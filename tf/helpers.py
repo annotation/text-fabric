@@ -1,11 +1,11 @@
-import sys
+import os,sys
 
-OTYPE = 'otype'
-MONADS = 'monads'
-
-def error(msg, line=None):
-    sys.stderr.write('{}{}\n'.format('ERROR at line {}: '.format(line) if line != None else '', msg))
-    sys.stderr.flush()
+def getModified(paths):
+    if type(paths) is str:
+        return os.path.getmtime(paths) if os.path.exists(paths) else None
+    else:
+        lastModified = [getModified(x) for x in paths if getModified(x) != None]
+        return None if len(lastModified) == 0 else max(lastModified)
 
 def setFromSpec(spec):
     covered = set()
@@ -41,21 +41,5 @@ def rangesFromSet(nodeSet):
 def specFromRanges(ranges): # ranges must be normalized
     return ','.join('{}'.format(r[0]) if r[0] == r[1] else '{}-{}'.format(*r) for r in ranges)
 
-valueFromTf = lambda tf: '\\'.join(x.replace('\\t','\t').replace('\\n','\n') for x in tf.split('\\\\'))
-tfFromValue = lambda val: val.replace('\\', '\\\\').replace('\t', '\\t').replace('\n', '\\n')
-
-def averageMonadLength(otype, monads, monadType):
-    otypeCount = collections.Counter()
-    monadSetLengths = collections.Counter()
-    for n in otype:
-        ntp = otype[n]
-        otypeCount[ntp] += 1
-        monadSetLengths[ntp] += len(monads[n]) if ntp != monadType else 1 
-    return sorted(
-        ((otype, monadSetLengths[otype]/otypeCount[otype]) for otype in otypeCount),
-        key=lambda x: -x[1],
-    )
-
-# if reading edges, you can opt to ignore the values, and construct sets instead of dictionaries
-# handy for the monads edge feature, which is big, and is not supposed to have values
-
+def valueFromTf(tf): return '\\'.join(x.replace('\\t','\t').replace('\\n','\n') for x in tf.split('\\\\'))
+def tfFromValue(val): return val.replace('\\', '\\\\').replace('\t', '\\t').replace('\n', '\\n')
