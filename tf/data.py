@@ -7,6 +7,11 @@ ERROR_CUTOFF = 20
 GZIP_LEVEL = 2
 PICKLE_PROTOCOL = 4
 
+SKELETON = (
+    'otype',
+    'monads',
+)
+
 class Data(object):
     def __init__(self, path, edgeValues=False, data=None, isEdge=None, metaData={}, method=None, dependencies=None):
         (dirName, baseName) = os.path.split(path)
@@ -185,6 +190,27 @@ class Data(object):
             if lnk > ERROR_CUTOFF:
                 self.tm.error('\t and {} more cases\n'.format(lnk - ERROR_CUTOFF), tm=False)
         self.data = data
+        if not errors:
+            if self.fileName == SKELETON[0]:
+                monadType = data[0]
+                otype = []
+                maxMonad = -1
+                for n in sorted(data):
+                    if data[n] == monadType:
+                        maxMonad += 1
+                        continue
+                    otype.append(data[n])
+                otype.append(monadType)
+                otype.append(maxMonad)
+                self.data = otype
+            elif self.fileName == SKELETON[1]:
+                monadsList = sorted(data)
+                maxMonad = min(data.keys()) - 1
+                monads = []
+                for n in monadsList:
+                    monads.append(sorted(data[n]))
+                monads.append(maxMonad)
+                self.data = monads
         return not errors
 
     def _compute(self):

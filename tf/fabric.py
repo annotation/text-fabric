@@ -1,24 +1,19 @@
 import os
 from glob import glob
-from .data import Data
+from .data import Data, SKELETON
 from .helpers import *
 from .timestamp import Timestamp
 from .prepare import *
-from .api import Pre, Feature
+from .api import *
 
 LOCATIONS = ['~/Downloads', '~', '~/text-fabric-data', '.']
 
-SKELETON = (
-    'otype',
-    'monads',
-)
-
 PRECOMPUTE = (
-    (False, '__levels__',  levels,   SKELETON                   ),
-    (True,  '__order__',   order,    SKELETON   +('__levels__',)),
-    (True,  '__rank__',    rank,    (SKELETON[0], '__order__'  )),
-    (True,  '__levUp__',   levUp,    SKELETON   +('__rank__',  )),
-    (True,  '__levDown__', levDown, ('__levUp__', '__rank__'   )),
+    (False, '__levels__',  levels,   SKELETON                               ),
+    (True,  '__order__',   order,    SKELETON   +('__levels__',            )),
+    (True,  '__rank__',    rank,    (SKELETON[0], '__order__'              )),
+    (True,  '__levUp__',   levUp,    SKELETON   +('__rank__',              )),
+    (True,  '__levDown__', levDown, (SKELETON[0],'__levUp__', '__rank__'   )),
 )
 
 class Fabric(object):
@@ -44,7 +39,7 @@ class Fabric(object):
         if self.good:
             self._precompute()
         if self.good:
-            self.featuresRequested = features.strip().split() if type(features) is str else features
+            self.featuresRequested = ['otype'] + (features.strip().split() if type(features) is str else features)
             good = True
             for featureName in self.featuresRequested:
                 if not self._loadFeature(featureName):
@@ -119,6 +114,13 @@ class Fabric(object):
             P=dict(),
         )
         if not self.good: return api
+        otypeFeature = OtypeFeature(self.features[SKELETON[0]].data)
+        if {'__levUp__', '__levDown__'} <= set(self.precomputeList):
+            api['L'] = Layer(
+                otypeFeature,
+                self.features['__levUp__'].data,
+                self.features['__levDown__'].data,
+            )
         for featureName in self.features:
             featureObject = self.features[featureName]
             if featureObject.dataLoaded:
@@ -129,7 +131,12 @@ class Fabric(object):
                         featureObject.unload()
                 else:
                     if featureName in self.featuresRequested:
-                        api['F'][featureName] = Feature(featureObject.data)
+                        if featureName == SKELETON[0]:
+                            api['F'][featureName] = otypeFeature
+                        elif featureName == SKELETON[1]:
+                            api['F'][featureName] = MonadsFeature(featureObject.data)
+                        else:
+                            api['F'][featureName] = Feature(featureObject.data)
                     else:
                         featureObject.unload()
         return api
