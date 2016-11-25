@@ -1,12 +1,3 @@
-import os,sys
-
-def getModified(paths):
-    if type(paths) is str:
-        return os.path.getmtime(paths) if os.path.exists(paths) else None
-    else:
-        lastModified = [getModified(x) for x in paths if getModified(x) != None]
-        return None if len(lastModified) == 0 else max(lastModified)
-
 def setFromSpec(spec):
     covered = set()
     for r_str in spec.split(','):

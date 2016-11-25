@@ -9,14 +9,16 @@ from .api import Pre, Feature
 LOCATIONS = ['~/Downloads', '~', '~/text-fabric-data', '.']
 
 SKELETON = (
-    '__otype__',
-    '__monads__',
+    'otype',
+    'monads',
 )
 
 PRECOMPUTE = (
-    ('__levels__', levels,  SKELETON                  ),
-    ('__order__',  order,   SKELETON   +('__levels__',)),
-    ('__rank__',   rank,   (SKELETON[0], '__order__'  )),
+    (False, '__levels__',  levels,   SKELETON                   ),
+    (True,  '__order__',   order,    SKELETON   +('__levels__',)),
+    (True,  '__rank__',    rank,    (SKELETON[0], '__order__'  )),
+    (True,  '__levUp__',   levUp,    SKELETON   +('__rank__',  )),
+    (True,  '__levDown__', levDown, ('__levUp__', '__rank__'   )),
 )
 
 class Fabric(object):
@@ -39,20 +41,19 @@ class Fabric(object):
         self._makeIndex()
 
     def load(self, features):
-        if not self.good: return
-        self._precompute()
-        if not self.good: return
-
-        if type(features) is str: features = features.strip().split()
-        good = True
-        for featureName in features:
-            if not self._loadFeature(featureName):
-                good = False
-        if good:
-            self.tm.info('All features loaded/computed\n')
-        else:
-            self.tm.error('Not all features could be loaded/computed\n')
-            self.good = False
+        if self.good:
+            self._precompute()
+        if self.good:
+            self.featuresRequested = features.strip().split() if type(features) is str else features
+            good = True
+            for featureName in self.featuresRequested:
+                if not self._loadFeature(featureName):
+                    good = False
+            if good:
+                self.tm.info('All features loaded/computed\n')
+            else:
+                self.tm.error('Not all features could be loaded/computed\n')
+                self.good = False
         return self._makeApi()
 
     def _loadFeature(self, featureName):
@@ -88,7 +89,7 @@ class Fabric(object):
         if not good: return False
         self.skeletonDir = self.features[SKELETON[0]].dirName
         self.precomputeList = []
-        for (featureName, method, dependencies) in PRECOMPUTE:
+        for (retain, featureName, method, dependencies) in PRECOMPUTE:
             thisGood = True
             for dep in dependencies:
                 if dep not in self.features:
@@ -100,7 +101,8 @@ class Fabric(object):
                 method=method,
                 dependencies=[self.features.get(dep, None) for dep in dependencies],
             )
-            self.precomputeList.append(featureName)
+            if retain:
+                self.precomputeList.append(featureName)
         self.good = good
 
     def _precompute(self):
@@ -119,9 +121,16 @@ class Fabric(object):
         if not self.good: return api
         for featureName in self.features:
             featureObject = self.features[featureName]
-            if featureObject.method:
-                api['P'][featureName] = Pre(featureObject.data)
-            else:
-                api['F'][featureName] = Feature(featureObject.data)
+            if featureObject.dataLoaded:
+                if featureObject.method:
+                    if featureName in self.precomputeList:
+                        api['P'][featureName] = Pre(featureObject.data)
+                    else:
+                        featureObject.unload()
+                else:
+                    if featureName in self.featuresRequested:
+                        api['F'][featureName] = Feature(featureObject.data)
+                    else:
+                        featureObject.unload()
         return api
 

@@ -24,39 +24,43 @@ class Data(object):
         self.dependencies = dependencies
         self.data = data
         self.dataLoaded = False
-        self.tm = Timestamp()
+        self.dataError = False
 
     def load(self):
-        self.tm.reset()
-        origTime = getModified([dep.path for dep in self.dependencies]) if self.method else getModified(self.path)
-        binTime = getModified(self.binPath)
+        self.tm = Timestamp(level=1)
+        origTime = self._getModified()
+        binTime = self._getModified(bin=True)
         sourceRep = ', '.join(dep.fileName for dep in self.dependencies) if self.method else self.path
         msgFormat = '{:<1} {:<20} from {}\n'
         actionRep = ''
         good = True
 
-        if self.dataLoaded and (not origTime or self.dataLoaded >= origTime) and (not binTime or self.dataLoaded >= binTime):
+        if self.dataError:
+            actionRep = 'E' # there has been an error in an earlier computation/compiling/loading of this feature
+            good = False
+        elif self.dataLoaded and (not origTime or self.dataLoaded >= origTime) and (not binTime or self.dataLoaded >= binTime):
             actionRep = '=' # loaded and up to date
         elif not origTime and not binTime:
             actionRep = 'X' # no source and no binary present
             good = False
         elif good:
             if not origTime:
+                actionRep = 'b'
                 good = self._readDataBin()
-                actionRep = 'B'
             elif not binTime or origTime > binTime:
+                actionRep = 'C' if self.method else 'T'
                 good = self._compute() if self.method else self._readTf()
-                actionRep = 'C'
                 if good: self._writeDataBin()
             else:
-                good = True if self.method else self._readTf(metaOnly=True)
                 actionRep = 'B'
+                good = True if self.method else self._readTf(metaOnly=True)
                 if good: good = self._readDataBin()
         if good:
             self.dataLoaded = time.time() 
             if actionRep != '=':
                 self.tm.info(msgFormat.format(actionRep, self.fileName, sourceRep))
         else:
+            self.dataError = True
             self.tm.error(msgFormat.format(actionRep, self.fileName, sourceRep))
         return good
 
@@ -102,24 +106,27 @@ class Data(object):
         return good
         
     def _readDataTf(self, fh, firstI):
-        wrongFields = []
+        errors=collections.defaultdict(list)
         first = True
         i = firstI
         implicit_node = 0
         data = {}
         isEdge = self.isEdge
         edgeValues = self.edgeValues
-        normFields = 3 if isEdge else 2
+        normFields = 3 if isEdge and edgeValues else 2
         for line in fh:
             i += 1
             fields = line.rstrip('\n').split('\t')
             lfields = len(fields)
             if lfields > normFields: 
-                wrongFields.append(i)
+                errors['wrongFields'].append(i)
                 continue
             if lfields == normFields:
                 nodes = setFromSpec(fields[0])
                 if isEdge:
+                    if fields[1] == '':
+                        errors['emptyNode2Spec'].append(i)
+                        continue
                     nodes2 = setFromSpec(fields[1])
                 if not isEdge or edgeValues:
                     valTf = fields[-1]
@@ -127,15 +134,33 @@ class Data(object):
                 if isEdge:
                     if edgeValues:
                         valTf = ''
-                    if lfields == normFields - 1:
-                        nodes = setFromSpec(fields[0])
-                        nodes2 = setFromSpec(fields[1])
-                    elif lfields == normFields - 2:
-                        nodes = {implicit_node}
-                        nodes2 = setFromSpec(fields[0])
+                        if lfields == normFields - 1:
+                            nodes = setFromSpec(fields[0])
+                            if fields[1] == '':
+                                errors['emptyNode2Spec'].append(i)
+                                continue
+                            nodes2 = setFromSpec(fields[1])
+                        elif lfields == normFields - 2:
+                            nodes = {implicit_node}
+                            if fields[0] == '':
+                                errors['emptyNode2Spec'].append(i)
+                                continue
+                            nodes2 = setFromSpec(fields[0])
+                        else:
+                            nodes = {implicit_node}
+                            errors['emptyNode2Spec'].append(i)
+                            continue
                     else:
-                        nodes = {implicit_node}
-                        nodes2 = {implicit_node}
+                        if lfields == normFields - 1:
+                            nodes = {implicit_node}
+                            if fields[0] == '':
+                                errors['emptyNode2Spec'].append(i)
+                                continue
+                            nodes2 = setFromSpec(fields[0])
+                        else:
+                            nodes = {implicit_node}
+                            errors['emptyNode2Spec'].append(i)
+                            continue
                 else:
                     nodes = {implicit_node}
                     if lfields == 1:
@@ -154,14 +179,13 @@ class Data(object):
                             data.setdefault(n, {})[m] = value
             else:
                 for n in nodes: data[n] = value
-        if wrongFields:
-            for ln in wrongFields[0:ERROR_CUTOFF]:
-                self.tm.error('Line {}: wrong number of fields\n'.format(ln))
-            if len(wrongFields) > ERROR_CUTOFF:
-                self.tm.error('{} more cases\n'.format(line=ln - ERROR_CUTOFF))
-            return False
+        for kind in errors:
+            lnk = len(errors[kind])
+            self.tm.error('{} in lines {}\n'.format(kind, ','.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF])))
+            if lnk > ERROR_CUTOFF:
+                self.tm.error('\t and {} more cases\n'.format(lnk - ERROR_CUTOFF), tm=False)
         self.data = data
-        return True
+        return not errors
 
     def _compute(self):
         good = True
@@ -169,7 +193,12 @@ class Data(object):
             if not feature.load():
                 good = False
         if not good: return False
-        self.data = self.method(*[dep.data for dep in self.dependencies])
+
+        cmpFormat = 'c {:<20} {{}}\n'.format(self.fileName)
+        ctm = Timestamp(level=2)
+        def info(msg, tm=True): ctm.info(cmpFormat.format(msg), tm=tm)
+        def error(msg, tm=True): ctm.error(cmpFormat.format(msg), tm=tm)
+        self.data = self.method(info, error, *[dep.data for dep in self.dependencies])
         return self.data != None
 
     def _writeTf(self, dirName=None, fileName=None, extension=None, metaOnly=False, nodeRanges=False):
@@ -262,3 +291,20 @@ class Data(object):
             error('Cannot write to file "{}"'.format(self.binPath))
             good = False
         return True
+
+    def _getModified(self, bin=False):
+        if bin:
+            return os.path.getmtime(self.binPath) if os.path.exists(self.binPath) else None
+        else:
+            if self.method:
+                depsInfo = [dep._getModified() for dep in self.dependencies]
+                depsModifieds = [d for d in depsInfo if d != None]
+                depsModified = None if len(depsModifieds) == 0 else max(depsModifieds)
+                if depsModified != None: return depsModified
+                elif os.path.exists(self.binPath): return os.path.getmtime(self.binPath)
+                else: return None
+            else:
+                if os.path.exists(self.path): return os.path.getmtime(self.path)
+                elif os.path.exists(self.binPath): return os.path.getmtime(self.binPath)
+                else: return None
+

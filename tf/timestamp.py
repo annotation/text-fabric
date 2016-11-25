@@ -2,20 +2,28 @@ import sys
 import collections
 import time
 
+
 class Timestamp(object):
-    def __init__(self):
+    def __init__(self, level=None):
+        self.oneLevelRep = '   |   '
+        self.level = level if level != None else 0
+        self.levelRep = self.oneLevelRep * self.level
         self.timestamp = time.time()
 
-    def raw_msg(self, msg, error=False):
-        timed_msg = '{:>7} {}'.format(self._elapsed(), msg)
+    def raw_msg(self, msg, tm=True, error=False):
+        if tm:
+            msgRep = '{}{:>7} {}'.format(self.levelRep, self._elapsed(), msg)
+        else:
+            msgRep = '{}{:>7} {}'.format(self.levelRep, self.oneLevelRep, msg)
         channel = sys.stderr if error else sys.stdout
-        channel.write(timed_msg)
+        channel.write(msgRep)
         channel.flush()
 
-    def info(self, msg): self.raw_msg(msg)
-    def error(self, msg): self.raw_msg(msg, error=True)
+    def info(self, msg, tm=True): self.raw_msg(msg, tm=tm)
+    def error(self, msg, tm=True): self.raw_msg(msg, tm=tm, error=True)
 
-    def reset(self): self.timestamp = time.time()
+    def reset(self, level=None):
+        self.timestamp = time.time()
 
     def _elapsed(self):
         interval = time.time() - self.timestamp
