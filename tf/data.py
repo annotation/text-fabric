@@ -48,7 +48,7 @@ class Data(object):
         elif not origTime and not binTime:
             actionRep = 'X' # no source and no binary present
             good = False
-        elif good:
+        else:
             if not origTime:
                 actionRep = 'b'
                 good = self._readDataBin()
@@ -202,15 +202,15 @@ class Data(object):
                     otype.append(data[n])
                 otype.append(monadType)
                 otype.append(maxMonad)
-                self.data = otype
+                self.data = tuple(otype)
             elif self.fileName == SKELETON[1]:
                 monadsList = sorted(data)
                 maxMonad = min(data.keys()) - 1
                 monads = []
                 for n in monadsList:
-                    monads.append(sorted(data[n]))
+                    monads.append(tuple(sorted(data[n])))
                 monads.append(maxMonad)
-                self.data = monads
+                self.data = tuple(monads)
         return not errors
 
     def _compute(self):

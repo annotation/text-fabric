@@ -1,7 +1,6 @@
 import array,collections,functools
 
 def getOtypeInfo(info, otype):
-    info('get monad type, max monad, max node')
     result = (otype[-2], otype[-1], len(otype) - 2 + otype[-1])
     info('monad type = {}; max monad = {}; max node = {}'.format(*result))
     return result
@@ -95,5 +94,5 @@ def levDown(info, error, otype, embedders, rank):
     embeddees = []
     for n in range(maxMonad+1, maxNode+1):
         embeddees.append(tuple(sorted(inverse.get(n, []), key=lambda m: rank[m])))
-    return embeddees
+    return tuple(embeddees)
 
