@@ -227,7 +227,7 @@ class Data(object):
         self.data = self.method(info, error, *[dep.data for dep in self.dependencies])
         return self.data != None
 
-    def _writeTf(self, dirName=None, fileName=None, extension=None, metaOnly=False, nodeRanges=False):
+    def writeTf(self, dirName=None, fileName=None, extension=None, metaOnly=False, nodeRanges=False):
         dirName = dirName or self.dirName
         fileName = fileName or self.fileName
         extension = extension or self.extension
