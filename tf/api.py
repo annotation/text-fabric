@@ -126,12 +126,12 @@ class Layer(object):
         if n < maxSlot+1: return tuple()
         if otype == None:
             return sorted(
-                levDown[n-maxSlot-1]+Eoslots.m(n),
+                levDown[n-maxSlot-1]+Eoslots.s(n),
                 key=lambda n: Crank[n],
             )
         elif otype == slotType:
             return sorted(
-                Eoslots.m(n),
+                Eoslots.s(n),
                 key=lambda n: Crank[n],
             )
         else:
