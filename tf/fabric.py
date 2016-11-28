@@ -6,7 +6,13 @@ from .timestamp import Timestamp
 from .prepare import *
 from .api import *
 
-LOCATIONS = ['~/Downloads', '~', '~/text-fabric-data', '.']
+LOCATIONS = [
+    '~/Downloads',
+    '~/text-fabric-data',
+    '~/github/text-fabric-data',
+    '~/github/text-fabric-data/hebrew/etcbc4c',
+    '.',
+]
 
 PRECOMPUTE = (
     (True , '__levels__' , levels ,  SKELETON                                 ),
@@ -51,6 +57,24 @@ class Fabric(object):
                 self.good = False
         return self._makeApi()
 
+    def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}):
+        self.targetDir = self.locations[-1]
+        self.tm.info('Exporting {} node and {} edge features to {}:\n'.format(
+            len(nodeFeatures), len(edgeFeatures), self.targetDir,
+        ))
+        todo = []
+        for (fName, data) in sorted(nodeFeatures.items()):
+            todo.append((fName, data, False))
+        for (fName, data) in sorted(edgeFeatures.items()):
+            todo.append((fName, data, True))
+        reduced = 0
+        total = 0
+        for (fName, data, isEdge) in todo:
+            fMeta = metaData.get(fName, metaData.get('', {})) 
+            fObj = Data('{}/{}.tf'.format(self.targetDir, fName), data=data, isEdge=isEdge, metaData=fMeta)
+            fObj.save(nodeRanges=fName==SKELETON[0], overwrite=True)
+        self.tm.info('Exported {} features to {}:\n'.format(len(self.features), self.targetDir))
+
     def _loadFeature(self, fName):
         if not self.good: return False
         if fName not in self.features:
@@ -71,9 +95,12 @@ class Fabric(object):
                 (fName, ext) = os.path.splitext(fileF)
                 tfFiles.setdefault(fName, []).append(f)
         for (fName, featurePaths) in sorted(tfFiles.items()):
-            for (i, featurePath) in enumerate(featurePaths):
-                self.tm.info('{:<1} {:<20} from {}\n'.format('X' if i < len(featurePaths)-1 else '', fName, featurePath))
-            self.features[fName] = Data(featurePaths[-1])  
+            chosenFPath = featurePaths[-1]
+            for featurePath in sorted(set(featurePaths[0:-1])):
+                if featurePath != chosenFPath:
+                    self.tm.info('{:<1} {:<20} from {}\n'.format('X', fName, featurePath))
+            self.tm.info('{:<1} {:<20} from {}\n'.format('', fName, chosenFPath))
+            self.features[fName] = Data(chosenFPath)  
         self.tm.info('{} features found\n'.format(len(tfFiles)))
 
         good = True
@@ -114,7 +141,7 @@ class Fabric(object):
 
          
         setattr(api.F, SKELETON[0], OtypeFeature(api, self.features[SKELETON[0]].data))
-        setattr(api.E, SKELETON[1], MonadsFeature(api, self.features[SKELETON[1]].data))
+        setattr(api.E, SKELETON[1], OslotsFeature(api, self.features[SKELETON[1]].data))
 
         for fName in self.features:
             fObj = self.features[fName]

@@ -1,41 +1,42 @@
 import collections
+from .helpers import *
 
 class OtypeFeature(object):
     def __init__(self, api, data=None):
         self.api = api
         self.data = data
-        self.monadType = self.data[-2]
-        self.maxMonad = self.data[-1]
+        self.slotType = self.data[-2]
+        self.maxSlot = self.data[-1]
         self.maxNode = len(self.data) + self.data[-1] - 1
 
     def v(self, n): 
-        if n < self.maxMonad + 1:
+        if n < self.maxSlot + 1:
             return self.data[-2]
-        m = n - self.maxMonad - 1
+        m = n - self.maxSlot - 1
         if m < len(self.data) - 2:
             return self.data[m]
         return None
 
     def s(self, val):
         Crank = self.api.C.rank.data
-        maxMonad = self.maxMonad
+        maxSlot = self.maxSlot
         if val == self.data[-2]:
-            return range(maxMonad+1)
+            return range(maxSlot+1)
         return sorted(
-            [n+maxMonad+1 for n in range(len(self.data)-2) if self.data[n] == val],
+            [n+maxSlot+1 for n in range(len(self.data)-2) if self.data[n] == val],
             key=lambda n: Crank[n],
         )
 
-class MonadsFeature(object):
+class OslotsFeature(object):
     def __init__(self, api, data=None):
         self.api = api
         self.data = data
-        self.maxMonad = self.data[-1]
+        self.maxSlot = self.data[-1]
 
     def m(self, n): 
-        if n < self.maxMonad + 1:
+        if n < self.maxSlot + 1:
             return [n]
-        m = n - self.maxMonad - 1
+        m = n - self.maxSlot - 1
         if m < len(self.data) - 1:
             return self.data[m]
         return []
@@ -117,24 +118,24 @@ class Layer(object):
 
     def d(self, n, otype=None):
         Fotype = self.api.F.otype
-        Emonads = self.api.E.monads
+        Eoslots = self.api.E.oslots
         Crank = self.api.C.rank.data
         levDown = self.api.C.levDown.data
-        monadType = Fotype.monadType
-        maxMonad = Fotype.maxMonad
-        if n < maxMonad+1: return tuple()
+        slotType = Fotype.slotType
+        maxSlot = Fotype.maxSlot
+        if n < maxSlot+1: return tuple()
         if otype == None:
             return sorted(
-                levDown[n-maxMonad-1]+Emonads.m(n),
+                levDown[n-maxSlot-1]+Eoslots.m(n),
                 key=lambda n: Crank[n],
             )
-        elif otype == monadType:
+        elif otype == slotType:
             return sorted(
-                Emonads.m(n),
+                Eoslots.m(n),
                 key=lambda n: Crank[n],
             )
         else:
-            return tuple(m for m in levDown[n-maxMonad-1] if Fotype.v(m) == otype)
+            return tuple(m for m in levDown[n-maxSlot-1] if Fotype.v(m) == otype)
 
 class Api(object):
     def __init__(self, tm):
@@ -179,18 +180,4 @@ def addOtype(api):
 
 def addLayer(api):
     api.L = Layer(api)
-
-def makeInverse(data):
-    inverse = {}
-    for n in data:
-        for m in data[n]:
-            inverse.setdefault(m, set()).add(n)
-    return inverse
-
-def makeInverseVal(data):
-    inverse = {}
-    for n in data:
-        for (m, val) in data[n].items():
-            inverse.setdefault(m, {})[n] = val
-    return inverse
 

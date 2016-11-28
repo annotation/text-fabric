@@ -9,7 +9,7 @@ PICKLE_PROTOCOL = 4
 
 SKELETON = (
     'otype',
-    'monads',
+    'oslots',
 )
 
 class Data(object):
@@ -35,7 +35,7 @@ class Data(object):
         self.tm = Timestamp(level=1)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
-        sourceRep = ', '.join(dep.fileName for dep in self.dependencies) if self.method else self.path
+        sourceRep = ', '.join(dep.fileName for dep in self.dependencies) if self.method else self.dirName
         msgFormat = '{:<1} {:<20} from {}\n'
         actionRep = ''
         good = True
@@ -72,6 +72,9 @@ class Data(object):
     def unload(self):
         self.data = None
         self.dataLoaded = False
+
+    def save(self, overwrite=False, nodeRanges=False):
+        return self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
 
     def _readTf(self, metaOnly=False):
         path = self.path
@@ -192,25 +195,25 @@ class Data(object):
         self.data = data
         if not errors:
             if self.fileName == SKELETON[0]:
-                monadType = data[0]
+                slotType = data[0]
                 otype = []
-                maxMonad = -1
+                maxSlot = -1
                 for n in sorted(data):
-                    if data[n] == monadType:
-                        maxMonad += 1
+                    if data[n] == slotType:
+                        maxSlot += 1
                         continue
                     otype.append(data[n])
-                otype.append(monadType)
-                otype.append(maxMonad)
+                otype.append(slotType)
+                otype.append(maxSlot)
                 self.data = tuple(otype)
             elif self.fileName == SKELETON[1]:
-                monadsList = sorted(data)
-                maxMonad = min(data.keys()) - 1
-                monads = []
-                for n in monadsList:
-                    monads.append(tuple(sorted(data[n])))
-                monads.append(maxMonad)
-                self.data = tuple(monads)
+                slotsList = sorted(data)
+                maxSlot = min(data.keys()) - 1
+                slots = []
+                for n in slotsList:
+                    slots.append(tuple(sorted(data[n])))
+                slots.append(maxSlot)
+                self.data = tuple(slots)
         return not errors
 
     def _compute(self):
@@ -227,15 +230,19 @@ class Data(object):
         self.data = self.method(info, error, *[dep.data for dep in self.dependencies])
         return self.data != None
 
-    def writeTf(self, dirName=None, fileName=None, extension=None, metaOnly=False, nodeRanges=False):
+    def _writeTf(self, dirName=None, fileName=None, overwrite=True, extension=None, metaOnly=False, nodeRanges=False):
+        self.tm = Timestamp(level=1)
+        data = self.data
+
         dirName = dirName or self.dirName
         fileName = fileName or self.fileName
         extension = extension or self.extension
         fpath = '{}/{}{}'.format(dirName, fileName, extension)
         if fpath == self.path:
             if os.path.exists(fpath):
-                self.tm.error('Feature file "{}" already exists, feature will not be written\n'.format(fpath))
-                return False
+                if not overwrite:
+                    self.tm.error('Feature file "{}" already exists, feature will not be written\n'.format(fpath))
+                    return False
         try:
             fh = open(fpath, 'w')
         except:
@@ -251,6 +258,11 @@ class Data(object):
         if not metaOnly:
             good = self._writeDataTf(fh, nodeRanges=nodeRanges)
         fh.close()
+        msgFormat = '{:<1} {:<20} to {}\n'
+        if good:
+            self.tm.info(msgFormat.format('M' if metaOnly else 'T', fileName, dirName))
+        else:
+            self.tm.error(msgFormat.format('M' if metaOnly else 'T', fileName, dirName))
         return good
 
     def _writeDataTf(self, fh, nodeRanges=False):
@@ -268,7 +280,9 @@ class Data(object):
                         nodeSpec2 = specFromRanges(rangesFromSet(mset))
                         nodeSpec = '' if n == implicitNode else n
                         implicitNode = n + 1
-                        fh.write('{}{}{}\t{}\n'.format(nodeSpec, '\t' if nodeSpec else '', nodeSpec2, tfFromValue(value)))
+                        fh.write('{}{}{}\t{}\n'.format(
+                            nodeSpec, '\t' if nodeSpec else '', nodeSpec2, tfFromValue(value),
+                        ))
                 else:
                     nodeSpec2 = specFromRanges(rangesFromSet(thisData))
                     nodeSpec = '' if n == implicitNode else n
@@ -286,13 +300,17 @@ class Data(object):
                     else:
                         nodeSpec = specFromRanges(rangesFromSet(nset))
                     implicitNode = nset[-1]
-                    fh.write('{}{}{}\n'.format(nodeSpec, '\t' if nodeSpec else '', tfFromValue(value)))
+                    fh.write('{}{}{}\n'.format(
+                        nodeSpec, '\t' if nodeSpec else '', tfFromValue(value),
+                    ))
             else:
                 implicitNode = 0
                 for n in sorted(data):
                     nodeSpec = '' if n == implicitNode else n
                     implicitNode = n + 1
-                    fh.write('{}{}{}\n'.format(nodeSpec, '\t' if nodeSpec else '', tfFromValue(data[n])))
+                    fh.write('{}{}{}\n'.format(
+                        nodeSpec, '\t' if nodeSpec else '', tfFromValue(data[n]),
+                    ))
         return True
 
     def _readDataBin(self):
@@ -312,7 +330,8 @@ class Data(object):
                 good = False
         if not good: return False
         try:
-            with gzip.open(self.binPath, "wb", compresslevel=GZIP_LEVEL) as f: pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
+            with gzip.open(self.binPath, "wb", compresslevel=GZIP_LEVEL) as f:
+                pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
         except:
             error('Cannot write to file "{}"'.format(self.binPath))
             good = False

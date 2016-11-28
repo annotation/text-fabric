@@ -34,3 +34,26 @@ def specFromRanges(ranges): # ranges must be normalized
 
 def valueFromTf(tf): return '\\'.join(x.replace('\\t','\t').replace('\\n','\n') for x in tf.split('\\\\'))
 def tfFromValue(val): return val.replace('\\', '\\\\').replace('\t', '\\t').replace('\n', '\\n')
+
+def makeInverse(data):
+    inverse = {}
+    for n in data:
+        for m in data[n]:
+            inverse.setdefault(m, set()).add(n)
+    return inverse
+
+def makeInverseVal(data):
+    inverse = {}
+    for n in data:
+        for (m, val) in data[n].items():
+            inverse.setdefault(m, {})[n] = val
+    return inverse
+
+def nbytes(by):
+    units = ['B', 'KB', 'MB', 'GB', 'TB']
+    result = ''
+    for i in range(len(units)):
+        if by < 1024 or i == len(units) - 1:
+            fmt = '{:>5}{}' if i == 0 else '{:>5.1f}{}'
+            return fmt.format(by, units[i])
+        by /= 1024
