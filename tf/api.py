@@ -33,7 +33,7 @@ class OslotsFeature(object):
         self.data = data
         self.maxSlot = self.data[-1]
 
-    def m(self, n): 
+    def s(self, n): 
         if n < self.maxSlot + 1:
             return [n]
         m = n - self.maxSlot - 1
