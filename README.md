@@ -11,6 +11,6 @@ The emphasis is lean and mean data processing and result serializing.
 
 [Motivation](http://www.slideshare.net/dirkroorda/text-fabric)
 
-[Docs](https://github.com/dirkroorda/text-fabric/blob/master/docs/tf.ipynb)
+[Docs](https://github.com/dirkroorda/text-fabric.wiki/Home)
 
 [Data](https://github.com/dirkroorda/text-fabric-data)
