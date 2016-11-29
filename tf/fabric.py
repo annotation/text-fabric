@@ -42,6 +42,8 @@ class Fabric(object):
         self._makeIndex()
 
     def load(self, features):
+        self.tm.reset()
+        self.tm.info('loading features ...')
         if self.good:
             self._precompute()
         if self.good:
@@ -58,6 +60,7 @@ class Fabric(object):
         return self._makeApi()
 
     def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}):
+        self.tm.reset()
         self.targetDir = self.locations[-1]
         self.tm.info('Exporting {} node and {} edge features to {}:\n'.format(
             len(nodeFeatures), len(edgeFeatures), self.targetDir,
