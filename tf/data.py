@@ -13,10 +13,11 @@ SKELETON = (
 )
 
 class Data(object):
-    def __init__(self, path, edgeValues=False, data=None, isEdge=None, metaData={}, method=None, dependencies=None):
+    def __init__(self, path, tm, edgeValues=False, data=None, isEdge=None, metaData={}, method=None, dependencies=None):
         (dirName, baseName) = os.path.split(path)
         (fileName, extension) = os.path.splitext(baseName)
         self.path = path
+        self.tm = tm
         self.dirName = dirName
         self.fileName = fileName
         self.extension = extension
@@ -32,11 +33,11 @@ class Data(object):
         self.dataError = False
 
     def load(self):
-        self.tm = Timestamp(level=1)
+        self.tm.indent(level=1, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
         sourceRep = ', '.join(dep.fileName for dep in self.dependencies) if self.method else self.dirName
-        msgFormat = '{:<1} {:<20} from {}\n'
+        msgFormat = '{:<1} {:<20} from {}'
         actionRep = ''
         good = True
 
@@ -79,7 +80,7 @@ class Data(object):
     def _readTf(self, metaOnly=False):
         path = self.path
         if not os.path.exists(path):
-            self.tm.error('TF reading: feature file "{}" does not exist\n'.format(path))
+            self.tm.error('TF reading: feature file "{}" does not exist'.format(path))
             return False
         fh = open(path)
         i = 0
@@ -91,7 +92,7 @@ class Data(object):
                 if text == '@edge': self.isEdge = True
                 elif text == '@node': self.isEdge = False
                 else:
-                    self.tm.error('Line {}: missing @node/@edge\n'.format(i))
+                    self.tm.error('Line {}: missing @node/@edge'.format(i))
                     fh.close()
                     return False
                 continue
@@ -102,7 +103,7 @@ class Data(object):
                 continue
             else:
                 if text != '':
-                    self.tm.error('Line {}: missing blank line after metadata\n'.format(i))
+                    self.tm.error('Line {}: missing blank line after metadata'.format(i))
                     fh.close()
                     return False
                 else:
@@ -189,9 +190,9 @@ class Data(object):
                 for n in nodes: data[n] = value
         for kind in errors:
             lnk = len(errors[kind])
-            self.tm.error('{} in lines {}\n'.format(kind, ','.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF])))
+            self.tm.error('{} in lines {}'.format(kind, ','.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF])))
             if lnk > ERROR_CUTOFF:
-                self.tm.error('\t and {} more cases\n'.format(lnk - ERROR_CUTOFF), tm=False)
+                self.tm.error('\t and {} more cases'.format(lnk - ERROR_CUTOFF), tm=False)
         self.data = data
         if not errors:
             if self.fileName == SKELETON[0]:
@@ -223,15 +224,15 @@ class Data(object):
                 good = False
         if not good: return False
 
-        cmpFormat = 'c {:<20} {{}}\n'.format(self.fileName)
-        ctm = Timestamp(level=2)
-        def info(msg, tm=True): ctm.info(cmpFormat.format(msg), tm=tm)
-        def error(msg, tm=True): ctm.error(cmpFormat.format(msg), tm=tm)
+        cmpFormat = 'c {:<20} {{}}'.format(self.fileName)
+        self.tm.indent(level=2, reset=True)
+        def info(msg, tm=True): self.tm.info(cmpFormat.format(msg), tm=tm)
+        def error(msg, tm=True): self.tm.error(cmpFormat.format(msg), tm=tm)
         self.data = self.method(info, error, *[dep.data for dep in self.dependencies])
         return self.data != None
 
     def _writeTf(self, dirName=None, fileName=None, overwrite=True, extension=None, metaOnly=False, nodeRanges=False):
-        self.tm = Timestamp(level=1)
+        self.tm.indent(level=1, reset=True)
         data = self.data
 
         dirName = dirName or self.dirName
@@ -241,12 +242,12 @@ class Data(object):
         if fpath == self.path:
             if os.path.exists(fpath):
                 if not overwrite:
-                    self.tm.error('Feature file "{}" already exists, feature will not be written\n'.format(fpath))
+                    self.tm.error('Feature file "{}" already exists, feature will not be written'.format(fpath))
                     return False
         try:
             fh = open(fpath, 'w')
         except:
-            self.tm.error('Cannot write to feature file "{}"\n'.format(fpath))
+            self.tm.error('Cannot write to feature file "{}"'.format(fpath))
             return False
         fh.write('@{}\n'.format('edge' if self.isEdge else 'node'))
         for meta in sorted(self.metaData):
@@ -315,7 +316,7 @@ class Data(object):
 
     def _readDataBin(self):
         if not os.path.exists(self.binPath):
-            self.tm.error('TF reading: feature file "{}" does not exist\n'.format(self.binPath))
+            self.tm.error('TF reading: feature file "{}" does not exist'.format(self.binPath))
             return False
         with gzip.open(self.binPath, "rb") as f: self.data = pickle.load(f)
         return True
@@ -326,14 +327,14 @@ class Data(object):
             try:
                 os.makedirs(self.binDir, exist_ok=True)
             except:
-                error('Cannot create directory "{}"'.format(self.binDir))
+                self.tm.error('Cannot create directory "{}"'.format(self.binDir))
                 good = False
         if not good: return False
         try:
             with gzip.open(self.binPath, "wb", compresslevel=GZIP_LEVEL) as f:
                 pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
         except:
-            error('Cannot write to file "{}"'.format(self.binPath))
+            self.tm.error('Cannot write to file "{}"'.format(self.binPath))
             good = False
         return True
 

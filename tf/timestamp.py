@@ -6,27 +6,29 @@ import time
 class Timestamp(object):
     def __init__(self, level=None):
         self.oneLevelRep = '   |   '
-        self.level = level if level != None else 0
-        self.levelRep = self.oneLevelRep * self.level
-        self.timestamp = time.time()
+        self.timestamp = {}
+        self.indent(level=level, reset=True)
 
-    def raw_msg(self, msg, tm=True, error=False):
+    def raw_msg(self, msg, tm=True, nl=True, error=False):
         if tm:
-            msgRep = '{}{:>7} {}'.format(self.levelRep, self._elapsed(), msg)
+            msgRep = '{}{:>7} {}'.format(self.levelRep, self._elapsed(), msg).replace('\n', '\n'+self.levelRep)
         else:
-            msgRep = '{}{:>7} {}'.format(self.levelRep, self.oneLevelRep, msg)
+            msgRep = '{}{}'.format(self.levelRep, msg).replace('\n', '\n'+self.levelRep)
         channel = sys.stderr if error else sys.stdout
-        channel.write(msgRep)
+        channel.write('{}{}'.format(msgRep, '\n' if nl else ''))
         channel.flush()
 
-    def info(self, msg, tm=True): self.raw_msg(msg, tm=tm)
-    def error(self, msg, tm=True): self.raw_msg(msg, tm=tm, error=True)
+    def info(self, msg, tm=True, nl=True): self.raw_msg(msg, tm=tm, nl=nl)
+    def error(self, msg, tm=True, nl=True): self.raw_msg(msg, tm=tm, nl=nl, error=True)
 
-    def reset(self, level=None):
-        self.timestamp = time.time()
+    def indent(self, level=None, reset=False):
+        self.level = level if level != None else 0
+        self.levelRep = self.oneLevelRep * self.level
+        if reset:
+            self.timestamp[self.level] = time.time()
 
     def _elapsed(self):
-        interval = time.time() - self.timestamp
+        interval = time.time() - self.timestamp.setdefault(self.level, time.time())
         if interval < 10: return "{: 2.2f}s".format(interval)
         interval = int(round(interval))
         if interval < 60: return "{:>2d}s".format(interval)

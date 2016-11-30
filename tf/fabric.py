@@ -42,7 +42,7 @@ class Fabric(object):
         self._makeIndex()
 
     def load(self, features):
-        self.tm.reset()
+        self.tm.indent(level=0, reset=True)
         self.tm.info('loading features ...')
         if self.good:
             self._precompute()
@@ -52,17 +52,18 @@ class Fabric(object):
             for fName in list(SKELETON) + self.featuresRequested:
                 if not self._loadFeature(fName):
                     good = False
+            self.tm.indent(level=0)
             if good:
-                self.tm.info('All features loaded/computed\n')
+                self.tm.info('All features loaded/computed')
             else:
-                self.tm.error('Not all features could be loaded/computed\n')
+                self.tm.error('Not all features could be loaded/computed')
                 self.good = False
         return self._makeApi()
 
     def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}):
-        self.tm.reset()
+        self.tm.indent(level=0, reset=True)
         self.targetDir = self.locations[-1]
-        self.tm.info('Exporting {} node and {} edge features to {}:\n'.format(
+        self.tm.info('Exporting {} node and {} edge features to {}:'.format(
             len(nodeFeatures), len(edgeFeatures), self.targetDir,
         ))
         todo = []
@@ -74,19 +75,20 @@ class Fabric(object):
         total = 0
         for (fName, data, isEdge) in todo:
             fMeta = metaData.get(fName, metaData.get('', {})) 
-            fObj = Data('{}/{}.tf'.format(self.targetDir, fName), data=data, isEdge=isEdge, metaData=fMeta)
+            fObj = Data('{}/{}.tf'.format(self.targetDir, fName), self.tm, data=data, isEdge=isEdge, metaData=fMeta)
             fObj.save(nodeRanges=fName==SKELETON[0], overwrite=True)
-        self.tm.info('Exported {} features to {}:\n'.format(len(self.features), self.targetDir))
+        self.tm.indent(level=0)
+        self.tm.info('Exported {} features to {}:'.format(len(self.features), self.targetDir))
 
     def _loadFeature(self, fName):
         if not self.good: return False
         if fName not in self.features:
-            self.tm.error('Feature "{}" not available in\n\t{}\n'.format(fName, self.locationRep))
+            self.tm.error('Feature "{}" not available in\n{}'.format(fName, self.locationRep))
             return False
         return self.features[fName].load()
 
     def _makeIndex(self):
-        self.tm.info('Looking for available data features:\n')
+        self.tm.info('Looking for available data features:')
         self.features = {}
         tfFiles = {}
         for loc in self.locations:
@@ -101,15 +103,15 @@ class Fabric(object):
             chosenFPath = featurePaths[-1]
             for featurePath in sorted(set(featurePaths[0:-1])):
                 if featurePath != chosenFPath:
-                    self.tm.info('{:<1} {:<20} from {}\n'.format('X', fName, featurePath))
-            self.tm.info('{:<1} {:<20} from {}\n'.format('', fName, chosenFPath))
-            self.features[fName] = Data(chosenFPath)  
-        self.tm.info('{} features found\n'.format(len(tfFiles)))
+                    self.tm.info('{:<1} {:<20} from {}'.format('X', fName, featurePath))
+            self.tm.info('{:<1} {:<20} from {}'.format('', fName, chosenFPath))
+            self.features[fName] = Data(chosenFPath, self.tm)  
+        self.tm.info('{} features found'.format(len(tfFiles)))
 
         good = True
         for fName in SKELETON:
             if fName not in self.features:
-                self.tm.error('Skeleton feature "{}" not found in\n\t{}\n'.format(fName, self.locationRep))
+                self.tm.error('Skeleton feature "{}" not found in\n{}'.format(fName, self.locationRep))
                 good = False
         if not good: return False
         self.skeletonDir = self.features[SKELETON[0]].dirName
@@ -118,11 +120,12 @@ class Fabric(object):
             thisGood = True
             for dep in dependencies:
                 if dep not in self.features:
-                    self.tm.error('Missing dependency for computed data feature "{}": "{}"\n'.format(fName, dep))
+                    self.tm.error('Missing dependency for computed data feature "{}": "{}"'.format(fName, dep))
                     thisGood = False
             if not thisGood: good = False
             self.features[fName] = Data(
                 '{}/{}.x'.format(self.skeletonDir, fName), 
+                self.tm,
                 method=method,
                 dependencies=[self.features.get(dep, None) for dep in dependencies],
             )

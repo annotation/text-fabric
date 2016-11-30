@@ -144,7 +144,7 @@ class Api(object):
         self.C = Computeds()
         self.info = tm.info
         self.error = tm.error
-        self.zero = tm.reset
+        self.indent = tm.indent
 
     def Fs(self, fName):
         if not hasattr(self.F, fName):
