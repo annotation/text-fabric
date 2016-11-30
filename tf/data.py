@@ -32,7 +32,7 @@ class Data(object):
         self.dataLoaded = False
         self.dataError = False
 
-    def load(self):
+    def load(self, silent=False):
         self.tm.indent(level=1, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
@@ -52,18 +52,18 @@ class Data(object):
         else:
             if not origTime:
                 actionRep = 'b'
-                good = self._readDataBin()
+                good = self._readDataBin(silent=silent)
             elif not binTime or origTime > binTime:
                 actionRep = 'C' if self.method else 'T'
-                good = self._compute() if self.method else self._readTf()
-                if good: self._writeDataBin()
+                good = self._compute(silent=silent) if self.method else self._readTf()
+                if good: self._writeDataBin(silent=silent)
             else:
                 actionRep = 'B'
                 good = True if self.method else self._readTf(metaOnly=True)
-                if good: good = self._readDataBin()
+                if good: good = self._readDataBin(silent=silent)
         if good:
             self.dataLoaded = time.time() 
-            if actionRep != '=':
+            if actionRep != '=' and not silent:
                 self.tm.info(msgFormat.format(actionRep, self.fileName, sourceRep))
         else:
             self.dataError = True
@@ -217,16 +217,19 @@ class Data(object):
                 self.data = tuple(slots)
         return not errors
 
-    def _compute(self):
+    def _compute(self, silent=False):
         good = True
         for feature in self.dependencies:
             if not feature.load():
                 good = False
         if not good: return False
 
+        if silent:
+            def info(msg, tm=True): pass
+        else:
+            def info(msg, tm=True): self.tm.info(cmpFormat.format(msg), tm=tm)
         cmpFormat = 'c {:<20} {{}}'.format(self.fileName)
         self.tm.indent(level=2, reset=True)
-        def info(msg, tm=True): self.tm.info(cmpFormat.format(msg), tm=tm)
         def error(msg, tm=True): self.tm.error(cmpFormat.format(msg), tm=tm)
         self.data = self.method(info, error, *[dep.data for dep in self.dependencies])
         return self.data != None
@@ -259,7 +262,7 @@ class Data(object):
         if not metaOnly:
             good = self._writeDataTf(fh, nodeRanges=nodeRanges)
         fh.close()
-        msgFormat = '{:<1} {:<20} to {}\n'
+        msgFormat = '{:<1} {:<20} to {}'
         if good:
             self.tm.info(msgFormat.format('M' if metaOnly else 'T', fileName, dirName))
         else:
@@ -314,14 +317,14 @@ class Data(object):
                     ))
         return True
 
-    def _readDataBin(self):
+    def _readDataBin(self, silent=False):
         if not os.path.exists(self.binPath):
             self.tm.error('TF reading: feature file "{}" does not exist'.format(self.binPath))
             return False
         with gzip.open(self.binPath, "rb") as f: self.data = pickle.load(f)
         return True
 
-    def _writeDataBin(self):
+    def _writeDataBin(self, silent=False):
         good = True
         if not os.path.exists(self.binDir):
             try:

@@ -5,5 +5,7 @@ tf/api.py
 tf/data.py
 tf/fabric.py
 tf/helpers.py
+tf/layer.py
 tf/prepare.py
+tf/text.py
 tf/timestamp.py

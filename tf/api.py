@@ -1,5 +1,7 @@
 import collections
 from .helpers import *
+from .layer import Layer
+from .text import Text
 
 class OtypeFeature(object):
     def __init__(self, api, data=None):
@@ -104,47 +106,15 @@ class NodeFeatures(object): pass
 class EdgeFeatures(object): pass
 class Computeds(object): pass
 
-class Layer(object):
-    def __init__(self, api):
-        self.api = api
-
-    def u(self, n, otype=None):
-        Fotype = self.api.F.otype
-        levUp = self.api.C.levUp.data
-        if otype == None:
-            return levUp[n]
-        else:
-            return tuple(m for m in levUp[n] if Fotype.v(m) == otype) 
-
-    def d(self, n, otype=None):
-        Fotype = self.api.F.otype
-        Eoslots = self.api.E.oslots
-        Crank = self.api.C.rank.data
-        levDown = self.api.C.levDown.data
-        slotType = Fotype.slotType
-        maxSlot = Fotype.maxSlot
-        if n < maxSlot+1: return tuple()
-        if otype == None:
-            return sorted(
-                levDown[n-maxSlot-1]+Eoslots.s(n),
-                key=lambda n: Crank[n],
-            )
-        elif otype == slotType:
-            return sorted(
-                Eoslots.s(n),
-                key=lambda n: Crank[n],
-            )
-        else:
-            return tuple(m for m in levDown[n-maxSlot-1] if Fotype.v(m) == otype)
-
 class Api(object):
-    def __init__(self, tm):
+    def __init__(self, tf):
+        self.ignored = tuple(sorted(tf.featuresIgnored))
         self.F = NodeFeatures()
         self.E = EdgeFeatures()
         self.C = Computeds()
-        self.info = tm.info
-        self.error = tm.error
-        self.indent = tm.indent
+        self.info = tf.tm.info
+        self.error = tf.tm.error
+        self.indent = tf.tm.indent
 
     def Fs(self, fName):
         if not hasattr(self.F, fName):
@@ -180,4 +150,7 @@ def addOtype(api):
 
 def addLayer(api):
     api.L = Layer(api)
+
+def addText(api, tf):
+    api.T = Text(api, tf)
 

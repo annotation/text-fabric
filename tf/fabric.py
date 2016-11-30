@@ -78,7 +78,9 @@ class Fabric(object):
             fObj = Data('{}/{}.tf'.format(self.targetDir, fName), self.tm, data=data, isEdge=isEdge, metaData=fMeta)
             fObj.save(nodeRanges=fName==SKELETON[0], overwrite=True)
         self.tm.indent(level=0)
-        self.tm.info('Exported {} features to {}:'.format(len(self.features), self.targetDir))
+        self.tm.info('Exported {} node features and {} edge features to {}:'.format(
+            len(nodeFeatures), len(edgeFeatures), self.targetDir,
+        ))
 
     def _loadFeature(self, fName):
         if not self.good: return False
@@ -88,8 +90,8 @@ class Fabric(object):
         return self.features[fName].load()
 
     def _makeIndex(self):
-        self.tm.info('Looking for available data features:')
         self.features = {}
+        self.featuresIgnored = {}
         tfFiles = {}
         for loc in self.locations:
             files = glob('{}/*.tf'.format(loc))
@@ -103,10 +105,12 @@ class Fabric(object):
             chosenFPath = featurePaths[-1]
             for featurePath in sorted(set(featurePaths[0:-1])):
                 if featurePath != chosenFPath:
-                    self.tm.info('{:<1} {:<20} from {}'.format('X', fName, featurePath))
-            self.tm.info('{:<1} {:<20} from {}'.format('', fName, chosenFPath))
+                    self.featuresIgnored.setdefault(fName, []).append(featurePath)
             self.features[fName] = Data(chosenFPath, self.tm)  
-        self.tm.info('{} features found'.format(len(tfFiles)))
+        self.tm.info('{} features found and {} ignored'.format(
+            len(tfFiles),
+            sum(len(x) for x in self.featuresIgnored.values()),
+        ), tm=False)
 
         good = True
         for fName in SKELETON:
@@ -143,8 +147,7 @@ class Fabric(object):
 
     def _makeApi(self):
         if not self.good: return None
-        api = Api(self.tm)
-
+        api = Api(self)
          
         setattr(api.F, SKELETON[0], OtypeFeature(api, self.features[SKELETON[0]].data))
         setattr(api.E, SKELETON[1], OslotsFeature(api, self.features[SKELETON[1]].data))
@@ -176,5 +179,6 @@ class Fabric(object):
                         fObj.unload()
         addOtype(api)
         addLayer(api)
+        addText(api, self)
         return api
 
