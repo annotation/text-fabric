@@ -15,11 +15,11 @@ LOCATIONS = [
 ]
 
 PRECOMPUTE = (
-    (True , '__levels__' , levels ,  SKELETON                                 ),
-    (True , '__order__'  , order  ,  SKELETON    + ('__levels__',            )),
-    (True , '__rank__'   , rank   , (SKELETON[0] ,  '__order__'              )),
-    (True , '__levUp__'  , levUp  ,  SKELETON    + ('__rank__'  ,            )),
-    (True , '__levDown__', levDown, (SKELETON[0] ,  '__levUp__' , '__rank__' )),
+    (True , '__levels__' , levels ,  SKELETON[0:2]                             ),
+    (True , '__order__'  , order  ,  SKELETON[0:2]+ ('__levels__',            )),
+    (True , '__rank__'   , rank   , (SKELETON[0]  ,  '__order__'              )),
+    (True , '__levUp__'  , levUp  ,  SKELETON[0:2]+ ('__rank__'  ,            )),
+    (True , '__levDown__', levDown, (SKELETON[0]  ,  '__levUp__' , '__rank__' )),
 )
 
 class Fabric(object):
@@ -60,22 +60,44 @@ class Fabric(object):
                 self.good = False
         return self._makeApi()
 
+    def loadExtra(self, features):
+        self.tm.indent(level=0, reset=True)
+        self.tm.info('loading extra features ...')
+        if self.good:
+            featuresRequested = (features.strip().split() if type(features) is str else sorted(features))
+            good = True
+            for fName in featuresRequested:
+                if not self._loadFeature(fName):
+                    good = False
+            self.tm.indent(level=0)
+            if good:
+                self.tm.info('All extra features loaded/computed')
+            else:
+                self.tm.error('Not all extra features could be loaded/computed')
+                self.good = False
+
     def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}):
         self.tm.indent(level=0, reset=True)
         self.targetDir = self.locations[-1]
-        self.tm.info('Exporting {} node and {} edge features to {}:'.format(
-            len(nodeFeatures), len(edgeFeatures), self.targetDir,
+        configFeatures = dict(f for f in metaData.items() if f[0] != '' and f[0] not in nodeFeatures and f[0] not in edgeFeatures)
+        self.tm.info('Exporting {} node and {} edge and {} config features to {}:'.format(
+            len(nodeFeatures), len(edgeFeatures), len(configFeatures), self.targetDir,
         ))
         todo = []
         for (fName, data) in sorted(nodeFeatures.items()):
-            todo.append((fName, data, False))
+            todo.append((fName, data, False, False))
         for (fName, data) in sorted(edgeFeatures.items()):
-            todo.append((fName, data, True))
+            todo.append((fName, data, True, False))
+        for (fName, data) in sorted(configFeatures.items()):
+            todo.append((fName, data, None, True))
         reduced = 0
         total = 0
-        for (fName, data, isEdge) in todo:
+        for (fName, data, isEdge, isConfig) in todo:
             fMeta = metaData.get(fName, metaData.get('', {})) 
-            fObj = Data('{}/{}.tf'.format(self.targetDir, fName), self.tm, data=data, isEdge=isEdge, metaData=fMeta)
+            fObj = Data('{}/{}.tf'.format(self.targetDir, fName), self.tm,
+                data=data, metaData=fMeta,
+                isEdge=isEdge, isConfig=isConfig,
+            )
             fObj.save(nodeRanges=fName==SKELETON[0], overwrite=True)
         self.tm.indent(level=0)
         self.tm.info('Exported {} node features and {} edge features to {}:'.format(
@@ -154,7 +176,7 @@ class Fabric(object):
 
         for fName in self.features:
             fObj = self.features[fName]
-            if fObj.dataLoaded:
+            if fObj.dataLoaded and not fObj.isConfig:
                 if fObj.method:
                     feat = fName.strip('_')
                     ap = api.C

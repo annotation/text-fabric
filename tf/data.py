@@ -10,10 +10,11 @@ PICKLE_PROTOCOL = 4
 SKELETON = (
     'otype',
     'oslots',
+    'otext',
 )
 
 class Data(object):
-    def __init__(self, path, tm, edgeValues=False, data=None, isEdge=None, metaData={}, method=None, dependencies=None):
+    def __init__(self, path, tm, edgeValues=False, data=None, isEdge=None, isConfig=None, metaData={}, method=None, dependencies=None):
         (dirName, baseName) = os.path.split(path)
         (fileName, extension) = os.path.splitext(baseName)
         self.path = path
@@ -25,6 +26,7 @@ class Data(object):
         self.binPath = '{}/{}.tfx'.format(self.binDir, self.fileName)
         self.edgeValues = edgeValues
         self.isEdge = isEdge
+        self.isConfig = isConfig
         self.metaData = metaData
         self.method = method
         self.dependencies = dependencies
@@ -44,7 +46,10 @@ class Data(object):
         if self.dataError:
             actionRep = 'E' # there has been an error in an earlier computation/compiling/loading of this feature
             good = False
-        elif self.dataLoaded and (not origTime or self.dataLoaded >= origTime) and (not binTime or self.dataLoaded >= binTime):
+        elif self.dataLoaded and (
+            self.isConfig or
+            (not origTime or self.dataLoaded >= origTime) and (not binTime or self.dataLoaded >= binTime)
+        ):
             actionRep = '=' # loaded and up to date
         elif not origTime and not binTime:
             actionRep = 'X' # no source and no binary present
@@ -60,7 +65,11 @@ class Data(object):
             else:
                 actionRep = 'B'
                 good = True if self.method else self._readTf(metaOnly=True)
-                if good: good = self._readDataBin(silent=silent)
+                if good:
+                    if self.isConfig:
+                        actionRep = 'M'
+                    else:
+                        good = self._readDataBin(silent=silent)
         if good:
             self.dataLoaded = time.time() 
             if actionRep != '=' and not silent:
@@ -85,12 +94,14 @@ class Data(object):
         fh = open(path)
         i = 0
         self.metaData = {}
+        self.isConfig = False
         for line in fh:
             i += 1
             if i == 1:
                 text = line.rstrip()
                 if text == '@edge': self.isEdge = True
                 elif text == '@node': self.isEdge = False
+                elif text == '@config': self.isConfig = True
                 else:
                     self.tm.error('Line {}: missing @node/@edge'.format(i))
                     fh.close()
@@ -109,7 +120,7 @@ class Data(object):
                 else:
                     break
         good = True
-        if not metaOnly:
+        if not metaOnly and not self.isConfig:
             good = self._readDataTf(fh, i)
         fh.close()
         return good
@@ -237,6 +248,7 @@ class Data(object):
     def _writeTf(self, dirName=None, fileName=None, overwrite=True, extension=None, metaOnly=False, nodeRanges=False):
         self.tm.indent(level=1, reset=True)
         data = self.data
+        metaOnly = metaOnly or self.isConfig
 
         dirName = dirName or self.dirName
         fileName = fileName or self.fileName

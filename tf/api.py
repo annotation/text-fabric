@@ -118,19 +118,19 @@ class Api(object):
 
     def Fs(self, fName):
         if not hasattr(self.F, fName):
-            self.tm.error('Node feature "{}" not loaded'.format(fName))
+            self.error('Node feature "{}" not loaded'.format(fName))
             return None
         return getattr(self.F, fName)
 
     def Es(self, fName):
         if not hasattr(self.E, fName):
-            self.tm.error('Edge feature "{}" not loaded'.format(fName))
+            self.error('Edge feature "{}" not loaded'.format(fName))
             return None
         return getattr(self.E, fName)
 
     def Cs(self, fName):
         if not hasattr(self.C, fName):
-            self.tm.error('Computed feature "{}" not loaded'.format(fName))
+            self.error('Computed feature "{}" not loaded'.format(fName))
             return None
         return getattr(self.C, fName)
     
