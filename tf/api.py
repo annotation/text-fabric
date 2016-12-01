@@ -26,7 +26,8 @@ class OtypeFeature(object):
         #if val == self.data[-2]:
         #    return range(maxSlot+1)
         if val in self.support:
-            return range(*self.support[val])
+            (b, e) = self.support[val]
+            return range(b, e+1)
         else:
             return ()
         #return sorted(
