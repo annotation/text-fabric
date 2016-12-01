@@ -7,11 +7,18 @@ ERROR_CUTOFF = 20
 GZIP_LEVEL = 2
 PICKLE_PROTOCOL = 4
 
-SKELETON = (
+GRID = (
     'otype',
     'oslots',
     'otext',
 )
+
+SECTIONS = (
+    'book',
+    'chapter',
+    'verse',
+) # the only place in the code where these words occur (hopefully)
+
 
 class Data(object):
     def __init__(self, path, tm, edgeValues=False, data=None, isEdge=None, isConfig=None, metaData={}, method=None, dependencies=None):
@@ -109,7 +116,7 @@ class Data(object):
                 continue
             text = line.rstrip('\n')
             if len(text) and text[0] == '@':
-                fields = text.rstrip()[1:].split('=', 1)
+                fields = text[1:].split('=', 1)
                 self.metaData[fields[0]] = fields[1] if len(fields) == 2 else None
                 continue
             else:
@@ -206,7 +213,7 @@ class Data(object):
                 self.tm.error('\t and {} more cases'.format(lnk - ERROR_CUTOFF), tm=False)
         self.data = data
         if not errors:
-            if self.fileName == SKELETON[0]:
+            if self.fileName == GRID[0]:
                 slotType = data[0]
                 otype = []
                 maxSlot = -1
@@ -218,7 +225,7 @@ class Data(object):
                 otype.append(slotType)
                 otype.append(maxSlot)
                 self.data = tuple(otype)
-            elif self.fileName == SKELETON[1]:
+            elif self.fileName == GRID[1]:
                 slotsList = sorted(data)
                 maxSlot = min(data.keys()) - 1
                 slots = []
@@ -242,7 +249,9 @@ class Data(object):
         cmpFormat = 'c {:<20} {{}}'.format(self.fileName)
         self.tm.indent(level=2, reset=True)
         def error(msg, tm=True): self.tm.error(cmpFormat.format(msg), tm=tm)
-        self.data = self.method(info, error, *[dep.data for dep in self.dependencies])
+        self.data = self.method(info, error, *[
+            dep.metaData if dep.fileName == GRID[2] else dep.data for dep in self.dependencies
+        ])
         return self.data != None
 
     def _writeTf(self, dirName=None, fileName=None, overwrite=True, extension=None, metaOnly=False, nodeRanges=False):
@@ -264,7 +273,7 @@ class Data(object):
         except:
             self.tm.error('Cannot write to feature file "{}"'.format(fpath))
             return False
-        fh.write('@{}\n'.format('edge' if self.isEdge else 'node'))
+        fh.write('@{}\n'.format('config' if self.isConfig else 'edge' if self.isEdge else 'node'))
         for meta in sorted(self.metaData):
             fh.write('@{}={}\n'.format(meta, self.metaData[meta]))
         fh.write('@writtenBy=Text-Fabric\n')

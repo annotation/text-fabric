@@ -1,6 +1,6 @@
 import os
 from glob import glob
-from .data import Data, SKELETON
+from .data import Data, GRID, SECTIONS
 from .helpers import *
 from .timestamp import Timestamp
 from .prepare import *
@@ -15,11 +15,12 @@ LOCATIONS = [
 ]
 
 PRECOMPUTE = (
-    (True , '__levels__' , levels ,  SKELETON[0:2]                             ),
-    (True , '__order__'  , order  ,  SKELETON[0:2]+ ('__levels__',            )),
-    (True , '__rank__'   , rank   , (SKELETON[0]  ,  '__order__'              )),
-    (True , '__levUp__'  , levUp  ,  SKELETON[0:2]+ ('__rank__'  ,            )),
-    (True , '__levDown__', levDown, (SKELETON[0]  ,  '__levUp__' , '__rank__' )),
+    (True , '__levels__'  , levels  ,  GRID[0:2]                                            ),
+    (True , '__order__'   , order   ,  GRID[0:2]+  ('__levels__',                          )),
+    (True , '__rank__'    , rank    , (GRID[0]  ,   '__order__'                            )),
+    (True , '__levUp__'   , levUp   ,  GRID[0:2]+  ('__rank__'  ,                          )),
+    (True , '__levDown__' , levDown , (GRID[0]  ,   '__levUp__' , '__rank__'               )),
+    (True , '__sections__', sections,  GRID     +  ('__levUp__' , '__levels__') + SECTIONS  ),
 )
 
 class Fabric(object):
@@ -45,36 +46,40 @@ class Fabric(object):
         self.tm.indent(level=0, reset=True)
         self.tm.info('loading features ...')
         if self.good:
+            self.featuresRequested = features.strip().split() if type(features) is str else sorted(features)
+            for fName in list(GRID):
+                self._loadFeature(fName)
+        if self.good:
+            otextMeta = self.features[GRID[2]].metaData
+            sectionFeats = otextMeta.get('sectionFeatures', '').strip().split(',')
+            sectionTypes = otextMeta.get('sectionTypes', '').strip().split(',')
+            if len(sectionTypes) != 3 or len(sectionFeats) != 3:
+                self.tm.error('No node type/feature associated with all three section levels')
+                self.good = False
+            else:
+                for (i, fName) in enumerate(sectionFeats):
+                    self._loadFeature(fName)
+                    if self.good:
+                        self.features[SECTIONS[i]] = self.features[fName]
+        if self.good:
+            (cformats, formatFeats) = collectFormats(otextMeta)
+            for fName in formatFeats:
+                self._loadFeature(fName)
+            self._cformats = cformats
+            self._formatFeats = formatFeats
+
+        if self.good:
             self._precompute()
         if self.good:
-            self.featuresRequested = (features.strip().split() if type(features) is str else sorted(features))
-            good = True
-            for fName in list(SKELETON) + self.featuresRequested:
-                if not self._loadFeature(fName):
-                    good = False
-            self.tm.indent(level=0)
-            if good:
-                self.tm.info('All features loaded/computed')
-            else:
-                self.tm.error('Not all features could be loaded/computed')
-                self.good = False
-        return self._makeApi()
-
-    def loadExtra(self, features):
-        self.tm.indent(level=0, reset=True)
-        self.tm.info('loading extra features ...')
+            for fName in self.featuresRequested:
+                self._loadFeature(fName)
+        self.tm.indent(level=0)
         if self.good:
-            featuresRequested = (features.strip().split() if type(features) is str else sorted(features))
-            good = True
-            for fName in featuresRequested:
-                if not self._loadFeature(fName):
-                    good = False
-            self.tm.indent(level=0)
-            if good:
-                self.tm.info('All extra features loaded/computed')
-            else:
-                self.tm.error('Not all extra features could be loaded/computed')
-                self.good = False
+            self.tm.info('All features loaded/computed')
+        else:
+            self.tm.error('Not all features could be loaded/computed')
+            self.good = False
+        return self._makeApi()
 
     def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}):
         self.tm.indent(level=0, reset=True)
@@ -98,18 +103,20 @@ class Fabric(object):
                 data=data, metaData=fMeta,
                 isEdge=isEdge, isConfig=isConfig,
             )
-            fObj.save(nodeRanges=fName==SKELETON[0], overwrite=True)
+            fObj.save(nodeRanges=fName==GRID[0], overwrite=True)
         self.tm.indent(level=0)
-        self.tm.info('Exported {} node features and {} edge features to {}:'.format(
-            len(nodeFeatures), len(edgeFeatures), self.targetDir,
+        self.tm.info('Exported {} node features and {} edge features and {} config features to {}:'.format(
+            len(nodeFeatures), len(edgeFeatures), len(configFeatures), self.targetDir,
         ))
 
     def _loadFeature(self, fName):
         if not self.good: return False
         if fName not in self.features:
             self.tm.error('Feature "{}" not available in\n{}'.format(fName, self.locationRep))
-            return False
-        return self.features[fName].load()
+            self.good = False
+        else:
+            if not self.features[fName].load():
+                self.good = False
 
     def _makeIndex(self):
         self.features = {}
@@ -135,12 +142,12 @@ class Fabric(object):
         ), tm=False)
 
         good = True
-        for fName in SKELETON:
+        for fName in GRID:
             if fName not in self.features:
-                self.tm.error('Skeleton feature "{}" not found in\n{}'.format(fName, self.locationRep))
+                self.tm.error('Grid feature "{}" not found in\n{}'.format(fName, self.locationRep))
                 good = False
         if not good: return False
-        self.skeletonDir = self.features[SKELETON[0]].dirName
+        self.gridDir = self.features[GRID[0]].dirName
         self.precomputeList = []
         for (retain, fName, method, dependencies) in PRECOMPUTE:
             thisGood = True
@@ -150,7 +157,7 @@ class Fabric(object):
                     thisGood = False
             if not thisGood: good = False
             self.features[fName] = Data(
-                '{}/{}.x'.format(self.skeletonDir, fName), 
+                '{}/{}.x'.format(self.gridDir, fName), 
                 self.tm,
                 method=method,
                 dependencies=[self.features.get(dep, None) for dep in dependencies],
@@ -171,8 +178,8 @@ class Fabric(object):
         if not self.good: return None
         api = Api(self)
          
-        setattr(api.F, SKELETON[0], OtypeFeature(api, self.features[SKELETON[0]].data))
-        setattr(api.E, SKELETON[1], OslotsFeature(api, self.features[SKELETON[1]].data))
+        setattr(api.F, GRID[0], OtypeFeature(api,  self.features[GRID[0]].data))
+        setattr(api.E, GRID[1], OslotsFeature(api, self.features[GRID[1]].data))
 
         for fName in self.features:
             fObj = self.features[fName]
@@ -187,13 +194,13 @@ class Fabric(object):
                         if hasattr(ap, feat): delattr(api.C, feat)
                 else:
                     if fName in self.featuresRequested:
-                        if fName in SKELETON: continue
+                        if fName in GRID: continue
                         elif fObj.isEdge:
                             setattr(api.E, fName, EdgeFeature(api, fObj.data, fObj.edgeValues))
                         else:
                             setattr(api.F, fName, NodeFeature(api, fObj.data))
                     else:
-                        if fName in SKELETON: continue
+                        if fName in GRID or fName in SECTIONS or fName in self._formatFeats: continue
                         elif fObj.isEdge:
                             if hasattr(api.E, fName): delattr(api.E, fName)
                         else:

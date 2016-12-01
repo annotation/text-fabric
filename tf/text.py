@@ -1,4 +1,7 @@
-from .data import SKELETON
+from .data import GRID, SECTIONS
+from .helpers import *
+
+DEFAULT_FORMAT = 'text-orig-full'
 
 class Text(object):
     def __init__(self, api, tf):
@@ -6,46 +9,44 @@ class Text(object):
         self.languages = {}
         self.nameFromNode = {}
         self.nodeFromName = {}
-        config = tf.features[SKELETON[2]].metaData
-        sections = config.get('sections', '').strip().split(',')
-        sectionFeatureNames = [config.get('{}Feature'.format(s), '') for s in sections]
-        sectionTypes = [config.get('{}Otype'.format(s), '') for s in sections]
+        config = tf.features[GRID[2]].metaData
+        self.sectionTypes = config.get('sectionTypes', '').strip().split(',')
+        sectionFeats = config.get('sectionFeatures', '').strip().split(',')
+        self.sectionFeatures = []
+        self.config = config
+
         good = True
-        for i in range(len(sections)):
-            if sectionFeatureNames[i] == '':
-                tf.tm.error('No feature name associated with section level {} = {}'.format(i+1, sections[i]))
-                good = False
-            if sectionTypes[i] == '':
-                tf.tm.error('No node type associated with section level {} = {}'.format(i+1, sections[i]))
-                good = False
-
-        tf.loadExtra(sectionFeatureNames)
-        if not good or not tf.good:
-            tf.tm.error('Failed to load the Text API')
-            return
-
-        sectionFeatures = tuple(tf.features[sectionFeatureNames[i]] for i in range(len(sections)))
-
-        for (fName, fObj) in [('', sectionFeatures[0])] + sorted(f for f in tf.features.items() if f[0].startswith(
-            '{}@'.format(sectionFeatureNames[0])
+        for (fName, fObj) in sorted(
+                f for f in tf.features.items() if f[0].startswith(
+                    '{}@'.format(sectionFeats[0])
         )):
-            if fName != '': fObj.load(silent=True)
+            if not fObj.load(silent=True):
+                good=False
+                continue
             meta = fObj.metaData
             code = meta.get('languageCode', '')
             self.languages[code] = dict(((k, meta.get(k, 'default')) for k in ('language', 'languageEnglish')))
             self.nameFromNode[code] = fObj.data
             self.nodeFromName[code] = dict(((name, node) for (node, name) in fObj.data.items()))
+        for fName in (SECTIONS):
+            if not tf.features[fName].load(silent=True):
+                good=False
+                continue
+            self.sectionFeatures.append(tf.features[fName].data)
 
-        self.sectionTypes = sectionTypes
-        self.sectionFeatureNames = sectionFeatureNames
-        self.sectionFeatures = sectionFeatures
-        setattr(self, '{}Name'.format(sections[0]), self._sec0Name)
-        setattr(self, '{}Node'.format(sections[0]), self._sec0Node)
+
+        sec0 = SECTIONS[0]
+        setattr(self, '{}Name'.format(sec0), self._sec0Name)
+        setattr(self, '{}Node'.format(sec0), self._sec0Node)
+
+        self._xformats = compileFormats(tf._cformats, tf.features)
+        self.formats = set(self._xformats.keys())
+        self.good = good
 
     def _sec0Name(self, n, lang='en'):
-        stp = self.sectionTypes[0]
+        sec0T = self.sectionTypes[0]
         return self.nameFromNode['' if lang not in self.languages else lang].get(
-            n if self.api.F.otype.v(n) == stp else self.api.L.u(n, stp)[0], 'not a {} node'.format(stp),
+            n if self.api.F.otype.v(n) == sec0T else self.api.L.u(n, sec0T)[0], 'not a {} node'.format(sec0T),
         )
 
     def _sec0Node(self, name, lang='en'):
@@ -53,17 +54,35 @@ class Text(object):
 
     def sectionFromNode(self, n, lastSlot=True, lang='en'):
         F = self.api.F
-        Fs = self.api.Fs
         L = self.api.L
+        sFs = self.sectionFeatures 
         slotType = F.otype.slotType
         nType = F.otype.v(n)
+        sTypes = self.sectionTypes
         r = L.d(n, slotType)[-1] if lastSlot and nType != slotType else L.d(n, slotType)[0] if nType != slotType else n
-        n0 = L.u(r, self.sectionTypes[0])[0]
-        n1 = L.u(r, self.sectionTypes[1])[0]
-        n2 = L.u(r, self.sectionTypes[2])[0]
+        n0 = L.u(r, sTypes[0])[0]
+        n1 = L.u(r, sTypes[1])[0]
+        n2 = L.u(r, sTypes[2])[0]
         return (
             self._sec0Name(n0, lang=lang),
-            self.sectionFeatures[1].data.get(n1, None),
-            self.sectionFeatures[2].data.get(n2, None),
+            sFs[1].get(n1, None),
+            sFs[2].get(n2, None),
         )
+
+    def nodeFromSection(self, section, lang='en'):
+        (sec1, sec2) = self.api.C.sections.data
+        sec0node = self._sec0Node(section[0], lang=lang)
+        if len(section) == 1:
+            return sec0node 
+        elif len(section) == 2:
+            return sec1.get(sec0node, {}).get(section[1], None)
+        else:
+            return sec2.get(sec0node, {}).get(section[1], {}).get(section[2], None)
+
+    def text(self, slots, fmt=None):
+        if fmt == None: fmt = DEFAULT_FORMAT
+        repf = self._xformats.get(fmt, None)
+        if repf == None:
+            return ' '.join(str(s) for s in slots)
+        return ''.join(repf(s) for s in slots)
 

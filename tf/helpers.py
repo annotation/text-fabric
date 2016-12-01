@@ -1,3 +1,5 @@
+import re
+
 def setFromSpec(spec):
     covered = set()
     for r_str in spec.split(','):
@@ -57,3 +59,54 @@ def nbytes(by):
             fmt = '{:>5}{}' if i == 0 else '{:>5.1f}{}'
             return fmt.format(by, units[i])
         by /= 1024
+
+def collectFormats(config):
+    varPattern = re.compile(r'\{([^}]+)\}')
+    featureSet = set()
+
+    def collectFormat(tpl):
+        features = []
+
+        def varReplace(match):
+            varText = match.group(1)
+            fts = tuple(varText.split('/'))
+            features.append(fts)
+            for ft in fts: featureSet.add(ft)
+            return '{}'
+
+        rtpl = varPattern.sub(varReplace, tpl)
+        return (rtpl, tuple(features))
+
+    formats = {}
+    for (fmt, tpl) in sorted(config.items()):
+        if fmt.startswith('fmt:'):
+            formats[fmt[4:]] = collectFormat(tpl)
+    return (formats, sorted(featureSet))
+
+def compileFormats(cformats, features):
+    xformats = {}
+    for (fmt, (rtpl, feats)) in sorted(cformats.items()):
+        xformats[fmt] = compileFormat(rtpl, feats, features)
+    return xformats
+
+def compileFormat(rtpl, feats, features):
+    replaceFuncs = []
+    for feat in feats:
+        replaceFuncs.append(makeFunc(feat, features))
+
+    def g(n):
+        values = tuple(replaceFunc(n) for replaceFunc in replaceFuncs)
+        return rtpl.format(*values)
+    return g
+
+def makeFunc(feat, features):
+    if len(feat) == 1:
+        ft = feat[0]
+        f = features[ft].data
+        return (lambda n: f.get(n, ''))
+    elif len(feat) == 2:
+        (ft1, ft2) = feat
+        f1 = features[ft1].data
+        f2 = features[ft2].data
+        return (lambda n: (f1.get(n, '') or f2.get(n, '')))
+

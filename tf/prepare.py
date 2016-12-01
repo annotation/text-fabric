@@ -9,19 +9,24 @@ def levels(info, error, otype, oslots):
     (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
     info('max node = {}'.format(maxNode))
     otypeCount = collections.Counter()
+    otypeMin = {}
+    otypeMax = {}
     slotSetLengths = collections.Counter()
     info('get ranking of otypes')
     for n in range(len(oslots) - 1):
         ntp = otype[n]
         otypeCount[ntp] += 1
         slotSetLengths[ntp] += len(oslots[n])
+        rn = n + maxSlot + 1
+        if ntp not in otypeMin: otypeMin[ntp] = rn
+        if ntp not in otypeMax or otypeMax[ntp] < rn: otypeMax[ntp] = rn
     result = tuple(sorted(
-        ((otp, slotSetLengths[otp]/otypeCount[otp]) for otp in otypeCount),
+        ((ntp, slotSetLengths[ntp]/otypeCount[ntp], otypeMin[ntp], otypeMax[ntp]) for ntp in otypeCount),
         key=lambda x: -x[1],
-    )+[(slotType, 1)])
+    )+[(slotType, 1, 0, maxSlot)])
     info('results:')
-    for (otp, av) in result:
-        info('{:<15}: {:>4}'.format(otp, round(av, 2)), tm=False)
+    for (otp, av, omin, omax) in result:
+        info('{:<15}: {:>8} {{{}-{}}}'.format(otp, round(av, 2), omin, omax), tm=False)
     return result
 
 def order(info, error, otype, oslots, levels):
@@ -92,12 +97,12 @@ def levUp(info, error, otype, oslots, rank):
             )))
     return tuple(embedders)
 
-def levDown(info, error, otype, embedders, rank):
+def levDown(info, error, otype, levUp, rank):
     (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
     info('inverting embedders')
     inverse = {}
     for n in range(maxSlot+1, maxNode+1):
-        for m in embedders[n]:
+        for m in levUp[n]:
             inverse.setdefault(m, set()).add(n)
     info('turning embeddees into list')
     embeddees = []
@@ -108,3 +113,24 @@ def levDown(info, error, otype, embedders, rank):
         )))
     return tuple(embeddees)
 
+def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
+    (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
+    support = dict(((o[0], (o[2], o[3])) for o in levels))
+    sTypes = otext['sectionTypes'].strip().split(',')
+    sec1 = {}
+    sec2 = {}
+    c1 = 0
+    c2 = 0
+    for n2 in range(*support[sTypes[2]]):
+        n0 = tuple(x for x in levUp[n2] if otype[x - maxSlot - 1] == sTypes[0])[0]
+        n1 = tuple(x for x in levUp[n2] if otype[x - maxSlot - 1] == sTypes[1])[0]
+        n1s = sFeats[1][n1]
+        n2s = sFeats[2][n2]
+        if n0 not in sec1: sec1[n0] = {}
+        if n1s not in sec1[n0]:
+            sec1[n0][n1s] = n1
+            c1 += 1
+        sec2.setdefault(n0, {}).setdefault(n1s, {})[n2s] = n2
+        c2 += 1
+    info('{} {}s and {} {}s indexed'.format(c1, sTypes[1], c2, sTypes[2]))
+    return (sec1, sec2)
