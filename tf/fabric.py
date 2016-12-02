@@ -26,6 +26,7 @@ PRECOMPUTE = (
 class Fabric(object):
     def __init__(self, locations=[]):
         self.tm = Timestamp()
+        self.good = True
         if type(locations) is str: locations = locations.strip().split()
         self.locations = []
         self.homeDir = os.path.expanduser('~').replace('\\', '/')
