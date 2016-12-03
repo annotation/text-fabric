@@ -27,7 +27,7 @@ class Fabric(object):
     def __init__(self, locations=[]):
         self.tm = Timestamp()
         self.good = True
-        if type(locations) is str: locations = itemize(locations)
+        if type(locations) is str: locations = [x.strip() for x in itemize(locations, '\n')]
         self.locations = []
         self.homeDir = os.path.expanduser('~').replace('\\', '/')
         self.curDir = os.getcwd().replace('\\', '/')
@@ -131,7 +131,7 @@ class Fabric(object):
         self.featuresIgnored = {}
         tfFiles = {}
         for loc in self.locations:
-            files = glob('{}/*.tf'.format(loc.replace(' ', '\\ '))
+            files = glob('{}/*.tf'.format(loc))
             for f in files:
                 if not os.path.isfile(f):
                     continue
