@@ -131,7 +131,7 @@ class Fabric(object):
         self.featuresIgnored = {}
         tfFiles = {}
         for loc in self.locations:
-            files = glob('{}/*.tf'.format(loc))
+            files = glob('{}/*.tf'.format(loc.replace(' ', '\\ '))
             for f in files:
                 if not os.path.isfile(f):
                     continue

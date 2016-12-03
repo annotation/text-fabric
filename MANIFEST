@@ -7,5 +7,6 @@ tf/fabric.py
 tf/helpers.py
 tf/layer.py
 tf/prepare.py
+tf/text-new.py
 tf/text.py
 tf/timestamp.py
