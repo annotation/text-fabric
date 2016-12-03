@@ -15,19 +15,19 @@ LOCATIONS = [
 ]
 
 PRECOMPUTE = (
-    (True , '__levels__'  , levels  ,  GRID[0:2]                                            ),
-    (True , '__order__'   , order   ,  GRID[0:2]+  ('__levels__',                          )),
-    (True , '__rank__'    , rank    , (GRID[0]  ,   '__order__'                            )),
-    (True , '__levUp__'   , levUp   ,  GRID[0:2]+  ('__rank__'  ,                          )),
-    (True , '__levDown__' , levDown , (GRID[0]  ,   '__levUp__' , '__rank__'               )),
-    (True , '__sections__', sections,  GRID     +  ('__levUp__' , '__levels__') + SECTIONS  ),
+    (False, '__levels__'  , levels  ,  GRID[0:2]                                            ),
+    (False, '__order__'   , order   ,  GRID[0:2]+  ('__levels__',                          )),
+    (False, '__rank__'    , rank    , (GRID[0]  ,   '__order__'                            )),
+    (False, '__levUp__'   , levUp   ,  GRID[0:2]+  ('__rank__'  ,                          )),
+    (False, '__levDown__' , levDown , (GRID[0]  ,   '__levUp__' , '__rank__'               )),
+    (True,  '__sections__', sections,  GRID     +  ('__levUp__' , '__levels__') + SECTIONS  ),
 )
 
 class Fabric(object):
     def __init__(self, locations=[]):
         self.tm = Timestamp()
         self.good = True
-        if type(locations) is str: locations = locations.strip().split()
+        if type(locations) is str: locations = itemize(locations)
         self.locations = []
         self.homeDir = os.path.expanduser('~').replace('\\', '/')
         self.curDir = os.getcwd().replace('\\', '/')
@@ -46,28 +46,34 @@ class Fabric(object):
     def load(self, features):
         self.tm.indent(level=0, reset=True)
         self.tm.info('loading features ...')
+        self.sectionsOK = True
         if self.good:
-            self.featuresRequested = features.strip().split() if type(features) is str else sorted(features)
+            self.featuresRequested = itemize(features) if type(features) is str else sorted(features)
             for fName in list(GRID):
-                self._loadFeature(fName)
+                self._loadFeature(fName, optional=fName==GRID[2])
         if self.good:
-            otextMeta = self.features[GRID[2]].metaData
-            sectionFeats = otextMeta.get('sectionFeatures', '').strip().split(',')
-            sectionTypes = otextMeta.get('sectionTypes', '').strip().split(',')
-            if len(sectionTypes) != 3 or len(sectionFeats) != 3:
-                self.tm.error('No node type/feature associated with all three section levels')
-                self.good = False
+            self._cformats = {}
+            self._formatFeats = []
+            if GRID[2] in self.features:
+                otextMeta = self.features[GRID[2]].metaData
+                sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
+                sectionTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
+                if len(sectionTypes) != 3 or len(sectionFeats) != 3:
+                    self.tm.info('No node type/feature associated with all three section levels')
+                    self.sectionsOK = False
+                else:
+                    for (i, fName) in enumerate(sectionFeats):
+                        self._loadFeature(fName)
+                        if self.good:
+                            self.features[SECTIONS[i]] = self.features[fName]
+                if self.good:
+                    (cformats, formatFeats) = collectFormats(otextMeta)
+                    for fName in formatFeats:
+                        self._loadFeature(fName)
+                    self._cformats = cformats
+                    self._formatFeats = formatFeats
             else:
-                for (i, fName) in enumerate(sectionFeats):
-                    self._loadFeature(fName)
-                    if self.good:
-                        self.features[SECTIONS[i]] = self.features[fName]
-        if self.good:
-            (cformats, formatFeats) = collectFormats(otextMeta)
-            for fName in formatFeats:
-                self._loadFeature(fName)
-            self._cformats = cformats
-            self._formatFeats = formatFeats
+                self.sectionsOK = False
 
         if self.good:
             self._precompute()
@@ -110,11 +116,12 @@ class Fabric(object):
             len(nodeFeatures), len(edgeFeatures), len(configFeatures), self.targetDir,
         ))
 
-    def _loadFeature(self, fName):
+    def _loadFeature(self, fName, optional=False):
         if not self.good: return False
         if fName not in self.features:
-            self.tm.error('Feature "{}" not available in\n{}'.format(fName, self.locationRep))
-            self.good = False
+            if not optional:
+                self.tm.error('Feature "{}" not available in\n{}'.format(fName, self.locationRep))
+                self.good = False
         else:
             if not self.features[fName].load():
                 self.good = False
@@ -145,13 +152,17 @@ class Fabric(object):
         good = True
         for fName in GRID:
             if fName not in self.features:
-                self.tm.error('Grid feature "{}" not found in\n{}'.format(fName, self.locationRep))
-                good = False
+                if fName == GRID[2]:
+                    self.tm.info('Grid feature "{}" not found. Working without Text-API\n'.format(GRID[2]))
+                else:
+                    self.tm.error('Grid feature "{}" not found in\n{}'.format(fName, self.locationRep))
+                    good = False
         if not good: return False
         self.gridDir = self.features[GRID[0]].dirName
         self.precomputeList = []
-        for (retain, fName, method, dependencies) in PRECOMPUTE:
+        for (dep2, fName, method, dependencies) in PRECOMPUTE:
             thisGood = True
+            if dep2 and GRID[2] not in self.features: continue
             for dep in dependencies:
                 if dep not in self.features:
                     self.tm.error('Missing dependency for computed data feature "{}": "{}"'.format(fName, dep))
@@ -163,13 +174,13 @@ class Fabric(object):
                 method=method,
                 dependencies=[self.features.get(dep, None) for dep in dependencies],
             )
-            if retain:
-                self.precomputeList.append(fName)
+            self.precomputeList.append((fName, dep2))
         self.good = good
 
     def _precompute(self):
         good = True
-        for fName in self.precomputeList:
+        for (fName, dep2) in self.precomputeList:
+            if dep2 and not self.sectionsOK: continue
             if not self.features[fName].load():
                 good = False
                 break
@@ -188,7 +199,7 @@ class Fabric(object):
                 if fObj.method:
                     feat = fName.strip('_')
                     ap = api.C
-                    if fName in self.precomputeList:
+                    if fName in [x[0] for x in self.precomputeList if not x[1] or self.sectionsOK]:
                         setattr(ap, feat, Computed(api, fObj.data))
                     else:
                         fObj.unload()

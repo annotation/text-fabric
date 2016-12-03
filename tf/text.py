@@ -9,35 +9,36 @@ class Text(object):
         self.languages = {}
         self.nameFromNode = {}
         self.nodeFromName = {}
-        config = tf.features[GRID[2]].metaData
-        self.sectionTypes = config.get('sectionTypes', '').strip().split(',')
-        sectionFeats = config.get('sectionFeatures', '').strip().split(',')
+        config = tf.features[GRID[2]].metaData if GRID[2] in tf.features else {}
+        self.sectionTypes = itemize(config.get('sectionTypes', ''), ',')
+        sectionFeats = itemize(config.get('sectionFeatures', ''), ',')
         self.sectionFeatures = []
         self.config = config
 
         good = True
-        for (fName, fObj) in sorted(
-                f for f in tf.features.items() if f[0].startswith(
-                    '{}@'.format(sectionFeats[0])
-        )):
-            if not fObj.load(silent=True):
-                good=False
-                continue
-            meta = fObj.metaData
-            code = meta.get('languageCode', '')
-            self.languages[code] = dict(((k, meta.get(k, 'default')) for k in ('language', 'languageEnglish')))
-            self.nameFromNode[code] = fObj.data
-            self.nodeFromName[code] = dict(((name, node) for (node, name) in fObj.data.items()))
-        for fName in (SECTIONS):
-            if not tf.features[fName].load(silent=True):
-                good=False
-                continue
-            self.sectionFeatures.append(tf.features[fName].data)
+        if len(sectionFeats) != 0 and len(self.sectionTypes) != 0:
+            for (fName, fObj) in sorted(
+                    f for f in tf.features.items() if f[0].startswith(
+                        '{}@'.format(sectionFeats[0])
+            )):
+                if not fObj.load(silent=True):
+                    good=False
+                    continue
+                meta = fObj.metaData
+                code = meta.get('languageCode', '')
+                self.languages[code] = dict(((k, meta.get(k, 'default')) for k in ('language', 'languageEnglish')))
+                self.nameFromNode[code] = fObj.data
+                self.nodeFromName[code] = dict(((name, node) for (node, name) in fObj.data.items()))
+            for fName in (SECTIONS):
+                if not tf.features[fName].load(silent=True):
+                    good=False
+                    continue
+                self.sectionFeatures.append(tf.features[fName].data)
 
 
-        sec0 = SECTIONS[0]
-        setattr(self, '{}Name'.format(sec0), self._sec0Name)
-        setattr(self, '{}Node'.format(sec0), self._sec0Node)
+            sec0 = SECTIONS[0]
+            setattr(self, '{}Name'.format(sec0), self._sec0Name)
+            setattr(self, '{}Node'.format(sec0), self._sec0Node)
 
         self._xformats = compileFormats(tf._cformats, tf.features)
         self.formats = set(self._xformats.keys())
@@ -53,12 +54,13 @@ class Text(object):
         return self.nodeFromName['' if lang not in self.languages else lang].get(name, None)
 
     def sectionFromNode(self, n, lastSlot=True, lang='en'):
+        sTypes = self.sectionTypes
+        if len(sTypes) == 0: return ()
+        sFs = self.sectionFeatures 
         F = self.api.F
         L = self.api.L
-        sFs = self.sectionFeatures 
         slotType = F.otype.slotType
         nType = F.otype.v(n)
-        sTypes = self.sectionTypes
         r = L.d(n, slotType)[-1] if lastSlot and nType != slotType else L.d(n, slotType)[0] if nType != slotType else n
         n0 = L.u(r, sTypes[0])[0]
         n1 = L.u(r, sTypes[1])[0]
@@ -70,6 +72,8 @@ class Text(object):
         )
 
     def nodeFromSection(self, section, lang='en'):
+        sTypes = self.sectionTypes
+        if len(sTypes) == 0: return None
         (sec1, sec2) = self.api.C.sections.data
         sec0node = self._sec0Node(section[0], lang=lang)
         if len(section) == 1:

@@ -110,3 +110,7 @@ def makeFunc(feat, features):
         f2 = features[ft2].data
         return (lambda n: (f1.get(n, '') or f2.get(n, '')))
 
+def itemize(string, sep=None):
+    if not string: return ()
+    if not sep: return string.strip().split()
+    return string.strip().split(sep)

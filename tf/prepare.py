@@ -1,4 +1,5 @@
 import array,collections,functools
+from .helpers import *
 
 def getOtypeInfo(info, otype):
     result = (otype[-2], otype[-1], len(otype) - 2 + otype[-1])
@@ -116,7 +117,7 @@ def levDown(info, error, otype, levUp, rank):
 def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
     support = dict(((o[0], (o[2], o[3])) for o in levels))
-    sTypes = otext['sectionTypes'].strip().split(',')
+    sTypes = itemize(otext['sectionTypes'], ',')
     sec1 = {}
     sec2 = {}
     c1 = 0
