@@ -221,5 +221,8 @@ class Fabric(object):
         addOtype(api)
         addLayer(api)
         addText(api, self)
+        for member in api.__dict__:
+            if '_' not in member:
+                globals()[member] = api[member]
         return api
 
