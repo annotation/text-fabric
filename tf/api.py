@@ -121,6 +121,7 @@ class Api(object):
         self.info = tf.tm.info
         self.error = tf.tm.error
         self.indent = tf.tm.indent
+        self.loadLog = tf.tm.cache
 
     def Fs(self, fName):
         if not hasattr(self.F, fName):
@@ -143,13 +144,17 @@ class Api(object):
     def N(self):
         for n in self.C.order.data: yield n
 
-    def sorted(self, nodeSet):
+    def sortNodes(self, nodeSet):
         Crank = self.C.rank.data
         return sorted(nodeSet, key=lambda n: Crank[n])
 
     def Fall(self): return sorted(x[0] for x in self.F.__dict__.items())
     def Eall(self): return sorted(x[0] for x in self.E.__dict__.items())
     def Call(self): return sorted(x[0] for x in self.C.__dict__.items())
+
+    def makeAvailableIn(self, scope):
+        for member in dir(self):
+            if '_' not in member and member != 'makeAvailableIn': scope[member] = getattr(self, member) 
 
 def addOtype(api):
     setattr(api.F.otype, 'all', tuple(o[0] for o in api.C.levels.data))

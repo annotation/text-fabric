@@ -6,6 +6,14 @@ from .timestamp import Timestamp
 from .prepare import *
 from .api import *
 
+NAME = 'Text-Fabric'
+VERSION = '1.0.0'
+APIREF = 'https://github.com/dirkroorda/text-fabric/wiki/Api'
+TUTORIAL = ''
+FEATDOC = 'https://shebanq.ancient-data.org/static/docs/featuredoc/texts/welcome.html'
+DATA = 'https://github.com/dirkroorda/text-fabric-data'
+EMAIL = 'shebanq@ancient-data.org'
+
 LOCATIONS = [
     '~/Downloads',
     '~/text-fabric-data',
@@ -26,6 +34,14 @@ PRECOMPUTE = (
 class Fabric(object):
     def __init__(self, locations=[]):
         self.tm = Timestamp()
+        self.tm.info('''This is {} {}
+Api reference    : {}
+Tutorial         : {}
+Data sources     : {}
+Data feature docs: {}
+Questions? Ask {} for an invite to Slack'''.format(
+            NAME, VERSION, APIREF, TUTORIAL, DATA, FEATDOC, EMAIL,
+        ), tm=False)
         self.good = True
         if type(locations) is str: locations = [x.strip() for x in itemize(locations, '\n')]
         self.locations = []
@@ -59,7 +75,7 @@ class Fabric(object):
                 sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
                 sectionTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
                 if len(sectionTypes) != 3 or len(sectionFeats) != 3:
-                    self.tm.info('No node type/feature associated with all three section levels')
+                    self.tm.info('Not enough info for sections in {}, section functionality will not work'.format(GRID[2]))
                     self.sectionsOK = False
                 else:
                     for (i, fName) in enumerate(sectionFeats):
@@ -80,12 +96,11 @@ class Fabric(object):
         if self.good:
             for fName in self.featuresRequested:
                 self._loadFeature(fName)
-        self.tm.indent(level=0)
-        if self.good:
-            self.tm.info('All features loaded/computed')
-        else:
+        if not self.good:
+            self.tm.indent(level=0)
             self.tm.error('Not all features could be loaded/computed')
-            self.good = False
+            self.tm.cache()
+            return None
         return self._makeApi()
 
     def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}):
@@ -221,8 +236,7 @@ class Fabric(object):
         addOtype(api)
         addLayer(api)
         addText(api, self)
-        for member in api.__dict__:
-            if '_' not in member:
-                globals()[member] = api[member]
+        self.tm.indent(level=0)
+        self.tm.info('All features loaded/computed - for details use loadLog()')
         return api
 

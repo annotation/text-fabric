@@ -8,18 +8,33 @@ class Timestamp(object):
         self.oneLevelRep = '   |   '
         self.timestamp = {}
         self.indent(level=level, reset=True)
+        self.log = []
 
-    def raw_msg(self, msg, tm=True, nl=True, error=False):
+    def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
+        # cache = -1: only to cache
+        # cache =  1: to cache and to console
+        # cache =  0: only to console
         if tm:
             msgRep = '{}{:>7} {}'.format(self.levelRep, self._elapsed(), msg).replace('\n', '\n'+self.levelRep)
         else:
             msgRep = '{}{}'.format(self.levelRep, msg).replace('\n', '\n'+self.levelRep)
-        channel = sys.stderr if error else sys.stdout
-        channel.write('{}{}'.format(msgRep, '\n' if nl else ''))
-        channel.flush()
+        if cache:
+            self.log.append((error, nl, msgRep))
+        if cache >= 0:
+            channel = sys.stderr if error else sys.stdout
+            channel.write('{}{}'.format(msgRep, '\n' if nl else ''))
+            channel.flush()
 
-    def info(self, msg, tm=True, nl=True): self.raw_msg(msg, tm=tm, nl=nl)
-    def error(self, msg, tm=True, nl=True): self.raw_msg(msg, tm=tm, nl=nl, error=True)
+    def cache(self):
+        for (error, nl, msgRep) in self.log:
+            channel = sys.stderr if error else sys.stdout
+            channel.write('{}{}'.format(msgRep, '\n' if nl else ''))
+        sys.stderr.flush()
+        sys.stdout.flush()
+        self.log = []
+
+    def info(self, msg, tm=True, nl=True, cache=False): self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
+    def error(self, msg, tm=True, nl=True, cache=False): self.raw_msg(msg, tm=tm, nl=nl, cache=cache, error=True)
 
     def indent(self, level=None, reset=False):
         self.level = level if level != None else 0

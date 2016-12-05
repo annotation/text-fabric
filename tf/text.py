@@ -21,7 +21,7 @@ class Text(object):
                     f for f in tf.features.items() if f[0].startswith(
                         '{}@'.format(sectionFeats[0])
             )):
-                if not fObj.load(silent=True):
+                if not fObj.load():
                     good=False
                     continue
                 meta = fObj.metaData
@@ -30,7 +30,7 @@ class Text(object):
                 self.nameFromNode[code] = fObj.data
                 self.nodeFromName[code] = dict(((name, node) for (node, name) in fObj.data.items()))
             for fName in (SECTIONS):
-                if not tf.features[fName].load(silent=True):
+                if not tf.features[fName].load():
                     good=False
                     continue
                 self.sectionFeatures.append(tf.features[fName].data)

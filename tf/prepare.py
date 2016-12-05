@@ -3,7 +3,7 @@ from .helpers import *
 
 def getOtypeInfo(info, otype):
     result = (otype[-2], otype[-1], len(otype) - 2 + otype[-1])
-    info('slot type = {}; max slot = {}; max node = {}'.format(*result))
+    info('slot={}-{};node-{}'.format(*result))
     return result
 
 def levels(info, error, otype, oslots):

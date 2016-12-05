@@ -41,7 +41,7 @@ class Data(object):
         self.dataLoaded = False
         self.dataError = False
 
-    def load(self, silent=False):
+    def load(self):
         self.tm.indent(level=1, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
@@ -64,11 +64,11 @@ class Data(object):
         else:
             if not origTime:
                 actionRep = 'b'
-                good = self._readDataBin(silent=silent)
+                good = self._readDataBin()
             elif not binTime or origTime > binTime:
                 actionRep = 'C' if self.method else 'T'
-                good = self._compute(silent=silent) if self.method else self._readTf()
-                if good: self._writeDataBin(silent=silent)
+                good = self._compute() if self.method else self._readTf()
+                if good: self._writeDataBin()
             else:
                 actionRep = 'B'
                 good = True if self.method else self._readTf(metaOnly=True)
@@ -76,11 +76,11 @@ class Data(object):
                     if self.isConfig:
                         actionRep = 'M'
                     else:
-                        good = self._readDataBin(silent=silent)
+                        good = self._readDataBin()
         if good:
             self.dataLoaded = time.time() 
-            if actionRep != '=' and not silent:
-                self.tm.info(msgFormat.format(actionRep, self.fileName, sourceRep))
+            if actionRep != '=':
+                self.tm.info(msgFormat.format(actionRep, self.fileName, sourceRep), cache=1 if actionRep in 'CT' else -1)
         else:
             self.dataError = True
             self.tm.error(msgFormat.format(actionRep, self.fileName, sourceRep))
@@ -235,17 +235,14 @@ class Data(object):
                 self.data = tuple(slots)
         return not errors
 
-    def _compute(self, silent=False):
+    def _compute(self):
         good = True
         for feature in self.dependencies:
             if not feature.load():
                 good = False
         if not good: return False
 
-        if silent:
-            def info(msg, tm=True): pass
-        else:
-            def info(msg, tm=True): self.tm.info(cmpFormat.format(msg), tm=tm)
+        def info(msg, tm=True): self.tm.info(cmpFormat.format(msg), tm=tm, cache=-1)
         cmpFormat = 'c {:<20} {{}}'.format(self.fileName)
         self.tm.indent(level=2, reset=True)
         def error(msg, tm=True): self.tm.error(cmpFormat.format(msg), tm=tm)
@@ -338,14 +335,14 @@ class Data(object):
                     ))
         return True
 
-    def _readDataBin(self, silent=False):
+    def _readDataBin(self):
         if not os.path.exists(self.binPath):
             self.tm.error('TF reading: feature file "{}" does not exist'.format(self.binPath))
             return False
         with gzip.open(self.binPath, "rb") as f: self.data = pickle.load(f)
         return True
 
-    def _writeDataBin(self, silent=False):
+    def _writeDataBin(self):
         good = True
         if not os.path.exists(self.binDir):
             try:
