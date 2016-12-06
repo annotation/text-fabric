@@ -108,7 +108,7 @@ def makeFunc(feat, features):
         (ft1, ft2) = feat
         f1 = features[ft1].data
         f2 = features[ft2].data
-        return (lambda n: (f1.get(n, '') or f2.get(n, '')))
+        return (lambda n: (f1.get(n, f2.get(n, ''))))
 
 def itemize(string, sep=None):
     if not string: return ()

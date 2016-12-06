@@ -53,7 +53,7 @@ class Text(object):
     def _sec0Node(self, name, lang='en'):
         return self.nodeFromName['' if lang not in self.languages else lang].get(name, None)
 
-    def sectionFromNode(self, n, lastSlot=True, lang='en'):
+    def sectionFromNode(self, n, lastSlot=False, lang='en'):
         sTypes = self.sectionTypes
         if len(sTypes) == 0: return ()
         sFs = self.sectionFeatures 

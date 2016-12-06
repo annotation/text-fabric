@@ -1,4 +1,4 @@
-import os
+import os,collections
 from glob import glob
 from .data import Data, GRID, SECTIONS
 from .helpers import *
@@ -7,19 +7,25 @@ from .prepare import *
 from .api import *
 
 NAME = 'Text-Fabric'
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 APIREF = 'https://github.com/dirkroorda/text-fabric/wiki/Api'
-TUTORIAL = ''
+TUTORIAL = 'https://github.com/dirkroorda/text-fabric/blob/master/docs/tutorial.ipynb'
 FEATDOC = 'https://shebanq.ancient-data.org/static/docs/featuredoc/texts/welcome.html'
 DATA = 'https://github.com/dirkroorda/text-fabric-data'
 EMAIL = 'shebanq@ancient-data.org'
 
 LOCATIONS = [
-    '~/Downloads',
     '~/text-fabric-data',
     '~/github/text-fabric-data',
-    '~/github/text-fabric-data/hebrew/etcbc4c',
-    '.',
+]
+
+DATASETS = [
+    'hebrew/etcbc4c',
+]
+
+MODULES = [
+    'core',
+    'phono',
 ]
 
 PRECOMPUTE = (
@@ -32,7 +38,7 @@ PRECOMPUTE = (
 )
 
 class Fabric(object):
-    def __init__(self, locations=[]):
+    def __init__(self, locations=None, modules=None):
         self.tm = Timestamp()
         self.tm.info('''This is {} {}
 Api reference    : {}
@@ -43,12 +49,18 @@ Questions? Ask {} for an invite to Slack'''.format(
             NAME, VERSION, APIREF, TUTORIAL, DATA, FEATDOC, EMAIL,
         ), tm=False)
         self.good = True
+
+        if modules == None: modules = []
+        if type(modules) is str: modules = [x.strip() for x in itemize(modules, '\n')]
+        self.modules = modules
+
+        if locations == None: locations = LOCATIONS
         if type(locations) is str: locations = [x.strip() for x in itemize(locations, '\n')]
-        self.locations = []
         self.homeDir = os.path.expanduser('~').replace('\\', '/')
         self.curDir = os.getcwd().replace('\\', '/')
         (self.parentDir, x) = os.path.split(self.curDir)
-        for loc in LOCATIONS + locations:
+        self.locations = []
+        for loc in locations:
             if loc.startswith('~'):
                 loc = loc.replace('~', self.homeDir, 1)
             elif loc.startswith('..'):
@@ -56,7 +68,8 @@ Questions? Ask {} for an invite to Slack'''.format(
             elif loc.startswith('.'):
                 loc = loc.replace('.', self.curDir, 1)
             self.locations.append(loc)
-        self.locationRep = '\n\t'.join(self.locations)
+
+        self.locationRep = '\n\t'.join('\n\t'.join('{}/{}'.format(l,f) for f in self.modules) for l in self.locations)
         self._makeIndex()
 
     def load(self, features):
@@ -72,6 +85,9 @@ Questions? Ask {} for an invite to Slack'''.format(
             self._formatFeats = []
             if GRID[2] in self.features:
                 otextMeta = self.features[GRID[2]].metaData
+                for otextMod in self.features:
+                    if otextMod.startswith(GRID[2]+'@'):
+                        otextMeta.update(self.features[otextMod].metaData)
                 sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
                 sectionTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
                 if len(sectionTypes) != 3 or len(sectionFeats) != 3:
@@ -105,10 +121,9 @@ Questions? Ask {} for an invite to Slack'''.format(
 
     def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}):
         self.tm.indent(level=0, reset=True)
-        self.targetDir = self.locations[-1]
         configFeatures = dict(f for f in metaData.items() if f[0] != '' and f[0] not in nodeFeatures and f[0] not in edgeFeatures)
         self.tm.info('Exporting {} node and {} edge and {} config features to {}:'.format(
-            len(nodeFeatures), len(edgeFeatures), len(configFeatures), self.targetDir,
+            len(nodeFeatures), len(edgeFeatures), len(configFeatures), self.writeDir,
         ))
         todo = []
         for (fName, data) in sorted(nodeFeatures.items()):
@@ -118,18 +133,26 @@ Questions? Ask {} for an invite to Slack'''.format(
         for (fName, data) in sorted(configFeatures.items()):
             todo.append((fName, data, None, True))
         reduced = 0
-        total = 0
+        total = collections.Counter()
+        failed = collections.Counter()
         for (fName, data, isEdge, isConfig) in todo:
             fMeta = metaData.get(fName, metaData.get('', {})) 
-            fObj = Data('{}/{}.tf'.format(self.targetDir, fName), self.tm,
+            fObj = Data('{}/{}.tf'.format(self.writeDir, fName), self.tm,
                 data=data, metaData=fMeta,
                 isEdge=isEdge, isConfig=isConfig,
             )
-            fObj.save(nodeRanges=fName==GRID[0], overwrite=True)
+            tag = 'config' if isConfig else 'edge' if isEdge else 'node'
+            if fObj.save(nodeRanges=fName==GRID[0], overwrite=True):
+                total[tag] += 1
+            else:
+                failed[tag] += 1
         self.tm.indent(level=0)
-        self.tm.info('Exported {} node features and {} edge features and {} config features to {}:'.format(
-            len(nodeFeatures), len(edgeFeatures), len(configFeatures), self.targetDir,
+        self.tm.info('Exported {} node features and {} edge features and {} config features to {}'.format(
+            total['node'], total['edge'], total['config'], self.writeDir,
         ))
+        if len(failed):
+            for (tag, nf) in sorted(failed.items()):
+                self.tm.info('Failed to export {} {} features'.format(nf, tag))
 
     def _loadFeature(self, fName, optional=False):
         if not self.good: return False
@@ -146,19 +169,23 @@ Questions? Ask {} for an invite to Slack'''.format(
         self.featuresIgnored = {}
         tfFiles = {}
         for loc in self.locations:
-            files = glob('{}/*.tf'.format(loc))
-            for f in files:
-                if not os.path.isfile(f):
-                    continue
-                (dirF, fileF) = os.path.split(f)
-                (fName, ext) = os.path.splitext(fileF)
-                tfFiles.setdefault(fName, []).append(f)
+            for mod in self.modules:
+                files = glob('{}/{}/*.tf'.format(loc, mod))
+                for f in files:
+                    if not os.path.isfile(f):
+                        continue
+                    (dirF, fileF) = os.path.split(f)
+                    (fName, ext) = os.path.splitext(fileF)
+                    tfFiles.setdefault(fName, []).append(f)
         for (fName, featurePaths) in sorted(tfFiles.items()):
             chosenFPath = featurePaths[-1]
             for featurePath in sorted(set(featurePaths[0:-1])):
                 if featurePath != chosenFPath:
                     self.featuresIgnored.setdefault(fName, []).append(featurePath)
             self.features[fName] = Data(chosenFPath, self.tm)  
+        writeLoc = '' if len(self.locations) == 0 else self.locations[-1]
+        writeMod = '' if len(self.modules) == 0 else self.modules[-1]
+        self.writeDir = '{}{}'.format(writeLoc, writeMod) if writeLoc == '' or writeMod == '' else '{}/{}'.format(writeLoc, writeMod)
         self.tm.info('{} features found and {} ignored'.format(
             len(tfFiles),
             sum(len(x) for x in self.featuresIgnored.values()),

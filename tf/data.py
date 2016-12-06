@@ -13,6 +13,8 @@ GRID = (
     'otext',
 )
 
+DATA_TYPES = ('str', 'int')
+
 SECTIONS = (
     'book',
     'chapter',
@@ -40,6 +42,7 @@ class Data(object):
         self.data = data
         self.dataLoaded = False
         self.dataError = False
+        self.dataType = 'str'
 
     def load(self):
         self.tm.indent(level=1, reset=True)
@@ -93,12 +96,30 @@ class Data(object):
     def save(self, overwrite=False, nodeRanges=False):
         return self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
 
+    def _setDataType(self):
+        if self.isConfig: return
+        if 'valueType' in self.metaData:
+            dataType = self.metaData['valueType']
+            if dataType not in DATA_TYPES:
+                self.tm.error('Unknown @valueType: "{}". Should be one of {}'.format(
+                    dataType,
+                    ','.join(DATA_TYPES),
+                ))
+                self.dataType = DATA_TYPES[0]
+            else:
+                self.dataType = dataType
+        else:
+            self.tm.error('Missing @valueType. Should be one of {}'.format(
+                ','.join(DATA_TYPES),
+            ))
+            self.dataType = DATA_TYPES[0]
+
     def _readTf(self, metaOnly=False):
         path = self.path
         if not os.path.exists(path):
             self.tm.error('TF reading: feature file "{}" does not exist'.format(path))
             return False
-        fh = open(path)
+        fh = open(path, encoding='utf8')
         i = 0
         self.metaData = {}
         self.isConfig = False
@@ -126,6 +147,7 @@ class Data(object):
                     return False
                 else:
                     break
+        self._setDataType()
         good = True
         if not metaOnly and not self.isConfig:
             good = self._readDataTf(fh, i)
@@ -141,6 +163,7 @@ class Data(object):
         isEdge = self.isEdge
         edgeValues = self.edgeValues
         normFields = 3 if isEdge and edgeValues else 2
+        isNum = self.dataType == 'int'
         for line in fh:
             i += 1
             fields = line.rstrip('\n').split('\t')
@@ -196,16 +219,19 @@ class Data(object):
                         valTf = ''
             implicit_node = max(nodes) + 1
             if not isEdge or edgeValues:
-                value = '' if valTf == '' else valueFromTf(valTf)
+                value = int(valTf) if isNum and valTf != '' else None if isNum else '' if valTf == '' else valueFromTf(valTf)
             if isEdge:
                 for n in nodes:
                     for m in nodes2:
                         if not edgeValues:
                             data.setdefault(n, set()).add(m)
                         else:
-                            data.setdefault(n, {})[m] = value
+                            if value != None:
+                                data.setdefault(n, {})[m] = value
             else:
-                for n in nodes: data[n] = value
+                for n in nodes:
+                    if value != None:
+                        data[n] = value
         for kind in errors:
             lnk = len(errors[kind])
             self.tm.error('{} in lines {}'.format(kind, ','.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF])))
@@ -266,7 +292,7 @@ class Data(object):
                     self.tm.error('Feature file "{}" already exists, feature will not be written'.format(fpath))
                     return False
         try:
-            fh = open(fpath, 'w')
+            fh = open(fpath, 'w', encoding='utf8')
         except:
             self.tm.error('Cannot write to feature file "{}"'.format(fpath))
             return False
@@ -276,6 +302,7 @@ class Data(object):
         fh.write('@writtenBy=Text-Fabric\n')
         fh.write('@dateWritten={}\n'.format(datetime.utcnow().replace(microsecond=0).isoformat()+'Z'))
         fh.write('\n')
+        self._setDataType()
         good = True
         if not metaOnly:
             good = self._writeDataTf(fh, nodeRanges=nodeRanges)
