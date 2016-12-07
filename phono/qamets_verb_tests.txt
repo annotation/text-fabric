@@ -1,0 +1,513 @@
+Joel 1:17	<@B:C74W.	ʕāvᵊšˈû	qamets: gadol maintained because of verb paradigm
+Samuel_I 13:7	<@75B:RW.03	ʕˈāvᵊrû	qamets: no need to suppress qatan
+Psalmi 103:16	<@75B:R@H	ʕˈāvᵊrā	qamets: no need to suppress qatan
+Jeremia 5:28	<@75B:R74W.	ʕˈāvᵊrˈû	qamets: no need to suppress qatan
+Jesaia 16:8	<@71B:RW.	ʕˌāvᵊrû	qamets: no need to suppress qatan
+Josua 4:13	<@B:R62W.	ʕāvᵊrˈû	qamets: gadol maintained because of verb paradigm
+Samuel_II 19:19	<@B:R@74H	ʕāvᵊrˈā	qamets: gadol maintained because of verb paradigm
+Josua 3:16	<@B:R73W.	ʕāvᵊrˌû	qamets: gadol maintained because of verb paradigm
+Samuel_I 14:23	<@B:R@73H	ʕāvᵊrˌā	qamets: gadol maintained because of verb paradigm
+Iob 17:11	13<@B:RW.	ˈʕāvᵊrû	qamets: gadol maintained because of verb paradigm
+Psalmi 73:7	11<@B:R81W.	ˈʕāvᵊrˈû	qamets: gadol maintained because of verb paradigm
+Iob 37:21	11<@B:R@81H	ˈʕāvᵊrˈā	qamets: gadol maintained because of verb paradigm
+Psalmi 6:8	<@75C:C@74H	ʕˈāšᵊšˈā	qamets: no need to suppress qatan
+Psalmi 31:10	<@C:C@73H	ʕāšᵊšˌā	qamets: gadol maintained because of verb paradigm
+Ezechiel 22:29	<@74C:QW.	ʕˈāšᵊqû	qamets: no need to suppress qatan
+Ezechiel 22:29	<@C:Q73W.	ʕāšᵊqˌû	qamets: gadol maintained because of verb paradigm
+Iob 33:4	<@F@92T:NIJ	ʕāśˈāṯᵊnî	qamets: no need to suppress qatan
+Leviticus 25:21	<@F@T03	ʕāśˌāṯ	qamets: no need to suppress qatan
+Iob 30:25	<@75G:M@71H	ʕˈāḡᵊmˌā	qamets: no need to suppress qatan
+Proverbia 16:26	<@74M:L@H	ʕˈāmᵊlā	qamets: no need to suppress qatan
+Psalmi 127:1	<@M:L74W.	ʕāmᵊlˈû	qamets: gadol maintained because of verb paradigm
+Psalmi 92:6	<@M:Q71W.	ʕāmᵊqˌû	qamets: gadol maintained because of verb paradigm
+Deuteronomium 22:19	<@N:C63W.	ʕānᵊšˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 6:8	11<@75T:Q@81H	ˈʕˈāṯᵊqˈā	qamets: no need to suppress qatan
+Iob 21:7	11<@T:Q81W.	ˈʕāṯᵊqˈû	qamets: gadol maintained because of verb paradigm
+Judices 18:9	T.;<@74Y:L80W.	tēʕˈāṣᵊlˈû	qamets: no need to suppress qatan
+Jeremia 15:8	<@75Y:MW.	ʕˈāṣᵊmû	qamets: no need to suppress qatan
+Jesaia 31:1	<@Y:M74W.	ʕāṣᵊmˈû	qamets: gadol maintained because of verb paradigm
+Jeremia 5:6	<@Y:M73W.	ʕāṣᵊmˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 139:17	11<@Y:MW.	ˈʕāṣᵊmû	qamets: gadol maintained because of verb paradigm
+Psalmi 40:6	11<@Y:M81W.	ˈʕāṣᵊmˈû	qamets: gadol maintained because of verb paradigm
+Iob 29:9	<@Y:R74W.	ʕāṣᵊrˈû	qamets: gadol maintained because of verb paradigm
+Chronica_II 20:37	<@Y:R73W.	ʕāṣᵊrˌû	qamets: gadol maintained because of verb paradigm
+Daniel 11:34	J;<@Z:R73W.	yēʕāzᵊrˌû	qamets: gadol maintained because of verb paradigm
+Chronica_I 12:22	<@Z:R70W.	ʕāzᵊrˈû	qamets: gadol maintained because of verb paradigm
+Sacharia 1:15	<@Z:R71W.	ʕāzᵊrˌû	qamets: gadol maintained because of verb paradigm
+Joel 1:9	>@75B:LW.03	ʔˈāvᵊlû	qamets: no need to suppress qatan
+Jesaia 19:8	>@74B:L80W.	ʔˈāvᵊlˈû	qamets: no need to suppress qatan
+Jesaia 24:4	>@B:L@70H	ʔāvᵊlˈā	qamets: gadol maintained because of verb paradigm
+Jesaia 3:26	>@B:L73W.	ʔāvᵊlˌû	qamets: gadol maintained because of verb paradigm
+Jeremia 12:11	>@B:L@71H	ʔāvᵊlˌā	qamets: gadol maintained because of verb paradigm
+Numeri 5:6	>@75C:M@73H	ʔˈāšᵊmˌā	qamets: no need to suppress qatan
+Threni 4:7	>@70D:MW.	ʔˈāḏᵊmû	qamets: no need to suppress qatan
+Proverbia 6:8	>@G:R@71H	ʔāḡᵊrˌā	qamets: gadol maintained because of verb paradigm
+Exodus 23:11	>@75K:LW.03	ʔˈāḵᵊlû	qamets: no need to suppress qatan
+Numeri 21:28	>@75K:L@H03	ʔˈāḵᵊlā	qamets: no need to suppress qatan
+Genesis 14:24	>@95K:L74W.	ʔˈāḵᵊlˈû	qamets: no need to suppress qatan
+Jesaia 10:17	>@75K:L@91H	ʔˈāḵᵊlˈā	qamets: no need to suppress qatan
+Sacharia 12:6	>@63K:L61W.	ʔˌāḵᵊlˈû	qamets: no need to suppress qatan
+Psalmi 69:10	>:AK@L@92T:NIJ	ʔᵃḵālˈāṯᵊnî	qamets: no need to suppress qatan
+Leviticus 11:13	J;>@K:L73W.	yēʔāḵᵊlˌû	qamets: gadol maintained because of verb paradigm
+Exodus 29:33	>@K:L70W.	ʔāḵᵊlˈû	qamets: gadol maintained because of verb paradigm
+Leviticus 26:38	>@K:L@74H	ʔāḵᵊlˈā	qamets: gadol maintained because of verb paradigm
+Exodus 12:8	>@K:L71W.	ʔāḵᵊlˌû	qamets: gadol maintained because of verb paradigm
+Jeremia 21:14	>@K:L@73H	ʔāḵᵊlˌā	qamets: gadol maintained because of verb paradigm
+Proverbia 30:20	13>@K:L@H	ˈʔāḵᵊlā	qamets: gadol maintained because of verb paradigm
+Genesis 42:20	J;>@M:N71W.	yēʔāmᵊnˌû	qamets: gadol maintained because of verb paradigm
+Exodus 3:13	>@75M:RW.	ʔˈāmᵊrû	qamets: no need to suppress qatan
+Deuteronomium 25:7	>@75M:R@H03	ʔˈāmᵊrā	qamets: no need to suppress qatan
+Genesis 38:22	>@75M:R80W.	ʔˈāmᵊrˈû	qamets: no need to suppress qatan
+Genesis 16:13	>@95M:R@81H	ʔˈāmᵊrˈā	qamets: no need to suppress qatan
+Genesis 20:5	>@95M:R@73H	ʔˈāmᵊrˌā	qamets: no need to suppress qatan
+Psalmi 12:5	>@75M:R63W.05	ʔˈāmᵊrˌˈû	qamets: no need to suppress qatan
+Proverbia 30:15	>@71M:RW.	ʔˌāmᵊrû	qamets: no need to suppress qatan
+Ezechiel 26:2	>@63M:R@H	ʔˌāmᵊrā	qamets: no need to suppress qatan
+Numeri 14:14	>@M:R81W.	ʔāmᵊrˈû	qamets: gadol maintained because of verb paradigm
+Genesis 24:14	>@M:R@74H	ʔāmᵊrˈā	qamets: gadol maintained because of verb paradigm
+Reges_II 20:14	>@M:R74W.05	ʔāmᵊrˈˈû	qamets: gadol maintained because of verb paradigm
+Genesis 12:12	>@M:R73W.	ʔāmᵊrˌû	qamets: gadol maintained because of verb paradigm
+Numeri 5:22	>@M:R@71H	ʔāmᵊrˌā	qamets: gadol maintained because of verb paradigm
+Psalmi 35:21	13>@M:RW.	ˈʔāmᵊrû	qamets: gadol maintained because of verb paradigm
+Psalmi 64:6	11>@M:R81W.	ˈʔāmᵊrˈû	qamets: gadol maintained because of verb paradigm
+Psalmi 142:7	>@M:Y74W.	ʔāmᵊṣˈû	qamets: gadol maintained because of verb paradigm
+Samuel_II 22:18	>@M:Y73W.	ʔāmᵊṣˌû	qamets: gadol maintained because of verb paradigm
+Genesis 42:16	H;>@74S:R80W.	hēʔˈāsᵊrˈû	qamets: no need to suppress qatan
+Numeri 30:5	>@95S:R@74H	ʔˈāsᵊrˈā	qamets: no need to suppress qatan
+Numeri 30:4	>@S:R@71H	ʔāsᵊrˌā	qamets: gadol maintained because of verb paradigm
+Reges_II 20:17	>@Y:R94W.	ʔāṣᵊrˈû	qamets: gadol maintained because of verb paradigm
+Deuteronomium 32:36	>@74Z:LAT	ʔˈāzᵊlaṯ	qamets: no need to suppress qatan
+Iob 14:11	>@75Z:LW.	ʔˈāzᵊlû	qamets: no need to suppress qatan
+Samuel_I 2:4	>@71Z:RW.	ʔˌāzᵊrû	qamets: no need to suppress qatan
+Ezechiel 24:5	B.@C:L71W.	bāšᵊlˌû	qamets: gadol maintained because of verb paradigm
+Esra 10:11	HIB.@75D:LW.03	hibbˈāḏᵊlû	qamets: no need to suppress qatan
+Numeri 16:21	HIB.@74D:L80W.	hibbˈāḏᵊlˈû	qamets: no need to suppress qatan
+Numeri 16:30	B@L:<@70H	vālᵊʕˈā	qamets: gadol maintained because of verb paradigm
+Jesaia 34:15	B@Q:<@73H	vāqᵊʕˌā	qamets: gadol maintained because of verb paradigm
+Iob 9:25	11B.@75R:X81W.	ˈbˈārᵊḥˈû	qamets: no need to suppress qatan
+Ecclesiastes 12:3	B@V:L70W.	vāṭᵊlˈû	qamets: gadol maintained because of verb paradigm
+Judices 20:36	B@75V:XW.03	vˈāṭᵊḥû	qamets: no need to suppress qatan
+Chronica_I 5:20	B@71V:XW.	vˌāṭᵊḥû	qamets: no need to suppress qatan
+Psalmi 22:5	B.@V:X74W.	bāṭᵊḥˈû	qamets: gadol maintained because of verb paradigm
+Psalmi 22:6	B@V:X74W.	vāṭᵊḥˈû	qamets: gadol maintained because of verb paradigm
+Psalmi 22:5	11B.@V:X81W.	ˈbāṭᵊḥˈû	qamets: gadol maintained because of verb paradigm
+Psalmi 78:22	11B@V:X81W.	ˈvāṭᵊḥˈû	qamets: gadol maintained because of verb paradigm
+Jesaia 33:23	B.@71Z:ZW.	bˌāzᵊzû	qamets: no need to suppress qatan
+Ezechiel 26:12	B@75Z:ZW.03	vˈāzᵊzû	qamets: no need to suppress qatan
+Chronica_II 28:8	B.@Z:Z74W.	bāzᵊzˈû	qamets: gadol maintained because of verb paradigm
+Numeri 31:32	B.@Z:Z73W.	bāzᵊzˌû	qamets: gadol maintained because of verb paradigm
+Zephania 2:9	J:B@Z.80W.M	yᵊvāzzˈûm	qamets: gadol maintained because of verb paradigm
+Josua 2:12	HIC.@75B:<W.	hiššˈāvᵊʕû	qamets: no need to suppress qatan
+Judices 15:12	HIC.@B:<74W.	hiššāvᵊʕˈû	qamets: gadol maintained because of verb paradigm
+Hosea 4:15	T.IC.@B:<73W.	tiššāvᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Leviticus 19:12	TIC.@B:<71W.	ṯiššāvᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Jeremia 5:5	C@74B:RW.	šˈāvᵊrû	qamets: no need to suppress qatan
+Psalmi 69:21	C@75B:R@71H	šˈāvᵊrˌā	qamets: no need to suppress qatan
+Jesaia 13:21	C@70K:NW.	šˈāḵᵊnû	qamets: no need to suppress qatan
+Psalmi 120:6	C@75K:N@H	šˈāḵᵊnā	qamets: no need to suppress qatan
+Psalmi 94:17	C@75K:N@73H	šˈāḵᵊnˌā	qamets: no need to suppress qatan
+Ezechiel 17:23	C@K:N74W.	šāḵᵊnˈû	qamets: gadol maintained because of verb paradigm
+Sacharia 8:8	C@K:N73W.	šāḵᵊnˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 29:9	C@75K:R74W.	šˈāḵᵊrˈû	qamets: no need to suppress qatan
+Jeremia 23:27	C@K:X94W.	šāḵᵊḥˈû	qamets: gadol maintained because of verb paradigm
+Jeremia 3:21	C@K:X73W.	šāḵᵊḥˌû	qamets: gadol maintained because of verb paradigm
+Hosea 2:15	C@K:X@73H	šāḵᵊḥˌā	qamets: gadol maintained because of verb paradigm
+Psalmi 106:21	13C@K:XW.	ˈšāḵᵊḥû	qamets: gadol maintained because of verb paradigm
+Habakuk 2:8	J:C@L.73W.K@	yᵊšāllˌûḵā	qamets: gadol maintained because of verb paradigm
+Ezechiel 26:12	C@L:L74W.	šālᵊlˈû	qamets: gadol maintained because of verb paradigm
+Jesaia 60:20	C@L:M73W.	šālᵊmˌû	qamets: gadol maintained because of verb paradigm
+Nehemia 5:15	C@L:V74W.	šālᵊṭˈû	qamets: gadol maintained because of verb paradigm
+Deuteronomium 19:12	C@75L:XW.03	šˈālᵊḥû	qamets: no need to suppress qatan
+Proverbia 9:3	C@75L:X@74H	šˈālᵊḥˈā	qamets: no need to suppress qatan
+Esther 9:16	C@75L:X73W.	šˈālᵊḥˌû	qamets: no need to suppress qatan
+Iob 1:4	C@L:X81W.	šālᵊḥˈû	qamets: gadol maintained because of verb paradigm
+Genesis 38:25	C@L:X@70H	šālᵊḥˈā	qamets: gadol maintained because of verb paradigm
+Jeremia 14:3	C@L:X71W.	šālᵊḥˌû	qamets: gadol maintained because of verb paradigm
+Reges_I 21:11	C@L:X@71H	šālᵊḥˌā	qamets: gadol maintained because of verb paradigm
+Psalmi 18:45	JIC.@74M:<W.	yiššˈāmᵊʕû	qamets: no need to suppress qatan
+Samuel_II 22:45	JIC.@71M:<W.	yiššˌāmᵊʕû	qamets: no need to suppress qatan
+Exodus 6:9	C@75M:<W.03	šˈāmᵊʕû	qamets: no need to suppress qatan
+Leviticus 5:1	C@75M:<@H03	šˈāmᵊʕā	qamets: no need to suppress qatan
+Chronica_II 9:1	C@75M:<@H02	šˈāmᵊʕāˈ	qamets: no need to suppress qatan
+Genesis 43:25	C@75M:<80W.	šˈāmᵊʕˈû	qamets: no need to suppress qatan
+Exodus 15:14	C@75M:<71W.	šˈāmᵊʕˌû	qamets: no need to suppress qatan
+Iob 13:1	C@75M:<@71H	šˈāmᵊʕˌā	qamets: no need to suppress qatan
+Exodus 6:12	C@M:<74W.	šāmᵊʕˈû	qamets: gadol maintained because of verb paradigm
+Josua 24:27	C@M:<@81H	šāmᵊʕˈā	qamets: gadol maintained because of verb paradigm
+Exodus 3:18	C@M:<73W.	šāmᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Iob 29:11	13C@M:<@H	ˈšāmᵊʕā	qamets: gadol maintained because of verb paradigm
+Psalmi 106:25	11C@M:<81W.	ˈšāmᵊʕˈû	qamets: gadol maintained because of verb paradigm
+Leviticus 26:32	C@75M:M70W.	šˈāmᵊmˈû	qamets: no need to suppress qatan
+Jesaia 52:14	C@M:M70W.	šāmᵊmˈû	qamets: gadol maintained because of verb paradigm
+Ezechiel 26:16	C@M:M73W.	šāmᵊmˌû	qamets: gadol maintained because of verb paradigm
+Jeremia 5:28	C@M:N74W.	šāmᵊnˈû	qamets: gadol maintained because of verb paradigm
+Judices 13:4	HIC.@74M:RIJ	hiššˈāmᵊrî	qamets: no need to suppress qatan
+Deuteronomium 11:16	HIC.@75M:R74W.	hiššˈāmᵊrˈû	qamets: no need to suppress qatan
+Genesis 18:19	C@75M:RW.03	šˈāmᵊrû	qamets: no need to suppress qatan
+Numeri 18:4	C@75M:R81W.	šˈāmᵊrˈû	qamets: no need to suppress qatan
+Psalmi 119:167	C@75M:R@74H	šˈāmᵊrˈā	qamets: no need to suppress qatan
+Iob 10:12	C@75M:R@71H	šˈāmᵊrˌā	qamets: no need to suppress qatan
+Deuteronomium 4:23	HIC.@M:R74W.	hiššāmᵊrˈû	qamets: gadol maintained because of verb paradigm
+Exodus 19:12	HIC.@M:R71W.	hiššāmᵊrˌû	qamets: gadol maintained because of verb paradigm
+Leviticus 22:9	C@M:R74W.	šāmᵊrˈû	qamets: gadol maintained because of verb paradigm
+Exodus 31:16	C@M:R71W.	šāmᵊrˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 78:10	13C@M:RW.	ˈšāmᵊrû	qamets: gadol maintained because of verb paradigm
+Chronica_I 13:9	C@75M:V73W.	šˈāmᵊṭˌû	qamets: no need to suppress qatan
+Samuel_II 6:6	C@M:V73W.	šāmᵊṭˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 64:4	C@N:N74W.	šānᵊnˈû	qamets: gadol maintained because of verb paradigm
+Psalmi 16:6	C@75P:R@71H	šˈāfᵊrˌā	qamets: no need to suppress qatan
+Numeri 35:24	C@75P:VW.03	šˈāfᵊṭû	qamets: no need to suppress qatan
+Jesaia 43:26	NIC.@P:V@73H	niššāfᵊṭˌā	qamets: gadol maintained because of verb paradigm
+Psalmi 9:20	JIC.@P:V71W.	yiššāfᵊṭˌû	qamets: gadol maintained because of verb paradigm
+Exodus 18:22	C@P:V74W.	šāfᵊṭˈû	qamets: gadol maintained because of verb paradigm
+Exodus 18:26	C@P:V71W.	šāfᵊṭˌû	qamets: gadol maintained because of verb paradigm
+Samuel_I 12:7	>IC.@P:V@71H	ʔiššāfᵊṭˌā	qamets: gadol maintained because of verb paradigm
+Amos 9:5	C@Q:<@73H	šāqᵊʕˌā	qamets: gadol maintained because of verb paradigm
+Chronica_II 14:5	C@Q:V@74H	šāqᵊṭˈā	qamets: gadol maintained because of verb paradigm
+Josua 11:23	C@Q:V@73H	šāqᵊṭˌā	qamets: gadol maintained because of verb paradigm
+Threni 2:15	C@75R:QW.03	šˈārᵊqû	qamets: no need to suppress qatan
+Ezechiel 27:36	C@R:Q73W.	šārᵊqˌû	qamets: gadol maintained because of verb paradigm
+Genesis 8:17	C@95R:Y74W.	šˈārᵊṣˈû	qamets: no need to suppress qatan
+Genesis 1:21	C@R:Y63W.	šārᵊṣˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 69:3	C:V@P@75T:NIJ	šᵊṭāfˈāṯᵊnî	qamets: no need to suppress qatan
+Psalmi 119:25	D.@75B:Q@74H	dˈāvᵊqˈā	qamets: no need to suppress qatan
+Ruth 1:14	D.@71B:Q@H	dˌāvᵊqā	qamets: no need to suppress qatan
+Samuel_II 20:2	D.@B:Q74W.	dāvᵊqˈû	qamets: gadol maintained because of verb paradigm
+Psalmi 63:9	D.@B:Q@74H	dāvᵊqˈā	qamets: gadol maintained because of verb paradigm
+Psalmi 44:26	D.@B:Q@73H	dāvᵊqˌā	qamets: gadol maintained because of verb paradigm
+Deuteronomium 28:60	D@B:Q73W.	ḏāvᵊqˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 34:15	D@G:R@74H	ḏāḡᵊrˈā	qamets: gadol maintained because of verb paradigm
+Obadia 1:18	D@L:Q71W.	ḏālᵊqˌû	qamets: gadol maintained because of verb paradigm
+Samuel_I 2:9	JID.@92M.W.	yiddˈāmmû	qamets: no need to suppress qatan
+Psalmi 35:15	D@75M.W.	ḏˈāmmû	qamets: no need to suppress qatan
+Chronica_II 25:20	D@75R:C80W.	ḏˈārᵊšˈû	qamets: no need to suppress qatan
+Proverbia 31:13	13D.@R:C@H	ˈdārᵊšā	qamets: gadol maintained because of verb paradigm
+Jesaia 19:3	D@R:C70W.	ḏārᵊšˈû	qamets: gadol maintained because of verb paradigm
+Deuteronomium 19:18	D@R:C71W.	ḏārᵊšˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 123:4	F@75B:<@H	śˈāvᵊʕā	qamets: no need to suppress qatan
+Jeremia 46:10	F@74B:<@80H	śˈāvᵊʕˈā	qamets: no need to suppress qatan
+Hosea 13:6	F@B:<73W.	śāvᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 9:2	F@M:X70W.	śāmᵊḥˈû	qamets: gadol maintained because of verb paradigm
+Jesaia 14:8	F@M:X71W.	śāmᵊḥˌû	qamets: gadol maintained because of verb paradigm
+Deuteronomium 19:14	G.@B:L73W.	gāvᵊlˌû	qamets: gadol maintained because of verb paradigm
+Genesis 49:26	G.@75B:RW.03	gˈāvᵊrû	qamets: no need to suppress qatan
+Genesis 7:19	G.@75B:R91W.	gˈāvᵊrˈû	qamets: no need to suppress qatan
+Iob 21:7	G.@71B:RW.	gˌāvᵊrû	qamets: no need to suppress qatan
+Jeremia 9:2	G.@B:R74W.	gāvᵊrˈû	qamets: gadol maintained because of verb paradigm
+Genesis 7:20	G.@B:R73W.	gāvᵊrˌû	qamets: gadol maintained because of verb paradigm
+Samuel_II 11:23	G@B:R70W.	ḡāvᵊrˈû	qamets: gadol maintained because of verb paradigm
+Genesis 19:13	G@95D:L@70H	ḡˈāḏᵊlˈā	qamets: no need to suppress qatan
+Reges_I 12:8	G.@D:L74W.	gāḏᵊlˈû	qamets: gadol maintained because of verb paradigm
+Samuel_I 26:24	G.@D:L@94H	gāḏᵊlˈā	qamets: gadol maintained because of verb paradigm
+Jeremia 5:27	G.@D:L73W.	gāḏᵊlˌû	qamets: gadol maintained because of verb paradigm
+Esra 9:6	G@D:L@73H	ḡāḏᵊlˌā	qamets: gadol maintained because of verb paradigm
+Canticum 4:1	G.@L:C73W.	gālᵊšˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 3:9	G@M:L71W.	ḡāmᵊlˌû	qamets: gadol maintained because of verb paradigm
+Zephania 3:3	G@R:M73W.	ḡārᵊmˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 119:20	G.@R:S@74H	gārᵊsˈā	qamets: gadol maintained because of verb paradigm
+Genesis 21:25	G.@Z:L73W.	gāzᵊlˌû	qamets: gadol maintained because of verb paradigm
+Iob 24:2	11G.@Z:L81W.	ˈgāzᵊlˈû	qamets: gadol maintained because of verb paradigm
+Ezechiel 22:29	G@Z:L73W.	ḡāzᵊlˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 16:8	H@L:M74W.	hālᵊmˈû	qamets: gadol maintained because of verb paradigm
+Judices 5:26	H@L:M@70H	hālᵊmˈā	qamets: gadol maintained because of verb paradigm
+Judices 5:22	H@L:M73W.	hālᵊmˌû	qamets: gadol maintained because of verb paradigm
+Ezechiel 26:4	H@75R:SW.03	hˈārᵊsû	qamets: no need to suppress qatan
+Ezechiel 16:39	H@R:S70W.	hārᵊsˈû	qamets: gadol maintained because of verb paradigm
+Joel 1:20	J@75B:CW.03	yˈāvᵊšû	qamets: no need to suppress qatan
+Ezechiel 37:11	J@B:C94W.	yāvᵊšˈû	qamets: gadol maintained because of verb paradigm
+Jeremia 23:10	J@B:C73W.	yāvᵊšˌû	qamets: gadol maintained because of verb paradigm
+Genesis 8:14	J@B:C@73H	yāvᵊšˌā	qamets: gadol maintained because of verb paradigm
+Jesaia 45:22	HIW.@C:<73W.	hiwwāšᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Jeremia 51:39	J@C:N71W.	yāšᵊnˌû	qamets: gadol maintained because of verb paradigm
+Reges_I 9:12	J@C:R73W.	yāšᵊrˌû	qamets: gadol maintained because of verb paradigm
+Judices 14:3	J@C:R@71H	yāšᵊrˌā	qamets: gadol maintained because of verb paradigm
+Numeri 14:31	J@75D:<W.03	yˈāḏᵊʕû	qamets: no need to suppress qatan
+Jeremia 8:7	J@75D:<@H03	yˈāḏᵊʕā	qamets: no need to suppress qatan
+Genesis 42:23	J@95D:<80W.	yˈāḏᵊʕˈû	qamets: no need to suppress qatan
+Hosea 2:10	J@75D:<@80H	yˈāḏᵊʕˈā	qamets: no need to suppress qatan
+Psalmi 82:5	J@75D:<63W.05	yˈāḏᵊʕˌˈû	qamets: no need to suppress qatan
+Iob 24:16	J@71D:<W.	yˌāḏᵊʕû	qamets: no need to suppress qatan
+Proverbia 9:13	J@71D:<@H	yˌāḏᵊʕā	qamets: no need to suppress qatan
+Ruth 3:3	T.IW.@D:<I74J	tiwwāḏᵊʕˈî	qamets: gadol maintained because of verb paradigm
+Exodus 7:5	J@D:<70W.	yāḏᵊʕˈû	qamets: gadol maintained because of verb paradigm
+Judices 11:39	J@D:<@74H	yāḏᵊʕˈā	qamets: gadol maintained because of verb paradigm
+Genesis 19:8	J@D:<W.03	yāḏᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Deuteronomium 8:3	J@D:<73W.N	yāḏᵊʕˌûn	qamets: gadol maintained because of verb paradigm
+Proverbia 4:19	11J@D:<81W.	ˈyāḏᵊʕˈû	qamets: gadol maintained because of verb paradigm
+Samuel_II 23:10	J@G:<@74H	yāḡᵊʕˈā	qamets: gadol maintained because of verb paradigm
+Exodus 7:24	J@75K:LW.03	yˈāḵᵊlû	qamets: no need to suppress qatan
+Exodus 15:23	J@75K:L81W.	yˈāḵᵊlˈû	qamets: no need to suppress qatan
+Genesis 36:7	J@95K:L@61H	yˈāḵᵊlˈā	qamets: no need to suppress qatan
+Genesis 13:6	J@75K:L73W.	yˈāḵᵊlˌû	qamets: no need to suppress qatan
+Psalmi 36:13	J@71K:LW.	yˌāḵᵊlû	qamets: no need to suppress qatan
+Genesis 45:3	J@K:L70W.	yāḵᵊlˈû	qamets: gadol maintained because of verb paradigm
+Exodus 2:3	J@K:L@74H	yāḵᵊlˈā	qamets: gadol maintained because of verb paradigm
+Genesis 37:4	J@K:L73W.	yāḵᵊlˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 1:18	NIW.@75K:X@73H	niwwˈāḵᵊḥˌā	qamets: no need to suppress qatan
+Psalmi 141:9	J@74Q:CW.	yˈāqᵊšû	qamets: no need to suppress qatan
+Samuel_I 26:21	J@Q:R@71H	yāqᵊrˌā	qamets: gadol maintained because of verb paradigm
+Psalmi 139:17	J.@Q:R74W.	yyāqᵊrˈû	qamets: gadol maintained because of verb paradigm
+Jesaia 15:4	J@71R:<@H	yˌārᵊʕā	qamets: no need to suppress qatan
+Jesaia 14:21	J@74R:CW.	yˈārᵊšû	qamets: no need to suppress qatan
+Psalmi 44:4	J@71R:CW.	yˌārᵊšû	qamets: no need to suppress qatan
+Deuteronomium 3:20	J@R:C74W.	yārᵊšˈû	qamets: gadol maintained because of verb paradigm
+Deuteronomium 30:5	J@R:C71W.	yārᵊšˌû	qamets: gadol maintained because of verb paradigm
+Deuteronomium 25:9	J@R:Q@73H	yārᵊqˌā	qamets: gadol maintained because of verb paradigm
+Jeremia 6:8	HIW.@S:RIJ03	hiwwāsᵊrˌî	qamets: gadol maintained because of verb paradigm
+Psalmi 2:10	11HIW.@S:R81W.	ˈhiwwāsᵊrˈû	qamets: gadol maintained because of verb paradigm
+Leviticus 26:23	TIW.@S:R73W.	ṯiwwāsᵊrˌû	qamets: gadol maintained because of verb paradigm
+Proverbia 2:21	JIW.@71T:RW.	yiwwˌāṯᵊrû	qamets: no need to suppress qatan
+Amos 6:9	JIW.@63T:R61W.	yiwwˌāṯᵊrˈû	qamets: no need to suppress qatan
+Sacharia 9:15	K@75B:CW.03	ḵˈāvᵊšû	qamets: no need to suppress qatan
+Hosea 5:5	JIK.@75C:LW.03	yikkˈāšᵊlû	qamets: no need to suppress qatan
+Daniel 11:35	JIK.@75C:L81W.	yikkˈāšᵊlˈû	qamets: no need to suppress qatan
+Hosea 14:10	JIK.@71C:LW.	yikkˌāšᵊlû	qamets: no need to suppress qatan
+Jeremia 6:21	K@74C:LW.	ḵˈāšᵊlû	qamets: no need to suppress qatan
+Jesaia 8:15	K@71C:LW.	ḵˌāšᵊlû	qamets: no need to suppress qatan
+Psalmi 109:24	K.@C:L74W.	kāšᵊlˈû	qamets: gadol maintained because of verb paradigm
+Jeremia 46:6	K.@C:L73W.	kāšᵊlˌû	qamets: gadol maintained because of verb paradigm
+Jeremia 6:15	JIK.@C:L73W.	yikkāšᵊlˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 107:12	11K.@C:L81W.	ˈkāšᵊlˈû	qamets: gadol maintained because of verb paradigm
+Leviticus 26:37	K@C:L94W.	ḵāšᵊlˈû	qamets: gadol maintained because of verb paradigm
+Jesaia 59:14	K@C:L@70H	ḵāšᵊlˈā	qamets: gadol maintained because of verb paradigm
+Jesaia 3:8	K@C:L@H03	ḵāšᵊlˌā	qamets: gadol maintained because of verb paradigm
+Ezechiel 27:4	K.@L:L73W.	kālᵊlˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 72:20	K.@L.71W.	kāllˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 69:7	JIK.@74L:MW.	yikkˈālᵊmû	qamets: no need to suppress qatan
+Jesaia 41:11	JIK.@74L:M80W.	yikkˈālᵊmˈû	qamets: no need to suppress qatan
+Ezechiel 36:32	HIK.@L:M91W.	hikkālᵊmˈû	qamets: gadol maintained because of verb paradigm
+Jesaia 54:4	T.IK.@L:MI73J	tikkālᵊmˌî	qamets: gadol maintained because of verb paradigm
+Psalmi 35:4	JIK.@L:MW.02	yikkālᵊmˈû	qamets: gadol maintained because of verb paradigm
+Ezechiel 43:10	JIK.@L:M73W.	yikkālᵊmˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 45:17	TIK.@L:M73W.	ṯikkālᵊmˌû	qamets: gadol maintained because of verb paradigm
+Chronica_II 7:14	JIK.@N:<63W.	yikkānᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Ezechiel 17:7	K.@75P:N@94H	kˈāfᵊnˈā	qamets: no need to suppress qatan
+Reges_I 19:18	K@75R:<W.03	ḵˈārᵊʕû	qamets: no need to suppress qatan
+Psalmi 20:9	K.@R:<74W.	kārᵊʕˈû	qamets: gadol maintained because of verb paradigm
+Judices 7:6	K.@R:<71W.	kārᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Ezechiel 44:19	L@75B:CW.03	lˈāvᵊšû	qamets: no need to suppress qatan
+Chronica_II 24:20	L@75B:C@H03	lˈāvᵊšā	qamets: no need to suppress qatan
+Psalmi 65:14	L@B:C64W.	lāvᵊšˈû	qamets: gadol maintained because of verb paradigm
+Chronica_I 12:19	L@B:C@81H	lāvᵊšˈā	qamets: gadol maintained because of verb paradigm
+Judices 6:34	L@B:C@73H	lāvᵊšˌā	qamets: gadol maintained because of verb paradigm
+Reges_I 21:19	L@Q:Q70W.	lāqᵊqˈû	qamets: gadol maintained because of verb paradigm
+Exodus 16:4	L@75Q:VW.03	lˈāqᵊṭû	qamets: no need to suppress qatan
+Numeri 11:8	L@75Q:V61W.	lˈāqᵊṭˈû	qamets: no need to suppress qatan
+Exodus 16:22	L@75Q:V71W.	lˈāqᵊṭˌû	qamets: no need to suppress qatan
+Exodus 12:7	L@75Q:XW.03	lˈāqᵊḥû	qamets: no need to suppress qatan
+Deuteronomium 21:3	L@75Q:X83W.	lˈāqᵊḥˈû	qamets: no need to suppress qatan
+Numeri 4:12	L@Q:XW.04	lāqᵊḥˈû	qamets: gadol maintained because of verb paradigm
+Genesis 31:34	L@Q:X@74H	lāqᵊḥˈā	qamets: gadol maintained because of verb paradigm
+Numeri 4:9	L@Q:X74W.05	lāqᵊḥˈˈû	qamets: gadol maintained because of verb paradigm
+Genesis 43:15	L@Q:X71W.	lāqᵊḥˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 40:2	L@Q:X@H03	lāqᵊḥˌā	qamets: gadol maintained because of verb paradigm
+Jesaia 3:12	M@74C:LW.	mˈāšᵊlû	qamets: no need to suppress qatan
+Samuel_II 2:7	M@C:X94W.	māšᵊḥˈû	qamets: gadol maintained because of verb paradigm
+Samuel_II 5:17	M@C:X63W.	māšᵊḥˌû	qamets: gadol maintained because of verb paradigm
+Exodus 21:35	M@63K:R61W.	mˌāḵᵊrˈû	qamets: no need to suppress qatan
+Genesis 47:20	M@K:R70W.	māḵᵊrˈû	qamets: gadol maintained because of verb paradigm
+Ruth 4:3	M@K:R@74H	māḵᵊrˈā	qamets: gadol maintained because of verb paradigm
+Genesis 37:36	M@K:R71W.	māḵᵊrˌû	qamets: gadol maintained because of verb paradigm
+Leviticus 25:42	JIM.@K:R73W.	yimmāḵᵊrˌû	qamets: gadol maintained because of verb paradigm
+Samuel_I 20:29	>IM.@71L:V@H	ʔimmˌālᵊṭā	qamets: no need to suppress qatan
+Sacharia 2:11	HIM.@L:VI92J	himmālᵊṭˈî	qamets: gadol maintained because of verb paradigm
+Daniel 11:41	JIM.@L:V74W.	yimmālᵊṭˈû	qamets: gadol maintained because of verb paradigm
+Genesis 19:20	>IM.@L:V@63H	ʔimmālᵊṭˌā	qamets: gadol maintained because of verb paradigm
+Jeremia 5:25	M@N:<71W.	mānᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Leviticus 26:39	JIM.@75Q.W.	yimmˈāqqû	qamets: no need to suppress qatan
+Iob 21:33	M@75T:QW.	mˈāṯᵊqû	qamets: no need to suppress qatan
+Numeri 20:14	M:Y@>@75T:NW.	mᵊṣāʔˈāṯᵊnû	qamets: no need to suppress qatan
+Jesaia 24:4	N@75B:L@H03	nˈāvᵊlā	qamets: no need to suppress qatan
+Jesaia 24:4	N@B:L@73H	nāvᵊlˌā	qamets: gadol maintained because of verb paradigm
+Proverbia 7:13	N@74C:Q@H	nˈāšᵊqā	qamets: no need to suppress qatan
+Jesaia 41:17	N@C@92T.@H	nāšˈāttā	qamets: no need to suppress qatan
+Jesaia 19:21	N@D:RW.	nāḏᵊrˌû	qamets: gadol maintained because of verb paradigm
+Samuel_I 6:9	N@74G:<@H	nˈāḡᵊʕā	qamets: no need to suppress qatan
+Judices 20:41	N@G:<@71H	nāḡᵊʕˌā	qamets: gadol maintained because of verb paradigm
+Jeremia 23:12	N@74P:LW.	nˈāfᵊlû	qamets: no need to suppress qatan
+Jesaia 21:9	N@75P:L@H03	nˈāfᵊlā	qamets: no need to suppress qatan
+Jeremia 20:4	N@75P:L91W.	nˈāfᵊlˈû	qamets: no need to suppress qatan
+Judices 18:1	N@63P:L@H	nˌāfᵊlā	qamets: no need to suppress qatan
+Josua 6:5	N@63P:L@61H	nˌāfᵊlˈā	qamets: no need to suppress qatan
+Leviticus 26:8	N@P:L94W.	nāfᵊlˈû	qamets: gadol maintained because of verb paradigm
+Genesis 15:12	N@P:L@74H	nāfᵊlˈā	qamets: gadol maintained because of verb paradigm
+Genesis 4:6	N@P:L71W.	nāfᵊlˌû	qamets: gadol maintained because of verb paradigm
+Numeri 5:27	N@P:L@73H	nāfᵊlˌā	qamets: gadol maintained because of verb paradigm
+Psalmi 36:13	13N@P:LW.	ˈnāfᵊlû	qamets: gadol maintained because of verb paradigm
+Jeremia 15:9	N@P:X@71H	nāfᵊḥˌā	qamets: gadol maintained because of verb paradigm
+Genesis 9:19	N@75P:Y@71H	nˈāfᵊṣˌā	qamets: no need to suppress qatan
+Jesaia 33:3	N@P:Y73W.	nāfᵊṣˌû	qamets: gadol maintained because of verb paradigm
+Ezechiel 23:18	N@Q:<@71H	nāqᵊʕˌā	qamets: gadol maintained because of verb paradigm
+Jeremia 50:15	HIN.@74Q:MW.	hinnˈāqᵊmû	qamets: no need to suppress qatan
+Judices 16:28	>IN.@Q:M@94H	ʔinnāqᵊmˈā	qamets: gadol maintained because of verb paradigm
+Jesaia 1:24	>IN.@Q:M@73H	ʔinnāqᵊmˌā	qamets: gadol maintained because of verb paradigm
+Numeri 10:5	N@75S:<W.03	nˈāsᵊʕû	qamets: no need to suppress qatan
+Deuteronomium 10:6	N@75S:<91W.	nˈāsᵊʕˈû	qamets: no need to suppress qatan
+Genesis 37:17	N@S:<74W.	nāsᵊʕˈû	qamets: gadol maintained because of verb paradigm
+Numeri 10:21	N@S:<W.03	nāsᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Jeremia 18:14	JIN.@T:C81W.	yinnāṯᵊšˈû	qamets: gadol maintained because of verb paradigm
+Ezechiel 27:19	N@T@92N.W.	nāṯˈānnû	qamets: no need to suppress qatan
+Numeri 4:12	N@75T:NW.03	nˈāṯᵊnû	qamets: no need to suppress qatan
+Genesis 3:12	N@75T:N@H	nˈāṯᵊnā	qamets: no need to suppress qatan
+Exodus 12:7	N@75T:N91W.	nˈāṯᵊnˈû	qamets: no need to suppress qatan
+Ezechiel 25:4	N@71T:NW.	nˌāṯᵊnû	qamets: no need to suppress qatan
+Exodus 30:12	N@63T:N61W.	nˌāṯᵊnˈû	qamets: no need to suppress qatan
+Samuel_II 21:10	N@T:N@H04	nāṯᵊnāˈ	qamets: gadol maintained because of verb paradigm
+Numeri 4:6	N@T:N74W.	nāṯᵊnˈû	qamets: gadol maintained because of verb paradigm
+Leviticus 25:19	N@T:N@70H	nāṯᵊnˈā	qamets: gadol maintained because of verb paradigm
+Exodus 39:18	N@T:N73W.	nāṯᵊnˌû	qamets: gadol maintained because of verb paradigm
+Reges_I 10:10	N@T:N@71H	nāṯᵊnˌā	qamets: gadol maintained because of verb paradigm
+Chronica_II 18:14	JIN.@T:N73W.	yinnāṯᵊnˌû	qamets: gadol maintained because of verb paradigm
+Iob 30:13	N@T:S81W.	nāṯᵊsˈû	qamets: gadol maintained because of verb paradigm
+Reges_II 25:10	N@75T:YW.03	nˈāṯᵊṣû	qamets: no need to suppress qatan
+Jesaia 65:21	N@V:<74W.	nāṭᵊʕˈû	qamets: gadol maintained because of verb paradigm
+Psalmi 80:16	N@V:<@74H	nāṭᵊʕˈā	qamets: gadol maintained because of verb paradigm
+Jeremia 31:5	N@V:<71W.	nāṭᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Amos 3:12	JIN.@Y:L62W.	yinnāṣᵊlˈû	qamets: gadol maintained because of verb paradigm
+Psalmi 69:15	>IN.@Y:L@71H	ʔinnāṣᵊlˌā	qamets: gadol maintained because of verb paradigm
+Proverbia 22:12	N@74Y:RW.	nˈāṣᵊrû	qamets: no need to suppress qatan
+Leviticus 22:2	JIN.@75Z:RW.03	yinnˈāzᵊrû	qamets: no need to suppress qatan
+Hosea 7:13	P@74C:<W.	fˈāšᵊʕû	qamets: no need to suppress qatan
+Jeremia 2:8	P.@74C:<W.	pˈāšᵊʕû	qamets: no need to suppress qatan
+Jesaia 1:2	P.@71C:<W.	pˌāšᵊʕû	qamets: no need to suppress qatan
+Reges_I 8:50	P.@C:<W.	pāšᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Samuel_I 30:1	P@75C:V81W.	fˈāšᵊṭˈû	qamets: no need to suppress qatan
+Judices 9:44	P.@75C:V91W.	pˈāšᵊṭˈû	qamets: no need to suppress qatan
+Samuel_I 23:27	P@C:V71W.	fāšᵊṭˌû	qamets: gadol maintained because of verb paradigm
+Judices 9:44	P.@C:V85W.	pāšᵊṭˈû	qamets: gadol maintained because of verb paradigm
+Jesaia 34:14	P@G:C70W.	fāḡᵊšˈû	qamets: gadol maintained because of verb paradigm
+Ezechiel 7:16	P@75L:VW.03	fˈālᵊṭû	qamets: no need to suppress qatan
+Deuteronomium 22:17	P@95R:FW.03	fˈārᵊśû	qamets: no need to suppress qatan
+Jesaia 33:23	P.@74R:FW.	pˈārᵊśû	qamets: no need to suppress qatan
+Numeri 4:6	P@R:F94W.	fārᵊśˈû	qamets: gadol maintained because of verb paradigm
+Micha 3:3	P@R:FW.03	fārᵊśˌû	qamets: gadol maintained because of verb paradigm
+Proverbia 31:20	P.@R:F@74H	pārᵊśˈā	qamets: gadol maintained because of verb paradigm
+Canticum 6:11	P@75R:X@74H	fˈārᵊḥˈā	qamets: no need to suppress qatan
+Canticum 7:13	P.@75R:X@70H	pˈārᵊḥˈā	qamets: no need to suppress qatan
+Micha 2:13	P.@75R:YW.03	pˈārᵊṣû	qamets: no need to suppress qatan
+Chronica_II 24:7	P@R:Y73W.	fārᵊṣˌû	qamets: gadol maintained because of verb paradigm
+Chronica_I 4:38	P.@R:Y73W.	pārᵊṣˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 37:14	P.@75T:X74W.	pˈāṯᵊḥˈû	qamets: no need to suppress qatan
+Nehemia 7:3	JIP.@75T:X62W.	yippˈāṯᵊḥˈû	qamets: no need to suppress qatan
+Deuteronomium 20:11	P@T:X@73H	fāṯᵊḥˌā	qamets: gadol maintained because of verb paradigm
+Proverbia 31:26	P.@T:X@74H	pāṯᵊḥˈā	qamets: gadol maintained because of verb paradigm
+Jesaia 14:7	P.@Y:X73W.	pāṣᵊḥˌû	qamets: gadol maintained because of verb paradigm
+Ezechiel 39:11	Q@74B:RW.	qˈāvᵊrû	qamets: no need to suppress qatan
+Genesis 49:31	Q@95B:R62W.	qˈāvᵊrˈû	qamets: no need to suppress qatan
+Genesis 49:31	Q@B:R74W.	qāvᵊrˈû	qamets: gadol maintained because of verb paradigm
+Samuel_II 2:4	Q@B:R73W.	qāvᵊrˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 60:7	JIQ.@74B:YW.	yiqqˈāvᵊṣû	qamets: no need to suppress qatan
+Jesaia 48:14	HIQ.@B:Y70W.	hiqqāvᵊṣˈû	qamets: gadol maintained because of verb paradigm
+Genesis 49:2	HIQ.@B:Y71W.	hiqqāvᵊṣˌû	qamets: gadol maintained because of verb paradigm
+Nehemia 4:14	T.IQ.@B:Y74W.	tiqqāvᵊṣˈû	qamets: gadol maintained because of verb paradigm
+Chronica_I 13:2	JIQ.@B:Y73W.	yiqqāvᵊṣˌû	qamets: gadol maintained because of verb paradigm
+Jeremia 14:2	Q@D:R74W.	qāḏᵊrˈû	qamets: gadol maintained because of verb paradigm
+Jeremia 4:28	Q@D:R71W.	qāḏᵊrˌû	qamets: gadol maintained because of verb paradigm
+Deuteronomium 32:22	Q@D:X@74H	qāḏᵊḥˈā	qamets: gadol maintained because of verb paradigm
+Jeremia 15:14	Q@D:X@71H	qāḏᵊḥˌā	qamets: gadol maintained because of verb paradigm
+Samuel_I 2:30	J;Q@75L.W.	yēqˈāllû	qamets: no need to suppress qatan
+Psalmi 107:42	Q@74P:Y@H	qˈāfᵊṣā	qamets: no need to suppress qatan
+Iob 24:24	JIQ.@P:Y92W.N	yiqqāfᵊṣˈûn	qamets: gadol maintained because of verb paradigm
+Psalmi 35:15	Q@75R:<71W.	qˈārᵊʕˌû	qamets: no need to suppress qatan
+Numeri 14:6	Q@R:<73W.	qārᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 46:2	Q@R:S70W.	qārᵊsˈû	qamets: gadol maintained because of verb paradigm
+Jesaia 50:2	Q@Y:R@70H	qāṣᵊrˈā	qamets: gadol maintained because of verb paradigm
+Jesaia 59:1	Q@Y:R@71H	qāṣᵊrˌā	qamets: gadol maintained because of verb paradigm
+Jesaia 22:9	R@92B.W.	rˈābbû	qamets: no need to suppress qatan
+Genesis 18:20	R@92B.@H	rˈābbā	qamets: no need to suppress qatan
+Deuteronomium 29:19	R@70B:Y@H	rˈāvᵊṣā	qamets: no need to suppress qatan
+Jesaia 13:21	R@B:YW.	rāvᵊṣˌû	qamets: gadol maintained because of verb paradigm
+Jeremia 47:6	H;R@G:<I73J	hērāḡᵊʕˌî	qamets: gadol maintained because of verb paradigm
+Psalmi 2:1	R@G:C74W.	rāḡᵊšˈû	qamets: gadol maintained because of verb paradigm
+Leviticus 24:14	R@G:M71W.	rāḡᵊmˌû	qamets: gadol maintained because of verb paradigm
+Joel 2:10	R@74G:Z@H	rˈāḡᵊzā	qamets: no need to suppress qatan
+Jeremia 33:9	R@75G:Z81W.	rˈāḡᵊzˈû	qamets: no need to suppress qatan
+Deuteronomium 2:25	R@G:Z71W.	rāḡᵊzˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 14:9	R@G:Z@71H	rāḡᵊzˌā	qamets: gadol maintained because of verb paradigm
+Genesis 46:6	R@75K:CW.03	rˈāḵᵊšû	qamets: no need to suppress qatan
+Iob 22:12	R@75M.W.	rˈāmmû	qamets: no need to suppress qatan
+Chronica_II 29:7	S@75G:R62W.	sˈāḡᵊrˈû	qamets: no need to suppress qatan
+Psalmi 17:10	S.@G:R92W.	ssāḡᵊrˈû	qamets: gadol maintained because of verb paradigm
+Jesaia 63:5	S:M@K@75T:NIJ	sᵊmāḵˈāṯᵊnî	qamets: no need to suppress qatan
+Threni 2:15	S@75P:Q63W.	sˈāfᵊqˌû	qamets: no need to suppress qatan
+Leviticus 15:28	S@71P:R@H	sˌāfᵊrā	qamets: no need to suppress qatan
+Reges_I 8:5	JIS.@P:R91W.	yissāfᵊrˈû	qamets: gadol maintained because of verb paradigm
+Zephania 2:3	T.IS.@74T:R80W.	tissˈāṯᵊrˈû	qamets: no need to suppress qatan
+Amos 9:3	JIS.@63T:R61W.	yissˌāṯᵊrˈû	qamets: no need to suppress qatan
+Ezechiel 18:29	JIT.@75K:N.W.03	yittˈāḵᵊnnû	qamets: no need to suppress qatan
+Reges_II 7:13	T.@92M.W.	tˈāmmû	qamets: no need to suppress qatan
+Psalmi 102:28	JIT.@75M.W.	yittˈāmmû	qamets: no need to suppress qatan
+Josua 8:23	T.@74P:FW.	tˈāfᵊśû	qamets: no need to suppress qatan
+Deuteronomium 21:19	T@71P:FW.	ṯˌāfᵊśû	qamets: no need to suppress qatan
+Psalmi 10:2	JIT.@P:F65W.05	yittāfᵊśˈˈû	qamets: gadol maintained because of verb paradigm
+Nahum 3:19	T.@70Q:<W.	tˈāqᵊʕû	qamets: no need to suppress qatan
+Samuel_I 31:10	T.@Q:<80W.	tāqᵊʕˈû	qamets: gadol maintained because of verb paradigm
+Josua 6:16	T.@Q:<71W.	tāqᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Numeri 10:3	T@Q:<73W.	ṯāqᵊʕˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 9:16	V@B:<74W.	ṭāvᵊʕˈû	qamets: gadol maintained because of verb paradigm
+Proverbia 9:2	V@B:X@74H	ṭāvᵊḥˈā	qamets: gadol maintained because of verb paradigm
+Psalmi 31:5	V@74M:NW.	ṭˈāmᵊnû	qamets: no need to suppress qatan
+Psalmi 140:6	V@75M:N75W.	ṭˈāmᵊnˈû	qamets: no need to suppress qatan
+Jeremia 18:22	V@M:N71W.	ṭāmᵊnˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 119:69	V@P:L64W.	ṭāfᵊlˈû	qamets: gadol maintained because of verb paradigm
+Genesis 14:3	X@75B:R80W.	ḥˈāvᵊrˈû	qamets: no need to suppress qatan
+Genesis 34:8	X@75C:Q@70H	ḥˈāšᵊqˈā	qamets: no need to suppress qatan
+Iob 3:17	X@74D:LW.	ḥˈāḏᵊlû	qamets: no need to suppress qatan
+Judices 5:7	X@D:L94W.	ḥāḏᵊlˈû	qamets: gadol maintained because of verb paradigm
+Judices 5:6	X@D:L73W.	ḥāḏᵊlˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 15:3	X@74G:RW.	ḥˈāḡᵊrû	qamets: no need to suppress qatan
+Proverbia 31:17	X@75G:R@74H	ḥˈāḡᵊrˈā	qamets: no need to suppress qatan
+Ezechiel 7:18	X@G:R74W.	ḥāḡᵊrˈû	qamets: gadol maintained because of verb paradigm
+Ezechiel 27:31	X@G:R73W.	ḥāḡᵊrˌû	qamets: gadol maintained because of verb paradigm
+Sacharia 9:2	X@75K:M@73H	ḥˈāḵᵊmˌā	qamets: no need to suppress qatan
+Deuteronomium 32:29	X@K:M73W.	ḥāḵᵊmˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 55:22	X@L:Q70W.05	ḥālᵊqˈˈû	qamets: gadol maintained because of verb paradigm
+Josua 18:2	X@L:Q73W.	ḥālᵊqˌû	qamets: gadol maintained because of verb paradigm
+Numeri 32:20	T.;X@75L:Y91W.	tēḥˈālᵊṣˈû	qamets: no need to suppress qatan
+Threni 4:3	X@74L:YW.	ḥˈālᵊṣû	qamets: no need to suppress qatan
+Numeri 31:3	H;X@L:Y94W.	hēḥālᵊṣˈû	qamets: gadol maintained because of verb paradigm
+Psalmi 60:7	J;X@L:Y74W.N	yēḥālᵊṣˈûn	qamets: gadol maintained because of verb paradigm
+Deuteronomium 25:9	X@L:Y@70H	ḥālᵊṣˈā	qamets: gadol maintained because of verb paradigm
+Ezechiel 22:26	X@M:S74W.	ḥāmᵊsˈû	qamets: gadol maintained because of verb paradigm
+Zephania 3:4	X@M:S73W.	ḥāmᵊsˌû	qamets: gadol maintained because of verb paradigm
+Canticum 2:13	X@75N:V@74H	ḥˈānᵊṭˈā	qamets: no need to suppress qatan
+Genesis 26:15	X@75P:RW.03	ḥˈāfᵊrû	qamets: no need to suppress qatan
+Psalmi 35:7	X@P:R71W.	ḥāfᵊrˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 24:23	X@75P:R@H03	ḥˈāfᵊrā	qamets: no need to suppress qatan
+Psalmi 71:24	11X@P:R81W.	ˈḥāfᵊrˈû	qamets: gadol maintained because of verb paradigm
+Jeremia 50:12	X@P:R@73H	ḥāfᵊrˌā	qamets: gadol maintained because of verb paradigm
+Jeremia 31:37	J;X@Q:R71W.	yēḥāqᵊrˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 129:3	X@R:C74W.	ḥārᵊšˈû	qamets: gadol maintained because of verb paradigm
+Josua 10:25	T.;X@92T.W.	tēḥˈāttû	qamets: no need to suppress qatan
+Iob 21:13	J;X@75T.W.	yēḥˈāttû	qamets: no need to suppress qatan
+Jeremia 50:36	X@75T.W.	ḥˈāttû	qamets: no need to suppress qatan
+Jeremia 48:1	X@75T.@H	ḥˈāttā	qamets: no need to suppress qatan
+Josua 17:13	X@95Z:QW.03	ḥˈāzᵊqû	qamets: no need to suppress qatan
+Samuel_II 16:21	X@74Z:Q80W.	ḥˈāzᵊqˈû	qamets: no need to suppress qatan
+Reges_I 20:23	X@Z:Q74W.	ḥāzᵊqˈû	qamets: gadol maintained because of verb paradigm
+Maleachi 3:13	X@Z:Q71W.	ḥāzᵊqˌû	qamets: gadol maintained because of verb paradigm
+Reges_II 14:5	X@Z:Q@71H	ḥāzᵊqˌā	qamets: gadol maintained because of verb paradigm
+Genesis 38:26	Y@75D:Q@74H	ṣˈāḏᵊqˈā	qamets: no need to suppress qatan
+Psalmi 19:10	Y@75D:Q71W.	ṣˈāḏᵊqˌû	qamets: no need to suppress qatan
+Samuel_I 10:6	Y@L:X@70H	ṣālᵊḥˈā	qamets: gadol maintained because of verb paradigm
+Samuel_II 19:18	Y@L:X71W.	ṣālᵊḥˌû	qamets: gadol maintained because of verb paradigm
+Jesaia 44:4	Y@M:X73W.	ṣāmᵊḥˌû	qamets: gadol maintained because of verb paradigm
+Leviticus 17:5	Z@63B:X61W.	zˌāvᵊḥˈû	qamets: no need to suppress qatan
+Exodus 34:15	Z@B:XW.03	zāvᵊḥˌû	qamets: gadol maintained because of verb paradigm
+Judices 8:34	Z@75K:RW.03	zˈāḵᵊrû	qamets: no need to suppress qatan
+Threni 1:9	Z@75K:R@H03	zˈāḵᵊrā	qamets: no need to suppress qatan
+Threni 1:7	Z@75K:R@74H	zˈāḵᵊrˈā	qamets: no need to suppress qatan
+Ezechiel 18:22	JIZ.@K:R73W.	yizzāḵᵊrˌû	qamets: gadol maintained because of verb paradigm
+Nehemia 9:17	Z@K:R70W.	zāḵᵊrˈû	qamets: gadol maintained because of verb paradigm
+Ezechiel 6:9	Z@K:R63W.	zāḵᵊrˌû	qamets: gadol maintained because of verb paradigm
+Psalmi 106:7	13Z@K:RW.	ˈzāḵᵊrû	qamets: gadol maintained because of verb paradigm
+Genesis 11:6	J@Z:M73W.	yāzᵊmˌû	qamets: gadol maintained because of verb paradigm
+Proverbia 31:16	Z@M:M@74H	zāmᵊmˈā	qamets: gadol maintained because of verb paradigm
+Proverbia 23:22	Z@Q:N@71H	zāqᵊnˌā	qamets: gadol maintained because of verb paradigm
+Jeremia 12:13	Z@R:<70W.	zārᵊʕˈû	qamets: gadol maintained because of verb paradigm
+Hosea 7:9	Z@74R:Q@H	zˈārᵊqā	qamets: no need to suppress qatan
+Leviticus 1:11	Z@R:Q83W.	zārᵊqˈû	qamets: gadol maintained because of verb paradigm
+Leviticus 1:5	Z@R:Q63W.	zārᵊqˌû	qamets: gadol maintained because of verb paradigm
+Nahum 3:17	Z@75R:X@H03	zˈārᵊḥā	qamets: no need to suppress qatan
+Reges_II 3:22	Z@R:X@74H	zārᵊḥˈā	qamets: gadol maintained because of verb paradigm
+Exodus 22:2	Z@R:X@71H	zārᵊḥˌā	qamets: gadol maintained because of verb paradigm

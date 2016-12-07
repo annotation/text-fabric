@@ -9,3 +9,4 @@ tf/layer.py
 tf/prepare.py
 tf/text.py
 tf/timestamp.py
+tf/transcription.py

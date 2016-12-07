@@ -1,0 +1,197 @@
+Numeri 8:22	<:ABO45D@T@M03	ʕᵃvˈōḏāṯām 	qamets: gadol maintained in pronominal suffix
+Deuteronomium 27:3	<@B:RE92K@	ʕovrˈeḵā 	qamets: no need to suppress qatan
+Reges_II 2:9	<@B:R@81M	ʕovrˈām 	qamets: no need to suppress qatan
+Deuteronomium 29:11	<@B:R:K@81	ʕovrᵊḵˈā 	qamets: no need to suppress qatan
+Psalmi 105:14	<@C:Q@92M	ʕošqˈām 	qamets: no need to suppress qatan
+Proverbia 14:24	<@C:R@92M	ʕošrˈām 	qamets: no need to suppress qatan
+Psalmi 49:7	11<@C:R@81M	ˈʕošrˈām 	qamets: no need to suppress qatan
+Leviticus 10:19	<O45L@T@M03	ʕˈōlāṯām 	qamets: gadol maintained in pronominal suffix
+Exodus 4:31	<@N:J@80M	ʕonyˈām 	qamets: no need to suppress qatan
+Threni 1:7	<@N:J@H.03	ʕonyˌāh 	qamets: no need to suppress qatan
+Genesis 17:23	<@R:L@T@81M	ʕorlāṯˈām 	qamets: no need to suppress qatan
+Iob 5:13	<@R:M@92M	ʕormˈām 	qamets: no need to suppress qatan
+Jesaia 48:4	<@R:P.E80K@	ʕorpˈeḵā 	qamets: no need to suppress qatan
+Jeremia 7:26	<@R:P.@80M	ʕorpˈām 	qamets: no need to suppress qatan
+Reges_II 17:14	<@R:P.@M03	ʕorpˌām 	qamets: no need to suppress qatan
+Deuteronomium 31:27	<@R:P.:K@73	ʕorpᵊḵˌā 	qamets: no need to suppress qatan
+Ezechiel 32:27	<:AWO45NOT@M03	ʕᵃwˈōnōṯām 	qamets: gadol maintained in pronominal suffix
+Jesaia 14:3	<@Y:B.:K@73	ʕoṣbᵊḵˌā 	qamets: no need to suppress qatan
+Psalmi 16:4	<AY.:BOWT@M02	ʕaṣṣᵊvôṯām 	qamets: gadol maintained in pronominal suffix
+Chronica_II 22:5	<:AY@T@M02	ʕᵃṣāṯām 	qamets: gadol maintained in pronominal suffix
+Psalmi 74:13	<@Z.:K@74	ʕozzᵊḵˈā 	qamets: no need to suppress qatan
+Exodus 15:13	<@Z.:K@73	ʕozzᵊḵˌā 	qamets: no need to suppress qatan
+Reges_I 9:9	>:ABOT@M02	ʔᵃvōṯām 	qamets: gadol maintained in pronominal suffix
+Psalmi 78:12	13>:ABOWT@M	ˈʔᵃvôṯām 	qamets: gadol maintained in pronominal suffix
+Deuteronomium 9:3	HA45>ABAD:T.@M03	hˈaʔavaḏtām 	qamets: gadol maintained in pronominal suffix
+Hosea 9:10	>@H:@B@75M	ʔohᵒvˈām . 	qamets: no need to suppress qatan
+Psalmi 15:1	>@H:@LE92K@	ʔohᵒlˈeḵā 	qamets: no need to suppress qatan
+Numeri 30:9	>IJC@H.02	ʔîšāh 	qamets: gadol maintained in pronominal suffix
+Leviticus 25:37	>@K:LE75K@	ʔoḵlˈeḵā . 	qamets: no need to suppress qatan
+Psalmi 104:21	>@K:L@75M	ʔoḵlˈām . 	qamets: no need to suppress qatan
+Genesis 14:11	>@K:L@73M	ʔoḵlˌām 	qamets: no need to suppress qatan
+Leviticus 22:16	>@K:L@73M	ʔoḵlˌām 	qamets: no need to suppress qatan
+Psalmi 80:6	13HE>:EKAL:T.@M	ˈheʔᵉḵaltām 	qamets: gadol maintained in pronominal suffix
+Esther 1:17	>@M:R@81M	ʔomrˈām 	qamets: no need to suppress qatan
+Psalmi 42:11	>@M:R@71M	ʔomrˌām 	qamets: no need to suppress qatan
+Hosea 7:6	>@R:B.@92M	ʔorbˈām 	qamets: no need to suppress qatan
+Exodus 25:17	>@R:K.@80H.	ʔorkˈāh 	qamets: no need to suppress qatan
+Genesis 13:17	>@R:K.@73H.	ʔorkˌāh 	qamets: no need to suppress qatan
+Chronica_II 3:11	>@R:K.@73M	ʔorkˌām 	qamets: no need to suppress qatan
+Ezechiel 42:11	>@R:K.@73N	ʔorkˌān 	qamets: no need to suppress qatan
+Psalmi 44:19	>@R:XE75K@	ʔorḥˈeḵā . 	qamets: no need to suppress qatan
+Exodus 23:16	>@S:P.:K@71	ʔospᵊḵˌā 	qamets: no need to suppress qatan
+Hosea 10:10	>@S:R@73M	ʔosrˌām 	qamets: no need to suppress qatan
+Samuel_I 25:24	>@Z:NE80JK@	ʔoznˈeʸḵā 	qamets: no need to suppress qatan
+Samuel_I 20:12	>@Z:NE75K@	ʔoznˈeḵā . 	qamets: no need to suppress qatan
+Jeremia 6:10	>@Z:N@80M	ʔoznˈām 	qamets: no need to suppress qatan
+Ezechiel 3:10	>@Z:NE71JK@	ʔoznˌeʸḵā 	qamets: no need to suppress qatan
+Leviticus 8:24	>@Z:N@M03	ʔoznˌām 	qamets: no need to suppress qatan
+Psalmi 31:3	>@Z:N:K@02	ʔoznᵊḵˈā 	qamets: no need to suppress qatan
+Nehemia 1:6	>@Z:N:K@45&	ʔoznᵊḵˈā-	qamets: no need to suppress qatan
+Reges_II 19:16	>@Z:N:K@03	ʔoznᵊḵˌā 	qamets: no need to suppress qatan
+Psalmi 130:2	13>@Z:NEJK@	ˈʔozneʸḵā 	qamets: no need to suppress qatan
+Psalmi 71:2	11>@Z:N:K@81	ˈʔoznᵊḵˈā 	qamets: no need to suppress qatan
+Iob 36:10	13>@Z:N@M	ˈʔoznām 	qamets: gadol maintained in pronominal suffix
+Jesaia 34:3	B@>:C@92M	vošˈām 	qamets: no need to suppress qatan
+Zephania 3:19	B.@C:T.@75M	boštˈām . 	qamets: no need to suppress qatan
+Exodus 8:5	B.@T.E92JK@	bāttˈeʸḵā 	qamets: no need to suppress qatan
+Exodus 10:6	B@T.E61JK@	vāttˈeʸḵā 	qamets: no need to suppress qatan
+Exodus 8:17	B@T.E73JK@	vāttˌeʸḵā 	qamets: no need to suppress qatan
+Genesis 35:1	B@R:X:AK@80	vorḥᵃḵˈā 	qamets: no need to suppress qatan
+Jeremia 35:2	H:ABI45>OWT@M03	hᵃvˈiʔôṯām 	qamets: gadol maintained in pronominal suffix
+Leviticus 5:12	H:EBIJ>@H.02	hᵉvîʔāh 	qamets: gadol maintained in pronominal suffix
+Esther 9:25	BO>@H.02	vōʔāh 	qamets: gadol maintained in pronominal suffix
+Leviticus 18:20	C:K@B:T.:K@73	šᵊḵovtᵊḵˌā 	qamets: no need to suppress qatan
+Deuteronomium 6:7	C@K:B.:K@73	šoḵbᵊḵˌā 	qamets: no need to suppress qatan
+Numeri 12:4	C:L@C:T.@75M	šᵊloštˈām . 	qamets: no need to suppress qatan
+Habakuk 2:8	J:C@L.73W.K@	yᵊšāllˌûḵā 	qamets: no need to suppress qatan
+Genesis 38:17	C@L:XE75K@	šolḥˈeḵā . 	qamets: no need to suppress qatan
+Genesis 34:7	C@M:<@80M	šomʕˈām 	qamets: no need to suppress qatan
+Jeremia 36:16	C@M:<@M03	šomʕˌām 	qamets: no need to suppress qatan
+Reges_II 22:19	C@M:<:AK@83	šomʕᵃḵˈā 	qamets: no need to suppress qatan
+Genesis 2:15	C@M:R@75H.	šomrˈāh . 	qamets: no need to suppress qatan
+Josua 10:18	C@M:R@75M	šomrˈām . 	qamets: no need to suppress qatan
+Ezechiel 9:8	C@P:K.:K@71	šofkᵊḵˌā 	qamets: no need to suppress qatan
+Psalmi 51:6	C@P:VE75K@	šofṭˈeḵā . 	qamets: no need to suppress qatan
+Proverbia 3:8	C@R.E92K@	šorrˈeḵā 	qamets: no need to suppress qatan
+Judices 5:14	C@R:C@M03	šoršˌām 	qamets: no need to suppress qatan
+Ezechiel 17:7	C@R:@CE74JH@	šorᵒšˈeʸhā 	qamets: no need to suppress qatan
+Reges_I 8:34	H:AC;45BOT@M03	hᵃšˈēvōṯām 	qamets: gadol maintained in pronominal suffix
+Jesaia 5:17	D@B:R@92M	ḏovrˈām 	qamets: no need to suppress qatan
+Psalmi 51:6	D@B:RE81K@	ḏovrˈeḵā 	qamets: no need to suppress qatan
+Psalmi 93:3	D.@K:J@75M	doḵyˈām . 	qamets: no need to suppress qatan
+Iob 29:25	D.AR:K.@M02	darkām 	qamets: gadol maintained in pronominal suffix
+Psalmi 49:14	13DAR:K.@M	ˈḏarkām 	qamets: gadol maintained in pronominal suffix
+Deuteronomium 23:25	F@B:<E92K@	śovʕˈeḵā 	qamets: no need to suppress qatan
+Ruth 2:18	F.@B:<@75H.	śśovʕˈāh . 	qamets: no need to suppress qatan
+Deuteronomium 24:3	F:N;>@H.02	śᵊnēʔāh 	qamets: gadol maintained in pronominal suffix
+Ezechiel 32:30	G.:B45W.R@T@M03	gᵊvˈûrāṯām 	qamets: gadol maintained in pronominal suffix
+Deuteronomium 3:24	G.@D:L:K@80	goḏlᵊḵˈā 	qamets: no need to suppress qatan
+Deuteronomium 9:26	G@D:LE92K@	ḡoḏlˈeḵā 	qamets: no need to suppress qatan
+Samuel_I 1:23	G.@M:L@73H.	gomlˌāh 	qamets: no need to suppress qatan
+Psalmi 105:33	13G.AP:N@M	ˈgafnām 	qamets: gadol maintained in pronominal suffix
+Deuteronomium 15:14	G.@R:N:K@73	gornᵊḵˌā 	qamets: no need to suppress qatan
+Iob 39:12	G@R:N:K@71	ḡornᵊḵˌā 	qamets: no need to suppress qatan
+Samuel_II 11:25	H@R:S@73H.	horsˌāh 	qamets: no need to suppress qatan
+Judices 2:18	HO45WCIJ<@M03	hˈôšîʕām 	qamets: gadol maintained in pronominal suffix
+Leviticus 12:8	J@D@H.02	yāḏāh 	qamets: gadol maintained in pronominal suffix
+Ezechiel 46:18	HO45WNOT@M03	hˈônōṯām 	qamets: gadol maintained in pronominal suffix
+Ezechiel 28:17	J@P:JE80K@	yofyˈeḵā 	qamets: no need to suppress qatan
+Esther 1:11	J@P:J@80H.	yofyˈāh 	qamets: no need to suppress qatan
+Proverbia 6:25	13J@P:J@H.	ˈyofyāh 	qamets: gadol maintained in pronominal suffix
+Exodus 4:7	J.O45WYI>@H.03	yyˈôṣiʔāh 	qamets: gadol maintained in pronominal suffix
+Psalmi 104:24	13K.UL.@M	ˈkullām 	qamets: gadol maintained in pronominal suffix
+Proverbia 31:20	13K.AP.@H.	ˈkappāh 	qamets: gadol maintained in pronominal suffix
+Jesaia 43:3	K@P:R:K@03	ḵofrᵊḵˌā 	qamets: no need to suppress qatan
+Jesaia 22:21	K.UT.@N:T.E81K@	kuttontˈeḵā 	qamets: no need to suppress qatan
+Iob 31:39	K.O73X@H.	kˌōḥāh 	qamets: gadol maintained in pronominal suffix
+Exodus 35:29	LIB.@M02	libbām 	qamets: gadol maintained in pronominal suffix
+Psalmi 105:25	13LIB.@M	ˈlibbām 	qamets: gadol maintained in pronominal suffix
+Jesaia 47:8	L:B@80B@H.	lᵊvˈāvāh 	qamets: gadol maintained in pronominal suffix
+Psalmi 140:4	L:COWN@M02	lᵊšônām 	qamets: gadol maintained in pronominal suffix
+Amos 2:4	M@>:@S@62M	moʔᵒsˈām 	qamets: no need to suppress qatan
+Psalmi 49:12	13MIC:K.:NOT@M	ˈmiškᵊnōṯām 	qamets: gadol maintained in pronominal suffix
+Exodus 40:15	M@C:X@T@91M	mošḥāṯˈām 	qamets: no need to suppress qatan
+Leviticus 22:25	M@C:X@T@70M	mošḥāṯˈām 	qamets: no need to suppress qatan
+Samuel_I 15:1	M:C@X:@K@74	mᵊšoḥᵒḵˈā 	qamets: no need to suppress qatan
+Jesaia 66:4	M:G45W.ROT@M03	mᵊḡˈûrōṯām 	qamets: gadol maintained in pronominal suffix
+Exodus 21:8	M@K:R@73H.	moḵrˌāh 	qamets: no need to suppress qatan
+Jeremia 23:10	M:R45W.Y@T@M03	mᵊrˈûṣāṯām 	qamets: gadol maintained in pronominal suffix
+Numeri 33:52	MAS.;45KOT@M03	massˈēḵōṯām 	qamets: gadol maintained in pronominal suffix
+Proverbia 31:17	M@T:NE92JH@	moṯnˈeʸhā 	qamets: no need to suppress qatan
+Reges_II 4:29	M@T:NE81JK@	moṯnˈeʸḵā 	qamets: no need to suppress qatan
+Genesis 36:43	MO45C:BOT@M03	mˈōšᵊvōṯām 	qamets: gadol maintained in pronominal suffix
+Esther 2:20	MO45WLAD:T.@H.03	mˈôlaḏtāh 	qamets: gadol maintained in pronominal suffix
+Samuel_I 30:17	M@45X:@R@T@92M	mˈoḥᵒrāṯˈām 	qamets: no need to suppress qatan
+Ezechiel 43:8	M:Z45W.Z@T@M03	mᵊzˈûzāṯām 	qamets: gadol maintained in pronominal suffix
+Genesis 11:2	N@S:<@74M	nosʕˈām 	qamets: no need to suppress qatan
+Numeri 10:34	N@S:<@73M	nosʕˌām 	qamets: no need to suppress qatan
+Jeremia 12:14	NO45T:C@M03	nˈōṯᵊšām 	qamets: gadol maintained in pronominal suffix
+Jeremia 36:32	J.IT.:N@H.02	yyittᵊnāh 	qamets: gadol maintained in pronominal suffix
+Psalmi 90:16	P@<:@LE92K@	foʕᵒlˈeḵā 	qamets: no need to suppress qatan
+Jeremia 50:29	P@<:@L@80H.	foʕᵒlˈāh 	qamets: no need to suppress qatan
+Jeremia 25:14	P@<:@L@73M	foʕᵒlˌām 	qamets: no need to suppress qatan
+Psalmi 77:13	P.@<:@LE92K@	poʕᵒlˈeḵā 	qamets: no need to suppress qatan
+Iob 36:9	P.@<:@L@92M	poʕᵒlˈām 	qamets: no need to suppress qatan
+Psalmi 28:4	P@<:@L@M02	foʕᵒlām 	qamets: gadol maintained in pronominal suffix
+Iob 37:12	P@<:@L@92M	foʕᵒlˈām 	qamets: no need to suppress qatan
+Nehemia 5:14	P.EX@M02	peḥām 	qamets: gadol maintained in pronominal suffix
+Reges_II 9:35	Q@B:R@92H.	qovrˈāh 	qamets: no need to suppress qatan
+Exodus 15:13	Q@D:CE75K@	qoḏšˈeḵā . 	qamets: no need to suppress qatan
+Deuteronomium 26:15	Q@D:C:K@61	qoḏšᵊḵˈā 	qamets: no need to suppress qatan
+Jesaia 63:15	Q@D:C:K@73	qoḏšᵊḵˌā 	qamets: no need to suppress qatan
+Psalmi 5:8	11Q@D:C:K@81	ˈqoḏšᵊḵˈā 	qamets: no need to suppress qatan
+Deuteronomium 28:35	Q@D:Q:@DE75K@	qoḏqᵒḏˈeḵā . 	qamets: no need to suppress qatan
+Threni 3:63	QI45JM@T@M03	qˈîmāṯām 	qamets: gadol maintained in pronominal suffix
+Leviticus 2:5	Q@R:B.@NE92K@	qorbānˈeḵā 	qamets: no need to suppress qatan
+Numeri 7:3	Q@R:B.@N@61M	qorbānˈām 	qamets: no need to suppress qatan
+Numeri 5:15	Q@R:B.@N@H.03	qorbānˌāh 	qamets: no need to suppress qatan
+Numeri 7:10	Q@R:B.@N@73M	qorbānˌām 	qamets: no need to suppress qatan
+Leviticus 2:13	Q@R:B.@N:K@73	qorbānᵊḵˌā 	qamets: no need to suppress qatan
+Jeremia 2:27	R@45<@T@M03	rˈāʕāṯām 	qamets: gadol maintained in pronominal suffix
+Iob 28:27	13R@>@H.	ˈrāʔāh 	qamets: gadol maintained in pronominal suffix
+Jesaia 14:3	R@G:ZE92K@	roḡzˈeḵā 	qamets: no need to suppress qatan
+Psalmi 90:10	R@H:B.@M	rohbˌām 	qamets: no need to suppress qatan
+Psalmi 104:29	13RW.X@M	ˈrûḥām 	qamets: gadol maintained in pronominal suffix
+Genesis 6:15	R@X:B.@80H.	roḥbˈāh 	qamets: no need to suppress qatan
+Ezechiel 42:11	R@X:B.@92N	roḥbˈān 	qamets: no need to suppress qatan
+Deuteronomium 3:11	R@X:B.@73H.	roḥbˌāh 	qamets: no need to suppress qatan
+Jeremia 50:26	S@L.71W.H@	sollˌûhā 	qamets: no need to suppress qatan
+Leviticus 2:2	S.@L:T.@H.03	ssoltˌāh 	qamets: no need to suppress qatan
+Proverbia 3:14	13SAX:R@H.	ˈsaḥrāh 	qamets: gadol maintained in pronominal suffix
+Threni 4:8	T.@45>:@R@80M	tˈoʔᵒrˈām 	qamets: no need to suppress qatan
+Deuteronomium 20:19	T@P:F@81H.	ṯofśˈāh 	qamets: no need to suppress qatan
+Samuel_I 23:26	T@P:F@75M	ṯofśˈām . 	qamets: no need to suppress qatan
+Ezechiel 29:7	T@P:F@63M	ṯofśˌām 	qamets: no need to suppress qatan
+Jesaia 33:23	T.@R:N@M03	tornˌām 	qamets: no need to suppress qatan
+Ezechiel 43:8	TO45W<:ABOWT@M03	ṯˈôʕᵃvôṯām 	qamets: gadol maintained in pronominal suffix
+Proverbia 9:2	13VIB:X@H.	ˈṭivḥāh 	qamets: gadol maintained in pronominal suffix
+Leviticus 12:4	V@H:@R@75H.	ṭohᵒrˈāh . 	qamets: no need to suppress qatan
+Ezechiel 30:21	X@B:C@71H.	ḥovšˌāh 	qamets: no need to suppress qatan
+Psalmi 94:20	J:X@B:R:K@	yᵊḥovrᵊḵˌā 	qamets: no need to suppress qatan
+Hosea 2:13	X@D:C@74H.	ḥoḏšˈāh 	qamets: no need to suppress qatan
+Jeremia 2:24	X@D:C@73H.	ḥoḏšˌāh 	qamets: no need to suppress qatan
+Psalmi 107:27	11X@K:M@T@81M	ˈḥoḵmāṯˈām 	qamets: no need to suppress qatan
+Reges_I 2:6	X@K:M@TE92K@	ḥoḵmāṯˈeḵā 	qamets: no need to suppress qatan
+Samuel_II 20:22	X@K:M@T@81H.	ḥoḵmāṯˈāh 	qamets: no need to suppress qatan
+Jeremia 49:7	X@K:M@T@75M	ḥoḵmāṯˈām . 	qamets: no need to suppress qatan
+Ezechiel 28:5	X@K:M@T:K@91	ḥoḵmāṯᵊḵˈā 	qamets: no need to suppress qatan
+Ezechiel 28:17	X@K:M@T:K@73	ḥoḵmāṯᵊḵˌā 	qamets: no need to suppress qatan
+Ezechiel 28:4	X@K:M@45T:K@03	ḥoḵmˈāṯᵊḵā 	qamets: no need to suppress qatan
+Iob 6:4	13X:AM@T@M	ˈḥᵃmāṯām 	qamets: gadol maintained in pronominal suffix
+Genesis 43:29	J@X:N:K@73	yoḥnᵊḵˌā 	qamets: no need to suppress qatan
+Ezechiel 10:2	X@P:NE70JK@	ḥofnˈeʸḵā 	qamets: no need to suppress qatan
+Samuel_II 4:4	X@P:Z@71H.	ḥofzˌāh 	qamets: no need to suppress qatan
+Judices 18:2	X@Q:R@80H.	ḥoqrˈāh 	qamets: no need to suppress qatan
+Psalmi 37:15	13XAR:B.@M	ˈḥarbām 	qamets: gadol maintained in pronominal suffix
+Numeri 5:7	XAV.@>T@M02	ḥaṭṭāṯām 	qamets: gadol maintained in pronominal suffix
+Ezechiel 30:21	X@Z:Q@73H.	ḥozqˌāh 	qamets: no need to suppress qatan
+Psalmi 132:15	13Y;JD@H.	ˈṣêḏāh 	qamets: gadol maintained in pronominal suffix
+Deuteronomium 21:12	YIP.@R:NE75JH@	ṣippornˈeʸhā . 	qamets: no need to suppress qatan
+Nehemia 9:27	Y@45R@T@M03	ṣˈārāṯām 	qamets: gadol maintained in pronominal suffix
+Samuel_I 1:6	Y@45R@T@H.03	ṣˈārāṯāh 	qamets: gadol maintained in pronominal suffix
+Chronica_II 2:15	Y@R:K.E80K@	ṣorkˈeḵā 	qamets: no need to suppress qatan
+Ezechiel 7:19	Z:H@B@M02	zᵊhāvām 	qamets: gadol maintained in pronominal suffix
+Psalmi 106:27	13ZAR:<@M	ˈzarʕām 	qamets: gadol maintained in pronominal suffix
+Psalmi 90:5	13Z:RAM:T.@M	ˈzramtām 	qamets: gadol maintained in pronominal suffix
+Psalmi 44:4	Z:ROW<@M02	zᵊrôʕām 	qamets: gadol maintained in pronominal suffix

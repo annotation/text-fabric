@@ -1,0 +1,86 @@
+Genesis 4:6	N@P:L71W.	nāfᵊlˈû	qamets is long a, no accent marking in verb except merkha on last syllable
+Genesis 18:29	JIM.@Y:>71W.N	yimmāṣᵊʔˈûn	qamets is long a, no accent marking in verb except merkha on last syllable
+Genesis 49:2	HIQ.@B:Y71W.	hiqqāvᵊṣˈû	qamets is long a, no accent marking in verb except merkha on last syllable
+Leviticus 19:12	TIC.@B:<71W.	ṯiššāvᵊʕˌû	qamets is long a, no accent marking in verb except merkha on last syllable
+Ezechiel 26:21	TIM.@Y:>I71J	ṯimmāṣᵊʔˌî	qamets is long a, no accent marking in verb except merkha on the last syllable
+Jesaia 43:26	NIC.@P:V@73H	niššāfᵊṭˈā	qamets is long a, no accent marking in verb except tipeha on last syllable
+Genesis 11:6	J@Z:M73W.	yāzᵊmˈû	qamets is long a, no accent marking in verb except tipeha on last syllable
+Samuel_II 4:4	WA-T.@NO80S	wattānˈōs	qamets gadol
+Deuteronomium 28:28	L;B@75B	lēvˈāv	qamets gadol
+Josua 7:10	L@74M.@H	lˈāmmā	qamets gadol
+Genesis 25:32	L@M.@H&	lāmmā-	qamets gadol, but no accent
+Josua 7:14	LA--B.@T.I80JM	labbāttˈîm	qamets gadol on the basis of other occurrences
+Sacharia 14:2	HA-B.@74T.I80JM	habbˈāttˈîm	qamets gadol, dagesh forte
+Iob 19:4	>@M:N@71M	ʔomnˌām	qamets qatan and then gadol
+Samuel_II 15:10	C@M:<:AKEM03	šomʕᵃḵˌem	qamets qatan
+Genesis 31:32	G.:N@B@75TAM	gᵊnāvˈāṯam	qamets in qal 3sf
+Genesis 35:18	M;80T@H	mˈēṯā	qamets in qal  perf 3sf
+Genesis 1:1	B.:-R;>CI73JT	bᵊrēšˈîṯ	alef as mater lectionis
+Genesis 11:2	WA95-J.IM:Y:>71W.	wˈayyimṣᵊʔˌû	schwa mobile
+Genesis 11:2	WA-J.;71C:BW.	wayyˌēšᵊvû	schwa mobile
+Genesis 11:3	WA-J.O>M:R62W.	wayyōmᵊrˈû	schwa mobile
+Genesis 11:3	W:-NIF:R:P@73H	wᵊniśrᵊfˈā	schwa mobile
+Genesis 1:1	B.@R@74>	bārˈā	mater lectionis: alef; qamets as long a
+Genesis 1:1	>:ELOHI92JM	ʔᵉlōhˈîm	alef not as mater lectionis
+Genesis 1:1	HA-C.@MA73JIM	haššāmˈayim	dagesh forte at word boundary
+Genesis 1:1	H@->@75REY	hāʔˈāreṣ	qamets as long a
+Genesis 1:2	T:HO92WM	ṯᵊhˈôm	tav without dagesh lene at initial position
+Genesis 1:2	W:-R74W.XA >:ELOHI80JM	wᵊrˈûₐḥ ʔᵉlōhˈîm	furtive patah
+Genesis 1:2	<AL&P.:N;71J	ʕal-pᵊnˌê	dagesh lene
+Genesis 1:3	WA75-J:HIJ&>O75WR	wˈayᵊhî-ʔˈôr	alef not as mater lectionis
+Genesis 1:6	R@QI73J<A	rāqˈîₐʕ	qamets as long a
+Genesis 1:6	B.:-TO74WK:	bᵊṯˈôḵ	silent schwa on last consonant after long vowel
+Genesis 1:18	HA-XO92CEK:	haḥˈōšeḵ	silent schwa on last consonant after short vowel
+Genesis 18:15	Y@X@75Q:T.:	ṣāḥˈāqt	silent schwa on last consonant after dagesh
+Proverbia 22:21	QO73C:V:	qˌōšṭ	silent schwa on last consonant after preceding consonant with also schwa in a noun
+Genesis 21:19	WA-T.A73C:Q:	wattˌašq	silent schwa on last consonant after preceding consonant with also schwa in a verb
+Genesis 1:7	WA-J.A74<AF	wayyˈaʕaś	dagesh forte at word boundary
+Genesis 1:10	W.-L:-MIQ:W;71H	ûlᵊmiqwˌē	dagesh quiescens
+Genesis 1:11	<O70FEH	ʕˈōśeh	is heh after short vowel mater lectionis?
+Genesis 1:16	HA-M.:>ORO73T	hammᵊʔōrˈōṯ	dagesh forte at word boundary
+Genesis 1:22	>ET&HA-M.A33JIM03	ʔeṯ-hammˌayim	ignore accent on final mem
+Genesis 1:22	B.A--J.AM.I80JM	bayyammˈîm	accent on last syllable
+Genesis 1:25	H@75->:AD@M@73H	hˈāʔᵃḏāmˈā	middle qamets is long a
+Genesis 1:27	H@95->@D@M03	hˈāʔāḏām	both qametses are long a, there is a meteg in the preceding article
+Genesis 1:28	W:-KIB:CU92H@	wᵊḵivšˈuhā	schwa quiescens
+Genesis 1:29	L:->@K:L@75H	lᵊʔoḵlˈā	qamets as long a and h as mater lectionis
+Genesis 1:30	W.95-L:-K@L&XAJ.A74T	ˈûlᵊḵol-ḥayyˈaṯ	qamets qatan in kol 
+Genesis 2:14	H71W.>	hˌû	waw dagesh as long u, aleph as mater lectionis
+Genesis 2:18	>E75<:EFEH.&L.O71W	ʔˈeʕᵉśeh-llˌô	dagesh forte in lamed
+Genesis 2:19	MAH&J.IQ:R@>&LO92W	mah-yyiqrā-lˈô	mah-yyiqroʔ-lˈô
+Genesis 2:21	MI-Y.AL:<OT@80JW	miṣṣalʕōṯˈāʸw	yod waw ending
+Genesis 2:23	LU75Q:@X@H&Z.O75>T	lˈuqᵒḥā-zzˈōṯ	is second heh mater lectionis?
+Genesis 3:1	J:HW@74H >:ELOHI92JM	[yᵊhwˈāh] ʔᵉlōhˈîm	tetra grammaton betweem []
+Genesis 3:14	<@FI74JT@ Z.O>T01	ʕāśˈîṯā zzōṯ	dagesh forte initial
+Genesis 3:14	XAJ.E75JK@	ḥayyˈeʸḵā	segol plus yod: glide
+Genesis 4:8	WA-J.@71Q@M	wayyˌāqom	second qamets is qatan
+Genesis 4:18	W.-M:XIJ.J@>;81L	ûmᵊḥiyyyāʔˈēl	yod with dagesh is not lengthening hireq
+Genesis 9:21	*>HLH	*ʔohᵒlˈôˈ	ketiv/qere
+Genesis 12:11	MIY:R@92J:M@H	miṣrˈāyᵊmā	qamets as long a, schwa mobile
+Genesis 12:18	MAH&Z.O73>T	mah-zzˈōṯ	heh is not mater lectionis
+Genesis 30:19	B.;N&CIC.I73J	bēn-šiššˈî	dagesh lene
+Genesis 30:19	L.:-JA<:AQO75B	llᵊyaʕᵃqˈōv	initial dagesh forte
+Exodus 12:39	L:-HIT:MAH:M;80H.A	lᵊhiṯmahmˈēₐh	furtive patah with heh mappiq
+Exodus 28:3	X@K:M@92H	ḥoḵmˈā	qamets qatan
+Deuteronomium 22:27	*H-*N<R	*hˈa*nnaʕᵃrā	qetiv/kere
+Deuteronomium 25:18	>A75XARE80JK@	ʔˈaḥarˈeʸḵā	segol plus yod: glide
+Jesaia 1:1	<UZ.IJ.@94HW.	ʕuzziyyˈāhû	yod with dagesh is not lengthening hireq
+Ezechiel 31:4	RO75M:M@92T:HW.	rˈōmᵊmˈāṯᵊhû	qamets is long a
+Jeremia 6:8	HIW.@S:RIJ03	hiwwāsᵊrî	qamets is long a, no accent marking in verb, waw with dagesh is not long u here but double waw
+Samuel_I 1:11	B.@-<:@NI74J	boʕᵒnˈî	qamets qatan, assimilation in preposition
+Genesis 1:2	H@J:T@71H	hāyᵊṯˌā	qamets is long a, no accent marking in verb except merkha on last syllable
+Jeremia 10:20	>@H:@LI74J	ʔohᵒlˈî	qamets qatan, assimilation inside word
+Jesaia 1:5	L@-X:@LI80J	loḥᵒlˈî	qamets qatan, assimilation in preposition
+Josua 7:21	H@->@95H:@LI73J	hāʔˈohᵒlˈî	qamets gadol, no assimilation in article
+Habakuk 3:2	P.@75<@L:K@03	pˈoʕolᵊḵā	qamets qatan in front of other qamets qatan (Lettinga 12th)
+Psalmi 11:3	P.@<@75L	pāʕˈāl	qamets gadol in verb
+Exodus 20:13	T.,IR:Y@7375X	ṯirṣˈāḥ	rafe on the taw with dagesh: cancels dagesh
+Samuel_II 11:1	HA-M.AL:>,KI81JM	hammalḵˈîm	rafe just before the kaf without dagesh: can be ignored
+Jesaia 22:10	WA-T.IT,:YW.03	wattiṯṣˌû	rafe just after the taf without dagesh: can be ignored
+Jeremia 20:17	W:-RAX:M@73H,	wᵊraḥmˌā	rafe just after the he: he is mater lectionis
+Psalmi 119:99	L,I75J	lˈî	rafe just after the lamed: can be ignored
+Genesis 1:7	>ET&H@-R@QIJ<A01	ʔeṯ-hārāqîˌₐʕ	furtive pata and default accent
+Numeri 8:22	<:ABO75D@T@M03	ʕᵃvˈōḏāṯām	first qamets is gadol because of other occurrences, second qamets is gadol because of ending
+Samuel_I 23:4	JHW@80H_S	[yhwˈāh]	tetragrammaton with _S
+Proverbia 10:10	<AY.@92BET	ʕaṣṣˈāveṯ	qamets is gadol
+Joel 1:17	<@B:C74W.	ʕāvᵊšˈû	qamets: gadol maintained because of verb paradigm

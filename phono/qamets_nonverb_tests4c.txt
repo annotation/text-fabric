@@ -1,0 +1,1192 @@
+Genesis 25:8	<AM.@75JW	ʕammˈāʸw	by the rules
+Leviticus 17:10	<AM.@75H.	ʕammˈāh	by the rules
+Leviticus 18:29	<AM.@75M	ʕammˈām	by the rules
+Leviticus 21:14	<AM.@73JW	ʕammˌāʸw	by the rules
+Jesaia 65:18	<AM.@71H.	ʕammˌāh	by the rules
+Chronica_II 25:15	<AM.@73M	ʕammˌām	by the rules
+Genesis 17:14	<AM.E92JH@	ʕammˈeʸhā	by the rules
+Exodus 5:16	<AM.E75K@	ʕammˈeḵā	by the rules
+Exodus 7:29	<AM.:K@73	ʕammᵊḵˌā	by the rules
+Exodus 8:5	<AM.:K@80	ʕammᵊḵˈā	by the rules
+Leviticus 19:16	<AM.E80JK@	ʕammˈeʸḵā	by the rules
+Numeri 27:13	<AM.E73JK@	ʕammˌeʸḵā	by the rules
+Reges_I 22:4	<AM.E73K@	ʕammˌeḵā	by the rules
+Hosea 10:14	<AM.EK@01	ʕammeḵˌā	by the rules
+Psalmi 83:4	13<AM.:K@	ˈʕammᵊḵā	by the rules
+Nehemia 9:22	<:AM@MI80JM	ʕᵃmāmˈîm	by the rules
+Judices 5:14	<:AM@ME92JK@	ʕᵃmāmˈeʸḵā	by the rules
+Exodus 3:21	<@M&	ʕām-	on the basis of other occurrences
+Exodus 14:13	<@M02	ʕām	on the basis of other occurrences
+Genesis 14:16	<@75M	ʕˈām	by the rules
+Genesis 19:4	<@73M	ʕˌām	by the rules
+Jeremia 16:5	<@70M&	ʕˈām-	by the rules
+Ruth 4:20	<AM.I45JN@D@B03	ʕammˈînāḏāv	on the basis of other occurrences
+Exodus 6:23	<AM.IJN@D@91B	ʕammînāḏˈāv	by the rules
+Numeri 7:12	<AM.IJN@D@73B	ʕammînāḏˌāv	by the rules
+Ruth 4:19	<AM.I45JN@D@75B	ʕammˈînāḏˈāv	by the rules
+Ecclesiastes 4:9	<:AM@L@75M	ʕᵃmālˈām	by the rules
+Genesis 41:51	<:AM@LI80J	ʕᵃmālˈî	by the rules
+Deuteronomium 26:7	<:AM@L;73NW.	ʕᵃmālˌēnû	by the rules
+Ecclesiastes 9:9	<:AM@74L:K@80	ʕᵃmˈālᵊḵˈā	by the rules
+Psalmi 7:17	<:AM@LO74W	ʕᵃmālˈô	by the rules
+Iob 15:35	13<@M@L	ˈʕāmāl	on the basis of other occurrences
+Numeri 23:21	<@M@73L	ʕāmˌāl	by the rules
+Habakuk 1:3	<@M@74L	ʕāmˈāl	by the rules
+Psalmi 7:15	11<@M@81L	ˈʕāmˈāl	by the rules
+Psalmi 10:14	<@82M@70L	ʕˈāmˈāl	by the rules
+Numeri 14:14	<:AN@45N:K@03	ʕᵃnˈānᵊḵā	by the rules
+Iob 26:9	<:AN@NO75W	ʕᵃnānˈô	by the rules
+Numeri 11:25	<@N@N02	ʕānān	on the basis of other occurrences
+Psalmi 99:7	13<@N@N	ˈʕānān	on the basis of other occurrences
+Genesis 9:13	<@N@92N	ʕānˈān	by the rules
+Genesis 9:14	<@N@73N	ʕānˌān	by the rules
+Reges_II 23:4	<:AP@R@73M	ʕᵃfārˌām	by the rules
+Reges_II 23:6	<:AP@R@80H.	ʕᵃfārˈāh	by the rules
+Jesaia 34:9	<:AP@R@73H.	ʕᵃfārˌāh	by the rules
+Ezechiel 26:12	<:AP@R;80K:	ʕᵃfārˈēḵ	by the rules
+Deuteronomium 9:21	<:AP@RO80W	ʕᵃfārˈô	by the rules
+Proverbia 8:26	<@P:RO71WT	ʕāfᵊrˌôṯ	on the basis of other occurrences
+Iob 38:38	13<@P@R	ˈʕāfār	on the basis of other occurrences
+Ezechiel 27:30	<@95P@R03	ʕˈāfār	on the basis of other occurrences
+Genesis 2:7	<@P@R03	ʕāfˌār	by the rules
+Genesis 3:19	<@P@74R	ʕāfˈār	by the rules
+Reges_II 17:14	<@R:P.@M03	ʕorpˌām	by the rules
+Jeremia 7:26	<@R:P.@80M	ʕorpˈām	by the rules
+Chronica_II 30:8	<@R:P.:KE73M	ʕorpᵊḵˌem	by the rules
+Deuteronomium 31:27	<@R:P.:K@73	ʕorpᵊḵˌā	by the rules
+Jesaia 48:4	<@R:P.E80K@	ʕorpˈeḵā	by the rules
+Iob 16:12	<@R:P.IJ	ʕorpˌî	by the rules
+Leviticus 5:8	<@R:P.O73W	ʕorpˌô	by the rules
+Deuteronomium 10:16	<@63R:P.:KE80M	ʕˌorpᵊḵˈem	on the basis of other occurrences
+Psalmi 61:8	13<OWL@M	ˈʕôlām	on the basis of other occurrences
+Genesis 3:22	<OL@75M	ʕōlˈām	by the rules
+Genesis 6:4	<OWL@73M	ʕôlˌām	by the rules
+Genesis 9:12	<OWL@75M	ʕôlˈām	by the rules
+Exodus 15:18	<OL@71M	ʕōlˌām	by the rules
+Reges_I 8:13	<OWL@MI75JM	ʕôlāmˈîm	by the rules
+Psalmi 72:19	<O60WL@71M	ʕˈôlˌām	by the rules
+Psalmi 73:12	11<OWL@81M	ˈʕôlˈām	by the rules
+Psalmi 77:8	<OWL@MIJM	ʕôlāmîm	by the rules
+Psalmi 145:13	<O45L@MI92JM	ʕˈōlāmˈîm	by the rules
+Ecclesiastes 12:5	<OWL@MO80W	ʕôlāmˈô	by the rules
+Samuel_II 6:4	>:ABI45JN@D@B03	ʔᵃvˈînāḏāv	on the basis of other occurrences
+Samuel_I 7:1	>:ABIJN@D@73B	ʔᵃvînāḏˌāv	by the rules
+Samuel_I 16:8	>:ABI74JN@D@80B	ʔᵃvˈînāḏˈāv	by the rules
+Samuel_I 31:2	>:ABIJN@D@91B	ʔᵃvînāḏˈāv	by the rules
+Reges_I 4:11	>:ABI45JN@D@73B	ʔᵃvˈînāḏˌāv	by the rules
+Genesis 42:21	>:AB@L02	ʔᵃvāl	on the basis of other occurrences
+Genesis 17:19	>:AB@L03	ʔᵃvˌāl	by the rules
+Samuel_II 14:5	>:AB@91L	ʔᵃvˈāl	by the rules
+Genesis 16:5	>AB:R@M02	ʔavrām	on the basis of other occurrences
+Genesis 11:26	>AB:R@80M	ʔavrˈām	by the rules
+Genesis 11:29	>AB:R@M03	ʔavrˌām	by the rules
+Numeri 18:9	>:AC@M@M03	ʔᵃšāmˌām	by the rules
+Psalmi 68:22	>:AC@M@75JW	ʔᵃšāmˈāʸw	by the rules
+Leviticus 5:6	>:AC@MO74W	ʔᵃšāmˈô	by the rules
+Leviticus 5:15	>:AC@MO63W	ʔᵃšāmˌô	by the rules
+Samuel_I 6:4	>@C@M02	ʔāšām	on the basis of other occurrences
+Genesis 26:10	>@C@75M	ʔāšˈām	by the rules
+Leviticus 5:16	>@C@73M	ʔāšˌām	by the rules
+Psalmi 17:4	13>@D@M	ˈʔāḏām	on the basis of other occurrences
+Psalmi 62:10	>@D@M02	ʔāḏām	on the basis of other occurrences
+Genesis 1:26	>@D@91M	ʔāḏˈām	by the rules
+Genesis 1:27	>@D@M03	ʔāḏˌām	by the rules
+Psalmi 8:5	11>@D@81M	ˈʔāḏˈām	by the rules
+Psalmi 14:2	>@60D@71M	ʔˈāḏˌām	by the rules
+Psalmi 36:7	>@70D@45M&	ʔˈāḏˈām-	by the rules
+Psalmi 107:21	>@D@75M00_|	ʔāḏˈām . 	by the rules
+Psalmi 35:17	>:ADON@J02	ʔᵃḏōnāy	on the basis of other occurrences
+Psalmi 38:10	>:A35DON@J	ʔˈᵃḏōnāy	on the basis of other occurrences
+Psalmi 51:17	13>:ADON@J	ˈʔᵃḏōnāy	on the basis of other occurrences
+Genesis 15:2	>:ADON@70J	ʔᵃḏōnˈāy	by the rules
+Exodus 4:10	>:ADON@J01	ʔᵃḏōnˌāy	by the rules
+Judices 13:8	>:ADOWN@80J	ʔᵃḏônˈāy	by the rules
+Psalmi 2:4	11>:ADON@81J	ˈʔᵃḏōnˈāy	by the rules
+Psalmi 90:1	>:A35DON@81J	ʔˈᵃḏōnˈāy	by the rules
+Genesis 18:30	>DON@J03	ʔḏōnˌāy	by the rules
+Reges_II 7:6	>DON@62J	ʔḏōnˈāy	by the rules
+Jeremia 32:17	>:AH@H.02	ʔᵃhāh	on the basis of other occurrences
+Josua 7:7	>:AH@74H.	ʔᵃhˈāh	by the rules
+Judices 6:22	>:AH@H.03	ʔᵃhˌāh	by the rules
+Genesis 18:6	>O73H:EL@H	ʔˌōhᵉlā	by the rules
+Genesis 24:67	>O33H:EL@H03	ʔˈōhᵉlā	by the rules
+Genesis 13:5	>OH@LI75JM	ʔōholˈîm	on the basis of other occurrences
+Judices 7:8	>O45H@L@80JW	ʔˈōholˈāʸw	on the basis of other occurrences
+Judices 8:11	>:@H@LI80JM	ʔᵒholˈîm	on the basis of other occurrences
+Samuel_I 4:10	>OH@L@80JW	ʔōholˈāʸw	on the basis of other occurrences
+Samuel_II 20:1	>OH@L@73JW	ʔōholˌāʸw	on the basis of other occurrences
+Reges_II 7:10	>OH@LI73JM	ʔōholˌîm	on the basis of other occurrences
+Jeremia 4:20	>OH@LA80J	ʔōholˈay	on the basis of other occurrences
+Jeremia 6:3	>OH@LIJM03	ʔōholîm	on the basis of other occurrences
+Hosea 12:10	>:@H@LI73JM	ʔᵒholˌîm	on the basis of other occurrences
+Iob 12:6	>O45H@LI63JM	ʔˈōholˌîm	on the basis of other occurrences
+Numeri 24:5	>OH@LE73JK@	ʔōholˌeʸḵā	on the basis of other occurrences
+Deuteronomium 16:7	>OH@LE75JK@	ʔōholˈeʸḵā	on the basis of other occurrences
+Judices 19:9	>OH@LE75K@	ʔōholˈeḵā	on the basis of other occurrences
+Genesis 9:27	>@45H:@L;J&	ʔˈohᵒlê-	by the rules
+Numeri 16:26	>@H:@L;63J	ʔohᵒlˌê	by the rules
+Numeri 16:27	>@95H:@L;JHE80M	ʔˈohᵒlêhˈem	by the rules
+Deuteronomium 1:27	>@H:@L;JKEM03	ʔohᵒlêḵˌem	by the rules
+Deuteronomium 5:30	>@H:@L;JKE75M	ʔohᵒlêḵˈem	by the rules
+Deuteronomium 11:6	>@H:@L;JHE92M	ʔohᵒlêhˈem	by the rules
+Josua 22:7	>@H:@L;JHE73M	ʔohᵒlêhˌem	by the rules
+Josua 22:8	>@45H:@L;JKEM03	ʔˈohᵒlêḵem	by the rules
+Jeremia 30:18	>@H:@L;74J	ʔohᵒlˈê	by the rules
+Psalmi 78:51	>@H:@L;J&	ʔohᵒlê-	by the rules
+Daniel 11:45	>@H:@LE74J	ʔohᵒlˈeʸ	by the rules
+Josua 7:21	>@95H:@LI73J	ʔˈohᵒlˌî	by the rules
+Jesaia 54:2	>@H:@L;81K:	ʔohᵒlˈēḵ	by the rules
+Jeremia 10:20	>@H:@LI74J	ʔohᵒlˈî	by the rules
+Psalmi 15:1	>@H:@LE92K@	ʔohᵒlˈeḵā	by the rules
+Genesis 9:21	>@H:@LO75W	*ʔohᵒlˈô	by the rules
+Genesis 13:3	>@95H:@LOW03	*ʔˈohᵒlô	by the rules
+Genesis 31:25	>@H:@LOW03	ʔohᵒlˌô	by the rules
+Genesis 35:21	>@45H:@LO80W	*ʔˈohᵒlˈô	by the rules
+Psalmi 61:5	>@H@L:K@	ʔoholᵊḵˌā	on the basis of other occurrences
+Leviticus 10:16	>I45JT@M@R03	ʔˈîṯāmār	on the basis of other occurrences
+Exodus 6:23	>I45JT@M@75R	ʔˈîṯāmˈār	by the rules
+Exodus 28:1	>IJT@M@73R	ʔîṯāmˌār	by the rules
+Leviticus 10:6	>I45JT@M@63R	ʔˈîṯāmˌār	by the rules
+Leviticus 10:12	>I63JT@M@71R	ʔˌîṯāmˌār	by the rules
+Numeri 3:2	>IJT@M@75R	ʔîṯāmˈār	by the rules
+Iob 9:2	13>@M:N@M	ˈʔomnām	on the basis of other occurrences
+Reges_II 19:17	>@M:N@73M	ʔomnˌām	by the rules
+Iob 34:12	>@M:N@81M	ʔomnˈām	by the rules
+Samuel_II 10:18	>:AR@M02	ʔᵃrām	on the basis of other occurrences
+Genesis 10:22	>:AR@75M	ʔᵃrˈām	by the rules
+Numeri 23:7	14>:AR@M	ʔᵃrˌām	by the rules
+Genesis 11:1	>:AX@DI75JM	ʔᵃḥāḏˈîm	by the rules
+Ezechiel 37:17	>:AX@DI73JM	ʔᵃḥāḏˌîm	by the rules
+Daniel 11:20	>:AX@DIJM03	ʔᵃḥāḏîm	by the rules
+Genesis 42:16	>EX@D02	ʔeḥāḏ	on the basis of other occurrences
+Daniel 8:13	>E45X@D&	ʔˈeḥāḏ-	on the basis of other occurrences
+Genesis 1:5	>EX@75D	ʔeḥˈāḏ	by the rules
+Genesis 2:11	>EX@73D	ʔeḥˌāḏ	by the rules
+Genesis 11:1	>EX@92T	ʔeḥˈāṯ	by the rules
+Exodus 26:5	>EX@T01	ʔeḥˌāṯ	by the rules
+Maleachi 2:10	>E45X@73D	ʔˈeḥˌāḏ	by the rules
+Proverbia 1:14	11>EX@81D	ˈʔeḥˈāḏ	by the rules
+Ezechiel 27:6	B.@80C@N	bˈāšān	on the basis of other occurrences
+Numeri 21:33	B.@C@92N	bāšˈān	by the rules
+Numeri 21:33	B.@C@63N	bāšˌān	by the rules
+Deuteronomium 32:14	B@C@N03	vāšˌān	by the rules
+Micha 7:14	B@C@91N	vāšˈān	by the rules
+Jesaia 61:7	B.@C:T.:KEM03	boštᵊḵˌem	by the rules
+Zephania 3:19	B.@C:T.@75M	boštˈām	by the rules
+Jeremia 3:25	B@C:T.;81NW.	voštˈēnû	by the rules
+Psalmi 69:20	B@C:T.IJ	voštˌî	by the rules
+Samuel_I 20:30	B@63C:T.:K@80	vˌoštᵊḵˈā	on the basis of other occurrences
+Leviticus 6:20	B:F@R@73H.	vᵊśārˌāh	by the rules
+Leviticus 11:8	B.:F@R@M03	bᵊśārˌām	by the rules
+Leviticus 13:39	B.:F@R@91M	bᵊśārˈām	by the rules
+Leviticus 15:19	B:F@R@92H.	vᵊśārˈāh	by the rules
+Leviticus 21:5	B:F@R@80M	vᵊśārˈām	by the rules
+Numeri 18:18	B:F@R@73M	vᵊśārˌām	by the rules
+Numeri 19:5	B.:F@R@H.03	bᵊśārˌāh	by the rules
+Proverbia 14:30	13B:F@RIJM	ˈvśārîm	by the rules
+Genesis 2:23	B.:F@RI92J	bᵊśārˈî	by the rules
+Genesis 29:14	B:F@RI73J	vᵊśārˌî	by the rules
+Genesis 37:27	B:F@R;73NW.	vᵊśārˌēnû	by the rules
+Genesis 40:19	B.:F@R:K@73	bᵊśārᵊḵˌā	by the rules
+Samuel_I 17:44	B.:F@74R:K@80	bᵊśˈārᵊḵˈā	by the rules
+Samuel_II 5:1	B:F@R:K@73	vᵊśārᵊḵˌā	by the rules
+Reges_II 5:10	B.:F@R:K@91	bᵊśārᵊḵˈā	by the rules
+Psalmi 16:9	11B.:F@RI81J	ˈbᵊśārˈî	by the rules
+Psalmi 27:2	B.:F@60RI71J	bᵊśˈārˌî	by the rules
+Psalmi 38:8	B:F@RI75J	vᵊśārˈî	by the rules
+Iob 6:12	B.:F@RI71J	bᵊśārˌî	by the rules
+Proverbia 5:11	11B.:F@R:K@81	ˈbᵊśārᵊḵˈā	by the rules
+Ecclesiastes 5:5	B.:F@RE80K@	bᵊśārˈeḵā	by the rules
+Nehemia 5:5	B.:F@R;80NW.	bᵊśārˈēnû	by the rules
+Exodus 4:7	B:F@RO75W	vᵊśārˈô	by the rules
+Exodus 21:28	B.:F@RO80W	bᵊśārˈô	by the rules
+Exodus 29:31	B.:F@RO73W	bᵊśārˌô	by the rules
+Leviticus 17:16	B:F@RO73W	vᵊśārˌô	by the rules
+Iob 14:22	13B.:F@ROW	ˈbᵊśārô	by the rules
+Leviticus 8:31	B.@F@R02	bāśār	on the basis of other occurrences
+Psalmi 145:21	13B.@F@R	ˈbāśār	on the basis of other occurrences
+Genesis 2:21	B.@F@73R	bāśˌār	by the rules
+Genesis 2:23	B@F@73R	vāśˌār	by the rules
+Genesis 6:3	B@F@92R	vāśˈār	by the rules
+Genesis 6:12	B.@F@91R	bāśˈār	by the rules
+Genesis 24:32	B.A80J:T@H	bˈayᵊṯā	by the rules
+Genesis 39:11	B.A73J:T@H	bˌayᵊṯā	by the rules
+Genesis 28:2	B.;71JT@H	bˌêṯā	by the rules
+Genesis 39:14	B;JT@81H.	vêṯˈāh	by the rules
+Genesis 43:24	B.;74JT@H	bˈêṯā	by the rules
+Exodus 3:22	B.;JT@80H.	bêṯˈāh	by the rules
+Josua 2:15	B;JT@H.03	vêṯˌāh	by the rules
+Samuel_I 1:19	B.;JT@73M	bêṯˌām	by the rules
+Reges_I 9:24	B.;JT@73H.	bêṯˌāh	by the rules
+Proverbia 30:26	B.;JT@75M	bêṯˈām	by the rules
+Proverbia 31:21	11B.;JT@81H.	ˈbêṯˈāh	by the rules
+Genesis 7:1	B.;JT:K@73	bêṯᵊḵˌā	by the rules
+Genesis 17:13	B.;95JT:K@73	bˈêṯᵊḵˌā	by the rules
+Genesis 31:37	B;JTE80K@	vêṯˈeḵā	by the rules
+Genesis 31:41	B;JTEK@01	vêṯeḵˌā	by the rules
+Genesis 45:11	B;45JT:K@73	vˈêṯᵊḵˌā	by the rules
+Numeri 18:11	B;JT:K@73	vêṯᵊḵˌā	by the rules
+Deuteronomium 6:9	B.;JTE73K@	bêṯˌeḵā	by the rules
+Deuteronomium 7:26	B.;JTE80K@	bêṯˈeḵā	by the rules
+Judices 12:1	B.;JT:K@85	bêṯᵊḵˈā	by the rules
+Samuel_I 2:30	B.;45JT:K@03	bˈêṯᵊḵā	by the rules
+Samuel_I 2:36	B;74JT:K@80	vˈêṯᵊḵˈā	by the rules
+Samuel_I 25:6	B;JT:K@74	vêṯᵊḵˈā	by the rules
+Reges_I 16:3	B.;74JT:K@80	bˈêṯᵊḵˈā	by the rules
+Psalmi 128:3	B;60JTE71K@	vˈêṯˌeḵā	by the rules
+Ruth 4:12	B;45JT:K@03	vˈêṯᵊḵā	by the rules
+Genesis 42:19	B.@T.;JKE75M	bāttêḵˈem	on the basis of other occurrences
+Genesis 42:33	B.@T.;JKE73M	bāttêḵˌem	on the basis of other occurrences
+Genesis 47:24	B@T.;JKE73M	vāttêḵˌem	on the basis of other occurrences
+Exodus 1:21	B.@T.I75JM	bāttˈîm	on the basis of other occurrences
+Exodus 8:9	B.@T.I71JM	bāttˌîm	on the basis of other occurrences
+Exodus 8:17	B.@T.;70J	bāttˈê	on the basis of other occurrences
+Exodus 10:6	B@T.;74J	vāttˈê	on the basis of other occurrences
+Exodus 12:13	B.@T.IJM03	bāttîm	on the basis of other occurrences
+Exodus 12:19	B@T.;JKE92M	vāttêḵˈem	on the basis of other occurrences
+Exodus 25:27	B@T.I74JM	vāttˈîm	on the basis of other occurrences
+Leviticus 25:32	B.@T.;73J	bāttˌê	on the basis of other occurrences
+Numeri 16:32	B.@T.;JHE92M	bāttêhˈem	on the basis of other occurrences
+Deuteronomium 8:12	B@T.I71JM	vāttˌîm	on the basis of other occurrences
+Deuteronomium 11:6	B.@T.;JHE73M	bāttêhˌem	on the basis of other occurrences
+Deuteronomium 19:1	B@T.;JHE75M	vāttêhˈem	on the basis of other occurrences
+Jesaia 3:20	B@T.;71J	vāttˌê	on the basis of other occurrences
+Jesaia 6:11	B@T.IJM03	vāttîm	on the basis of other occurrences
+Jesaia 13:21	B@T.;JHE73M	vāttêhˌem	on the basis of other occurrences
+Ezechiel 23:47	B@T.;JHE73N	vāttêhˌen	on the basis of other occurrences
+Iob 15:28	13B.@T.IJM	ˈbāttîm	on the basis of other occurrences
+Ezechiel 16:41	B@T.A33JIK:03	vāttˈayiḵ	on the basis of other occurrences
+Exodus 8:5	B.@T.E92JK@	bāttˈeʸḵā	on the basis of other occurrences
+Exodus 8:17	B@T.E73JK@	vāttˌeʸḵā	on the basis of other occurrences
+Exodus 10:6	B@T.E61JK@	vāttˈeʸḵā	on the basis of other occurrences
+Exodus 12:27	B.@T.;74JNW.	bāttˈênû	on the basis of other occurrences
+Psalmi 49:12	B.@T.;63JMOW	bāttˌêmô	on the basis of other occurrences
+Proverbia 1:13	B@T.;74JNW.	vāttˈênû	on the basis of other occurrences
+Threni 5:2	B.@T.;73JNW.	bāttˌênû	on the basis of other occurrences
+Nehemia 5:3	B@T.;73JNW.	vāttˌênû	on the basis of other occurrences
+Exodus 12:7	B.@74T.I80JM	bˈāttˈîm	by the rules
+Deuteronomium 6:11	B@63T.I61JM	vˌāttˈîm	by the rules
+Jesaia 13:16	B.@45T.;JHE80M	bˈāttêhˈem	by the rules
+Jeremia 6:12	B@45T.;JHEM03	vˈāttêhem	by the rules
+Jeremia 17:22	B.@45T.;JKEM03	bˈāttêḵem	by the rules
+Ezechiel 45:4	B@74T.I80JM	vˈāttˈîm	by the rules
+Iob 4:19	B@45T.;J&	vˈāttê-	by the rules
+Iob 24:16	B.@60T.I71JM	bˈāttˌîm	by the rules
+Chronica_I 28:11	B.@63T.@61JW	bˌāttˈāʸw	by the rules
+Genesis 17:12	B.@80JIT	bˈāyiṯ	by the rules
+Genesis 19:10	B.@92J:T@H	bˈāyᵊṯā	by the rules
+Exodus 8:7	B.@74T.E80JK@	bˈāttˈeʸḵā	by the rules
+Josua 9:12	B.@74T.;80JNW.	bˈāttˈênû	by the rules
+Samuel_II 5:9	B@75J:T@H	vˈāyᵊṯā	by the rules
+Reges_I 5:31	B.@73JIT	bˌāyiṯ	by the rules
+Jesaia 58:7	B@92JIT	vˈāyiṯ	by the rules
+Numeri 22:20	B.IL:<@M02	bilʕām	on the basis of other occurrences
+Numeri 22:5	B.IL:<@74M	bilʕˈām	by the rules
+Numeri 22:10	B.IL:<@73M	bilʕˌām	by the rules
+Numeri 22:28	BIL:<@M03	vilʕˌām	by the rules
+Numeri 22:36	BIL:<@92M	vilʕˈām	by the rules
+Deuteronomium 32:13	B.@74M:@T;J	*bˈāmᵒṯê	on the basis of other occurrences
+Micha 1:3	B.@71M:@T;J	*bˌāmᵒṯê	on the basis of other occurrences
+Numeri 21:28	B.@MO71WT	bāmˌôṯ	by the rules
+Reges_I 13:2	B.@MOWT03	bāmôṯ	by the rules
+Reges_I 13:33	B@MO80WT	vāmˈôṯ	by the rules
+Jeremia 26:18	B@MO71WT	vāmˌôṯ	by the rules
+Leviticus 26:30	B.@MO45T;JKE81M	bāmˈōṯêḵˈem	by the rules
+Numeri 33:52	B.@MOT@73M	bāmōṯˌām	by the rules
+Samuel_II 22:34	B.@MOWTA73J	bāmôṯˌay	by the rules
+Reges_II 18:22	B.@MOT@74JW	bāmōṯˈāʸw	by the rules
+Ezechiel 6:3	B.@MO45WT;JKE75M	bāmˈôṯêḵˈem	by the rules
+Ezechiel 43:7	B.@MOWT@75M	bāmôṯˈām	by the rules
+Psalmi 18:34	11B.@MOTA81J	ˈbāmōṯˈay	by the rules
+Psalmi 78:58	B@MOWT@92M	vāmôṯˈām	by the rules
+Chronica_II 32:12	B.@MOT@73JW	bāmōṯˌāʸw	by the rules
+Deuteronomium 33:29	B.@MOWT;71JMOW	bāmôṯˌêmô	by the rules
+Samuel_II 1:19	B.@MOWTE73JK@	bāmôṯˌeʸḵā	by the rules
+Jeremia 17:3	B.@MOTE85JK@	bāmōṯˈeʸḵā	by the rules
+Samuel_I 9:12	B.@M@75H	bāmˈoh	on the basis of other occurrences
+Samuel_I 9:13	B.@M@61T@H	bāmˈoṯā	on the basis of other occurrences
+Samuel_I 9:25	B.@M@73H	bāmˌoh	on the basis of other occurrences
+Jeremia 48:35	B@M@80H	vāmˈoh	on the basis of other occurrences
+Proverbia 11:26	13B.@R	ˈbār	on the basis of other occurrences
+Genesis 41:35	B@62R	vˈār	by the rules
+Genesis 41:49	B.@91R	bˈār	by the rules
+Genesis 42:3	B.@73R	bˌār	by the rules
+Exodus 19:16	B:R@QI61JM	vᵊrāqˈîm	by the rules
+Jeremia 10:13	B.:R@QI70JM	bᵊrāqˈîm	by the rules
+Nahum 2:5	B.:R@QI73JM	bᵊrāqˌîm	by the rules
+Psalmi 18:15	B:R@QI71JM	vᵊrāqˌîm	by the rules
+Psalmi 97:4	B:R@Q@74JW	vᵊrāqˈāʸw	by the rules
+Psalmi 144:6	13B.@R@Q	ˈborāq	on the basis of other occurrences
+Ezechiel 21:15	B.@73R@Q	bˌārāq	on the basis of other occurrences
+Judices 4:22	B@R@Q02	vārāq	on the basis of other occurrences
+Judices 4:6	B@R@74Q	vārˈāq	by the rules
+Judices 4:8	B.@R@80Q	bārˈāq	by the rules
+Judices 4:9	B.@R@73Q	bārˌāq	by the rules
+Judices 5:1	B@R@73Q	vārˌāq	by the rules
+Genesis 6:10	C:LOC@74H	šᵊlōšˈā	by the rules
+Genesis 9:19	C:LOC@71H	šᵊlōšˌā	by the rules
+Numeri 3:46	C.:LOC@80H	ššᵊlōšˈā	by the rules
+Deuteronomium 19:15	C:LOC@45H&	šᵊlōšˈā-	by the rules
+Josua 15:14	C:LOWC@73H	šᵊlôšˌā	by the rules
+Samuel_II 14:27	C:LOWC@74H	šᵊlôšˈā	by the rules
+Samuel_II 23:19	C.:LOC@H03	ššᵊlōšˌā	by the rules
+Chronica_I 11:15	C:45LOWC@H04	šᵊˈlôšā	by the rules
+Chronica_I 11:20	C.:LOWC@80H	ššᵊlôšˈā	by the rules
+Chronica_I 11:21	C.:LOWC@73H	ššᵊlôšˌā	by the rules
+Numeri 12:4	C:L@C:T.:KE73M	šᵊloštᵊḵˌem	by the rules
+Numeri 12:4	C:L@C:T.@75M	šᵊloštˈām	by the rules
+Exodus 21:11	C:L@63C&	šᵊlˌoš-	on the basis of other occurrences
+Genesis 11:13	C@LO74C	šālˈōš	by the rules
+Exodus 7:7	C@LO71C	šālˌōš	by the rules
+Numeri 22:32	C@LO74WC	šālˈôš	by the rules
+Deuteronomium 19:2	C@LO71WC	šālˌôš	by the rules
+Deuteronomium 19:9	C.@LO71C	ššālˌōš	by the rules
+Reges_II 13:18	C@45LOC&	šˈālōš-	by the rules
+Ezechiel 41:22	C@LOWC04	šālôš	by the rules
+Proverbia 30:21	13C@LOWC	ˈšālôš	by the rules
+Genesis 49:31	10C@M.@H	ˈšāmmā	on the basis of other occurrences
+Numeri 21:13	C.@M02	ššām	on the basis of other occurrences
+Ezechiel 47:23	10C@M	ˈšām	on the basis of other occurrences
+Genesis 2:8	C@80M	šˈām	by the rules
+Genesis 2:10	C.@M03	ššˌām	by the rules
+Genesis 2:11	C@73M	šˌām	by the rules
+Genesis 3:23	C.@75M	ššˈām	by the rules
+Genesis 14:10	C@92M.@H	šˈāmmā	by the rules
+Genesis 19:20	C@73M.@H	šˌāmmā	by the rules
+Hosea 2:17	C.@33M.@H03	ššˈāmmā	by the rules
+Psalmi 66:6	11C@81M	ˈšˈām	by the rules
+Psalmi 104:25	C@45M&	šˈām-	by the rules
+Iob 1:21	C@80M@H	šˈāmā	by the rules
+Judices 5:14	C@R:C@M03	šoršˌām	by the rules
+Iob 13:27	C@R:C;71J	šoršˌê	by the rules
+Jesaia 14:30	C@R:C;80K:	šoršˈēḵ	by the rules
+Iob 29:19	C@R:CI74J	šoršˈî	by the rules
+Ezechiel 31:7	C@R:CO73W	šoršˌô	by the rules
+Iob 14:8	C@R:CO92W	šoršˈô	by the rules
+Ezechiel 17:7	C@R:@CE74JH@	šorᵒšˈeʸhā	by the rules
+Jesaia 11:1	C.@R@C@71JW	ššorāšˌāʸw	on the basis of other occurrences
+Jeremia 17:8	C@45R@C@80JW	šˈorāšˈāʸw	on the basis of other occurrences
+Ezechiel 17:6	C@R@C@73JW	šorāšˌāʸw	on the basis of other occurrences
+Ezechiel 17:9	C@R@CE63JH@	šorāšˌeʸhā	on the basis of other occurrences
+Ezechiel 17:9	C.@R@CE75JH@	ššorāšˈeʸhā	on the basis of other occurrences
+Psalmi 80:10	11C@R@CE81JH@	ˈšorāšˈeʸhā	on the basis of other occurrences
+Genesis 11:1	D:B@RI73JM	ḏᵊvārˌîm	by the rules
+Genesis 15:1	D.:B@RI74JM	dᵊvārˈîm	by the rules
+Genesis 20:8	D.:B@RI71JM	dᵊvārˌîm	by the rules
+Genesis 24:33	D.:B@R@92J	dᵊvārˈāy	by the rules
+Genesis 37:8	D.:B@R@75JW	dᵊvārˈāʸw	by the rules
+Numeri 12:6	D:B@R@92J	ḏᵊvārˈāy	by the rules
+Deuteronomium 4:12	D.:B@RIJM03	dᵊvārîm	by the rules
+Deuteronomium 4:36	D:B@R@71JW	ḏᵊvārˌāʸw	by the rules
+Deuteronomium 11:18	D.:B@RA74J	dᵊvārˈay	by the rules
+Deuteronomium 18:18	D:B@RAJ03	ḏᵊvārˌay	by the rules
+Samuel_I 3:19	D.:B@R@73JW	dᵊvārˌāʸw	by the rules
+Samuel_I 15:11	D.:B@RA73J	dᵊvārˌay	by the rules
+Reges_I 1:7	D:B@R@80JW	ḏᵊvārˈāʸw	by the rules
+Reges_I 8:59	D:B@RA61J	ḏᵊvārˈay	by the rules
+Jeremia 38:24	D.:B@45RIJM&	dᵊvˈārîm-	by the rules
+Ezechiel 38:10	D:B@RIJM03	ḏᵊvārîm	by the rules
+Hosea 10:4	D:B@RI80JM	ḏᵊvārˈîm	by the rules
+Iob 11:2	13D.:B@RIJM	ˈdᵊvārîm	by the rules
+Iob 33:13	11D.:B@R@81JW	ˈdᵊvārˈāʸw	by the rules
+Chronica_II 28:26	D.:B@R@JW03	dᵊvārāʸw	by the rules
+Genesis 30:34	D:B@RE75K@	ḏᵊvārˈeḵā	by the rules
+Exodus 8:6	D:B@74R:K@80	ḏᵊvˈārᵊḵˈā	by the rules
+Numeri 11:23	D:B@RI73J	ḏᵊvārˌî	by the rules
+Josua 1:18	D.:B@RE91JK@	dᵊvārˈeʸḵā	by the rules
+Josua 2:14	D.:B@R;73NW.	dᵊvārˌēnû	by the rules
+Josua 2:20	D.:B@R;74NW.	dᵊvārˈēnû	by the rules
+Judices 11:10	D:B@R:K@73	ḏᵊvārᵊḵˌā	by the rules
+Judices 13:12	D:B@RE92JK@	ḏᵊvārˈeʸḵā	by the rules
+Judices 16:16	D:B@RE91JH@	ḏᵊvārˈeʸhā	by the rules
+Samuel_I 9:10	D.:B@R:K@73	dᵊvārᵊḵˌā	by the rules
+Samuel_II 7:21	D.:B@45R:K@03	dᵊvˈārᵊḵā	by the rules
+Samuel_II 7:28	D:B@RE73JK@	ḏᵊvārˌeʸḵā	by the rules
+Samuel_II 15:3	D:B@RE73K@	ḏᵊvārˌeḵā	by the rules
+Reges_I 6:12	D.:B@RIJ03	dᵊvārˌî	by the rules
+Reges_I 8:26	D.:B@74R:k@80	*dᵊvˈārᵊḵˈā	by the rules
+Reges_I 10:3	D.:B@RE92JH@	dᵊvārˈeʸhā	by the rules
+Reges_I 10:6	D.:B@RE73JK@	dᵊvārˌeʸḵā	by the rules
+Reges_I 17:1	D:B@RI75J	ḏᵊvārˈî	by the rules
+Reges_I 17:13	D:B@R;92K:	ḏᵊvārˈēḵ	by the rules
+Reges_I 18:36	D:B@R:k@74	*ḏᵊvārᵊḵˈā	by the rules
+Jesaia 66:2	D.:B@RI75J	dᵊvārˈî	by the rules
+Jeremia 15:16	D:B@45R:k@03	*ḏᵊvˈārᵊḵā	by the rules
+Psalmi 119:16	D.:B@RE75K@	dᵊvārˈeḵā	by the rules
+Psalmi 119:89	11D.:B@R:K@81	ˈdᵊvārᵊḵˈā	by the rules
+Psalmi 119:161	D.:B@R:k@81	*dᵊvārᵊḵˈā	by the rules
+Iob 29:22	13D:B@RIJ	ˈḏᵊvārî	by the rules
+Numeri 30:3	D.:B@RO92W	dᵊvārˈô	by the rules
+Reges_I 8:20	D.:B@RO73W	dᵊvārˌô	by the rules
+Reges_II 1:16	D:B@RO92W	ḏᵊvārˈô	by the rules
+Psalmi 56:5	D.:B@60RO71W	dᵊvˈārˌô	by the rules
+Psalmi 107:20	13D.:B@ROW	ˈdᵊvārô	by the rules
+Psalmi 130:5	D:B@RO71W	ḏᵊvārˌô	by the rules
+Daniel 9:12	D.:B@RO74W 	*dᵊvārˈô 	by the rules
+Reges_I 1:14	D.:B@R@75JIK:	dᵊvārˈoyiḵ	on the basis of other occurrences
+Iob 26:14	13D.@B@R	ˈdāvār	on the basis of other occurrences
+Genesis 18:14	D.@B@92R	dāvˈār	by the rules
+Genesis 19:8	D@B@80R	ḏāvˈār	by the rules
+Genesis 20:10	D.@B@71R	dāvˌār	by the rules
+Genesis 44:18	D@B@R03	ḏāvˌār	by the rules
+Psalmi 45:2	D.@82B@70R	dˈāvˈār	by the rules
+Iob 19:28	11D.@B@81R	ˈdāvˈār	by the rules
+Psalmi 4:8	D.:G@N@73M	dᵊḡānˌām	by the rules
+Psalmi 65:10	11D.:G@N@81M	ˈdᵊḡānˈām	by the rules
+Deuteronomium 7:13	D.:G@63N:K@61	dᵊḡˌānᵊḵˈā	by the rules
+Deuteronomium 11:14	D:G@NE80K@	ḏᵊḡānˈeḵā	by the rules
+Deuteronomium 12:17	D.:G@45N:K@03	dᵊḡˈānᵊḵā	by the rules
+Deuteronomium 18:4	D.:G@95N:K@61	dᵊḡˈānᵊḵˈā	by the rules
+Jesaia 62:8	D.:G@N;63K:	dᵊḡānˌēḵ	by the rules
+Hosea 2:11	D:G@NIJ03	ḏᵊḡānˌî	by the rules
+Nehemia 10:40	D.@G@N02	dāḡān	on the basis of other occurrences
+Genesis 27:28	D.@G@73N	dāḡˌān	by the rules
+Genesis 27:37	D@G@71N	ḏāḡˌān	by the rules
+Numeri 18:12	D@G@92N	ḏāḡˈān	by the rules
+Deuteronomium 33:28	D.@G@74N	dāḡˈān	by the rules
+Proverbia 14:31	13D.@L	ˈdāl	on the basis of other occurrences
+Exodus 23:3	D@85L	ḏˈāl	by the rules
+Samuel_I 2:8	D.@81L	dˈāl	by the rules
+Leviticus 8:30	D.@M02	dām	on the basis of other occurrences
+Joel 4:19	D@M&	ḏām-	on the basis of other occurrences
+Proverbia 6:17	D.@M&	dām-	on the basis of other occurrences
+Chronica_II 19:10	D@M02	ḏām	on the basis of other occurrences
+Genesis 37:22	D@M01	ḏˌām	by the rules
+Genesis 37:31	D.@75M	dˈām	by the rules
+Exodus 4:25	D.@MI91JM	dāmˈîm	by the rules
+Exodus 4:26	D.@MI73JM	dāmˌîm	by the rules
+Exodus 7:17	D@75M	ḏˈām	by the rules
+Exodus 7:21	D.@73M	dˌām	by the rules
+Leviticus 4:30	D.@M@H.03	dāmˌāh	by the rules
+Leviticus 4:30	D.@M@74H.	dāmˈāh	by the rules
+Leviticus 16:27	D.@M@M03	dāmˌām	by the rules
+Leviticus 20:9	D.@M@71JW	dāmˌāʸw	by the rules
+Numeri 18:17	D.@M@62M	dāmˈām	by the rules
+Deuteronomium 22:8	D.@MIJM03	dāmîm	by the rules
+Judices 9:24	D@M@81M	ḏāmˈām	by the rules
+Samuel_I 25:26	D@MI80JM	ḏāmˈîm	by the rules
+Ezechiel 24:7	D@M@H.03	ḏāmˌāh	by the rules
+Hosea 4:2	D@MI71JM	ḏāmˌîm	by the rules
+Hosea 12:15	D@M@JW03	ḏāmāʸw	by the rules
+Sacharia 9:7	D@M@61JW	ḏāmˈāʸw	by the rules
+Psalmi 9:13	13D.@MIJM	ˈdāmîm	by the rules
+Psalmi 59:3	11D@MI81JM	ˈḏāmˈîm	by the rules
+Psalmi 79:3	D@M@63M	ḏāmˌām	by the rules
+Proverbia 29:10	13D@MIJM	ˈḏāmîm	by the rules
+Ezechiel 16:6	D@MA74JIK:	ḏāmˈayiḵ	by the rules
+Ezechiel 16:6	D@MA71JIK:	ḏāmˌayiḵ	by the rules
+Ezechiel 16:9	D.@MA73JIK:	dāmˌayiḵ	by the rules
+Leviticus 12:7	D.@ME92JH@	dāmˈeʸhā	by the rules
+Samuel_I 26:20	D.@45MIJ03	dˈāmî	by the rules
+Samuel_II 1:16	D.@M:k@73	*dāmᵊḵˌā	by the rules
+Jeremia 51:35	D@MIJ03	ḏāmˌî	by the rules
+Ezechiel 16:22	D@M;73K:	ḏāmˌēḵ	by the rules
+Ezechiel 19:10	D@M:K@73	ḏāmᵊḵˌā	by the rules
+Ezechiel 21:37	D.@M;71K:	dāmˌēḵ	by the rules
+Ezechiel 22:13	D.@M;80K:	dāmˈēḵ	by the rules
+Psalmi 30:10	D@MIJ02	ḏāmˈî	by the rules
+Genesis 9:4	D@MO73W	ḏāmˌô	by the rules
+Genesis 9:6	D.@MO74W	dāmˈô	by the rules
+Genesis 42:22	D.@MO73W	dāmˌô	by the rules
+Leviticus 1:15	D@MO80W	ḏāmˈô	by the rules
+Ezechiel 16:6	D@M@92JIK:	ḏāmˈāyiḵ	by the rules
+Chronica_I 2:2	10D.@N	ˈdān	on the basis of other occurrences
+Genesis 14:14	D.@75N	dˈān	by the rules
+Genesis 35:25	D.@73N	dˌān	by the rules
+Genesis 46:23	D@73N	ḏˌān	by the rules
+Exodus 31:6	D@80N	ḏˈān	by the rules
+Samuel_II 24:6	D.@74N@H	dˈānā	by the rules
+Numeri 26:15	G@D02	ḡāḏ	on the basis of other occurrences
+Genesis 30:11	G.@75D	gˈāḏ	by the rules
+Genesis 49:19	G.@73D	gˌāḏ	by the rules
+Numeri 26:18	G@73D	ḡˌāḏ	by the rules
+Reges_I 17:1	GIL:<@D02	ḡilʕāḏ	on the basis of other occurrences
+Genesis 31:21	G.IL:<@75D	gilʕˈāḏ	by the rules
+Numeri 26:29	GIL:<@85D	ḡilʕˈāḏ	by the rules
+Numeri 27:1	G.IL:<@D03	gilʕˌāḏ	by the rules
+Numeri 32:39	G.IL:<@73D@H	gilʕˌāḏā	by the rules
+Numeri 36:1	GIL:<@D03	ḡilʕˌāḏ	by the rules
+Samuel_II 24:6	G.IL:<@80D@H	gilʕˈāḏā	by the rules
+Psalmi 50:18	13GAN.@B	ˈḡannāv	on the basis of other occurrences
+Proverbia 29:24	13G.AN.@B	ˈgannāv	on the basis of other occurrences
+Exodus 22:1	G.AN.@73B	gannˌāv	by the rules
+Exodus 22:7	G.AN.@80B	gannˈāv	by the rules
+Jesaia 1:23	G.AN.@BI80JM	gannāvˈîm	by the rules
+Jeremia 48:27	GAN.@BI73JM	ḡannāvˌîm	by the rules
+Jeremia 49:9	G.AN.@BI71JM	gannāvˌîm	by the rules
+Hosea 7:1	GAN.@74B	ḡannˈāv	by the rules
+Chronica_I 18:10	H:ADO45WR@M&	hᵃḏˈôrām-	on the basis of other occurrences
+Genesis 10:27	H:ADOWR@71M	hᵃḏôrˌām	by the rules
+Chronica_II 10:18	H:ADOR@M03	hᵃḏōrˌām	by the rules
+Chronica_I 11:11	J@C@B:<@74M	yošovʕˈām	by the rules
+Chronica_I 12:7	J@C@B:<@73M	yošovʕˌām	by the rules
+Chronica_I 27:2	J@45C@B:<@73M	yˈošovʕˌām	on the basis of other occurrences
+Numeri 23:10	J:C@RI80JM	yᵊšārˈîm	by the rules
+Samuel_I 12:23	J:C@R@75H	yᵊšārˈā	by the rules
+Ezechiel 1:23	J:C@RO80WT	yᵊšārˈôṯ	by the rules
+Micha 3:9	J:C@R@73H	yᵊšārˌā	by the rules
+Psalmi 19:9	13J:C@RIJM	ˈyšārîm	by the rules
+Psalmi 49:15	J:C@RI63JM	yᵊšārˌîm	by the rules
+Psalmi 140:14	11J:C@RI81JM	ˈyšārˈîm	by the rules
+Proverbia 2:7	J:C@RIJM	yᵊšārîm	by the rules
+Iob 23:7	13J@C@R	ˈyāšār	on the basis of other occurrences
+Psalmi 125:4	JC@RI81JM	yšārˈîm	by the rules
+Daniel 11:17	JC@RI71JM	yšārˌîm	by the rules
+Exodus 15:26	J.@C@70R	yyāšˈār	by the rules
+Deuteronomium 6:18	J.@C@71R	yyāšˌār	by the rules
+Deuteronomium 32:4	J@C@73R	yāšˌār	by the rules
+Samuel_I 29:6	J@C@74R	yāšˈār	by the rules
+Psalmi 11:7	11J@C@81R	ˈyāšˈār	by the rules
+Exodus 26:19	J:DOT@80JW	yᵊḏōṯˈāʸw	by the rules
+Reges_I 7:33	J:DOWT@74M	yᵊḏôṯˈām	by the rules
+Reges_I 7:35	J:DOTE80JH@	yᵊḏōṯˈeʸhā	by the rules
+Exodus 21:24	10J@D	ˈyāḏ	on the basis of other occurrences
+Genesis 19:10	J@D@80M	yāḏˈām	by the rules
+Genesis 24:18	J@D@73H.	yāḏˌāh	by the rules
+Genesis 27:16	J@D@92JW	yāḏˈāʸw	by the rules
+Genesis 37:21	J.@D@92M	yyāḏˈām	by the rules
+Genesis 37:22	J@73D	yˌāḏ	by the rules
+Genesis 38:28	J@92D	yˈāḏ	by the rules
+Genesis 39:12	J@D@80H.	yāḏˈāh	by the rules
+Genesis 43:15	J@D@73M	yāḏˌām	by the rules
+Genesis 43:34	J@DO92WT	yāḏˈôṯ	by the rules
+Genesis 47:24	J.@DO83T	yyāḏˈōṯ	by the rules
+Exodus 14:31	J.@74D	yyˈāḏ	by the rules
+Exodus 32:19	J.@D@JW03	*yyāḏāʸw	by the rules
+Exodus 36:22	J@DO81T	yāḏˈōṯ	by the rules
+Leviticus 12:8	J@D@H.02	yāḏāh	by the rules
+Leviticus 15:11	J@D@73JW	yāḏˌāʸw	by the rules
+Deuteronomium 9:15	J@D@75J	yāḏˈāy	by the rules
+Deuteronomium 33:7	J@D@JW03	yāḏāʸw	by the rules
+Samuel_I 25:35	J.@D@80H.	yyāḏˈāh	by the rules
+Samuel_II 19:44	J@DO63WT	yāḏˌôṯ	by the rules
+Samuel_II 22:21	J@DA73J	yāḏˌay	by the rules
+Reges_I 10:19	J.@DO75WT	yyāḏˈôṯ	by the rules
+Reges_II 5:24	J.@D@73M	yyāḏˌām	by the rules
+Reges_II 11:7	J.@DOWT03	yyāḏôṯ	by the rules
+Jesaia 14:26	J.@71D	yyˌāḏ	by the rules
+Jesaia 29:23	J@DA91J	yāḏˈay	by the rules
+Psalmi 18:21	11J@DA81J	ˈyāḏˈay	by the rules
+Psalmi 18:35	13J@DAJ	ˈyāḏay	by the rules
+Psalmi 19:2	11J@D@81JW	ˈyāḏˈāʸw	by the rules
+Psalmi 55:21	13J@D@JW	ˈyāḏāʸw	by the rules
+Nehemia 11:1	J.@DO73WT	yyāḏˌôṯ	by the rules
+Genesis 27:22	J.@DA73JIM	yyāḏˌayim	by the rules
+Genesis 34:21	J@DA73JIM	yāḏˌayim	by the rules
+Josua 8:20	J@DA91JIM	yāḏˈayim	by the rules
+Iob 17:9	11J@DA81JIM	ˈyāḏˈayim	by the rules
+Jeremia 2:37	J@DA73JIK:	yāḏˌayiḵ	by the rules
+Ezechiel 16:11	J@DA80JIK:	yāḏˈayiḵ	by the rules
+Genesis 4:11	J.@DE75K@	yyāḏˈeḵā	by the rules
+Genesis 5:29	J@D;80JNW.	yāḏˈênû	by the rules
+Genesis 14:20	J@DE92K@	yāḏˈeḵā	by the rules
+Genesis 14:22	J@DI70J	yāḏˈî	by the rules
+Genesis 16:6	J@D;80K:	yāḏˈēḵ	by the rules
+Genesis 16:9	J@DE75JH@	yāḏˈeʸhā	by the rules
+Genesis 21:18	J@D;73K:	yāḏˌēḵ	by the rules
+Genesis 21:30	J.@DI92J	yyāḏˈî	by the rules
+Genesis 22:12	J@45D:K@03	yˈāḏᵊḵā	by the rules
+Genesis 24:2	J@D:K@73	yāḏᵊḵˌā	by the rules
+Genesis 31:39	J.@DI73J	yyāḏˌî	by the rules
+Genesis 37:27	J@D;33NW.03	yāḏˈēnû	by the rules
+Genesis 43:22	J@D;73NW.	yāḏˌēnû	by the rules
+Exodus 3:20	J@DIJ03	yāḏˌî	by the rules
+Exodus 4:4	J@45D:K@80	yˈāḏᵊḵˈā	by the rules
+Exodus 10:12	J@D:K@61	yāḏᵊḵˈā	by the rules
+Exodus 13:16	J@74D:K@80H	yˈāḏᵊḵˈā	by the rules
+Exodus 15:17	J@DE75JK@	yāḏˈeʸḵā	by the rules
+Deuteronomium 21:10	J@DE73K@	yāḏˌeḵā	by the rules
+Josua 10:6	J@DE73JK@	yāḏˌeʸḵā	by the rules
+Judices 13:23	J.@D;33NW.03	yyāḏˈēnû	by the rules
+Judices 19:27	J@DE73JH@	yāḏˌeʸhā	by the rules
+Samuel_II 13:10	J.@D;92K:	yyāḏˈēḵ	by the rules
+Reges_I 14:3	J@D;K:	yāḏēḵ	by the rules
+Jesaia 51:22	J.@D;73K:	yyāḏˌēḵ	by the rules
+Jeremia 25:28	J.@D:K@73	yyāḏᵊḵˌā	by the rules
+Jeremia 40:4	J@DEK@01	yāḏeḵˌā	by the rules
+Habakuk 3:10	J@D;71JHW.	yāḏˌêhû	by the rules
+Psalmi 10:14	J@60DE71K@	yˈāḏˌeḵā	by the rules
+Psalmi 21:9	13J@D:K@	ˈyāḏᵊḵā	by the rules
+Psalmi 39:11	11J@D:K@81	ˈyāḏᵊḵˈā	by the rules
+Psalmi 89:22	13J@DIJ	ˈyāḏî	by the rules
+Psalmi 90:17	13J@D;JNW.	ˈyāḏênû	by the rules
+Psalmi 90:17	11J@D;81JNW.	ˈyāḏˈênû	by the rules
+Psalmi 104:28	11J@45D:K@81	ˈyˈāḏᵊḵˈā	by the rules
+Iob 10:7	J.@D:K@74	yyāḏᵊḵˈā	by the rules
+Iob 23:2	11J@DI81J	ˈyāḏˈî	by the rules
+Proverbia 31:19	13J@DEJH@	ˈyāḏeʸhā	by the rules
+Genesis 3:22	J@DO81W	yāḏˈô	by the rules
+Genesis 8:9	J@DOW03	yāḏˌô	by the rules
+Numeri 21:26	J.@DO73W	yyāḏˌô	by the rules
+Josua 24:10	J.@DO75W	yyāḏˈô	by the rules
+Samuel_I 14:34	J@91DOW	yˈāḏô	by the rules
+Iob 6:9	11J@DO81W	ˈyāḏˈô	by the rules
+Proverbia 19:24	13J@DOW	ˈyāḏô	by the rules
+Reges_II 9:35	J.@D@75JIM	yyāḏˈāyim	by the rules
+Jesaia 22:18	J@D@92JIM	yāḏˈāyim	by the rules
+Psalmi 104:25	J@60D@71JIM	yˈāḏˌāyim	by the rules
+Zephania 3:16	J@D@75JIK:	yāḏˈāyiḵ	by the rules
+Psalmi 122:4	13J@H.	ˈyāh	on the basis of other occurrences
+Exodus 15:2	J@80H.	yˈāh	by the rules
+Jesaia 38:11	J@73H.	yˌāh	by the rules
+Psalmi 94:7	J.@92H.	yyˈāh	by the rules
+Reges_II 13:9	J:HO45W>@X@Z03	yᵊhˈôʔāḥāz	on the basis of other occurrences
+Reges_II 10:35	J:HOW>@X@71Z	yᵊhôʔāḥˌāz	by the rules
+Reges_II 13:8	J:HOW>@X@91Z	yᵊhôʔāḥˈāz	by the rules
+Reges_II 14:17	J:HO45W>@X@73Z	yᵊhˈôʔāḥˌāz	by the rules
+Reges_II 13:7	JHOW>@X@61Z	yhôʔoḥˈāz	on the basis of other occurrences
+Reges_I 22:4	J:HO45WC@P@V03	yᵊhˈôšāfāṭ	on the basis of other occurrences
+Reges_I 4:3	J:HOWC@P@71V	yᵊhôšāfˌāṭ	by the rules
+Reges_I 22:4	J:HO74WC@P@80V	yᵊhˈôšāfˈāṭ	by the rules
+Reges_I 22:8	J:HOWC@P@83V	yᵊhôšāfˈāṭ	by the rules
+Reges_I 22:41	JHO45WC@P@V03	yhˈôšofāṭ	on the basis of other occurrences
+Samuel_II 8:16	JHOWC@P@71V	yhôšofˌāṭ	on the basis of other occurrences
+Reges_I 22:10	JHOWC@P@74V	yhôšofˈāṭ	on the basis of other occurrences
+Samuel_I 20:11	J:HO45WN@T@N03	yᵊhˈônāṯān	on the basis of other occurrences
+Samuel_I 14:6	J:HOWN@T@61N	yᵊhônāṯˈān	by the rules
+Samuel_I 14:8	J:HO74WN@T@80N	yᵊhˈônāṯˈān	by the rules
+Samuel_I 18:1	J:HOWN@T@73N	yᵊhônāṯˌān	by the rules
+Samuel_I 19:1	JHO45WN@T@N03	yhˈônāṯān	on the basis of other occurrences
+Samuel_II 21:14	JHOWN@45T@N&	yhônˈāṯān-	on the basis of other occurrences
+Judices 18:30	JHOWN@T@N	yhônāṯˌān	by the rules
+Samuel_I 20:13	JHOWN@T@61N	yhônāṯˈān	by the rules
+Samuel_I 20:30	JHO74WN@T@80N	yhˈônāṯˈān	by the rules
+Samuel_II 1:5	JHO45WN@T@71N	yhˈônāṯˌān	by the rules
+Chronica_II 28:12	J:HO45WX@N@N03	yᵊhˈôḥānān	on the basis of other occurrences
+Esra 10:6	J:HOWX@N@74N	yᵊhôḥānˈān	by the rules
+Esra 10:28	J:HOWX@N@71N	yᵊhôḥānˌān	by the rules
+Nehemia 6:18	JHOWX@N@74N	yhôḥonˈān	on the basis of other occurrences
+Nehemia 12:42	JHOWX@N@71N	yhôḥonˌān	on the basis of other occurrences
+Jeremia 51:36	JAM.@80H.	yammˈāh	by the rules
+Numeri 34:3	J@M&	yom-	by the rules
+Psalmi 78:13	13J@M	ˈyom	by the rules
+Genesis 1:26	J.@61M	yyˈom	on the basis of other occurrences
+Genesis 1:28	J.@M03	yyˌom	on the basis of other occurrences
+Genesis 13:14	J@75M.@H	yˈommā	on the basis of other occurrences
+Genesis 14:3	J@71M	yˌom	on the basis of other occurrences
+Genesis 28:14	J@71M.@H	yˌommā	on the basis of other occurrences
+Exodus 15:8	J@75M	yˈom	on the basis of other occurrences
+Numeri 34:5	J.@75M.@H	yyˈommā	on the basis of other occurrences
+Josua 15:12	J.@71M.@H	yyˌommā	on the basis of other occurrences
+Iob 41:23	11J@81M	ˈyˈom	on the basis of other occurrences
+Psalmi 45:10	JIQ.:ROWTE92JK@	yiqqᵊrôṯˈeʸḵā	by the rules
+Samuel_II 12:30	J:Q@R@80H	yᵊqārˈā	by the rules
+Reges_I 5:31	J:Q@RO91WT	yᵊqārˈôṯ	by the rules
+Reges_I 7:9	J:Q@ROT03	yᵊqārˌōṯ	by the rules
+Reges_I 7:10	J:Q@RO73WT	yᵊqārˌôṯ	by the rules
+Ezechiel 27:22	J:Q@R@H03	yᵊqārˌā	by the rules
+Proverbia 3:15	J:Q@74R@H	yᵊqˈārā	by the rules
+Threni 4:2	J:Q@RI80JM	yᵊqārˈîm	by the rules
+Psalmi 116:15	13J@Q@R	ˈyāqār	on the basis of other occurrences
+Samuel_I 3:1	J@Q@R03	yāqˌār	by the rules
+Jeremia 15:19	J@Q@91R	yāqˈār	by the rules
+Psalmi 36:8	J.@Q@71R	yyāqˌār	by the rules
+Reges_I 11:26	J@R@B:<@M04	yārovʕˌām	on the basis of other occurrences
+Reges_I 11:40	J@R@B:<@92M	yārovʕˈām	on the basis of other occurrences
+Reges_I 14:10	J@45R@B:<@M03	yˈārovʕām	on the basis of other occurrences
+Reges_I 11:29	J@45R@B:<@73M	yˈārovʕˌām	by the rules
+Reges_I 11:31	J@45R@B:<@80M	yˈārovʕˈām	by the rules
+Proverbia 15:17	13J@R@Q	ˈyārāq	on the basis of other occurrences
+Deuteronomium 11:10	J.@R@75Q	yyārˈāq	by the rules
+Reges_I 21:2	J@R@81Q	yārˈāq	by the rules
+Chronica_II 34:8	JO45W>@X@Z03	yˈôʔāḥāz	on the basis of other occurrences
+Reges_II 14:1	JOW>@X@73Z	yôʔāḥˌāz	by the rules
+Chronica_II 36:2	JOW>@X@74Z	yôʔāḥˈāz	by the rules
+Nehemia 3:6	JO45WJ@D@<03	yˈôyāḏāʕ	on the basis of other occurrences
+Nehemia 12:10	JOWJ@D@75<	yôyāḏˈāʕ	by the rules
+Nehemia 12:11	JOWJ@D@<03	yôyāḏˌāʕ	by the rules
+Jeremia 33:20	JO45WM@M&	yˈômām-	on the basis of other occurrences
+Psalmi 22:3	JO73WM@M	yˌômām	on the basis of other occurrences
+Exodus 13:21	JOWM@61M	yômˈām	by the rules
+Exodus 13:21	JOWM@71M	yômˌām	by the rules
+Samuel_II 13:35	JO45WN@D@B03	yˈônāḏāv	on the basis of other occurrences
+Samuel_II 13:3	JO45WN@D@80B	yˈônāḏˈāv	by the rules
+Samuel_II 13:32	JOWN@D@74B	yônāḏˈāv	by the rules
+Jeremia 35:6	JOWN@D@63B	yônāḏˌāv	by the rules
+Samuel_I 14:4	JO45WN@T@N03	yˈônāṯān	on the basis of other occurrences
+Samuel_I 13:2	JO74WN@T@80N	yˈônāṯˈān	by the rules
+Samuel_I 13:3	JOWN@T@81N	yônāṯˈān	by the rules
+Samuel_I 13:22	JOWN@T@73N	yônāṯˌān	by the rules
+Samuel_II 8:10	JO45WR@M&	yˈôrām-	on the basis of other occurrences
+Reges_II 8:16	JOWR@70M	yôrˈām	by the rules
+Reges_II 8:21	JOWR@M03	yôrˌām	by the rules
+Chronica_I 26:25	JOR@74M	yōrˈām	by the rules
+Jeremia 40:13	JO45WX@N@N03	yˈôḥānān	on the basis of other occurrences
+Reges_II 25:23	JOWX@N@74N	yôḥānˈān	by the rules
+Jeremia 41:14	JO45WX@N@73N	yˈôḥānˌān	by the rules
+Jeremia 41:15	JO45WX@N@92N	yˈôḥānˈān	by the rules
+Jeremia 41:16	JOWX@N@63N	yôḥānˌān	by the rules
+Esra 10:18	JO45WY@D@Q03	yˈôṣāḏāq	on the basis of other occurrences
+Esra 3:2	JO45WY@D@61Q	yˈôṣāḏˈāq	by the rules
+Nehemia 12:26	JOWY@D@92Q	yôṣāḏˈāq	by the rules
+Psalmi 4:9	JAX:D.@W02	yaḥdāw	on the basis of other occurrences
+Psalmi 55:15	13JAX:D.@W	ˈyaḥdāw	on the basis of other occurrences
+Genesis 13:6	JAX:D.@92W	yaḥdˈāw	by the rules
+Genesis 22:19	JAX:D.@73W	yaḥdˌāw	by the rules
+Jeremia 46:12	JAX:D.@73JW	yaḥdˌāʸw	by the rules
+Jeremia 48:7	JAX:D.@75JW	*yaḥdˈāʸw	by the rules
+Iob 9:32	11JAX:D.@81W	ˈyaḥdˈāw	by the rules
+Genesis 27:30	JIY:X@Q02	yiṣḥāq	on the basis of other occurrences
+Genesis 17:19	JIY:X@92Q	yiṣḥˈāq	by the rules
+Genesis 21:5	JIY:X@71Q	yiṣḥˌāq	by the rules
+Genesis 11:6	KUL.@80M	ḵullˈām	by the rules
+Genesis 13:10	KUL.@73H.	ḵullˌāh	by the rules
+Genesis 43:34	K.UL.@73M	kullˌām	by the rules
+Genesis 45:22	KUL.@71M	ḵullˌām	by the rules
+Exodus 25:36	K.UL.@91H.	kullˈāh	by the rules
+Numeri 13:3	K.UL.@74M	kullˈām	by the rules
+Samuel_II 23:6	K.UL.@92HAM	kullˈāham	by the rules
+Jeremia 6:6	K.UL.@73H.	kullˌāh	by the rules
+Jeremia 31:34	KW.L.@M04	ḵûllˌām	by the rules
+Ezechiel 36:5	K.UL.@92>	kullˈā	by the rules
+Psalmi 104:24	13K.UL.@M	ˈkullām	by the rules
+Psalmi 139:4	KUL.@75H.	ḵullˈāh	by the rules
+Genesis 42:11	K.UL.@85NW.	kullˈānû	by the rules
+Genesis 42:36	KUL.@75N@H	ḵullˈānā	by the rules
+Exodus 12:33	K.UL.@71NW.	kullˌānû	by the rules
+Samuel_II 19:7	KUL.@70NW.	ḵullˈānû	by the rules
+Reges_I 7:37	KUL.@75H:N@H	ḵullˈāhᵊnā	by the rules
+Jesaia 22:1	K.UL.@73K:	kullˌāḵ	by the rules
+Micha 2:12	K.UL.@81K:	kullˈāḵ	by the rules
+Proverbia 31:29	K.UL.@75N@H	kullˈānā	by the rules
+Genesis 1:21	K.@L&	kol-	by the rules
+Genesis 1:26	K@L&	ḵol-	by the rules
+Genesis 7:11	K.@45L&	kˈol-	on the basis of other occurrences
+Exodus 15:20	K@45L&	ḵˈol-	on the basis of other occurrences
+Exodus 33:16	K.@63L&	kˌol-	on the basis of other occurrences
+Deuteronomium 28:52	K@63L&	ḵˌol-	on the basis of other occurrences
+Psalmi 35:10	K.@71L	kˌol	on the basis of other occurrences
+Psalmi 119:96	K@L	ḵˌol	on the basis of other occurrences
+Iob 9:4	13L;B@B	ˈlēvāv	on the basis of other occurrences
+Leviticus 26:36	L:B@B@80M	lᵊvāvˈām	by the rules
+Leviticus 26:41	L:B@B@M03	lᵊvāvˌām	by the rules
+Deuteronomium 20:8	L.;B@80B	llēvˈāv	by the rules
+Deuteronomium 28:28	L;B@75B	lēvˈāv	by the rules
+Reges_I 3:6	L;B@73B	lēvˌāv	by the rules
+Reges_I 10:2	L:B@B@75H.	lᵊvāvˈāh	by the rules
+Jesaia 47:8	L:B@80B@H.	lᵊvˈāvāh	by the rules
+Psalmi 24:4	L;60B@71B	lˈēvˌāv	by the rules
+Chronica_I 28:9	L:B@BOWT03	lᵊvāvôṯ	by the rules
+Genesis 20:5	L:B@BI91J	lᵊvāvˈî	by the rules
+Genesis 20:6	L:B@B:K@03	lᵊvāvᵊḵˌā	by the rules
+Leviticus 19:17	L:B@BE92K@	lᵊvāvˈeḵā	by the rules
+Deuteronomium 1:28	L:B@B;61NW.	lᵊvāvˈēnû	by the rules
+Deuteronomium 4:9	L.:B@74B:K@80	llᵊvˈāvᵊḵˈā	by the rules
+Deuteronomium 4:39	L:B@BEK@01	lᵊvāveḵˌā	by the rules
+Deuteronomium 7:17	L:B@74B:K@80	lᵊvˈāvᵊḵˈā	by the rules
+Deuteronomium 8:2	L:B@B:K@91	lᵊvāvᵊḵˈā	by the rules
+Deuteronomium 28:67	L:B@45B:K@03	lᵊvˈāvᵊḵā	by the rules
+Samuel_I 1:8	L:B@B;92K:	lᵊvāvˈēḵ	by the rules
+Samuel_I 2:35	L:B@BI71J	lᵊvāvˌî	by the rules
+Reges_I 8:58	L:B@B;73NW.	lᵊvāvˌēnû	by the rules
+Reges_II 22:19	L:B@63B:K@61	lᵊvˌāvᵊḵˈā	by the rules
+Psalmi 73:26	L:B@60BI71J	lᵊvˈāvˌî	by the rules
+Psalmi 86:11	11L:B@BI81J	ˈlᵊvāvˈî	by the rules
+Deuteronomium 2:30	L:B@BO80W	lᵊvāvˈô	by the rules
+Deuteronomium 17:20	L:B@BOW03	lᵊvāvˌô	by the rules
+Genesis 4:6	10L@M.@H	ˈlāmmā	on the basis of other occurrences
+Genesis 25:32	L@M.@H&	lāmmā-	on the basis of other occurrences
+Exodus 32:12	L@M.@H04	lāmmˌā	on the basis of other occurrences
+Samuel_I 1:8	L@74MEH	lˈāmeh	by the rules
+Samuel_I 1:8	L@73MEH	lˌāmeh	by the rules
+Genesis 4:6	L@73M.@H	lˌāmmā	by the rules
+Genesis 12:19	L@M@70H	lāmˈā	by the rules
+Genesis 18:13	L@74M.@H	lˈāmmā	by the rules
+Genesis 27:45	L@M@71H	lāmˌā	by the rules
+Samuel_II 18:22	L@45M.@H&	lˈāmmā-	by the rules
+Iob 7:20	L@70M@H	lˈāmā	by the rules
+Canticum 1:7	L.@M@70H	llāmˈā	by the rules
+Genesis 6:21	MA95>:AK@L03	mˈaʔᵃḵāl	on the basis of other occurrences
+Psalmi 79:2	13MA>:AK@L	ˈmaʔᵃḵāl	on the basis of other occurrences
+Genesis 2:9	MA>:AK@92L	maʔᵃḵˈāl	by the rules
+Deuteronomium 20:20	MA>:AK@L03	maʔᵃḵˌāl	by the rules
+Jeremia 7:33	MA45>:AK@80L	mˈaʔᵃḵˈāl	by the rules
+Psalmi 74:14	11MA>:AK@81L	ˈmaʔᵃḵˈāl	by the rules
+Proverbia 6:8	MA>:AK@L@75H.	maʔᵃḵālˈāh	by the rules
+Ezechiel 4:10	MA>:AK@45L:K@03	maʔᵃḵˈālᵊḵā	by the rules
+Habakuk 1:16	MA>:AK@LO73W	maʔᵃḵālˌô	by the rules
+Ezechiel 14:8	M:C@LI80JM	mᵊšālˈîm	by the rules
+Ezechiel 21:5	M:C@LI73JM	mᵊšālˌîm	by the rules
+Numeri 23:7	M:C@LO73W	mᵊšālˌô	by the rules
+Iob 27:1	M:C@LO81W	mᵊšālˈô	by the rules
+Psalmi 44:15	13M@C@L	ˈmāšāl	on the basis of other occurrences
+Deuteronomium 28:37	M@C@73L	māšˌāl	by the rules
+Samuel_I 10:12	M@C@80L	māšˈāl	by the rules
+Jesaia 14:4	M.@C@71L	mmāšˌāl	by the rules
+Ezechiel 12:22	M.@C@70L	mmāšˈāl	by the rules
+Proverbia 4:23	13MIC:M@R	ˈmišmār	on the basis of other occurrences
+Genesis 40:4	MIC:M@75R	mišmˈār	by the rules
+Genesis 42:17	MIC:M@73R	mišmˌār	by the rules
+Leviticus 24:12	M.IC:M@92R	mmišmˈār	by the rules
+Nehemia 4:17	M.IC:M@R03	mmišmˌār	by the rules
+Nehemia 13:14	MIC:M@R@75JW	mišmārˈāʸw	by the rules
+Nehemia 7:3	MIC:M@RO80W	mišmārˈô	by the rules
+Proverbia 16:11	13MIC:P.@V	ˈmišpāṭ	on the basis of other occurrences
+Genesis 18:19	MIC:P.@92V	mišpˈāṭ	by the rules
+Genesis 40:13	M.IC:P.@V03	mmišpˌāṭ	by the rules
+Exodus 15:25	MIC:P.@73V	mišpˌāṭ	by the rules
+Exodus 21:1	M.IC:P.@VI80JM	mmišpāṭˈîm	by the rules
+Exodus 28:29	M.IC:P.@91V	mmišpˈāṭ	by the rules
+Leviticus 18:4	MIC:P.@VA94J	mišpāṭˈay	by the rules
+Leviticus 25:18	MIC:P.@VA71J	mišpāṭˌay	by the rules
+Leviticus 26:46	M.IC:P.@VIJM02	mmišpāṭîm	by the rules
+Numeri 9:3	MIC:P.@V@73JW	mišpāṭˌāʸw	by the rules
+Numeri 27:5	MIC:P.@V@73N	mišpāṭˌān	by the rules
+Numeri 29:6	MIC:P.@V@92M	mišpāṭˈām	by the rules
+Numeri 35:24	M.IC:P.@VI73JM	mmišpāṭˌîm	by the rules
+Deuteronomium 4:5	MIC:P.@VI80JM	mišpāṭˈîm	by the rules
+Deuteronomium 4:8	MIC:P.@VI73JM	mišpāṭˌîm	by the rules
+Deuteronomium 8:11	MIC:P.@V@74JW	mišpāṭˈāʸw	by the rules
+Reges_II 17:40	MIC:P.@V@71M	mišpāṭˌām	by the rules
+Jeremia 12:1	MIC:P.@VIJM03	mišpāṭîm	by the rules
+Jeremia 51:9	MIC:P.@V@80H.	mišpāṭˈāh	by the rules
+Ezechiel 20:25	MI63C:P.@VI80JM	mˌišpāṭˈîm	by the rules
+Psalmi 81:5	11MIC:P.@81V	ˈmišpˈāṭ	by the rules
+Zephania 3:15	MIC:P.@VA80JIK:	mišpāṭˈayiḵ	by the rules
+Deuteronomium 33:10	MIC:P.@VE33JK@03	mišpāṭˈeʸḵā	by the rules
+Reges_I 20:40	MIC:P.@VE73K@	mišpāṭˌeḵā	by the rules
+Jesaia 40:27	MIC:P.@VI71J	mišpāṭˌî	by the rules
+Jesaia 49:4	MIC:P.@VI74J	mišpāṭˈî	by the rules
+Hosea 6:5	MIC:P.@VE73JK@	mišpāṭˌeʸḵā	by the rules
+Psalmi 10:5	13MIC:P.@VEJK@	ˈmišpāṭeʸḵā	by the rules
+Psalmi 36:7	13MIC:P.@VEK@	ˈmišpāṭeḵā	by the rules
+Psalmi 37:6	MIC:P.@VE81K@	mišpāṭˈeḵā	by the rules
+Psalmi 119:91	MIC:P.@VEJK@	mišpāṭeʸḵˌā	by the rules
+Psalmi 119:102	M.IC:P.@VE71JK@	mmišpāṭˌeʸḵā	by the rules
+Daniel 9:5	M.IC:P.@VE75JK@	mmišpāṭˈeʸḵā	by the rules
+Exodus 26:30	MI63C:P.@VO80W	mˌišpāṭˈô	by the rules
+Numeri 9:14	MIC:P.@VO73W	mišpāṭˌô	by the rules
+Samuel_I 27:11	MIC:P.@VO80W	mišpāṭˈô	by the rules
+Josua 18:12	MID:B.A73R@H	miḏbˌarā	by the rules
+Reges_I 19:15	MID:B.A74R@H	miḏbˈarā	by the rules
+Psalmi 107:35	13MID:B.@R	ˈmiḏbār	on the basis of other occurrences
+Genesis 14:6	M.ID:B.@75R	mmiḏbˈār	by the rules
+Exodus 4:27	M.ID:B.@92R@H	mmiḏbˈārā	by the rules
+Exodus 13:18	M.ID:B.@73R	mmiḏbˌār	by the rules
+Deuteronomium 1:40	M.ID:B.@73R@H	mmiḏbˌārā	by the rules
+Deuteronomium 32:10	MID:B.@80R	miḏbˈār	by the rules
+Jesaia 16:1	MID:B.@92R@H	miḏbˈārā	by the rules
+Jesaia 32:15	MID:B.@R03	miḏbˌār	by the rules
+Jesaia 51:3	MID:B.@R@H.03	miḏbārˌāh	by the rules
+Iob 38:26	11MID:B.@81R	ˈmiḏbˈār	by the rules
+Ezechiel 48:17	MIG:R@C02	miḡrāš	on the basis of other occurrences
+Numeri 35:2	MIG:R@81C	miḡrˈāš	by the rules
+Ezechiel 36:5	MIG:R@C@73H.	miḡrāšˌāh	by the rules
+Ezechiel 45:2	MIG:R@71C	miḡrˌāš	by the rules
+Josua 21:11	MIG:R@CE73H@	miḡrāšˌehā	by the rules
+Josua 21:13	MIG:R@CE92H@	miḡrāšˈehā	by the rules
+Josua 21:42	MIG:R@CE73JH@	miḡrāšˌeʸhā	by the rules
+Chronica_I 6:42	MIG:R@CE92JH@	miḡrāšˈeʸhā	by the rules
+Jeremia 13:25	M:N@T&	mᵊnāṯ-	on the basis of other occurrences
+Psalmi 11:6	M:N@74T	mᵊnˈāṯ	by the rules
+Psalmi 63:11	M:N@73T	mᵊnˌāṯ	by the rules
+Nehemia 12:44	M:N@>O74WT	mᵊnāʔˈôṯ	by the rules
+Nehemia 12:47	M:N@JO91WT	mᵊnāyˈôṯ	by the rules
+Nehemia 13:10	M:N@JO71WT	mᵊnāyˌôṯ	by the rules
+Esther 2:5	M@R:D.:@KA81J	mordᵒḵˈay	by the rules
+Esther 2:11	M@R:D.:@KAJ03	mordᵒḵˌay	by the rules
+Esther 2:20	M@R:D.:@K@92J	mordᵒḵˈāy	by the rules
+Esther 3:2	M@63R:D.:@KA80J	mˌordᵒḵˈay	on the basis of other occurrences
+Psalmi 147:4	13MIS:P.@R	ˈmispār	on the basis of other occurrences
+Genesis 34:30	MIS:P.@80R	mispˈār	by the rules
+Numeri 9:20	MIS:P.@73R	mispˌār	by the rules
+Numeri 15:12	M.IS:P.@73R	mmispˌār	by the rules
+Numeri 15:12	MIS:P.@R@75M	mispārˈām	by the rules
+Numeri 29:18	MIS:P.@R@73M	mispārˌām	by the rules
+Chronica_I 27:24	M.IS:P.@80R	mmispˈār	by the rules
+Iob 5:10	13M@V@R	ˈmāṭār	on the basis of other occurrences
+Exodus 9:33	M@V@73R	māṭˌār	by the rules
+Exodus 9:34	M.@V@94R	mmāṭˈār	by the rules
+Deuteronomium 11:17	M@V@80R	māṭˈār	by the rules
+Deuteronomium 32:2	M.@V@R03	mmāṭˌār	by the rules
+Proverbia 12:1	M73W.S@R	mˌûsār	on the basis of other occurrences
+Jeremia 2:30	MW.S@73R	mûsˌār	by the rules
+Jeremia 5:3	MW.S@92R	mûsˈār	by the rules
+Iob 33:16	MO73S@R@74M	mˌōsārˈām	by the rules
+Iob 36:10	M.W.S@92R	mmûsˈār	by the rules
+Proverbia 22:15	11MW.S@81R	ˈmûsˈār	by the rules
+Jesaia 26:16	MW.S@R:K@73	mûsārᵊḵˌā	by the rules
+Proverbia 8:10	MW.S@RI71J	mûsārˌî	by the rules
+Numeri 11:18	M@X@R02	māḥār	on the basis of other occurrences
+Genesis 30:33	M@X@80R	māḥˈār	by the rules
+Exodus 8:19	M@X@71R	māḥˌār	by the rules
+Deuteronomium 4:41	MIZ:R:X@73H	mizrᵊḥˌā	by the rules
+Josua 12:1	MIZ:R:X@74H	mizrᵊḥˈā	by the rules
+Psalmi 103:12	13MIZ:R@X	ˈmizrāḥ	on the basis of other occurrences
+Chronica_I 26:17	M.IZ:R@X02	mmizrāḥ	on the basis of other occurrences
+Exodus 27:13	MIZ:R@73X@H	mizrˌāḥā	by the rules
+Numeri 2:3	MIZ:R@80X@H	mizrˈāḥā	by the rules
+Josua 11:3	M.IZ:R@74X	mmizrˈāḥ	by the rules
+Jesaia 43:5	M.IZ:R@X03	mmizrˌāḥ	by the rules
+Amos 8:12	MIZ:R@92X	mizrˈāḥ	by the rules
+Chronica_I 5:10	MIZ:R@71X	mizrˌāḥ	by the rules
+Chronica_II 31:14	M.IZ:R@80X@H	mmizrˈāḥā	by the rules
+Reges_II 5:21	NA45<:AM@N03	nˈaʕᵃmān	on the basis of other occurrences
+Genesis 46:21	NA<:AM@73N	naʕᵃmˌān	by the rules
+Numeri 26:40	NA<:AM@92N	naʕᵃmˈān	by the rules
+Numeri 26:40	NA45<:AM@80N	nˈaʕᵃmˈān	by the rules
+Samuel_II 13:13	N.:B@LI73JM	nnᵊvālˌîm	by the rules
+Iob 2:10	N.:B@LOWT03	nnᵊvālôṯ	by the rules
+Iob 30:8	13N@B@L	ˈnāvāl	on the basis of other occurrences
+Deuteronomium 32:6	N@B@73L	nāvˌāl	by the rules
+Psalmi 39:9	11N@B@81L	ˈnāvˈāl	by the rules
+Jeremia 39:9	N:B45W.ZAR&>:AD@71N	nᵊvˈûzar-ʔᵃḏˌān	by the rules
+Jeremia 41:10	N:B45W.ZAR:>:AD@N03	nᵊvˈûzarʔᵃḏān	on the basis of other occurrences
+Reges_II 25:8	N:BW.ZAR:>:AD@94N	nᵊvûzarʔᵃḏˈān	by the rules
+Reges_II 25:11	N:BW.ZAR:>:AD@73N	nᵊvûzarʔᵃḏˌān	by the rules
+Jeremia 39:13	N:B45W.ZAR:>:AD@74N	nᵊvˈûzarʔᵃḏˈān	by the rules
+Numeri 21:6	N.:X@CI74JM	nnᵊḥāšˈîm	by the rules
+Jeremia 8:17	N:X@CIJM03	nᵊḥāšîm	by the rules
+Genesis 3:14	N.@X@C02	nnāḥāš	on the basis of other occurrences
+Genesis 3:1	N.@X@C03	nnāḥˌāš	by the rules
+Genesis 3:2	N.@X@92C	nnāḥˈāš	by the rules
+Genesis 49:17	N@X@74C	nāḥˈāš	by the rules
+Exodus 7:15	N@X@73C	nāḥˌāš	by the rules
+Psalmi 140:4	N@60X@71C	nˈāḥˌāš	by the rules
+Samuel_II 23:20	P.:<@LI73JM	pᵊʕolˌîm	on the basis of other occurrences
+Jeremia 25:14	P@<:@L@73M	foʕᵒlˌām	by the rules
+Jeremia 50:29	P@<:@L@80H.	foʕᵒlˈāh	by the rules
+Psalmi 28:4	P@<:@L@M02	foʕᵒlām	by the rules
+Iob 36:9	P.@<:@L@92M	poʕᵒlˈām	by the rules
+Psalmi 77:13	P.@<:@LE92K@	poʕᵒlˈeḵā	by the rules
+Psalmi 90:16	P@<:@LE92K@	foʕᵒlˈeḵā	by the rules
+Psalmi 95:9	P@<:@LI25J	foʕᵒlˈî	by the rules
+Ruth 2:12	P.@<:@L;92K:	poʕᵒlˈēḵ	by the rules
+Deuteronomium 32:4	P.@<:@LO80W	poʕᵒlˈô	by the rules
+Psalmi 104:23	P@<:@LO92W	foʕᵒlˈô	by the rules
+Psalmi 111:3	P.@45<:@LO92W	pˈoʕᵒlˈô	by the rules
+Jesaia 41:24	P@<@L:KE73M	foʕolᵊḵˌem	on the basis of other occurrences
+Jesaia 45:9	P@<@L:K@73	foʕolᵊḵˌā	on the basis of other occurrences
+Habakuk 3:2	P.@45<@L:K@03	pˈoʕolᵊḵā	on the basis of other occurrences
+Numeri 25:7	P.I45JN:X@S03	pˈînᵊḥās	on the basis of other occurrences
+Samuel_I 4:19	P.IJN:X@S02	pînᵊḥās	on the basis of other occurrences
+Psalmi 106:30	13P.I45JN:X@S	ˈpˈînᵊḥās	on the basis of other occurrences
+Esra 8:2	PI45JN:X@S03	fˈînᵊḥās	on the basis of other occurrences
+Exodus 6:25	P.I45JN:X@92S	pˈînᵊḥˈās	by the rules
+Numeri 25:11	P.I45JN:X@63S	pˈînᵊḥˌās	by the rules
+Numeri 31:6	P.I63JN:X@61S	pˌînᵊḥˈās	by the rules
+Josua 22:13	P.IJN:X@73S	pînᵊḥˌās	by the rules
+Judices 20:28	PIJN:X@S	fînᵊḥˌās	by the rules
+Samuel_I 1:3	PI74N:X@80S	fˈinḥˈās	by the rules
+Samuel_I 2:34	PI45JN:X@92S	fˈînᵊḥˈās	by the rules
+Ezechiel 44:13	Q.:D@CI92JM	qqᵊḏāšˈîm	by the rules
+Exodus 26:33	Q.:@D@CI75JM	qqᵒḏāšˈîm	by the rules
+Leviticus 21:22	Q.:@D@CI73JM	qqᵒḏāšˌîm	by the rules
+Leviticus 22:3	Q.:@D@CIJM03	qqᵒḏāšîm	by the rules
+Numeri 5:10	Q:@D@C@73JW	qᵒḏāšˌāʸw	by the rules
+Reges_II 12:19	Q:@D@C@80JW	qᵒḏāšˈāʸw	by the rules
+Exodus 28:38	Q@D:C;JHE92M	qoḏšêhˈem	by the rules
+Leviticus 5:15	Q.@D:C;73J	qqoḏšˌê	by the rules
+Leviticus 22:2	Q.@D:C;74J	qqoḏšˈê	by the rules
+Leviticus 22:15	Q@D:C;73J	qoḏšˌê	by the rules
+Numeri 5:9	Q@D:C;94J	qoḏšˈê	by the rules
+Ezechiel 20:40	Q@D:C;JKE75M	qoḏšêḵˈem	by the rules
+Exodus 15:13	Q@D:CE75K@	qoḏšˈeḵā	by the rules
+Leviticus 20:3	Q@D:CI75J	qoḏšˈî	by the rules
+Deuteronomium 26:15	Q@D:C:K@61	qoḏšᵊḵˈā	by the rules
+Jesaia 63:15	Q@D:C:K@73	qoḏšᵊḵˌā	by the rules
+Jesaia 64:10	Q@D:C;74NW.	qoḏšˈēnû	by the rules
+Jesaia 65:25	Q@D:CI73J	qoḏšˌî	by the rules
+Psalmi 5:8	11Q@D:C:K@81	ˈqoḏšᵊḵˈā	by the rules
+Jesaia 52:10	Q@D:CO80W	qoḏšˈô	by the rules
+Jeremia 25:30	Q@D:COW03	qoḏšˌô	by the rules
+Exodus 29:37	Q@45D@CI80JM	qˈoḏāšˈîm	on the basis of other occurrences
+Exodus 30:10	Q@95D@CI71JM	qˈoḏāšˌîm	on the basis of other occurrences
+Leviticus 6:10	Q@45D@CIJM03	qˈoḏāšîm	on the basis of other occurrences
+Ezechiel 22:8	Q@D@CA73J	qoḏāšˌay	on the basis of other occurrences
+Ezechiel 43:12	Q@D@CI80JM	qoḏāšˈîm	on the basis of other occurrences
+Ezechiel 44:8	Q@D@C@92J	qoḏāšˈāy	on the basis of other occurrences
+Ezechiel 44:13	Q@74D@CA80J	qˈoḏāšˈay	on the basis of other occurrences
+Chronica_II 15:18	Q@45D@C@73JW	qˈoḏāšˌāʸw	on the basis of other occurrences
+Deuteronomium 12:26	Q@95D@CE91JK@	qˈoḏāšˈeʸḵā	on the basis of other occurrences
+Psalmi 55:19	Q.:AR@B&	qqᵃrāv-	on the basis of other occurrences
+Psalmi 55:22	Q:AR@B&	qᵃrāv-	on the basis of other occurrences
+Samuel_II 17:11	Q:R@75B	qᵊrˈāv	by the rules
+Psalmi 68:31	Q:R@BO71WT	qᵊrāvˌôṯ	by the rules
+Iob 38:23	11Q:R@81B	ˈqrˈāv	by the rules
+Leviticus 1:2	Q@R:B.AN:KE75M	qorbanᵊḵˈem	by the rules
+Leviticus 2:1	Q@R:B.A70N	qorbˈan	by the rules
+Leviticus 2:4	Q@R:B.A71N	qorbˌan	by the rules
+Leviticus 7:38	Q@R:B.:N;JHE91M	qorbᵊnêhˈem	by the rules
+Leviticus 1:2	Q@R:B.@73N	qorbˌān	by the rules
+Leviticus 7:14	Q@R:B.@80N	qorbˈān	by the rules
+Numeri 5:15	Q@R:B.@N@H.03	qorbānˌāh	by the rules
+Numeri 7:3	Q@R:B.@N@61M	qorbānˈām	by the rules
+Numeri 7:10	Q@R:B.@N@73M	qorbānˌām	by the rules
+Leviticus 2:5	Q@R:B.@NE92K@	qorbānˈeḵā	by the rules
+Leviticus 2:13	Q@R:B.@N:K@73	qorbānᵊḵˌā	by the rules
+Numeri 28:2	Q@R:B.@NI63J	qorbānˌî	by the rules
+Leviticus 1:3	Q@R:B.@NOW03	qorbānˌô	by the rules
+Leviticus 1:10	Q@R:B.@NO94W	qorbānˈô	by the rules
+Ezechiel 40:43	Q.@R:B@75N	qqorᵊvˈān	on the basis of other occurrences
+Leviticus 23:10	Q:YIJR@92H.	qᵊṣîrˈāh	by the rules
+Leviticus 19:9	Q:YI45JR:K@73	qᵊṣˈîrᵊḵˌā	by the rules
+Leviticus 23:22	Q:YIJR:K@73	qᵊṣîrᵊḵˌā	by the rules
+Leviticus 25:5	Q:YI45JR:K@03	qᵊṣˈîrᵊḵā	by the rules
+Jeremia 5:17	Q:YI45JR:K@61	qᵊṣˈîrᵊḵˈā	by the rules
+Genesis 45:6	Q@Y.I75JR	qāṣṣˈîr	on the basis of other occurrences
+Genesis 8:22	Q@YIJR	qāṣîr	by the rules
+Exodus 23:16	Q.@YIJR03	qqāṣîr	by the rules
+Exodus 34:21	Q.@YI73JR	qqāṣˌîr	by the rules
+Josua 3:15	Q@YI75JR	qāṣˈîr	by the rules
+Jesaia 9:2	Q.@YI80JR	qqāṣˈîr	by the rules
+Jeremia 5:24	Q@YI73JR	qāṣˌîr	by the rules
+Psalmi 119:101	13R@<	ˈrāʕ	on the basis of other occurrences
+Genesis 2:9	R@75<	rˈāʕ	by the rules
+Genesis 13:13	R@<I73JM	rāʕˌîm	by the rules
+Genesis 28:8	R@<O73WT	rāʕˌôṯ	by the rules
+Genesis 41:4	R@<O70WT	rāʕˈôṯ	by the rules
+Genesis 41:27	R@<O61T	rāʕˈōṯ	by the rules
+Genesis 47:9	R@<I81JM	rāʕˈîm	by the rules
+Exodus 32:22	R@73<	rˌāʕ	by the rules
+Reges_II 17:13	R@<IJM03	rāʕîm	by the rules
+Jeremia 24:3	R@<OWT03	rāʕôṯ	by the rules
+Jeremia 39:12	R.@92<	rrˈāʕ	by the rules
+Ezechiel 7:24	R@<;74J	rāʕˈê	by the rules
+Psalmi 36:5	11R@81<	ˈrˈāʕ	by the rules
+Proverbia 14:19	13R@<IJM	ˈrāʕîm	by the rules
+Nehemia 9:15	R:<@B@80M	rᵊʕāvˈām	by the rules
+Psalmi 105:16	13R@<@B	ˈrāʕāv	on the basis of other occurrences
+Genesis 12:10	R@<@73B	rāʕˌāv	by the rules
+Genesis 26:1	R@<@74B	rāʕˈāv	by the rules
+Jeremia 11:16	RA45<:AN@N03	rˈaʕᵃnān	on the basis of other occurrences
+Psalmi 52:10	13RA<:AN@N	ˈraʕᵃnān	on the basis of other occurrences
+Deuteronomium 12:2	RA<:AN@N	raʕᵃnˌān	by the rules
+Reges_I 14:23	RA<:AN@75N	raʕᵃnˈān	by the rules
+Jeremia 17:2	RA45<:AN@92N	rˈaʕᵃnˈān	by the rules
+Canticum 1:16	RA<:AN@N@75H	raʕᵃnānˈā	by the rules
+Genesis 6:5	RAB.@91H	rabbˈā	by the rules
+Numeri 11:33	RAB.@71H	rabbˌā	by the rules
+Threni 1:1	RAB.@74TIJ	rabbˈāṯî	by the rules
+Psalmi 18:15	11R@B	ˈrāv	on the basis of other occurrences
+Genesis 13:6	R@80B	rˈāv	by the rules
+Genesis 36:7	R@73B	rˌāv	by the rules
+Proverbia 15:16	11R@81B	ˈrˈāv	by the rules
+Exodus 9:27	R:C@<I75JM	rᵊšāʕˈîm	by the rules
+Numeri 16:26	R:C@<IJM03	rᵊšāʕîm	by the rules
+Samuel_I 2:9	R:C@<I73JM	rᵊšāʕˌîm	by the rules
+Ezechiel 3:18	R:C@<@73H	rᵊšāʕˌā	by the rules
+Ezechiel 3:19	R:C@<@92H	rᵊšāʕˈā	by the rules
+Psalmi 1:1	R:C@60<I71JM	rᵊšˈāʕˌîm	by the rules
+Psalmi 1:5	13R:C@<IJM	ˈršāʕîm	by the rules
+Psalmi 26:5	11R:C@<I81JM	ˈršāʕˈîm	by the rules
+Iob 21:17	R:C@82<I70JM	rᵊšˈāʕˈîm	by the rules
+Psalmi 10:2	13R@C@<	ˈrāšāʕ	on the basis of other occurrences
+Proverbia 24:24	R@C@<02	rāšāʕ	on the basis of other occurrences
+Genesis 18:23	R@C@75<	rāšˈāʕ	by the rules
+Numeri 35:31	R@C@73<	rāšˌāʕ	by the rules
+Psalmi 32:10	R@60C@71<	rˈāšˌāʕ	by the rules
+Psalmi 112:10	R@82C@70<	rˈāšˈāʕ	by the rules
+Iob 34:18	11R@C@81<	ˈrāšˈāʕ	by the rules
+Reges_I 12:21	R:XAB:<@M02	rᵊḥavʕām	on the basis of other occurrences
+Reges_I 11:43	R:XAB:<@71M	rᵊḥavʕˌām	by the rules
+Reges_I 12:6	R:XAB:<@81M	rᵊḥavʕˈām	by the rules
+Canticum 5:2	TAM.@TI80J	ṯammāṯˈî	by the rules
+Psalmi 37:37	13T.@M	ˈtām	on the basis of other occurrences
+Genesis 25:27	T.@80M	tˈām	by the rules
+Iob 9:20	T.@45M&	tˈām-	by the rules
+Iob 9:22	T.@71M	tˌām	by the rules
+Proverbia 29:10	T@92M	ṯˈām	by the rules
+Leviticus 23:16	X:AD@C@73H	ḥᵃḏāšˌā	by the rules
+Deuteronomium 24:5	X:AD@C@80H	ḥᵃḏāšˈā	by the rules
+Deuteronomium 32:17	X:AD@CIJM03	ḥᵃḏāšîm	by the rules
+Josua 9:13	X:AD@CI80JM	ḥᵃḏāšˈîm	by the rules
+Jesaia 42:9	X:AD@COWT03	ḥᵃḏāšôṯ	by the rules
+Jesaia 65:17	X:AD@CI73JM	ḥᵃḏāšˌîm	by the rules
+Iob 32:19	11X:AD@CI81JM	ˈḥᵃḏāšˈîm	by the rules
+Psalmi 40:4	X@D@C02	ḥāḏāš	on the basis of other occurrences
+Psalmi 98:1	13X@D@C	ˈḥāḏāš	on the basis of other occurrences
+Exodus 1:8	X@D@73C	ḥāḏˌāš	by the rules
+Deuteronomium 22:8	X@D@80C	ḥāḏˈāš	by the rules
+Exodus 7:11	X:AK@MI73JM	ḥᵃḵāmˌîm	by the rules
+Exodus 36:4	X:AK@MI80JM	ḥᵃḵāmˈîm	by the rules
+Deuteronomium 1:15	X:AK@MIJM03	ḥᵃḵāmîm	by the rules
+Samuel_II 14:2	X:AK@M@92H	ḥᵃḵāmˈā	by the rules
+Samuel_II 20:16	X:AK@M@73H	ḥᵃḵāmˌā	by the rules
+Jesaia 29:14	X:AK@M@80JW	ḥᵃḵāmˈāʸw	by the rules
+Jeremia 9:16	X:AK@MO71WT	ḥᵃḵāmˌôṯ	by the rules
+Psalmi 49:11	X:AK@82MI70JM	ḥᵃḵˈāmˈîm	by the rules
+Proverbia 1:6	11X:AK@MI81JM	ˈḥᵃḵāmˈîm	by the rules
+Proverbia 15:2	13X:AK@MIJM	ˈḥᵃḵāmîm	by the rules
+Ezechiel 27:8	X:AK@MA70JIK:	ḥᵃḵāmˈayiḵ	by the rules
+Genesis 41:8	X:AK@ME92JH@	ḥᵃḵāmˈeʸhā	by the rules
+Jesaia 19:12	X:AK@ME80JK@	ḥᵃḵāmˈeʸḵā	by the rules
+Proverbia 1:5	13X@K@M	ˈḥāḵām	on the basis of other occurrences
+Genesis 41:33	X@K@92M	ḥāḵˈām	by the rules
+Genesis 41:39	X@K@73M	ḥāḵˌām	by the rules
+Iob 34:34	11X@K@81M	ˈḥāḵˈām	by the rules
+Genesis 9:22	10X@M	ˈḥām	on the basis of other occurrences
+Genesis 5:32	X@71M	ḥˌām	by the rules
+Genesis 9:18	X@74M	ḥˈām	by the rules
+Samuel_II 22:49	X:AM@SI73JM	ḥᵃmāsˌîm	by the rules
+Psalmi 140:2	X:AM@SI74JM	ḥᵃmāsˈîm	by the rules
+Genesis 16:5	X:AM@SI74J	ḥᵃmāsˈî	by the rules
+Psalmi 7:17	X:AM@SO71W	ḥᵃmāsˌô	by the rules
+Iob 19:7	13X@M@S	ˈḥāmās	on the basis of other occurrences
+Genesis 6:11	X@M@75S	ḥāmˈās	by the rules
+Genesis 6:13	X@M@73S	ḥāmˌās	by the rules
+Psalmi 18:49	11X@M@81S	ˈḥāmˈās	by the rules
+Proverbia 1:17	13XIN.@M	ˈḥinnām	on the basis of other occurrences
+Genesis 29:15	XIN.@92M	ḥinnˈām	by the rules
+Exodus 21:11	XIN.@73M	ḥinnˌām	by the rules
+Psalmi 35:7	11XIN.@81M	ˈḥinnˈām	by the rules
+Psalmi 69:5	XI60N.@71M	ḥˈinnˌām	by the rules
+Jesaia 58:6	X@P:CI80JM	ḥofšˈîm	by the rules
+Jeremia 34:16	X@P:CI73JM	ḥofšˌîm	by the rules
+Exodus 21:2	X@P:CI73J	ḥofšˌî	by the rules
+Exodus 21:5	X@P:CI75J	ḥofšˈî	by the rules
+Psalmi 88:6	X@60P:CI71J	ḥˈofšˌî	on the basis of other occurrences
+Genesis 47:22	XUQ.@M03	ḥuqqˌām	by the rules
+Exodus 15:26	XUQ.@92JW	ḥuqqˈāʸw	by the rules
+Deuteronomium 6:17	XUQ.@73JW	ḥuqqˌāʸw	by the rules
+Reges_I 8:58	XUQ.@JW03	ḥuqqāʸw	by the rules
+Psalmi 50:16	XUQ.@92J	ḥuqqˈāy	by the rules
+Psalmi 105:45	13XUQ.@JW	ˈḥuqqāʸw	by the rules
+Psalmi 119:5	XUQ.E75JK@	ḥuqqˈeʸḵā	by the rules
+Psalmi 119:8	XUQ.E71JK@	ḥuqqˌeʸḵā	by the rules
+Psalmi 119:83	11XUQ.E81JK@	ˈḥuqqˈeʸḵā	by the rules
+Psalmi 119:155	11XUQ.EJK@	ˈḥuqqeʸḵā	by the rules
+Exodus 12:24	X@Q&	ḥoq-	by the rules
+Exodus 5:14	X@Q:KE70M	ḥoqᵊḵˈem	on the basis of other occurrences
+Leviticus 10:13	X@Q:K@70	ḥoqᵊḵˈā	on the basis of other occurrences
+Jesaia 48:21	X:@R@BOWT03	ḥᵒrāvôṯ	by the rules
+Ezechiel 13:4	X:@R@BO92WT	ḥᵒrāvˈôṯ	by the rules
+Ezechiel 33:24	X:@R@BO63WT	ḥᵒrāvˌôṯ	by the rules
+Leviticus 26:31	X@R:B.@80H	ḥārᵊbbˈoh	on the basis of other occurrences
+Jeremia 7:34	X@R:B.@73H	ḥārᵊbbˌoh	on the basis of other occurrences
+Jesaia 5:17	X@R:BO71WT	ḥārᵊvˌôṯ	by the rules
+Jesaia 58:12	X@R:BO74WT	ḥārᵊvˈôṯ	by the rules
+Ezechiel 29:10	X@R:BOWT03	ḥārᵊvôṯ	by the rules
+Psalmi 109:10	X@R:BOWT;JHE75M	ḥārᵊvôṯêhˈem	by the rules
+Esra 9:9	X@R:BOT@80JW	ḥārᵊvōṯˈāʸw	by the rules
+Jesaia 49:19	X@R:BOTA33JIK:03	ḥārᵊvōṯˈayiḵ	by the rules
+Jesaia 44:26	X@R:BOWTE73JH@	ḥārᵊvôṯˌeʸhā	by the rules
+Jesaia 51:3	X@R:BOTE80JH@	ḥārᵊvōṯˈeʸhā	by the rules
+Psalmi 69:11	X:AR@PO74WT	ḥᵃrāfˈôṯ	by the rules
+Daniel 12:2	X:AR@PO73WT	ḥᵃrāfˌôṯ	by the rules
+Iob 19:5	XER:P.@T.I75J	ḥerpāttˈî	on the basis of other occurrences
+Genesis 34:14	XER:P.@71H	ḥerpˌā	by the rules
+Jesaia 30:5	XER:P.@75H	ḥerpˈā	by the rules
+Ezechiel 21:33	XER:P.@T@92M	ḥerpāṯˈām	by the rules
+Psalmi 44:14	13XER:P.@H	ˈḥerpā	by the rules
+Psalmi 79:12	XER:P.@82T@70M	ḥerpˈāṯˈām	by the rules
+Psalmi 89:42	11XER:P.@81H	ˈḥerpˈā	by the rules
+Threni 3:61	XER:P.@T@M03	ḥerpāṯˌām	by the rules
+Genesis 30:23	XER:P.@TI75J	ḥerpāṯˈî	by the rules
+Jesaia 4:1	XER:P.@T;75NW.	ḥerpāṯˈēnû	by the rules
+Jesaia 47:3	XER:P.@T;92K:	ḥerpāṯˈēḵ	by the rules
+Psalmi 74:22	XER:P.@T:K@71	ḥerpāṯᵊḵˌā	by the rules
+Psalmi 119:39	13XER:P.@TIJ	ˈḥerpāṯî	by the rules
+Hosea 12:15	XE63R:P.@TO80W	ḥˌerpāṯˈô	by the rules
+Proverbia 6:33	XER:P.@TO81W	ḥerpāṯˈô	by the rules
+Daniel 11:18	XER:P.@TOW03	ḥerpāṯˌô	by the rules
+Genesis 19:14	X:AT@N@74JW	ḥᵃṯānˈāʸw	by the rules
+Judices 19:5	X:AT@NO81W	ḥᵃṯānˈô	by the rules
+Jeremia 33:11	X@T@N02	ḥāṯān	on the basis of other occurrences
+Genesis 19:12	X@T@N03	ḥāṯˌān	by the rules
+Ezechiel 48:1	X:AYA74R_<;JN@N04	ḥᵃṣˈar ʕênān	on the basis of other occurrences
+Numeri 34:9	X:AYA74R_<;JN@92N	ḥᵃṣˈar ʕênˈān	by the rules
+Numeri 34:10	X:AYA71R_<;JN@73N	ḥᵃṣˌar ʕênˌān	by the rules
+Numeri 27:7	Y:L@P:X@D02	ṣᵊlofḥāḏ	on the basis of other occurrences
+Numeri 26:33	Y:L@P:X@74D	ṣᵊlofḥˈāḏ	by the rules
+Numeri 36:2	Y:L@P:X@71D	ṣᵊlofḥˌāḏ	by the rules

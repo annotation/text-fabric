@@ -285,6 +285,12 @@ class Data(object):
         dirName = dirName or self.dirName
         fileName = fileName or self.fileName
         extension = extension or self.extension
+        if not os.path.exists(dirName):
+            try:
+                os.makedirs(dirName, exist_ok=True)
+            except:
+                self.tm.error('Cannot create directory "{}"'.format(dirName))
+                return False
         fpath = '{}/{}{}'.format(dirName, fileName, extension)
         if fpath == self.path:
             if os.path.exists(fpath):

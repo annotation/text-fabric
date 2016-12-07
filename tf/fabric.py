@@ -7,7 +7,7 @@ from .prepare import *
 from .api import *
 
 NAME = 'Text-Fabric'
-VERSION = '1.0.1'
+VERSION = '1.1.0'
 APIREF = 'https://github.com/dirkroorda/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/dirkroorda/text-fabric/blob/master/docs/tutorial.ipynb'
 FEATDOC = 'https://shebanq.ancient-data.org/static/docs/featuredoc/texts/welcome.html'
@@ -87,6 +87,7 @@ Questions? Ask {} for an invite to Slack'''.format(
                 otextMeta = self.features[GRID[2]].metaData
                 for otextMod in self.features:
                     if otextMod.startswith(GRID[2]+'@'):
+                        self._loadFeature(otextMod)
                         otextMeta.update(self.features[otextMod].metaData)
                 sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
                 sectionTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
@@ -119,8 +120,9 @@ Questions? Ask {} for an invite to Slack'''.format(
             return None
         return self._makeApi()
 
-    def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}):
+    def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}, module=None):
         self.tm.indent(level=0, reset=True)
+        self._getWriteLoc(module=module)
         configFeatures = dict(f for f in metaData.items() if f[0] != '' and f[0] not in nodeFeatures and f[0] not in edgeFeatures)
         self.tm.info('Exporting {} node and {} edge and {} config features to {}:'.format(
             len(nodeFeatures), len(edgeFeatures), len(configFeatures), self.writeDir,
@@ -183,9 +185,7 @@ Questions? Ask {} for an invite to Slack'''.format(
                 if featurePath != chosenFPath:
                     self.featuresIgnored.setdefault(fName, []).append(featurePath)
             self.features[fName] = Data(chosenFPath, self.tm)  
-        writeLoc = '' if len(self.locations) == 0 else self.locations[-1]
-        writeMod = '' if len(self.modules) == 0 else self.modules[-1]
-        self.writeDir = '{}{}'.format(writeLoc, writeMod) if writeLoc == '' or writeMod == '' else '{}/{}'.format(writeLoc, writeMod)
+        self._getWriteLoc()
         self.tm.info('{} features found and {} ignored'.format(
             len(tfFiles),
             sum(len(x) for x in self.featuresIgnored.values()),
@@ -218,6 +218,11 @@ Questions? Ask {} for an invite to Slack'''.format(
             )
             self.precomputeList.append((fName, dep2))
         self.good = good
+
+    def _getWriteLoc(self, module=None):
+        writeLoc = '' if len(self.locations) == 0 else self.locations[-1]
+        writeMod = module if module != None else '' if len(self.modules) == 0 else self.modules[-1]
+        self.writeDir = '{}{}'.format(writeLoc, writeMod) if writeLoc == '' or writeMod == '' else '{}/{}'.format(writeLoc, writeMod)
 
     def _precompute(self):
         good = True

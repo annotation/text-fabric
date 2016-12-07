@@ -1,0 +1,238 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=UTF-8" />
+    <title>special cases</title>
+    <style type="text/css">
+        .h {
+            font-family: Ezra SIL, SBL Hebrew, Verdana, sans-serif; 
+            font-size: x-large;
+            text-align: right;
+        }
+        .t {
+            font-family: Menlo, Courier New, Courier, monospace;
+            font-size: small;
+            color: #0000cc;        
+        }
+        .tl {
+            font-family: Menlo, Courier New, Courier, monospace;
+            font-size: medium;
+            font-weight: bold;
+            color: #000000;        
+        }
+        .p {
+            font-family: Verdana, Arial, sans-serif;
+            font-size: medium;
+        }
+        .l {
+            font-family: Verdana, Arial, sans-serif;
+            font-size: small;
+            color: #440088;
+        }
+        .v {
+            font-family: Verdana, Arial, sans-serif; 
+            font-size: x-small;
+            color: #666666;
+        }
+        .c {
+            font-family: Ezra SIL, SBL Hebrew, Verdana, sans-serif;
+            font-size: small;
+            background-color: #ffffdd;
+            width: 20%;
+        }
+        .cor {
+            font-family: Menlo, Courier New, Courier, monospace;
+            font-weight: bold
+            font-size: medium;
+        }
+        .exact {
+            background-color: #88ffff;
+        }
+        .good {
+            background-color: #88ff88;
+        }
+        .error {
+            background-color: #ff8888;
+        }
+        .norm {
+            background-color: #8888ff;
+        }
+        .ca {
+            background-color: #88ffff;
+        }
+        .cr {
+            background-color: #ffff33;
+        }
+    </style>
+</head><body>
+<p>14 tests; 0 skipped; 0 failed; 14 passed of which 14 exactly.</p>
+<table>
+
+    <tr>
+        <th class="v">v</th>
+        <th class="v">verse</th>
+        <th class="t">etcbc</th>
+        <th class="h">hebrew</th>
+        <th class="l">lexical</th>
+        <th class="p">phono</th>
+        <th class="p norm">expected</th>
+        <th class="c">comment</th>
+    </tr>
+    
+    <tr>
+        <td class="exact">1</td>
+        <td class="v">Genesis 9:21 363512</td>
+        <td class="t">&gt;@H:@LO75W00</td>        
+        <td class="h">אָהֳלֹֽו׃
+</td>
+        <td class="l">subs sm,+h</td>
+        <td class="p exact">*ʔohᵒlˈô</td>
+        <td class="p"></td>
+        <td class="c">ketiv qere</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">2</td>
+        <td class="v">Genesis 4:1 363512</td>
+        <td class="t">J:HW@75H00 </td>        
+        <td class="h">יְהוָֽה׃  </td>
+        <td class="l">nmpr sm,</td>
+        <td class="p exact">[yᵊhwˈāh]</td>
+        <td class="p"></td>
+        <td class="c">Tetra with end of verse</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">3</td>
+        <td class="v">Genesis 4:1 363512</td>
+        <td class="t">J:HW@75H00 </td>        
+        <td class="h">יְהוָֽה׃  </td>
+        <td class="l">nmpr sm,</td>
+        <td class="p exact">[yᵊhwˈāh]</td>
+        <td class="p"></td>
+        <td class="c">Tetra with end of verse</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">4</td>
+        <td class="v">Genesis 1:27 363512</td>
+        <td class="t">H@95-&gt;@D@M03 </td>        
+        <td class="h">הָֽאָדָם֙  </td>
+        <td class="l">subs sm,</td>
+        <td class="p exact">hˈāʔāḏˌām</td>
+        <td class="p"></td>
+        <td class="c">qamets gadol</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">5</td>
+        <td class="v">Genesis 1:1 363512</td>
+        <td class="t">HA-</td>        
+        <td class="h">הַ</td>
+        <td class="l">art</td>
+        <td class="p exact">hˌa</td>
+        <td class="p"></td>
+        <td class="c">article in isolation</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">6</td>
+        <td class="v">Genesis 1:7 363512</td>
+        <td class="t">MI-T.A74XAT </td>        
+        <td class="h">מִתַּ֣חַת  </td>
+        <td class="l">subs sm,</td>
+        <td class="p exact">mittˈaḥaṯ</td>
+        <td class="p"></td>
+        <td class="c">proclitic min combined with word starting with BGDKPT</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">7</td>
+        <td class="v">Samuel_I 23:3 363512</td>
+        <td class="t">MA95&lt;AR:KO73WT </td>        
+        <td class="h">מַֽעַרְכֹ֖ות  </td>
+        <td class="l">subs pf,</td>
+        <td class="p exact">mˈaʕarᵊḵˌôṯ</td>
+        <td class="p"></td>
+        <td class="c">peculiar representation of tetragrammaton</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">8</td>
+        <td class="v">Genesis 1:7 363512</td>
+        <td class="t">MI-</td>        
+        <td class="h">מִ</td>
+        <td class="l">prep</td>
+        <td class="p exact">mˌi</td>
+        <td class="p"></td>
+        <td class="c">proclitic min</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">9</td>
+        <td class="v">Genesis 1:7 363512</td>
+        <td class="t">T.A74XAT </td>        
+        <td class="h">תַּ֣חַת  </td>
+        <td class="l">subs sm,</td>
+        <td class="p exact">tˈaḥaṯ</td>
+        <td class="p"></td>
+        <td class="c">word starting with BGDKPT after proclitic min</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">10</td>
+        <td class="v">Genesis 1:1 363512</td>
+        <td class="t">C.@MA73JIM </td>        
+        <td class="h">שָּׁמַ֖יִם  </td>
+        <td class="l">subs pm,</td>
+        <td class="p exact">ššāmˌayim</td>
+        <td class="p"></td>
+        <td class="c">word after article in isolation</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">11</td>
+        <td class="v">Genesis 48:9 363512</td>
+        <td class="t">&gt;:AB@R:AK;75M00 </td>        
+        <td class="h">אֲבָרֲכֵֽם׃  </td>
+        <td class="l">verb piel impf 1s-,+;m</td>
+        <td class="p exact">ʔᵃvārᵃḵˈēm</td>
+        <td class="p"></td>
+        <td class="c">pronominal suffix after verb</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">12</td>
+        <td class="v">Proverbia 10:10 363512</td>
+        <td class="t">&lt;AY.@92BET </td>        
+        <td class="h">עַצָּ֑בֶת  </td>
+        <td class="l">subs sf,</td>
+        <td class="p exact">ʕaṣṣˈāveṯ</td>
+        <td class="p"></td>
+        <td class="c">the qamets should be gadol</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">13</td>
+        <td class="v">Genesis 17:11 363512</td>
+        <td class="t">&lt;@R:LAT:KE92M </td>        
+        <td class="h">עָרְלַתְכֶ֑ם  </td>
+        <td class="l">subs sf,+kem</td>
+        <td class="p exact">ʕorlaṯᵊḵˈem</td>
+        <td class="p"></td>
+        <td class="c">schwa in front of BGDKPT without dagesh</td>
+    </tr>
+    
+    <tr>
+        <td class="exact">14</td>
+        <td class="v">Joel 1:17 363512</td>
+        <td class="t">&lt;@B:C74W. </td>        
+        <td class="h">עָבְשׁ֣וּ  </td>
+        <td class="l">verb qal perf 3p-,</td>
+        <td class="p exact">ʕāvᵊšˈû</td>
+        <td class="p"></td>
+        <td class="c">qamets gadol or qatan</td>
+    </tr>
+    </table>
+</body>
+</html>
