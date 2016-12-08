@@ -11917,11 +11917,13 @@ so the algorithm can be easily adapted to other choices.</p>
 <h3 id="Consonants">Consonants<a class="anchor-link" href="#Consonants">&#182;</a></h3><p>Provided it is not part of a long vowel, we write yod as <code>y</code>,
 whilst <code>j</code> would be more in line with the phonetic alphabet.</p>
 <p>Likewise, we write <code>ו</code> as w, if it is not part of a long vowel.</p>
-<p>With regards to the <code>BGDKPT</code> letters, it would have been attractive to use the letters <code>b g d k p t</code> without 
+<p>With regards to the <code>BGDKPT</code> letters,
+it would have been attractive to use the letters <code>b g d k p t</code> without 
 diacritic for the plosive variants, and with a suitable diacritic for the fricative variants.
 Alas, the UNICODE table does not offer such a suitable diacritic that is available for all these particular 6 letters.</p>
 <p>So, we use <code>b g d k p t</code> for the plosives, but for the fricatives we use <code>v ḡ ḏ ḵ f ṯ</code>.</p>
-<p>With regards to the <em>emphatic</em> consonants ט and ח and צ we represent them with a under dot: <code>ṭ ḥ ṣ</code>.
+<p>With regards to the <em>emphatic</em> consonants ט and ח and צ we
+represent them with a under dot: <code>ṭ ḥ ṣ</code>.
 ק is just <code>q</code>.</p>
 <p>א and ע translate to translate to <code>ʕ</code> and <code>ʔ</code>.</p>
 <p>שׁ and שׂ translate to <code>š</code> and <code>ś</code>.
@@ -12049,7 +12051,7 @@ transliteration from etcbc orginal into the phonetic result.</p>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>This is Text-Fabric 1.0.1
+<pre>This is Text-Fabric 1.1.0
 Api reference    : https://github.com/dirkroorda/text-fabric/wiki/Api
 Tutorial         : https://github.com/dirkroorda/text-fabric/blob/master/docs/tutorial.ipynb
 Data sources     : https://github.com/dirkroorda/text-fabric-data
@@ -12091,7 +12093,19 @@ Questions? Ask shebanq@ancient-data.org for an invite to Slack
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>  0.00s loading features ...
-  6.57s All features loaded/computed - for details use loadLog()
+   |     1.64s T vs                   from /Users/dirk/github/text-fabric-data/hebrew/etcbc4c
+   |     1.66s T vt                   from /Users/dirk/github/text-fabric-data/hebrew/etcbc4c
+   |     1.60s T gn                   from /Users/dirk/github/text-fabric-data/hebrew/etcbc4c
+   |     1.63s T nu                   from /Users/dirk/github/text-fabric-data/hebrew/etcbc4c
+   |     1.62s T ps                   from /Users/dirk/github/text-fabric-data/hebrew/etcbc4c
+   |     1.57s T st                   from /Users/dirk/github/text-fabric-data/hebrew/etcbc4c
+   |     1.64s T uvf                  from /Users/dirk/github/text-fabric-data/hebrew/etcbc4c
+   |     1.71s T prs                  from /Users/dirk/github/text-fabric-data/hebrew/etcbc4c
+   |     0.84s T g_prs                from /Users/dirk/github/text-fabric-data/hebrew/etcbc4c
+   |     1.62s T pfm                  from /Users/dirk/github/text-fabric-data/hebrew/etcbc4c
+   |     1.65s T vbs                  from /Users/dirk/github/text-fabric-data/hebrew/etcbc4c
+   |     1.60s T vbe                  from /Users/dirk/github/text-fabric-data/hebrew/etcbc4c
+    25s All features loaded/computed - for details use loadLog()
 </pre>
 </div>
 </div>
@@ -12291,123 +12305,6 @@ Sometimes we want that extra bit, and sometimes not, and sometimes part of it.</
 </pre></div>
 
 </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ws</span> <span class="o">=</span> <span class="n">find_w</span><span class="p">((</span><span class="s1">&#39;Deuteronomium&#39;</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">27</span><span class="p">),</span> <span class="s1">&#39;*H-*N&lt;R&#39;</span><span class="p">)</span>
-<span class="n">ws</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[105845, 105846]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="p">(</span><span class="n">w1</span><span class="p">,</span> <span class="n">w2</span><span class="p">)</span> <span class="o">=</span> <span class="n">ws</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{}</span><span class="s1">&quot; &quot;</span><span class="si">{}</span><span class="s1">&quot; </span><span class="si">{}</span><span class="s1">&quot; &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">g_word</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">w1</span><span class="p">),</span> <span class="n">F</span><span class="o">.</span><span class="n">g_cons</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">w1</span><span class="p">),</span> <span class="n">F</span><span class="o">.</span><span class="n">qere</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">w1</span><span class="p">)</span><span class="o">+</span><span class="n">F</span><span class="o">.</span><span class="n">qere_trailer</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">w1</span><span class="p">),</span> <span class="n">get_orig</span><span class="p">(</span><span class="n">w1</span><span class="p">)))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>&#34;*H-&#34; &#34;H&#34; HA45&#34; &#34;HA45-&#34;
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ws</span> <span class="o">=</span> <span class="p">[</span><span class="mi">15895</span><span class="p">,</span> <span class="mi">15896</span><span class="p">]</span>
-<span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">ws</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">get_orig</span><span class="p">(</span><span class="n">w</span><span class="p">)))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>&#34;B.;N&amp;&#34;
-&#34;CIC.I73J &#34;
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">ws</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{}</span><span class="s1">&quot; &quot;</span><span class="si">{}</span><span class="s1">&quot; </span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">g_word</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">F</span><span class="o">.</span><span class="n">g_cons</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">get_orig</span><span class="p">(</span><span class="n">w</span><span class="p">)))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>&#34;B.;N&#34; &#34;BN&#34; B.;N&amp;&#34;
-&#34;CIC.I73J&#34; &#34;CCJ&#34; CIC.I73J &#34;
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -13793,8 +13690,8 @@ This involves looking at accents, verb paradigms and special cases among the non
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>  7.73s Looking for non-verb qamets
-    11s 4060 lexemes and 13458 unique occurrences
+<pre> 1m 39s Looking for non-verb qamets
+ 1m 42s 4060 lexemes and 13458 unique occurrences
 </pre>
 </div>
 </div>
@@ -13852,8 +13749,8 @@ This involves looking at accents, verb paradigms and special cases among the non
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>    11s Filtering lexemes with varied occurrences
-    11s 161 interesting lexemes with 1705 unique occurrences
+<pre> 1m 47s Filtering lexemes with varied occurrences
+ 1m 47s 161 interesting lexemes with 1705 unique occurrences
 </pre>
 </div>
 </div>
@@ -14000,14 +13897,14 @@ This involves looking at accents, verb paradigms and special cases among the non
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>    12s Guessing between gadol and qatan
-BJT/: Override for syllable 1: o becomes ā
+<pre> 1m 53s Guessing between gadol and qatan
 JM/: Override for syllable 1: ā becomes o
-JHWNTN/: Override for syllable 2:  becomes ā
 JRB&lt;M/: No override needed for syllable 1 which is ā
 JWMM: Override for syllable 2:  becomes ā
-    12s 107 lexemes with modified occurrences (224)
-    12s 0 patterns with conflicts
+BJT/: Override for syllable 1: o becomes ā
+JHWNTN/: Override for syllable 2:  becomes ā
+ 1m 53s 107 lexemes with modified occurrences (224)
+ 1m 53s 0 patterns with conflicts
 </pre>
 </div>
 </div>
@@ -14486,13 +14383,13 @@ If the node is found, it will be used to get the <code>lex_info</code>, if not, 
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>    12s ntests=86, skipped=0, ngood=19, nexact=67
+<pre> 2m 10s ntests=86, skipped=0, ngood=19, nexact=67
 86 tests; 0 skipped; 0 failed; 86 passed of which 67 exactly.
-    13s ntests=1574, skipped=0, ngood=197, nexact=1377
+ 2m 11s ntests=1574, skipped=0, ngood=197, nexact=1377
 1574 tests; 0 skipped; 0 failed; 1574 passed of which 1377 exactly.
-    13s ntests=513, skipped=0, ngood=30, nexact=483
+ 2m 11s ntests=513, skipped=0, ngood=30, nexact=483
 513 tests; 0 skipped; 0 failed; 513 passed of which 483 exactly.
-    13s ntests=209, skipped=0, ngood=30, nexact=179
+ 2m 11s ntests=209, skipped=0, ngood=30, nexact=179
 209 tests; 0 skipped; 0 failed; 209 passed of which 179 exactly.
 </pre>
 </div>
@@ -14557,21 +14454,21 @@ If the node is found, it will be used to get the <code>lex_info</code>, if not, 
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>  1 Genesis 9:21          4419 subs sm,+h        &gt;@H:@LO75W00           *ʔohᵒlˈô             =                     
-  2 Genesis 4:1           1684 nmpr sm,          J:HW@75H00             [yᵊhwˈāh]            =                     
-  3 Genesis 4:1           1684 nmpr sm,          J:HW@75H00             [yᵊhwˈāh]            =                     
-  4 Genesis 1:27           538 subs sm,          H@95-&gt;@D@M03           hˈāʔāḏˌām            =                     
-  5 Genesis 1:1              5 art               HA-                    hˌa                  =                     
-  6 Genesis 1:7            107 subs sm,          MI-T.A74XAT            mittˈaḥaṯ            =                     
-  7 Samuel_I 23:3       155387 subs pf,          MA95&lt;AR:KO73WT         mˈaʕarᵊḵˌôṯ          =                     
-  8 Genesis 1:7            106 prep              MI-                    mˌi                  =                     
-  9 Genesis 1:7            107 subs sm,          T.A74XAT               tˈaḥaṯ               =                     
- 10 Genesis 1:1              6 subs pm,          C.@MA73JIM             ššāmˌayim            =                     
- 11 Genesis 48:9         27477 verb piel impf 1s-,+;m &gt;:AB@R:AK;75M00        ʔᵃvārᵃḵˈēm           =                     
- 12 Proverbia 10:10     349418 subs sf,          &lt;AY.@92BET             ʕaṣṣˈāveṯ            =                     
- 13 Genesis 17:11         7494 subs sf,+kem      &lt;@R:LAT:KE92M          ʕorlaṯᵊḵˈem          =                     
- 14 Joel 1:17           294302 verb qal perf 3p-, &lt;@B:C74W.              ʕāvᵊšˈû              =                     
-    13s ntests=14, skipped=0, ngood=0, nexact=14
+<pre>  1 Genesis 9:21          4420 subs sm,+h        &gt;@H:@LO75W00           *ʔohᵒlˈô             =                     
+  2 Genesis 4:1           1685 nmpr sm,          J:HW@75H00             [yᵊhwˈāh]            =                     
+  3 Genesis 17:11         7494 subs sm,          B.:FA74R               bᵊśˈar               =                     
+  4 Genesis 1:27           539 subs sm,          H@95-&gt;@D@M03           hˈāʔāḏˌām            =                     
+  5 Genesis 1:1              6 art               HA-                    hˌa                  =                     
+  6 Genesis 1:7            108 subs sm,          MI-T.A74XAT            mittˈaḥaṯ            =                     
+  7 Genesis 1:7            107 prep              MI-                    mˌi                  =                     
+  8 Genesis 48:9         27477 conj              WA-                    wˌa                  =                     
+  9 Samuel_I 23:3       155387 prep              &gt;EL&amp;                   ʔel-                 =                     
+ 10 Genesis 4:1           1684 prep              &gt;ET&amp;                   ʔeṯ-                 =                     
+ 11 Genesis 1:1              5 prep              &gt;;71T                  ʔˌēṯ                 =                     
+ 12 Genesis 1:7            106 conj              &gt;:ACER03               ʔᵃšˌer               =                     
+ 13 Proverbia 10:10     349419 subs sf,          &lt;AY.@92BET             ʕaṣṣˈāveṯ            =                     
+ 14 Joel 1:17           294303 verb qal perf 3p-, &lt;@B:C74W.              ʕāvᵊšˈû              =                     
+ 2m 22s ntests=14, skipped=0, ngood=0, nexact=14
 14 tests; 0 skipped; 0 failed; 14 passed of which 14 exactly.
 </pre>
 </div>
@@ -14648,10 +14545,10 @@ If the node is found, it will be used to get the <code>lex_info</code>, if not, 
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>    13s Showing lexemes with varied occurrences
-    14s 107 lexemes with 1192 occurrences and 224 corrections written
-    14s Generating HTML in qamets_nonverb_cases4c.html
-    14s Generating test set qamets nonverb in qamets_nonverb_tests4c.txt
+<pre> 2m 26s Showing lexemes with varied occurrences
+ 2m 26s 107 lexemes with 1192 occurrences and 224 corrections written
+ 2m 26s Generating HTML in qamets_nonverb_cases4c.html
+ 2m 26s Generating test set qamets nonverb in qamets_nonverb_tests4c.txt
 107 lexemes
 1192 occurrences and 224 corrections
 </pre>
@@ -14716,8 +14613,8 @@ We look at the verb paradigms to fill in the missing information.</p>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>    14s Finding qamets qatan special verb cases
-    15s 524 cases
+<pre> 2m 29s Finding qamets qatan special verb cases
+ 2m 31s 524 cases
 </pre>
 </div>
 </div>
@@ -14780,9 +14677,9 @@ We look at the verb paradigms to fill in the missing information.</p>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>    15s Showing verb cases
-    15s Generating HTML in qamets_verb_cases4c.html
-    15s Generating test set qamets verb in qamets_verb_tests4c.txt
+<pre> 2m 33s Showing verb cases
+ 2m 33s Generating HTML in qamets_verb_cases4c.html
+ 2m 33s Generating test set qamets verb in qamets_verb_tests4c.txt
 192 lexemes
 524 occurrences and 300 corrections
 </pre>
@@ -14841,8 +14738,8 @@ We detect these cases and suppress the gamets-as-qatan interpretation there.</p>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>    16s Finding qamets qatan in pronominal suffixes
-    18s 197 potential cases
+<pre> 2m 36s Finding qamets qatan in pronominal suffixes
+ 2m 38s 197 potential cases
 </pre>
 </div>
 </div>
@@ -14905,9 +14802,9 @@ We detect these cases and suppress the gamets-as-qatan interpretation there.</p>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>    18s Showing prs cases
-    18s Generating HTML in qamets_prs_cases4c.html
-    18s Generating test set qamets prs in qamets_prs_tests4c.txt
+<pre> 2m 42s Showing prs cases
+ 2m 42s Generating HTML in qamets_prs_cases4c.html
+ 2m 42s Generating test set qamets prs in qamets_prs_tests4c.txt
 131 lexemes
 197 occurrences and 60 corrections
 </pre>
@@ -14929,12 +14826,12 @@ We detect these cases and suppress the gamets-as-qatan interpretation there.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[47]:</div>
+<div class="prompt input_prompt">In&nbsp;[48]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">stats_prog</span><span class="p">():</span> <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">stat</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">interesting_stats</span><span class="p">)</span>
         
-<span class="n">info</span><span class="p">(</span><span class="s1">&#39;Generating complete texts in two ways ... &#39;</span><span class="p">)</span>
+<span class="n">info</span><span class="p">(</span><span class="s1">&#39;Generating data in two ways ... &#39;</span><span class="p">)</span>
 
 <span class="n">phono_file</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">word_file</span> <span class="o">=</span> <span class="p">[]</span>
@@ -14983,31 +14880,31 @@ We detect these cases and suppress the gamets-as-qatan interpretation there.</p>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>    18s Generating complete texts in two ways ... 
-    20s  1000 verses 13315 62 0 21
-    22s  2000 verses 27406 123 2 79
-    24s  3000 verses 40962 174 5 125
-    27s  4000 verses 54142 242 8 143
-    29s  5000 verses 67150 307 13 171
-    31s  6000 verses 82446 393 15 196
-    34s  7000 verses 97548 456 17 254
-    36s  8000 verses 113745 528 18 287
-    38s  9000 verses 129599 572 20 327
-    41s 10000 verses 146214 623 20 438
-    43s 11000 verses 159806 748 20 487
-    46s 12000 verses 174189 890 24 524
-    48s 13000 verses 190552 1017 28 576
-    50s 14000 verses 205101 1167 32 622
-    53s 15000 verses 218607 1289 33 728
-    54s 16000 verses 227941 1335 39 777
-    56s 17000 verses 235631 1378 48 827
-    58s 18000 verses 243254 1395 51 866
-    59s 19000 verses 250705 1428 59 906
- 1m 01s 20000 verses 260114 1469 60 960
- 1m 04s 21000 verses 275079 1532 63 979
- 1m 05s 22000 verses 286437 1589 65 1007
- 1m 08s 23000 verses 301295 1644 66 1075
- 1m 08s 23213 verses done 304793 1649 66 1081
+<pre> 3m 37s Generating data in two ways ... 
+ 3m 39s  1000 verses 13315 62 0 21
+ 3m 42s  2000 verses 27406 123 2 79
+ 3m 44s  3000 verses 40962 174 5 125
+ 3m 46s  4000 verses 54142 242 8 143
+ 3m 48s  5000 verses 67150 307 13 171
+ 3m 50s  6000 verses 82446 393 15 196
+ 3m 52s  7000 verses 97548 456 17 254
+ 3m 55s  8000 verses 113745 528 18 287
+ 3m 57s  9000 verses 129599 572 20 327
+ 3m 59s 10000 verses 146214 623 20 438
+ 4m 01s 11000 verses 159806 748 20 487
+ 4m 03s 12000 verses 174189 890 24 524
+ 4m 06s 13000 verses 190552 1017 28 576
+ 4m 08s 14000 verses 205101 1167 32 622
+ 4m 10s 15000 verses 218607 1289 33 728
+ 4m 11s 16000 verses 227941 1335 39 777
+ 4m 12s 17000 verses 235631 1378 48 827
+ 4m 14s 18000 verses 243254 1395 51 866
+ 4m 15s 19000 verses 250705 1428 59 906
+ 4m 16s 20000 verses 260114 1469 60 960
+ 4m 18s 21000 verses 275079 1532 63 979
+ 4m 20s 22000 verses 286437 1589 65 1007
+ 4m 22s 23000 verses 301295 1644 66 1075
+ 4m 23s 23213 verses done 304793 1649 66 1081
   270184 accents
     9015 cleanup
    45235 dagesh_forte
@@ -15091,9 +14988,9 @@ From the phono file we strip the passage indicators, and from the wordph we stri
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre> 1m 28s 304793 items in phono
- 1m 29s Reading word
- 1m 29s 23213 lines
+<pre> 4m 29s 304793 items in phono
+ 4m 29s Reading word
+ 4m 30s 23213 lines
 OK: phono text and word info are CONSISTENT
 </pre>
 </div>
@@ -15118,7 +15015,7 @@ In it we define the phonetic <em>format</em>, so that Text-Fabric has can output
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[59]:</div>
+<div class="prompt input_prompt">In&nbsp;[50]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">nodeFeatures</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -15147,7 +15044,7 @@ In it we define the phonetic <em>format</em>, so that Text-Fabric has can output
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[60]:</div>
+<div class="prompt input_prompt">In&nbsp;[51]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
@@ -15168,10 +15065,10 @@ In it we define the phonetic <em>format</em>, so that Text-Fabric has can output
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>  0.00s Exporting 2 node and 0 edge and 1 config features to /Users/dirk/github/text-fabric-data/hebrew/phono:
-   |     0.89s T phono                to /Users/dirk/github/text-fabric-data/hebrew/phono
-   |     0.64s T phono_trailer        to /Users/dirk/github/text-fabric-data/hebrew/phono
+   |     0.87s T phono                to /Users/dirk/github/text-fabric-data/hebrew/phono
+   |     0.63s T phono_trailer        to /Users/dirk/github/text-fabric-data/hebrew/phono
    |     0.00s M otext@phono          to /Users/dirk/github/text-fabric-data/hebrew/phono
-  1.53s Exported 2 node features and 0 edge features and 1 config features to /Users/dirk/github/text-fabric-data/hebrew/phono
+  1.51s Exported 2 node features and 0 edge features and 1 config features to /Users/dirk/github/text-fabric-data/hebrew/phono
 </pre>
 </div>
 </div>

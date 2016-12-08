@@ -8,7 +8,7 @@ from .api import *
 from .mql import MQL
 
 NAME = 'Text-Fabric'
-VERSION = '1.2.0'
+VERSION = '1.2.1'
 APIREF = 'https://github.com/dirkroorda/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/dirkroorda/text-fabric/blob/master/docs/tutorial.ipynb'
 FEATDOC = 'https://shebanq.ancient-data.org/static/docs/featuredoc/texts/welcome.html'
@@ -16,6 +16,7 @@ DATA = 'https://github.com/dirkroorda/text-fabric-data'
 EMAIL = 'shebanq@ancient-data.org'
 
 LOCATIONS = [
+    '~/Downloads/text-fabric-data',
     '~/text-fabric-data',
     '~/github/text-fabric-data',
 ]
