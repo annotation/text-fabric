@@ -9,6 +9,15 @@ def cleanName(name):
         clean = 'x' + clean
     return clean
 
+def expandDir(dirName, paths):
+    if dirName.startswith('~'):
+        dirName = dirName.replace('~', paths['home'], 1)
+    elif dirName.startswith('..'):
+        dirName = dirName.replace('..', paths['up'], 1)
+    elif dirName.startswith('.'):
+        dirName = dirName.replace('.', paths['cur'], 1)
+    return dirName
+
 def setFromSpec(spec):
     covered = set()
     for r_str in spec.split(','):
@@ -39,9 +48,6 @@ def rangesFromSet(nodeSet):
     if curstart != None:
         ranges.append((curstart, curend))
     return ranges
-
-def plusOne(ranges):
-    return tuple((s+1, e+1) for (s,e) in ranges)
 
 def rangesFromList(nodeList): # the list must be sorted 
     ranges = []

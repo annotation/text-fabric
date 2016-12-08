@@ -62,13 +62,11 @@ Questions? Ask {} for an invite to Slack'''.format(
         (self.parentDir, x) = os.path.split(self.curDir)
         self.locations = []
         for loc in locations:
-            if loc.startswith('~'):
-                loc = loc.replace('~', self.homeDir, 1)
-            elif loc.startswith('..'):
-                loc = loc.replace('..', self.parentDir, 1)
-            elif loc.startswith('.'):
-                loc = loc.replace('.', self.curDir, 1)
-            self.locations.append(loc)
+            self.locations.append(expandDir(loc, dict(
+                cur=self.curDir,
+                up=self.parentDir,
+                home=self.homeDir,
+            )))
 
         self.locationRep = '\n\t'.join('\n\t'.join('{}/{}'.format(l,f) for f in self.modules) for l in self.locations)
         self._makeIndex()
@@ -162,6 +160,11 @@ Questions? Ask {} for an invite to Slack'''.format(
         (mqlDir, mqlName) = os.path.split(self.writeDir)
         if dirName != None: mqlDir = dirName
         if dbName != None: mqlName = dbName
+        mqlDir = expandDir(mqlDir, dict(
+            cur=self.curDir,
+            up=self.parentDir,
+            home=self.homeDir,
+        ))
         if not os.path.exists(mqlDir):
             try:
                 os.makedirs(mqlDir, exist_ok=True)

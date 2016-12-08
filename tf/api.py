@@ -9,18 +9,20 @@ class OtypeFeature(object):
         self.data = data
         self.slotType = self.data[-2]
         self.maxSlot = self.data[-1]
-        self.maxNode = len(self.data) + self.data[-1] - 1
+        self.maxNode = len(self.data) - 2 + self.maxSlot
 
     def v(self, n): 
+        if n == 0: return None
         if n < self.maxSlot + 1:
             return self.data[-2]
-        m = n - self.maxSlot - 1
-        if m < len(self.data) - 2:
-            return self.data[m]
+        m = n - self.maxSlot
+        if m <= len(self.data) - 2:
+            return self.data[m-1]
         return None
 
     def s(self, val):
-        if val in self.support:
+        # NB: the support attribute has been added by precomputing __levels__
+        if val in self.support:        
             (b, e) = self.support[val]
             return range(b, e+1)
         else:
@@ -33,11 +35,12 @@ class OslotsFeature(object):
         self.maxSlot = self.data[-1]
 
     def s(self, n): 
+        if n == 0: return []
         if n < self.maxSlot + 1:
             return [n]
-        m = n - self.maxSlot - 1
-        if m < len(self.data) - 1:
-            return self.data[m]
+        m = n - self.maxSlot
+        if m <= len(self.data) - 1:
+            return self.data[m-1]
         return []
 
 class NodeFeature(object):
@@ -54,7 +57,7 @@ class NodeFeature(object):
         Crank = self.api.C.rank.data
         return sorted(
             [n for n in self.data if self.data[n] == val],
-            key=lambda n: Crank[n],
+            key=lambda n: Crank[n-1],
         )
 
 class EdgeFeature(object):
@@ -70,12 +73,12 @@ class EdgeFeature(object):
             if self.doValues:
                 return sorted(
                     self.data[n].items(),
-                    key=lambda n: Crank[n[0]],
+                    key=lambda mv: Crank[mv[0]-1],
                 )
             else:
                 return sorted(
                     self.data[n],
-                    key=lambda n: Crank[n],
+                    key=lambda m: Crank[m-1],
                 )
         return None
 
@@ -85,12 +88,12 @@ class EdgeFeature(object):
             if self.doValues:
                 return sorted(
                     self.dataInv[n].items(),
-                    key=lambda n: Crank[n[0]],
+                    key=lambda mv: Crank[mv[0]-1],
                 )
             else:
                 return sorted(
                     self.dataInv[n],
-                    key=lambda n: Crank[n],
+                    key=lambda m: Crank[m-1],
                 )
         return None
 
@@ -137,7 +140,7 @@ class Api(object):
 
     def sortNodes(self, nodeSet):
         Crank = self.C.rank.data
-        return sorted(nodeSet, key=lambda n: Crank[n])
+        return sorted(nodeSet, key=lambda n: Crank[n-1])
 
     def Fall(self): return sorted(x[0] for x in self.F.__dict__.items())
     def Eall(self): return sorted(x[0] for x in self.E.__dict__.items())

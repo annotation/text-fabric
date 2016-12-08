@@ -1,1299 +1,1299 @@
- 	     	ʕammˈāʸw        	ʕammˈāʸw        	<M/       	<AM.@75JW           	12549
- 	     	ʕammˈāh         	ʕammˈāh         	<M/       	<AM.@75H.           	63241
- 	     	ʕammˈām         	ʕammˈām         	<M/       	<AM.@75M            	63798
- 	     	ʕammˌāʸw        	ʕammˌāʸw        	<M/       	<AM.@73JW           	65199
- 	     	ʕammˌāh         	ʕammˌāh         	<M/       	<AM.@71H.           	234316
- 	     	ʕammˌām         	ʕammˌām         	<M/       	<AM.@73M            	419262
- 	     	ʕammˈeʸhā       	ʕammˈeʸhā       	<M/       	<AM.E92JH@          	7558
- 	     	ʕammˈeḵā        	ʕammˈeḵā        	<M/       	<AM.E75K@           	31121
- 	     	ʕammᵊḵˌā        	ʕammᵊḵˌā        	<M/       	<AM.:K@73           	32379
- 	     	ʕammᵊḵˈā        	ʕammᵊḵˈā        	<M/       	<AM.:K@80           	32496
- 	     	ʕammˈeʸḵā       	ʕammˈeʸḵā       	<M/       	<AM.E80JK@          	64045
- 	     	ʕammˌeʸḵā       	ʕammˌeʸḵā       	<M/       	<AM.E73JK@          	87140
- 	     	ʕammˌeḵā        	ʕammˌeḵā        	<M/       	<AM.E73K@           	193721
- 	     	ʕammeḵˌā        	ʕammeḵˌā        	<M/       	<AM.EK@01           	293279
- 	     	ˈʕammᵊḵā        	ˈʕammᵊḵā        	<M/       	13<AM.:K@           	324859
- 	     	ʕᵃmāmˈîm        	ʕᵃmāmˈîm        	<M/       	<:AM@MI80JM         	388261
- 	     	ʕᵃmāmˈeʸḵā      	ʕᵃmāmˈeʸḵā      	<M/       	<:AM@ME92JK@        	130146
-*	1ā   	ʕom-            	ʕām-            	<M/       	<@M&                	30126
-*	1ā   	ʕom             	ʕām             	<M/       	<@M02               	36479
- 	     	ʕˈām            	ʕˈām            	<M/       	<@75M               	6529
- 	     	ʕˌām            	ʕˌām            	<M/       	<@73M               	8517
- 	     	ʕˈām-           	ʕˈām-           	<M/       	<@70M&              	242723
-
-*	1ā,2ā	ʕammˈînoḏov     	ʕammˈînāḏāv     	<MJNDB/   	<AM.I45JN@D@B03     	357563
- 	     	ʕammînāḏˈāv     	ʕammînāḏˈāv     	<MJNDB/   	<AM.IJN@D@91B       	31646
- 	     	ʕammînāḏˌāv     	ʕammînāḏˌāv     	<MJNDB/   	<AM.IJN@D@73B       	74121
- 	     	ʕammˈînāḏˈāv    	ʕammˈînāḏˈāv    	<MJNDB/   	<AM.I45JN@D@75B     	357561
-
- 	     	ʕᵃmālˈām        	ʕᵃmālˈām        	<ML/      	<:AM@L@75M          	360720
- 	     	ʕᵃmālˈî         	ʕᵃmālˈî         	<ML/      	<:AM@LI80J          	23301
- 	     	ʕᵃmālˌēnû       	ʕᵃmālˌēnû       	<ML/      	<:AM@L;73NW.        	107316
- 	     	ʕᵃmˈālᵊḵˈā      	ʕᵃmˈālᵊḵˈā      	<ML/      	<:AM@74L:K@80       	362539
- 	     	ʕᵃmālˈô         	ʕᵃmālˈô         	<ML/      	<:AM@LO74W          	311437
-*	1ā,2ā	ˈʕomol          	ˈʕāmāl          	<ML/      	13<@M@L             	340075
- 	     	ʕāmˌāl          	ʕāmˌāl          	<ML/      	<@M@73L             	85044
- 	     	ʕāmˈāl          	ʕāmˈāl          	<ML/      	<@M@74L             	302203
- 	     	ˈʕāmˈāl         	ˈʕāmˈāl         	<ML/      	11<@M@81L           	311423
- 	     	ʕˈāmˈāl         	ʕˈāmˈāl         	<ML/      	<@82M@70L           	311914
-
- 	     	ʕᵃnˈānᵊḵā       	ʕᵃnˈānᵊḵā       	<NN/      	<:AN@45N:K@03       	78703
- 	     	ʕᵃnānˈô         	ʕᵃnānˈô         	<NN/      	<:AN@NO75W          	342318
-*	1ā,2ā	ʕonon           	ʕānān           	<NN/      	<@N@N02             	77337
-*	1ā,2ā	ˈʕonon          	ˈʕānān          	<NN/      	13<@N@N             	327529
- 	     	ʕānˈān          	ʕānˈān          	<NN/      	<@N@92N             	4268
- 	     	ʕānˌān          	ʕānˌān          	<NN/      	<@N@73N             	4283
-
- 	     	ʕᵃfārˌām        	ʕᵃfārˌām        	<PR/      	<:AP@R@73M          	209935
- 	     	ʕᵃfārˈāh        	ʕᵃfārˈāh        	<PR/      	<:AP@R@80H.         	210009
- 	     	ʕᵃfārˌāh        	ʕᵃfārˌāh        	<PR/      	<:AP@R@73H.         	223408
- 	     	ʕᵃfārˈēḵ        	ʕᵃfārˈēḵ        	<PR/      	<:AP@R;80K:         	277619
- 	     	ʕᵃfārˈô         	ʕᵃfārˈô         	<PR/      	<:AP@RO80W          	98934
-*	1ā   	ʕofrˌôṯ         	ʕāfᵊrˌôṯ        	<PR/      	<@P:RO71WT          	349067
-*	1ā,2ā	ˈʕofor          	ˈʕāfār          	<PR/      	13<@P@R             	345794
-*	2ā   	ʕˈāfor          	ʕˈāfār          	<PR/      	<@95P@R03           	278271
- 	     	ʕāfˌār          	ʕāfˌār          	<PR/      	<@P@R03             	797
- 	     	ʕāfˈār          	ʕāfˈār          	<PR/      	<@P@74R             	1555
-
- 	     	ʕorpˌām         	ʕorpˌām         	<RP/      	<@R:P.@M03          	205862
- 	     	ʕorpˈām         	ʕorpˈām         	<RP/      	<@R:P.@80M          	238760
- 	     	ʕorpᵊḵˌem       	ʕorpᵊḵˌem       	<RP/      	<@R:P.:KE73M        	422015
- 	     	ʕorpᵊḵˌā        	ʕorpᵊḵˌā        	<RP/      	<@R:P.:K@73         	111342
- 	     	ʕorpˈeḵā        	ʕorpˈeḵā        	<RP/      	<@R:P.E80K@         	228854
- 	     	ʕorpˌî          	ʕorpˌî          	<RP/      	<@R:P.IJ            	340197
- 	     	ʕorpˌô          	ʕorpˌô          	<RP/      	<@R:P.O73W          	54482
-*	1o   	ʕˌārᵊppᵊḵˈem    	ʕˌorpᵊḵˈem      	<RP/      	<@63R:P.:KE80M      	99481
-
-*	1ā   	ˈʕôlom          	ˈʕôlām          	<WLM/     	13<OWL@M            	320436
- 	     	ʕōlˈām          	ʕōlˈām          	<WLM/     	<OL@75M             	1620
- 	     	ʕôlˌām          	ʕôlˌām          	<WLM/     	<OWL@73M            	2691
- 	     	ʕôlˈām          	ʕôlˈām          	<WLM/     	<OWL@75M            	4262
- 	     	ʕōlˌām          	ʕōlˌām          	<WLM/     	<OL@71M             	37137
- 	     	ʕôlāmˈîm        	ʕôlāmˈîm        	<WLM/     	<OWL@MI75JM         	182335
- 	     	ʕˈôlˌām         	ʕˈôlˌām         	<WLM/     	<O60WL@71M          	322511
- 	     	ˈʕôlˈām         	ˈʕôlˈām         	<WLM/     	11<OWL@81M          	322631
- 	     	ʕôlāmîm         	ʕôlāmîm         	<WLM/     	<OWL@MIJM           	323322
- 	     	ʕˈōlāmˈîm       	ʕˈōlāmˈîm       	<WLM/     	<O45L@MI92JM        	335347
- 	     	ʕôlāmˈô         	ʕôlāmˈô         	<WLM/     	<OWL@MO80W          	363351
-
-*	1ā,2ā	ʔᵃvˈînoḏov      	ʔᵃvˈînāḏāv      	>BJNDB/   	>:ABI45JN@D@B03     	163492
- 	     	ʔᵃvînāḏˌāv      	ʔᵃvînāḏˌāv      	>BJNDB/   	>:ABIJN@D@73B       	144689
- 	     	ʔᵃvˈînāḏˈāv     	ʔᵃvˈînāḏˈāv     	>BJNDB/   	>:ABI74JN@D@80B     	150446
- 	     	ʔᵃvînāḏˈāv      	ʔᵃvînāḏˈāv      	>BJNDB/   	>:ABIJN@D@91B       	160211
- 	     	ʔᵃvˈînāḏˌāv     	ʔᵃvˈînāḏˌāv     	>BJNDB/   	>:ABI45JN@D@73B     	179204
-
-*	1ā   	ʔᵃvol           	ʔᵃvāl           	>BL       	>:AB@L02            	23763
- 	     	ʔᵃvˌāl          	ʔᵃvˌāl          	>BL       	>:AB@L03            	7635
- 	     	ʔᵃvˈāl          	ʔᵃvˈāl          	>BL       	>:AB@91L            	168112
-
-*	1ā   	ʔavrom          	ʔavrām          	>BRM/     	>AB:R@M02           	7117
- 	     	ʔavrˈām         	ʔavrˈām         	>BRM/     	>AB:R@80M           	5365
- 	     	ʔavrˌām         	ʔavrˌām         	>BRM/     	>AB:R@M03           	5411
-
- 	     	ʔᵃšāmˌām        	ʔᵃšāmˌām        	>CM/      	>:AC@M@M03          	81520
- 	     	ʔᵃšāmˈāʸw       	ʔᵃšāmˈāʸw       	>CM/      	>:AC@M@75JW         	321474
- 	     	ʔᵃšāmˈô         	ʔᵃšāmˈô         	>CM/      	>:AC@MO74W          	54410
- 	     	ʔᵃšāmˌô         	ʔᵃšāmˌô         	>CM/      	>:AC@MO63W          	54635
-*	1ā,2ā	ʔošom           	ʔāšām           	>CM/      	>@C@M02             	144184
- 	     	ʔāšˈām          	ʔāšˈām          	>CM/      	>@C@75M             	13190
- 	     	ʔāšˌām          	ʔāšˌām          	>CM/      	>@C@73M             	54680
-
-*	1ā,2ā	ˈʔoḏom          	ˈʔāḏām          	>DM/      	13>@D@M             	312520
-*	1ā,2ā	ʔoḏom           	ʔāḏām           	>DM/      	>@D@M02             	320551
- 	     	ʔāḏˈām          	ʔāḏˈām          	>DM/      	>@D@91M             	498
- 	     	ʔāḏˌām          	ʔāḏˌām          	>DM/      	>@D@M03             	538
- 	     	ˈʔāḏˈām         	ˈʔāḏˈām         	>DM/      	11>@D@81M           	311508
- 	     	ʔˈāḏˌām         	ʔˈāḏˌām         	>DM/      	>@60D@71M           	312238
- 	     	ʔˈāḏˈām-        	ʔˈāḏˈām-        	>DM/      	>@70D@45M&          	316154
- 	     	ʔāḏˈām .        	ʔāḏˈām .        	>DM/      	>@D@75M00_|         	329647
-
-*	1ā   	ʔᵃḏōnoy         	ʔᵃḏōnāy         	>DNJ/     	>:ADON@J02          	315966
-*	1ā   	ʔˈᵃḏōnoy        	ʔˈᵃḏōnāy        	>DNJ/     	>:A35DON@J          	316696
-*	1ā   	ˈʔᵃḏōnoy        	ˈʔᵃḏōnāy        	>DNJ/     	13>:ADON@J          	319014
- 	     	ʔᵃḏōnˈāy        	ʔᵃḏōnˈāy        	>DNJ/     	>:ADON@70J          	6696
- 	     	ʔᵃḏōnˌāy        	ʔᵃḏōnˌāy        	>DNJ/     	>:ADON@J01          	30368
- 	     	ʔᵃḏônˈāy        	ʔᵃḏônˈāy        	>DNJ/     	>:ADOWN@80J         	135872
- 	     	ˈʔᵃḏōnˈāy       	ˈʔᵃḏōnˈāy       	>DNJ/     	11>:ADON@81J        	310769
- 	     	ʔˈᵃḏōnˈāy       	ʔˈᵃḏōnˈāy       	>DNJ/     	>:A35DON@81J        	326223
- 	     	ʔḏōnˌāy         	ʔḏōnˌāy         	>DNJ/     	>DON@J03            	8348
- 	     	ʔḏōnˈāy         	ʔḏōnˈāy         	>DNJ/     	>DON@62J            	199059
-
-*	1ā   	ʔᵃhoh           	ʔᵃhāh           	>HH       	>:AH@H.02           	251836
- 	     	ʔᵃhˈāh          	ʔᵃhˈāh          	>HH       	>:AH@74H.           	116255
- 	     	ʔᵃhˌāh          	ʔᵃhˌāh          	>HH       	>:AH@H.03           	130918
-
- 	     	ʔˌōhᵉlā         	ʔˌōhᵉlā         	>HL/      	>O73H:EL@H          	7894
- 	     	ʔˈōhᵉlā         	ʔˈōhᵉlā         	>HL/      	>O33H:EL@H03        	12405
-*	1o   	ʔōhālˈîm        	ʔōholˈîm        	>HL/      	>OH@LI75JM          	5951
-*	1o   	ʔˈōhālˈāʸw      	ʔˈōholˈāʸw      	>HL/      	>O45H@L@80JW        	131633
-*	1o   	ʔᵒhālˈîm        	ʔᵒholˈîm        	>HL/      	>:@H@LI80JM         	132371
-*	1o   	ʔōhālˈāʸw       	ʔōholˈāʸw       	>HL/      	>OH@L@80JW          	143519
-*	1o   	ʔōhālˌāʸw       	ʔōholˌāʸw       	>HL/      	>OH@L@73JW          	173115
-*	1o   	ʔōhālˌîm        	ʔōholˌîm        	>HL/      	>OH@LI73JM          	199238
-*	1o   	ʔōhālˈay        	ʔōholˈay        	>HL/      	>OH@LA80J           	236910
-*	1o   	ʔōhālîm         	ʔōholîm         	>HL/      	>OH@LIJM03          	237704
-*	1o   	ʔᵒhālˌîm        	ʔᵒholˌîm        	>HL/      	>:@H@LI73JM         	293619
-*	1o   	ʔˈōhālˌîm       	ʔˈōholˌîm       	>HL/      	>O45H@LI63JM        	339056
-*	1o   	ʔōhālˌeʸḵā      	ʔōholˌeʸḵā      	>HL/      	>OH@LE73JK@         	85281
-*	1o   	ʔōhālˈeʸḵā      	ʔōholˈeʸḵā      	>HL/      	>OH@LE75JK@         	102626
-*	1o   	ʔōhālˈeḵā       	ʔōholˈeḵā       	>HL/      	>OH@LE75K@          	139321
- 	     	ʔˈohᵒlê-        	ʔˈohᵒlê-        	>HL/      	>@45H:@L;J&         	4506
- 	     	ʔohᵒlˌê         	ʔohᵒlˌê         	>HL/      	>@H:@L;63J          	80532
- 	     	ʔˈohᵒlêhˈem     	ʔˈohᵒlêhˈem     	>HL/      	>@95H:@L;JHE80M     	80569
- 	     	ʔohᵒlêḵˌem      	ʔohᵒlêḵˌem      	>HL/      	>@H:@L;JKEM03       	93352
- 	     	ʔohᵒlêḵˈem      	ʔohᵒlêḵˈem      	>HL/      	>@H:@L;JKE75M       	96891
- 	     	ʔohᵒlêhˈem      	ʔohᵒlêhˈem      	>HL/      	>@H:@L;JHE92M       	99722
- 	     	ʔohᵒlêhˌem      	ʔohᵒlêhˌem      	>HL/      	>@H:@L;JHE73M       	125405
- 	     	ʔˈohᵒlêḵem      	ʔˈohᵒlêḵem      	>HL/      	>@45H:@L;JKEM03     	125418
- 	     	ʔohᵒlˈê         	ʔohᵒlˈê         	>HL/      	>@H:@L;74J          	250527
- 	     	ʔohᵒlê-         	ʔohᵒlê-         	>HL/      	>@H:@L;J&           	324021
- 	     	ʔohᵒlˈeʸ        	ʔohᵒlˈeʸ        	>HL/      	>@H:@LE74J          	377851
- 	     	ʔˈohᵒlˌî        	ʔˈohᵒlˌî        	>HL/      	>@95H:@LI73J        	116633
- 	     	ʔohᵒlˈēḵ        	ʔohᵒlˈēḵ        	>HL/      	>@H:@L;81K:         	230797
- 	     	ʔohᵒlˈî         	ʔohᵒlˈî         	>HL/      	>@H:@LI74J          	240212
- 	     	ʔohᵒlˈeḵā       	ʔohᵒlˈeḵā       	>HL/      	>@H:@LE92K@         	312307
- 	     	*ʔohᵒlˈô        	*ʔohᵒlˈô        	>HL/      	>@H:@LO75W          	4419
- 	     	*ʔˈohᵒlô        	*ʔˈohᵒlô        	>HL/      	>@95H:@LOW03        	5911
- 	     	ʔohᵒlˌô         	ʔohᵒlˌô         	>HL/      	>@H:@LOW03          	16825
- 	     	*ʔˈohᵒlˈô       	*ʔˈohᵒlˈô       	>HL/      	>@45H:@LO80W        	19426
-*	1o,2o	ʔāhālᵊḵˌā       	ʔoholᵊḵˌā       	>HL/      	>@H@L:K@            	320408
-
-*	1ā,2ā	ʔˈîṯomor        	ʔˈîṯāmār        	>JTMR/    	>I45JT@M@R03        	57748
- 	     	ʔˈîṯāmˈār       	ʔˈîṯāmˈār       	>JTMR/    	>I45JT@M@75R        	31664
- 	     	ʔîṯāmˌār        	ʔîṯāmˌār        	>JTMR/    	>IJT@M@73R          	43742
- 	     	ʔˈîṯāmˌār       	ʔˈîṯāmˌār       	>JTMR/    	>I45JT@M@63R        	57505
- 	     	ʔˌîṯāmˌār       	ʔˌîṯāmˌār       	>JTMR/    	>I63JT@M@71R        	57627
- 	     	ʔîṯāmˈār        	ʔîṯāmˈār        	>JTMR/    	>IJT@M@75R          	70937
-
-*	2ā   	ˈʔomnom         	ˈʔomnām         	>MNM      	13>@M:N@M           	338276
- 	     	ʔomnˌām         	ʔomnˌām         	>MNM      	>@M:N@73M           	207760
- 	     	ʔomnˈām         	ʔomnˈām         	>MNM      	>@M:N@81M           	344462
-
-*	1ā   	ʔᵃrom           	ʔᵃrām           	>RM/      	>:AR@M02            	165648
- 	     	ʔᵃrˈām          	ʔᵃrˈām          	>RM/      	>:AR@75M            	4838
- 	     	ʔᵃrˌām          	ʔᵃrˌām          	>RM/      	14>:AR@M            	84803
-
- 	     	ʔᵃḥāḏˈîm        	ʔᵃḥāḏˈîm        	>XD/      	>:AX@DI75JM         	4974
- 	     	ʔᵃḥāḏˌîm        	ʔᵃḥāḏˌîm        	>XD/      	>:AX@DI73JM         	283546
- 	     	ʔᵃḥāḏîm         	ʔᵃḥāḏîm         	>XD/      	>:AX@DIJM03         	377348
-*	1ā   	ʔeḥoḏ           	ʔeḥāḏ           	>XD/      	>EX@D02             	23679
-*	1ā   	ʔˈeḥoḏ-         	ʔˈeḥāḏ-         	>XD/      	>E45X@D&            	375474
- 	     	ʔeḥˈāḏ          	ʔeḥˈāḏ          	>XD/      	>EX@75D             	77
- 	     	ʔeḥˌāḏ          	ʔeḥˌāḏ          	>XD/      	>EX@73D             	883
- 	     	ʔeḥˈāṯ          	ʔeḥˈāṯ          	>XD/      	>EX@92T             	4971
- 	     	ʔeḥˌāṯ          	ʔeḥˌāṯ          	>XD/      	>EX@T01             	42703
- 	     	ʔˈeḥˌāḏ         	ʔˈeḥˌāḏ         	>XD/      	>E45X@73D           	309967
- 	     	ˈʔeḥˈāḏ         	ˈʔeḥˈāḏ         	>XD/      	11>EX@81D           	347049
-
-*	2ā   	bˈāšon          	bˈāšān          	BCN/      	B.@80C@N            	277888
- 	     	bāšˈān          	bāšˈān          	BCN/      	B.@C@92N            	83734
- 	     	bāšˌān          	bāšˌān          	BCN/      	B.@C@63N            	83740
- 	     	vāšˌān          	vāšˌān          	BCN/      	B@C@N03             	111627
- 	     	vāšˈān          	vāšˈān          	BCN/      	B@C@91N             	301342
-
- 	     	boštᵊḵˌem       	boštᵊḵˌem       	BCT/      	B.@C:T.:KEM03       	233132
- 	     	boštˈām         	boštˈām         	BCT/      	B.@C:T.@75M         	304078
- 	     	voštˈēnû        	voštˈēnû        	BCT/      	B@C:T.;81NW.        	236519
- 	     	voštˌî          	voštˌî          	BCT/      	B@C:T.IJ            	321824
-*	1o   	vˌāšᵊttᵊḵˈā     	vˌoštᵊḵˈā       	BCT/      	B@63C:T.:K@80       	154078
-
- 	     	vᵊśārˌāh        	vᵊśārˌāh        	BFR/      	B:F@R@73H.          	55254
- 	     	bᵊśārˌām        	bᵊśārˌām        	BFR/      	B.:F@R@M03          	57965
- 	     	bᵊśārˈām        	bᵊśārˈām        	BFR/      	B.:F@R@91M          	59723
- 	     	vᵊśārˈāh        	vᵊśārˈāh        	BFR/      	B:F@R@92H.          	61874
- 	     	vᵊśārˈām        	vᵊśārˈām        	BFR/      	B:F@R@80M           	65040
- 	     	vᵊśārˌām        	vᵊśārˌām        	BFR/      	B:F@R@73M           	81691
- 	     	bᵊśārˌāh        	bᵊśārˌāh        	BFR/      	B.:F@R@H.03         	82094
- 	     	ˈvśārîm         	ˈvśārîm         	BFR/      	13B:F@RIJM          	350658
- 	     	bᵊśārˈî         	bᵊśārˈî         	BFR/      	B.:F@RI92J          	1128
- 	     	vᵊśārˌî         	vᵊśārˌî         	BFR/      	B:F@RI73J           	15231
- 	     	vᵊśārˌēnû       	vᵊśārˌēnû       	BFR/      	B:F@R;73NW.         	20673
- 	     	bᵊśārᵊḵˌā       	bᵊśārᵊḵˌā       	BFR/      	B.:F@R:K@73         	22278
- 	     	bᵊśˈārᵊḵˈā      	bᵊśˈārᵊḵˈā      	BFR/      	B.:F@74R:K@80       	151786
- 	     	vᵊśārᵊḵˌā       	vᵊśārᵊḵˌā       	BFR/      	B:F@R:K@73          	162941
- 	     	bᵊśārᵊḵˈā       	bᵊśārᵊḵˈā       	BFR/      	B.:F@R:K@91         	197699
- 	     	ˈbᵊśārˈî        	ˈbᵊśārˈî        	BFR/      	11B.:F@RI81J        	312458
- 	     	bᵊśˈārˌî        	bᵊśˈārˌî        	BFR/      	B.:F@60RI71J        	314407
- 	     	vᵊśārˈî         	vᵊśārˈî         	BFR/      	B:F@RI75J           	316686
- 	     	bᵊśārˌî         	bᵊśārˌî         	BFR/      	B.:F@RI71J          	337686
- 	     	ˈbᵊśārᵊḵˈā      	ˈbᵊśārᵊḵˈā      	BFR/      	11B.:F@R:K@81       	348121
- 	     	bᵊśārˈeḵā       	bᵊśārˈeḵā       	BFR/      	B.:F@RE80K@         	360949
- 	     	bᵊśārˈēnû       	bᵊśārˈēnû       	BFR/      	B.:F@R;80NW.        	385474
- 	     	vᵊśārˈô         	vᵊśārˈô         	BFR/      	B:F@RO75W           	30295
- 	     	bᵊśārˈô         	bᵊśārˈô         	BFR/      	B.:F@RO80W          	40429
- 	     	bᵊśārˌô         	bᵊśārˌô         	BFR/      	B.:F@RO73W          	45226
- 	     	vᵊśārˌô         	vᵊśārˌô         	BFR/      	B:F@RO73W           	63384
- 	     	ˈbᵊśārô         	ˈbᵊśārô         	BFR/      	13B.:F@ROW          	339733
-*	1ā,2ā	bośor           	bāśār           	BFR/      	B.@F@R02            	56764
-*	1ā,2ā	ˈbośor          	ˈbāśār          	BFR/      	13B.@F@R            	335436
- 	     	bāśˌār          	bāśˌār          	BFR/      	B.@F@73R            	1094
- 	     	vāśˌār          	vāśˌār          	BFR/      	B@F@73R             	1126
- 	     	vāśˈār          	vāśˈār          	BFR/      	B@F@92R             	2651
- 	     	bāśˈār          	bāśˈār          	BFR/      	B.@F@91R            	2819
-
- 	     	bˈayᵊṯā         	bˈayᵊṯā         	BJT/      	B.A80J:T@H          	11736
- 	     	bˌayᵊṯā         	bˌayᵊṯā         	BJT/      	B.A73J:T@H          	21658
- 	     	bˌêṯā           	bˌêṯā           	BJT/      	B.;71JT@H           	14521
- 	     	vêṯˈāh          	vêṯˈāh          	BJT/      	B;JT@81H.           	21709
- 	     	bˈêṯā           	bˈêṯā           	BJT/      	B.;74JT@H           	24622
- 	     	bêṯˈāh          	bêṯˈāh          	BJT/      	B.;JT@80H.          	30147
- 	     	vêṯˌāh          	vêṯˌāh          	BJT/      	B;JT@H.03           	113714
- 	     	bêṯˌām          	bêṯˌām          	BJT/      	B.;JT@73M           	141913
- 	     	bêṯˌāh          	bêṯˌāh          	BJT/      	B.;JT@73H.          	184251
- 	     	bêṯˈām          	bêṯˈām          	BJT/      	B.;JT@75M           	355423
- 	     	ˈbêṯˈāh         	ˈbêṯˈāh         	BJT/      	11B.;JT@81H.        	355695
- 	     	bêṯᵊḵˌā         	bêṯᵊḵˌā         	BJT/      	B.;JT:K@73          	3046
- 	     	bˈêṯᵊḵˌā        	bˈêṯᵊḵˌā        	BJT/      	B.;95JT:K@73        	7530
- 	     	vêṯˈeḵā         	vêṯˈeḵā         	BJT/      	B;JTE80K@           	17086
- 	     	vêṯeḵˌā         	vêṯeḵˌā         	BJT/      	B;JTEK@01           	17147
- 	     	vˈêṯᵊḵˌā        	vˈêṯᵊḵˌā        	BJT/      	B;45JT:K@73         	25676
- 	     	vêṯᵊḵˌā         	vêṯᵊḵˌā         	BJT/      	B;JT:K@73           	81568
- 	     	bêṯˌeḵā         	bêṯˌeḵā         	BJT/      	B.;JTE73K@          	97116
- 	     	bêṯˈeḵā         	bêṯˈeḵā         	BJT/      	B.;JTE80K@          	97981
- 	     	bêṯᵊḵˈā         	bêṯᵊḵˈā         	BJT/      	B.;JT:K@85          	135405
- 	     	bˈêṯᵊḵā         	bˈêṯᵊḵā         	BJT/      	B.;45JT:K@03        	142711
- 	     	vˈêṯᵊḵˈā        	vˈêṯᵊḵˈā        	BJT/      	B;74JT:K@80         	142842
- 	     	vêṯᵊḵˈā         	vêṯᵊḵˈā         	BJT/      	B;JT:K@74           	156606
- 	     	bˈêṯᵊḵˈā        	bˈêṯᵊḵˈā        	BJT/      	B.;74JT:K@80        	189105
- 	     	vˈêṯˌeḵā        	vˈêṯˌeḵā        	BJT/      	B;60JTE71K@         	333225
- 	     	vˈêṯᵊḵā         	vˈêṯᵊḵā         	BJT/      	B;45JT:K@03         	357423
-*	1ā   	bottêḵˈem       	bāttêḵˈem       	BJT/      	B.@T.;JKE75M        	23741
-*	1ā   	bottêḵˌem       	bāttêḵˌem       	BJT/      	B.@T.;JKE73M        	24014
-*	1ā   	vottêḵˌem       	vāttêḵˌem       	BJT/      	B@T.;JKE73M         	27139
-*	1ā   	bottˈîm         	bāttˈîm         	BJT/      	B.@T.I75JM          	29089
-*	1ā   	bottˌîm         	bāttˌîm         	BJT/      	B.@T.I71JM          	32577
-*	1ā   	bottˈê          	bāttˈê          	BJT/      	B.@T.;70J           	32773
-*	1ā   	vottˈê          	vāttˈê          	BJT/      	B@T.;74J            	33913
-*	1ā   	bottîm          	bāttîm          	BJT/      	B.@T.IJM03          	34940
-*	1ā   	vottêḵˈem       	vāttêḵˈem       	BJT/      	B@T.;JKE92M         	35114
-*	1ā   	vottˈîm         	vāttˈîm         	BJT/      	B@T.I74JM           	42388
-*	1ā   	bottˌê          	bāttˌê          	BJT/      	B.@T.;73J           	67748
-*	1ā   	bottêhˈem       	bāttêhˈem       	BJT/      	B.@T.;JHE92M        	80677
-*	1ā   	vottˌîm         	vāttˌîm         	BJT/      	B@T.I71JM           	98228
-*	1ā   	bottêhˌem       	bāttêhˌem       	BJT/      	B.@T.;JHE73M        	99719
-*	1ā   	vottêhˈem       	vāttêhˈem       	BJT/      	B@T.;JHE75M         	103889
-*	1ā   	vottˌê          	vāttˌê          	BJT/      	B@T.;71J            	213204
-*	1ā   	vottîm          	vāttîm          	BJT/      	B@T.IJM03           	214192
-*	1ā   	vottêhˌem       	vāttêhˌem       	BJT/      	B@T.;JHE73M         	216794
-*	1ā   	vottêhˌen       	vāttêhˌen       	BJT/      	B@T.;JHE73N         	276518
-*	1ā   	ˈbottîm         	ˈbāttîm         	BJT/      	13B.@T.IJM          	340003
-*	1ā   	vottˈayiḵ       	vāttˈayiḵ       	BJT/      	B@T.A33JIK:03       	271742
-*	1ā   	bottˈeʸḵā       	bāttˈeʸḵā       	BJT/      	B.@T.E92JK@         	32504
-*	1ā   	vottˌeʸḵā       	vāttˌeʸḵā       	BJT/      	B@T.E73JK@          	32767
-*	1ā   	vottˈeʸḵā       	vāttˈeʸḵā       	BJT/      	B@T.E61JK@          	33911
-*	1ā   	bottˈênû        	bāttˈênû        	BJT/      	B.@T.;74JNW.        	35312
-*	1ā   	bottˌêmô        	bāttˌêmô        	BJT/      	B.@T.;63JMOW        	318520
-*	1ā   	vottˈênû        	vāttˈênû        	BJT/      	B@T.;74JNW.         	347042
-*	1ā   	bottˌênû        	bāttˌênû        	BJT/      	B.@T.;73JNW.        	365287
-*	1ā   	vottˌênû        	vāttˌênû        	BJT/      	B@T.;73JNW.         	385447
- 	     	bˈāttˈîm        	bˈāttˈîm        	BJT/      	B.@74T.I80JM        	34820
- 	     	vˌāttˈîm        	vˌāttˈîm        	BJT/      	B@63T.I61JM         	97151
- 	     	bˈāttêhˈem      	bˈāttêhˈem      	BJT/      	B.@45T.;JHE80M      	216719
- 	     	vˈāttêhem       	vˈāttêhem       	BJT/      	B@45T.;JHEM03       	237860
- 	     	bˈāttêḵem       	bˈāttêḵem       	BJT/      	B.@45T.;JKEM03      	243487
- 	     	vˈāttˈîm        	vˈāttˈîm        	BJT/      	B@74T.I80JM         	288531
- 	     	vˈāttê-         	vˈāttê-         	BJT/      	B@45T.;J&           	337258
- 	     	bˈāttˌîm        	bˈāttˌîm        	BJT/      	B.@60T.I71JM        	342081
- 	     	bˌāttˈāʸw       	bˌāttˈāʸw       	BJT/      	B.@63T.@61JW        	405787
- 	     	bˈāyiṯ          	bˈāyiṯ          	BJT/      	B.@80JIT            	7514
- 	     	bˈāyᵊṯā         	bˈāyᵊṯā         	BJT/      	B.@92J:T@H          	8638
- 	     	bˈāttˈeʸḵā      	bˈāttˈeʸḵā      	BJT/      	B.@74T.E80JK@       	32532
- 	     	bˈāttˈênû       	bˈāttˈênû       	BJT/      	B.@74T.;80JNW.      	117998
- 	     	vˈāyᵊṯā         	vˈāyᵊṯā         	BJT/      	B@75J:T@H           	163141
- 	     	bˌāyiṯ          	bˌāyiṯ          	BJT/      	B.@73JIT            	180034
- 	     	vˈāyiṯ          	vˈāyiṯ          	BJT/      	B@92JIT             	232052
-
-*	1ā   	bilʕom          	bilʕām          	BL<M/     	B.IL:<@M02          	84198
- 	     	bilʕˈām         	bilʕˈām         	BL<M/     	B.IL:<@74M          	83887
- 	     	bilʕˌām         	bilʕˌām         	BL<M/     	B.IL:<@73M          	84010
- 	     	vilʕˌām         	vilʕˌām         	BL<M/     	BIL:<@M03           	84392
- 	     	vilʕˈām         	vilʕˈām         	BL<M/     	BIL:<@92M           	84578
-
-*	1ā   	*bˈomᵒṯê        	*bˈāmᵒṯê        	BMH/      	B.@74M:@T;J         	111600
-*	1ā   	*bˌomᵒṯê        	*bˌāmᵒṯê        	BMH/      	B.@71M:@T;J         	299588
- 	     	bāmˌôṯ          	bāmˌôṯ          	BMH/      	B.@MO71WT           	83671
- 	     	bāmôṯ           	bāmôṯ           	BMH/      	B.@MOWT03           	186820
- 	     	vāmˈôṯ          	vāmˈôṯ          	BMH/      	B@MO80WT            	187606
- 	     	vāmˌôṯ          	vāmˌôṯ          	BMH/      	B@MO71WT            	248321
- 	     	bāmˈōṯêḵˈem     	bāmˈōṯêḵˈem     	BMH/      	B.@MO45T;JKE81M     	68632
- 	     	bāmōṯˌām        	bāmōṯˌām        	BMH/      	B.@MOT@73M          	91298
- 	     	bāmôṯˌay        	bāmôṯˌay        	BMH/      	B.@MOWTA73J         	174632
- 	     	bāmōṯˈāʸw       	bāmōṯˈāʸw       	BMH/      	B.@MOT@74JW         	207029
- 	     	bāmˈôṯêḵˈem     	bāmˈôṯêḵˈem     	BMH/      	B.@MO45WT;JKE75M    	266875
- 	     	bāmôṯˈām        	bāmôṯˈām        	BMH/      	B.@MOWT@75M         	287271
- 	     	ˈbāmōṯˈay       	ˈbāmōṯˈay       	BMH/      	11B.@MOTA81J        	313004
- 	     	vāmôṯˈām        	vāmôṯˈām        	BMH/      	B@MOWT@92M          	324099
- 	     	bāmōṯˌāʸw       	bāmōṯˌāʸw       	BMH/      	B.@MOT@73JW         	423346
- 	     	bāmôṯˌêmô       	bāmôṯˌêmô       	BMH/      	B.@MOWT;71JMOW      	112677
- 	     	bāmôṯˌeʸḵā      	bāmôṯˌeʸḵā      	BMH/      	B.@MOWTE73JK@       	160825
- 	     	bāmōṯˈeʸḵā      	bāmōṯˈeʸḵā      	BMH/      	B.@MOTE85JK@        	243153
-*	2o   	bāmˈā           	bāmˈoh          	BMH/      	B.@M@75H            	145802
-*	2o   	bāmˈāṯā         	bāmˈoṯā         	BMH/      	B.@M@61T@H          	145814
-*	2o   	bāmˌā           	bāmˌoh          	BMH/      	B.@M@73H            	146136
-*	2o   	vāmˈā           	vāmˈoh          	BMH/      	B@M@80H             	260897
-
-*	1ā   	ˈbor            	ˈbār            	BR/       	13B.@R              	349856
- 	     	vˈār            	vˈār            	BR/       	B@62R               	22989
- 	     	bˈār            	bˈār            	BR/       	B.@91R              	23253
- 	     	bˌār            	bˌār            	BR/       	B.@73R              	23472
-
- 	     	vᵊrāqˈîm        	vᵊrāqˈîm        	BRQ/      	B:R@QI61JM          	39392
- 	     	bᵊrāqˈîm        	bᵊrāqˈîm        	BRQ/      	B.:R@QI70JM         	240118
- 	     	bᵊrāqˌîm        	bᵊrāqˌîm        	BRQ/      	B.:R@QI73JM         	301725
- 	     	vᵊrāqˌîm        	vᵊrāqˌîm        	BRQ/      	B:R@QI71JM          	312819
- 	     	vᵊrāqˈāʸw       	vᵊrāqˈāʸw       	BRQ/      	B:R@Q@74JW          	327257
-*	2ā   	ˈboroq          	ˈborāq          	BRQ/      	13B.@R@Q            	335120
-*	2ā   	bˌāroq          	bˌārāq          	BRQ/      	B.@73R@Q            	274768
-
-*	1ā,2ā	voroq           	vārāq           	BRQ=/     	B@R@Q02             	129886
- 	     	vārˈāq          	vārˈāq          	BRQ=/     	B@R@74Q             	129484
- 	     	bārˈāq          	bārˈāq          	BRQ=/     	B.@R@80Q            	129542
- 	     	bārˌāq          	bārˌāq          	BRQ=/     	B.@R@73Q            	129585
- 	     	vārˌāq          	vārˌāq          	BRQ=/     	B@R@73Q             	129959
-
- 	     	šᵊlōšˈā         	šᵊlōšˈā         	CLC/      	C:LOC@74H           	2785
- 	     	šᵊlōšˌā         	šᵊlōšˌā         	CLC/      	C:LOC@71H           	4388
- 	     	ššᵊlōšˈā        	ššᵊlōšˈā        	CLC/      	C.:LOC@80H          	71667
- 	     	šᵊlōšˈā-        	šᵊlōšˈā-        	CLC/      	C:LOC@45H&          	104223
- 	     	šᵊlôšˌā         	šᵊlôšˌā         	CLC/      	C:LOWC@73H          	121700
- 	     	šᵊlôšˈā         	šᵊlôšˈā         	CLC/      	C:LOWC@74H          	168695
- 	     	ššᵊlōšˌā        	ššᵊlōšˌā        	CLC/      	C.:LOC@H03          	175187
- 	     	šᵊˈlôšā         	šᵊˈlôšā         	CLC/      	C:45LOWC@H04        	397284
- 	     	ššᵊlôšˈā        	ššᵊlôšˈā        	CLC/      	C.:LOWC@80H         	397405
- 	     	ššᵊlôšˌā        	ššᵊlôšˌā        	CLC/      	C.:LOWC@73H         	397436
- 	     	šᵊloštᵊḵˌem     	šᵊloštᵊḵˌem     	CLC/      	C:L@C:T.:KE73M      	77650
- 	     	šᵊloštˈām       	šᵊloštˈām       	CLC/      	C:L@C:T.@75M        	77656
-*	1o   	šᵊlˌāš-         	šᵊlˌoš-         	CLC/      	C:L@63C&            	40176
- 	     	šālˈōš          	šālˈōš          	CLC/      	C@LO74C             	5184
- 	     	šālˌōš          	šālˌōš          	CLC/      	C@LO71C             	31896
- 	     	šālˈôš          	šālˈôš          	CLC/      	C@LO74WC            	84485
- 	     	šālˌôš          	šālˌôš          	CLC/      	C@LO71WC            	103890
- 	     	ššālˌōš         	ššālˌōš         	CLC/      	C.@LO71C            	104097
- 	     	šˈālōš-         	šˈālōš-         	CLC/      	C@45LOC&            	203467
- 	     	šālôš           	šālôš           	CLC/      	C@LOWC04            	286579
- 	     	ˈšālôš          	ˈšālôš          	CLC/      	13C@LOWC            	355368
-
-*	1ā   	ˈšommā          	ˈšāmmā          	CM        	10C@M.@H            	28213
-*	1ā   	ššom            	ššām            	CM        	C.@M02              	83383
-*	1ā   	ˈšom            	ˈšām            	CM        	10C@M               	290187
- 	     	šˈām            	šˈām            	CM        	C@80M               	825
- 	     	ššˌām           	ššˌām           	CM        	C.@M03              	874
- 	     	šˌām            	šˌām            	CM        	C@73M               	894
- 	     	ššˈām           	ššˈām           	CM        	C.@75M              	1636
- 	     	šˈāmmā          	šˈāmmā          	CM        	C@92M.@H            	6403
- 	     	šˌāmmā          	šˌāmmā          	CM        	C@73M.@H            	8876
- 	     	ššˈāmmā         	ššˈāmmā         	CM        	C.@33M.@H03         	291416
- 	     	ˈšˈām           	ˈšˈām           	CM        	11C@81M             	321014
- 	     	šˈām-           	šˈām-           	CM        	C@45M&              	328474
- 	     	šˈāmā           	šˈāmā           	CM        	C@80M@H             	336501
-
- 	     	šoršˌām         	šoršˌām         	CRC/      	C@R:C@M03           	130140
- 	     	šoršˌê          	šoršˌê          	CRC/      	C@R:C;71J           	339498
- 	     	šoršˈēḵ         	šoršˈēḵ         	CRC/      	C@R:C;80K:          	217285
- 	     	šoršˈî          	šoršˈî          	CRC/      	C@R:CI74J           	343032
- 	     	šoršˌô          	šoršˌô          	CRC/      	C@R:CO73W           	279896
- 	     	šoršˈô          	šoršˈô          	CRC/      	C@R:CO92W           	339590
- 	     	šorᵒšˈeʸhā      	šorᵒšˈeʸhā      	CRC/      	C@R:@CE74JH@        	272298
-*	1o   	ššārāšˌāʸw      	ššorāšˌāʸw      	CRC/      	C.@R@C@71JW         	216094
-*	1o   	šˈārāšˈāʸw      	šˈorāšˈāʸw      	CRC/      	C@45R@C@80JW        	243252
-*	1o   	šārāšˌāʸw       	šorāšˌāʸw       	CRC/      	C@R@C@73JW          	272268
-*	1o   	šārāšˌeʸhā      	šorāšˌeʸhā      	CRC/      	C@R@CE63JH@         	272339
-*	1o   	ššārāšˈeʸhā     	ššorāšˈeʸhā     	CRC/      	C.@R@CE75JH@        	272364
-*	1o   	ˈšārāšˈeʸhā     	ˈšorāšˈeʸhā     	CRC/      	11C@R@CE81JH@       	324495
-
- 	     	ḏᵊvārˌîm        	ḏᵊvārˌîm        	DBR/      	D:B@RI73JM          	4973
- 	     	dᵊvārˈîm        	dᵊvārˈîm        	DBR/      	D.:B@RI74JM         	6671
- 	     	dᵊvārˌîm        	dᵊvārˌîm        	DBR/      	D.:B@RI71JM         	9414
- 	     	dᵊvārˈāy        	dᵊvārˈāy        	DBR/      	D.:B@R@92J          	11773
- 	     	dᵊvārˈāʸw       	dᵊvārˈāʸw       	DBR/      	D.:B@R@75JW         	20313
- 	     	ḏᵊvārˈāy        	ḏᵊvārˈāy        	DBR/      	D:B@R@92J           	77680
- 	     	dᵊvārîm         	dᵊvārîm         	DBR/      	D.:B@RIJM03         	95442
- 	     	ḏᵊvārˌāʸw       	ḏᵊvārˌāʸw       	DBR/      	D:B@R@71JW          	96019
- 	     	dᵊvārˈay        	dᵊvārˈay        	DBR/      	D.:B@RA74J          	99970
- 	     	ḏᵊvārˌay        	ḏᵊvārˌay        	DBR/      	D:B@RAJ03           	103767
- 	     	dᵊvārˌāʸw       	dᵊvārˌāʸw       	DBR/      	D.:B@R@73JW         	143235
- 	     	dᵊvārˌay        	dᵊvārˌay        	DBR/      	D.:B@RA73J          	149765
- 	     	ḏᵊvārˈāʸw       	ḏᵊvārˈāʸw       	DBR/      	D:B@R@80JW          	176209
- 	     	ḏᵊvārˈay        	ḏᵊvārˈay        	DBR/      	D:B@RA61J           	183432
- 	     	dᵊvˈārîm-       	dᵊvˈārîm-       	DBR/      	D.:B@45RIJM&        	256249
- 	     	ḏᵊvārîm         	ḏᵊvārîm         	DBR/      	D:B@RIJM03          	283998
- 	     	ḏᵊvārˈîm        	ḏᵊvārˈîm        	DBR/      	D:B@RI80JM          	293106
- 	     	ˈdᵊvārîm        	ˈdᵊvārîm        	DBR/      	13D.:B@RIJM         	338818
- 	     	ˈdᵊvārˈāʸw      	ˈdᵊvārˈāʸw      	DBR/      	11D.:B@R@81JW       	344153
- 	     	dᵊvārāʸw        	dᵊvārāʸw        	DBR/      	D.:B@R@JW03         	420932
- 	     	ḏᵊvārˈeḵā       	ḏᵊvārˈeḵā       	DBR/      	D:B@RE75K@          	16159
- 	     	ḏᵊvˈārᵊḵˈā      	ḏᵊvˈārᵊḵˈā      	DBR/      	D:B@74R:K@80        	32517
- 	     	ḏᵊvārˌî         	ḏᵊvārˌî         	DBR/      	D:B@RI73J           	77304
- 	     	dᵊvārˈeʸḵā      	dᵊvārˈeʸḵā      	DBR/      	D.:B@RE91JK@        	113344
- 	     	dᵊvārˌēnû       	dᵊvārˌēnû       	DBR/      	D.:B@R;73NW.        	113688
- 	     	dᵊvārˈēnû       	dᵊvārˈēnû       	DBR/      	D.:B@R;74NW.        	113836
- 	     	ḏᵊvārᵊḵˌā       	ḏᵊvārᵊḵˌā       	DBR/      	D:B@R:K@73          	134672
- 	     	ḏᵊvārˈeʸḵā      	ḏᵊvārˈeʸḵā      	DBR/      	D:B@RE92JK@         	135974
- 	     	ḏᵊvārˈeʸhā      	ḏᵊvārˈeʸhā      	DBR/      	D:B@RE91JH@         	137575
- 	     	dᵊvārᵊḵˌā       	dᵊvārᵊḵˌā       	DBR/      	D.:B@R:K@73         	145739
- 	     	dᵊvˈārᵊḵā       	dᵊvˈārᵊḵā       	DBR/      	D.:B@45R:K@03       	164375
- 	     	ḏᵊvārˌeʸḵā      	ḏᵊvārˌeʸḵā      	DBR/      	D:B@RE73JK@         	164550
- 	     	ḏᵊvārˌeḵā       	ḏᵊvārˌeḵā       	DBR/      	D:B@RE73K@          	168943
- 	     	dᵊvārˌî         	dᵊvārˌî         	DBR/      	D.:B@RIJ03          	180336
- 	     	*dᵊvˈārᵊḵˈā     	*dᵊvˈārᵊḵˈā     	DBR/      	D.:B@74R:k@80       	182633
- 	     	dᵊvārˈeʸhā      	dᵊvārˈeʸhā      	DBR/      	D.:B@RE92JH@        	184395
- 	     	dᵊvārˌeʸḵā      	dᵊvārˌeʸḵā      	DBR/      	D.:B@RE73JK@        	184459
- 	     	ḏᵊvārˈî         	ḏᵊvārˈî         	DBR/      	D:B@RI75J           	189844
- 	     	ḏᵊvārˈēḵ        	ḏᵊvārˈēḵ        	DBR/      	D:B@R;92K:          	190062
- 	     	*ḏᵊvārᵊḵˈā      	*ḏᵊvārᵊḵˈā      	DBR/      	D:B@R:k@74          	191162
- 	     	dᵊvārˈî         	dᵊvārˈî         	DBR/      	D.:B@RI75J          	234503
- 	     	*ḏᵊvˈārᵊḵā      	*ḏᵊvˈārᵊḵā      	DBR/      	D:B@45R:k@03        	242490
- 	     	dᵊvārˈeḵā       	dᵊvārˈeḵā       	DBR/      	D.:B@RE75K@         	331434
- 	     	ˈdᵊvārᵊḵˈā      	ˈdᵊvārᵊḵˈā      	DBR/      	11D.:B@R:K@81       	331991
- 	     	*dᵊvārᵊḵˈā      	*dᵊvārᵊḵˈā      	DBR/      	D.:B@R:k@81         	332539
- 	     	ˈḏᵊvārî         	ˈḏᵊvārî         	DBR/      	13D:B@RIJ           	343058
- 	     	dᵊvārˈô         	dᵊvārˈô         	DBR/      	D.:B@RO92W          	88590
- 	     	dᵊvārˌô         	dᵊvārˌô         	DBR/      	D.:B@RO73W          	182465
- 	     	ḏᵊvārˈô         	ḏᵊvārˈô         	DBR/      	D:B@RO92W           	195191
- 	     	dᵊvˈārˌô        	dᵊvˈārˌô        	DBR/      	D.:B@60RO71W        	319662
- 	     	ˈdᵊvārô         	ˈdᵊvārô         	DBR/      	13D.:B@ROW          	329632
- 	     	ḏᵊvārˌô         	ḏᵊvārˌô         	DBR/      	D:B@RO71W           	333362
- 	     	*dᵊvārˈô        	*dᵊvārˈô        	DBR/      	D.:B@RO74W          	376010
-*	2o   	dᵊvārˈāyiḵ      	dᵊvārˈoyiḵ      	DBR/      	D.:B@R@75JIK:       	176383
-*	1ā,2ā	ˈdovor          	ˈdāvār          	DBR/      	13D.@B@R            	342361
- 	     	dāvˈār          	dāvˈār          	DBR/      	D.@B@92R            	8046
- 	     	ḏāvˈār          	ḏāvˈār          	DBR/      	D@B@80R             	8586
- 	     	dāvˌār          	dāvˌār          	DBR/      	D.@B@71R            	9464
- 	     	ḏāvˌār          	ḏāvˌār          	DBR/      	D@B@R03             	25165
- 	     	dˈāvˈār         	dˈāvˈār         	DBR/      	D.@82B@70R          	317886
- 	     	ˈdāvˈār         	ˈdāvˈār         	DBR/      	11D.@B@81R          	340893
-
- 	     	dᵊḡānˌām        	dᵊḡānˌām        	DGN/      	D.:G@N@73M          	311015
- 	     	ˈdᵊḡānˈām       	ˈdᵊḡānˈām       	DGN/      	11D.:G@N@81M        	320916
- 	     	dᵊḡˌānᵊḵˈā      	dᵊḡˌānᵊḵˈā      	DGN/      	D.:G@63N:K@61       	97715
- 	     	ḏᵊḡānˈeḵā       	ḏᵊḡānˈeḵā       	DGN/      	D:G@NE80K@          	99903
- 	     	dᵊḡˈānᵊḵā       	dᵊḡˈānᵊḵā       	DGN/      	D.:G@45N:K@03       	100665
- 	     	dᵊḡˈānᵊḵˈā      	dᵊḡˈānᵊḵˈā      	DGN/      	D.:G@95N:K@61       	103518
- 	     	dᵊḡānˌēḵ        	dᵊḡānˌēḵ        	DGN/      	D.:G@N;63K:         	233375
- 	     	ḏᵊḡānˌî         	ḏᵊḡānˌî         	DGN/      	D:G@NIJ03           	291300
-*	1ā,2ā	doḡon           	dāḡān           	DGN/      	D.@G@N02            	389192
- 	     	dāḡˌān          	dāḡˌān          	DGN/      	D.@G@73N            	14104
- 	     	ḏāḡˌān          	ḏāḡˌān          	DGN/      	D@G@71N             	14298
- 	     	ḏāḡˈān          	ḏāḡˈān          	DGN/      	D@G@92N             	81579
- 	     	dāḡˈān          	dāḡˈān          	DGN/      	D.@G@74N            	112649
-
-*	1ā   	ˈdol            	ˈdāl            	DL/       	13D.@L              	350666
- 	     	ḏˈāl            	ḏˈāl            	DL/       	D@85L               	41091
- 	     	dˈāl            	dˈāl            	DL/       	D.@81L              	142202
-
-*	1ā   	dom             	dām             	DM/       	D.@M02              	56720
-*	1ā   	ḏom-            	ḏām-            	DM/       	D@M&                	295356
-*	1ā   	dom-            	dām-            	DM/       	D.@M&               	348401
-*	1ā   	ḏom             	ḏām             	DM/       	D@M02               	415902
- 	     	ḏˌām            	ḏˌām            	DM/       	D@M01               	20556
- 	     	dˈām            	dˈām            	DM/       	D.@75M              	20754
- 	     	dāmˈîm          	dāmˈîm          	DM/       	D.@MI91JM           	30699
- 	     	dāmˌîm          	dāmˌîm          	DM/       	D.@MI73JM           	30708
- 	     	ḏˈām            	ḏˈām            	DM/       	D@75M               	32108
- 	     	dˌām            	dˌām            	DM/       	D.@73M              	32243
- 	     	dāmˌāh          	dāmˌāh          	DM/       	D.@M@H.03           	54144
- 	     	dāmˈāh          	dāmˈāh          	DM/       	D.@M@74H.           	54157
- 	     	dāmˌām          	dāmˌām          	DM/       	D.@M@M03            	62820
- 	     	dāmˌāʸw         	dāmˌāʸw         	DM/       	D.@M@71JW           	64586
- 	     	dāmˈām          	dāmˈām          	DM/       	D.@M@62M            	81675
- 	     	dāmîm           	dāmîm           	DM/       	D.@MIJM03           	105453
- 	     	ḏāmˈām          	ḏāmˈām          	DM/       	D@M@81M             	133361
- 	     	ḏāmˈîm          	ḏāmˈîm          	DM/       	D@MI80JM            	157092
- 	     	ḏāmˌāh          	ḏāmˌāh          	DM/       	D@M@H.03            	276681
- 	     	ḏāmˌîm          	ḏāmˌîm          	DM/       	D@MI71JM            	291724
- 	     	ḏāmāʸw          	ḏāmāʸw          	DM/       	D@M@JW03            	293687
- 	     	ḏāmˈāʸw         	ḏāmˈāʸw         	DM/       	D@M@61JW            	307568
- 	     	ˈdāmîm          	ˈdāmîm          	DM/       	13D.@MIJM           	311676
- 	     	ˈḏāmˈîm         	ˈḏāmˈîm         	DM/       	11D@MI81JM          	320054
- 	     	ḏāmˌām          	ḏāmˌām          	DM/       	D@M@63M             	324273
- 	     	ˈḏāmîm          	ˈḏāmîm          	DM/       	13D@MIJM            	354951
- 	     	ḏāmˈayiḵ        	ḏāmˈayiḵ        	DM/       	D@MA74JIK:          	271119
- 	     	ḏāmˌayiḵ        	ḏāmˌayiḵ        	DM/       	D@MA71JIK:          	271125
- 	     	dāmˌayiḵ        	dāmˌayiḵ        	DM/       	D.@MA73JIK:         	271190
- 	     	dāmˈeʸhā        	dāmˈeʸhā        	DM/       	D.@ME92JH@          	58827
- 	     	dˈāmî           	dˈāmî           	DM/       	D.@45MIJ03          	158057
- 	     	*dāmᵊḵˌā        	*dāmᵊḵˌā        	DM/       	D.@M:k@73           	160780
- 	     	ḏāmˌî           	ḏāmˌî           	DM/       	D@MIJ03             	263359
- 	     	ḏāmˌēḵ          	ḏāmˌēḵ          	DM/       	D@M;73K:            	271423
- 	     	ḏāmᵊḵˌā         	ḏāmᵊḵˌā         	DM/       	D@M:K@73            	273446
- 	     	dāmˌēḵ          	dāmˌēḵ          	DM/       	D.@M;71K:           	275184
- 	     	dāmˈēḵ          	dāmˈēḵ          	DM/       	D.@M;80K:           	275401
- 	     	ḏāmˈî           	ḏāmˈî           	DM/       	D@MIJ02             	314898
- 	     	ḏāmˌô           	ḏāmˌô           	DM/       	D@MO73W             	4105
- 	     	dāmˈô           	dāmˈô           	DM/       	D.@MO74W            	4141
- 	     	dāmˌô           	dāmˌô           	DM/       	D.@MO73W            	23808
- 	     	ḏāmˈô           	ḏāmˈô           	DM/       	D@MO80W             	52824
- 	     	ḏāmˈāyiḵ        	ḏāmˈāyiḵ        	DM/       	D@M@92JIK:          	271114
-
-*	1ā   	ˈdon            	ˈdān            	DN/       	10D.@N              	391852
- 	     	dˈān            	dˈān            	DN/       	D.@75N              	6488
- 	     	dˌān            	dˌān            	DN/       	D.@73N              	19484
- 	     	ḏˌān            	ḏˌān            	DN/       	D@73N               	26346
- 	     	ḏˈān            	ḏˈān            	DN/       	D@80N               	46236
- 	     	dˈānā           	dˈānā           	DN/       	D.@74N@H            	175571
-
-*	1ā   	ḡoḏ             	ḡāḏ             	GD==/     	G@D02               	86156
- 	     	gˈāḏ            	gˈāḏ            	GD==/     	G.@75D              	15751
- 	     	gˌāḏ            	gˌāḏ            	GD==/     	G.@73D              	28017
- 	     	ḡˌāḏ            	ḡˌāḏ            	GD==/     	G@73D               	86197
-
-*	1ā   	ḡilʕoḏ          	ḡilʕāḏ          	GL<D/     	GIL:<@D02           	189820
- 	     	gilʕˈāḏ         	gilʕˈāḏ         	GL<D/     	G.IL:<@75D          	16761
- 	     	ḡilʕˈāḏ         	ḡilʕˈāḏ         	GL<D/     	GIL:<@85D           	86350
- 	     	gilʕˌāḏ         	gilʕˌāḏ         	GL<D/     	G.IL:<@D03          	86907
- 	     	gilʕˌāḏā        	gilʕˌāḏā        	GL<D/     	G.IL:<@73D@H        	90614
- 	     	ḡilʕˌāḏ         	ḡilʕˌāḏ         	GL<D/     	GIL:<@D03           	92517
- 	     	gilʕˈāḏā        	gilʕˈāḏā        	GL<D/     	G.IL:<@80D@H        	175564
-
-*	1ā   	ˈḡannov         	ˈḡannāv         	GNB/      	13GAN.@B            	318806
-*	1ā   	ˈgannov         	ˈgannāv         	GNB/      	13G.AN.@B           	355077
- 	     	gannˌāv         	gannˌāv         	GNB/      	G.AN.@73B           	40616
- 	     	gannˈāv         	gannˈāv         	GNB/      	G.AN.@80B           	40725
- 	     	gannāvˈîm       	gannāvˈîm       	GNB/      	G.AN.@BI80JM        	212399
- 	     	ḡannāvˌîm       	ḡannāvˌîm       	GNB/      	GAN.@BI73JM         	260760
- 	     	gannāvˌîm       	gannāvˌîm       	GNB/      	G.AN.@BI71JM        	261290
- 	     	ḡannˈāv         	ḡannˈāv         	GNB/      	GAN.@74B            	292380
-
-*	1ā   	hᵃḏˈôrom-       	hᵃḏˈôrām-       	HDWRM/    	H:ADO45WR@M&        	400966
- 	     	hᵃḏôrˌām        	hᵃḏôrˌām        	HDWRM/    	H:ADOWR@71M         	4895
- 	     	hᵃḏōrˌām        	hᵃḏōrˌām        	HDWRM/    	H:ADOR@M03          	412154
-
- 	     	yošovʕˈām       	yošovʕˈām       	JCB<M/    	J@C@B:<@74M         	397207
- 	     	yošovʕˌām       	yošovʕˌām       	JCB<M/    	J@C@B:<@73M         	397826
-*	1o   	yˈāšovʕˌām      	yˈošovʕˌām      	JCB<M/    	J@45C@B:<@73M       	404903
-
- 	     	yᵊšārˈîm        	yᵊšārˈîm        	JCR/      	J:C@RI80JM          	84862
- 	     	yᵊšārˈā         	yᵊšārˈā         	JCR/      	J:C@R@75H           	147755
- 	     	yᵊšārˈôṯ        	yᵊšārˈôṯ        	JCR/      	J:C@RO80WT          	265169
- 	     	yᵊšārˌā         	yᵊšārˌā         	JCR/      	J:C@R@73H           	300232
- 	     	ˈyšārîm         	ˈyšārîm         	JCR/      	13J:C@RIJM          	313264
- 	     	yᵊšārˌîm        	yᵊšārˌîm        	JCR/      	J:C@RI63JM          	318565
- 	     	ˈyšārˈîm        	ˈyšārˈîm        	JCR/      	11J:C@RI81JM        	334705
- 	     	yᵊšārîm         	yᵊšārîm         	JCR/      	J:C@RIJM            	347301
-*	1ā,2ā	ˈyošor          	ˈyāšār          	JCR/      	13J@C@R             	341812
- 	     	yšārˈîm         	yšārˈîm         	JCR/      	JC@RI81JM           	333046
- 	     	yšārˌîm         	yšārˌîm         	JCR/      	JC@RI71JM           	377288
- 	     	yyāšˈār         	yyāšˈār         	JCR/      	J.@C@70R            	37301
- 	     	yyāšˌār         	yyāšˌār         	JCR/      	J.@C@71R            	97256
- 	     	yāšˌār          	yāšˌār          	JCR/      	J@C@73R             	111494
- 	     	yāšˈār          	yāšˈār          	JCR/      	J@C@74R             	159285
- 	     	ˈyāšˈār         	ˈyāšˈār         	JCR/      	11J@C@81R           	312050
-
- 	     	yᵊḏōṯˈāʸw       	yᵊḏōṯˈāʸw       	JD/       	J:DOT@80JW          	43000
- 	     	yᵊḏôṯˈām        	yᵊḏôṯˈām        	JD/       	J:DOWT@74M          	181613
- 	     	yᵊḏōṯˈeʸhā      	yᵊḏōṯˈeʸhā      	JD/       	J:DOTE80JH@         	181653
-*	1ā   	ˈyoḏ            	ˈyāḏ            	JD/       	10J@D               	40362
- 	     	yāḏˈām          	yāḏˈām          	JD/       	J@D@80M             	8631
- 	     	yāḏˌāh          	yāḏˌāh          	JD/       	J@D@73H.            	11485
- 	     	yāḏˈāʸw         	yāḏˈāʸw         	JD/       	J@D@92JW            	13897
- 	     	yyāḏˈām         	yyāḏˈām         	JD/       	J.@D@92M            	20544
- 	     	yˌāḏ            	yˌāḏ            	JD/       	J@73D               	20569
- 	     	yˈāḏ            	yˈāḏ            	JD/       	J@92D               	21367
- 	     	yāḏˈāh          	yāḏˈāh          	JD/       	J@D@80H.            	21685
- 	     	yāḏˌām          	yāḏˌām          	JD/       	J@D@73M             	24422
- 	     	yāḏˈôṯ          	yāḏˈôṯ          	JD/       	J@DO92WT            	24826
- 	     	yyāḏˈōṯ         	yyāḏˈōṯ         	JD/       	J.@DO83T            	27125
- 	     	yyˈāḏ           	yyˈāḏ           	JD/       	J.@74D              	36890
- 	     	*yyāḏāʸw        	*yyāḏāʸw        	JD/       	J.@D@JW03           	46926
- 	     	yāḏˈōṯ          	yāḏˈōṯ          	JD/       	J@DO81T             	49625
- 	     	yāḏāh           	yāḏāh           	JD/       	J@D@H.02            	58843
- 	     	yāḏˌāʸw         	yāḏˌāʸw         	JD/       	J@D@73JW            	61696
- 	     	yāḏˈāy          	yāḏˈāy          	JD/       	J@D@75J             	98790
- 	     	yāḏāʸw          	yāḏāʸw          	JD/       	J@D@JW03            	112321
- 	     	yyāḏˈāh         	yyāḏˈāh         	JD/       	J.@D@80H.           	157311
- 	     	yāḏˌôṯ          	yāḏˌôṯ          	JD/       	J@DO63WT            	173049
- 	     	yāḏˌay          	yāḏˌay          	JD/       	J@DA73J             	174510
- 	     	yyāḏˈôṯ         	yyāḏˈôṯ         	JD/       	J.@DO75WT           	184777
- 	     	yyāḏˌām         	yyāḏˌām         	JD/       	J.@D@73M            	198066
- 	     	yyāḏôṯ          	yyāḏôṯ          	JD/       	J.@DOWT03           	202160
- 	     	yyˌāḏ           	yyˌāḏ           	JD/       	J.@71D              	217221
- 	     	yāḏˈay          	yāḏˈay          	JD/       	J@DA91J             	221767
- 	     	ˈyāḏˈay         	ˈyāḏˈay         	JD/       	11J@DA81J           	312881
- 	     	ˈyāḏay          	ˈyāḏay          	JD/       	13J@DAJ             	313007
- 	     	ˈyāḏˈāʸw        	ˈyāḏˈāʸw        	JD/       	11J@D@81JW          	313185
- 	     	ˈyāḏāʸw         	ˈyāḏāʸw         	JD/       	13J@D@JW            	319567
- 	     	yyāḏˌôṯ         	yyāḏˌôṯ         	JD/       	J.@DO73WT           	389249
- 	     	yyāḏˌayim       	yyāḏˌayim       	JD/       	J.@DA73JIM          	14006
- 	     	yāḏˌayim        	yāḏˌayim        	JD/       	J@DA73JIM           	18817
- 	     	yāḏˈayim        	yāḏˈayim        	JD/       	J@DA91JIM           	117318
- 	     	ˈyāḏˈayim       	ˈyāḏˈayim       	JD/       	11J@DA81JIM         	340378
- 	     	yāḏˌayiḵ        	yāḏˌayiḵ        	JD/       	J@DA73JIK:          	235992
- 	     	yāḏˈayiḵ        	yāḏˈayiḵ        	JD/       	J@DA80JIK:          	271219
- 	     	yyāḏˈeḵā        	yyāḏˈeḵā        	JD/       	J.@DE75K@           	1852
- 	     	yāḏˈênû         	yāḏˈênû         	JD/       	J@D;80JNW.          	2541
- 	     	yāḏˈeḵā         	yāḏˈeḵā         	JD/       	J@DE92K@            	6590
- 	     	yāḏˈî           	yāḏˈî           	JD/       	J@DI70J             	6619
- 	     	yāḏˈēḵ          	yāḏˈēḵ          	JD/       	J@D;80K:            	7146
- 	     	yāḏˈeʸhā        	yāḏˈeʸhā        	JD/       	J@DE75JH@           	7208
- 	     	yāḏˌēḵ          	yāḏˌēḵ          	JD/       	J@D;73K:            	9945
- 	     	yyāḏˈî          	yyāḏˈî          	JD/       	J.@DI92J            	10152
- 	     	yˈāḏᵊḵā         	yˈāḏᵊḵā         	JD/       	J@45D:K@03          	10488
- 	     	yāḏᵊḵˌā         	yāḏᵊḵˌā         	JD/       	J@D:K@73            	11137
- 	     	yyāḏˌî          	yyāḏˌî          	JD/       	J.@DI73J            	17119
- 	     	yāḏˈēnû         	yāḏˈēnû         	JD/       	J@D;33NW.03         	20667
- 	     	yāḏˌēnû         	yāḏˌēnû         	JD/       	J@D;73NW.           	24581
- 	     	yāḏˌî           	yāḏˌî           	JD/       	J@DIJ03             	30104
- 	     	yˈāḏᵊḵˈā        	yˈāḏᵊḵˈā        	JD/       	J@45D:K@80          	30220
- 	     	yāḏᵊḵˈā         	yāḏᵊḵˈā         	JD/       	J@D:K@61            	34064
- 	     	yˈāḏᵊḵˈā        	yˈāḏᵊḵˈā        	JD/       	J@74D:K@80H         	36086
- 	     	yāḏˈeʸḵā        	yāḏˈeʸḵā        	JD/       	J@DE75JK@           	37133
- 	     	yāḏˌeḵā         	yāḏˌeḵā         	JD/       	J@DE73K@            	104991
- 	     	yāḏˌeʸḵā        	yāḏˌeʸḵā        	JD/       	J@DE73JK@           	118498
- 	     	yyāḏˈēnû        	yyāḏˈēnû        	JD/       	J.@D;33NW.03        	136188
- 	     	yāḏˌeʸhā        	yāḏˌeʸhā        	JD/       	J@DE73JH@           	139798
- 	     	yyāḏˈēḵ         	yyāḏˈēḵ         	JD/       	J.@D;92K:           	167358
- 	     	yāḏēḵ           	yāḏēḵ           	JD/       	J@D;K:              	187684
- 	     	yyāḏˌēḵ         	yyāḏˌēḵ         	JD/       	J.@D;73K:           	230261
- 	     	yyāḏᵊḵˌā        	yyāḏᵊḵˌā        	JD/       	J.@D:K@73           	247613
- 	     	yāḏeḵˌā         	yāḏeḵˌā         	JD/       	J@DEK@01            	256872
- 	     	yāḏˌêhû         	yāḏˌêhû         	JD/       	J@D;71JHW.          	302932
- 	     	yˈāḏˌeḵā        	yˈāḏˌeḵā        	JD/       	J@60DE71K@          	311921
- 	     	ˈyāḏᵊḵā         	ˈyāḏᵊḵā         	JD/       	13J@D:K@            	313516
- 	     	ˈyāḏᵊḵˈā        	ˈyāḏᵊḵˈā        	JD/       	11J@D:K@81          	316943
- 	     	ˈyāḏî           	ˈyāḏî           	JD/       	13J@DIJ             	325934
- 	     	ˈyāḏênû         	ˈyāḏênû         	JD/       	13J@D;JNW.          	326401
- 	     	ˈyāḏˈênû        	ˈyāḏˈênû        	JD/       	11J@D;81JNW.        	326406
- 	     	ˈyˈāḏᵊḵˈā       	ˈyˈāḏᵊḵˈā       	JD/       	11J@45D:K@81        	328504
- 	     	yyāḏᵊḵˈā        	yyāḏᵊḵˈā        	JD/       	J.@D:K@74           	338649
- 	     	ˈyāḏˈî          	ˈyāḏˈî          	JD/       	11J@DI81J           	341772
- 	     	ˈyāḏeʸhā        	ˈyāḏeʸhā        	JD/       	13J@DEJH@           	355667
- 	     	yāḏˈô           	yāḏˈô           	JD/       	J@DO81W             	1607
- 	     	yāḏˌô           	yāḏˌô           	JD/       	J@DOW03             	3728
- 	     	yyāḏˌô          	yyāḏˌô          	JD/       	J.@DO73W            	83643
- 	     	yyāḏˈô          	yyāḏˈô          	JD/       	J.@DO75W            	126883
- 	     	yˈāḏô           	yˈāḏô           	JD/       	J@91DOW             	149129
- 	     	ˈyāḏˈô          	ˈyāḏˈô          	JD/       	11J@DO81W           	337653
- 	     	ˈyāḏô           	ˈyāḏô           	JD/       	13J@DOW             	352065
- 	     	yyāḏˈāyim       	yyāḏˈāyim       	JD/       	J.@D@75JIM          	201066
- 	     	yāḏˈāyim        	yāḏˈāyim        	JD/       	J@D@92JIM           	219269
- 	     	yˈāḏˌāyim       	yˈāḏˌāyim       	JD/       	J@60D@71JIM         	328473
- 	     	yāḏˈāyiḵ        	yāḏˈāyiḵ        	JD/       	J@D@75JIK:          	304021
-
-*	1ā   	ˈyoh            	ˈyāh            	JH/       	13J@H.              	332819
- 	     	yˈāh            	yˈāh            	JH/       	J@80H.              	36945
- 	     	yˌāh            	yˌāh            	JH/       	J@73H.              	225204
- 	     	yyˈāh           	yyˈāh           	JH/       	J.@92H.             	326805
-
-*	1ā,2ā	yᵊhˈôʔoḥoz      	yᵊhˈôʔāḥāz      	JHW>XZ/   	J:HO45W>@X@Z03      	203257
- 	     	yᵊhôʔāḥˌāz      	yᵊhôʔāḥˌāz      	JHW>XZ/   	J:HOW>@X@71Z        	201982
- 	     	yᵊhôʔāḥˈāz      	yᵊhôʔāḥˈāz      	JHW>XZ/   	J:HOW>@X@91Z        	203236
- 	     	yᵊhˈôʔāḥˌāz     	yᵊhˈôʔāḥˌāz     	JHW>XZ/   	J:HO45W>@X@73Z      	204020
-*	1o   	yhôʔāḥˈāz       	yhôʔoḥˈāz       	JHW>XZ/   	JHOW>@X@61Z         	203209
-
-*	1ā,2ā	yᵊhˈôšofoṭ      	yᵊhˈôšāfāṭ      	JHWCPV/   	J:HO45WC@P@V03      	193712
- 	     	yᵊhôšāfˌāṭ      	yᵊhôšāfˌāṭ      	JHWCPV/   	J:HOWC@P@71V        	179101
- 	     	yᵊhˈôšāfˈāṭ     	yᵊhˈôšāfˈāṭ     	JHWCPV/   	J:HO74WC@P@80V      	193701
- 	     	yᵊhôšāfˈāṭ      	yᵊhôšāfˈāṭ      	JHWCPV/   	J:HOWC@P@83V        	193793
-*	2ā   	yhˈôšofoṭ       	yhˈôšofāṭ       	JHWCPV/   	JHO45WC@P@V03       	194526
-*	1o   	yhôšāfˌāṭ       	yhôšofˌāṭ       	JHWCPV/   	JHOWC@P@71V         	164926
-*	1o   	yhôšāfˈāṭ       	yhôšofˈāṭ       	JHWCPV/   	JHOWC@P@74V         	193842
-
-*	1ā,2ā	yᵊhˈônoṯon      	yᵊhˈônāṯān      	JHWNTN/   	J:HO45WN@T@N03      	153652
- 	     	yᵊhônāṯˈān      	yᵊhônāṯˈān      	JHWNTN/   	J:HOWN@T@61N        	148440
- 	     	yᵊhˈônāṯˈān     	yᵊhˈônāṯˈān     	JHWNTN/   	J:HO74WN@T@80N      	148489
- 	     	yᵊhônāṯˌān      	yᵊhônāṯˌān      	JHWNTN/   	J:HOWN@T@73N        	152174
-*	1ā,2ā	yhˈônoṯon       	yhˈônāṯān       	JHWNTN/   	JHO45WN@T@N03       	152832
-*	2ā   	yhônˈāṯon-      	yhônˈāṯān-      	JHWNTN/   	JHOWN@45T@N&        	174070
- 	     	yhônāṯˌān       	yhônāṯˌān       	JHWNTN/   	JHOWN@T@N           	139046
- 	     	yhônāṯˈān       	yhônāṯˈān       	JHWNTN/   	JHOWN@T@61N         	153701
- 	     	yhˈônāṯˈān      	yhˈônāṯˈān      	JHWNTN/   	JHO74WN@T@80N       	154060
- 	     	yhˈônāṯˌān      	yhˈônāṯˌān      	JHWNTN/   	JHO45WN@T@71N       	160585
-
-*	1ā,2ā	yᵊhˈôḥonon      	yᵊhˈôḥānān      	JHWXNN/   	J:HO45WX@N@N03      	420593
- 	     	yᵊhôḥānˈān      	yᵊhôḥānˈān      	JHWXNN/   	J:HOWX@N@74N        	382847
- 	     	yᵊhôḥānˌān      	yᵊhôḥānˌān      	JHWXNN/   	J:HOWX@N@71N        	383299
-*	1o   	yhôḥānˈān       	yhôḥonˈān       	JHWXNN/   	JHOWX@N@74N         	386316
-*	1o   	yhôḥānˌān       	yhôḥonˌān       	JHWXNN/   	JHOWX@N@71N         	390346
-
- 	     	yammˈāh         	yammˈāh         	JM/       	JAM.@80H.           	263380
- 	     	yom-            	yom-            	JM/       	J@M&                	91447
- 	     	ˈyom            	ˈyom            	JM/       	13J@M               	323599
-*	1o   	yyˈām           	yyˈom           	JM/       	J.@61M              	508
-*	1o   	yyˌām           	yyˌom           	JM/       	J.@M03              	574
-*	1o   	yˈāmmā          	yˈommā          	JM/       	J@75M.@H            	6142
-*	1o   	yˌām            	yˌom            	JM/       	J@71M               	6259
-*	1o   	yˌāmmā          	yˌommā          	JM/       	J@71M.@H            	14760
-*	1o   	yˈām            	yˈom            	JM/       	J@75M               	37022
-*	1o   	yyˈāmmā         	yyˈommā         	JM/       	J.@75M.@H           	91488
-*	1o   	yyˌāmmā         	yyˌommā         	JM/       	J.@71M.@H           	121659
-*	1o   	ˈyˈām           	ˈyˈom           	JM/       	11J@81M             	346584
-
- 	     	yiqqᵊrôṯˈeʸḵā   	yiqqᵊrôṯˈeʸḵā   	JQR/      	JIQ.:ROWTE92JK@     	317980
- 	     	yᵊqārˈā         	yᵊqārˈā         	JQR/      	J:Q@R@80H           	167060
- 	     	yᵊqārˈôṯ        	yᵊqārˈôṯ        	JQR/      	J:Q@RO91WT          	180030
- 	     	yᵊqārˌōṯ        	yᵊqārˌōṯ        	JQR/      	J:Q@ROT03           	181012
- 	     	yᵊqārˌôṯ        	yᵊqārˌôṯ        	JQR/      	J:Q@RO73WT          	181042
- 	     	yᵊqārˌā         	yᵊqārˌā         	JQR/      	J:Q@R@H03           	278146
- 	     	yᵊqˈārā         	yᵊqˈārā         	JQR/      	J:Q@74R@H           	347574
- 	     	yᵊqārˈîm        	yᵊqārˈîm        	JQR/      	J:Q@RI80JM          	364962
-*	1ā,2ā	ˈyoqor          	ˈyāqār          	JQR/      	13J@Q@R             	331001
- 	     	yāqˌār          	yāqˌār          	JQR/      	J@Q@R03             	142879
- 	     	yāqˈār          	yāqˈār          	JQR/      	J@Q@91R             	242551
- 	     	yyāqˌār         	yyāqˌār         	JQR/      	J.@Q@71R            	316160
-
-*	1ā   	yorovʕˌām       	yārovʕˌām       	JRB<M/    	J@R@B:<@M04         	185522
-*	1ā   	yorovʕˈām       	yārovʕˈām       	JRB<M/    	J@R@B:<@92M         	185875
-*	3ā   	yˈārovʕom       	yˈārovʕām       	JRB<M/    	J@45R@B:<@M03       	187879
- 	     	yˈārovʕˌām      	yˈārovʕˌām      	JRB<M/    	J@45R@B:<@73M       	185597
- 	     	yˈārovʕˈām      	yˈārovʕˈām      	JRB<M/    	J@45R@B:<@80M       	185643
-
-*	1ā,2ā	ˈyoroq          	ˈyārāq          	JRQ=/     	13J@R@Q             	350855
- 	     	yyārˈāq         	yyārˈāq         	JRQ=/     	J.@R@75Q            	99825
- 	     	yārˈāq          	yārˈāq          	JRQ=/     	J@R@81Q             	193022
-
-*	1ā,2ā	yˈôʔoḥoz        	yˈôʔāḥāz        	JW>XZ/    	JO45W>@X@Z03        	424635
- 	     	yôʔāḥˌāz        	yôʔāḥˌāz        	JW>XZ/    	JOW>@X@73Z          	203633
- 	     	yôʔāḥˈāz        	yôʔāḥˈāz        	JW>XZ/    	JOW>@X@74Z          	426084
-
-*	1ā,2ā	yˈôyoḏoʕ        	yˈôyāḏāʕ        	JWJD</    	JO45WJ@D@<03        	384367
- 	     	yôyāḏˈāʕ        	yôyāḏˈāʕ        	JWJD</    	JOWJ@D@75<          	389852
- 	     	yôyāḏˌāʕ        	yôyāḏˌāʕ        	JWJD</    	JOWJ@D@<03          	389854
-
-*	1ā   	yˈômom-         	yˈômām-         	JWMM      	JO45WM@M&           	253012
-*	1ā   	yˌômom          	yˌômām          	JWMM      	JO73WM@M            	313591
- 	     	yômˈām          	yômˈām          	JWMM      	JOWM@61M            	36193
- 	     	yômˌām          	yômˌām          	JWMM      	JOWM@71M            	36211
-
-*	1ā,2ā	yˈônoḏov        	yˈônāḏāv        	JWNDB/    	JO45WN@D@B03        	167930
- 	     	yˈônāḏˈāv       	yˈônāḏˈāv       	JWNDB/    	JO45WN@D@80B        	167164
- 	     	yônāḏˈāv        	yônāḏˈāv        	JWNDB/    	JOWN@D@74B          	167845
- 	     	yônāḏˌāv        	yônāḏˌāv        	JWNDB/    	JOWN@D@63B          	253845
-
-*	1ā,2ā	yˈônoṯon        	yˈônāṯān        	JWNTN/    	JO45WN@T@N03        	148389
- 	     	yˈônāṯˈān       	yˈônāṯˈān       	JWNTN/    	JO74WN@T@80N        	147817
- 	     	yônāṯˈān        	yônāṯˈān        	JWNTN/    	JOWN@T@81N          	147831
- 	     	yônāṯˌān        	yônāṯˌān        	JWNTN/    	JOWN@T@73N          	148298
-
-*	1ā   	yˈôrom-         	yˈôrām-         	JWRM/     	JO45WR@M&           	164777
- 	     	yôrˈām          	yôrˈām          	JWRM/     	JOWR@70M            	199936
- 	     	yôrˌām          	yôrˌām          	JWRM/     	JOWR@M03            	200028
- 	     	yōrˈām          	yōrˈām          	JWRM/     	JOR@74M             	404655
-
-*	1ā,2ā	yˈôḥonon        	yˈôḥānān        	JWXNN/    	JO45WX@N@N03        	257190
- 	     	yôḥānˈān        	yôḥānˈān        	JWXNN/    	JOWX@N@74N          	211874
- 	     	yˈôḥānˌān       	yˈôḥānˌān       	JWXNN/    	JO45WX@N@73N        	257686
- 	     	yˈôḥānˈān       	yˈôḥānˈān       	JWXNN/    	JO45WX@N@92N        	257699
- 	     	yôḥānˌān        	yôḥānˌān        	JWXNN/    	JOWX@N@63N          	257707
-
-*	1ā,2ā	yˈôṣoḏoq        	yˈôṣāḏāq        	JWYDQ/    	JO45WY@D@Q03        	383167
- 	     	yˈôṣāḏˈāq       	yˈôṣāḏˈāq       	JWYDQ/    	JO45WY@D@61Q        	379122
- 	     	yôṣāḏˈāq        	yôṣāḏˈāq        	JWYDQ/    	JOWY@D@92Q          	390022
-
-*	1ā   	yaḥdow          	yaḥdāw          	JXDW      	JAX:D.@W02          	311021
-*	1ā   	ˈyaḥdow         	ˈyaḥdāw         	JXDW      	13JAX:D.@W          	319499
- 	     	yaḥdˈāw         	yaḥdˈāw         	JXDW      	JAX:D.@92W          	5960
- 	     	yaḥdˌāw         	yaḥdˌāw         	JXDW      	JAX:D.@73W          	10642
- 	     	yaḥdˌāʸw        	yaḥdˌāʸw        	JXDW      	JAX:D.@73JW         	259918
- 	     	*yaḥdˈāʸw       	*yaḥdˈāʸw       	JXDW      	JAX:D.@75JW         	260468
- 	     	ˈyaḥdˈāw        	ˈyaḥdˈāw        	JXDW      	11JAX:D.@81W        	338551
-
-*	1ā   	yiṣḥoq          	yiṣḥāq          	JYXQ/     	JIY:X@Q02           	14132
- 	     	yiṣḥˈāq         	yiṣḥˈāq         	JYXQ/     	JIY:X@92Q           	7645
- 	     	yiṣḥˌāq         	yiṣḥˌāq         	JYXQ/     	JIY:X@71Q           	9691
-
- 	     	ḵullˈām         	ḵullˈām         	KL/       	KUL.@80M            	5068
- 	     	ḵullˌāh         	ḵullˌāh         	KL/       	KUL.@73H.           	6051
- 	     	kullˌām         	kullˌām         	KL/       	K.UL.@73M           	24824
- 	     	ḵullˌām         	ḵullˌām         	KL/       	KUL.@71M            	25859
- 	     	kullˈāh         	kullˈāh         	KL/       	K.UL.@91H.          	42556
- 	     	kullˈām         	kullˈām         	KL/       	K.UL.@74M           	77903
- 	     	kullˈāham       	kullˈāham       	KL/       	K.UL.@92HAM         	174895
- 	     	kullˌāh         	kullˌāh         	KL/       	K.UL.@73H.          	237754
- 	     	ḵûllˌām         	ḵûllˌām         	KL/       	KW.L.@M04           	251299
- 	     	kullˈā          	kullˈā          	KL/       	K.UL.@92>           	282542
- 	     	ˈkullām         	ˈkullām         	KL/       	13K.UL.@M           	328459
- 	     	ḵullˈāh         	ḵullˈāh         	KL/       	KUL.@75H.           	334380
- 	     	kullˈānû        	kullˈānû        	KL/       	K.UL.@85NW.         	23601
- 	     	ḵullˈānā        	ḵullˈānā        	KL/       	KUL.@75N@H          	24083
- 	     	kullˌānû        	kullˌānû        	KL/       	K.UL.@71NW.         	35450
- 	     	ḵullˈānû        	ḵullˈānû        	KL/       	KUL.@70NW.          	172097
- 	     	ḵullˈāhᵊnā      	ḵullˈāhᵊnā      	KL/       	KUL.@75H:N@H        	181690
- 	     	kullˌāḵ         	kullˌāḵ         	KL/       	K.UL.@73K:          	218987
- 	     	kullˈāḵ         	kullˈāḵ         	KL/       	K.UL.@81K:          	300008
- 	     	kullˈānā        	kullˈānā        	KL/       	K.UL.@75N@H         	355766
- 	     	kol-            	kol-            	KL/       	K.@L&               	389
- 	     	ḵol-            	ḵol-            	KL/       	K@L&                	520
-*	1o   	kˈāl-           	kˈol-           	KL/       	K.@45L&             	3253
-*	1o   	ḵˈāl-           	ḵˈol-           	KL/       	K@45L&              	37185
-*	1o   	kˌāl-           	kˌol-           	KL/       	K.@63L&             	47645
-*	1o   	ḵˌāl-           	ḵˌol-           	KL/       	K@63L&              	109087
-*	1o   	kˌāl            	kˌol            	KL/       	K.@71L              	315885
-*	1o   	ḵˌāl            	ḵˌol            	KL/       	K@L                 	332043
-
-*	1ā   	ˈlēvov          	ˈlēvāv          	LBB/      	13L;B@B             	338297
- 	     	lᵊvāvˈām        	lᵊvāvˈām        	LBB/      	L:B@B@80M           	68737
- 	     	lᵊvāvˌām        	lᵊvāvˌām        	LBB/      	L:B@B@M03           	68838
- 	     	llēvˈāv         	llēvˈāv         	LBB/      	L.;B@80B            	104518
- 	     	lēvˈāv          	lēvˈāv          	LBB/      	L;B@75B             	108638
- 	     	lēvˌāv          	lēvˌāv          	LBB/      	L;B@73B             	178531
- 	     	lᵊvāvˈāh        	lᵊvāvˈāh        	LBB/      	L:B@B@75H.          	184388
- 	     	lᵊvˈāvāh        	lᵊvˈāvāh        	LBB/      	L:B@80B@H.          	228634
- 	     	lˈēvˌāv         	lˈēvˌāv         	LBB/      	L;60B@71B           	313998
- 	     	lᵊvāvôṯ         	lᵊvāvôṯ         	LBB/      	L:B@BOWT03          	405742
- 	     	lᵊvāvˈî         	lᵊvāvˈî         	LBB/      	L:B@BI91J           	9333
- 	     	lᵊvāvᵊḵˌā       	lᵊvāvᵊḵˌā       	LBB/      	L:B@B:K@03          	9353
- 	     	lᵊvāvˈeḵā       	lᵊvāvˈeḵā       	LBB/      	L:B@BE92K@          	64058
- 	     	lᵊvāvˈēnû       	lᵊvāvˈēnû       	LBB/      	L:B@B;61NW.         	93378
- 	     	llᵊvˈāvᵊḵˈā     	llᵊvˈāvᵊḵˈā     	LBB/      	L.:B@74B:K@80       	95359
- 	     	lᵊvāveḵˌā       	lᵊvāveḵˌā       	LBB/      	L:B@BEK@01          	96075
- 	     	lᵊvˈāvᵊḵˈā      	lᵊvˈāvᵊḵˈā      	LBB/      	L:B@74B:K@80        	97799
- 	     	lᵊvāvᵊḵˈā       	lᵊvāvᵊḵˈā       	LBB/      	L:B@B:K@91          	98046
- 	     	lᵊvˈāvᵊḵā       	lᵊvˈāvᵊḵā       	LBB/      	L:B@45B:K@03        	109465
- 	     	lᵊvāvˈēḵ        	lᵊvāvˈēḵ        	LBB/      	L:B@B;92K:          	141693
- 	     	lᵊvāvˌî         	lᵊvāvˌî         	LBB/      	L:B@BI71J           	142818
- 	     	lᵊvāvˌēnû       	lᵊvāvˌēnû       	LBB/      	L:B@B;73NW.         	183411
- 	     	lᵊvˌāvᵊḵˈā      	lᵊvˌāvᵊḵˈā      	LBB/      	L:B@63B:K@61        	209690
- 	     	lᵊvˈāvˌî        	lᵊvˈāvˌî        	LBB/      	L:B@60BI71J         	322751
- 	     	ˈlᵊvāvˈî        	ˈlᵊvāvˈî        	LBB/      	11L:B@BI81J         	325381
- 	     	lᵊvāvˈô         	lᵊvāvˈô         	LBB/      	L:B@BO80W           	94335
- 	     	lᵊvāvˌô         	lᵊvāvˌô         	LBB/      	L:B@BOW03           	103426
-
-*	1ā   	ˈlommā          	ˈlāmmā          	LMH       	10L@M.@H            	1758
-*	1ā   	lommā-          	lāmmā-          	LMH       	L@M.@H&             	12932
-*	1ā   	lommˌā          	lāmmˌā          	LMH       	L@M.@H04            	46745
- 	     	lˈāmeh          	lˈāmeh          	LMH       	L@74MEH             	141684
- 	     	lˌāmeh          	lˌāmeh          	LMH       	L@73MEH             	141691
- 	     	lˌāmmā          	lˌāmmā          	LMH       	L@73M.@H            	1762
- 	     	lāmˈā           	lāmˈā           	LMH       	L@M@70H             	5832
- 	     	lˈāmmā          	lˈāmmā          	LMH       	L@74M.@H            	8029
- 	     	lāmˌā           	lāmˌā           	LMH       	L@M@71H             	14464
- 	     	lˈāmmā-         	lˈāmmā-         	LMH       	L@45M.@H&           	171646
- 	     	lˈāmā           	lˈāmā           	LMH       	L@70M@H             	338037
- 	     	llāmˈā          	llāmˈā          	LMH       	L.@M@70H            	357683
-
-*	1ā   	mˈaʔᵃḵol        	mˈaʔᵃḵāl        	M>KL/     	MA95>:AK@L03        	3013
-*	1ā   	ˈmaʔᵃḵol        	ˈmaʔᵃḵāl        	M>KL/     	13MA>:AK@L          	324262
- 	     	maʔᵃḵˈāl        	maʔᵃḵˈāl        	M>KL/     	MA>:AK@92L          	846
- 	     	maʔᵃḵˌāl        	maʔᵃḵˌāl        	M>KL/     	MA>:AK@L03          	104765
- 	     	mˈaʔᵃḵˈāl       	mˈaʔᵃḵˈāl       	M>KL/     	MA45>:AK@80L        	238907
- 	     	ˈmaʔᵃḵˈāl       	ˈmaʔᵃḵˈāl       	M>KL/     	11MA>:AK@81L        	322925
- 	     	maʔᵃḵālˈāh      	maʔᵃḵālˈāh      	M>KL/     	MA>:AK@L@75H.       	348322
- 	     	maʔᵃḵˈālᵊḵā     	maʔᵃḵˈālᵊḵā     	M>KL/     	MA>:AK@45L:K@03     	266277
- 	     	maʔᵃḵālˌô       	maʔᵃḵālˌô       	M>KL/     	MA>:AK@LO73W        	302438
-
- 	     	mᵊšālˈîm        	mᵊšālˈîm        	MCL/      	M:C@LI80JM          	270527
- 	     	mᵊšālˌîm        	mᵊšālˌîm        	MCL/      	M:C@LI73JM          	274609
- 	     	mᵊšālˌô         	mᵊšālˌô         	MCL/      	M:C@LO73W           	84799
- 	     	mᵊšālˈô         	mᵊšālˈô         	MCL/      	M:C@LO81W           	342373
-*	1ā,2ā	ˈmošol          	ˈmāšāl          	MCL/      	13M@C@L             	317752
- 	     	māšˌāl          	māšˌāl          	MCL/      	M@C@73L             	108813
- 	     	māšˈāl          	māšˈāl          	MCL/      	M@C@80L             	146522
- 	     	mmāšˌāl         	mmāšˌāl         	MCL/      	M.@C@71L            	216900
- 	     	mmāšˈāl         	mmāšˈāl         	MCL/      	M.@C@70L            	269736
-
-*	1ā   	ˈmišmor         	ˈmišmār         	MCMR/     	13MIC:M@R           	347987
- 	     	mišmˈār         	mišmˈār         	MCMR/     	MIC:M@75R           	21979
- 	     	mišmˌār         	mišmˌār         	MCMR/     	MIC:M@73R           	23705
- 	     	mmišmˈār        	mmišmˈār        	MCMR/     	M.IC:M@92R          	66981
- 	     	mmišmˌār        	mmišmˌār        	MCMR/     	M.IC:M@R03          	385400
- 	     	mišmārˈāʸw      	mišmārˈāʸw      	MCMR/     	MIC:M@R@75JW        	390833
- 	     	mišmārˈô        	mišmārˈô        	MCMR/     	MIC:M@RO80W         	386413
-
-*	1ā   	ˈmišpoṭ         	ˈmišpāṭ         	MCPV/     	13MIC:P.@V          	351112
- 	     	mišpˈāṭ         	mišpˈāṭ         	MCPV/     	MIC:P.@92V          	8137
- 	     	mmišpˌāṭ        	mmišpˌāṭ        	MCPV/     	M.IC:P.@V03         	22150
- 	     	mišpˌāṭ         	mišpˌāṭ         	MCPV/     	MIC:P.@73V          	37286
- 	     	mmišpāṭˈîm      	mmišpāṭˈîm      	MCPV/     	M.IC:P.@VI80JM      	40016
- 	     	mmišpˈāṭ        	mmišpˈāṭ        	MCPV/     	M.IC:P.@91V         	44236
- 	     	mišpāṭˈay       	mišpāṭˈay       	MCPV/     	MIC:P.@VA94J        	63434
- 	     	mišpāṭˌay       	mišpāṭˌay       	MCPV/     	MIC:P.@VA71J        	67475
- 	     	mmišpāṭîm       	mmišpāṭîm       	MCPV/     	M.IC:P.@VIJM02      	68946
- 	     	mišpāṭˌāʸw      	mišpāṭˌāʸw      	MCPV/     	MIC:P.@V@73JW       	75805
- 	     	mišpāṭˌān       	mišpāṭˌān       	MCPV/     	MIC:P.@V@73N        	87005
- 	     	mišpāṭˈām       	mišpāṭˈām       	MCPV/     	MIC:P.@V@92M        	87962
- 	     	mmišpāṭˌîm      	mmišpāṭˌîm      	MCPV/     	M.IC:P.@VI73JM      	92284
- 	     	mišpāṭˈîm       	mišpāṭˈîm       	MCPV/     	MIC:P.@VI80JM       	95248
- 	     	mišpāṭˌîm       	mišpāṭˌîm       	MCPV/     	MIC:P.@VI73JM       	95325
- 	     	mišpāṭˈāʸw      	mišpāṭˈāʸw      	MCPV/     	MIC:P.@V@74JW       	98215
- 	     	mišpāṭˌām       	mišpāṭˌām       	MCPV/     	MIC:P.@V@71M        	206485
- 	     	mišpāṭîm        	mišpāṭîm        	MCPV/     	MIC:P.@VIJM03       	240840
- 	     	mišpāṭˈāh       	mišpāṭˈāh       	MCPV/     	MIC:P.@V@80H.       	262893
- 	     	mˌišpāṭˈîm      	mˌišpāṭˈîm      	MCPV/     	MI63C:P.@VI80JM     	274069
- 	     	ˈmišpˈāṭ        	ˈmišpˈāṭ        	MCPV/     	11MIC:P.@81V        	324630
- 	     	mišpāṭˈayiḵ     	mišpāṭˈayiḵ     	MCPV/     	MIC:P.@VA80JIK:     	303996
- 	     	mišpāṭˈeʸḵā     	mišpāṭˈeʸḵā     	MCPV/     	MIC:P.@VE33JK@03    	112373
- 	     	mišpāṭˌeḵā      	mišpāṭˌeḵā      	MCPV/     	MIC:P.@VE73K@       	192928
- 	     	mišpāṭˌî        	mišpāṭˌî        	MCPV/     	MIC:P.@VI71J        	226001
- 	     	mišpāṭˈî        	mišpāṭˈî        	MCPV/     	MIC:P.@VI74J        	229196
- 	     	mišpāṭˌeʸḵā     	mišpāṭˌeʸḵā     	MCPV/     	MIC:P.@VE73JK@      	292302
- 	     	ˈmišpāṭeʸḵā     	ˈmišpāṭeʸḵā     	MCPV/     	13MIC:P.@VEJK@      	311811
- 	     	ˈmišpāṭeḵā      	ˈmišpāṭeḵā      	MCPV/     	13MIC:P.@VEK@       	316151
- 	     	mišpāṭˈeḵā      	mišpāṭˈeḵā      	MCPV/     	MIC:P.@VE81K@       	316273
- 	     	mišpāṭeʸḵˌā     	mišpāṭeʸḵˌā     	MCPV/     	MIC:P.@VEJK@        	332006
- 	     	mmišpāṭˌeʸḵā    	mmišpāṭˌeʸḵā    	MCPV/     	M.IC:P.@VE71JK@     	332091
- 	     	mmišpāṭˈeʸḵā    	mmišpāṭˈeʸḵā    	MCPV/     	M.IC:P.@VE75JK@     	375864
- 	     	mˌišpāṭˈô       	mˌišpāṭˈô       	MCPV/     	MI63C:P.@VO80W      	43192
- 	     	mišpāṭˌô        	mišpāṭˌô        	MCPV/     	MIC:P.@VO73W        	76045
- 	     	mišpāṭˈô        	mišpāṭˈô        	MCPV/     	MIC:P.@VO80W        	158467
-
- 	     	miḏbˌarā        	miḏbˌarā        	MDBR/     	MID:B.A73R@H        	123140
- 	     	miḏbˈarā        	miḏbˈarā        	MDBR/     	MID:B.A74R@H        	191756
-*	1ā   	ˈmiḏbor         	ˈmiḏbār         	MDBR/     	13MID:B.@R          	329767
- 	     	mmiḏbˈār        	mmiḏbˈār        	MDBR/     	M.ID:B.@75R         	6316
- 	     	mmiḏbˈārā       	mmiḏbˈārā       	MDBR/     	M.ID:B.@92R@H       	30722
- 	     	mmiḏbˌār        	mmiḏbˌār        	MDBR/     	M.ID:B.@73R         	36139
- 	     	mmiḏbˌārā       	mmiḏbˌārā       	MDBR/     	M.ID:B.@73R@H       	93619
- 	     	miḏbˈār         	miḏbˈār         	MDBR/     	MID:B.@80R          	111565
- 	     	miḏbˈārā        	miḏbˈārā        	MDBR/     	MID:B.@92R@H        	217473
- 	     	miḏbˌār         	miḏbˌār         	MDBR/     	MID:B.@R03          	222859
- 	     	miḏbārˌāh       	miḏbārˌāh       	MDBR/     	MID:B.@R@H.03       	229882
- 	     	ˈmiḏbˈār        	ˈmiḏbˈār        	MDBR/     	11MID:B.@81R        	345677
-
-*	1ā   	miḡroš          	miḡrāš          	MGRC/     	MIG:R@C02           	290537
- 	     	miḡrˈāš         	miḡrˈāš         	MGRC/     	MIG:R@81C           	91839
- 	     	miḡrāšˌāh       	miḡrāšˌāh       	MGRC/     	MIG:R@C@73H.        	282558
- 	     	miḡrˌāš         	miḡrˌāš         	MGRC/     	MIG:R@71C           	288482
- 	     	miḡrāšˌehā      	miḡrāšˌehā      	MGRC/     	MIG:R@CE73H@        	124649
- 	     	miḡrāšˈehā      	miḡrāšˈehā      	MGRC/     	MIG:R@CE92H@        	124682
- 	     	miḡrāšˌeʸhā     	miḡrāšˌeʸhā     	MGRC/     	MIG:R@CE73JH@       	125157
- 	     	miḡrāšˈeʸhā     	miḡrāšˈeʸhā     	MGRC/     	MIG:R@CE92JH@       	394510
-
-*	1ā   	mᵊnoṯ-          	mᵊnāṯ-          	MNT/      	M:N@T&              	241643
- 	     	mᵊnˈāṯ          	mᵊnˈāṯ          	MNT/      	M:N@74T             	312043
- 	     	mᵊnˌāṯ          	mᵊnˌāṯ          	MNT/      	M:N@73T             	320698
- 	     	mᵊnāʔˈôṯ        	mᵊnāʔˈôṯ        	MNT/      	M:N@>O74WT          	390423
- 	     	mᵊnāyˈôṯ        	mᵊnāyˈôṯ        	MNT/      	M:N@JO91WT          	390493
- 	     	mᵊnāyˌôṯ        	mᵊnāyˌôṯ        	MNT/      	M:N@JO71WT          	390732
-
- 	     	mordᵒḵˈay       	mordᵒḵˈay       	MRDKJ/    	M@R:D.:@KA81J       	366126
- 	     	mordᵒḵˌay       	mordᵒḵˌay       	MRDKJ/    	M@R:D.:@KAJ03       	366287
- 	     	mordᵒḵˈāy       	mordᵒḵˈāy       	MRDKJ/    	M@R:D.:@K@92J       	366564
-*	1o   	mˌārᵊddᵒḵˈay    	mˌordᵒḵˈay      	MRDKJ/    	M@63R:D.:@KA80J     	366703
-
-*	1ā   	ˈmispor         	ˈmispār         	MSPR/     	13MIS:P.@R          	335580
- 	     	mispˈār         	mispˈār         	MSPR/     	MIS:P.@80R          	19024
- 	     	mispˌār         	mispˌār         	MSPR/     	MIS:P.@73R          	76177
- 	     	mmispˌār        	mmispˌār        	MSPR/     	M.IS:P.@73R         	79508
- 	     	mispārˈām       	mispārˈām       	MSPR/     	MIS:P.@R@75M        	79517
- 	     	mispārˌām       	mispārˌām       	MSPR/     	MIS:P.@R@73M        	88197
- 	     	mmispˈār        	mmispˈār        	MSPR/     	M.IS:P.@80R         	405292
-
-*	1ā,2ā	ˈmoṭor          	ˈmāṭār          	MVR/      	13M@V@R             	337387
- 	     	māṭˌār          	māṭˌār          	MVR/      	M@V@73R             	33738
- 	     	mmāṭˈār         	mmāṭˈār         	MVR/      	M.@V@94R            	33748
- 	     	māṭˈār          	māṭˈār          	MVR/      	M@V@80R             	99946
- 	     	mmāṭˌār         	mmāṭˌār         	MVR/      	M.@V@R03            	111455
-
-*	1ā   	mˌûsor          	mˌûsār          	MWSR/     	M73W.S@R            	349913
- 	     	mûsˌār          	mûsˌār          	MWSR/     	MW.S@73R            	235881
- 	     	mûsˈār          	mûsˈār          	MWSR/     	MW.S@92R            	237160
- 	     	mˌōsārˈām       	mˌōsārˈām       	MWSR/     	MO73S@R@74M         	344185
- 	     	mmûsˈār         	mmûsˈār         	MWSR/     	M.W.S@92R           	344970
- 	     	ˈmûsˈār         	ˈmûsˈār         	MWSR/     	11MW.S@81R          	352846
- 	     	mûsārᵊḵˌā       	mûsārᵊḵˌā       	MWSR/     	MW.S@R:K@73         	220472
- 	     	mûsārˌî         	mûsārˌî         	MWSR/     	MW.S@RI71J          	348920
-
-*	1ā,2ā	moḥor           	māḥār           	MXR/      	M@X@R02             	77171
- 	     	māḥˈār          	māḥˈār          	MXR/      	M@X@80R             	16128
- 	     	māḥˌār          	māḥˌār          	MXR/      	M@X@71R             	32822
-
- 	     	mizrᵊḥˌā        	mizrᵊḥˌā        	MZRX/     	MIZ:R:X@73H         	96137
- 	     	mizrᵊḥˈā        	mizrᵊḥˈā        	MZRX/     	MIZ:R:X@74H         	120025
-*	1ā   	ˈmizroḥ         	ˈmizrāḥ         	MZRX/     	13MIZ:R@X           	328116
-*	1ā   	mmizroḥ         	mmizrāḥ         	MZRX/     	M.IZ:R@X02          	404534
- 	     	mizrˌāḥā        	mizrˌāḥā        	MZRX/     	MIZ:R@73X@H         	43562
- 	     	mizrˈāḥā        	mizrˈāḥā        	MZRX/     	MIZ:R@80X@H         	70458
- 	     	mmizrˈāḥ        	mmizrˈāḥ        	MZRX/     	M.IZ:R@74X          	119476
- 	     	mmizrˌāḥ        	mmizrˌāḥ        	MZRX/     	M.IZ:R@X03          	227014
- 	     	mizrˈāḥ         	mizrˈāḥ         	MZRX/     	MIZ:R@92X           	297747
- 	     	mizrˌāḥ         	mizrˌāḥ         	MZRX/     	MIZ:R@71X           	393612
- 	     	mmizrˈāḥā       	mmizrˈāḥā       	MZRX/     	M.IZ:R@80X@H        	422873
-
-*	1ā   	nˈaʕᵃmon        	nˈaʕᵃmān        	N<MN/     	NA45<:AM@N03        	197984
- 	     	naʕᵃmˌān        	naʕᵃmˌān        	N<MN/     	NA<:AM@73N          	26324
- 	     	naʕᵃmˈān        	naʕᵃmˈān        	N<MN/     	NA<:AM@92N          	86502
- 	     	nˈaʕᵃmˈān       	nˈaʕᵃmˈān       	N<MN/     	NA45<:AM@80N        	86507
-
- 	     	nnᵊvālˌîm       	nnᵊvālˌîm       	NBL/      	N.:B@LI73JM         	167421
- 	     	nnᵊvālôṯ        	nnᵊvālôṯ        	NBL/      	N.:B@LOWT03         	336716
-*	1ā,2ā	ˈnovol          	ˈnāvāl          	NBL/      	13N@B@L             	343171
- 	     	nāvˌāl          	nāvˌāl          	NBL/      	N@B@73L             	111511
- 	     	ˈnāvˈāl         	ˈnāvˈāl         	NBL/      	11N@B@81L           	316927
-
- 	     	nᵊvˈûzar-ʔᵃḏˌān 	nᵊvˈûzar-ʔᵃḏˌān 	NBWZR>DN/ 	N:B45W.ZAR&>:AD@71N 	256570
-*	1ā   	nᵊvˈûzarʔᵃḏon   	nᵊvˈûzarʔᵃḏān   	NBWZR>DN/ 	N:B45W.ZAR:>:AD@N03 	257583
- 	     	nᵊvûzarʔᵃḏˈān   	nᵊvûzarʔᵃḏˈān   	NBWZR>DN/ 	N:BW.ZAR:>:AD@94N   	211499
- 	     	nᵊvûzarʔᵃḏˌān   	nᵊvûzarʔᵃḏˌān   	NBWZR>DN/ 	N:BW.ZAR:>:AD@73N   	211568
- 	     	nᵊvˈûzarʔᵃḏˈān  	nᵊvˈûzarʔᵃḏˈān  	NBWZR>DN/ 	N:B45W.ZAR:>:AD@74N 	256637
-
- 	     	nnᵊḥāšˈîm       	nnᵊḥāšˈîm       	NXC/      	N.:X@CI74JM         	83253
- 	     	nᵊḥāšîm         	nᵊḥāšîm         	NXC/      	N:X@CIJM03          	239316
-*	1ā,2ā	nnoḥoš          	nnāḥāš          	NXC/      	N.@X@C02            	1430
- 	     	nnāḥˌāš         	nnāḥˌāš         	NXC/      	N.@X@C03            	1169
- 	     	nnāḥˈāš         	nnāḥˈāš         	NXC/      	N.@X@92C            	1203
- 	     	nāḥˈāš          	nāḥˈāš          	NXC/      	N@X@74C             	27999
- 	     	nāḥˌāš          	nāḥˌāš          	NXC/      	N@X@73C             	32051
- 	     	nˈāḥˌāš         	nˈāḥˌāš         	NXC/      	N@60X@71C           	334598
-
-*	1o   	pᵊʕālˌîm        	pᵊʕolˌîm        	P<L/      	P.:<@LI73JM         	175210
- 	     	foʕᵒlˌām        	foʕᵒlˌām        	P<L/      	P@<:@L@73M          	247332
- 	     	foʕᵒlˈāh        	foʕᵒlˈāh        	P<L/      	P@<:@L@80H.         	262407
- 	     	foʕᵒlām         	foʕᵒlām         	P<L/      	P@<:@L@M02          	314622
- 	     	poʕᵒlˈām        	poʕᵒlˈām        	P<L/      	P.@<:@L@92M         	344960
- 	     	poʕᵒlˈeḵā       	poʕᵒlˈeḵā       	P<L/      	P.@<:@LE92K@        	323371
- 	     	foʕᵒlˈeḵā       	foʕᵒlˈeḵā       	P<L/      	P@<:@LE92K@         	326388
- 	     	foʕᵒlˈî         	foʕᵒlˈî         	P<L/      	P@<:@LI25J          	327052
- 	     	poʕᵒlˈēḵ        	poʕᵒlˈēḵ        	P<L/      	P.@<:@L;92K:        	356490
- 	     	poʕᵒlˈô         	poʕᵒlˈô         	P<L/      	P.@<:@LO80W         	111482
- 	     	foʕᵒlˈô         	foʕᵒlˈô         	P<L/      	P@<:@LO92W          	328449
- 	     	pˈoʕᵒlˈô        	pˈoʕᵒlˈô        	P<L/      	P.@45<:@LO92W       	330381
-*	1o,2o	fāʕālᵊḵˌem      	foʕolᵊḵˌem      	P<L/      	P@<@L:KE73M         	226441
-*	1o,2o	fāʕālᵊḵˌā       	foʕolᵊḵˌā       	P<L/      	P@<@L:K@73          	228025
-*	1o,2o	pˈāʕālᵊḵā       	pˈoʕolᵊḵā       	P<L/      	P.@45<@L:K@03       	302810
-
-*	1ā   	pˈînᵊḥos        	pˈînᵊḥās        	PJNXS/    	P.I45JN:X@S03       	85731
-*	1ā   	pînᵊḥos         	pînᵊḥās         	PJNXS/    	P.IJN:X@S02         	143740
-*	1ā   	ˈpˈînᵊḥos       	ˈpˈînᵊḥās       	PJNXS/    	13P.I45JN:X@S       	329251
-*	1ā   	fˈînᵊḥos        	fˈînᵊḥās        	PJNXS/    	PI45JN:X@S03        	381549
- 	     	pˈînᵊḥˈās       	pˈînᵊḥˈās       	PJNXS/    	P.I45JN:X@92S       	31693
- 	     	pˈînᵊḥˌās       	pˈînᵊḥˌās       	PJNXS/    	P.I45JN:X@63S       	85796
- 	     	pˌînᵊḥˈās       	pˌînᵊḥˈās       	PJNXS/    	P.I63JN:X@61S       	88960
- 	     	pînᵊḥˌās        	pînᵊḥˌās        	PJNXS/    	P.IJN:X@73S         	125589
- 	     	fînᵊḥˌās        	fînᵊḥˌās        	PJNXS/    	PIJN:X@S            	140495
- 	     	fˈinḥˈās        	fˈinḥˈās        	PJNXS/    	PI74N:X@80S         	141608
- 	     	fˈînᵊḥˈās       	fˈînᵊḥˈās       	PJNXS/    	PI45JN:X@92S        	142804
-
- 	     	qqᵊḏāšˈîm       	qqᵊḏāšˈîm       	QDC/      	Q.:D@CI92JM         	288048
- 	     	qqᵒḏāšˈîm       	qqᵒḏāšˈîm       	QDC/      	Q.:@D@CI75JM        	43262
- 	     	qqᵒḏāšˌîm       	qqᵒḏāšˌîm       	QDC/      	Q.:@D@CI73JM        	65315
- 	     	qqᵒḏāšîm        	qqᵒḏāšîm        	QDC/      	Q.:@D@CIJM03        	65398
- 	     	qᵒḏāšˌāʸw       	qᵒḏāšˌāʸw       	QDC/      	Q:@D@C@73JW         	72897
- 	     	qᵒḏāšˈāʸw       	qᵒḏāšˈāʸw       	QDC/      	Q:@D@C@80JW         	202991
- 	     	qoḏšêhˈem       	qoḏšêhˈem       	QDC/      	Q@D:C;JHE92M        	44419
- 	     	qqoḏšˌê         	qqoḏšˌê         	QDC/      	Q.@D:C;73J          	54630
- 	     	qqoḏšˈê         	qqoḏšˈê         	QDC/      	Q.@D:C;74J          	65370
- 	     	qoḏšˌê          	qoḏšˌê          	QDC/      	Q@D:C;73J           	65631
- 	     	qoḏšˈê          	qoḏšˈê          	QDC/      	Q@D:C;94J           	72884
- 	     	qoḏšêḵˈem       	qoḏšêḵˈem       	QDC/      	Q@D:C;JKE75M        	274428
- 	     	qoḏšˈeḵā        	qoḏšˈeḵā        	QDC/      	Q@D:CE75K@          	37078
- 	     	qoḏšˈî          	qoḏšˈî          	QDC/      	Q@D:CI75J           	64465
- 	     	qoḏšᵊḵˈā        	qoḏšᵊḵˈā        	QDC/      	Q@D:C:K@61          	107519
- 	     	qoḏšᵊḵˌā        	qoḏšᵊḵˌā        	QDC/      	Q@D:C:K@73          	233713
- 	     	qoḏšˈēnû        	qoḏšˈēnû        	QDC/      	Q@D:C;74NW.         	233928
- 	     	qoḏšˌî          	qoḏšˌî          	QDC/      	Q@D:CI73J           	234454
- 	     	ˈqoḏšᵊḵˈā       	ˈqoḏšᵊḵˈā       	QDC/      	11Q@D:C:K@81        	311104
- 	     	qoḏšˈô          	qoḏšˈô          	QDC/      	Q@D:CO80W           	230449
- 	     	qoḏšˌô          	qoḏšˌô          	QDC/      	Q@D:COW03           	247676
-*	1o   	qˈāḏāšˈîm       	qˈoḏāšˈîm       	QDC/      	Q@45D@CI80JM        	45351
-*	1o   	qˈāḏāšˌîm       	qˈoḏāšˌîm       	QDC/      	Q@95D@CI71JM        	45693
-*	1o   	qˈāḏāšîm        	qˈoḏāšîm        	QDC/      	Q@45D@CIJM03        	55100
-*	1o   	qāḏāšˌay        	qoḏāšˌay        	QDC/      	Q@D@CA73J           	275315
-*	1o   	qāḏāšˈîm        	qoḏāšˈîm        	QDC/      	Q@D@CI80JM          	287393
-*	1o   	qāḏāšˈāy        	qoḏāšˈāy        	QDC/      	Q@D@C@92J           	287918
-*	1o   	qˈāḏāšˈay       	qˈoḏāšˈay       	QDC/      	Q@74D@CA80J         	288044
-*	1o   	qˈāḏāšˌāʸw      	qˈoḏāšˌāʸw      	QDC/      	Q@45D@C@73JW        	414172
-*	1o   	qˈāḏāšˈeʸḵā     	qˈoḏāšˈeʸḵā     	QDC/      	Q@95D@CE91JK@       	100864
-
-*	1ā   	qqᵃrov-         	qqᵃrāv-         	QRB==/    	Q.:AR@B&            	319543
-*	1ā   	qᵃrov-          	qᵃrāv-          	QRB==/    	Q:AR@B&             	319576
- 	     	qᵊrˈāv          	qᵊrˈāv          	QRB==/    	Q:R@75B             	170546
- 	     	qᵊrāvˌôṯ        	qᵊrāvˌôṯ        	QRB==/    	Q:R@BO71WT          	321560
- 	     	ˈqrˈāv          	ˈqrˈāv          	QRB==/    	11Q:R@81B           	345647
-
- 	     	qorbanᵊḵˈem     	qorbanᵊḵˈem     	QRBN/     	Q@R:B.AN:KE75M      	52549
- 	     	qorbˈan         	qorbˈan         	QRBN/     	Q@R:B.A70N          	52878
- 	     	qorbˌan         	qorbˌan         	QRBN/     	Q@R:B.A71N          	52946
- 	     	qorbᵊnêhˈem     	qorbᵊnêhˈem     	QRBN/     	Q@R:B.:N;JHE91M     	56030
- 	     	qorbˌān         	qorbˌān         	QRBN/     	Q@R:B.@73N          	52534
- 	     	qorbˈān         	qorbˈān         	QRBN/     	Q@R:B.@80N          	55551
- 	     	qorbānˌāh       	qorbānˌāh       	QRBN/     	Q@R:B.@N@H.03       	72992
- 	     	qorbānˈām       	qorbānˈām       	QRBN/     	Q@R:B.@N@61M        	73938
- 	     	qorbānˌām       	qorbānˌām       	QRBN/     	Q@R:B.@N@73M        	74081
- 	     	qorbānˈeḵā      	qorbānˈeḵā      	QRBN/     	Q@R:B.@NE92K@       	52970
- 	     	qorbānᵊḵˌā      	qorbānᵊḵˌā      	QRBN/     	Q@R:B.@N:K@73       	53108
- 	     	qorbānˌî        	qorbānˌî        	QRBN/     	Q@R:B.@NI63J        	87356
- 	     	qorbānˌô        	qorbānˌô        	QRBN/     	Q@R:B.@NOW03        	52552
- 	     	qorbānˈô        	qorbānˈô        	QRBN/     	Q@R:B.@NO94W        	52695
-*	1o   	qqārᵊvˈān       	qqorᵊvˈān       	QRBN/     	Q.@R:B@75N          	285922
-
- 	     	qᵊṣîrˈāh        	qᵊṣîrˈāh        	QYJR/     	Q:YIJR@92H.         	66094
- 	     	qᵊṣˈîrᵊḵˌā      	qᵊṣˈîrᵊḵˌā      	QYJR/     	Q:YI45JR:K@73       	63942
- 	     	qᵊṣîrᵊḵˌā       	qᵊṣîrᵊḵˌā       	QYJR/     	Q:YIJR:K@73         	66339
- 	     	qᵊṣˈîrᵊḵā       	qᵊṣˈîrᵊḵā       	QYJR/     	Q:YI45JR:K@03       	67230
- 	     	qᵊṣˈîrᵊḵˈā      	qᵊṣˈîrᵊḵˈā      	QYJR/     	Q:YI45JR:K@61       	237396
-*	1ā   	qoṣṣˈîr         	qāṣṣˈîr         	QYJR/     	Q@Y.I75JR           	25569
- 	     	qāṣîr           	qāṣîr           	QYJR/     	Q@YIJR              	4020
- 	     	qqāṣîr          	qqāṣîr          	QYJR/     	Q.@YIJR03           	41280
- 	     	qqāṣˌîr         	qqāṣˌîr         	QYJR/     	Q.@YI73JR           	48206
- 	     	qāṣˈîr          	qāṣˈîr          	QYJR/     	Q@YI75JR            	114308
- 	     	qqāṣˈîr         	qqāṣˈîr         	QYJR/     	Q.@YI80JR           	215186
- 	     	qāṣˌîr          	qāṣˌîr          	QYJR/     	Q@YI73JR            	237565
-
-*	1ā   	ˈroʕ            	ˈrāʕ            	R</       	13R@<               	332084
- 	     	rˈāʕ            	rˈāʕ            	R</       	R@75<               	861
- 	     	rāʕˌîm          	rāʕˌîm          	R</       	R@<I73JM            	6109
- 	     	rāʕˌôṯ          	rāʕˌôṯ          	R</       	R@<O73WT            	14641
- 	     	rāʕˈôṯ          	rāʕˈôṯ          	R</       	R@<O70WT            	22411
- 	     	rāʕˈōṯ          	rāʕˈōṯ          	R</       	R@<O61T             	22836
- 	     	rāʕˈîm          	rāʕˈîm          	R</       	R@<I81JM            	26733
- 	     	rˌāʕ            	rˌāʕ            	R</       	R@73<               	46995
- 	     	rāʕîm           	rāʕîm           	R</       	R@<IJM03            	205834
- 	     	rāʕôṯ           	rāʕôṯ           	R</       	R@<OWT03            	246804
- 	     	rrˈāʕ           	rrˈāʕ           	R</       	R.@92<              	256626
- 	     	rāʕˈê           	rāʕˈê           	R</       	R@<;74J             	267549
- 	     	ˈrˈāʕ           	ˈrˈāʕ           	R</       	11R@81<             	316136
- 	     	ˈrāʕîm          	ˈrāʕîm          	R</       	13R@<IJM            	350556
-
- 	     	rᵊʕāvˈām        	rᵊʕāvˈām        	R<B/      	R:<@B@80M           	388081
-*	1ā,2ā	ˈroʕov          	ˈrāʕāv          	R<B/      	13R@<@B             	328710
- 	     	rāʕˌāv          	rāʕˌāv          	R<B/      	R@<@73B             	5674
- 	     	rāʕˈāv          	rāʕˈāv          	R<B/      	R@<@74B             	12986
-
-*	1ā   	rˈaʕᵃnon        	rˈaʕᵃnān        	R<NN/     	RA45<:AN@N03        	240678
-*	1ā   	ˈraʕᵃnon        	ˈraʕᵃnān        	R<NN/     	13RA<:AN@N          	319161
- 	     	raʕᵃnˌān        	raʕᵃnˌān        	R<NN/     	RA<:AN@N            	100361
- 	     	raʕᵃnˈān        	raʕᵃnˈān        	R<NN/     	RA<:AN@75N          	188201
- 	     	rˈaʕᵃnˈān       	rˈaʕᵃnˈān       	R<NN/     	RA45<:AN@92N        	243138
- 	     	raʕᵃnānˈā       	raʕᵃnānˈā       	R<NN/     	RA<:AN@N@75H        	357776
-
- 	     	rabbˈā          	rabbˈā          	RB/       	RAB.@91H            	2699
- 	     	rabbˌā          	rabbˌā          	RB/       	RAB.@71H            	77557
- 	     	rabbˈāṯî        	rabbˈāṯî        	RB/       	RAB.@74TIJ          	363512
-*	1ā   	ˈrov            	ˈrāv            	RB/       	11R@B               	312820
- 	     	rˈāv            	rˈāv            	RB/       	R@80B               	5964
- 	     	rˌāv            	rˌāv            	RB/       	R@73B               	19659
- 	     	ˈrˈāv           	ˈrˈāv           	RB/       	11R@81B             	350849
-
- 	     	rᵊšāʕˈîm        	rᵊšāʕˈîm        	RC</      	R:C@<I75JM          	33628
- 	     	rᵊšāʕîm         	rᵊšāʕîm         	RC</      	R:C@<IJM03          	80536
- 	     	rᵊšāʕˌîm        	rᵊšāʕˌîm        	RC</      	R:C@<I73JM          	142228
- 	     	rᵊšāʕˌā         	rᵊšāʕˌā         	RC</      	R:C@<@73H           	265849
- 	     	rᵊšāʕˈā         	rᵊšāʕˈā         	RC</      	R:C@<@92H           	265876
- 	     	rᵊšˈāʕˌîm       	rᵊšˈāʕˌîm       	RC</      	R:C@60<I71JM        	310656
- 	     	ˈršāʕîm         	ˈršāʕîm         	RC</      	13R:C@<IJM          	310720
- 	     	ˈršāʕˈîm        	ˈršāʕˈîm        	RC</      	11R:C@<I81JM        	314321
- 	     	rᵊšˈāʕˈîm       	rᵊšˈāʕˈîm       	RC</      	R:C@82<I70JM        	341320
-*	1ā,2ā	ˈrošoʕ          	ˈrāšāʕ          	RC</      	13R@C@<             	311776
-*	1ā,2ā	rošoʕ           	rāšāʕ           	RC</      	R@C@<02             	353595
- 	     	rāšˈāʕ          	rāšˈāʕ          	RC</      	R@C@75<             	8203
- 	     	rāšˌāʕ          	rāšˌāʕ          	RC</      	R@C@73<             	92426
- 	     	rˈāšˌāʕ         	rˈāšˌāʕ         	RC</      	R@60C@71<           	315345
- 	     	rˈāšˈāʕ         	rˈāšˈāʕ         	RC</      	R@82C@70<           	330550
- 	     	ˈrāšˈāʕ         	ˈrāšˈāʕ         	RC</      	11R@C@81<           	344522
-
-*	1ā   	rᵊḥavʕom        	rᵊḥavʕām        	RXB<M/    	R:XAB:<@M02         	186443
- 	     	rᵊḥavʕˌām       	rᵊḥavʕˌām       	RXB<M/    	R:XAB:<@71M         	185937
- 	     	rᵊḥavʕˈām       	rᵊḥavʕˈām       	RXB<M/    	R:XAB:<@81M         	186035
-
- 	     	ṯammāṯˈî        	ṯammāṯˈî        	TM/       	TAM.@TI80J          	358486
-*	1ā   	ˈtom            	ˈtām            	TM/       	13T.@M              	316580
- 	     	tˈām            	tˈām            	TM/       	T.@80M              	12861
- 	     	tˈām-           	tˈām-           	TM/       	T.@45M&             	338446
- 	     	tˌām            	tˌām            	TM/       	T.@71M              	338462
- 	     	ṯˈām            	ṯˈām            	TM/       	T@92M               	354953
-
- 	     	ḥᵃḏāšˌā         	ḥᵃḏāšˌā         	XDC/      	X:AD@C@73H          	66214
- 	     	ḥᵃḏāšˈā         	ḥᵃḏāšˈā         	XDC/      	X:AD@C@80H          	106450
- 	     	ḥᵃḏāšîm         	ḥᵃḏāšîm         	XDC/      	X:AD@CIJM03         	111670
- 	     	ḥᵃḏāšˈîm        	ḥᵃḏāšˈîm        	XDC/      	X:AD@CI80JM         	118019
- 	     	ḥᵃḏāšôṯ         	ḥᵃḏāšôṯ         	XDC/      	X:AD@COWT03         	226662
- 	     	ḥᵃḏāšˌîm        	ḥᵃḏāšˌîm        	XDC/      	X:AD@CI73JM         	234285
- 	     	ˈḥᵃḏāšˈîm       	ˈḥᵃḏāšˈîm       	XDC/      	11X:AD@CI81JM       	344015
-*	1ā,2ā	ḥoḏoš           	ḥāḏāš           	XDC/      	X@D@C02             	317026
-*	1ā,2ā	ˈḥoḏoš          	ˈḥāḏāš          	XDC/      	13X@D@C             	327362
- 	     	ḥāḏˌāš          	ḥāḏˌāš          	XDC/      	X@D@73C             	28838
- 	     	ḥāḏˈāš          	ḥāḏˈāš          	XDC/      	X@D@80C             	105444
-
- 	     	ḥᵃḵāmˌîm        	ḥᵃḵāmˌîm        	XKM/      	X:AK@MI73JM         	31974
- 	     	ḥᵃḵāmˈîm        	ḥᵃḵāmˈîm        	XKM/      	X:AK@MI80JM         	49262
- 	     	ḥᵃḵāmîm         	ḥᵃḵāmîm         	XKM/      	X:AK@MIJM03         	93084
- 	     	ḥᵃḵāmˈā         	ḥᵃḵāmˈā         	XKM/      	X:AK@M@92H          	168036
- 	     	ḥᵃḵāmˌā         	ḥᵃḵāmˌā         	XKM/      	X:AK@M@73H          	173489
- 	     	ḥᵃḵāmˈāʸw       	ḥᵃḵāmˈāʸw       	XKM/      	X:AK@M@80JW         	221616
- 	     	ḥᵃḵāmˌôṯ        	ḥᵃḵāmˌôṯ        	XKM/      	X:AK@MO71WT         	239711
- 	     	ḥᵃḵˈāmˈîm       	ḥᵃḵˈāmˈîm       	XKM/      	X:AK@82MI70JM       	318507
- 	     	ˈḥᵃḵāmˈîm       	ˈḥᵃḵāmˈîm       	XKM/      	11X:AK@MI81JM       	346980
- 	     	ˈḥᵃḵāmîm        	ˈḥᵃḵāmîm        	XKM/      	13X:AK@MIJM         	350718
- 	     	ḥᵃḵāmˈayiḵ      	ḥᵃḵāmˈayiḵ      	XKM/      	X:AK@MA70JIK:       	277926
- 	     	ḥᵃḵāmˈeʸhā      	ḥᵃḵāmˈeʸhā      	XKM/      	X:AK@ME92JH@        	22497
- 	     	ḥᵃḵāmˈeʸḵā      	ḥᵃḵāmˈeʸḵā      	XKM/      	X:AK@ME80JK@        	218314
-*	1ā,2ā	ˈḥoḵom          	ˈḥāḵām          	XKM/      	13X@K@M             	346966
- 	     	ḥāḵˈām          	ḥāḵˈām          	XKM/      	X@K@92M             	22950
- 	     	ḥāḵˌām          	ḥāḵˌām          	XKM/      	X@K@73M             	23067
- 	     	ˈḥāḵˈām         	ˈḥāḵˈām         	XKM/      	11X@K@81M           	344695
-
-*	1ā   	ˈḥom            	ˈḥām            	XM===/    	10X@M               	4422
- 	     	ḥˌām            	ḥˌām            	XM===/    	X@71M               	2596
- 	     	ḥˈām            	ḥˈām            	XM===/    	X@74M               	4380
-
- 	     	ḥᵃmāsˌîm        	ḥᵃmāsˌîm        	XMS/      	X:AM@SI73JM         	174774
- 	     	ḥᵃmāsˈîm        	ḥᵃmāsˈîm        	XMS/      	X:AM@SI74JM         	334584
- 	     	ḥᵃmāsˈî         	ḥᵃmāsˈî         	XMS/      	X:AM@SI74J          	7118
- 	     	ḥᵃmāsˌô         	ḥᵃmāsˌô         	XMS/      	X:AM@SO71W          	311443
-*	1ā,2ā	ˈḥomos          	ˈḥāmās          	XMS/      	13X@M@S             	340680
- 	     	ḥāmˈās          	ḥāmˈās          	XMS/      	X@M@75S             	2806
- 	     	ḥāmˌās          	ḥāmˌās          	XMS/      	X@M@73S             	2840
- 	     	ˈḥāmˈās         	ˈḥāmˈās         	XMS/      	11X@M@81S           	313144
-
-*	1ā   	ˈḥinnom         	ˈḥinnām         	XNM       	13XIN.@M            	347075
- 	     	ḥinnˈām         	ḥinnˈām         	XNM       	XIN.@92M            	15249
- 	     	ḥinnˌām         	ḥinnˌām         	XNM       	XIN.@73M            	40183
- 	     	ˈḥinnˈām        	ˈḥinnˈām        	XNM       	11XIN.@81M          	315860
- 	     	ḥˈinnˌām        	ḥˈinnˌām        	XNM       	XI60N.@71M          	321664
-
- 	     	ḥofšˈîm         	ḥofšˈîm         	XPCJ/     	X@P:CI80JM          	232036
- 	     	ḥofšˌîm         	ḥofšˌîm         	XPCJ/     	X@P:CI73JM          	253541
- 	     	ḥofšˌî          	ḥofšˌî          	XPCJ/     	X@P:CI73J           	40035
- 	     	ḥofšˈî          	ḥofšˈî          	XPCJ/     	X@P:CI75J           	40091
-*	1o   	ḥˈāfᵊšˌî        	ḥˈofšˌî         	XPCJ/     	X@60P:CI71J         	325587
-
- 	     	ḥuqqˌām         	ḥuqqˌām         	XQ/       	XUQ.@M03            	27077
- 	     	ḥuqqˈāʸw        	ḥuqqˈāʸw        	XQ/       	XUQ.@92JW           	37312
- 	     	ḥuqqˌāʸw        	ḥuqqˌāʸw        	XQ/       	XUQ.@73JW           	97250
- 	     	ḥuqqāʸw         	ḥuqqāʸw         	XQ/       	XUQ.@JW03           	183423
- 	     	ḥuqqˈāy         	ḥuqqˈāy         	XQ/       	XUQ.@92J            	318790
- 	     	ˈḥuqqāʸw        	ˈḥuqqāʸw        	XQ/       	13XUQ.@JW           	328962
- 	     	ḥuqqˈeʸḵā       	ḥuqqˈeʸḵā       	XQ/       	XUQ.E75JK@          	331354
- 	     	ḥuqqˌeʸḵā       	ḥuqqˌeʸḵā       	XQ/       	XUQ.E71JK@          	331372
- 	     	ˈḥuqqˈeʸḵā      	ˈḥuqqˈeʸḵā      	XQ/       	11XUQ.E81JK@        	331944
- 	     	ˈḥuqqeʸḵā       	ˈḥuqqeʸḵā       	XQ/       	11XUQ.EJK@          	332492
- 	     	ḥoq-            	ḥoq-            	XQ/       	X@Q&                	35251
-*	1o   	ḥāqᵊḵˈem        	ḥoqᵊḵˈem        	XQ/       	X@Q:KE70M           	31078
-*	1o   	ḥāqᵊḵˈā         	ḥoqᵊḵˈā         	XQ/       	X@Q:K@70            	57657
-
- 	     	ḥᵒrāvôṯ         	ḥᵒrāvôṯ         	XRBH=/    	X:@R@BOWT03         	229119
- 	     	ḥᵒrāvˈôṯ        	ḥᵒrāvˈôṯ        	XRBH=/    	X:@R@BO92WT         	269915
- 	     	ḥᵒrāvˌôṯ        	ḥᵒrāvˌôṯ        	XRBH=/    	X:@R@BO63WT         	281276
-*	1ā,2o	ḥorbˈā          	ḥārᵊbbˈoh       	XRBH=/    	X@R:B.@80H          	68652
-*	1ā,2o	ḥorbˌā          	ḥārᵊbbˌoh       	XRBH=/    	X@R:B.@73H          	238941
- 	     	ḥārᵊvˌôṯ        	ḥārᵊvˌôṯ        	XRBH=/    	X@R:BO71WT          	213709
- 	     	ḥārᵊvˈôṯ        	ḥārᵊvˈôṯ        	XRBH=/    	X@R:BO74WT          	232149
- 	     	ḥārᵊvôṯ         	ḥārᵊvôṯ         	XRBH=/    	X@R:BOWT03          	279033
- 	     	ḥārᵊvôṯêhˈem    	ḥārᵊvôṯêhˈem    	XRBH=/    	X@R:BOWT;JHE75M     	330056
- 	     	ḥārᵊvōṯˈāʸw     	ḥārᵊvōṯˈāʸw     	XRBH=/    	X@R:BOT@80JW        	382537
- 	     	ḥārᵊvōṯˈayiḵ    	ḥārᵊvōṯˈayiḵ    	XRBH=/    	X@R:BOTA33JIK:03    	229459
- 	     	ḥārᵊvôṯˌeʸhā    	ḥārᵊvôṯˌeʸhā    	XRBH=/    	X@R:BOWTE73JH@      	227840
- 	     	ḥārᵊvōṯˈeʸhā    	ḥārᵊvōṯˈeʸhā    	XRBH=/    	X@R:BOTE80JH@       	229879
-
- 	     	ḥᵃrāfˈôṯ        	ḥᵃrāfˈôṯ        	XRPH/     	X:AR@PO74WT         	321731
- 	     	ḥᵃrāfˌôṯ        	ḥᵃrāfˌôṯ        	XRPH/     	X:AR@PO73WT         	377928
-*	1ā   	ḥerpottˈî       	ḥerpāttˈî       	XRPH/     	XER:P.@T.I75J       	340668
- 	     	ḥerpˌā          	ḥerpˌā          	XRPH/     	XER:P.@71H          	18701
- 	     	ḥerpˈā          	ḥerpˈā          	XRPH/     	XER:P.@75H          	221878
- 	     	ḥerpāṯˈām       	ḥerpāṯˈām       	XRPH/     	XER:P.@T@92M        	275114
- 	     	ˈḥerpā          	ˈḥerpā          	XRPH/     	13XER:P.@H          	317743
- 	     	ḥerpˈāṯˈām      	ḥerpˈāṯˈām      	XRPH/     	XER:P.@82T@70M      	324386
- 	     	ˈḥerpˈā         	ˈḥerpˈā         	XRPH/     	11XER:P.@81H        	326113
- 	     	ḥerpāṯˌām       	ḥerpāṯˌām       	XRPH/     	XER:P.@T@M03        	364903
- 	     	ḥerpāṯˈî        	ḥerpāṯˈî        	XRPH/     	XER:P.@TI75J        	15953
- 	     	ḥerpāṯˈēnû      	ḥerpāṯˈēnû      	XRPH/     	XER:P.@T;75NW.      	213307
- 	     	ḥerpāṯˈēḵ       	ḥerpāṯˈēḵ       	XRPH/     	XER:P.@T;92K:       	228560
- 	     	ḥerpāṯᵊḵˌā      	ḥerpāṯᵊḵˌā      	XRPH/     	XER:P.@T:K@71       	323005
- 	     	ˈḥerpāṯî        	ˈḥerpāṯî        	XRPH/     	13XER:P.@TIJ        	331596
- 	     	ḥˌerpāṯˈô       	ḥˌerpāṯˈô       	XRPH/     	XE63R:P.@TO80W      	293691
- 	     	ḥerpāṯˈô        	ḥerpāṯˈô        	XRPH/     	XER:P.@TO81W        	348560
- 	     	ḥerpāṯˌô        	ḥerpāṯˌô        	XRPH/     	XER:P.@TOW03        	377318
-
- 	     	ḥᵃṯānˈāʸw       	ḥᵃṯānˈāʸw       	XTN/      	X:AT@N@74JW         	8718
- 	     	ḥᵃṯānˈô         	ḥᵃṯānˈô         	XTN/      	X:AT@NO81W          	139202
-*	1ā,2ā	ḥoṯon           	ḥāṯān           	XTN/      	X@T@N02             	252791
- 	     	ḥāṯˌān          	ḥāṯˌān          	XTN/      	X@T@N03             	8677
-
-*	1ā   	ḥᵃṣˈar ʕênon    	ḥᵃṣˈar ʕênān    	XYR_<JNN/ 	X:AYA74R_<;JN@N04   	290208
- 	     	ḥᵃṣˈar ʕênˈān   	ḥᵃṣˈar ʕênˈān   	XYR_<JNN/ 	X:AYA74R_<;JN@92N   	91544
- 	     	ḥᵃṣˌar ʕênˌān   	ḥᵃṣˌar ʕênˌān   	XYR_<JNN/ 	X:AYA71R_<;JN@73N   	91557
-
-*	2ā   	ṣᵊlofḥoḏ        	ṣᵊlofḥāḏ        	YLPXD/    	Y:L@P:X@D02         	87018
- 	     	ṣᵊlofḥˈāḏ       	ṣᵊlofḥˈāḏ       	YLPXD/    	Y:L@P:X@74D         	86387
- 	     	ṣᵊlofḥˌāḏ       	ṣᵊlofḥˌāḏ       	YLPXD/    	Y:L@P:X@71D         	92568
+ 	     	ʕammˈāʸw        	ʕammˈāʸw        	<M/       	<AM.@75JW           	12550
+ 	     	ʕammˈāh         	ʕammˈāh         	<M/       	<AM.@75H.           	63242
+ 	     	ʕammˈām         	ʕammˈām         	<M/       	<AM.@75M            	63799
+ 	     	ʕammˌāʸw        	ʕammˌāʸw        	<M/       	<AM.@73JW           	65200
+ 	     	ʕammˌāh         	ʕammˌāh         	<M/       	<AM.@71H.           	234317
+ 	     	ʕammˌām         	ʕammˌām         	<M/       	<AM.@73M            	419263
+ 	     	ʕammˈeʸhā       	ʕammˈeʸhā       	<M/       	<AM.E92JH@          	7559
+ 	     	ʕammˈeḵā        	ʕammˈeḵā        	<M/       	<AM.E75K@           	31122
+ 	     	ʕammᵊḵˌā        	ʕammᵊḵˌā        	<M/       	<AM.:K@73           	32380
+ 	     	ʕammᵊḵˈā        	ʕammᵊḵˈā        	<M/       	<AM.:K@80           	32497
+ 	     	ʕammˈeʸḵā       	ʕammˈeʸḵā       	<M/       	<AM.E80JK@          	64046
+ 	     	ʕammˌeʸḵā       	ʕammˌeʸḵā       	<M/       	<AM.E73JK@          	87141
+ 	     	ʕammˌeḵā        	ʕammˌeḵā        	<M/       	<AM.E73K@           	193722
+ 	     	ʕammeḵˌā        	ʕammeḵˌā        	<M/       	<AM.EK@01           	293280
+ 	     	ˈʕammᵊḵā        	ˈʕammᵊḵā        	<M/       	13<AM.:K@           	324860
+ 	     	ʕᵃmāmˈîm        	ʕᵃmāmˈîm        	<M/       	<:AM@MI80JM         	388262
+ 	     	ʕᵃmāmˈeʸḵā      	ʕᵃmāmˈeʸḵā      	<M/       	<:AM@ME92JK@        	130147
+*	1ā   	ʕom-            	ʕām-            	<M/       	<@M&                	30127
+*	1ā   	ʕom             	ʕām             	<M/       	<@M02               	36480
+ 	     	ʕˈām            	ʕˈām            	<M/       	<@75M               	6530
+ 	     	ʕˌām            	ʕˌām            	<M/       	<@73M               	8518
+ 	     	ʕˈām-           	ʕˈām-           	<M/       	<@70M&              	242724
+
+*	1ā,2ā	ʕammˈînoḏov     	ʕammˈînāḏāv     	<MJNDB/   	<AM.I45JN@D@B03     	357564
+ 	     	ʕammînāḏˈāv     	ʕammînāḏˈāv     	<MJNDB/   	<AM.IJN@D@91B       	31647
+ 	     	ʕammînāḏˌāv     	ʕammînāḏˌāv     	<MJNDB/   	<AM.IJN@D@73B       	74122
+ 	     	ʕammˈînāḏˈāv    	ʕammˈînāḏˈāv    	<MJNDB/   	<AM.I45JN@D@75B     	357562
+
+ 	     	ʕᵃmālˈām        	ʕᵃmālˈām        	<ML/      	<:AM@L@75M          	360721
+ 	     	ʕᵃmālˈî         	ʕᵃmālˈî         	<ML/      	<:AM@LI80J          	23302
+ 	     	ʕᵃmālˌēnû       	ʕᵃmālˌēnû       	<ML/      	<:AM@L;73NW.        	107317
+ 	     	ʕᵃmˈālᵊḵˈā      	ʕᵃmˈālᵊḵˈā      	<ML/      	<:AM@74L:K@80       	362540
+ 	     	ʕᵃmālˈô         	ʕᵃmālˈô         	<ML/      	<:AM@LO74W          	311438
+*	1ā,2ā	ˈʕomol          	ˈʕāmāl          	<ML/      	13<@M@L             	340076
+ 	     	ʕāmˌāl          	ʕāmˌāl          	<ML/      	<@M@73L             	85045
+ 	     	ʕāmˈāl          	ʕāmˈāl          	<ML/      	<@M@74L             	302204
+ 	     	ˈʕāmˈāl         	ˈʕāmˈāl         	<ML/      	11<@M@81L           	311424
+ 	     	ʕˈāmˈāl         	ʕˈāmˈāl         	<ML/      	<@82M@70L           	311915
+
+ 	     	ʕᵃnˈānᵊḵā       	ʕᵃnˈānᵊḵā       	<NN/      	<:AN@45N:K@03       	78704
+ 	     	ʕᵃnānˈô         	ʕᵃnānˈô         	<NN/      	<:AN@NO75W          	342319
+*	1ā,2ā	ʕonon           	ʕānān           	<NN/      	<@N@N02             	77338
+*	1ā,2ā	ˈʕonon          	ˈʕānān          	<NN/      	13<@N@N             	327530
+ 	     	ʕānˈān          	ʕānˈān          	<NN/      	<@N@92N             	4269
+ 	     	ʕānˌān          	ʕānˌān          	<NN/      	<@N@73N             	4284
+
+ 	     	ʕᵃfārˌām        	ʕᵃfārˌām        	<PR/      	<:AP@R@73M          	209936
+ 	     	ʕᵃfārˈāh        	ʕᵃfārˈāh        	<PR/      	<:AP@R@80H.         	210010
+ 	     	ʕᵃfārˌāh        	ʕᵃfārˌāh        	<PR/      	<:AP@R@73H.         	223409
+ 	     	ʕᵃfārˈēḵ        	ʕᵃfārˈēḵ        	<PR/      	<:AP@R;80K:         	277620
+ 	     	ʕᵃfārˈô         	ʕᵃfārˈô         	<PR/      	<:AP@RO80W          	98935
+*	1ā   	ʕofrˌôṯ         	ʕāfᵊrˌôṯ        	<PR/      	<@P:RO71WT          	349068
+*	1ā,2ā	ˈʕofor          	ˈʕāfār          	<PR/      	13<@P@R             	345795
+*	2ā   	ʕˈāfor          	ʕˈāfār          	<PR/      	<@95P@R03           	278272
+ 	     	ʕāfˌār          	ʕāfˌār          	<PR/      	<@P@R03             	798
+ 	     	ʕāfˈār          	ʕāfˈār          	<PR/      	<@P@74R             	1556
+
+ 	     	ʕorpˌām         	ʕorpˌām         	<RP/      	<@R:P.@M03          	205863
+ 	     	ʕorpˈām         	ʕorpˈām         	<RP/      	<@R:P.@80M          	238761
+ 	     	ʕorpᵊḵˌem       	ʕorpᵊḵˌem       	<RP/      	<@R:P.:KE73M        	422016
+ 	     	ʕorpᵊḵˌā        	ʕorpᵊḵˌā        	<RP/      	<@R:P.:K@73         	111343
+ 	     	ʕorpˈeḵā        	ʕorpˈeḵā        	<RP/      	<@R:P.E80K@         	228855
+ 	     	ʕorpˌî          	ʕorpˌî          	<RP/      	<@R:P.IJ            	340198
+ 	     	ʕorpˌô          	ʕorpˌô          	<RP/      	<@R:P.O73W          	54483
+*	1o   	ʕˌārᵊppᵊḵˈem    	ʕˌorpᵊḵˈem      	<RP/      	<@63R:P.:KE80M      	99482
+
+*	1ā   	ˈʕôlom          	ˈʕôlām          	<WLM/     	13<OWL@M            	320437
+ 	     	ʕōlˈām          	ʕōlˈām          	<WLM/     	<OL@75M             	1621
+ 	     	ʕôlˌām          	ʕôlˌām          	<WLM/     	<OWL@73M            	2692
+ 	     	ʕôlˈām          	ʕôlˈām          	<WLM/     	<OWL@75M            	4263
+ 	     	ʕōlˌām          	ʕōlˌām          	<WLM/     	<OL@71M             	37138
+ 	     	ʕôlāmˈîm        	ʕôlāmˈîm        	<WLM/     	<OWL@MI75JM         	182336
+ 	     	ʕˈôlˌām         	ʕˈôlˌām         	<WLM/     	<O60WL@71M          	322512
+ 	     	ˈʕôlˈām         	ˈʕôlˈām         	<WLM/     	11<OWL@81M          	322632
+ 	     	ʕôlāmîm         	ʕôlāmîm         	<WLM/     	<OWL@MIJM           	323323
+ 	     	ʕˈōlāmˈîm       	ʕˈōlāmˈîm       	<WLM/     	<O45L@MI92JM        	335348
+ 	     	ʕôlāmˈô         	ʕôlāmˈô         	<WLM/     	<OWL@MO80W          	363352
+
+*	1ā,2ā	ʔᵃvˈînoḏov      	ʔᵃvˈînāḏāv      	>BJNDB/   	>:ABI45JN@D@B03     	163493
+ 	     	ʔᵃvînāḏˌāv      	ʔᵃvînāḏˌāv      	>BJNDB/   	>:ABIJN@D@73B       	144690
+ 	     	ʔᵃvˈînāḏˈāv     	ʔᵃvˈînāḏˈāv     	>BJNDB/   	>:ABI74JN@D@80B     	150447
+ 	     	ʔᵃvînāḏˈāv      	ʔᵃvînāḏˈāv      	>BJNDB/   	>:ABIJN@D@91B       	160212
+ 	     	ʔᵃvˈînāḏˌāv     	ʔᵃvˈînāḏˌāv     	>BJNDB/   	>:ABI45JN@D@73B     	179205
+
+*	1ā   	ʔᵃvol           	ʔᵃvāl           	>BL       	>:AB@L02            	23764
+ 	     	ʔᵃvˌāl          	ʔᵃvˌāl          	>BL       	>:AB@L03            	7636
+ 	     	ʔᵃvˈāl          	ʔᵃvˈāl          	>BL       	>:AB@91L            	168113
+
+*	1ā   	ʔavrom          	ʔavrām          	>BRM/     	>AB:R@M02           	7118
+ 	     	ʔavrˈām         	ʔavrˈām         	>BRM/     	>AB:R@80M           	5366
+ 	     	ʔavrˌām         	ʔavrˌām         	>BRM/     	>AB:R@M03           	5412
+
+ 	     	ʔᵃšāmˌām        	ʔᵃšāmˌām        	>CM/      	>:AC@M@M03          	81521
+ 	     	ʔᵃšāmˈāʸw       	ʔᵃšāmˈāʸw       	>CM/      	>:AC@M@75JW         	321475
+ 	     	ʔᵃšāmˈô         	ʔᵃšāmˈô         	>CM/      	>:AC@MO74W          	54411
+ 	     	ʔᵃšāmˌô         	ʔᵃšāmˌô         	>CM/      	>:AC@MO63W          	54636
+*	1ā,2ā	ʔošom           	ʔāšām           	>CM/      	>@C@M02             	144185
+ 	     	ʔāšˈām          	ʔāšˈām          	>CM/      	>@C@75M             	13191
+ 	     	ʔāšˌām          	ʔāšˌām          	>CM/      	>@C@73M             	54681
+
+*	1ā,2ā	ˈʔoḏom          	ˈʔāḏām          	>DM/      	13>@D@M             	312521
+*	1ā,2ā	ʔoḏom           	ʔāḏām           	>DM/      	>@D@M02             	320552
+ 	     	ʔāḏˈām          	ʔāḏˈām          	>DM/      	>@D@91M             	499
+ 	     	ʔāḏˌām          	ʔāḏˌām          	>DM/      	>@D@M03             	539
+ 	     	ˈʔāḏˈām         	ˈʔāḏˈām         	>DM/      	11>@D@81M           	311509
+ 	     	ʔˈāḏˌām         	ʔˈāḏˌām         	>DM/      	>@60D@71M           	312239
+ 	     	ʔˈāḏˈām-        	ʔˈāḏˈām-        	>DM/      	>@70D@45M&          	316155
+ 	     	ʔāḏˈām .        	ʔāḏˈām .        	>DM/      	>@D@75M00_|         	329648
+
+*	1ā   	ʔᵃḏōnoy         	ʔᵃḏōnāy         	>DNJ/     	>:ADON@J02          	315967
+*	1ā   	ʔˈᵃḏōnoy        	ʔˈᵃḏōnāy        	>DNJ/     	>:A35DON@J          	316697
+*	1ā   	ˈʔᵃḏōnoy        	ˈʔᵃḏōnāy        	>DNJ/     	13>:ADON@J          	319015
+ 	     	ʔᵃḏōnˈāy        	ʔᵃḏōnˈāy        	>DNJ/     	>:ADON@70J          	6697
+ 	     	ʔᵃḏōnˌāy        	ʔᵃḏōnˌāy        	>DNJ/     	>:ADON@J01          	30369
+ 	     	ʔᵃḏônˈāy        	ʔᵃḏônˈāy        	>DNJ/     	>:ADOWN@80J         	135873
+ 	     	ˈʔᵃḏōnˈāy       	ˈʔᵃḏōnˈāy       	>DNJ/     	11>:ADON@81J        	310770
+ 	     	ʔˈᵃḏōnˈāy       	ʔˈᵃḏōnˈāy       	>DNJ/     	>:A35DON@81J        	326224
+ 	     	ʔḏōnˌāy         	ʔḏōnˌāy         	>DNJ/     	>DON@J03            	8349
+ 	     	ʔḏōnˈāy         	ʔḏōnˈāy         	>DNJ/     	>DON@62J            	199060
+
+*	1ā   	ʔᵃhoh           	ʔᵃhāh           	>HH       	>:AH@H.02           	251837
+ 	     	ʔᵃhˈāh          	ʔᵃhˈāh          	>HH       	>:AH@74H.           	116256
+ 	     	ʔᵃhˌāh          	ʔᵃhˌāh          	>HH       	>:AH@H.03           	130919
+
+ 	     	ʔˌōhᵉlā         	ʔˌōhᵉlā         	>HL/      	>O73H:EL@H          	7895
+ 	     	ʔˈōhᵉlā         	ʔˈōhᵉlā         	>HL/      	>O33H:EL@H03        	12406
+*	1o   	ʔōhālˈîm        	ʔōholˈîm        	>HL/      	>OH@LI75JM          	5952
+*	1o   	ʔˈōhālˈāʸw      	ʔˈōholˈāʸw      	>HL/      	>O45H@L@80JW        	131634
+*	1o   	ʔᵒhālˈîm        	ʔᵒholˈîm        	>HL/      	>:@H@LI80JM         	132372
+*	1o   	ʔōhālˈāʸw       	ʔōholˈāʸw       	>HL/      	>OH@L@80JW          	143520
+*	1o   	ʔōhālˌāʸw       	ʔōholˌāʸw       	>HL/      	>OH@L@73JW          	173116
+*	1o   	ʔōhālˌîm        	ʔōholˌîm        	>HL/      	>OH@LI73JM          	199239
+*	1o   	ʔōhālˈay        	ʔōholˈay        	>HL/      	>OH@LA80J           	236911
+*	1o   	ʔōhālîm         	ʔōholîm         	>HL/      	>OH@LIJM03          	237705
+*	1o   	ʔᵒhālˌîm        	ʔᵒholˌîm        	>HL/      	>:@H@LI73JM         	293620
+*	1o   	ʔˈōhālˌîm       	ʔˈōholˌîm       	>HL/      	>O45H@LI63JM        	339057
+*	1o   	ʔōhālˌeʸḵā      	ʔōholˌeʸḵā      	>HL/      	>OH@LE73JK@         	85282
+*	1o   	ʔōhālˈeʸḵā      	ʔōholˈeʸḵā      	>HL/      	>OH@LE75JK@         	102627
+*	1o   	ʔōhālˈeḵā       	ʔōholˈeḵā       	>HL/      	>OH@LE75K@          	139322
+ 	     	ʔˈohᵒlê-        	ʔˈohᵒlê-        	>HL/      	>@45H:@L;J&         	4507
+ 	     	ʔohᵒlˌê         	ʔohᵒlˌê         	>HL/      	>@H:@L;63J          	80533
+ 	     	ʔˈohᵒlêhˈem     	ʔˈohᵒlêhˈem     	>HL/      	>@95H:@L;JHE80M     	80570
+ 	     	ʔohᵒlêḵˌem      	ʔohᵒlêḵˌem      	>HL/      	>@H:@L;JKEM03       	93353
+ 	     	ʔohᵒlêḵˈem      	ʔohᵒlêḵˈem      	>HL/      	>@H:@L;JKE75M       	96892
+ 	     	ʔohᵒlêhˈem      	ʔohᵒlêhˈem      	>HL/      	>@H:@L;JHE92M       	99723
+ 	     	ʔohᵒlêhˌem      	ʔohᵒlêhˌem      	>HL/      	>@H:@L;JHE73M       	125406
+ 	     	ʔˈohᵒlêḵem      	ʔˈohᵒlêḵem      	>HL/      	>@45H:@L;JKEM03     	125419
+ 	     	ʔohᵒlˈê         	ʔohᵒlˈê         	>HL/      	>@H:@L;74J          	250528
+ 	     	ʔohᵒlê-         	ʔohᵒlê-         	>HL/      	>@H:@L;J&           	324022
+ 	     	ʔohᵒlˈeʸ        	ʔohᵒlˈeʸ        	>HL/      	>@H:@LE74J          	377852
+ 	     	ʔˈohᵒlˌî        	ʔˈohᵒlˌî        	>HL/      	>@95H:@LI73J        	116634
+ 	     	ʔohᵒlˈēḵ        	ʔohᵒlˈēḵ        	>HL/      	>@H:@L;81K:         	230798
+ 	     	ʔohᵒlˈî         	ʔohᵒlˈî         	>HL/      	>@H:@LI74J          	240213
+ 	     	ʔohᵒlˈeḵā       	ʔohᵒlˈeḵā       	>HL/      	>@H:@LE92K@         	312308
+ 	     	*ʔohᵒlˈô        	*ʔohᵒlˈô        	>HL/      	>@H:@LO75W          	4420
+ 	     	*ʔˈohᵒlô        	*ʔˈohᵒlô        	>HL/      	>@95H:@LOW03        	5912
+ 	     	ʔohᵒlˌô         	ʔohᵒlˌô         	>HL/      	>@H:@LOW03          	16826
+ 	     	*ʔˈohᵒlˈô       	*ʔˈohᵒlˈô       	>HL/      	>@45H:@LO80W        	19427
+*	1o,2o	ʔāhālᵊḵˌā       	ʔoholᵊḵˌā       	>HL/      	>@H@L:K@            	320409
+
+*	1ā,2ā	ʔˈîṯomor        	ʔˈîṯāmār        	>JTMR/    	>I45JT@M@R03        	57749
+ 	     	ʔˈîṯāmˈār       	ʔˈîṯāmˈār       	>JTMR/    	>I45JT@M@75R        	31665
+ 	     	ʔîṯāmˌār        	ʔîṯāmˌār        	>JTMR/    	>IJT@M@73R          	43743
+ 	     	ʔˈîṯāmˌār       	ʔˈîṯāmˌār       	>JTMR/    	>I45JT@M@63R        	57506
+ 	     	ʔˌîṯāmˌār       	ʔˌîṯāmˌār       	>JTMR/    	>I63JT@M@71R        	57628
+ 	     	ʔîṯāmˈār        	ʔîṯāmˈār        	>JTMR/    	>IJT@M@75R          	70938
+
+*	2ā   	ˈʔomnom         	ˈʔomnām         	>MNM      	13>@M:N@M           	338277
+ 	     	ʔomnˌām         	ʔomnˌām         	>MNM      	>@M:N@73M           	207761
+ 	     	ʔomnˈām         	ʔomnˈām         	>MNM      	>@M:N@81M           	344463
+
+*	1ā   	ʔᵃrom           	ʔᵃrām           	>RM/      	>:AR@M02            	165649
+ 	     	ʔᵃrˈām          	ʔᵃrˈām          	>RM/      	>:AR@75M            	4839
+ 	     	ʔᵃrˌām          	ʔᵃrˌām          	>RM/      	14>:AR@M            	84804
+
+ 	     	ʔᵃḥāḏˈîm        	ʔᵃḥāḏˈîm        	>XD/      	>:AX@DI75JM         	4975
+ 	     	ʔᵃḥāḏˌîm        	ʔᵃḥāḏˌîm        	>XD/      	>:AX@DI73JM         	283547
+ 	     	ʔᵃḥāḏîm         	ʔᵃḥāḏîm         	>XD/      	>:AX@DIJM03         	377349
+*	1ā   	ʔeḥoḏ           	ʔeḥāḏ           	>XD/      	>EX@D02             	23680
+*	1ā   	ʔˈeḥoḏ-         	ʔˈeḥāḏ-         	>XD/      	>E45X@D&            	375475
+ 	     	ʔeḥˈāḏ          	ʔeḥˈāḏ          	>XD/      	>EX@75D             	78
+ 	     	ʔeḥˌāḏ          	ʔeḥˌāḏ          	>XD/      	>EX@73D             	884
+ 	     	ʔeḥˈāṯ          	ʔeḥˈāṯ          	>XD/      	>EX@92T             	4972
+ 	     	ʔeḥˌāṯ          	ʔeḥˌāṯ          	>XD/      	>EX@T01             	42704
+ 	     	ʔˈeḥˌāḏ         	ʔˈeḥˌāḏ         	>XD/      	>E45X@73D           	309968
+ 	     	ˈʔeḥˈāḏ         	ˈʔeḥˈāḏ         	>XD/      	11>EX@81D           	347050
+
+*	2ā   	bˈāšon          	bˈāšān          	BCN/      	B.@80C@N            	277889
+ 	     	bāšˈān          	bāšˈān          	BCN/      	B.@C@92N            	83735
+ 	     	bāšˌān          	bāšˌān          	BCN/      	B.@C@63N            	83741
+ 	     	vāšˌān          	vāšˌān          	BCN/      	B@C@N03             	111628
+ 	     	vāšˈān          	vāšˈān          	BCN/      	B@C@91N             	301343
+
+ 	     	boštᵊḵˌem       	boštᵊḵˌem       	BCT/      	B.@C:T.:KEM03       	233133
+ 	     	boštˈām         	boštˈām         	BCT/      	B.@C:T.@75M         	304079
+ 	     	voštˈēnû        	voštˈēnû        	BCT/      	B@C:T.;81NW.        	236520
+ 	     	voštˌî          	voštˌî          	BCT/      	B@C:T.IJ            	321825
+*	1o   	vˌāšᵊttᵊḵˈā     	vˌoštᵊḵˈā       	BCT/      	B@63C:T.:K@80       	154079
+
+ 	     	vᵊśārˌāh        	vᵊśārˌāh        	BFR/      	B:F@R@73H.          	55255
+ 	     	bᵊśārˌām        	bᵊśārˌām        	BFR/      	B.:F@R@M03          	57966
+ 	     	bᵊśārˈām        	bᵊśārˈām        	BFR/      	B.:F@R@91M          	59724
+ 	     	vᵊśārˈāh        	vᵊśārˈāh        	BFR/      	B:F@R@92H.          	61875
+ 	     	vᵊśārˈām        	vᵊśārˈām        	BFR/      	B:F@R@80M           	65041
+ 	     	vᵊśārˌām        	vᵊśārˌām        	BFR/      	B:F@R@73M           	81692
+ 	     	bᵊśārˌāh        	bᵊśārˌāh        	BFR/      	B.:F@R@H.03         	82095
+ 	     	ˈvśārîm         	ˈvśārîm         	BFR/      	13B:F@RIJM          	350659
+ 	     	bᵊśārˈî         	bᵊśārˈî         	BFR/      	B.:F@RI92J          	1129
+ 	     	vᵊśārˌî         	vᵊśārˌî         	BFR/      	B:F@RI73J           	15232
+ 	     	vᵊśārˌēnû       	vᵊśārˌēnû       	BFR/      	B:F@R;73NW.         	20674
+ 	     	bᵊśārᵊḵˌā       	bᵊśārᵊḵˌā       	BFR/      	B.:F@R:K@73         	22279
+ 	     	bᵊśˈārᵊḵˈā      	bᵊśˈārᵊḵˈā      	BFR/      	B.:F@74R:K@80       	151787
+ 	     	vᵊśārᵊḵˌā       	vᵊśārᵊḵˌā       	BFR/      	B:F@R:K@73          	162942
+ 	     	bᵊśārᵊḵˈā       	bᵊśārᵊḵˈā       	BFR/      	B.:F@R:K@91         	197700
+ 	     	ˈbᵊśārˈî        	ˈbᵊśārˈî        	BFR/      	11B.:F@RI81J        	312459
+ 	     	bᵊśˈārˌî        	bᵊśˈārˌî        	BFR/      	B.:F@60RI71J        	314408
+ 	     	vᵊśārˈî         	vᵊśārˈî         	BFR/      	B:F@RI75J           	316687
+ 	     	bᵊśārˌî         	bᵊśārˌî         	BFR/      	B.:F@RI71J          	337687
+ 	     	ˈbᵊśārᵊḵˈā      	ˈbᵊśārᵊḵˈā      	BFR/      	11B.:F@R:K@81       	348122
+ 	     	bᵊśārˈeḵā       	bᵊśārˈeḵā       	BFR/      	B.:F@RE80K@         	360950
+ 	     	bᵊśārˈēnû       	bᵊśārˈēnû       	BFR/      	B.:F@R;80NW.        	385475
+ 	     	vᵊśārˈô         	vᵊśārˈô         	BFR/      	B:F@RO75W           	30296
+ 	     	bᵊśārˈô         	bᵊśārˈô         	BFR/      	B.:F@RO80W          	40430
+ 	     	bᵊśārˌô         	bᵊśārˌô         	BFR/      	B.:F@RO73W          	45227
+ 	     	vᵊśārˌô         	vᵊśārˌô         	BFR/      	B:F@RO73W           	63385
+ 	     	ˈbᵊśārô         	ˈbᵊśārô         	BFR/      	13B.:F@ROW          	339734
+*	1ā,2ā	bośor           	bāśār           	BFR/      	B.@F@R02            	56765
+*	1ā,2ā	ˈbośor          	ˈbāśār          	BFR/      	13B.@F@R            	335437
+ 	     	bāśˌār          	bāśˌār          	BFR/      	B.@F@73R            	1095
+ 	     	vāśˌār          	vāśˌār          	BFR/      	B@F@73R             	1127
+ 	     	vāśˈār          	vāśˈār          	BFR/      	B@F@92R             	2652
+ 	     	bāśˈār          	bāśˈār          	BFR/      	B.@F@91R            	2820
+
+ 	     	bˈayᵊṯā         	bˈayᵊṯā         	BJT/      	B.A80J:T@H          	11737
+ 	     	bˌayᵊṯā         	bˌayᵊṯā         	BJT/      	B.A73J:T@H          	21659
+ 	     	bˌêṯā           	bˌêṯā           	BJT/      	B.;71JT@H           	14522
+ 	     	vêṯˈāh          	vêṯˈāh          	BJT/      	B;JT@81H.           	21710
+ 	     	bˈêṯā           	bˈêṯā           	BJT/      	B.;74JT@H           	24623
+ 	     	bêṯˈāh          	bêṯˈāh          	BJT/      	B.;JT@80H.          	30148
+ 	     	vêṯˌāh          	vêṯˌāh          	BJT/      	B;JT@H.03           	113715
+ 	     	bêṯˌām          	bêṯˌām          	BJT/      	B.;JT@73M           	141914
+ 	     	bêṯˌāh          	bêṯˌāh          	BJT/      	B.;JT@73H.          	184252
+ 	     	bêṯˈām          	bêṯˈām          	BJT/      	B.;JT@75M           	355424
+ 	     	ˈbêṯˈāh         	ˈbêṯˈāh         	BJT/      	11B.;JT@81H.        	355696
+ 	     	bêṯᵊḵˌā         	bêṯᵊḵˌā         	BJT/      	B.;JT:K@73          	3047
+ 	     	bˈêṯᵊḵˌā        	bˈêṯᵊḵˌā        	BJT/      	B.;95JT:K@73        	7531
+ 	     	vêṯˈeḵā         	vêṯˈeḵā         	BJT/      	B;JTE80K@           	17087
+ 	     	vêṯeḵˌā         	vêṯeḵˌā         	BJT/      	B;JTEK@01           	17148
+ 	     	vˈêṯᵊḵˌā        	vˈêṯᵊḵˌā        	BJT/      	B;45JT:K@73         	25677
+ 	     	vêṯᵊḵˌā         	vêṯᵊḵˌā         	BJT/      	B;JT:K@73           	81569
+ 	     	bêṯˌeḵā         	bêṯˌeḵā         	BJT/      	B.;JTE73K@          	97117
+ 	     	bêṯˈeḵā         	bêṯˈeḵā         	BJT/      	B.;JTE80K@          	97982
+ 	     	bêṯᵊḵˈā         	bêṯᵊḵˈā         	BJT/      	B.;JT:K@85          	135406
+ 	     	bˈêṯᵊḵā         	bˈêṯᵊḵā         	BJT/      	B.;45JT:K@03        	142712
+ 	     	vˈêṯᵊḵˈā        	vˈêṯᵊḵˈā        	BJT/      	B;74JT:K@80         	142843
+ 	     	vêṯᵊḵˈā         	vêṯᵊḵˈā         	BJT/      	B;JT:K@74           	156607
+ 	     	bˈêṯᵊḵˈā        	bˈêṯᵊḵˈā        	BJT/      	B.;74JT:K@80        	189106
+ 	     	vˈêṯˌeḵā        	vˈêṯˌeḵā        	BJT/      	B;60JTE71K@         	333226
+ 	     	vˈêṯᵊḵā         	vˈêṯᵊḵā         	BJT/      	B;45JT:K@03         	357424
+*	1ā   	bottêḵˈem       	bāttêḵˈem       	BJT/      	B.@T.;JKE75M        	23742
+*	1ā   	bottêḵˌem       	bāttêḵˌem       	BJT/      	B.@T.;JKE73M        	24015
+*	1ā   	vottêḵˌem       	vāttêḵˌem       	BJT/      	B@T.;JKE73M         	27140
+*	1ā   	bottˈîm         	bāttˈîm         	BJT/      	B.@T.I75JM          	29090
+*	1ā   	bottˌîm         	bāttˌîm         	BJT/      	B.@T.I71JM          	32578
+*	1ā   	bottˈê          	bāttˈê          	BJT/      	B.@T.;70J           	32774
+*	1ā   	vottˈê          	vāttˈê          	BJT/      	B@T.;74J            	33914
+*	1ā   	bottîm          	bāttîm          	BJT/      	B.@T.IJM03          	34941
+*	1ā   	vottêḵˈem       	vāttêḵˈem       	BJT/      	B@T.;JKE92M         	35115
+*	1ā   	vottˈîm         	vāttˈîm         	BJT/      	B@T.I74JM           	42389
+*	1ā   	bottˌê          	bāttˌê          	BJT/      	B.@T.;73J           	67749
+*	1ā   	bottêhˈem       	bāttêhˈem       	BJT/      	B.@T.;JHE92M        	80678
+*	1ā   	vottˌîm         	vāttˌîm         	BJT/      	B@T.I71JM           	98229
+*	1ā   	bottêhˌem       	bāttêhˌem       	BJT/      	B.@T.;JHE73M        	99720
+*	1ā   	vottêhˈem       	vāttêhˈem       	BJT/      	B@T.;JHE75M         	103890
+*	1ā   	vottˌê          	vāttˌê          	BJT/      	B@T.;71J            	213205
+*	1ā   	vottîm          	vāttîm          	BJT/      	B@T.IJM03           	214193
+*	1ā   	vottêhˌem       	vāttêhˌem       	BJT/      	B@T.;JHE73M         	216795
+*	1ā   	vottêhˌen       	vāttêhˌen       	BJT/      	B@T.;JHE73N         	276519
+*	1ā   	ˈbottîm         	ˈbāttîm         	BJT/      	13B.@T.IJM          	340004
+*	1ā   	vottˈayiḵ       	vāttˈayiḵ       	BJT/      	B@T.A33JIK:03       	271743
+*	1ā   	bottˈeʸḵā       	bāttˈeʸḵā       	BJT/      	B.@T.E92JK@         	32505
+*	1ā   	vottˌeʸḵā       	vāttˌeʸḵā       	BJT/      	B@T.E73JK@          	32768
+*	1ā   	vottˈeʸḵā       	vāttˈeʸḵā       	BJT/      	B@T.E61JK@          	33912
+*	1ā   	bottˈênû        	bāttˈênû        	BJT/      	B.@T.;74JNW.        	35313
+*	1ā   	bottˌêmô        	bāttˌêmô        	BJT/      	B.@T.;63JMOW        	318521
+*	1ā   	vottˈênû        	vāttˈênû        	BJT/      	B@T.;74JNW.         	347043
+*	1ā   	bottˌênû        	bāttˌênû        	BJT/      	B.@T.;73JNW.        	365288
+*	1ā   	vottˌênû        	vāttˌênû        	BJT/      	B@T.;73JNW.         	385448
+ 	     	bˈāttˈîm        	bˈāttˈîm        	BJT/      	B.@74T.I80JM        	34821
+ 	     	vˌāttˈîm        	vˌāttˈîm        	BJT/      	B@63T.I61JM         	97152
+ 	     	bˈāttêhˈem      	bˈāttêhˈem      	BJT/      	B.@45T.;JHE80M      	216720
+ 	     	vˈāttêhem       	vˈāttêhem       	BJT/      	B@45T.;JHEM03       	237861
+ 	     	bˈāttêḵem       	bˈāttêḵem       	BJT/      	B.@45T.;JKEM03      	243488
+ 	     	vˈāttˈîm        	vˈāttˈîm        	BJT/      	B@74T.I80JM         	288532
+ 	     	vˈāttê-         	vˈāttê-         	BJT/      	B@45T.;J&           	337259
+ 	     	bˈāttˌîm        	bˈāttˌîm        	BJT/      	B.@60T.I71JM        	342082
+ 	     	bˌāttˈāʸw       	bˌāttˈāʸw       	BJT/      	B.@63T.@61JW        	405788
+ 	     	bˈāyiṯ          	bˈāyiṯ          	BJT/      	B.@80JIT            	7515
+ 	     	bˈāyᵊṯā         	bˈāyᵊṯā         	BJT/      	B.@92J:T@H          	8639
+ 	     	bˈāttˈeʸḵā      	bˈāttˈeʸḵā      	BJT/      	B.@74T.E80JK@       	32533
+ 	     	bˈāttˈênû       	bˈāttˈênû       	BJT/      	B.@74T.;80JNW.      	117999
+ 	     	vˈāyᵊṯā         	vˈāyᵊṯā         	BJT/      	B@75J:T@H           	163142
+ 	     	bˌāyiṯ          	bˌāyiṯ          	BJT/      	B.@73JIT            	180035
+ 	     	vˈāyiṯ          	vˈāyiṯ          	BJT/      	B@92JIT             	232053
+
+*	1ā   	bilʕom          	bilʕām          	BL<M/     	B.IL:<@M02          	84199
+ 	     	bilʕˈām         	bilʕˈām         	BL<M/     	B.IL:<@74M          	83888
+ 	     	bilʕˌām         	bilʕˌām         	BL<M/     	B.IL:<@73M          	84011
+ 	     	vilʕˌām         	vilʕˌām         	BL<M/     	BIL:<@M03           	84393
+ 	     	vilʕˈām         	vilʕˈām         	BL<M/     	BIL:<@92M           	84579
+
+*	1ā   	*bˈomᵒṯê        	*bˈāmᵒṯê        	BMH/      	B.@74M:@T;J         	111601
+*	1ā   	*bˌomᵒṯê        	*bˌāmᵒṯê        	BMH/      	B.@71M:@T;J         	299589
+ 	     	bāmˌôṯ          	bāmˌôṯ          	BMH/      	B.@MO71WT           	83672
+ 	     	bāmôṯ           	bāmôṯ           	BMH/      	B.@MOWT03           	186821
+ 	     	vāmˈôṯ          	vāmˈôṯ          	BMH/      	B@MO80WT            	187607
+ 	     	vāmˌôṯ          	vāmˌôṯ          	BMH/      	B@MO71WT            	248322
+ 	     	bāmˈōṯêḵˈem     	bāmˈōṯêḵˈem     	BMH/      	B.@MO45T;JKE81M     	68633
+ 	     	bāmōṯˌām        	bāmōṯˌām        	BMH/      	B.@MOT@73M          	91299
+ 	     	bāmôṯˌay        	bāmôṯˌay        	BMH/      	B.@MOWTA73J         	174633
+ 	     	bāmōṯˈāʸw       	bāmōṯˈāʸw       	BMH/      	B.@MOT@74JW         	207030
+ 	     	bāmˈôṯêḵˈem     	bāmˈôṯêḵˈem     	BMH/      	B.@MO45WT;JKE75M    	266876
+ 	     	bāmôṯˈām        	bāmôṯˈām        	BMH/      	B.@MOWT@75M         	287272
+ 	     	ˈbāmōṯˈay       	ˈbāmōṯˈay       	BMH/      	11B.@MOTA81J        	313005
+ 	     	vāmôṯˈām        	vāmôṯˈām        	BMH/      	B@MOWT@92M          	324100
+ 	     	bāmōṯˌāʸw       	bāmōṯˌāʸw       	BMH/      	B.@MOT@73JW         	423347
+ 	     	bāmôṯˌêmô       	bāmôṯˌêmô       	BMH/      	B.@MOWT;71JMOW      	112678
+ 	     	bāmôṯˌeʸḵā      	bāmôṯˌeʸḵā      	BMH/      	B.@MOWTE73JK@       	160826
+ 	     	bāmōṯˈeʸḵā      	bāmōṯˈeʸḵā      	BMH/      	B.@MOTE85JK@        	243154
+*	2o   	bāmˈā           	bāmˈoh          	BMH/      	B.@M@75H            	145803
+*	2o   	bāmˈāṯā         	bāmˈoṯā         	BMH/      	B.@M@61T@H          	145815
+*	2o   	bāmˌā           	bāmˌoh          	BMH/      	B.@M@73H            	146137
+*	2o   	vāmˈā           	vāmˈoh          	BMH/      	B@M@80H             	260898
+
+*	1ā   	ˈbor            	ˈbār            	BR/       	13B.@R              	349857
+ 	     	vˈār            	vˈār            	BR/       	B@62R               	22990
+ 	     	bˈār            	bˈār            	BR/       	B.@91R              	23254
+ 	     	bˌār            	bˌār            	BR/       	B.@73R              	23473
+
+ 	     	vᵊrāqˈîm        	vᵊrāqˈîm        	BRQ/      	B:R@QI61JM          	39393
+ 	     	bᵊrāqˈîm        	bᵊrāqˈîm        	BRQ/      	B.:R@QI70JM         	240119
+ 	     	bᵊrāqˌîm        	bᵊrāqˌîm        	BRQ/      	B.:R@QI73JM         	301726
+ 	     	vᵊrāqˌîm        	vᵊrāqˌîm        	BRQ/      	B:R@QI71JM          	312820
+ 	     	vᵊrāqˈāʸw       	vᵊrāqˈāʸw       	BRQ/      	B:R@Q@74JW          	327258
+*	2ā   	ˈboroq          	ˈborāq          	BRQ/      	13B.@R@Q            	335121
+*	2ā   	bˌāroq          	bˌārāq          	BRQ/      	B.@73R@Q            	274769
+
+*	1ā,2ā	voroq           	vārāq           	BRQ=/     	B@R@Q02             	129887
+ 	     	vārˈāq          	vārˈāq          	BRQ=/     	B@R@74Q             	129485
+ 	     	bārˈāq          	bārˈāq          	BRQ=/     	B.@R@80Q            	129543
+ 	     	bārˌāq          	bārˌāq          	BRQ=/     	B.@R@73Q            	129586
+ 	     	vārˌāq          	vārˌāq          	BRQ=/     	B@R@73Q             	129960
+
+ 	     	šᵊlōšˈā         	šᵊlōšˈā         	CLC/      	C:LOC@74H           	2786
+ 	     	šᵊlōšˌā         	šᵊlōšˌā         	CLC/      	C:LOC@71H           	4389
+ 	     	ššᵊlōšˈā        	ššᵊlōšˈā        	CLC/      	C.:LOC@80H          	71668
+ 	     	šᵊlōšˈā-        	šᵊlōšˈā-        	CLC/      	C:LOC@45H&          	104224
+ 	     	šᵊlôšˌā         	šᵊlôšˌā         	CLC/      	C:LOWC@73H          	121701
+ 	     	šᵊlôšˈā         	šᵊlôšˈā         	CLC/      	C:LOWC@74H          	168696
+ 	     	ššᵊlōšˌā        	ššᵊlōšˌā        	CLC/      	C.:LOC@H03          	175188
+ 	     	šᵊˈlôšā         	šᵊˈlôšā         	CLC/      	C:45LOWC@H04        	397285
+ 	     	ššᵊlôšˈā        	ššᵊlôšˈā        	CLC/      	C.:LOWC@80H         	397406
+ 	     	ššᵊlôšˌā        	ššᵊlôšˌā        	CLC/      	C.:LOWC@73H         	397437
+ 	     	šᵊloštᵊḵˌem     	šᵊloštᵊḵˌem     	CLC/      	C:L@C:T.:KE73M      	77651
+ 	     	šᵊloštˈām       	šᵊloštˈām       	CLC/      	C:L@C:T.@75M        	77657
+*	1o   	šᵊlˌāš-         	šᵊlˌoš-         	CLC/      	C:L@63C&            	40177
+ 	     	šālˈōš          	šālˈōš          	CLC/      	C@LO74C             	5185
+ 	     	šālˌōš          	šālˌōš          	CLC/      	C@LO71C             	31897
+ 	     	šālˈôš          	šālˈôš          	CLC/      	C@LO74WC            	84486
+ 	     	šālˌôš          	šālˌôš          	CLC/      	C@LO71WC            	103891
+ 	     	ššālˌōš         	ššālˌōš         	CLC/      	C.@LO71C            	104098
+ 	     	šˈālōš-         	šˈālōš-         	CLC/      	C@45LOC&            	203468
+ 	     	šālôš           	šālôš           	CLC/      	C@LOWC04            	286580
+ 	     	ˈšālôš          	ˈšālôš          	CLC/      	13C@LOWC            	355369
+
+*	1ā   	ˈšommā          	ˈšāmmā          	CM        	10C@M.@H            	28214
+*	1ā   	ššom            	ššām            	CM        	C.@M02              	83384
+*	1ā   	ˈšom            	ˈšām            	CM        	10C@M               	290188
+ 	     	šˈām            	šˈām            	CM        	C@80M               	826
+ 	     	ššˌām           	ššˌām           	CM        	C.@M03              	875
+ 	     	šˌām            	šˌām            	CM        	C@73M               	895
+ 	     	ššˈām           	ššˈām           	CM        	C.@75M              	1637
+ 	     	šˈāmmā          	šˈāmmā          	CM        	C@92M.@H            	6404
+ 	     	šˌāmmā          	šˌāmmā          	CM        	C@73M.@H            	8877
+ 	     	ššˈāmmā         	ššˈāmmā         	CM        	C.@33M.@H03         	291417
+ 	     	ˈšˈām           	ˈšˈām           	CM        	11C@81M             	321015
+ 	     	šˈām-           	šˈām-           	CM        	C@45M&              	328475
+ 	     	šˈāmā           	šˈāmā           	CM        	C@80M@H             	336502
+
+ 	     	šoršˌām         	šoršˌām         	CRC/      	C@R:C@M03           	130141
+ 	     	šoršˌê          	šoršˌê          	CRC/      	C@R:C;71J           	339499
+ 	     	šoršˈēḵ         	šoršˈēḵ         	CRC/      	C@R:C;80K:          	217286
+ 	     	šoršˈî          	šoršˈî          	CRC/      	C@R:CI74J           	343033
+ 	     	šoršˌô          	šoršˌô          	CRC/      	C@R:CO73W           	279897
+ 	     	šoršˈô          	šoršˈô          	CRC/      	C@R:CO92W           	339591
+ 	     	šorᵒšˈeʸhā      	šorᵒšˈeʸhā      	CRC/      	C@R:@CE74JH@        	272299
+*	1o   	ššārāšˌāʸw      	ššorāšˌāʸw      	CRC/      	C.@R@C@71JW         	216095
+*	1o   	šˈārāšˈāʸw      	šˈorāšˈāʸw      	CRC/      	C@45R@C@80JW        	243253
+*	1o   	šārāšˌāʸw       	šorāšˌāʸw       	CRC/      	C@R@C@73JW          	272269
+*	1o   	šārāšˌeʸhā      	šorāšˌeʸhā      	CRC/      	C@R@CE63JH@         	272340
+*	1o   	ššārāšˈeʸhā     	ššorāšˈeʸhā     	CRC/      	C.@R@CE75JH@        	272365
+*	1o   	ˈšārāšˈeʸhā     	ˈšorāšˈeʸhā     	CRC/      	11C@R@CE81JH@       	324496
+
+ 	     	ḏᵊvārˌîm        	ḏᵊvārˌîm        	DBR/      	D:B@RI73JM          	4974
+ 	     	dᵊvārˈîm        	dᵊvārˈîm        	DBR/      	D.:B@RI74JM         	6672
+ 	     	dᵊvārˌîm        	dᵊvārˌîm        	DBR/      	D.:B@RI71JM         	9415
+ 	     	dᵊvārˈāy        	dᵊvārˈāy        	DBR/      	D.:B@R@92J          	11774
+ 	     	dᵊvārˈāʸw       	dᵊvārˈāʸw       	DBR/      	D.:B@R@75JW         	20314
+ 	     	ḏᵊvārˈāy        	ḏᵊvārˈāy        	DBR/      	D:B@R@92J           	77681
+ 	     	dᵊvārîm         	dᵊvārîm         	DBR/      	D.:B@RIJM03         	95443
+ 	     	ḏᵊvārˌāʸw       	ḏᵊvārˌāʸw       	DBR/      	D:B@R@71JW          	96020
+ 	     	dᵊvārˈay        	dᵊvārˈay        	DBR/      	D.:B@RA74J          	99971
+ 	     	ḏᵊvārˌay        	ḏᵊvārˌay        	DBR/      	D:B@RAJ03           	103768
+ 	     	dᵊvārˌāʸw       	dᵊvārˌāʸw       	DBR/      	D.:B@R@73JW         	143236
+ 	     	dᵊvārˌay        	dᵊvārˌay        	DBR/      	D.:B@RA73J          	149766
+ 	     	ḏᵊvārˈāʸw       	ḏᵊvārˈāʸw       	DBR/      	D:B@R@80JW          	176210
+ 	     	ḏᵊvārˈay        	ḏᵊvārˈay        	DBR/      	D:B@RA61J           	183433
+ 	     	dᵊvˈārîm-       	dᵊvˈārîm-       	DBR/      	D.:B@45RIJM&        	256250
+ 	     	ḏᵊvārîm         	ḏᵊvārîm         	DBR/      	D:B@RIJM03          	283999
+ 	     	ḏᵊvārˈîm        	ḏᵊvārˈîm        	DBR/      	D:B@RI80JM          	293107
+ 	     	ˈdᵊvārîm        	ˈdᵊvārîm        	DBR/      	13D.:B@RIJM         	338819
+ 	     	ˈdᵊvārˈāʸw      	ˈdᵊvārˈāʸw      	DBR/      	11D.:B@R@81JW       	344154
+ 	     	dᵊvārāʸw        	dᵊvārāʸw        	DBR/      	D.:B@R@JW03         	420933
+ 	     	ḏᵊvārˈeḵā       	ḏᵊvārˈeḵā       	DBR/      	D:B@RE75K@          	16160
+ 	     	ḏᵊvˈārᵊḵˈā      	ḏᵊvˈārᵊḵˈā      	DBR/      	D:B@74R:K@80        	32518
+ 	     	ḏᵊvārˌî         	ḏᵊvārˌî         	DBR/      	D:B@RI73J           	77305
+ 	     	dᵊvārˈeʸḵā      	dᵊvārˈeʸḵā      	DBR/      	D.:B@RE91JK@        	113345
+ 	     	dᵊvārˌēnû       	dᵊvārˌēnû       	DBR/      	D.:B@R;73NW.        	113689
+ 	     	dᵊvārˈēnû       	dᵊvārˈēnû       	DBR/      	D.:B@R;74NW.        	113837
+ 	     	ḏᵊvārᵊḵˌā       	ḏᵊvārᵊḵˌā       	DBR/      	D:B@R:K@73          	134673
+ 	     	ḏᵊvārˈeʸḵā      	ḏᵊvārˈeʸḵā      	DBR/      	D:B@RE92JK@         	135975
+ 	     	ḏᵊvārˈeʸhā      	ḏᵊvārˈeʸhā      	DBR/      	D:B@RE91JH@         	137576
+ 	     	dᵊvārᵊḵˌā       	dᵊvārᵊḵˌā       	DBR/      	D.:B@R:K@73         	145740
+ 	     	dᵊvˈārᵊḵā       	dᵊvˈārᵊḵā       	DBR/      	D.:B@45R:K@03       	164376
+ 	     	ḏᵊvārˌeʸḵā      	ḏᵊvārˌeʸḵā      	DBR/      	D:B@RE73JK@         	164551
+ 	     	ḏᵊvārˌeḵā       	ḏᵊvārˌeḵā       	DBR/      	D:B@RE73K@          	168944
+ 	     	dᵊvārˌî         	dᵊvārˌî         	DBR/      	D.:B@RIJ03          	180337
+ 	     	*dᵊvˈārᵊḵˈā     	*dᵊvˈārᵊḵˈā     	DBR/      	D.:B@74R:k@80       	182634
+ 	     	dᵊvārˈeʸhā      	dᵊvārˈeʸhā      	DBR/      	D.:B@RE92JH@        	184396
+ 	     	dᵊvārˌeʸḵā      	dᵊvārˌeʸḵā      	DBR/      	D.:B@RE73JK@        	184460
+ 	     	ḏᵊvārˈî         	ḏᵊvārˈî         	DBR/      	D:B@RI75J           	189845
+ 	     	ḏᵊvārˈēḵ        	ḏᵊvārˈēḵ        	DBR/      	D:B@R;92K:          	190063
+ 	     	*ḏᵊvārᵊḵˈā      	*ḏᵊvārᵊḵˈā      	DBR/      	D:B@R:k@74          	191163
+ 	     	dᵊvārˈî         	dᵊvārˈî         	DBR/      	D.:B@RI75J          	234504
+ 	     	*ḏᵊvˈārᵊḵā      	*ḏᵊvˈārᵊḵā      	DBR/      	D:B@45R:k@03        	242491
+ 	     	dᵊvārˈeḵā       	dᵊvārˈeḵā       	DBR/      	D.:B@RE75K@         	331435
+ 	     	ˈdᵊvārᵊḵˈā      	ˈdᵊvārᵊḵˈā      	DBR/      	11D.:B@R:K@81       	331992
+ 	     	*dᵊvārᵊḵˈā      	*dᵊvārᵊḵˈā      	DBR/      	D.:B@R:k@81         	332540
+ 	     	ˈḏᵊvārî         	ˈḏᵊvārî         	DBR/      	13D:B@RIJ           	343059
+ 	     	dᵊvārˈô         	dᵊvārˈô         	DBR/      	D.:B@RO92W          	88591
+ 	     	dᵊvārˌô         	dᵊvārˌô         	DBR/      	D.:B@RO73W          	182466
+ 	     	ḏᵊvārˈô         	ḏᵊvārˈô         	DBR/      	D:B@RO92W           	195192
+ 	     	dᵊvˈārˌô        	dᵊvˈārˌô        	DBR/      	D.:B@60RO71W        	319663
+ 	     	ˈdᵊvārô         	ˈdᵊvārô         	DBR/      	13D.:B@ROW          	329633
+ 	     	ḏᵊvārˌô         	ḏᵊvārˌô         	DBR/      	D:B@RO71W           	333363
+ 	     	*dᵊvārˈô        	*dᵊvārˈô        	DBR/      	D.:B@RO74W          	376011
+*	2o   	dᵊvārˈāyiḵ      	dᵊvārˈoyiḵ      	DBR/      	D.:B@R@75JIK:       	176384
+*	1ā,2ā	ˈdovor          	ˈdāvār          	DBR/      	13D.@B@R            	342362
+ 	     	dāvˈār          	dāvˈār          	DBR/      	D.@B@92R            	8047
+ 	     	ḏāvˈār          	ḏāvˈār          	DBR/      	D@B@80R             	8587
+ 	     	dāvˌār          	dāvˌār          	DBR/      	D.@B@71R            	9465
+ 	     	ḏāvˌār          	ḏāvˌār          	DBR/      	D@B@R03             	25166
+ 	     	dˈāvˈār         	dˈāvˈār         	DBR/      	D.@82B@70R          	317887
+ 	     	ˈdāvˈār         	ˈdāvˈār         	DBR/      	11D.@B@81R          	340894
+
+ 	     	dᵊḡānˌām        	dᵊḡānˌām        	DGN/      	D.:G@N@73M          	311016
+ 	     	ˈdᵊḡānˈām       	ˈdᵊḡānˈām       	DGN/      	11D.:G@N@81M        	320917
+ 	     	dᵊḡˌānᵊḵˈā      	dᵊḡˌānᵊḵˈā      	DGN/      	D.:G@63N:K@61       	97716
+ 	     	ḏᵊḡānˈeḵā       	ḏᵊḡānˈeḵā       	DGN/      	D:G@NE80K@          	99904
+ 	     	dᵊḡˈānᵊḵā       	dᵊḡˈānᵊḵā       	DGN/      	D.:G@45N:K@03       	100666
+ 	     	dᵊḡˈānᵊḵˈā      	dᵊḡˈānᵊḵˈā      	DGN/      	D.:G@95N:K@61       	103519
+ 	     	dᵊḡānˌēḵ        	dᵊḡānˌēḵ        	DGN/      	D.:G@N;63K:         	233376
+ 	     	ḏᵊḡānˌî         	ḏᵊḡānˌî         	DGN/      	D:G@NIJ03           	291301
+*	1ā,2ā	doḡon           	dāḡān           	DGN/      	D.@G@N02            	389193
+ 	     	dāḡˌān          	dāḡˌān          	DGN/      	D.@G@73N            	14105
+ 	     	ḏāḡˌān          	ḏāḡˌān          	DGN/      	D@G@71N             	14299
+ 	     	ḏāḡˈān          	ḏāḡˈān          	DGN/      	D@G@92N             	81580
+ 	     	dāḡˈān          	dāḡˈān          	DGN/      	D.@G@74N            	112650
+
+*	1ā   	ˈdol            	ˈdāl            	DL/       	13D.@L              	350667
+ 	     	ḏˈāl            	ḏˈāl            	DL/       	D@85L               	41092
+ 	     	dˈāl            	dˈāl            	DL/       	D.@81L              	142203
+
+*	1ā   	dom             	dām             	DM/       	D.@M02              	56721
+*	1ā   	ḏom-            	ḏām-            	DM/       	D@M&                	295357
+*	1ā   	dom-            	dām-            	DM/       	D.@M&               	348402
+*	1ā   	ḏom             	ḏām             	DM/       	D@M02               	415903
+ 	     	ḏˌām            	ḏˌām            	DM/       	D@M01               	20557
+ 	     	dˈām            	dˈām            	DM/       	D.@75M              	20755
+ 	     	dāmˈîm          	dāmˈîm          	DM/       	D.@MI91JM           	30700
+ 	     	dāmˌîm          	dāmˌîm          	DM/       	D.@MI73JM           	30709
+ 	     	ḏˈām            	ḏˈām            	DM/       	D@75M               	32109
+ 	     	dˌām            	dˌām            	DM/       	D.@73M              	32244
+ 	     	dāmˌāh          	dāmˌāh          	DM/       	D.@M@H.03           	54145
+ 	     	dāmˈāh          	dāmˈāh          	DM/       	D.@M@74H.           	54158
+ 	     	dāmˌām          	dāmˌām          	DM/       	D.@M@M03            	62821
+ 	     	dāmˌāʸw         	dāmˌāʸw         	DM/       	D.@M@71JW           	64587
+ 	     	dāmˈām          	dāmˈām          	DM/       	D.@M@62M            	81676
+ 	     	dāmîm           	dāmîm           	DM/       	D.@MIJM03           	105454
+ 	     	ḏāmˈām          	ḏāmˈām          	DM/       	D@M@81M             	133362
+ 	     	ḏāmˈîm          	ḏāmˈîm          	DM/       	D@MI80JM            	157093
+ 	     	ḏāmˌāh          	ḏāmˌāh          	DM/       	D@M@H.03            	276682
+ 	     	ḏāmˌîm          	ḏāmˌîm          	DM/       	D@MI71JM            	291725
+ 	     	ḏāmāʸw          	ḏāmāʸw          	DM/       	D@M@JW03            	293688
+ 	     	ḏāmˈāʸw         	ḏāmˈāʸw         	DM/       	D@M@61JW            	307569
+ 	     	ˈdāmîm          	ˈdāmîm          	DM/       	13D.@MIJM           	311677
+ 	     	ˈḏāmˈîm         	ˈḏāmˈîm         	DM/       	11D@MI81JM          	320055
+ 	     	ḏāmˌām          	ḏāmˌām          	DM/       	D@M@63M             	324274
+ 	     	ˈḏāmîm          	ˈḏāmîm          	DM/       	13D@MIJM            	354952
+ 	     	ḏāmˈayiḵ        	ḏāmˈayiḵ        	DM/       	D@MA74JIK:          	271120
+ 	     	ḏāmˌayiḵ        	ḏāmˌayiḵ        	DM/       	D@MA71JIK:          	271126
+ 	     	dāmˌayiḵ        	dāmˌayiḵ        	DM/       	D.@MA73JIK:         	271191
+ 	     	dāmˈeʸhā        	dāmˈeʸhā        	DM/       	D.@ME92JH@          	58828
+ 	     	dˈāmî           	dˈāmî           	DM/       	D.@45MIJ03          	158058
+ 	     	*dāmᵊḵˌā        	*dāmᵊḵˌā        	DM/       	D.@M:k@73           	160781
+ 	     	ḏāmˌî           	ḏāmˌî           	DM/       	D@MIJ03             	263360
+ 	     	ḏāmˌēḵ          	ḏāmˌēḵ          	DM/       	D@M;73K:            	271424
+ 	     	ḏāmᵊḵˌā         	ḏāmᵊḵˌā         	DM/       	D@M:K@73            	273447
+ 	     	dāmˌēḵ          	dāmˌēḵ          	DM/       	D.@M;71K:           	275185
+ 	     	dāmˈēḵ          	dāmˈēḵ          	DM/       	D.@M;80K:           	275402
+ 	     	ḏāmˈî           	ḏāmˈî           	DM/       	D@MIJ02             	314899
+ 	     	ḏāmˌô           	ḏāmˌô           	DM/       	D@MO73W             	4106
+ 	     	dāmˈô           	dāmˈô           	DM/       	D.@MO74W            	4142
+ 	     	dāmˌô           	dāmˌô           	DM/       	D.@MO73W            	23809
+ 	     	ḏāmˈô           	ḏāmˈô           	DM/       	D@MO80W             	52825
+ 	     	ḏāmˈāyiḵ        	ḏāmˈāyiḵ        	DM/       	D@M@92JIK:          	271115
+
+*	1ā   	ˈdon            	ˈdān            	DN/       	10D.@N              	391853
+ 	     	dˈān            	dˈān            	DN/       	D.@75N              	6489
+ 	     	dˌān            	dˌān            	DN/       	D.@73N              	19485
+ 	     	ḏˌān            	ḏˌān            	DN/       	D@73N               	26347
+ 	     	ḏˈān            	ḏˈān            	DN/       	D@80N               	46237
+ 	     	dˈānā           	dˈānā           	DN/       	D.@74N@H            	175572
+
+*	1ā   	ḡoḏ             	ḡāḏ             	GD==/     	G@D02               	86157
+ 	     	gˈāḏ            	gˈāḏ            	GD==/     	G.@75D              	15752
+ 	     	gˌāḏ            	gˌāḏ            	GD==/     	G.@73D              	28018
+ 	     	ḡˌāḏ            	ḡˌāḏ            	GD==/     	G@73D               	86198
+
+*	1ā   	ḡilʕoḏ          	ḡilʕāḏ          	GL<D/     	GIL:<@D02           	189821
+ 	     	gilʕˈāḏ         	gilʕˈāḏ         	GL<D/     	G.IL:<@75D          	16762
+ 	     	ḡilʕˈāḏ         	ḡilʕˈāḏ         	GL<D/     	GIL:<@85D           	86351
+ 	     	gilʕˌāḏ         	gilʕˌāḏ         	GL<D/     	G.IL:<@D03          	86908
+ 	     	gilʕˌāḏā        	gilʕˌāḏā        	GL<D/     	G.IL:<@73D@H        	90615
+ 	     	ḡilʕˌāḏ         	ḡilʕˌāḏ         	GL<D/     	GIL:<@D03           	92518
+ 	     	gilʕˈāḏā        	gilʕˈāḏā        	GL<D/     	G.IL:<@80D@H        	175565
+
+*	1ā   	ˈḡannov         	ˈḡannāv         	GNB/      	13GAN.@B            	318807
+*	1ā   	ˈgannov         	ˈgannāv         	GNB/      	13G.AN.@B           	355078
+ 	     	gannˌāv         	gannˌāv         	GNB/      	G.AN.@73B           	40617
+ 	     	gannˈāv         	gannˈāv         	GNB/      	G.AN.@80B           	40726
+ 	     	gannāvˈîm       	gannāvˈîm       	GNB/      	G.AN.@BI80JM        	212400
+ 	     	ḡannāvˌîm       	ḡannāvˌîm       	GNB/      	GAN.@BI73JM         	260761
+ 	     	gannāvˌîm       	gannāvˌîm       	GNB/      	G.AN.@BI71JM        	261291
+ 	     	ḡannˈāv         	ḡannˈāv         	GNB/      	GAN.@74B            	292381
+
+*	1ā   	hᵃḏˈôrom-       	hᵃḏˈôrām-       	HDWRM/    	H:ADO45WR@M&        	400967
+ 	     	hᵃḏôrˌām        	hᵃḏôrˌām        	HDWRM/    	H:ADOWR@71M         	4896
+ 	     	hᵃḏōrˌām        	hᵃḏōrˌām        	HDWRM/    	H:ADOR@M03          	412155
+
+ 	     	yošovʕˈām       	yošovʕˈām       	JCB<M/    	J@C@B:<@74M         	397208
+ 	     	yošovʕˌām       	yošovʕˌām       	JCB<M/    	J@C@B:<@73M         	397827
+*	1o   	yˈāšovʕˌām      	yˈošovʕˌām      	JCB<M/    	J@45C@B:<@73M       	404904
+
+ 	     	yᵊšārˈîm        	yᵊšārˈîm        	JCR/      	J:C@RI80JM          	84863
+ 	     	yᵊšārˈā         	yᵊšārˈā         	JCR/      	J:C@R@75H           	147756
+ 	     	yᵊšārˈôṯ        	yᵊšārˈôṯ        	JCR/      	J:C@RO80WT          	265170
+ 	     	yᵊšārˌā         	yᵊšārˌā         	JCR/      	J:C@R@73H           	300233
+ 	     	ˈyšārîm         	ˈyšārîm         	JCR/      	13J:C@RIJM          	313265
+ 	     	yᵊšārˌîm        	yᵊšārˌîm        	JCR/      	J:C@RI63JM          	318566
+ 	     	ˈyšārˈîm        	ˈyšārˈîm        	JCR/      	11J:C@RI81JM        	334706
+ 	     	yᵊšārîm         	yᵊšārîm         	JCR/      	J:C@RIJM            	347302
+*	1ā,2ā	ˈyošor          	ˈyāšār          	JCR/      	13J@C@R             	341813
+ 	     	yšārˈîm         	yšārˈîm         	JCR/      	JC@RI81JM           	333047
+ 	     	yšārˌîm         	yšārˌîm         	JCR/      	JC@RI71JM           	377289
+ 	     	yyāšˈār         	yyāšˈār         	JCR/      	J.@C@70R            	37302
+ 	     	yyāšˌār         	yyāšˌār         	JCR/      	J.@C@71R            	97257
+ 	     	yāšˌār          	yāšˌār          	JCR/      	J@C@73R             	111495
+ 	     	yāšˈār          	yāšˈār          	JCR/      	J@C@74R             	159286
+ 	     	ˈyāšˈār         	ˈyāšˈār         	JCR/      	11J@C@81R           	312051
+
+ 	     	yᵊḏōṯˈāʸw       	yᵊḏōṯˈāʸw       	JD/       	J:DOT@80JW          	43001
+ 	     	yᵊḏôṯˈām        	yᵊḏôṯˈām        	JD/       	J:DOWT@74M          	181614
+ 	     	yᵊḏōṯˈeʸhā      	yᵊḏōṯˈeʸhā      	JD/       	J:DOTE80JH@         	181654
+*	1ā   	ˈyoḏ            	ˈyāḏ            	JD/       	10J@D               	40363
+ 	     	yāḏˈām          	yāḏˈām          	JD/       	J@D@80M             	8632
+ 	     	yāḏˌāh          	yāḏˌāh          	JD/       	J@D@73H.            	11486
+ 	     	yāḏˈāʸw         	yāḏˈāʸw         	JD/       	J@D@92JW            	13898
+ 	     	yyāḏˈām         	yyāḏˈām         	JD/       	J.@D@92M            	20545
+ 	     	yˌāḏ            	yˌāḏ            	JD/       	J@73D               	20570
+ 	     	yˈāḏ            	yˈāḏ            	JD/       	J@92D               	21368
+ 	     	yāḏˈāh          	yāḏˈāh          	JD/       	J@D@80H.            	21686
+ 	     	yāḏˌām          	yāḏˌām          	JD/       	J@D@73M             	24423
+ 	     	yāḏˈôṯ          	yāḏˈôṯ          	JD/       	J@DO92WT            	24827
+ 	     	yyāḏˈōṯ         	yyāḏˈōṯ         	JD/       	J.@DO83T            	27126
+ 	     	yyˈāḏ           	yyˈāḏ           	JD/       	J.@74D              	36891
+ 	     	*yyāḏāʸw        	*yyāḏāʸw        	JD/       	J.@D@JW03           	46927
+ 	     	yāḏˈōṯ          	yāḏˈōṯ          	JD/       	J@DO81T             	49626
+ 	     	yāḏāh           	yāḏāh           	JD/       	J@D@H.02            	58844
+ 	     	yāḏˌāʸw         	yāḏˌāʸw         	JD/       	J@D@73JW            	61697
+ 	     	yāḏˈāy          	yāḏˈāy          	JD/       	J@D@75J             	98791
+ 	     	yāḏāʸw          	yāḏāʸw          	JD/       	J@D@JW03            	112322
+ 	     	yyāḏˈāh         	yyāḏˈāh         	JD/       	J.@D@80H.           	157312
+ 	     	yāḏˌôṯ          	yāḏˌôṯ          	JD/       	J@DO63WT            	173050
+ 	     	yāḏˌay          	yāḏˌay          	JD/       	J@DA73J             	174511
+ 	     	yyāḏˈôṯ         	yyāḏˈôṯ         	JD/       	J.@DO75WT           	184778
+ 	     	yyāḏˌām         	yyāḏˌām         	JD/       	J.@D@73M            	198067
+ 	     	yyāḏôṯ          	yyāḏôṯ          	JD/       	J.@DOWT03           	202161
+ 	     	yyˌāḏ           	yyˌāḏ           	JD/       	J.@71D              	217222
+ 	     	yāḏˈay          	yāḏˈay          	JD/       	J@DA91J             	221768
+ 	     	ˈyāḏˈay         	ˈyāḏˈay         	JD/       	11J@DA81J           	312882
+ 	     	ˈyāḏay          	ˈyāḏay          	JD/       	13J@DAJ             	313008
+ 	     	ˈyāḏˈāʸw        	ˈyāḏˈāʸw        	JD/       	11J@D@81JW          	313186
+ 	     	ˈyāḏāʸw         	ˈyāḏāʸw         	JD/       	13J@D@JW            	319568
+ 	     	yyāḏˌôṯ         	yyāḏˌôṯ         	JD/       	J.@DO73WT           	389250
+ 	     	yyāḏˌayim       	yyāḏˌayim       	JD/       	J.@DA73JIM          	14007
+ 	     	yāḏˌayim        	yāḏˌayim        	JD/       	J@DA73JIM           	18818
+ 	     	yāḏˈayim        	yāḏˈayim        	JD/       	J@DA91JIM           	117319
+ 	     	ˈyāḏˈayim       	ˈyāḏˈayim       	JD/       	11J@DA81JIM         	340379
+ 	     	yāḏˌayiḵ        	yāḏˌayiḵ        	JD/       	J@DA73JIK:          	235993
+ 	     	yāḏˈayiḵ        	yāḏˈayiḵ        	JD/       	J@DA80JIK:          	271220
+ 	     	yyāḏˈeḵā        	yyāḏˈeḵā        	JD/       	J.@DE75K@           	1853
+ 	     	yāḏˈênû         	yāḏˈênû         	JD/       	J@D;80JNW.          	2542
+ 	     	yāḏˈeḵā         	yāḏˈeḵā         	JD/       	J@DE92K@            	6591
+ 	     	yāḏˈî           	yāḏˈî           	JD/       	J@DI70J             	6620
+ 	     	yāḏˈēḵ          	yāḏˈēḵ          	JD/       	J@D;80K:            	7147
+ 	     	yāḏˈeʸhā        	yāḏˈeʸhā        	JD/       	J@DE75JH@           	7209
+ 	     	yāḏˌēḵ          	yāḏˌēḵ          	JD/       	J@D;73K:            	9946
+ 	     	yyāḏˈî          	yyāḏˈî          	JD/       	J.@DI92J            	10153
+ 	     	yˈāḏᵊḵā         	yˈāḏᵊḵā         	JD/       	J@45D:K@03          	10489
+ 	     	yāḏᵊḵˌā         	yāḏᵊḵˌā         	JD/       	J@D:K@73            	11138
+ 	     	yyāḏˌî          	yyāḏˌî          	JD/       	J.@DI73J            	17120
+ 	     	yāḏˈēnû         	yāḏˈēnû         	JD/       	J@D;33NW.03         	20668
+ 	     	yāḏˌēnû         	yāḏˌēnû         	JD/       	J@D;73NW.           	24582
+ 	     	yāḏˌî           	yāḏˌî           	JD/       	J@DIJ03             	30105
+ 	     	yˈāḏᵊḵˈā        	yˈāḏᵊḵˈā        	JD/       	J@45D:K@80          	30221
+ 	     	yāḏᵊḵˈā         	yāḏᵊḵˈā         	JD/       	J@D:K@61            	34065
+ 	     	yˈāḏᵊḵˈā        	yˈāḏᵊḵˈā        	JD/       	J@74D:K@80H         	36087
+ 	     	yāḏˈeʸḵā        	yāḏˈeʸḵā        	JD/       	J@DE75JK@           	37134
+ 	     	yāḏˌeḵā         	yāḏˌeḵā         	JD/       	J@DE73K@            	104992
+ 	     	yāḏˌeʸḵā        	yāḏˌeʸḵā        	JD/       	J@DE73JK@           	118499
+ 	     	yyāḏˈēnû        	yyāḏˈēnû        	JD/       	J.@D;33NW.03        	136189
+ 	     	yāḏˌeʸhā        	yāḏˌeʸhā        	JD/       	J@DE73JH@           	139799
+ 	     	yyāḏˈēḵ         	yyāḏˈēḵ         	JD/       	J.@D;92K:           	167359
+ 	     	yāḏēḵ           	yāḏēḵ           	JD/       	J@D;K:              	187685
+ 	     	yyāḏˌēḵ         	yyāḏˌēḵ         	JD/       	J.@D;73K:           	230262
+ 	     	yyāḏᵊḵˌā        	yyāḏᵊḵˌā        	JD/       	J.@D:K@73           	247614
+ 	     	yāḏeḵˌā         	yāḏeḵˌā         	JD/       	J@DEK@01            	256873
+ 	     	yāḏˌêhû         	yāḏˌêhû         	JD/       	J@D;71JHW.          	302933
+ 	     	yˈāḏˌeḵā        	yˈāḏˌeḵā        	JD/       	J@60DE71K@          	311922
+ 	     	ˈyāḏᵊḵā         	ˈyāḏᵊḵā         	JD/       	13J@D:K@            	313517
+ 	     	ˈyāḏᵊḵˈā        	ˈyāḏᵊḵˈā        	JD/       	11J@D:K@81          	316944
+ 	     	ˈyāḏî           	ˈyāḏî           	JD/       	13J@DIJ             	325935
+ 	     	ˈyāḏênû         	ˈyāḏênû         	JD/       	13J@D;JNW.          	326402
+ 	     	ˈyāḏˈênû        	ˈyāḏˈênû        	JD/       	11J@D;81JNW.        	326407
+ 	     	ˈyˈāḏᵊḵˈā       	ˈyˈāḏᵊḵˈā       	JD/       	11J@45D:K@81        	328505
+ 	     	yyāḏᵊḵˈā        	yyāḏᵊḵˈā        	JD/       	J.@D:K@74           	338650
+ 	     	ˈyāḏˈî          	ˈyāḏˈî          	JD/       	11J@DI81J           	341773
+ 	     	ˈyāḏeʸhā        	ˈyāḏeʸhā        	JD/       	13J@DEJH@           	355668
+ 	     	yāḏˈô           	yāḏˈô           	JD/       	J@DO81W             	1608
+ 	     	yāḏˌô           	yāḏˌô           	JD/       	J@DOW03             	3729
+ 	     	yyāḏˌô          	yyāḏˌô          	JD/       	J.@DO73W            	83644
+ 	     	yyāḏˈô          	yyāḏˈô          	JD/       	J.@DO75W            	126884
+ 	     	yˈāḏô           	yˈāḏô           	JD/       	J@91DOW             	149130
+ 	     	ˈyāḏˈô          	ˈyāḏˈô          	JD/       	11J@DO81W           	337654
+ 	     	ˈyāḏô           	ˈyāḏô           	JD/       	13J@DOW             	352066
+ 	     	yyāḏˈāyim       	yyāḏˈāyim       	JD/       	J.@D@75JIM          	201067
+ 	     	yāḏˈāyim        	yāḏˈāyim        	JD/       	J@D@92JIM           	219270
+ 	     	yˈāḏˌāyim       	yˈāḏˌāyim       	JD/       	J@60D@71JIM         	328474
+ 	     	yāḏˈāyiḵ        	yāḏˈāyiḵ        	JD/       	J@D@75JIK:          	304022
+
+*	1ā   	ˈyoh            	ˈyāh            	JH/       	13J@H.              	332820
+ 	     	yˈāh            	yˈāh            	JH/       	J@80H.              	36946
+ 	     	yˌāh            	yˌāh            	JH/       	J@73H.              	225205
+ 	     	yyˈāh           	yyˈāh           	JH/       	J.@92H.             	326806
+
+*	1ā,2ā	yᵊhˈôʔoḥoz      	yᵊhˈôʔāḥāz      	JHW>XZ/   	J:HO45W>@X@Z03      	203258
+ 	     	yᵊhôʔāḥˌāz      	yᵊhôʔāḥˌāz      	JHW>XZ/   	J:HOW>@X@71Z        	201983
+ 	     	yᵊhôʔāḥˈāz      	yᵊhôʔāḥˈāz      	JHW>XZ/   	J:HOW>@X@91Z        	203237
+ 	     	yᵊhˈôʔāḥˌāz     	yᵊhˈôʔāḥˌāz     	JHW>XZ/   	J:HO45W>@X@73Z      	204021
+*	1o   	yhôʔāḥˈāz       	yhôʔoḥˈāz       	JHW>XZ/   	JHOW>@X@61Z         	203210
+
+*	1ā,2ā	yᵊhˈôšofoṭ      	yᵊhˈôšāfāṭ      	JHWCPV/   	J:HO45WC@P@V03      	193713
+ 	     	yᵊhôšāfˌāṭ      	yᵊhôšāfˌāṭ      	JHWCPV/   	J:HOWC@P@71V        	179102
+ 	     	yᵊhˈôšāfˈāṭ     	yᵊhˈôšāfˈāṭ     	JHWCPV/   	J:HO74WC@P@80V      	193702
+ 	     	yᵊhôšāfˈāṭ      	yᵊhôšāfˈāṭ      	JHWCPV/   	J:HOWC@P@83V        	193794
+*	2ā   	yhˈôšofoṭ       	yhˈôšofāṭ       	JHWCPV/   	JHO45WC@P@V03       	194527
+*	1o   	yhôšāfˌāṭ       	yhôšofˌāṭ       	JHWCPV/   	JHOWC@P@71V         	164927
+*	1o   	yhôšāfˈāṭ       	yhôšofˈāṭ       	JHWCPV/   	JHOWC@P@74V         	193843
+
+*	1ā,2ā	yᵊhˈônoṯon      	yᵊhˈônāṯān      	JHWNTN/   	J:HO45WN@T@N03      	153653
+ 	     	yᵊhônāṯˈān      	yᵊhônāṯˈān      	JHWNTN/   	J:HOWN@T@61N        	148441
+ 	     	yᵊhˈônāṯˈān     	yᵊhˈônāṯˈān     	JHWNTN/   	J:HO74WN@T@80N      	148490
+ 	     	yᵊhônāṯˌān      	yᵊhônāṯˌān      	JHWNTN/   	J:HOWN@T@73N        	152175
+*	1ā,2ā	yhˈônoṯon       	yhˈônāṯān       	JHWNTN/   	JHO45WN@T@N03       	152833
+*	2ā   	yhônˈāṯon-      	yhônˈāṯān-      	JHWNTN/   	JHOWN@45T@N&        	174071
+ 	     	yhônāṯˌān       	yhônāṯˌān       	JHWNTN/   	JHOWN@T@N           	139047
+ 	     	yhônāṯˈān       	yhônāṯˈān       	JHWNTN/   	JHOWN@T@61N         	153702
+ 	     	yhˈônāṯˈān      	yhˈônāṯˈān      	JHWNTN/   	JHO74WN@T@80N       	154061
+ 	     	yhˈônāṯˌān      	yhˈônāṯˌān      	JHWNTN/   	JHO45WN@T@71N       	160586
+
+*	1ā,2ā	yᵊhˈôḥonon      	yᵊhˈôḥānān      	JHWXNN/   	J:HO45WX@N@N03      	420594
+ 	     	yᵊhôḥānˈān      	yᵊhôḥānˈān      	JHWXNN/   	J:HOWX@N@74N        	382848
+ 	     	yᵊhôḥānˌān      	yᵊhôḥānˌān      	JHWXNN/   	J:HOWX@N@71N        	383300
+*	1o   	yhôḥānˈān       	yhôḥonˈān       	JHWXNN/   	JHOWX@N@74N         	386317
+*	1o   	yhôḥānˌān       	yhôḥonˌān       	JHWXNN/   	JHOWX@N@71N         	390347
+
+ 	     	yammˈāh         	yammˈāh         	JM/       	JAM.@80H.           	263381
+ 	     	yom-            	yom-            	JM/       	J@M&                	91448
+ 	     	ˈyom            	ˈyom            	JM/       	13J@M               	323600
+*	1o   	yyˈām           	yyˈom           	JM/       	J.@61M              	509
+*	1o   	yyˌām           	yyˌom           	JM/       	J.@M03              	575
+*	1o   	yˈāmmā          	yˈommā          	JM/       	J@75M.@H            	6143
+*	1o   	yˌām            	yˌom            	JM/       	J@71M               	6260
+*	1o   	yˌāmmā          	yˌommā          	JM/       	J@71M.@H            	14761
+*	1o   	yˈām            	yˈom            	JM/       	J@75M               	37023
+*	1o   	yyˈāmmā         	yyˈommā         	JM/       	J.@75M.@H           	91489
+*	1o   	yyˌāmmā         	yyˌommā         	JM/       	J.@71M.@H           	121660
+*	1o   	ˈyˈām           	ˈyˈom           	JM/       	11J@81M             	346585
+
+ 	     	yiqqᵊrôṯˈeʸḵā   	yiqqᵊrôṯˈeʸḵā   	JQR/      	JIQ.:ROWTE92JK@     	317981
+ 	     	yᵊqārˈā         	yᵊqārˈā         	JQR/      	J:Q@R@80H           	167061
+ 	     	yᵊqārˈôṯ        	yᵊqārˈôṯ        	JQR/      	J:Q@RO91WT          	180031
+ 	     	yᵊqārˌōṯ        	yᵊqārˌōṯ        	JQR/      	J:Q@ROT03           	181013
+ 	     	yᵊqārˌôṯ        	yᵊqārˌôṯ        	JQR/      	J:Q@RO73WT          	181043
+ 	     	yᵊqārˌā         	yᵊqārˌā         	JQR/      	J:Q@R@H03           	278147
+ 	     	yᵊqˈārā         	yᵊqˈārā         	JQR/      	J:Q@74R@H           	347575
+ 	     	yᵊqārˈîm        	yᵊqārˈîm        	JQR/      	J:Q@RI80JM          	364963
+*	1ā,2ā	ˈyoqor          	ˈyāqār          	JQR/      	13J@Q@R             	331002
+ 	     	yāqˌār          	yāqˌār          	JQR/      	J@Q@R03             	142880
+ 	     	yāqˈār          	yāqˈār          	JQR/      	J@Q@91R             	242552
+ 	     	yyāqˌār         	yyāqˌār         	JQR/      	J.@Q@71R            	316161
+
+*	1ā   	yorovʕˌām       	yārovʕˌām       	JRB<M/    	J@R@B:<@M04         	185523
+*	1ā   	yorovʕˈām       	yārovʕˈām       	JRB<M/    	J@R@B:<@92M         	185876
+*	3ā   	yˈārovʕom       	yˈārovʕām       	JRB<M/    	J@45R@B:<@M03       	187880
+ 	     	yˈārovʕˌām      	yˈārovʕˌām      	JRB<M/    	J@45R@B:<@73M       	185598
+ 	     	yˈārovʕˈām      	yˈārovʕˈām      	JRB<M/    	J@45R@B:<@80M       	185644
+
+*	1ā,2ā	ˈyoroq          	ˈyārāq          	JRQ=/     	13J@R@Q             	350856
+ 	     	yyārˈāq         	yyārˈāq         	JRQ=/     	J.@R@75Q            	99826
+ 	     	yārˈāq          	yārˈāq          	JRQ=/     	J@R@81Q             	193023
+
+*	1ā,2ā	yˈôʔoḥoz        	yˈôʔāḥāz        	JW>XZ/    	JO45W>@X@Z03        	424636
+ 	     	yôʔāḥˌāz        	yôʔāḥˌāz        	JW>XZ/    	JOW>@X@73Z          	203634
+ 	     	yôʔāḥˈāz        	yôʔāḥˈāz        	JW>XZ/    	JOW>@X@74Z          	426085
+
+*	1ā,2ā	yˈôyoḏoʕ        	yˈôyāḏāʕ        	JWJD</    	JO45WJ@D@<03        	384368
+ 	     	yôyāḏˈāʕ        	yôyāḏˈāʕ        	JWJD</    	JOWJ@D@75<          	389853
+ 	     	yôyāḏˌāʕ        	yôyāḏˌāʕ        	JWJD</    	JOWJ@D@<03          	389855
+
+*	1ā   	yˈômom-         	yˈômām-         	JWMM      	JO45WM@M&           	253013
+*	1ā   	yˌômom          	yˌômām          	JWMM      	JO73WM@M            	313592
+ 	     	yômˈām          	yômˈām          	JWMM      	JOWM@61M            	36194
+ 	     	yômˌām          	yômˌām          	JWMM      	JOWM@71M            	36212
+
+*	1ā,2ā	yˈônoḏov        	yˈônāḏāv        	JWNDB/    	JO45WN@D@B03        	167931
+ 	     	yˈônāḏˈāv       	yˈônāḏˈāv       	JWNDB/    	JO45WN@D@80B        	167165
+ 	     	yônāḏˈāv        	yônāḏˈāv        	JWNDB/    	JOWN@D@74B          	167846
+ 	     	yônāḏˌāv        	yônāḏˌāv        	JWNDB/    	JOWN@D@63B          	253846
+
+*	1ā,2ā	yˈônoṯon        	yˈônāṯān        	JWNTN/    	JO45WN@T@N03        	148390
+ 	     	yˈônāṯˈān       	yˈônāṯˈān       	JWNTN/    	JO74WN@T@80N        	147818
+ 	     	yônāṯˈān        	yônāṯˈān        	JWNTN/    	JOWN@T@81N          	147832
+ 	     	yônāṯˌān        	yônāṯˌān        	JWNTN/    	JOWN@T@73N          	148299
+
+*	1ā   	yˈôrom-         	yˈôrām-         	JWRM/     	JO45WR@M&           	164778
+ 	     	yôrˈām          	yôrˈām          	JWRM/     	JOWR@70M            	199937
+ 	     	yôrˌām          	yôrˌām          	JWRM/     	JOWR@M03            	200029
+ 	     	yōrˈām          	yōrˈām          	JWRM/     	JOR@74M             	404656
+
+*	1ā,2ā	yˈôḥonon        	yˈôḥānān        	JWXNN/    	JO45WX@N@N03        	257191
+ 	     	yôḥānˈān        	yôḥānˈān        	JWXNN/    	JOWX@N@74N          	211875
+ 	     	yˈôḥānˌān       	yˈôḥānˌān       	JWXNN/    	JO45WX@N@73N        	257687
+ 	     	yˈôḥānˈān       	yˈôḥānˈān       	JWXNN/    	JO45WX@N@92N        	257700
+ 	     	yôḥānˌān        	yôḥānˌān        	JWXNN/    	JOWX@N@63N          	257708
+
+*	1ā,2ā	yˈôṣoḏoq        	yˈôṣāḏāq        	JWYDQ/    	JO45WY@D@Q03        	383168
+ 	     	yˈôṣāḏˈāq       	yˈôṣāḏˈāq       	JWYDQ/    	JO45WY@D@61Q        	379123
+ 	     	yôṣāḏˈāq        	yôṣāḏˈāq        	JWYDQ/    	JOWY@D@92Q          	390023
+
+*	1ā   	yaḥdow          	yaḥdāw          	JXDW      	JAX:D.@W02          	311022
+*	1ā   	ˈyaḥdow         	ˈyaḥdāw         	JXDW      	13JAX:D.@W          	319500
+ 	     	yaḥdˈāw         	yaḥdˈāw         	JXDW      	JAX:D.@92W          	5961
+ 	     	yaḥdˌāw         	yaḥdˌāw         	JXDW      	JAX:D.@73W          	10643
+ 	     	yaḥdˌāʸw        	yaḥdˌāʸw        	JXDW      	JAX:D.@73JW         	259919
+ 	     	*yaḥdˈāʸw       	*yaḥdˈāʸw       	JXDW      	JAX:D.@75JW         	260469
+ 	     	ˈyaḥdˈāw        	ˈyaḥdˈāw        	JXDW      	11JAX:D.@81W        	338552
+
+*	1ā   	yiṣḥoq          	yiṣḥāq          	JYXQ/     	JIY:X@Q02           	14133
+ 	     	yiṣḥˈāq         	yiṣḥˈāq         	JYXQ/     	JIY:X@92Q           	7646
+ 	     	yiṣḥˌāq         	yiṣḥˌāq         	JYXQ/     	JIY:X@71Q           	9692
+
+ 	     	ḵullˈām         	ḵullˈām         	KL/       	KUL.@80M            	5069
+ 	     	ḵullˌāh         	ḵullˌāh         	KL/       	KUL.@73H.           	6052
+ 	     	kullˌām         	kullˌām         	KL/       	K.UL.@73M           	24825
+ 	     	ḵullˌām         	ḵullˌām         	KL/       	KUL.@71M            	25860
+ 	     	kullˈāh         	kullˈāh         	KL/       	K.UL.@91H.          	42557
+ 	     	kullˈām         	kullˈām         	KL/       	K.UL.@74M           	77904
+ 	     	kullˈāham       	kullˈāham       	KL/       	K.UL.@92HAM         	174896
+ 	     	kullˌāh         	kullˌāh         	KL/       	K.UL.@73H.          	237755
+ 	     	ḵûllˌām         	ḵûllˌām         	KL/       	KW.L.@M04           	251300
+ 	     	kullˈā          	kullˈā          	KL/       	K.UL.@92>           	282543
+ 	     	ˈkullām         	ˈkullām         	KL/       	13K.UL.@M           	328460
+ 	     	ḵullˈāh         	ḵullˈāh         	KL/       	KUL.@75H.           	334381
+ 	     	kullˈānû        	kullˈānû        	KL/       	K.UL.@85NW.         	23602
+ 	     	ḵullˈānā        	ḵullˈānā        	KL/       	KUL.@75N@H          	24084
+ 	     	kullˌānû        	kullˌānû        	KL/       	K.UL.@71NW.         	35451
+ 	     	ḵullˈānû        	ḵullˈānû        	KL/       	KUL.@70NW.          	172098
+ 	     	ḵullˈāhᵊnā      	ḵullˈāhᵊnā      	KL/       	KUL.@75H:N@H        	181691
+ 	     	kullˌāḵ         	kullˌāḵ         	KL/       	K.UL.@73K:          	218988
+ 	     	kullˈāḵ         	kullˈāḵ         	KL/       	K.UL.@81K:          	300009
+ 	     	kullˈānā        	kullˈānā        	KL/       	K.UL.@75N@H         	355767
+ 	     	kol-            	kol-            	KL/       	K.@L&               	390
+ 	     	ḵol-            	ḵol-            	KL/       	K@L&                	521
+*	1o   	kˈāl-           	kˈol-           	KL/       	K.@45L&             	3254
+*	1o   	ḵˈāl-           	ḵˈol-           	KL/       	K@45L&              	37186
+*	1o   	kˌāl-           	kˌol-           	KL/       	K.@63L&             	47646
+*	1o   	ḵˌāl-           	ḵˌol-           	KL/       	K@63L&              	109088
+*	1o   	kˌāl            	kˌol            	KL/       	K.@71L              	315886
+*	1o   	ḵˌāl            	ḵˌol            	KL/       	K@L                 	332044
+
+*	1ā   	ˈlēvov          	ˈlēvāv          	LBB/      	13L;B@B             	338298
+ 	     	lᵊvāvˈām        	lᵊvāvˈām        	LBB/      	L:B@B@80M           	68738
+ 	     	lᵊvāvˌām        	lᵊvāvˌām        	LBB/      	L:B@B@M03           	68839
+ 	     	llēvˈāv         	llēvˈāv         	LBB/      	L.;B@80B            	104519
+ 	     	lēvˈāv          	lēvˈāv          	LBB/      	L;B@75B             	108639
+ 	     	lēvˌāv          	lēvˌāv          	LBB/      	L;B@73B             	178532
+ 	     	lᵊvāvˈāh        	lᵊvāvˈāh        	LBB/      	L:B@B@75H.          	184389
+ 	     	lᵊvˈāvāh        	lᵊvˈāvāh        	LBB/      	L:B@80B@H.          	228635
+ 	     	lˈēvˌāv         	lˈēvˌāv         	LBB/      	L;60B@71B           	313999
+ 	     	lᵊvāvôṯ         	lᵊvāvôṯ         	LBB/      	L:B@BOWT03          	405743
+ 	     	lᵊvāvˈî         	lᵊvāvˈî         	LBB/      	L:B@BI91J           	9334
+ 	     	lᵊvāvᵊḵˌā       	lᵊvāvᵊḵˌā       	LBB/      	L:B@B:K@03          	9354
+ 	     	lᵊvāvˈeḵā       	lᵊvāvˈeḵā       	LBB/      	L:B@BE92K@          	64059
+ 	     	lᵊvāvˈēnû       	lᵊvāvˈēnû       	LBB/      	L:B@B;61NW.         	93379
+ 	     	llᵊvˈāvᵊḵˈā     	llᵊvˈāvᵊḵˈā     	LBB/      	L.:B@74B:K@80       	95360
+ 	     	lᵊvāveḵˌā       	lᵊvāveḵˌā       	LBB/      	L:B@BEK@01          	96076
+ 	     	lᵊvˈāvᵊḵˈā      	lᵊvˈāvᵊḵˈā      	LBB/      	L:B@74B:K@80        	97800
+ 	     	lᵊvāvᵊḵˈā       	lᵊvāvᵊḵˈā       	LBB/      	L:B@B:K@91          	98047
+ 	     	lᵊvˈāvᵊḵā       	lᵊvˈāvᵊḵā       	LBB/      	L:B@45B:K@03        	109466
+ 	     	lᵊvāvˈēḵ        	lᵊvāvˈēḵ        	LBB/      	L:B@B;92K:          	141694
+ 	     	lᵊvāvˌî         	lᵊvāvˌî         	LBB/      	L:B@BI71J           	142819
+ 	     	lᵊvāvˌēnû       	lᵊvāvˌēnû       	LBB/      	L:B@B;73NW.         	183412
+ 	     	lᵊvˌāvᵊḵˈā      	lᵊvˌāvᵊḵˈā      	LBB/      	L:B@63B:K@61        	209691
+ 	     	lᵊvˈāvˌî        	lᵊvˈāvˌî        	LBB/      	L:B@60BI71J         	322752
+ 	     	ˈlᵊvāvˈî        	ˈlᵊvāvˈî        	LBB/      	11L:B@BI81J         	325382
+ 	     	lᵊvāvˈô         	lᵊvāvˈô         	LBB/      	L:B@BO80W           	94336
+ 	     	lᵊvāvˌô         	lᵊvāvˌô         	LBB/      	L:B@BOW03           	103427
+
+*	1ā   	ˈlommā          	ˈlāmmā          	LMH       	10L@M.@H            	1759
+*	1ā   	lommā-          	lāmmā-          	LMH       	L@M.@H&             	12933
+*	1ā   	lommˌā          	lāmmˌā          	LMH       	L@M.@H04            	46746
+ 	     	lˈāmeh          	lˈāmeh          	LMH       	L@74MEH             	141685
+ 	     	lˌāmeh          	lˌāmeh          	LMH       	L@73MEH             	141692
+ 	     	lˌāmmā          	lˌāmmā          	LMH       	L@73M.@H            	1763
+ 	     	lāmˈā           	lāmˈā           	LMH       	L@M@70H             	5833
+ 	     	lˈāmmā          	lˈāmmā          	LMH       	L@74M.@H            	8030
+ 	     	lāmˌā           	lāmˌā           	LMH       	L@M@71H             	14465
+ 	     	lˈāmmā-         	lˈāmmā-         	LMH       	L@45M.@H&           	171647
+ 	     	lˈāmā           	lˈāmā           	LMH       	L@70M@H             	338038
+ 	     	llāmˈā          	llāmˈā          	LMH       	L.@M@70H            	357684
+
+*	1ā   	mˈaʔᵃḵol        	mˈaʔᵃḵāl        	M>KL/     	MA95>:AK@L03        	3014
+*	1ā   	ˈmaʔᵃḵol        	ˈmaʔᵃḵāl        	M>KL/     	13MA>:AK@L          	324263
+ 	     	maʔᵃḵˈāl        	maʔᵃḵˈāl        	M>KL/     	MA>:AK@92L          	847
+ 	     	maʔᵃḵˌāl        	maʔᵃḵˌāl        	M>KL/     	MA>:AK@L03          	104766
+ 	     	mˈaʔᵃḵˈāl       	mˈaʔᵃḵˈāl       	M>KL/     	MA45>:AK@80L        	238908
+ 	     	ˈmaʔᵃḵˈāl       	ˈmaʔᵃḵˈāl       	M>KL/     	11MA>:AK@81L        	322926
+ 	     	maʔᵃḵālˈāh      	maʔᵃḵālˈāh      	M>KL/     	MA>:AK@L@75H.       	348323
+ 	     	maʔᵃḵˈālᵊḵā     	maʔᵃḵˈālᵊḵā     	M>KL/     	MA>:AK@45L:K@03     	266278
+ 	     	maʔᵃḵālˌô       	maʔᵃḵālˌô       	M>KL/     	MA>:AK@LO73W        	302439
+
+ 	     	mᵊšālˈîm        	mᵊšālˈîm        	MCL/      	M:C@LI80JM          	270528
+ 	     	mᵊšālˌîm        	mᵊšālˌîm        	MCL/      	M:C@LI73JM          	274610
+ 	     	mᵊšālˌô         	mᵊšālˌô         	MCL/      	M:C@LO73W           	84800
+ 	     	mᵊšālˈô         	mᵊšālˈô         	MCL/      	M:C@LO81W           	342374
+*	1ā,2ā	ˈmošol          	ˈmāšāl          	MCL/      	13M@C@L             	317753
+ 	     	māšˌāl          	māšˌāl          	MCL/      	M@C@73L             	108814
+ 	     	māšˈāl          	māšˈāl          	MCL/      	M@C@80L             	146523
+ 	     	mmāšˌāl         	mmāšˌāl         	MCL/      	M.@C@71L            	216901
+ 	     	mmāšˈāl         	mmāšˈāl         	MCL/      	M.@C@70L            	269737
+
+*	1ā   	ˈmišmor         	ˈmišmār         	MCMR/     	13MIC:M@R           	347988
+ 	     	mišmˈār         	mišmˈār         	MCMR/     	MIC:M@75R           	21980
+ 	     	mišmˌār         	mišmˌār         	MCMR/     	MIC:M@73R           	23706
+ 	     	mmišmˈār        	mmišmˈār        	MCMR/     	M.IC:M@92R          	66982
+ 	     	mmišmˌār        	mmišmˌār        	MCMR/     	M.IC:M@R03          	385401
+ 	     	mišmārˈāʸw      	mišmārˈāʸw      	MCMR/     	MIC:M@R@75JW        	390834
+ 	     	mišmārˈô        	mišmārˈô        	MCMR/     	MIC:M@RO80W         	386414
+
+*	1ā   	ˈmišpoṭ         	ˈmišpāṭ         	MCPV/     	13MIC:P.@V          	351113
+ 	     	mišpˈāṭ         	mišpˈāṭ         	MCPV/     	MIC:P.@92V          	8138
+ 	     	mmišpˌāṭ        	mmišpˌāṭ        	MCPV/     	M.IC:P.@V03         	22151
+ 	     	mišpˌāṭ         	mišpˌāṭ         	MCPV/     	MIC:P.@73V          	37287
+ 	     	mmišpāṭˈîm      	mmišpāṭˈîm      	MCPV/     	M.IC:P.@VI80JM      	40017
+ 	     	mmišpˈāṭ        	mmišpˈāṭ        	MCPV/     	M.IC:P.@91V         	44237
+ 	     	mišpāṭˈay       	mišpāṭˈay       	MCPV/     	MIC:P.@VA94J        	63435
+ 	     	mišpāṭˌay       	mišpāṭˌay       	MCPV/     	MIC:P.@VA71J        	67476
+ 	     	mmišpāṭîm       	mmišpāṭîm       	MCPV/     	M.IC:P.@VIJM02      	68947
+ 	     	mišpāṭˌāʸw      	mišpāṭˌāʸw      	MCPV/     	MIC:P.@V@73JW       	75806
+ 	     	mišpāṭˌān       	mišpāṭˌān       	MCPV/     	MIC:P.@V@73N        	87006
+ 	     	mišpāṭˈām       	mišpāṭˈām       	MCPV/     	MIC:P.@V@92M        	87963
+ 	     	mmišpāṭˌîm      	mmišpāṭˌîm      	MCPV/     	M.IC:P.@VI73JM      	92285
+ 	     	mišpāṭˈîm       	mišpāṭˈîm       	MCPV/     	MIC:P.@VI80JM       	95249
+ 	     	mišpāṭˌîm       	mišpāṭˌîm       	MCPV/     	MIC:P.@VI73JM       	95326
+ 	     	mišpāṭˈāʸw      	mišpāṭˈāʸw      	MCPV/     	MIC:P.@V@74JW       	98216
+ 	     	mišpāṭˌām       	mišpāṭˌām       	MCPV/     	MIC:P.@V@71M        	206486
+ 	     	mišpāṭîm        	mišpāṭîm        	MCPV/     	MIC:P.@VIJM03       	240841
+ 	     	mišpāṭˈāh       	mišpāṭˈāh       	MCPV/     	MIC:P.@V@80H.       	262894
+ 	     	mˌišpāṭˈîm      	mˌišpāṭˈîm      	MCPV/     	MI63C:P.@VI80JM     	274070
+ 	     	ˈmišpˈāṭ        	ˈmišpˈāṭ        	MCPV/     	11MIC:P.@81V        	324631
+ 	     	mišpāṭˈayiḵ     	mišpāṭˈayiḵ     	MCPV/     	MIC:P.@VA80JIK:     	303997
+ 	     	mišpāṭˈeʸḵā     	mišpāṭˈeʸḵā     	MCPV/     	MIC:P.@VE33JK@03    	112374
+ 	     	mišpāṭˌeḵā      	mišpāṭˌeḵā      	MCPV/     	MIC:P.@VE73K@       	192929
+ 	     	mišpāṭˌî        	mišpāṭˌî        	MCPV/     	MIC:P.@VI71J        	226002
+ 	     	mišpāṭˈî        	mišpāṭˈî        	MCPV/     	MIC:P.@VI74J        	229197
+ 	     	mišpāṭˌeʸḵā     	mišpāṭˌeʸḵā     	MCPV/     	MIC:P.@VE73JK@      	292303
+ 	     	ˈmišpāṭeʸḵā     	ˈmišpāṭeʸḵā     	MCPV/     	13MIC:P.@VEJK@      	311812
+ 	     	ˈmišpāṭeḵā      	ˈmišpāṭeḵā      	MCPV/     	13MIC:P.@VEK@       	316152
+ 	     	mišpāṭˈeḵā      	mišpāṭˈeḵā      	MCPV/     	MIC:P.@VE81K@       	316274
+ 	     	mišpāṭeʸḵˌā     	mišpāṭeʸḵˌā     	MCPV/     	MIC:P.@VEJK@        	332007
+ 	     	mmišpāṭˌeʸḵā    	mmišpāṭˌeʸḵā    	MCPV/     	M.IC:P.@VE71JK@     	332092
+ 	     	mmišpāṭˈeʸḵā    	mmišpāṭˈeʸḵā    	MCPV/     	M.IC:P.@VE75JK@     	375865
+ 	     	mˌišpāṭˈô       	mˌišpāṭˈô       	MCPV/     	MI63C:P.@VO80W      	43193
+ 	     	mišpāṭˌô        	mišpāṭˌô        	MCPV/     	MIC:P.@VO73W        	76046
+ 	     	mišpāṭˈô        	mišpāṭˈô        	MCPV/     	MIC:P.@VO80W        	158468
+
+ 	     	miḏbˌarā        	miḏbˌarā        	MDBR/     	MID:B.A73R@H        	123141
+ 	     	miḏbˈarā        	miḏbˈarā        	MDBR/     	MID:B.A74R@H        	191757
+*	1ā   	ˈmiḏbor         	ˈmiḏbār         	MDBR/     	13MID:B.@R          	329768
+ 	     	mmiḏbˈār        	mmiḏbˈār        	MDBR/     	M.ID:B.@75R         	6317
+ 	     	mmiḏbˈārā       	mmiḏbˈārā       	MDBR/     	M.ID:B.@92R@H       	30723
+ 	     	mmiḏbˌār        	mmiḏbˌār        	MDBR/     	M.ID:B.@73R         	36140
+ 	     	mmiḏbˌārā       	mmiḏbˌārā       	MDBR/     	M.ID:B.@73R@H       	93620
+ 	     	miḏbˈār         	miḏbˈār         	MDBR/     	MID:B.@80R          	111566
+ 	     	miḏbˈārā        	miḏbˈārā        	MDBR/     	MID:B.@92R@H        	217474
+ 	     	miḏbˌār         	miḏbˌār         	MDBR/     	MID:B.@R03          	222860
+ 	     	miḏbārˌāh       	miḏbārˌāh       	MDBR/     	MID:B.@R@H.03       	229883
+ 	     	ˈmiḏbˈār        	ˈmiḏbˈār        	MDBR/     	11MID:B.@81R        	345678
+
+*	1ā   	miḡroš          	miḡrāš          	MGRC/     	MIG:R@C02           	290538
+ 	     	miḡrˈāš         	miḡrˈāš         	MGRC/     	MIG:R@81C           	91840
+ 	     	miḡrāšˌāh       	miḡrāšˌāh       	MGRC/     	MIG:R@C@73H.        	282559
+ 	     	miḡrˌāš         	miḡrˌāš         	MGRC/     	MIG:R@71C           	288483
+ 	     	miḡrāšˌehā      	miḡrāšˌehā      	MGRC/     	MIG:R@CE73H@        	124650
+ 	     	miḡrāšˈehā      	miḡrāšˈehā      	MGRC/     	MIG:R@CE92H@        	124683
+ 	     	miḡrāšˌeʸhā     	miḡrāšˌeʸhā     	MGRC/     	MIG:R@CE73JH@       	125158
+ 	     	miḡrāšˈeʸhā     	miḡrāšˈeʸhā     	MGRC/     	MIG:R@CE92JH@       	394511
+
+*	1ā   	mᵊnoṯ-          	mᵊnāṯ-          	MNT/      	M:N@T&              	241644
+ 	     	mᵊnˈāṯ          	mᵊnˈāṯ          	MNT/      	M:N@74T             	312044
+ 	     	mᵊnˌāṯ          	mᵊnˌāṯ          	MNT/      	M:N@73T             	320699
+ 	     	mᵊnāʔˈôṯ        	mᵊnāʔˈôṯ        	MNT/      	M:N@>O74WT          	390424
+ 	     	mᵊnāyˈôṯ        	mᵊnāyˈôṯ        	MNT/      	M:N@JO91WT          	390494
+ 	     	mᵊnāyˌôṯ        	mᵊnāyˌôṯ        	MNT/      	M:N@JO71WT          	390733
+
+ 	     	mordᵒḵˈay       	mordᵒḵˈay       	MRDKJ/    	M@R:D.:@KA81J       	366127
+ 	     	mordᵒḵˌay       	mordᵒḵˌay       	MRDKJ/    	M@R:D.:@KAJ03       	366288
+ 	     	mordᵒḵˈāy       	mordᵒḵˈāy       	MRDKJ/    	M@R:D.:@K@92J       	366565
+*	1o   	mˌārᵊddᵒḵˈay    	mˌordᵒḵˈay      	MRDKJ/    	M@63R:D.:@KA80J     	366704
+
+*	1ā   	ˈmispor         	ˈmispār         	MSPR/     	13MIS:P.@R          	335581
+ 	     	mispˈār         	mispˈār         	MSPR/     	MIS:P.@80R          	19025
+ 	     	mispˌār         	mispˌār         	MSPR/     	MIS:P.@73R          	76178
+ 	     	mmispˌār        	mmispˌār        	MSPR/     	M.IS:P.@73R         	79509
+ 	     	mispārˈām       	mispārˈām       	MSPR/     	MIS:P.@R@75M        	79518
+ 	     	mispārˌām       	mispārˌām       	MSPR/     	MIS:P.@R@73M        	88198
+ 	     	mmispˈār        	mmispˈār        	MSPR/     	M.IS:P.@80R         	405293
+
+*	1ā,2ā	ˈmoṭor          	ˈmāṭār          	MVR/      	13M@V@R             	337388
+ 	     	māṭˌār          	māṭˌār          	MVR/      	M@V@73R             	33739
+ 	     	mmāṭˈār         	mmāṭˈār         	MVR/      	M.@V@94R            	33749
+ 	     	māṭˈār          	māṭˈār          	MVR/      	M@V@80R             	99947
+ 	     	mmāṭˌār         	mmāṭˌār         	MVR/      	M.@V@R03            	111456
+
+*	1ā   	mˌûsor          	mˌûsār          	MWSR/     	M73W.S@R            	349914
+ 	     	mûsˌār          	mûsˌār          	MWSR/     	MW.S@73R            	235882
+ 	     	mûsˈār          	mûsˈār          	MWSR/     	MW.S@92R            	237161
+ 	     	mˌōsārˈām       	mˌōsārˈām       	MWSR/     	MO73S@R@74M         	344186
+ 	     	mmûsˈār         	mmûsˈār         	MWSR/     	M.W.S@92R           	344971
+ 	     	ˈmûsˈār         	ˈmûsˈār         	MWSR/     	11MW.S@81R          	352847
+ 	     	mûsārᵊḵˌā       	mûsārᵊḵˌā       	MWSR/     	MW.S@R:K@73         	220473
+ 	     	mûsārˌî         	mûsārˌî         	MWSR/     	MW.S@RI71J          	348921
+
+*	1ā,2ā	moḥor           	māḥār           	MXR/      	M@X@R02             	77172
+ 	     	māḥˈār          	māḥˈār          	MXR/      	M@X@80R             	16129
+ 	     	māḥˌār          	māḥˌār          	MXR/      	M@X@71R             	32823
+
+ 	     	mizrᵊḥˌā        	mizrᵊḥˌā        	MZRX/     	MIZ:R:X@73H         	96138
+ 	     	mizrᵊḥˈā        	mizrᵊḥˈā        	MZRX/     	MIZ:R:X@74H         	120026
+*	1ā   	ˈmizroḥ         	ˈmizrāḥ         	MZRX/     	13MIZ:R@X           	328117
+*	1ā   	mmizroḥ         	mmizrāḥ         	MZRX/     	M.IZ:R@X02          	404535
+ 	     	mizrˌāḥā        	mizrˌāḥā        	MZRX/     	MIZ:R@73X@H         	43563
+ 	     	mizrˈāḥā        	mizrˈāḥā        	MZRX/     	MIZ:R@80X@H         	70459
+ 	     	mmizrˈāḥ        	mmizrˈāḥ        	MZRX/     	M.IZ:R@74X          	119477
+ 	     	mmizrˌāḥ        	mmizrˌāḥ        	MZRX/     	M.IZ:R@X03          	227015
+ 	     	mizrˈāḥ         	mizrˈāḥ         	MZRX/     	MIZ:R@92X           	297748
+ 	     	mizrˌāḥ         	mizrˌāḥ         	MZRX/     	MIZ:R@71X           	393613
+ 	     	mmizrˈāḥā       	mmizrˈāḥā       	MZRX/     	M.IZ:R@80X@H        	422874
+
+*	1ā   	nˈaʕᵃmon        	nˈaʕᵃmān        	N<MN/     	NA45<:AM@N03        	197985
+ 	     	naʕᵃmˌān        	naʕᵃmˌān        	N<MN/     	NA<:AM@73N          	26325
+ 	     	naʕᵃmˈān        	naʕᵃmˈān        	N<MN/     	NA<:AM@92N          	86503
+ 	     	nˈaʕᵃmˈān       	nˈaʕᵃmˈān       	N<MN/     	NA45<:AM@80N        	86508
+
+ 	     	nnᵊvālˌîm       	nnᵊvālˌîm       	NBL/      	N.:B@LI73JM         	167422
+ 	     	nnᵊvālôṯ        	nnᵊvālôṯ        	NBL/      	N.:B@LOWT03         	336717
+*	1ā,2ā	ˈnovol          	ˈnāvāl          	NBL/      	13N@B@L             	343172
+ 	     	nāvˌāl          	nāvˌāl          	NBL/      	N@B@73L             	111512
+ 	     	ˈnāvˈāl         	ˈnāvˈāl         	NBL/      	11N@B@81L           	316928
+
+ 	     	nᵊvˈûzar-ʔᵃḏˌān 	nᵊvˈûzar-ʔᵃḏˌān 	NBWZR>DN/ 	N:B45W.ZAR&>:AD@71N 	256571
+*	1ā   	nᵊvˈûzarʔᵃḏon   	nᵊvˈûzarʔᵃḏān   	NBWZR>DN/ 	N:B45W.ZAR:>:AD@N03 	257584
+ 	     	nᵊvûzarʔᵃḏˈān   	nᵊvûzarʔᵃḏˈān   	NBWZR>DN/ 	N:BW.ZAR:>:AD@94N   	211500
+ 	     	nᵊvûzarʔᵃḏˌān   	nᵊvûzarʔᵃḏˌān   	NBWZR>DN/ 	N:BW.ZAR:>:AD@73N   	211569
+ 	     	nᵊvˈûzarʔᵃḏˈān  	nᵊvˈûzarʔᵃḏˈān  	NBWZR>DN/ 	N:B45W.ZAR:>:AD@74N 	256638
+
+ 	     	nnᵊḥāšˈîm       	nnᵊḥāšˈîm       	NXC/      	N.:X@CI74JM         	83254
+ 	     	nᵊḥāšîm         	nᵊḥāšîm         	NXC/      	N:X@CIJM03          	239317
+*	1ā,2ā	nnoḥoš          	nnāḥāš          	NXC/      	N.@X@C02            	1431
+ 	     	nnāḥˌāš         	nnāḥˌāš         	NXC/      	N.@X@C03            	1170
+ 	     	nnāḥˈāš         	nnāḥˈāš         	NXC/      	N.@X@92C            	1204
+ 	     	nāḥˈāš          	nāḥˈāš          	NXC/      	N@X@74C             	28000
+ 	     	nāḥˌāš          	nāḥˌāš          	NXC/      	N@X@73C             	32052
+ 	     	nˈāḥˌāš         	nˈāḥˌāš         	NXC/      	N@60X@71C           	334599
+
+*	1o   	pᵊʕālˌîm        	pᵊʕolˌîm        	P<L/      	P.:<@LI73JM         	175211
+ 	     	foʕᵒlˌām        	foʕᵒlˌām        	P<L/      	P@<:@L@73M          	247333
+ 	     	foʕᵒlˈāh        	foʕᵒlˈāh        	P<L/      	P@<:@L@80H.         	262408
+ 	     	foʕᵒlām         	foʕᵒlām         	P<L/      	P@<:@L@M02          	314623
+ 	     	poʕᵒlˈām        	poʕᵒlˈām        	P<L/      	P.@<:@L@92M         	344961
+ 	     	poʕᵒlˈeḵā       	poʕᵒlˈeḵā       	P<L/      	P.@<:@LE92K@        	323372
+ 	     	foʕᵒlˈeḵā       	foʕᵒlˈeḵā       	P<L/      	P@<:@LE92K@         	326389
+ 	     	foʕᵒlˈî         	foʕᵒlˈî         	P<L/      	P@<:@LI25J          	327053
+ 	     	poʕᵒlˈēḵ        	poʕᵒlˈēḵ        	P<L/      	P.@<:@L;92K:        	356491
+ 	     	poʕᵒlˈô         	poʕᵒlˈô         	P<L/      	P.@<:@LO80W         	111483
+ 	     	foʕᵒlˈô         	foʕᵒlˈô         	P<L/      	P@<:@LO92W          	328450
+ 	     	pˈoʕᵒlˈô        	pˈoʕᵒlˈô        	P<L/      	P.@45<:@LO92W       	330382
+*	1o,2o	fāʕālᵊḵˌem      	foʕolᵊḵˌem      	P<L/      	P@<@L:KE73M         	226442
+*	1o,2o	fāʕālᵊḵˌā       	foʕolᵊḵˌā       	P<L/      	P@<@L:K@73          	228026
+*	1o,2o	pˈāʕālᵊḵā       	pˈoʕolᵊḵā       	P<L/      	P.@45<@L:K@03       	302811
+
+*	1ā   	pˈînᵊḥos        	pˈînᵊḥās        	PJNXS/    	P.I45JN:X@S03       	85732
+*	1ā   	pînᵊḥos         	pînᵊḥās         	PJNXS/    	P.IJN:X@S02         	143741
+*	1ā   	ˈpˈînᵊḥos       	ˈpˈînᵊḥās       	PJNXS/    	13P.I45JN:X@S       	329252
+*	1ā   	fˈînᵊḥos        	fˈînᵊḥās        	PJNXS/    	PI45JN:X@S03        	381550
+ 	     	pˈînᵊḥˈās       	pˈînᵊḥˈās       	PJNXS/    	P.I45JN:X@92S       	31694
+ 	     	pˈînᵊḥˌās       	pˈînᵊḥˌās       	PJNXS/    	P.I45JN:X@63S       	85797
+ 	     	pˌînᵊḥˈās       	pˌînᵊḥˈās       	PJNXS/    	P.I63JN:X@61S       	88961
+ 	     	pînᵊḥˌās        	pînᵊḥˌās        	PJNXS/    	P.IJN:X@73S         	125590
+ 	     	fînᵊḥˌās        	fînᵊḥˌās        	PJNXS/    	PIJN:X@S            	140496
+ 	     	fˈinḥˈās        	fˈinḥˈās        	PJNXS/    	PI74N:X@80S         	141609
+ 	     	fˈînᵊḥˈās       	fˈînᵊḥˈās       	PJNXS/    	PI45JN:X@92S        	142805
+
+ 	     	qqᵊḏāšˈîm       	qqᵊḏāšˈîm       	QDC/      	Q.:D@CI92JM         	288049
+ 	     	qqᵒḏāšˈîm       	qqᵒḏāšˈîm       	QDC/      	Q.:@D@CI75JM        	43263
+ 	     	qqᵒḏāšˌîm       	qqᵒḏāšˌîm       	QDC/      	Q.:@D@CI73JM        	65316
+ 	     	qqᵒḏāšîm        	qqᵒḏāšîm        	QDC/      	Q.:@D@CIJM03        	65399
+ 	     	qᵒḏāšˌāʸw       	qᵒḏāšˌāʸw       	QDC/      	Q:@D@C@73JW         	72898
+ 	     	qᵒḏāšˈāʸw       	qᵒḏāšˈāʸw       	QDC/      	Q:@D@C@80JW         	202992
+ 	     	qoḏšêhˈem       	qoḏšêhˈem       	QDC/      	Q@D:C;JHE92M        	44420
+ 	     	qqoḏšˌê         	qqoḏšˌê         	QDC/      	Q.@D:C;73J          	54631
+ 	     	qqoḏšˈê         	qqoḏšˈê         	QDC/      	Q.@D:C;74J          	65371
+ 	     	qoḏšˌê          	qoḏšˌê          	QDC/      	Q@D:C;73J           	65632
+ 	     	qoḏšˈê          	qoḏšˈê          	QDC/      	Q@D:C;94J           	72885
+ 	     	qoḏšêḵˈem       	qoḏšêḵˈem       	QDC/      	Q@D:C;JKE75M        	274429
+ 	     	qoḏšˈeḵā        	qoḏšˈeḵā        	QDC/      	Q@D:CE75K@          	37079
+ 	     	qoḏšˈî          	qoḏšˈî          	QDC/      	Q@D:CI75J           	64466
+ 	     	qoḏšᵊḵˈā        	qoḏšᵊḵˈā        	QDC/      	Q@D:C:K@61          	107520
+ 	     	qoḏšᵊḵˌā        	qoḏšᵊḵˌā        	QDC/      	Q@D:C:K@73          	233714
+ 	     	qoḏšˈēnû        	qoḏšˈēnû        	QDC/      	Q@D:C;74NW.         	233929
+ 	     	qoḏšˌî          	qoḏšˌî          	QDC/      	Q@D:CI73J           	234455
+ 	     	ˈqoḏšᵊḵˈā       	ˈqoḏšᵊḵˈā       	QDC/      	11Q@D:C:K@81        	311105
+ 	     	qoḏšˈô          	qoḏšˈô          	QDC/      	Q@D:CO80W           	230450
+ 	     	qoḏšˌô          	qoḏšˌô          	QDC/      	Q@D:COW03           	247677
+*	1o   	qˈāḏāšˈîm       	qˈoḏāšˈîm       	QDC/      	Q@45D@CI80JM        	45352
+*	1o   	qˈāḏāšˌîm       	qˈoḏāšˌîm       	QDC/      	Q@95D@CI71JM        	45694
+*	1o   	qˈāḏāšîm        	qˈoḏāšîm        	QDC/      	Q@45D@CIJM03        	55101
+*	1o   	qāḏāšˌay        	qoḏāšˌay        	QDC/      	Q@D@CA73J           	275316
+*	1o   	qāḏāšˈîm        	qoḏāšˈîm        	QDC/      	Q@D@CI80JM          	287394
+*	1o   	qāḏāšˈāy        	qoḏāšˈāy        	QDC/      	Q@D@C@92J           	287919
+*	1o   	qˈāḏāšˈay       	qˈoḏāšˈay       	QDC/      	Q@74D@CA80J         	288045
+*	1o   	qˈāḏāšˌāʸw      	qˈoḏāšˌāʸw      	QDC/      	Q@45D@C@73JW        	414173
+*	1o   	qˈāḏāšˈeʸḵā     	qˈoḏāšˈeʸḵā     	QDC/      	Q@95D@CE91JK@       	100865
+
+*	1ā   	qqᵃrov-         	qqᵃrāv-         	QRB==/    	Q.:AR@B&            	319544
+*	1ā   	qᵃrov-          	qᵃrāv-          	QRB==/    	Q:AR@B&             	319577
+ 	     	qᵊrˈāv          	qᵊrˈāv          	QRB==/    	Q:R@75B             	170547
+ 	     	qᵊrāvˌôṯ        	qᵊrāvˌôṯ        	QRB==/    	Q:R@BO71WT          	321561
+ 	     	ˈqrˈāv          	ˈqrˈāv          	QRB==/    	11Q:R@81B           	345648
+
+ 	     	qorbanᵊḵˈem     	qorbanᵊḵˈem     	QRBN/     	Q@R:B.AN:KE75M      	52550
+ 	     	qorbˈan         	qorbˈan         	QRBN/     	Q@R:B.A70N          	52879
+ 	     	qorbˌan         	qorbˌan         	QRBN/     	Q@R:B.A71N          	52947
+ 	     	qorbᵊnêhˈem     	qorbᵊnêhˈem     	QRBN/     	Q@R:B.:N;JHE91M     	56031
+ 	     	qorbˌān         	qorbˌān         	QRBN/     	Q@R:B.@73N          	52535
+ 	     	qorbˈān         	qorbˈān         	QRBN/     	Q@R:B.@80N          	55552
+ 	     	qorbānˌāh       	qorbānˌāh       	QRBN/     	Q@R:B.@N@H.03       	72993
+ 	     	qorbānˈām       	qorbānˈām       	QRBN/     	Q@R:B.@N@61M        	73939
+ 	     	qorbānˌām       	qorbānˌām       	QRBN/     	Q@R:B.@N@73M        	74082
+ 	     	qorbānˈeḵā      	qorbānˈeḵā      	QRBN/     	Q@R:B.@NE92K@       	52971
+ 	     	qorbānᵊḵˌā      	qorbānᵊḵˌā      	QRBN/     	Q@R:B.@N:K@73       	53109
+ 	     	qorbānˌî        	qorbānˌî        	QRBN/     	Q@R:B.@NI63J        	87357
+ 	     	qorbānˌô        	qorbānˌô        	QRBN/     	Q@R:B.@NOW03        	52553
+ 	     	qorbānˈô        	qorbānˈô        	QRBN/     	Q@R:B.@NO94W        	52696
+*	1o   	qqārᵊvˈān       	qqorᵊvˈān       	QRBN/     	Q.@R:B@75N          	285923
+
+ 	     	qᵊṣîrˈāh        	qᵊṣîrˈāh        	QYJR/     	Q:YIJR@92H.         	66095
+ 	     	qᵊṣˈîrᵊḵˌā      	qᵊṣˈîrᵊḵˌā      	QYJR/     	Q:YI45JR:K@73       	63943
+ 	     	qᵊṣîrᵊḵˌā       	qᵊṣîrᵊḵˌā       	QYJR/     	Q:YIJR:K@73         	66340
+ 	     	qᵊṣˈîrᵊḵā       	qᵊṣˈîrᵊḵā       	QYJR/     	Q:YI45JR:K@03       	67231
+ 	     	qᵊṣˈîrᵊḵˈā      	qᵊṣˈîrᵊḵˈā      	QYJR/     	Q:YI45JR:K@61       	237397
+*	1ā   	qoṣṣˈîr         	qāṣṣˈîr         	QYJR/     	Q@Y.I75JR           	25570
+ 	     	qāṣîr           	qāṣîr           	QYJR/     	Q@YIJR              	4021
+ 	     	qqāṣîr          	qqāṣîr          	QYJR/     	Q.@YIJR03           	41281
+ 	     	qqāṣˌîr         	qqāṣˌîr         	QYJR/     	Q.@YI73JR           	48207
+ 	     	qāṣˈîr          	qāṣˈîr          	QYJR/     	Q@YI75JR            	114309
+ 	     	qqāṣˈîr         	qqāṣˈîr         	QYJR/     	Q.@YI80JR           	215187
+ 	     	qāṣˌîr          	qāṣˌîr          	QYJR/     	Q@YI73JR            	237566
+
+*	1ā   	ˈroʕ            	ˈrāʕ            	R</       	13R@<               	332085
+ 	     	rˈāʕ            	rˈāʕ            	R</       	R@75<               	862
+ 	     	rāʕˌîm          	rāʕˌîm          	R</       	R@<I73JM            	6110
+ 	     	rāʕˌôṯ          	rāʕˌôṯ          	R</       	R@<O73WT            	14642
+ 	     	rāʕˈôṯ          	rāʕˈôṯ          	R</       	R@<O70WT            	22412
+ 	     	rāʕˈōṯ          	rāʕˈōṯ          	R</       	R@<O61T             	22837
+ 	     	rāʕˈîm          	rāʕˈîm          	R</       	R@<I81JM            	26734
+ 	     	rˌāʕ            	rˌāʕ            	R</       	R@73<               	46996
+ 	     	rāʕîm           	rāʕîm           	R</       	R@<IJM03            	205835
+ 	     	rāʕôṯ           	rāʕôṯ           	R</       	R@<OWT03            	246805
+ 	     	rrˈāʕ           	rrˈāʕ           	R</       	R.@92<              	256627
+ 	     	rāʕˈê           	rāʕˈê           	R</       	R@<;74J             	267550
+ 	     	ˈrˈāʕ           	ˈrˈāʕ           	R</       	11R@81<             	316137
+ 	     	ˈrāʕîm          	ˈrāʕîm          	R</       	13R@<IJM            	350557
+
+ 	     	rᵊʕāvˈām        	rᵊʕāvˈām        	R<B/      	R:<@B@80M           	388082
+*	1ā,2ā	ˈroʕov          	ˈrāʕāv          	R<B/      	13R@<@B             	328711
+ 	     	rāʕˌāv          	rāʕˌāv          	R<B/      	R@<@73B             	5675
+ 	     	rāʕˈāv          	rāʕˈāv          	R<B/      	R@<@74B             	12987
+
+*	1ā   	rˈaʕᵃnon        	rˈaʕᵃnān        	R<NN/     	RA45<:AN@N03        	240679
+*	1ā   	ˈraʕᵃnon        	ˈraʕᵃnān        	R<NN/     	13RA<:AN@N          	319162
+ 	     	raʕᵃnˌān        	raʕᵃnˌān        	R<NN/     	RA<:AN@N            	100362
+ 	     	raʕᵃnˈān        	raʕᵃnˈān        	R<NN/     	RA<:AN@75N          	188202
+ 	     	rˈaʕᵃnˈān       	rˈaʕᵃnˈān       	R<NN/     	RA45<:AN@92N        	243139
+ 	     	raʕᵃnānˈā       	raʕᵃnānˈā       	R<NN/     	RA<:AN@N@75H        	357777
+
+ 	     	rabbˈā          	rabbˈā          	RB/       	RAB.@91H            	2700
+ 	     	rabbˌā          	rabbˌā          	RB/       	RAB.@71H            	77558
+ 	     	rabbˈāṯî        	rabbˈāṯî        	RB/       	RAB.@74TIJ          	363513
+*	1ā   	ˈrov            	ˈrāv            	RB/       	11R@B               	312821
+ 	     	rˈāv            	rˈāv            	RB/       	R@80B               	5965
+ 	     	rˌāv            	rˌāv            	RB/       	R@73B               	19660
+ 	     	ˈrˈāv           	ˈrˈāv           	RB/       	11R@81B             	350850
+
+ 	     	rᵊšāʕˈîm        	rᵊšāʕˈîm        	RC</      	R:C@<I75JM          	33629
+ 	     	rᵊšāʕîm         	rᵊšāʕîm         	RC</      	R:C@<IJM03          	80537
+ 	     	rᵊšāʕˌîm        	rᵊšāʕˌîm        	RC</      	R:C@<I73JM          	142229
+ 	     	rᵊšāʕˌā         	rᵊšāʕˌā         	RC</      	R:C@<@73H           	265850
+ 	     	rᵊšāʕˈā         	rᵊšāʕˈā         	RC</      	R:C@<@92H           	265877
+ 	     	rᵊšˈāʕˌîm       	rᵊšˈāʕˌîm       	RC</      	R:C@60<I71JM        	310657
+ 	     	ˈršāʕîm         	ˈršāʕîm         	RC</      	13R:C@<IJM          	310721
+ 	     	ˈršāʕˈîm        	ˈršāʕˈîm        	RC</      	11R:C@<I81JM        	314322
+ 	     	rᵊšˈāʕˈîm       	rᵊšˈāʕˈîm       	RC</      	R:C@82<I70JM        	341321
+*	1ā,2ā	ˈrošoʕ          	ˈrāšāʕ          	RC</      	13R@C@<             	311777
+*	1ā,2ā	rošoʕ           	rāšāʕ           	RC</      	R@C@<02             	353596
+ 	     	rāšˈāʕ          	rāšˈāʕ          	RC</      	R@C@75<             	8204
+ 	     	rāšˌāʕ          	rāšˌāʕ          	RC</      	R@C@73<             	92427
+ 	     	rˈāšˌāʕ         	rˈāšˌāʕ         	RC</      	R@60C@71<           	315346
+ 	     	rˈāšˈāʕ         	rˈāšˈāʕ         	RC</      	R@82C@70<           	330551
+ 	     	ˈrāšˈāʕ         	ˈrāšˈāʕ         	RC</      	11R@C@81<           	344523
+
+*	1ā   	rᵊḥavʕom        	rᵊḥavʕām        	RXB<M/    	R:XAB:<@M02         	186444
+ 	     	rᵊḥavʕˌām       	rᵊḥavʕˌām       	RXB<M/    	R:XAB:<@71M         	185938
+ 	     	rᵊḥavʕˈām       	rᵊḥavʕˈām       	RXB<M/    	R:XAB:<@81M         	186036
+
+ 	     	ṯammāṯˈî        	ṯammāṯˈî        	TM/       	TAM.@TI80J          	358487
+*	1ā   	ˈtom            	ˈtām            	TM/       	13T.@M              	316581
+ 	     	tˈām            	tˈām            	TM/       	T.@80M              	12862
+ 	     	tˈām-           	tˈām-           	TM/       	T.@45M&             	338447
+ 	     	tˌām            	tˌām            	TM/       	T.@71M              	338463
+ 	     	ṯˈām            	ṯˈām            	TM/       	T@92M               	354954
+
+ 	     	ḥᵃḏāšˌā         	ḥᵃḏāšˌā         	XDC/      	X:AD@C@73H          	66215
+ 	     	ḥᵃḏāšˈā         	ḥᵃḏāšˈā         	XDC/      	X:AD@C@80H          	106451
+ 	     	ḥᵃḏāšîm         	ḥᵃḏāšîm         	XDC/      	X:AD@CIJM03         	111671
+ 	     	ḥᵃḏāšˈîm        	ḥᵃḏāšˈîm        	XDC/      	X:AD@CI80JM         	118020
+ 	     	ḥᵃḏāšôṯ         	ḥᵃḏāšôṯ         	XDC/      	X:AD@COWT03         	226663
+ 	     	ḥᵃḏāšˌîm        	ḥᵃḏāšˌîm        	XDC/      	X:AD@CI73JM         	234286
+ 	     	ˈḥᵃḏāšˈîm       	ˈḥᵃḏāšˈîm       	XDC/      	11X:AD@CI81JM       	344016
+*	1ā,2ā	ḥoḏoš           	ḥāḏāš           	XDC/      	X@D@C02             	317027
+*	1ā,2ā	ˈḥoḏoš          	ˈḥāḏāš          	XDC/      	13X@D@C             	327363
+ 	     	ḥāḏˌāš          	ḥāḏˌāš          	XDC/      	X@D@73C             	28839
+ 	     	ḥāḏˈāš          	ḥāḏˈāš          	XDC/      	X@D@80C             	105445
+
+ 	     	ḥᵃḵāmˌîm        	ḥᵃḵāmˌîm        	XKM/      	X:AK@MI73JM         	31975
+ 	     	ḥᵃḵāmˈîm        	ḥᵃḵāmˈîm        	XKM/      	X:AK@MI80JM         	49263
+ 	     	ḥᵃḵāmîm         	ḥᵃḵāmîm         	XKM/      	X:AK@MIJM03         	93085
+ 	     	ḥᵃḵāmˈā         	ḥᵃḵāmˈā         	XKM/      	X:AK@M@92H          	168037
+ 	     	ḥᵃḵāmˌā         	ḥᵃḵāmˌā         	XKM/      	X:AK@M@73H          	173490
+ 	     	ḥᵃḵāmˈāʸw       	ḥᵃḵāmˈāʸw       	XKM/      	X:AK@M@80JW         	221617
+ 	     	ḥᵃḵāmˌôṯ        	ḥᵃḵāmˌôṯ        	XKM/      	X:AK@MO71WT         	239712
+ 	     	ḥᵃḵˈāmˈîm       	ḥᵃḵˈāmˈîm       	XKM/      	X:AK@82MI70JM       	318508
+ 	     	ˈḥᵃḵāmˈîm       	ˈḥᵃḵāmˈîm       	XKM/      	11X:AK@MI81JM       	346981
+ 	     	ˈḥᵃḵāmîm        	ˈḥᵃḵāmîm        	XKM/      	13X:AK@MIJM         	350719
+ 	     	ḥᵃḵāmˈayiḵ      	ḥᵃḵāmˈayiḵ      	XKM/      	X:AK@MA70JIK:       	277927
+ 	     	ḥᵃḵāmˈeʸhā      	ḥᵃḵāmˈeʸhā      	XKM/      	X:AK@ME92JH@        	22498
+ 	     	ḥᵃḵāmˈeʸḵā      	ḥᵃḵāmˈeʸḵā      	XKM/      	X:AK@ME80JK@        	218315
+*	1ā,2ā	ˈḥoḵom          	ˈḥāḵām          	XKM/      	13X@K@M             	346967
+ 	     	ḥāḵˈām          	ḥāḵˈām          	XKM/      	X@K@92M             	22951
+ 	     	ḥāḵˌām          	ḥāḵˌām          	XKM/      	X@K@73M             	23068
+ 	     	ˈḥāḵˈām         	ˈḥāḵˈām         	XKM/      	11X@K@81M           	344696
+
+*	1ā   	ˈḥom            	ˈḥām            	XM===/    	10X@M               	4423
+ 	     	ḥˌām            	ḥˌām            	XM===/    	X@71M               	2597
+ 	     	ḥˈām            	ḥˈām            	XM===/    	X@74M               	4381
+
+ 	     	ḥᵃmāsˌîm        	ḥᵃmāsˌîm        	XMS/      	X:AM@SI73JM         	174775
+ 	     	ḥᵃmāsˈîm        	ḥᵃmāsˈîm        	XMS/      	X:AM@SI74JM         	334585
+ 	     	ḥᵃmāsˈî         	ḥᵃmāsˈî         	XMS/      	X:AM@SI74J          	7119
+ 	     	ḥᵃmāsˌô         	ḥᵃmāsˌô         	XMS/      	X:AM@SO71W          	311444
+*	1ā,2ā	ˈḥomos          	ˈḥāmās          	XMS/      	13X@M@S             	340681
+ 	     	ḥāmˈās          	ḥāmˈās          	XMS/      	X@M@75S             	2807
+ 	     	ḥāmˌās          	ḥāmˌās          	XMS/      	X@M@73S             	2841
+ 	     	ˈḥāmˈās         	ˈḥāmˈās         	XMS/      	11X@M@81S           	313145
+
+*	1ā   	ˈḥinnom         	ˈḥinnām         	XNM       	13XIN.@M            	347076
+ 	     	ḥinnˈām         	ḥinnˈām         	XNM       	XIN.@92M            	15250
+ 	     	ḥinnˌām         	ḥinnˌām         	XNM       	XIN.@73M            	40184
+ 	     	ˈḥinnˈām        	ˈḥinnˈām        	XNM       	11XIN.@81M          	315861
+ 	     	ḥˈinnˌām        	ḥˈinnˌām        	XNM       	XI60N.@71M          	321665
+
+ 	     	ḥofšˈîm         	ḥofšˈîm         	XPCJ/     	X@P:CI80JM          	232037
+ 	     	ḥofšˌîm         	ḥofšˌîm         	XPCJ/     	X@P:CI73JM          	253542
+ 	     	ḥofšˌî          	ḥofšˌî          	XPCJ/     	X@P:CI73J           	40036
+ 	     	ḥofšˈî          	ḥofšˈî          	XPCJ/     	X@P:CI75J           	40092
+*	1o   	ḥˈāfᵊšˌî        	ḥˈofšˌî         	XPCJ/     	X@60P:CI71J         	325588
+
+ 	     	ḥuqqˌām         	ḥuqqˌām         	XQ/       	XUQ.@M03            	27078
+ 	     	ḥuqqˈāʸw        	ḥuqqˈāʸw        	XQ/       	XUQ.@92JW           	37313
+ 	     	ḥuqqˌāʸw        	ḥuqqˌāʸw        	XQ/       	XUQ.@73JW           	97251
+ 	     	ḥuqqāʸw         	ḥuqqāʸw         	XQ/       	XUQ.@JW03           	183424
+ 	     	ḥuqqˈāy         	ḥuqqˈāy         	XQ/       	XUQ.@92J            	318791
+ 	     	ˈḥuqqāʸw        	ˈḥuqqāʸw        	XQ/       	13XUQ.@JW           	328963
+ 	     	ḥuqqˈeʸḵā       	ḥuqqˈeʸḵā       	XQ/       	XUQ.E75JK@          	331355
+ 	     	ḥuqqˌeʸḵā       	ḥuqqˌeʸḵā       	XQ/       	XUQ.E71JK@          	331373
+ 	     	ˈḥuqqˈeʸḵā      	ˈḥuqqˈeʸḵā      	XQ/       	11XUQ.E81JK@        	331945
+ 	     	ˈḥuqqeʸḵā       	ˈḥuqqeʸḵā       	XQ/       	11XUQ.EJK@          	332493
+ 	     	ḥoq-            	ḥoq-            	XQ/       	X@Q&                	35252
+*	1o   	ḥāqᵊḵˈem        	ḥoqᵊḵˈem        	XQ/       	X@Q:KE70M           	31079
+*	1o   	ḥāqᵊḵˈā         	ḥoqᵊḵˈā         	XQ/       	X@Q:K@70            	57658
+
+ 	     	ḥᵒrāvôṯ         	ḥᵒrāvôṯ         	XRBH=/    	X:@R@BOWT03         	229120
+ 	     	ḥᵒrāvˈôṯ        	ḥᵒrāvˈôṯ        	XRBH=/    	X:@R@BO92WT         	269916
+ 	     	ḥᵒrāvˌôṯ        	ḥᵒrāvˌôṯ        	XRBH=/    	X:@R@BO63WT         	281277
+*	1ā,2o	ḥorbˈā          	ḥārᵊbbˈoh       	XRBH=/    	X@R:B.@80H          	68653
+*	1ā,2o	ḥorbˌā          	ḥārᵊbbˌoh       	XRBH=/    	X@R:B.@73H          	238942
+ 	     	ḥārᵊvˌôṯ        	ḥārᵊvˌôṯ        	XRBH=/    	X@R:BO71WT          	213710
+ 	     	ḥārᵊvˈôṯ        	ḥārᵊvˈôṯ        	XRBH=/    	X@R:BO74WT          	232150
+ 	     	ḥārᵊvôṯ         	ḥārᵊvôṯ         	XRBH=/    	X@R:BOWT03          	279034
+ 	     	ḥārᵊvôṯêhˈem    	ḥārᵊvôṯêhˈem    	XRBH=/    	X@R:BOWT;JHE75M     	330057
+ 	     	ḥārᵊvōṯˈāʸw     	ḥārᵊvōṯˈāʸw     	XRBH=/    	X@R:BOT@80JW        	382538
+ 	     	ḥārᵊvōṯˈayiḵ    	ḥārᵊvōṯˈayiḵ    	XRBH=/    	X@R:BOTA33JIK:03    	229460
+ 	     	ḥārᵊvôṯˌeʸhā    	ḥārᵊvôṯˌeʸhā    	XRBH=/    	X@R:BOWTE73JH@      	227841
+ 	     	ḥārᵊvōṯˈeʸhā    	ḥārᵊvōṯˈeʸhā    	XRBH=/    	X@R:BOTE80JH@       	229880
+
+ 	     	ḥᵃrāfˈôṯ        	ḥᵃrāfˈôṯ        	XRPH/     	X:AR@PO74WT         	321732
+ 	     	ḥᵃrāfˌôṯ        	ḥᵃrāfˌôṯ        	XRPH/     	X:AR@PO73WT         	377929
+*	1ā   	ḥerpottˈî       	ḥerpāttˈî       	XRPH/     	XER:P.@T.I75J       	340669
+ 	     	ḥerpˌā          	ḥerpˌā          	XRPH/     	XER:P.@71H          	18702
+ 	     	ḥerpˈā          	ḥerpˈā          	XRPH/     	XER:P.@75H          	221879
+ 	     	ḥerpāṯˈām       	ḥerpāṯˈām       	XRPH/     	XER:P.@T@92M        	275115
+ 	     	ˈḥerpā          	ˈḥerpā          	XRPH/     	13XER:P.@H          	317744
+ 	     	ḥerpˈāṯˈām      	ḥerpˈāṯˈām      	XRPH/     	XER:P.@82T@70M      	324387
+ 	     	ˈḥerpˈā         	ˈḥerpˈā         	XRPH/     	11XER:P.@81H        	326114
+ 	     	ḥerpāṯˌām       	ḥerpāṯˌām       	XRPH/     	XER:P.@T@M03        	364904
+ 	     	ḥerpāṯˈî        	ḥerpāṯˈî        	XRPH/     	XER:P.@TI75J        	15954
+ 	     	ḥerpāṯˈēnû      	ḥerpāṯˈēnû      	XRPH/     	XER:P.@T;75NW.      	213308
+ 	     	ḥerpāṯˈēḵ       	ḥerpāṯˈēḵ       	XRPH/     	XER:P.@T;92K:       	228561
+ 	     	ḥerpāṯᵊḵˌā      	ḥerpāṯᵊḵˌā      	XRPH/     	XER:P.@T:K@71       	323006
+ 	     	ˈḥerpāṯî        	ˈḥerpāṯî        	XRPH/     	13XER:P.@TIJ        	331597
+ 	     	ḥˌerpāṯˈô       	ḥˌerpāṯˈô       	XRPH/     	XE63R:P.@TO80W      	293692
+ 	     	ḥerpāṯˈô        	ḥerpāṯˈô        	XRPH/     	XER:P.@TO81W        	348561
+ 	     	ḥerpāṯˌô        	ḥerpāṯˌô        	XRPH/     	XER:P.@TOW03        	377319
+
+ 	     	ḥᵃṯānˈāʸw       	ḥᵃṯānˈāʸw       	XTN/      	X:AT@N@74JW         	8719
+ 	     	ḥᵃṯānˈô         	ḥᵃṯānˈô         	XTN/      	X:AT@NO81W          	139203
+*	1ā,2ā	ḥoṯon           	ḥāṯān           	XTN/      	X@T@N02             	252792
+ 	     	ḥāṯˌān          	ḥāṯˌān          	XTN/      	X@T@N03             	8678
+
+*	1ā   	ḥᵃṣˈar ʕênon    	ḥᵃṣˈar ʕênān    	XYR_<JNN/ 	X:AYA74R_<;JN@N04   	290209
+ 	     	ḥᵃṣˈar ʕênˈān   	ḥᵃṣˈar ʕênˈān   	XYR_<JNN/ 	X:AYA74R_<;JN@92N   	91545
+ 	     	ḥᵃṣˌar ʕênˌān   	ḥᵃṣˌar ʕênˌān   	XYR_<JNN/ 	X:AYA71R_<;JN@73N   	91558
+
+*	2ā   	ṣᵊlofḥoḏ        	ṣᵊlofḥāḏ        	YLPXD/    	Y:L@P:X@D02         	87019
+ 	     	ṣᵊlofḥˈāḏ       	ṣᵊlofḥˈāḏ       	YLPXD/    	Y:L@P:X@74D         	86388
+ 	     	ṣᵊlofḥˌāḏ       	ṣᵊlofḥˌāḏ       	YLPXD/    	Y:L@P:X@71D         	92569
 

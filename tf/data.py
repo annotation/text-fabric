@@ -136,7 +136,7 @@ class Data(object):
                 elif text == '@node': self.isEdge = False
                 elif text == '@config': self.isConfig = True
                 else:
-                    self.tm.error('Line {}: missing @node/@edge'.format(i))
+                    self.tm.error('Line {}: missing @node/@edge/@config'.format(i))
                     fh.close()
                     return False
                 continue
@@ -163,7 +163,7 @@ class Data(object):
         errors=collections.defaultdict(list)
         first = True
         i = firstI
-        implicit_node = 0
+        implicit_node = 1
         data = {}
         isEdge = self.isEdge
         edgeValues = self.edgeValues
@@ -245,12 +245,12 @@ class Data(object):
         self.data = data
         if not errors:
             if self.fileName == GRID[0]:
-                slotType = data[0]
+                slotType = data[1]
                 otype = []
-                maxSlot = -1
+                maxSlot = 1
                 for n in sorted(data):
                     if data[n] == slotType:
-                        maxSlot += 1
+                        maxSlot = n
                         continue
                     otype.append(data[n])
                 otype.append(slotType)
@@ -259,11 +259,11 @@ class Data(object):
             elif self.fileName == GRID[1]:
                 slotsList = sorted(data)
                 maxSlot = min(data.keys()) - 1
-                slots = []
+                oslots = []
                 for n in slotsList:
-                    slots.append(tuple(sorted(data[n])))
-                slots.append(maxSlot)
-                self.data = tuple(slots)
+                    oslots.append(tuple(sorted(data[n])))
+                oslots.append(maxSlot)
+                self.data = tuple(oslots)
         return not errors
 
     def _compute(self):
@@ -330,9 +330,15 @@ class Data(object):
 
     def _writeDataTf(self, fh, nodeRanges=False):
         data = self.data
+        if type(data) is tuple:
+            maxSlot = data[-1]
+            if self.fileName == GRID[0]:
+                data = dict(((k+1+maxSlot, data[k]) for k in range(0, len(data)-2)))
+            elif self.fileName == GRID[1]:
+                data = dict(((k+1+maxSlot, data[k]) for k in range(0, len(data)-1)))
         edgeValues = self.edgeValues
         if self.isEdge:
-            implicitNode = 0
+            implicitNode = 1
             for n in sorted(data):
                 thisData = data[n]
                 sets = {}
@@ -356,7 +362,7 @@ class Data(object):
             if nodeRanges:
                 for n in sorted(data):
                     sets.setdefault(data[n], []).append(n)
-                implicitNode = 0
+                implicitNode = 1
                 for (value, nset) in sorted(sets.items(), key=lambda x: (x[1][0], x[1][-1])):
                     if len(nset) == 1 and nset[0] == implicitNode:
                         nodeSpec = ''
@@ -367,7 +373,7 @@ class Data(object):
                         nodeSpec, '\t' if nodeSpec else '', tfFromValue(value),
                     ))
             else:
-                implicitNode = 0
+                implicitNode = 1
                 for n in sorted(data):
                     nodeSpec = '' if n == implicitNode else n
                     implicitNode = n + 1

@@ -131,8 +131,8 @@ FROM MONADS= {{ {m} }}
 WITH ID_D={i} [
 iam:="x";
 '''.format(
-    m=n+1 if n <= maxSlot else specFromRanges(plusOne(rangesFromList(oslots[n-maxSlot-1]))),
-    i=n+1,
+    m=n if n <= maxSlot else specFromRanges(rangesFromList(oslots[n-maxSlot-1])),
+    i=n,
 ))
         fm.write('''
 ]
