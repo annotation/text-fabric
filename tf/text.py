@@ -21,7 +21,7 @@ class Text(object):
                     f for f in tf.features.items() if f[0].startswith(
                         '{}@'.format(sectionFeats[0])
             )):
-                if not fObj.load():
+                if not fObj.load(silent=True):
                     good=False
                     continue
                 meta = fObj.metaData

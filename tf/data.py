@@ -44,7 +44,7 @@ class Data(object):
         self.dataError = False
         self.dataType = 'str'
 
-    def load(self, metaOnly=False):
+    def load(self, metaOnly=False, silent=False):
         self.tm.indent(level=1, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
@@ -88,7 +88,10 @@ class Data(object):
             self._cleanDataBin()
         if good:
             if actionRep != '=':
-                self.tm.info(msgFormat.format(actionRep, self.fileName, sourceRep), cache=1 if actionRep in 'CT' else -1)
+                self.tm.info(
+                    msgFormat.format(actionRep, self.fileName, sourceRep),
+                    cache=1 if (not silent) or (actionRep in 'CT') else -1,
+                )
         else:
             self.dataError = True
             self.tm.error(msgFormat.format(actionRep, self.fileName, sourceRep))

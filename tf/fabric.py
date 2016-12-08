@@ -5,10 +5,10 @@ from .helpers import *
 from .timestamp import Timestamp
 from .prepare import *
 from .api import *
-from .mql import *
+from .mql import MQL
 
 NAME = 'Text-Fabric'
-VERSION = '1.1.0'
+VERSION = '1.2.0'
 APIREF = 'https://github.com/dirkroorda/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/dirkroorda/text-fabric/blob/master/docs/tutorial.ipynb'
 FEATDOC = 'https://shebanq.ancient-data.org/static/docs/featuredoc/texts/welcome.html'
@@ -75,6 +75,7 @@ Questions? Ask {} for an invite to Slack'''.format(
         self.tm.indent(level=0, reset=True)
         self.tm.info('loading features ...')
         self.sectionsOK = True
+        self.good = True
         if self.good:
             self.featuresRequested = itemize(features) if type(features) is str else sorted(features)
             for fName in list(GRID):
@@ -155,25 +156,17 @@ Questions? Ask {} for an invite to Slack'''.format(
             for (tag, nf) in sorted(failed.items()):
                 self.tm.info('Failed to export {} {} features'.format(nf, tag))
 
-    def exportMQL(self, dirName=None, dbName=None):
+    def exportMQL(self, mqlName, mqlDir):
         self.tm.indent(level=0, reset=True)
-        (mqlDir, mqlName) = os.path.split(self.writeDir)
-        if dirName != None: mqlDir = dirName
-        if dbName != None: mqlName = dbName
         mqlDir = expandDir(mqlDir, dict(
             cur=self.curDir,
             up=self.parentDir,
             home=self.homeDir,
         ))
-        if not os.path.exists(mqlDir):
-            try:
-                os.makedirs(mqlDir, exist_ok=True)
-            except:
-                self.tm.error('Cannot create directory "{}"'.format(mqlDir))
-                return False
 
         mqlNameClean = cleanName(mqlName)
-        return writeMQL(mqlDir, mqlNameClean, self.features, self.tm)
+        mql = MQL(mqlDir, mqlName, self.features, self.tm)
+        mql.write()
 
     def _loadFeature(self, fName, optional=False):
         if not self.good: return False

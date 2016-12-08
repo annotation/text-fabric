@@ -59,6 +59,10 @@ class NodeFeature(object):
             [n for n in self.data if self.data[n] == val],
             key=lambda n: Crank[n-1],
         )
+    def freqList(self):
+        fql = collections.Counter()
+        for n in self.data: fql[self.data[n]] += 1
+        return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
 
 class EdgeFeature(object):
     def __init__(self, api, data, doValues):
