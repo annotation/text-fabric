@@ -1,5 +1,14 @@
 import re
 
+LETTER = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+VALID = set('_0123456789') | LETTER
+
+def cleanName(name):
+    clean = ''.join(c if c in VALID else '_' for c in name)
+    if clean == '' or not clean[0] in LETTER:
+        clean = 'x' + clean
+    return clean
+
 def setFromSpec(spec):
     covered = set()
     for r_str in spec.split(','):
@@ -17,7 +26,28 @@ def rangesFromSet(nodeSet):
     ranges = []
     curstart = None
     curend = None
-    for n in sorted((nodeSet)):
+    for n in sorted(nodeSet):
+        if curstart == None:
+            curstart = n
+            curend = n
+        elif n == curend + 1:
+            curend = n
+        else:
+            ranges.append((curstart, curend))
+            curstart = n
+            curend = n
+    if curstart != None:
+        ranges.append((curstart, curend))
+    return ranges
+
+def plusOne(ranges):
+    return tuple((s+1, e+1) for (s,e) in ranges)
+
+def rangesFromList(nodeList): # the list must be sorted 
+    ranges = []
+    curstart = None
+    curend = None
+    for n in nodeList:
         if curstart == None:
             curstart = n
             curend = n

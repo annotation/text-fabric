@@ -44,7 +44,7 @@ class Data(object):
         self.dataError = False
         self.dataType = 'str'
 
-    def load(self):
+    def load(self, metaOnly=False):
         self.tm.indent(level=1, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
@@ -71,17 +71,22 @@ class Data(object):
             elif not binTime or origTime > binTime:
                 actionRep = 'C' if self.method else 'T'
                 good = self._compute() if self.method else self._readTf()
-                if good: self._writeDataBin()
+                if good:
+                    if self.isConfig or metaOnly:
+                        actionRep = 'M'
+                    else:
+                        self._writeDataBin()
             else:
                 actionRep = 'B'
                 good = True if self.method else self._readTf(metaOnly=True)
                 if good:
-                    if self.isConfig:
+                    if self.isConfig or metaOnly:
                         actionRep = 'M'
                     else:
                         good = self._readDataBin()
+        if self.isConfig:
+            self._cleanDataBin()
         if good:
-            self.dataLoaded = time.time() 
             if actionRep != '=':
                 self.tm.info(msgFormat.format(actionRep, self.fileName, sourceRep), cache=1 if actionRep in 'CT' else -1)
         else:
@@ -275,7 +280,10 @@ class Data(object):
         self.data = self.method(info, error, *[
             dep.metaData if dep.fileName == GRID[2] else dep.data for dep in self.dependencies
         ])
-        return self.data != None
+        good = self.data != None
+        if good:
+            self.dataLoaded = time.time() 
+        return good
 
     def _writeTf(self, dirName=None, fileName=None, overwrite=True, extension=None, metaOnly=False, nodeRanges=False):
         self.tm.indent(level=1, reset=True)
@@ -373,7 +381,12 @@ class Data(object):
             self.tm.error('TF reading: feature file "{}" does not exist'.format(self.binPath))
             return False
         with gzip.open(self.binPath, "rb") as f: self.data = pickle.load(f)
+        self.dataLoaded = time.time() 
         return True
+
+    def _cleanDataBin(self):
+        if os.path.exists(self.binPath):
+            os.unlink(self.binPath)
 
     def _writeDataBin(self):
         good = True
@@ -390,6 +403,7 @@ class Data(object):
         except:
             self.tm.error('Cannot write to file "{}"'.format(self.binPath))
             good = False
+        self.dataLoaded = time.time() 
         return True
 
     def _getModified(self, bin=False):

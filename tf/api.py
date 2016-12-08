@@ -20,20 +20,11 @@ class OtypeFeature(object):
         return None
 
     def s(self, val):
-        #Crank = self.api.C.rank.data
-        #Clevels = self.api.C.levels.data
-        #maxSlot = self.maxSlot
-        #if val == self.data[-2]:
-        #    return range(maxSlot+1)
         if val in self.support:
             (b, e) = self.support[val]
             return range(b, e+1)
         else:
             return ()
-        #return sorted(
-        #    [n+maxSlot+1 for n in range(len(self.data)-2) if self.data[n] == val],
-        #    key=lambda n: Crank[n],
-        #)
 
 class OslotsFeature(object):
     def __init__(self, api, data=None):

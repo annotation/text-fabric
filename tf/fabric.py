@@ -5,6 +5,7 @@ from .helpers import *
 from .timestamp import Timestamp
 from .prepare import *
 from .api import *
+from .mql import *
 
 NAME = 'Text-Fabric'
 VERSION = '1.1.0'
@@ -156,6 +157,21 @@ Questions? Ask {} for an invite to Slack'''.format(
             for (tag, nf) in sorted(failed.items()):
                 self.tm.info('Failed to export {} {} features'.format(nf, tag))
 
+    def exportMQL(self, dirName=None, dbName=None):
+        self.tm.indent(level=0, reset=True)
+        (mqlDir, mqlName) = os.path.split(self.writeDir)
+        if dirName != None: mqlDir = dirName
+        if dbName != None: mqlName = dbName
+        if not os.path.exists(mqlDir):
+            try:
+                os.makedirs(mqlDir, exist_ok=True)
+            except:
+                self.tm.error('Cannot create directory "{}"'.format(mqlDir))
+                return False
+
+        mqlNameClean = cleanName(mqlName)
+        return writeMQL(mqlDir, mqlNameClean, self.features, self.tm)
+
     def _loadFeature(self, fName, optional=False):
         if not self.good: return False
         if fName not in self.features:
@@ -219,8 +235,8 @@ Questions? Ask {} for an invite to Slack'''.format(
             self.precomputeList.append((fName, dep2))
         self.good = good
 
-    def _getWriteLoc(self, module=None):
-        writeLoc = '' if len(self.locations) == 0 else self.locations[-1]
+    def _getWriteLoc(self, dirName=None, module=None):
+        writeLoc = dirName if dirName != None else '' if len(self.locations) == 0 else self.locations[-1]
         writeMod = module if module != None else '' if len(self.modules) == 0 else self.modules[-1]
         self.writeDir = '{}{}'.format(writeLoc, writeMod) if writeLoc == '' or writeMod == '' else '{}/{}'.format(writeLoc, writeMod)
 
