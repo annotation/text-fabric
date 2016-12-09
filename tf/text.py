@@ -30,7 +30,7 @@ class Text(object):
                 self.nameFromNode[code] = fObj.data
                 self.nodeFromName[code] = dict(((name, node) for (node, name) in fObj.data.items()))
             for fName in (SECTIONS):
-                if not tf.features[fName].load():
+                if not tf.features[fName].load(silent=True):
                     good=False
                     continue
                 self.sectionFeatures.append(tf.features[fName].data)

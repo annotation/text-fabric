@@ -8,7 +8,7 @@ from .api import *
 from .mql import MQL
 
 NAME = 'Text-Fabric'
-VERSION = '1.2.1'
+VERSION = '1.2.2'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 FEATDOC = 'https://shebanq.ancient-data.org/static/docs/featuredoc/texts/welcome.html'
@@ -176,7 +176,7 @@ Questions? Ask {} for an invite to Slack'''.format(
                 self.tm.error('Feature "{}" not available in\n{}'.format(fName, self.locationRep))
                 self.good = False
         else:
-            if not self.features[fName].load():
+            if not self.features[fName].load(silent=fName not in self.featuresRequested):
                 self.good = False
 
     def _makeIndex(self):
@@ -241,7 +241,7 @@ Questions? Ask {} for an invite to Slack'''.format(
         good = True
         for (fName, dep2) in self.precomputeList:
             if dep2 and not self.sectionsOK: continue
-            if not self.features[fName].load():
+            if not self.features[fName].load(silent=True):
                 good = False
                 break
         self.good = good
