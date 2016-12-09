@@ -70,7 +70,7 @@ class Data(object):
                 good = self._readDataBin()
             elif not binTime or origTime > binTime:
                 actionRep = 'C' if self.method else 'T'
-                good = self._compute() if self.method else self._readTf()
+                good = self._compute() if self.method else self._readTf(metaOnly=metaOnly)
                 if good:
                     if self.isConfig or metaOnly:
                         actionRep = 'M'
@@ -90,7 +90,7 @@ class Data(object):
             if actionRep != '=':
                 self.tm.info(
                     msgFormat.format(actionRep, self.fileName, sourceRep),
-                    cache=1 if (not silent) or (actionRep in 'CT') else -1,
+                    cache=1 if (not silent) or (actionRep in 'CTM') else -1,
                 )
         else:
             self.dataError = True
