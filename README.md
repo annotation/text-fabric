@@ -1,6 +1,6 @@
 # text-fabric
 
-![text-fabric](https://raw.github.com/etcbc/text-fabric/master/docs/tf.png)
+![text-fabric](https://raw.github.com/ETCBC/text-fabric/master/docs/tf.png)
 
 A Python3 package for Text plus Annotations.
 
@@ -11,6 +11,6 @@ The emphasis is lean and mean data processing and result serializing.
 
 [Motivation](http://www.slideshare.net/dirkroorda/text-fabric)
 
-[Install & Docs](https://github.com/etcbc/text-fabric/wiki/Home)
+[Install & Docs](https://github.com/ETCBC/text-fabric/wiki/Home)
 
-[Data](https://github.com/etcbc/text-fabric-data)
+[Data](https://github.com/ETCBC/text-fabric-data)

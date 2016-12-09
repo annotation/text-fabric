@@ -9,10 +9,10 @@ from .mql import MQL
 
 NAME = 'Text-Fabric'
 VERSION = '1.2.1'
-APIREF = 'https://github.com/etcbc/text-fabric/wiki/Api'
-TUTORIAL = 'https://github.com/etcbc/text-fabric/blob/master/docs/tutorial.ipynb'
+APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
+TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 FEATDOC = 'https://shebanq.ancient-data.org/static/docs/featuredoc/texts/welcome.html'
-DATA = 'https://github.com/etcbc/text-fabric-data'
+DATA = 'https://github.com/ETCBC/text-fabric-data'
 EMAIL = 'shebanq@ancient-data.org'
 
 LOCATIONS = [
