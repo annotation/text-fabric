@@ -8,11 +8,12 @@ from .api import *
 from .mql import MQL
 
 NAME = 'Text-Fabric'
-VERSION = '1.2.3'
+VERSION = '1.2.4'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
-FEATDOC = 'https://shebanq.ancient-data.org/static/docs/featuredoc/texts/welcome.html'
 DATA = 'https://github.com/ETCBC/text-fabric-data'
+DATADOC = 'https://etcbc.github.io/text-fabric-data/'
+FEATDOC = 'https://shebanq.ancient-data.org/static/docs/featuredoc/texts/welcome.html'
 EMAIL = 'shebanq@ancient-data.org'
 
 LOCATIONS = [
@@ -43,12 +44,13 @@ class Fabric(object):
     def __init__(self, locations=None, modules=None):
         self.tm = Timestamp()
         self.tm.info('''This is {} {}
-Api reference    : {}
-Tutorial         : {}
-Data sources     : {}
-Data feature docs: {}
+Api reference : {}
+Tutorial      : {}
+Data sources  : {}
+Data docs     : {}
+Shebanq docs  : {}
 Questions? Ask {} for an invite to Slack'''.format(
-            NAME, VERSION, APIREF, TUTORIAL, DATA, FEATDOC, EMAIL,
+            NAME, VERSION, APIREF, TUTORIAL, DATA, DATADOC, FEATDOC, EMAIL,
         ), tm=False)
         self.good = True
 
