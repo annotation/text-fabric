@@ -8,12 +8,12 @@ from .api import *
 from .mql import MQL
 
 NAME = 'Text-Fabric'
-VERSION = '1.2.4'
+VERSION = '1.2.5'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 DATA = 'https://github.com/ETCBC/text-fabric-data'
-DATADOC = 'https://etcbc.github.io/text-fabric-data/'
-FEATDOC = 'https://shebanq.ancient-data.org/static/docs/featuredoc/texts/welcome.html'
+DATADOC = 'https://etcbc.github.io/text-fabric-data/features/hebrew/etcbc4c/0_overview.html'
+SHEBANQ = 'https://shebanq.ancient-data.org/text'
 EMAIL = 'shebanq@ancient-data.org'
 
 LOCATIONS = [
@@ -50,7 +50,7 @@ Data sources  : {}
 Data docs     : {}
 Shebanq docs  : {}
 Questions? Ask {} for an invite to Slack'''.format(
-            NAME, VERSION, APIREF, TUTORIAL, DATA, DATADOC, FEATDOC, EMAIL,
+            NAME, VERSION, APIREF, TUTORIAL, DATA, DATADOC, SHEBANQ, EMAIL,
         ), tm=False)
         self.good = True
 
