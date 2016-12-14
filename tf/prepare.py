@@ -47,11 +47,11 @@ def order(info, error, otype, oslots, levels):
         else:
             b = nb - maxSlot
             sb = set(oslots[b-1])
-        oa = otypeRank(a)
-        ob = otypeRank(b)
+        oa = otypeRank(na)
+        ob = otypeRank(nb)
         if sa == sb: return 0 if oa == ob else -1 if oa < ob else 1
-        if sa < sb: return 1
         if sa > sb: return -1
+        if sa < sb: return 1
         am = min(sa - sb)
         bm = min(sb - sa)
         return -1 if am < bm else 1 if bm < am else None

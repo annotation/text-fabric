@@ -85,7 +85,7 @@ class Data(object):
                     else:
                         good = self._readDataBin()
         if self.isConfig:
-            self._cleanDataBin()
+            self.cleanDataBin()
         if good:
             if actionRep != '=':
                 self.tm.info(
@@ -393,7 +393,7 @@ class Data(object):
         self.dataLoaded = time.time() 
         return True
 
-    def _cleanDataBin(self):
+    def cleanDataBin(self):
         if os.path.exists(self.binPath):
             os.unlink(self.binPath)
 

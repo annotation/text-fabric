@@ -8,13 +8,14 @@ from .api import *
 from .mql import MQL
 
 NAME = 'Text-Fabric'
-VERSION = '1.2.5'
+VERSION = '1.2.6'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 DATA = 'https://github.com/ETCBC/text-fabric-data'
 DATADOC = 'https://etcbc.github.io/text-fabric-data/features/hebrew/etcbc4c/0_overview.html'
 SHEBANQ = 'https://shebanq.ancient-data.org/text'
 EMAIL = 'shebanq@ancient-data.org'
+SLACK = 'https://shebanq.slack.com/signup'
 
 LOCATIONS = [
     '~/Downloads/text-fabric-data',
@@ -49,8 +50,9 @@ Tutorial      : {}
 Data sources  : {}
 Data docs     : {}
 Shebanq docs  : {}
+Slack team    : {}
 Questions? Ask {} for an invite to Slack'''.format(
-            NAME, VERSION, APIREF, TUTORIAL, DATA, DATADOC, SHEBANQ, EMAIL,
+            NAME, VERSION, APIREF, TUTORIAL, DATA, DATADOC, SHEBANQ, SLACK, EMAIL,
         ), tm=False)
         self.good = True
 
@@ -122,6 +124,10 @@ Questions? Ask {} for an invite to Slack'''.format(
             self.tm.cache()
             return None
         return self._makeApi()
+
+    def clearCache(self):
+        for (fName, fObj) in self.features.items():
+            fObj.cleanDataBin()
 
     def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}, module=None):
         self.tm.indent(level=0, reset=True)
