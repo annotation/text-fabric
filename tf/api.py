@@ -28,6 +28,13 @@ class OtypeFeature(object):
         else:
             return ()
 
+    def sInterval(self, val):
+        # NB: the support attribute has been added by precomputing __levels__
+        if val in self.support:        
+            return self.support[val]
+        else:
+            return ()
+
 class OslotsFeature(object):
     def __init__(self, api, data=None):
         self.api = api
