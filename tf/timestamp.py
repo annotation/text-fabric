@@ -9,11 +9,13 @@ class Timestamp(object):
         self.timestamp = {}
         self.indent(level=level, reset=True)
         self.log = []
+        self.verbose = -2
 
     def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
         # cache = -1: only to cache
         # cache =  1: to cache and to console
         # cache =  0: only to console
+        if self.verbose != -2 and self.level >= self.verbose: return
         if tm:
             msgRep = '{}{:>7} {}'.format(self.levelRep, self._elapsed(), msg).replace('\n', '\n'+self.levelRep)
         else:
@@ -36,11 +38,13 @@ class Timestamp(object):
     def info(self, msg, tm=True, nl=True, cache=False): self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
     def error(self, msg, tm=True, nl=True, cache=False): self.raw_msg(msg, tm=tm, nl=nl, cache=cache, error=True)
 
-    def indent(self, level=None, reset=False):
+    def indent(self, level=None, reset=False, verbose=None):
         self.level = level if level != None else 0
         self.levelRep = self.oneLevelRep * self.level
         if reset:
             self.timestamp[self.level] = time.time()
+        if verbose != None:
+            self.verbose=verbose
 
     def _elapsed(self):
         interval = time.time() - self.timestamp.setdefault(self.level, time.time())
