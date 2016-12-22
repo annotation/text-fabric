@@ -90,7 +90,7 @@ class Data(object):
             if actionRep != '=':
                 self.tm.info(
                     msgFormat.format(actionRep, self.fileName, sourceRep),
-                    cache=1 if (not silent) or (actionRep in 'CTM') else -1,
+                    cache=1 if (not silent) or (actionRep in 'CT') else -1,
                 )
         else:
             self.dataError = True

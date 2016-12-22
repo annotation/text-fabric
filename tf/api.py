@@ -2,6 +2,7 @@ import collections
 from .helpers import *
 from .layer import Layer
 from .text import Text
+from .search import Search
 
 class OtypeFeature(object):
     def __init__(self, api, data=None):
@@ -42,13 +43,13 @@ class OslotsFeature(object):
         self.maxSlot = self.data[-1]
 
     def s(self, n): 
-        if n == 0: return []
+        if n == 0: return ()
         if n < self.maxSlot + 1:
-            return [n]
+            return (n,)
         m = n - self.maxSlot
         if m <= len(self.data) - 1:
             return self.data[m-1]
-        return []
+        return ()
 
 class NodeFeature(object):
     def __init__(self, api, data):
@@ -91,7 +92,7 @@ class EdgeFeature(object):
                     self.data[n],
                     key=lambda m: Crank[m-1],
                 )
-        return None
+        return ()
 
     def t(self, n): 
         Crank = self.api.C.rank.data
@@ -106,7 +107,7 @@ class EdgeFeature(object):
                     self.dataInv[n],
                     key=lambda m: Crank[m-1],
                 )
-        return None
+        return ()
 
 class Computed(object):
     def __init__(self, api, data):
@@ -170,4 +171,7 @@ def addLayer(api):
 
 def addText(api, tf):
     api.T = Text(api, tf)
+
+def addSearch(api, tf):
+    api.S = Search(api, tf)
 

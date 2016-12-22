@@ -74,15 +74,20 @@ Questions? Ask {} for an invite to Slack'''.format(
             )))
 
         self.locationRep = '\n\t'.join('\n\t'.join('{}/{}'.format(l,f) for f in self.modules) for l in self.locations)
+        self.featuresRequested = []
         self._makeIndex()
 
-    def load(self, features):
+    def load(self, features, add=False):
         self.tm.indent(level=0, reset=True)
         self.tm.info('loading features ...')
         self.sectionsOK = True
         self.good = True
         if self.good:
-            self.featuresRequested = itemize(features) if type(features) is str else sorted(features)
+            featuresRequested = itemize(features) if type(features) is str else sorted(features)
+            if add:
+                self.featuresRequested += featuresRequested
+            else:
+                self.featuresRequested = featuresRequested
             for fName in list(GRID):
                 self._loadFeature(fName, optional=fName==GRID[2])
         if self.good:
@@ -123,7 +128,28 @@ Questions? Ask {} for an invite to Slack'''.format(
             self.tm.error('Not all features could be loaded/computed')
             self.tm.cache()
             return None
-        return self._makeApi()
+        if add: self._updateApi()
+        else:
+            return self._makeApi()
+
+    
+    def explore(self):
+        nodes = set()
+        edges = set()
+        configs = set()
+        computeds = set()
+        for (fName, fObj) in self.features.items():
+            fObj.load(metaOnly=True, silent=True)
+            dest = None
+            if fObj.method: dest = computeds
+            elif fObj.isConfig: dest = configs
+            elif fObj.isEdge: dest = edges
+            else: dest = nodes
+            dest.add(fName)
+        self.tm.info('Feature overview: {} nodes; {} edges; {} configs; {} computeds'.format(
+            len(nodes), len(edges), len(configs), len(computeds),
+        ))
+        self.featureSets = dict(nodes=nodes, edges=edges, configs=configs, computeds=computeds)
 
     def clearCache(self):
         for (fName, fObj) in self.features.items():
@@ -289,7 +315,35 @@ Questions? Ask {} for an invite to Slack'''.format(
         addOtype(api)
         addLayer(api)
         addText(api, self)
+        addSearch(api, self)
         self.tm.indent(level=0)
         self.tm.info('All features loaded/computed - for details use loadLog()')
+        self.api = api
         return api
+
+    def _updateApi(self):
+        if not self.good: return None
+        api = self.api
+         
+        for fName in self.features:
+            fObj = self.features[fName]
+            if fObj.dataLoaded and not fObj.isConfig:
+                if not fObj.method:
+                    if fName in self.featuresRequested:
+                        if fName in GRID: continue
+                        elif fObj.isEdge:
+                            if not hasattr(api.E, fName):
+                                setattr(api.E, fName, EdgeFeature(api, fObj.data, fObj.edgeValues))
+                        else:
+                            if not hasattr(api.F, fName):
+                                setattr(api.F, fName, NodeFeature(api, fObj.data))
+                    else:
+                        if fName in GRID or fName in SECTIONS or fName in self._formatFeats: continue
+                        elif fObj.isEdge:
+                            if hasattr(api.E, fName): delattr(api.E, fName)
+                        else:
+                            if hasattr(api.F, fName): delattr(api.F, fName)
+                        fObj.unload()
+        self.tm.indent(level=0)
+        self.tm.info('All additional features loaded - for details use loadLog()')
 

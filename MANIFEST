@@ -8,6 +8,7 @@ tf/helpers.py
 tf/layer.py
 tf/mql.py
 tf/prepare.py
+tf/search.py
 tf/text.py
 tf/timestamp.py
 tf/transcription.py

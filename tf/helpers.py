@@ -147,6 +147,6 @@ def makeFunc(feat, features):
         return (lambda n: (f1.get(n, f2.get(n, ''))))
 
 def itemize(string, sep=None):
-    if not string: return ()
+    if not string: return []
     if not sep: return string.strip().split()
     return string.strip().split(sep)
