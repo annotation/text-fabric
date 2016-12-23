@@ -1,4 +1,4 @@
-import re
+import re, types
 from functools import reduce
 from random import randrange
 from inspect import signature
@@ -77,20 +77,26 @@ class Search(object):
     def glean(self, r):
         T = self.api.T
         F = self.api.F
+        L = self.api.L
         slotType = F.otype.slotType
         lR = len(r)
         if lR == 0: return ''
         fields = []
         for (i, n) in enumerate(r):
             otype = F.otype.v(n)
+            words = L.d(n, otype=slotType)
             if otype == SECTIONS[2]:
                 field = '{} {}:{}'.format(*T.sectionFromNode(n))
             elif otype == slotType:
-                field = T.text([n])
+                field = T.text(words)
             elif otype in SECTIONS[0:2]:
                 field = ''
             else:
-                field = otype
+                field = '{}[{}{}]'.format(
+                    otype,
+                    T.text(words[0:5]),
+                    '...' if len(words) > 5 else '',
+                )
             fields.append(field)
         return ' '.join(fields)
 
@@ -129,20 +135,21 @@ class Search(object):
         indent(level=0)
         info('Done: {} results'.format(i))
 
-    def showPlan(self):
+    def showPlan(self, details=False):
         info = self.api.info
         nodeLine = self.nodeLine
         qedges = self.qedges
         (qs, es) = self.stitchPlan
-        info('Search with {} objects and {} relations'.format(len(qs), len(es)), tm=False)
-        info('Results are instantiations of the following objects:', tm=False)
-        for q in qs: self._showNode(q)
-        info('Instantiations are computed along the following relations:', tm=False)
-        (firstE, firstDir) = es[0]
-        (f, rela, t) = qedges[firstE]
-        if firstDir == -1: (f, t) = (t, f)
-        self._showNode(f, pos2=True)
-        for e in es: self._showEdge(*e)
+        if details:
+            info('Search with {} objects and {} relations'.format(len(qs), len(es)), tm=False)
+            info('Results are instantiations of the following objects:', tm=False)
+            for q in qs: self._showNode(q)
+            info('Instantiations are computed along the following relations:', tm=False)
+            (firstE, firstDir) = es[0]
+            (f, rela, t) = qedges[firstE]
+            if firstDir == -1: (f, t) = (t, f)
+            self._showNode(f, pos2=True)
+            for e in es: self._showEdge(*e)
         info('The results are connected to the original search template as follows:')
 
         resultNode = {}
@@ -150,7 +157,7 @@ class Search(object):
             resultNode[nodeLine[q]] = q
         for (i, line) in enumerate(self.searchLines):
             rNode = resultNode.get(i, '')
-            info('{:>2} {:<1}{:>2} {}'.format(
+            info('{:>2} {:<1}{:<2} {}'.format(
                 i,
                 'R' if rNode != '' else '',
                 rNode,
@@ -170,7 +177,13 @@ class Search(object):
         maxSlot = F.otype.maxSlot
 
         def equalR(fTp, tTp):
-            return lambda n, m: n == m
+            return lambda n: (n,)
+
+        def spinEqual(fTp, tTp):
+            def doyarns(yF, yT):
+                x = set(yF) & set(yT)
+                return (x, x)
+            return doyarns
 
         def unequalR(fTp, tTp):
             return lambda n, m: n != m
@@ -181,6 +194,57 @@ class Search(object):
         def canonicalAfterR(fTp, tTp):
             return lambda n, m: Crank[n-1] > Crank[m-1]
         
+        def spinSameSlots(fTp, tTp):
+            if fTp == slotType and tTp == slotType:
+                def doyarns(yF, yT):
+                    x = set(yF) & set(yT)
+                    return (x, x)
+                return doyarns
+            elif fTp == slotType or tTp == slotType:
+                def doyarns(yS, y2):
+                    sindex = {}
+                    for m in y2:
+                        ss = len(Eoslots[m-maxSlot-1])
+                        if len(ss) == 1:
+                            sindex.setdefault(ss[0], set()).add(m)
+                    nyS = yS & set(sindex.keys())
+                    ny2 = reduce(
+                        set.union,
+                        (sindex[s] for s in nyS),
+                        set(),
+                    )
+                    return (nyS, ny2)
+                if fTp == slotType:
+                    return doyarns
+                else:
+                    def xx(yF, yT):
+                        (nyT, nyF) = doyarns(yT, yF)
+                        return (nyF, nyT)
+                    return xx
+            else:
+                def doyarns(yF, yT):
+                    sindexF = {}
+                    for n in yF:
+                        s = frozenset(Eoslots[n-maxSlot-1])
+                        sindexF.setdefault(s, set()).add(n)
+                    sindexT = {}
+                    for m in yT:
+                        s = frozenset(Eoslots[m-maxSlot-1])
+                        sindexT.setdefault(s, set()).add(m)
+                    nyS = set(sindexF.keys()) & set(sindexT.keys())
+                    nyF = reduce(
+                        set.union,
+                        (sindexF[s] for s in nyS),
+                        set(),
+                    )
+                    nyT = reduce(
+                        set.union,
+                        (sindexT[s] for s in nyS),
+                        set(),
+                    )
+                    return (nyF, nyT)
+                return doyarns
+
         def sameSlotsR(fTp, tTp):
             if fTp == slotType and tTp == slotType:
                 return lambda n: (n,)
@@ -189,7 +253,70 @@ class Search(object):
             elif fTp == slotType:
                 return lambda n, m: Eoslots[m-maxSlot-1] == (n,)
             else:
-                return lambda n, m: frozenset(Eoslots[m-maxSlot-1]) == frozenset(Eoslots[m-maxSlot-1])
+                return lambda n, m: frozenset(Eoslots[n-maxSlot-1]) == frozenset(Eoslots[m-maxSlot-1])
+
+        def spinOverlap(fTp, tTp):
+            if fTp == slotType and tTp == slotType:
+                def doyarns(yF, yT):
+                    x = set(yF) & set(yT)
+                    return (x, x)
+                return doyarns
+            elif fTp == slotType or tTp == slotType:
+                def doyarns(yS, y2):
+                    sindex = {}
+                    for m in y2:
+                        for s in Eoslots[m-maxSlot-1]:
+                            sindex.setdefault(s, set()).add(m)
+                    nyS = yS & set(sindex.keys())
+                    ny2 = reduce(
+                        set.union,
+                        (sindex[s] for s in nyS),
+                        set(),
+                    )
+                    return (nyS, ny2)
+                if fTp == slotType:
+                    return doyarns
+                else:
+                    def xx(yF, yT):
+                        (nyT, nyF) = doyarns(yT, yF)
+                        return (nyF, nyT)
+                    return xx
+            else:
+                def doyarns(yF, yT):
+                    REDUCE_FACTOR = 0.4
+                    SIZE_LIMIT = 10000
+                    sindexF = {}
+                    for n in yF:
+                        for s in Eoslots[n-maxSlot-1]:
+                            sindexF.setdefault(s, set()).add(n)
+                    sindexT = {}
+                    for m in yT:
+                        for s in Eoslots[m-maxSlot-1]:
+                            sindexT.setdefault(s, set()).add(m)
+                    nyS = set(sindexF.keys()) & set(sindexT.keys())
+
+                    lsF = len(sindexF)
+                    lsT = len(sindexT)
+                    lsI = len(nyS)
+                    if lsF == lsT: # spinning is completely useless
+                        return (yF, yT)
+                    if lsI > REDUCE_FACTOR * lsT and lsT > SIZE_LIMIT: # spinning is not worth it
+                        return (yF, yT)
+
+                    self.api.info('1. reducing over {} elements'.format(len(nyS)))
+                    nyF = reduce(
+                        set.union,
+                        (sindexF[s] for s in nyS),
+                        set(),
+                    )
+                    self.api.info('2. reducing over {} elements'.format(len(nyS)))
+                    nyT = reduce(
+                        set.union,
+                        (sindexT[s] for s in nyS),
+                        set(),
+                    )
+                    return (nyF, nyT)
+                return doyarns
 
         def overlapR(fTp, tTp):
             if fTp == slotType and tTp == slotType:
@@ -273,40 +400,40 @@ class Search(object):
 
         relations = [
             (
-                ( '='  , equalR           , 'left equal to right (as node)'),
-                ( '='  , equalR           , None),
+                ( '='  , spinEqual,     equalR           , 'left equal to right (as node)'),
+                ( '='  , spinEqual,     equalR           , None),
             ),
             (
-                ( '#'  , unequalR         , 'left unequal to right (as node)'),
-                ( '#'  , unequalR         , None),
+                ( '#'  , 0.999,         unequalR         , 'left unequal to right (as node)'),
+                ( '#'  , 0.999,         unequalR         , None),
             ),
             (
-                ( '<'  , canonicalBeforeR , 'left before right (in canonical node ordering)'),
-                ( '>'  , canonicalAfterR  , 'left after right (in canonical node ordering)'),
+                ( '<'  , 0.500,         canonicalBeforeR , 'left before right (in canonical node ordering)'),
+                ( '>'  , 0.500,         canonicalAfterR  , 'left after right (in canonical node ordering)'),
             ),
             (
-                ( '==' , sameSlotsR       , 'left occupies same slots as right'),
-                ( '==' , sameSlotsR       , None),
+                ( '==' , spinSameSlots, sameSlotsR       , 'left occupies same slots as right'),
+                ( '==' , spinSameSlots, sameSlotsR       , None),
             ),
             (
-                ( '&&' , overlapR         , 'left has overlapping slots with right'),
-                ( '&&' , overlapR         , None),
+                ( '&&' , spinOverlap,   overlapR         , 'left has overlapping slots with right'),
+                ( '&&' , spinOverlap,   overlapR         , None),
             ),
             (
-                ( '##' , diffSlotsR       , 'left and right do not have the same slot set'),
-                ( '##' , diffSlotsR       , None),
+                ( '##' , 0.990,         diffSlotsR       , 'left and right do not have the same slot set'),
+                ( '##' , 0.990,         diffSlotsR       , None),
             ),
             (
-                ( '||' , disjointSlotsR   , 'left and right do not have common slots'),
-                ( '||' , disjointSlotsR   , None),
+                ( '||' , 0.900,         disjointSlotsR   , 'left and right do not have common slots'),
+                ( '||' , 0.900,         disjointSlotsR   , None),
             ),
             (
-                ( '[[' , hasR             , 'left embeds right'),
-                ( ']]' , inR              , 'left embedded in right'),
+                ( '[[' , True,          hasR             , 'left embeds right'),
+                ( ']]' , True,          inR              , 'left embedded in right'),
             ),
             (
-                ( '<<' , slotBeforeR      , 'left completely before right'),
-                ( '>>' , slotAfterR       , 'left completely after right'),
+                ( '<<' , 0.490,         slotBeforeR      , 'left completely before right'),
+                ( '>>' , 0.490,         slotAfterR       , 'left completely after right'),
             ),
         ]
 
@@ -319,8 +446,8 @@ class Search(object):
 
             (edgeR, edgeIR) = makeEdgeMaps(efName)
             relations.append((
-                ('-{}>'.format(efName), edgeR,  'edge feature "{}"'.format(efName)),
-                ('<{}-'.format(efName), edgeIR, 'edge feature "{}" (opposite direction)'.format(efName)),
+                ('-{}>'.format(efName), True, edgeR,  'edge feature "{}"'.format(efName)),
+                ('<{}-'.format(efName), True, edgeIR, 'edge feature "{}" (opposite direction)'.format(efName)),
             ))
             edgeMap[2*r] = (efName, 1)
             edgeMap[2*r+1] = (efName, -1)
@@ -329,9 +456,14 @@ class Search(object):
         relationsAll = []
         for (r, rc) in relations: relationsAll.extend([r, rc])
 
-        self.relations = relationsAll
-        self.relationFromName = dict(((r[0], i) for (i, r) in enumerate(relationsAll)))
-        self.relationLegend = '\n'.join('{:>23} {}'.format(r[0], r[2]) for r in relationsAll if r[2] != None)
+        self.relations = [dict(
+            acro=r[0],
+            spin=r[1],
+            func=r[2],
+            desc=r[3],
+        ) for r in relationsAll]
+        self.relationFromName = dict(((r['acro'], i) for (i, r) in enumerate(self.relations)))
+        self.relationLegend = '\n'.join('{:>23} {}'.format(r['acro'], r['desc']) for r in self.relations if r['desc'] != None)
         self.relationLegend += '''
 The grid feature "{}" cannot be used in searches.
 Surely, one of the above relations on nodes and/or slots will suit you better!'''.format(GRID[1])
@@ -695,7 +827,7 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
         (f, rela, t) = qedges[e]
         if dir == -1: (f, rela, t) = (t, converse[rela], f)
         self.api.info('edge {:>2}-{:<13} {:^2} {:>2}-{:<13} ({:8.1f} choices)'.format(
-            f, qnodes[f][0], relations[rela][0], t, qnodes[t][0],
+            f, qnodes[f][0], relations[rela]['acro'], t, qnodes[t][0],
             spreads.get(e, -1) if dir == 1 else spreadsC.get(e, -1),
         ), tm=False)
 
@@ -746,8 +878,15 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
             if both:
                 tasks.append((t, converse[rela], f, -1))
             for (tf, trela, tt, dir) in tasks:
+                s = relations[trela]['spin']
+                yarnF = yarns[tf]
+                yarnT = yarns[tt]
                 dest = self.spreads if dir == 1 else self.spreadsC
-                yarnF = list(yarns[tf])
+                if type(s) is float:
+                    # fixed estimates
+                    dest[e] = len(yarnT) * s
+                    continue
+                yarnF = list(yarnF)
                 yarnT = yarns[tt]
                 totalSpread = 0
                 yarnFl = len(yarnF)
@@ -758,7 +897,7 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
                 if len(triesn) == 0:
                     dest[e] = 0
                 else:
-                    r = relations[trela][1](qnodes[tf][0], qnodes[tt][0])
+                    r = relations[trela]['func'](qnodes[tf][0], qnodes[tt][0])
                     nparams = len(signature(r).parameters)
                     if nparams == 1:
                         for n in triesn:
@@ -800,7 +939,7 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
         return firstEdge
             
     def _spinEdge(self, e):
-        SPIN_LIMIT = 100000
+        SPIN_LIMIT = 1000
         qnodes = self.qnodes
         relations = self.relations
         yarns = self.yarns
@@ -811,30 +950,39 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
         (f, rela, t) = qedges[e]
         yarnF = yarns[f]
         yarnT = yarns[t]
-
-        newYarnF = set()
-        newYarnT = set()
-        
-        r = relations[rela][1](qnodes[f][0], qnodes[t][0])
-        nparams = len(signature(r).parameters)
         uptodate[e] = True
+
         # if the yarns around an edge are big, and the spread of the relation is
         # also big, spinning costs an enormous amount of time, and will not help in
         # reducing the search space.
         # condition for skipping: spread times length from-yarn >= SPIN_LIMIT
-        if spreads[e] * len(yarns[f]) >= SPIN_LIMIT: return
-        if nparams == 1:
-            for n in yarnF:
-                mFromN = set(r(n)) & yarnT
-                if len(mFromN):
-                    newYarnT |= mFromN
-                    newYarnF.add(n)
+        if spreads[e] * len(yarnF) >= SPIN_LIMIT: return
+
+        # for some basic relations we know that spinning is useless
+        s = relations[rela]['spin']
+        if type(s) is float: return
+
+        # for other basic realtions we have an optimized spin function
+        if type(s) is types.FunctionType:
+            (newYarnF, newYarnT) = s(qnodes[f][0], qnodes[t][0])(yarnF, yarnT)
         else:
-            for n in yarnF:
-                mFromN = set(m for m in yarnT if r(n, m))
-                if len(mFromN):
-                    newYarnT |= mFromN
-                    newYarnF.add(n)
+            r = relations[rela]['func'](qnodes[f][0], qnodes[t][0])
+            nparams = len(signature(r).parameters)
+            newYarnF = set()
+            newYarnT = set()
+            
+            if nparams == 1:
+                for n in yarnF:
+                    mFromN = set(r(n)) & yarnT
+                    if len(mFromN):
+                        newYarnT |= mFromN
+                        newYarnF.add(n)
+            else:
+                for n in yarnF:
+                    mFromN = set(m for m in yarnT if r(n, m))
+                    if len(mFromN):
+                        newYarnT |= mFromN
+                        newYarnF.add(n)
 
         affectedF = len(newYarnF) != len(yarns[f])
         affectedT = len(newYarnT) != len(yarns[t])
@@ -1140,7 +1288,7 @@ In plan    : {}'''.format(qedgesO, newCedgesO), tm=False)
             (f, rela, t) = qedges[e]
             if dir == -1:
                 (f, rela, t) = (t, converse[rela], f)
-            r = relations[rela][1](qnodes[f][0], qnodes[t][0])
+            r = relations[rela]['func'](qnodes[f][0], qnodes[t][0])
             nparams = len(signature(r).parameters)
             if i == 0:
                 qPermuted.append(f)
