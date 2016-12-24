@@ -36,6 +36,8 @@ class Search(object):
         self.good = True
         self._basicRelations()
 
+### API METHODS ###
+
     def study(self, searchTemplate, strategy=None):
         indent = self.api.indent
         info = self.api.info
@@ -164,6 +166,8 @@ class Search(object):
                 line,
             ), tm=False)
                    
+### LOW-LEVEL NODE RELATIONS SEMANTICS ###
+
     def _basicRelations(self):
         C = self.api.C
         F = self.api.F
@@ -470,6 +474,8 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
         self.converse = dict(tuple((2*i, 2*i + 1) for i in range(lr)) + tuple((2*i+1, 2*i) for i in range(lr))) 
         self.edgeMap = edgeMap
 
+### SYNTACTIC ANALYSIS OF SEARCH TEMPLATE ###
+
     def _tokenize(self):            
         if not self.good: return
 
@@ -558,6 +564,8 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
                 error('{:>2} {}'.format(i, line), tm=False)
             for eline in self.badSyntax:
                 error(eline, tm=False)
+
+### SEMANTIC ANALYSIS OF SEARCH TEMPLATE ###
 
     def _grammar(self):
         if not self.good: return
@@ -769,6 +777,8 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
             for eline in self.badSemantics:
                 error(eline, tm=False)
 
+### WORKING WITH THE SEARCH GRAPH ###
+
     def _connectedness(self):
         info = self.api.info
         error = self.api.error
@@ -833,6 +843,8 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
 
     def _showYarns(self):
         for q in range(len(self.qnodes)): self._showNode(q)
+
+### SPINNING ###
 
     def _spinAtom(self, q):
         F = self.api.F
@@ -1018,6 +1030,8 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
             self._spinEdge(e)
             it += 1
 
+### STITCHING: STRATEGIES ###
+
     def _spread_1_first(self):
         qedges = self.qedges
         qnodes = self.qnodes
@@ -1167,6 +1181,18 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
         self.newNodes = newNodes
         self.newEdges = newEdges
 
+### STITCHING ###
+
+    def _stitch(self):
+        yarns = self.yarns
+
+        self._estimateSpreads(both=True)
+        self._stitchPlan()
+        if not self.good: return
+        self._stitchResults()
+        
+### STITCHING: PLANNING ###
+
     def _stitchPlan(self, strategy=None):
         qnodes = self.qnodes
         qedges = self.qedges
@@ -1214,14 +1240,8 @@ In plan    : {}'''.format(qedgesO, newCedgesO), tm=False)
 
         self.stitchPlan = (newNodes, newCedgesOrder)
         
-    def _stitch(self):
-        yarns = self.yarns
+### STITCHING: DELIVERING ###
 
-        self._estimateSpreads(both=True)
-        self._stitchPlan()
-        if not self.good: return
-        self._stitchResults()
-        
     def _stitchResults(self):
         qnodes = self.qnodes
         qedges = self.qedges
@@ -1343,6 +1363,8 @@ In plan    : {}'''.format(qedgesO, newCedgesO), tm=False)
             for s in stitchOn(0): yield s
 
         self.results = deliver
+
+### TOP-LEVEL IMPLEMENTATION METHODS
 
     def _parse(self):
         self._syntax()
