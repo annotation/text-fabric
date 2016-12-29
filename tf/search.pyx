@@ -180,25 +180,31 @@ class Search(object):
         slotType = F.otype.slotType
         maxSlot = F.otype.maxSlot
 
-        def equalR(fTp, tTp):
+        def equalR(str fTp, str tTp):
             return lambda n: (n,)
 
-        def spinEqual(fTp, tTp):
+        def spinEqual(str fTp, str tTp):
             def doyarns(yF, yT):
                 x = set(yF) & set(yT)
                 return (x, x)
             return doyarns
 
-        def unequalR(fTp, tTp):
+        def unequalR_ORIG(str fTp, str tTp):
             return lambda n, m: n != m
 
-        def canonicalBeforeR(fTp, tTp):
-            return lambda n, m: Crank[n-1] < Crank[m-1]
+        def unequalR(str fTp, str tTp):
+            def xx(n, m): return n != m
+            return xx
+
+        def canonicalBeforeR(str fTp, str tTp):
+            def xx(n, m): return Crank[n-1] < Crank[m-1]
+            return xx
         
-        def canonicalAfterR(fTp, tTp):
-            return lambda n, m: Crank[n-1] > Crank[m-1]
+        def canonicalAfterR(str fTp, str tTp):
+            def xx(n, m): return Crank[n-1] > Crank[m-1]
+            return xx
         
-        def spinSameSlots(fTp, tTp):
+        def spinSameSlots(str fTp, str tTp):
             if fTp == slotType and tTp == slotType:
                 def doyarns(yF, yT):
                     x = set(yF) & set(yT)
@@ -249,7 +255,7 @@ class Search(object):
                     return (nyF, nyT)
                 return doyarns
 
-        def sameSlotsR(fTp, tTp):
+        def sameSlotsR(str fTp, str tTp):
             if fTp == slotType and tTp == slotType:
                 return lambda n: (n,)
             elif tTp == slotType:
@@ -259,7 +265,7 @@ class Search(object):
             else:
                 return lambda n, m: frozenset(Eoslots[n-maxSlot-1]) == frozenset(Eoslots[m-maxSlot-1])
 
-        def spinOverlap(fTp, tTp):
+        def spinOverlap(str fTp, str tTp):
             if fTp == slotType and tTp == slotType:
                 def doyarns(yF, yT):
                     x = set(yF) & set(yT)
@@ -322,7 +328,7 @@ class Search(object):
                     return (nyF, nyT)
                 return doyarns
 
-        def overlapR(fTp, tTp):
+        def overlapR(str fTp, str tTp):
             if fTp == slotType and tTp == slotType:
                 return lambda n: (n,)
             elif tTp == slotType:
@@ -332,7 +338,7 @@ class Search(object):
             else:
                 return lambda n, m: len(frozenset(Eoslots[n-maxSlot-1]) & frozenset(Eoslots[m-maxSlot-1])) != 0
 
-        def diffSlotsR(fTp, tTp):
+        def diffSlotsR(str fTp, str tTp):
             if fTp == slotType and tTp == slotType:
                 return lambda n, m: m != n
             elif tTp == slotType:
@@ -342,7 +348,7 @@ class Search(object):
             else:
                 return lambda n, m: frozenset(Eoslots[n-maxSlot-1]) != frozenset(Eoslots[m-maxSlot-1])
 
-        def disjointSlotsR(fTp, tTp):
+        def disjointSlotsR(str fTp, str tTp):
             if fTp == slotType and tTp == slotType:
                 return lambda n, m: m != n
             elif tTp == slotType:
@@ -352,7 +358,7 @@ class Search(object):
             else:
                 return lambda n, m: len(frozenset(Eoslots[n-maxSlot-1]) & frozenset(Eoslots[m-maxSlot-1])) == 0
 
-        def inR(fTp, tTp):
+        def inR_ORIG(str fTp, str tTp):
             if fTp == slotType and tTp == slotType:
                 return lambda n: ()
             elif tTp == slotType:
@@ -362,7 +368,19 @@ class Search(object):
             else:
                 return lambda n: ClevUp[n-1]
 
-        def hasR(fTp, tTp):
+        def inR(str fTp, str tTp):
+            def xx(n): return ()
+            def yy(n): return ClevUp[n-1]
+            if fTp == slotType and tTp == slotType:
+                return xx
+            elif tTp == slotType:
+                return xx
+            elif fTp == slotType:
+                return yy
+            else:
+                return yy
+
+        def hasR_ORIG(str fTp, str tTp):
             if fTp == slotType and tTp == slotType:
                 return lambda n: ()
             elif fTp == slotType:
@@ -372,7 +390,20 @@ class Search(object):
             else:
                 return lambda n: ClevDown[n-maxSlot-1]
 
-        def slotBeforeR(fTp, tTp):
+        def hasR(str fTp, str tTp):
+            def xx(n): return ()
+            def yy(n): return ClevDown[n-maxSlot-1]
+            def zz(n): return Eoslots[n-maxSlot-1]
+            if fTp == slotType and tTp == slotType:
+                return xx
+            elif fTp == slotType:
+                return xx
+            elif tTp == slotType:
+                return zz
+            else:
+                return yy
+
+        def slotBeforeR(str fTp, str tTp):
             if fTp == slotType and tTp == slotType:
                 return lambda n, m: n < m
             elif fTp == slotType:
@@ -382,7 +413,7 @@ class Search(object):
             else:
                 return lambda n, m: max(Eoslots[n-maxSlot-1]) < min(Eoslots[m-maxSlot-1])
 
-        def slotAfterR(fTp, tTp):
+        def slotAfterR(str fTp, str tTp):
             if fTp == slotType and tTp == slotType:
                 return lambda n, m: n > m
             elif fTp == slotType:
@@ -1324,12 +1355,14 @@ In plan    : {}'''.format(qedgesO, newCedgesO), tm=False)
         yarnsPermuted = [yarns[q] for q in qPermuted] 
 
         def deliver(remap=True):
-            stitch = [None for q in range(len(qPermuted))]
-            lStitch = len(stitch)
+            cdef int lStitch = len(qPermuted)
+            cdef int stitch[100]
+            for q in range(lStitch):
+                stitch[q] = -1
             edgesC = edgesCompiled
             yarnsP = yarnsPermuted
 
-            def stitchOn(e):
+            def stitchOn(int e):
                 if e >= len(edgesC):
                     if remap:
                         yield tuple(stitch[qPermutedInv[q]] for q in range(lStitch))
@@ -1338,7 +1371,7 @@ In plan    : {}'''.format(qedgesO, newCedgesO), tm=False)
                     return
                 (f, t, r, nparams) = edgesC[e]
                 yarnT = yarnsP[t]
-                if e == 0 and stitch[f] == None:
+                if e == 0 and stitch[f] == -1:
                     yarnF = yarnsP[f]
                     for sN in yarnF:
                         stitch[f] = sN
@@ -1346,7 +1379,7 @@ In plan    : {}'''.format(qedgesO, newCedgesO), tm=False)
                     return
                 sN = stitch[f]
                 sM = stitch[t]
-                if sM != None:
+                if sM != -1:
                     if nparams == 1:
                         if sM in set(r(sN)) & yarnT:
                             for s in stitchOn(e+1): yield s
@@ -1358,7 +1391,7 @@ In plan    : {}'''.format(qedgesO, newCedgesO), tm=False)
                 for m in mFromN:
                     stitch[t] = m
                     for s in stitchOn(e+1): yield s
-                stitch[t] = None
+                stitch[t] = -1
             
             for s in stitchOn(0): yield s
 

@@ -1,4 +1,6 @@
 from distutils.core import setup
+#from Cython.Build import cythonize
+
 setup(
     name='text-fabric',
     packages=['tf'],
@@ -28,6 +30,7 @@ setup(
         "Topic :: Text Processing :: Linguistic",
         "Topic :: Text Processing :: Markup :: XML",
     ],
+#    ext_modules = cythonize('tf/search.pyx'),
     long_description = '''\
 Tools to read Text-Fabric resources analyse them efficiently.
 More info on https://shebanq.ancient-data.org
