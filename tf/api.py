@@ -1,6 +1,6 @@
 import collections
 from .helpers import *
-from .layer import Layer
+from .locality import Locality
 from .text import Text
 from .search import Search
 
@@ -166,8 +166,8 @@ def addOtype(api):
     setattr(api.F.otype, 'all', tuple(o[0] for o in api.C.levels.data))
     setattr(api.F.otype, 'support', dict(((o[0], (o[2], o[3])) for o in api.C.levels.data)))
 
-def addLayer(api):
-    api.L = Layer(api)
+def addLocality(api):
+    api.L = Locality(api)
 
 def addText(api, tf):
     api.T = Text(api, tf)

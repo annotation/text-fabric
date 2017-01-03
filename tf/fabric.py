@@ -33,12 +33,13 @@ MODULES = [
 ]
 
 PRECOMPUTE = (
-    (False, '__levels__'  , levels  ,  GRID[0:2]                                            ),
-    (False, '__order__'   , order   ,  GRID[0:2]+  ('__levels__',                          )),
-    (False, '__rank__'    , rank    , (GRID[0]  ,   '__order__'                            )),
-    (False, '__levUp__'   , levUp   ,  GRID[0:2]+  ('__rank__'  ,                          )),
-    (False, '__levDown__' , levDown , (GRID[0]  ,   '__levUp__' , '__rank__'               )),
-    (True,  '__sections__', sections,  GRID     +  ('__levUp__' , '__levels__') + SECTIONS  ),
+    (False, '__levels__'   , levels   ,  GRID[0:2]                                            ),
+    (False, '__order__'    , order    ,  GRID[0:2]+  ('__levels__' ,                         )),
+    (False, '__rank__'     , rank     , (GRID[0]  ,   '__order__'                            )),
+    (False, '__levUp__'    , levUp    ,  GRID[0:2]+  (               '__rank__'  ,           )),
+    (False, '__levDown__'  , levDown  , (GRID[0]  ,   '__levUp__'   ,'__rank__'              )),
+    (False, '__boundary__' , boundary ,  GRID[0:2]+  (               '__rank__'  ,           )),
+    (True,  '__sections__' , sections ,  GRID     +  ('__levUp__'   , '__levels__') + SECTIONS),
 )
 
 class Fabric(object):
@@ -313,7 +314,7 @@ Questions? Ask {} for an invite to Slack'''.format(
                             if hasattr(api.F, fName): delattr(api.F, fName)
                         fObj.unload()
         addOtype(api)
-        addLayer(api)
+        addLocality(api)
         addText(api, self)
         addSearch(api, self)
         self.tm.indent(level=0)

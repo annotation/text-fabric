@@ -8,6 +8,7 @@ from .data import GRID, SECTIONS
 STRATEGY = '''
     small_choice_first
     spread_1_first
+    big_choice_first
 '''.strip().split()
 
 escapes = (
@@ -176,6 +177,7 @@ class Search(object):
         Crank = C.rank.data
         ClevDown = C.levDown.data
         ClevUp = C.levUp.data
+        (CfirstSlots, ClastSlots) = C.boundary.data
         Eoslots = E.oslots.data
         slotType = F.otype.slotType
         maxSlot = F.otype.maxSlot
@@ -258,6 +260,15 @@ class Search(object):
                 return lambda n, m: Eoslots[m-maxSlot-1] == (n,)
             else:
                 return lambda n, m: frozenset(Eoslots[n-maxSlot-1]) == frozenset(Eoslots[m-maxSlot-1])
+
+        def sameFirstSlotR(fTp, tTp):
+            return lambda n: ()
+
+        def sameLastSlotR(fTp, tTp):
+            return lambda n: ()
+
+        def sameBoundaryR(fTp, tTp):
+            return lambda n: ()
 
         def spinOverlap(fTp, tTp):
             if fTp == slotType and tTp == slotType:
@@ -376,21 +387,43 @@ class Search(object):
             if fTp == slotType and tTp == slotType:
                 return lambda n, m: n < m
             elif fTp == slotType:
-                return lambda n, m: n < min(Eoslots[m-maxSlot-1])
+                return lambda n, m: n < Eoslots[m-maxSlot-1][0]
             elif tTp == slotType:
-                return lambda n, m: max(Eoslots[n-maxSlot-1]) < m
+                return lambda n, m: Eoslots[n-maxSlot-1][-1] < m
             else:
-                return lambda n, m: max(Eoslots[n-maxSlot-1]) < min(Eoslots[m-maxSlot-1])
+                return lambda n, m: Eoslots[n-maxSlot-1][-1] < Eoslots[m-maxSlot-1][0]
 
         def slotAfterR(fTp, tTp):
             if fTp == slotType and tTp == slotType:
                 return lambda n, m: n > m
             elif fTp == slotType:
-                return lambda n, m: n > max(Eoslots[m-maxSlot-1])
+                return lambda n, m: n > Eoslots[m-maxSlot-1][-1]
             elif tTp == slotType:
-                return lambda n, m: min(Eoslots[n-maxSlot-1]) > m
+                return lambda n, m: Eoslots[n-maxSlot-1][0] > m
             else:
-                return lambda n, m: min(Eoslots[n-maxSlot-1]) > max(Eoslots[m-maxSlot-1])
+                return lambda n, m: Eoslots[n-maxSlot-1][0] > Eoslots[m-maxSlot-1][-1]
+
+        def adjBeforeR(fTp, tTp):
+            if fTp == slotType and tTp == slotType:
+                return lambda n: (n+1,) if n < maxSlot else () 
+            else:
+                def xx(n):
+                    if n == maxSlot: return ()
+                    myNext = n+1 if n < maxSlot else Eoslots[n-maxSlot-1][-1] + 1
+                    if myNext > maxSlot: return ()
+                    return CfirstSlots[myNext-1] + (myNext,)
+                return xx
+
+        def adjAfterR(fTp, tTp):
+            if fTp == slotType and tTp == slotType:
+                return lambda n: (n-1,) if n > 1 else () 
+            else:
+                def xx(n):
+                    if n <= 1: return ()
+                    myPrev = n-1 if n < maxSlot else Eoslots[n-maxSlot-1][0]-1
+                    if myPrev <= 1: return ()
+                    return (myPrev,) + ClastSlots[myPrev-1]
+                return xx
 
         def makeEdgeMaps(efName):
             def edgeR(ftP, tTp):
@@ -438,6 +471,22 @@ class Search(object):
             (
                 ( '<<' , 0.490,         slotBeforeR      , 'left completely before right'),
                 ( '>>' , 0.490,         slotAfterR       , 'left completely after right'),
+            ),
+            (
+                ( ':=' , True,          sameFirstSlotR   , 'left and right start at the same slot'),
+                ( ':=' , True,          sameFirstSlotR   , None),
+            ),
+            (
+                ( '=:' , True,          sameLastSlotR    , 'left and right end at the same slot'),
+                ( '=:' , True,          sameLastSlotR    , None),
+            ),
+            (
+                ( '::' , True,          sameBoundaryR    , 'left and right start and end at the same slot'),
+                ( '::' , True,          sameBoundaryR    , None),
+            ),
+            (
+                ( '<:' , True,          adjBeforeR       , 'left immediately before right'),
+                ( ':>' , True,          adjAfterR        , 'left immediately after right'),
             ),
         ]
 
@@ -1018,13 +1067,14 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
         for e in range(len(qedges)):
             uptodate[e] = False
         it = 0
-        while True:
+        while 1:
             if min(len(yarns[q]) for q in range(len(qnodes))) == 0: break
-            if reduce(
-                lambda y,z: y and z, 
-                (uptodate[e] for e in range(len(qedges))),
-                True,
-            ): break
+            #if reduce(
+            #    lambda y,z: y and z, 
+            #    (uptodate[e] for e in range(len(qedges))),
+            #    True,
+            #): break
+            if all(uptodate[e] for e in range(len(qedges))): break
             e = self._chooseEdge()
             (f, rela, t) = qedges[e]
             self._spinEdge(e)
@@ -1052,7 +1102,7 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
             cnodes = {q}
             cedges = set()
             cedgesOrder = []
-            while True:
+            while 1:
                 added = False
                 for (e, dir) in s1Edges:
                     (f, rela, t) = qedges[e]
@@ -1099,7 +1149,7 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
             key=lambda e: self.spreads[e[0]] if e[1] == 1 else self.spreadsC[e[0]],
         )
 
-        while True:
+        while 1:
             added = False
             for (e, dir) in remainingEdgesO:
                 if e in doneEdges: continue
@@ -1156,7 +1206,53 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
             key=lambda e: self.spreads[e[0]] if e[1] == 1 else self.spreadsC[e[0]],
         )
 
-        while True:
+        while 1:
+            added = False
+            for (e, dir) in remainingEdgesO:
+                if e in doneEdges: continue
+                (f, rela, t) = qedges[e]
+                if dir == -1: (f, t) = (t, f)
+                if f in newNodes and t in newNodes:
+                    newEdges.append((e, dir))
+                    doneEdges.add(e)
+                    added = True
+            for (e, dir) in remainingEdgesO:
+                if e in doneEdges: continue
+                (f, rela, t) = qedges[e]
+                if dir == -1: (f, t) = (t, f)
+                if f in newNodes:
+                    newNodes.add(t)
+                    newEdges.append((e, dir))
+                    doneEdges.add(e)
+                    added = True
+                    break
+            if not added: break
+
+        self.newNodes = newNodes
+        self.newEdges = newEdges
+
+    def _big_choice_first(self):
+
+# For comparison: the opposite of _small_choice_first.
+# Just to see what the performance difference is.
+
+        qedges = self.qedges
+        qnodes = self.qnodes
+
+        newNodes = {sorted(range(len(qnodes)), key=lambda x: -len(self.yarns[x]))[0]}
+        newEdges = []
+        doneEdges = set()
+
+        remainingEdges = set()
+        for e in range(len(qedges)):
+            remainingEdges.add((e, 1))
+            remainingEdges.add((e, -1))
+        remainingEdgesO = sorted(
+            remainingEdges,
+            key=lambda e: -self.spreads[e[0]] if e[1] == 1 else -self.spreadsC[e[0]],
+        )
+
+        while 1:
             added = False
             for (e, dir) in remainingEdgesO:
                 if e in doneEdges: continue
@@ -1348,7 +1444,7 @@ In plan    : {}'''.format(qedgesO, newCedgesO), tm=False)
                 sM = stitch[t]
                 if sM != None:
                     if nparams == 1:
-                        if sM in set(r(sN)) & yarnT:
+                        if sM in set(r(sN)): # & yarnT:
                             for s in stitchOn(e+1): yield s
                     else:
                         if r(sN, sM):

@@ -71,8 +71,8 @@ def levUp(info, error, otype, oslots, rank):
     (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
     info('making inverse of edge feature oslots')
     oslotsInv = {}
-    for (k, mapList) in enumerate(oslots[0:-1]):
-        for m in mapList:
+    for (k, mList) in enumerate(oslots[0:-1]):
+        for m in mList:
             oslotsInv.setdefault(m, set()).add(k+1+maxSlot)
     info('listing embedders of all nodes')
     embedders = []
@@ -112,6 +112,20 @@ def levDown(info, error, otype, levUp, rank):
             key=lambda m: rank[m-1],
         )))
     return tuple(embeddees)
+
+def boundary(info, error, otype, oslots, rank):
+    firstSlotsD = {}
+    lastSlotsD = {}
+    (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
+    for (k, mList) in enumerate(oslots[0:-1]):
+        firstSlotsD.setdefault(mList[0], []).append(k+1+maxSlot)
+        lastSlotsD.setdefault(mList[-1], []).append(k+1+maxSlot)
+    firstSlots = []
+    lastSlots = []
+    for n in range(1, maxSlot+1):
+        firstSlots.append(tuple(sorted(firstSlotsD.get(n, []), key=lambda k: -rank[k-1])))
+        lastSlots.append(tuple(sorted(lastSlotsD.get(n, []), key=lambda k: rank[k-1])))
+    return (tuple(firstSlots), tuple(lastSlots))
 
 def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
