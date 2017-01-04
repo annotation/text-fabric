@@ -139,6 +139,7 @@ class Search(object):
         info('Done: {} results'.format(i))
 
     def showPlan(self, details=False):
+        if not self.good: return
         info = self.api.info
         nodeLine = self.nodeLine
         qedges = self.qedges
@@ -403,6 +404,57 @@ class Search(object):
             else:
                 return lambda n, m: Eoslots[n-maxSlot-1][0] > Eoslots[m-maxSlot-1][-1]
 
+        def sameFirstSlotR(fTp, tTp):
+            if fTp == slotType and tTp == slotType:
+                return lambda n: (n,)
+            elif fTp == slotType:
+                return lambda n: CfirstSlots[n-1] + (n,)
+            elif tTp == slotType:
+                return lambda n: (Eoslots[n-maxSlot-1][0],)
+            else:
+                def xx(n):
+                    fn = Eoslots[n-maxSlot-1][0]
+                    return CfirstSlots[fn-1] + (fn,)
+                return xx
+
+        def sameLastSlotR(fTp, tTp):
+            if fTp == slotType and tTp == slotType:
+                return lambda n: (n,)
+            elif fTp == slotType:
+                return lambda n: ClastSlots[n-1] + (n,)
+            elif tTp == slotType:
+                return lambda n: (Eoslots[n-maxSlot-1][-1],)
+            else:
+                def xx(n):
+                    fn = Eoslots[n-maxSlot-1][-1]
+                    return ClastSlots[fn-1] + (fn,)
+                return xx
+
+        def sameBoundaryR(fTp, tTp):
+            if fTp == slotType and tTp == slotType:
+                return lambda n: (n,)
+            elif fTp == slotType:
+                def xx(n):
+                    fok =  set(CfirstSlots[n-1])
+                    lok =  set(ClastSlots[n-1])
+                    return tuple(fok & lok) + (n,)
+                return xx
+            elif tTp == slotType:
+                def xx(n):
+                    slots = Eoslots[n-maxSlot-1]
+                    f = slots[0]
+                    l = slots[-1]
+                    return (f,) if f == l else ()
+                return xx
+            else:
+                def xx(n):
+                    fn = Eoslots[n-maxSlot-1][0]
+                    ln = Eoslots[n-maxSlot-1][-1]
+                    fok =  set(CfirstSlots[fn-1])
+                    lok =  set(ClastSlots[ln-1])
+                    return tuple(fok & lok) + ((fn,) if fn == ln else ())
+                return xx
+
         def adjBeforeR(fTp, tTp):
             if fTp == slotType and tTp == slotType:
                 return lambda n: (n+1,) if n < maxSlot else () 
@@ -473,12 +525,12 @@ class Search(object):
                 ( '>>' , 0.490,         slotAfterR       , 'left completely after right'),
             ),
             (
-                ( ':=' , True,          sameFirstSlotR   , 'left and right start at the same slot'),
-                ( ':=' , True,          sameFirstSlotR   , None),
+                ( '=:' , True,          sameFirstSlotR   , 'left and right start at the same slot'),
+                ( '=:' , True,          sameFirstSlotR   , None),
             ),
             (
-                ( '=:' , True,          sameLastSlotR    , 'left and right end at the same slot'),
-                ( '=:' , True,          sameLastSlotR    , None),
+                ( ':=' , True,          sameLastSlotR    , 'left and right end at the same slot'),
+                ( ':=' , True,          sameLastSlotR    , None),
             ),
             (
                 ( '::' , True,          sameBoundaryR    , 'left and right start and end at the same slot'),
@@ -528,12 +580,16 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
     def _tokenize(self):            
         if not self.good: return
 
-        opPat = '(?:[#&|\[\]<>=-]+\S*)'
+        opPat = '(?:[#&|\[\]<>:=-]+\S*)'
         atomPat = '(\s*)([^ \t=]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
+        atomOpPat = '(\s*)({op})\s+([^ \t=]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(op=opPat)
+        opLinePat = '(\s*)({op})\s*$'.format(op=opPat)
         namePat = '[A-Za-z0-9_-]+'
-        atomRe = re.compile(atomPat)
         relPat = '^\s*({nm})\s+({op})\s+({nm})\s*$'.format(nm=namePat, op=opPat)
         
+        atomOpRe = re.compile(atomOpPat)
+        atomRe = re.compile(atomPat)
+        opLineRe = re.compile(opLinePat)
         nameRe = re.compile('^{}$'.format(namePat))
         relRe = re.compile(relPat)
         whiteRe = re.compile('^\s*$')
@@ -560,14 +616,26 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
             if line.startswith('#') or whiteRe.match(line): continue
             good = False
             for x in [True]:
+                match = opLineRe.match(line)
+                if match:
+                    (indent, op) = match.groups()
+                    tokens.append((i, 'atom', len(indent), op))
+                    good = True
+                    break
                 match = relRe.match(line)
                 if match:
                     tokens.append((i, 'rel', match.group(1), match.group(2), match.group(3)))
                     good = True
                     break
-                match = atomRe.match(esc(line))
-                if match:
+                matchOp = atomOpRe.match(esc(line))
+                if not matchOp:
+                    match = atomRe.match(esc(line))
+                if matchOp:
+                    (indent, op, atom, features) = matchOp.groups()
+                elif match:
+                    op = None
                     (indent, atom, features) = match.groups()
+                if matchOp or match:
                     atomComps = atom.split(':', 1)
                     if len(atomComps) == 1:
                         name = ''
@@ -584,7 +652,7 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
                             self.badSyntax.append('Illegal feature specification at line {}: "{}"'.format(i, wrong))
                         good = False
                         break                
-                    tokens.append((i, 'atom', len(indent), name, atom, features))
+                    tokens.append((i, 'atom', len(indent), op, name, atom, features))
                     good = True
                     break
                 (features, wrongs) = getFeatures(esc(line))
@@ -629,7 +697,7 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
         nodeLine = {}
         tokens = sorted(self.tokens, key=lambda t: (len(self.tokens)+t[0]) if t[1] == 'rel' else t[0])
 
-        # atomStack is a stack of qnodes with there indent levels
+        # atomStack is a stack of qnodes with their indent levels
         # such that every next member is one level deeper
         # and every member is the last qnode encountered at that level
         # The stack is implemented as a dict, keyed by the indent, and valued by the qnode
@@ -637,30 +705,52 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
         
         for (i, kind, *fields) in tokens:
             if kind == 'atom':
-                (indent, name, otype, features) = fields
-                qnodes.append((otype, features))
-                q = len(qnodes) - 1
-                nodeLine[q] = i
-                name = ':{}'.format(i) if name == '' else name
-                qnames[name] = q
+                if len(fields) == 2:
+                    (indent, op) = fields
+                else:
+                    (indent, op, name, otype, features) = fields
+                    qnodes.append((otype, features))
+                    q = len(qnodes) - 1
+                    nodeLine[q] = i
+                    name = ':{}'.format(i) if name == '' else name
+                    qnames[name] = q
                 if len(atomStack) == 0:
                     if indent > 0:
                         self.badSemantics.append('Unexpected indent at line {}: {}, expected {}'.format(i, indent, 0))
                         good = False
-                    atomStack[0] = q
+                    if op != None:
+                        self.badSemantics.append('Lonely relation at line {}: not allowed at outermost level'.format(i))
+                        good = False
+                    if len(fields) > 2:
+                        atomStack[0] = q
                 else:
                     atomNest = sorted(atomStack.items(), key=lambda x: x[0])
                     top = atomNest[-1]
                     if indent == top[0]:  
                         # sibling of previous atom
                         if len(atomNest) > 1:
-                            # take the qnode of the subtop of the atomStack, if there is one
-                            qedges.append((q, ']]', atomNest[-2][1]))
-                            edgeLine[len(qedges) - 1] = i
+                            if len(fields) == 2:
+                                # lonely operator: left is previous atom, right is parent atom
+                                qedges.append((top[1], op, atomNest[-2][1]))
+                                edgeLine[len(qedges) - 1] = i
+                            else:
+                                # take the qnode of the subtop of the atomStack, if there is one
+                                qedges.append((q, ']]', atomNest[-2][1]))
+                                edgeLine[len(qedges) - 1] = i
+                                if op != None:
+                                    qedges.append((top[1], op, q))
+                                    edgeLine[len(qedges) - 1] = i
                     elif indent > top[0]:
-                        # child of previous atom
-                        qedges.append((q, ']]', top[1]))
-                        edgeLine[len(qedges) - 1] = i
+                        if len(fields) == 2:
+                            self.badSemantics.append('Lonely relation at line {}: not allowed as first child'.format(i))
+                            good = False
+                        else:
+                            # child of previous atom
+                            qedges.append((q, ']]', top[1]))
+                            edgeLine[len(qedges) - 1] = i
+                            if op != None:
+                                qedges.append((top[1], op, q))
+                                edgeLine[len(qedges) - 1] = i
                     else:
                         # outdent action: look up the proper parent in the stack
                         if indent not in atomStack:
@@ -673,8 +763,12 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
                         else:
                             parents = [at[1] for at in atomNest if at[0] < indent]
                             if len(parents) != 0: # if not already at outermost level
-                                qedges.append((q, ']]', parents[-1]))
-                                edgeLine[len(qedges) - 1] = i
+                                if len(fields) == 2: # connect previous sibling to parent
+                                    qedges.append((atomStack[indent], op, parents[-1]))
+                                    edgeLine[len(qedges) - 1] = i
+                                else:
+                                    qedges.append((q, ']]', parents[-1]))
+                                    edgeLine[len(qedges) - 1] = i
                             removeKeys = [at[0] for at in atomNest if at[0] > indent]
                             for rk in removeKeys: del atomStack[rk]
                     atomStack[indent] = q
