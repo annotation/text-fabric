@@ -4,7 +4,7 @@ from distutils.core import setup
 setup(
     name='text-fabric',
     packages=['tf'],
-    version='2.1.1',
+    version='2.1.2',
     description='''Processor for Text Fabric Data''',
     author='Dirk Roorda',
     author_email='shebanq@ancient-data.org',
@@ -33,6 +33,6 @@ setup(
 #    ext_modules = cythonize('tf/search.pyx'),
     long_description = '''\
 Tools to read Text-Fabric resources analyse them efficiently.
-More info on https://shebanq.ancient-data.org
+More info on https://github.com/ETCBC/text-fabric/wiki
 ''',
 )
