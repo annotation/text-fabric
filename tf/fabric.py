@@ -12,7 +12,7 @@ VERSION = '2.1.3'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 DATA = 'https://github.com/ETCBC/text-fabric-data'
-DATADOC = 'https://etcbc.github.io/text-fabric-data/features/hebrew/etcbc4c/0_overview.html'
+DATADOC = 'https://etcbc.github.io/text-fabric-data'
 SHEBANQ = 'https://shebanq.ancient-data.org/text'
 EMAIL = 'shebanq@ancient-data.org'
 SLACK = 'https://shebanq.slack.com/signup'
@@ -313,6 +313,7 @@ Questions? Ask {} for an invite to Slack'''.format(
                         else:
                             if hasattr(api.F, fName): delattr(api.F, fName)
                         fObj.unload()
+        addSortKey(api)
         addOtype(api)
         addLocality(api)
         addText(api, self)

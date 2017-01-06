@@ -162,6 +162,10 @@ class Api(object):
         for member in dir(self):
             if '_' not in member and member != 'makeAvailableIn': scope[member] = getattr(self, member) 
 
+def addSortKey(api):
+    Crank = api.C.rank.data
+    api.sortKey = lambda n: Crank[n-1]
+
 def addOtype(api):
     setattr(api.F.otype, 'all', tuple(o[0] for o in api.C.levels.data))
     setattr(api.F.otype, 'support', dict(((o[0], (o[2], o[3])) for o in api.C.levels.data)))

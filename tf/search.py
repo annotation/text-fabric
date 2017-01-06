@@ -1,4 +1,4 @@
-import re, types
+import re, types, collections
 from functools import reduce
 from random import randrange
 from inspect import signature
@@ -87,7 +87,7 @@ class Search(object):
         fields = []
         for (i, n) in enumerate(r):
             otype = F.otype.v(n)
-            words = L.d(n, otype=slotType)
+            words = [n] if otype == slotType else L.d(n, otype=slotType)
             if otype == SECTIONS[2]:
                 field = '{} {}:{}'.format(*T.sectionFromNode(n))
             elif otype == slotType:
@@ -262,15 +262,6 @@ class Search(object):
             else:
                 return lambda n, m: frozenset(Eoslots[n-maxSlot-1]) == frozenset(Eoslots[m-maxSlot-1])
 
-        def sameFirstSlotR(fTp, tTp):
-            return lambda n: ()
-
-        def sameLastSlotR(fTp, tTp):
-            return lambda n: ()
-
-        def sameBoundaryR(fTp, tTp):
-            return lambda n: ()
-
         def spinOverlap(fTp, tTp):
             if fTp == slotType and tTp == slotType:
                 def doyarns(yF, yT):
@@ -408,26 +399,26 @@ class Search(object):
             if fTp == slotType and tTp == slotType:
                 return lambda n: (n,)
             elif fTp == slotType:
-                return lambda n: CfirstSlots[n-1] + (n,)
+                return lambda n: CfirstSlots[n-1]
             elif tTp == slotType:
                 return lambda n: (Eoslots[n-maxSlot-1][0],)
             else:
                 def xx(n):
                     fn = Eoslots[n-maxSlot-1][0]
-                    return CfirstSlots[fn-1] + (fn,)
+                    return CfirstSlots[fn-1]
                 return xx
 
         def sameLastSlotR(fTp, tTp):
             if fTp == slotType and tTp == slotType:
                 return lambda n: (n,)
             elif fTp == slotType:
-                return lambda n: ClastSlots[n-1] + (n,)
+                return lambda n: ClastSlots[n-1]
             elif tTp == slotType:
                 return lambda n: (Eoslots[n-maxSlot-1][-1],)
             else:
                 def xx(n):
-                    fn = Eoslots[n-maxSlot-1][-1]
-                    return ClastSlots[fn-1] + (fn,)
+                    ln = Eoslots[n-maxSlot-1][-1]
+                    return ClastSlots[ln-1]
                 return xx
 
         def sameBoundaryR(fTp, tTp):
@@ -437,7 +428,7 @@ class Search(object):
                 def xx(n):
                     fok =  set(CfirstSlots[n-1])
                     lok =  set(ClastSlots[n-1])
-                    return tuple(fok & lok) + (n,)
+                    return tuple(fok & lok)
                 return xx
             elif tTp == slotType:
                 def xx(n):
@@ -452,8 +443,118 @@ class Search(object):
                     ln = Eoslots[n-maxSlot-1][-1]
                     fok =  set(CfirstSlots[fn-1])
                     lok =  set(ClastSlots[ln-1])
-                    return tuple(fok & lok) + ((fn,) if fn == ln else ())
+                    return tuple(fok & lok)
                 return xx
+
+        def nearFirstSlotR(k):
+            def zz(fTp, tTp):
+                if fTp == slotType and tTp == slotType:
+                    return lambda n: tuple(m for m in range(max((1, n-k)), min((maxSlot, n+k+1))))
+                elif fTp == slotType:
+                    def xx(n):
+                        near = set(l for l in range(max((1, n-k)), min((maxSlot, n+k+1))))
+                        return tuple(reduce(
+                            set.union,
+                            (set(CfirstSlots[l-1]) for l in near),
+                            set(),
+                        ))
+                    return xx
+                elif tTp == slotType:
+                    def xx(n):
+                        fn = Eoslots[n-maxSlot-1][0]
+                        return tuple(m for m in range(max((1, fn-k)), min((maxSlot, fn+k+1))))
+                    return xx
+                else:
+                    def xx(n):
+                        fn = Eoslots[n-maxSlot-1][0]
+                        near = set(l for l in range(max((1, fn-k)), min((maxSlot, fn+k+1))))
+                        return tuple(reduce(
+                            set.union,
+                            (set(CfirstSlots[l-1]) for l in near),
+                            set(),
+                        ))
+                    return xx
+            return zz
+
+        def nearLastSlotR(k):
+            def zz(fTp, tTp):
+                if fTp == slotType and tTp == slotType:
+                    return lambda n: tuple(m for m in range(max((1, n-k)), min((maxSlot, n+k+1))))
+                elif fTp == slotType:
+                    def xx(n):
+                        near = set(l for l in range(max((1, n-k)), min((maxSlot, n+k+1))))
+                        return tuple(reduce(
+                            set.union,
+                            (set(ClastSlots[l-1]) for l in near),
+                            set(),
+                        ))
+                    return xx
+                elif tTp == slotType:
+                    def xx(n):
+                        ln = Eoslots[n-maxSlot-1][-1]
+                        return tuple(m for m in range(max((1, ln-k)), min((maxSlot, ln+k+1))))
+                    return xx
+                else:
+                    def xx(n):
+                        ln = Eoslots[n-maxSlot-1][-1]
+                        near = set(l for l in range(max((1, ln-k)), min((maxSlot, ln+k+1))))
+                        return tuple(reduce(
+                            set.union,
+                            (set(ClastSlots[l-1]) for l in near),
+                            set(),
+                        ))
+                    return xx
+            return zz
+
+        def nearBoundaryR(k):
+            def zz(fTp, tTp):
+                if fTp == slotType and tTp == slotType:
+                    return lambda n: tuple(m for m in range(max((1, n-k)), min((maxSlot, n+k+1))))
+                elif fTp == slotType:
+                    def xx(n):
+                        near = set(l for l in range(max((1, n-k)), min((maxSlot, n+k+1))))
+                        fok = set(reduce(
+                            set.union,
+                            (set(CfirstSlots[l-1]) for l in near),
+                            set(),
+                        ))
+                        lok = set(reduce(
+                            set.union,
+                            (set(ClastSlots[l-1]) for l in near),
+                            set(),
+                        ))
+                        return tuple(fok & lok)
+                    return xx
+                elif tTp == slotType:
+                    def xx(n):
+                        slots = Eoslots[n-maxSlot-1]
+                        f = slots[0]
+                        l = slots[-1]
+                        fok = set(m for m in range(max((1, f-k)), min((maxSlot, f+k+1))))
+                        lok = set(m for m in range(max((1, l-k)), min((maxSlot, l+k+1))))
+                        return tuple(fok & lok)
+                    return xx
+                else:
+                    def xx(n):
+                        fn = Eoslots[n-maxSlot-1][0]
+                        ln = Eoslots[n-maxSlot-1][-1]
+                        nearf = set(l for l in range(max((1, fn-k)), min((maxSlot, fn+k+1))))
+                        nearl = set(l for l in range(max((1, ln-k)), min((maxSlot, ln+k+1))))
+                        fok =  set(CfirstSlots[fn-1])
+                        lok =  set(ClastSlots[ln-1])
+                        fok = set(reduce(
+                            set.union,
+                            (set(CfirstSlots[l-1]) for l in nearf),
+                            set(),
+                        ))
+                        lok = set(reduce(
+                            set.union,
+                            (set(ClastSlots[l-1]) for l in nearl),
+                            set(),
+                        ))
+                        return tuple(fok & lok)
+                    return xx
+            return zz
 
         def adjBeforeR(fTp, tTp):
             if fTp == slotType and tTp == slotType:
@@ -476,6 +577,40 @@ class Search(object):
                     if myPrev <= 1: return ()
                     return (myPrev,) + ClastSlots[myPrev-1]
                 return xx
+
+        def nearBeforeR(k):
+            def zz(fTp, tTp):
+                if fTp == slotType and tTp == slotType:
+                    return lambda n: tuple(m for m in range(max((1, n+1-k)), min((maxSlot, n+1+k+1))))
+                else:
+                    def xx(n):
+                        myNext = n+1 if n < maxSlot else Eoslots[n-maxSlot-1][-1] + 1
+                        myNextNear = tuple(l for l in range(max((1, myNext-k)), min((maxSlot, myNext+k+1))))
+                        nextSet = set(reduce(
+                            set.union,
+                            (set(CfirstSlots[l-1]) for l in myNextNear),
+                            set(),
+                        ))
+                        return tuple(nextSet)+myNextNear
+                    return xx
+            return zz
+
+        def nearAfterR(k):
+            def zz(fTp, tTp):
+                if fTp == slotType and tTp == slotType:
+                    return lambda n: tuple(m for m in range(max((1, n-1-k)), min((maxSlot, n-1+k+1))))
+                else:
+                    def xx(n):
+                        myPrev = n-1 if n < maxSlot else Eoslots[n-maxSlot-1][0] - 1
+                        myPrevNear = tuple(l for l in range(max((1, myPrev-k)), min((maxSlot, myPrev+k+1))))
+                        prevSet = set(reduce(
+                            set.union,
+                            (set(ClastSlots[l-1]) for l in myPrevNear),
+                            set(),
+                        ))
+                        return tuple(prevSet)+myPrevNear
+                    return xx
+            return zz
 
         def makeEdgeMaps(efName):
             def edgeR(ftP, tTp):
@@ -540,6 +675,22 @@ class Search(object):
                 ( '<:' , True,          adjBeforeR       , 'left immediately before right'),
                 ( ':>' , True,          adjAfterR        , 'left immediately after right'),
             ),
+            (
+                ( '=k:' , True,         nearFirstSlotR   , 'left and right start at k-nearly the same slot'),
+                ( '=k:' , True,         nearFirstSlotR   , None),
+            ),
+            (
+                ( ':k=' , True,         nearLastSlotR    , 'left and right end at k-nearly the same slot'),
+                ( ':k=' , True,         nearLastSlotR    , None),
+            ),
+            (
+                ( ':k:' , True,         nearBoundaryR    , 'left and right start and end at k-near slots'),
+                ( ':k:' , True,         nearBoundaryR    , None),
+            ),
+            (
+                ( '<k:' , True,         nearBeforeR      , 'left k-nearly before right'),
+                ( ':k>' , True,         nearAfterR       , 'left k-nearly after right'),
+            ),
         ]
 
         self.tf.explore()
@@ -574,6 +725,43 @@ The grid feature "{}" cannot be used in searches.
 Surely, one of the above relations on nodes and/or slots will suit you better!'''.format(GRID[1])
         self.converse = dict(tuple((2*i, 2*i + 1) for i in range(lr)) + tuple((2*i+1, 2*i) for i in range(lr))) 
         self.edgeMap = edgeMap
+
+    def _addRelations(self, varRels):
+        relations = self.relations
+        tasks = collections.defaultdict(set)
+        for (acro, ks) in varRels.items():
+            j = self.relationFromName[acro]
+            ji = self.converse[j]
+            if ji < j: (j, ji) = (ji, j)
+            acro = relations[j]['acro']
+            acroi = relations[ji]['acro']
+            tasks[(j, acro, ji, acroi)] |= ks
+            
+        for ((j, acro, ji, acroi), ks) in tasks.items():
+            for k in ks:
+                newAcro = acro.replace('k', str(k))
+                newAcroi = acroi.replace('k', str(k))
+                r = relations[j]
+                ri = relations[ji]
+                lr = len(relations)
+                relations.extend([
+                    dict(
+                        acro=newAcro,
+                        spin=r['spin'],
+                        func=r['func'](k),
+                        desc=r['desc'],
+                    ),
+                    dict(
+                        acro=newAcroi,
+                        spin=ri['spin'],
+                        func=ri['func'](k),
+                        desc=ri['desc'],
+                    ),
+                ])
+                self.relationFromName[newAcro] = lr
+                self.relationFromName[newAcroi] = lr+1
+                self.converse[lr] = lr + 1
+                self.converse[lr + 1] = lr
 
 ### SYNTACTIC ANALYSIS OF SEARCH TEMPLATE ###
 
@@ -870,7 +1058,20 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
         # in the relations array of known relations
         qedges = []
         edgesGood = True
+        kRe = re.compile('^([^0-9]*)([0-9]+)([^0-9]*)$')
+        addRels = {}
         for (e, (f, opName, t)) in enumerate(self.qedgesRaw):
+            match = kRe.findall(opName)
+            if len(match):
+                (pre, k, post) = match[0]
+                opNameK = '{}{}{}'.format(pre, 'k', post)
+                addRels.setdefault(opNameK, set()).add(int(k))
+        self._addRelations(addRels)
+        for (e, (f, opName, t)) in enumerate(self.qedgesRaw):
+            match = kRe.findall(opName)
+            if len(match):
+                (pre, k, post) = match[0]
+                opNameK = '{}{}{}'.format(pre, 'k', post)
             rela = relationFromName.get(opName, None)
             if rela == None:
                 self.badSemantics.append('Unknown relation in line {}: "{}"'.format(edgeLine[e], opName))
@@ -947,7 +1148,7 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
         for c in components:
             self.components.append([
                 sorted(c),
-                componentEdges[c]
+                componentEdges.get(c, [])
             ])
         lComps = len(self.components)
         if lComps == 0:
