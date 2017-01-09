@@ -148,12 +148,13 @@ class Search(object):
             info('Search with {} objects and {} relations'.format(len(qs), len(es)), tm=False)
             info('Results are instantiations of the following objects:', tm=False)
             for q in qs: self._showNode(q)
-            info('Instantiations are computed along the following relations:', tm=False)
-            (firstE, firstDir) = es[0]
-            (f, rela, t) = qedges[firstE]
-            if firstDir == -1: (f, t) = (t, f)
-            self._showNode(f, pos2=True)
-            for e in es: self._showEdge(*e)
+            if len(es) != 0:
+                info('Instantiations are computed along the following relations:', tm=False)
+                (firstE, firstDir) = es[0]
+                (f, rela, t) = qedges[firstE]
+                if firstDir == -1: (f, t) = (t, f)
+                self._showNode(f, pos2=True)
+                for e in es: self._showEdge(*e)
         info('The results are connected to the original search template as follows:')
 
         resultNode = {}
