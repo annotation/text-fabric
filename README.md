@@ -1,5 +1,5 @@
 # text-fabric
-
+[![DOI](https://zenodo.org/badge/73742167.svg)](https://zenodo.org/badge/latestdoi/73742167)
 ![text-fabric](https://raw.github.com/ETCBC/text-fabric/master/docs/tf.png)
 
 Text-Fabric is a Python3 package for Text plus Annotations.
@@ -25,4 +25,3 @@ abstract fabric of the text.
 [Motivation](http://www.slideshare.net/dirkroorda/text-fabric) - 
 [Data](https://github.com/ETCBC/text-fabric-data)
 
-[![DOI](https://zenodo.org/badge/73742167.svg)](https://zenodo.org/badge/latestdoi/73742167)
