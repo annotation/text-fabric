@@ -24,3 +24,5 @@ abstract fabric of the text.
 
 [Motivation](http://www.slideshare.net/dirkroorda/text-fabric) - 
 [Data](https://github.com/ETCBC/text-fabric-data)
+
+Releases are being archived at Zenodo.
