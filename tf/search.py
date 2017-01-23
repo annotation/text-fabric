@@ -1649,7 +1649,7 @@ In plan    : {}'''.format(qedgesO, newCedgesO), tm=False)
             # hence we must deliver everything of its yarn
             yarn = yarns[0]
             def deliver(remap=True):
-                for n in yarn: yield n
+                for n in yarn: yield (n,)
             self.results = deliver
             return
                 
