@@ -63,10 +63,10 @@ class NodeFeature(object):
 
     def s(self, val):
         Crank = self.api.C.rank.data
-        return sorted(
+        return tuple(sorted(
             [n for n in self.data if self.data[n] == val],
             key=lambda n: Crank[n-1],
-        )
+        ))
     def freqList(self):
         fql = collections.Counter()
         for n in self.data: fql[self.data[n]] += 1
@@ -83,30 +83,30 @@ class EdgeFeature(object):
         Crank = self.api.C.rank.data
         if n in self.data:
             if self.doValues:
-                return sorted(
+                return tuple(sorted(
                     self.data[n].items(),
                     key=lambda mv: Crank[mv[0]-1],
-                )
+                ))
             else:
-                return sorted(
+                return tuple(sorted(
                     self.data[n],
                     key=lambda m: Crank[m-1],
-                )
+                ))
         return ()
 
     def t(self, n): 
         Crank = self.api.C.rank.data
         if n in self.dataInv:
             if self.doValues:
-                return sorted(
+                return tuple(sorted(
                     self.dataInv[n].items(),
                     key=lambda mv: Crank[mv[0]-1],
-                )
+                ))
             else:
-                return sorted(
+                return tuple(sorted(
                     self.dataInv[n],
                     key=lambda m: Crank[m-1],
-                )
+                ))
         return ()
 
 class Computed(object):
