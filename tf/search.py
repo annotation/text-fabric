@@ -31,50 +31,58 @@ def unesc(x):
     return x
 
 class Search(object):
-    def __init__(self, api, tf):
+    def __init__(self, api, tf, silent):
         self.api = api
         self.tf = tf
         self.good = True
+        self.silent = silent
         self._basicRelations()
 
 ### API METHODS ###
 
-    def study(self, searchTemplate, strategy=None):
+    def search(self, searchTemplate, limit=None):
+        self.silent = True
+        self.study(searchTemplate, silent=True)
+        return self.fetch(limit=limit)
+
+    def study(self, searchTemplate, strategy=None, silent=False):
         indent = self.api.indent
         info = self.api.info
         error = self.api.error
+        self.silent = silent
         self.api.indent(level=0, reset=True)
         self.good = True
 
         self._setStrategy(strategy)
         if not self.good: return
 
-        info('Checking search template ...')
+        if not self.silent: info('Checking search template ...')
         self.searchTemplate = searchTemplate
 
         self._parse()
         self._prepare()
         if not self.good: return
-        info('Setting up search space for {} objects ...'.format(len(self.qnodes)))
+        if not self.silent: info('Setting up search space for {} objects ...'.format(len(self.qnodes)))
         self._spinAtoms()
-        info('Constraining search space with {} relations ...'.format(len(self.qedges)))
+        if not self.silent: info('Constraining search space with {} relations ...'.format(len(self.qedges)))
         self._spinEdges()
-        info('Setting up retrieval plan ...')
+        if not self.silent: info('Setting up retrieval plan ...')
         self._stitch()
         if self.good:
-            info('Ready to deliver results from {} nodes'.format(
-                sum(len(y) for y in self.yarns.values()),
-            ))
-            info('Iterate over S.fetch() to get the results', tm=False)
-            info('See S.showPlan() to interpret the results', tm=False)
+            if not self.silent:
+                info('Ready to deliver results from {} nodes'.format(
+                    sum(len(y) for y in self.yarns.values()),
+                ))
+            if not self.silent: info('Iterate over S.fetch() to get the results', tm=False)
+            if not self.silent: info('See S.showPlan() to interpret the results', tm=False)
 
-    def fetch(self, amount=None):
+    def fetch(self, limit=None):
         if not self.good: return []
-        if amount == None: return self.results()
+        if limit == None: return self.results()
         results = []
         for r in self.results():
             results.append(r)
-            if len(results) == amount: break
+            if len(results) == limit: break
         return tuple(results)
 
     def glean(self, r):
@@ -311,13 +319,13 @@ class Search(object):
                     if lsI > REDUCE_FACTOR * lsT and lsT > SIZE_LIMIT: # spinning is not worth it
                         return (yF, yT)
 
-                    self.api.info('1. reducing over {} elements'.format(len(nyS)))
+                    if not self.silent: self.api.info('1. reducing over {} elements'.format(len(nyS)))
                     nyF = reduce(
                         set.union,
                         (sindexF[s] for s in nyS),
                         set(),
                     )
-                    self.api.info('2. reducing over {} elements'.format(len(nyS)))
+                    if not self.silent: self.api.info('2. reducing over {} elements'.format(len(nyS)))
                     nyT = reduce(
                         set.union,
                         (sindexT[s] for s in nyS),
@@ -694,7 +702,7 @@ class Search(object):
             ),
         ]
 
-        self.tf.explore()
+        self.tf.explore(silent=self.silent)
         edgeMap = {}
 
         for efName in sorted(self.tf.featureSets['edges']):
@@ -1101,7 +1109,7 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
                 if not fObj.dataLoaded or not hasattr(self.api.F, fName):
                     needToLoad.append((fName, fObj))
             if len(needToLoad):
-                self.tf.load([x[0] for x in needToLoad], add=True)
+                self.tf.load([x[0] for x in needToLoad], add=True, silent=True)
 
     def _semantics(self):
         self.badSemantics = []
@@ -1768,6 +1776,7 @@ In plan    : {}'''.format(qedgesO, newCedgesO), tm=False)
         self.spreads = {}
         self.spreadsC = {}
         self.uptodate = {}
+        self.results = None
         self._connectedness()
 
     def _setStrategy(self, strategy, keep=False):

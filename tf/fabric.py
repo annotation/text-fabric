@@ -8,7 +8,7 @@ from .api import *
 from .mql import MQL
 
 NAME = 'Text-Fabric'
-VERSION = '2.3.2'
+VERSION = '2.3.3'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 DATA = 'https://github.com/ETCBC/text-fabric-data'
@@ -78,9 +78,9 @@ Questions? Ask {} for an invite to Slack'''.format(
         self.featuresRequested = []
         self._makeIndex()
 
-    def load(self, features, add=False):
+    def load(self, features, add=False, silent=False):
         self.tm.indent(level=0, reset=True)
-        self.tm.info('loading features ...')
+        if not silent: self.tm.info('loading features ...')
         self.sectionsOK = True
         self.good = True
         if self.good:
@@ -90,7 +90,7 @@ Questions? Ask {} for an invite to Slack'''.format(
             else:
                 self.featuresRequested = featuresRequested
             for fName in list(GRID):
-                self._loadFeature(fName, optional=fName==GRID[2])
+                self._loadFeature(fName, optional=fName==GRID[2], silent=silent)
         if self.good:
             self._cformats = {}
             self._formatFeats = []
@@ -98,22 +98,22 @@ Questions? Ask {} for an invite to Slack'''.format(
                 otextMeta = self.features[GRID[2]].metaData
                 for otextMod in self.features:
                     if otextMod.startswith(GRID[2]+'@'):
-                        self._loadFeature(otextMod)
+                        self._loadFeature(otextMod, silent=silent)
                         otextMeta.update(self.features[otextMod].metaData)
                 sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
                 sectionTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
                 if len(sectionTypes) != 3 or len(sectionFeats) != 3:
-                    self.tm.info('Not enough info for sections in {}, section functionality will not work'.format(GRID[2]))
+                    if not silent: self.tm.info('Not enough info for sections in {}, section functionality will not work'.format(GRID[2]))
                     self.sectionsOK = False
                 else:
                     for (i, fName) in enumerate(sectionFeats):
-                        self._loadFeature(fName)
+                        self._loadFeature(fName, silent=silent)
                         if self.good:
                             self.features[SECTIONS[i]] = self.features[fName]
                 if self.good:
                     (cformats, formatFeats) = collectFormats(otextMeta)
                     for fName in formatFeats:
-                        self._loadFeature(fName)
+                        self._loadFeature(fName, silent=silent)
                     self._cformats = cformats
                     self._formatFeats = formatFeats
             else:
@@ -123,18 +123,18 @@ Questions? Ask {} for an invite to Slack'''.format(
             self._precompute()
         if self.good:
             for fName in self.featuresRequested:
-                self._loadFeature(fName)
+                self._loadFeature(fName, silent=silent)
         if not self.good:
             self.tm.indent(level=0)
             self.tm.error('Not all features could be loaded/computed')
             self.tm.cache()
             return None
-        if add: self._updateApi()
+        if add: self._updateApi(silent)
         else:
-            return self._makeApi()
+            return self._makeApi(silent)
 
     
-    def explore(self):
+    def explore(self, silent=True):
         nodes = set()
         edges = set()
         configs = set()
@@ -147,9 +147,9 @@ Questions? Ask {} for an invite to Slack'''.format(
             elif fObj.isEdge: dest = edges
             else: dest = nodes
             dest.add(fName)
-        self.tm.info('Feature overview: {} nodes; {} edges; {} configs; {} computeds'.format(
-            len(nodes), len(edges), len(configs), len(computeds),
-        ))
+        if not silent: self.tm.info('Feature overview: {} nodes; {} edges; {} configs; {} computeds'.format(
+                len(nodes), len(edges), len(configs), len(computeds),
+            ))
         self.featureSets = dict(nodes=nodes, edges=edges, configs=configs, computeds=computeds)
 
     def clearCache(self):
@@ -204,14 +204,14 @@ Questions? Ask {} for an invite to Slack'''.format(
         mql = MQL(mqlDir, mqlName, self.features, self.tm)
         mql.write()
 
-    def _loadFeature(self, fName, optional=False):
+    def _loadFeature(self, fName, optional=False, silent=False):
         if not self.good: return False
         if fName not in self.features:
             if not optional:
                 self.tm.error('Feature "{}" not available in\n{}'.format(fName, self.locationRep))
                 self.good = False
         else:
-            if not self.features[fName].load(silent=fName not in self.featuresRequested):
+            if not self.features[fName].load(silent=silent or (fName not in self.featuresRequested)):
                 self.good = False
 
     def _makeIndex(self):
@@ -281,7 +281,7 @@ Questions? Ask {} for an invite to Slack'''.format(
                 break
         self.good = good
 
-    def _makeApi(self):
+    def _makeApi(self, silent):
         if not self.good: return None
         api = Api(self)
          
@@ -317,13 +317,13 @@ Questions? Ask {} for an invite to Slack'''.format(
         addOtype(api)
         addLocality(api)
         addText(api, self)
-        addSearch(api, self)
+        addSearch(api, self, silent)
         self.tm.indent(level=0)
-        self.tm.info('All features loaded/computed - for details use loadLog()')
+        if not silent: self.tm.info('All features loaded/computed - for details use loadLog()')
         self.api = api
         return api
 
-    def _updateApi(self):
+    def _updateApi(self, silent):
         if not self.good: return None
         api = self.api
          
@@ -347,5 +347,5 @@ Questions? Ask {} for an invite to Slack'''.format(
                             if hasattr(api.F, fName): delattr(api.F, fName)
                         fObj.unload()
         self.tm.indent(level=0)
-        self.tm.info('All additional features loaded - for details use loadLog()')
+        if not silent: self.tm.info('All additional features loaded - for details use loadLog()')
 

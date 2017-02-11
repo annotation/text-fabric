@@ -4,7 +4,7 @@ from distutils.core import setup
 setup(
     name='text-fabric',
     packages=['tf'],
-    version='2.3.2',
+    version='2.3.3',
     description='''Processor for Text Fabric Data''',
     author='Dirk Roorda',
     author_email='shebanq@ancient-data.org',

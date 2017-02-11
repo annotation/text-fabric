@@ -176,6 +176,6 @@ def addLocality(api):
 def addText(api, tf):
     api.T = Text(api, tf)
 
-def addSearch(api, tf):
-    api.S = Search(api, tf)
+def addSearch(api, tf, silent):
+    api.S = Search(api, tf, silent)
 
