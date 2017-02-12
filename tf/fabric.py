@@ -8,7 +8,7 @@ from .api import *
 from .mql import MQL
 
 NAME = 'Text-Fabric'
-VERSION = '2.3.3'
+VERSION = '2.3.4'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 DATA = 'https://github.com/ETCBC/text-fabric-data'
@@ -43,9 +43,10 @@ PRECOMPUTE = (
 )
 
 class Fabric(object):
-    def __init__(self, locations=None, modules=None):
+    def __init__(self, locations=None, modules=None, silent=False):
+        self.silent = silent
         self.tm = Timestamp()
-        self.tm.info('''This is {} {}
+        if not silent: self.tm.info('''This is {} {}
 Api reference : {}
 Tutorial      : {}
 Data sources  : {}
@@ -160,7 +161,7 @@ Questions? Ask {} for an invite to Slack'''.format(
         self.tm.indent(level=0, reset=True)
         self._getWriteLoc(module=module)
         configFeatures = dict(f for f in metaData.items() if f[0] != '' and f[0] not in nodeFeatures and f[0] not in edgeFeatures)
-        self.tm.info('Exporting {} node and {} edge and {} config features to {}:'.format(
+        if not self.silent: self.tm.info('Exporting {} node and {} edge and {} config features to {}:'.format(
             len(nodeFeatures), len(edgeFeatures), len(configFeatures), self.writeDir,
         ))
         todo = []
@@ -185,12 +186,12 @@ Questions? Ask {} for an invite to Slack'''.format(
             else:
                 failed[tag] += 1
         self.tm.indent(level=0)
-        self.tm.info('Exported {} node features and {} edge features and {} config features to {}'.format(
+        if not self.silent: self.tm.info('Exported {} node features and {} edge features and {} config features to {}'.format(
             total['node'], total['edge'], total['config'], self.writeDir,
         ))
         if len(failed):
             for (tag, nf) in sorted(failed.items()):
-                self.tm.info('Failed to export {} {} features'.format(nf, tag))
+                self.tm.error('Failed to export {} {} features'.format(nf, tag))
 
     def exportMQL(self, mqlName, mqlDir):
         self.tm.indent(level=0, reset=True)
@@ -234,7 +235,7 @@ Questions? Ask {} for an invite to Slack'''.format(
                     self.featuresIgnored.setdefault(fName, []).append(featurePath)
             self.features[fName] = Data(chosenFPath, self.tm)  
         self._getWriteLoc()
-        self.tm.info('{} features found and {} ignored'.format(
+        if not self.silent: self.tm.info('{} features found and {} ignored'.format(
             len(tfFiles),
             sum(len(x) for x in self.featuresIgnored.values()),
         ), tm=False)
@@ -243,7 +244,7 @@ Questions? Ask {} for an invite to Slack'''.format(
         for fName in GRID:
             if fName not in self.features:
                 if fName == GRID[2]:
-                    self.tm.info('Grid feature "{}" not found. Working without Text-API\n'.format(GRID[2]))
+                    if not self.silent: self.tm.info('Grid feature "{}" not found. Working without Text-API\n'.format(GRID[2]))
                 else:
                     self.tm.error('Grid feature "{}" not found in\n{}'.format(fName, self.locationRep))
                     good = False
