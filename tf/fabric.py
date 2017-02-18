@@ -148,7 +148,7 @@ Questions? Ask {} for an invite to Slack'''.format(
             elif fObj.isEdge: dest = edges
             else: dest = nodes
             dest.add(fName)
-        if not silent: self.tm.info('Feature overview: {} nodes; {} edges; {} configs; {} computeds'.format(
+        if not silent: self.tm.info('Feature overview: {} for nodes; {} for edges; {} configs; {} computed'.format(
                 len(nodes), len(edges), len(configs), len(computeds),
             ))
         self.featureSets = dict(nodes=nodes, edges=edges, configs=configs, computeds=computeds)
