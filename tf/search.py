@@ -966,6 +966,9 @@ Surely, one of the above relations on nodes and/or slots will suit you better!''
                                 else:
                                     qedges.append((q, ']]', parents[-1]))
                                     edgeLine[len(qedges) - 1] = i
+                                    if op != None:
+                                        qedges.append((atomStack[indent], op, q))
+                                        edgeLine[len(qedges) - 1] = i
                             removeKeys = [at[0] for at in atomNest if at[0] > indent]
                             for rk in removeKeys: del atomStack[rk]
                     atomStack[indent] = q
