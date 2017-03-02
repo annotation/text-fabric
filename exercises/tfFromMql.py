@@ -1,7 +1,13 @@
 import os,sys,re,collections
 from tf.fabric import Fabric
 
-mqlFile = 'synvar.mql'
+sourceDir = os.path.expanduser('~/github/etcbc-data')
+mqlFile = '{}/{}'.format(sourceDir, 'synvar.mql')
+targetDir = os.path.expanduser('~/github/text-fabric-data')
+tfDir = '{}/hebrew/extrabiblical'.format(targetDir)
+if not os.path.exists(tfDir): os.makedirs(tfDir)
+
+TF = Fabric(tfDir)
 
 slotType = 'word'
 
@@ -12,12 +18,6 @@ curMonads = None
 curId = None
 edgeF = dict()
 nodeF = dict()
-
-dataDir = '~/github/etcbc-data/hebrew/extrabiblical'
-TF = Fabric(dataDir)
-dataPath = os.path.expanduser(dataDir)
-if not os.path.exists(dataPath):
-    os.makedirs(dataPath)
 
 def setFromSpec(spec):
     covered = set()
@@ -226,12 +226,12 @@ def tfFromData():
     bookMapping = dict(
         B_1QM='1QM',
         B_1QS='1QS',
-        Ajrud='Arjud',
+        Ajrud='Kuntillet_Ajrud',
         Arad='Arad',
         Balaam='Balaam',
         Ketef_Hinnom='Ketef_Hinnom',
         Lachish='Lachish',
-        Mesa='Mesha',
+        Mesa='Mesha_Stela',
         Mesad_Hashavyahu='Mesad_Hashavyahu',
         Pirqe='Pirqe',
         Shirata='Shirata',
