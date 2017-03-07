@@ -24,13 +24,17 @@ It has been used to construct the website
 [SHEBANQ](https://shebanq.ancient-data.org) and it is being
 used by researchers to analyze such texts. 
 
-[Install](https://github.com/ETCBC/text-fabric/wiki/Home)
+# Install
+
+Text Fabric is a Python(3) package on the Python Package Index, so you can install it easily with `pip` from
+the command line. Here are the precise
+[installation instructions](https://github.com/ETCBC/text-fabric/wiki/Home).
 
 # Documentation
 
 There is extensive documentation.
 
-1. [Wiki associated with this repo](https://github.com/ETCBC/text-fabric/wiki) is meant as a reference:
+1. The [wiki associated with this repo](https://github.com/ETCBC/text-fabric/wiki) is meant as a reference:
    1. it explains the [data model](https://github.com/ETCBC/text-fabric/wiki/Data-model)
    2. it specifies the [file format](https://github.com/ETCBC/text-fabric/wiki/File-formats)
    3. it holds the [api docs](https://github.com/ETCBC/text-fabric/wiki/Api)
@@ -44,7 +48,7 @@ There is extensive documentation.
 3. For more background information (earlier work, institutes, people, datasets), consult the
    [sources](https://shebanq.ancient-data.org/sources)
    page of SHEBANQ.
-4. Papers (preprints on [arxiv](https://arxiv.org):
+4. Papers (preprints on [arxiv](https://arxiv.org)), most of them published:
    1. [Parallel Texts in the Hebrew Bible, New Methods and Visualizations ](https://arxiv.org/abs/1603.01541)
    1. [The Hebrew Bible as Data: Laboratory - Sharing - Experiences](https://arxiv.org/abs/1501.01866)
    1. [LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible](https://arxiv.org/abs/1410.0286)
