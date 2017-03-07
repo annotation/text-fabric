@@ -18,7 +18,7 @@ affiliations:
     index: 1
 date: 07 March 2017
 codeRepository: 'https://github.com/ETCBC/text-fabric'
-identifier: 'http://doi.org/10.5281/zenodo.242384'
+identifier: 'http://doi.org/10.5281/zenodo.375595'
 bibliography: README.md 
 ---
 
