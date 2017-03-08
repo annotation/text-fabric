@@ -1,6 +1,7 @@
 # text-fabric
-[![DOI](https://zenodo.org/badge/73742167.svg)](https://zenodo.org/badge/latestdoi/73742167)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.375595.svg)](https://doi.org/10.5281/zenodo.375595)
 ![text-fabric](https://raw.github.com/ETCBC/text-fabric/master/docs/tf.png)
+
 
 Text-Fabric is a Python3 package for Text plus Annotations.
 
@@ -63,7 +64,7 @@ There is extensive documentation.
 In order to work with Text-Fabric, you need a dataset to operate on.
 Here is a
 [collection of datasets and additional modules](https://etcbc.github.io/text-fabric-data/)
-ready to be used in text-fabric. The link points to the data dacoumentation, and from there you find the github
+ready to be used in text-fabric. The link points to the data documentation, and from there you find the github
 repo where the data resides.
 
 ---
