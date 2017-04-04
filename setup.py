@@ -25,7 +25,6 @@ setup(
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: Implementation :: CPython",
-        "Topic :: Religion",
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Text Processing :: Linguistic",
         "Topic :: Text Processing :: Markup :: XML",
