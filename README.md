@@ -56,7 +56,7 @@ There is extensive documentation.
    1. [Annotation as a New Paradigm in Research Archiving](https://arxiv.org/abs/1412.6069)
 
    N.B. [LAF-Fabric](https://github.com/ETCBC/laf-fabric) is a precursor of Text-Fabric.
-   Text-Fabric is simpler to use, and has something that Text-Fabric does not have:
+   Text-Fabric is simpler to use, and has something that LAF-Fabric does not have:
    a powerful structured search engine.
 
 # Data
