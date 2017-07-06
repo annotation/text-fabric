@@ -3,7 +3,7 @@
 @source=Semantic plurality training set
 @valueType=str
 @writtenBy=Text-Fabric
-@dateWritten=2017-07-05T18:55:20Z
+@dateWritten=2017-07-06T12:06:53Z
 
 400518	p
 400523	p
