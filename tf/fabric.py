@@ -21,6 +21,7 @@ LOCATIONS = [
     '~/Downloads/text-fabric-data',
     '~/text-fabric-data',
     '~/github/text-fabric-data',
+    '~/Dropbox/text-fabric-data',
     '/mnt/shared/text-fabric-data',
 ]
 
