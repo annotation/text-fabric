@@ -15,13 +15,6 @@ GRID = (
 
 DATA_TYPES = ('str', 'int')
 
-SECTIONS = (
-    'book',
-    'chapter',
-    'verse',
-) # the only place in the code where these words occur (hopefully)
-
-
 class Data(object):
     def __init__(self, path, tm, edgeValues=False, data=None, isEdge=None, isConfig=None, metaData={}, method=None, dependencies=None):
         (dirName, baseName) = os.path.split(path)

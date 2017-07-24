@@ -1,6 +1,6 @@
 import os,collections
 from glob import glob
-from .data import Data, GRID, SECTIONS
+from .data import Data, GRID
 from .helpers import *
 from .timestamp import Timestamp
 from .prepare import *
@@ -8,7 +8,7 @@ from .api import *
 from .mql import MQL
 
 NAME = 'Text-Fabric'
-VERSION = '2.3.7'
+VERSION = '2.3.8'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 DATA = 'https://github.com/ETCBC/text-fabric-data'
@@ -40,7 +40,7 @@ PRECOMPUTE = (
     (False, '__levUp__'    , levUp    ,  GRID[0:2]+  (               '__rank__'  ,           )),
     (False, '__levDown__'  , levDown  , (GRID[0]  ,   '__levUp__'   ,'__rank__'              )),
     (False, '__boundary__' , boundary ,  GRID[0:2]+  (               '__rank__'  ,           )),
-    (True,  '__sections__' , sections ,  GRID     +  ('__levUp__'   , '__levels__') + SECTIONS),
+    (True,  '__sections__' , sections ,  GRID     +  ('__levUp__'   , '__levels__')           ),
 )
 
 class Fabric(object):
@@ -110,8 +110,6 @@ Questions? Ask {} for an invite to Slack'''.format(
                 else:
                     for (i, fName) in enumerate(sectionFeats):
                         self._loadFeature(fName, silent=silent)
-                        if self.good:
-                            self.features[SECTIONS[i]] = self.features[fName]
                 if self.good:
                     (cformats, formatFeats) = collectFormats(otextMeta)
                     for fName in formatFeats:
@@ -249,12 +247,18 @@ Questions? Ask {} for an invite to Slack'''.format(
                 else:
                     self.tm.error('Grid feature "{}" not found in\n{}'.format(fName, self.locationRep))
                     good = False
+            elif fName == GRID[2]:
+                self._loadFeature(fName, optional=True, silent=True)
         if not good: return False
         self.gridDir = self.features[GRID[0]].dirName
         self.precomputeList = []
         for (dep2, fName, method, dependencies) in PRECOMPUTE:
             thisGood = True
             if dep2 and GRID[2] not in self.features: continue
+            if dep2:
+                otextMeta = self.features[GRID[2]].metaData
+                sectionFeats = tuple(itemize(otextMeta.get('sectionFeatures', ''), ','))
+                dependencies = dependencies + sectionFeats
             for dep in dependencies:
                 if dep not in self.features:
                     self.tm.error('Missing dependency for computed data feature "{}": "{}"'.format(fName, dep))
@@ -290,6 +294,11 @@ Questions? Ask {} for an invite to Slack'''.format(
         setattr(api.F, GRID[0], OtypeFeature(api,  self.features[GRID[0]].data))
         setattr(api.E, GRID[1], OslotsFeature(api, self.features[GRID[1]].data))
 
+        sectionFeats = []
+        if GRID[2] in self.features:
+            otextMeta = self.features[GRID[2]].metaData
+            sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
+
         for fName in self.features:
             fObj = self.features[fName]
             if fObj.dataLoaded and not fObj.isConfig:
@@ -309,7 +318,7 @@ Questions? Ask {} for an invite to Slack'''.format(
                         else:
                             setattr(api.F, fName, NodeFeature(api, fObj.data))
                     else:
-                        if fName in GRID or fName in SECTIONS or fName in self._formatFeats: continue
+                        if fName in GRID or fName in sectionFeats or fName in self._formatFeats: continue
                         elif fObj.isEdge:
                             if hasattr(api.E, fName): delattr(api.E, fName)
                         else:
@@ -329,6 +338,11 @@ Questions? Ask {} for an invite to Slack'''.format(
         if not self.good: return None
         api = self.api
          
+        sectionFeats = []
+        if GRID[2] in self.features:
+            otextMeta = self.features[GRID[2]].metaData
+            sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
+
         for fName in self.features:
             fObj = self.features[fName]
             if fObj.dataLoaded and not fObj.isConfig:
@@ -342,7 +356,7 @@ Questions? Ask {} for an invite to Slack'''.format(
                             if not hasattr(api.F, fName):
                                 setattr(api.F, fName, NodeFeature(api, fObj.data))
                     else:
-                        if fName in GRID or fName in SECTIONS or fName in self._formatFeats: continue
+                        if fName in GRID or fName in sectionFeats or fName in self._formatFeats: continue
                         elif fObj.isEdge:
                             if hasattr(api.E, fName): delattr(api.E, fName)
                         else:

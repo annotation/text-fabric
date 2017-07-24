@@ -3,7 +3,7 @@ from functools import reduce
 from random import randrange
 from inspect import signature
 
-from .data import GRID, SECTIONS
+from .data import GRID
 
 STRATEGY = '''
     small_choice_first
@@ -96,11 +96,11 @@ class Search(object):
         for (i, n) in enumerate(r):
             otype = F.otype.v(n)
             words = [n] if otype == slotType else L.d(n, otype=slotType)
-            if otype == SECTIONS[2]:
+            if otype == T.sectionTypes[2]:
                 field = '{} {}:{}'.format(*T.sectionFromNode(n))
             elif otype == slotType:
                 field = T.text(words)
-            elif otype in SECTIONS[0:2]:
+            elif otype in T.sectionTypes[0:2]:
                 field = ''
             else:
                 field = '{}[{}{}]'.format(

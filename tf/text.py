@@ -1,4 +1,4 @@
-from .data import GRID, SECTIONS
+from .data import GRID
 from .helpers import *
 
 DEFAULT_FORMAT = 'text-orig-full'
@@ -29,14 +29,14 @@ class Text(object):
                 self.languages[code] = dict(((k, meta.get(k, 'default')) for k in ('language', 'languageEnglish')))
                 self.nameFromNode[code] = fObj.data
                 self.nodeFromName[code] = dict(((name, node) for (node, name) in fObj.data.items()))
-            for fName in (SECTIONS):
+            for fName in (sectionFeats):
                 if not tf.features[fName].load(silent=True):
                     good=False
                     continue
                 self.sectionFeatures.append(tf.features[fName].data)
 
 
-            sec0 = SECTIONS[0]
+            sec0 = self.sectionTypes[0]
             setattr(self, '{}Name'.format(sec0), self._sec0Name)
             setattr(self, '{}Node'.format(sec0), self._sec0Node)
 
