@@ -122,7 +122,8 @@ def collectFormats(config):
 def compileFormats(cformats, features):
     xformats = {}
     for (fmt, (rtpl, feats)) in sorted(cformats.items()):
-        xformats[fmt] = compileFormat(rtpl, feats, features)
+        tpl = rtpl.replace('\\n', '\n').replace('\\t', '\t')
+        xformats[fmt] = compileFormat(tpl, feats, features)
     return xformats
 
 def compileFormat(rtpl, feats, features):
