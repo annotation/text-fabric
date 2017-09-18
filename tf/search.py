@@ -358,9 +358,9 @@ class Search(object):
             if fTp == slotType and tTp == slotType:
                 return lambda n, m: m != n
             elif tTp == slotType:
-                return lambda n, m: n not in frozenset(Eoslots[m-maxSlot-1])
-            elif fTp == slotType:
                 return lambda n, m: m not in frozenset(Eoslots[n-maxSlot-1])
+            elif fTp == slotType:
+                return lambda n, m: n not in frozenset(Eoslots[m-maxSlot-1])
             else:
                 return lambda n, m: len(frozenset(Eoslots[n-maxSlot-1]) & frozenset(Eoslots[m-maxSlot-1])) == 0
 
