@@ -8,7 +8,7 @@ from .api import *
 from .mql import MQL
 
 NAME = 'Text-Fabric'
-VERSION = '2.3.11'
+VERSION = '2.3.12'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 DATA = 'https://github.com/ETCBC/text-fabric-data'
@@ -133,9 +133,8 @@ Questions? Ask {} for an invite to Slack'''.format(
         if add: self._updateApi(silent)
         else:
             return self._makeApi(silent)
-
     
-    def explore(self, silent=True):
+    def explore(self, silent=True, show=True):
         nodes = set()
         edges = set()
         configs = set()
@@ -152,6 +151,8 @@ Questions? Ask {} for an invite to Slack'''.format(
                 len(nodes), len(edges), len(configs), len(computeds),
             ))
         self.featureSets = dict(nodes=nodes, edges=edges, configs=configs, computeds=computeds)
+        if show:
+            return dict((kind, tuple(sorted(kindSet))) for (kind, kindSet) in sorted(self.featureSets.items(), key=lambda x: x[0]))
 
     def clearCache(self):
         for (fName, fObj) in self.features.items():
@@ -175,7 +176,9 @@ Questions? Ask {} for an invite to Slack'''.format(
         total = collections.Counter()
         failed = collections.Counter()
         for (fName, data, isEdge, isConfig) in todo:
-            fMeta = metaData.get(fName, metaData.get('', {})) 
+            fMeta = {}
+            fMeta.update(metaData.get('', {}))
+            fMeta.update(metaData.get(fName, {})) 
             fObj = Data('{}/{}.tf'.format(self.writeDir, fName), self.tm,
                 data=data, metaData=fMeta,
                 isEdge=isEdge, isConfig=isConfig,
