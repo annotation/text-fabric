@@ -8,7 +8,7 @@ from .api import *
 from .mql import MQL
 
 NAME = 'Text-Fabric'
-VERSION = '2.3.12'
+VERSION = '2.3.13'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 DATA = 'https://github.com/ETCBC/text-fabric-data'
@@ -249,7 +249,7 @@ Questions? Ask {} for an invite to Slack'''.format(
                 if fName == GRID[2]:
                     if not self.silent: self.tm.info('Grid feature "{}" not found. Working without Text-API\n'.format(GRID[2]))
                 else:
-                    self.tm.error('Grid feature "{}" not found in\n{}'.format(fName, self.locationRep))
+                    if not self.silent: self.tm.error('Grid feature "{}" not found in\n{}'.format(fName, self.locationRep))
                     good = False
             elif fName == GRID[2]:
                 self._loadFeature(fName, optional=True, silent=True)
