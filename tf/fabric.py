@@ -8,7 +8,7 @@ from .api import *
 from .mql import MQL
 
 NAME = 'Text-Fabric'
-VERSION = '2.3.14'
+VERSION = '2.3.15'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 DATA = 'https://github.com/ETCBC/text-fabric-data'
@@ -176,12 +176,17 @@ Questions? Ask {} for an invite to Slack'''.format(
         total = collections.Counter()
         failed = collections.Counter()
         for (fName, data, isEdge, isConfig) in todo:
+            edgeValues = False
             fMeta = {}
             fMeta.update(metaData.get('', {}))
-            fMeta.update(metaData.get(fName, {})) 
+            fMeta.update(metaData.get(fName, {}))
+            if fMeta.get('edgeValues', False):
+                edgeValues = True
+            if 'edgeValues' in fMeta: del fMeta['edgeValues']
             fObj = Data('{}/{}.tf'.format(self.writeDir, fName), self.tm,
                 data=data, metaData=fMeta,
                 isEdge=isEdge, isConfig=isConfig,
+                edgeValues=edgeValues,
             )
             tag = 'config' if isConfig else 'edge' if isEdge else 'node'
             if fObj.save(nodeRanges=fName==GRID[0], overwrite=True):

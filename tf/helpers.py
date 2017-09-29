@@ -71,7 +71,7 @@ def specFromRanges(ranges): # ranges must be normalized
     return ','.join('{}'.format(r[0]) if r[0] == r[1] else '{}-{}'.format(*r) for r in ranges)
 
 def valueFromTf(tf): return '\\'.join(x.replace('\\t','\t').replace('\\n','\n') for x in tf.split('\\\\'))
-def tfFromValue(val): return val.replace('\\', '\\\\').replace('\t', '\\t').replace('\n', '\\n')
+def tfFromValue(val): return str(val) if type(val) is int else val.replace('\\', '\\\\').replace('\t', '\\t').replace('\n', '\\n')
 
 def makeInverse(data):
     inverse = {}

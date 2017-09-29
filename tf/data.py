@@ -138,6 +138,9 @@ class Data(object):
                 continue
             text = line.rstrip('\n')
             if len(text) and text[0] == '@':
+                if text == '@edgeValues':
+                    self.edgeValues = True
+                    continue
                 fields = text[1:].split('=', 1)
                 self.metaData[fields[0]] = fields[1] if len(fields) == 2 else None
                 continue
@@ -307,6 +310,7 @@ class Data(object):
             self.tm.error('Cannot write to feature file "{}"'.format(fpath))
             return False
         fh.write('@{}\n'.format('config' if self.isConfig else 'edge' if self.isEdge else 'node'))
+        if self.edgeValues: fh.write('@edgeValues\n')
         for meta in sorted(self.metaData):
             fh.write('@{}={}\n'.format(meta, self.metaData[meta]))
         fh.write('@writtenBy=Text-Fabric\n')
