@@ -12,10 +12,6 @@ VERSION = '2.3.15'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 DATA = 'https://github.com/ETCBC/text-fabric-data'
-DATADOC = 'https://etcbc.github.io/text-fabric-data'
-SHEBANQ = 'https://shebanq.ancient-data.org/text'
-EMAIL = 'shebanq@ancient-data.org'
-SLACK = 'https://shebanq.slack.com/signup'
 
 LOCATIONS = [
     '~/Downloads/text-fabric-data',
@@ -52,11 +48,8 @@ class Fabric(object):
 Api reference : {}
 Tutorial      : {}
 Data sources  : {}
-Data docs     : {}
-Shebanq docs  : {}
-Slack team    : {}
-Questions? Ask {} for an invite to Slack'''.format(
-            NAME, VERSION, APIREF, TUTORIAL, DATA, DATADOC, SHEBANQ, SLACK, EMAIL,
+'''.format(
+            NAME, VERSION, APIREF, TUTORIAL, DATA,
         ), tm=False)
         self.good = True
 
