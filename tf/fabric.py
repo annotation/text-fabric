@@ -7,11 +7,11 @@ from .prepare import *
 from .api import *
 from .mql import MQL, tfFromMql
 
-NAME = 'Text-Fabric'
-VERSION = '3.0.1'
-APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
-TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
-DATA = 'https://github.com/ETCBC/text-fabric-data'
+NAME     = 'Text-Fabric'
+VERSION  = '3.0.1'
+APIREF   = 'https://github.com/Dans-labs/text-fabric/wiki/Api'
+TUTORIAL = 'https://github.com/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb'
+EXAMPLES = 'https://github.com/Dans-labs/text-fabric-data'
 
 LOCATIONS = [
     '~/Downloads/text-fabric-data',
