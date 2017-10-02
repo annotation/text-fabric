@@ -187,21 +187,20 @@ class Data(object):
             else:
                 if isEdge:
                     if edgeValues:
-                        valTf = ''
                         if lfields == normFields - 1:
-                            nodes = setFromSpec(fields[0])
-                            if fields[1] == '':
-                                errors['emptyNode2Spec'].append(i)
-                                continue
-                            nodes2 = setFromSpec(fields[1])
+                            nodes = {implicit_node}
+                            nodes2 = setFromSpec(fields[0])
+                            valTf = fields[-1]
                         elif lfields == normFields - 2:
                             nodes = {implicit_node}
                             if fields[0] == '':
                                 errors['emptyNode2Spec'].append(i)
                                 continue
                             nodes2 = setFromSpec(fields[0])
+                            valTf = ''
                         else:
                             nodes = {implicit_node}
+                            valTf = ''
                             errors['emptyNode2Spec'].append(i)
                             continue
                     else:
