@@ -5,10 +5,10 @@ from .helpers import *
 from .timestamp import Timestamp
 from .prepare import *
 from .api import *
-from .mql import MQL
+from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '2.3.15'
+VERSION = '3.0.0'
 APIREF = 'https://github.com/ETCBC/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/ETCBC/text-fabric/blob/master/docs/tutorial.ipynb'
 DATA = 'https://github.com/ETCBC/text-fabric-data'
@@ -205,6 +205,12 @@ Data sources  : {}
         mqlNameClean = cleanName(mqlName)
         mql = MQL(mqlDir, mqlName, self.features, self.tm)
         mql.write()
+
+    def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
+        self.tm.indent(level=0, reset=True)
+        (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(mqlFile, self.tm, slotType=slotType, otext=otext, meta=meta)
+        if good:
+            self.save(nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures, metaData=metaData)
 
     def _loadFeature(self, fName, optional=False, silent=False):
         if not self.good: return False

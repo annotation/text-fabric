@@ -224,3 +224,269 @@ GO
 
         tm.indent(level=1)
         tm.info('{} data: {} objects'.format(otype, t))
+
+
+# MQL IMPORT
+
+uniscan = re.compile(r'(?:\\x..)+')
+
+def makeuni(match):
+    ''' Make proper unicode of a text that contains byte escape codes such as backslash xb6
+    '''
+    byts = eval('"' + match.group(0) + '"')
+    return byts.encode('latin1').decode('utf-8')
+
+def uni(line): return uniscan.sub(makeuni, line)
+    
+def tfFromMql(mqlFile, tm, slotType=None, otext=None, meta=None):
+    if slotType == None:
+        tm.error('ERROR: no slotType specified')
+        return (False, {}, {}, {})
+    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlFile, tm)
+    if not good:
+        return (False, {}, {}, {})
+    return tfFromData(tm, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)
+
+def parseMql(mqlFile, tm):
+    tm.info('Parsing mql source ...')
+    fh = open(mqlFile)
+
+    objectTypes = dict()
+    tables = dict()
+
+    edgeF = dict()
+    nodeF = dict()
+
+    curId = None
+    curEnum = None
+    curObjectType = None
+    curTable = None
+    curObject = None
+    curValue = None
+    curFeature = None
+
+    STRING_TYPES = {'ascii', 'string'}
+
+    enums = dict()
+
+    chunkSize = 1000000
+    inThisChunk = 0
+
+    good = True
+
+    for (ln, line) in enumerate(fh):
+        inThisChunk += 1
+        if inThisChunk == chunkSize:
+            tm.info('\tline {:>9}'.format(ln + 1))
+            inThisChunk = 0
+        if line.startswith('CREATE OBJECTS WITH OBJECT TYPE') or line.startswith('WITH OBJECT TYPE'):
+            comps = line.rstrip().rstrip(']').split('[', 1)
+            curTable = comps[1]
+            tm.info('\t\tobjects in {}'.format(curTable))
+            curObject = None
+            if not curTable in tables:
+                tables[curTable] = dict()
+        elif curEnum != None:
+            if line.startswith('}'):
+                curEnum = None
+                continue
+            comps = line.strip().rstrip(',').split('=', 1)
+            comp = comps[0].strip()
+            words = comp.split()
+            if words[0] == 'DEFAULT':
+                enums[curEnum]['default'] = uni(words[1])
+                value = words[1]
+            else:
+                value = words[0]
+            enums[curEnum]['values'].append(value)
+        elif curObjectType != None:
+            if line.startswith(']'):
+                curObjectType = None
+                continue
+            if curObjectType == True:
+                if line.startswith('['):
+                    curObjectType = line.rstrip()[1:]
+                    objectTypes[curObjectType] = dict()
+                    tm.info('\t\totype {}'.format(curObjectType))
+                    continue
+            comps = line.strip().rstrip(';').split(':', 1)
+            feature = comps[0].strip()
+            fInfo = comps[1].strip()
+            fCleanInfo = fInfo.replace('FROM SET', '')
+            fInfoComps = fCleanInfo.split(' ', 1)
+            fMQLType = fInfoComps[0]
+            fDefault = fInfoComps[1].strip().split(' ', 1)[1] if len(fInfoComps) == 2 else None
+            if fDefault != None and fMQLType in STRING_TYPES:
+                fDefault = uni(fDefault[1:-1])
+            default = enums.get(fMQLType, {}).get('default', fDefault)
+            ftype = 'str' if fMQLType in enums else\
+                    'int' if fMQLType == 'integer' else\
+                    'str' if fMQLType in STRING_TYPES else\
+                    'int' if fInfo == 'id_d' else\
+                    'str'
+            isEdge = fMQLType == 'id_d'
+            if isEdge:
+                edgeF.setdefault(curObjectType, set()).add(feature)
+            else:
+                nodeF.setdefault(curObjectType, set()).add(feature)
+
+            objectTypes[curObjectType][feature] = (ftype, default)
+            tm.info('\t\t\tfeature {} ({}) =def= {} : {}'.format(feature, ftype, default, 'edge' if isEdge else 'node'))
+        elif curTable != None:
+            if curObject != None:
+                if line.startswith(']'):
+                    objectType = objectTypes[curTable]
+                    for (feature, (ftype, default)) in objectType.items():
+                        if feature not in curObject['feats'] and default != None:
+                            curObject['feats'][feature] = default
+                    tables[curTable][curId] = curObject
+                    curObject = None
+                    continue
+                elif line.startswith('['):
+                    continue
+                elif line.startswith('FROM MONADS'):
+                    monads = line.split('=', 1)[1].replace('{', '').replace('}', '').replace(' ','').strip()
+                    curObject['monads'] = setFromSpec(monads)
+                elif line.startswith('WITH ID_D'):
+                    comps = line.replace('[', '').rstrip().split('=', 1)
+                    curId = int(comps[1])
+                elif line.startswith('GO'):
+                    continue
+                elif line.strip() == '':
+                    continue
+                else:
+                    if curValue != None:
+                        toBeContinued = not line.rstrip().endswith('";')
+                        if toBeContinued:
+                            curValue += line
+                        else:
+                            curValue += line.rstrip().rstrip(';').rstrip('"')
+                            curObject['feats'][curFeature] = uni(curValue)
+                            curValue = None
+                            curFeature = None
+                        continue
+                    if ':=' in line:
+                        (featurePart, valuePart) = line.split('=', 1)
+                        feature = featurePart[0:-1].strip()
+                        isText = ':="' in line
+                        toBeContinued = isText and not line.rstrip().endswith('";')
+                        if toBeContinued:
+                            # this happens if a feature value contains a new line
+                            # we must continue scanning lines until we meet the ned of the value
+                            curFeature = feature
+                            curValue = valuePart.lstrip('"')
+                        else:
+                            value = valuePart.rstrip().rstrip(';').strip('"')
+                            curObject['feats'][feature] = uni(value) if isText else value
+                    else:
+                        tm.error('ERROR: line {}: unrecognized line -->{}<--'.format(ln, line))
+                        good = False
+                        break
+            else:
+                if line.startswith('CREATE OBJECT'):
+                    curObject = dict(feats=dict(), monads=None)
+                    curId = None
+        else:
+            if line.startswith('CREATE ENUMERATION'):
+                words = line.split()
+                curEnum = words[2]
+                enums[curEnum] = dict(default=None, values=[])
+                tm.info('\t\tenum {}'.format(curEnum))
+            elif line.startswith('CREATE OBJECT TYPE'):
+                curObjectType = True
+    tm.info('{} lines parsed'.format(ln + 1))
+    fh.close()
+    for table in tables:
+        tm.info('{} objects of type {}'.format(len(tables[table]), table))
+    return (good, objectTypes, tables, nodeF, edgeF)
+    
+def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
+    tm.info('Making TF data ...')
+    
+    NIL = {'nil', 'NIL', 'Nil'}
+
+    tableOrder = [slotType]+[t for t in sorted(tables) if t != slotType]
+
+    nodeFromIdd = dict()
+    iddFromNode = dict()
+
+    nodeFeatures = dict()
+    edgeFeatures = dict()
+    metaData = dict()
+
+    # metadata that ends up in every feature
+    metaData[''] = {} if meta == None else meta
+
+    # the config feature otext
+    metaData['otext'] = otext
+
+    good = True
+
+    tm.info('Monad - idd mapping ...')
+    otype = dict()
+    for idd in tables.get(slotType, {}):
+        monad = list(tables[slotType][idd]['monads'])[0]
+        nodeFromIdd[idd] = monad
+        iddFromNode[monad] = idd
+        otype[monad] = slotType
+
+    maxSlot = max(nodeFromIdd.values()) if len(nodeFromIdd) else 0
+    tm.info('maxSlot={}'.format(maxSlot))
+
+    tm.info('Node mapping and otype ...')
+    node = maxSlot
+    for t in tableOrder[1:]:
+        for idd in sorted(tables[t]):
+            node += 1
+            nodeFromIdd[idd] = node
+            iddFromNode[node] = idd
+            otype[node] = t
+
+    nodeFeatures['otype'] = otype
+    metaData['otype'] = dict(
+        valueType='str',
+    )
+
+    tm.info('oslots ...')
+    oslots = dict()
+    for t in tableOrder[1:]:
+        for idd in tables.get(t, {}):
+            node = nodeFromIdd[idd]
+            monads = tables[t][idd]['monads']
+            oslots[node] = monads
+    edgeFeatures['oslots'] = oslots
+    metaData['oslots'] = dict(
+        valueType='str',
+    )
+
+    tm.info('metadata ...')
+    for t in nodeF:
+        for f in nodeF[t]:
+            ftype = objectTypes[t][f][0]
+            metaData.setdefault(f, {})['valueType'] = ftype
+    for t in edgeF:
+        for f in edgeF[t]:
+            metaData.setdefault(f, {})['valueType'] = 'str'
+
+    tm.info('features ...')
+    chunkSize = 100000
+    for t in tableOrder:
+        tm.info('\tfeatures from {}s'.format(t))
+        inThisChunk = 0
+        for (i, idd) in enumerate(tables.get(t, {})):
+            inThisChunk += 1
+            if inThisChunk == chunkSize:
+                tm.info('\t{:>9} {}s'.format(i + 1, t))
+                inThisChunk = 0
+            node = nodeFromIdd[idd]
+            features = tables[t][idd]['feats']
+            for (f, v) in features.items():
+                isEdge = f in edgeF.get(t, set())
+                if isEdge:
+                    if v not in NIL:
+                        edgeFeatures.setdefault(f, {}).setdefault(node, set()).add(nodeFromIdd[int(v)])
+                else:
+                    nodeFeatures.setdefault(f, {})[node] = v
+        tm.info('\t{:>9} {}s'.format(i + 1, t))
+
+    return(good, nodeFeatures, edgeFeatures, metaData)
