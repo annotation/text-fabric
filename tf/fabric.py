@@ -11,7 +11,7 @@ NAME     = 'Text-Fabric'
 VERSION = '3.0.2'
 APIREF   = 'https://github.com/Dans-labs/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb'
-EXAMPLES = 'https://github.com/Dans-labs/text-fabric-data'
+DATA = 'https://github.com/Dans-labs/text-fabric-data'
 
 LOCATIONS = [
     '~/Downloads/text-fabric-data',
@@ -47,7 +47,7 @@ class Fabric(object):
         if not silent: self.tm.info('''This is {} {}
 Api reference : {}
 Tutorial      : {}
-Data sources  : {}
+Example data  : {}
 '''.format(
             NAME, VERSION, APIREF, TUTORIAL, DATA,
         ), tm=False)
