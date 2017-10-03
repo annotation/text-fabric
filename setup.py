@@ -7,8 +7,8 @@ setup(
     version='3.0.1',
     description='''Processor for Text Fabric Data''',
     author='Dirk Roorda',
-    author_email='shebanq@ancient-data.org',
-    url='https://github.com/ETCBC/text-fabric',
+    author_email='dirk.roorda@dans.knaw.nl',
+    url='https://github.com/Dans-labs/text-fabric',
     keywords = ['text', 'linguistics', 'database', 'graph', 'hebrew', 'greek', 'syriac'],
     classifiers = [
         "Development Status :: 4 - Beta",
@@ -30,9 +30,8 @@ setup(
         "Topic :: Text Processing :: Linguistic",
         "Topic :: Text Processing :: Markup :: XML",
     ],
-#    ext_modules = cythonize('tf/search.pyx'),
     long_description = '''\
 Tools to read Text-Fabric resources analyse them efficiently.
-More info on https://github.com/ETCBC/text-fabric/wiki
+More info on https://github.com/Dans-labs/text-fabric/wiki
 ''',
 )
