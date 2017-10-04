@@ -315,7 +315,11 @@ def parseMql(mqlFile, tm):
             fCleanInfo = fInfo.replace('FROM SET', '')
             fInfoComps = fCleanInfo.split(' ', 1)
             fMQLType = fInfoComps[0]
-            fDefault = fInfoComps[1].strip().split(' ', 1)[1] if len(fInfoComps) == 2 else None
+            if len(fInfoComps) == 2:
+                fDefaultComps = fInfoComps[1].strip().split(' ', 1)
+                fDefault = fDefaultComps[1] if len(fDefaultComps) > 1 else None
+            else:
+                fDefault = None
             if fDefault != None and fMQLType in STRING_TYPES:
                 fDefault = uni(fDefault[1:-1])
             default = enums.get(fMQLType, {}).get('default', fDefault)
