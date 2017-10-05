@@ -265,6 +265,8 @@ def parseMql(mqlFile, tm):
     curValue = None
     curFeature = None
 
+    inObjectTypeFeatures = False
+
     STRING_TYPES = {'ascii', 'string'}
 
     enums = dict()
@@ -302,40 +304,45 @@ def parseMql(mqlFile, tm):
         elif curObjectType != None:
             if line.startswith(']'):
                 curObjectType = None
+                inObjectTypeFeatures = False
                 continue
             if curObjectType == True:
                 if line.startswith('['):
                     curObjectType = line.rstrip()[1:]
                     objectTypes[curObjectType] = dict()
                     tm.info('\t\totype {}'.format(curObjectType))
+                    inObjectTypeFeatures = True
                     continue
-            comps = line.strip().rstrip(';').split(':', 1)
-            feature = comps[0].strip()
-            fInfo = comps[1].strip()
-            fCleanInfo = fInfo.replace('FROM SET', '')
-            fInfoComps = fCleanInfo.split(' ', 1)
-            fMQLType = fInfoComps[0]
-            if len(fInfoComps) == 2:
-                fDefaultComps = fInfoComps[1].strip().split(' ', 1)
-                fDefault = fDefaultComps[1] if len(fDefaultComps) > 1 else None
-            else:
-                fDefault = None
-            if fDefault != None and fMQLType in STRING_TYPES:
-                fDefault = uni(fDefault[1:-1])
-            default = enums.get(fMQLType, {}).get('default', fDefault)
-            ftype = 'str' if fMQLType in enums else\
-                    'int' if fMQLType == 'integer' else\
-                    'str' if fMQLType in STRING_TYPES else\
-                    'int' if fInfo == 'id_d' else\
-                    'str'
-            isEdge = fMQLType == 'id_d'
-            if isEdge:
-                edgeF.setdefault(curObjectType, set()).add(feature)
-            else:
-                nodeF.setdefault(curObjectType, set()).add(feature)
+            if inObjectTypeFeatures:
+                comps = line.strip().rstrip(';').split(':', 1)
+                feature = comps[0].strip()
+                fInfo = comps[1].strip()
+                fCleanInfo = fInfo.replace('FROM SET', '')
+                fInfoComps = fCleanInfo.split(' ', 1)
+                fMQLType = fInfoComps[0]
+                if len(fInfoComps) == 2:
+                    fDefaultComps = fInfoComps[1].strip().split(' ', 1)
+                    fDefault = fDefaultComps[1] if len(fDefaultComps) > 1 else None
+                else:
+                    fDefault = None
+                if fDefault != None and fMQLType in STRING_TYPES:
+                    fDefault = uni(fDefault[1:-1])
+                default = enums.get(fMQLType, {}).get('default', fDefault)
+                ftype = 'str' if fMQLType in enums else\
+                        'int' if fMQLType == 'integer' else\
+                        'str' if fMQLType in STRING_TYPES else\
+                        'int' if fInfo == 'id_d' else\
+                        'str'
+                isEdge = fMQLType == 'id_d'
+                if isEdge:
+                    edgeF.setdefault(curObjectType, set()).add(feature)
+                else:
+                    nodeF.setdefault(curObjectType, set()).add(feature)
 
-            objectTypes[curObjectType][feature] = (ftype, default)
-            tm.info('\t\t\tfeature {} ({}) =def= {} : {}'.format(feature, ftype, default, 'edge' if isEdge else 'node'))
+                objectTypes[curObjectType][feature] = (ftype, default)
+                tm.info('\t\t\tfeature {} ({}) =def= {} : {}'.format(feature, ftype, default, 'edge' if isEdge else 'node'))
+            else:
+                continue
         elif curTable != None:
             if curObject != None:
                 if line.startswith(']'):
@@ -398,6 +405,7 @@ def parseMql(mqlFile, tm):
                 tm.info('\t\tenum {}'.format(curEnum))
             elif line.startswith('CREATE OBJECT TYPE'):
                 curObjectType = True
+                inObjectTypeFeatures = False
     tm.info('{} lines parsed'.format(ln + 1))
     fh.close()
     for table in tables:
