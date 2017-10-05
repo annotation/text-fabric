@@ -419,6 +419,9 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
 
     tableOrder = [slotType]+[t for t in sorted(tables) if t != slotType]
 
+    iddFromMonad = dict()
+    slotFromMonad = dict()
+
     nodeFromIdd = dict()
     iddFromNode = dict()
 
@@ -435,14 +438,23 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     good = True
 
     tm.info('Monad - idd mapping ...')
-    otype = dict()
     for idd in tables.get(slotType, {}):
         monad = list(tables[slotType][idd]['monads'])[0]
-        nodeFromIdd[idd] = monad
-        iddFromNode[monad] = idd
-        otype[monad] = slotType
+        iddFromMonad[monad] = idd
 
-    maxSlot = max(nodeFromIdd.values()) if len(nodeFromIdd) else 0
+    tm.info('Removing holes in the monad sequence')
+    # we set up a monad - slot mapping
+    curSlot = 0
+    otype = dict()
+    for monad in sorted(iddFromMonad):
+        curSlot += 1
+        slotFromMonad[monad] = curSlot
+        idd = iddFromMonad[monad]
+        nodeFromIdd[idd] = curSlot
+        iddFromNode[curSlot] = idd
+        otype[curSlot] = slotType
+
+    maxSlot = curSlot
     tm.info('maxSlot={}'.format(maxSlot))
 
     tm.info('Node mapping and otype ...')
@@ -465,7 +477,7 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
         for idd in tables.get(t, {}):
             node = nodeFromIdd[idd]
             monads = tables[t][idd]['monads']
-            oslots[node] = monads
+            oslots[node] = {slotFromMonad[m] for m in monads}
     edgeFeatures['oslots'] = oslots
     metaData['oslots'] = dict(
         valueType='str',
