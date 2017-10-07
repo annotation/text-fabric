@@ -348,9 +348,14 @@ class Data(object):
                         nodeSpec2 = specFromRanges(rangesFromSet(mset))
                         nodeSpec = '' if n == implicitNode else n
                         implicitNode = n + 1
-                        fh.write('{}{}{}\t{}\n'.format(
-                            nodeSpec, '\t' if nodeSpec else '', nodeSpec2, tfFromValue(value),
-                        ))
+                        if value == None:
+                            fh.write('{}{}{}\n'.format(
+                                nodeSpec, '\t' if nodeSpec else '', nodeSpec2,
+                            ))
+                        else:
+                            fh.write('{}{}{}\t{}\n'.format(
+                                nodeSpec, '\t' if nodeSpec else '', nodeSpec2, tfFromValue(value),
+                            ))
                 else:
                     nodeSpec2 = specFromRanges(rangesFromSet(thisData))
                     nodeSpec = '' if n == implicitNode else n
