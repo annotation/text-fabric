@@ -229,8 +229,7 @@ class Data(object):
                         if not edgeValues:
                             data.setdefault(n, set()).add(m)
                         else:
-                            if value != None:
-                                data.setdefault(n, {})[m] = value
+                            data.setdefault(n, {})[m] = value # even if the value is None
             else:
                 for n in nodes:
                     if value != None:
