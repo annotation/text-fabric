@@ -23,7 +23,7 @@ The intended use case is ancient writings, such as the Hebrew Bible or the Greek
 Text-Fabric not only deals with the text, but also with rich sets of linguistic annotations added to them.
 It has been used to construct the website
 [SHEBANQ](https://shebanq.ancient-data.org) and it is being
-used by researchers to analyze such texts. 
+used by researchers to analyse such texts. 
 
 # Install
 
@@ -35,10 +35,10 @@ the command line. Here are the precise
 
 There is extensive documentation.
 
-1. The [wiki associated with this repo](https://github.com/Dans-labs/text-fabric/wiki) is meant as a reference:
-   1. it explains the [data model](https://github.com/Dans-labs/text-fabric/wiki/Data-model)
-   2. it specifies the [file format](https://github.com/Dans-labs/text-fabric/wiki/File-formats)
-   3. it holds the [api docs](https://github.com/Dans-labs/text-fabric/wiki/Api)
+1. The [wiki associated with this repo](https://github.com/Dans-labs/text-fabric/wiki) is meant as a reference.
+   1. It explains the [data model](https://github.com/Dans-labs/text-fabric/wiki/Data-model)
+   2. It specifies the [file format](https://github.com/Dans-labs/text-fabric/wiki/File-formats)
+   3. It holds the [api docs](https://github.com/Dans-labs/text-fabric/wiki/Api)
 2. Included in this repo are also tutorials and exercises to guide you into increasingly involved tasks
    1. [general tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb)
    1. [search tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb)
@@ -64,7 +64,7 @@ There is extensive documentation.
 In order to work with Text-Fabric, you need a dataset to operate on.
 Here is a
 [collection of datasets and additional modules](https://Dans-labs.github.io/text-fabric-data/)
-ready to be used in text-fabric. The link points to the data documentation, and from there you find the github
+ready to be used in text-fabric. The link points to the data documentation, and from there you find the GitHub
 repo where the data resides.
 
 ---
