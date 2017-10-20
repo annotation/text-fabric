@@ -9,6 +9,10 @@ def cleanName(name):
         clean = 'x' + clean
     return clean
 
+def isClean(name):
+    if name == None or len(name) == 0 or name[0] not in LETTER: return False
+    return all(c in VALID for c in name[1:])
+
 def expandDir(dirName, paths):
     if dirName.startswith('~'):
         dirName = dirName.replace('~', paths['home'], 1)

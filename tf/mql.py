@@ -2,6 +2,13 @@ import os
 from .data import GRID
 from .helpers import *
 
+# If a feature, with type string, has less than ENUM_LIMIT values,
+# an enumeration type for it will be created
+# provided all values of that feature are a valid name for MQL.
+
+ENUM_LIMIT = 1000 
+
+
 class MQL(object):
     def __init__(self, mqlDir, mqlName, tfFeatures, tm):
         self.mqlDir = mqlDir
@@ -11,6 +18,7 @@ class MQL(object):
         self.mqlName = cleanDb
         self.tfFeatures = tfFeatures
         self.tm = tm
+        self.enums = {}
         self._check()
 
     def write(self):
@@ -29,8 +37,15 @@ class MQL(object):
             self.tm.error('Could not write to {}'.format(mqlPath))
             self.good = False
             return
+
+        self.tm.info('Loading {} features'.format(len(self.featureList)))
+        for ft in self.featureList:
+            fObj = self.features[ft]
+            fObj.load()
+
         self.fm = fm
         self._writeStartDb()
+        self._writeEnums()
         self._writeTypes()
         self._writeDataAll()
         self._writeEndDb()
@@ -86,6 +101,41 @@ GO
 ''')
         self.fm.close()
 
+    def _writeEnums(self):
+        self.tm.indent(level=0)
+        self.tm.info('Writing enumerations')
+        self.tm.indent(level=1)
+        for ft in self.featureList:
+            fObj = self.features[ft]
+            if fObj.isEdge or fObj.dataType == 'int': continue
+            fMap = fObj.data
+            fValues = sorted(set(fMap.values()))
+            if len(fValues) > ENUM_LIMIT: continue
+            eligible = all(isClean(fVal) for fVal in fValues) 
+            if not eligible:
+                unclean = [fVal for fVal in fValues if not isClean(fVal)]
+                print('\t{:<15}: {:>4} values, {} not a name, e.g. «{}»'.format(
+                    ft, len(fValues), len(unclean), unclean[0],
+                ))
+                continue
+            self.enums[ft] = fValues
+
+        for ft in sorted(self.enums):
+            self._writeEnum(ft)
+        self.tm.indent(level=0)
+        self.tm.info('Written {} enumerations'.format(len(self.enums)))
+        
+    def _writeEnum(self, ft):
+        fValues = self.enums[ft]
+        self.tm.info('enum {:<15} with {:>4} values'.format(ft, len(fValues)))
+        fValuesEnumerated = ',\n\t'.join('{} = {}'.format(fVal, i) for (i, fVal) in enumerate(fValues))
+        self.fm.write('''
+CREATE ENUMERATION {}_enum = {{
+    {}
+}}
+GO
+'''.format(ft, fValuesEnumerated))
+
     def _writeTypes(self):
         def valInt(n): return str(n)
         def valStr(s):
@@ -96,11 +146,6 @@ GO
         def valIds(ids): return '({})'.format(','.join(str(i) for i in ids))
 
         self.levels = self.tfFeatures['__levels__'].data[::-1]
-        self.tm.info('Loading {} features'.format(len(self.featureList)))
-        for ft in self.featureList:
-            fObj = self.features[ft]
-            fObj.load()
-
         self.tm.indent(level=0)
         self.tm.info('Mapping {} features onto {} object types'.format(
             len(self.featureList), len(self.levels),
@@ -123,7 +168,7 @@ GO
             else:
                 if fObj.dataType == 'str':
                     dataType = 'string DEFAULT ""'
-                    method = valStr
+                    method = valInt if ft in self.enums else valStr 
                 elif fObj.dataType == 'int':
                     dataType = 'integer DEFAULT 0'
                     method = valInt
@@ -147,7 +192,8 @@ CREATE OBJECT TYPE
 [{}
 '''.format(otype))
         for ft in self.otypes[otype]:
-            self.fm.write('  {}:{};\n'.format(ft, self.featureTypes[ft]))
+            fType = '{}_enum'.format(ft) if ft in self.enums else self.featureTypes[ft]
+            self.fm.write('  {}:{};\n'.format(ft, fType))
         self.fm.write('''
 ]
 GO
