@@ -1,4 +1,5 @@
 import os
+from functools import reduce
 from .data import GRID
 from .helpers import *
 
@@ -8,6 +9,7 @@ from .helpers import *
 
 ENUM_LIMIT = 1000 
 
+ONE_ENUM_TYPE = True
 
 class MQL(object):
     def __init__(self, mqlDir, mqlName, tfFeatures, tm):
@@ -120,11 +122,30 @@ GO
                 continue
             self.enums[ft] = fValues
 
-        for ft in sorted(self.enums):
-            self._writeEnum(ft)
-        self.tm.indent(level=0)
-        self.tm.info('Written {} enumerations'.format(len(self.enums)))
+        if ONE_ENUM_TYPE:
+            self._writeEnumsAsOne()
+        else:
+            for ft in sorted(self.enums):
+                self._writeEnum(ft)
+            self.tm.indent(level=0)
+            self.tm.info('Written {} enumerations'.format(len(self.enums)))
         
+    def _writeEnumsAsOne(self):
+        fValues = reduce(
+            set.union,
+            (set(fV) for fV in self.enums.values()),
+            set(),
+        )
+        self.tm.info('Writing an all-in-one enum with {:>4} values'.format(len(fValues)))
+        fValuesEnumerated = ',\n\t'.join('{} = {}'.format(fVal, i) for (i, fVal) in enumerate(fValues))
+        self.fm.write('''
+CREATE ENUMERATION all_enum = {{
+    {}
+}}
+GO
+'''.format(fValuesEnumerated))
+
+
     def _writeEnum(self, ft):
         fValues = self.enums[ft]
         self.tm.info('enum {:<15} with {:>4} values'.format(ft, len(fValues)))
@@ -192,7 +213,7 @@ CREATE OBJECT TYPE
 [{}
 '''.format(otype))
         for ft in self.otypes[otype]:
-            fType = '{}_enum'.format(ft) if ft in self.enums else self.featureTypes[ft]
+            fType = '{}_enum'.format('all' if ONE_ENUM_TYPE else ft) if ft in self.enums else self.featureTypes[ft]
             self.fm.write('  {}:{};\n'.format(ft, fType))
         self.fm.write('''
 ]
