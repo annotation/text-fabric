@@ -1,5 +1,5 @@
 # text-fabric
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1008899.svg)](https://doi.org/10.5281/zenodo.1008899)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1008899.svg)](https://doi.org/10.5281/zenodo.592193)
 ![text-fabric](https://raw.github.com/Dans-labs/text-fabric/master/docs/tf.png)
 
 
