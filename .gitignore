@@ -47,6 +47,7 @@ _themes/
 build/
 _build/
 __pycache__/
+_temp/
 .tf/
 .ipynb_checkpoints/
 
