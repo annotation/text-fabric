@@ -1,6 +1,6 @@
 import os
 from functools import reduce
-from .data import GRID
+from .data import WARP
 from .helpers import *
 
 # If a feature, with type string, has less than ENUM_LIMIT values,
@@ -60,7 +60,7 @@ class MQL(object):
         self.featureList = []
         self.tm.indent(level=1)
         for (f, fo) in sorted(self.tfFeatures.items()):
-            if fo.method != None or f in GRID: continue
+            if fo.method != None or f in WARP: continue
             fo.load(metaOnly=True)
             if fo.isConfig: continue
             cleanF = cleanName(f)
@@ -69,10 +69,10 @@ class MQL(object):
             self.featureList.append(cleanF)
             self.features[cleanF] = fo
         good = True
-        for feat in (GRID[0], GRID[1], '__levels__'):
+        for feat in (WARP[0], WARP[1], '__levels__'):
             if feat not in self.tfFeatures:
                 self.tm.error('{} feature {} is missing from data set'.format(
-                    'Grid' if feat in GRID else 'Computed' if feat.startswith('__') else 'Data',
+                    'Warp' if feat in WARP else 'Computed' if feat.startswith('__') else 'Data',
                     feat,
                 ))
                 good = False
@@ -224,7 +224,7 @@ GO
         self.tm.info('Writing {} features as data in {} object types'.format(
             len(self.featureList), len(self.levels),
         ))
-        self.oslots = self.tfFeatures[GRID[1]].data
+        self.oslots = self.tfFeatures[WARP[1]].data
         for (otype, av, start, end) in self.levels:
             self._writeData(otype, start, end)
 

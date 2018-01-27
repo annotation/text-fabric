@@ -3,7 +3,7 @@ from functools import reduce
 from random import randrange
 from inspect import signature
 
-from .data import GRID
+from .data import WARP
 
 STRATEGY = '''
     small_choice_first
@@ -706,7 +706,7 @@ class Search(object):
         edgeMap = {}
 
         for efName in sorted(self.tf.featureSets['edges']):
-            if efName == GRID[1]: continue
+            if efName == WARP[1]: continue
             r = len(relations)
 
             (edgeR, edgeIR) = makeEdgeMaps(efName)
@@ -730,8 +730,8 @@ class Search(object):
         self.relationFromName = dict(((r['acro'], i) for (i, r) in enumerate(self.relations)))
         self.relationLegend = '\n'.join('{:>23} {}'.format(r['acro'], r['desc']) for r in self.relations if r['desc'] != None)
         self.relationLegend += '''
-The grid feature "{}" cannot be used in searches.
-Surely, one of the above relations on nodes and/or slots will suit you better!'''.format(GRID[1])
+The warp feature "{}" cannot be used in searches.
+Surely, one of the above relations on nodes and/or slots will suit you better!'''.format(WARP[1])
         self.converse = dict(tuple((2*i, 2*i + 1) for i in range(lr)) + tuple((2*i+1, 2*i) for i in range(lr))) 
         self.edgeMap = edgeMap
 

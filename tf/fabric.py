@@ -1,6 +1,6 @@
 import os,collections
 from glob import glob
-from .data import Data, GRID
+from .data import Data, WARP
 from .helpers import *
 from .timestamp import Timestamp
 from .prepare import *
@@ -8,7 +8,7 @@ from .api import *
 from .mql import MQL, tfFromMql
 
 NAME     = 'Text-Fabric'
-VERSION = '3.1.1'
+VERSION = '3.1.2'
 APIREF   = 'https://github.com/Dans-labs/text-fabric/wiki/Api'
 TUTORIAL = 'https://github.com/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb'
 DATA = 'https://github.com/Dans-labs/text-fabric-data'
@@ -31,13 +31,13 @@ MODULES = [
 ]
 
 PRECOMPUTE = (
-    (False, '__levels__'   , levels   ,  GRID[0:2]                                            ),
-    (False, '__order__'    , order    ,  GRID[0:2]+  ('__levels__' ,                         )),
-    (False, '__rank__'     , rank     , (GRID[0]  ,   '__order__'                            )),
-    (False, '__levUp__'    , levUp    ,  GRID[0:2]+  (               '__rank__'  ,           )),
-    (False, '__levDown__'  , levDown  , (GRID[0]  ,   '__levUp__'   ,'__rank__'              )),
-    (False, '__boundary__' , boundary ,  GRID[0:2]+  (               '__rank__'  ,           )),
-    (True,  '__sections__' , sections ,  GRID     +  ('__levUp__'   , '__levels__')           ),
+    (False, '__levels__'   , levels   ,  WARP[0:2]                                            ),
+    (False, '__order__'    , order    ,  WARP[0:2]+  ('__levels__' ,                         )),
+    (False, '__rank__'     , rank     , (WARP[0]  ,   '__order__'                            )),
+    (False, '__levUp__'    , levUp    ,  WARP[0:2]+  (               '__rank__'  ,           )),
+    (False, '__levDown__'  , levDown  , (WARP[0]  ,   '__levUp__'   ,'__rank__'              )),
+    (False, '__boundary__' , boundary ,  WARP[0:2]+  (               '__rank__'  ,           )),
+    (True,  '__sections__' , sections ,  WARP     +  ('__levUp__'   , '__levels__')           ),
 )
 
 class Fabric(object):
@@ -85,21 +85,21 @@ Example data  : {}
                 self.featuresRequested += featuresRequested
             else:
                 self.featuresRequested = featuresRequested
-            for fName in list(GRID):
-                self._loadFeature(fName, optional=fName==GRID[2], silent=silent)
+            for fName in list(WARP):
+                self._loadFeature(fName, optional=fName==WARP[2], silent=silent)
         if self.good:
             self._cformats = {}
             self._formatFeats = []
-            if GRID[2] in self.features:
-                otextMeta = self.features[GRID[2]].metaData
+            if WARP[2] in self.features:
+                otextMeta = self.features[WARP[2]].metaData
                 for otextMod in self.features:
-                    if otextMod.startswith(GRID[2]+'@'):
+                    if otextMod.startswith(WARP[2]+'@'):
                         self._loadFeature(otextMod, silent=silent)
                         otextMeta.update(self.features[otextMod].metaData)
                 sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
                 sectionTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
                 if len(sectionTypes) != 3 or len(sectionFeats) != 3:
-                    if not silent: self.tm.info('Not enough info for sections in {}, section functionality will not work'.format(GRID[2]))
+                    if not silent: self.tm.info('Not enough info for sections in {}, section functionality will not work'.format(WARP[2]))
                     self.sectionsOK = False
                 else:
                     for (i, fName) in enumerate(sectionFeats):
@@ -182,7 +182,7 @@ Example data  : {}
                 edgeValues=edgeValues,
             )
             tag = 'config' if isConfig else 'edge' if isEdge else 'node'
-            if fObj.save(nodeRanges=fName==GRID[0], overwrite=True):
+            if fObj.save(nodeRanges=fName==WARP[0], overwrite=True):
                 total[tag] += 1
             else:
                 failed[tag] += 1
@@ -248,23 +248,23 @@ Example data  : {}
         ), tm=False)
 
         good = True
-        for fName in GRID:
+        for fName in WARP:
             if fName not in self.features:
-                if fName == GRID[2]:
-                    if not self.silent: self.tm.info('Grid feature "{}" not found. Working without Text-API\n'.format(GRID[2]))
+                if fName == WARP[2]:
+                    if not self.silent: self.tm.info('Warp feature "{}" not found. Working without Text-API\n'.format(WARP[2]))
                 else:
-                    if not self.silent: self.tm.error('Grid feature "{}" not found in\n{}'.format(fName, self.locationRep))
+                    if not self.silent: self.tm.error('Warp feature "{}" not found in\n{}'.format(fName, self.locationRep))
                     good = False
-            elif fName == GRID[2]:
+            elif fName == WARP[2]:
                 self._loadFeature(fName, optional=True, silent=True)
         if not good: return False
-        self.gridDir = self.features[GRID[0]].dirName
+        self.warpDir = self.features[WARP[0]].dirName
         self.precomputeList = []
         for (dep2, fName, method, dependencies) in PRECOMPUTE:
             thisGood = True
-            if dep2 and GRID[2] not in self.features: continue
+            if dep2 and WARP[2] not in self.features: continue
             if dep2:
-                otextMeta = self.features[GRID[2]].metaData
+                otextMeta = self.features[WARP[2]].metaData
                 sectionFeats = tuple(itemize(otextMeta.get('sectionFeatures', ''), ','))
                 dependencies = dependencies + sectionFeats
             for dep in dependencies:
@@ -273,7 +273,7 @@ Example data  : {}
                     thisGood = False
             if not thisGood: good = False
             self.features[fName] = Data(
-                '{}/{}.x'.format(self.gridDir, fName), 
+                '{}/{}.x'.format(self.warpDir, fName), 
                 self.tm,
                 method=method,
                 dependencies=[self.features.get(dep, None) for dep in dependencies],
@@ -299,12 +299,12 @@ Example data  : {}
         if not self.good: return None
         api = Api(self)
          
-        setattr(api.F, GRID[0], OtypeFeature(api,  self.features[GRID[0]].data))
-        setattr(api.E, GRID[1], OslotsFeature(api, self.features[GRID[1]].data))
+        setattr(api.F, WARP[0], OtypeFeature(api,  self.features[WARP[0]].data))
+        setattr(api.E, WARP[1], OslotsFeature(api, self.features[WARP[1]].data))
 
         sectionFeats = []
-        if GRID[2] in self.features:
-            otextMeta = self.features[GRID[2]].metaData
+        if WARP[2] in self.features:
+            otextMeta = self.features[WARP[2]].metaData
             sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
 
         for fName in self.features:
@@ -320,13 +320,13 @@ Example data  : {}
                         if hasattr(ap, feat): delattr(api.C, feat)
                 else:
                     if fName in self.featuresRequested:
-                        if fName in GRID: continue
+                        if fName in WARP: continue
                         elif fObj.isEdge:
                             setattr(api.E, fName, EdgeFeature(api, fObj.data, fObj.edgeValues))
                         else:
                             setattr(api.F, fName, NodeFeature(api, fObj.data))
                     else:
-                        if fName in GRID or fName in sectionFeats or fName in self._formatFeats: continue
+                        if fName in WARP or fName in sectionFeats or fName in self._formatFeats: continue
                         elif fObj.isEdge:
                             if hasattr(api.E, fName): delattr(api.E, fName)
                         else:
@@ -347,8 +347,8 @@ Example data  : {}
         api = self.api
          
         sectionFeats = []
-        if GRID[2] in self.features:
-            otextMeta = self.features[GRID[2]].metaData
+        if WARP[2] in self.features:
+            otextMeta = self.features[WARP[2]].metaData
             sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
 
         for fName in self.features:
@@ -356,7 +356,7 @@ Example data  : {}
             if fObj.dataLoaded and not fObj.isConfig:
                 if not fObj.method:
                     if fName in self.featuresRequested:
-                        if fName in GRID: continue
+                        if fName in WARP: continue
                         elif fObj.isEdge:
                             if not hasattr(api.E, fName):
                                 setattr(api.E, fName, EdgeFeature(api, fObj.data, fObj.edgeValues))
@@ -364,7 +364,7 @@ Example data  : {}
                             if not hasattr(api.F, fName):
                                 setattr(api.F, fName, NodeFeature(api, fObj.data))
                     else:
-                        if fName in GRID or fName in sectionFeats or fName in self._formatFeats: continue
+                        if fName in WARP or fName in sectionFeats or fName in self._formatFeats: continue
                         elif fObj.isEdge:
                             if hasattr(api.E, fName): delattr(api.E, fName)
                         else:

@@ -7,7 +7,7 @@ ERROR_CUTOFF = 20
 GZIP_LEVEL = 2
 PICKLE_PROTOCOL = 4
 
-GRID = (
+WARP = (
     'otype',
     'oslots',
     'otext',
@@ -241,7 +241,7 @@ class Data(object):
                 self.tm.error('\t and {} more cases'.format(lnk - ERROR_CUTOFF), tm=False)
         self.data = data
         if not errors:
-            if self.fileName == GRID[0]:
+            if self.fileName == WARP[0]:
                 slotType = data[1]
                 otype = []
                 maxSlot = 1
@@ -253,7 +253,7 @@ class Data(object):
                 otype.append(slotType)
                 otype.append(maxSlot)
                 self.data = tuple(otype)
-            elif self.fileName == GRID[1]:
+            elif self.fileName == WARP[1]:
                 slotsList = sorted(data)
                 maxSlot = min(data.keys()) - 1
                 oslots = []
@@ -275,7 +275,7 @@ class Data(object):
         self.tm.indent(level=2, reset=True)
         def error(msg, tm=True): self.tm.error(cmpFormat.format(msg), tm=tm)
         self.data = self.method(info, error, *[
-            dep.metaData if dep.fileName == GRID[2] else dep.data for dep in self.dependencies
+            dep.metaData if dep.fileName == WARP[2] else dep.data for dep in self.dependencies
         ])
         good = self.data != None
         if good:
@@ -330,9 +330,9 @@ class Data(object):
         data = self.data
         if type(data) is tuple:
             maxSlot = data[-1]
-            if self.fileName == GRID[0]:
+            if self.fileName == WARP[0]:
                 data = dict(((k+1+maxSlot, data[k]) for k in range(0, len(data)-2)))
-            elif self.fileName == GRID[1]:
+            elif self.fileName == WARP[1]:
                 data = dict(((k+1+maxSlot, data[k]) for k in range(0, len(data)-1)))
         edgeValues = self.edgeValues
         if self.isEdge:

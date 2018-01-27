@@ -1,4 +1,4 @@
-from .data import GRID
+from .data import WARP
 from .helpers import *
 
 DEFAULT_FORMAT = 'text-orig-full'
@@ -9,7 +9,7 @@ class Text(object):
         self.languages = {}
         self.nameFromNode = {}
         self.nodeFromName = {}
-        config = tf.features[GRID[2]].metaData if GRID[2] in tf.features else {}
+        config = tf.features[WARP[2]].metaData if WARP[2] in tf.features else {}
         self.sectionTypes = itemize(config.get('sectionTypes', ''), ',')
         sectionFeats = itemize(config.get('sectionFeatures', ''), ',')
         self.sectionFeatures = []
