@@ -331,6 +331,7 @@ def parseMql(mqlFile, tm):
     curObject = None
     curValue = None
     curFeature = None
+    seeObjects = False
 
     inObjectTypeFeatures = False
 
@@ -355,6 +356,12 @@ def parseMql(mqlFile, tm):
             curObject = None
             if not curTable in tables:
                 tables[curTable] = dict()
+            seeObjects = True
+        elif line == 'CREATE OBJECT\n':
+            curObject = None
+            curObject = dict(feats=dict(), monads=None)
+            curId = None
+            seeObjects = True
         elif curEnum != None:
             if line.startswith('}'):
                 curEnum = None
@@ -408,9 +415,7 @@ def parseMql(mqlFile, tm):
 
                 objectTypes[curObjectType][feature] = (ftype, default)
                 tm.info('\t\t\tfeature {} ({}) =def= {} : {}'.format(feature, ftype, default, 'edge' if isEdge else 'node'))
-            else:
-                continue
-        elif curTable != None:
+        elif seeObjects:
             if curObject != None:
                 if line.startswith(']'):
                     objectType = objectTypes[curTable]
@@ -421,7 +426,11 @@ def parseMql(mqlFile, tm):
                     curObject = None
                     continue
                 elif line.startswith('['):
-                    continue
+                    name = line.rstrip()[1:]
+                    if len(name):
+                        curTable = name
+                        if not curTable in tables:
+                            tables[curTable] = dict()
                 elif line.startswith('FROM MONADS'):
                     monads = line.split('=', 1)[1].replace('{', '').replace('}', '').replace(' ','').strip()
                     curObject['monads'] = setFromSpec(monads)
@@ -429,9 +438,9 @@ def parseMql(mqlFile, tm):
                     comps = line.replace('[', '').rstrip().split('=', 1)
                     curId = int(comps[1])
                 elif line.startswith('GO'):
-                    continue
+                    pass
                 elif line.strip() == '':
-                    continue
+                    pass
                 else:
                     if curValue != None:
                         toBeContinued = not line.rstrip().endswith('";')
@@ -446,6 +455,7 @@ def parseMql(mqlFile, tm):
                     if ':=' in line:
                         (featurePart, valuePart) = line.split('=', 1)
                         feature = featurePart[0:-1].strip()
+                        valuePart = valuePart.lstrip()
                         isText = ':="' in line
                         toBeContinued = isText and not line.rstrip().endswith('";')
                         if toBeContinued:
@@ -477,6 +487,9 @@ def parseMql(mqlFile, tm):
     fh.close()
     for table in tables:
         tm.info('{} objects of type {}'.format(len(tables[table]), table))
+
+    if len(tables) == 0:
+        tm.info('No objects found')
     return (good, objectTypes, tables, nodeF, edgeF)
     
 def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
@@ -564,7 +577,8 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     for t in tableOrder:
         tm.info('\tfeatures from {}s'.format(t))
         inThisChunk = 0
-        for (i, idd) in enumerate(tables.get(t, {})):
+        thisTable = tables.get(t, {})
+        for (i, idd) in enumerate(thisTable):
             inThisChunk += 1
             if inThisChunk == chunkSize:
                 tm.info('\t{:>9} {}s'.format(i + 1, t))
@@ -578,6 +592,6 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
                         edgeFeatures.setdefault(f, {}).setdefault(node, set()).add(nodeFromIdd[int(v)])
                 else:
                     nodeFeatures.setdefault(f, {})[node] = v
-        tm.info('\t{:>9} {}s'.format(i + 1, t))
+        tm.info('\t{:>9} {}s'.format(len(thisTable), t))
 
     return(good, nodeFeatures, edgeFeatures, metaData)
