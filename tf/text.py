@@ -76,9 +76,12 @@ class Text(object):
         r = L.d(n, slotType)[-1] if lastSlot and nType != slotType else L.d(
             n, slotType
         )[0] if nType != slotType else n
-        n0 = L.u(r, sTypes[0])[0]
-        n1 = L.u(r, sTypes[1])[0]
-        n2 = L.u(r, sTypes[2])[0]
+        n0s = L.u(r, sTypes[0])
+        n0 = n0s[0] if n0s else None
+        n1s = L.u(r, sTypes[1])
+        n1 = n1s[0] if n1s else None
+        n2s = L.u(r, sTypes[2])
+        n2 = n2s[0] if n2s else None
         return (
             self._sec0Name(n0, lang=lang),
             sFs[1].get(n1, None),
