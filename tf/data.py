@@ -1,7 +1,12 @@
-import os,sys,array,pickle,json,gzip,collections,time
+import os
+import pickle
+import gzip
+import collections
+import time
 from datetime import datetime
-from .timestamp import Timestamp
-from .helpers import *
+from .helpers import (
+    setFromSpec, valueFromTf, tfFromValue, specFromRanges, rangesFromSet
+)
 
 ERROR_CUTOFF = 20
 GZIP_LEVEL = 2
@@ -15,8 +20,20 @@ WARP = (
 
 DATA_TYPES = ('str', 'int')
 
+
 class Data(object):
-    def __init__(self, path, tm, edgeValues=False, data=None, isEdge=None, isConfig=None, metaData={}, method=None, dependencies=None):
+    def __init__(
+        self,
+        path,
+        tm,
+        edgeValues=False,
+        data=None,
+        isEdge=None,
+        isConfig=None,
+        metaData={},
+        method=None,
+        dependencies=None
+    ):
         (dirName, baseName) = os.path.split(path)
         (fileName, extension) = os.path.splitext(baseName)
         self.path = path
@@ -41,21 +58,25 @@ class Data(object):
         self.tm.indent(level=1, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
-        sourceRep = ', '.join(dep.fileName for dep in self.dependencies) if self.method else self.dirName
+        sourceRep = ', '.join(
+            dep.fileName for dep in self.dependencies
+        ) if self.method else self.dirName
         msgFormat = '{:<1} {:<20} from {}'
         actionRep = ''
         good = True
 
         if self.dataError:
-            actionRep = 'E' # there has been an error in an earlier computation/compiling/loading of this feature
+            # there has been an error in an earlier
+            # computation/compiling/loading of this feature
+            actionRep = 'E'
             good = False
         elif self.dataLoaded and (
-            self.isConfig or
-            (not origTime or self.dataLoaded >= origTime) and (not binTime or self.dataLoaded >= binTime)
+            self.isConfig or (not origTime or self.dataLoaded >= origTime) and
+            (not binTime or self.dataLoaded >= binTime)
         ):
-            actionRep = '=' # loaded and up to date
+            actionRep = '='  # loaded and up to date
         elif not origTime and not binTime:
-            actionRep = 'X' # no source and no binary present
+            actionRep = 'X'  # no source and no binary present
             good = False
         else:
             if not origTime:
@@ -63,7 +84,9 @@ class Data(object):
                 good = self._readDataBin()
             elif not binTime or origTime > binTime:
                 actionRep = 'C' if self.method else 'T'
-                good = self._compute() if self.method else self._readTf(metaOnly=metaOnly)
+                good = self._compute() if self.method else self._readTf(
+                    metaOnly=metaOnly
+                )
                 if good:
                     if self.isConfig or metaOnly:
                         actionRep = 'M'
@@ -87,7 +110,9 @@ class Data(object):
                 )
         else:
             self.dataError = True
-            self.tm.error(msgFormat.format(actionRep, self.fileName, sourceRep))
+            self.tm.error(
+                msgFormat.format(actionRep, self.fileName, sourceRep)
+            )
         return good
 
     def unload(self):
@@ -98,27 +123,34 @@ class Data(object):
         return self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
 
     def _setDataType(self):
-        if self.isConfig: return
+        if self.isConfig:
+            return
         if 'valueType' in self.metaData:
             dataType = self.metaData['valueType']
             if dataType not in DATA_TYPES:
-                self.tm.error('Unknown @valueType: "{}". Should be one of {}'.format(
-                    dataType,
-                    ','.join(DATA_TYPES),
-                ))
+                self.tm.error(
+                    'Unknown @valueType: "{}". Should be one of {}'.format(
+                        dataType,
+                        ','.join(DATA_TYPES),
+                    )
+                )
                 self.dataType = DATA_TYPES[0]
             else:
                 self.dataType = dataType
         else:
-            self.tm.error('Missing @valueType. Should be one of {}'.format(
-                ','.join(DATA_TYPES),
-            ))
+            self.tm.error(
+                'Missing @valueType. Should be one of {}'.format(
+                    ','.join(DATA_TYPES),
+                )
+            )
             self.dataType = DATA_TYPES[0]
 
     def _readTf(self, metaOnly=False):
         path = self.path
         if not os.path.exists(path):
-            self.tm.error('TF reading: feature file "{}" does not exist'.format(path))
+            self.tm.error(
+                'TF reading: feature file "{}" does not exist'.format(path)
+            )
             return False
         fh = open(path, encoding='utf8')
         i = 0
@@ -128,11 +160,16 @@ class Data(object):
             i += 1
             if i == 1:
                 text = line.rstrip()
-                if text == '@edge': self.isEdge = True
-                elif text == '@node': self.isEdge = False
-                elif text == '@config': self.isConfig = True
+                if text == '@edge':
+                    self.isEdge = True
+                elif text == '@node':
+                    self.isEdge = False
+                elif text == '@config':
+                    self.isConfig = True
                 else:
-                    self.tm.error('Line {}: missing @node/@edge/@config'.format(i))
+                    self.tm.error(
+                        'Line {}: missing @node/@edge/@config'.format(i)
+                    )
                     fh.close()
                     return False
                 continue
@@ -142,11 +179,14 @@ class Data(object):
                     self.edgeValues = True
                     continue
                 fields = text[1:].split('=', 1)
-                self.metaData[fields[0]] = fields[1] if len(fields) == 2 else None
+                self.metaData[fields[0]
+                              ] = fields[1] if len(fields) == 2 else None
                 continue
             else:
                 if text != '':
-                    self.tm.error('Line {}: missing blank line after metadata'.format(i))
+                    self.tm.error(
+                        'Line {}: missing blank line after metadata'.format(i)
+                    )
                     fh.close()
                     return False
                 else:
@@ -157,10 +197,9 @@ class Data(object):
             good = self._readDataTf(fh, i)
         fh.close()
         return good
-        
+
     def _readDataTf(self, fh, firstI):
-        errors=collections.defaultdict(list)
-        first = True
+        errors = collections.defaultdict(list)
         i = firstI
         implicit_node = 1
         data = {}
@@ -172,7 +211,7 @@ class Data(object):
             i += 1
             fields = line.rstrip('\n').split('\t')
             lfields = len(fields)
-            if lfields > normFields: 
+            if lfields > normFields:
                 errors['wrongFields'].append(i)
                 continue
             if lfields == normFields:
@@ -222,23 +261,36 @@ class Data(object):
                         valTf = ''
             implicit_node = max(nodes) + 1
             if not isEdge or edgeValues:
-                value = int(valTf) if isNum and valTf != '' else None if isNum else '' if valTf == '' else valueFromTf(valTf)
+                value = (
+                    int(valTf) if isNum and valTf != '' else None
+                    if isNum else '' if valTf == '' else valueFromTf(valTf)
+                )
             if isEdge:
                 for n in nodes:
                     for m in nodes2:
                         if not edgeValues:
                             data.setdefault(n, set()).add(m)
                         else:
-                            data.setdefault(n, {})[m] = value # even if the value is None
+                            data.setdefault(
+                                n, {}
+                            )[m] = value  # even if the value is None
             else:
                 for n in nodes:
-                    if value != None:
+                    if value is not None:
                         data[n] = value
         for kind in errors:
             lnk = len(errors[kind])
-            self.tm.error('{} in lines {}'.format(kind, ','.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF])))
+            self.tm.error(
+                '{} in lines {}'.format(
+                    kind,
+                    ','.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF])
+                )
+            )
             if lnk > ERROR_CUTOFF:
-                self.tm.error('\t and {} more cases'.format(lnk - ERROR_CUTOFF), tm=False)
+                self.tm.error(
+                    '\t and {} more cases'.format(lnk - ERROR_CUTOFF),
+                    tm=False
+                )
         self.data = data
         if not errors:
             if self.fileName == WARP[0]:
@@ -268,23 +320,39 @@ class Data(object):
         for feature in self.dependencies:
             if not feature.load():
                 good = False
-        if not good: return False
+        if not good:
+            return False
 
-        def info(msg, tm=True): self.tm.info(cmpFormat.format(msg), tm=tm, cache=-1)
+        def info(msg, tm=True):
+            self.tm.info(cmpFormat.format(msg), tm=tm, cache=-1)
+
         cmpFormat = 'c {:<20} {{}}'.format(self.fileName)
         self.tm.indent(level=2, reset=True)
-        def error(msg, tm=True): self.tm.error(cmpFormat.format(msg), tm=tm)
-        self.data = self.method(info, error, *[
-            dep.metaData if dep.fileName == WARP[2] else dep.data for dep in self.dependencies
-        ])
-        good = self.data != None
+
+        def error(msg, tm=True):
+            self.tm.error(cmpFormat.format(msg), tm=tm)
+
+        self.data = self.method(
+            info, error, *[
+                dep.metaData if dep.fileName == WARP[2] else dep.data
+                for dep in self.dependencies
+            ]
+        )
+        good = self.data is not None
         if good:
-            self.dataLoaded = time.time() 
+            self.dataLoaded = time.time()
         return good
 
-    def _writeTf(self, dirName=None, fileName=None, overwrite=True, extension=None, metaOnly=False, nodeRanges=False):
+    def _writeTf(
+        self,
+        dirName=None,
+        fileName=None,
+        overwrite=True,
+        extension=None,
+        metaOnly=False,
+        nodeRanges=False
+    ):
         self.tm.indent(level=1, reset=True)
-        data = self.data
         metaOnly = metaOnly or self.isConfig
 
         dirName = dirName or self.dirName
@@ -293,26 +361,38 @@ class Data(object):
         if not os.path.exists(dirName):
             try:
                 os.makedirs(dirName, exist_ok=True)
-            except:
+            except Exception:
                 self.tm.error('Cannot create directory "{}"'.format(dirName))
                 return False
         fpath = '{}/{}{}'.format(dirName, fileName, extension)
         if fpath == self.path:
             if os.path.exists(fpath):
                 if not overwrite:
-                    self.tm.error('Feature file "{}" already exists, feature will not be written'.format(fpath))
+                    self.tm.error((
+                        'Feature file "{}" already exists,'
+                        ' feature will not be written'
+                    ).format(fpath))
                     return False
         try:
             fh = open(fpath, 'w', encoding='utf8')
-        except:
+        except Exception:
             self.tm.error('Cannot write to feature file "{}"'.format(fpath))
             return False
-        fh.write('@{}\n'.format('config' if self.isConfig else 'edge' if self.isEdge else 'node'))
-        if self.edgeValues: fh.write('@edgeValues\n')
+        fh.write(
+            '@{}\n'.format(
+                'config' if self.isConfig else 'edge'
+                if self.isEdge else 'node'
+            )
+        )
+        if self.edgeValues:
+            fh.write('@edgeValues\n')
         for meta in sorted(self.metaData):
             fh.write('@{}={}\n'.format(meta, self.metaData[meta]))
         fh.write('@writtenBy=Text-Fabric\n')
-        fh.write('@dateWritten={}\n'.format(datetime.utcnow().replace(microsecond=0).isoformat()+'Z'))
+        fh.write(
+            '@dateWritten={}\n'.
+            format(datetime.utcnow().replace(microsecond=0).isoformat() + 'Z')
+        )
         fh.write('\n')
         self._setDataType()
         good = True
@@ -321,9 +401,13 @@ class Data(object):
         fh.close()
         msgFormat = '{:<1} {:<20} to {}'
         if good:
-            self.tm.info(msgFormat.format('M' if metaOnly else 'T', fileName, dirName))
+            self.tm.info(
+                msgFormat.format('M' if metaOnly else 'T', fileName, dirName)
+            )
         else:
-            self.tm.error(msgFormat.format('M' if metaOnly else 'T', fileName, dirName))
+            self.tm.error(
+                msgFormat.format('M' if metaOnly else 'T', fileName, dirName)
+            )
         return good
 
     def _writeDataTf(self, fh, nodeRanges=False):
@@ -331,9 +415,13 @@ class Data(object):
         if type(data) is tuple:
             maxSlot = data[-1]
             if self.fileName == WARP[0]:
-                data = dict(((k+1+maxSlot, data[k]) for k in range(0, len(data)-2)))
+                data = dict(((k + 1 + maxSlot, data[k])
+                             for k in range(0,
+                                            len(data) - 2)))
             elif self.fileName == WARP[1]:
-                data = dict(((k+1+maxSlot, data[k]) for k in range(0, len(data)-1)))
+                data = dict(((k + 1 + maxSlot, data[k])
+                             for k in range(0,
+                                            len(data) - 1)))
         edgeValues = self.edgeValues
         if self.isEdge:
             implicitNode = 1
@@ -347,50 +435,78 @@ class Data(object):
                         nodeSpec2 = specFromRanges(rangesFromSet(mset))
                         nodeSpec = '' if n == implicitNode else n
                         implicitNode = n + 1
-                        if value == None:
-                            fh.write('{}{}{}\n'.format(
-                                nodeSpec, '\t' if nodeSpec else '', nodeSpec2,
-                            ))
+                        if value is None:
+                            fh.write(
+                                '{}{}{}\n'.format(
+                                    nodeSpec,
+                                    '\t' if nodeSpec else '',
+                                    nodeSpec2,
+                                )
+                            )
                         else:
-                            fh.write('{}{}{}\t{}\n'.format(
-                                nodeSpec, '\t' if nodeSpec else '', nodeSpec2, tfFromValue(value),
-                            ))
+                            fh.write(
+                                '{}{}{}\t{}\n'.format(
+                                    nodeSpec,
+                                    '\t' if nodeSpec else '',
+                                    nodeSpec2,
+                                    tfFromValue(value),
+                                )
+                            )
                 else:
                     nodeSpec2 = specFromRanges(rangesFromSet(thisData))
                     nodeSpec = '' if n == implicitNode else n
                     implicitNode = n + 1
-                    fh.write('{}{}{}\n'.format(nodeSpec, '\t' if nodeSpec else '', nodeSpec2))
+                    fh.write(
+                        '{}{}{}\n'.format(
+                            nodeSpec, '\t' if nodeSpec else '', nodeSpec2
+                        )
+                    )
         else:
             sets = {}
             if nodeRanges:
                 for n in sorted(data):
                     sets.setdefault(data[n], []).append(n)
                 implicitNode = 1
-                for (value, nset) in sorted(sets.items(), key=lambda x: (x[1][0], x[1][-1])):
+                for (value, nset) in sorted(
+                    sets.items(), key=lambda x: (x[1][0], x[1][-1])
+                ):
                     if len(nset) == 1 and nset[0] == implicitNode:
                         nodeSpec = ''
                     else:
                         nodeSpec = specFromRanges(rangesFromSet(nset))
                     implicitNode = nset[-1]
-                    fh.write('{}{}{}\n'.format(
-                        nodeSpec, '\t' if nodeSpec else '', tfFromValue(value),
-                    ))
+                    fh.write(
+                        '{}{}{}\n'.format(
+                            nodeSpec,
+                            '\t' if nodeSpec else '',
+                            tfFromValue(value),
+                        )
+                    )
             else:
                 implicitNode = 1
                 for n in sorted(data):
                     nodeSpec = '' if n == implicitNode else n
                     implicitNode = n + 1
-                    fh.write('{}{}{}\n'.format(
-                        nodeSpec, '\t' if nodeSpec else '', tfFromValue(data[n]),
-                    ))
+                    fh.write(
+                        '{}{}{}\n'.format(
+                            nodeSpec,
+                            '\t' if nodeSpec else '',
+                            tfFromValue(data[n]),
+                        )
+                    )
         return True
 
     def _readDataBin(self):
         if not os.path.exists(self.binPath):
-            self.tm.error('TF reading: feature file "{}" does not exist'.format(self.binPath))
+            self.tm.error(
+                'TF reading: feature file "{}" does not exist'.format(
+                    self.binPath
+                )
+            )
             return False
-        with gzip.open(self.binPath, "rb") as f: self.data = pickle.load(f)
-        self.dataLoaded = time.time() 
+        with gzip.open(self.binPath, "rb") as f:
+            self.data = pickle.load(f)
+        self.dataLoaded = time.time()
         return True
 
     def cleanDataBin(self):
@@ -402,32 +518,43 @@ class Data(object):
         if not os.path.exists(self.binDir):
             try:
                 os.makedirs(self.binDir, exist_ok=True)
-            except:
-                self.tm.error('Cannot create directory "{}"'.format(self.binDir))
+            except Exception:
+                self.tm.error(
+                    'Cannot create directory "{}"'.format(self.binDir)
+                )
                 good = False
-        if not good: return False
+        if not good:
+            return False
         try:
             with gzip.open(self.binPath, "wb", compresslevel=GZIP_LEVEL) as f:
                 pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
-        except:
+        except Exception:
             self.tm.error('Cannot write to file "{}"'.format(self.binPath))
             good = False
-        self.dataLoaded = time.time() 
+        self.dataLoaded = time.time()
         return True
 
     def _getModified(self, bin=False):
         if bin:
-            return os.path.getmtime(self.binPath) if os.path.exists(self.binPath) else None
+            return os.path.getmtime(self.binPath) if os.path.exists(
+                self.binPath
+            ) else None
         else:
             if self.method:
                 depsInfo = [dep._getModified() for dep in self.dependencies]
-                depsModifieds = [d for d in depsInfo if d != None]
-                depsModified = None if len(depsModifieds) == 0 else max(depsModifieds)
-                if depsModified != None: return depsModified
-                elif os.path.exists(self.binPath): return os.path.getmtime(self.binPath)
-                else: return None
+                depsModifieds = [d for d in depsInfo if d is not None]
+                depsModified = None if len(depsModifieds
+                                           ) == 0 else max(depsModifieds)
+                if depsModified is not None:
+                    return depsModified
+                elif os.path.exists(self.binPath):
+                    return os.path.getmtime(self.binPath)
+                else:
+                    return None
             else:
-                if os.path.exists(self.path): return os.path.getmtime(self.path)
-                elif os.path.exists(self.binPath): return os.path.getmtime(self.binPath)
-                else: return None
-
+                if os.path.exists(self.path):
+                    return os.path.getmtime(self.path)
+                elif os.path.exists(self.binPath):
+                    return os.path.getmtime(self.binPath)
+                else:
+                    return None
