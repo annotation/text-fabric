@@ -10,8 +10,13 @@ def getOtypeInfo(info, otype):
     return result
 
 
-def levels(info, error, otype, oslots):
+def levels(info, error, otype, oslots, otext):
     (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
+    levelOrder = otext.get('levels', None)
+    if levelOrder is not None:
+        levelRank = {
+            level: i for (i, level) in enumerate(levelOrder.split(','))
+        }
     otypeCount = collections.Counter()
     otypeMin = {}
     otypeMax = {}
@@ -26,13 +31,17 @@ def levels(info, error, otype, oslots):
             otypeMin[ntp] = tfn
         if ntp not in otypeMax or otypeMax[ntp] < tfn:
             otypeMax[ntp] = tfn
+    sortKey = (
+        (lambda x: -x[1]) if levelOrder is None else
+        (lambda x: levelRank[x[0]])
+    )
     result = tuple(
         sorted(
             ((
                 ntp, slotSetLengths[ntp] / otypeCount[ntp], otypeMin[ntp],
                 otypeMax[ntp]
             ) for ntp in otypeCount),
-            key=lambda x: -x[1],
+            key=sortKey,
         ) + [(slotType, 1, 1, maxSlot)]
     )
     info('results:')
@@ -50,7 +59,8 @@ def order(info, error, otype, oslots, levels):
     otypeLevels = dict(((x[0], i) for (i, x) in enumerate(levels)))
 
     def otypeRank(n):
-        otypeLevels[slotType if n < maxSlot + 1 else otype[n - maxSlot - 1]]
+        return otypeLevels[slotType
+                           if n < maxSlot + 1 else otype[n - maxSlot - 1]]
 
     def before(na, nb):
         if na < maxSlot + 1:
@@ -104,7 +114,12 @@ def levUp(info, error, otype, oslots, rank):
         embedders.append(
             tuple(
                 sorted(
-                    [m for m in contentEmbedders if rank[m - 1] < rank[n - 1]],
+                    [
+                        m
+                        for m in contentEmbedders
+                        if m != n
+                        # if rank[m - 1] < rank[n - 1]
+                    ],
                     key=lambda k: -rank[k - 1],
                 )
             )
@@ -123,8 +138,10 @@ def levUp(info, error, otype, oslots, rank):
                 tuple(
                     sorted(
                         [
-                            m for m in contentEmbedders
-                            if rank[m - 1] < rank[n - 1]
+                            m
+                            for m in contentEmbedders
+                            if m != n
+                            # if rank[m - 1] < rank[n - 1]
                         ],
                         key=lambda k: -rank[k - 1],
                     )
@@ -180,8 +197,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     c1 = 0
     c2 = 0
     support2 = support[sTypes[2]]
-    for n2 in range(support2[0],
-                    support2[1] + 1):
+    for n2 in range(support2[0], support2[1] + 1):
         # otherwise we miss the last one
         # for n2 in range(*support[sTypes[2]]):
         n0 = tuple(

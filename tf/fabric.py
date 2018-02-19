@@ -21,7 +21,7 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '3.1.5'
+VERSION = '3.2.0'
 APIREF = 'https://github.com/Dans-labs/text-fabric/wiki/Api'
 TUTORIAL = (
     'https://github.com/Dans-labs/text-fabric'
@@ -47,7 +47,7 @@ MODULES = [
 ]
 
 PRECOMPUTE = (
-    (False, '__levels__', levels, WARP[0:2]),
+    (False, '__levels__', levels, WARP),
     (False, '__order__', order, WARP[0:2] + ('__levels__', )),
     (False, '__rank__', rank, (WARP[0], '__order__')),
     (False, '__levUp__', levUp, WARP[0:2] + ('__rank__', )),
