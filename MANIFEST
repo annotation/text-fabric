@@ -2,7 +2,6 @@
 setup.py
 tf/__init__.py
 tf/api.py
-tf/cunei.py
 tf/data.py
 tf/fabric.py
 tf/helpers.py
