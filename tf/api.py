@@ -152,12 +152,22 @@ class Api(object):
     def __init__(self, tf):
         self.ignored = tuple(sorted(tf.featuresIgnored))
         self.F = NodeFeatures()
+        self.Feature = self.F
         self.E = EdgeFeatures()
+        self.Edge = self.E
         self.C = Computeds()
+        self.Computed = self.C
         self.info = tf.tm.info
         self.error = tf.tm.error
         self.indent = tf.tm.indent
         self.loadLog = tf.tm.cache
+        setattr(self, 'FeatureString', self.Fs)
+        setattr(self, 'EdgeString', self.Es)
+        setattr(self, 'ComputedString', self.Cs)
+        setattr(self, 'Nodes', self.N)
+        setattr(self, 'AllFeatures', self.Fall)
+        setattr(self, 'AllEdges', self.Eall)
+        setattr(self, 'AllComputeds', self.Call)
 
     def Fs(self, fName):
         if not hasattr(self.F, fName):
@@ -215,11 +225,14 @@ def addOtype(api):
 
 def addLocality(api):
     api.L = Locality(api)
+    api.Locality = api.L
 
 
 def addText(api, tf):
     api.T = Text(api, tf)
+    api.Text = api.T
 
 
 def addSearch(api, tf, silent):
     api.S = Search(api, tf, silent)
+    api.Search = api.S
