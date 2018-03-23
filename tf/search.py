@@ -1111,20 +1111,19 @@ One of the above relations on nodes and/or slots will suit you better!
 
         def getFeatures(x):
             features = {}
-            wrongs = []
             featureList = (x if x is not None else '').split()
             for feat in featureList:
                 featComps = feat.split('=', 1)
-                if len(featComps) != 2:
-                    wrongs.append(unesc(feat))
-                    continue
                 featName = unesc(featComps[0])
-                featValList = featComps[1]
-                featVals = set(
-                    unesc(featVal) for featVal in featValList.split('|')
-                )
+                if len(featComps) == 1:
+                    featVals = None
+                else:
+                    featValList = featComps[1]
+                    featVals = set(
+                        unesc(featVal) for featVal in featValList.split('|')
+                    )
                 features[featName] = featVals
-            return (features, wrongs)
+            return features
 
         searchLines = self.searchLines
         tokens = []
@@ -1171,29 +1170,13 @@ One of the above relations on nodes and/or slots will suit you better!
                                 )
                             )
                             good = False
-                    (features, wrongs) = getFeatures(features)
-                    if len(wrongs):
-                        for wrong in wrongs:
-                            self.badSyntax.append(
-                                'Illegal feature specification at line'
-                                ' {}: "{}"'.format(i, wrong)
-                            )
-                        good = False
-                        break
+                    features = getFeatures(features)
                     tokens.append(
                         (i, 'atom', len(indent), op, name, atom, features)
                     )
                     good = True
                     break
-                (features, wrongs) = getFeatures(esc(line))
-                if len(wrongs):
-                    for wrong in wrongs:
-                        self.badSyntax.append(
-                            'Illegal feature specification at line {}: "{}"'.
-                            format(i, wrong)
-                        )
-                    good = False
-                    break
+                features = getFeatures(esc(line))
                 tokens.append((i, 'feat', features))
                 good = True
                 break
@@ -1425,6 +1408,8 @@ One of the above relations on nodes and/or slots will suit you better!
                 if fName not in self.tf.featureSets['nodes']:
                     missingFeatures.setdefault(fName, []).append(q)
                 else:
+                    if values is None:
+                        continue
                     valuesCast = set()
                     requiredType = self.tf.features[fName].dataType
                     if requiredType == 'int':
@@ -1638,7 +1623,11 @@ One of the above relations on nodes and/or slots will suit you better!
             good = True
             for (ft, val) in featureList:
                 fval = Fs(ft).v(n)
-                if type(val) is str or type(val) is int:
+                if val is None:
+                    if fval is None:
+                        good = False
+                        break
+                elif type(val) is str or type(val) is int:
                     if fval != val:
                         good = False
                         break
