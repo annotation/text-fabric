@@ -383,9 +383,11 @@ This notebook online:
         if lastWord and (myEnd > lastWord):
             boundaryClass += ' L'
         if nType == 'book':
-            return self.shbLink(n)
+            html.append(self.shbLink(n))
+            return
         elif nType == 'chapter':
-            return self.shbLink(n)
+            html.append(self.shbLink(n))
+            return
         elif nType == 'verse':
             label = self.shbLink(n)
             (firstWord, lastWord) = self._getBoundary(n)
