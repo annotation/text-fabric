@@ -5,13 +5,14 @@ DEFAULT_FORMAT = 'text-orig-full'
 
 
 class Text(object):
-    def __init__(self, api, tf):
+    def __init__(self, api):
         self.api = api
         self.languages = {}
         self.nameFromNode = {}
         self.nodeFromName = {}
-        config = tf.features[WARP[2]].metaData if WARP[2
-                                                       ] in tf.features else {}
+        config = api.TF.features[WARP[2]].metaData if WARP[
+            2
+        ] in api.TF.features else {}
         self.sectionTypes = itemize(config.get('sectionTypes', ''), ',')
         sectionFeats = itemize(config.get('sectionFeatures', ''), ',')
         self.sectionFeatures = []
@@ -20,7 +21,7 @@ class Text(object):
         good = True
         if len(sectionFeats) != 0 and len(self.sectionTypes) != 0:
             for (fName, fObj) in sorted(
-                f for f in tf.features.items()
+                f for f in api.TF.features.items()
                 if f[0] == sectionFeats[0]
                 or f[0].startswith('{}@'.format(sectionFeats[0]))
             ):
@@ -38,16 +39,16 @@ class Text(object):
                     ((name, node) for (node, name) in fObj.data.items())
                 )
             for fName in (sectionFeats):
-                if not tf.features[fName].load(silent=True):
+                if not api.TF.features[fName].load(silent=True):
                     good = False
                     continue
-                self.sectionFeatures.append(tf.features[fName].data)
+                self.sectionFeatures.append(api.TF.features[fName].data)
 
             sec0 = self.sectionTypes[0]
             setattr(self, '{}Name'.format(sec0), self._sec0Name)
             setattr(self, '{}Node'.format(sec0), self._sec0Node)
 
-        self._xformats = compileFormats(tf._cformats, tf.features)
+        self._xformats = compileFormats(api.TF._cformats, api.TF.features)
         self.formats = set(self._xformats.keys())
         self.good = good
 

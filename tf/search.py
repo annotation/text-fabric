@@ -36,9 +36,8 @@ def unesc(x):
 
 
 class Search(object):
-    def __init__(self, api, tf, silent):
+    def __init__(self, api, silent):
         self.api = api
-        self.tf = tf
         self.good = True
         self.silent = silent
         self._basicRelations()
@@ -993,10 +992,10 @@ class Search(object):
             ),
         ]
 
-        self.tf.explore(silent=self.silent)
+        self.api.TF.explore(silent=self.silent)
         edgeMap = {}
 
-        for efName in sorted(self.tf.featureSets['edges']):
+        for efName in sorted(self.api.TF.featureSets['edges']):
             if efName == WARP[1]:
                 continue
             r = len(relations)
@@ -1405,13 +1404,13 @@ One of the above relations on nodes and/or slots will suit you better!
         wrongValues = {}
         for (q, (xx, features)) in enumerate(qnodes):
             for (fName, values) in features.items():
-                if fName not in self.tf.featureSets['nodes']:
+                if fName not in self.api.TF.featureSets['nodes']:
                     missingFeatures.setdefault(fName, []).append(q)
                 else:
                     if values is None:
                         continue
                     valuesCast = set()
-                    requiredType = self.tf.features[fName].dataType
+                    requiredType = self.api.TF.features[fName].dataType
                     if requiredType == 'int':
                         for val in values:
                             try:
@@ -1498,11 +1497,11 @@ One of the above relations on nodes and/or slots will suit you better!
         if self.good:
             needToLoad = []
             for fName in sorted(eFeatsUsed | nFeatsUsed):
-                fObj = self.tf.features[fName]
+                fObj = self.api.TF.features[fName]
                 if not fObj.dataLoaded or not hasattr(self.api.F, fName):
                     needToLoad.append((fName, fObj))
             if len(needToLoad):
-                self.tf.load([x[0] for x in needToLoad], add=True, silent=True)
+                self.api.TF.load([x[0] for x in needToLoad], add=True, silent=True)
 
     def _semantics(self):
         self.badSemantics = []

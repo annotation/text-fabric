@@ -21,7 +21,7 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '3.2.5'
+VERSION = '3.2.6'
 APIREF = 'https://github.com/Dans-labs/text-fabric/wiki/Api'
 TUTORIAL = (
     'https://github.com/Dans-labs/text-fabric'
@@ -79,7 +79,7 @@ Example data  : {}
         self.good = True
 
         if modules is None:
-            modules = []
+            modules = ['']
         if type(modules) is str:
             modules = [x.strip() for x in itemize(modules, '\n')]
         self.modules = modules
@@ -494,8 +494,8 @@ Example data  : {}
         addSortKey(api)
         addOtype(api)
         addLocality(api)
-        addText(api, self)
-        addSearch(api, self, silent)
+        addText(api)
+        addSearch(api, silent)
         self.tm.indent(level=0)
         if not silent:
             self.tm.info(

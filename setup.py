@@ -1,16 +1,17 @@
 from distutils.core import setup
-#from Cython.Build import cythonize
 
 setup(
     name='text-fabric',
-    packages=['tf'],
-    version='3.2.5',
+    packages=['tf', 'tf.extra'],
+    version='3.2.6',
     description='''Processor for Text Fabric Data''',
     author='Dirk Roorda',
     author_email='dirk.roorda@dans.knaw.nl',
     url='https://github.com/Dans-labs/text-fabric',
-    keywords = ['text', 'linguistics', 'database', 'graph', 'hebrew', 'greek', 'syriac'],
-    classifiers = [
+    keywords=[
+        'text', 'linguistics', 'database', 'graph', 'hebrew', 'greek', 'syriac'
+    ],
+    classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Other Environment",
         "Intended Audience :: Education",
@@ -30,7 +31,7 @@ setup(
         "Topic :: Text Processing :: Linguistic",
         "Topic :: Text Processing :: Markup :: XML",
     ],
-    long_description = '''\
+    long_description='''\
 Tools to read Text-Fabric resources analyse them efficiently.
 More info on https://github.com/Dans-labs/text-fabric/wiki
 ''',

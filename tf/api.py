@@ -149,18 +149,19 @@ class Computeds(object):
 
 
 class Api(object):
-    def __init__(self, tf):
-        self.ignored = tuple(sorted(tf.featuresIgnored))
+    def __init__(self, TF):
+        self.TF = TF
+        self.ignored = tuple(sorted(TF.featuresIgnored))
         self.F = NodeFeatures()
         self.Feature = self.F
         self.E = EdgeFeatures()
         self.Edge = self.E
         self.C = Computeds()
         self.Computed = self.C
-        self.info = tf.tm.info
-        self.error = tf.tm.error
-        self.indent = tf.tm.indent
-        self.loadLog = tf.tm.cache
+        self.info = TF.tm.info
+        self.error = TF.tm.error
+        self.indent = TF.tm.indent
+        self.loadLog = TF.tm.cache
         setattr(self, 'FeatureString', self.Fs)
         setattr(self, 'EdgeString', self.Es)
         setattr(self, 'ComputedString', self.Cs)
@@ -228,11 +229,11 @@ def addLocality(api):
     api.Locality = api.L
 
 
-def addText(api, tf):
-    api.T = Text(api, tf)
+def addText(api):
+    api.T = Text(api)
     api.Text = api.T
 
 
-def addSearch(api, tf, silent):
-    api.S = Search(api, tf, silent)
+def addSearch(api, silent):
+    api.S = Search(api, silent)
     api.Search = api.S

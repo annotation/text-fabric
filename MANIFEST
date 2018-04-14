@@ -12,3 +12,6 @@ tf/search.py
 tf/text.py
 tf/timestamp.py
 tf/transcription.py
+tf/extra/__init__.py
+tf/extra/bhsa.py
+tf/extra/cunei.py
