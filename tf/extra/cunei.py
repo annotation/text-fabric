@@ -431,14 +431,14 @@ This notebook online:
         return (section[0], section[1], fullNumber)
 
     # this is a slow implementation!
-    def _casesByLevelM(self, lev, withChildren=False):
+    def _casesByLevelM(self, lev, terminal=True):
         api = self.api
         E = api.E
         F = api.F
         if lev == 0:
             results = F.otype.s('line')
         else:
-            parents = self.casesByLevel(lev - 1, withChildren=True)
+            parents = self.casesByLevel(lev - 1, terminal=False)
             results = reduce(
                 operator.add,
                 [
@@ -448,13 +448,13 @@ This notebook online:
                 (),
             )
         return (
+            tuple(r for r in results if F.fullNumber.v(r))
+            if terminal else
             results
-            if withChildren
-            else tuple(r for r in results if F.fullNumber.v(r))
         )
 
     # this is a fast implementation!
-    def casesByLevel(self, lev, withChildren=False):
+    def casesByLevel(self, lev, terminal=True):
         api = self.api
         F = api.F
         S = api.S
@@ -462,7 +462,7 @@ This notebook online:
         for i in range(1, lev + 1):
             extra = (
                 ' fullNumber'
-                if i == lev and not withChildren
+                if i == lev and terminal
                 else ''
             )
             query += ('  ' * i) + f'w{i}:case{extra}\n'
@@ -470,9 +470,9 @@ This notebook online:
             query += f'w{i} -sub> w{i+1}\n'
         results = list(S.search(query))
         return (
-            tuple(r[-1] for r in results)
-            if withChildren else
             tuple(r[-1] for r in results if F.fullNumber.v(r[-1]))
+            if terminal else
+            tuple(r[-1] for r in results)
         )
 
     def lineart(self, ns, key=None, asLink=False, withCaption=None, **options):
