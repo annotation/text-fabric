@@ -21,7 +21,7 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '3.3.2'
+VERSION = '3.3.3'
 APIREF = 'https://github.com/Dans-labs/text-fabric/wiki/Api'
 TUTORIAL = (
     'https://github.com/Dans-labs/text-fabric'

@@ -474,6 +474,7 @@ This notebook online:
     def casesByLevel(self, lev, terminal=True):
         api = self.api
         S = api.S
+        sortNodes = api.sortNodes
         query = ''
         for i in range(lev + 1):
             extra = (' terminal' if i == lev and terminal else '')
@@ -482,7 +483,7 @@ This notebook online:
         for i in range(lev):
             query += f'w{i} -sub> w{i+1}\n'
         results = list(S.search(query))
-        return (tuple(r[-1] for r in results))
+        return sortNodes(tuple(r[-1] for r in results))
 
     def lineart(self, ns, key=None, asLink=False, withCaption=None, **options):
         return self._getImages(
