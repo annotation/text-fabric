@@ -159,12 +159,12 @@ class Cunei(object):
         cwdRel = cwdPat.findall(self.cwd)
         if cwdRel:
             (thisOrg, thisRepo, thisPath) = cwdRel[0]
+            onlineTail = (
+                f'{thisOrg}/{thisRepo}'
+                f'/blob/master{thisPath}/{name}.ipynb'
+            )
         else:
             cwdRel = None
-        onlineTail = (
-            f'{thisOrg}/{thisRepo}'
-            f'/blob/master{thisPath}/{name}.ipynb'
-        )
         nbLink = (
             None
             if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}'
@@ -176,16 +176,13 @@ class Cunei(object):
         docLink = f'https://github.com/{repoRel}/blob/master/docs'
         extraLink = f'https://github.com/Dans-labs/text-fabric/wiki/Cunei'
         dataLink = _outLink(
-            self.corpusFull, f'{docLink}/about.md',
-            'provenance of this corpus'
+            self.corpusFull, f'{docLink}/about.md', 'provenance of this corpus'
         )
         featureLink = _outLink(
             'Feature docs', f'{docLink}/transcription.md',
             'feature documentation'
         )
-        cuneiLink = _outLink(
-            'Cunei API', extraLink, 'cunei api documentation'
-        )
+        cuneiLink = _outLink('Cunei API', extraLink, 'cunei api documentation')
         tfLink = _outLink(
             'Text-Fabric API',
             'https://github.com/Dans-labs/text-fabric/wiki/api',
@@ -200,11 +197,18 @@ This notebook online:
 {_outLink('GitHub', ghLink)}
 '''
             )
-        thisRepoDir = f'{repoBase}/{thisOrg}/{thisRepo}'
-        self.tempDir = f'{thisRepoDir}/{TEMP_DIR}'
-        self.reportDir = f'{thisRepoDir}/{REPORT_DIR}'
+        thisRepoDir = (
+            None if cwdRel is None else f'{repoBase}/{thisOrg}/{thisRepo}'
+        )
+        self.tempDir = (
+            None if cwdRel is None else f'{thisRepoDir}/{TEMP_DIR}'
+        )
+        self.reportDir = (
+            None if cwdRel is None else f'{thisRepoDir}/{REPORT_DIR}'
+        )
         for cdir in (self.tempDir, self.reportDir):
-            os.makedirs(cdir, exist_ok=True)
+            if cdir:
+                os.makedirs(cdir, exist_ok=True)
 
     def getSource(self, node, nodeType=None, lineNumbers=False):
         api = self.api
@@ -400,6 +404,13 @@ This notebook online:
             )
         ]
 
+    def lineFromNode(self, n):
+        api = self.api
+        F = api.F
+        L = api.L
+        caseOrLineUp = [m for m in L.u(n) if F.terminal.v(m)]
+        return caseOrLineUp[0] if caseOrLineUp else None
+
     def nodeFromCase(self, passage):
         api = self.api
         F = api.F
@@ -410,25 +421,32 @@ This notebook online:
         column = T.nodeFromSection(section)
         if column is None:
             return None
-        cases = [
-            c for c in L.d(column, otype='case')
-            if F.fullNumber.v(c) == caseNum
+        casesOrLines = [
+            c for c in L.d(column)
+            if F.terminal.v(c) and F.number.v(c) == caseNum
         ]
-        if not cases:
+        if not casesOrLines:
             return None
-        return cases[0]
+        return casesOrLines[0]
 
     def caseFromNode(self, n):
         api = self.api
         F = api.F
         T = api.T
+        L = api.L
         section = T.sectionFromNode(n)
         if section is None:
             return None
-        fullNumber = F.fullNumber.v(n)
-        if fullNumber is None:
-            return None
-        return (section[0], section[1], fullNumber)
+        nodeType = F.otype.v(n)
+        if nodeType in {'sign', 'quad', 'cluster', 'case'}:
+            if nodeType == 'case':
+                caseNumber = F.number.v(n)
+            else:
+                caseOrLine = [m for m in L.u(n) if F.terminal.v(m)][0]
+                caseNumber = F.number.v(caseOrLine)
+            return (section[0], section[1], caseNumber)
+        else:
+            return section
 
     # this is a slow implementation!
     def _casesByLevelM(self, lev, terminal=True):
@@ -448,32 +466,23 @@ This notebook online:
                 (),
             )
         return (
-            tuple(r for r in results if F.fullNumber.v(r))
-            if terminal else
-            results
+            tuple(r for r in results if F.terminal.v(r))
+            if terminal else results
         )
 
     # this is a fast implementation!
     def casesByLevel(self, lev, terminal=True):
         api = self.api
-        F = api.F
         S = api.S
-        query = 'w0:line\n'
-        for i in range(1, lev + 1):
-            extra = (
-                ' fullNumber'
-                if i == lev and terminal
-                else ''
-            )
-            query += ('  ' * i) + f'w{i}:case{extra}\n'
+        query = ''
+        for i in range(lev + 1):
+            extra = (' terminal' if i == lev and terminal else '')
+            nodeType = 'line' if i == 0 else 'case'
+            query += ('  ' * i) + f'w{i}:{nodeType}{extra}\n'
         for i in range(lev):
             query += f'w{i} -sub> w{i+1}\n'
         results = list(S.search(query))
-        return (
-            tuple(r[-1] for r in results if F.fullNumber.v(r[-1]))
-            if terminal else
-            tuple(r[-1] for r in results)
-        )
+        return (tuple(r[-1] for r in results))
 
     def lineart(self, ns, key=None, asLink=False, withCaption=None, **options):
         return self._getImages(

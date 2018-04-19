@@ -193,12 +193,12 @@ class Bhsa(object):
         cwdRel = cwdPat.findall(self.cwd)
         if cwdRel:
             (thisOrg, thisRepo, thisPath) = cwdRel[0]
+            onlineTail = (
+                f'{thisOrg}/{thisRepo}'
+                f'/blob/master{thisPath}/{name}.ipynb'
+            )
         else:
             cwdRel = None
-        onlineTail = (
-            f'{thisOrg}/{thisRepo}'
-            f'/blob/master{thisPath}/{name}.ipynb'
-        )
         nbLink = (
             None
             if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}'
