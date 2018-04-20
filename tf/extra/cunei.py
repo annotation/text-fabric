@@ -108,6 +108,8 @@ CAPTION_STYLE = dict(
 
 ITEM_STYLE = ('padding: 0.5rem;')
 
+SIZING = {'height', 'width'}
+
 
 def dm(md):
     display(Markdown(md))
@@ -120,7 +122,7 @@ def _outLink(text, href, title=None):
 
 def _wrapLink(piece, objectType, kind, identifier, pos='bottom', caption=None):
     title = (
-        'to CDLI main page'
+        'to CDLI main page for this item'
         if kind == 'main' else f'to higher resolution {kind} on CDLI'
     )
     url = URL_FORMAT.get(objectType, {}).get(kind, '').format(identifier)
@@ -554,7 +556,31 @@ This notebook online:
             ns = [ns]
         result = []
         attStr = ' '.join(
-            f'{opt}="{value}"' for (opt, value) in options.items()
+            f'{opt}="{value}"'
+            for (opt, value) in options.items()
+            if opt not in SIZING
+        )
+        cssProps = {}
+        for (opt, value) in options.items():
+            if opt in SIZING:
+                if type(value) is int:
+                    force = False
+                    realValue = f'{value}px'
+                else:
+                    if value.startswith('!'):
+                        force = True
+                        realValue = value[1:]
+                    else:
+                        force = False
+                        realValue = value
+                    if realValue.isdecimal():
+                        realValue += 'px'
+                cssProps[f'max-{opt}'] = realValue
+                if force:
+                    cssProps[f'min-{opt}'] = realValue
+        cssStr = ' '.join(
+            f'{opt}: {value};'
+            for (opt, value) in cssProps.items()
         )
         if withCaption is None:
             withCaption = None if asLink else 'bottom'
@@ -566,7 +592,7 @@ This notebook online:
                 images = imageBase.get(identifier, None)
                 if withCaption:
                     caption = _wrapLink(
-                        f'{identifier} on CDLI', objectType, 'main', identifier
+                        identifier, objectType, 'main', identifier
                     )
                 if images is None:
                     thisImage = (
@@ -589,7 +615,8 @@ This notebook online:
                             theImage = self._useImage(image, kind, n)
                             thisImage = (
                                 f'<img src="{theImage}"'
-                                f' style="display: inline;" {attStr} />'
+                                f' style="display: inline;{cssStr}"'
+                                f' {attStr} />'
                             )
                 thisResult = _wrapLink(
                     thisImage,
