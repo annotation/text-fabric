@@ -7,10 +7,16 @@ URL_NB = 'http://nbviewer.jupyter.org/github'
 
 CORPUS = 'BHSA'
 
+SHEBANQ_URL = 'https://shebanq.ancient-data.org/hebrew'
 SHEBANQ = (
-    'https://shebanq.ancient-data.org/hebrew/text'
+    f'{SHEBANQ_URL}/text'
     '?book={book}&chapter={chapter}&verse={verse}&version={version}'
     '&mr=m&qw=q&tp=txt_p&tr=hb&wget=v&qget=v&nget=vt'
+)
+SHEBANQ_LEX = (
+    f'{SHEBANQ_URL}/word'
+    '?version={version}'
+    '&id={lid}'
 )
 
 LIMIT = 100
@@ -92,6 +98,17 @@ CSS = '''
     direction: rtl;
     background-color: #ffffff;
 }
+.lex {
+    padding: 0.1em;
+    margin: 0.1em;
+    border-radius: 0.1em;
+    border: 2px solid #888888;
+    width: fit-content;
+    display: flex;
+    flex-flow: column nowrap;
+    direction: rtl;
+    background-color: #ffffff;
+}
 .satom.l,.catom.l,.patom.l {
     border-left-style: dotted
 }
@@ -115,6 +132,22 @@ CSS = '''
     color: #0000bb;
 }
 .sp {
+    font-family: monospace;
+    font-size: medium;
+    color: #0000bb;
+}
+.vl {
+    font-family: monospace;
+    font-size: medium;
+    color: #0000bb;
+}
+.vvs {
+    font-family: monospace;
+    font-size: medium;
+    font-weight: bold;
+    color: #0000bb;
+}
+.vvt {
     font-family: monospace;
     font-size: medium;
     color: #0000bb;
@@ -151,6 +184,7 @@ CLASS_NAMES = dict(
     phrase_atom='patom',
     subphrase='subphrase',
     word='word',
+    lex='lex',
 )
 
 ATOMS = dict(
@@ -180,7 +214,8 @@ class Bhsa(object):
         self.version = version
         api.TF.load(
             '''
-            sp gloss
+            sp vs vt
+            lex language gloss voc_lex voc_lex_utf8
             function typ rela
             number label book
         ''',
@@ -241,6 +276,27 @@ This notebook online:
         F = api.F
         version = self.version
         nType = F.otype.v(n)
+        if nType == 'lex':
+            lex = F.lex.v(n)
+            lan = F.language.v(n)
+            lexId = '{}{}'.format(
+                '1' if lan == 'Hebrew' else '2',
+                lex.
+                    replace('>', 'A').
+                    replace('<', 'O').
+                    replace('[', 'v').
+                    replace('/', 'n').
+                    replace('=', 'i'),
+            )
+            href = SHEBANQ_LEX.format(
+                version=version,
+                lid=lexId,
+            )
+            title = 'show this lexeme in SHEBANQ'
+            if text is None:
+                text = F.voc_lex_utf8.v(n)
+            return _outLink(text, href, title=title)
+
         (bookE, chapter, verse) = T.sectionFromNode(n)
         bookNode = n if nType == 'book' else L.u(n, otype='book')[0]
         book = F.book.v(bookNode)
@@ -284,6 +340,7 @@ This notebook online:
         sortNodes = api.sortNodes
         heading = []
         verses = set()
+        lexemes = set()
         highlights = set()
         for n in ns:
             nType = F.otype.v(n)
@@ -303,17 +360,28 @@ This notebook online:
                 nodePart = f' `{n}`' if withNodes else ''
                 nodeRep = f'**{nType}**{nodePart}'
                 firstWord = n if nType == 'word' else L.d(n, otype='word')[0]
-                verses.add(L.u(firstWord, otype='verse')[0])
-                atomType = SUPER.get(nType, None)
-                if atomType:
-                    highlights |= set(L.d(n, otype=atomType))
-                else:
+                if nType == 'lex':
+                    lexemes.add(n)
                     highlights.add(n)
+                else:
+                    verses.add(L.u(firstWord, otype='verse')[0])
+                    atomType = SUPER.get(nType, None)
+                    if atomType:
+                        highlights |= set(L.d(n, otype=atomType))
+                    else:
+                        highlights.add(n)
             heading.append(nodeRep)
         _dm(f'''
 ## Result {seqNumber}
 ({", ".join(heading)})
 ''')
+        for l in sortNodes(lexemes):
+            self.pretty(
+                l,
+                withNodes=withNodes,
+                suppress=suppress,
+                highlights=highlights
+            )
         for v in sortNodes(verses):
             self.pretty(
                 v,
@@ -332,21 +400,33 @@ This notebook online:
     ):
         if start is None:
             start = 0
-        if end is None:
-            end = len(results)
-        rest = 0
-        if end - start > LIMIT:
-            rest = end - start - LIMIT
-            end = start + LIMIT
-        for i in range(start, end):
-            self.prettyTuple(
-                results[i], i, withNodes=withNodes, suppress=suppress
-            )
-        if rest:
-            _dm(
-                f'**{rest} more results skipped**'
-                f' because we show a maximum of {LIMIT} results at a time'
-            )
+        i = -1
+        if not hasattr(results, 'len'):
+            for result in results:
+                i += 1
+                if i < start:
+                    continue
+                if end is not None and i > end:
+                    break
+                self.prettyTuple(
+                    result, i, withNodes=withNodes, suppress=suppress
+                )
+        else:
+            if end is None:
+                end = len(results)
+            rest = 0
+            if end - start > LIMIT:
+                rest = end - start - LIMIT
+                end = start + LIMIT
+            for i in range(start, end):
+                self.prettyTuple(
+                    results[i], i, withNodes=withNodes, suppress=suppress
+                )
+            if rest:
+                _dm(
+                    f'**{rest} more results skipped**'
+                    f' because we show a maximum of {LIMIT} results at a time'
+                )
 
     def _pretty(
         self,
@@ -405,6 +485,8 @@ This notebook online:
             children = L.d(n, otype='phrase_atom')
         elif nType == 'phrase_atom' or nType == 'subphrase':
             children = L.d(n, otype='word')
+        elif nType == 'lex':
+            children = ()
         elif nType == 'word':
             children = ()
             lx = L.u(n, otype='lex')[0]
@@ -428,6 +510,31 @@ This notebook online:
                 html.append(
                     f'<div class="gl">'
                     f'{F.gloss.v(lx).replace("<", "&lt;")}</div>'
+                )
+            if F.sp.v(n) == 'verb':
+                if 'vs' not in suppress:
+                    html.append(
+                        f'<div class="vvs">'
+                        f'{F.vs.v(n)}</div>'
+                    )
+                if 'vt' not in suppress:
+                    html.append(
+                        f'<div class="vvt">'
+                        f'{F.vt.v(n)}</div>'
+                    )
+        elif nType == 'lex':
+            html.append(f'<div class="h">{F.voc_lex_utf8.v(n)}</div>')
+            if 'voc_lex' not in suppress:
+                llink = self.shbLink(
+                        n, text=F.voc_lex.v(n).replace("<", "&lt;")
+                )
+                html.append(
+                    f'<div class="vl">{llink}</div>'
+                )
+            if 'gloss' not in suppress:
+                html.append(
+                    f'<div class="gl">'
+                    f'{F.gloss.v(n).replace("<", "&lt;")}</div>'
                 )
         elif superType:
             nodePart = (

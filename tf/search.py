@@ -22,6 +22,10 @@ escapes = (
     '\\=',
 )
 
+rePat = '^([a-zA-Z0-9-_]+)~(.*)$'
+reRe = re.compile(rePat)
+reTp = type(reRe)
+
 
 def esc(x):
     for (i, c) in enumerate(escapes):
@@ -1089,9 +1093,9 @@ One of the above relations on nodes and/or slots will suit you better!
             return
 
         opPat = '(?:[#&|\[\]<>:=-]+\S*)'
-        atomPat = '(\s*)([^ \t=]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
+        atomPat = '(\s*)([^ \t=!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
         atomOpPat = (
-            '(\s*)({op})\s+([^ \t=]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(
+            '(\s*)({op})\s+([^ \t=!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(
                 op=opPat
             )
         )
@@ -1108,21 +1112,48 @@ One of the above relations on nodes and/or slots will suit you better!
         relRe = re.compile(relPat)
         whiteRe = re.compile('^\s*$')
 
-        def getFeatures(x):
+        nonePat = '^([a-zA-Z0-9-_]+)!\s*$'
+        noneRe = re.compile(nonePat)
+
+        def getFeatures(x, i):
             features = {}
-            featureList = (x if x is not None else '').split()
-            for feat in featureList:
-                featComps = feat.split('=', 1)
-                featName = unesc(featComps[0])
-                if len(featComps) == 1:
+            featureString = x.replace('\\ ', chr(1)) if x is not None else ''
+            featureList = featureString.split()
+            good = True
+            for featStr in featureList:
+                feat = featStr.replace(chr(1), ' ')
+                match = noneRe.match(feat)
+                if match:
+                    (featN,) = match.groups()
+                    featName = unesc(featN)
                     featVals = None
                 else:
-                    featValList = featComps[1]
-                    featVals = set(
-                        unesc(featVal) for featVal in featValList.split('|')
-                    )
+                    match = reRe.match(feat)
+                    if match:
+                        (featN, valRe) = match.groups()
+                        featName = unesc(featN)
+                        try:
+                            featVals = re.compile(valRe)
+                        except Exception() as err:
+                            self.badSyntax.append(
+                                'Wrong regular expression in line'
+                                f'{i}: "{err}"'
+                            )
+                            good = False
+                            featVals = None
+                    else:
+                        featComps = feat.split('=', 1)
+                        featName = unesc(featComps[0])
+                        if len(featComps) == 1:
+                            featVals = True
+                        else:
+                            featValList = featComps[1]
+                            featVals = set(
+                                unesc(featVal)
+                                for featVal in featValList.split('|')
+                            )
                 features[featName] = featVals
-            return features
+            return features if good else None
 
         searchLines = self.searchLines
         tokens = []
@@ -1169,15 +1200,21 @@ One of the above relations on nodes and/or slots will suit you better!
                                 )
                             )
                             good = False
-                    features = getFeatures(features)
-                    tokens.append(
-                        (i, 'atom', len(indent), op, name, atom, features)
-                    )
-                    good = True
+                    features = getFeatures(features, i)
+                    if features is None:
+                        good = False
+                    else:
+                        tokens.append(
+                            (i, 'atom', len(indent), op, name, atom, features)
+                        )
+                        good = True
                     break
-                features = getFeatures(esc(line))
-                tokens.append((i, 'feat', features))
-                good = True
+                features = getFeatures(esc(line), i)
+                if features is None:
+                    good = False
+                else:
+                    tokens.append((i, 'feat', features))
+                    good = True
                 break
             if not good:
                 allGood = False
@@ -1407,21 +1444,30 @@ One of the above relations on nodes and/or slots will suit you better!
                 if fName not in self.api.TF.featureSets['nodes']:
                     missingFeatures.setdefault(fName, []).append(q)
                 else:
-                    if values is None:
-                        continue
-                    valuesCast = set()
                     requiredType = self.api.TF.features[fName].dataType
-                    if requiredType == 'int':
-                        for val in values:
-                            try:
-                                valCast = int(val)
-                            except Exception:
-                                valCast = val
-                                wrongValues.setdefault(fName, {}).setdefault(
-                                    val, []
-                                ).append(q)
-                            valuesCast.add(valCast)
-                        features[fName] = valuesCast
+                    if values is True:
+                        continue
+                    elif values is None:
+                        continue
+                    elif isinstance(values, reTp):
+                        if requiredType == 'int':
+                            wrongValues.setdefault(fName, {}).setdefault(
+                                values, []
+                            ).append(q)
+                    else:
+                        valuesCast = set()
+                        if requiredType == 'int':
+                            for val in values:
+                                try:
+                                    valCast = int(val)
+                                except Exception:
+                                    valCast = val
+                                    wrongValues.setdefault(
+                                        fName, {}).setdefault(
+                                            val, []
+                                    ).append(q)
+                                valuesCast.add(valCast)
+                            features[fName] = valuesCast
 
         if len(missingFeatures):
             for (fName, qs) in sorted(missingFeatures.items()):
@@ -1501,7 +1547,9 @@ One of the above relations on nodes and/or slots will suit you better!
                 if not fObj.dataLoaded or not hasattr(self.api.F, fName):
                     needToLoad.append((fName, fObj))
             if len(needToLoad):
-                self.api.TF.load([x[0] for x in needToLoad], add=True, silent=True)
+                self.api.TF.load(
+                    [x[0] for x in needToLoad], add=True, silent=True,
+                )
 
     def _semantics(self):
         self.badSemantics = []
@@ -1623,11 +1671,19 @@ One of the above relations on nodes and/or slots will suit you better!
             for (ft, val) in featureList:
                 fval = Fs(ft).v(n)
                 if val is None:
+                    if fval is not None:
+                        good = False
+                        break
+                elif val is True:
                     if fval is None:
                         good = False
                         break
                 elif type(val) is str or type(val) is int:
                     if fval != val:
+                        good = False
+                        break
+                elif isinstance(val, reTp):
+                    if fval is None or not val.search(fval):
                         good = False
                         break
                 else:
