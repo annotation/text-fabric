@@ -13,11 +13,7 @@ SHEBANQ = (
     '?book={book}&chapter={chapter}&verse={verse}&version={version}'
     '&mr=m&qw=q&tp=txt_p&tr=hb&wget=v&qget=v&nget=vt'
 )
-SHEBANQ_LEX = (
-    f'{SHEBANQ_URL}/word'
-    '?version={version}'
-    '&id={lid}'
-)
+SHEBANQ_LEX = (f'{SHEBANQ_URL}/word' '?version={version}' '&id={lid}')
 
 LIMIT = 100
 
@@ -208,7 +204,9 @@ def _outLink(text, href, title=None):
 
 class Bhsa(object):
     def __init__(
-        self, api, name,
+        self,
+        api,
+        name,
         version='c',
     ):
         self.version = version
@@ -250,9 +248,7 @@ class Bhsa(object):
             f'{docLink}/features/hebrew/{self.version}/0_home.html',
             '{CORPUS} feature documentation'
         )
-        bhsaLink = _outLink(
-            'BHSA API', extraLink, 'BHSA API documentation'
-        )
+        bhsaLink = _outLink('BHSA API', extraLink, 'BHSA API documentation')
         tfLink = _outLink(
             'Text-Fabric API',
             'https://github.com/Dans-labs/text-fabric/wiki/api',
@@ -281,12 +277,10 @@ This notebook online:
             lan = F.language.v(n)
             lexId = '{}{}'.format(
                 '1' if lan == 'Hebrew' else '2',
-                lex.
-                    replace('>', 'A').
-                    replace('<', 'O').
-                    replace('[', 'v').
-                    replace('/', 'n').
-                    replace('=', 'i'),
+                lex.replace('>', 'A').replace('<',
+                                              'O').replace('[', 'v').replace(
+                                                  '/', 'n'
+                                              ).replace('=', 'i'),
             )
             href = SHEBANQ_LEX.format(
                 version=version,
@@ -322,72 +316,60 @@ This notebook online:
         self._pretty(
             n,
             html,
-            firstWord=None,
-            lastWord=None,
+            firstSlot=None,
+            lastSlot=None,
             withNodes=withNodes,
             suppress=suppress,
             highlights=highlights,
         )
         htmlStr = '\n'.join(html)
-        # print(htmlStr)
         display(HTML(htmlStr))
 
-    def prettyTuple(self, ns, seqNumber, withNodes=True, suppress=set()):
+    def prettyTuple(
+        self,
+        ns,
+        seqNumber,
+        item='Result',
+        withNodes=True,
+        suppress=set(),
+    ):
         api = self.api
         L = api.L
-        T = api.T
         F = api.F
         sortNodes = api.sortNodes
-        heading = []
         verses = set()
         lexemes = set()
         highlights = set()
         for n in ns:
             nType = F.otype.v(n)
-            nodeRep = None
-            if nType == 'book':
-                nodeRep = f'**{T.sectionFromNode(n)[0]}**'
-            elif nType == 'chapter':
-                nodeRep = '**{} {}**'.format(*T.sectionFromNode(n))
-            elif nType == 'verse':
-                nodeRep = '**{} {}:{}**'.format(*T.sectionFromNode(n))
-            elif nType == 'half_verse':
-                nodeRep = '**{} {}:{}{}**'.format(
-                    *T.sectionFromNode(n),
-                    F.label.v(n),
-                )
-            else:
-                nodePart = f' `{n}`' if withNodes else ''
-                nodeRep = f'**{nType}**{nodePart}'
-                firstWord = n if nType == 'word' else L.d(n, otype='word')[0]
+            if nType not in SECTION:
+                firstSlot = n if nType == 'word' else L.d(n, otype='word')[0]
                 if nType == 'lex':
                     lexemes.add(n)
                     highlights.add(n)
                 else:
-                    verses.add(L.u(firstWord, otype='verse')[0])
+                    verses.add(L.u(firstSlot, otype='verse')[0])
                     atomType = SUPER.get(nType, None)
                     if atomType:
                         highlights |= set(L.d(n, otype=atomType))
                     else:
                         highlights.add(n)
-            heading.append(nodeRep)
         _dm(f'''
-## Result {seqNumber}
-({", ".join(heading)})
+##### {item} {seqNumber}
 ''')
         for l in sortNodes(lexemes):
             self.pretty(
                 l,
                 withNodes=withNodes,
                 suppress=suppress,
-                highlights=highlights
+                highlights=highlights,
             )
         for v in sortNodes(verses):
             self.pretty(
                 v,
                 withNodes=withNodes,
                 suppress=suppress,
-                highlights=highlights
+                highlights=highlights,
             )
 
     def search(self, query):
@@ -396,20 +378,34 @@ This notebook online:
         return list(S.search(query))
 
     def show(
-        self, results, start=None, end=None, withNodes=True, suppress=set()
+        self,
+        results,
+        condensed=False,
+        start=None,
+        end=None,
+        withNodes=True,
+        suppress=set(),
     ):
+        if condensed:
+            results = self._condense(results)
         if start is None:
             start = 0
         i = -1
         if not hasattr(results, 'len'):
+            if end is None or end > LIMIT:
+                end = LIMIT
             for result in results:
                 i += 1
                 if i < start:
                     continue
-                if end is not None and i > end:
+                if i > end:
                     break
                 self.prettyTuple(
-                    result, i, withNodes=withNodes, suppress=suppress
+                    result,
+                    i,
+                    item='Passage' if condensed else 'Result',
+                    withNodes=withNodes,
+                    suppress=suppress,
                 )
         else:
             if end is None:
@@ -420,7 +416,11 @@ This notebook online:
                 end = start + LIMIT
             for i in range(start, end):
                 self.prettyTuple(
-                    results[i], i, withNodes=withNodes, suppress=suppress
+                    results[i],
+                    i,
+                    item='Passage' if condensed else 'Result',
+                    withNodes=withNodes,
+                    suppress=suppress,
                 )
             if rest:
                 _dm(
@@ -428,12 +428,31 @@ This notebook online:
                     f' because we show a maximum of {LIMIT} results at a time'
                 )
 
+    def _condense(self, results):
+        api = self.api
+        F = api.F
+        L = api.L
+        sortNodes = api.sortNodes
+        passages = {}
+        for ns in results:
+            for n in ns:
+                nType = F.otype.v(n)
+                if nType in SECTION:
+                    passages.setdefault(n, set())
+                    if nType != 'verse':
+                        passages[n].add(n)
+                else:
+                    fw = n if nType == 'word' else L.d(n, otype='word')[0]
+                    v = L.u(fw, otype='verse')[0]
+                    passages.setdefault(v, set()).add(n)
+        return tuple((p,) + tuple(passages[p]) for p in sortNodes(passages))
+
     def _pretty(
         self,
         n,
         html,
-        firstWord=None,
-        lastWord=None,
+        firstSlot=None,
+        lastSlot=None,
         withNodes=True,
         suppress=set(),
         highlights=set()
@@ -455,12 +474,12 @@ This notebook online:
                 boundaryClass += ' r'
             if superEnd > myEnd:
                 boundaryClass += ' l'
-        if ((firstWord and myEnd < firstWord)
-            or (lastWord and myStart > lastWord)):  # noqa 129
+        if ((firstSlot and myEnd < firstSlot)
+            or (lastSlot and myStart > lastSlot)):  # noqa 129
             return
-        if firstWord and (myStart < firstWord):
+        if firstSlot and (myStart < firstSlot):
             boundaryClass += ' R'
-        if lastWord and (myEnd > lastWord):
+        if lastSlot and (myEnd > lastSlot):
             boundaryClass += ' L'
         if nType == 'book':
             html.append(self.shbLink(n))
@@ -468,13 +487,16 @@ This notebook online:
         elif nType == 'chapter':
             html.append(self.shbLink(n))
             return
+        elif nType == 'half_verse':
+            html.append(self.shbLink(n))
+            return
         elif nType == 'verse':
             label = self.shbLink(n)
-            (firstWord, lastWord) = self._getBoundary(n)
+            (firstSlot, lastSlot) = self._getBoundary(n)
             children = sortNodes(
                 set(L.d(n, otype='sentence_atom')) | {
-                    L.u(firstWord, otype='sentence_atom')[0],
-                    L.u(lastWord, otype='sentence_atom')[0],
+                    L.u(firstSlot, otype='sentence_atom')[0],
+                    L.u(lastSlot, otype='sentence_atom')[0],
                 }
             )
         elif nType == 'sentence':
@@ -513,24 +535,16 @@ This notebook online:
                 )
             if F.sp.v(n) == 'verb':
                 if 'vs' not in suppress:
-                    html.append(
-                        f'<div class="vvs">'
-                        f'{F.vs.v(n)}</div>'
-                    )
+                    html.append(f'<div class="vvs">' f'{F.vs.v(n)}</div>')
                 if 'vt' not in suppress:
-                    html.append(
-                        f'<div class="vvt">'
-                        f'{F.vt.v(n)}</div>'
-                    )
+                    html.append(f'<div class="vvt">' f'{F.vt.v(n)}</div>')
         elif nType == 'lex':
             html.append(f'<div class="h">{F.voc_lex_utf8.v(n)}</div>')
             if 'voc_lex' not in suppress:
                 llink = self.shbLink(
-                        n, text=F.voc_lex.v(n).replace("<", "&lt;")
+                    n, text=F.voc_lex.v(n).replace("<", "&lt;")
                 )
-                html.append(
-                    f'<div class="vl">{llink}</div>'
-                )
+                html.append(f'<div class="vl">{llink}</div>')
             if 'gloss' not in suppress:
                 html.append(
                     f'<div class="gl">'
@@ -572,8 +586,8 @@ This notebook online:
             self._pretty(
                 ch,
                 html,
-                firstWord=firstWord,
-                lastWord=lastWord,
+                firstSlot=firstSlot,
+                lastSlot=lastSlot,
                 withNodes=withNodes,
                 suppress=suppress,
                 highlights=highlights,

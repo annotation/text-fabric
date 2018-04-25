@@ -18,7 +18,7 @@ IMAGE_DIR = f'{SOURCE_DIR}/images'
 TEMP_DIR = '_temp'
 REPORT_DIR = 'reports'
 
-LIMIT = 20
+LIMIT = 100
 
 PHOTO_TO = '{}/tablets/photos'
 PHOTO_EXT = 'jpg'
@@ -109,6 +109,246 @@ CAPTION_STYLE = dict(
 ITEM_STYLE = ('padding: 0.5rem;')
 
 SIZING = {'height', 'width'}
+
+COMMENT_TYPES = set(
+    '''
+    tablet
+    face
+    column
+    line
+    case
+'''.strip().split()
+)
+
+CLUSTER_TYPES = dict(
+    uncertain='?',
+    properName='=',
+    supplied='&gt;',
+)
+
+CSS = '''
+<style>
+.pnum {
+    font-family: sans-serif;
+    font-size: small;
+    font-weight: bold;
+    color: #444444;
+}
+.nd {
+    font-family: monospace;
+    font-size: x-small;
+    color: #999999;
+}
+.meta {
+    display: flex;
+    flex-flow: row nowrap;
+}
+.features,.comments {
+    display: flex;
+    flex-flow: column nowrap;
+    max-width: fit-content;
+}
+.tabletLabel {
+    display: flex;
+    flex-flow: column nowrap;
+    font-family: monospace;
+    font-size: medium;
+    color: #0000bb;
+}
+.children.tablet {
+    display: flex;
+    flex-flow: row nowrap;
+    border: 0;
+}
+.children.face {
+    display: flex;
+    flex-flow: row nowrap;
+    border: 0;
+}
+.children.column {
+    display: flex;
+    flex-flow: column wrap;
+    border: 0;
+}
+.children.line {
+    display: flex;
+    flex-flow: column wrap;
+    border: 0;
+}
+.children.case {
+    display: flex;
+    flex-flow: column wrap;
+    border: 0;
+}
+.children.trminal {
+    display: flex;
+    flex-flow: row wrap;
+    border: 0;
+}
+.children.cluster {
+    display: flex;
+    flex-flow: row wrap;
+    border: 0;
+}
+.children.quad {
+    display: flex;
+    flex-flow: row wrap;
+    border: 0;
+}
+.outer.tablet,.outer.face,.outer.column,
+.outer.line,.outer.case,.outer.trminal,
+.outer.comment,
+.outer.cluster,
+.outer.quad,.outer.sign {
+    display: flex;
+    flex-flow: column nowrap;
+    background: #ffffff none repeat scroll 0 0;
+    padding:  0.5em 0.1em 0.1em 0.1em;
+    margin: 0.8em 0.1em 0.1em 0.1em;
+    border-radius: 0.2em;
+    border-style: solid;
+    border-width: 0.2em;
+    font-size: small;
+}
+.outer.tablet,.outer.face,.outer.column {
+    border-color: #bb8800;
+}
+.outer.line,.outer.case,.outer.trminal {
+    border-color: #0088bb;
+}
+.outer.cluster {
+    flex-flow: row wrap;
+    border: 0;
+    max-width: fit-content;
+}
+.outer.sign,.outer.quad {
+    border-color: #bbbbbb;
+    max-width: fit-content;
+}
+.outer.tablet {
+    flex: 100% 1 1;
+}
+.outer.face {
+    flex: 50% 1 1;
+}
+.outer.column {
+    flex: 50% 1 1;
+}
+.outer.comment {
+    background-color: #ffddaa;
+    border: 0.2em solid #eecc99;
+    border-radius: 0.3em;
+    max-width: fit-content;
+}
+.outer.hl {
+    background-color: #ffee66;
+}
+.lbl.tablet,.lbl.face,.lbl.column,
+.lbl.line,.lbl.case,.lbl.trminal,
+.lbl.comment,
+.lbl.cluster,
+.lbl.quad,.lbl.sign {
+    margin-top: -1.2em;
+    margin-left: 1em;
+    background: #ffffff none repeat scroll 0 0;
+    padding: 0 0.3em;
+    border-style: solid;
+    font-size: small;
+    color: #0000cc;
+    display: block;
+    width: fit-content;
+    max-width: fit-content;
+}
+.lbl.tablet,.lbl.face,.lbl.column {
+    border-color: #bb8800;
+    border-width: 0.2em;
+    border-radius: 0.2em;
+    color: #bb8800;
+}
+.lbl.line,.lbl.case,.lbl.trminal {
+    border-color: #0088bb;
+    border-width: 0.2em;
+    border-radius: 0.2em;
+    color: #0088bb;
+}
+.lbl.comment {
+    border-color: #eecc99;
+    border-width: 0.2em;
+    border-radius: 0.2em;
+    color: #eecc99;
+    background-color: #ffddaa none repeat scroll 0 0;
+}
+.lbl.clusterB,.lbl.clusterE {
+    max-width: fit-content;
+    max-height: 100%;
+    padding:  0.5em 0.1em 0.1em 0.1em;
+    margin: 0.8em 0.1em 0.1em 0.1em;
+    color: #888844;
+    font-size: x-small;
+}
+.lbl.clusterB {
+    border-left: 0.3em solid #cccc99;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 0;
+    border-radius: 1em;
+}
+.lbl.clusterE {
+    border-left: 0;
+    border-right: 0.3em solid #cccc99;
+    border-top: 0;
+    border-bottom: 0;
+    border-radius: 1em;
+}
+.lbl.quad,.lbl.sign {
+    border-color: #bbbbbb;
+    border-width: 0.1em;
+    border-radius: 0.1em;
+    color: #bbbbbb;
+}
+.op {
+    max-width: fit-content;
+    max-height: 100%;
+    padding:  0.5em 0.1em 0.1em 0.1em;
+    margin: 0.8em 0.1em 0.1em 0.1em;
+    font-family: monospace;
+    font-size: x-large;
+    font-weight: bold;
+}
+.name {
+    font-family: monospace;
+    font-size: medium;
+    color: #0000bb;
+}
+.period {
+    font-family: monospace;
+    font-size: medium;
+    font-weight: bold;
+    color: #0000bb;
+}
+.excavation {
+    font-family: monospace;
+    font-size: medium;
+    font-style: italic;
+    color: #779900;
+}
+.text {
+    font-family: sans-serif;
+    font-size: x-small;
+    color: #000000;
+}
+.srcLn {
+    font-family: monospace;
+    font-size: medium;
+    color: #000000;
+}
+.srcLnNum {
+    font-family: monospace;
+    font-size: x-small;
+    color: #0000bb;
+}
+</style>
+'''
 
 
 def dm(md):
@@ -211,6 +451,8 @@ This notebook online:
         for cdir in (self.tempDir, self.reportDir):
             if cdir:
                 os.makedirs(cdir, exist_ok=True)
+
+        self._loadCSS()
 
     def getSource(self, node, nodeType=None, lineNumbers=False):
         api = self.api
@@ -510,6 +752,369 @@ This notebook online:
     def imagery(self, objectType, kind):
         return set(self._imagery.get(objectType, {}).get(kind, {}))
 
+    def cdli(self, n, linkText=None):
+        (nType, objectType, identifier) = self._imageClass(n)
+        if linkText is None:
+            linkText = identifier
+        return _wrapLink(linkText, objectType, 'main', identifier)
+
+    def tabletLink(self, t, text=None):
+        api = self.api
+        L = api.L
+        F = api.F
+        if type(t) is str:
+            pNum = t
+        else:
+            n = t if F.otype.v(t) == 'tablet' else L.u(t, otype='tablet')[0]
+            pNum = F.catalogId.v(n)
+
+        title = ('to CDLI main page for this tablet')
+        linkText = pNum if text is None else text
+        url = URL_FORMAT['tablet']['main'].format(pNum)
+
+        return _outLink(linkText, url, title=title)
+
+    def pretty(
+        self,
+        n,
+        withNodes=False,
+        lineNumbers=False,
+        suppress=set(),
+        highlights=set()
+    ):
+        html = []
+        self._pretty(
+            n,
+            True,
+            html,
+            seen=set(),
+            withNodes=withNodes,
+            lineNumbers=lineNumbers,
+            suppress=suppress,
+            highlights=highlights,
+        )
+        htmlStr = '\n'.join(html)
+        display(HTML(htmlStr))
+
+    def prettyTuple(
+        self,
+        ns,
+        seqNumber,
+        item='Result',
+        withNodes=False,
+        lineNumbers=False,
+        suppress=set(),
+    ):
+        api = self.api
+        L = api.L
+        F = api.F
+        sortNodes = api.sortNodes
+        tablets = set()
+        highlights = set()
+        for n in ns:
+            nType = F.otype.v(n)
+            if nType == 'tablet':
+                tablets.add(n)
+            else:
+                t = L.u(n, otype='tablet')[0]
+                tablets.add(t)
+                highlights.add(n)
+        dm(f'''
+##### {item} {seqNumber}
+''')
+        for t in sortNodes(tablets):
+            self.pretty(
+                t,
+                withNodes=withNodes,
+                lineNumbers=lineNumbers,
+                suppress=suppress,
+                highlights=highlights,
+            )
+
+    def search(self, query):
+        api = self.api
+        S = api.S
+        return list(S.search(query))
+
+    def show(
+        self,
+        results,
+        condensed=True,
+        start=None,
+        end=None,
+        withNodes=False,
+        lineNumbers=False,
+        suppress=set()
+    ):
+        if condensed:
+            results = self._condense(results)
+        if start is None:
+            start = 0
+        i = -1
+        if not hasattr(results, 'len'):
+            if end is None or end > LIMIT:
+                end = LIMIT
+            for result in results:
+                i += 1
+                if i < start:
+                    continue
+                if i > end:
+                    break
+                self.prettyTuple(
+                    result,
+                    i,
+                    item='Tablet' if condensed else 'Result',
+                    withNodes=withNodes,
+                    lineNumbers=lineNumbers,
+                    suppress=suppress
+                )
+        else:
+            if end is None:
+                end = len(results)
+            rest = 0
+            if end - start > LIMIT:
+                rest = end - start - LIMIT
+                end = start + LIMIT
+            for i in range(start, end):
+                self.prettyTuple(
+                    results[i],
+                    i,
+                    item='Tablet' if condensed else 'Result',
+                    withNodes=withNodes,
+                    lineNumbers=lineNumbers,
+                    suppress=suppress
+                )
+            if rest:
+                dm(
+                    f'**{rest} more results skipped**'
+                    f' because we show a maximum of {LIMIT} results at a time'
+                )
+
+    def _condense(self, results):
+        api = self.api
+        F = api.F
+        L = api.L
+        sortNodes = api.sortNodes
+        tablets = {}
+        for ns in results:
+            for n in ns:
+                if F.otype.v(n) == 'tablet':
+                    tablets.setdefault(n, set())
+                else:
+                    t = L.u(n, otype='tablet')[0]
+                    tablets.setdefault(t, set()).add(n)
+        return tuple((t,) + tuple(tablets[t]) for t in sortNodes(tablets))
+
+    def _pretty(
+        self,
+        n,
+        outer,
+        html,
+        withNodes=False,
+        lineNumbers=False,
+        seen=set(),
+        suppress=set(),
+        highlights=set(),
+    ):
+        api = self.api
+        L = api.L
+        F = api.F
+        E = api.E
+        sortNodes = api.sortNodes
+        hl = ' hl' if n in highlights else ''
+        nType = F.otype.v(n)
+        className = nType
+        nodePart = (f'<span class="nd">{n}</span>' if withNodes else '')
+        heading = ''
+        featurePart = ''
+        commentsPart = self._getComments(
+            n, withNodes=withNodes, lineNumbers=lineNumbers
+        ) if nType in COMMENT_TYPES else ''
+        children = ()
+
+        if nType == 'tablet':
+            heading = F.catalogId.v(n)
+            heading += ' '
+            heading += self._getFeatures(
+                n,
+                suppress,
+                ('name', 'period', 'excavation'),
+                plain=True,
+            )
+            children = L.d(n, otype='face')
+        elif nType == 'face':
+            heading = F.type.v(n)
+            featurePart = self._getFeatures(
+                n,
+                suppress,
+                ('identifier', 'fragment'),
+            )
+            children = L.d(n, otype='column')
+        elif nType == 'column':
+            heading = F.number.v(n)
+            if F.prime.v(n):
+                heading += "'"
+            children = L.d(n, otype='line')
+        elif nType == 'line' or nType == 'case':
+            heading = F.number.v(n)
+            if F.prime.v(n):
+                heading += "'"
+            if F.terminal.v(n):
+                className = 'trminal'
+                theseFeats = ('srcLnNum', ) if lineNumbers else ()
+                featurePart = self._getFeatures(
+                    n,
+                    suppress,
+                    theseFeats,
+                )
+                children = sortNodes(
+                    set(L.d(n, otype='cluster'))
+                    | set(L.d(n, otype='quad'))
+                    | set(L.d(n, otype='sign'))
+                )
+            else:
+                children = L.d(n, otype='case')
+        elif nType == 'comment':
+            heading = F.type.v(n)
+            featurePart = self._getFeatures(
+                n,
+                suppress,
+                ('text', ),
+            )
+        elif nType == 'cluster':
+            seen.add(n)
+            heading = CLUSTER_TYPES.get(F.type.v(n), '')
+            children = sortNodes(
+                set(L.d(n, otype='cluster'))
+                | set(L.d(n, otype='quad'))
+                | set(L.d(n, otype='sign'))
+            )
+        elif nType == 'quad':
+            seen.add(n)
+            children = E.sub.f(n)
+        elif nType == 'sign':
+            featurePart = self._getAtf(n)
+            seen.add(n)
+            if not outer and F.type.v(n) == 'empty':
+                return
+
+        if outer:
+            typePart = self.tabletLink(n, text=f'{nType} {heading}')
+        else:
+            typePart = heading
+
+        isCluster = nType == 'cluster'
+        extra = 'B' if isCluster else ''
+        label = f'''
+    <div class="lbl {className}{extra}">
+        {typePart}
+        {nodePart}
+    </div>
+''' if typePart or nodePart else ''
+
+        if isCluster:
+            if outer:
+                html.append(f'<div class="outer {className} {hl}">')
+            html.append(label)
+            if outer:
+                html.append(f'<div class="children {className}">')
+        else:
+            html.append(
+                f'''
+<div class="outer {className} {hl}">
+    {label}
+    <div class="meta">
+        {featurePart}
+        {commentsPart}
+    </div>
+'''
+            )
+        if not isCluster:
+            if children:
+                html.append(f'''
+    <div class="children {className}">
+''')
+
+        for ch in children:
+            if ch not in seen:
+                self._pretty(
+                    ch,
+                    False,
+                    html,
+                    seen=seen,
+                    withNodes=withNodes,
+                    lineNumbers=lineNumbers,
+                    suppress=suppress,
+                    highlights=highlights,
+                )
+                if nType == 'quad':
+                    nextChildren = E.op.f(ch)
+                    if nextChildren:
+                        op = nextChildren[0][1]
+                        html.append(f'<div class="op">{op}</div>')
+        if isCluster:
+            html.append(
+                f'''
+    <div class="lbl {className}E {hl}">
+        {typePart}
+        {nodePart}
+    </div>
+'''
+            )
+            if outer:
+                html.append('</div></div>')
+        else:
+            if children:
+                html.append('''
+    </div>
+''')
+            html.append('''
+</div>
+''')
+
+    def _getFeatures(self, n, suppress, features, plain=False):
+        api = self.api
+        Fs = api.Fs
+        featurePart = '' if plain else '<div class="features">'
+        for name in features:
+            if 'name' not in suppress:
+                value = Fs(name).v(n)
+                if value is not None:
+                    featurePart += (
+                        f' <span class="{name}">{Fs(name).v(n)}</span>'
+                    )
+        if not plain:
+            featurePart += '</div>'
+        return featurePart
+
+    def _getComments(self, n, withNodes=False, lineNumbers=False):
+        api = self.api
+        E = api.E
+        cns = E.comments.f(n)
+        if len(cns):
+            html = ['<div class="comments">']
+            for c in cns:
+                self._pretty(
+                    c,
+                    False,
+                    html,
+                    withNodes=withNodes,
+                    lineNumbers=lineNumbers,
+                )
+            html.append('</div>')
+            commentsPart = ''.join(html)
+        else:
+            commentsPart = ''
+        return commentsPart
+
+    def _getAtf(self, n):
+        atf = self.atfFromSign(n, flags=True)
+        featurePart = f' <span class="srcLn">{atf}</span>'
+        return featurePart
+
+    def _loadCSS(self):
+        display(HTML(CSS))
+
     def _imageClass(self, n):
         api = self.api
         F = api.F
@@ -556,8 +1161,7 @@ This notebook online:
             ns = [ns]
         result = []
         attStr = ' '.join(
-            f'{opt}="{value}"'
-            for (opt, value) in options.items()
+            f'{opt}="{value}"' for (opt, value) in options.items()
             if opt not in SIZING
         )
         cssProps = {}
@@ -579,8 +1183,7 @@ This notebook online:
                 if force:
                     cssProps[f'min-{opt}'] = realValue
         cssStr = ' '.join(
-            f'{opt}: {value};'
-            for (opt, value) in cssProps.items()
+            f'{opt}: {value};' for (opt, value) in cssProps.items()
         )
         if withCaption is None:
             withCaption = None if asLink else 'bottom'
@@ -646,12 +1249,6 @@ This notebook online:
         '''.replace('\n', '')
 
         return HTML(html)
-
-    def cdli(self, n, linkText=None):
-        (nType, objectType, identifier) = self._imageClass(n)
-        if linkText is None:
-            linkText = identifier
-        return _wrapLink(linkText, objectType, 'main', identifier)
 
     def _useImage(self, image, kind, node):
         (imageDir, imageName) = os.path.split(image)
