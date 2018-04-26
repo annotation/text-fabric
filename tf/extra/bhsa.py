@@ -254,7 +254,18 @@ class Bhsa(object):
             'https://github.com/Dans-labs/text-fabric/wiki/api',
             'text-fabric-api'
         )
-        _dm(f'**Documentation:** {dataLink} {featureLink} {bhsaLink} {tfLink}')
+        tfsLink = _outLink(
+            'Search Reference',
+            (
+                'https://github.com/Dans-labs/text-fabric/wiki/api'
+                '#search-template-introduction'
+            ),
+            'Search Templates Introduction and Reference'
+        )
+        _dm(
+            '**Documentation:**'
+            f' {dataLink} {featureLink} {bhsaLink} {tfLink} {tfsLink}'
+        )
         if nbLink:
             _dm(
                 f'''

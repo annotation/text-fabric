@@ -141,66 +141,60 @@ CSS = '''
 }
 .meta {
     display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
     flex-flow: row nowrap;
 }
 .features,.comments {
     display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
     flex-flow: column nowrap;
-    max-width: fit-content;
 }
-.tabletLabel {
+.children {
     display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+    border: 0;
+    background-color: #ffffff;
+}
+.children.tablet,.children.face {
+    flex-flow: row nowrap;
+}
+.children.column,.children.line,.children.case {
+    align-items: stretch;
     flex-flow: column nowrap;
-    font-family: monospace;
-    font-size: medium;
-    color: #0000bb;
-}
-.children.tablet {
-    display: flex;
-    flex-flow: row nowrap;
-    border: 0;
-}
-.children.face {
-    display: flex;
-    flex-flow: row nowrap;
-    border: 0;
-}
-.children.column {
-    display: flex;
-    flex-flow: column wrap;
-    border: 0;
-}
-.children.line {
-    display: flex;
-    flex-flow: column wrap;
-    border: 0;
-}
-.children.case {
-    display: flex;
-    flex-flow: column wrap;
-    border: 0;
 }
 .children.trminal {
-    display: flex;
-    flex-flow: row wrap;
-    border: 0;
+    flex-flow: row nowrap;
 }
 .children.cluster {
-    display: flex;
     flex-flow: row wrap;
-    border: 0;
 }
 .children.quad {
-    display: flex;
     flex-flow: row wrap;
-    border: 0;
 }
-.outer.tablet,.outer.face,.outer.column,
-.outer.line,.outer.case,.outer.trminal,
-.outer.comment,
-.outer.cluster,
-.outer.quad,.outer.sign {
+.children.sign {
+    flex-flow: column nowrap;
+}
+.contnr {
+}
+.contnr.line,.contnr.case,.contnr.trminal {
+}
+.contnr.quad {
+}
+.contnr.tablet,.contnr.face,.contnr.column,
+.contnr.line,.contnr.case,.contnr.trminal,
+.contnr.comment,
+.contnr.cluster,
+.contnr.quad,.contnr.sign {
     display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
     flex-flow: column nowrap;
     background: #ffffff none repeat scroll 0 0;
     padding:  0.5em 0.1em 0.1em 0.1em;
@@ -210,37 +204,31 @@ CSS = '''
     border-width: 0.2em;
     font-size: small;
 }
-.outer.tablet,.outer.face,.outer.column {
+.contnr.tablet,.contnr.face,.contnr.column {
+    width: fit-content;
+}
+.contnr.tablet,.contnr.face,.contnr.column {
     border-color: #bb8800;
 }
-.outer.line,.outer.case,.outer.trminal {
+.contnr.line,.contnr.case,.contnr.trminal {
     border-color: #0088bb;
 }
-.outer.cluster {
+.contnr.cluster {
     flex-flow: row wrap;
+    width: fit-content;
     border: 0;
-    max-width: fit-content;
 }
-.outer.sign,.outer.quad {
+.contnr.sign,.contnr.quad {
+    width: fit-content;
     border-color: #bbbbbb;
-    max-width: fit-content;
 }
-.outer.tablet {
-    flex: 100% 1 1;
-}
-.outer.face {
-    flex: 50% 1 1;
-}
-.outer.column {
-    flex: 50% 1 1;
-}
-.outer.comment {
+.contnr.comment {
+    width: fit-content;
     background-color: #ffddaa;
     border: 0.2em solid #eecc99;
     border-radius: 0.3em;
-    max-width: fit-content;
 }
-.outer.hl {
+.contnr.hl {
     background-color: #ffee66;
 }
 .lbl.tablet,.lbl.face,.lbl.column,
@@ -256,8 +244,6 @@ CSS = '''
     font-size: small;
     color: #0000cc;
     display: block;
-    width: fit-content;
-    max-width: fit-content;
 }
 .lbl.tablet,.lbl.face,.lbl.column {
     border-color: #bb8800;
@@ -279,8 +265,6 @@ CSS = '''
     background-color: #ffddaa none repeat scroll 0 0;
 }
 .lbl.clusterB,.lbl.clusterE {
-    max-width: fit-content;
-    max-height: 100%;
     padding:  0.5em 0.1em 0.1em 0.1em;
     margin: 0.8em 0.1em 0.1em 0.1em;
     color: #888844;
@@ -307,8 +291,6 @@ CSS = '''
     color: #bbbbbb;
 }
 .op {
-    max-width: fit-content;
-    max-height: 100%;
     padding:  0.5em 0.1em 0.1em 0.1em;
     margin: 0.8em 0.1em 0.1em 0.1em;
     font-family: monospace;
@@ -430,7 +412,16 @@ class Cunei(object):
             'https://github.com/Dans-labs/text-fabric/wiki/api',
             'text-fabric-api'
         )
-        dm(f'**Documentation:** {dataLink} {featureLink} {cuneiLink} {tfLink}')
+        tfsLink = _outLink(
+            'Search Reference', (
+                'https://github.com/Dans-labs/text-fabric/wiki/api'
+                '#search-template-introduction'
+            ), 'Search Templates Introduction and Reference'
+        )
+        dm(
+            '**Documentation:**'
+            f' {dataLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}'
+        )
         if nbLink:
             dm(
                 f'''
@@ -777,6 +768,7 @@ This notebook online:
     def pretty(
         self,
         n,
+        lineart=True,
         withNodes=False,
         lineNumbers=False,
         suppress=set(),
@@ -788,6 +780,7 @@ This notebook online:
             True,
             html,
             seen=set(),
+            lineart=lineart,
             withNodes=withNodes,
             lineNumbers=lineNumbers,
             suppress=suppress,
@@ -801,6 +794,7 @@ This notebook online:
         ns,
         seqNumber,
         item='Result',
+        lineart=True,
         withNodes=False,
         lineNumbers=False,
         suppress=set(),
@@ -825,6 +819,7 @@ This notebook online:
         for t in sortNodes(tablets):
             self.pretty(
                 t,
+                lineart=lineart,
                 withNodes=withNodes,
                 lineNumbers=lineNumbers,
                 suppress=suppress,
@@ -842,6 +837,7 @@ This notebook online:
         condensed=True,
         start=None,
         end=None,
+        lineart=True,
         withNodes=False,
         lineNumbers=False,
         suppress=set()
@@ -864,6 +860,7 @@ This notebook online:
                     result,
                     i,
                     item='Tablet' if condensed else 'Result',
+                    lineart=lineart,
                     withNodes=withNodes,
                     lineNumbers=lineNumbers,
                     suppress=suppress
@@ -880,6 +877,7 @@ This notebook online:
                     results[i],
                     i,
                     item='Tablet' if condensed else 'Result',
+                    lineart=lineart,
                     withNodes=withNodes,
                     lineNumbers=lineNumbers,
                     suppress=suppress
@@ -903,13 +901,14 @@ This notebook online:
                 else:
                     t = L.u(n, otype='tablet')[0]
                     tablets.setdefault(t, set()).add(n)
-        return tuple((t,) + tuple(tablets[t]) for t in sortNodes(tablets))
+        return tuple((t, ) + tuple(tablets[t]) for t in sortNodes(tablets))
 
     def _pretty(
         self,
         n,
         outer,
         html,
+        lineart=True,
         withNodes=False,
         lineNumbers=False,
         seen=set(),
@@ -973,7 +972,7 @@ This notebook online:
                     | set(L.d(n, otype='sign'))
                 )
             else:
-                children = L.d(n, otype='case')
+                children = E.sub.f(n)
         elif nType == 'comment':
             heading = F.type.v(n)
             featurePart = self._getFeatures(
@@ -1014,14 +1013,14 @@ This notebook online:
 
         if isCluster:
             if outer:
-                html.append(f'<div class="outer {className} {hl}">')
+                html.append(f'<div class="contnr {className} {hl}">')
             html.append(label)
             if outer:
                 html.append(f'<div class="children {className}">')
         else:
             html.append(
                 f'''
-<div class="outer {className} {hl}">
+<div class="contnr {className} {hl}">
     {label}
     <div class="meta">
         {featurePart}
@@ -1029,6 +1028,27 @@ This notebook online:
     </div>
 '''
             )
+        if lineart:
+            isQuad = nType == 'quad'
+            isSign = nType == 'sign'
+            if isQuad or isSign:
+                isOuter = (
+                    all(F.otype.v(parent) != 'quad' for parent in E.sub.t(n))
+                )
+                if isOuter:
+                    width = '2em' if isSign else '4em'
+                    height = '4em' if isSign else '6em'
+                    theLineart = self._getImages(
+                        n,
+                        kind='lineart',
+                        width=width,
+                        height=height,
+                        plainHtml=True,
+                        withCaption=False,
+                        warning=False
+                    )
+                    if theLineart:
+                        html.append(f'<div>{theLineart}</div>')
         if not isCluster:
             if children:
                 html.append(f'''
@@ -1042,6 +1062,7 @@ This notebook online:
                     False,
                     html,
                     seen=seen,
+                    lineart=lineart,
                     withNodes=withNodes,
                     lineNumbers=lineNumbers,
                     suppress=suppress,
@@ -1098,6 +1119,7 @@ This notebook online:
                     c,
                     False,
                     html,
+                    lineart=False,
                     withNodes=withNodes,
                     lineNumbers=lineNumbers,
                 )
@@ -1155,6 +1177,7 @@ This notebook online:
         asLink=False,
         withCaption=None,
         warning=True,
+        plainHtml=False,
         **options
     ):
         if type(ns) is int or type(ns) is str:
@@ -1248,7 +1271,7 @@ This notebook online:
         </div>
         '''.replace('\n', '')
 
-        return HTML(html)
+        return html if plainHtml else HTML(html)
 
     def _useImage(self, image, kind, node):
         (imageDir, imageName) = os.path.split(image)
