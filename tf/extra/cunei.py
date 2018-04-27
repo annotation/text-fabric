@@ -126,6 +126,12 @@ CLUSTER_TYPES = dict(
     supplied='&gt;',
 )
 
+ATF_TYPES = set('''
+    sign
+    quad
+    cluster
+'''.strip().split())
+
 CSS = '''
 <style>
 .pnum {
@@ -764,6 +770,140 @@ This notebook online:
         url = URL_FORMAT['tablet']['main'].format(pNum)
 
         return _outLink(linkText, url, title=title)
+
+    def plain(
+        self,
+        n,
+        linked=True,
+        lineart=True,
+        withNodes=False,
+        lineNumbers=False,
+    ):
+        api = self.api
+        F = api.F
+        E = api.E
+
+        nType = F.otype.v(n)
+        markdown = ''
+        nodeRep = f' ({n}) ' if withNodes else ''
+
+        if nType in ATF_TYPES:
+            isSign = nType == 'sign'
+            isQuad = nType == 'quad'
+            rep = (
+                self.atfFromSign(n) if isSign else self.atfFromQuad(n)
+                if isQuad else self.atfFromCluster(n)
+            )
+            if linked:
+                rep = self.tabletLink(n, text=rep)
+            theLineart = ''
+            if isSign or isQuad:
+                isOuter = (
+                    all(F.otype.v(parent) != 'quad' for parent in E.sub.t(n))
+                )
+                if isOuter:
+                    width = '2em' if isSign else '4em'
+                    height = '4em' if isSign else '6em'
+                    theLineart = self._getImages(
+                        n,
+                        kind='lineart',
+                        width=width,
+                        height=height,
+                        plainHtml=True,
+                        withCaption=False,
+                        warning=False
+                    )
+            if theLineart:
+                theLineart = f' {theLineart} '
+            markdown = f'{rep}{nodeRep}{theLineart}'
+        elif nType == 'comment':
+            rep = F.type.v(n)
+            if linked:
+                rep = self.tabletLink(n, text=rep)
+            markdown = f'{rep}{nodeRep}: {F.text.v(n)}'
+        elif nType == 'line' or nType == 'case':
+            rep = f'{nType} {F.number.v(n)}'
+            if linked:
+                rep = self.tabletLink(n, text=rep)
+            theLine = ''
+            if lineNumbers:
+                if F.terminal.v(n):
+                    theLine = f' @{F.srcLnNum.v(n)} '
+            markdown = f'{rep}{nodeRep}{theLine}'
+        elif nType == 'column':
+            rep = f'{nType} {F.number.v(n)}'
+            if linked:
+                rep = self.tabletLink(n, text=rep)
+            theLine = ''
+            if lineNumbers:
+                theLine = f' @{F.srcLnNum.v(n)} '
+            markdown = f'{rep}{nodeRep}{theLine}'
+        elif nType == 'face':
+            rep = f'{nType} {F.type.v(n)}'
+            if linked:
+                rep = self.tabletLink(n, text=rep)
+            theLine = ''
+            if lineNumbers:
+                theLine = f' @{F.srcLnNum.v(n)} '
+            markdown = f'{rep}{nodeRep}{theLine}'
+        elif nType == 'tablet':
+            rep = f'{nType} {F.catalogId.v(n)}'
+            if linked:
+                rep = self.tabletLink(n, text=rep)
+            theLine = ''
+            if lineNumbers:
+                theLine = f' @{F.srcLnNum.v(n)} '
+            markdown = f'{rep}{nodeRep}{theLine}'
+
+        dm((markdown))
+
+    def plainTuple(
+        self,
+        ns,
+        seqNumber,
+        linked=1,
+        lineart=True,
+        withNodes=False,
+        lineNumbers=False,
+    ):
+        markdown = [str(seqNumber)]
+        for (i, n) in enumerate(ns):
+            markdown.append(
+                self.plain(
+                    n,
+                    linked=i == linked,
+                    lineart=lineart,
+                    withNodes=withNodes,
+                    lineNumbers=lineNumbers
+                )
+            )
+        dm(' | '.join(markdown))
+
+    def plainList(
+        self,
+        items,
+        linked=1,
+        lineart=True,
+        withNodes=False,
+        lineNumbers=False,
+    ):
+        api = self.api
+        F = api.F
+
+        if len(items) == 0:
+            return
+        markdown = [' | '.join(F.otype.v(n) for n in items[0])]
+        markdown.append(' | '.join('---' for n in items[0]))
+        dm('\n'.join(markdown))
+        for (seqNumber, ns) in enumerate(items):
+            self.plainTuple(
+                ns,
+                seqNumber,
+                linked=linked,
+                lineart=lineart,
+                withNodes=withNodes,
+                lineNumbers=lineNumbers,
+            )
 
     def pretty(
         self,
