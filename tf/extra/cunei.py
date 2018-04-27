@@ -18,7 +18,8 @@ IMAGE_DIR = f'{SOURCE_DIR}/images'
 TEMP_DIR = '_temp'
 REPORT_DIR = 'reports'
 
-LIMIT = 100
+LIMIT_SHOW = 100
+LIMIT_TABLE = 2000
 
 PHOTO_TO = '{}/tablets/photos'
 PHOTO_EXT = 'jpg'
@@ -778,6 +779,7 @@ This notebook online:
         lineart=True,
         withNodes=False,
         lineNumbers=False,
+        asString=False,
     ):
         api = self.api
         F = api.F
@@ -855,16 +857,19 @@ This notebook online:
                 theLine = f' @{F.srcLnNum.v(n)} '
             markdown = f'{rep}{nodeRep}{theLine}'
 
+        if asString:
+            return markdown
         dm((markdown))
 
     def plainTuple(
         self,
         ns,
         seqNumber,
-        linked=1,
+        linked=0,
         lineart=True,
         withNodes=False,
         lineNumbers=False,
+        asString=False,
     ):
         markdown = [str(seqNumber)]
         for (i, n) in enumerate(ns):
@@ -874,36 +879,13 @@ This notebook online:
                     linked=i == linked,
                     lineart=lineart,
                     withNodes=withNodes,
-                    lineNumbers=lineNumbers
+                    lineNumbers=lineNumbers,
+                    asString=True,
                 )
             )
-        dm(' | '.join(markdown))
-
-    def plainList(
-        self,
-        items,
-        linked=1,
-        lineart=True,
-        withNodes=False,
-        lineNumbers=False,
-    ):
-        api = self.api
-        F = api.F
-
-        if len(items) == 0:
-            return
-        markdown = [' | '.join(F.otype.v(n) for n in items[0])]
-        markdown.append(' | '.join('---' for n in items[0]))
-        dm('\n'.join(markdown))
-        for (seqNumber, ns) in enumerate(items):
-            self.plainTuple(
-                ns,
-                seqNumber,
-                linked=linked,
-                lineart=lineart,
-                withNodes=withNodes,
-                lineNumbers=lineNumbers,
-            )
+        if asString:
+            return ' | '.join(markdown)
+        dm(' , '.join(markdown))
 
     def pretty(
         self,
@@ -971,6 +953,78 @@ This notebook online:
         S = api.S
         return list(S.search(query))
 
+    def table(
+        self,
+        results,
+        start=None,
+        end=None,
+        linked=0,
+        lineart=True,
+        withNodes=False,
+        lineNumbers=False,
+        asString=False,
+    ):
+        api = self.api
+        F = api.F
+
+        collected = []
+        if start is None:
+            start = 0
+        i = -1
+        rest = 0
+        if not hasattr(results, 'len'):
+            if end is None or end > LIMIT_TABLE:
+                end = LIMIT_TABLE
+            for result in results:
+                i += 1
+                if i < start:
+                    continue
+                if i >= end:
+                    break
+                collected.append((i + 1, result))
+        else:
+            if end is None:
+                end = len(results)
+            rest = 0
+            if end - start > LIMIT_TABLE:
+                rest = end - start - LIMIT_TABLE
+                end = start + LIMIT_TABLE
+            for i in range(start, end):
+                collected.append((i + 1, results[i]))
+
+        if len(collected) == 0:
+            return
+        (firstSeq, firstResult) = collected[0]
+        nColumns = len(firstResult)
+        markdown = [
+            'n | '
+            +
+            (' | '.join(F.otype.v(n) for n in firstResult))
+        ]
+        markdown.append(' | '.join('---' for n in range(nColumns + 1)))
+        for (seqNumber, ns) in collected:
+            markdown.append(
+                self.plainTuple(
+                    ns,
+                    seqNumber,
+                    linked=linked,
+                    lineart=lineart,
+                    withNodes=withNodes,
+                    lineNumbers=lineNumbers,
+                    asString=True,
+                )
+            )
+        markdown = '\n'.join(markdown)
+        if asString:
+            return markdown
+        dm(markdown)
+        if rest:
+            dm(
+                f'**{rest} more results skipped**'
+                f' because we show a maximum of'
+                f' {LIMIT_TABLE} results at a time'
+            )
+
     def show(
         self,
         results,
@@ -988,17 +1042,17 @@ This notebook online:
             start = 0
         i = -1
         if not hasattr(results, 'len'):
-            if end is None or end > LIMIT:
-                end = LIMIT
+            if end is None or end > LIMIT_SHOW:
+                end = LIMIT_SHOW
             for result in results:
                 i += 1
                 if i < start:
                     continue
-                if i > end:
+                if i >= end:
                     break
                 self.prettyTuple(
                     result,
-                    i,
+                    i + 1,
                     item='Tablet' if condensed else 'Result',
                     lineart=lineart,
                     withNodes=withNodes,
@@ -1009,13 +1063,13 @@ This notebook online:
             if end is None:
                 end = len(results)
             rest = 0
-            if end - start > LIMIT:
-                rest = end - start - LIMIT
-                end = start + LIMIT
+            if end - start > LIMIT_SHOW:
+                rest = end - start - LIMIT_SHOW
+                end = start + LIMIT_SHOW
             for i in range(start, end):
                 self.prettyTuple(
                     results[i],
-                    i,
+                    i + 1,
                     item='Tablet' if condensed else 'Result',
                     lineart=lineart,
                     withNodes=withNodes,
@@ -1025,7 +1079,8 @@ This notebook online:
             if rest:
                 dm(
                     f'**{rest} more results skipped**'
-                    f' because we show a maximum of {LIMIT} results at a time'
+                    f' because we show a maximum of'
+                    f' {LIMIT_SHOW} results at a time'
                 )
 
     def _condense(self, results):
