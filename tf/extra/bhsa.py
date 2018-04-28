@@ -15,7 +15,8 @@ SHEBANQ = (
 )
 SHEBANQ_LEX = (f'{SHEBANQ_URL}/word' '?version={version}' '&id={lid}')
 
-LIMIT = 100
+LIMIT_SHOW = 100
+LIMIT_TABLE = 2000
 
 CSS = '''
 <style>
@@ -276,7 +277,7 @@ This notebook online:
             )
         self._loadCSS()
 
-    def shbLink(self, n, text=None):
+    def shbLink(self, n, text=None, asHtml=False):
         api = self.api
         L = api.L
         T = api.T
@@ -300,7 +301,11 @@ This notebook online:
             title = 'show this lexeme in SHEBANQ'
             if text is None:
                 text = F.voc_lex_utf8.v(n)
-            return _outLink(text, href, title=title)
+            result = _outLink(text, href, title=title)
+            if asHtml:
+                return result
+            display(HTML(result))
+            return
 
         (bookE, chapter, verse) = T.sectionFromNode(n)
         bookNode = n if nType == 'book' else L.u(n, otype='book')[0]
@@ -320,7 +325,78 @@ This notebook online:
             title = 'show this passage in SHEBANQ'
         else:
             title = passageText
-        return _outLink(text, href, title=title)
+        result = _outLink(text, href, title=title)
+        if asHtml:
+            return result
+        display(HTML(result))
+
+    def plain(
+        self,
+        n,
+        linked=True,
+        withNodes=True,
+        asString=False,
+    ):
+        api = self.api
+        L = api.L
+        T = api.T
+        F = api.F
+
+        nType = F.otype.v(n)
+        markdown = ''
+        nodeRep = f' *{n}* ' if withNodes else ''
+
+        if nType == 'word':
+            rep = T.text([n])
+            if linked:
+                rep = self.shbLink(n, text=rep, asHtml=True)
+        elif nType in SECTION:
+            fmt = (
+                '{}' if nType == 'book'
+                else '{} {}' if nType == 'chapter'
+                else '{} {}:{}'
+            )
+            rep = fmt.format(*T.sectionFromNode(n))
+            if nType == 'half_verse':
+                rep += F.label.v(n)
+            if linked:
+                rep = self.shbLink(n, text=rep, asHtml=True)
+        elif nType == 'lex':
+            rep = F.voc_lex_utf8.v(n)
+            if linked:
+                rep = self.shbLink(n, text=rep, asHtml=True)
+        else:
+            rep = T.text(L.d(n, otype='word'))
+            if linked:
+                rep = self.shbLink(n, text=rep, asHtml=True)
+
+        markdown = f'{rep}{nodeRep}'
+
+        if asString:
+            return markdown
+        _dm((markdown))
+
+    def plainTuple(
+        self,
+        ns,
+        seqNumber,
+        linked=1,
+        withNodes=False,
+        asString=False,
+    ):
+        markdown = [str(seqNumber)]
+        for (i, n) in enumerate(ns):
+            markdown.append(
+                self.plain(
+                    n,
+                    linked=i == linked - 1,
+                    withNodes=withNodes,
+                    asString=True,
+                )
+            )
+        if asString:
+            return ' | '.join(markdown)
+        _dm(' , '.join(markdown))
 
     def pretty(self, n, withNodes=True, suppress=set(), highlights=set()):
         html = []
@@ -388,55 +464,125 @@ This notebook online:
         S = api.S
         return list(S.search(query))
 
+    def table(
+        self,
+        results,
+        start=None,
+        end=None,
+        linked=1,
+        withNodes=False,
+        asString=False,
+    ):
+        api = self.api
+        F = api.F
+
+        collected = []
+        if start is None:
+            start = 1
+        i = -1
+        rest = 0
+        if not hasattr(results, 'len'):
+            if end is None or end > LIMIT_TABLE:
+                end = LIMIT_TABLE
+            for result in results:
+                i += 1
+                if i < start - 1:
+                    continue
+                if i >= end:
+                    break
+                collected.append((i + 1, result))
+        else:
+            if end is None:
+                end = len(results)
+            rest = 0
+            if end - (start - 1) > LIMIT_TABLE:
+                rest = end - (start - 1) - LIMIT_TABLE
+                end = start - 1 + LIMIT_TABLE
+            for i in range(start - 1, end):
+                collected.append((i + 1, results[i]))
+
+        if len(collected) == 0:
+            return
+        (firstSeq, firstResult) = collected[0]
+        nColumns = len(firstResult)
+        markdown = [
+            'n | '
+            +
+            (' | '.join(F.otype.v(n) for n in firstResult))
+        ]
+        markdown.append(' | '.join('---' for n in range(nColumns + 1)))
+        for (seqNumber, ns) in collected:
+            markdown.append(
+                self.plainTuple(
+                    ns,
+                    seqNumber,
+                    linked=linked,
+                    withNodes=withNodes,
+                    asString=True,
+                )
+            )
+        markdown = '\n'.join(markdown)
+        if asString:
+            return markdown
+        _dm(markdown)
+        if rest:
+            _dm(
+                f'**{rest} more results skipped**'
+                f' because we show a maximum of'
+                f' {LIMIT_TABLE} results at a time'
+            )
+
     def show(
         self,
         results,
-        condensed=False,
+        condensed=True,
         start=None,
         end=None,
-        withNodes=True,
-        suppress=set(),
+        withNodes=False,
+        suppress=set()
     ):
         if condensed:
-            results = self._condense(results)
+            (passages, verses) = self._condense(results)
+            results = passages if len(verses) == 0 else verses
         if start is None:
-            start = 0
+            start = 1
         i = -1
         if not hasattr(results, 'len'):
-            if end is None or end > LIMIT:
-                end = LIMIT
+            if end is None or end > LIMIT_SHOW:
+                end = LIMIT_SHOW
             for result in results:
                 i += 1
-                if i < start:
+                if i < start - 1:
                     continue
-                if i > end:
+                if i >= end:
                     break
                 self.prettyTuple(
                     result,
-                    i,
-                    item='Passage' if condensed else 'Result',
+                    i + 1,
+                    item='Verse' if condensed else 'Result',
                     withNodes=withNodes,
-                    suppress=suppress,
+                    suppress=suppress
                 )
         else:
             if end is None:
                 end = len(results)
             rest = 0
-            if end - start > LIMIT:
-                rest = end - start - LIMIT
-                end = start + LIMIT
-            for i in range(start, end):
+            if end - (start - 1) > LIMIT_SHOW:
+                rest = end - (start - 1) - LIMIT_SHOW
+                end = start - 1 + LIMIT_SHOW
+            for i in range(start - 1, end):
                 self.prettyTuple(
                     results[i],
-                    i,
+                    i + 1,
                     item='Passage' if condensed else 'Result',
                     withNodes=withNodes,
-                    suppress=suppress,
+                    suppress=suppress
                 )
             if rest:
                 _dm(
                     f'**{rest} more results skipped**'
-                    f' because we show a maximum of {LIMIT} results at a time'
+                    f' because we show a maximum of'
+                    f' {LIMIT_SHOW} results at a time'
                 )
 
     def _condense(self, results):
@@ -444,19 +590,23 @@ This notebook online:
         F = api.F
         L = api.L
         sortNodes = api.sortNodes
-        passages = {}
+        verses = {}
+        passages = set()
         for ns in results:
             for n in ns:
                 nType = F.otype.v(n)
                 if nType in SECTION:
-                    passages.setdefault(n, set())
-                    if nType != 'verse':
-                        passages[n].add(n)
+                    if nType == 'verse':
+                        verses.setdefault(n, set())
+                    passages.add(n)
                 else:
                     fw = n if nType == 'word' else L.d(n, otype='word')[0]
                     v = L.u(fw, otype='verse')[0]
-                    passages.setdefault(v, set()).add(n)
-        return tuple((p,) + tuple(passages[p]) for p in sortNodes(passages))
+                    verses.setdefault(v, set()).add(n)
+        return (
+            tuple(sortNodes(passages)),
+            tuple((p,) + tuple(verses[p]) for p in sortNodes(verses)),
+        )
 
     def _pretty(
         self,
@@ -493,16 +643,16 @@ This notebook online:
         if lastSlot and (myEnd > lastSlot):
             boundaryClass += ' L'
         if nType == 'book':
-            html.append(self.shbLink(n))
+            html.append(self.shbLink(n, asHtml=True))
             return
         elif nType == 'chapter':
-            html.append(self.shbLink(n))
+            html.append(self.shbLink(n, asHtml=True))
             return
         elif nType == 'half_verse':
-            html.append(self.shbLink(n))
+            html.append(self.shbLink(n, asHtml=True))
             return
         elif nType == 'verse':
-            label = self.shbLink(n)
+            label = self.shbLink(n, asHtml=True)
             (firstSlot, lastSlot) = self._getBoundary(n)
             children = sortNodes(
                 set(L.d(n, otype='sentence_atom')) | {
@@ -535,9 +685,20 @@ This notebook online:
             )
         elif nType == 'word':
             html.append(f'<div class="h">{T.text([n])}</div>')
-            if 'sp' not in suppress:
+            if 'lex' not in suppress:
+                lx = L.u(n, otype='lex')[0]
+                lexLink = (
+                    self.shbLink(lx, text=F.voc_lex_utf8.v(lx), asHtml=True)
+                )
                 html.append(
-                    f'<div class="sp">{self.shbLink(n, text=F.sp.v(n))}</div>'
+                    f'<div class="sp">{lexLink}</div>'
+                )
+            if 'sp' not in suppress:
+                spLink = (
+                    self.shbLink(n, text=F.sp.v(n), asHtml=True)
+                )
+                html.append(
+                    f'<div class="sp">{spLink}</div>'
                 )
             if 'gloss' not in suppress:
                 html.append(
@@ -553,7 +714,8 @@ This notebook online:
             html.append(f'<div class="h">{F.voc_lex_utf8.v(n)}</div>')
             if 'voc_lex' not in suppress:
                 llink = self.shbLink(
-                    n, text=F.voc_lex.v(n).replace("<", "&lt;")
+                    n, text=F.voc_lex.v(n).replace("<", "&lt;"),
+                    asHtml=True
                 )
                 html.append(f'<div class="vl">{llink}</div>')
             if 'gloss' not in suppress:
@@ -565,7 +727,7 @@ This notebook online:
             nodePart = (
                 f'<span class="nd">{superNode}</span>' if withNodes else ''
             )
-            typePart = self.shbLink(superNode, text=superType)
+            typePart = self.shbLink(superNode, text=superType, asHtml=True)
             featurePart = ''
             if superType == 'clause':
                 if 'rela' not in suppress:

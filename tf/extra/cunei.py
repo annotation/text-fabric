@@ -756,7 +756,7 @@ This notebook online:
             linkText = identifier
         return _wrapLink(linkText, objectType, 'main', identifier)
 
-    def tabletLink(self, t, text=None):
+    def tabletLink(self, t, text=None, asHtml=False):
         api = self.api
         L = api.L
         F = api.F
@@ -770,7 +770,10 @@ This notebook online:
         linkText = pNum if text is None else text
         url = URL_FORMAT['tablet']['main'].format(pNum)
 
-        return _outLink(linkText, url, title=title)
+        result = _outLink(linkText, url, title=title)
+        if asHtml:
+            return result
+        display(HTML(result))
 
     def plain(
         self,
@@ -787,7 +790,7 @@ This notebook online:
 
         nType = F.otype.v(n)
         markdown = ''
-        nodeRep = f' ({n}) ' if withNodes else ''
+        nodeRep = f' *{n}* ' if withNodes else ''
 
         if nType in ATF_TYPES:
             isSign = nType == 'sign'
@@ -797,7 +800,7 @@ This notebook online:
                 if isQuad else self.atfFromCluster(n)
             )
             if linked:
-                rep = self.tabletLink(n, text=rep)
+                rep = self.tabletLink(n, text=rep, asHtml=True)
             theLineart = ''
             if isSign or isQuad:
                 isOuter = (
@@ -821,12 +824,12 @@ This notebook online:
         elif nType == 'comment':
             rep = F.type.v(n)
             if linked:
-                rep = self.tabletLink(n, text=rep)
+                rep = self.tabletLink(n, text=rep, asHtml=True)
             markdown = f'{rep}{nodeRep}: {F.text.v(n)}'
         elif nType == 'line' or nType == 'case':
             rep = f'{nType} {F.number.v(n)}'
             if linked:
-                rep = self.tabletLink(n, text=rep)
+                rep = self.tabletLink(n, text=rep, asHtml=True)
             theLine = ''
             if lineNumbers:
                 if F.terminal.v(n):
@@ -835,7 +838,7 @@ This notebook online:
         elif nType == 'column':
             rep = f'{nType} {F.number.v(n)}'
             if linked:
-                rep = self.tabletLink(n, text=rep)
+                rep = self.tabletLink(n, text=rep, asHtml=True)
             theLine = ''
             if lineNumbers:
                 theLine = f' @{F.srcLnNum.v(n)} '
@@ -843,7 +846,7 @@ This notebook online:
         elif nType == 'face':
             rep = f'{nType} {F.type.v(n)}'
             if linked:
-                rep = self.tabletLink(n, text=rep)
+                rep = self.tabletLink(n, text=rep, asHtml=True)
             theLine = ''
             if lineNumbers:
                 theLine = f' @{F.srcLnNum.v(n)} '
@@ -851,7 +854,7 @@ This notebook online:
         elif nType == 'tablet':
             rep = f'{nType} {F.catalogId.v(n)}'
             if linked:
-                rep = self.tabletLink(n, text=rep)
+                rep = self.tabletLink(n, text=rep, asHtml=True)
             theLine = ''
             if lineNumbers:
                 theLine = f' @{F.srcLnNum.v(n)} '
@@ -865,7 +868,7 @@ This notebook online:
         self,
         ns,
         seqNumber,
-        linked=0,
+        linked=1,
         lineart=True,
         withNodes=False,
         lineNumbers=False,
@@ -876,7 +879,7 @@ This notebook online:
             markdown.append(
                 self.plain(
                     n,
-                    linked=i == linked,
+                    linked=i == linked - 1,
                     lineart=lineart,
                     withNodes=withNodes,
                     lineNumbers=lineNumbers,
@@ -958,7 +961,7 @@ This notebook online:
         results,
         start=None,
         end=None,
-        linked=0,
+        linked=1,
         lineart=True,
         withNodes=False,
         lineNumbers=False,
@@ -969,7 +972,7 @@ This notebook online:
 
         collected = []
         if start is None:
-            start = 0
+            start = 1
         i = -1
         rest = 0
         if not hasattr(results, 'len'):
@@ -977,7 +980,7 @@ This notebook online:
                 end = LIMIT_TABLE
             for result in results:
                 i += 1
-                if i < start:
+                if i < start - 1:
                     continue
                 if i >= end:
                     break
@@ -986,21 +989,17 @@ This notebook online:
             if end is None:
                 end = len(results)
             rest = 0
-            if end - start > LIMIT_TABLE:
-                rest = end - start - LIMIT_TABLE
-                end = start + LIMIT_TABLE
-            for i in range(start, end):
+            if end - (start - 1) > LIMIT_TABLE:
+                rest = end - (start - 1) - LIMIT_TABLE
+                end = start - 1 + LIMIT_TABLE
+            for i in range(start - 1, end):
                 collected.append((i + 1, results[i]))
 
         if len(collected) == 0:
             return
         (firstSeq, firstResult) = collected[0]
         nColumns = len(firstResult)
-        markdown = [
-            'n | '
-            +
-            (' | '.join(F.otype.v(n) for n in firstResult))
-        ]
+        markdown = ['n | ' + (' | '.join(F.otype.v(n) for n in firstResult))]
         markdown.append(' | '.join('---' for n in range(nColumns + 1)))
         for (seqNumber, ns) in collected:
             markdown.append(
@@ -1039,14 +1038,14 @@ This notebook online:
         if condensed:
             results = self._condense(results)
         if start is None:
-            start = 0
+            start = 1
         i = -1
         if not hasattr(results, 'len'):
             if end is None or end > LIMIT_SHOW:
                 end = LIMIT_SHOW
             for result in results:
                 i += 1
-                if i < start:
+                if i < start - 1:
                     continue
                 if i >= end:
                     break
@@ -1063,10 +1062,10 @@ This notebook online:
             if end is None:
                 end = len(results)
             rest = 0
-            if end - start > LIMIT_SHOW:
-                rest = end - start - LIMIT_SHOW
-                end = start + LIMIT_SHOW
-            for i in range(start, end):
+            if end - (start - 1) > LIMIT_SHOW:
+                rest = end - (start - 1) - LIMIT_SHOW
+                end = start - 1 + LIMIT_SHOW
+            for i in range(start - 1, end):
                 self.prettyTuple(
                     results[i],
                     i + 1,
@@ -1193,7 +1192,9 @@ This notebook online:
                 return
 
         if outer:
-            typePart = self.tabletLink(n, text=f'{nType} {heading}')
+            typePart = self.tabletLink(
+                n, text=f'{nType} {heading}', asHtml=True
+            )
         else:
             typePart = heading
 
