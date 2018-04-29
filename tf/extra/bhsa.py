@@ -462,7 +462,11 @@ This notebook online:
     def search(self, query):
         api = self.api
         S = api.S
-        return list(S.search(query))
+        results = list(S.search(query))
+        nResults = len(results)
+        plural = '' if nResults == 1 else 's'
+        print(f'{nResults} result{plural}')
+        return results
 
     def table(
         self,

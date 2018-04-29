@@ -803,21 +803,17 @@ This notebook online:
                 rep = self.tabletLink(n, text=rep, asHtml=True)
             theLineart = ''
             if isSign or isQuad:
-                isOuter = (
-                    all(F.otype.v(parent) != 'quad' for parent in E.sub.t(n))
+                width = '2em' if isSign else '4em'
+                height = '4em' if isSign else '6em'
+                theLineart = self._getImages(
+                    n,
+                    kind='lineart',
+                    width=width,
+                    height=height,
+                    plainHtml=True,
+                    withCaption=False,
+                    warning=False
                 )
-                if isOuter:
-                    width = '2em' if isSign else '4em'
-                    height = '4em' if isSign else '6em'
-                    theLineart = self._getImages(
-                        n,
-                        kind='lineart',
-                        width=width,
-                        height=height,
-                        plainHtml=True,
-                        withCaption=False,
-                        warning=False
-                    )
             if theLineart:
                 theLineart = f' {theLineart} '
             markdown = f'{rep}{nodeRep}{theLineart}'
@@ -954,7 +950,11 @@ This notebook online:
     def search(self, query):
         api = self.api
         S = api.S
-        return list(S.search(query))
+        results = list(S.search(query))
+        nResults = len(results)
+        plural = '' if nResults == 1 else 's'
+        print(f'{nResults} result{plural}')
+        return results
 
     def table(
         self,
@@ -1228,7 +1228,7 @@ This notebook online:
             isQuad = nType == 'quad'
             isSign = nType == 'sign'
             if isQuad or isSign:
-                isOuter = (
+                isOuter = outer or (
                     all(F.otype.v(parent) != 'quad' for parent in E.sub.t(n))
                 )
                 if isOuter:
