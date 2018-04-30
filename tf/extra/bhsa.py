@@ -118,26 +118,23 @@ CSS = '''
 .satom.R,.catom.R,.patom.R {
     border-right-style: none
 }
-.h {
+.h,.h :visited,.h :link {
     font-family: "Ezra SIL", "SBL Hebrew", sans-serif;
     font-size: large;
+    color: #000044;
     direction: rtl;
-}
-.lx {
-    font-family: "Ezra SIL", "SBL Hebrew", sans-serif;
-    font-size: medium;
-    direction: rtl;
-    color: #aa0000;
+    text-decoration: none;
 }
 .rela,.function,.typ {
     font-family: monospace;
     font-size: small;
     color: #0000bb;
 }
-.sp {
+.sp,.sp :visited,.sp :link {
     font-family: monospace;
     font-size: medium;
     color: #0000bb;
+    text-decoration: none;
 }
 .vl {
     font-family: monospace;
@@ -283,7 +280,7 @@ This notebook online:
             )
         self._loadCSS()
 
-    def shbLink(self, n, text=None, asHtml=False):
+    def shbLink(self, n, text=None, asString=False):
         api = self.api
         L = api.L
         T = api.T
@@ -308,7 +305,7 @@ This notebook online:
             if text is None:
                 text = F.voc_lex_utf8.v(n)
             result = _outLink(text, href, title=title)
-            if asHtml:
+            if asString:
                 return result
             display(HTML(result))
             return
@@ -332,7 +329,7 @@ This notebook online:
         else:
             title = passageText
         result = _outLink(text, href, title=title)
-        if asHtml:
+        if asString:
             return result
         display(HTML(result))
 
@@ -340,7 +337,7 @@ This notebook online:
         self,
         n,
         linked=True,
-        withNodes=True,
+        withNodes=False,
         asString=False,
     ):
         api = self.api
@@ -355,7 +352,7 @@ This notebook online:
         if nType == 'word':
             rep = T.text([n])
             if linked:
-                rep = self.shbLink(n, text=rep, asHtml=True)
+                rep = self.shbLink(n, text=rep, asString=True)
         elif nType in SECTION:
             fmt = (
                 '{}' if nType == 'book'
@@ -366,15 +363,15 @@ This notebook online:
             if nType == 'half_verse':
                 rep += F.label.v(n)
             if linked:
-                rep = self.shbLink(n, text=rep, asHtml=True)
+                rep = self.shbLink(n, text=rep, asString=True)
         elif nType == 'lex':
             rep = F.voc_lex_utf8.v(n)
             if linked:
-                rep = self.shbLink(n, text=rep, asHtml=True)
+                rep = self.shbLink(n, text=rep, asString=True)
         else:
             rep = T.text(L.d(n, otype='word'))
             if linked:
-                rep = self.shbLink(n, text=rep, asHtml=True)
+                rep = self.shbLink(n, text=rep, asString=True)
 
         markdown = f'{rep}{nodeRep}'
 
@@ -404,7 +401,7 @@ This notebook online:
             return ' | '.join(markdown)
         _dm(' , '.join(markdown))
 
-    def pretty(self, n, withNodes=True, suppress=set(), highlights=set()):
+    def pretty(self, n, withNodes=False, suppress=set(), highlights=set()):
         html = []
         self._pretty(
             n,
@@ -423,7 +420,7 @@ This notebook online:
         ns,
         seqNumber,
         item='Result',
-        withNodes=True,
+        withNodes=False,
         suppress=set(),
     ):
         api = self.api
@@ -653,16 +650,16 @@ This notebook online:
         if lastSlot and (myEnd > lastSlot):
             boundaryClass += ' L'
         if nType == 'book':
-            html.append(self.shbLink(n, asHtml=True))
+            html.append(self.shbLink(n, asString=True))
             return
         elif nType == 'chapter':
-            html.append(self.shbLink(n, asHtml=True))
+            html.append(self.shbLink(n, asString=True))
             return
         elif nType == 'half_verse':
-            html.append(self.shbLink(n, asHtml=True))
+            html.append(self.shbLink(n, asString=True))
             return
         elif nType == 'verse':
-            label = self.shbLink(n, asHtml=True)
+            label = self.shbLink(n, asString=True)
             (firstSlot, lastSlot) = self._getBoundary(n)
             children = sortNodes(
                 set(L.d(n, otype='sentence_atom')) | {
@@ -694,18 +691,14 @@ This notebook online:
 '''
             )
         elif nType == 'word':
-            html.append(f'<div class="h">{T.text([n])}</div>')
-            if 'lex' not in suppress:
-                lx = L.u(n, otype='lex')[0]
-                lexLink = (
-                    self.shbLink(lx, text=F.voc_lex_utf8.v(lx), asHtml=True)
-                )
-                html.append(
-                    f'<div class="lx">{lexLink}</div>'
-                )
+            lx = L.u(n, otype='lex')[0]
+            lexLink = (
+                self.shbLink(lx, text=T.text([n]), asString=True)
+            )
+            html.append(f'<div class="h">{lexLink}</div>')
             if 'sp' not in suppress:
                 spLink = (
-                    self.shbLink(n, text=F.sp.v(n), asHtml=True)
+                    self.shbLink(n, text=F.sp.v(n), asString=True)
                 )
                 html.append(
                     f'<div class="sp">{spLink}</div>'
@@ -725,7 +718,7 @@ This notebook online:
             if 'voc_lex' not in suppress:
                 llink = self.shbLink(
                     n, text=F.voc_lex.v(n).replace("<", "&lt;"),
-                    asHtml=True
+                    asString=True
                 )
                 html.append(f'<div class="vl">{llink}</div>')
             if 'gloss' not in suppress:
@@ -737,7 +730,7 @@ This notebook online:
             nodePart = (
                 f'<span class="nd">{superNode}</span>' if withNodes else ''
             )
-            typePart = self.shbLink(superNode, text=superType, asHtml=True)
+            typePart = self.shbLink(superNode, text=superType, asString=True)
             featurePart = ''
             if superType == 'clause':
                 if 'rela' not in suppress:
