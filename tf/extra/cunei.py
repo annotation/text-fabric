@@ -786,7 +786,6 @@ This notebook online:
     ):
         api = self.api
         F = api.F
-        E = api.E
 
         nType = F.otype.v(n)
         markdown = ''
@@ -1434,7 +1433,9 @@ This notebook online:
                         if asLink:
                             thisImage = identifier
                         else:
-                            theImage = self._useImage(image, kind, n)
+                            theImage = self._useImage(
+                                image, kind, key or '', n
+                            )
                             thisImage = (
                                 f'<img src="{theImage}"'
                                 f' style="display: inline;{cssStr}"'
@@ -1469,13 +1470,31 @@ This notebook online:
 
         return html if plainHtml else HTML(html)
 
-    def _useImage(self, image, kind, node):
+    def _useImage(self, image, kind, key, node):
+        api = self.api
+        F = api.F
         (imageDir, imageName) = os.path.split(image)
         (base, ext) = os.path.splitext(imageName)
         localDir = f'{self.cwd}/{LOCAL_DIR}'
         if not os.path.exists(localDir):
             os.makedirs(localDir, exist_ok=True)
-        localImageName = f'node{node}{kind}{ext}'
+        if type(node) is int:
+            nType = F.otype.v(node)
+            if nType == 'tablet':
+                nodeRep = F.catalogId.v(node)
+            elif nType in OUTER_QUAD_TYPES:
+                nodeRep = self.atfFromOuterQuad(node)
+            else:
+                nodeRep = str(node)
+        else:
+            nodeRep = node
+        nodeRep = (
+            nodeRep.lower().replace('|', 'q').replace('~', '-')
+            .replace('@', '(a)').replace('&', '(e)')
+            .replace('+', '(p)').replace('.', '(d)')
+        )
+        keyRep = '' if key == '' else f'-{key}'
+        localImageName = f'{kind}-{nodeRep}{keyRep}{ext}'
         localImagePath = f'{localDir}/{localImageName}'
         if (
             not os.path.exists(localImagePath) or
