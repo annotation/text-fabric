@@ -750,13 +750,17 @@ This notebook online:
     def imagery(self, objectType, kind):
         return set(self._imagery.get(objectType, {}).get(kind, {}))
 
-    def cdli(self, n, linkText=None):
+    def cdli(self, n, linkText=None, asString=False):
         (nType, objectType, identifier) = self._imageClass(n)
         if linkText is None:
             linkText = identifier
-        return _wrapLink(linkText, objectType, 'main', identifier)
+        result = _wrapLink(linkText, objectType, 'main', identifier)
+        if asString:
+            return result
+        else:
+            display(HTML(result))
 
-    def tabletLink(self, t, text=None, asHtml=False):
+    def tabletLink(self, t, text=None, asString=False):
         api = self.api
         L = api.L
         F = api.F
@@ -771,7 +775,7 @@ This notebook online:
         url = URL_FORMAT['tablet']['main'].format(pNum)
 
         result = _outLink(linkText, url, title=title)
-        if asHtml:
+        if asString:
             return result
         display(HTML(result))
 
@@ -799,32 +803,34 @@ This notebook online:
                 if isQuad else self.atfFromCluster(n)
             )
             if linked:
-                rep = self.tabletLink(n, text=rep, asHtml=True)
+                rep = self.tabletLink(n, text=rep, asString=True)
             theLineart = ''
-            if isSign or isQuad:
-                width = '2em' if isSign else '4em'
-                height = '4em' if isSign else '6em'
-                theLineart = self._getImages(
-                    n,
-                    kind='lineart',
-                    width=width,
-                    height=height,
-                    plainHtml=True,
-                    withCaption=False,
-                    warning=False
-                )
-            if theLineart:
-                theLineart = f' {theLineart} '
-            markdown = f'{rep}{nodeRep}{theLineart}'
+            if lineart:
+                if isSign or isQuad:
+                    width = '2em' if isSign else '4em'
+                    height = '4em' if isSign else '6em'
+                    theLineart = self._getImages(
+                        n,
+                        kind='lineart',
+                        width=width,
+                        height=height,
+                        asString=True,
+                        withCaption=False,
+                        warning=False
+                    )
+                    theLineart = f' {theLineart}'
+            markdown = (
+                f'{rep}{nodeRep}{theLineart}'
+            ) if theLineart else f'{rep}{nodeRep}'
         elif nType == 'comment':
             rep = F.type.v(n)
             if linked:
-                rep = self.tabletLink(n, text=rep, asHtml=True)
+                rep = self.tabletLink(n, text=rep, asString=True)
             markdown = f'{rep}{nodeRep}: {F.text.v(n)}'
         elif nType == 'line' or nType == 'case':
             rep = f'{nType} {F.number.v(n)}'
             if linked:
-                rep = self.tabletLink(n, text=rep, asHtml=True)
+                rep = self.tabletLink(n, text=rep, asString=True)
             theLine = ''
             if lineNumbers:
                 if F.terminal.v(n):
@@ -833,7 +839,7 @@ This notebook online:
         elif nType == 'column':
             rep = f'{nType} {F.number.v(n)}'
             if linked:
-                rep = self.tabletLink(n, text=rep, asHtml=True)
+                rep = self.tabletLink(n, text=rep, asString=True)
             theLine = ''
             if lineNumbers:
                 theLine = f' @{F.srcLnNum.v(n)} '
@@ -841,7 +847,7 @@ This notebook online:
         elif nType == 'face':
             rep = f'{nType} {F.type.v(n)}'
             if linked:
-                rep = self.tabletLink(n, text=rep, asHtml=True)
+                rep = self.tabletLink(n, text=rep, asString=True)
             theLine = ''
             if lineNumbers:
                 theLine = f' @{F.srcLnNum.v(n)} '
@@ -849,7 +855,7 @@ This notebook online:
         elif nType == 'tablet':
             rep = f'{nType} {F.catalogId.v(n)}'
             if linked:
-                rep = self.tabletLink(n, text=rep, asHtml=True)
+                rep = self.tabletLink(n, text=rep, asString=True)
             theLine = ''
             if lineNumbers:
                 theLine = f' @{F.srcLnNum.v(n)} '
@@ -857,7 +863,7 @@ This notebook online:
 
         if asString:
             return markdown
-        dm((markdown))
+        dm(markdown)
 
     def plainTuple(
         self,
@@ -881,9 +887,16 @@ This notebook online:
                     asString=True,
                 )
             )
+        markdown = '|'.join(markdown)
         if asString:
-            return ' | '.join(markdown)
-        dm(' , '.join(markdown))
+            return markdown
+        api = self.api
+        F = api.F
+        head = ['n | ' + (' | '.join(F.otype.v(n) for n in ns))]
+        head.append(' | '.join('---' for n in range(len(ns) + 1)))
+        head.append(markdown)
+
+        dm('\n'.join(head))
 
     def pretty(
         self,
@@ -1192,7 +1205,7 @@ This notebook online:
 
         if outer:
             typePart = self.tabletLink(
-                n, text=f'{nType} {heading}', asHtml=True
+                n, text=f'{nType} {heading}', asString=True
             )
         else:
             typePart = heading
@@ -1238,7 +1251,7 @@ This notebook online:
                         kind='lineart',
                         width=width,
                         height=height,
-                        plainHtml=True,
+                        asString=True,
                         withCaption=False,
                         warning=False
                     )
@@ -1372,7 +1385,7 @@ This notebook online:
         asLink=False,
         withCaption=None,
         warning=True,
-        plainHtml=False,
+        asString=False,
         **options
     ):
         if type(ns) is int or type(ns) is str:
@@ -1459,16 +1472,17 @@ This notebook online:
             result = [image for image in result if image]
         if not result:
             return ''
-        resultStr = f'</div>\n<div style="{ITEM_STYLE}">'.join(result)
-        html = f'''
-        <div style="{FLEX_STYLE}">
-            <div style="{ITEM_STYLE}">
-                {resultStr}
-            </div>
-        </div>
-        '''.replace('\n', '')
-
-        return html if plainHtml else HTML(html)
+        if asString:
+            return ''.join(result)
+        resultStr = f'</div><div style="{ITEM_STYLE}">'.join(result)
+        html = (
+            f'<div style="{FLEX_STYLE}">'
+            f'<div style="{ITEM_STYLE}">'
+            f'{resultStr}</div></div>'
+        ).replace('\n', '')
+        display(HTML(html))
+        if not warning:
+            return True
 
     def _useImage(self, image, kind, key, node):
         api = self.api
