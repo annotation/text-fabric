@@ -123,6 +123,12 @@ CSS = '''
     font-size: large;
     direction: rtl;
 }
+.lx {
+    font-family: "Ezra SIL", "SBL Hebrew", sans-serif;
+    font-size: medium;
+    direction: rtl;
+    color: #aa0000;
+}
 .rela,.function,.typ {
     font-family: monospace;
     font-size: small;
@@ -695,7 +701,7 @@ This notebook online:
                     self.shbLink(lx, text=F.voc_lex_utf8.v(lx), asHtml=True)
                 )
                 html.append(
-                    f'<div class="sp">{lexLink}</div>'
+                    f'<div class="lx">{lexLink}</div>'
                 )
             if 'sp' not in suppress:
                 spLink = (
