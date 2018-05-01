@@ -171,8 +171,18 @@ CSS = '''
 .children.tablet,.children.face {
     flex-flow: row nowrap;
 }
-.children.column,.children.line,.children.case {
+.children.column {
     align-items: stretch;
+    flex-flow: column nowrap;
+}
+.children.line,.children.case {
+    align-items: stretch;
+    flex-flow: row nowrap;
+}
+.children.caseh,.children.trminalh {
+    flex-flow: row nowrap;
+}
+.children.casev,.children.trminalv {
     flex-flow: column nowrap;
 }
 .children.trminal {
@@ -188,10 +198,7 @@ CSS = '''
     flex-flow: column nowrap;
 }
 .contnr {
-}
-.contnr.line,.contnr.case,.contnr.trminal {
-}
-.contnr.quad {
+    width: fit-content;
 }
 .contnr.tablet,.contnr.face,.contnr.column,
 .contnr.line,.contnr.case,.contnr.trminal,
@@ -212,9 +219,6 @@ CSS = '''
     font-size: small;
 }
 .contnr.tablet,.contnr.face,.contnr.column {
-    width: fit-content;
-}
-.contnr.tablet,.contnr.face,.contnr.column {
     border-color: #bb8800;
 }
 .contnr.line,.contnr.case,.contnr.trminal {
@@ -222,15 +226,12 @@ CSS = '''
 }
 .contnr.cluster {
     flex-flow: row wrap;
-    width: fit-content;
     border: 0;
 }
 .contnr.sign,.contnr.quad {
-    width: fit-content;
     border-color: #bbbbbb;
 }
 .contnr.comment {
-    width: fit-content;
     background-color: #ffddaa;
     border: 0.2em solid #eecc99;
     border-radius: 0.3em;
@@ -698,7 +699,7 @@ This notebook online:
         if lev == 0:
             results = F.otype.s('line')
         else:
-            parents = self.casesByLevel(lev - 1, terminal=False)
+            parents = self._casesByLevelM(lev - 1, terminal=False)
             results = reduce(
                 operator.add,
                 [
@@ -713,7 +714,7 @@ This notebook online:
         )
 
     # this is a fast implementation!
-    def casesByLevel(self, lev, terminal=True):
+    def _casesByLevelS(self, lev, terminal=True):
         api = self.api
         S = api.S
         sortNodes = api.sortNodes
@@ -726,6 +727,17 @@ This notebook online:
             query += f'w{i} -sub> w{i+1}\n'
         results = list(S.search(query))
         return sortNodes(tuple(r[-1] for r in results))
+
+    def casesByLevel(self, lev, terminal=True):
+        api = self.api
+        F = api.F
+        return ((
+            tuple(c for c in F.otype.s('line') if F.terminal.v(c))
+            if terminal else F.otype.s('line')
+        ) if lev == 0 else (
+            tuple(c for c in F.depth.s(lev) if F.terminal.v(c))
+            if terminal else F.depth.s(lev)
+        ))
 
     def lineart(self, ns, key=None, asLink=False, withCaption=None, **options):
         return self._getImages(
@@ -1257,11 +1269,17 @@ This notebook online:
                     )
                     if theLineart:
                         html.append(f'<div>{theLineart}</div>')
+        caseDir = ''
         if not isCluster:
             if children:
-                html.append(f'''
-    <div class="children {className}">
-''')
+                if nType == 'case':
+                    depth = F.depth.v(n)
+                    caseDir = 'v' if depth & 1 else 'h'
+                html.append(
+                    f'''
+    <div class="children {className}{caseDir}">
+'''
+                )
 
         for ch in children:
             if ch not in seen:
