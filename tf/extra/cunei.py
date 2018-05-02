@@ -416,7 +416,7 @@ class Cunei(object):
         )
         cuneiLink = _outLink('Cunei API', extraLink, 'cunei api documentation')
         tfLink = _outLink(
-            'Text-Fabric API',
+            f'Text-Fabric API {api.TF.version}',
             'https://github.com/Dans-labs/text-fabric/wiki/api',
             'text-fabric-api'
         )

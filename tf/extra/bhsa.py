@@ -254,7 +254,7 @@ class Bhsa(object):
         )
         bhsaLink = _outLink('BHSA API', extraLink, 'BHSA API documentation')
         tfLink = _outLink(
-            'Text-Fabric API',
+            f'Text-Fabric API {api.TF.version}',
             'https://github.com/Dans-labs/text-fabric/wiki/api',
             'text-fabric-api'
         )

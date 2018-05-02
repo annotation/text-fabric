@@ -21,7 +21,7 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '3.4.11'
+VERSION = '3.4.12'
 APIREF = 'https://github.com/Dans-labs/text-fabric/wiki/Api'
 TUTORIAL = (
     'https://github.com/Dans-labs/text-fabric'
@@ -61,15 +61,16 @@ class Fabric(object):
     def __init__(self, locations=None, modules=None, silent=False):
         self.silent = silent
         self.tm = Timestamp()
+        self.banner = f'This is {NAME} {VERSION}'
+        self.version = VERSION
         if not silent:
             self.tm.info(
-                '''This is {} {}
+                '''{}
 Api reference : {}
 Tutorial      : {}
 Example data  : {}
 '''.format(
-                    NAME,
-                    VERSION,
+                    self.banner,
                     APIREF,
                     TUTORIAL,
                     DATA,
