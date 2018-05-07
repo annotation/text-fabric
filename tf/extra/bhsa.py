@@ -315,7 +315,10 @@ This notebook online:
         book = F.book.v(bookNode)
         passageText = (
             bookE if nType == 'book' else '{} {}'.format(bookE, chapter) if
-            nType == 'chapter' else '{} {}:{}'.format(bookE, chapter, verse)
+            nType == 'chapter' else
+            '{} {}:{}{}'.format(bookE, chapter, verse, F.label.v(n))
+            if nType == 'half_verse' else
+            '{} {}:{}'.format(bookE, chapter, verse)
         )
         href = SHEBANQ.format(
             version=version,
@@ -655,10 +658,7 @@ This notebook online:
         elif nType == 'chapter':
             html.append(self.shbLink(n, asString=True))
             return
-        elif nType == 'half_verse':
-            html.append(self.shbLink(n, asString=True))
-            return
-        elif nType == 'verse':
+        elif nType in {'verse', 'half_verse'}:
             label = self.shbLink(n, asString=True)
             (firstSlot, lastSlot) = self._getBoundary(n)
             children = sortNodes(
@@ -681,7 +681,7 @@ This notebook online:
             children = ()
             lx = L.u(n, otype='lex')[0]
         html.append(f'''<div class="{className} {boundaryClass} {hl}">''')
-        if nType == 'verse':
+        if nType in {'verse', 'half_verse'}:
             nodePart = f'<div class="nd">{n}</div>' if withNodes else ''
             html.append(
                 f'''
