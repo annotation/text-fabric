@@ -897,7 +897,7 @@ This notebook online:
                     withNodes=withNodes,
                     lineNumbers=lineNumbers,
                     asString=True,
-                )
+                ).replace('|', '&#124;')
             )
         markdown = '|'.join(markdown)
         if asString:

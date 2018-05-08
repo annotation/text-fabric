@@ -1,0 +1,1595 @@
+??? note "Tutorial"
+    See the
+    [tutorial](/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb) for examples
+    of how to use the Text-Fabric API.
+
+## Loading
+
+??? note "`TF=Fabric()`"
+    ```python
+    from tf.fabric import Fabric
+    TF = Fabric(locations=directories, modules=subdirectories, silent=False)
+    ```
+
+    ??? info
+        Here `directories` and `subdirectories` are strings with directory names
+        separated by newlines, or iterables of directories.
+
+        The directories specified in `locations` will be searched for `modules`, which
+        are paths that will be appended to the paths in `locations`.
+
+        All `.tf` files (non-recursively) in any `module` will be added to the feature
+        set to be loaded in this session. The order in `modules` is important, because
+        if a feature occurs in multiple modules, the last one will be chosen. In this
+        way you can easily override certain features in one module by features in an
+        other module of your choice.
+
+        If modules contain features with a name starting with `otext@`, then the format
+        definitions in these features will be added to the format definitions in the
+        regular `otext` feature (which is a WARP feature). In this way, modules that
+        define new features for text representation, also can add new formats to the
+        Text-API.
+
+        The `locations` list defaults to
+
+            ~/Downloads/text-fabric-data
+            ~/text-fabric-data
+            ~/github/text-fabric-data
+
+        in that order. So if you have stored your main Text-Fabric dataset in
+        `text-fabric-data` in your `~/github` or `~` directory, you do not have to pass
+        a location to Fabric.
+
+        The `modules` list defaults to `['']`. So if you leave it out, Text-Fabric will
+        just search the paths specified in `locations`.
+
+        If `silent=True` is passed, banners and normal progress messages are suppressed.
+
+??? note "`TF.explore()`"
+    ```python
+    features = TF.explore(silent=False, show=True)
+    features
+    ```
+
+    or
+
+    ```python
+    TF.explore(silent=False, show=False)
+    TF.featureSets
+    ```
+
+    ??? info
+        This will give you a dictionary of all available features by kind. The kinds
+        are: *nodes*, *edges*, *configs*, *computeds*.
+
+        With `silent=False` a message containing the total numbers of features is issued.
+
+        The resulting dictionary is delivered in `TF.featureSets`, but if you say
+        `show=True`, the dictionary is return as function result.
+
+
+??? note "`api=TF.load()`"
+    ```python
+    api = TF.load(features, add=False, silent=False)
+    ```
+
+    ??? info
+        Here `features` is a string containing space separated feature names, or an
+        iterable of feature names. The feature names are just the names of `.tf` files
+        without directory information and without extension.
+
+        The features will be loaded rather silently, most messages will be suppressed.
+        Time consuming operations will always be announced, so that you know what
+        Text-Fabric is doing. If `silent=True` is passed, all informational messages
+        will be suppressed. This is handy I you want to load data as part of other
+        methods, on-the-fly.
+
+        If later on you want load more features, you can either:
+
+        *   add the features to the original `load()` statement and just run it again
+        *   make a new statement: `TF.load(newfeatures, add=True)`. The new features will
+            be added to the same api, so you do not have to to call
+            `api.makeAvailableIn(globals())` again after this!
+
+
+??? note "`api.makeAvailableIn(globals())`"
+    ```python
+    api.makeAvailableIn(globals())
+    ```
+
+    ??? info
+        After having loaded the features by `api = TF.load(...)`, the `api` harbours
+        your Text-Fabric API. You can access node feature `mydata` by `api.F.mydata.v(node)`, edge
+        feature `mylink` by `api.E.mylink.f(node)`, and so on.
+
+        If you are working with a single data source in your program, it is a bit
+        tedious to write the initial `api.` all the time. It is easy to get rid of it.
+
+        This method will export every member of the API (such as `N`, `F`, `E`, `L`, `T`,
+        `info`) to the global namespace. From now on, we will omit the `api.` in our
+        documentation.
+
+    ??? note "Longer names"
+        There are also longer names which can be used as aliases to the single capital
+        letters. This might or might not improve the readability of your program.
+
+        short name | long name
+        --- | ---
+        `N` | `Nodes`
+        `F` | `Feature`
+        `Fs` | `FeatureString`
+        `Fall` | `AllFeatures`
+        `E` | `Edge`
+        `Es` | `EdgeString`
+        `Eall` | `AllEdges`
+        `C` | `Computed`
+        `Cs` | `ComputedString`
+        `Call` | `AllComputeds`
+        `L` | `Locality`
+        `T` | `Text`
+        `S` | `Search`
+
+??? note "`ignored`"
+    ```python
+    api.ignored
+    ```
+
+    ??? info
+    If you want to know which features were found but ignored (because the feature
+    is also present in another, later, location), you can use this attribute
+    to inspect the ignored features and their locations.
+
+??? note "`loadLog()`"
+    ```python
+    api.loadlog()
+    ```
+
+    After loading you can view all messages using this method.
+    It also shows the messages that have been suppressed due to `silent=True`.
+
+## Navigating nodes
+
+
+??? note "`N()`"
+    ```python
+    for n in N():
+        action
+    ```
+
+    ??? explanation
+        Most processing boils down to walking through the nodes by visiting node sets in
+        a suitable order. Occasionally, during the walk you might want to visit
+        embedding or embedded nodes to glean some feature information from them.
+
+    ??? info
+        The result of `N()` is a generator that walks through all nodes in the
+        *canonical order* (see below).
+        Iterating over `N()` delivers you all words and structural elements of
+        your corpus in a very natural order.
+
+    !!!+ note
+        Later, under *Features* there is another convenient way to walk through
+        nodes.
+
+??? note "canonical order"
+    The canonical order is a way to sort the nodes in your corpus in such a way
+    that you can enumerate all nodes in the order you encounter them if you
+    walk through your corpus.
+
+    Briefly this means:
+
+    *   embedder nodes come before the nodes that lie embedded in them;
+    *   earlier stuff comes before later stuff,
+    *   if a verse coincides with a sentence, the verse comes before the sentence,
+        because verses generally contain sentences and not the other way round;
+    *   if two objects are intersecting, but none embeds the other, the one with the
+        smallest slot that does not occur in the other, comes first.
+
+    ??? example
+        That means, roughly, that you start with a
+        book node (Genesis), then a chapter node (Genesis 1), then a verse node, Genesis
+        1:1, then a sentence node, then a clause node, a phrase node, and the first word
+        node. Then follow all word nodes in the first phrase, then the phrase node of
+        the second phrase, followed by the word nodes in that phrase. When ever you
+        enter a higher structure, you will first get the node corresponding to that
+        structure, and after that the nodes corresponding to the building blocks of that
+        structure.
+
+    This concept follows the intuition that slot sets with smaller elements come
+    before slot set with bigger elements, and embedding slot sets come before
+    embedded slot sets. Hence, if you enumerate a set of nodes that happens to
+    constitute a tree hierarchy based on slot set embedding, and you enumerate those
+    nodes in the slot set order, you will walk the tree in pre-order.
+
+    This order is a modification of the one as described in (Doedens 1994, 3.6.3).
+    ![fabric](/images/DoedensLO.png)
+
+    > Doedens, Crist-Jan (1994), *Text Databases. One Database Model and Several
+    > Retrieval Languages*, number 14 in Language and Computers, Editions Rodopi,
+    > Amsterdam, Netherlands and Atlanta, USA. ISBN: 90-5183-729-1,
+    > <http://books.google.nl/books?id=9ggOBRz1dO4C>. The order as defined by
+    > Doedens corresponds to walking trees in post-order.
+
+    For a lot of processing, it is handy to have a the stack of embedding elements
+    available when working with an element. That is the advantage of pre-order over
+    post-order. It is very much like SAX parsing in the XML world.
+
+
+??? note "`sortNodes()`"
+    ```python
+    sortNodes(nodeset)
+    ```
+
+    ??? info
+        delivers `nodeset` as a tuple sorted by the *canonical ordering*.
+
+??? note "`sortKey`"
+    ```python
+    nodeList = sorted(nodes, key=sortKey)
+    ```
+
+    ??? info
+        A function that provides for each node the key to be used to sort nodes in the
+        canonical ordering. That means that the following two pieces of code do the same
+        thing:
+
+        `sortNodes(nodeset)` and `sorted(nodeset, key=sortKey)`.
+
+    ??? example
+        Handy to sort things that are not nodes themselves, but data structures with
+        nodes in it, e.g. search results: if `results` is a list of tuples of nodes, we
+        could sort them in canonical order like this:
+
+        ```python
+        sorted(nodeset, key=lambda r: sortKey(r[0]))
+        ```
+
+## Locality
+
+??? explanation
+    Here are the methods by which you can navigate easily from a node to its
+    neighbours: parents and children, previous and next siblings.
+
+    Locality is exposed as `L` or `Locality`.
+
+???+ note "`otype=` parameter"
+    In all of the following `L`-functions, if the `otype` parameter is passed, the result is filtered and
+    only nodes with `otype=nodetype` are retained.
+
+???+ caution "Results are tuples, not single notes"
+      Even if an `L`-function returns a single node, it is packed in a *tuple*.
+      So to get the node itself, you have to dereference the tuple:
+
+      ```python
+      L.u(node)[0]
+      ```
+
+??? note "`L.u()`"
+    ```python
+    L.u(node, otype=nodetype)
+    ```
+
+    ??? info
+        Produces an ordered tuple of nodes **upward** from `node`, i.e. embedder nodes
+        of `node`. The result does not include `node`.
+
+??? note "`L.d()`"
+    ```python
+    L.d(node, otype=nodetype)
+    ```
+
+    ??? info
+        Produces an ordered tuple of nodes **downward** from `node`, i.e. embedded nodes
+        of `node`. The result does not include `node`.
+
+??? note "`L.n()`"
+    ```python
+    L.n(node, otype=nodetype)
+    ```
+
+    ??? info
+        Produces an ordered tuple of adjacent **next** nodes from `node`, i.e. nodes
+        whose first slot just follows the last slot of `node`.
+
+??? note "`L.p()`"
+    ```python
+    L.p(node, otype=nodetype)
+    ```
+
+    ??? info
+        Produces an ordered tuple of adjacent **previous** nodes from `node`, i.e. nodes
+        whose last slot just precedes the first slot of `node`.
+
+??? explanation "Locality and levels"
+    Here is something that is very important to be aware of when using `sortNodes`
+    and the `L.d(n)` and `L.u(n)` methods.
+
+    When we order nodes and report on which nodes embed which other nodes, we do not
+    only take into account the sets of slots the nodes occupy, but also their
+    *level*. See [levels](#levels) and [text](#levels-of-node-types).
+
+    Both the `L.d(n)` and `L.u(n)` work as follows:
+
+    *   `L.d(n)` returns nodes such that embedding nodes come before embedded nodes
+        words)
+    *   `L.u(n)` returns nodes such that embedded nodes come before embedding nodes
+        books)
+
+    **N.B.:** Suppose you have node types `verse` and `sentence`, and usually a
+    verse has multiple sentences, but not vice versa. Then you expect that
+
+    *   `L.d(verseNode)` will contain sentence nodes,
+    *   `L.d(sentenceNode)` will **not** contain verse nodes.
+
+    But if there is a verse with exactly one sentence, and both have exactly the
+    same words, then that is a case where:
+
+    *   `L.d(verseNode)` will contain one sentence node,
+    *   `L.d(sentenceNode)` will contain **one** verse node.
+
+## Text
+
+??? info "Overview"
+    Here are the functions that enable you to get the actual text in the dataset.
+    There are several things to accomplish here, such as
+
+    *   getting text given book, chapter, and verse;
+    *   given a node, produce the book, chapter and verse indicators in which the node
+        is contained;
+    *   handle multilingual book names;
+    *   switch between various text representations.
+
+    The details of the Text API are dependent on the *warp* feature `otext`, which
+    is a config feature.
+
+???+ info "`T`"
+    The Text API is exposed as `T` or `Text`.
+
+### Sections
+
+??? explanation "Section levels"
+    In `otext` the main section levels (usually `book`, `chapter`, `verse`) can be
+    defined. It loads the features it needs (so you do not have to specify those
+    features, unless you want to use them via `F`). And finally, it makes some
+    functions available by which you can make handy use of that information.
+
+    ??? note "Section levels are generic"
+        In this documentation, we call the main section level `book`, the second level
+        `chapter`, and the third level `verse`. Text-Fabric, however, is completely
+        agnostic about how these levels are called. It is prepared to distinguish three
+        section levels, but how they are called, must be configured in the dataset. The
+        task of the `otext` feature is to declare which node type and feature correspond
+        with which section level. Text-Fabric assumes that the first section level may
+        have multilingual headings, but that section levels two and three have single
+        language headings (numbers of some kind).
+
+    ??? note "String versus number"
+        Chapter and verse numbers will be considered to be strings or
+        integers, depending on whether your dataset has declared the corresponding
+        feature *valueType* as `str` or as `int`.
+
+        Conceivably, other works might have chapter and verse numbers
+        like `XIV`, '3A', '4.5', and in those cases these numbers are obviously not
+        `int`s.
+
+    ??? note "`otext` is optional"
+        If `otext` is missing, the Text API will not be build. If it exists, but
+        does not specify sections, that part of the Text API will not be built. Likewise
+        for text representations.
+
+    ??? caution "levels of node types"
+        Usually, Text-Fabric computes the hierarchy of node types correctly, in the
+        sense that node types that act as containers have a lower level than node types
+        that act as containees. So books have the lowest level, words the highest. See
+        [levels](#levels). However, if this level assignment turns out to be wrong for
+        your dataset, you can configure the right order in the *otext* feature, by means
+        of a key `levels` with value a comma separated list of levels. Example:
+
+        ```
+        @levels=tablet,face,column,line,case,cluster,quad,comment,sign
+        ```
+
+??? note "`T.sectionFromNode()`"
+    ```python
+    T.sectionFromNode(n, lastSlot=False, lang='en')
+    ```
+
+    ??? info
+        Returns the book/chapter/verse indications that correspond to the reference
+        node, which is the first or last slot belonging `n`, dependent on `lastSlot`.
+        The result is a tuple, consisting of the book name (in language `lang`), the
+        chapter number, and the verse number.
+
+    ??? note "crossing verse boundaries"
+        Sometimes a sentence or clause in a verse continue into the next verse.
+        In those cases, this function will return a different results for
+        `lastSlot=False` and `lastSlot=True`.
+
+    ??? caution "nodes outside sections"
+        Nodes that lie outside any book, chapter, verse will get a `None` in the
+        corresponding members of the returned tuple.
+
+??? note "`T.nodeFromSection()`"
+    ```python
+    T.nodeFromSection(section, lang='en')
+    ```
+
+    ??? info
+        Given a `section` tuple, return the node of it. `section` 
+        consists of a book name (in language `lang`), and a chapter number and a verse
+        number (both as strings or number depending on the value type of the
+        corresponding feature). The verse number may be left out, the result is then a
+        chapter node. Both verse and chapter numbers may be left out, the result is then
+        a book node. If all three are present, de result is a verse node.
+
+### Book names and languages
+
+??? explanation "Book names and nodes"
+    The names of the books may be available in multiple languages. The book names
+    are stored in node features with names of the form `book@`*la*, where *la* is
+    the [ISO 639](https://nl.wikipedia.org/wiki/ISO_639) two-letter code for that
+    language. Text-Fabric will always load these features.
+
+??? note "`T.languages`"
+    ```python
+    T.languages
+    ```
+
+    ??? info
+        A dictionary of the languages that are available for book names.
+
+??? note "`T.bookName()`"
+    ```python
+    T.bookName(n, lang='en')
+    ```
+
+    ??? info
+        gives the name of the book in which node `n` occurs.
+
+        The `lang` parameter is a two letter language code. The default is `en`
+        (English).
+
+        If there is no feature data for the language chosen, the value of the ordinary
+        `book` feature of the dataset will be returned.
+
+    ??? note "Works for all nodes"
+        `n` may or may not be a book node. If not, `bookName()` retrieves the
+        embedding book node first.
+
+??? note "`T.bookNode()`"
+    ```python
+    T.bookNode(name, lang='en')
+    ```
+
+    ??? info
+        gives the node of the book identified by `name` in language `lang`.
+
+        If `lang` can not be found, the value of the ordinary `book` feature of the
+        dataset will be used.
+
+        If `name` cannot be found in the specified language, `None` will be returned.
+
+    ??? caution "Function name follows configured section level"
+        If your dataset has configured section level one under an other name,
+        say `tablet`, then these two methods follow that name. Instead of `T.bookName()`
+        and `T.bookNode()` we have then `T.tabletName()` and `T.tabletNode()`.
+
+### Text representation
+
+??? explanation "Text formats"
+    Text can be represented in multiple ways. We provide a number of formats with
+    structured names.
+
+    A format name is a string of keywords separated by `-`:
+
+    *what*`-`*how*`-`*fullness*`-`*modifier*
+
+    For Hebrew any combination of the follwoing could be useful formats:
+
+    keyword | value | meaning
+    ------- | ----- | -------
+    *what* | `text` | words as they belong to the text
+    *what* | `lex` | lexemes of the words
+    *how* | `orig` | in the original script (Hebrew, Greek, Syriac) (all Unicode)
+    *how* | `trans` | in (latin) transliteration
+    *how* | `phono` | in phonetic/phonological transcription
+    *fullness* | `full` | complete with accents and all diacritical marks
+    *fullness* | `plain` | with accents and diacritical marks stripped, in Hebrew only the consonants are left
+    *modifier* | `ketiv` | (Hebrew): where there is ketiv/qere, follow ketiv instead of qere (default);
+
+    The default format is `text-orig-full`, we assume that every TF dataset defines
+    this format.
+
+    Remember that the formats are defined in the `otext` warp config feature of your
+    set, not by Text-Fabric.
+    
+    ??? note "Freedom of names for formats"
+        There is complete freedom of choosing names for text formats.
+        They do not have to complied with the above-mentioned scheme.
+
+??? note "`T.formats`"
+    ```python
+    T.formats
+    ```
+
+    ??? info
+        Show the text representation formats that have been defined in your dataset.
+
+??? note "`T.text()`"
+    ```python
+    T.text(nodes, fmt=None)
+    ```
+
+    ??? info
+        Gives the text that corresponds to the nodes, which can be an arbitrary iterable
+        of nodes. No attempt will be made to sort the nodes, if you need order, it is
+        better to order the nodes before you feed them to `T.text()`.
+
+    ??? note "Defaults and errors"
+        The format is given with `fmt`, with default `text-orig-full`. If the `fmt`
+        cannot be found, the default is taken. If the default format is not defined in
+        the dataset, the node numbers will be output instead.
+
+        This function does not give error messages, because that could easily overwhelm
+        the output stream, especially in a notebook.
+
+    ??? note "Non slot nodes allowed"
+        In most cases, the nodes fed to `T.text()` are slots, and the formats are
+        templates that use features that are defined for slots.
+
+        But nothing prevents you to define a format for non-slot nodes, and use features
+        defined for a non-slot node type.
+
+        If, for example, your slot type is *glyph*, and you want a format that renders
+        lexemes, which are not defined for glyphs but for words, you can just define a
+        format in terms of word features.
+
+        It is your responsibility to take care to use the formats for node types for
+        which they make sense.
+
+    ??? caution "Escape whitespace in formats"
+        When defining formats in `otext.tf`, if you need a newline or tab in the format,
+        specify it as `\n` and `\t`.
+
+## Search
+ 
+??? info "What is Text-Fabric Search?"
+    You can query for graph like structures in your data set. The structure you are
+    interested in has to be written as a *search template*, offered to `S.search()`
+    which returns the matching results as tuples of nodes.
+
+???+ info "`S`"
+    The Search API is exposed as `S` or `Search`.
+
+### Search templates
+
+??? info "Search primer"
+    A search template consists of a bunch of lines, possibly indented, that specify
+    objects to look for. Here is a simple example:
+
+        book name=Genesis|Exodus
+           chapter number=2
+              sentence
+                word pos=verb gender=feminine number=plural
+                word pos=noun gender=feminine number=singular
+
+    This template looks for word combinations within a sentence within chapter 2 of
+    either Genesis or Exodus, where one of the words is a verb and the other is a
+    noun. Both have a feminine inflection, but the verb is plural and the noun is
+    singular.
+
+    The indentation signifies embedding, i.e. containment. The two words are
+    contained in the same sentence, the sentence is contained in the chapter, the
+    chapter in the book.
+
+    The conditions you specify on book, chapter, word are all conditions in terms of
+    [node features](Api#node-features). You can use all features in the corpus for
+    this.
+
+    The order of the two words is immaterial. If there are cases where the verb
+    follows the noun, they will be included in the results.
+
+    Also, the words do not have to be adjacent. If there are cases with words
+    intervening between the noun and the verb, they will be included in the results.
+
+    Speaking of results: the `S.search()` function returns its results as tuples of
+    nodes:
+
+    ```python
+    (book, chapter, sentence, word1, word2)
+    ```
+
+    With these nodes in hand, you can programmatically gather all information about
+    the results that the corpus provides.
+
+    If the order between the verb and the noun is important, you can specify that as
+    an additional constraint. You can give the words a name, and state a relational
+    condition. Here we state that the noun precedes the verb.
+
+        book name=Genesis|Exodus
+           chapter number=2
+              sentence
+                vb:word pos=verb gender=feminine number=plural
+                nn:word pos=noun gender=feminine number=singular
+        nn < vb
+
+    This can be written a bit more economically as:
+
+        book name=Genesis|Exodus
+           chapter number=2
+              sentence
+                word pos=verb gender=feminine number=plural
+                > word pos=noun gender=feminine number=singular
+
+    If you insist that the noun immediately precedes the verb, you can use a
+    different relational operator:
+
+        book name=Genesis|Exodus
+           chapter number=2
+              sentence
+                word pos=verb gender=feminine number=plural
+                :> word pos=noun gender=feminine number=singular
+
+    There are more kinds of relational operators.
+
+    If the noun must be the first word in the sentence, you can specify it as
+
+        book name=Genesis|Exodus
+           chapter number=2
+              s:sentence
+                w:word pos=noun gender=feminine number=singular
+                <: word pos=verb gender=feminine number=plural
+        s =: w
+
+    or a bit more economically:
+
+        book name=Genesis|Exodus
+           chapter number=2
+              sentence
+                =: word pos=noun gender=feminine number=singular
+                <: word pos=verb gender=feminine number=plural
+
+    If the verb must be the last word in the sentence, you can specify it as
+
+        book name=Genesis|Exodus
+           chapter number=2
+              s:sentence
+                word pos=noun gender=feminine number=singular
+                <: w:word pos=verb gender=feminine number=plural
+        s := w
+
+    or a bit more economically:
+
+        book name=Genesis|Exodus
+           chapter number=2
+              s:sentence
+                word pos=noun gender=feminine number=singular
+                <: word pos=verb gender=feminine number=plural
+                :=
+
+    You can also use the [edge features](Api#edge-features) in the corpus as
+    relational operators as well.
+
+    Suppose we have an edge feature `sub` between clauses, such that if main clause
+    *m* has subordinate clauses *s1*, *s2* and *s3*, then
+
+        E.sub.f(m) = (s1, s2, s3)
+
+    You can use this relation in search. Suppose we want to find the noun verb pair
+    in subordinate clauses only. We can use this template:
+
+        book name=Genesis|Exodus
+           chapter number=2
+              m:clause
+                s:clause
+                  word pos=verb gender=feminine number=plural
+                  :> word pos=noun gender=feminine number=singular
+        m -sub> s
+
+    or a bit more economically:
+
+        book name=Genesis|Exodus
+          chapter number=2
+            clause
+              -sub> clause
+                word    pos=verb gender=feminine number=plural
+                :> word pos=noun gender=feminine number=singular
+
+    Read `m -sub> s` as: there is a `sub`-arrow from `m` to `s`.
+
+    To get a more specific introduction to search, consult the search tutorials for
+    [Hebrew](https://github.com/ETCBC/bhsa/blob/master/tutorial/search.ipynb) and
+    [Cuneiform](https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb).
+
+??? info "Search template reference"
+    ??? info "General"
+        We have these kinds of lines in a template:
+
+        *   *atom* lines
+            *   (simple): **indent name:otype features**
+                *   `vb: word pos=verb gender=feminine`
+                *   The indent is significant. Indent is counted as the number of white space
+                    characters, where tabs count for just 1. **Avoid tabs!**.
+                *   The **name:** part is optional.
+            *   (with relop): **indent op name:otype features**
+            *   `<: word pos=verb gender=feminine`
+            *   The relation operator specifies an extra constraint between a preceding atom
+                and this atom.
+            *   The preceding atom may be the parent, provided we are at its first child, or
+                it may the preceding sibling.
+            *   You can leave out the **name:otype features** bit. In that case, the
+                relation holds between the preceding atom and its parent.
+        *   *feature* lines: **features**
+            *   Indent is not significant. Continuation of feature constraints after a
+                preceding atom line or other feature line. This way you can divide lengthy
+                feature constraints over multiple lines.
+        *   *relation* lines: **name operator name**
+            *   `s := w`
+            *   `m -sub> s`
+            *   Indents and spacing are ignored.
+            *   There must be white-space around the operator.
+        *   *white-space or empty* lines
+            *   Everywhere allowed.
+            *   Always ignored.
+
+    ??? info "Features"
+        The **features** above is a specification of what features with which values to
+        search for. This specification must be written as a white-space separated list
+        of **feature specs**.
+
+        A **feature spec** may have these forms:
+
+        form | meaning
+        ---- | -------
+        *key* | feature *key* may have any value except `None`
+        *key*`!` | feature *key* must have value `None` (synonymous for: *key* has no value)
+        *key*`=`*values* | feature *key* has one of the values specified
+        *key*`~`*regular expression* | feature *key* has a value and it matches *regular expression*
+
+        **Additional constraints**
+
+        *   There may be no space around the `=`, nor the `~`.
+        *   *key* must be a feature name that exists in the dataset. If it references a
+            feature that is not yet loaded, the feature will be loaded automatically.
+        *   *values* must be a `|` separated list of feature values, no quotes. No spaces
+            around the `|`. If you need a space or `|` or `\` in a value, escape it by a
+            `\`. Escape tabs and newlines as `\t` and `\n`.
+        *   *regular expression* must be a string that conforms to the Python
+            [regular axpression syntax](https://docs.python.org/3/library/re.html#regular-expression-syntax)
+            *   If that syntax prescribes a`\`, you have to write it twice: `\` `\`.
+            *   If you need a space in your regular expression, you have to escape it with a
+                `\`.
+            *   You can do regular expressions only on string valued features, not on
+                number-valued features.
+
+    ??? info "Operator lines"
+        ??? info "Node comparison"
+
+            *   `=`: is equal (meaning the same node, a clause and a verse that occupy the
+                same slots are still unequal)
+            *   `#`: is unequal (meaning a different node, a clause and a verse that occupy
+                the same slots are still unequal)
+            *   `<` `>`: before and after (in the *canonical ordering*)
+
+        ??? info "Slot comparison"
+
+            *   `==`: occupy the same slots (identical slot sets)
+            *   `&&`: overlap (the intersection of both slot sets is not empty)
+            *   `##`: occupy different slots (but they may overlap, the set of slots of the
+                two are different as sets)
+            *   `||`: occupy disjoint slots (no slot occupied by the one is also occupied by
+                the other)
+            *   `[[ ]]`: embeds and contains (slot set inclusion, in both directions)
+            *   `<<` `>>`: before and after (with respect to the slots occupied: left ends
+                before right starts and vice versa)
+            *   `<:` `:>`: *adjacent* before and after (with respect to the slots occupied:
+                left ends immediately before right starts and vice versa)
+            *   `=:` left and right start at the same slot
+            *   `:=` left and right end at the same slot
+            *   `::` left and right start and end at the same slot
+
+        ??? info "Nearness comparison"
+
+            Some of the adjacency relations can actually be weakened. Instead of requiring
+            that one slot is equal to an other slot, you can require that they are *k-near*,
+            i.e. they are at most *k* apart. Here are the relationships where you can do
+            that. Instead of typing the letter `k`, provide the actual number you want.
+
+            *   `<k:` `:k>`: `k`-*adjacent* before and after (with respect to the slots
+                occupied: left ends `k`-near where right starts and vice versa)
+            *   `=k:` left and right start at `k`-near slots
+            *   `:k=` left and right end at `k`-near slots
+            *   `:k:` left and right start and end at `k`-near slots
+
+        ??? info "Based on edge features"
+
+            *   `-`*name*`>` `<`*name*`-`: connected by the edge feature *name*, in both
+                directions
+
+??? note "`S.relationsLegend`"
+    ```python
+    S.relationsLegend
+    ```
+
+    ??? info
+        Gives dynamic help about the basic relations that you can use in your search
+        template. It includes the edge features that are available in your dataset.
+
+
+??? note "`S.search()`"
+    ```python
+    S.search(searchTemplate, limit=None)
+    ```
+
+    ??? info
+        Searches for combinations of nodes that together match the `searchTemplate`. If
+        `limit` is a number, it will fetch only that many results.
+
+        This method returns a *generator* which yields the results one by one. A result
+        is a tuple of nodes, where each node corresponds to an *atom*-line in your
+        [search template](#search-template-introduction).
+
+    ??? note "Generator versus tuple"
+        If `limit` is specified, the result is not a generator but a tuple of results.
+
+    ??? explanation "More info on the search plan"
+        Searching is complex. The search template must be parsed, interpreted, and
+        translated into a search plan. The following methods expose parts of the search
+        process, and may provide you with useful information in case the search does not
+        deliver what you expect.
+
+    ??? hint "see the plan"
+        the method `S.showPlan()` below shows you at a glance the correspondence
+        between the nodes in each result tuple and your search template.
+
+??? note "`S.study()`"
+    ```python
+    S.study(searchTemplate, strategy=None, silent=False)
+    ```
+
+    ??? info
+        Your search template will be checked, studied, the search
+        space will be narrowed down, and a plan for retrieving the results will be set
+        up.
+
+        For the meaning of the `strategy` parameter, see below.
+
+        If you want to suppress most of the output, say `silent=True`.
+
+
+??? note "`S.showPlan()`"
+    ```python
+    S.showPlan(details=False)
+    ```
+
+    ??? info
+        Search results are tuples of nodes and the plan shows which part of the tuple
+        corresponds to which part of the search template.
+
+        If you say `details=True`, you also get an overview of the search space and a
+        description of how the results will be retrieved.
+
+        This function is only meaningful after a call to `S.study()`.
+
+### Search results
+
+??? info
+    The method `S.search()` above combines the interpretation of a given
+    template, the setting up of a plan, the constraining of the search space
+    and the fetching of results.
+
+    Here are a few methods that do actual result fetching.
+    They must be called after a previous `S.search()` or `S.study()`.
+
+??? note "`S.count()`"
+    ```python
+    S.count(progress=None, limit=None)
+    ```
+
+    info ???
+        Counts the results, up to a given `limit`, default 1000.
+        Setting `limit` to 0 or a negative value means no limit: all results will be
+        counted.
+
+        Every so often it shows a progress message.
+        The frequency is `progress` results, default every 100.
+
+        You typically need this in cases where result fetching turns out to
+        be (very) slow.
+
+    !!! caution
+        `len(S.results())` does not work, because `S.results()` is a generator
+        that delivers its results as they come.
+
+??? note "`S.fetch()`"
+    ```python
+    S.fetch(limit=None)
+    ```
+
+    ??? info
+        Finally, you can retrieve the results. The result of `fetch()` is not a list of
+        all results, but a *generator*. It will retrieve results as long as they are
+        requested and their are still results.
+
+    ??? example
+        You typically fetch results by saying:
+
+        ```python
+        i = 0
+        for r in S.results():
+            do_something(r[0])
+            do_something_else(r[1])
+        ```
+
+        Alternatively, you can set the `limit` parameter, to ask for just so many
+        results. They will be fetched, and when they are all collected, returned as a
+        tuple.
+
+    ??? example
+        ```python
+        S.fetch(limit=10)
+        ```
+
+        gives you the first bunch of results quickly.
+
+??? note "`S.glean()`"
+    ```python
+    S.glean(r)
+    ```
+
+    ??? info
+        A search result is just a tuple of nodes that correspond to your template, as
+        indicated by `showPlan()`. Nodes give you access to all information that the
+        corpus has about it.
+
+        The `glean()` function is here to just give you a first impression quickly.  
+        Pass it a raw result tuple `r`, and you get a string indicating where it occurs,
+        in terms of sections, 
+        and what text is associated with the results.
+
+    ??? example
+        ```python
+        for result in S.fetch(limit=10):
+            print(S.glean(result))
+        ```
+
+        is a handy way to get an impression of the first bunch of results.
+
+??? danger "Search strategies"
+    In order to tame the performance of search, the strategy by which results are fetched
+    matters a lot.
+    The search strategy is an implementation detail, but we bring
+    it to the surface nevertheless.
+
+    To see the names of the available strategies, just call
+    `S.study('', strategy='x')` and you will get a list of options reported to
+    choose from.
+
+    Feel free to experiment. To see what the strategies do,
+    see the [code](https://github.com/Dans-labs/text-fabric/blob/master/tf/search.py).
+
+
+## Node features
+
+???+ info "Node Features"
+
+All data stored in node features is accessible through the
+`F` API. The longer name for `F` is `Feature`.
+
+??? note "`Fall()` aka `AllFeatures()`"
+    ```python
+    Fall()
+    AllFeatures()
+    ```
+
+    ??? info
+      Returns a sorted list of all usable, loaded node feature names.
+
+??? "`F.`*feature* aka `Feature.`*feature*"
+    ```python
+    F.part_of_speech
+    Feature.part_of_speech
+    ```
+
+    ??? info
+        Returns a sub-api for retrieving data that is stored in node features.
+        In this example, we assume there is a feature called
+        `part_of_speech`.
+
+    ??? caution "Tricky feature names"
+        If the feature name is not
+        a valid python identifier, you can not use this function,
+        you should use `Fs` instead.
+
+??? "`Fs(feature)` aka `FeatureString(feature)`"
+    ```python
+    Fs(feature)
+    FeatureString(feature)
+    Fs('part-of-speech')
+    FeatureString('part-of-speech')
+    ```
+
+    ??? info
+        Returns a sub-api for retrieving data that is stored in node features.
+        
+        In this example, in line 1 and 2, the feature name is contained in
+        the variable `feature`.
+
+        In lines 3 and 4, 
+        we assume there is a feature called
+        `part-of-speech`.
+        Note that this is not a valid name in Python, yet we
+        can work with it.
+
+    ??? explanation
+        The result of `Fs(feature)` and `F.`*value_of_feature* is identical.
+
+        In most cases `F` works just fine, but we need `Fs` in two cases:
+
+        * if we need to work with a feature whose name is not a valid
+          Python name;
+        * if we determine the feature we work with dynamically, at run time.
+
+    ??? note
+        In the sequel we'll give examples based on the simple form only.
+
+
+??? "`F.`*feature*`.v(node)`"
+    ```python
+    F.part_of_speech.v(node)
+    ```
+
+    ??? info
+        Get the value of a *feature*, such as `part_of_speech` for `node`.
+
+??? "`F.`*feature*`.s(value)`"
+    ```python
+    F.part_of_speech.s(value)
+    F.part_of_speech.s('noun')
+    ```
+
+    ??? info
+        This is the other way to walk through nodes: it returns a generator of all nodes
+        in the *canonical order* that have the value `value` for the
+        feature *feature* (in this example: `part_of_speech`).
+
+        The second line gives you all nodes which are nouns according to the corpus.
+
+??? "`F.`*feature*`.freqList()`"
+    ```python
+    F.part_of_speech.freqList()
+    ```
+
+    ??? info
+        Inspect the values of *feature* (in this example: `part_of_speech`)
+        and see how often they occur. The result is a
+        list of pairs `(value, frequency)`, ordered by `frequency`, highest frequencies
+        first.
+
+
+??? info "`F.otype`"
+    `otype` is a special node feature and has additional capabilities.
+
+    ??? info
+        *   `F.otype.slotType` is the node type that can fill the slots (usually: `word`)
+        *   `F.otype.maxSlot` is the largest slot number
+        *   `F.otype.maxNode` is the largest node number
+        *   `F.otype.all` is a list of all *otypes* from big to small (from books through
+            clauses to words)
+        *   `F.otype.sInterval(otype)` is like `F.otype.s(otype)`, but instead of
+            returning you a range to iterate over, it will give you the starting and
+            ending nodes of `otype`. This makes use of the fact that the data is so
+            organized that all node types have single ranges of nodes as members.
+
+## Edge features
+
+???+ info "Edge Features"
+
+All data stored in edge features is accessible through the
+`E` API. The longer name for `E` is `Edge`.
+
+??? note "`Eall()` aka `AllEdges()`"
+    ```python
+    Eall()
+    AllEdges()
+    ```
+
+    ??? info
+      Returns a sorted list of all usable, loaded edge feature names.
+
+??? "`E.`*feature* aka `Edge.`*feature*"
+    ```python
+    E.head
+    Feature.head
+    ```
+
+    ??? info
+        Returns a sub-api for retrieving data that is stored in edge features.
+        In this example, we assume there is a feature called
+        `head`.
+
+    ??? caution "Tricky feature names"
+        If the feature name is not
+        a valid python identifier, you can not use this function,
+        you should use `Es` instead.
+
+??? "`Es(feature)` aka `EdgeString(feature)`"
+    ```python
+    Es(feature)
+    EdgeString(feature)
+    Es('head')
+    EdgeString('head')
+    ```
+
+    ??? info
+        Returns a sub-api for retrieving data that is stored in edge features.
+        
+        In this example, in line 1 and 2, the feature name is contained in
+        the variable `feature`.
+
+        In lines 3 and 4, 
+        we assume there is a feature called
+        `head`.
+
+    ??? explanation
+        The result of `Es(feature)` and `E.`*value_of_feature* is identical.
+
+        In most cases `E` works just fine, but we need `Es` in two cases:
+
+        * if we need to work with a feature whose name is not a valid
+          Python name;
+        * if we determine the feature we work with dynamically, at run time.
+
+    ??? note
+        In the sequel we'll give examples based on the simple form only.
+
+??? note "`E.`*feature*`.f(node)`"
+    ```python
+    E.head.f(node)
+    ```
+
+    ??? info
+        Get the nodes reached by *feature*-edges **from** `node`
+        (in this example we want the `head`-edges).
+        The result is an ordered tuple
+        (again, in the *canonical order*. The members of the
+        result are just nodes, if `head` describes edges without values. Otherwise
+        the members are pairs (tuples) of a node and a value.
+
+        If there are no edges from `n`, the empty tuple is returned, rather than `None`.
+
+??? note "`E.`*feature*`.t(node)`"
+    ```python
+    E.head.t(node)
+    ```
+
+    ??? info
+        Get the nodes from which there are *feature*-edges **to** `node`..
+        (in this example we want the `head`-edges).
+        The result is an ordered tuple
+        (again, in the *canonical order*. The members of the
+        result are just nodes, if `feature` describes edges without values. Otherwise
+        the members are pairs (tuples) of a node and a value.
+
+        If there are no edges from `n`, the empty tuple is returned, rather than `None`.
+
+??? info "`E.oslots`"
+    `oslots` is a special edge feature and is mainly used to construct other parts
+    of the API. It has less capabilities, and you will rarely need it. It does not
+    have `.f` and `.t` methods, but an `.s` method instead.
+
+    ??? info
+      * `E.oslots.s(node)`
+        Gives the sorted list of slot numbers linked to `node`, or put otherwise: the
+        slots that **support** node.
+
+## Messaging
+
+??? info
+    Error and informational messages can be issued, with a time indication.
+
+??? note "`info()`"
+    ```python
+    info(msg, tm=True, nl=True)
+    ```
+    
+    ??? info
+        Sends string `msg` to standard output, with a preceding elapsed time indicator,
+        unless `tm=False`.
+        A newline will be appended, unless `nl=False`.
+
+??? note "`error()`"
+    ```python
+    error(msg, tm=True, nl=True)
+    ```
+    
+    ??? info
+        Sends string `msg` to standard error, with a preceding elapsed time indicator,
+        unless `tm=False`.
+        A newline will be appended, unless `nl=False`.
+
+        In a Jupyter notebook, the standard error is displayed with
+        a reddish background colour.
+
+??? note "`indent()`"
+    ```python
+    indent(level=None, reset=False)
+    ```
+
+    ??? info
+        `indent()` You can indicate a level, which must be an integer. Subsequent
+        `info()` and `error()` will display their messages with an indent. Timers at
+        different levels are independent of each other. If `reset`, the elapsed time to
+        0 at this level will be set to 0.
+
+## Saving features
+
+??? note "`TF.save()`"
+    ```python
+    TF.save(nodeFeatures={}, edgeFeatures={}, metaData={}, module=None)
+    ```
+
+    ??? info
+        If you have collected feature data in dictionaries, keyed by the
+        names of the features, and valued by their feature data,
+        then you can save that data to `.tf` feature files on disk.
+         
+        The data of a node feature is a dictionary with nodes as keys (integers!) and
+        strings or numbers as (feature) values.
+
+        The data of an edge feature is a dictionary with nodes as keys, and sets or
+        dictionaries as values. These sets should be sets of nodes (integers!), and
+        these dictionaries should have nodes as keys and strings or numbers as values.
+
+        It is this easy to export new data as features:
+        collect the data and metadata of
+        the features and 
+        feed it in an orderly way to `TF.save()` and there you go.
+
+    ??? note "value types"
+        The type of the values should conform to `@valueType` (`int` or `str`), which
+        must be stated in the metadata.
+
+    ??? note "edge values"
+        If you save an edge feature, and there are values in that edge feature, you have
+        to say so, by specifying `edgeValues = True` in the metadata for that feature.
+
+    ??? info "metadata"
+        Every feature will receive metadata from `metaData`, which is a dictionary
+        mapping a feature name to its metadata.
+        
+    ??? info "generic metadata"
+        `metaData` may also contain fields under
+        the empty name. These fields will be added to all features in `nodeFeatures` and
+        `edgeFeatures`.
+
+    ??? info "config features"
+        If you need to write the *config* feature `otext`,
+        which is a metadata-only feature, just
+        add the metadata under key `otext` in `metaData` and make sure
+        that `otext` is not a key in `nodeFeatures` nor in
+        `edgeFeatures`.
+        These fields will be written into the separate config feature `otext`,
+        with no data associated.
+
+    ??? info "save location"
+        The (meta)data will be written to the very last module in the list of locations
+        that you specified when calling `Fabric()` or to what you passed as `module` in
+        the same location. If that module does not exist, it will be created in the last
+        `location`. If both `locations` and `modules` are empty, writing will take place
+        in the current directory.
+
+### Clearing the cache
+
+??? note "`TF.clearCache()`"
+    ```python
+    TF.clearCache()
+    ```
+
+    ??? info
+        Text-Fabric precomputes data for you, so that it can be loaded faster. If the
+        original data is updated, Text-Fabric detects it, and will recompute that data.
+
+        But there are cases, when the algorithms of Text-Fabric have changed, without
+        any changes in the data, where you might want to clear the cache of precomputed
+        results.
+
+        Calling this function just does it, and it is equivalent with manually removing
+        all `.tfx` files inside the hidden `.tf` directory inside your dataset.
+
+    ??? note
+        It is not needed to execute a `TF.load()` first.
+
+## MQL
+
+??? info
+    You can interchange with MQL data. Text-Fabric can read and write MQL dumps. An
+    MQL dump is a text file, like an SQL dump. It contains the instructions to
+    create and fill a complete database.
+
+??? note "`TF.exportMQL()`"
+    ```python
+    TF.exportMQL(dbName, dirName)
+    ```
+
+    ??? info
+        Exports the complete TF dataset into single MQL database.
+
+        The resulting MQL database has the following properties with respect to the
+        Text-Fabric dataset it comes from:
+
+        *   the TF *slots* correspond exactly with the MQL *monads* and have the same
+            numbers; provided the monad numbers in the MQL dump are consecutive. In MQL
+            this is not obligatory. Even if there gaps in the monads sequence, we will
+            fill the holes during conversion, so the slots are tightly consecutive;
+        *   the TF *nodes* correspond exactly with the MQL *objects* and have the same
+            numbers
+
+        MQL names for databases, object types and features must be valid C identifiers
+        (yes, the computer language C). The requirements are:
+
+        *   start with a letter (ASCII, upper-case or lower-case)
+        *   follow by any sequence of ASCII upper/lower-case letters or digits or
+            underscores (`_`)
+        *   avoid being a reserved word in the C language
+
+        So, we have to change names coming from TF if they are invalid in MQL. We do
+        that by replacing illegal characters by `_`, and, if the result does not start
+        with a letter, we prepend an `x`. We do not check whether the name is a reserved
+        C word.
+
+        With these provisos:
+
+        *   the given `dbName` correspond to the MQL *database name*
+        *   the TF *otypes* correspond to the MQL *objects*
+        *   the TF *features* correspond to the MQL *features*
+
+    ??? info "Node features in MQL"
+        The values of TF features are of two types, `int` and `str`, and they translate
+        to corresponding MQL types `integer` and `string`. The actual values do not
+        undergo any transformation.
+
+        That means that in MQL queries, you use quotes if the feature is a string feature.
+        Only if the feature is a number feature, you may omit the quotes:
+
+        ```
+        [word sp='verb']
+        [verse chapter=1 and verse=1]
+        ```
+
+    ??? info "Enumeration types"
+        It is attractive to use eumeration types for the values of a feature, whereever
+        possible, because then you can query those features in MQL with `IN` and without
+        quotes:
+
+        ```
+        [chapter book IN (Genesis, Exodus)]
+        ```
+
+        We will generate enumerations for eligible features.
+
+        Integer values can already be queried like this, even if they are not part of an
+        enumeration. So we restrict ourselves to node features with string values. We
+        put the following extra restrictions:
+
+        *   the number of distinct values is less than 1000
+        *   all values must be legal C names, in practice: starting with a letter,
+            followed by letters, digits, or `_`. The letters can only be plain ASCII
+            letters, uppercase and lowercase.
+
+        Features that comply with these restrictions will get an enumeration type.
+        Currently, we provide no ways to configure this in more detail.
+
+        ??? note "Merged enumeration types"
+            Instead of creating separate enumeration types for individual features,
+            we collect all enumerated values for all those features into one
+            big enumeration type.
+
+            The reason is that MQL considers equal values in different types as
+            distinct values. If we had separate types, we could never compare
+            values for different features.
+
+    ??? caution "Values of edge features are ignored"
+        There is no place for edge values in
+        MQL. There is only one concept of feature in MQL: object features,
+        which are node features.
+        But TF edges without values can be seen as node features: nodes are
+        mapped onto sets of nodes to which the edges go. And that notion is supported by
+        MQL:
+        edge features are translated into MQL features of type `LIST OF id_d`,
+        i.e. lists of object identifiers.
+
+    ??? info "Export location"
+        The exported file will be written to `dirName/dbName.mql`. If `dirName` starts
+        with `~`, the `~` will be expanded to your home directory. Likewise, `..` will
+        be expanded to the parent of the current directory, and `.` to the current
+        directory, both only at the start of `dirName`.
+
+    ??? caution
+        The MQL export is usually quite massive (500 MB for the Hebrew Bible).
+        It can be compressed greatly, especially by the program `bzip2`.
+
+    ??? caution
+        If you try to import an MQL file in Emdros, and there exists already a file or
+        directory with the same name as the MQL database, your import will fail
+        spectacularly. So do not do that. A good way to prevent it is:
+
+        *   export the MQL to outside your `text-fabric-data` directory, e.g. to
+            `~/Downloads`;
+        *   before importing the MQL file, delete the previous copy;
+
+        ??? example
+            ```sh
+            cd ~/Downloads
+            rm dataset ; mql -b 3 < dataset.mql
+            ```
+
+### MQL import
+
+You can convert an MQL database dump to a text-fabric dataset.
+
+```python
+TF.importMQL(mqlFile, slotType=None, otext=None, meta=None)
+```
+
+It is recommended to call this `importMQL` on a TF instance called with
+
+```python
+locations=targetDir, modules=''
+```
+
+then the resulting features will be written in the targetDir.
+
+In fact, the rules are exactly the same as for `TF.save()`, see
+[Saving features](#Saving-features).
+
+You have to tell which object type in the MQL file acts as the slot type,
+because TF cannot see that on its own.
+
+You can pass the information about sections and text formats as the parameter
+`otext`. This info will end up in the `otext.tf` feature. Pass it as a
+dictionary of keys and values, like so:
+
+```python
+otext = {
+    'fmt:text-trans-plain': '{glyphs}{trailer}',
+    'sectionFeatures': 'book,chapter,verse',
+}
+```
+
+Likewise, you can add a dictionary of keys and values that will added to the
+metadata of all features. Handy to add provenance data here:
+
+```python
+meta = dict(
+    dataset='DLC',
+    datasetName='Digital Language Corpus',
+    author="That 's me",
+)
+```
+
+## Computed data
+
+In order to make the API work, Text-Fabric prepares some data and saves it in
+quick-load format. Most of this data are the features, but there is some extra
+data needed for the special functions of the WARP features and the L-API.
+
+Normally, you do not use this data, but since it is there, it might be valuable,
+so we have made it accessible in the `C`-api, which we document here.
+
+### Levels
+
+All node types have a level, defined by the average amount of slots object of
+that type usually occupy. The bigger the average object, the lower the levels.
+Books have the lowest level, words the highest level.
+
+However, this can be overruled. Suppose you have a node type *phrase* and above
+it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
+versa. If all phrases are contained in clusters, and some clusters have more
+than one phrase, the automatic level ranking of node types works out well in
+this case. But if clusters only have very small phrases, and the big phrases do
+not occur in clusters, then the algorithm may assign a lower rank to clusters
+than to phrases.
+
+In general, it is too expensive to try to compute the levels in a sophisticated
+way. In order to remedy cases where the algorithm assigns wrong levels, you can
+add a `@levels` key to the `otext` config feature. See
+[text](#levels-of-node-types).
+
+`C.levels.data` alias `Computed.levels.data` is a sorted list of object types
+plus basic information about them.
+
+Each entry in the list has the shape
+
+```python
+    (otype, averageSlots, minNode, maxNode)
+```
+
+where `otype` is the name of the node type, `averageSlots` the average size of
+objects in this type, measured in slots (usually words). `minNode` is the first
+node of this type, `maxNode` the last, and the nodes of this node type are
+exactly the nodes between these two values (including).
+
+### Order
+
+Order all nodes in the [canonical ordering](#sorting-nodes) is quite a bit of
+work, and we need this ordering all the time.
+
+`C.order.data` is an **array** of all nodes in the correct order. This is the
+order in which `N()` alias `Node()` traverses all nodes.
+
+### Rank
+
+I we want to order a set of nodes in the canonical ordering, we need to know
+which position each node takes in the canonical order, in other words, at what
+index we find it in the [`C.order.data`](#order) array.
+
+`C.rank.data` is an **array** of all indices of all nodes in the canonical order
+array. It can be viewed as its inverse.
+
+### Level Up and Down
+
+`C.levUp.data` and `C.levDown.data` feed the `L.d()` and `L.u()` functions. They
+consist of a fair amount of megabytes, so they are heavily optimized. It is not
+advisable to use them directly, it is far better to use the `L` functions.
+
+Only when every bit of performance waste has to be squeezed out, this raw data
+might be a deal.
+
+### Boundary
+
+`C.boundary.data` feeds the `L.n()` and `L.p()` functions. It is a tuple
+consisting of `firstSlots` and `lastSlots`. They are indexes for the first slot
+and last slot of nodes. For each slot, `firstSlot` gives all nodes (except
+slots) that start at that slot, and `lastSlot` gives all nodes (except slots)
+that end at that slot. Both `firstSlot` and `lastSlot` are tuples, and the
+information for node `n` can be found at position `n-MaxSlot-1`.
+
+### Sections
+
+The `T`-api is good in mapping nodes unto sections, such as books, chapters,
+verses and back. It knows how many chapters each book has, and how many verses
+each chapter.
+
+The `T` api is meant to make your life easier when you have to find passage
+labels by nodes or vice versa. That is why you probably never need to consult
+the underlying data. But you can! That data is stored in
+
+`C.sections.data`
+
+Let us assume for the sake of clarity, that the node type of section level 1 is
+`book`, that of level 2 is `chapter`, and that of level 3 is `verse`. And
+suppose that we have features, named `bookHeading`, `chapterHeading`, and
+`verseHeading` that give the names or numbers of these.
+
+Then `C.section.data` is a tuple of two mappings , let us call them `chapters`
+and `verses`.
+
+`chapters` is a mapping, keyed by `book` **nodes**, and the values are mappings
+themselves, keyed by chapter **headings**, and valued by the corresponding
+chapter **node**.
+
+`verses` is a mapping, keyed by `book` **nodes**, and the values are mappings
+themselves, keyed by chapter **headings**, and valued by mappings, keyed by
+verse **headings** and valued by the corresponding verse **node**.
+
+## Miscellaneous
+
+### Banner and version
+
+You can call up a banner, showing the name and the version of the Text-Fabric
+library by means of
+
+```python
+TF.banner
+```
+
+And the version itself is in
+
+```python
+TF.version
+```
+
+* * *
+
+[Previous](Optimizations) - [Next](Roadmap)

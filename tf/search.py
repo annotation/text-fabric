@@ -881,11 +881,21 @@ class Search(object):
         def makeEdgeMaps(efName):
             def edgeR(ftP, tTp):
                 Es = self.api.Es
-                return lambda n: Es(efName).f(n)
+                Edata = Es(efName)
+                doValues = Edata.doValues
+                if doValues:
+                    return lambda n: tuple(m[0] for m in Edata.f(n))
+                else:
+                    return lambda n: Edata.f(n)
 
             def edgeIR(ftP, tTp):
                 Es = self.api.Es
-                return lambda n: Es(efName).t(n)
+                Edata = Es(efName)
+                doValues = Edata.doValues
+                if doValues:
+                    return lambda n: tuple(m[0] for m in Edata.t(n))
+                else:
+                    return lambda n: Edata.t(n)
 
             return (edgeR, edgeIR)
 

@@ -1,0 +1,17 @@
+site_name: Text-Fabric
+theme:
+  name: material
+  logo: 'images/tf-small.png'
+  feature:
+    tabs: true
+repo_name: 'Dans-labs/text-fabric'
+repo_url: 'https://github.com/dans-labs/text-fabric'
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+      linenums: true
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
