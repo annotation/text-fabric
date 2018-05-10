@@ -1,4 +1,4 @@
-![logo](images/tf.png)
+![logo](/images/tf.png)
 
 Text-Fabric is a Python3 package for Text plus Annotations.
 
@@ -88,12 +88,3 @@ Most ideas derive from an earlier project,
 [LAF-Fabric](https://github.com/Dans-labs/laf-fabric).
 We have taken out everything that makes LAF-Fabric complicated and is not essential for the
 kind of data processing we have in mind.
-
-[Motivation](http://www.slideshare.net/dirkroorda/text-fabric)
-
-[Data](https://github.com/Dans-labs/text-fabric-data)
-
----
-[Previous](Roadmap) -
-[Next](News)
-

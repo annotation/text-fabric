@@ -971,13 +971,14 @@ This notebook online:
                 highlights=highlights,
             )
 
-    def search(self, query):
+    def search(self, query, silent=False):
         api = self.api
         S = api.S
-        results = list(S.search(query))
+        results = sorted(S.search(query))
         nResults = len(results)
         plural = '' if nResults == 1 else 's'
-        print(f'{nResults} result{plural}')
+        if not silent:
+            print(f'{nResults} result{plural}')
         return results
 
     def table(

@@ -1,10 +1,11 @@
-<a name="top">
+# Text-Fabric File Format
+
+## Overview
 
 A `.tf` feature file starts with a *header*, and is followed by the actual data.
 The whole file is a plain text in UNICODE-utf8.
 
-Header
-======
+## Header
 
 A `.tf` feature file always starts with one or more metadata lines of the form
 
@@ -53,14 +54,12 @@ date stamp in it like this
 
 The time format should be [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601).
 
-Data
-====
+## Data
 
 After the metadata, there must be exactly one blank line, and every line after
 that is data.
 
-Data lines
-----------
+### Data lines
 
 The form of a data line is
 
@@ -78,8 +77,7 @@ These fields are separated by single tabs.
 describe the bits that can be left out, which will lead to significant
 improvement in space demands and processing speed.
 
-Node Specification
-------------------
+### Node Specification
 
 Every line contains a feature value that pertains to all nodes defined by its
 *node_spec*, or to all edges defined by its pair of *node_spec*s.
@@ -125,8 +123,7 @@ arbitrary order:
 
     1-3 is the same as 3-1
 
-Edges
------
+### Edges
 
 An edge is specified by an *ordered* pair of nodes. The edge is *from* the first
 node in the pair *to* the second one. An edge spec consists of two node specs.
@@ -134,8 +131,7 @@ It denotes all edges that are *from* a node denoted by the first node spec *to*
 a node denoted by the second node spec. An edge might be labelled, in that case
 the label of the edge is specified by the *value* after the two node specs.
 
-Value
------
+#### Value
 
 The value is arbitrary text. The type of the value must conform to the
 `@valueType` declaration in the feature file. If it is missing, it is assumed to
@@ -158,14 +154,12 @@ be no data line in the feature that targets this node.
 If the declared value type (`@valueType`) of a feature is `int`, then its empty
 values will be taken as absence of values, though.
 
-Consistency requirements
-========================
+## Consistency requirements
 
 There are a few additional requirements on feature data, having to do with the
 fact that features annotate nodes or edges of a graph.
 
-Single values
--------------
+### Single values
 
 It is assumed that a node feature assigns only one value to the same node. If
 the data contains multiple assignments to a node, only the last assignment will
@@ -177,7 +171,3 @@ assignment will be honoured.
 
 Violations maybe or may not be reported, and processing may continue without
 warnings.
-
-* * *
-
-[Previous](Data-model) - [Next](Optimizations)

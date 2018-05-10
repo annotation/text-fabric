@@ -1,7 +1,6 @@
-<a name="top">
+# Search Design
 
-At a glance
-===========
+## Fabric metaphor
 
 ![fabric](/images/searchFabric.jpg)
 
@@ -33,8 +32,7 @@ stitch the yarns together with thread | build results by selecting a member for 
 
 We will explain the stages of the fabrication process in detail.
 
-Fleece
-======
+## Fleece
 
 ![fleece](/images/SearchDesign.002.jpeg)
 
@@ -64,8 +62,7 @@ divided into a small set of fleeces.
 The most important characteristic of a fleece is it size: the number of nodes in
 a node type.
 
-Spinning thick yarn
-===================
+## Spinning thick yarn
 
 ![spin thick](/images/SearchDesign.003.jpeg)
 
@@ -107,15 +104,13 @@ is that of the verbs, which has a thickness of roughly 1/6. A very thin thread
 is that of the word `<CQH` (which occurs only once) with a thickness of only
 1/400,000.
 
-Spinning thin yarns
-===================
+## Spinning thin yarns
 
 In order to find results, we have to further narrow down the search space. In
 other words, we are going to spin our thick yarns into thinner and thinner
 yarns. Before we can do that, we should make one thing clear.
 
-Connected by constraints
-------------------------
+### Connected by constraints
 
 If the template above were complete, it would lead to a monstrous number of
 results. Because a result of a template like this is any combination of verse-,
@@ -175,8 +170,7 @@ connected by constraints**.
 Text-Fabric will check this, and will only work with search templates that have
 only one connected component.
 
-Terminology
------------
+### Terminology
 
 By now we have arrived at the idea that our search template is a graph
 underneath: what we have called *atoms* are in fact the nodes, and what we have
@@ -196,8 +190,7 @@ Finding results is nothing else than instantiating *qnodes* of the search
 template by text nodes in such a way that the *qedges* hold between the text
 edges.
 
-Spinning a qedge
-----------------
+### Spinning a qedge
 
 ![spin edge1](/images/SearchDesign.004.jpeg)
 
@@ -284,8 +277,7 @@ We end up with a set of thin yarns, severely thinned out, even. This will be a
 good starting point for the last stage: picking members from each yarn to form
 results. We call this *stitching* and we'll get there in a moment.
 
-The spread of a qedge
----------------------
+### The spread of a qedge
 
 A very important property of a qedge is its *spread*. A qedge links a every node
 *n* in its *from*-yarn to zero, one, or more nodes in its *to*-yarn. The number
@@ -316,8 +308,7 @@ A few examples:
     the same set of slots. The spread of this relation is not too big, but the
     cost of computing it adds up quickly when applied to many cases.
 
-Spinning all qedges
--------------------
+### Spinning all qedges
 
 Let us describe the spinning of yarns along edges in a bit more general way, and
 reflect on what it does for us.
@@ -387,8 +378,7 @@ them. Also here there is complication: not every qedge is equally expensive when
 computed over a yarn. It might be better to compute a cheaper edge over a
 thicker yarn.
 
-Stitching
-=========
+## Stitching
 
 ![stitch](/images/SearchDesign.008.jpeg)
 
@@ -444,8 +434,7 @@ edges, without introducing choice points (very much like the one-choice above).
 If the relation fails to hold, this stitch is doomed, and we have to back-track
 (very much like the zero-choice above).
 
-Strategy of stitching
----------------------
+### Strategy of stitching
 
 The steps involved in stitching as described above are clear, but less clear is
 what yarn we shall select to start with, and in which order we shall follow the
@@ -479,8 +468,7 @@ implemented, and which can be used by means of an optional argument to
 [`S.study()`](https://github.com/Dans-labs/text-fabric/wiki/Api#prepare-for-search),
 but results of this strategy were not particularly good.
 
-Small-first strategy
---------------------
+### Small-first strategy
 
 Here is the small-first strategy in a bit more detail.
 
@@ -533,8 +521,4 @@ back-tracking occurs, by which the current stitch will get partly undefined,
 only to be filled up again by further searching.
 
 Read it all in the source code:
-[`def stichOn(e)`](https://github.com/Dans-labs/text-fabric/blob/master/tf/search.py#L1332).
-
-* * *
-
-[Previous](Data-Model) - [Next](File-formats)
+[`def stitchOn(e)`](https://github.com/Dans-labs/text-fabric/blob/master/tf/search.py#L1332).

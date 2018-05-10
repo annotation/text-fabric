@@ -1,11 +1,12 @@
-<a name="top">
+# File format Optimizations
+
+## Rationale
 
 It is important to avoid an explosion of redundant data in `.tf` files. We want
 the `.tf` format to be suitable for archiving, transparent to the human eye, and
 easy (i.e. fast) to process.
 
-Using the implicit node
-=======================
+## Using the implicit node
 
 You may leave out the node spec for node features, and the first node spec for
 edge features. When leaving out a node spec, you must also leave out the tab
@@ -58,8 +59,7 @@ you can just say
 This optimization is not obligatory. It is a device that may be used if you want
 to optimize the size of data files that you want to distribute.
 
-Omitting empty values
-=====================
+## Omitting empty values
 
 If the value is the empty string, you may also leave out the preceding tab (if
 there is one). This is especially good for edge features, because most edges
@@ -121,8 +121,7 @@ specified in a consecutive way, especially slot (word) nodes. There are quite
 many distinct word features, and it would be a waste to have a column of half a
 million incremental integers in those files.
 
-Absence of values
-=================
+## Absence of values
 
 Say you have a node feature assigning a value to only 2000 of 400,000 nodes.
 (The Hebrew `qere` would be an example). It is better to make sure that the
@@ -145,8 +144,7 @@ get a value, you can do it like this:
 
 Here all 10,000 nodes get a value, except node `1001`.
 
-Note on redundancy
-==================
+## Note on redundancy
 
 Some features assign the same value to many nodes. It is tempting to make a
 value definition facility, so that values are coded by short codes, the most
@@ -156,13 +154,11 @@ out that the overall gain was just 50%.
 I find this advantage too small to justify the increased code complexity, and
 above all, the reduced transparency of the `.tf` files.
 
-Examples
-========
+## Examples
 
 Here are a few more and less contrived examples of legal feature data lines.
 
-Node features
--------------
+### Node features
 
 1.  `\t\n`
 2.  `2 2\t3`
@@ -176,8 +172,7 @@ meaning
 3.  node 3 has value: foo *newline* bar
 4.  node 1 gets a new value: Escape <tab> as \t
 
-Edge features
--------------
+### Edge features
 
 1.  `1`
 2.  `1 2`
@@ -192,7 +187,3 @@ meaning
 4.  four edges: 1->2, 1->3, 2->2, 2->3, all with value bar. Note that edges can
     go from a node to itself. Note also that this line reassigns a value to two
     edges: 1->2 and 2->3.
-
-* * *
-
-[Previous](File-formats) - [Next](Api)

@@ -75,10 +75,16 @@ class NodeFeature(object):
             )
         )
 
-    def freqList(self):
+    def freqList(self, nodeTypes=None):
         fql = collections.Counter()
-        for n in self.data:
-            fql[self.data[n]] += 1
+        if nodeTypes is None:
+            for n in self.data:
+                fql[self.data[n]] += 1
+        else:
+            otype = self.api.F.otype.v
+            for n in self.data:
+                if otype(n) in nodeTypes:
+                    fql[self.data[n]] += 1
         return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
 
 
@@ -128,6 +134,38 @@ class EdgeFeature(object):
                     )
                 )
         return ()
+
+    def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
+        if nodeTypesFrom is None and nodeTypesTo is None:
+            if self.doValues:
+                fql = collections.Counter()
+                for (n, vals) in self.data.items():
+                    for val in vals.values():
+                        fql[val] += 1
+                return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
+            else:
+                fql = 0
+                for (n, ms) in self.data.items():
+                    fql += len(ms)
+                return fql
+        else:
+            otype = self.api.F.otype.v
+            if self.doValues:
+                fql = collections.Counter()
+                for (n, vals) in self.data.items():
+                    if nodeTypesFrom is None or otype(n) in nodeTypesFrom:
+                        for (m, val) in vals.items():
+                            if nodeTypesTo is None or otype(m) in nodeTypesTo:
+                                fql[val] += 1
+                return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
+            else:
+                fql = 0
+                for (n, ms) in self.data.items():
+                    if nodeTypesFrom is None or otype(n) in nodeTypesFrom:
+                        for m in ms:
+                            if nodeTypesTo is None or otype(m) in nodeTypesTo:
+                                fql += len(ms)
+                return fql
 
 
 class Computed(object):

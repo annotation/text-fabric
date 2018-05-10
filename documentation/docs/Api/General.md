@@ -1,7 +1,19 @@
+# Text-Fabric API
+
 ??? note "Tutorial"
     See the
     [tutorial](/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb) for examples
     of how to use the Text-Fabric API.
+
+???+ note "Generic API"
+    This is the API of Text-Fabric in general.
+    Text-Fabric has no baked in knowledge of particular corpora.
+
+    However, Text-Fabric comes with several additions that make working
+    with specific corpora easier.
+
+    * Hebrew Bible: [BHSA](bhsa)
+    * Proto-cuneiform tablets from Uruk: [Cunei](cunei)
 
 ## Loading
 
@@ -11,10 +23,15 @@
     TF = Fabric(locations=directories, modules=subdirectories, silent=False)
     ```
 
-    ??? info
+    ???+ info "Description"
+        Text-Fabric is initialized for a corpus. It will search a set of directories
+        and catalog all `.tf` files it finds there.
+        These are the features you can subsequently load.
+
         Here `directories` and `subdirectories` are strings with directory names
         separated by newlines, or iterables of directories.
 
+    ??? explanation "locations and modules"
         The directories specified in `locations` will be searched for `modules`, which
         are paths that will be appended to the paths in `locations`.
 
@@ -24,25 +41,28 @@
         way you can easily override certain features in one module by features in an
         other module of your choice.
 
+    ??? explanation "otext@ in modules"
         If modules contain features with a name starting with `otext@`, then the format
         definitions in these features will be added to the format definitions in the
         regular `otext` feature (which is a WARP feature). In this way, modules that
         define new features for text representation, also can add new formats to the
         Text-API.
 
-        The `locations` list defaults to
+    ??? hint "Defaults"
+        The `locations` list has a few defaults:
 
             ~/Downloads/text-fabric-data
             ~/text-fabric-data
             ~/github/text-fabric-data
 
-        in that order. So if you have stored your main Text-Fabric dataset in
-        `text-fabric-data` in your `~/github` or `~` directory, you do not have to pass
-        a location to Fabric.
+        So if you have stored your main Text-Fabric dataset in
+        `text-fabric-data` in one of these directories
+        you do not have to pass a location to Fabric.
 
         The `modules` list defaults to `['']`. So if you leave it out, Text-Fabric will
         just search the paths specified in `locations`.
 
+    ??? hint "Silent mode"
         If `silent=True` is passed, banners and normal progress messages are suppressed.
 
 ??? note "`TF.explore()`"
@@ -58,12 +78,13 @@
     TF.featureSets
     ```
 
-    ??? info
+    ???+ info "Description"
         This will give you a dictionary of all available features by kind. The kinds
         are: *nodes*, *edges*, *configs*, *computeds*.
 
         With `silent=False` a message containing the total numbers of features is issued.
 
+    ??? hint "Results"
         The resulting dictionary is delivered in `TF.featureSets`, but if you say
         `show=True`, the dictionary is return as function result.
 
@@ -73,17 +94,23 @@
     api = TF.load(features, add=False, silent=False)
     ```
 
-    ??? info
-        Here `features` is a string containing space separated feature names, or an
+    ???+ info "Description"
+        Reads the features indicated by `features` and loads them in memory
+        ready to be used in the rest of the program.
+
+    ??? explanation "`features`"
+        `features` is a string containing space separated feature names, or an
         iterable of feature names. The feature names are just the names of `.tf` files
         without directory information and without extension.
 
+    ??? info "Silent mode"
         The features will be loaded rather silently, most messages will be suppressed.
         Time consuming operations will always be announced, so that you know what
         Text-Fabric is doing. If `silent=True` is passed, all informational messages
         will be suppressed. This is handy I you want to load data as part of other
         methods, on-the-fly.
 
+    ??? info "Add features later"
         If later on you want load more features, you can either:
 
         *   add the features to the original `load()` statement and just run it again
@@ -97,19 +124,21 @@
     api.makeAvailableIn(globals())
     ```
 
-    ??? info
+    ???+ info "Description"
+        This method will export every member of the API (such as `N`, `F`, `E`, `L`, `T`,
+        `info`) to the global namespace. From now on, we will omit the `api.` in our
+        documentation.
+
+    ??? explanation "Contents of the API"
         After having loaded the features by `api = TF.load(...)`, the `api` harbours
         your Text-Fabric API. You can access node feature `mydata` by `api.F.mydata.v(node)`, edge
         feature `mylink` by `api.E.mylink.f(node)`, and so on.
 
         If you are working with a single data source in your program, it is a bit
-        tedious to write the initial `api.` all the time. It is easy to get rid of it.
+        tedious to write the initial `api.` all the time.
+        By this methodd you can avoid that.
 
-        This method will export every member of the API (such as `N`, `F`, `E`, `L`, `T`,
-        `info`) to the global namespace. From now on, we will omit the `api.` in our
-        documentation.
-
-    ??? note "Longer names"
+    ??? hint "Longer names"
         There are also longer names which can be used as aliases to the single capital
         letters. This might or might not improve the readability of your program.
 
@@ -134,21 +163,21 @@
     api.ignored
     ```
 
-    ??? info
-    If you want to know which features were found but ignored (because the feature
-    is also present in another, later, location), you can use this attribute
-    to inspect the ignored features and their locations.
+    ???+ info "Description"
+        If you want to know which features were found but ignored (because the feature
+        is also present in another, later, location), you can use this attribute
+        to inspect the ignored features and their locations.
 
 ??? note "`loadLog()`"
     ```python
     api.loadlog()
     ```
 
-    After loading you can view all messages using this method.
-    It also shows the messages that have been suppressed due to `silent=True`.
+    ???+ info "Description"
+        After loading you can view all messages using this method.
+        It also shows the messages that have been suppressed due to `silent=True`.
 
 ## Navigating nodes
-
 
 ??? note "`N()`"
     ```python
@@ -156,22 +185,22 @@
         action
     ```
 
-    ??? explanation
-        Most processing boils down to walking through the nodes by visiting node sets in
-        a suitable order. Occasionally, during the walk you might want to visit
-        embedding or embedded nodes to glean some feature information from them.
-
-    ??? info
+    ???+ info "Description"
         The result of `N()` is a generator that walks through all nodes in the
         *canonical order* (see below).
         Iterating over `N()` delivers you all words and structural elements of
         your corpus in a very natural order.
 
-    !!!+ note
+    ??? explanation "Walking nodes"
+        Most processing boils down to walking through the nodes by visiting node sets in
+        a suitable order. Occasionally, during the walk you might want to visit
+        embedding or embedded nodes to glean some feature information from them.
+
+    ??? hint "More ways of walking"
         Later, under *Features* there is another convenient way to walk through
         nodes.
 
-??? note "canonical order"
+??? explanation "canonical order"
     The canonical order is a way to sort the nodes in your corpus in such a way
     that you can enumerate all nodes in the order you encounter them if you
     walk through your corpus.
@@ -185,7 +214,7 @@
     *   if two objects are intersecting, but none embeds the other, the one with the
         smallest slot that does not occur in the other, comes first.
 
-    ??? example
+    ??? example "first things first, big things first"
         That means, roughly, that you start with a
         book node (Genesis), then a chapter node (Genesis 1), then a verse node, Genesis
         1:1, then a sentence node, then a clause node, a phrase node, and the first word
@@ -220,7 +249,7 @@
     sortNodes(nodeset)
     ```
 
-    ??? info
+    ???+ info "Description"
         delivers `nodeset` as a tuple sorted by the *canonical ordering*.
 
 ??? note "`sortKey`"
@@ -228,14 +257,14 @@
     nodeList = sorted(nodes, key=sortKey)
     ```
 
-    ??? info
+    ???+ info "Description"
         A function that provides for each node the key to be used to sort nodes in the
         canonical ordering. That means that the following two pieces of code do the same
         thing:
 
         `sortNodes(nodeset)` and `sorted(nodeset, key=sortKey)`.
 
-    ??? example
+    ??? example "Sorting tuples of nodes"
         Handy to sort things that are not nodes themselves, but data structures with
         nodes in it, e.g. search results: if `results` is a list of tuples of nodes, we
         could sort them in canonical order like this:
@@ -246,17 +275,18 @@
 
 ## Locality
 
-??? explanation
+??? explanation "Local navigation"
     Here are the methods by which you can navigate easily from a node to its
     neighbours: parents and children, previous and next siblings.
 
-    Locality is exposed as `L` or `Locality`.
+???+ info "`L`"
+    The Locality API is exposed as `L` or `Locality`.
 
-???+ note "`otype=` parameter"
+??? hint "`otype` parameter"
     In all of the following `L`-functions, if the `otype` parameter is passed, the result is filtered and
     only nodes with `otype=nodetype` are retained.
 
-???+ caution "Results are tuples, not single notes"
+??? caution "Results are tuples, not single notes"
       Even if an `L`-function returns a single node, it is packed in a *tuple*.
       So to get the node itself, you have to dereference the tuple:
 
@@ -269,7 +299,7 @@
     L.u(node, otype=nodetype)
     ```
 
-    ??? info
+    ???+ info "Description"
         Produces an ordered tuple of nodes **upward** from `node`, i.e. embedder nodes
         of `node`. The result does not include `node`.
 
@@ -278,7 +308,7 @@
     L.d(node, otype=nodetype)
     ```
 
-    ??? info
+    ???+ info "Description"
         Produces an ordered tuple of nodes **downward** from `node`, i.e. embedded nodes
         of `node`. The result does not include `node`.
 
@@ -287,7 +317,7 @@
     L.n(node, otype=nodetype)
     ```
 
-    ??? info
+    ???+ info "Description"
         Produces an ordered tuple of adjacent **next** nodes from `node`, i.e. nodes
         whose first slot just follows the last slot of `node`.
 
@@ -296,7 +326,7 @@
     L.p(node, otype=nodetype)
     ```
 
-    ??? info
+    ???+ info "Description"
         Produces an ordered tuple of adjacent **previous** nodes from `node`, i.e. nodes
         whose last slot just precedes the first slot of `node`.
 
@@ -394,7 +424,7 @@
     T.sectionFromNode(n, lastSlot=False, lang='en')
     ```
 
-    ??? info
+    ???+ info "Description"
         Returns the book/chapter/verse indications that correspond to the reference
         node, which is the first or last slot belonging `n`, dependent on `lastSlot`.
         The result is a tuple, consisting of the book name (in language `lang`), the
@@ -414,7 +444,7 @@
     T.nodeFromSection(section, lang='en')
     ```
 
-    ??? info
+    ???+ info "Description"
         Given a `section` tuple, return the node of it. `section` 
         consists of a book name (in language `lang`), and a chapter number and a verse
         number (both as strings or number depending on the value type of the
@@ -435,7 +465,7 @@
     T.languages
     ```
 
-    ??? info
+    ???+ info "Description"
         A dictionary of the languages that are available for book names.
 
 ??? note "`T.bookName()`"
@@ -443,7 +473,7 @@
     T.bookName(n, lang='en')
     ```
 
-    ??? info
+    ???+ info "Description"
         gives the name of the book in which node `n` occurs.
 
         The `lang` parameter is a two letter language code. The default is `en`
@@ -461,7 +491,7 @@
     T.bookNode(name, lang='en')
     ```
 
-    ??? info
+    ???+ info "Description"
         gives the node of the book identified by `name` in language `lang`.
 
         If `lang` can not be found, the value of the ordinary `book` feature of the
@@ -512,7 +542,7 @@
     T.formats
     ```
 
-    ??? info
+    ???+ info "Description"
         Show the text representation formats that have been defined in your dataset.
 
 ??? note "`T.text()`"
@@ -520,7 +550,7 @@
     T.text(nodes, fmt=None)
     ```
 
-    ??? info
+    ???+ info "Description"
         Gives the text that corresponds to the nodes, which can be an arbitrary iterable
         of nodes. No attempt will be made to sort the nodes, if you need order, it is
         better to order the nodes before you feed them to `T.text()`.
@@ -707,18 +737,18 @@
 
         *   *atom* lines
             *   (simple): **indent name:otype features**
-                *   `vb: word pos=verb gender=feminine`
+                *   `vb:word pos=verb gender=feminine`
                 *   The indent is significant. Indent is counted as the number of white space
                     characters, where tabs count for just 1. **Avoid tabs!**.
                 *   The **name:** part is optional.
             *   (with relop): **indent op name:otype features**
-            *   `<: word pos=verb gender=feminine`
-            *   The relation operator specifies an extra constraint between a preceding atom
-                and this atom.
-            *   The preceding atom may be the parent, provided we are at its first child, or
-                it may the preceding sibling.
-            *   You can leave out the **name:otype features** bit. In that case, the
-                relation holds between the preceding atom and its parent.
+                *   `<: word pos=verb gender=feminine`
+                *   The relation operator specifies an extra constraint between a preceding atom
+                    and this atom.
+                *   The preceding atom may be the parent, provided we are at its first child, or
+                    it may the preceding sibling.
+                *   You can leave out the **name:otype features** bit. In that case, the
+                    relation holds between the preceding atom and its parent.
         *   *feature* lines: **features**
             *   Indent is not significant. Continuation of feature constraints after a
                 preceding atom line or other feature line. This way you can divide lengthy
@@ -726,8 +756,11 @@
         *   *relation* lines: **name operator name**
             *   `s := w`
             *   `m -sub> s`
+            *   `m <sub- s`
             *   Indents and spacing are ignored.
             *   There must be white-space around the operator.
+            *   Operators that come from edge features may be enriched with values.
+                See below.
         *   *white-space or empty* lines
             *   Everywhere allowed.
             *   Always ignored.
@@ -737,14 +770,23 @@
         search for. This specification must be written as a white-space separated list
         of **feature specs**.
 
-        A **feature spec** may have these forms:
+        A **feature spec** has the form *key* *valueSpec*, with no space between the *key*
+        and the *valueSpec*.
+        The *valueSpec* may have the following forms:
 
         form | meaning
         ---- | -------
-        *key* | feature *key* may have any value except `None`
-        *key*`!` | feature *key* must have value `None` (synonymous for: *key* has no value)
-        *key*`=`*values* | feature *key* has one of the values specified
-        *key*`~`*regular expression* | feature *key* has a value and it matches *regular expression*
+        | feature *key* may have any value except `None`
+        `!` | feature *key* must have value `None` (synonymous for: *key* has no value)
+        `=`*values* | feature *key* has one of the values specified
+        `>`*value* | feature *key* must be greater than *value*
+        `<`*value* | feature *key* must be less than *value*
+        `~`*regular expression* | feature *key* has a value and it matches *regular expression*
+
+        All these forms are also valid as `-`*form*`>` and `<`*form`-`, in which case
+        they specify value constraints on edge features.
+        This is only meaningful if the edge feature is declared to have values (most edge features
+        do not have values).
 
         **Additional constraints**
 
@@ -754,12 +796,16 @@
         *   *values* must be a `|` separated list of feature values, no quotes. No spaces
             around the `|`. If you need a space or `|` or `\` in a value, escape it by a
             `\`. Escape tabs and newlines as `\t` and `\n`.
+        *   When comparing values with `<` and `>`:
+            *    *value* must be an integer (negative values allowed);
+            *   You can do numeric comparisons only on number-valued features, not on
+                string-valued features.
         *   *regular expression* must be a string that conforms to the Python
             [regular axpression syntax](https://docs.python.org/3/library/re.html#regular-expression-syntax)
             *   If that syntax prescribes a`\`, you have to write it twice: `\` `\`.
             *   If you need a space in your regular expression, you have to escape it with a
                 `\`.
-            *   You can do regular expressions only on string valued features, not on
+            *   You can do regular expressions only on string-valued features, not on
                 number-valued features.
 
     ??? info "Operator lines"
@@ -803,15 +849,19 @@
 
         ??? info "Based on edge features"
 
-            *   `-`*name*`>` `<`*name*`-`: connected by the edge feature *name*, in both
-                directions
+            *   `-`*name*`>` `<`*name*`-`: connected by the edge feature *name*
+                *   in both directions;
+                *   these forms work for edges that do and do not have values;
+            *   `-`*name* *valueSpec*`>` `<`*name* *valueSpec*`-`: connected by the edge feature *name*
+                *   in both directions;
+                *   these forms work only for edges that do have values.
 
 ??? note "`S.relationsLegend`"
     ```python
     S.relationsLegend
     ```
 
-    ??? info
+    ???+ info "Description"
         Gives dynamic help about the basic relations that you can use in your search
         template. It includes the edge features that are available in your dataset.
 
@@ -821,7 +871,7 @@
     S.search(searchTemplate, limit=None)
     ```
 
-    ??? info
+    ???+ info "Description"
         Searches for combinations of nodes that together match the `searchTemplate`. If
         `limit` is a number, it will fetch only that many results.
 
@@ -847,7 +897,7 @@
     S.study(searchTemplate, strategy=None, silent=False)
     ```
 
-    ??? info
+    ???+ info "Description"
         Your search template will be checked, studied, the search
         space will be narrowed down, and a plan for retrieving the results will be set
         up.
@@ -862,7 +912,7 @@
     S.showPlan(details=False)
     ```
 
-    ??? info
+    ???+ info "Description"
         Search results are tuples of nodes and the plan shows which part of the tuple
         corresponds to which part of the search template.
 
@@ -873,7 +923,7 @@
 
 ### Search results
 
-??? info
+??? info "Preparation versus result fetching"
     The method `S.search()` above combines the interpretation of a given
     template, the setting up of a plan, the constraining of the search space
     and the fetching of results.
@@ -886,7 +936,7 @@
     S.count(progress=None, limit=None)
     ```
 
-    info ???
+    info ??? "Description"
         Counts the results, up to a given `limit`, default 1000.
         Setting `limit` to 0 or a negative value means no limit: all results will be
         counted.
@@ -906,12 +956,12 @@
     S.fetch(limit=None)
     ```
 
-    ??? info
+    ???+ info "Description"
         Finally, you can retrieve the results. The result of `fetch()` is not a list of
         all results, but a *generator*. It will retrieve results as long as they are
         requested and their are still results.
 
-    ??? example
+    ??? example "Iterating over the `fetch()` generator"
         You typically fetch results by saying:
 
         ```python
@@ -925,7 +975,7 @@
         results. They will be fetched, and when they are all collected, returned as a
         tuple.
 
-    ??? example
+    ??? example "Fetching a limited amount of results"
         ```python
         S.fetch(limit=10)
         ```
@@ -937,7 +987,7 @@
     S.glean(r)
     ```
 
-    ??? info
+    ???+ info "Description"
         A search result is just a tuple of nodes that correspond to your template, as
         indicated by `showPlan()`. Nodes give you access to all information that the
         corpus has about it.
@@ -947,13 +997,18 @@
         in terms of sections, 
         and what text is associated with the results.
 
-    ??? example
+    ??? example "Inspecting results"
         ```python
         for result in S.fetch(limit=10):
             print(S.glean(result))
         ```
 
         is a handy way to get an impression of the first bunch of results.
+
+    ??? hint "More ways of showing results"
+        If you work in one of the corpora for which the TF-API has been extended,
+        you will be provided with more powerful methods `show()` and `table()`
+        to display your results. See [Cunei](cunei) and [Bhsa](bhsa).
 
 ??? danger "Search strategies"
     In order to tame the performance of search, the strategy by which results are fetched
@@ -973,8 +1028,8 @@
 
 ???+ info "Node Features"
 
-All data stored in node features is accessible through the
-`F` API. The longer name for `F` is `Feature`.
+???+ info "`F`"
+    The node features API is exposed as `F` (`Fs`) or `Feature` (`FeatureString`).
 
 ??? note "`Fall()` aka `AllFeatures()`"
     ```python
@@ -982,7 +1037,7 @@ All data stored in node features is accessible through the
     AllFeatures()
     ```
 
-    ??? info
+    ???+ info "Description"
       Returns a sorted list of all usable, loaded node feature names.
 
 ??? "`F.`*feature* aka `Feature.`*feature*"
@@ -991,7 +1046,7 @@ All data stored in node features is accessible through the
     Feature.part_of_speech
     ```
 
-    ??? info
+    ???+ info "Description"
         Returns a sub-api for retrieving data that is stored in node features.
         In this example, we assume there is a feature called
         `part_of_speech`.
@@ -1009,7 +1064,7 @@ All data stored in node features is accessible through the
     FeatureString('part-of-speech')
     ```
 
-    ??? info
+    ???+ info "Description"
         Returns a sub-api for retrieving data that is stored in node features.
         
         In this example, in line 1 and 2, the feature name is contained in
@@ -1021,7 +1076,7 @@ All data stored in node features is accessible through the
         Note that this is not a valid name in Python, yet we
         can work with it.
 
-    ??? explanation
+    ??? explanation "Both methods have identical results"
         The result of `Fs(feature)` and `F.`*value_of_feature* is identical.
 
         In most cases `F` works just fine, but we need `Fs` in two cases:
@@ -1030,7 +1085,7 @@ All data stored in node features is accessible through the
           Python name;
         * if we determine the feature we work with dynamically, at run time.
 
-    ??? note
+    ??? note "Simple forms"
         In the sequel we'll give examples based on the simple form only.
 
 
@@ -1039,7 +1094,7 @@ All data stored in node features is accessible through the
     F.part_of_speech.v(node)
     ```
 
-    ??? info
+    ???+ info "Description"
         Get the value of a *feature*, such as `part_of_speech` for `node`.
 
 ??? "`F.`*feature*`.s(value)`"
@@ -1048,7 +1103,7 @@ All data stored in node features is accessible through the
     F.part_of_speech.s('noun')
     ```
 
-    ??? info
+    ???+ info "Description"
         This is the other way to walk through nodes: it returns a generator of all nodes
         in the *canonical order* that have the value `value` for the
         feature *feature* (in this example: `part_of_speech`).
@@ -1057,20 +1112,24 @@ All data stored in node features is accessible through the
 
 ??? "`F.`*feature*`.freqList()`"
     ```python
-    F.part_of_speech.freqList()
+    F.part_of_speech.freqList(nodeTypes=None)
     ```
 
-    ??? info
+    ???+ info "Description"
         Inspect the values of *feature* (in this example: `part_of_speech`)
         and see how often they occur. The result is a
         list of pairs `(value, frequency)`, ordered by `frequency`, highest frequencies
         first.
 
+    ??? note "`nodeTypes`"
+        If you pass a set of nodeTypes, only the values for nodes within those
+        types will be counted.
+
 
 ??? info "`F.otype`"
     `otype` is a special node feature and has additional capabilities.
 
-    ??? info
+    ???+ info "Description"
         *   `F.otype.slotType` is the node type that can fill the slots (usually: `word`)
         *   `F.otype.maxSlot` is the largest slot number
         *   `F.otype.maxNode` is the largest node number
@@ -1085,8 +1144,8 @@ All data stored in node features is accessible through the
 
 ???+ info "Edge Features"
 
-All data stored in edge features is accessible through the
-`E` API. The longer name for `E` is `Edge`.
+???+ info "`E`"
+    The edge features API is exposed as `E` (`Es`) or `Edge` (`EdgeString`).
 
 ??? note "`Eall()` aka `AllEdges()`"
     ```python
@@ -1094,7 +1153,7 @@ All data stored in edge features is accessible through the
     AllEdges()
     ```
 
-    ??? info
+    ???+ info "Description"
       Returns a sorted list of all usable, loaded edge feature names.
 
 ??? "`E.`*feature* aka `Edge.`*feature*"
@@ -1103,7 +1162,7 @@ All data stored in edge features is accessible through the
     Feature.head
     ```
 
-    ??? info
+    ???+ info "Description"
         Returns a sub-api for retrieving data that is stored in edge features.
         In this example, we assume there is a feature called
         `head`.
@@ -1121,7 +1180,7 @@ All data stored in edge features is accessible through the
     EdgeString('head')
     ```
 
-    ??? info
+    ???+ info "Description"
         Returns a sub-api for retrieving data that is stored in edge features.
         
         In this example, in line 1 and 2, the feature name is contained in
@@ -1131,7 +1190,7 @@ All data stored in edge features is accessible through the
         we assume there is a feature called
         `head`.
 
-    ??? explanation
+    ??? explanation "Both methods have identical results"
         The result of `Es(feature)` and `E.`*value_of_feature* is identical.
 
         In most cases `E` works just fine, but we need `Es` in two cases:
@@ -1140,7 +1199,7 @@ All data stored in edge features is accessible through the
           Python name;
         * if we determine the feature we work with dynamically, at run time.
 
-    ??? note
+    ??? note "Simple forms"
         In the sequel we'll give examples based on the simple form only.
 
 ??? note "`E.`*feature*`.f(node)`"
@@ -1148,7 +1207,7 @@ All data stored in edge features is accessible through the
     E.head.f(node)
     ```
 
-    ??? info
+    ???+ info "Description"
         Get the nodes reached by *feature*-edges **from** `node`
         (in this example we want the `head`-edges).
         The result is an ordered tuple
@@ -1163,7 +1222,7 @@ All data stored in edge features is accessible through the
     E.head.t(node)
     ```
 
-    ??? info
+    ???+ info "Description"
         Get the nodes from which there are *feature*-edges **to** `node`..
         (in this example we want the `head`-edges).
         The result is an ordered tuple
@@ -1173,19 +1232,42 @@ All data stored in edge features is accessible through the
 
         If there are no edges from `n`, the empty tuple is returned, rather than `None`.
 
+??? "`E.`*feature*`.freqList()`"
+    ```python
+    E.op.freqList(nodeTypesFrom=None, nodeTypesTo=None)
+    ```
+
+    ???+ info "Description"
+        If the edge feature has no values, simply return the number of node pairs
+        between an edge of this kind exists.
+
+        If the edge feature does have values, we 
+        inspect them
+        and see how often they occur. The result is a
+        list of pairs `(value, frequency)`, ordered by `frequency`, highest frequencies
+        first.
+
+    ??? note "Restrict to certain nodeTypes for outgoing and incoming edges"
+        If you pass a set of nodeTypesFrom and or a set of nodeTypesTo,
+        only the values for node pairs with first member within nodeTypesFrom
+        and second member within nodeTypesTo 
+        will be counted.
+
+
+
 ??? info "`E.oslots`"
     `oslots` is a special edge feature and is mainly used to construct other parts
     of the API. It has less capabilities, and you will rarely need it. It does not
     have `.f` and `.t` methods, but an `.s` method instead.
 
-    ??? info
+    ???+ info "Description"
       * `E.oslots.s(node)`
         Gives the sorted list of slot numbers linked to `node`, or put otherwise: the
         slots that **support** node.
 
 ## Messaging
 
-??? info
+??? info "Timed messages"
     Error and informational messages can be issued, with a time indication.
 
 ??? note "`info()`"
@@ -1193,7 +1275,7 @@ All data stored in edge features is accessible through the
     info(msg, tm=True, nl=True)
     ```
     
-    ??? info
+    ???+ info "Description"
         Sends string `msg` to standard output, with a preceding elapsed time indicator,
         unless `tm=False`.
         A newline will be appended, unless `nl=False`.
@@ -1203,7 +1285,7 @@ All data stored in edge features is accessible through the
     error(msg, tm=True, nl=True)
     ```
     
-    ??? info
+    ???+ info "Description"
         Sends string `msg` to standard error, with a preceding elapsed time indicator,
         unless `tm=False`.
         A newline will be appended, unless `nl=False`.
@@ -1216,7 +1298,7 @@ All data stored in edge features is accessible through the
     indent(level=None, reset=False)
     ```
 
-    ??? info
+    ???+ info "Description"
         `indent()` You can indicate a level, which must be an integer. Subsequent
         `info()` and `error()` will display their messages with an indent. Timers at
         different levels are independent of each other. If `reset`, the elapsed time to
@@ -1229,7 +1311,7 @@ All data stored in edge features is accessible through the
     TF.save(nodeFeatures={}, edgeFeatures={}, metaData={}, module=None)
     ```
 
-    ??? info
+    ???+ info "Description"
         If you have collected feature data in dictionaries, keyed by the
         names of the features, and valued by their feature data,
         then you can save that data to `.tf` feature files on disk.
@@ -1286,7 +1368,7 @@ All data stored in edge features is accessible through the
     TF.clearCache()
     ```
 
-    ??? info
+    ???+ info "Description"
         Text-Fabric precomputes data for you, so that it can be loaded faster. If the
         original data is updated, Text-Fabric detects it, and will recompute that data.
 
@@ -1297,12 +1379,12 @@ All data stored in edge features is accessible through the
         Calling this function just does it, and it is equivalent with manually removing
         all `.tfx` files inside the hidden `.tf` directory inside your dataset.
 
-    ??? note
+    ??? hint "No need to load"
         It is not needed to execute a `TF.load()` first.
 
 ## MQL
 
-??? info
+??? info "Data interchange with MQL"
     You can interchange with MQL data. Text-Fabric can read and write MQL dumps. An
     MQL dump is a text file, like an SQL dump. It contains the instructions to
     create and fill a complete database.
@@ -1312,7 +1394,7 @@ All data stored in edge features is accessible through the
     TF.exportMQL(dbName, dirName)
     ```
 
-    ??? info
+    ???+ info "Description"
         Exports the complete TF dataset into single MQL database.
 
         The resulting MQL database has the following properties with respect to the
@@ -1405,11 +1487,11 @@ All data stored in edge features is accessible through the
         be expanded to the parent of the current directory, and `.` to the current
         directory, both only at the start of `dirName`.
 
-    ??? caution
+    ??? hint "File size"
         The MQL export is usually quite massive (500 MB for the Hebrew Bible).
         It can be compressed greatly, especially by the program `bzip2`.
 
-    ??? caution
+    ??? caution "Exisiting database"
         If you try to import an MQL file in Emdros, and there exists already a file or
         directory with the same name as the MQL database, your import will fail
         spectacularly. So do not do that. A good way to prevent it is:
@@ -1418,178 +1500,195 @@ All data stored in edge features is accessible through the
             `~/Downloads`;
         *   before importing the MQL file, delete the previous copy;
 
-        ??? example
+        ??? example "Delete existing copy"
             ```sh
             cd ~/Downloads
             rm dataset ; mql -b 3 < dataset.mql
             ```
 
-### MQL import
+??? note "`TF.importMQL()`"
+    ```python
+    TF.importMQL(mqlFile, slotType=None, otext=None, meta=None)
+    ```
 
-You can convert an MQL database dump to a text-fabric dataset.
+    ???+ info "Description"
+        Converts an MQL database dump to a Text-Fabric dataset.
 
-```python
-TF.importMQL(mqlFile, slotType=None, otext=None, meta=None)
-```
+    ??? hint "Destination directory"
+        It is recommended to call this `importMQL` on a TF instance called with
 
-It is recommended to call this `importMQL` on a TF instance called with
+        ```python
+        locations=targetDir, modules=''
+        ```
 
-```python
-locations=targetDir, modules=''
-```
+        Then the resulting features will be written in the targetDir.
 
-then the resulting features will be written in the targetDir.
+        In fact, the rules are exactly the same as for `TF.save()`.
 
-In fact, the rules are exactly the same as for `TF.save()`, see
-[Saving features](#Saving-features).
+    ??? info "`slotType`"
+        You have to tell which object type in the MQL file acts as the slot type,
+        because TF cannot see that on its own.
 
-You have to tell which object type in the MQL file acts as the slot type,
-because TF cannot see that on its own.
+    ??? info "`otext`"
+        You can pass the information about sections and text formats as the parameter
+        `otext`. This info will end up in the `otext.tf` feature. Pass it as a
+        dictionary of keys and values, like so:
 
-You can pass the information about sections and text formats as the parameter
-`otext`. This info will end up in the `otext.tf` feature. Pass it as a
-dictionary of keys and values, like so:
+        ```python
+        otext = {
+            'fmt:text-trans-plain': '{glyphs}{trailer}',
+            'sectionFeatures': 'book,chapter,verse',
+        }
+        ```
 
-```python
-otext = {
-    'fmt:text-trans-plain': '{glyphs}{trailer}',
-    'sectionFeatures': 'book,chapter,verse',
-}
-```
+    ??? info "`meta`"
+        Likewise, you can add a dictionary of keys and values that will added to the
+        metadata of all features. Handy to add provenance data here:
 
-Likewise, you can add a dictionary of keys and values that will added to the
-metadata of all features. Handy to add provenance data here:
-
-```python
-meta = dict(
-    dataset='DLC',
-    datasetName='Digital Language Corpus',
-    author="That 's me",
-)
-```
+        ```python
+        meta = dict(
+            dataset='DLC',
+            datasetName='Digital Language Corpus',
+            author="That 's me",
+        )
+        ```
 
 ## Computed data
 
-In order to make the API work, Text-Fabric prepares some data and saves it in
-quick-load format. Most of this data are the features, but there is some extra
-data needed for the special functions of the WARP features and the L-API.
+??? explanation "Pre-computing"
+    In order to make the API work, Text-Fabric prepares some data and saves it in
+    quick-load format. Most of this data are the features, but there is some extra
+    data needed for the special functions of the WARP features and the L-API.
 
-Normally, you do not use this data, but since it is there, it might be valuable,
-so we have made it accessible in the `C`-api, which we document here.
+    Normally, you do not use this data, but since it is there, it might be valuable,
+    so we have made it accessible in the `C`-api, which we document here.
 
-### Levels
+??? note "Levels"
 
-All node types have a level, defined by the average amount of slots object of
-that type usually occupy. The bigger the average object, the lower the levels.
-Books have the lowest level, words the highest level.
+    ??? note "`C.levels.data`"
+        ???+ info "Description"
+            A sorted list of object types plus basic information about them.
 
-However, this can be overruled. Suppose you have a node type *phrase* and above
-it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
-versa. If all phrases are contained in clusters, and some clusters have more
-than one phrase, the automatic level ranking of node types works out well in
-this case. But if clusters only have very small phrases, and the big phrases do
-not occur in clusters, then the algorithm may assign a lower rank to clusters
-than to phrases.
+            Each entry in the list has the shape
 
-In general, it is too expensive to try to compute the levels in a sophisticated
-way. In order to remedy cases where the algorithm assigns wrong levels, you can
-add a `@levels` key to the `otext` config feature. See
-[text](#levels-of-node-types).
+            ```python
+                (otype, averageSlots, minNode, maxNode)
+            ```
 
-`C.levels.data` alias `Computed.levels.data` is a sorted list of object types
-plus basic information about them.
+            where `otype` is the name of the node type, `averageSlots` the average size of
+            objects in this type, measured in slots (usually words). `minNode` is the first
+            node of this type, `maxNode` the last, and the nodes of this node type are
+            exactly the nodes between these two values (including).
 
-Each entry in the list has the shape
+        ??? explanation "Level computation and customization"
+            All node types have a level, defined by the average amount of slots object of
+            that type usually occupy. The bigger the average object, the lower the levels.
+            Books have the lowest level, words the highest level.
 
-```python
-    (otype, averageSlots, minNode, maxNode)
-```
+            However, this can be overruled. Suppose you have a node type *phrase* and above
+            it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
+            versa. If all phrases are contained in clusters, and some clusters have more
+            than one phrase, the automatic level ranking of node types works out well in
+            this case. But if clusters only have very small phrases, and the big phrases do
+            not occur in clusters, then the algorithm may assign a lower rank to clusters
+            than to phrases.
 
-where `otype` is the name of the node type, `averageSlots` the average size of
-objects in this type, measured in slots (usually words). `minNode` is the first
-node of this type, `maxNode` the last, and the nodes of this node type are
-exactly the nodes between these two values (including).
+            In general, it is too expensive to try to compute the levels in a sophisticated
+            way. In order to remedy cases where the algorithm assigns wrong levels, you can
+            add a `@levels` key to the `otext` config feature. See
+            [text](#levels-of-node-types).
 
-### Order
+??? note "Order"
+    ??? note "`C.order.data`"
+        ???+ info "Description"
+            An **array** of all nodes in the correct order. This is the
+            order in which `N()` alias `Node()` traverses all nodes.
 
-Order all nodes in the [canonical ordering](#sorting-nodes) is quite a bit of
-work, and we need this ordering all the time.
+        ??? explanation "Rationale"
+            To order all nodes in the [canonical ordering](#sorting-nodes) is quite a bit of
+            work, and we need this ordering all the time.
 
-`C.order.data` is an **array** of all nodes in the correct order. This is the
-order in which `N()` alias `Node()` traverses all nodes.
 
-### Rank
+??? note "Rank"
+    ??? note "`C.rank.data`"
+        ???+ info "Description"
+            An **array** of all indices of all nodes in the canonical order
+            array. It can be viewed as its inverse.
 
-I we want to order a set of nodes in the canonical ordering, we need to know
-which position each node takes in the canonical order, in other words, at what
-index we find it in the [`C.order.data`](#order) array.
+        ??? explanation "Order arbitrary node sets"
+            I we want to order a set of nodes in the canonical ordering, we need to know
+            which position each node takes in the canonical order, in other words, at what
+            index we find it in the [`C.order.data`](#order) array.
 
-`C.rank.data` is an **array** of all indices of all nodes in the canonical order
-array. It can be viewed as its inverse.
+??? "Level Up and Down"
+    ??? note "`C.levUp.data` and `C.levDown.data`"
+        ???+ info "Description"
+            These tables feed the `L.d()` and `L.u()` functions.
 
-### Level Up and Down
+        ??? caution "Use with care"
+            They consist of a fair amount of megabytes, so they are heavily optimized.
+            It is not advisable to use them directly, it is far better to use the `L` functions.
 
-`C.levUp.data` and `C.levDown.data` feed the `L.d()` and `L.u()` functions. They
-consist of a fair amount of megabytes, so they are heavily optimized. It is not
-advisable to use them directly, it is far better to use the `L` functions.
+            Only when every bit of performance waste has to be squeezed out, this raw data
+            might be a deal.
 
-Only when every bit of performance waste has to be squeezed out, this raw data
-might be a deal.
+??? "Boundary"
+    ??? note "`C.boundary.data`"
+        ???+ info "Description"
+            These tables feed the `L.n()` and `L.p()` functions.
+            It is a tuple consisting of `firstSlots` and `lastSlots`.
+            They are indexes for the first slot
+            and last slot of nodes.
+            
+        ??? explanation "Slot index"
+            For each slot, `firstSlot` gives all nodes (except
+            slots) that start at that slot, and `lastSlot` gives all nodes (except slots)
+            that end at that slot.
+            Both `firstSlot` and `lastSlot` are tuples, and the
+            information for node `n` can be found at position `n-MaxSlot-1`.
 
-### Boundary
+??? "Sections"
+    ??? note "`C.sections.data`"
+        ???+ info "Description"
+            Let us assume for the sake of clarity, that the node type of section level 1 is
+            `book`, that of level 2 is `chapter`, and that of level 3 is `verse`. And
+            suppose that we have features, named `bookHeading`, `chapterHeading`, and
+            `verseHeading` that give the names or numbers of these.
 
-`C.boundary.data` feeds the `L.n()` and `L.p()` functions. It is a tuple
-consisting of `firstSlots` and `lastSlots`. They are indexes for the first slot
-and last slot of nodes. For each slot, `firstSlot` gives all nodes (except
-slots) that start at that slot, and `lastSlot` gives all nodes (except slots)
-that end at that slot. Both `firstSlot` and `lastSlot` are tuples, and the
-information for node `n` can be found at position `n-MaxSlot-1`.
+            ??? caution "Custom names"
+                Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
+                It is the corpus data, especially the `otext` config feature that
+                spells out the names of the sections.
 
-### Sections
+            Then `C.section.data` is a tuple of two mappings , let us call them `chapters`
+            and `verses`.
 
-The `T`-api is good in mapping nodes unto sections, such as books, chapters,
-verses and back. It knows how many chapters each book has, and how many verses
-each chapter.
+            `chapters` is a mapping, keyed by `book` **nodes**, and then by
+            by chapter **headings**, giving the corresponding
+            chapter **node**s as values.
 
-The `T` api is meant to make your life easier when you have to find passage
-labels by nodes or vice versa. That is why you probably never need to consult
-the underlying data. But you can! That data is stored in
+            `verses` is a mapping, keyed by `book` **nodes**, and then
+            by chapter **headings**, and then by verse **headings**,
+            giving the corresponding verse **node**s as values.
 
-`C.sections.data`
+        ??? explanation "Supporting the `T`-Api"
+            The `T`-api is good in mapping nodes unto sections, such as books, chapters,
+            verses and back. It knows how many chapters each book has, and how many verses
+            each chapter.
 
-Let us assume for the sake of clarity, that the node type of section level 1 is
-`book`, that of level 2 is `chapter`, and that of level 3 is `verse`. And
-suppose that we have features, named `bookHeading`, `chapterHeading`, and
-`verseHeading` that give the names or numbers of these.
+            The `T` api is meant to make your life easier when you have to find passage
+            labels by nodes or vice versa. That is why you probably never need to consult
+            the underlying data. But you can! That data is stored in
 
-Then `C.section.data` is a tuple of two mappings , let us call them `chapters`
-and `verses`.
 
-`chapters` is a mapping, keyed by `book` **nodes**, and the values are mappings
-themselves, keyed by chapter **headings**, and valued by the corresponding
-chapter **node**.
+# Miscellaneous
 
-`verses` is a mapping, keyed by `book` **nodes**, and the values are mappings
-themselves, keyed by chapter **headings**, and valued by mappings, keyed by
-verse **headings** and valued by the corresponding verse **node**.
+??? note "`TF.version`"
+    ???+ info "Description"
+        Contains the version number of the Text-Fabric
+        library.
 
-## Miscellaneous
-
-### Banner and version
-
-You can call up a banner, showing the name and the version of the Text-Fabric
-library by means of
-
-```python
-TF.banner
-```
-
-And the version itself is in
-
-```python
-TF.version
-```
-
-* * *
-
-[Previous](Optimizations) - [Next](Roadmap)
+??? note "`TF.banner`"
+    ???+ info "Description"
+        Contains the name and the version of the Text-Fabric
+        library.

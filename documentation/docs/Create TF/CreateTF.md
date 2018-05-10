@@ -1,3 +1,5 @@
+# Create a TF dataset
+
 We describe a conversion of an [example text](ExampleText) to Text-Fabric.
 
 This is not meant as a recipe, but as a description of the pieces of information
@@ -8,18 +10,17 @@ How you turn this insight into an executable program is dependent on how the
 source text is encoded and organized. See some
 [examples](https://github.com/Dans-labs/text-fabric-data/tree/master/programs).
 
-Analysis
---------
+## Analysis
 
 The text is a string with a little bit of structure. Some of that structure
 gives us our node types, and other bits give us the features.
 
-### Node types ###
+## Node types
 
 The text is divided into main sections, subsections, paragraphs, and sentences.
 The sentences are divided into words by white-space and/or punctuation.
 
-#### Step 1: define slots ####
+### Step 1: define slots
 
 Make a copy of the text, strip out all headings and split the string on
 white-space. We get a sequence of "words". These words may contain punctuation or
@@ -34,7 +35,7 @@ We assign to numbers 1, ... ,*S* the string `word`.
 
 That means, we have now *S* nodes, all of type `word`.
 
-#### Step 2: add higher level nodes ####
+### Step 2: add higher level nodes
 
 For each level of *section*, *subsection* and *paragraph*, make new nodes. Nodes
 are numbers, and we start making new nodes directly after *S*.
@@ -61,7 +62,7 @@ add so many nodes of type `sentence`.
 The mapping `otype` is called a *feature* of nodes. Any mapping that assigns
 values to nodes, is called a (node-)feature.
 
-### Containment ###
+## Containment
 
 We also have to record which words belong to which nodes. This information takes
 the shape of a mapping of nodes to sets of nodes. Or, with a slight twist, we
@@ -76,7 +77,7 @@ we have in our set.
 The edge feature that records the containment of words in nodes, is called
 `oslots`.
 
-#### Step 3: map nodes to sets of words ####
+### Step 3: map nodes to sets of words
 
 For each of the higher level nodes `n` (the ones beyond *S*) we have to
 lookup/remember/compute which words `w` belong to it, and put that in the
@@ -88,7 +89,7 @@ lookup/remember/compute which words `w` belong to it, and put that in the
 *   *S+6* ~ { x+1, x+2, ...}
 *   ...
 
-### Features ###
+## Features
 
 Now we have two features, a node feature `otype` and an edge feature `oslots`.
 This is merely the skeleton of our text, the *warp* so to speak. It contains the
@@ -96,7 +97,7 @@ textual positions, and the information what the meaningful chunks are.
 
 Now it is time to weave the information in.
 
-#### Step 4: the actual text ####
+### Step 4: the actual text
 
 Remember the words with punctuation attached? We can split every word into three
 parts:
@@ -117,7 +118,7 @@ Here we go:
 
 And so for all words.
 
-#### Step 5: more features ####
+### Step 5: more features
 
 For the sections and subsections we can make a feature `heading`, in which we
 store the headings of those sections.
@@ -138,7 +139,7 @@ If you want absolute paragraph numbers, you can just add a feature for that:
 *   `abs_number[p]` is 23 if `p` is the node corresponding to the 23th paragraph
     in the corpus.
 
-### Metadata ###
+## Metadata
 
 You can supply metadata to all node features and edge features. Metadata must be
 given as a dictionary, where the keys are the names of the features in your
@@ -164,7 +165,7 @@ If you specify `otext` well, the [T-API](Api#text) can make use of it, so that
 you have convenient, generic functions to get at your sections and to serialize
 your text in different formats.
 
-#### Step 6: sectioning metadata ####
+### Step 6: sectioning metadata
 
 *   `sectionTypes: 'section,subsection,paragraph'`
 *   `sectionFeatures: 'title,title,number'`
@@ -174,7 +175,7 @@ This tells Text-Fabric that node type `section` corresponds to section level 1,
 that the heading of sections at level 1 and 2 are in the feature `title`, and
 that the heading at level 3 is in the feature `number`.
 
-#### Step 7: text formats ####
+### Step 7: text formats
 
 *   `fmt:text-orig-plain: '{prefix}{text}{suffix}'`
 *   `fmt:text-orig-bare: '{text} '`
@@ -215,13 +216,13 @@ that have been designed for Hebrew:
 Note that the actual text-formats are not baked in into TF, but are supplied by
 you, the corpus designer.
 
-### Writing out TF ###
+## Writing out TF
 
 Once you have assembled your features and metadata as data structures in memory,
 you can use [`TF.save()`](Api#saving-features) to write out your data as a bunch
 of Text-Fabric files.
 
-#### Step 8: invoke TF.save() ####
+### Step 8: invoke TF.save()
 
 The call to make is
 
@@ -239,7 +240,7 @@ And the metadata you have composed goes into the `metaData` parameter.
 Finally, the `module` parameter dictates where on your system the TF-files will
 be written.
 
-### First time usage ###
+## First time usage
 
 When you start using your new dataset in Text-Fabric, you'll notice that there
 is some upfront computation going on. Text-Fabric computes derived data,
@@ -256,7 +257,7 @@ files are outdated and need to be regenerated again.
 This whole machinery is invisible to you, the user, except for the delay at
 first time use.
 
-### Enriching your corpus ###
+## Enriching your corpus
 
 Maybe a linguistic friend of yours has a tool to determine the part of speech of
 each word in the text.
@@ -269,7 +270,7 @@ See for example how Cody Kingham
 the notion of linguistic head to the BHSA
 datasource of the Hebrew Bible.
 
-#### Step 9: add the new feature ####
+### Step 9: add the new feature
 
 Once you have the feature `pos`, provide a bit of metadata, and call
 
@@ -293,7 +294,7 @@ Users can just obtain the corpus and your linguistic module separately. When
 they call their Text-Fabric, they can point it to both locations, and
 Text-Fabric treats it as one dataset.
 
-#### Step 10: use the new feature ####
+### Step 10: use the new feature
 
 The call to [`TF=Fabric()`](Api#importing-and-calling-text-fabric) looks like this
 

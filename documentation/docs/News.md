@@ -1,23 +1,18 @@
-<a name="top">
+# Changes
 
-[Previous](Home) - [Next](Data-Model)
+???+ hint "Consult the tutorials after changes"
+    When we change the API, we make sure that the tutorials shows off
+    all possibilities.
+    * [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
+    * [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
-* * *
-
-**walk through the**
-[tutorial](/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb) **and**
-[searchTutorial](/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb)
-**after each major update**
-
-3.4.12
-======
+## 3.4.12
 
 2018-05-02
 
 The Cunei and Bhsa APIs show the version of Text-Fabric that is being called.
 
-3.4.11
-======
+## 3.4.11
 
 2018-05-01
 
@@ -28,8 +23,7 @@ Cunei
 *   cases have a feature **depth** now, indicating at which level of nesting they
     are.
 
-    3.4.8-9-10
-    ==========
+## 3.4.8-9-10
 
 2018-04-30
 
@@ -39,18 +33,15 @@ Various small fixes, such as:
 
 *   Cunei: Prevented spurious `</div>` in nbviewer.
 
-3.4.7
-=====
+## 3.4.7
 
 Cunei: Modified local image names
 
-3.4.6
-=====
+## 3.4.6
 
 Small tweaks in search.
 
-3.4.5
-=====
+## 3.4.5
 
 2018-04-28
 
@@ -60,8 +51,7 @@ Bhsa API:
     and result lists, as opposed to the abundant representations by `pretty()` and
     `show()`.
 
-3.4.4
-=====
+## 3.4.4
 
 2018-04-27
 
@@ -71,8 +61,7 @@ Cunei API:
     and result lists, as opposed to the abundant representations by `pretty()` and
     `show()`.
 
-3.4.2
-=====
+## 3.4.2
 
 2018-04-26
 
@@ -80,8 +69,7 @@ Better search documentation.
 
 Cunei API: small fixes.
 
-3.4.1
-=====
+## 3.4.1
 
 2018-04-25
 
@@ -99,8 +87,7 @@ Cunei API:
     have bee translated to the Cunei API. You can now get **very** pretty displays
     of search results.
 
-3.4
-===
+## 3.4
 
 2018-04-23
 
@@ -115,22 +102,19 @@ Bhsa API:
 
 The display of query results also works with lexeme nodes.
 
-3.3.4
-=====
+## 3.3.4
 
 2018-04-20
 
 Cunei API: Better height and width control for images. Leaner captions.
 
-3.3.3
-=====
+## 3.3.3
 
 2018-04-19
 
 Cunei API: `casesByLevel()` returns case nodes in corpus order.
 
-3.3.2
-=====
+## 3.3.2
 
 2018-04-18
 
@@ -144,8 +128,7 @@ Changes in Cunei and Bhsa api:
 
 *   fixed a bug that occurred when working outside a github repository.
 
-    3.3.1
-    =====
+## 3.3.1
 
 2018-04-18
 
@@ -160,8 +143,7 @@ but not intended).
 
 `terminal=False`: delivers all cases at that level.
 
-3.3
-===
+## 3.3
 
 2018-04-14
 
@@ -169,8 +151,7 @@ Small fix in the bhsa api.
 
 Bumped the version number because of the inclusion of corpus specific APIs.
 
-3.2.6
-=====
+## 3.2.6
 
 2018-04-14
 
@@ -182,10 +163,9 @@ Bumped the version number because of the inclusion of corpus specific APIs.
     own to specify the search paths for TF features, leaving the `modules`
     parameter undefined, if you wish.
 
-    3.2.5
-    =====
+## 3.2.5
 
-    2018-03-23
+2018-03-23
 
 Enhancement in search templates: you can now test for the presence of features.
 Till now, you could only test for one or more concrete values of features. So,
@@ -199,32 +179,28 @@ you can also say things like
 
 and it will give you words in the plural that have a tense.
 
-3.2.4
-=====
+## 3.2.4
 
 2018-03-20
 
 The short API names `F`, `T`, `L` etc. have been aliased to longer names:
 `Feature`, `Text`, `Locality`, etc.
 
-3.2.2
-=====
+## 3.2.2
 
 2018-02-27
 
 Removed the sub module `cunei.py`. It is better to keep corpus dependent modules
 in outside the TF package.
 
-3.2.1
-=====
+## 3.2.1
 
 2018-02-26
 
 Added a sub module `cunei.py`, which contains methods to produce ATF
 transcriptions for nodes of certain types.
 
-3.2
-===
+## 3.2
 
 2018-02-19
 
@@ -251,16 +227,14 @@ bigger ones.
 Now you can override the computation by text-fabric by means of a key-value in
 the *otext* feature. See the [api](Api#levels-of-node-types).
 
-3.1.5
-=====
+## 3.1.5
 
 2018-02-15
 
 Fixed a small problem in `sectionFromNode(n)` when `n` is a node within a
 primary section but outside secundary/tertiary sections.
 
-3.1.4
-=====
+## 3.1.4
 
 2018-02-15
 
@@ -270,16 +244,14 @@ API will not break, and the plain `book` feature will be taken always.
 
 We also reformatted all code with a pep8 code formatter.
 
-3.1.3
-=====
+## 3.1.3
 
 2018-01-29
 
 Small adaptions in conversion from MQL to TF, it can now also convert the MQL
 coming from CALAP dataset (Syriac).
 
-3.1.2
-=====
+## 3.1.2
 
 2018-01-27
 
@@ -287,8 +259,7 @@ Nothing changed, only the names of some variables and the text of some messages.
 The terminology has been maed more consistent with the fabric metaphor, in
 particular, *grid* has been replaced by *warp*.
 
-3.1.1
-=====
+## 3.1.1
 
 2017-10-21
 
@@ -296,8 +267,7 @@ The `exportMQL()` function now generates one single enumeration type that serves
 for all enum features. That makes it possible to compare values of different
 enum features with each other, such as `ps` and `prs_ps`.
 
-3.1
-===
+## 3.1
 
 2017-10-20
 
@@ -305,22 +275,19 @@ The `exportMQL()` function now generates enumeration types for features, if
 certain conditions are fulfilled. That makes it possible to query those features
 with the `IN` relationship of MQL, like `[chapter book IN (Genesis, Exodus)]`.
 
-3.0.8
-=====
+## 3.0.8
 
 2017-10-07
 
 When reading edges with values, also the edges without a value are taken in.
 
-3.0.7
-=====
+## 3.0.7
 
 2017-10-07
 
 Edges with edge values did not allow for the absence of values. Now they do.
 
-3.0.6
-=====
+## 3.0.6
 
 2017-10-05
 
@@ -331,8 +298,7 @@ are somewhat arbitrary gaps in the monad sequence between the books of the
 Hebrew Bible. I transform a gapped sequence of monads into a continuous sequence
 of slots.
 
-3.0.5
-=====
+## 3.0.5
 
 2017-10-05
 
@@ -340,8 +306,7 @@ Another little tweak in the [importMQL()](Api#mql-import) function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
 MQL for version 3 of the [BHSA](https://github.com/ETCBC/bhsa).
 
-3.0.4
-=====
+## 3.0.4
 
 2017-10-04
 
@@ -349,8 +314,7 @@ Little tweak in the [importMQL()](Api#mql-import) function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
 [extrabiblical](https://github.com/ETCBC/extrabiblical) material.
 
-3.0.2, 3.0.3
-============
+## 3.0.2, 3.0.3
 
 2017-10-03
 
@@ -358,15 +322,13 @@ No changes, only an update of the package metadata, to reflect that Text-Fabric
 has moved from [ETCBC](https://github.com/ETCBC) to
 [Dans-labs](https://github.com/Dans-labs).
 
-3.0.1
-=====
+## 3.0.1
 
 2017-10-02
 
 Bug fix in reading edge features with values.
 
-3.0.0
-=====
+## 3.0.0
 
 2017-10-02
 
@@ -380,8 +342,7 @@ We can start with source data in MQL, convert it to TF, combine it with other TF
 data sources, compute additional stuff and add it, and then finally export it as
 enriched MQL, so that the enriched data can be queried by MQL.
 
-2.3.15
-======
+## 2.3.15
 
 2017-09-29
 
@@ -392,8 +353,7 @@ impossible to let TF know that an edge carries values, when
 [saving](https://github.com/Dans-labs/text-fabric/wiki/Api#saving-features) data
 as a new feature. Now it is possible.
 
-2.3.14
-======
+## 2.3.14
 
 2017-09-29
 
@@ -414,15 +374,13 @@ somewhere, which should of course have been
 range(firstVerse, lastVerse + 1)
 ```
 
-2.3.13
-======
+## 2.3.13
 
 2017-09-28
 
 Loading TF was not completely silent if `silent=True` was passed. Better now.
 
-2.3.12
-======
+## 2.3.12
 
 2017-09-18
 
@@ -437,8 +395,7 @@ Loading TF was not completely silent if `silent=True` was passed. Better now.
 *   New API function [explore](Api#exploring-features), to get a list of all known
     features in a dataset.
 
-2.3.11
-======
+## 2.3.11
 
 2017-09-18
 
@@ -450,24 +407,21 @@ Loading TF was not completely silent if `silent=True` was passed. Better now.
     search language. Yet the language turns out to be powerful enough to look for
     gaps. This answers a question by Cody Kingham.
 
-2.3.10
-======
+## 2.3.10
 
 2017-08-24
 
 When defining text formats in the `otext.tf` feature, you can now include
 newlines and tabs in the formats. Enter them as `\n` and `\t`.
 
-2.3.9
-=====
+## 2.3.9
 
 2017-07-24
 
 TF has a list of default locations to look for data sources: `~/Downloads`,
 `~/github`, etc. Now `~/Dropbox` has been added to that list.
 
-2.3.8
-=====
+## 2.3.8
 
 2017-07-24
 
@@ -478,31 +432,27 @@ section types and the features that name/number them, are given in the `otext`
 feature. It is still the case that exactly three levels must be specified,
 otherwise it does not work.
 
-2.3.7
-=====
+## 2.3.7
 
 2017-05-12
 
 Fixes. Added an extra default location for looking for text-fabric-data sources,
 for the benefit of running text-fabric within a shared notebook service.
 
-2.3.5, 2.3.6
-============
+## 2.3.5, 2.3.6
 
 2017-03-01
 
 Bug fix in Search. Spotted by Cody Kingham. Relational operators between atoms
 in the template got discarded after an outdent.
 
-2.3.4
-=====
+## 2.3.4
 
 2017-02-12
 
 Also the `Fabric()` call can be made silent now.
 
-2.3.3
-=====
+## 2.3.3
 
 2017-02-11
 
@@ -515,43 +465,37 @@ Improvements:
     [`S.fetch()`](Api#getting-results) has been renamed to `limit`;
 *   the tutorial notebooks (see links on top) have been updated.
 
-2.3.2
-=====
+## 2.3.2
 
 2017-02-03
 
 Bug fix: the results of `F.feature.s()`, `E.feature.f()`, and `E.features.t()`
 are now all tuples. They were a mixture of tuples and lists.
 
-2.3.1
-=====
+## 2.3.1
 
 2017-01-23
 
 Bug fix: when searching simple queries with only one query node, the result
 nodes were delivered as integers, instead of 1-tuples of integers.
 
-2.3
-===
+## 2.3
 
 2017-01-13
 
 We start archiving releases of Text-Fabric at [Zenodo](https://zenodo.org).
 
-2.2.1
-=====
+## 2.2.1
 
 2017-01-09
 
 Small fixes.
 
-2.2.0
-=====
+## 2.2.0
 
 2017-01-06
 
-New: sortKey
-------------
+### New: sortKey
 
 The API has a new member: [`sortKey`](Api#sorting-nodes)
 
@@ -560,27 +504,23 @@ examples the end of the
 [searchTutorial](/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb).
 Thanks to James Cuénod for requesting nearness operators.
 
-Fixes
------
+### Fixes
 
 *   in `S.glean()` word nodes were not printed;
 *   the check whether the search graph consists of a single connected component
     did not handle the case of one node without edges well;
 
-2.1.3
-=====
+## 2.1.3
 
 2017-01-04
 
 Various fixes.
 
-2.1.0
-=====
+## 2.1.0
 
 2017-01-04
 
-New: relations
---------------
+### New: relations
 
 Some relations have been added to search templates:
 
@@ -592,8 +532,7 @@ The latter two can also be used through the `L`-api: `L.p()` and `L.n()`.
 
 The data that feeds them is precomputed and available as `C.boundary`.
 
-New: enhanced search templates
-------------------------------
+### New: enhanced search templates
 
 You can now easily make extra constraints in search templates without naming
 atoms.
@@ -602,13 +541,11 @@ See the
 [searchTutorial](/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb)
 for an updated exposition on searching.
 
-2.0.0
-=====
+## 2.0.0
 
 2016-12-23
 
-New: Search
------------
+### New: Search
 
 ![warmXmas](/images/warmXmas.jpg)
 
@@ -630,23 +567,19 @@ metaphor: spinning wool into yarn and then stitching the yarns together.
 That will be explained further in a document that I'll love to write during
 Xmas.
 
-1.2.7
-=====
+## 1.2.7
 
 2016-12-14
 
-New
----
+### New
 
 [`F.otype.sInterval()`](Api#warp-feature-otype)
 
-1.2.6
-=====
+## 1.2.6
 
 2016-12-14
 
-bug fix
--------
+### bug fix
 
 There was an error in computing the order of nodes. One of the consequences was
 that objects that occupy the same slots were not ordered properly. And that had
@@ -655,29 +588,25 @@ containing phrase.
 
 It has been remedied.
 
-##### Note: #####
+??? note
+    Your computed data needs to be refreshed. This can be done by calling a new
+    function [`TF.clearCache()`](Api#clearing-the-cache). When you use TF after
+    this, you will see it working quite hard to recompute a bunch of data.
 
-> Your computed data needs to be refreshed. This can be done by calling a new
-> function [`TF.clearCache()`](Api#clearing-the-cache). When you use TF after
-> this, you will see it working quite hard to recompute a bunch of data.
-
-1.2.5
-=====
+## 1.2.5
 
 2016-12-13
 
 Documentation update
 
-1.2.0
-=====
+## 1.2.0
 
 2016-12-08
 
-NB: Data update needed
-----------------------
+??? note
+    Data update needed
 
-New
----
+### New
 
 ### Frequency lists ###
 
@@ -689,8 +618,7 @@ feature. Handy as a first step in exploring a feature.
 [`TF.exportMQL()`](Api#export-to-mql): export a whole dataset as a MQL database.
 Including all modules that you have loaded with it.
 
-Changed
--------
+### Changed
 
 The slot numbers start at 0, no longer at 1. Personally I prefer the zero
 starting point, but Emdros insists on positive monads and objects ids. Most

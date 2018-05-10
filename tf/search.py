@@ -26,6 +26,21 @@ rePat = '^([a-zA-Z0-9-_]+)~(.*)$'
 reRe = re.compile(rePat)
 reTp = type(reRe)
 
+compPat = '^([a-zA-Z0-9-_]+)([<>])(.*)$'
+compRe = re.compile(compPat)
+
+numPat = '^-?[0-9]+$'
+numRe = re.compile(numPat)
+
+nonePat = '^([a-zA-Z0-9-_]+)!\s*$'
+noneRe = re.compile(nonePat)
+
+
+def makeLimit(n, isLower):
+    if isLower:
+        return lambda x: x > n
+    return lambda x: x < n
+
 
 def esc(x):
     for (i, c) in enumerate(escapes):
@@ -37,6 +52,10 @@ def unesc(x):
     for (i, c) in enumerate(escapes):
         x = x.replace(chr(i), c[1])
     return x
+
+
+opValPat = '^([^=~]*?)([=~<>])(.*)'
+opValRe = re.compile(opValPat)
 
 
 class Search(object):
@@ -59,6 +78,7 @@ class Search(object):
         self.api.indent(level=0, reset=True)
         self.good = True
 
+        self._basicRelations()
         self._setStrategy(strategy)
         if not self.good:
             return
@@ -73,16 +93,13 @@ class Search(object):
             return
         if not self.silent:
             info(
-                'Setting up search space for {} objects ...'.format(
-                    len(self.qnodes)
-                )
+                f'Setting up search space for {len(self.qnodes)} objects ...'
             )
         self._spinAtoms()
         if not self.silent:
             info(
-                'Constraining search space with {} relations ...'.format(
-                    len(self.qedges)
-                )
+                'Constraining search space with'
+                f' {len(self.qedges)} relations ...'
             )
         self._spinEdges()
         if not self.silent:
@@ -90,10 +107,9 @@ class Search(object):
         self._stitch()
         if self.good:
             if not self.silent:
+                yarnContent = sum(len(y) for y in self.yarns.values())
                 info(
-                    'Ready to deliver results from {} nodes'.format(
-                        sum(len(y) for y in self.yarns.values()),
-                    )
+                    f'Ready to deliver results from {yarnContent} nodes'
                 )
             if not self.silent:
                 info('Iterate over S.fetch() to get the results', tm=False)
@@ -178,7 +194,7 @@ class Search(object):
                 break
 
         indent(level=0)
-        info('Done: {} results'.format(i))
+        info(f'Done: {i} results')
 
     def showPlan(self, details=False):
         if not self.good:
@@ -189,9 +205,7 @@ class Search(object):
         (qs, es) = self.stitchPlan
         if details:
             info(
-                'Search with {} objects and {} relations'.format(
-                    len(qs), len(es)
-                ),
+                f'Search with {len(qs)} objects and {len(es)} relations',
                 tm=False
             )
             info(
@@ -223,13 +237,9 @@ class Search(object):
             resultNode[nodeLine[q]] = q
         for (i, line) in enumerate(self.searchLines):
             rNode = resultNode.get(i, '')
+            prefix = 'R' if rNode != '' else ''
             info(
-                '{:>2} {:<1}{:<2} {}'.format(
-                    i,
-                    'R' if rNode != '' else '',
-                    rNode,
-                    line,
-                ),
+                f'{i:>2} {prefix:<1}{rNode:<2} {line}',
                 tm=False
             )
 
@@ -398,7 +408,7 @@ class Search(object):
 
                     if not self.silent:
                         self.api.info(
-                            '1. reducing over {} elements'.format(len(nyS))
+                            f'1. reducing over {len(nyS)} elements'
                         )
                     nyF = reduce(
                         set.union,
@@ -407,7 +417,7 @@ class Search(object):
                     )
                     if not self.silent:
                         self.api.info(
-                            '2. reducing over {} elements'.format(len(nyS))
+                            f'2. reducing over {len(nyS)} elements'
                         )
                     nyT = reduce(
                         set.union,
@@ -879,25 +889,49 @@ class Search(object):
             return zz
 
         def makeEdgeMaps(efName):
-            def edgeR(ftP, tTp):
-                Es = self.api.Es
-                Edata = Es(efName)
-                doValues = Edata.doValues
+            def edgeAccess(eFunc, doValues, value):
                 if doValues:
-                    return lambda n: tuple(m[0] for m in Edata.f(n))
+                    if value is None:
+                        return lambda n: tuple(
+                            m[0] for m in eFunc(n) if m[1] is None
+                        )
+                    elif value is True:
+                        return lambda n: tuple(
+                            m[0] for m in eFunc(n)
+                        )
+                    elif isinstance(value, types.FunctionType):
+                        return lambda n: tuple(
+                            m[0] for m in eFunc(n) if value(m[1])
+                        )
+                    elif isinstance(value, reTp):
+                        return lambda n: tuple(
+                            m[0] for m in eFunc(n)
+                            if value is not None and value.search(m[1])
+                        )
+                    else:
+                        return lambda n: tuple(
+                            m[0] for m in eFunc(n) if m[1] in value
+                        )
                 else:
-                    return lambda n: Edata.f(n)
+                    return lambda n: eFunc(n)
 
-            def edgeIR(ftP, tTp):
-                Es = self.api.Es
-                Edata = Es(efName)
-                doValues = Edata.doValues
-                if doValues:
-                    return lambda n: tuple(m[0] for m in Edata.t(n))
-                else:
-                    return lambda n: Edata.t(n)
+            def edgeRV(value):
+                def edgeR(fTp, tTp):
+                    Es = self.api.Es
+                    Edata = Es(efName)
+                    doValues = Edata.doValues
+                    return edgeAccess(Edata.f, doValues, value)
+                return edgeR
 
-            return (edgeR, edgeIR)
+            def edgeIRV(value):
+                def edgeIR(fTp, tTp):
+                    Es = self.api.Es
+                    Edata = Es(efName)
+                    doValues = Edata.doValues
+                    return edgeAccess(Edata.t, doValues, value)
+                return edgeIR
+
+            return (edgeRV, edgeIRV)
 
         relations = [
             (
@@ -1014,15 +1048,17 @@ class Search(object):
                 continue
             r = len(relations)
 
-            (edgeR, edgeIR) = makeEdgeMaps(efName)
+            (edgeRV, edgeIRV) = makeEdgeMaps(efName)
+            doValues = self.api.TF.features[efName].edgeValues
+            extra = ' with value specification allowed' if doValues else ''
             relations.append((
                 (
-                    '-{}>'.format(efName), True, edgeR,
-                    'edge feature "{}"'.format(efName)
+                    f'-{efName}>', True, edgeRV,
+                    f'edge feature "{efName}"{extra}'
                 ),
                 (
-                    '<{}-'.format(efName), True, edgeIR,
-                    'edge feature "{}" (opposite direction)'.format(efName)
+                    f'<{efName}-', True, edgeIRV,
+                    f'edge feature "{efName}"{extra} (opposite direction)'
                 ),
             ))
             edgeMap[2 * r] = (efName, 1)
@@ -1044,13 +1080,13 @@ class Search(object):
         self.relationFromName = dict(((r['acro'], i)
                                       for (i, r) in enumerate(self.relations)))
         self.relationLegend = '\n'.join(
-            '{:>23} {}'.format(r['acro'], r['desc']) for r in self.relations
+            f'{r["acro"]:>23} {r["desc"]}' for r in self.relations
             if r['desc'] is not None
         )
-        self.relationLegend += '''
-The warp feature "{}" cannot be used in searches.
+        self.relationLegend += f'''
+The warp feature "{WARP[1]}" cannot be used in searches.
 One of the above relations on nodes and/or slots will suit you better!
-'''.format(WARP[1])
+'''
         self.converse = dict(
             tuple((2 * i, 2 * i + 1)
                   for i in range(lr)) + tuple((2 * i + 1, 2 * i)
@@ -1058,7 +1094,7 @@ One of the above relations on nodes and/or slots will suit you better!
         )
         self.edgeMap = edgeMap
 
-    def _addRelations(self, varRels):
+    def _add_K_Relations(self, varRels):
         relations = self.relations
         tasks = collections.defaultdict(set)
         for (acro, ks) in varRels.items():
@@ -1096,7 +1132,107 @@ One of the above relations on nodes and/or slots will suit you better!
                 self.converse[lr] = lr + 1
                 self.converse[lr + 1] = lr
 
+    def _add_V_Relations(self, varRels):
+        relations = self.relations
+        tasks = collections.defaultdict(set)
+        for (acro, vals) in sorted(varRels.items()):
+            for (eName, val) in vals:
+                conv = acro[0] == '<'
+                eRel = f'-{eName}>'
+                eReli = f'<{eName}-'
+                acroi = f'-{acro[1:-1]}>' if conv else f'<{acro[1:-1]}-'
+                if conv:
+                    (acro, acroi) = (acroi, acro)
+                j = self.relationFromName[eRel]
+                ji = self.relationFromName[eReli]
+                tasks[(eName, j, acro, ji, acroi)].add(val)
+
+        for ((eName, j, acro, ji, acroi), vals) in sorted(tasks.items()):
+            for val in vals:
+                r = relations[j]
+                ri = relations[ji]
+                lr = len(relations)
+                relations.extend([
+                    dict(
+                        acro=acro,
+                        spin=r['spin'],
+                        func=r['func'](val),
+                        desc=r['desc'],
+                    ),
+                    dict(
+                        acro=acroi,
+                        spin=ri['spin'],
+                        func=ri['func'](val),
+                        desc=ri['desc'],
+                    ),
+                ])
+                self.relationFromName[acro] = lr
+                self.relationFromName[acroi] = lr + 1
+                self.edgeMap[lr] = (eName, 1)
+                self.edgeMap[lr + 1] = (eName, -1)
+                self.converse[lr] = lr + 1
+                self.converse[lr + 1] = lr
+
 # SYNTACTIC ANALYSIS OF SEARCH TEMPLATE ###
+
+    def _parseFeatureVals(self, featStr, features, i, asEdge=False):
+        if asEdge:
+            if not (
+                    (featStr[0] == '-' and featStr[-1] == '>')
+                    or
+                    (featStr[0] == '<' and featStr[-1] == '-')
+            ):
+                return True
+            feat = featStr[1:-1]
+        else:
+            feat = featStr.replace(chr(1), ' ')
+        good = True
+        for x in [True]:
+            match = noneRe.match(feat)
+            if match:
+                (featN,) = match.groups()
+                featName = unesc(featN)
+                featVals = None
+                break
+            match = compRe.match(feat)
+            if match:
+                (featN, comp, limit) = match.groups()
+                featName = unesc(featN)
+                if not numRe.match(limit):
+                    self.badSyntax.append(
+                        f'Limit is non numeric "{limit}" in line {i}'
+                    )
+                    good = False
+                    featVals = None
+                else:
+                    featVals = makeLimit(int(limit), comp == '>')
+                break
+            match = reRe.match(feat)
+            if match:
+                (featN, valRe) = match.groups()
+                featName = unesc(featN)
+                try:
+                    featVals = re.compile(valRe)
+                except Exception() as err:
+                    self.badSyntax.append(
+                        f'Wrong regular expression "{valRe}" in line'
+                        f'{i}: "{err}"'
+                    )
+                    good = False
+                    featVals = None
+                break
+            featComps = feat.split('=', 1)
+            featName = unesc(featComps[0])
+            if len(featComps) == 1:
+                featVals = True
+            else:
+                featValList = featComps[1]
+                featVals = frozenset(
+                    unesc(featVal)
+                    for featVal in featValList.split('|')
+                )
+        features[featName] = featVals
+        return good
 
     def _tokenize(self):
         if not self.good:
@@ -1122,47 +1258,14 @@ One of the above relations on nodes and/or slots will suit you better!
         relRe = re.compile(relPat)
         whiteRe = re.compile('^\s*$')
 
-        nonePat = '^([a-zA-Z0-9-_]+)!\s*$'
-        noneRe = re.compile(nonePat)
-
         def getFeatures(x, i):
             features = {}
             featureString = x.replace('\\ ', chr(1)) if x is not None else ''
             featureList = featureString.split()
             good = True
             for featStr in featureList:
-                feat = featStr.replace(chr(1), ' ')
-                match = noneRe.match(feat)
-                if match:
-                    (featN,) = match.groups()
-                    featName = unesc(featN)
-                    featVals = None
-                else:
-                    match = reRe.match(feat)
-                    if match:
-                        (featN, valRe) = match.groups()
-                        featName = unesc(featN)
-                        try:
-                            featVals = re.compile(valRe)
-                        except Exception() as err:
-                            self.badSyntax.append(
-                                'Wrong regular expression in line'
-                                f'{i}: "{err}"'
-                            )
-                            good = False
-                            featVals = None
-                    else:
-                        featComps = feat.split('=', 1)
-                        featName = unesc(featComps[0])
-                        if len(featComps) == 1:
-                            featVals = True
-                        else:
-                            featValList = featComps[1]
-                            featVals = set(
-                                unesc(featVal)
-                                for featVal in featValList.split('|')
-                            )
-                features[featName] = featVals
+                if not self._parseFeatureVals(featStr, features, i):
+                    good = False
             return features if good else None
 
         searchLines = self.searchLines
@@ -1172,20 +1275,35 @@ One of the above relations on nodes and/or slots will suit you better!
             if line.startswith('#') or whiteRe.match(line):
                 continue
             good = False
+            opFeatures = {}
             for x in [True]:
                 match = opLineRe.match(line)
                 if match:
                     (indent, op) = match.groups()
-                    tokens.append((i, 'atom', len(indent), op))
-                    good = True
+                    if not self._parseFeatureVals(
+                        op, opFeatures, i, asEdge=True
+                    ):
+                        good = False
+                    else:
+                        if opFeatures:
+                            op = (op, opFeatures)
+                        tokens.append((i, 'atom', len(indent), op))
+                        good = True
                     break
                 match = relRe.match(line)
                 if match:
-                    tokens.append((
-                        i, 'rel', match.group(1), match.group(2),
-                        match.group(3)
-                    ))
-                    good = True
+                    op = match.group(2)
+                    if not self._parseFeatureVals(
+                        op, opFeatures, i, asEdge=True
+                    ):
+                        good = False
+                    else:
+                        if opFeatures:
+                            op = (op, opFeatures)
+                        tokens.append((
+                            i, 'rel', match.group(1), op, match.group(3)
+                        ))
+                        good = True
                     break
                 matchOp = atomOpRe.match(esc(line))
                 if not matchOp:
@@ -1196,6 +1314,7 @@ One of the above relations on nodes and/or slots will suit you better!
                     op = None
                     (indent, atom, features) = match.groups()
                 if matchOp or match:
+                    good = True
                     atomComps = atom.split(':', 1)
                     if len(atomComps) == 1:
                         name = ''
@@ -1205,19 +1324,25 @@ One of the above relations on nodes and/or slots will suit you better!
                         mt = nameRe.match(name)
                         if not mt:
                             self.badSyntax.append(
-                                'Illegal name at line {}: "{}"'.format(
-                                    i, name
-                                )
+                                f'Illegal name at line {i}: "{name}"'
                             )
                             good = False
                     features = getFeatures(features, i)
                     if features is None:
                         good = False
                     else:
-                        tokens.append(
-                            (i, 'atom', len(indent), op, name, atom, features)
-                        )
-                        good = True
+                        if matchOp:
+                            if not self._parseFeatureVals(
+                                op, opFeatures, i, asEdge=True
+                            ):
+                                good = False
+                        if good:
+                            if opFeatures:
+                                op = (op, opFeatures)
+                            tokens.append((
+                                i, 'atom', len(indent),
+                                op, name, atom, features
+                            ))
                     break
                 features = getFeatures(esc(line), i)
                 if features is None:
@@ -1241,7 +1366,7 @@ One of the above relations on nodes and/or slots will suit you better!
         self._tokenize()
         if not self.good:
             for (i, line) in enumerate(self.searchLines):
-                error('{:>2} {}'.format(i, line), tm=False)
+                error(f'{i:>2} {line}', tm=False)
             for eline in self.badSyntax:
                 error(eline, tm=False)
 
@@ -1279,7 +1404,7 @@ One of the above relations on nodes and/or slots will suit you better!
                     qnodes.append((otype, features))
                     q = len(qnodes) - 1
                     nodeLine[q] = i
-                    name = ':{}'.format(i) if name == '' else name
+                    name = f':{i}' if name == '' else name
                     qnames[name] = q
                 if len(atomStack) == 0:
                     if indent > 0:
@@ -1290,9 +1415,9 @@ One of the above relations on nodes and/or slots will suit you better!
                         good = False
                     if op is not None:
                         self.badSemantics.append((
-                            'Lonely relation at line {}:'
+                            f'Lonely relation at line {i}:'
                             ' not allowed at outermost level'
-                        ).format(i))
+                        ))
                         good = False
                     if len(fields) > 2:
                         atomStack[0] = q
@@ -1315,12 +1440,16 @@ One of the above relations on nodes and/or slots will suit you better!
                                 if op is not None:
                                     qedges.append((top[1], op, q))
                                     edgeLine[len(qedges) - 1] = i
+                        else:
+                            if op is not None:
+                                qedges.append((top[1], op, q))
+                                edgeLine[len(qedges) - 1] = i
                     elif indent > top[0]:
                         if len(fields) == 2:
                             self.badSemantics.append((
-                                'Lonely relation at line {}:'
+                                f'Lonely relation at line {i}:'
                                 ' not allowed as first child'
-                            ).format(i))
+                            ))
                             good = False
                         else:
                             # child of previous atom
@@ -1378,15 +1507,13 @@ One of the above relations on nodes and/or slots will suit you better!
                 features = fields[0]
                 if prevKind is not None and prevKind != 'atom':
                     self.badSemantics.append(
-                        'Features without atom at line {}: "{}"'.format(
-                            i, features
-                        )
+                        f'Features without atom at line {i}: "{features}"'
                     )
                     good = False
                 else:
                     qnodes[-1][1].update(features)
             elif kind == 'rel':
-                (fName, opName, tName) = fields
+                (fName, op, tName) = fields
                 f = qnames.get(fName, None)
                 t = qnames.get(tName, None)
                 namesGood = True
@@ -1400,7 +1527,7 @@ One of the above relations on nodes and/or slots will suit you better!
                 if not namesGood:
                     good = False
                 else:
-                    qedges.append((f, opName, t))
+                    qedges.append((f, op, t))
                     edgeLine[len(qedges) - 1] = i
             prevKind = kind
         if good:
@@ -1411,6 +1538,53 @@ One of the above relations on nodes and/or slots will suit you better!
             self.edgeLine = edgeLine
         else:
             self.good = False
+
+    def _validateFeature(
+        self, q, fName, features,
+        missingFeatures, wrongValues,
+        hasValues={}, asEdge=False
+    ):
+        values = features[fName]
+        fSet = 'edges' if asEdge else 'nodes'
+        if fName not in self.api.TF.featureSets[fSet]:
+            missingFeatures.setdefault(fName, []).append(q)
+        else:
+            if asEdge:
+                doValues = self.api.TF.features[fName].edgeValues
+                if not doValues and values is not True:
+                    hasValues.setdefault(fName, {}).setdefault(
+                        values, []
+                    ).append(q)
+                    return
+            requiredType = self.api.TF.features[fName].dataType
+            if values is True:
+                return
+            elif values is None:
+                return
+            elif isinstance(values, types.FunctionType):
+                if requiredType == 'str':
+                    wrongValues.setdefault(fName, {}).setdefault(
+                        values, []
+                    ).append(q)
+            elif isinstance(values, reTp):
+                if requiredType == 'int':
+                    wrongValues.setdefault(fName, {}).setdefault(
+                        values, []
+                    ).append(q)
+            else:
+                valuesCast = set()
+                if requiredType == 'int':
+                    for val in values:
+                        try:
+                            valCast = int(val)
+                        except Exception:
+                            valCast = val
+                            wrongValues.setdefault(
+                                fName, {}).setdefault(
+                                    val, []
+                            ).append(q)
+                        valuesCast.add(valCast)
+                    features[fName] = frozenset(valuesCast)
 
     def _validation(self):
         if not self.good:
@@ -1431,9 +1605,8 @@ One of the above relations on nodes and/or slots will suit you better!
         for (q, (otype, xx)) in enumerate(qnodes):
             if otype not in otypes:
                 self.badSemantics.append(
-                    'Unknown object type in line {}: "{}"'.format(
-                        nodeLine[q], otype
-                    )
+                    'Unknown object type in line'
+                    f' {nodeLine[q]}: "{otype}"'
                 )
                 otypesGood = False
         if not otypesGood:
@@ -1449,36 +1622,73 @@ One of the above relations on nodes and/or slots will suit you better!
 
         missingFeatures = {}
         wrongValues = {}
+        hasValues = {}
         for (q, (xx, features)) in enumerate(qnodes):
-            for (fName, values) in features.items():
-                if fName not in self.api.TF.featureSets['nodes']:
-                    missingFeatures.setdefault(fName, []).append(q)
-                else:
-                    requiredType = self.api.TF.features[fName].dataType
-                    if values is True:
-                        continue
-                    elif values is None:
-                        continue
-                    elif isinstance(values, reTp):
-                        if requiredType == 'int':
-                            wrongValues.setdefault(fName, {}).setdefault(
-                                values, []
-                            ).append(q)
-                    else:
-                        valuesCast = set()
-                        if requiredType == 'int':
-                            for val in values:
-                                try:
-                                    valCast = int(val)
-                                except Exception:
-                                    valCast = val
-                                    wrongValues.setdefault(
-                                        fName, {}).setdefault(
-                                            val, []
-                                    ).append(q)
-                                valuesCast.add(valCast)
-                            features[fName] = valuesCast
+            for fName in sorted(features):
+                self._validateFeature(
+                    q, fName, features, missingFeatures, wrongValues
+                )
 
+        # check the relational operator token in edges
+        # and replace them by an index
+        # in the relations array of known relations
+        qedges = []
+        edgesGood = True
+
+        # relations may have a variable number k in them (k-nearness, etc.)
+        # make an entry in the relation map for each value of k
+        kRe = re.compile('^([^0-9]*)([0-9]+)([^0-9]*)$')
+        addRels = {}
+        for (e, (f, op, t)) in enumerate(self.qedgesRaw):
+            if (
+                    type(op) is tuple
+                    or
+                    (op[0] == '-' and op[-1] == '>')
+                    or
+                    (op[0] == '<' and op[-1] == '-')
+            ):
+                continue
+            match = kRe.findall(op)
+            if len(match):
+                (pre, k, post) = match[0]
+                opNameK = f'{pre}k{post}'
+                addRels.setdefault(opNameK, set()).add(int(k))
+        self._add_K_Relations(addRels)
+
+        # edge relations may have a value spec in them
+        # make an entry in the relation map for each value spec
+        addRels = {}
+        for (e, (f, op, t)) in enumerate(self.qedgesRaw):
+            if type(op) is not tuple:
+                continue
+            (opName, opFeatures) = op
+            for eName in sorted(opFeatures):
+                self._validateFeature(
+                    e, eName, opFeatures, missingFeatures, wrongValues,
+                    hasValues, asEdge=True
+                )
+                addRels.setdefault(opName, set()).add(
+                    (eName, opFeatures[eName])
+                )
+        self._add_V_Relations(addRels)
+
+        # now look up each particalur relation in the relation map
+        for (e, (f, op, t)) in enumerate(self.qedgesRaw):
+            theOp = op[0] if type(op) is tuple else op
+            rela = relationFromName.get(theOp, None)
+            if rela is None:
+                self.badSemantics.append(
+                    f'Unknown relation in line {edgeLine[e]}: "{theOp}"'
+                )
+                edgesGood = False
+            qedges.append((f, rela, t))
+        if not edgesGood:
+            self.badSemantics.append(
+                f'Allowed relations:\n{self.relationLegend}'
+            )
+            self.good = False
+
+        # report error found above
         if len(missingFeatures):
             for (fName, qs) in sorted(missingFeatures.items()):
                 self.badSemantics.append(
@@ -1489,10 +1699,24 @@ One of the above relations on nodes and/or slots will suit you better!
                 )
             self.good = False
 
+        if len(hasValues):
+            for (fName, wrongs) in sorted(hasValues.items()):
+                self.badSemantics.append(
+                    f'Feature "{fName}" has cannot have values:'
+                )
+                for (val, qs) in sorted(wrongs.items()):
+                    self.badSemantics.append(
+                        '    "{}" superfluous: line(s) {}'.format(
+                            val,
+                            ','.join(str(nodeLine[q]) for q in qs),
+                        )
+                    )
+            self.good = False
+
         if len(wrongValues):
             for (fName, wrongs) in sorted(wrongValues.items()):
                 self.badSemantics.append(
-                    'Feature "{}" has wrong values:'.format(fName)
+                    f'Feature "{fName}" has wrong values:'
                 )
                 for (val, qs) in sorted(wrongs.items()):
                     self.badSemantics.append(
@@ -1503,39 +1727,6 @@ One of the above relations on nodes and/or slots will suit you better!
                     )
             self.good = False
 
-        # check the relational operator token in edges
-        # and replace them by an index
-        # in the relations array of known relations
-        qedges = []
-        edgesGood = True
-        kRe = re.compile('^([^0-9]*)([0-9]+)([^0-9]*)$')
-        addRels = {}
-        for (e, (f, opName, t)) in enumerate(self.qedgesRaw):
-            match = kRe.findall(opName)
-            if len(match):
-                (pre, k, post) = match[0]
-                opNameK = '{}{}{}'.format(pre, 'k', post)
-                addRels.setdefault(opNameK, set()).add(int(k))
-        self._addRelations(addRels)
-        for (e, (f, opName, t)) in enumerate(self.qedgesRaw):
-            match = kRe.findall(opName)
-            if len(match):
-                (pre, k, post) = match[0]
-                opNameK = '{}{}{}'.format(pre, 'k', post)
-            rela = relationFromName.get(opName, None)
-            if rela is None:
-                self.badSemantics.append(
-                    'Unknown relation in line {}: "{}"'.format(
-                        edgeLine[e], opName
-                    )
-                )
-                edgesGood = False
-            qedges.append((f, rela, t))
-        if not edgesGood:
-            self.badSemantics.append(
-                'Allowed relations:\n{}'.format(self.relationLegend)
-            )
-            self.good = False
         self.qedges = qedges
 
         # determine which node and edge features are not yet loaded,
@@ -1570,14 +1761,14 @@ One of the above relations on nodes and/or slots will suit you better!
         self._grammar()
         if not self.good:
             for (i, line) in enumerate(self.searchLines):
-                error('{:>2} {}'.format(i, line), tm=False)
+                error(f'{i:>2} {line}', tm=False)
             for eline in self.badSemantics:
                 error(eline, tm=False)
             return
         self._validation()
         if not self.good:
             for (i, line) in enumerate(self.searchLines):
-                error('{:>2} {}'.format(i, line), tm=False)
+                error(f'{i:>2} {line}', tm=False)
             for eline in self.badSemantics:
                 error(eline, tm=False)
 
@@ -1612,9 +1803,8 @@ One of the above relations on nodes and/or slots will suit you better!
             self.good = False
         elif lComps > 1:
             error(
-                'More than one connected components ({}):'.format(
-                    len(self.components)
-                )
+                'More than one connected components'
+                f' ({len(self.components)}):'
             )
             error(
                 'Either run the subqueries one by one,'
@@ -1688,8 +1878,8 @@ One of the above relations on nodes and/or slots will suit you better!
                     if fval is None:
                         good = False
                         break
-                elif type(val) is str or type(val) is int:
-                    if fval != val:
+                elif isinstance(val, types.FunctionType):
+                    if not val(fval):
                         good = False
                         break
                 elif isinstance(val, reTp):
@@ -2167,9 +2357,9 @@ One of the above relations on nodes and/or slots will suit you better!
         newNodesO = tuple(sorted(newNodes))
         if newNodesO != qnodesO:
             error(
-                '''Object mismatch in plan:
-In template: {}
-In plan    : {}'''.format(qnodesO, newNodesO),
+                f'''Object mismatch in plan:
+In template: {qnodesO}
+In plan    : {newNodesO}''',
                 tm=False
             )
             self.good = False
@@ -2178,9 +2368,9 @@ In plan    : {}'''.format(qnodesO, newNodesO),
         newCedgesO = tuple(sorted(newCedges))
         if newCedgesO != qedgesO:
             error(
-                '''Relation mismatch in plan:
-In template: {}
-In plan    : {}'''.format(qedgesO, newCedgesO),
+                f'''Relation mismatch in plan:
+In template: {qedgesO}
+In plan    : {newCedgesO}''',
                 tm=False
             )
             self.good = False
@@ -2353,17 +2543,17 @@ In plan    : {}'''.format(qedgesO, newCedgesO),
                 return
             strategy = STRATEGY[0]
         if strategy not in STRATEGY:
-            error('Strategy not defined: "{}"'.format(strategy))
+            error(f'Strategy not defined: "{strategy}"')
             error(
                 'Allowed strategies:\n{}'.format(
-                    '\n'.join('    {}'.format(s) for s in STRATEGY)
+                    '\n'.join(f'    {s}' for s in STRATEGY)
                 ),
                 tm=False
             )
             self.good = False
             return
 
-        method = '_{}'.format(strategy)
+        method = f'_{strategy}'
         if not hasattr(self, method):
             error(
                 'Strategy is defined, but not implemented: "{}"'.
