@@ -465,7 +465,7 @@ a lot will fail.
 
 I have also tried a different, more complicated strategy, which is still
 implemented, and which can be used by means of an optional argument to
-[`S.study()`](https://github.com/Dans-labs/text-fabric/wiki/Api#prepare-for-search),
+[`S.study()`](https://dans-labs.github.io/text-fabric/Api/General/#search-templates),
 but results of this strategy were not particularly good.
 
 ### Small-first strategy

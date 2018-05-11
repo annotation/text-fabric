@@ -4,7 +4,7 @@
 
 The module [bhsa.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/bhsa.py)
 contains a number of handy functions on top of Text-Fabric and especially its 
-[Search](https://github.com/Dans-labs/text-fabric/wiki/Api#search) part.
+[Search](/Api/General/#search) part.
 
 ## Set up
 

@@ -21,8 +21,8 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '4.0.0'
-APIREF = 'https://github.com/Dans-labs/text-fabric/wiki/Api'
+VERSION = '4.0.1'
+APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'
 TUTORIAL = (
     'https://github.com/Dans-labs/text-fabric'
     '/blob/master/docs/tutorial.ipynb'

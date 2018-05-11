@@ -29,16 +29,16 @@ used by researchers to analyse such texts.
 
 Text Fabric is a Python(3) package on the Python Package Index, so you can install it easily with `pip` from
 the command line. Here are the precise
-[installation instructions](https://github.com/Dans-labs/text-fabric/wiki/Home).
+[installation instructions](https://dans-labs.github.io/text-fabric/).
 
 # Documentation
 
 There is extensive documentation.
 
-1. The [wiki associated with this repo](https://github.com/Dans-labs/text-fabric/wiki) is meant as a reference.
-   1. It explains the [data model](https://github.com/Dans-labs/text-fabric/wiki/Data-model)
-   2. It specifies the [file format](https://github.com/Dans-labs/text-fabric/wiki/File-formats)
-   3. It holds the [api docs](https://github.com/Dans-labs/text-fabric/wiki/Api)
+1. The [github pages associated with this repo](https://dans-labs.github.io/text-fabric/) are meant as a reference.
+   1. It explains the [data model](https://dans-labs.github.io/text-fabric/Model/Data-Model/)
+   2. It specifies the [file format](https://dans-labs.github.io/text-fabric/Model/File-formats/)
+   3. It holds the [api docs](https://dans-labs.github.io/text-fabric/Api/General/)
 2. Included in this repo are also tutorials and exercises to guide you into increasingly involved tasks
    1. [general tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb)
    1. [search tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb)

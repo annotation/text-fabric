@@ -2,7 +2,7 @@
 
 ??? note "Tutorial"
     See the
-    [tutorial](/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb) for examples
+    [tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb) for examples
     of how to use the Text-Fabric API.
 
 ???+ note "Generic API"
