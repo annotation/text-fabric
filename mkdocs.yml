@@ -1,12 +1,20 @@
 site_name: Text-Fabric
+site_description: >- 
+  Text-Fabric is a Python3 package for Text plus Annotations.
+  It provides a data model,
+  a text file format,
+  and a binary format
+  for (ancient) text plus
+  (linguistic) annotations.
+
+site_author: Dirk Roorda
 
 theme:
   name: material
   logo: 'images/tf-small.png'
   feature:
     tabs: false
-repo_name: 'Dans-labs/text-fabric'
-repo_url: 'https://github.com/dans-labs/text-fabric'
+repo_url: 'https://github.com/dans-labs/text-fabric/'
 
 pages:
   - Home: 'index.md'

@@ -15,11 +15,6 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
 ## Initialisation
 
-??? note "`from tf.extra.bhsa import Bhsa`"
-    ??? explanation "import Bhsa"
-        The `Bhsa` API is distributed with Text-Fabric.
-        You have to import it into your program.
-
 ??? note "`Bhsa()`"
     ```python
     B = Bhsa(api, 'test', version=VERSION)

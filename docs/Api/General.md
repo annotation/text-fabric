@@ -286,7 +286,7 @@
     In all of the following `L`-functions, if the `otype` parameter is passed, the result is filtered and
     only nodes with `otype=nodetype` are retained.
 
-??? caution "Results are tuples, not single notes"
+??? caution "Results of the `L.` functions are tuples, not single nodes"
       Even if an `L`-function returns a single node, it is packed in a *tuple*.
       So to get the node itself, you have to dereference the tuple:
 

@@ -6,6 +6,12 @@
     * [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     * [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.0.3
+
+2018-05-11
+
+No changes, just quirks in the update process to get a new version of TF out.
+
 ## 4.0.1
 
 2018-05-11
