@@ -245,7 +245,7 @@ class Bhsa(object):
             if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}'
         )
         docLink = f'https://etcbc.github.io/bhsa'
-        extraLink = f'https://github.com/Dans-labs/text-fabric/wiki/Bhsa'
+        extraLink = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
         dataLink = _outLink(CORPUS, docLink, '{provenance of this corpus}')
         featureLink = _outLink(
             'Feature docs',
@@ -255,14 +255,14 @@ class Bhsa(object):
         bhsaLink = _outLink('BHSA API', extraLink, 'BHSA API documentation')
         tfLink = _outLink(
             f'Text-Fabric API {api.TF.version}',
-            'https://github.com/Dans-labs/text-fabric/wiki/api',
+            'https://dans-labs.github.io/text-fabric/Api/General/',
             'text-fabric-api'
         )
         tfsLink = _outLink(
             'Search Reference',
             (
-                'https://github.com/Dans-labs/text-fabric/wiki/api'
-                '#search-template-introduction'
+                'https://dans-labs.github.io/text-fabric/Api/General/'
+                '#search-templates'
             ),
             'Search Templates Introduction and Reference'
         )

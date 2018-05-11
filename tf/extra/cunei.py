@@ -406,7 +406,7 @@ class Cunei(object):
             if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}'
         )
         docLink = f'https://github.com/{repoRel}/blob/master/docs'
-        extraLink = f'https://github.com/Dans-labs/text-fabric/wiki/Cunei'
+        extraLink = f'https://dans-labs.github.io/text-fabric/Api/Cunei/'
         dataLink = _outLink(
             self.corpusFull, f'{docLink}/about.md', 'provenance of this corpus'
         )
@@ -417,14 +417,16 @@ class Cunei(object):
         cuneiLink = _outLink('Cunei API', extraLink, 'cunei api documentation')
         tfLink = _outLink(
             f'Text-Fabric API {api.TF.version}',
-            'https://github.com/Dans-labs/text-fabric/wiki/api',
+            'https://dans-labs.github.io/text-fabric/Api/General/',
             'text-fabric-api'
         )
         tfsLink = _outLink(
-            'Search Reference', (
-                'https://github.com/Dans-labs/text-fabric/wiki/api'
-                '#search-template-introduction'
-            ), 'Search Templates Introduction and Reference'
+            'Search Reference',
+            (
+                'https://dans-labs.github.io/text-fabric/Api/General/'
+                '#search-templates'
+            ),
+            'Search Templates Introduction and Reference'
         )
         dm(
             '**Documentation:**'
