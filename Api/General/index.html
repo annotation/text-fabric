@@ -933,7 +933,7 @@ could sort them in canonical order like this:</p><table class="codehilitetable">
 </details></details><h2 id="locality">Locality<a class="headerlink" href="#locality" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Local navigation</summary><p>Here are the methods by which you can navigate easily from a node to its
 neighbours: parents and children, previous and next siblings.</p></details><details class="info" open="open"><summary><code>L</code></summary><p>The Locality API is exposed as <code>L</code> or <code>Locality</code>.</p></details><details class="hint"><summary><code>otype</code> parameter</summary><p>In all of the following <code>L</code>-functions, if the <code>otype</code> parameter is passed, the result is filtered and
-only nodes with <code>otype=nodetype</code> are retained.</p></details><details class="caution"><summary>Results are tuples, not single notes</summary><p>Even if an <code>L</code>-function returns a single node, it is packed in a <em>tuple</em>.
+only nodes with <code>otype=nodetype</code> are retained.</p></details><details class="caution"><summary>Results of the <code>L.</code> functions are tuples, not single nodes</summary><p>Even if an <code>L</code>-function returns a single node, it is packed in a <em>tuple</em>.
   So to get the node itself, you have to dereference the tuple:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">L</span><span class="o">.</span><span class="n">u</span><span class="p">(</span><span class="n">node</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </td></tr></table>
