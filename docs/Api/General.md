@@ -19,7 +19,7 @@
 
 ## Loading
 
-??? abstract "`TF=Fabric()`"
+??? abstract "TF=Fabric()"
     ```python
     from tf.fabric import Fabric
     TF = Fabric(locations=directories, modules=subdirectories, silent=False)
@@ -33,7 +33,7 @@
         Here `directories` and `subdirectories` are strings with directory names
         separated by newlines, or iterables of directories.
 
-    ??? explanation "locations and modules"
+    ??? info "locations and modules"
         The directories specified in `locations` will be searched for `modules`, which
         are paths that will be appended to the paths in `locations`.
 
@@ -43,7 +43,7 @@
         way you can easily override certain features in one module by features in an
         other module of your choice.
 
-    ??? explanation "otext@ in modules"
+    ??? note "otext@ in modules"
         If modules contain features with a name starting with `otext@`, then the format
         definitions in these features will be added to the format definitions in the
         regular `otext` feature (which is a WARP feature). In this way, modules that
@@ -64,10 +64,10 @@
         The `modules` list defaults to `['']`. So if you leave it out, Text-Fabric will
         just search the paths specified in `locations`.
 
-    ??? hint "Silent mode"
+    ??? info "silent"
         If `silent=True` is passed, banners and normal progress messages are suppressed.
 
-??? abstract "`TF.explore()`"
+??? abstract "TF.explore()"
     ```python
     features = TF.explore(silent=False, show=True)
     features
@@ -84,14 +84,15 @@
         This will give you a dictionary of all available features by kind. The kinds
         are: *nodes*, *edges*, *configs*, *computeds*.
 
+    ??? info "silent"
         With `silent=False` a message containing the total numbers of features is issued.
 
-    ??? hint "Results"
+    ??? info "show"
         The resulting dictionary is delivered in `TF.featureSets`, but if you say
-        `show=True`, the dictionary is return as function result.
+        `show=True`, the dictionary is returned as function result.
 
 
-??? abstract "`api=TF.load()`"
+??? abstract "api=TF.load()"
     ```python
     api = TF.load(features, add=False, silent=False)
     ```
@@ -100,19 +101,19 @@
         Reads the features indicated by `features` and loads them in memory
         ready to be used in the rest of the program.
 
-    ??? explanation "`features`"
+    ??? info "features"
         `features` is a string containing space separated feature names, or an
         iterable of feature names. The feature names are just the names of `.tf` files
         without directory information and without extension.
 
-    ??? info "Silent mode"
+    ??? info "silent"
         The features will be loaded rather silently, most messages will be suppressed.
         Time consuming operations will always be announced, so that you know what
         Text-Fabric is doing. If `silent=True` is passed, all informational messages
         will be suppressed. This is handy I you want to load data as part of other
         methods, on-the-fly.
 
-    ??? info "Add features later"
+    ??? info "add"
         If later on you want load more features, you can either:
 
         *   add the features to the original `load()` statement and just run it again
@@ -121,7 +122,7 @@
             `api.makeAvailableIn(globals())` again after this!
 
 
-??? abstract "`api.makeAvailableIn(globals())`"
+??? abstract "api.makeAvailableIn(globals())"
     ```python
     api.makeAvailableIn(globals())
     ```
@@ -160,7 +161,7 @@
         `T` | `Text`
         `S` | `Search`
 
-??? abstract "`ignored`"
+??? abstract "ignored"
     ```python
     api.ignored
     ```
@@ -170,7 +171,7 @@
         is also present in another, later, location), you can use this attribute
         to inspect the ignored features and their locations.
 
-??? abstract "`loadLog()`"
+??? abstract "loadLog()"
     ```python
     api.loadlog()
     ```
@@ -181,7 +182,7 @@
 
 ## Navigating nodes
 
-??? abstract "`N()`"
+??? abstract "N()"
     ```python
     for n in N():
         action
@@ -246,15 +247,18 @@
     post-order. It is very much like SAX parsing in the XML world.
 
 
-??? abstract "`sortNodes()`"
+??? abstract "sortNodes()"
     ```python
-    sortNodes(nodeset)
+    sortNodes(nodeSet)
     ```
 
     ???+ info "Description"
-        delivers `nodeset` as a tuple sorted by the *canonical ordering*.
+        delivers an iterable of nodes as a tuple sorted by the *canonical ordering*.
 
-??? abstract "`sortKey`"
+    ??? info "nodeSet"
+        An iterable of nodes to be sorted.
+
+??? abstract "sortKey"
     ```python
     nodeList = sorted(nodes, key=sortKey)
     ```
@@ -264,7 +268,7 @@
         canonical ordering. That means that the following two pieces of code do the same
         thing:
 
-        `sortNodes(nodeset)` and `sorted(nodeset, key=sortKey)`.
+        `sortNodes(nodeSet)` and `sorted(nodeSet, key=sortKey)`.
 
     ??? example "Sorting tuples of nodes"
         Handy to sort things that are not nodes themselves, but data structures with
@@ -272,7 +276,7 @@
         could sort them in canonical order like this:
 
         ```python
-        sorted(nodeset, key=lambda r: sortKey(r[0]))
+        sorted(nodeSet, key=lambda r: sortKey(r[0]))
         ```
 
 ## Locality
@@ -281,12 +285,12 @@
     Here are the methods by which you can navigate easily from a node to its
     neighbours: parents and children, previous and next siblings.
 
-???+ info "`L`"
+???+ info "L"
     The Locality API is exposed as `L` or `Locality`.
 
-??? hint "`otype` parameter"
+??? hint "otype parameter"
     In all of the following `L`-functions, if the `otype` parameter is passed, the result is filtered and
-    only nodes with `otype=nodetype` are retained.
+    only nodes with `otype=nodeType` are retained.
 
 ??? caution "Results of the `L.` functions are tuples, not single nodes"
       Even if an `L`-function returns a single node, it is packed in a *tuple*.
@@ -296,36 +300,36 @@
       L.u(node)[0]
       ```
 
-??? abstract "`L.u()`"
+??? abstract "L.u()"
     ```python
-    L.u(node, otype=nodetype)
+    L.u(node, otype=nodeType)
     ```
 
     ???+ info "Description"
         Produces an ordered tuple of nodes **upward** from `node`, i.e. embedder nodes
         of `node`. The result does not include `node`.
 
-??? abstract "`L.d()`"
+??? abstract "L.d()"
     ```python
-    L.d(node, otype=nodetype)
+    L.d(node, otype=nodeType)
     ```
 
     ???+ info "Description"
         Produces an ordered tuple of nodes **downward** from `node`, i.e. embedded nodes
         of `node`. The result does not include `node`.
 
-??? abstract "`L.n()`"
+??? abstract "L.n()"
     ```python
-    L.n(node, otype=nodetype)
+    L.n(node, otype=nodeType)
     ```
 
     ???+ info "Description"
         Produces an ordered tuple of adjacent **next** nodes from `node`, i.e. nodes
         whose first slot just follows the last slot of `node`.
 
-??? abstract "`L.p()`"
+??? abstract "L.p()"
     ```python
-    L.p(node, otype=nodetype)
+    L.p(node, otype=nodeType)
     ```
 
     ???+ info "Description"
@@ -374,7 +378,7 @@
     The details of the Text API are dependent on the *warp* feature `otext`, which
     is a config feature.
 
-???+ info "`T`"
+???+ info "T"
     The Text API is exposed as `T` or `Text`.
 
 ### Sections
@@ -404,7 +408,7 @@
         like `XIV`, '3A', '4.5', and in those cases these numbers are obviously not
         `int`s.
 
-    ??? note "`otext` is optional"
+    ??? note "otext is optional"
         If `otext` is missing, the Text API will not be build. If it exists, but
         does not specify sections, that part of the Text API will not be built. Likewise
         for text representations.
@@ -421,9 +425,9 @@
         @levels=tablet,face,column,line,case,cluster,quad,comment,sign
         ```
 
-??? abstract "`T.sectionFromNode()`"
+??? abstract "T.sectionFromNode()"
     ```python
-    T.sectionFromNode(n, lastSlot=False, lang='en')
+    T.sectionFromNode(node, lastSlot=False, lang='en')
     ```
 
     ???+ info "Description"
@@ -431,6 +435,16 @@
         node, which is the first or last slot belonging `n`, dependent on `lastSlot`.
         The result is a tuple, consisting of the book name (in language `lang`), the
         chapter number, and the verse number.
+
+    ??? info "node"
+        The node from which we obtain a section specification.
+
+    ??? info "lastSlot"
+        Whether the reference node will be the last slot contained by the `node` argument
+        or the first node.
+
+    ??? info "lang"
+        The language to be used for the section parts, as far as they are language dependent.
 
     ??? note "crossing verse boundaries"
         Sometimes a sentence or clause in a verse continue into the next verse.
@@ -441,18 +455,24 @@
         Nodes that lie outside any book, chapter, verse will get a `None` in the
         corresponding members of the returned tuple.
 
-??? abstract "`T.nodeFromSection()`"
+??? abstract "T.nodeFromSection()"
     ```python
     T.nodeFromSection(section, lang='en')
     ```
 
     ???+ info "Description"
-        Given a `section` tuple, return the node of it. `section` 
-        consists of a book name (in language `lang`), and a chapter number and a verse
+        Given a `section` tuple, return the node of it.
+        
+    ??? info "section"
+        `section` consists of a book name (in language `lang`),
+        and a chapter number and a verse
         number (both as strings or number depending on the value type of the
         corresponding feature). The verse number may be left out, the result is then a
         chapter node. Both verse and chapter numbers may be left out, the result is then
         a book node. If all three are present, de result is a verse node.
+
+    ??? info "lang"
+        The language assumed for the section parts, as far as they are language dependent.
 
 ### Book names and languages
 
@@ -462,7 +482,7 @@
     the [ISO 639](https://nl.wikipedia.org/wiki/ISO_639) two-letter code for that
     language. Text-Fabric will always load these features.
 
-??? abstract "`T.languages`"
+??? abstract "T.languages"
     ```python
     T.languages
     ```
@@ -470,14 +490,18 @@
     ???+ info "Description"
         A dictionary of the languages that are available for book names.
 
-??? abstract "`T.bookName()`"
+??? abstract "T.bookName()"
     ```python
-    T.bookName(n, lang='en')
+    T.bookName(node, lang='en')
     ```
 
     ???+ info "Description"
-        gives the name of the book in which node `n` occurs.
+        gives the name of the book in which a node occurs.
 
+    ??? info "node"
+        The node in question.
+
+    ??? info "lang"
         The `lang` parameter is a two letter language code. The default is `en`
         (English).
 
@@ -488,13 +512,19 @@
         `n` may or may not be a book node. If not, `bookName()` retrieves the
         embedding book node first.
 
-??? abstract "`T.bookNode()`"
+??? abstract "T.bookNode()"
     ```python
     T.bookNode(name, lang='en')
     ```
 
     ???+ info "Description"
-        gives the node of the book identified by `name` in language `lang`.
+        gives the node of the book identified by its name
+        
+    ??? info "name"
+        The name of the book.
+        
+    ??? info "lang"
+        The language in which the book name is supplied by the `name` parameter.
 
         If `lang` can not be found, the value of the ordinary `book` feature of the
         dataset will be used.
@@ -539,7 +569,7 @@
         There is complete freedom of choosing names for text formats.
         They do not have to complied with the above-mentioned scheme.
 
-??? abstract "`T.formats`"
+??? abstract "T.formats"
     ```python
     T.formats
     ```
@@ -547,14 +577,18 @@
     ???+ info "Description"
         Show the text representation formats that have been defined in your dataset.
 
-??? abstract "`T.text()`"
+??? abstract "T.text()"
     ```python
     T.text(nodes, fmt=None)
     ```
 
     ???+ info "Description"
-        Gives the text that corresponds to the nodes, which can be an arbitrary iterable
-        of nodes. No attempt will be made to sort the nodes, if you need order, it is
+        Gives the text that corresponds to a bunch of nodes.
+
+    ??? info "nodes"
+        `nodes` can be an arbitrary iterable of nodes.
+        No attempt will be made to sort the nodes.
+        If you need order, it is
         better to order the nodes before you feed them to `T.text()`.
 
     ??? note "Defaults and errors"
@@ -590,7 +624,7 @@
     interested in has to be written as a *search template*, offered to `S.search()`
     which returns the matching results as tuples of nodes.
 
-???+ info "`S`"
+???+ info "S"
     The Search API is exposed as `S` or `Search`.
 
 ### Search templates
@@ -807,20 +841,20 @@
         search for. This specification must be written as a white-space separated list
         of **feature specs**.
 
-        A **feature spec** has the form *key* *valueSpec*, with no space between the *key*
+        A **feature spec** has the form *name* *valueSpec*, with no space between the *name*
         and the *valueSpec*.
         The *valueSpec* may have the following forms:
 
         form | meaning
         ---- | -------
-        | feature *key* may have any value except `None`
-        `!` | feature *key* must have value `None` (synonymous for: *key* has no value)
-        `=`*values* | feature *key* has one of the values specified
-        `>`*value* | feature *key* must be greater than *value*
-        `<`*value* | feature *key* must be less than *value*
-        `~`*regular expression* | feature *key* has a value and it matches *regular expression*
+        | feature *name* may have any value except `None`
+        `!` | feature *name* must have value `None` (synonymous for: *name* has no value)
+        `=`*values* | feature *name* has one of the values specified
+        `>`*value* | feature *name* must be greater than *value*
+        `<`*value* | feature *name* must be less than *value*
+        `~`*regular expression* | feature *name* has a value and it matches *regular expression*
 
-        All these forms are also valid as `-`*form*`>` and `<`*form`-`, in which case
+        All these forms are also valid as `-`*name* *form*`>` and `<`*name* *form*`-`, in which case
         they specify value constraints on edge features.
         This is only meaningful if the edge feature is declared to have values (most edge features
         do not have values).
@@ -828,7 +862,7 @@
         **Additional constraints**
 
         *   There may be no space around the `=`, nor the `~`.
-        *   *key* must be a feature name that exists in the dataset. If it references a
+        *   *name* must be a feature name that exists in the dataset. If it references a
             feature that is not yet loaded, the feature will be loaded automatically.
         *   *values* must be a `|` separated list of feature values, no quotes. No spaces
             around the `|`. If you need a space or `|` or `\` in a value, escape it by a
@@ -893,7 +927,7 @@
                 *   in both directions;
                 *   these forms work only for edges that do have values.
 
-??? abstract "`S.relationsLegend`"
+??? abstract "S.relationsLegend"
     ```python
     S.relationsLegend
     ```
@@ -903,18 +937,22 @@
         template. It includes the edge features that are available in your dataset.
 
 
-??? abstract "`S.search()`"
+??? abstract "S.search()"
     ```python
     S.search(searchTemplate, limit=None)
     ```
 
     ???+ info "Description"
-        Searches for combinations of nodes that together match the `searchTemplate`. If
-        `limit` is a number, it will fetch only that many results.
-
-        This method returns a *generator* which yields the results one by one. A result
+        Searches for combinations of nodes that together match a search template.
+        This method returns a *generator* which yields the results one by one. One result
         is a tuple of nodes, where each node corresponds to an *atom*-line in your
         [search template](#search-template-introduction).
+        
+    ??? info "searchTemplate"
+        The search template is a string that conforms to the rules described above.
+        
+    ??? info "limit"
+        If `limit` is a number, it will fetch only that many results.
 
     ??? note "Generator versus tuple"
         If `limit` is specified, the result is not a generator but a tuple of results.
@@ -929,7 +967,7 @@
         the method `S.showPlan()` below shows you at a glance the correspondence
         between the nodes in each result tuple and your search template.
 
-??? abstract "`S.study()`"
+??? abstract "S.study()"
     ```python
     S.study(searchTemplate, strategy=None, silent=False)
     ```
@@ -939,12 +977,14 @@
         space will be narrowed down, and a plan for retrieving the results will be set
         up.
 
+    ??? info "strategy"
         For the meaning of the `strategy` parameter, see below.
 
+    ??? info "silent"
         If you want to suppress most of the output, say `silent=True`.
 
 
-??? abstract "`S.showPlan()`"
+??? abstract "S.showPlan()"
     ```python
     S.showPlan(details=False)
     ```
@@ -953,9 +993,11 @@
         Search results are tuples of nodes and the plan shows which part of the tuple
         corresponds to which part of the search template.
 
+    ??? info "details"
         If you say `details=True`, you also get an overview of the search space and a
         description of how the results will be retrieved.
 
+    ??? note "after S.study()"
         This function is only meaningful after a call to `S.study()`.
 
 ### Search results
@@ -968,27 +1010,32 @@
     Here are a few methods that do actual result fetching.
     They must be called after a previous `S.search()` or `S.study()`.
 
-??? abstract "`S.count()`"
+??? abstract "S.count()"
     ```python
     S.count(progress=None, limit=None)
     ```
 
-    info ??? "Description"
-        Counts the results, up to a given `limit`, default 1000.
-        Setting `limit` to 0 or a negative value means no limit: all results will be
-        counted.
-
+    ??? info "Description"
+        Counts the results, with progress messages, optionally up to a limit.
+        
+    ??? info "progress"
         Every so often it shows a progress message.
         The frequency is `progress` results, default every 100.
 
+    ??? info "limit"
+        Fetch results up to a given `limit`, default 1000.
+        Setting `limit` to 0 or a negative value means no limit: all results will be
+        counted.
+
+    ??? note "why needed"
         You typically need this in cases where result fetching turns out to
         be (very) slow.
 
-    !!! caution
+    ??? caution "generator versus list"
         `len(S.results())` does not work, because `S.results()` is a generator
         that delivers its results as they come.
 
-??? abstract "`S.fetch()`"
+??? abstract "S.fetch()"
     ```python
     S.fetch(limit=None)
     ```
@@ -997,6 +1044,10 @@
         Finally, you can retrieve the results. The result of `fetch()` is not a list of
         all results, but a *generator*. It will retrieve results as long as they are
         requested and their are still results.
+
+    ??? info "limit"
+        Tries to get that many results and collects them in a tuple.
+        So if limit is not `None`, the result is a tuple with a known length.
 
     ??? example "Iterating over the `fetch()` generator"
         You typically fetch results by saying:
@@ -1019,7 +1070,7 @@
 
         gives you the first bunch of results quickly.
 
-??? abstract "`S.glean()`"
+??? abstract "S.glean()"
     ```python
     S.glean(r)
     ```
@@ -1030,7 +1081,9 @@
         corpus has about it.
 
         The `glean()` function is here to just give you a first impression quickly.  
-        Pass it a raw result tuple `r`, and you get a string indicating where it occurs,
+
+    ??? info "r"
+        Pass a raw result tuple `r`, and you get a string indicating where it occurs,
         in terms of sections, 
         and what text is associated with the results.
 
@@ -1041,6 +1094,10 @@
         ```
 
         is a handy way to get an impression of the first bunch of results.
+
+    ??? hint "Universal"
+        This function works on all tuples of nodes, whether they have been
+        obtained by search or not.
 
     ??? hint "More ways of showing results"
         If you work in one of the corpora for which the TF-API has been extended,
@@ -1065,10 +1122,10 @@
 
 ???+ info "Node Features"
 
-???+ info "`F`"
+???+ info "F"
     The node features API is exposed as `F` (`Fs`) or `Feature` (`FeatureString`).
 
-??? abstract "`Fall()` aka `AllFeatures()`"
+??? abstract "Fall() aka AllFeatures()"
     ```python
     Fall()
     AllFeatures()
@@ -1077,7 +1134,7 @@
     ???+ info "Description"
       Returns a sorted list of all usable, loaded node feature names.
 
-??? abstract "`F.`*feature* aka `Feature.`*feature*"
+??? abstract "F.*feature* aka Feature.*feature*"
     ```python
     F.part_of_speech
     Feature.part_of_speech
@@ -1093,7 +1150,7 @@
         a valid python identifier, you can not use this function,
         you should use `Fs` instead.
 
-??? abstract "`Fs(feature)` aka `FeatureString(feature)`"
+??? abstract "Fs(feature) aka FeatureString(feature)"
     ```python
     Fs(feature)
     FeatureString(feature)
@@ -1126,7 +1183,7 @@
         In the sequel we'll give examples based on the simple form only.
 
 
-??? abstract "`F.`*feature*`.v(node)`"
+??? abstract "F.*feature*.v(node)"
     ```python
     F.part_of_speech.v(node)
     ```
@@ -1134,7 +1191,7 @@
     ???+ info "Description"
         Get the value of a *feature*, such as `part_of_speech` for `node`.
 
-??? abstract "`F.`*feature*`.s(value)`"
+??? abstract "F.*feature*.s(value)"
     ```python
     F.part_of_speech.s(value)
     F.part_of_speech.s('noun')
@@ -1147,7 +1204,7 @@
 
         The second line gives you all nodes which are nouns according to the corpus.
 
-??? abstract "`F.`*feature*`.freqList()`"
+??? abstract "F.`*feature*.freqList()"
     ```python
     F.part_of_speech.freqList(nodeTypes=None)
     ```
@@ -1158,12 +1215,12 @@
         list of pairs `(value, frequency)`, ordered by `frequency`, highest frequencies
         first.
 
-    ??? note "`nodeTypes`"
+    ??? info "nodeTypes"
         If you pass a set of nodeTypes, only the values for nodes within those
         types will be counted.
 
 
-??? abstract "`F.otype`"
+??? abstract "F.otype"
     `otype` is a special node feature and has additional capabilities.
 
     ???+ info "Description"
@@ -1181,10 +1238,10 @@
 
 ???+ info "Edge Features"
 
-???+ info "`E`"
+???+ info "E"
     The edge features API is exposed as `E` (`Es`) or `Edge` (`EdgeString`).
 
-??? abstract "`Eall()` aka `AllEdges()`"
+??? abstract "Eall() aka AllEdges()"
     ```python
     Eall()
     AllEdges()
@@ -1193,7 +1250,7 @@
     ???+ info "Description"
       Returns a sorted list of all usable, loaded edge feature names.
 
-??? abstract "`E.`*feature* aka `Edge.`*feature*"
+??? abstract "E.*feature* aka Edge.*feature*"
     ```python
     E.head
     Feature.head
@@ -1209,7 +1266,7 @@
         a valid python identifier, you can not use this function,
         you should use `Es` instead.
 
-??? abstract "`Es(feature)` aka `EdgeString(feature)`"
+??? abstract "Es(feature) aka EdgeString(feature)"
     ```python
     Es(feature)
     EdgeString(feature)
@@ -1239,7 +1296,7 @@
     ??? note "Simple forms"
         In the sequel we'll give examples based on the simple form only.
 
-??? abstract "`E.`*feature*`.f(node)`"
+??? abstract "E.*feature*.f(node)"
     ```python
     E.head.f(node)
     ```
@@ -1254,7 +1311,7 @@
 
         If there are no edges from `n`, the empty tuple is returned, rather than `None`.
 
-??? abstract "`E.`*feature*`.t(node)`"
+??? abstract "E.*feature*.t(node)"
     ```python
     E.head.t(node)
     ```
@@ -1269,7 +1326,7 @@
 
         If there are no edges from `n`, the empty tuple is returned, rather than `None`.
 
-??? abstract "`E.`*feature*`.freqList()`"
+??? abstract "E.*feature*.freqList()"
     ```python
     E.op.freqList(nodeTypesFrom=None, nodeTypesTo=None)
     ```
@@ -1290,7 +1347,7 @@
         and second member within nodeTypesTo 
         will be counted.
 
-??? abstract "`E.oslots`"
+??? abstract "E.oslots"
     `oslots` is a special edge feature and is mainly used to construct other parts
     of the API. It has less capabilities, and you will rarely need it. It does not
     have `.f` and `.t` methods, but an `.s` method instead.
@@ -1305,7 +1362,7 @@
 ??? info "Timed messages"
     Error and informational messages can be issued, with a time indication.
 
-??? abstract "`info()`"
+??? abstract "info()"
     ```python
     info(msg, tm=True, nl=True)
     ```
@@ -1315,7 +1372,7 @@
         unless `tm=False`.
         A newline will be appended, unless `nl=False`.
 
-??? abstract "`error()`"
+??? abstract "error()"
     ```python
     error(msg, tm=True, nl=True)
     ```
@@ -1328,7 +1385,7 @@
         In a Jupyter notebook, the standard error is displayed with
         a reddish background colour.
 
-??? abstract "`indent()`"
+??? abstract "indent()"
     ```python
     indent(level=None, reset=False)
     ```
@@ -1341,7 +1398,7 @@
 
 ## Saving features
 
-??? abstract "`TF.save()`"
+??? abstract "TF.save()"
     ```python
     TF.save(nodeFeatures={}, edgeFeatures={}, metaData={}, module=None)
     ```
@@ -1398,7 +1455,7 @@
 
 ### Clearing the cache
 
-??? abstract "`TF.clearCache()`"
+??? abstract "TF.clearCache()"
     ```python
     TF.clearCache()
     ```
@@ -1424,7 +1481,7 @@
     MQL dump is a text file, like an SQL dump. It contains the instructions to
     create and fill a complete database.
 
-??? abstract "`TF.exportMQL()`"
+??? abstract "TF.exportMQL()"
     ```python
     TF.exportMQL(dbName, dirName)
     ```
@@ -1541,7 +1598,7 @@
             rm dataset ; mql -b 3 < dataset.mql
             ```
 
-??? abstract "`TF.importMQL()`"
+??? abstract "TF.importMQL()"
     ```python
     TF.importMQL(mqlFile, slotType=None, otext=None, meta=None)
     ```
@@ -1560,11 +1617,11 @@
 
         In fact, the rules are exactly the same as for `TF.save()`.
 
-    ??? info "`slotType`"
+    ??? info "slotType"
         You have to tell which object type in the MQL file acts as the slot type,
         because TF cannot see that on its own.
 
-    ??? info "`otext`"
+    ??? info "otext"
         You can pass the information about sections and text formats as the parameter
         `otext`. This info will end up in the `otext.tf` feature. Pass it as a
         dictionary of keys and values, like so:
@@ -1576,7 +1633,7 @@
         }
         ```
 
-    ??? info "`meta`"
+    ??? info "meta"
         Likewise, you can add a dictionary of keys and values that will added to the
         metadata of all features. Handy to add provenance data here:
 
@@ -1598,7 +1655,7 @@
     Normally, you do not use this data, but since it is there, it might be valuable,
     so we have made it accessible in the `C`-api, which we document here.
 
-??? abstract "`C.levels.data`"
+??? abstract "C.levels.data"
     ???+ info "Description"
         A sorted list of object types plus basic information about them.
 
@@ -1631,7 +1688,7 @@
         add a `@levels` key to the `otext` config feature. See
         [text](#levels-of-node-types).
 
-??? abstract "`C.order.data`"
+??? abstract "C.order.data"
     ???+ info "Description"
         An **array** of all nodes in the correct order. This is the
         order in which `N()` alias `Node()` traverses all nodes.
@@ -1640,7 +1697,7 @@
         To order all nodes in the [canonical ordering](#sorting-nodes) is quite a bit of
         work, and we need this ordering all the time.
 
-??? abstract "`C.rank.data`"
+??? abstract "C.rank.data"
     ???+ info "Description"
         An **array** of all indices of all nodes in the canonical order
         array. It can be viewed as its inverse.
@@ -1650,7 +1707,7 @@
         which position each node takes in the canonical order, in other words, at what
         index we find it in the [`C.order.data`](#order) array.
 
-??? abstract "`C.levUp.data` and `C.levDown.data`"
+??? abstract "C.levUp.data and C.levDown.data"
     ???+ info "Description"
         These tables feed the `L.d()` and `L.u()` functions.
 
@@ -1661,7 +1718,7 @@
         Only when every bit of performance waste has to be squeezed out, this raw data
         might be a deal.
 
-??? abstract "`C.boundary.data`"
+??? abstract "C.boundary.data"
     ???+ info "Description"
         These tables feed the `L.n()` and `L.p()` functions.
         It is a tuple consisting of `firstSlots` and `lastSlots`.
@@ -1675,7 +1732,7 @@
         Both `firstSlot` and `lastSlot` are tuples, and the
         information for node `n` can be found at position `n-MaxSlot-1`.
 
-??? abstract "`C.sections.data`"
+??? abstract "C.sections.data"
     ???+ info "Description"
         Let us assume for the sake of clarity, that the node type of section level 1 is
         `book`, that of level 2 is `chapter`, and that of level 3 is `verse`. And
@@ -1709,12 +1766,12 @@
 
 # Miscellaneous
 
-??? abstract "`TF.version`"
+??? abstract "TF.version"
     ???+ info "Description"
         Contains the version number of the Text-Fabric
         library.
 
-??? abstract "`TF.banner`"
+??? abstract "TF.banner"
     ???+ info "Description"
         Contains the name and the version of the Text-Fabric
         library.
