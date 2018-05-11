@@ -1857,17 +1857,17 @@ enriched MQL, so that the enriched data can be queried by MQL.</p>
 <h2 id="2315">2.3.15<a class="headerlink" href="#2315" title="Permanent link">&para;</a></h2>
 <p>2017-09-29</p>
 <p>Completion: TF defines the concept of
-<a href="https://github.com/Dans-labs/text-fabric/wiki/Api#edge-features">edges</a> that
+<a href="../Api/General/#edge-features">edges</a> that
 carry a value. But so far we have not used them. It turned out that it was
 impossible to let TF know that an edge carries values, when
-<a href="https://github.com/Dans-labs/text-fabric/wiki/Api#saving-features">saving</a> data
+<a href="../Api/General/#saving-features">saving</a> data
 as a new feature. Now it is possible.</p>
 <h2 id="2314">2.3.14<a class="headerlink" href="#2314" title="Permanent link">&para;</a></h2>
 <p>2017-09-29</p>
 <p>Bug fix: it was not possible to get
 <code>T.nodeFromSection(('2_Chronicles', 36, 23))</code>, the last verse in the Bible.</p>
 <p>This is the consequence of a bug in precomputing the sections
-<a href="https://github.com/Dans-labs/text-fabric/wiki/Api#sections">sections</a>. The
+<a href="../Api/General/#computed-data">sections</a>. The
 preparation step used</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">range</span><span class="p">(</span><span class="n">firstVerse</span><span class="p">,</span> <span class="n">lastVerse</span><span class="p">)</span>
 </pre></div>
@@ -1886,14 +1886,14 @@ preparation step used</p>
 <ul>
 <li>
 <p>Small fix in
-    <a href="https://github.com/Dans-labs/text-fabric/wiki/Api#saving-features">TF.save()</a>.
+    <a href="../Api/General/#saving-features">TF.save()</a>.
     The spec says that the metadata under the empty key will be inserted into all
     features, but in fact this did not happen. Instead it was used as a default
     when some feature did not have metadata specified.</p>
 <p>From now on, that metadata will spread through all features.</p>
 </li>
 <li>
-<p>New API function <a href="../Api#exploring-features">explore</a>, to get a list of all known
+<p>New API function <a href="../Api/General#loading">explore</a>, to get a list of all known
     features in a dataset.</p>
 </li>
 </ul>
