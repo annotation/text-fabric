@@ -646,9 +646,9 @@
 contains a number of handy functions on top of Text-Fabric and especially its 
 <a href="../../Api/General/#search">Search</a> part.</p>
 <h2 id="set-up">Set up<a class="headerlink" href="#set-up" title="Permanent link">&para;</a></h2>
-<details class="note"><summary><code>from tf.extra.bhsa import Bhsa</code></summary><details class="explanation"><summary>import Bhsa</summary><p>The <code>Bhsa</code> API is distributed with Text-Fabric.
+<details class="abstract"><summary><code>from tf.extra.bhsa import Bhsa</code></summary><details class="explanation"><summary>import Bhsa</summary><p>The <code>Bhsa</code> API is distributed with Text-Fabric.
 You have to import it into your program.</p></details></details><h2 id="initialisation">Initialisation<a class="headerlink" href="#initialisation" title="Permanent link">&para;</a></h2>
-<details class="note"><summary><code>Bhsa()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">VERSION</span><span class="p">)</span>
+<details class="abstract"><summary><code>Bhsa()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">VERSION</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Silently loads some additional features, and <code>B</code>
@@ -669,7 +669,7 @@ will give access to some extra functions.</p></details><details class="explanati
 of your current notebook (without the <code>.ipynb</code> extension).
 The Bhsa API will use this to generate a link to your notebook
 on GitHub and NBViewer.</p></details></details><h2 id="linking">Linking<a class="headerlink" href="#linking" title="Permanent link">&para;</a></h2>
-<details class="note"><summary><code>B.shbLink()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">shbLink</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<details class="abstract"><summary><code>B.shbLink()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">shbLink</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Produces a link to SHEBANQ</p></details><details class="info"><summary>node</summary><p><code>node</code> can be an arbitrary node. The link targets the verse that
@@ -683,13 +683,13 @@ the passage indicator (book chapter:verse) will be chosen.</p></details><details
 </td></tr></table>
 </details></details><h2 id="plain-display">Plain display<a class="headerlink" href="#plain-display" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Straightforward display of things</summary><p>There are functions to display nodes, tuples of nodes, and iterables of tuples
-of nodes in a simple way, as rows and as a table.</p></details><details class="note"><summary><code>B.plain()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">plain</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+of nodes in a simple way, as rows and as a table.</p></details><details class="abstract"><summary><code>B.plain()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">plain</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a simple way.</p></details><details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p></details><details class="info"><summary>linked</summary><p><code>linked</code> indicates whether the result should be a link to SHEBANQ
 to the appropriate book/chapter/verse.</p></details><details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p></details><details class="info"><summary>asString</summary><p>Instead of displaying the result directly in the output of your
 code cell in a notebook, you can also deliver the markdown as string,
-just say <code>asString=True</code>.</p></details></details><details class="note"><summary><code>B.plainTuple()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">plainTuple</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+just say <code>asString=True</code>.</p></details></details><details class="abstract"><summary><code>B.plainTuple()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">plainTuple</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a tuple of nodes
@@ -699,7 +699,7 @@ This prepares the way for displaying query results, which come as
 a sequence of tuples of nodes.</p></details><details class="info"><summary>linked</summary><p><code>linked=1</code> the column number where the cell contents is
 linked to
 the relevant passage in to SHEBANQ;
-(the first data column is column 1)</p></details><details class="info"><summary>withNodes, asString</summary><p>Same as in <code>B.plain()</code>.</p></details></details><details class="note"><summary><code>B.table()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+(the first data column is column 1)</p></details><details class="info"><summary>withNodes, asString</summary><p>Same as in <code>B.plain()</code>.</p></details></details><details class="abstract"><summary><code>B.table()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
@@ -722,7 +722,7 @@ no matter which process has produced the tuples.</p></details><details class="in
 Default 1.</p></details><details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
 Default the length of the iterable.</p></details><details class="info"><summary>linked, withNodes, asString</summary><p>Same as in <code>B.plainTuple()</code>.</p></details></details><h2 id="pretty-display">Pretty display<a class="headerlink" href="#pretty-display" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Graphical display of things</summary><p>There are functions to display nodes, tuples of nodes, and iterables of tuples
-of nodes in a graphical way.</p></details><details class="note"><summary><code>B.pretty()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">pretty</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">highlights</span><span class="o">=</span><span class="nb">set</span><span class="p">())</span>
+of nodes in a graphical way.</p></details><details class="abstract"><summary><code>B.pretty()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">pretty</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">highlights</span><span class="o">=</span><span class="nb">set</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a graphical way.</p></details><details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p></details><details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p></details><details class="info"><summary>suppress</summary><p><code>suppress=set()</code> is a set of feature names that should NOT be displayed.
@@ -731,7 +731,7 @@ If you find they clutter the display, you can turn them off
 selectively.</p></details><details class="info"><summary>highlights</summary><p><code>highlights=set()</code> is a set of nodes that should be highlighted.
 Only nodes that are involved in the display will be highlighted.</p></details><details class="explanation"><summary>Highlighting</summary><p>When nodes such as verses and sentences are displayed by <code>pretty()</code>,
 their contents is also displayed. You can selectively highlight
-those parts.</p></details></details><details class="note"><summary><code>B.prettyTuple()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+those parts.</p></details></details><details class="abstract"><summary><code>B.prettyTuple()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
@@ -744,7 +744,7 @@ those parts.</p></details></details><details class="note"><summary><code>B.prett
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a tuple of nodes in a graphical way.</p></details><details class="explanation"><summary>By verse</summary><p>We examine all nodes in the tuple.
 We collect and show all verses in which they
-occur and highlight the material corresponding to all the nodes in the tuple.</p></details><details class="info"><summary>nodes, seqNumber, withNodes</summary><p>Same as in <code>B.plainTuple()</code>.</p></details><details class="info"><summary>suppress</summary><p>Same as in <code>B.pretty()</code>.</p></details></details><details class="note"><summary><code>B.show()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+occur and highlight the material corresponding to all the nodes in the tuple.</p></details><details class="info"><summary>nodes, seqNumber, withNodes</summary><p>Same as in <code>B.plainTuple()</code>.</p></details><details class="info"><summary>suppress</summary><p>Same as in <code>B.pretty()</code>.</p></details></details><details class="abstract"><summary><code>B.show()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
@@ -770,7 +770,7 @@ no matter which process has produced the tuples.</p></details><details class="in
   This gives the best account of the exact result set.</li></ul></details><details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
 Default 1.</p></details><details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
 Default the length of the iterable.</p></details><details class="info"><summary>withNodes, suppress</summary><p>Same as in <code>B.plainTuple()</code>.</p></details></details><h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
-<details class="note"><summary><code>B.search()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<details class="abstract"><summary><code>B.search()</code></summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Searches in the same way as the generic Text-Fabric <code>S.search()</code>.
