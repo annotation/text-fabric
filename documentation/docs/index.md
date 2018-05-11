@@ -33,19 +33,40 @@ Install Text-Fabric:
 pip3 install text-fabric
 ```
 
-Get the Hebrew Bible:
+## Corpora
+
+There are a few corpora in Text-Fabric that are being supported
+with extra modules.
+
+### Hebrew Bible
+
+Get the corpus:
 
 ```sh
 cd ~/github/etcbc
 git clone https://github.com/etcbc/bhsa
 ```
 
-or get example corpora (Greek, Sanskrit, Babylonian):
+### Cuneiform tablets from Uruk
+
+Get the corpus:
+
+```sh
+cd ~/github/Nino-cunei
+git clone https://github.com/Nino-cunei/uruk
+```
+
+### More
+
+We have example corpora (Greek, Sanskrit, Babylonian),
+but these are not supported by extra modules.
 
 ```sh
 cd ~/github
 git clone https://github.com/Dans-labs/text-fabric-data
 ```
+
+## Getting started
 
 Start programming: write a python script or code in the Jupyter notebook
 
@@ -69,22 +90,25 @@ under your home directory  or under `~/github`, Text-Fabric can find it.
 In your `modules` argument you then specify one or more subdirectories of
 `text-fabric-data`.
 
-Note to "Hebrew" users: the Hebrew dataset is no longer in the `text-fabric-data` repository.
-That repository is meant for examples and tutorials for various corpora.
-The Hebrew data is now in the [bhsa](https://github.com/ETCBC/bhsa) repository on GitHub
-and here is how you can load it, assuming you have cloned it into `~/github/etcbc'.
+### Using Hebrew data
 
-```python
-TF = Fabric(locations='~/github/etcbc', modules=['bhsa/tf/2017', 'parallels/tf/2017'])
-```
+To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
+[start](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb).
 
-You might want to consult the
-[tutorial](/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb).
-It contains a lot of test cases and elementary examples of what Text-Fabric can do.
+Or go straight to the
+[bhsa-api-docs](/Api/Bhsa).
 
-## About
+### Using Cuneiform data
+
+To get started with the Uruk corpus, use its tutorial in the Nino-cunei repo:
+[start](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb).
+
+Or go straight to the
+[cunei-api-docs](/Api/Cunei).
+
+## History
 
 Most ideas derive from an earlier project, 
 [LAF-Fabric](https://github.com/Dans-labs/laf-fabric).
-We have taken out everything that makes LAF-Fabric complicated and is not essential for the
-kind of data processing we have in mind.
+We have taken out everything that makes LAF-Fabric complicated and
+all things that are not essential for the sake of raw data processing.

@@ -6,6 +6,22 @@
     * [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     * [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.0.0
+
+2018-05-11
+
+*   Additions to Search.
+    You can now include the values of edges in your search templates.
+*   `F.`*feature*`.freqList()` accepts a new parameter: `nodeTypes`. It will restrict its results to nodes in
+    one of the types in `nodeTypes`. 
+*   You can now also do `E.`*feature*`.freqList()`.
+    It will count the number of edges if the edge is declared to be without values, 
+    or it will give a frequency list of the edges by value if the edge has values.
+    Like `F.freqList`, you can pass parameters to constrain the frequency list to certain node types.
+    You can constrain the node types from which the edges start (`nodeTypesFrom`) and where they arrive
+    (`nodeTypesTo`).
+*   New documentation system based on [mkdocs](https://mkdocs.readthedocs.io/en/stable/).
+
 ## 3.4.12
 
 2018-05-02

@@ -1,11 +1,31 @@
 site_name: Text-Fabric
+
 theme:
   name: material
   logo: 'images/tf-small.png'
   feature:
-    tabs: true
+    tabs: false
 repo_name: 'Dans-labs/text-fabric'
 repo_url: 'https://github.com/dans-labs/text-fabric'
+
+pages:
+  - Home: 'index.md'
+  - News: 'News.md'
+  - Api:
+    - 'Text-Fabric': 'Api/General.md'
+    - 'Hebrew Bible': 'Api/Bhsa.md'
+    - 'Cuneiform Tablets': 'Api/Cunei.md'
+    - 'Auxiliary': 'Api/Lib.md'
+  - Model:
+    - 'Data': 'Model/Data-Model.md'
+    - 'Format': 'Model/File-formats.md'
+    - 'Tweaks': 'Model/Optimizations.md'
+  - Create:
+    - 'Make TF': 'Create/CreateTF.md'
+    - 'Example data': 'Create/ExampleText.md'
+  - Details:
+    - 'Search': 'Search.md'
+
 markdown_extensions:
   - admonition
   - codehilite:
