@@ -16,14 +16,14 @@ See also
 
 ## Set up
 
-??? abstract "`from tf.extra.cunei import Cunei`"
+??? abstract "from tf.extra.cunei import Cunei"
     ??? explanation "import Cunei"
         The `Cunei` API is distributed with Text-Fabric.
         You have to import it into your program.
 
 ## Initialisation
 
-??? abstract "`Cunei()`"
+??? abstract "Cunei()"
     ```python
         CN = Cunei('~/github', 'Nino-cunei/uruk', 'test')
         CN.api.makeAvailableIn(globals())
@@ -58,7 +58,7 @@ See also
 
 ## Linking
 
-??? abstract "`CN.cdli()`"
+??? abstract "CN.cdli()"
     ```python
     CN.cdli(tablet, linkText=None, asString=False)
     ```
@@ -81,7 +81,7 @@ See also
         code cell in a notebook, you can also deliver the HTML as string,
         just say `asString=True`.
 
-??? abstract "`CN.tabletLink()`"
+??? abstract "CN.tabletLink()"
     ```python
     CN.tabletLink(node, text=None, asString=False)
     ```
@@ -114,7 +114,7 @@ See also
     There are functions to display nodes, tuples of nodes, and iterables of tuples
     of nodes in a simple way, as rows and as a table.
 
-??? abstract "`CN.plain()`"
+??? abstract "CN.plain()"
     ```python
     CN.plain(node, linked=True, withNodes=False, lineart=True, lineNumbers=False, asString=False)
     ```
@@ -145,7 +145,7 @@ See also
         code cell in a notebook, you can also deliver the markdown as string,
         just say `asString=True`.
 
-??? abstract "`CN.plainTuple()`"
+??? abstract "CN.plainTuple()"
     ```python
     CN.plainTuple(nodes, linked=1, withNodes=False, lineart=True, lineNumbers=False, asString=False)
     ```
@@ -172,7 +172,7 @@ See also
     ??? info "withNodes, lineart, lineNumbers, asString"
         Same as in `CN.plain()`.
 
-??? abstract "`CN.table()`"
+??? abstract "CN.table()"
     ```python
     CN.table(
       results,
@@ -212,7 +212,7 @@ See also
     There are functions to display nodes, tuples of nodes, and iterables of tuples
     of nodes in a graphical way.
 
-??? abstract "`CN.pretty()`"
+??? abstract "CN.pretty()"
     ```python
     CN.pretty(node, withNodes=False, suppress=set())
     ```
@@ -244,7 +244,7 @@ See also
         their contents is also displayed. You can selectively highlight
         those parts.
 
-??? abstract "`CN.prettyTuple()`"
+??? abstract "CN.prettyTuple()"
     ```python
     CN.prettyTuple(
       nodes, seqNumber,
@@ -269,7 +269,7 @@ See also
     ??? info "suppress"
         Same as in `CN.pretty()`.
 
-??? abstract "`CN.show()`"
+??? abstract "CN.show()"
     ```python
     CN.show(
       results,
@@ -314,7 +314,7 @@ See also
 
 ## Search
 
-??? abstract "`CN.search()`" 
+??? abstract "CN.search()" 
     ```python
     CN.search(query, silent=False)
     ```
@@ -344,7 +344,7 @@ See also
     We provide a bunch of function that, given a node, generate the appropriate ATF
     representation.
 
-??? abstract "`CN.atfFromSign()`"
+??? abstract "CN.atfFromSign()"
     ```python
     CN.atfFromSign(node, flags=False)
     ```
@@ -359,7 +359,7 @@ See also
         `flags` whether the *flags* associated with the sign
         will be included in the ATF.
 
-??? abstract "`CN.atfFromQuad()`"
+??? abstract "CN.atfFromQuad()"
     ```python
     CN.atfFromQuad(node, flags=False)
     ```
@@ -374,7 +374,7 @@ See also
         `flags` whether the *flags* associated with the quad
         will be included in the ATF.
 
-??? abstract "`CN.atfFromOuterQuad()`"
+??? abstract "CN.atfFromOuterQuad()"
     ```python
     ```
 
@@ -397,7 +397,7 @@ See also
         conveniently produce them. You do not have to worry yourself about the sign/quad
         distinction here.
 
-??? abstract "`CN.atfFromCluster()`"
+??? abstract "CN.atfFromCluster()"
     ```python
     ```
 
@@ -417,7 +417,7 @@ See also
         represented. Signs belonging to multiple nested clusters will only be
         represented once.
 
-??? abstract "`CN.getSource()`"
+??? abstract "CN.getSource()"
     ```python
     CN.getSource(node, nodeType=None, lineNumbers=False)
     ```
@@ -460,7 +460,7 @@ See also
     In most cases it is easier to extract nodes by search than by hand-written
     code using the functions here.
 
-??? abstract "`CN.nodeFromCase()`"
+??? abstract "CN.nodeFromCase()"
     ```python
     CN.nodeFromCase((P-number, face:columnNumber, hLineNumber))
     ```
@@ -485,7 +485,7 @@ See also
     ??? caution "Not found"
         If no such node exists, you get `None` back.
 
-??? abstract "`CN.caseFromNode()`"
+??? abstract "CN.caseFromNode()"
     ```python
     CN.caseFromNode(n)
     ```
@@ -513,7 +513,7 @@ See also
         If `node` corresponds to something inside a transcription line,
         the node of the terminal case or line in which it is contained will be used.
 
-??? abstract "`CN.lineFromNode()`"
+??? abstract "CN.lineFromNode()"
     ```python
     CN.lineFromNode()
     ```
@@ -527,7 +527,7 @@ See also
         `node` must correspond to something inside a transcription line:
         `sign`, `quad`, `cluster`.
 
-??? abstract "`CN.casesByLevel()`"
+??? abstract "CN.casesByLevel()"
     ```python
     CN.casesByLevel(k, terminal=True)
     ```
@@ -549,7 +549,7 @@ See also
     are delivered.
     Otherwise, all lines/cases of that level will be delivered.
 
-??? abstract "`CN.getOuterQuads()`"
+??? abstract "CN.getOuterQuads()"
     ```python
     CN.getOuterQuads(node)
     ```
@@ -568,7 +568,7 @@ See also
 
 ## Images
 
-??? abstract "`CN.photo()` and `CN.lineart()`"
+??? abstract "CN.photo() and CN.lineart()"
     ```python
     CN.photo(nodes, key=None, asLink=True, withCaption='bottom', **options)
     CN.lineart(nodes, key=None, asLink=True, withCaption='bottom', **options)
@@ -650,7 +650,7 @@ See also
         done if needed. The names of the images will be changed, to prevent problems
         with systems that cannot handle `|` and `+` characters in file names well.
 
-??? abstract "`CN.imagery()`"
+??? abstract "CN.imagery()"
     ```python
     CN.imagery(objectType, kind)
     ```
