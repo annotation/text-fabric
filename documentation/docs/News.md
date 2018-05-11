@@ -6,6 +6,12 @@
     * [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     * [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.0.1
+
+2018-05-11
+
+Documentation updates.
+
 ## 4.0.0
 
 2018-05-11
