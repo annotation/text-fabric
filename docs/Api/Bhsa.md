@@ -8,14 +8,14 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
 ## Set up
 
-??? note "`from tf.extra.bhsa import Bhsa`"
+??? abstract "`from tf.extra.bhsa import Bhsa`"
     ??? explanation "import Bhsa"
         The `Bhsa` API is distributed with Text-Fabric.
         You have to import it into your program.
 
 ## Initialisation
 
-??? note "`Bhsa()`"
+??? abstract "`Bhsa()`"
     ```python
     B = Bhsa(api, 'test', version=VERSION)
     ```
@@ -46,7 +46,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
 ## Linking
 
-??? note "`B.shbLink()`"
+??? abstract "`B.shbLink()`"
     ```python
     B.shbLink(node, text=None)
     ```
@@ -77,7 +77,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
     There are functions to display nodes, tuples of nodes, and iterables of tuples
     of nodes in a simple way, as rows and as a table.
 
-??? note "`B.plain()`"
+??? abstract "`B.plain()`"
     ```python
     B.plain(node, linked=True, withNodes=False, asString=False)
     ```
@@ -100,7 +100,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
         code cell in a notebook, you can also deliver the markdown as string,
         just say `asString=True`.
 
-??? note "`B.plainTuple()`"
+??? abstract "`B.plainTuple()`"
     ```python
     B.plainTuple(nodes, linked=1, withNodes=False, asString=False)
     ```
@@ -127,7 +127,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
     ??? info "withNodes, asString"
         Same as in `B.plain()`.
 
-??? note "`B.table()`"
+??? abstract "`B.table()`"
     ```python
     B.table(
       results,
@@ -165,7 +165,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
     There are functions to display nodes, tuples of nodes, and iterables of tuples
     of nodes in a graphical way.
 
-??? note "`B.pretty()`"
+??? abstract "`B.pretty()`"
     ```python
     B.pretty(node, withNodes=False, suppress=set(), highlights=set())
     ```
@@ -194,7 +194,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
         their contents is also displayed. You can selectively highlight
         those parts.
 
-??? note "`B.prettyTuple()`"
+??? abstract "`B.prettyTuple()`"
     ```python
     B.prettyTuple(
       nodes, seqNumber,
@@ -217,7 +217,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
     ??? info "suppress"
         Same as in `B.pretty()`.
 
-??? note "`B.show()`"
+??? abstract "`B.show()`"
     ```python
     B.show(
       results,
@@ -261,7 +261,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
 ## Search
 
-??? note "`B.search()`" 
+??? abstract "`B.search()`" 
     ```python
     B.search(query, silent=False)
     ```
@@ -277,3 +277,6 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
     ??? info "silent mode"
         `silent`: if `True` it will suppress the reporting of the number of results.
+
+    ??? hint "search template reference"
+        See the [search template reference](/Api/General#search-templates)

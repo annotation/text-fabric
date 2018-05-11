@@ -2,9 +2,9 @@
 
 ???+ hint "Consult the tutorials after changes"
     When we change the API, we make sure that the tutorials shows off
-    all possibilities.
-    * [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
-    * [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
+    all possibilities:
+    [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
+    [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
 ## 4.0.3
 

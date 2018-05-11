@@ -1,9 +1,11 @@
 # Text-Fabric API
 
 ??? note "Tutorial"
-    See the
-    [tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb) for examples
-    of how to use the Text-Fabric API.
+    The tutorials for the
+    [Hebrew Bible](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
+    and the
+    [Uruk Cuneiform Tablets](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
+    put the Text-Fabric API on show for two distinguished (and vastly distinct) corpora.
 
 ???+ note "Generic API"
     This is the API of Text-Fabric in general.
@@ -17,7 +19,7 @@
 
 ## Loading
 
-??? note "`TF=Fabric()`"
+??? abstract "`TF=Fabric()`"
     ```python
     from tf.fabric import Fabric
     TF = Fabric(locations=directories, modules=subdirectories, silent=False)
@@ -65,7 +67,7 @@
     ??? hint "Silent mode"
         If `silent=True` is passed, banners and normal progress messages are suppressed.
 
-??? note "`TF.explore()`"
+??? abstract "`TF.explore()`"
     ```python
     features = TF.explore(silent=False, show=True)
     features
@@ -89,7 +91,7 @@
         `show=True`, the dictionary is return as function result.
 
 
-??? note "`api=TF.load()`"
+??? abstract "`api=TF.load()`"
     ```python
     api = TF.load(features, add=False, silent=False)
     ```
@@ -119,7 +121,7 @@
             `api.makeAvailableIn(globals())` again after this!
 
 
-??? note "`api.makeAvailableIn(globals())`"
+??? abstract "`api.makeAvailableIn(globals())`"
     ```python
     api.makeAvailableIn(globals())
     ```
@@ -158,7 +160,7 @@
         `T` | `Text`
         `S` | `Search`
 
-??? note "`ignored`"
+??? abstract "`ignored`"
     ```python
     api.ignored
     ```
@@ -168,7 +170,7 @@
         is also present in another, later, location), you can use this attribute
         to inspect the ignored features and their locations.
 
-??? note "`loadLog()`"
+??? abstract "`loadLog()`"
     ```python
     api.loadlog()
     ```
@@ -179,7 +181,7 @@
 
 ## Navigating nodes
 
-??? note "`N()`"
+??? abstract "`N()`"
     ```python
     for n in N():
         action
@@ -244,7 +246,7 @@
     post-order. It is very much like SAX parsing in the XML world.
 
 
-??? note "`sortNodes()`"
+??? abstract "`sortNodes()`"
     ```python
     sortNodes(nodeset)
     ```
@@ -252,7 +254,7 @@
     ???+ info "Description"
         delivers `nodeset` as a tuple sorted by the *canonical ordering*.
 
-??? note "`sortKey`"
+??? abstract "`sortKey`"
     ```python
     nodeList = sorted(nodes, key=sortKey)
     ```
@@ -294,7 +296,7 @@
       L.u(node)[0]
       ```
 
-??? note "`L.u()`"
+??? abstract "`L.u()`"
     ```python
     L.u(node, otype=nodetype)
     ```
@@ -303,7 +305,7 @@
         Produces an ordered tuple of nodes **upward** from `node`, i.e. embedder nodes
         of `node`. The result does not include `node`.
 
-??? note "`L.d()`"
+??? abstract "`L.d()`"
     ```python
     L.d(node, otype=nodetype)
     ```
@@ -312,7 +314,7 @@
         Produces an ordered tuple of nodes **downward** from `node`, i.e. embedded nodes
         of `node`. The result does not include `node`.
 
-??? note "`L.n()`"
+??? abstract "`L.n()`"
     ```python
     L.n(node, otype=nodetype)
     ```
@@ -321,7 +323,7 @@
         Produces an ordered tuple of adjacent **next** nodes from `node`, i.e. nodes
         whose first slot just follows the last slot of `node`.
 
-??? note "`L.p()`"
+??? abstract "`L.p()`"
     ```python
     L.p(node, otype=nodetype)
     ```
@@ -419,7 +421,7 @@
         @levels=tablet,face,column,line,case,cluster,quad,comment,sign
         ```
 
-??? note "`T.sectionFromNode()`"
+??? abstract "`T.sectionFromNode()`"
     ```python
     T.sectionFromNode(n, lastSlot=False, lang='en')
     ```
@@ -439,7 +441,7 @@
         Nodes that lie outside any book, chapter, verse will get a `None` in the
         corresponding members of the returned tuple.
 
-??? note "`T.nodeFromSection()`"
+??? abstract "`T.nodeFromSection()`"
     ```python
     T.nodeFromSection(section, lang='en')
     ```
@@ -460,7 +462,7 @@
     the [ISO 639](https://nl.wikipedia.org/wiki/ISO_639) two-letter code for that
     language. Text-Fabric will always load these features.
 
-??? note "`T.languages`"
+??? abstract "`T.languages`"
     ```python
     T.languages
     ```
@@ -468,7 +470,7 @@
     ???+ info "Description"
         A dictionary of the languages that are available for book names.
 
-??? note "`T.bookName()`"
+??? abstract "`T.bookName()`"
     ```python
     T.bookName(n, lang='en')
     ```
@@ -486,7 +488,7 @@
         `n` may or may not be a book node. If not, `bookName()` retrieves the
         embedding book node first.
 
-??? note "`T.bookNode()`"
+??? abstract "`T.bookNode()`"
     ```python
     T.bookNode(name, lang='en')
     ```
@@ -537,7 +539,7 @@
         There is complete freedom of choosing names for text formats.
         They do not have to complied with the above-mentioned scheme.
 
-??? note "`T.formats`"
+??? abstract "`T.formats`"
     ```python
     T.formats
     ```
@@ -545,7 +547,7 @@
     ???+ info "Description"
         Show the text representation formats that have been defined in your dataset.
 
-??? note "`T.text()`"
+??? abstract "`T.text()`"
     ```python
     T.text(nodes, fmt=None)
     ```
@@ -581,7 +583,7 @@
         When defining formats in `otext.tf`, if you need a newline or tab in the format,
         specify it as `\n` and `\t`.
 
-## Search
+## Searching
  
 ??? info "What is Text-Fabric Search?"
     You can query for graph like structures in your data set. The structure you are
@@ -727,6 +729,41 @@
 
     Read `m -sub> s` as: there is a `sub`-arrow from `m` to `s`.
 
+    Edge features may have values.
+    For example, the
+    [crossref feature](https://github.com/ETCBC/parallels)
+    is a set of edges between parallel verses, with the levels of confidence
+    as values. This number is an integer between 0 and 100.
+    We can ask for parallel verses in an unqualified way:
+
+        verse
+        -crossref> verse
+
+    But we can also ask for the cases with a specific confidence:
+
+        verse
+        -crossref=90> verse
+
+    or cases with a high confidence:
+
+        verse
+        -crossref>95> verse
+
+    or cases with a low confidence:
+
+        verse
+        -crossref<80> verse
+
+
+    All feature conditions that you can assert on node features, you can also
+    assert for edge features. If an edge feature is integer valued, such as `crossref`
+    you can use comparisons; if it is string valued, you can use regular expressions.
+    In both cases you can also use the other constructs, such as
+
+
+        verse
+        -crossref=66|77> verse
+
     To get a more specific introduction to search, consult the search tutorials for
     [Hebrew](https://github.com/ETCBC/bhsa/blob/master/tutorial/search.ipynb) and
     [Cuneiform](https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb).
@@ -856,7 +893,7 @@
                 *   in both directions;
                 *   these forms work only for edges that do have values.
 
-??? note "`S.relationsLegend`"
+??? abstract "`S.relationsLegend`"
     ```python
     S.relationsLegend
     ```
@@ -866,7 +903,7 @@
         template. It includes the edge features that are available in your dataset.
 
 
-??? note "`S.search()`"
+??? abstract "`S.search()`"
     ```python
     S.search(searchTemplate, limit=None)
     ```
@@ -892,7 +929,7 @@
         the method `S.showPlan()` below shows you at a glance the correspondence
         between the nodes in each result tuple and your search template.
 
-??? note "`S.study()`"
+??? abstract "`S.study()`"
     ```python
     S.study(searchTemplate, strategy=None, silent=False)
     ```
@@ -907,7 +944,7 @@
         If you want to suppress most of the output, say `silent=True`.
 
 
-??? note "`S.showPlan()`"
+??? abstract "`S.showPlan()`"
     ```python
     S.showPlan(details=False)
     ```
@@ -931,7 +968,7 @@
     Here are a few methods that do actual result fetching.
     They must be called after a previous `S.search()` or `S.study()`.
 
-??? note "`S.count()`"
+??? abstract "`S.count()`"
     ```python
     S.count(progress=None, limit=None)
     ```
@@ -951,7 +988,7 @@
         `len(S.results())` does not work, because `S.results()` is a generator
         that delivers its results as they come.
 
-??? note "`S.fetch()`"
+??? abstract "`S.fetch()`"
     ```python
     S.fetch(limit=None)
     ```
@@ -982,7 +1019,7 @@
 
         gives you the first bunch of results quickly.
 
-??? note "`S.glean()`"
+??? abstract "`S.glean()`"
     ```python
     S.glean(r)
     ```
@@ -1031,7 +1068,7 @@
 ???+ info "`F`"
     The node features API is exposed as `F` (`Fs`) or `Feature` (`FeatureString`).
 
-??? note "`Fall()` aka `AllFeatures()`"
+??? abstract "`Fall()` aka `AllFeatures()`"
     ```python
     Fall()
     AllFeatures()
@@ -1040,7 +1077,7 @@
     ???+ info "Description"
       Returns a sorted list of all usable, loaded node feature names.
 
-??? "`F.`*feature* aka `Feature.`*feature*"
+??? abstract "`F.`*feature* aka `Feature.`*feature*"
     ```python
     F.part_of_speech
     Feature.part_of_speech
@@ -1056,7 +1093,7 @@
         a valid python identifier, you can not use this function,
         you should use `Fs` instead.
 
-??? "`Fs(feature)` aka `FeatureString(feature)`"
+??? abstract "`Fs(feature)` aka `FeatureString(feature)`"
     ```python
     Fs(feature)
     FeatureString(feature)
@@ -1089,7 +1126,7 @@
         In the sequel we'll give examples based on the simple form only.
 
 
-??? "`F.`*feature*`.v(node)`"
+??? abstract "`F.`*feature*`.v(node)`"
     ```python
     F.part_of_speech.v(node)
     ```
@@ -1097,7 +1134,7 @@
     ???+ info "Description"
         Get the value of a *feature*, such as `part_of_speech` for `node`.
 
-??? "`F.`*feature*`.s(value)`"
+??? abstract "`F.`*feature*`.s(value)`"
     ```python
     F.part_of_speech.s(value)
     F.part_of_speech.s('noun')
@@ -1110,7 +1147,7 @@
 
         The second line gives you all nodes which are nouns according to the corpus.
 
-??? "`F.`*feature*`.freqList()`"
+??? abstract "`F.`*feature*`.freqList()`"
     ```python
     F.part_of_speech.freqList(nodeTypes=None)
     ```
@@ -1126,7 +1163,7 @@
         types will be counted.
 
 
-??? info "`F.otype`"
+??? abstract "`F.otype`"
     `otype` is a special node feature and has additional capabilities.
 
     ???+ info "Description"
@@ -1147,7 +1184,7 @@
 ???+ info "`E`"
     The edge features API is exposed as `E` (`Es`) or `Edge` (`EdgeString`).
 
-??? note "`Eall()` aka `AllEdges()`"
+??? abstract "`Eall()` aka `AllEdges()`"
     ```python
     Eall()
     AllEdges()
@@ -1156,7 +1193,7 @@
     ???+ info "Description"
       Returns a sorted list of all usable, loaded edge feature names.
 
-??? "`E.`*feature* aka `Edge.`*feature*"
+??? abstract "`E.`*feature* aka `Edge.`*feature*"
     ```python
     E.head
     Feature.head
@@ -1172,7 +1209,7 @@
         a valid python identifier, you can not use this function,
         you should use `Es` instead.
 
-??? "`Es(feature)` aka `EdgeString(feature)`"
+??? abstract "`Es(feature)` aka `EdgeString(feature)`"
     ```python
     Es(feature)
     EdgeString(feature)
@@ -1202,7 +1239,7 @@
     ??? note "Simple forms"
         In the sequel we'll give examples based on the simple form only.
 
-??? note "`E.`*feature*`.f(node)`"
+??? abstract "`E.`*feature*`.f(node)`"
     ```python
     E.head.f(node)
     ```
@@ -1217,7 +1254,7 @@
 
         If there are no edges from `n`, the empty tuple is returned, rather than `None`.
 
-??? note "`E.`*feature*`.t(node)`"
+??? abstract "`E.`*feature*`.t(node)`"
     ```python
     E.head.t(node)
     ```
@@ -1232,7 +1269,7 @@
 
         If there are no edges from `n`, the empty tuple is returned, rather than `None`.
 
-??? "`E.`*feature*`.freqList()`"
+??? abstract "`E.`*feature*`.freqList()`"
     ```python
     E.op.freqList(nodeTypesFrom=None, nodeTypesTo=None)
     ```
@@ -1253,9 +1290,7 @@
         and second member within nodeTypesTo 
         will be counted.
 
-
-
-??? info "`E.oslots`"
+??? abstract "`E.oslots`"
     `oslots` is a special edge feature and is mainly used to construct other parts
     of the API. It has less capabilities, and you will rarely need it. It does not
     have `.f` and `.t` methods, but an `.s` method instead.
@@ -1270,7 +1305,7 @@
 ??? info "Timed messages"
     Error and informational messages can be issued, with a time indication.
 
-??? note "`info()`"
+??? abstract "`info()`"
     ```python
     info(msg, tm=True, nl=True)
     ```
@@ -1280,7 +1315,7 @@
         unless `tm=False`.
         A newline will be appended, unless `nl=False`.
 
-??? note "`error()`"
+??? abstract "`error()`"
     ```python
     error(msg, tm=True, nl=True)
     ```
@@ -1293,7 +1328,7 @@
         In a Jupyter notebook, the standard error is displayed with
         a reddish background colour.
 
-??? note "`indent()`"
+??? abstract "`indent()`"
     ```python
     indent(level=None, reset=False)
     ```
@@ -1306,7 +1341,7 @@
 
 ## Saving features
 
-??? note "`TF.save()`"
+??? abstract "`TF.save()`"
     ```python
     TF.save(nodeFeatures={}, edgeFeatures={}, metaData={}, module=None)
     ```
@@ -1363,7 +1398,7 @@
 
 ### Clearing the cache
 
-??? note "`TF.clearCache()`"
+??? abstract "`TF.clearCache()`"
     ```python
     TF.clearCache()
     ```
@@ -1389,7 +1424,7 @@
     MQL dump is a text file, like an SQL dump. It contains the instructions to
     create and fill a complete database.
 
-??? note "`TF.exportMQL()`"
+??? abstract "`TF.exportMQL()`"
     ```python
     TF.exportMQL(dbName, dirName)
     ```
@@ -1506,7 +1541,7 @@
             rm dataset ; mql -b 3 < dataset.mql
             ```
 
-??? note "`TF.importMQL()`"
+??? abstract "`TF.importMQL()`"
     ```python
     TF.importMQL(mqlFile, slotType=None, otext=None, meta=None)
     ```
@@ -1563,132 +1598,123 @@
     Normally, you do not use this data, but since it is there, it might be valuable,
     so we have made it accessible in the `C`-api, which we document here.
 
-??? note "Levels"
+??? abstract "`C.levels.data`"
+    ???+ info "Description"
+        A sorted list of object types plus basic information about them.
 
-    ??? note "`C.levels.data`"
-        ???+ info "Description"
-            A sorted list of object types plus basic information about them.
+        Each entry in the list has the shape
 
-            Each entry in the list has the shape
+        ```python
+            (otype, averageSlots, minNode, maxNode)
+        ```
 
-            ```python
-                (otype, averageSlots, minNode, maxNode)
-            ```
+        where `otype` is the name of the node type, `averageSlots` the average size of
+        objects in this type, measured in slots (usually words). `minNode` is the first
+        node of this type, `maxNode` the last, and the nodes of this node type are
+        exactly the nodes between these two values (including).
 
-            where `otype` is the name of the node type, `averageSlots` the average size of
-            objects in this type, measured in slots (usually words). `minNode` is the first
-            node of this type, `maxNode` the last, and the nodes of this node type are
-            exactly the nodes between these two values (including).
+    ??? explanation "Level computation and customization"
+        All node types have a level, defined by the average amount of slots object of
+        that type usually occupy. The bigger the average object, the lower the levels.
+        Books have the lowest level, words the highest level.
 
-        ??? explanation "Level computation and customization"
-            All node types have a level, defined by the average amount of slots object of
-            that type usually occupy. The bigger the average object, the lower the levels.
-            Books have the lowest level, words the highest level.
+        However, this can be overruled. Suppose you have a node type *phrase* and above
+        it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
+        versa. If all phrases are contained in clusters, and some clusters have more
+        than one phrase, the automatic level ranking of node types works out well in
+        this case. But if clusters only have very small phrases, and the big phrases do
+        not occur in clusters, then the algorithm may assign a lower rank to clusters
+        than to phrases.
 
-            However, this can be overruled. Suppose you have a node type *phrase* and above
-            it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
-            versa. If all phrases are contained in clusters, and some clusters have more
-            than one phrase, the automatic level ranking of node types works out well in
-            this case. But if clusters only have very small phrases, and the big phrases do
-            not occur in clusters, then the algorithm may assign a lower rank to clusters
-            than to phrases.
+        In general, it is too expensive to try to compute the levels in a sophisticated
+        way. In order to remedy cases where the algorithm assigns wrong levels, you can
+        add a `@levels` key to the `otext` config feature. See
+        [text](#levels-of-node-types).
 
-            In general, it is too expensive to try to compute the levels in a sophisticated
-            way. In order to remedy cases where the algorithm assigns wrong levels, you can
-            add a `@levels` key to the `otext` config feature. See
-            [text](#levels-of-node-types).
+??? abstract "`C.order.data`"
+    ???+ info "Description"
+        An **array** of all nodes in the correct order. This is the
+        order in which `N()` alias `Node()` traverses all nodes.
 
-??? note "Order"
-    ??? note "`C.order.data`"
-        ???+ info "Description"
-            An **array** of all nodes in the correct order. This is the
-            order in which `N()` alias `Node()` traverses all nodes.
+    ??? explanation "Rationale"
+        To order all nodes in the [canonical ordering](#sorting-nodes) is quite a bit of
+        work, and we need this ordering all the time.
 
-        ??? explanation "Rationale"
-            To order all nodes in the [canonical ordering](#sorting-nodes) is quite a bit of
-            work, and we need this ordering all the time.
+??? abstract "`C.rank.data`"
+    ???+ info "Description"
+        An **array** of all indices of all nodes in the canonical order
+        array. It can be viewed as its inverse.
 
+    ??? explanation "Order arbitrary node sets"
+        I we want to order a set of nodes in the canonical ordering, we need to know
+        which position each node takes in the canonical order, in other words, at what
+        index we find it in the [`C.order.data`](#order) array.
 
-??? note "Rank"
-    ??? note "`C.rank.data`"
-        ???+ info "Description"
-            An **array** of all indices of all nodes in the canonical order
-            array. It can be viewed as its inverse.
+??? abstract "`C.levUp.data` and `C.levDown.data`"
+    ???+ info "Description"
+        These tables feed the `L.d()` and `L.u()` functions.
 
-        ??? explanation "Order arbitrary node sets"
-            I we want to order a set of nodes in the canonical ordering, we need to know
-            which position each node takes in the canonical order, in other words, at what
-            index we find it in the [`C.order.data`](#order) array.
+    ??? caution "Use with care"
+        They consist of a fair amount of megabytes, so they are heavily optimized.
+        It is not advisable to use them directly, it is far better to use the `L` functions.
 
-??? "Level Up and Down"
-    ??? note "`C.levUp.data` and `C.levDown.data`"
-        ???+ info "Description"
-            These tables feed the `L.d()` and `L.u()` functions.
+        Only when every bit of performance waste has to be squeezed out, this raw data
+        might be a deal.
 
-        ??? caution "Use with care"
-            They consist of a fair amount of megabytes, so they are heavily optimized.
-            It is not advisable to use them directly, it is far better to use the `L` functions.
+??? abstract "`C.boundary.data`"
+    ???+ info "Description"
+        These tables feed the `L.n()` and `L.p()` functions.
+        It is a tuple consisting of `firstSlots` and `lastSlots`.
+        They are indexes for the first slot
+        and last slot of nodes.
+        
+    ??? explanation "Slot index"
+        For each slot, `firstSlot` gives all nodes (except
+        slots) that start at that slot, and `lastSlot` gives all nodes (except slots)
+        that end at that slot.
+        Both `firstSlot` and `lastSlot` are tuples, and the
+        information for node `n` can be found at position `n-MaxSlot-1`.
 
-            Only when every bit of performance waste has to be squeezed out, this raw data
-            might be a deal.
+??? abstract "`C.sections.data`"
+    ???+ info "Description"
+        Let us assume for the sake of clarity, that the node type of section level 1 is
+        `book`, that of level 2 is `chapter`, and that of level 3 is `verse`. And
+        suppose that we have features, named `bookHeading`, `chapterHeading`, and
+        `verseHeading` that give the names or numbers of these.
 
-??? "Boundary"
-    ??? note "`C.boundary.data`"
-        ???+ info "Description"
-            These tables feed the `L.n()` and `L.p()` functions.
-            It is a tuple consisting of `firstSlots` and `lastSlots`.
-            They are indexes for the first slot
-            and last slot of nodes.
-            
-        ??? explanation "Slot index"
-            For each slot, `firstSlot` gives all nodes (except
-            slots) that start at that slot, and `lastSlot` gives all nodes (except slots)
-            that end at that slot.
-            Both `firstSlot` and `lastSlot` are tuples, and the
-            information for node `n` can be found at position `n-MaxSlot-1`.
+        ??? caution "Custom names"
+            Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
+            It is the corpus data, especially the `otext` config feature that
+            spells out the names of the sections.
 
-??? "Sections"
-    ??? note "`C.sections.data`"
-        ???+ info "Description"
-            Let us assume for the sake of clarity, that the node type of section level 1 is
-            `book`, that of level 2 is `chapter`, and that of level 3 is `verse`. And
-            suppose that we have features, named `bookHeading`, `chapterHeading`, and
-            `verseHeading` that give the names or numbers of these.
+        Then `C.section.data` is a tuple of two mappings , let us call them `chapters`
+        and `verses`.
 
-            ??? caution "Custom names"
-                Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
-                It is the corpus data, especially the `otext` config feature that
-                spells out the names of the sections.
+        `chapters` is a mapping, keyed by `book` **nodes**, and then by
+        by chapter **headings**, giving the corresponding
+        chapter **node**s as values.
 
-            Then `C.section.data` is a tuple of two mappings , let us call them `chapters`
-            and `verses`.
+        `verses` is a mapping, keyed by `book` **nodes**, and then
+        by chapter **headings**, and then by verse **headings**,
+        giving the corresponding verse **node**s as values.
 
-            `chapters` is a mapping, keyed by `book` **nodes**, and then by
-            by chapter **headings**, giving the corresponding
-            chapter **node**s as values.
+    ??? explanation "Supporting the `T`-Api"
+        The `T`-api is good in mapping nodes unto sections, such as books, chapters,
+        verses and back. It knows how many chapters each book has, and how many verses
+        each chapter.
 
-            `verses` is a mapping, keyed by `book` **nodes**, and then
-            by chapter **headings**, and then by verse **headings**,
-            giving the corresponding verse **node**s as values.
-
-        ??? explanation "Supporting the `T`-Api"
-            The `T`-api is good in mapping nodes unto sections, such as books, chapters,
-            verses and back. It knows how many chapters each book has, and how many verses
-            each chapter.
-
-            The `T` api is meant to make your life easier when you have to find passage
-            labels by nodes or vice versa. That is why you probably never need to consult
-            the underlying data. But you can! That data is stored in
-
+        The `T` api is meant to make your life easier when you have to find passage
+        labels by nodes or vice versa. That is why you probably never need to consult
+        the underlying data. But you can! That data is stored in
 
 # Miscellaneous
 
-??? note "`TF.version`"
+??? abstract "`TF.version`"
     ???+ info "Description"
         Contains the version number of the Text-Fabric
         library.
 
-??? note "`TF.banner`"
+??? abstract "`TF.banner`"
     ???+ info "Description"
         Contains the name and the version of the Text-Fabric
         library.
