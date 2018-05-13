@@ -648,11 +648,11 @@ contains a number of handy functions on top of Text-Fabric and especially its
 <h2 id="set-up">Set up<a class="headerlink" href="#set-up" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>from tf.extra.bhsa import Bhsa</summary><details class="explanation"><summary>import Bhsa</summary><p>The <code>Bhsa</code> API is distributed with Text-Fabric.
 You have to import it into your program.</p></details></details><h2 id="initialisation">Initialisation<a class="headerlink" href="#initialisation" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>Bhsa()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">VERSION</span><span class="p">)</span>
+<details class="abstract"><summary>Bhsa()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="s1">&#39;notebook&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">VERSION</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Silently loads some additional features, and <code>B</code>
-will give access to some extra functions.</p></details><details class="explanation"><summary>Set up</summary><p>This module comes in action after you have set up TF and loaded some features, e.g.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+will give access to some extra functions.</p></details><details class="info"><summary>api</summary><p>The API resulting from an earlier call <code>TF.load()</code></p></details><details class="explanation"><summary>Set up</summary><p>This module comes in action after you have set up TF and loaded some features, e.g.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
@@ -665,7 +665,7 @@ will give access to some extra functions.</p></details><details class="explanati
 <span class="n">api</span><span class="o">.</span><span class="n">makeAvailableIn</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
-<p>Then we add the functionality of the <code>bhsa</code> module by a call to <code>Bhsa()</code>.</p></details><details class="info"><summary>Name of your notebook</summary><p>The second argument of <code>Bhsa()</code> should be the name
+<p>Then we add the functionality of the <code>bhsa</code> module by a call to <code>Bhsa()</code>.</p></details><details class="info"><summary>notebook</summary><p>This should be the name
 of your current notebook (without the <code>.ipynb</code> extension).
 The Bhsa API will use this to generate a link to your notebook
 on GitHub and NBViewer.</p></details></details><h2 id="linking">Linking<a class="headerlink" href="#linking" title="Permanent link">&para;</a></h2>
@@ -673,7 +673,7 @@ on GitHub and NBViewer.</p></details></details><h2 id="linking">Linking<a class=
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Produces a link to SHEBANQ</p></details><details class="info"><summary>node</summary><p><code>node</code> can be an arbitrary node. The link targets the verse that
-contains the first word contained by the node.</p></details><details class="info"><summary>link text</summary><p>You may provide the text to be displayed as the link.
+contains the first word contained by the node.</p></details><details class="info"><summary>text</summary><p>You may provide the text to be displayed as the link.
 Then the
 passage indicator (book chapter:verse) will be put
 in the tooltip (title) of the link.
@@ -689,7 +689,7 @@ of nodes in a simple way, as rows and as a table.</p></details><details class="a
 <details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a simple way.</p></details><details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p></details><details class="info"><summary>linked</summary><p><code>linked</code> indicates whether the result should be a link to SHEBANQ
 to the appropriate book/chapter/verse.</p></details><details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p></details><details class="info"><summary>asString</summary><p>Instead of displaying the result directly in the output of your
 code cell in a notebook, you can also deliver the markdown as string,
-just say <code>asString=True</code>.</p></details></details><details class="abstract"><summary>B.plainTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">plainTuple</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+just say <code>asString=True</code>.</p></details></details><details class="abstract"><summary>B.plainTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">plainTuple</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">seqNumber</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a tuple of nodes
@@ -776,7 +776,7 @@ Default the length of the iterable.</p></details><details class="info"><summary>
 <details open="open"><summary>Description</summary><p>Searches in the same way as the generic Text-Fabric <code>S.search()</code>.
 But whereas the <code>S</code> version returns a generator which yields the results
 one by one, the <code>B</code> version collects all results and sorts them.
-It then reports the number of results.</p></details><details class="info"><summary>query</summary><p><code>query</code> is the search template that has to be searched for.</p></details><details class="info"><summary>silent mode</summary><p><code>silent</code>: if <code>True</code> it will suppress the reporting of the number of results.</p></details><details class="hint"><summary>search template reference</summary><p>See the <a href="../../Api/General#search-templates">search template reference</a></p></details></details>
+It then reports the number of results.</p></details><details class="info"><summary>query</summary><p><code>query</code> is the search template that has to be searched for.</p></details><details class="info"><summary>silent</summary><p><code>silent</code>: if <code>True</code> it will suppress the reporting of the number of results.</p></details><details class="hint"><summary>search template reference</summary><p>See the <a href="../../Api/General#search-templates">search template reference</a></p></details></details>
                 
                   
                 

@@ -698,18 +698,18 @@ transcriptions of them and <a href="https://cdli.ucla.edu">CDLI</a> photos and l
 <details class="abstract"><summary>from tf.extra.cunei import Cunei</summary><details class="explanation"><summary>import Cunei</summary><p>The <code>Cunei</code> API is distributed with Text-Fabric.
 You have to import it into your program.</p></details></details><h2 id="initialisation">Initialisation<a class="headerlink" href="#initialisation" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>Cunei()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="s1">&#39;~/github&#39;</span><span class="p">,</span> <span class="s1">&#39;Nino-cunei/uruk&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">)</span>
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="s1">&#39;~/github&#39;</span><span class="p">,</span> <span class="s1">&#39;Nino-cunei/uruk&#39;</span><span class="p">,</span> <span class="s1">&#39;notebook&#39;</span><span class="p">)</span>
     <span class="n">CN</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">makeAvailableIn</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Text-Fabric will be started for you and load all features.
 When <code>Cunei</code> is
 initializing, it scans the image directory of the repo and reports how many
-photos and lineart images it sees.</p></details><details class="info"><summary>local GitHub</summary><p>The first argument (<code>~/github</code>)
+photos and lineart images it sees.</p></details><details class="info"><summary>local GitHub</summary><p>The argument <code>~/github</code>
 should point to the directory where your local
-github repositories reside.</p></details><details class="info"><summary>Uruk location</summary><p>The second argument (<code>Nino-cunei/uruk</code>)
+github repositories reside.</p></details><details class="info"><summary>Uruk location</summary><p>The argument <code>Nino-cunei/uruk</code>
 should point to the local GitHub repository
-where the Uruk corpus resides.</p></details><details class="info"><summary>Name of your notebook</summary><p>The third argument of <code>Cunei()</code> should be the name
+where the Uruk corpus resides.</p></details><details class="info"><summary>notebook</summary><p>The third argument of <code>Cunei()</code> should be the name
 of your current notebook (without the <code>.ipynb</code> extension).
 The Cunei API will use this to generate a link to your notebook
 on GitHub and NBViewer.</p><details class="note"><summary>Note</summary><p>Your current notebook can be anywhere on your system.
@@ -720,7 +720,7 @@ location, but not its name, hence you have to pass its name.</p></details></deta
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Produces a link to a tablet page on CDLI,
 to be placed in an output cell.</p></details><details class="info"><summary>tablet</summary><p><code>tablet</code> is either a node of type <code>tablet</code>
-or a P-number of a tablet.</p></details><details class="info"><summary>link text</summary><p>You may provide the text to be displayed as the link.
+or a P-number of a tablet.</p></details><details class="info"><summary>linkText</summary><p>You may provide the text to be displayed as the link.
 If you do not provide any,
 the P-number of the tablet will be used.</p></details><details class="info"><summary>asString</summary><p>Instead of displaying the result directly in the output of your
 code cell in a notebook, you can also deliver the HTML as string,
@@ -728,7 +728,7 @@ just say <code>asString=True</code>.</p></details></details><details class="abst
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Produces a link to CDLI</p></details><details class="info"><summary>node</summary><p><code>node</code> can be an arbitrary node. The link targets the tablet that
-contains the material contained by the node.</p></details><details class="info"><summary>link text</summary><p>You may provide the text to be displayed as the link.
+contains the material contained by the node.</p></details><details class="info"><summary>text</summary><p>You may provide the text to be displayed as the link.
 If you do not provide a link text,
 the P-number of the tablet will be chosen.</p></details><details class="info"><summary>asString</summary><p>Instead of displaying the result directly in the output of your
 code cell in a notebook, you can also deliver the HTML as string,
@@ -745,7 +745,17 @@ to the tablet on which the node occurs.</p></details><details class="info"><summ
 (only relevant for signs and quads)</p></details><details class="info"><summary>lineNumbers</summary><p><code>lineNumbers</code> indicates whether corresponding line numbers in the
 ATF source should be displayed.</p></details><details class="info"><summary>asString</summary><p>Instead of displaying the result directly in the output of your
 code cell in a notebook, you can also deliver the markdown as string,
-just say <code>asString=True</code>.</p></details></details><details class="abstract"><summary>CN.plainTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">plainTuple</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">lineart</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">lineNumbers</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+just say <code>asString=True</code>.</p></details></details><details class="abstract"><summary>CN.plainTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">plainTuple</span><span class="p">(</span>
+  <span class="n">nodes</span><span class="p">,</span> <span class="n">seqNumber</span><span class="p">,</span>
+  <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+  <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">lineart</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">lineNumbers</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+  <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a tuple of nodes
@@ -843,7 +853,7 @@ Default the length of the iterable.</p></details><details class="info"><summary>
 <details open="open"><summary>Description</summary><p>Searches in the same way as the generic Text-Fabric <code>S.search()</code>.
 But whereas the <code>S</code> version returns a generator which yields the results
 one by one, the <code>CN</code> version collects all results and sorts them.
-It then reports the number of results.</p></details><details class="info"><summary>query</summary><p><code>query</code> is the search template that has to be searched for.</p></details><details class="info"><summary>silent mode</summary><p><code>silent</code>: if <code>True</code> it will suppress the reporting of the number of results.</p></details><details class="hint"><summary>search template reference</summary><p>See the <a href="../../Api/General#search-templates">search template reference</a></p></details></details><h2 id="atf-representation">ATF representation<a class="headerlink" href="#atf-representation" title="Permanent link">&para;</a></h2>
+It then reports the number of results.</p></details><details class="info"><summary>query</summary><p><code>query</code> is the search template that has to be searched for.</p></details><details class="info"><summary>silent</summary><p><code>silent</code>: if <code>True</code> it will suppress the reporting of the number of results.</p></details><details class="hint"><summary>search template reference</summary><p>See the <a href="../../Api/General#search-templates">search template reference</a></p></details></details><h2 id="atf-representation">ATF representation<a class="headerlink" href="#atf-representation" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Generate ATF</summary><p>Signs and quads and clusters can be represented by an ascii string,
 in the so-called Ascii Text Format,
 <a href="http://oracc.museum.upenn.edu/doc/help/editinginatf/primer/inlinetutorial/index.html">ATF</a>.</p><p>We provide a bunch of function that, given a node, generate the appropriate ATF
@@ -855,7 +865,7 @@ will be included in the ATF.</p></details></details><details class="abstract"><s
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Reproduces the ATF representation of a quad.</p></details><details class="info"><summary>node</summary><p><code>node</code> must have node type <code>quad</code>.</p></details><details class="info"><summary>flags</summary><p><code>flags</code> whether the <em>flags</em> associated with the quad
-will be included in the ATF.</p></details></details><details class="abstract"><summary>CN.atfFromOuterQuad()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>
+will be included in the ATF.</p></details></details><details class="abstract"><summary>CN.atfFromOuterQuad()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">atfFromOuterQuad</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Reproduces the ATF representation of a quad or sign.</p></details><details class="info"><summary>node</summary><p><code>node</code> must have node type <code>quad</code> or <code>sign</code>.</p></details><details class="info"><summary>flags</summary><p><code>flags</code> whether the <em>flags</em> associated with the quad
@@ -863,7 +873,7 @@ will be included in the ATF.</p></details><details class="explanation"><summary>
 split it on white space, and you forget the brackets that cluster quads and
 signs, then you get a sequence of outer quads and signs.</p><p>If you need to get the ATF representation for these items, this function does
 conveniently produce them. You do not have to worry yourself about the sign/quad
-distinction here.</p></details></details><details class="abstract"><summary>CN.atfFromCluster()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>
+distinction here.</p></details></details><details class="abstract"><summary>CN.atfFromCluster()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">atfFromCluster</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Reproduces the ATF representation of a cluster.</p></details><details class="info"><summary>node</summary><p><code>node</code> must have node type <code>quad</code>.</p></details><details class="explanation"><summary>clusters</summary><p>Clusters are bracketings of
@@ -893,7 +903,7 @@ numbered transcription line.</p></details><details class="explanation"><summary>
 <code>T.nodeFromSection()</code> of Text-Fabric.</p></details><details class="info"><summary>case specification</summary><p>This function takes a single argument which must be
 a tuple
 (<em>tabletNumber</em>, <em>face</em>:<em>columnNumber</em>, <em>hierarchical-line-number</em>).</p></details><details class="note"><summary>dots</summary><p>The hierarchical number may contain the original <code>.</code> that they
-often have in the transcriptions, but you may also leave them out.</p></details><details class="caution"><summary>Not found</summary><p>If no such node exists, you get <code>None</code> back.</p></details></details><details class="abstract"><summary>CN.caseFromNode()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">caseFromNode</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+often have in the transcriptions, but you may also leave them out.</p></details><details class="caution"><summary>Not found</summary><p>If no such node exists, you get <code>None</code> back.</p></details></details><details class="abstract"><summary>CN.caseFromNode()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">caseFromNode</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Gives you a terminal case specification,
@@ -904,7 +914,7 @@ The hierarchical line number will not contain dots.</p></details><details class=
 (these are the cases that have a full hierarchical
 number; these cases correspond to the individual numbered lines in the
 transcription sources).</p></details><details class="hint"><summary>other nodes</summary><p>If <code>node</code> corresponds to something inside a transcription line,
-the node of the terminal case or line in which it is contained will be used.</p></details></details><details class="abstract"><summary>CN.lineFromNode()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">lineFromNode</span><span class="p">()</span>
+the node of the terminal case or line in which it is contained will be used.</p></details></details><details class="abstract"><summary>CN.lineFromNode()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">lineFromNode</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>If called on a node corresponding to something inside a transcription line, it
@@ -919,15 +929,15 @@ subcases anymore. Such cases correspond to individual lines in the ATF.</p></det
 <code>0</code> is lines,
 <code>1</code> is top-level cases,
 <code>2</code> is subcases,
-<code>3</code> is subsubcases, and so on.</p></details><details class="info"><summary>terminal</summary></details><p><code>terminal</code>: if <code>True</code>, only lines and cases that have the feature <code>terminal</code>
+<code>3</code> is subsubcases, and so on.</p></details><details class="info"><summary>terminal</summary><p><code>terminal</code>: if <code>True</code>, only lines and cases that have the feature <code>terminal</code>
 are delivered.
-Otherwise, all lines/cases of that level will be delivered.</p></details><details class="abstract"><summary>CN.getOuterQuads()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">getOuterQuads</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+Otherwise, all lines/cases of that level will be delivered.</p></details></details><details class="abstract"><summary>CN.getOuterQuads()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">getOuterQuads</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
-<details open="open"><summary>Description</summary><p>Collects the outer quads and isolated signs under a node.</p></details><details class="explanation"><summary>Outer quads</summary><p>Outer quads and isolated signs is what you get
+<details open="open"><summary>Description</summary><p>Collects the outer quads and isolated signs under a node.</p></details><details class="info"><summary>node</summary><p><code>node</code> is typically a tablet, face, column, line, or case.
+This is the container of the outer quads.</p></details><details class="explanation"><summary>Outer quads</summary><p>Outer quads and isolated signs is what you get
 if you split line material by white space and
-remove cluster brackets.</p></details><details class="info"><summary>node</summary><p><code>node</code> is typically a tablet, face, column, line, or case.
-This is the container of the outer quads.</p></details></details><h2 id="images">Images<a class="headerlink" href="#images" title="Permanent link">&para;</a></h2>
+remove cluster brackets.</p></details></details><h2 id="images">Images<a class="headerlink" href="#images" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>CN.photo() and CN.lineart()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">photo</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">asLink</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withCaption</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
 <span class="n">CN</span><span class="o">.</span><span class="n">lineart</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">asLink</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withCaption</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
