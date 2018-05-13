@@ -25,7 +25,7 @@ See also
 
 ??? abstract "Cunei()"
     ```python
-        CN = Cunei('~/github', 'Nino-cunei/uruk', 'test')
+        CN = Cunei('~/github', 'Nino-cunei/uruk', 'notebook')
         CN.api.makeAvailableIn(globals())
     ```
 
@@ -36,16 +36,16 @@ See also
         photos and lineart images it sees.
 
     ??? info "local GitHub"
-        The first argument (`~/github`)
+        The argument `~/github`
         should point to the directory where your local
         github repositories reside.
 
     ??? info "Uruk location"
-        The second argument (`Nino-cunei/uruk`)
+        The argument `Nino-cunei/uruk`
         should point to the local GitHub repository
         where the Uruk corpus resides.
 
-    ??? info "Name of your notebook"
+    ??? info "notebook"
         The third argument of `Cunei()` should be the name
         of your current notebook (without the `.ipynb` extension).
         The Cunei API will use this to generate a link to your notebook
@@ -71,7 +71,7 @@ See also
         `tablet` is either a node of type `tablet`
         or a P-number of a tablet.
 
-    ??? info "link text"
+    ??? info "linkText"
         You may provide the text to be displayed as the link.
         If you do not provide any,
         the P-number of the tablet will be used.
@@ -93,7 +93,7 @@ See also
         `node` can be an arbitrary node. The link targets the tablet that
         contains the material contained by the node.
     
-    ??? info "link text"
+    ??? info "text"
         You may provide the text to be displayed as the link.
         If you do not provide a link text,
         the P-number of the tablet will be chosen.
@@ -147,7 +147,12 @@ See also
 
 ??? abstract "CN.plainTuple()"
     ```python
-    CN.plainTuple(nodes, linked=1, withNodes=False, lineart=True, lineNumbers=False, asString=False)
+    CN.plainTuple(
+      nodes, seqNumber,
+      linked=1,
+      withNodes=False, lineart=True, lineNumbers=False,
+      asString=False,
+    )
     ```
 
     ???+ info "Description"
@@ -328,7 +333,7 @@ See also
     ??? info "query"
         `query` is the search template that has to be searched for.
 
-    ??? info "silent mode"
+    ??? info "silent"
         `silent`: if `True` it will suppress the reporting of the number of results.
 
     ??? hint "search template reference"
@@ -376,6 +381,7 @@ See also
 
 ??? abstract "CN.atfFromOuterQuad()"
     ```python
+    CN.atfFromOuterQuad(node, flags=False)
     ```
 
     ???+ "Description"
@@ -399,6 +405,7 @@ See also
 
 ??? abstract "CN.atfFromCluster()"
     ```python
+    CN.atfFromCluster(node, flags=False)
     ```
 
     ???+ "Description"
@@ -487,7 +494,7 @@ See also
 
 ??? abstract "CN.caseFromNode()"
     ```python
-    CN.caseFromNode(n)
+    CN.caseFromNode(node)
     ```
 
     ???+ info "Description"
@@ -515,7 +522,7 @@ See also
 
 ??? abstract "CN.lineFromNode()"
     ```python
-    CN.lineFromNode()
+    CN.lineFromNode(node)
     ```
 
     ???+ info "Description"
@@ -545,9 +552,9 @@ See also
         `3` is subsubcases, and so on.
 
     ??? info "terminal"
-    `terminal`: if `True`, only lines and cases that have the feature `terminal`
-    are delivered.
-    Otherwise, all lines/cases of that level will be delivered.
+        `terminal`: if `True`, only lines and cases that have the feature `terminal`
+        are delivered.
+        Otherwise, all lines/cases of that level will be delivered.
 
 ??? abstract "CN.getOuterQuads()"
     ```python
@@ -557,14 +564,14 @@ See also
     ???+ "Description"
         Collects the outer quads and isolated signs under a node.
     
+    ??? info "node"
+        `node` is typically a tablet, face, column, line, or case.
+        This is the container of the outer quads.
+
     ??? explanation "Outer quads"
         Outer quads and isolated signs is what you get
         if you split line material by white space and
         remove cluster brackets.
-
-    ??? info "node"
-        `node` is typically a tablet, face, column, line, or case.
-        This is the container of the outer quads.
 
 ## Images
 

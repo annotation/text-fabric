@@ -17,12 +17,15 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
 ??? abstract "Bhsa()"
     ```python
-    B = Bhsa(api, 'test', version=VERSION)
+    B = Bhsa(api, 'notebook', version=VERSION)
     ```
 
     ???+ info "Description"
         Silently loads some additional features, and `B`
         will give access to some extra functions.
+
+    ??? info "api"
+        The API resulting from an earlier call `TF.load()`
 
     ??? explanation "Set up"
         This module comes in action after you have set up TF and loaded some features, e.g.
@@ -38,8 +41,8 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
         Then we add the functionality of the `bhsa` module by a call to `Bhsa()`.
 
-    ??? info "Name of your notebook"
-        The second argument of `Bhsa()` should be the name
+    ??? info "notebook"
+        This should be the name
         of your current notebook (without the `.ipynb` extension).
         The Bhsa API will use this to generate a link to your notebook
         on GitHub and NBViewer.
@@ -58,7 +61,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
         `node` can be an arbitrary node. The link targets the verse that
         contains the first word contained by the node.
     
-    ??? info "link text"
+    ??? info "text"
         You may provide the text to be displayed as the link.
         Then the
         passage indicator (book chapter:verse) will be put
@@ -102,7 +105,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
 ??? abstract "B.plainTuple()"
     ```python
-    B.plainTuple(nodes, linked=1, withNodes=False, asString=False)
+    B.plainTuple(nodes, seqNumber, linked=1, withNodes=False, asString=False)
     ```
 
     ???+ info "Description"
@@ -275,7 +278,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
     ??? info "query"
         `query` is the search template that has to be searched for.
 
-    ??? info "silent mode"
+    ??? info "silent"
         `silent`: if `True` it will suppress the reporting of the number of results.
 
     ??? hint "search template reference"

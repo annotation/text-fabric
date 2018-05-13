@@ -33,7 +33,7 @@
         Here `directories` and `subdirectories` are strings with directory names
         separated by newlines, or iterables of directories.
 
-    ??? info "locations and modules"
+    ??? info "locations, modules"
         The directories specified in `locations` will be searched for `modules`, which
         are paths that will be appended to the paths in `locations`.
 
@@ -106,13 +106,6 @@
         iterable of feature names. The feature names are just the names of `.tf` files
         without directory information and without extension.
 
-    ??? info "silent"
-        The features will be loaded rather silently, most messages will be suppressed.
-        Time consuming operations will always be announced, so that you know what
-        Text-Fabric is doing. If `silent=True` is passed, all informational messages
-        will be suppressed. This is handy I you want to load data as part of other
-        methods, on-the-fly.
-
     ??? info "add"
         If later on you want load more features, you can either:
 
@@ -121,6 +114,12 @@
             be added to the same api, so you do not have to to call
             `api.makeAvailableIn(globals())` again after this!
 
+    ??? info "silent"
+        The features will be loaded rather silently, most messages will be suppressed.
+        Time consuming operations will always be announced, so that you know what
+        Text-Fabric is doing. If `silent=True` is passed, all informational messages
+        will be suppressed. This is handy I you want to load data as part of other
+        methods, on-the-fly.
 
 ??? abstract "api.makeAvailableIn(globals())"
     ```python
@@ -306,8 +305,11 @@
     ```
 
     ???+ info "Description"
-        Produces an ordered tuple of nodes **upward** from `node`, i.e. embedder nodes
-        of `node`. The result does not include `node`.
+        Produces an ordered tuple of nodes **upward**, i.e. embedder nodes.
+
+    ??? info "node"
+        The node whose embedder nodes will be delivered.
+        The result never includes `node` itself.
 
 ??? abstract "L.d()"
     ```python
@@ -315,8 +317,11 @@
     ```
 
     ???+ info "Description"
-        Produces an ordered tuple of nodes **downward** from `node`, i.e. embedded nodes
-        of `node`. The result does not include `node`.
+        Produces an ordered tuple of nodes **downward**, i.e. embedded nodes.
+
+    ??? info "node"
+        The node whose embedded nodes will be delivered.
+        The result never includes `node` itself.
 
 ??? abstract "L.n()"
     ```python
@@ -324,8 +329,13 @@
     ```
 
     ???+ info "Description"
-        Produces an ordered tuple of adjacent **next** nodes from `node`, i.e. nodes
-        whose first slot just follows the last slot of `node`.
+        Produces an ordered tuple of adjacent **next** nodes.
+
+    ??? info "node"
+        The node whose right adjacent nodes will be delivered;
+        i.e. the nodes whose first slot immediately follow the last slot 
+        of `node`.
+        The result never includes `node` itself.
 
 ??? abstract "L.p()"
     ```python
@@ -335,6 +345,14 @@
     ???+ info "Description"
         Produces an ordered tuple of adjacent **previous** nodes from `node`, i.e. nodes
         whose last slot just precedes the first slot of `node`.
+
+    ???+ info "Description"
+        Produces an ordered tuple of adjacent **previous** nodes.
+
+    ??? info "node"
+        The node whose lefy adjacent nodes will be delivered;
+        i.e. the nodes whose last slot immediately precede the first slot 
+        of `node`.
 
 ??? explanation "Locality and levels"
     Here is something that is very important to be aware of when using `sortNodes`
@@ -591,10 +609,13 @@
         If you need order, it is
         better to order the nodes before you feed them to `T.text()`.
 
-    ??? note "Defaults and errors"
-        The format is given with `fmt`, with default `text-orig-full`. If the `fmt`
-        cannot be found, the default is taken. If the default format is not defined in
-        the dataset, the node numbers will be output instead.
+    ??? info "fmt"
+        The format of text-representation is given with `fmt`, with default `text-orig-full`.
+        If the `fmt`
+        cannot be found, the default is taken.
+        If the default format is not defined in the
+        `otext` feature of the dataset,
+        the node numbers will be output instead.
 
         This function does not give error messages, because that could easily overwhelm
         the output stream, especially in a notebook.
@@ -977,12 +998,24 @@
         space will be narrowed down, and a plan for retrieving the results will be set
         up.
 
-    ??? info "strategy"
-        For the meaning of the `strategy` parameter, see below.
+    ??? info "searchTemplate"
+        The search template is a string that conforms to the rules described above.
+
+    ??? danger "strategy"
+        In order to tame the performance of search, the strategy by which results are fetched
+        matters a lot.
+        The search strategy is an implementation detail, but we bring
+        it to the surface nevertheless.
+
+        To see the names of the available strategies, just call
+        `S.study('', strategy='x')` and you will get a list of options reported to
+        choose from.
+
+        Feel free to experiment. To see what the strategies do,
+        see the [code](https://github.com/Dans-labs/text-fabric/blob/master/tf/search.py).
 
     ??? info "silent"
         If you want to suppress most of the output, say `silent=True`.
-
 
 ??? abstract "S.showPlan()"
     ```python
@@ -1104,19 +1137,6 @@
         you will be provided with more powerful methods `show()` and `table()`
         to display your results. See [Cunei](cunei) and [Bhsa](bhsa).
 
-??? danger "Search strategies"
-    In order to tame the performance of search, the strategy by which results are fetched
-    matters a lot.
-    The search strategy is an implementation detail, but we bring
-    it to the surface nevertheless.
-
-    To see the names of the available strategies, just call
-    `S.study('', strategy='x')` and you will get a list of options reported to
-    choose from.
-
-    Feel free to experiment. To see what the strategies do,
-    see the [code](https://github.com/Dans-labs/text-fabric/blob/master/tf/search.py).
-
 
 ## Node features
 
@@ -1161,6 +1181,7 @@
     ???+ info "Description"
         Returns a sub-api for retrieving data that is stored in node features.
         
+    ??? info "feature"
         In this example, in line 1 and 2, the feature name is contained in
         the variable `feature`.
 
@@ -1168,12 +1189,13 @@
         we assume there is a feature called
         `part-of-speech`.
         Note that this is not a valid name in Python, yet we
-        can work with it.
+        can work with features with such names.
 
     ??? explanation "Both methods have identical results"
-        The result of `Fs(feature)` and `F.`*value_of_feature* is identical.
+        Suppose we have just issued `feature = 'pos'.
+        Then the result of `Fs(feature)` and `F.pos` is identical.
 
-        In most cases `F` works just fine, but we need `Fs` in two cases:
+        In most cases `F` works just fine, but `Fs` is needed in two cases:
 
         * if we need to work with a feature whose name is not a valid
           Python name;
@@ -1189,7 +1211,10 @@
     ```
 
     ???+ info "Description"
-        Get the value of a *feature*, such as `part_of_speech` for `node`.
+        Get the value of a *feature*, such as `part_of_speech` for a node.
+
+    ??? info "node"
+        The node whose value for the feature is being retrieved.
 
 ??? abstract "F.*feature*.s(value)"
     ```python
@@ -1198,10 +1223,13 @@
     ```
 
     ???+ info "Description"
-        This is the other way to walk through nodes: it returns a generator of all nodes
-        in the *canonical order* that have the value `value` for the
-        feature *feature* (in this example: `part_of_speech`).
+        Returns a generator of all nodes in the canonical order with a given value for a given feature.
+        This is an other way to walk through nodes than using `N()`.
 
+    ??? info "value"
+        The test value: all nodes with this value are yielded, the others pass through.
+
+    ??? example "nouns"
         The second line gives you all nodes which are nouns according to the corpus.
 
 ??? abstract "F.`*feature*.freqList()"
@@ -1277,6 +1305,7 @@
     ???+ info "Description"
         Returns a sub-api for retrieving data that is stored in edge features.
         
+    ??? info "feature"
         In this example, in line 1 and 2, the feature name is contained in
         the variable `feature`.
 
@@ -1285,9 +1314,10 @@
         `head`.
 
     ??? explanation "Both methods have identical results"
-        The result of `Es(feature)` and `E.`*value_of_feature* is identical.
+        Suppose we have just issued `feature = 'head'.
+        Then the result of `Es(feature)` and `E.pos` is identical.
 
-        In most cases `E` works just fine, but we need `Es` in two cases:
+        In most cases `E` works just fine, but `Es` is needed in two cases:
 
         * if we need to work with a feature whose name is not a valid
           Python name;
@@ -1302,14 +1332,17 @@
     ```
 
     ???+ info "Description"
-        Get the nodes reached by *feature*-edges **from** `node`
-        (in this example we want the `head`-edges).
+        Get the nodes reached by *feature*-edges **from** a certain node.
+        These edges must be specified in *feature*, in this case `head`.
         The result is an ordered tuple
         (again, in the *canonical order*. The members of the
         result are just nodes, if `head` describes edges without values. Otherwise
         the members are pairs (tuples) of a node and a value.
 
-        If there are no edges from `n`, the empty tuple is returned, rather than `None`.
+        If there are no edges from the node, the empty tuple is returned, rather than `None`.
+
+    ??? info "node"
+        The node **from** which the edges in question start.
 
 ??? abstract "E.*feature*.t(node)"
     ```python
@@ -1317,14 +1350,17 @@
     ```
 
     ???+ info "Description"
-        Get the nodes from which there are *feature*-edges **to** `node`..
-        (in this example we want the `head`-edges).
+        Get the nodes reached by *feature*-edges **to** a certain node.
+        These edges must be specified in *feature*, in this case `head`.
         The result is an ordered tuple
         (again, in the *canonical order*. The members of the
         result are just nodes, if `feature` describes edges without values. Otherwise
         the members are pairs (tuples) of a node and a value.
 
-        If there are no edges from `n`, the empty tuple is returned, rather than `None`.
+        If there are no edges to `n`, the empty tuple is returned, rather than `None`.
+
+    ??? info "node"
+        The node **to** which the edges in question go.
 
 ??? abstract "E.*feature*.freqList()"
     ```python
@@ -1341,10 +1377,16 @@
         list of pairs `(value, frequency)`, ordered by `frequency`, highest frequencies
         first.
 
-    ??? note "Restrict to certain nodeTypes for outgoing and incoming edges"
-        If you pass a set of nodeTypesFrom and or a set of nodeTypesTo,
-        only the values for node pairs with first member within nodeTypesFrom
-        and second member within nodeTypesTo 
+    ??? info "nodeTypesFrom"
+        If not `None`,
+        only the values for edges that start from a node with type
+        within `nodeTypesFrom`
+        will be counted.
+
+    ??? info "nodeTypesTo"
+        If not `None`,
+        only the values for edges that go to a node with type
+        within `nodeTypesTo`
         will be counted.
 
 ??? abstract "E.oslots"
@@ -1353,37 +1395,36 @@
     have `.f` and `.t` methods, but an `.s` method instead.
 
     ???+ info "Description"
-      * `E.oslots.s(node)`
-        Gives the sorted list of slot numbers linked to `node`, or put otherwise: the
-        slots that **support** node.
+        `E.oslots.s(node)`
+        Gives the sorted list of slot numbers linked to a node,
+        or put otherwise: the slots that **support** that node.
+
+    ??? info "node"
+        The node whose slots are being delivered.
 
 ## Messaging
 
 ??? info "Timed messages"
     Error and informational messages can be issued, with a time indication.
 
-??? abstract "info()"
+??? abstract "info(), error()"
     ```python
     info(msg, tm=True, nl=True)
     ```
     
     ???+ info "Description"
-        Sends string `msg` to standard output, with a preceding elapsed time indicator,
-        unless `tm=False`.
-        A newline will be appended, unless `nl=False`.
-
-??? abstract "error()"
-    ```python
-    error(msg, tm=True, nl=True)
-    ```
-    
-    ???+ info "Description"
-        Sends string `msg` to standard error, with a preceding elapsed time indicator,
-        unless `tm=False`.
-        A newline will be appended, unless `nl=False`.
+        Sends a message to standard output, possibly with time and newline.
+        * if `info()` is being used, the message is sent to `stdout`;
+        * if `error()` is being used, the message is sent to `stderr`;
 
         In a Jupyter notebook, the standard error is displayed with
         a reddish background colour.
+
+    ??? info "tm"
+        If `True`, an indicator of the elapsed time will be prepended to the message.
+
+    ??? info "nl"
+        If `True` a newline will be appended.
 
 ??? abstract "indent()"
     ```python
@@ -1391,10 +1432,15 @@
     ```
 
     ???+ info "Description"
-        `indent()` You can indicate a level, which must be an integer. Subsequent
-        `info()` and `error()` will display their messages with an indent. Timers at
-        different levels are independent of each other. If `reset`, the elapsed time to
-        0 at this level will be set to 0.
+        Changes the level of indentation of messages and possibly resets the time.
+
+    ??? info "level"
+        The level of indentation, an integer.  Subsequent
+        `info()` and `error()` will display their messages with this indent.
+
+    ??? info "reset"
+        If `True`, the elapsed time to will be reset to 0 at the given level.
+        Timers at different levels are independent of each other.
 
 ## Saving features
 
@@ -1407,46 +1453,48 @@
         If you have collected feature data in dictionaries, keyed by the
         names of the features, and valued by their feature data,
         then you can save that data to `.tf` feature files on disk.
-         
-        The data of a node feature is a dictionary with nodes as keys (integers!) and
-        strings or numbers as (feature) values.
-
-        The data of an edge feature is a dictionary with nodes as keys, and sets or
-        dictionaries as values. These sets should be sets of nodes (integers!), and
-        these dictionaries should have nodes as keys and strings or numbers as values.
 
         It is this easy to export new data as features:
         collect the data and metadata of
         the features and 
         feed it in an orderly way to `TF.save()` and there you go.
+         
+    ??? info "nodeFeatures"
+        The data of a node feature is a dictionary with nodes as keys (integers!) and
+        strings or numbers as (feature) values.
 
-    ??? note "value types"
-        The type of the values should conform to `@valueType` (`int` or `str`), which
-        must be stated in the metadata.
-
-    ??? note "edge values"
-        If you save an edge feature, and there are values in that edge feature, you have
-        to say so, by specifying `edgeValues = True` in the metadata for that feature.
+    ??? info "edgeFeatures"
+        The data of an edge feature is a dictionary with nodes as keys, and sets or
+        dictionaries as values. These sets should be sets of nodes (integers!), and
+        these dictionaries should have nodes as keys and strings or numbers as values.
 
     ??? info "metadata"
         Every feature will receive metadata from `metaData`, which is a dictionary
         mapping a feature name to its metadata.
         
-    ??? info "generic metadata"
-        `metaData` may also contain fields under
-        the empty name. These fields will be added to all features in `nodeFeatures` and
-        `edgeFeatures`.
+        ??? note "value types"
+            The type of the values should conform to `@valueType` (`int` or `str`), which
+            must be stated in the metadata.
 
-    ??? info "config features"
-        If you need to write the *config* feature `otext`,
-        which is a metadata-only feature, just
-        add the metadata under key `otext` in `metaData` and make sure
-        that `otext` is not a key in `nodeFeatures` nor in
-        `edgeFeatures`.
-        These fields will be written into the separate config feature `otext`,
-        with no data associated.
+        ??? note "edge values"
+            If you save an edge feature, and there are values in that edge feature, you have
+            to say so, by specifying `edgeValues = True` in the metadata for that feature.
 
-    ??? info "save location"
+        ??? note "generic metadata"
+          `metaData` may also contain fields under
+          the empty name. These fields will be added to all features in `nodeFeatures` and
+          `edgeFeatures`.
+
+        ??? note "config features"
+            If you need to write the *config* feature `otext`,
+            which is a metadata-only feature, just
+            add the metadata under key `otext` in `metaData` and make sure
+            that `otext` is not a key in `nodeFeatures` nor in
+            `edgeFeatures`.
+            These fields will be written into the separate config feature `otext`,
+            with no data associated.
+
+    ??? note "save location"
         The (meta)data will be written to the very last module in the list of locations
         that you specified when calling `Fabric()` or to what you passed as `module` in
         the same location. If that module does not exist, it will be created in the last
@@ -1489,6 +1537,13 @@
     ???+ info "Description"
         Exports the complete TF dataset into single MQL database.
 
+    ??? info "dirName, dbName"
+        The exported file will be written to `dirName/dbName.mql`. If `dirName` starts
+        with `~`, the `~` will be expanded to your home directory. Likewise, `..` will
+        be expanded to the parent of the current directory, and `.` to the current
+        directory, both only at the start of `dirName`.
+
+    ??? explanation "Correspondence TF and MQL"
         The resulting MQL database has the following properties with respect to the
         Text-Fabric dataset it comes from:
 
@@ -1499,26 +1554,7 @@
         *   the TF *nodes* correspond exactly with the MQL *objects* and have the same
             numbers
 
-        MQL names for databases, object types and features must be valid C identifiers
-        (yes, the computer language C). The requirements are:
-
-        *   start with a letter (ASCII, upper-case or lower-case)
-        *   follow by any sequence of ASCII upper/lower-case letters or digits or
-            underscores (`_`)
-        *   avoid being a reserved word in the C language
-
-        So, we have to change names coming from TF if they are invalid in MQL. We do
-        that by replacing illegal characters by `_`, and, if the result does not start
-        with a letter, we prepend an `x`. We do not check whether the name is a reserved
-        C word.
-
-        With these provisos:
-
-        *   the given `dbName` correspond to the MQL *database name*
-        *   the TF *otypes* correspond to the MQL *objects*
-        *   the TF *features* correspond to the MQL *features*
-
-    ??? info "Node features in MQL"
+    ??? note "Node features in MQL"
         The values of TF features are of two types, `int` and `str`, and they translate
         to corresponding MQL types `integer` and `string`. The actual values do not
         undergo any transformation.
@@ -1531,7 +1567,7 @@
         [verse chapter=1 and verse=1]
         ```
 
-    ??? info "Enumeration types"
+    ??? note "Enumeration types"
         It is attractive to use eumeration types for the values of a feature, whereever
         possible, because then you can query those features in MQL with `IN` and without
         quotes:
@@ -1573,11 +1609,25 @@
         edge features are translated into MQL features of type `LIST OF id_d`,
         i.e. lists of object identifiers.
 
-    ??? info "Export location"
-        The exported file will be written to `dirName/dbName.mql`. If `dirName` starts
-        with `~`, the `~` will be expanded to your home directory. Likewise, `..` will
-        be expanded to the parent of the current directory, and `.` to the current
-        directory, both only at the start of `dirName`.
+    ??? caution "Legal names in MQL"
+        MQL names for databases, object types and features must be valid C identifiers
+        (yes, the computer language C). The requirements are:
+
+        *   start with a letter (ASCII, upper-case or lower-case)
+        *   follow by any sequence of ASCII upper/lower-case letters or digits or
+            underscores (`_`)
+        *   avoid being a reserved word in the C language
+
+        So, we have to change names coming from TF if they are invalid in MQL. We do
+        that by replacing illegal characters by `_`, and, if the result does not start
+        with a letter, we prepend an `x`. We do not check whether the name is a reserved
+        C word.
+
+        With these provisos:
+
+        *   the given `dbName` correspond to the MQL *database name*
+        *   the TF *otypes* correspond to the MQL *objects*
+        *   the TF *features* correspond to the MQL *features*
 
     ??? hint "File size"
         The MQL export is usually quite massive (500 MB for the Hebrew Bible).
