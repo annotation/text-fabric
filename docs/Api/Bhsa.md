@@ -170,7 +170,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
 ??? abstract "B.pretty()"
     ```python
-    B.pretty(node, withNodes=False, suppress=set(), highlights=set())
+    B.pretty(node, withNodes=False, suppress=set(), highlights={)
     ```
 
     ???+ info "Description"
@@ -188,14 +188,26 @@ contains a number of handy functions on top of Text-Fabric and especially its
         If you find they clutter the display, you can turn them off
         selectively.
 
-    ??? info "highlights"
-        `highlights=set()` is a set of nodes that should be highlighted.
-        Only nodes that are involved in the display will be highlighted.
-
     ??? explanation "Highlighting"
         When nodes such as verses and sentences are displayed by `pretty()`,
         their contents is also displayed. You can selectively highlight
         those parts.
+
+    ??? info "highlights"
+        `highlights={}` is a set or mapping of nodes that should be highlighted.
+        Only nodes that are involved in the display will be highlighted.
+
+        If `highlights` is a set, its nodes will be highlighted with a default color (yellow).
+
+        If it is a dictionary, it should map nodes to colors.
+        Any color that is a valid 
+        [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
+        qualifies.
+
+        If you map a node to the empty string, it will get the default highlight color.
+
+        ??? hint "color names"
+            The link above points to a series of handy color names and their previews.
 
 ??? abstract "B.prettyTuple()"
     ```python
@@ -203,22 +215,41 @@ contains a number of handy functions on top of Text-Fabric and especially its
       nodes, seqNumber,
       withNodes=False,
       suppress=set(),
+      colorMap=None,
     )
     ```
 
     ???+ info "Description"
-        Displays the material that corresponds to a tuple of nodes in a graphical way.
+        Displays the material that corresponds to a tuple of nodes in a graphical way,
+        with customizable highlighting of nodes.
 
     ??? explanation "By verse"
         We examine all nodes in the tuple.
         We collect and show all verses in which they
         occur and highlight the material corresponding to all the nodes in the tuple.
+        The highlighting can be tweaked by the optional `colorMap` parameter.
 
     ??? info "nodes, seqNumber, withNodes"
         Same as in `B.plainTuple()`.
 
     ??? info "suppress"
         Same as in `B.pretty()`.
+
+    ??? info "colorMap"
+        The nodes of the tuple will be highlighted.
+        If `colorMap` is `None` or missing, all nodes will be highlighted with
+        the default highlight color, which is yellow.
+
+        But you can assign different colors to the members of the tuple:
+        `colorMap` must be a dictionary that maps the positions in a tuple 
+        to a color.
+        *   If a position is not mapped, it will not be highlighted.
+        *   If it is mapped to the empty string, it gets the default highlight color.
+        *   Otherwise, it should be mapped to a string that is a valid
+            [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
+
+        ??? hint "color names"
+            The link above points to a series of handy color names and their previews.
 
 ??? abstract "B.show()"
     ```python
@@ -228,6 +259,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
       start=1, end=len(results),
       withNodes=False,
       suppress=set(),
+      colorMap=None,
     )
     ```
 
@@ -259,8 +291,8 @@ contains a number of handy functions on top of Text-Fabric and especially its
         `end` is the end point in the results iterable.
         Default the length of the iterable.
 
-    ??? info "withNodes, suppress"
-        Same as in `B.plainTuple()`.
+    ??? info "withNodes, suppress, colorMap"
+        Same as in `B.prettyTuple()`.
 
 ## Search
 

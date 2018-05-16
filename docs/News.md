@@ -6,6 +6,17 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.1
+
+2018-05-16
+
+Bhsa and Cunei APIs: you can customize the highlighting of search results:
+
+*   different colors for different parts of the results
+*   you can choose your colors freely from all that CSS has to offer.
+
+See the updated search tutorials.
+
 ## 4.0.3
 
 2018-05-11

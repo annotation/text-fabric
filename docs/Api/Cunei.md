@@ -219,7 +219,7 @@ See also
 
 ??? abstract "CN.pretty()"
     ```python
-    CN.pretty(node, withNodes=False, suppress=set())
+    CN.pretty(node, withNodes=False, suppress=set(), highlights={})
     ```
 
     ???+ info "Description"
@@ -240,14 +240,26 @@ See also
         If you find they clutter the display, you can turn them off
         selectively.
 
-    ??? info "highlights"
-        `highlights=set()` is a set of nodes that should be highlighted.
-        Only nodes that are involved in the display will be highlighted.
-
     ??? explanation "Highlighting"
         When nodes such as tablets and cases are displayed by `pretty()`,
         their contents is also displayed. You can selectively highlight
         those parts.
+
+    ??? info "highlights"
+        `highlights={}` is a set or mapping of nodes that should be highlighted.
+        Only nodes that are involved in the display will be highlighted.
+
+        If `highlights` is a set, its nodes will be highlighted with a default color (yellow).
+
+        If it is a dictionary, it should map nodes to colors.
+        Any color that is a valid 
+        [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
+        qualifies.
+
+        If you map a node to the empty string, it will get the default highlight color.
+
+        ??? hint "color names"
+            The link above points to a series of handy color names and their previews.
 
 ??? abstract "CN.prettyTuple()"
     ```python
@@ -257,22 +269,41 @@ See also
       lineart=True,
       lineNumbers=False,
       suppress=set(),
+      colorMap=None,
     )
     ```
 
     ???+ info "Description"
-        Displays the material that corresponds to a tuple of nodes in a graphical way.
+        Displays the material that corresponds to a tuple of nodes in a graphical way,
+        with customizable highlighting of nodes.
 
     ??? explanation "By tablet"
         We examine all nodes in the tuple.
         We collect and show all tablets in which they
         occur and highlight the material corresponding to the all nodes in the tuple.
+        The highlighting can be tweaked by the optional `colorMap` parameter.
 
     ??? info "nodes, seqNumber, withNodes, lineart, lineNumbers"
         Same as in `CN.plainTuple()`.
 
     ??? info "suppress"
         Same as in `CN.pretty()`.
+
+    ??? info "colorMap"
+        The nodes of the tuple will be highlighted.
+        If `colorMap` is `None` or missing, all nodes will be highlighted with
+        the default highlight color, which is yellow.
+
+        But you can assign different colors to the members of the tuple:
+        `colorMap` must be a dictionary that maps the positions in a tuple 
+        to a color:
+        *   If a position is not mapped, it will not be highlighted.
+        *   If it is mapped to the empty string, it gets the default highlight color.
+        *   Otherwise, it should be mapped to a string that is a valid
+            [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
+
+        ??? hint "color names"
+            The link above points to a series of handy color names and their previews.
 
 ??? abstract "CN.show()"
     ```python
@@ -284,6 +315,7 @@ See also
       lineart=True,
       lineNumbers=False,
       suppress=set(),
+      colorMap=None,
     )
     ```
 
@@ -314,8 +346,8 @@ See also
         `end` is the end point in the results iterable.
         Default the length of the iterable.
 
-    ??? info "withNodes, lineart, lineNumbers, suppress"
-        Same as in `B.plainTuple()`.
+    ??? info "withNodes, lineart, lineNumbers, suppress, colorMap"
+        Same as in `B.prettyTuple()`.
 
 ## Search
 

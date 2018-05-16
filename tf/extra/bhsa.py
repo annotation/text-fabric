@@ -404,77 +404,6 @@ This notebook online:
             return ' | '.join(markdown)
         _dm(' , '.join(markdown))
 
-    def pretty(self, n, withNodes=False, suppress=set(), highlights=set()):
-        html = []
-        self._pretty(
-            n,
-            html,
-            firstSlot=None,
-            lastSlot=None,
-            withNodes=withNodes,
-            suppress=suppress,
-            highlights=highlights,
-        )
-        htmlStr = '\n'.join(html)
-        display(HTML(htmlStr))
-
-    def prettyTuple(
-        self,
-        ns,
-        seqNumber,
-        item='Result',
-        withNodes=False,
-        suppress=set(),
-    ):
-        api = self.api
-        L = api.L
-        F = api.F
-        sortNodes = api.sortNodes
-        verses = set()
-        lexemes = set()
-        highlights = set()
-        for n in ns:
-            nType = F.otype.v(n)
-            if nType not in SECTION:
-                firstSlot = n if nType == 'word' else L.d(n, otype='word')[0]
-                if nType == 'lex':
-                    lexemes.add(n)
-                    highlights.add(n)
-                else:
-                    verses.add(L.u(firstSlot, otype='verse')[0])
-                    atomType = SUPER.get(nType, None)
-                    if atomType:
-                        highlights |= set(L.d(n, otype=atomType))
-                    else:
-                        highlights.add(n)
-        _dm(f'''
-##### {item} {seqNumber}
-''')
-        for l in sortNodes(lexemes):
-            self.pretty(
-                l,
-                withNodes=withNodes,
-                suppress=suppress,
-                highlights=highlights,
-            )
-        for v in sortNodes(verses):
-            self.pretty(
-                v,
-                withNodes=withNodes,
-                suppress=suppress,
-                highlights=highlights,
-            )
-
-    def search(self, query, silent=False):
-        api = self.api
-        S = api.S
-        results = sorted(S.search(query))
-        nResults = len(results)
-        plural = '' if nResults == 1 else 's'
-        if not silent:
-            print(f'{nResults} result{plural}')
-        return results
-
     def table(
         self,
         results,
@@ -543,6 +472,78 @@ This notebook online:
                 f' {LIMIT_TABLE} results at a time'
             )
 
+    def pretty(self, n, withNodes=False, suppress=set(), highlights={}):
+        html = []
+        if type(highlights) is set:
+            highlights = {m: '' for m in highlights}
+        self._pretty(
+            n,
+            html,
+            firstSlot=None,
+            lastSlot=None,
+            withNodes=withNodes,
+            suppress=suppress,
+            highlights=highlights,
+        )
+        htmlStr = '\n'.join(html)
+        display(HTML(htmlStr))
+
+    def prettyTuple(
+        self,
+        ns,
+        seqNumber,
+        item='Result',
+        withNodes=False,
+        suppress=set(),
+        colorMap=None,
+    ):
+        api = self.api
+        L = api.L
+        F = api.F
+        sortNodes = api.sortNodes
+        verses = set()
+        lexemes = set()
+        highlights = {}
+        for (i, n) in enumerate(ns):
+            nType = F.otype.v(n)
+            if colorMap is None:
+                thisHighlight = ''
+            else:
+                thisHighlight = colorMap.get(i + 1, None)
+            if nType not in SECTION:
+                firstSlot = n if nType == 'word' else L.d(n, otype='word')[0]
+                if nType == 'lex':
+                    lexemes.add(n)
+                    if thisHighlight is not None:
+                        highlights[n] = thisHighlight
+                else:
+                    verses.add(L.u(firstSlot, otype='verse')[0])
+                    atomType = SUPER.get(nType, None)
+                    if atomType:
+                        if thisHighlight is not None:
+                            for m in L.d(n, otype=atomType):
+                                highlights[m] = thisHighlight
+                    else:
+                        if thisHighlight is not None:
+                            highlights[n] = thisHighlight
+        _dm(f'''
+##### {item} {seqNumber}
+''')
+        for l in sortNodes(lexemes):
+            self.pretty(
+                l,
+                withNodes=withNodes,
+                suppress=suppress,
+                highlights=highlights,
+            )
+        for v in sortNodes(verses):
+            self.pretty(
+                v,
+                withNodes=withNodes,
+                suppress=suppress,
+                highlights=highlights,
+            )
+
     def show(
         self,
         results,
@@ -550,11 +551,14 @@ This notebook online:
         start=None,
         end=None,
         withNodes=False,
-        suppress=set()
+        suppress=set(),
+        colorMap=None,
     ):
         if condensed:
             (passages, verses) = self._condense(results)
             results = passages if len(verses) == 0 else verses
+            if colorMap:
+                colorMap = None
         if start is None:
             start = 1
         i = -1
@@ -572,7 +576,8 @@ This notebook online:
                     i + 1,
                     item='Verse' if condensed else 'Result',
                     withNodes=withNodes,
-                    suppress=suppress
+                    suppress=suppress,
+                    colorMap=colorMap,
                 )
         else:
             if end is None:
@@ -587,7 +592,8 @@ This notebook online:
                     i + 1,
                     item='Passage' if condensed else 'Result',
                     withNodes=withNodes,
-                    suppress=suppress
+                    suppress=suppress,
+                    colorMap=colorMap,
                 )
             if rest:
                 _dm(
@@ -595,6 +601,16 @@ This notebook online:
                     f' because we show a maximum of'
                     f' {LIMIT_SHOW} results at a time'
                 )
+
+    def search(self, query, silent=False):
+        api = self.api
+        S = api.S
+        results = sorted(S.search(query))
+        nResults = len(results)
+        plural = '' if nResults == 1 else 's'
+        if not silent:
+            print(f'{nResults} result{plural}')
+        return results
 
     def _condense(self, results):
         api = self.api
@@ -627,14 +643,21 @@ This notebook online:
         lastSlot=None,
         withNodes=True,
         suppress=set(),
-        highlights=set()
+        highlights={},
     ):
         api = self.api
         L = api.L
         T = api.T
         F = api.F
         sortNodes = api.sortNodes
-        hl = ' hl' if n in highlights else ''
+        hl = highlights.get(n, None)
+        hlClass = ''
+        hlStyle = ''
+        if hl == '':
+            hlClass = ' hl'
+        else:
+            hlStyle = f' style="background-color: {hl};"'
+
         nType = F.otype.v(n)
         className = CLASS_NAMES.get(nType, None)
         superType = ATOMS.get(nType, None)
@@ -681,7 +704,9 @@ This notebook online:
         elif nType == 'word':
             children = ()
             lx = L.u(n, otype='lex')[0]
-        html.append(f'''<div class="{className} {boundaryClass} {hl}">''')
+        html.append(
+            f'<div class="{className} {boundaryClass}{hlClass}"{hlStyle}>'
+        )
         if nType in {'verse', 'half_verse'}:
             nodePart = f'<div class="nd">{n}</div>' if withNodes else ''
             html.append(

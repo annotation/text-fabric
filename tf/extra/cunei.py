@@ -912,77 +912,6 @@ This notebook online:
 
         dm('\n'.join(head))
 
-    def pretty(
-        self,
-        n,
-        lineart=True,
-        withNodes=False,
-        lineNumbers=False,
-        suppress=set(),
-        highlights=set()
-    ):
-        html = []
-        self._pretty(
-            n,
-            True,
-            html,
-            seen=set(),
-            lineart=lineart,
-            withNodes=withNodes,
-            lineNumbers=lineNumbers,
-            suppress=suppress,
-            highlights=highlights,
-        )
-        htmlStr = '\n'.join(html)
-        display(HTML(htmlStr))
-
-    def prettyTuple(
-        self,
-        ns,
-        seqNumber,
-        item='Result',
-        lineart=True,
-        withNodes=False,
-        lineNumbers=False,
-        suppress=set(),
-    ):
-        api = self.api
-        L = api.L
-        F = api.F
-        sortNodes = api.sortNodes
-        tablets = set()
-        highlights = set()
-        for n in ns:
-            nType = F.otype.v(n)
-            if nType == 'tablet':
-                tablets.add(n)
-            else:
-                t = L.u(n, otype='tablet')[0]
-                tablets.add(t)
-                highlights.add(n)
-        dm(f'''
-##### {item} {seqNumber}
-''')
-        for t in sortNodes(tablets):
-            self.pretty(
-                t,
-                lineart=lineart,
-                withNodes=withNodes,
-                lineNumbers=lineNumbers,
-                suppress=suppress,
-                highlights=highlights,
-            )
-
-    def search(self, query, silent=False):
-        api = self.api
-        S = api.S
-        results = sorted(S.search(query))
-        nResults = len(results)
-        plural = '' if nResults == 1 else 's'
-        if not silent:
-            print(f'{nResults} result{plural}')
-        return results
-
     def table(
         self,
         results,
@@ -1051,6 +980,75 @@ This notebook online:
                 f' {LIMIT_TABLE} results at a time'
             )
 
+    def pretty(
+        self,
+        n,
+        lineart=True,
+        withNodes=False,
+        lineNumbers=False,
+        suppress=set(),
+        highlights={},
+    ):
+        html = []
+        if type(highlights) is set:
+            highlights = {m: '' for m in highlights}
+        self._pretty(
+            n,
+            True,
+            html,
+            seen=set(),
+            lineart=lineart,
+            withNodes=withNodes,
+            lineNumbers=lineNumbers,
+            suppress=suppress,
+            highlights=highlights,
+        )
+        htmlStr = '\n'.join(html)
+        display(HTML(htmlStr))
+
+    def prettyTuple(
+        self,
+        ns,
+        seqNumber,
+        item='Result',
+        lineart=True,
+        withNodes=False,
+        lineNumbers=False,
+        suppress=set(),
+        colorMap=None,
+    ):
+        api = self.api
+        L = api.L
+        F = api.F
+        sortNodes = api.sortNodes
+        tablets = set()
+        highlights = {}
+        for (i, n) in enumerate(ns):
+            nType = F.otype.v(n)
+            if colorMap is None:
+                thisHighlight = ''
+            else:
+                thisHighlight = colorMap.get(i + 1, None)
+            if nType == 'tablet':
+                tablets.add(n)
+            else:
+                t = L.u(n, otype='tablet')[0]
+                tablets.add(t)
+                if thisHighlight is not None:
+                    highlights[n] = thisHighlight
+        dm(f'''
+##### {item} {seqNumber}
+''')
+        for t in sortNodes(tablets):
+            self.pretty(
+                t,
+                lineart=lineart,
+                withNodes=withNodes,
+                lineNumbers=lineNumbers,
+                suppress=suppress,
+                highlights=highlights,
+            )
+
     def show(
         self,
         results,
@@ -1060,10 +1058,13 @@ This notebook online:
         lineart=True,
         withNodes=False,
         lineNumbers=False,
-        suppress=set()
+        suppress=set(),
+        colorMap=None,
     ):
         if condensed:
             results = self._condense(results)
+            if colorMap:
+                colorMap = None
         if start is None:
             start = 1
         i = -1
@@ -1083,7 +1084,8 @@ This notebook online:
                     lineart=lineart,
                     withNodes=withNodes,
                     lineNumbers=lineNumbers,
-                    suppress=suppress
+                    suppress=suppress,
+                    colorMap=colorMap,
                 )
         else:
             if end is None:
@@ -1100,7 +1102,8 @@ This notebook online:
                     lineart=lineart,
                     withNodes=withNodes,
                     lineNumbers=lineNumbers,
-                    suppress=suppress
+                    suppress=suppress,
+                    colorMap=colorMap,
                 )
             if rest:
                 dm(
@@ -1108,6 +1111,16 @@ This notebook online:
                     f' because we show a maximum of'
                     f' {LIMIT_SHOW} results at a time'
                 )
+
+    def search(self, query, silent=False):
+        api = self.api
+        S = api.S
+        results = sorted(S.search(query))
+        nResults = len(results)
+        plural = '' if nResults == 1 else 's'
+        if not silent:
+            print(f'{nResults} result{plural}')
+        return results
 
     def _condense(self, results):
         api = self.api
@@ -1134,14 +1147,21 @@ This notebook online:
         lineNumbers=False,
         seen=set(),
         suppress=set(),
-        highlights=set(),
+        highlights={},
     ):
         api = self.api
         L = api.L
         F = api.F
         E = api.E
         sortNodes = api.sortNodes
-        hl = ' hl' if n in highlights else ''
+        hl = highlights.get(n, None)
+        hlClass = ''
+        hlStyle = ''
+        if hl == '':
+            hlClass = ' hl'
+        else:
+            hlStyle = f' style="background-color: {hl};"'
+
         nType = F.otype.v(n)
         className = nType
         nodePart = (f'<span class="nd">{n}</span>' if withNodes else '')
@@ -1236,14 +1256,16 @@ This notebook online:
 
         if isCluster:
             if outer:
-                html.append(f'<div class="contnr {className} {hl}">')
+                html.append(
+                    f'<div class="contnr {className}{hlClass}"{hlStyle}>'
+                )
             html.append(label)
             if outer:
                 html.append(f'<div class="children {className}">')
         else:
             html.append(
                 f'''
-<div class="contnr {className} {hl}">
+<div class="contnr {className}{hlClass}"{hlStyle}>
     {label}
     <div class="meta">
         {featurePart}
@@ -1305,7 +1327,7 @@ This notebook online:
         if isCluster:
             html.append(
                 f'''
-    <div class="lbl {className}E {hl}">
+    <div class="lbl {className}E{hlClass}"{hlStyle}>
         {typePart}
         {nodePart}
     </div>
