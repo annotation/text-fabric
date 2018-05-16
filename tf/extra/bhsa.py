@@ -168,6 +168,17 @@ CSS = '''
     font-size: x-small;
     color: #999999;
 }
+.feat {
+    font-family: monospace;
+    font-size: medium;
+    font-weight: bold;
+    color: #0a6611;
+}
+.feat .f {
+    font-family: sans-serif;
+    font-size: x-small;
+    color: #5555bb;
+}
 .hl {
     background-color: #ffee66;
 }
@@ -196,6 +207,15 @@ SUPER = dict((y, x) for (x, y) in ATOMS.items())
 
 SECTION = {'book', 'chapter', 'verse', 'half_verse'}
 
+NONE_VALUES = {None, 'NA', 'none', 'unknown'}
+
+STANDARD_FEATURES = set('''
+    sp vs vt
+    lex language gloss voc_lex voc_lex_utf8
+    function typ rela
+    number label book
+'''.strip().split())
+
 
 def _dm(md):
     display(Markdown(md))
@@ -214,16 +234,9 @@ class Bhsa(object):
         version='c',
     ):
         self.version = version
-        api.TF.load(
-            '''
-            sp vs vt
-            lex language gloss voc_lex voc_lex_utf8
-            function typ rela
-            number label book
-        ''',
-            add=True,
-            silent=True
-        )
+        api.TF.load(STANDARD_FEATURES, add=True, silent=True)
+        self.prettyFeaturesLoaded = STANDARD_FEATURES
+        self.prettyFeatures = ()
         self.api = api
         self.cwd = os.getcwd()
         cwdPat = re.compile(f'^.*/github/([^/]+)/([^/]+)((?:/.+)?)$', re.I)
@@ -472,7 +485,29 @@ This notebook online:
                 f' {LIMIT_TABLE} results at a time'
             )
 
-    def pretty(self, n, withNodes=False, suppress=set(), highlights={}):
+    def prettySetup(self, features=None, noneValues=None):
+        if features is None:
+            self.prettyFeatures = ()
+        else:
+            featuresRequested = (
+                tuple(features.strip().split())
+            ) if type(features) is str else tuple(features)
+            tobeLoaded = set(featuresRequested) - self.prettyFeaturesLoaded
+            if tobeLoaded:
+                self.api.TF.load(tobeLoaded, add=True, silent=True)
+                self.prettyFeaturesLoaded |= tobeLoaded
+            self.prettyFeatures = featuresRequested
+        if noneValues is None:
+            self.noneValues = NONE_VALUES
+        else:
+            self.noneValues = noneValues
+
+    def pretty(
+            self, n,
+            withNodes=False,
+            suppress=set(),
+            highlights={},
+    ):
         html = []
         if type(highlights) is set:
             highlights = {m: '' for m in highlights}
@@ -739,6 +774,7 @@ This notebook online:
                     html.append(f'<div class="vvs">' f'{F.vs.v(n)}</div>')
                 if 'vt' not in suppress:
                     html.append(f'<div class="vvt">' f'{F.vt.v(n)}</div>')
+            self._extraFeatures(n, suppress, html)
         elif nType == 'lex':
             html.append(f'<div class="h">{F.voc_lex_utf8.v(n)}</div>')
             if 'voc_lex' not in suppress:
@@ -752,31 +788,34 @@ This notebook online:
                     f'<div class="gl">'
                     f'{F.gloss.v(n).replace("<", "&lt;")}</div>'
                 )
+            self._extraFeatures(n, suppress, html)
         elif superType:
             nodePart = (
                 f'<span class="nd">{superNode}</span>' if withNodes else ''
             )
             typePart = self.shbLink(superNode, text=superType, asString=True)
-            featurePart = ''
+            featurePart = []
             if superType == 'clause':
                 if 'rela' not in suppress:
-                    featurePart += (
+                    featurePart.append(
                         f' <span class="rela">{F.rela.v(superNode)}</span>'
                     )
                 if 'typ' not in suppress:
-                    featurePart += (
+                    featurePart.append(
                         f' <span class="typ">{F.typ.v(superNode)}</span>'
                     )
             elif superType == 'phrase':
                 if 'function' not in suppress:
-                    featurePart += (
+                    featurePart.append(
                         f' <span class="function">'
                         f'{F.function.v(superNode)}</span>'
                     )
                 if 'typ' not in suppress:
-                    featurePart += (
+                    featurePart.append(
                         f' <span class="typ">{F.typ.v(superNode)}</span>'
                     )
+            self._extraFeatures(n, suppress, featurePart)
+            featurePart = '\n'.join(featurePart)
             html.append(
                 f'''
     <div class="{superType}">{typePart} {nodePart} {featurePart}
@@ -801,6 +840,18 @@ This notebook online:
         html.append('''
 </div>
 ''')
+
+    def _extraFeatures(self, n, suppress, html):
+        api = self.api
+        Fs = api.Fs
+        for ef in self.prettyFeatures:
+            if ef not in suppress:
+                efVal = Fs(ef).v(n)
+                if efVal not in self.noneValues:
+                    html.append(
+                        f'<div class="feat"><span class="f">{ef}='
+                        f'</span>{efVal}</div>'
+                    )
 
     def _getBoundary(self, n):
         api = self.api

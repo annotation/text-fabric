@@ -168,9 +168,50 @@ contains a number of handy functions on top of Text-Fabric and especially its
     There are functions to display nodes, tuples of nodes, and iterables of tuples
     of nodes in a graphical way.
 
+??? abstract "B.prettySetup()"
+    ```python
+    B.pretty(features=None, noneValues=None)
+    ```
+    ???+ info "Description"
+        In pretty displays, nodes are shown together with the values of a selected
+        set of features. 
+        With this function you can add features to the display.
+
+    ??? info "features"
+        A string or iterable of feature names.
+        These features will be loaded automatically.
+        In pretty displays these features will show up as `feature=value`,
+        provided the value is not `None`, or something like None.
+
+        ???+ hint "Automatic loading"
+            These features will load automatically, no explicit loading is
+            necessary.
+
+    ??? info "noneValues"
+        A set of values for which no display should be generated.
+        The default set is `None` and the strings `NA`, `none`, `unknown`.
+
+        ???+ hint "None is useful"
+            Keep `None` in the set. If not, all custom features will be displayed
+            for all kinds of nodes. So you will see clause types on words,
+              and part of speech on clause atoms, al with value `None`.
+
+        ??? hint "Suppress common values"
+            You can use `noneValues` also to suppress the normal values of a feature,
+            in order to attrect attention to the more special values, e.g.
+            
+            ```python
+            noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}
+            ```
+
+        ??? caution "None values affect all features"
+            Beware of putting to much in `noneValues`.
+            The contents of `noneValues` affect the display of
+            all features, not only the custom features.
+
 ??? abstract "B.pretty()"
     ```python
-    B.pretty(node, withNodes=False, suppress=set(), highlights={)
+    B.pretty(node, withNodes=False, suppress=set(), highlights={})
     ```
 
     ???+ info "Description"

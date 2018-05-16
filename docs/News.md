@@ -6,6 +6,12 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.1.1
+
+2018-05-16
+
+Bhsa API: you can customize the features that are shown in pretty displays.
+
 ## 4.1
 
 2018-05-16
