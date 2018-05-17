@@ -270,6 +270,7 @@ See also
       lineNumbers=False,
       suppress=set(),
       colorMap=None,
+      highlights=None,
     )
     ```
 
@@ -305,6 +306,20 @@ See also
         ??? hint "color names"
             The link above points to a series of handy color names and their previews.
 
+    ??? info "highlights"
+        Same as in `B.pretty()`.
+
+    ???+ note "highlights takes precedence over colorMap"
+        If both `highlights` and `colorMap` are given, `colorMap` is ignored.
+        
+        If you need to micro-manage, `highlights` is your thing.
+        Whenever possible, use `colorMap`.  
+
+    ??? note "one big highlights dictionary"
+        It is OK to first compose a big highlights dictionary for many tuples of nodes,
+        and then run `prettyTuple()` for many different tuples with the same `highlights`.
+        It does not harm performance if `highlights` maps lots of nodes outside the tuple as well.
+
 ??? abstract "CN.show()"
     ```python
     CN.show(
@@ -316,6 +331,7 @@ See also
       lineNumbers=False,
       suppress=set(),
       colorMap=None,
+      highlights=None,
     )
     ```
 
@@ -346,7 +362,7 @@ See also
         `end` is the end point in the results iterable.
         Default the length of the iterable.
 
-    ??? info "withNodes, lineart, lineNumbers, suppress, colorMap"
+    ??? info "withNodes, lineart, lineNumbers, suppress, colorMap, highlights"
         Same as in `B.prettyTuple()`.
 
 ## Search

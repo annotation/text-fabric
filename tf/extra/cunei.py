@@ -1016,26 +1016,31 @@ This notebook online:
         lineNumbers=False,
         suppress=set(),
         colorMap=None,
+        highlights=None,
     ):
         api = self.api
         L = api.L
         F = api.F
         sortNodes = api.sortNodes
         tablets = set()
-        highlights = {}
+        newHighlights = {}
         for (i, n) in enumerate(ns):
-            nType = F.otype.v(n)
-            if colorMap is None:
-                thisHighlight = ''
-            else:
+            thisHighlight = None
+            if highlights is not None:
+                thisHighlight = highlights.get(n, None)
+            elif colorMap is not None:
                 thisHighlight = colorMap.get(i + 1, None)
+            else:
+                thisHighlight = ''
+
+            nType = F.otype.v(n)
             if nType == 'tablet':
                 tablets.add(n)
             else:
                 t = L.u(n, otype='tablet')[0]
                 tablets.add(t)
                 if thisHighlight is not None:
-                    highlights[n] = thisHighlight
+                    newHighlights[n] = thisHighlight
         dm(f'''
 ##### {item} {seqNumber}
 ''')
@@ -1046,7 +1051,7 @@ This notebook online:
                 withNodes=withNodes,
                 lineNumbers=lineNumbers,
                 suppress=suppress,
-                highlights=highlights,
+                highlights=newHighlights,
             )
 
     def show(
@@ -1060,11 +1065,25 @@ This notebook online:
         lineNumbers=False,
         suppress=set(),
         colorMap=None,
+        highlights=None,
     ):
+        newHighlights = highlights
         if condensed:
+            if colorMap is not None:
+                newHighlights = {}
+                for ns in results:
+                    for (i, n) in enumerate(ns):
+                        thisHighlight = None
+                        if highlights is not None:
+                            thisHighlight = highlights.get(n, None)
+                        elif colorMap is not None:
+                            thisHighlight = colorMap.get(i + 1, None)
+                        else:
+                            thisHighlight = ''
+                        newHighlights[n] = thisHighlight
+
             results = self._condense(results)
-            if colorMap:
-                colorMap = None
+
         if start is None:
             start = 1
         i = -1
@@ -1086,6 +1105,7 @@ This notebook online:
                     lineNumbers=lineNumbers,
                     suppress=suppress,
                     colorMap=colorMap,
+                    highlights=newHighlights,
                 )
         else:
             if end is None:
@@ -1104,6 +1124,7 @@ This notebook online:
                     lineNumbers=lineNumbers,
                     suppress=suppress,
                     colorMap=colorMap,
+                    highlights=newHighlights,
                 )
             if rest:
                 dm(

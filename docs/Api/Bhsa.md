@@ -257,6 +257,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
       withNodes=False,
       suppress=set(),
       colorMap=None,
+      highlights=None,
     )
     ```
 
@@ -284,6 +285,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
         But you can assign different colors to the members of the tuple:
         `colorMap` must be a dictionary that maps the positions in a tuple 
         to a color.
+
         *   If a position is not mapped, it will not be highlighted.
         *   If it is mapped to the empty string, it gets the default highlight color.
         *   Otherwise, it should be mapped to a string that is a valid
@@ -291,6 +293,20 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
         ??? hint "color names"
             The link above points to a series of handy color names and their previews.
+
+    ??? info "highlights"
+        Same as in `B.pretty()`.
+
+    ???+ note "highlights takes precedence over colorMap"
+        If both `highlights` and `colorMap` are given, `colorMap` is ignored.
+        
+        If you need to micro-manage, `highlights` is your thing.
+        Whenever possible, use `colorMap`.  
+
+    ??? note "one big highlights dictionary"
+        It is OK to first compose a big highlights dictionary for many tuples of nodes,
+        and then run `prettyTuple()` for many different tuples with the same `highlights`.
+        It does not harm performance if `highlights` maps lots of nodes outside the tuple as well.
 
 ??? abstract "B.show()"
     ```python
@@ -301,6 +317,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
       withNodes=False,
       suppress=set(),
       colorMap=None,
+      highlights=None,
     )
     ```
 
@@ -324,6 +341,12 @@ contains a number of handy functions on top of Text-Fabric and especially its
         * `False: make a separate display for each result tuple.
           This gives the best account of the exact result set.
 
+        ???+ caution "mixing up highlights"
+            Condensing may mix-up the highlight coloring.
+            If a node occurs in two results, at different positions
+            in the tuple, the `colorMap` wants to assign it two colors!
+            Yet one color will be chosen, and it is unpredictable which.
+
     ??? info "start"
         `start` is the starting point in the results iterable (1 is the first one).
         Default 1.
@@ -332,7 +355,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
         `end` is the end point in the results iterable.
         Default the length of the iterable.
 
-    ??? info "withNodes, suppress, colorMap"
+    ??? info "withNodes, suppress, colorMap, highlights"
         Same as in `B.prettyTuple()`.
 
 ## Search

@@ -531,6 +531,7 @@ This notebook online:
         withNodes=False,
         suppress=set(),
         colorMap=None,
+        highlights=None,
     ):
         api = self.api
         L = api.L
@@ -538,29 +539,33 @@ This notebook online:
         sortNodes = api.sortNodes
         verses = set()
         lexemes = set()
-        highlights = {}
+        newHighlights = {}
         for (i, n) in enumerate(ns):
-            nType = F.otype.v(n)
-            if colorMap is None:
-                thisHighlight = ''
-            else:
+            thisHighlight = None
+            if highlights is not None:
+                thisHighlight = highlights.get(n, None)
+            elif colorMap is not None:
                 thisHighlight = colorMap.get(i + 1, None)
+            else:
+                thisHighlight = ''
+
+            nType = F.otype.v(n)
             if nType not in SECTION:
                 firstSlot = n if nType == 'word' else L.d(n, otype='word')[0]
                 if nType == 'lex':
                     lexemes.add(n)
                     if thisHighlight is not None:
-                        highlights[n] = thisHighlight
+                        newHighlights[n] = thisHighlight
                 else:
                     verses.add(L.u(firstSlot, otype='verse')[0])
                     atomType = SUPER.get(nType, None)
                     if atomType:
                         if thisHighlight is not None:
                             for m in L.d(n, otype=atomType):
-                                highlights[m] = thisHighlight
+                                newHighlights[m] = thisHighlight
                     else:
                         if thisHighlight is not None:
-                            highlights[n] = thisHighlight
+                            newHighlights[n] = thisHighlight
         _dm(f'''
 ##### {item} {seqNumber}
 ''')
@@ -569,14 +574,14 @@ This notebook online:
                 l,
                 withNodes=withNodes,
                 suppress=suppress,
-                highlights=highlights,
+                highlights=newHighlights,
             )
         for v in sortNodes(verses):
             self.pretty(
                 v,
                 withNodes=withNodes,
                 suppress=suppress,
-                highlights=highlights,
+                highlights=newHighlights,
             )
 
     def show(
@@ -588,12 +593,26 @@ This notebook online:
         withNodes=False,
         suppress=set(),
         colorMap=None,
+        highlights=None,
     ):
+        newHighlights = highlights
         if condensed:
+            if colorMap is not None:
+                newHighlights = {}
+                for ns in results:
+                    for (i, n) in enumerate(ns):
+                        thisHighlight = None
+                        if highlights is not None:
+                            thisHighlight = highlights.get(n, None)
+                        elif colorMap is not None:
+                            thisHighlight = colorMap.get(i + 1, None)
+                        else:
+                            thisHighlight = ''
+                        newHighlights[n] = thisHighlight
+
             (passages, verses) = self._condense(results)
             results = passages if len(verses) == 0 else verses
-            if colorMap:
-                colorMap = None
+
         if start is None:
             start = 1
         i = -1
@@ -613,6 +632,7 @@ This notebook online:
                     withNodes=withNodes,
                     suppress=suppress,
                     colorMap=colorMap,
+                    highlights=newHighlights,
                 )
         else:
             if end is None:
@@ -629,6 +649,7 @@ This notebook online:
                     withNodes=withNodes,
                     suppress=suppress,
                     colorMap=colorMap,
+                    highlights=newHighlights,
                 )
             if rest:
                 _dm(
