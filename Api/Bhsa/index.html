@@ -754,11 +754,13 @@ qualifies.</p><p>If you map a node to the empty string, it will get the default 
 3
 4
 5
-6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">prettyTuple</span><span class="p">(</span>
+6
+7</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">prettyTuple</span><span class="p">(</span>
   <span class="n">nodes</span><span class="p">,</span> <span class="n">seqNumber</span><span class="p">,</span>
   <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
   <span class="n">suppress</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
   <span class="n">colorMap</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+  <span class="n">highlights</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </td></tr></table>
@@ -770,24 +772,26 @@ The highlighting can be tweaked by the optional <code>colorMap</code> parameter.
 If <code>colorMap</code> is <code>None</code> or missing, all nodes will be highlighted with
 the default highlight color, which is yellow.</p><p>But you can assign different colors to the members of the tuple:
 <code>colorMap</code> must be a dictionary that maps the positions in a tuple 
-to a color.
-<em>   If a position is not mapped, it will not be highlighted.
-</em>   If it is mapped to the empty string, it gets the default highlight color.
-*   Otherwise, it should be mapped to a string that is a valid
-    <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>.</p><details class="hint"><summary>color names</summary><p>The link above points to a series of handy color names and their previews.</p></details></details></details><details class="abstract"><summary>B.show()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+to a color.</p><ul><li>If a position is not mapped, it will not be highlighted.</li><li>If it is mapped to the empty string, it gets the default highlight color.</li><li>Otherwise, it should be mapped to a string that is a valid
+    <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>.</li></ul><details class="hint"><summary>color names</summary><p>The link above points to a series of handy color names and their previews.</p></details></details><details class="info"><summary>highlights</summary><p>Same as in <code>B.pretty()</code>.</p></details><details class="note" open="open"><summary>highlights takes precedence over colorMap</summary><p>If both <code>highlights</code> and <code>colorMap</code> are given, <code>colorMap</code> is ignored.</p><p>If you need to micro-manage, <code>highlights</code> is your thing.
+Whenever possible, use <code>colorMap</code>.  </p></details><details class="note"><summary>one big highlights dictionary</summary><p>It is OK to first compose a big highlights dictionary for many tuples of nodes,
+and then run <code>prettyTuple()</code> for many different tuples with the same <code>highlights</code>.
+It does not harm performance if <code>highlights</code> maps lots of nodes outside the tuple as well.</p></details></details><details class="abstract"><summary>B.show()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
 5
 6
 7
-8</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">show</span><span class="p">(</span>
+8
+9</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">show</span><span class="p">(</span>
   <span class="n">results</span><span class="p">,</span>
   <span class="n">condensed</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
   <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
   <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
   <span class="n">suppress</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
   <span class="n">colorMap</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+  <span class="n">highlights</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </td></tr></table>
@@ -799,9 +803,12 @@ no matter which process has produced the tuples.</p></details><details class="in
   That way, we blur the distinction between the individual results,
   but it is easier to oversee where the results are.
   This is how SHEBANQ displays its query results.</li><li>`False: make a separate display for each result tuple.
-  This gives the best account of the exact result set.</li></ul></details><details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
+  This gives the best account of the exact result set.</li></ul><details class="caution" open="open"><summary>mixing up highlights</summary><p>Condensing may mix-up the highlight coloring.
+If a node occurs in two results, at different positions
+in the tuple, the <code>colorMap</code> wants to assign it two colors!
+Yet one color will be chosen, and it is unpredictable which.</p></details></details><details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
 Default 1.</p></details><details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
-Default the length of the iterable.</p></details><details class="info"><summary>withNodes, suppress, colorMap</summary><p>Same as in <code>B.prettyTuple()</code>.</p></details></details><h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
+Default the length of the iterable.</p></details><details class="info"><summary>withNodes, suppress, colorMap, highlights</summary><p>Same as in <code>B.prettyTuple()</code>.</p></details></details><h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>B.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
