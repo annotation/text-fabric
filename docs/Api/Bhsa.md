@@ -338,14 +338,14 @@ contains a number of handy functions on top of Text-Fabric and especially its
           That way, we blur the distinction between the individual results,
           but it is easier to oversee where the results are.
           This is how SHEBANQ displays its query results.
-        * `False: make a separate display for each result tuple.
+        * `False`: make a separate display for each result tuple.
           This gives the best account of the exact result set.
 
         ???+ caution "mixing up highlights"
             Condensing may mix-up the highlight coloring.
             If a node occurs in two results, at different positions
             in the tuple, the `colorMap` wants to assign it two colors!
-            Yet one color will be chosen, and it is unpredictable which.
+            Yet one color will be chosen, and it is unpredictable which one.
 
     ??? info "start"
         `start` is the starting point in the results iterable (1 is the first one).

@@ -298,6 +298,7 @@ See also
         But you can assign different colors to the members of the tuple:
         `colorMap` must be a dictionary that maps the positions in a tuple 
         to a color:
+
         *   If a position is not mapped, it will not be highlighted.
         *   If it is mapped to the empty string, it gets the default highlight color.
         *   Otherwise, it should be mapped to a string that is a valid
@@ -351,7 +352,7 @@ See also
           we show all tablets with all results in it highlighted.
           That way, we blur the distinction between the individual results,
           but it is easier to oversee where the results are.
-        * `False: make a separate display for each result tuple.
+        * `False`: make a separate display for each result tuple.
           This gives the best account of the exact result set.
 
     ??? info "start"

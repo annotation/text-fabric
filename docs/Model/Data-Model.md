@@ -5,13 +5,13 @@
 Take a text, put a grid around the words, and then leave out the words. What is
 left, are the textual positions, or *slots*.
 
-![Slots](/images/DataModel.001.jpeg)
+![Slots](/images/DataModel/DataModel.001.png)
 
 Pieces of text correspond to phrases, clauses, sentences, verses, chapters,
 books. Draw circles around those pieces, and then leave out their contents. What
 is left, are the textual objects, or *nodes*.
 
-![Nodes](/images/DataModel.002.jpeg)
+![Nodes](/images/DataModel/DataModel.002.png)
 
 Nodes can be connected to other nodes by *edges*. A basic function of edges is
 to indicate *containment*: *this* node corresponds to a set of slots that is
@@ -72,7 +72,7 @@ dataset contains these two warp features. (Later on we'll see a third member of
 the warp, **otext**). They provide the structure of a text and its annotations,
 without any content. Even the text itself is left out!
 
-![Warp](/images/DataModel.003.jpeg)
+![Warp](/images/DataModel/DataModel.003.png)
 
 All other information is added to the warp as *features* (the wefts): node
 features and edge features. A feature is a special aspect of the textual
@@ -94,7 +94,7 @@ Whenever you use Text-Fabric to generate new data, you are weaving a weave. The
 resulting dataset is a tight fabric of individual features (wefts), whose values
 are taken for a set of nodes (warp).
 
-![Fabric](/images/DataModel.004.jpeg)
+![Fabric](/images/DataModel/DataModel.004.png)
 
 Some features deserve a privileged place. After all, we are dealing with *text*,
 so we need a bit of information about which features carry textual
@@ -113,7 +113,7 @@ Especially when you are in the process of converting a data source (such as a
 treebanks set) into a Text-Fabric dataset, it is handy that Text-Fabric can load
 the data without bothering about these matters.
 
-![Text](/images/DataModel.005.jpeg)
+![Text](/images/DataModel/DataModel.005.png)
 
 ## Model
 
