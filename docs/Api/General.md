@@ -14,8 +14,8 @@
     However, Text-Fabric comes with several additions that make working
     with specific corpora easier.
 
-    * Hebrew Bible: [BHSA](bhsa)
-    * Proto-cuneiform tablets from Uruk: [Cunei](cunei)
+    * Hebrew Bible: [BHSA](Bhsa)
+    * Proto-cuneiform tablets from Uruk: [Cunei](Cunei)
 
 ## Loading
 
@@ -1161,7 +1161,7 @@
     ??? hint "More ways of showing results"
         If you work in one of the corpora for which the TF-API has been extended,
         you will be provided with more powerful methods `show()` and `table()`
-        to display your results. See [Cunei](cunei) and [Bhsa](bhsa).
+        to display your results. See [Cunei](Cunei) and [Bhsa](Bhsa).
 
 
 ## Node features
