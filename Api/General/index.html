@@ -844,7 +844,7 @@ and the
 <a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">Uruk Cuneiform Tablets</a>
 put the Text-Fabric API on show for two distinguished (and vastly distinct) corpora.</p></details><details class="note" open="open"><summary>Generic API</summary><p>This is the API of Text-Fabric in general.
 Text-Fabric has no baked in knowledge of particular corpora.</p><p>However, Text-Fabric comes with several additions that make working
-with specific corpora easier.</p><ul><li>Hebrew Bible: <a href="../bhsa">BHSA</a></li><li>Proto-cuneiform tablets from Uruk: <a href="../cunei">Cunei</a></li></ul></details><h2 id="loading">Loading<a class="headerlink" href="#loading" title="Permanent link">&para;</a></h2>
+with specific corpora easier.</p><ul><li>Hebrew Bible: <a href="../Bhsa">BHSA</a></li><li>Proto-cuneiform tablets from Uruk: <a href="../Cunei">Cunei</a></li></ul></details><h2 id="loading">Loading<a class="headerlink" href="#loading" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>TF=Fabric()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.fabric</span> <span class="kn">import</span> <span class="n">Fabric</span>
 <span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">directories</span><span class="p">,</span> <span class="n">modules</span><span class="o">=</span><span class="n">subdirectories</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
@@ -1402,7 +1402,7 @@ and what text is associated with the results.</p></details><details class="examp
 <p>is a handy way to get an impression of the first bunch of results.</p></details><details class="hint"><summary>Universal</summary><p>This function works on all tuples of nodes, whether they have been
 obtained by search or not.</p></details><details class="hint"><summary>More ways of showing results</summary><p>If you work in one of the corpora for which the TF-API has been extended,
 you will be provided with more powerful methods <code>show()</code> and <code>table()</code>
-to display your results. See <a href="../cunei">Cunei</a> and <a href="../bhsa">Bhsa</a>.</p></details></details><h2 id="node-features">Node features<a class="headerlink" href="#node-features" title="Permanent link">&para;</a></h2>
+to display your results. See <a href="../Cunei">Cunei</a> and <a href="../Bhsa">Bhsa</a>.</p></details></details><h2 id="node-features">Node features<a class="headerlink" href="#node-features" title="Permanent link">&para;</a></h2>
 <details class="info" open="open"><summary>Node Features</summary></details><details class="info" open="open"><summary>F</summary><p>The node features API is exposed as <code>F</code> (<code>Fs</code>) or <code>Feature</code> (<code>FeatureString</code>).</p></details><details class="abstract"><summary>Fall() aka AllFeatures()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">Fall</span><span class="p">()</span>
 <span class="n">AllFeatures</span><span class="p">()</span>
