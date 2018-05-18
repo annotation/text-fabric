@@ -1271,16 +1271,34 @@ do not have values).</p><p><strong>Additional constraints</strong></p><ul><li>Th
     <a href="https://docs.python.org/3/library/re.html#regular-expression-syntax">regular axpression syntax</a><ul><li>If that syntax prescribes a<code>\</code>, you have to write it twice: <code>\</code> <code>\</code>.</li><li>If you need a space in your regular expression, you have to escape it with a
     <code>\</code>.</li><li>You can do regular expressions only on string-valued features, not on
     number-valued features.</li></ul></li></ul></details><details class="info"><summary>Operator lines</summary><details class="info"><summary>Node comparison</summary><ul><li><code>=</code>: is equal (meaning the same node, a clause and a verse that occupy the
-    same slots are still unequal)</li><li><code>#</code>: is unequal (meaning a different node, a clause and a verse that occupy
-    the same slots are still unequal)</li><li><code>&lt;</code> <code>&gt;</code>: before and after (in the <em>canonical ordering</em>)</li></ul></details><details class="info"><summary>Slot comparison</summary><ul><li><code>==</code>: occupy the same slots (identical slot sets)</li><li><code>&amp;&amp;</code>: overlap (the intersection of both slot sets is not empty)</li><li><code>##</code>: occupy different slots (but they may overlap, the set of slots of the
-    two are different as sets)</li><li><code>||</code>: occupy disjoint slots (no slot occupied by the one is also occupied by
-    the other)</li><li><code>[[ ]]</code>: embeds and contains (slot set inclusion, in both directions)</li><li><code>&lt;&lt;</code> <code>&gt;&gt;</code>: before and after (with respect to the slots occupied: left ends
-    before right starts and vice versa)</li><li><code>&lt;:</code> <code>:&gt;</code>: <em>adjacent</em> before and after (with respect to the slots occupied:
-    left ends immediately before right starts and vice versa)</li><li><code>=:</code> left and right start at the same slot</li><li><code>:=</code> left and right end at the same slot</li><li><code>::</code> left and right start and end at the same slot</li></ul></details><details class="info"><summary>Nearness comparison</summary><p>Some of the adjacency relations can actually be weakened. Instead of requiring
+    same slots are still unequal)
+    <img alt="op" src="../../images/Spatial/Spatial.001.png" /></li><li><code>#</code>: is unequal (meaning a different node, a clause and a verse that occupy
+    the same slots are still unequal)
+    <img alt="op" src="../../images/Spatial/Spatial.002.png" /></li><li><code>&lt;</code> <code>&gt;</code>: before and after (in the <em>canonical ordering</em>)
+    <img alt="op" src="../../images/Spatial/Spatial.003.png" /></li></ul></details><details class="info"><summary>Slot comparison</summary><ul><li><code>==</code>: occupy the same slots (identical slot sets)
+    <img alt="op" src="../../images/Spatial/Spatial.004.png" /></li><li><code>&amp;&amp;</code>: overlap (the intersection of both slot sets is not empty)
+    <img alt="op" src="../../images/Spatial/Spatial.006.png" /></li><li><code>##</code>: occupy different slots (but they may overlap, the set of slots of the
+    two are different as sets)
+    <img alt="op" src="../../images/Spatial/Spatial.005.png" /></li><li><code>||</code>: occupy disjoint slots (no slot occupied by the one is also occupied by
+    the other)
+    <img alt="op" src="../../images/Spatial/Spatial.007.png" /></li><li><code>[[ ]]</code>: embeds and contains (slot set inclusion, in both directions)
+    <img alt="op" src="../../images/Spatial/Spatial.008.png" /></li><li><code>&lt;&lt;</code> <code>&gt;&gt;</code>: before and after (with respect to the slots occupied: left ends
+    before right starts and vice versa)
+    <img alt="op" src="../../images/Spatial/Spatial.009.png" /></li><li><code>&lt;:</code> <code>:&gt;</code>: <em>adjacent</em> before and after (with respect to the slots occupied:
+    left ends immediately before right starts and vice versa)
+    <img alt="op" src="../../images/Spatial/Spatial.013.png" /></li><li><code>=:</code> left and right start at the same slot
+    <img alt="op" src="../../images/Spatial/Spatial.010.png" /></li><li><code>:=</code> left and right end at the same slot
+    <img alt="op" src="../../images/Spatial/Spatial.011.png" /></li><li><code>::</code> left and right start and end at the same slot
+    <img alt="op" src="../../images/Spatial/Spatial.012.png" /></li></ul></details><details class="info"><summary>Nearness comparison</summary><p>Some of the adjacency relations can actually be weakened. Instead of requiring
 that one slot is equal to an other slot, you can require that they are <em>k-near</em>,
 i.e. they are at most <em>k</em> apart. Here are the relationships where you can do
 that. Instead of typing the letter <code>k</code>, provide the actual number you want.</p><ul><li><code>&lt;k:</code> <code>:k&gt;</code>: <code>k</code>-<em>adjacent</em> before and after (with respect to the slots
-    occupied: left ends <code>k</code>-near where right starts and vice versa)</li><li><code>=k:</code> left and right start at <code>k</code>-near slots</li><li><code>:k=</code> left and right end at <code>k</code>-near slots</li><li><code>:k:</code> left and right start and end at <code>k</code>-near slots</li></ul></details><details class="info"><summary>Based on edge features</summary><ul><li><code>-</code><em>name</em><code>&gt;</code> <code>&lt;</code><em>name</em><code>-</code>: connected by the edge feature <em>name</em><ul><li>in both directions;</li><li>these forms work for edges that do and do not have values;</li></ul></li><li><code>-</code><em>name</em> <em>valueSpec</em><code>&gt;</code> <code>&lt;</code><em>name</em> <em>valueSpec</em><code>-</code>: connected by the edge feature <em>name</em><ul><li>in both directions;</li><li>these forms work only for edges that do have values.</li></ul></li></ul></details></details></details><details class="abstract"><summary>S.relationsLegend</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">relationsLegend</span>
+    occupied: left ends <code>k</code>-near where right starts and vice versa)
+    <img alt="op" src="../../images/Spatial/Spatial.017.png" /></li><li><code>=k:</code> left and right start at <code>k</code>-near slots
+    <img alt="op" src="../../images/Spatial/Spatial.014.png" /></li><li><code>:k=</code> left and right end at <code>k</code>-near slots
+    <img alt="op" src="../../images/Spatial/Spatial.015.png" /></li><li><code>:k:</code> left and right start and end at <code>k</code>-near slots
+    <img alt="op" src="../../images/Spatial/Spatial.016.png" /></li></ul></details><details class="info"><summary>Based on edge features</summary><ul><li><p><code>-</code><em>name</em><code>&gt;</code> <code>&lt;</code><em>name</em><code>-</code>: connected by the edge feature <em>name</em></p><ul><li>in both directions;</li><li>these forms work for edges that do and do not have values;</li></ul><p><img alt="op" src="../../images/Spatial/Spatial.018.png" />
+<em>   <code>-</code></em>name<em> </em>valueSpec<em><code>&gt;</code> <code>&lt;</code></em>name<em> </em>valueSpec<em><code>-</code>: connected by the edge feature </em>name*</p><ul><li>in both directions;</li><li>these forms work only for edges that do have values.</li></ul><p><img alt="op" src="../../images/Spatial/Spatial.019.png" /></p></li></ul></details></details></details><details class="abstract"><summary>S.relationsLegend</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">relationsLegend</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Gives dynamic help about the basic relations that you can use in your search
