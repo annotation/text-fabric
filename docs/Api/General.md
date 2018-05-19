@@ -827,6 +827,9 @@
     ??? info "General"
         We have these kinds of lines in a template:
 
+        *   *comment* lines
+            *   If a line starts with `#` it is ignored.
+            *   You cannot comment out parts of lines, only whole lines.
         *   *atom* lines
             *   (simple): **indent name:otype features**
                 *   `vb:word pos=verb gender=feminine`
