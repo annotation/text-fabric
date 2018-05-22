@@ -1167,7 +1167,36 @@
         to display your results. See [Cunei](Cunei) and [Bhsa](Bhsa).
 
 
-## Node features
+## Features
+
+???+ info "Features"
+    TF can give you information of all features it has encountered.
+
+??? abstract "TF.featureSets"
+    ```python
+    TF.featureSets
+    ```
+
+    ???+ info "Description"
+        Returns a dictionary with keys `nodes`, `edges`, `configs`, `computeds`.
+
+        Under each key there is the set of feature names in that category.
+        
+        So you can easily test whether a node feature or edge feature is present in the
+        dataset you are working with.
+
+        ??? note "configs"
+            These are config features, with metadata only, no data. E.g. `otext`.
+
+        ??? note "computeds"
+            These are blocks of precomputed data, available under the `C.` API, see below.
+
+    ??? caution "May be unloaded"
+        The sets do not indicate whether a feature is loaded or not.
+        There are other functions that give you the loaded node features (`Fall()`)
+        and the loaded edge features (`Eall()`).
+
+### Node features
 
 ???+ info "Node Features"
 
@@ -1291,7 +1320,7 @@
             ending nodes of `otype`. This makes use of the fact that the data is so
             organized that all node types have single ranges of nodes as members.
 
-## Edge features
+### Edge features
 
 ???+ info "Edge Features"
 
