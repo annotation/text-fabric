@@ -398,16 +398,29 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#features" title="Features" class="md-nav__link">
+    Features
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#node-features" title="Node features" class="md-nav__link">
     Node features
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#edge-features" title="Edge features" class="md-nav__link">
     Edge features
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -764,16 +777,29 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#features" title="Features" class="md-nav__link">
+    Features
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#node-features" title="Node features" class="md-nav__link">
     Node features
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#edge-features" title="Edge features" class="md-nav__link">
     Edge features
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1275,14 +1301,28 @@ In both cases you can also use the other constructs, such as</p><table class="co
 </td></tr></table>
 <p>To get a more specific introduction to search, consult the search tutorials for
 <a href="https://github.com/ETCBC/bhsa/blob/master/tutorial/search.ipynb">Hebrew</a> and
-<a href="https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb">Cuneiform</a>.</p></details><details class="info"><summary>Search template reference</summary><details class="info"><summary>General</summary><p>We have these kinds of lines in a template:</p><ul><li><em>comment</em> lines<ul><li>If a line starts with <code>#</code> it is ignored.</li><li>You cannot comment out parts of lines, only whole lines.</li></ul></li><li><em>atom</em> lines<ul><li>(simple): <strong>indent name:otype features</strong><ul><li><code>vb:word pos=verb gender=feminine</code></li><li>The indent is significant. Indent is counted as the number of white space
-    characters, where tabs count for just 1. <strong>Avoid tabs!</strong>.</li><li>The <strong>name:</strong> part is optional.</li></ul></li><li>(with relop): <strong>indent op name:otype features</strong><ul><li><code>&lt;: word pos=verb gender=feminine</code></li><li>The relation operator specifies an extra constraint between a preceding atom
+<a href="https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb">Cuneiform</a>.</p></details><details class="info"><summary>Search template reference</summary><details class="info"><summary>General</summary><p>We have these kinds of lines in a template:</p><ul><li><em>comment</em> lines<ul><li>If a line starts with <code>#</code> it is ignored.</li><li>You cannot comment out parts of lines, only whole lines.</li></ul></li><li><p><em>atom</em> lines</p><ul><li>(simple): <strong>indent name:otype-or-set features</strong><ul><li><code>vb:word pos=verb gender=feminine</code></li><li>The indent is significant. Indent is counted as the number of white space
+    characters, where tabs count for just 1. <strong>Avoid tabs!</strong>.</li><li>The <strong>name:</strong> part is optional.</li></ul></li><li>(with relop): <strong>indent op name:otype-or-set features</strong><ul><li><code>&lt;: word pos=verb gender=feminine</code></li><li>The relation operator specifies an extra constraint between a preceding atom
     and this atom.</li><li>The preceding atom may be the parent, provided we are at its first child, or
-    it may the preceding sibling.</li><li>You can leave out the <strong>name:otype features</strong> bit. In that case, the
-    relation holds between the preceding atom and its parent.</li></ul></li></ul></li><li><em>feature</em> lines: <strong>features</strong><ul><li>Indent is not significant. Continuation of feature constraints after a
+    it may the preceding sibling.</li><li>You can leave out the <strong>name:otype-or-set features</strong> bit. In that case, the
+    relation holds between the preceding atom and its parent.</li></ul></li></ul><p>The otype-or-set is either a node type that exists in your TF data set,
+or it is the name of a set that you have passed in the <code>sets</code> parameter alongside
+the query itself when you call <code>S.search()</code> or <code>S.study()</code>.
+<em>   </em>feature<em> lines: <strong>features</strong>
+</em>   Indent is not significant. Continuation of feature constraints after a
     preceding atom line or other feature line. This way you can divide lengthy
-    feature constraints over multiple lines.</li></ul></li><li><em>relation</em> lines: <strong>name operator name</strong><ul><li><code>s := w</code></li><li><code>m -sub&gt; s</code></li><li><code>m &lt;sub- s</code></li><li>Indents and spacing are ignored.</li><li>There must be white-space around the operator.</li><li>Operators that come from edge features may be enriched with values.
-    See below.</li></ul></li><li><em>white-space or empty</em> lines<ul><li>Everywhere allowed.</li><li>Always ignored.</li></ul></li></ul></details><details class="info"><summary>Features</summary><p>The <strong>features</strong> above is a specification of what features with which values to
+    feature constraints over multiple lines.
+<em>   </em>relation<em> lines: <strong>name operator name</strong>
+</em>   <code>s := w</code>
+<em>   <code>m -sub&gt; s</code>
+</em>   <code>m &lt;sub- s</code>
+<em>   Indents and spacing are ignored.
+</em>   There must be white-space around the operator.
+<em>   Operators that come from edge features may be enriched with values.
+    See below.
+</em>   <em>white-space or empty</em> lines
+<em>   Everywhere allowed.
+</em>   Always ignored.</p></li></ul></details><details class="info"><summary>Features</summary><p>The <strong>features</strong> above is a specification of what features with which values to
 search for. This specification must be written as a white-space separated list
 of <strong>feature specs</strong>.</p><p>A <strong>feature spec</strong> has the form <em>name</em> <em>valueSpec</em>, with no space between the <em>name</em>
 and the <em>valueSpec</em>.
@@ -1329,17 +1369,19 @@ that. Instead of typing the letter <code>k</code>, provide the actual number you
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Gives dynamic help about the basic relations that you can use in your search
-template. It includes the edge features that are available in your dataset.</p></details></details><details class="abstract"><summary>S.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">searchTemplate</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+template. It includes the edge features that are available in your dataset.</p></details></details><details class="abstract"><summary>S.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">searchTemplate</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">shallow</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Searches for combinations of nodes that together match a search template.
 This method returns a <em>generator</em> which yields the results one by one. One result
 is a tuple of nodes, where each node corresponds to an <em>atom</em>-line in your
-<a href="#search-template-introduction">search template</a>.</p></details><details class="info"><summary>searchTemplate</summary><p>The search template is a string that conforms to the rules described above.</p></details><details class="info"><summary>limit</summary><p>If <code>limit</code> is a number, it will fetch only that many results.</p></details><details class="note"><summary>Generator versus tuple</summary><p>If <code>limit</code> is specified, the result is not a generator but a tuple of results.</p></details><details class="explanation"><summary>More info on the search plan</summary><p>Searching is complex. The search template must be parsed, interpreted, and
+<a href="#search-template-introduction">search template</a>.</p></details><details class="info"><summary>searchTemplate</summary><p>The search template is a string that conforms to the rules described above.</p></details><details class="info"><summary>shallow</summary><p>If <code>True</code>, the result is a set of things that match the top-level element
+of the <code>query</code>.</p></details><details class="info"><summary>sets</summary><p>If not <code>None</code>, it should be a dictionary of sets, keyed by a names.
+In <code>query</code> you can refer to those names to invoke those sets.</p></details><details class="info"><summary>limit</summary><p>If <code>limit</code> is a number, it will fetch only that many results.</p></details><details class="note"><summary>Generator versus tuple</summary><p>If <code>limit</code> is specified, the result is not a generator but a tuple of results.</p></details><details class="explanation"><summary>More info on the search plan</summary><p>Searching is complex. The search template must be parsed, interpreted, and
 translated into a search plan. The following methods expose parts of the search
 process, and may provide you with useful information in case the search does not
 deliver what you expect.</p></details><details class="hint"><summary>see the plan</summary><p>the method <code>S.showPlan()</code> below shows you at a glance the correspondence
-between the nodes in each result tuple and your search template.</p></details></details><details class="abstract"><summary>S.study()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">study</span><span class="p">(</span><span class="n">searchTemplate</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+between the nodes in each result tuple and your search template.</p></details></details><details class="abstract"><summary>S.study()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">study</span><span class="p">(</span><span class="n">searchTemplate</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">shallow</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Your search template will be checked, studied, the search
@@ -1350,7 +1392,7 @@ The search strategy is an implementation detail, but we bring
 it to the surface nevertheless.</p><p>To see the names of the available strategies, just call
 <code>S.study('', strategy='x')</code> and you will get a list of options reported to
 choose from.</p><p>Feel free to experiment. To see what the strategies do,
-see the <a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/search.py">code</a>.</p></details><details class="info"><summary>silent</summary><p>If you want to suppress most of the output, say <code>silent=True</code>.</p></details></details><details class="abstract"><summary>S.showPlan()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">showPlan</span><span class="p">(</span><span class="n">details</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+see the <a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/search.py">code</a>.</p></details><details class="info"><summary>silent</summary><p>If you want to suppress most of the output, say <code>silent=True</code>.</p></details><details class="info"><summary>shallow, sets</summary><p>As in <code>S.search()</code>.</p></details></details><details class="abstract"><summary>S.showPlan()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">showPlan</span><span class="p">(</span><span class="n">details</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Search results are tuples of nodes and the plan shows which part of the tuple
@@ -1402,7 +1444,14 @@ and what text is associated with the results.</p></details><details class="examp
 <p>is a handy way to get an impression of the first bunch of results.</p></details><details class="hint"><summary>Universal</summary><p>This function works on all tuples of nodes, whether they have been
 obtained by search or not.</p></details><details class="hint"><summary>More ways of showing results</summary><p>If you work in one of the corpora for which the TF-API has been extended,
 you will be provided with more powerful methods <code>show()</code> and <code>table()</code>
-to display your results. See <a href="../Cunei">Cunei</a> and <a href="../Bhsa">Bhsa</a>.</p></details></details><h2 id="node-features">Node features<a class="headerlink" href="#node-features" title="Permanent link">&para;</a></h2>
+to display your results. See <a href="../Cunei">Cunei</a> and <a href="../Bhsa">Bhsa</a>.</p></details></details><h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
+<details class="info" open="open"><summary>Features</summary><p>TF can give you information of all features it has encountered.</p></details><details class="abstract"><summary>TF.featureSets</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">featureSets</span>
+</pre></div>
+</td></tr></table>
+<details class="info" open="open"><summary>Description</summary><p>Returns a dictionary with keys <code>nodes</code>, <code>edges</code>, <code>configs</code>, <code>computeds</code>.</p><p>Under each key there is the set of feature names in that category.</p><p>So you can easily test whether a node feature or edge feature is present in the
+dataset you are working with.</p><details class="note"><summary>configs</summary><p>These are config features, with metadata only, no data. E.g. <code>otext</code>.</p></details><details class="note"><summary>computeds</summary><p>These are blocks of precomputed data, available under the <code>C.</code> API, see below.</p></details></details><details class="caution"><summary>May be unloaded</summary><p>The sets do not indicate whether a feature is loaded or not.
+There are other functions that give you the loaded node features (<code>Fall()</code>)
+and the loaded edge features (<code>Eall()</code>).</p></details></details><h3 id="node-features">Node features<a class="headerlink" href="#node-features" title="Permanent link">&para;</a></h3>
 <details class="info" open="open"><summary>Node Features</summary></details><details class="info" open="open"><summary>F</summary><p>The node features API is exposed as <code>F</code> (<code>Fs</code>) or <code>Feature</code> (<code>FeatureString</code>).</p></details><details class="abstract"><summary>Fall() aka AllFeatures()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">Fall</span><span class="p">()</span>
 <span class="n">AllFeatures</span><span class="p">()</span>
@@ -1453,7 +1502,7 @@ types will be counted.</p></details></details><details class="abstract"><summary
     clauses to words)</li><li><code>F.otype.sInterval(otype)</code> is like <code>F.otype.s(otype)</code>, but instead of
     returning you a range to iterate over, it will give you the starting and
     ending nodes of <code>otype</code>. This makes use of the fact that the data is so
-    organized that all node types have single ranges of nodes as members.</li></ul></details></details><h2 id="edge-features">Edge features<a class="headerlink" href="#edge-features" title="Permanent link">&para;</a></h2>
+    organized that all node types have single ranges of nodes as members.</li></ul></details></details><h3 id="edge-features">Edge features<a class="headerlink" href="#edge-features" title="Permanent link">&para;</a></h3>
 <details class="info" open="open"><summary>Edge Features</summary></details><details class="info" open="open"><summary>E</summary><p>The edge features API is exposed as <code>E</code> (<code>Es</code>) or <code>Edge</code> (<code>EdgeString</code>).</p></details><details class="abstract"><summary>Eall() aka AllEdges()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">Eall</span><span class="p">()</span>
 <span class="n">AllEdges</span><span class="p">()</span>

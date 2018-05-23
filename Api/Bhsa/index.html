@@ -809,13 +809,21 @@ in the tuple, the <code>colorMap</code> wants to assign it two colors!
 Yet one color will be chosen, and it is unpredictable which one.</p></details></details><details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
 Default 1.</p></details><details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
 Default the length of the iterable.</p></details><details class="info"><summary>withNodes, suppress, colorMap, highlights</summary><p>Same as in <code>B.prettyTuple()</code>.</p></details></details><h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>B.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<details class="abstract"><summary>B.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">shallow</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Searches in the same way as the generic Text-Fabric <code>S.search()</code>.
 But whereas the <code>S</code> version returns a generator which yields the results
 one by one, the <code>B</code> version collects all results and sorts them.
-It then reports the number of results.</p></details><details class="info"><summary>query</summary><p><code>query</code> is the search template that has to be searched for.</p></details><details class="info"><summary>silent</summary><p><code>silent</code>: if <code>True</code> it will suppress the reporting of the number of results.</p></details><details class="hint"><summary>search template reference</summary><p>See the <a href="../../Api/General#search-templates">search template reference</a></p></details></details>
+It then reports the number of results.</p></details><details class="info"><summary>query</summary><p><code>query</code> is the search template that has to be searched for.</p></details><details class="info"><summary>silent</summary><p><code>silent</code>: if <code>True</code> it will suppress the reporting of the number of results.</p></details><details class="info"><summary>shallow</summary><p>If <code>True</code>, the result is a set of things that match the top-level element
+of the <code>query</code>.</p></details><details class="info"><summary>sets</summary><p>If not <code>None</code>, it should be a dictionary of sets, keyed by a names.
+In <code>query</code> you can refer to those names to invoke those sets.</p><p>For example, if you have a set <code>gappedPhrases</code> of all phrase nodes that have a gap,
+you can pass <code>sets=dict(gphrase=gappedPhrases)</code>, and then in your query you can say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>gphrase function=Pred
+  word sp=verb
+</pre></div>
+</td></tr></table>
+<p>etc.</p></details><details class="hint"><summary>search template reference</summary><p>See the <a href="../../Api/General#search-templates">search template reference</a></p></details></details>
                 
                   
                 
