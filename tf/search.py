@@ -67,12 +67,19 @@ class Search(object):
 
 # API METHODS ###
 
-    def search(self, searchTemplate, limit=None):
+    def search(self, searchTemplate, limit=None, sets=None, shallow=False):
         self.silent = True
-        self.study(searchTemplate, silent=True)
+        self.study(searchTemplate, silent=True, sets=sets, shallow=shallow)
         return self.fetch(limit=limit)
 
-    def study(self, searchTemplate, strategy=None, silent=False):
+    def study(
+        self,
+        searchTemplate,
+        strategy=None,
+        silent=False,
+        sets=None,
+        shallow=False
+    ):
         info = self.api.info
         self.silent = silent
         self.api.indent(level=0, reset=True)
@@ -86,15 +93,15 @@ class Search(object):
         if not self.silent:
             info('Checking search template ...')
         self.searchTemplate = searchTemplate
+        self.sets = sets
+        self.shallow = shallow
 
         self._parse()
         self._prepare()
         if not self.good:
             return
         if not self.silent:
-            info(
-                f'Setting up search space for {len(self.qnodes)} objects ...'
-            )
+            info(f'Setting up search space for {len(self.qnodes)} objects ...')
         self._spinAtoms()
         if not self.silent:
             info(
@@ -108,9 +115,7 @@ class Search(object):
         if self.good:
             if not self.silent:
                 yarnContent = sum(len(y) for y in self.yarns.values())
-                info(
-                    f'Ready to deliver results from {yarnContent} nodes'
-                )
+                info(f'Ready to deliver results from {yarnContent} nodes')
             if not self.silent:
                 info('Iterate over S.fetch() to get the results', tm=False)
             if not self.silent:
@@ -119,6 +124,8 @@ class Search(object):
     def fetch(self, limit=None):
         if not self.good:
             return []
+        if self.shallow:
+            return self.results
         if limit is None:
             return self.results()
         results = []
@@ -238,10 +245,7 @@ class Search(object):
         for (i, line) in enumerate(self.searchLines):
             rNode = resultNode.get(i, '')
             prefix = 'R' if rNode != '' else ''
-            info(
-                f'{i:>2} {prefix:<1}{rNode:<2} {line}',
-                tm=False
-            )
+            info(f'{i:>2} {prefix:<1}{rNode:<2} {line}', tm=False)
 
 # LOW-LEVEL NODE RELATIONS SEMANTICS ###
 
@@ -407,18 +411,14 @@ class Search(object):
                         return (yF, yT)
 
                     if not self.silent:
-                        self.api.info(
-                            f'1. reducing over {len(nyS)} elements'
-                        )
+                        self.api.info(f'1. reducing over {len(nyS)} elements')
                     nyF = reduce(
                         set.union,
                         (sindexF[s] for s in nyS),
                         set(),
                     )
                     if not self.silent:
-                        self.api.info(
-                            f'2. reducing over {len(nyS)} elements'
-                        )
+                        self.api.info(f'2. reducing over {len(nyS)} elements')
                     nyT = reduce(
                         set.union,
                         (sindexT[s] for s in nyS),
@@ -594,8 +594,7 @@ class Search(object):
 
                     def xx(n):
                         near = set(
-                            l
-                            for l in
+                            l for l in
                             range(max((1, n - k)), min((maxSlot, n + k + 1)))
                         )
                         return tuple(
@@ -612,8 +611,7 @@ class Search(object):
                     def xx(n):
                         fn = Eoslots[n - maxSlot - 1][0]
                         return tuple(
-                            m
-                            for m in range(
+                            m for m in range(
                                 max((1, fn - k)), min((maxSlot, fn + k + 1))
                             )
                         )
@@ -624,8 +622,7 @@ class Search(object):
                     def xx(n):
                         fn = Eoslots[n - maxSlot - 1][0]
                         near = set(
-                            l
-                            for l in range(
+                            l for l in range(
                                 max((1, fn - k)), min((maxSlot, fn + k + 1))
                             )
                         )
@@ -651,8 +648,7 @@ class Search(object):
 
                     def xx(n):
                         near = set(
-                            l
-                            for l in
+                            l for l in
                             range(max((1, n - k)), min((maxSlot, n + k + 1)))
                         )
                         return tuple(
@@ -669,8 +665,7 @@ class Search(object):
                     def xx(n):
                         ln = Eoslots[n - maxSlot - 1][-1]
                         return tuple(
-                            m
-                            for m in range(
+                            m for m in range(
                                 max((1, ln - k)), min((maxSlot, ln + k + 1))
                             )
                         )
@@ -681,8 +676,7 @@ class Search(object):
                     def xx(n):
                         ln = Eoslots[n - maxSlot - 1][-1]
                         near = set(
-                            l
-                            for l in range(
+                            l for l in range(
                                 max((1, ln - k)), min((maxSlot, ln + k + 1))
                             )
                         )
@@ -708,8 +702,7 @@ class Search(object):
 
                     def xx(n):
                         near = set(
-                            l
-                            for l in
+                            l for l in
                             range(max((1, n - k)), min((maxSlot, n + k + 1)))
                         )
                         fok = set(
@@ -736,14 +729,12 @@ class Search(object):
                         fs = slots[0]
                         ls = slots[-1]
                         fok = set(
-                            m
-                            for m in range(
+                            m for m in range(
                                 max((1, fs - k)), min((maxSlot, fs + k + 1))
                             )
                         )
                         lok = set(
-                            m
-                            for m in range(
+                            m for m in range(
                                 max((1, ls - k)), min((maxSlot, ls + k + 1))
                             )
                         )
@@ -756,14 +747,12 @@ class Search(object):
                         fn = Eoslots[n - maxSlot - 1][0]
                         ln = Eoslots[n - maxSlot - 1][-1]
                         nearf = set(
-                            ls
-                            for ls in range(
+                            ls for ls in range(
                                 max((1, fn - k)), min((maxSlot, fn + k + 1))
                             )
                         )
                         nearl = set(
-                            ls
-                            for ls in range(
+                            ls for ls in range(
                                 max((1, ln - k)), min((maxSlot, ln + k + 1))
                             )
                         )
@@ -834,10 +823,9 @@ class Search(object):
                         myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot
                                                                    - 1][-1] + 1
                         myNextNear = tuple(
-                            ls
-                            for ls in range(
-                                max((1, myNext - k
-                                     )), min((maxSlot, myNext + k + 1))
+                            ls for ls in range(
+                                max((1, myNext -
+                                     k)), min((maxSlot, myNext + k + 1))
                             )
                         )
                         nextSet = set(
@@ -869,10 +857,9 @@ class Search(object):
                         myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot
                                                                    - 1][0] - 1
                         myPrevNear = tuple(
-                            l
-                            for l in range(
-                                max((1, myPrev - k
-                                     )), min((maxSlot, myPrev + k + 1))
+                            l for l in range(
+                                max((1, myPrev -
+                                     k)), min((maxSlot, myPrev + k + 1))
                             )
                         )
                         prevSet = set(
@@ -896,9 +883,7 @@ class Search(object):
                             m[0] for m in eFunc(n) if m[1] is None
                         )
                     elif value is True:
-                        return lambda n: tuple(
-                            m[0] for m in eFunc(n)
-                        )
+                        return lambda n: tuple(m[0] for m in eFunc(n))
                     elif isinstance(value, types.FunctionType):
                         return lambda n: tuple(
                             m[0] for m in eFunc(n) if value(m[1])
@@ -921,6 +906,7 @@ class Search(object):
                     Edata = Es(efName)
                     doValues = Edata.doValues
                     return edgeAccess(Edata.f, doValues, value)
+
                 return edgeR
 
             def edgeIRV(value):
@@ -929,6 +915,7 @@ class Search(object):
                     Edata = Es(efName)
                     doValues = Edata.doValues
                     return edgeAccess(Edata.t, doValues, value)
+
                 return edgeIR
 
             return (edgeRV, edgeIRV)
@@ -1177,11 +1164,8 @@ One of the above relations on nodes and/or slots will suit you better!
 
     def _parseFeatureVals(self, featStr, features, i, asEdge=False):
         if asEdge:
-            if not (
-                    (featStr[0] == '-' and featStr[-1] == '>')
-                    or
-                    (featStr[0] == '<' and featStr[-1] == '-')
-            ):
+            if not ((featStr[0] == '-' and featStr[-1] == '>') or
+                    (featStr[0] == '<' and featStr[-1] == '-')):
                 return True
             feat = featStr[1:-1]
         else:
@@ -1190,7 +1174,7 @@ One of the above relations on nodes and/or slots will suit you better!
         for x in [True]:
             match = noneRe.match(feat)
             if match:
-                (featN,) = match.groups()
+                (featN, ) = match.groups()
                 featName = unesc(featN)
                 featVals = None
                 break
@@ -1228,8 +1212,7 @@ One of the above relations on nodes and/or slots will suit you better!
             else:
                 featValList = featComps[1]
                 featVals = frozenset(
-                    unesc(featVal)
-                    for featVal in featValList.split('|')
+                    unesc(featVal) for featVal in featValList.split('|')
                 )
         features[featName] = featVals
         return good
@@ -1300,9 +1283,9 @@ One of the above relations on nodes and/or slots will suit you better!
                     else:
                         if opFeatures:
                             op = (op, opFeatures)
-                        tokens.append((
-                            i, 'rel', match.group(1), op, match.group(3)
-                        ))
+                        tokens.append(
+                            (i, 'rel', match.group(1), op, match.group(3))
+                        )
                         good = True
                     break
                 matchOp = atomOpRe.match(esc(line))
@@ -1340,8 +1323,8 @@ One of the above relations on nodes and/or slots will suit you better!
                             if opFeatures:
                                 op = (op, opFeatures)
                             tokens.append((
-                                i, 'atom', len(indent),
-                                op, name, atom, features
+                                i, 'atom', len(indent), op, name, atom,
+                                features
                             ))
                     break
                 features = getFeatures(esc(line), i)
@@ -1540,9 +1523,14 @@ One of the above relations on nodes and/or slots will suit you better!
             self.good = False
 
     def _validateFeature(
-        self, q, fName, features,
-        missingFeatures, wrongValues,
-        hasValues={}, asEdge=False
+        self,
+        q,
+        fName,
+        features,
+        missingFeatures,
+        wrongValues,
+        hasValues={},
+        asEdge=False
     ):
         values = features[fName]
         fSet = 'edges' if asEdge else 'nodes'
@@ -1552,9 +1540,8 @@ One of the above relations on nodes and/or slots will suit you better!
             if asEdge:
                 doValues = self.api.TF.features[fName].edgeValues
                 if not doValues and values is not True:
-                    hasValues.setdefault(fName, {}).setdefault(
-                        values, []
-                    ).append(q)
+                    hasValues.setdefault(fName, {}).setdefault(values,
+                                                               []).append(q)
                     return
             requiredType = self.api.TF.features[fName].dataType
             if values is True:
@@ -1563,14 +1550,12 @@ One of the above relations on nodes and/or slots will suit you better!
                 return
             elif isinstance(values, types.FunctionType):
                 if requiredType == 'str':
-                    wrongValues.setdefault(fName, {}).setdefault(
-                        values, []
-                    ).append(q)
+                    wrongValues.setdefault(fName, {}).setdefault(values,
+                                                                 []).append(q)
             elif isinstance(values, reTp):
                 if requiredType == 'int':
-                    wrongValues.setdefault(fName, {}).setdefault(
-                        values, []
-                    ).append(q)
+                    wrongValues.setdefault(fName, {}).setdefault(values,
+                                                                 []).append(q)
             else:
                 valuesCast = set()
                 if requiredType == 'int':
@@ -1579,9 +1564,8 @@ One of the above relations on nodes and/or slots will suit you better!
                             valCast = int(val)
                         except Exception:
                             valCast = val
-                            wrongValues.setdefault(
-                                fName, {}).setdefault(
-                                    val, []
+                            wrongValues.setdefault(fName, {}).setdefault(
+                                val, []
                             ).append(q)
                         valuesCast.add(valCast)
                     features[fName] = frozenset(valuesCast)
@@ -1602,7 +1586,10 @@ One of the above relations on nodes and/or slots will suit you better!
         # check the object types of atoms
 
         otypesGood = True
+        sets = self.sets
         for (q, (otype, xx)) in enumerate(qnodes):
+            if sets is not None and otype in sets:
+                continue
             if otype not in otypes:
                 self.badSemantics.append(
                     'Unknown object type in line'
@@ -1615,6 +1602,12 @@ One of the above relations on nodes and/or slots will suit you better!
                     ','.join(x[0] for x in levels),
                 )
             )
+            if sets is not None:
+                self.badSemantics.append(
+                    'Or choose a custom set from: {}'.format(
+                        ','.join(x for x in sorted(sets)),
+                    )
+                )
             self.good = False
 
         # check the feature names of feature specs
@@ -1641,11 +1634,8 @@ One of the above relations on nodes and/or slots will suit you better!
         addRels = {}
         for (e, (f, op, t)) in enumerate(self.qedgesRaw):
             if (
-                    type(op) is tuple
-                    or
-                    (op[0] == '-' and op[-1] == '>')
-                    or
-                    (op[0] == '<' and op[-1] == '-')
+                type(op) is tuple or (op[0] == '-' and op[-1] == '>')
+                or (op[0] == '<' and op[-1] == '-')
             ):
                 continue
             match = kRe.findall(op)
@@ -1664,12 +1654,16 @@ One of the above relations on nodes and/or slots will suit you better!
             (opName, opFeatures) = op
             for eName in sorted(opFeatures):
                 self._validateFeature(
-                    e, eName, opFeatures, missingFeatures, wrongValues,
-                    hasValues, asEdge=True
+                    e,
+                    eName,
+                    opFeatures,
+                    missingFeatures,
+                    wrongValues,
+                    hasValues,
+                    asEdge=True
                 )
-                addRels.setdefault(opName, set()).add(
-                    (eName, opFeatures[eName])
-                )
+                addRels.setdefault(opName,
+                                   set()).add((eName, opFeatures[eName]))
         self._add_V_Relations(addRels)
 
         # now look up each particalur relation in the relation map
@@ -1749,7 +1743,9 @@ One of the above relations on nodes and/or slots will suit you better!
                     needToLoad.append((fName, fObj))
             if len(needToLoad):
                 self.api.TF.load(
-                    [x[0] for x in needToLoad], add=True, silent=True,
+                    [x[0] for x in needToLoad],
+                    add=True,
+                    silent=True,
                 )
 
     def _semantics(self):
@@ -1862,11 +1858,15 @@ One of the above relations on nodes and/or slots will suit you better!
         F = self.api.F
         Fs = self.api.Fs
         qnodes = self.qnodes
+        sets = self.sets
 
         (otype, features) = qnodes[q]
         featureList = sorted(features.items())
         yarn = set()
-        for n in F.otype.s(otype):
+        nodeSet = sets[
+            otype
+        ] if sets is not None and otype in sets else F.otype.s(otype)
+        for n in nodeSet:
             good = True
             for (ft, val) in featureList:
                 fval = Fs(ft).v(n)
@@ -1969,9 +1969,14 @@ One of the above relations on nodes and/or slots will suit you better!
         qnodes = self.qnodes
         qedges = self.qedges
         spreads = self.spreads
+        sets = self.sets
         for (q, (otype, xx)) in enumerate(qnodes):
-            (begin, end) = F.otype.sInterval(otype)
-            nOtype = 1 + end - begin
+            if sets is not None and otype in sets:
+                nodeSet = sets[otype]
+                nOtype = len(nodeSet)
+            else:
+                (begin, end) = F.otype.sInterval(otype)
+                nOtype = 1 + end - begin
             nYarn = len(self.yarns[q])
             yf = nYarn / nOtype
             yarnFractionNode[q] = yf * yf
@@ -2469,6 +2474,8 @@ In plan    : {newCedgesO}''',
 
         yarnsPermuted = [yarns[q] for q in qPermuted]
 
+        shallow = self.shallow
+
         def deliver(remap=True):
             stitch = [None for q in range(len(qPermuted))]
             lStitch = len(stitch)
@@ -2517,7 +2524,71 @@ In plan    : {newCedgesO}''',
             for s in stitchOn(0):
                 yield s
 
-        self.results = deliver
+        def delivered():
+            stitch = [None for q in range(len(qPermuted))]
+            edgesC = edgesCompiled
+            yarnsP = yarnsPermuted
+            resultQ = qPermutedInv[0]
+            resultSet = set()
+
+            def stitchOn(e):
+                if e >= len(edgesC):
+                    yield tuple(stitch)
+                    return
+                (f, t, r, nparams) = edgesC[e]
+                yarnT = yarnsP[t]
+                if e == 0 and stitch[f] is None:
+                    yarnF = yarnsP[f]
+                    if f == resultQ:
+                        for sN in yarnF:
+                            if sN in resultSet:
+                                continue
+                            stitch[f] = sN
+                            for s in stitchOn(e):
+                                yield s
+                    else:
+                        for sN in yarnF:
+                            stitch[f] = sN
+                            for s in stitchOn(e):
+                                yield s
+                    return
+                sN = stitch[f]
+                if f == resultQ:
+                    if sN in resultSet:
+                        return
+                sM = stitch[t]
+                if sM is not None:
+                    if t == resultQ:
+                        if sM in resultSet:
+                            return
+                    if nparams == 1:
+                        if sM in set(r(sN)):  # & yarnT:
+                            for s in stitchOn(e + 1):
+                                yield s
+                    else:
+                        if r(sN, sM):
+                            for s in stitchOn(e + 1):
+                                yield s
+                    return
+                mFromN = tuple(set(r(sN)) & yarnT) if nparams == 1 else tuple(
+                    m for m in yarnT if r(sN, m)
+                )
+                for m in mFromN:
+                    stitch[t] = m
+                    for s in stitchOn(e + 1):
+                        yield s
+                stitch[t] = None
+
+            for s in stitchOn(0):
+                result = s[resultQ]
+                resultSet.add(result)
+
+            return resultSet
+
+        if shallow:
+            self.results = delivered()
+        else:
+            self.results = deliver
 
 
 # TOP-LEVEL IMPLEMENTATION METHODS

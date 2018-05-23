@@ -658,10 +658,12 @@ This notebook online:
                     f' {LIMIT_SHOW} results at a time'
                 )
 
-    def search(self, query, silent=False):
+    def search(self, query, silent=False, sets=None, shallow=False):
         api = self.api
         S = api.S
-        results = sorted(S.search(query))
+        results = S.search(query, sets=sets, shallow=shallow)
+        if not shallow:
+            results = sorted(results)
         nResults = len(results)
         plural = '' if nResults == 1 else 's'
         if not silent:

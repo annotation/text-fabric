@@ -6,6 +6,20 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.2
+
+2018-05-23
+
+The Search API has been extended:
+
+*   you can use custom sets in your query templates
+*   you can search in shallow mode: instead of full result tuples, you just get a set
+    of the top-level thing you mention in your template.
+    
+This functionality is a precursor for
+quantifiers in search templates (see issue #4)
+but is also a powerful addition to search in its own right.
+
 ## 4.1.2
 
 2018-05-17

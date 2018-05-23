@@ -362,7 +362,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
 ??? abstract "B.search()" 
     ```python
-    B.search(query, silent=False)
+    B.search(query, silent=False, shallow=False, sets=None)
     ```
     
     ???+ "Description"
@@ -376,6 +376,24 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
     ??? info "silent"
         `silent`: if `True` it will suppress the reporting of the number of results.
+
+    ??? info "shallow"
+        If `True`, the result is a set of things that match the top-level element
+        of the `query`.
+
+    ??? info "sets"
+        If not `None`, it should be a dictionary of sets, keyed by a names.
+        In `query` you can refer to those names to invoke those sets.
+
+        For example, if you have a set `gappedPhrases` of all phrase nodes that have a gap,
+        you can pass `sets=dict(gphrase=gappedPhrases)`, and then in your query you can say
+
+        ```
+        gphrase function=Pred
+          word sp=verb
+        ```
+
+        etc.
 
     ??? hint "search template reference"
         See the [search template reference](/Api/General#search-templates)

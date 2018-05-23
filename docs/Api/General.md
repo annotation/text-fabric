@@ -831,19 +831,23 @@
             *   If a line starts with `#` it is ignored.
             *   You cannot comment out parts of lines, only whole lines.
         *   *atom* lines
-            *   (simple): **indent name:otype features**
+            *   (simple): **indent name:otype-or-set features**
                 *   `vb:word pos=verb gender=feminine`
                 *   The indent is significant. Indent is counted as the number of white space
                     characters, where tabs count for just 1. **Avoid tabs!**.
                 *   The **name:** part is optional.
-            *   (with relop): **indent op name:otype features**
+            *   (with relop): **indent op name:otype-or-set features**
                 *   `<: word pos=verb gender=feminine`
                 *   The relation operator specifies an extra constraint between a preceding atom
                     and this atom.
                 *   The preceding atom may be the parent, provided we are at its first child, or
                     it may the preceding sibling.
-                *   You can leave out the **name:otype features** bit. In that case, the
+                *   You can leave out the **name:otype-or-set features** bit. In that case, the
                     relation holds between the preceding atom and its parent.
+
+            The otype-or-set is either a node type that exists in your TF data set,
+            or it is the name of a set that you have passed in the `sets` parameter alongside
+            the query itself when you call `S.search()` or `S.study()`.
         *   *feature* lines: **features**
             *   Indent is not significant. Continuation of feature constraints after a
                 preceding atom line or other feature line. This way you can divide lengthy
@@ -989,7 +993,7 @@
 
 ??? abstract "S.search()"
     ```python
-    S.search(searchTemplate, limit=None)
+    S.search(searchTemplate, limit=None, shallow=False, sets=None)
     ```
 
     ???+ info "Description"
@@ -1001,6 +1005,14 @@
     ??? info "searchTemplate"
         The search template is a string that conforms to the rules described above.
         
+    ??? info "shallow"
+        If `True`, the result is a set of things that match the top-level element
+        of the `query`.
+
+    ??? info "sets"
+        If not `None`, it should be a dictionary of sets, keyed by a names.
+        In `query` you can refer to those names to invoke those sets.
+
     ??? info "limit"
         If `limit` is a number, it will fetch only that many results.
 
@@ -1019,7 +1031,7 @@
 
 ??? abstract "S.study()"
     ```python
-    S.study(searchTemplate, strategy=None, silent=False)
+    S.study(searchTemplate, strategy=None, silent=False, shallow=False, sets=None)
     ```
 
     ???+ info "Description"
@@ -1045,6 +1057,9 @@
 
     ??? info "silent"
         If you want to suppress most of the output, say `silent=True`.
+
+    ??? info "shallow, sets"
+        As in `S.search()`.
 
 ??? abstract "S.showPlan()"
     ```python
