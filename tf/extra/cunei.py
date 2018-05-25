@@ -931,9 +931,9 @@ This notebook online:
             start = 1
         i = -1
         rest = 0
-        if not hasattr(results, 'len'):
-            if end is None or end > LIMIT_TABLE:
-                end = LIMIT_TABLE
+        if not hasattr(results, '__len__'):
+            if end is None or end - start + 1 > LIMIT_SHOW:
+                end = start - 1 + LIMIT_SHOW
             for result in results:
                 i += 1
                 if i < start - 1:
@@ -942,7 +942,7 @@ This notebook online:
                     break
                 collected.append((i + 1, result))
         else:
-            if end is None:
+            if end is None or end > len(results):
                 end = len(results)
             rest = 0
             if end - (start - 1) > LIMIT_TABLE:
@@ -1024,6 +1024,10 @@ This notebook online:
         sortNodes = api.sortNodes
         tablets = set()
         newHighlights = {}
+        if type(highlights) is set:
+            highlights = {m: '' for m in highlights}
+        if highlights:
+            newHighlights.update(highlights)
         for (i, n) in enumerate(ns):
             thisHighlight = None
             if highlights is not None:
@@ -1067,10 +1071,16 @@ This notebook online:
         colorMap=None,
         highlights=None,
     ):
-        newHighlights = highlights
+        newHighlights = None
+        if type(highlights) is set:
+            highlights = {m: '' for m in highlights}
+        if highlights:
+            newHighlights = {}
+            newHighlights.update(highlights)
         if condensed:
             if colorMap is not None:
-                newHighlights = {}
+                if newHighlights is None:
+                    newHighlights = {}
                 for ns in results:
                     for (i, n) in enumerate(ns):
                         thisHighlight = None
@@ -1087,9 +1097,9 @@ This notebook online:
         if start is None:
             start = 1
         i = -1
-        if not hasattr(results, 'len'):
-            if end is None or end > LIMIT_SHOW:
-                end = LIMIT_SHOW
+        if not hasattr(results, '__len__'):
+            if end is None or end - start + 1 > LIMIT_SHOW:
+                end = start - 1 + LIMIT_SHOW
             for result in results:
                 i += 1
                 if i < start - 1:
@@ -1108,7 +1118,7 @@ This notebook online:
                     highlights=newHighlights,
                 )
         else:
-            if end is None:
+            if end is None or end > len(results):
                 end = len(results)
             rest = 0
             if end - (start - 1) > LIMIT_SHOW:

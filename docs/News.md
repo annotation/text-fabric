@@ -17,7 +17,7 @@ The Search API has been extended:
     of the top-level thing you mention in your template.
     
 This functionality is a precursor for
-quantifiers in search templates (see issue #4)
+[quantifiers in search templates](https://github.com/Dans-labs/text-fabric/issues/4)
 but is also a powerful addition to search in its own right.
 
 ## 4.1.2

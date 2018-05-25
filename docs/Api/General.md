@@ -981,9 +981,9 @@
 
             ![op](/images/Spatial/Spatial.019.png)
 
-??? abstract "S.relationsLegend"
+??? abstract "S.relationsLegend()"
     ```python
-    S.relationsLegend
+    S.relationsLegend()
     ```
 
     ???+ info "Description"

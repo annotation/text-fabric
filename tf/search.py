@@ -57,44 +57,199 @@ def unesc(x):
 opValPat = '^([^=~]*?)([=~<>])(.*)'
 opValRe = re.compile(opValPat)
 
+# Search and SearchExe
+#
+# HIGH LEVEL description of the roles of Search and SerchExe
+#
+# SearchExe is the class that runs queries.
+# SearchFactory is a class that creates SearchExe instances.
+#
+# The user is given the factory class as search api S.
+#
+# The (public) methods of the factory class has methods for searching.
+# These methods work on a dedicated instance of SearchExe
+# within the factory class.
+# The factory class will create this instance when needed.
+#
+# A reference to the factory class Search is stored in the SearchExe objects.
+# This gives the SearchExe objects the possibility to create other
+# SearchExe objects to perform auxiliary queries.
+# This is needed to run the queries implied by
+# quantifiers in the search template.
+#
+# The search processes done by distinct SearchExe objects do not interfere.
+#
+# Summarizing: the factory class Search looks to the user like the execution
+# class # SearchExe.
+# But under the hood, different queries are always performed on different
+# instances of SearchExe.
+
+# LOW LEVEL description of the roles of Search and SerchExe
+#
+# In order to search, you have to create an instance of the SearchExe class.
+# This instance contains all parameters and settings relevant to the search.
+#
+# The factory Search may contain one instance of a SearchExe.
+#
+# The factory class Search has methods study() and search(),
+# which create a SearchExe instance and store it inside the Search.
+# After that they call methods with the same name on that SearchExe object.
+#
+# The factory class Search has methods fetch(), count(), showPlan().
+# These call mehtods with the same name on the SearchExe instance stored in
+# the factory class Search, if it has been created earlier
+# by search() or study().
+# If not, an error message is displayed.
+#
+# All the work involved in searching is performed by the SearchExe object.
+# The data of a SearchExe object are tied to a particular search:
+# searchTemplate, sets, shallow, silent.
+# This also holds for all data that is created during executions of a query:
+# qnodes, qedges, results, etc.
+
 
 class Search(object):
     def __init__(self, api, silent):
         self.api = api
-        self.good = True
         self.silent = silent
-        self._basicRelations()
+        self.exe = None
 
-# API METHODS ###
-
-    def search(self, searchTemplate, limit=None, sets=None, shallow=False):
-        self.silent = True
-        self.study(searchTemplate, silent=True, sets=sets, shallow=shallow)
-        return self.fetch(limit=limit)
+    def search(
+        self,
+        searchTemplate,
+        limit=None,
+        sets=None,
+        shallow=False,
+        silent=True,
+        here=True,
+    ):
+        exe = SearchExe(
+            self,
+            self.api,
+            searchTemplate,
+            sets=sets,
+            shallow=shallow,
+            silent=silent,
+        )
+        if here:
+            self.exe = exe
+        return exe.search(limit=limit)
 
     def study(
         self,
         searchTemplate,
         strategy=None,
-        silent=False,
         sets=None,
-        shallow=False
+        shallow=False,
+        here=True,
     ):
-        info = self.api.info
+        exe = SearchExe(
+            self,
+            self.api,
+            searchTemplate,
+            sets=sets,
+            shallow=shallow,
+            silent=False
+        )
+        if here:
+            self.exe = exe
+        return exe.study(strategy=strategy)
+
+    def fetch(self, limit=None):
+        exe = self.exe
+        if exe is None:
+            error = self.api.error
+            error('Cannot fetch if there is no previous "study()"')
+        else:
+            return exe.fetch(limit=limit)
+
+    def count(self, progress=None, limit=None):
+        exe = self.exe
+        if exe is None:
+            error = self.api.error
+            error('Cannot count if there is no previous "study()"')
+        else:
+            exe.count(progress=progress, limit=limit)
+
+    def showPlan(self, details=False):
+        exe = self.exe
+        if exe is None:
+            error = self.api.error
+            error('Cannot show plan if there is no previous "study()"')
+        else:
+            exe.showPlan(details=details)
+
+    def relationsLegend(self):
+        exe = self.exe
+        if exe is None:
+            exe = SearchExe(self, self.api, '')
+        print(exe.relationLegend)
+
+    def glean(self, r):
+        T = self.api.T
+        F = self.api.F
+        L = self.api.L
+        slotType = F.otype.slotType
+        lR = len(r)
+        if lR == 0:
+            return ''
+        fields = []
+        for (i, n) in enumerate(r):
+            otype = F.otype.v(n)
+            words = [n] if otype == slotType else L.d(n, otype=slotType)
+            if otype == T.sectionTypes[2]:
+                field = '{} {}:{}'.format(*T.sectionFromNode(n))
+            elif otype == slotType:
+                field = T.text(words)
+            elif otype in T.sectionTypes[0:2]:
+                field = ''
+            else:
+                field = '{}[{}{}]'.format(
+                    otype,
+                    T.text(words[0:5]),
+                    '...' if len(words) > 5 else '',
+                )
+            fields.append(field)
+        return ' '.join(fields)
+
+
+class SearchExe(object):
+    def __init__(
+        self,
+        factory,
+        api,
+        searchTemplate,
+        sets=None,
+        shallow=False,
+        silent=True
+    ):
+        self.factory = factory
+        self.api = api
+        self.searchTemplate = searchTemplate
+        self.sets = sets
+        self.shallow = shallow
         self.silent = silent
+        self.good = True
+        self._basicRelations()
+
+# API METHODS ###
+
+    def search(self, limit=None):
+        self.silent = True
+        self.study()
+        return self.fetch(limit=limit)
+
+    def study(self, strategy=None):
+        info = self.api.info
         self.api.indent(level=0, reset=True)
         self.good = True
 
-        self._basicRelations()
         self._setStrategy(strategy)
         if not self.good:
             return
 
         if not self.silent:
             info('Checking search template ...')
-        self.searchTemplate = searchTemplate
-        self.sets = sets
-        self.shallow = shallow
 
         self._parse()
         self._prepare()
@@ -135,42 +290,14 @@ class Search(object):
                 break
         return tuple(results)
 
-    def glean(self, r):
-        T = self.api.T
-        F = self.api.F
-        L = self.api.L
-        slotType = F.otype.slotType
-        lR = len(r)
-        if lR == 0:
-            return ''
-        fields = []
-        for (i, n) in enumerate(r):
-            otype = F.otype.v(n)
-            words = [n] if otype == slotType else L.d(n, otype=slotType)
-            if otype == T.sectionTypes[2]:
-                field = '{} {}:{}'.format(*T.sectionFromNode(n))
-            elif otype == slotType:
-                field = T.text(words)
-            elif otype in T.sectionTypes[0:2]:
-                field = ''
-            else:
-                field = '{}[{}{}]'.format(
-                    otype,
-                    T.text(words[0:5]),
-                    '...' if len(words) > 5 else '',
-                )
-            fields.append(field)
-        return ' '.join(fields)
-
     def count(self, progress=None, limit=None):
         info = self.api.info
+        error = self.api.error
         indent = self.api.indent
         indent(level=0, reset=True)
 
         if not self.good:
-            self.error(
-                'This search has problems. No results to count.', tm=False
-            )
+            error('This search has problems. No results to count.', tm=False)
             return
 
         PROGRESS = 100
@@ -1222,21 +1349,26 @@ One of the above relations on nodes and/or slots will suit you better!
             return
 
         opPat = '(?:[#&|\[\]<>:=-]+\S*)'
+        quPat = '(?:all|have|no|either|or)'
         atomPat = '(\s*)([^ \t=!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
         atomOpPat = (
             '(\s*)({op})\s+([^ \t=!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(
                 op=opPat
             )
         )
-        opLinePat = '(\s*)({op})\s*$'.format(op=opPat)
+        indentLinePat = '^(\s*)'
+        opLinePat = '^(\s*)({op})\s*$'.format(op=opPat)
+        quLinePat = '^(\s*)({qu}):\s*$'.format(qu=quPat)
         namePat = '[A-Za-z0-9_-]+'
-        relPat = '^\s*({nm})\s+({op})\s+({nm})\s*$'.format(
+        relPat = '^(\s*)({nm})\s+({op})\s+({nm})\s*$'.format(
             nm=namePat, op=opPat
         )
 
         atomOpRe = re.compile(atomOpPat)
         atomRe = re.compile(atomPat)
+        indentLineRe = re.compile(indentLinePat)
         opLineRe = re.compile(opLinePat)
+        quLineRe = re.compile(quLinePat)
         nameRe = re.compile('^{}$'.format(namePat))
         relRe = re.compile(relPat)
         whiteRe = re.compile('^\s*$')
@@ -1254,11 +1386,207 @@ One of the above relations on nodes and/or slots will suit you better!
         searchLines = self.searchLines
         tokens = []
         allGood = True
+
+        # the template may contain nested quantifiers
+        # However, we detect only the outer level of quantifiers.
+        # Everything contained in a quantifiers is collected in
+        # a new search template, verbatim, without interpretion,
+        # because it will be fed to search() on another instance.
+        # We only strip the quantified lines of the leading indentation
+        # that corresponds to the level of the first line of the quantifier
+
+        # We can maintain the current quantifier, None if there is none.
+        # We also remember the current indentation of the current quantifier
+        # We collect the templates within the quantifier in a list of strings.
+        # We add all the material into a quantifier token of the shape
+        #
+        # (linenr, 'quant', indent-length, quKind, quTemplates)
+
+        curQuKind = None
+        curQuIndent = None
+        curQuTemplateIndent = None
+        curQuTemplates = None
+
         for (i, line) in enumerate(searchLines):
             if line.startswith('#') or whiteRe.match(line):
                 continue
             good = False
             opFeatures = {}
+
+            # first check whether we have a line with a quantifier
+            # and what the indent on the line is
+
+            match = quLineRe.match(line)
+            if match:
+                (indent, lineQuKind) = match.groups()
+            else:
+                lineQuKind = None
+                match = indentLineRe.match(line)
+                indent = match.group(1)
+
+            lineIndent = len(indent)
+
+            # QUANTIFIER FILTERING
+            #
+            # now check whether we are in a quantifier or not
+            # and determine whether a quantifier starts or ends here
+
+            # we have the following possible situations:
+            #
+            # nnn no quantifier in progress - no start of new one
+            # nqs no quantifier in progress - start of new one
+            #     enqs but with wrong quantifier
+            # qpp quantifier in progress - no start or end
+            # qpc quantifier in progress - ends - is continued with other part
+            #     eqpc but with wrong precursor for the continuation
+            # qps quantifier in progress - ends - new one starts
+            #     eqps but with unterminated precursor
+            # qpe quantifier in progress - ends - no new one
+            #     eqpe but with unterminated precursor
+
+            # first we determine what is the case and we store it in booleans
+
+            nnn = (
+                not curQuKind and not lineQuKind
+            )
+            nqs = (
+                not curQuKind and lineQuKind
+            )
+            enqs = (
+                not curQuKind and lineQuKind and
+                lineQuKind in {'have', 'or'}
+            )
+            qpp = (
+                curQuKind and
+                lineIndent > curQuIndent
+            )
+            qpc = (
+                curQuKind and lineQuKind and
+                lineIndent == curQuIndent and
+                lineQuKind in {'have', 'or'}
+            )
+            eqpc = (
+                curQuKind and lineQuKind and
+                lineIndent == curQuIndent and
+                (
+                    (curQuKind != 'all' and lineQuKind == 'have')
+                    or
+                    (
+                        curQuKind not in {'either', 'or'}
+                        and
+                        lineQuKind == 'or'
+                    )
+                )
+            )
+            qps = (
+                curQuKind and lineQuKind and
+                lineIndent <= curQuIndent and
+                lineQuKind in {'all', 'either', 'no'}
+            )
+            eqps = (
+                curQuKind and lineQuKind and
+                lineIndent <= curQuIndent and
+                curQuKind in {'all', 'either'}
+            )
+            qpe = (
+                curQuKind and not lineQuKind and
+                lineIndent <= curQuIndent
+            )
+            eqpe = (
+                curQuKind and not lineQuKind and
+                lineIndent <= curQuIndent and
+                curQuKind in {'all', 'either'}
+            )
+            #message = (
+            #    f'curQu={curQuKind} lineQu={lineQuKind} nnn={nnn} nqs={nqs} qpp={qpp} qpc={qpc} qps={qps} qpe={qpe}: {line}'
+            #)
+            #print(message)
+
+            # QUANTIFIER HANDLING
+            #
+            # Based on what is the case, we take actions.
+            # * we swallow quantified templates
+            # * we handle quantifier lines
+            # * we let all other lines pass through
+
+            for x in [True]:
+                if nnn:
+                    # no quantifier business
+                    continue
+                if nqs:
+                    # start new quantifier from nothing
+                    if enqs:
+                        self.badSyntax.append(
+                            f'Quantifier at line {i}:'
+                            f' Can not start with "{lineQuKind}:"'
+                        )
+                        good = False
+                    curQuTemplates = []
+                    tokens.append((
+                        i, 'quant', lineIndent, lineQuKind, curQuTemplates
+                    ))
+                    curQuTemplates.append([])
+                    curQuKind = lineQuKind
+                    curQuIndent = lineIndent
+                    continue
+                if qpp:
+                    # inside a quantifier
+                    # lines are passed with stripped indentation
+                    if curQuTemplateIndent is None:
+                        # the amount of indentation is dependent
+                        # on the first line
+                        # of the quantified template
+                        curQuTemplateIndent = lineIndent
+                    strippedLine = line[curQuTemplateIndent:]
+                    curQuTemplates[-1].append(strippedLine)
+                    continue
+                if qpc:
+                    if eqpc:
+                        self.badSyntax.append(
+                            f'Quantifier at line {i}:'
+                            f' Can not follow "{curQuKind}:"'
+                        )
+                        good = False
+                    continue
+                    curQuTemplates.append([])
+                    curQuKind = lineQuKind
+                if qps:
+                    if eqps:
+                        self.badSyntax.append(
+                            f'Quantifier at line {i}:'
+                            f' Incomplete "{curQuKind}:"'
+                        )
+                        good = False
+                    continue
+                    curQuTemplates = []
+                    tokens.append((
+                        i, 'quant', lineIndent, lineQuKind, curQuTemplates
+                    ))
+                    curQuTemplates.append([])
+                    curQuKind = lineQuKind
+                    curQuIndent = lineIndent
+                if qpe:
+                    if eqpe:
+                        self.badSyntax.append(
+                            f'Quantifier at line {i}:'
+                            f' Incomplete "{curQuKind}:"'
+                        )
+                        good = False
+                        curQuKind = None
+                        curQuIndent = None
+                        curQuTemplateIndent = None
+                        curQuTemplates = None
+                    continue
+
+            if nnn:
+                # go on with normal template tokenization
+                pass
+            else:
+                # quantifiers stuff has been dealt with
+                continue
+
+            # QUANTIFIER FREEE HANDLING
+
             for x in [True]:
                 match = opLineRe.match(line)
                 if match:
@@ -1275,7 +1603,7 @@ One of the above relations on nodes and/or slots will suit you better!
                     break
                 match = relRe.match(line)
                 if match:
-                    op = match.group(2)
+                    op = match.group(3)
                     if not self._parseFeatureVals(
                         op, opFeatures, i, asEdge=True
                     ):
@@ -1284,7 +1612,7 @@ One of the above relations on nodes and/or slots will suit you better!
                         if opFeatures:
                             op = (op, opFeatures)
                         tokens.append(
-                            (i, 'rel', match.group(1), op, match.group(3))
+                            (i, 'rel', match.group(2), op, match.group(4))
                         )
                         good = True
                     break
