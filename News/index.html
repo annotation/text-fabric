@@ -275,6 +275,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#421" title="4.2.1" class="md-nav__link">
+    4.2.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#42" title="4.2" class="md-nav__link">
     4.2
   </a>
@@ -1097,6 +1104,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#421" title="4.2.1" class="md-nav__link">
+    4.2.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#42" title="4.2" class="md-nav__link">
     4.2
   </a>
@@ -1694,7 +1708,21 @@
 <details class="hint" open="open"><summary>Consult the tutorials after changes</summary><p>When we change the API, we make sure that the tutorials shows off
 all possibilities:
 <a href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">bhsa</a>
-<a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">cunei</a></p></details><h2 id="42">4.2<a class="headerlink" href="#42" title="Permanent link">&para;</a></h2>
+<a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">cunei</a></p></details><h2 id="421">4.2.1<a class="headerlink" href="#421" title="Permanent link">&para;</a></h2>
+<p>2018-05-25</p>
+<ul>
+<li>Several imporvements in the pretty display in Bhsa and Cunei APIs</li>
+<li>Inder the hood changes in <code>S.search()</code> to prepare for <em>quantifiers</em> in search templates.</li>
+<li>Tokenization of quantifiers already works</li>
+<li>Searches can now spawn auxiliary searches without polluting intermediate data</li>
+<li>This has been done by promoting the <code>S</code> API to a factory of search engines.
+    By deafault, <code>S</code> creates and maintains a single factory, so to the user
+    it is the same <code>S</code>. But when it needs to run a query in the middle of processing another query
+    it can just spawn another search engine to do that, without interfering with the
+    original search.</li>
+<li>NB: the search tutorial for the Bhsa got too big. It has thoroughly been rewritten.</li>
+</ul>
+<h2 id="42">4.2<a class="headerlink" href="#42" title="Permanent link">&para;</a></h2>
 <p>2018-05-23</p>
 <p>The Search API has been extended:</p>
 <ul>
