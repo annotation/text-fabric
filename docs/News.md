@@ -6,6 +6,21 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.2.1
+
+2018-05-25
+
+* Several imporvements in the pretty display in Bhsa and Cunei APIs
+* Inder the hood changes in `S.search()` to prepare for *quantifiers* in search templates.
+  * Tokenization of quantifiers already works
+  * Searches can now spawn auxiliary searches without polluting intermediate data
+  * This has been done by promoting the `S` API to a factory of search engines.
+    By deafault, `S` creates and maintains a single factory, so to the user
+    it is the same `S`. But when it needs to run a query in the middle of processing another query
+    it can just spawn another search engine to do that, without interfering with the
+    original search.
+* NB: the search tutorial for the Bhsa got too big. It has thoroughly been rewritten.
+
 ## 4.2
 
 2018-05-23
