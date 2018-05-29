@@ -6,6 +6,7 @@ from random import randrange
 from inspect import signature
 
 from .data import WARP
+from .helpers import project
 
 STRATEGY = '''
     small_choice_first
@@ -22,18 +23,24 @@ escapes = (
     '\\=',
 )
 
-rePat = '^([a-zA-Z0-9-_]+)~(.*)$'
+rePat = '^([a-zA-Z0-9-@_]+)~(.*)$'
 reRe = re.compile(rePat)
 reTp = type(reRe)
 
-compPat = '^([a-zA-Z0-9-_]+)([<>])(.*)$'
+compPat = '^([a-zA-Z0-9-@_]+)([<>])(.*)$'
 compRe = re.compile(compPat)
+
+identPat = '^([a-zA-Z0-9-@_]+)([=#])(.+)$'
+identRe = re.compile(identPat)
 
 numPat = '^-?[0-9]+$'
 numRe = re.compile(numPat)
 
-nonePat = '^([a-zA-Z0-9-_]+)!\s*$'
+nonePat = '^([a-zA-Z0-9-@_]+)(#?)\s*$'
 noneRe = re.compile(nonePat)
+
+indentLinePat = '^(\s*)(.*)'
+indentLineRe = re.compile(indentLinePat)
 
 
 def makeLimit(n, isLower):
@@ -53,9 +60,6 @@ def unesc(x):
         x = x.replace(chr(i), c[1])
     return x
 
-
-opValPat = '^([^=~]*?)([=~<>])(.*)'
-opValRe = re.compile(opValPat)
 
 # Search and SearchExe
 #
@@ -124,7 +128,6 @@ class Search(object):
         here=True,
     ):
         exe = SearchExe(
-            self,
             self.api,
             searchTemplate,
             sets=sets,
@@ -144,12 +147,8 @@ class Search(object):
         here=True,
     ):
         exe = SearchExe(
-            self,
-            self.api,
-            searchTemplate,
-            sets=sets,
-            shallow=shallow,
-            silent=False
+            self.api, searchTemplate, sets=sets, shallow=shallow,
+            silent=False, showQuantifiers=True,
         )
         if here:
             self.exe = exe
@@ -182,7 +181,7 @@ class Search(object):
     def relationsLegend(self):
         exe = self.exe
         if exe is None:
-            exe = SearchExe(self, self.api, '')
+            exe = SearchExe(self.api, '')
         print(exe.relationLegend)
 
     def glean(self, r):
@@ -215,20 +214,15 @@ class Search(object):
 
 class SearchExe(object):
     def __init__(
-        self,
-        factory,
-        api,
-        searchTemplate,
-        sets=None,
-        shallow=False,
-        silent=True
+        self, api, searchTemplate, sets=None, shallow=False,
+        silent=True, showQuantifiers=False,
     ):
-        self.factory = factory
         self.api = api
         self.searchTemplate = searchTemplate
         self.sets = sets
-        self.shallow = shallow
+        self.shallow = 0 if not shallow else 1 if shallow is True else shallow
         self.silent = silent
+        self.showQuantifiers = showQuantifiers
         self.good = True
         self._basicRelations()
 
@@ -278,7 +272,7 @@ class SearchExe(object):
 
     def fetch(self, limit=None):
         if not self.good:
-            return []
+            return set() if self.shallow else []
         if self.shallow:
             return self.results
         if limit is None:
@@ -1021,9 +1015,15 @@ class SearchExe(object):
                             if value is not None and value.search(m[1])
                         )
                     else:
-                        return lambda n: tuple(
-                            m[0] for m in eFunc(n) if m[1] in value
-                        )
+                        (ident, value) = value
+                        if ident:
+                            return lambda n: tuple(
+                                m[0] for m in eFunc(n) if m[1] in value
+                            )
+                        else:
+                            return lambda n: tuple(
+                                m[0] for m in eFunc(n) if m[1] not in value
+                            )
                 else:
                     return lambda n: eFunc(n)
 
@@ -1301,9 +1301,18 @@ One of the above relations on nodes and/or slots will suit you better!
         for x in [True]:
             match = noneRe.match(feat)
             if match:
-                (featN, ) = match.groups()
+                (featN, unequal) = match.groups()
                 featName = unesc(featN)
-                featVals = None
+                featVals = None if unequal else True
+                break
+            match = identRe.match(feat)
+            if match:
+                (featN, comp, featValStr) = match.groups()
+                featName = unesc(featN)
+                featValSet = frozenset(
+                    unesc(featVal) for featVal in featValStr.split('|')
+                )
+                featVals = (comp == '=', featValSet)
                 break
             match = compRe.match(feat)
             if match:
@@ -1332,16 +1341,14 @@ One of the above relations on nodes and/or slots will suit you better!
                     good = False
                     featVals = None
                 break
-            featComps = feat.split('=', 1)
-            featName = unesc(featComps[0])
-            if len(featComps) == 1:
-                featVals = True
-            else:
-                featValList = featComps[1]
-                featVals = frozenset(
-                    unesc(featVal) for featVal in featValList.split('|')
-                )
-        features[featName] = featVals
+            self.badSyntax.append(
+                f'Unrecognized feature condition "{feat}" in line'
+                f'{i}'
+            )
+            good = False
+            featVals = None
+        if good:
+            features[featName] = featVals
         return good
 
     def _tokenize(self):
@@ -1349,14 +1356,13 @@ One of the above relations on nodes and/or slots will suit you better!
             return
 
         opPat = '(?:[#&|\[\]<>:=-]+\S*)'
-        quPat = '(?:all|have|no|either|or)'
-        atomPat = '(\s*)([^ \t=!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
+        quPat = '(?:all|have|no|either|or|end)'
+        atomPat = '(\s*)([^ \t=#!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
         atomOpPat = (
-            '(\s*)({op})\s+([^ \t=!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(
+            '(\s*)({op})\s+([^ \t=#!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(
                 op=opPat
             )
         )
-        indentLinePat = '^(\s*)'
         opLinePat = '^(\s*)({op})\s*$'.format(op=opPat)
         quLinePat = '^(\s*)({qu}):\s*$'.format(qu=quPat)
         namePat = '[A-Za-z0-9_-]+'
@@ -1366,7 +1372,6 @@ One of the above relations on nodes and/or slots will suit you better!
 
         atomOpRe = re.compile(atomOpPat)
         atomRe = re.compile(atomPat)
-        indentLineRe = re.compile(indentLinePat)
         opLineRe = re.compile(opLinePat)
         quLineRe = re.compile(quLinePat)
         nameRe = re.compile('^{}$'.format(namePat))
@@ -1402,9 +1407,9 @@ One of the above relations on nodes and/or slots will suit you better!
         #
         # (linenr, 'quant', indent-length, quKind, quTemplates)
 
+        curQuLine = None
         curQuKind = None
         curQuIndent = None
-        curQuTemplateIndent = None
         curQuTemplates = None
 
         for (i, line) in enumerate(searchLines):
@@ -1436,71 +1441,44 @@ One of the above relations on nodes and/or slots will suit you better!
             # nnn no quantifier in progress - no start of new one
             # nqs no quantifier in progress - start of new one
             #     enqs but with wrong quantifier
+            #     enqsa no preceding token
+            #     enqsb no preceding atom
+            #     enqsc preceding atom not the same indentation
             # qpp quantifier in progress - no start or end
             # qpc quantifier in progress - ends - is continued with other part
             #     eqpc but with wrong precursor for the continuation
-            # qps quantifier in progress - ends - new one starts
-            #     eqps but with unterminated precursor
-            # qpe quantifier in progress - ends - no new one
+            # qpe quantifier in progress - ends -
             #     eqpe but with unterminated precursor
 
             # first we determine what is the case and we store it in booleans
 
-            nnn = (
-                not curQuKind and not lineQuKind
+            nnn = (not curQuKind and not lineQuKind)
+            nqs = (not curQuKind and lineQuKind)
+            enqs = (nqs and lineQuKind in {'have', 'or', 'end'})
+            enqsa = (nqs and not enqs and len(tokens) == 0)
+            enqsb = (
+                nqs and not enqs and not enqsa and
+                (tokens[-1]['kind'] != 'atom' or 'otype' not in tokens[-1])
             )
-            nqs = (
-                not curQuKind and lineQuKind
+            enqsc = (
+                nqs and not enqs and not enqsa and not enqsb
+                and tokens[-1]['indent'] != lineIndent
             )
-            enqs = (
-                not curQuKind and lineQuKind and
-                lineQuKind in {'have', 'or'}
-            )
-            qpp = (
-                curQuKind and
-                lineIndent > curQuIndent
-            )
+            qpp = (curQuKind and lineIndent > curQuIndent)
             qpc = (
-                curQuKind and lineQuKind and
-                lineIndent == curQuIndent and
-                lineQuKind in {'have', 'or'}
+                curQuKind and lineQuKind and lineIndent == curQuIndent
+                and lineQuKind in {'have', 'or'}
             )
             eqpc = (
-                curQuKind and lineQuKind and
-                lineIndent == curQuIndent and
-                (
-                    (curQuKind != 'all' and lineQuKind == 'have')
-                    or
-                    (
-                        curQuKind not in {'either', 'or'}
-                        and
-                        lineQuKind == 'or'
-                    )
-                )
-            )
-            qps = (
-                curQuKind and lineQuKind and
-                lineIndent <= curQuIndent and
-                lineQuKind in {'all', 'either', 'no'}
-            )
-            eqps = (
-                curQuKind and lineQuKind and
-                lineIndent <= curQuIndent and
-                curQuKind in {'all', 'either'}
+                qpc and
+                ((curQuKind != 'all' and lineQuKind == 'have') or
+                 (curQuKind not in {'either', 'or'} and lineQuKind == 'or'))
             )
             qpe = (
-                curQuKind and not lineQuKind and
-                lineIndent <= curQuIndent
+                curQuKind and lineQuKind and lineIndent == curQuIndent
+                and lineQuKind == 'end'
             )
-            eqpe = (
-                curQuKind and not lineQuKind and
-                lineIndent <= curQuIndent and
-                curQuKind in {'all', 'either'}
-            )
-            #message = (
-            #    f'curQu={curQuKind} lineQu={lineQuKind} nnn={nnn} nqs={nqs} qpp={qpp} qpc={qpc} qps={qps} qpe={qpe}: {line}'
-            #)
-            #print(message)
+            eqpe = (qpe and curQuKind in {'all', 'either'})
 
             # QUANTIFIER HANDLING
             #
@@ -1521,23 +1499,31 @@ One of the above relations on nodes and/or slots will suit you better!
                             f' Can not start with "{lineQuKind}:"'
                         )
                         good = False
-                    curQuTemplates = []
-                    tokens.append((
-                        i, 'quant', lineIndent, lineQuKind, curQuTemplates
-                    ))
-                    curQuTemplates.append([])
+                    if enqsa:
+                        self.badSyntax.append(
+                            f'Quantifier at line {i}:'
+                            f' No preceding tokens'
+                        )
+                        good = False
+                    elif enqsb or enqsc:
+                        self.badSyntax.append(
+                            f'Quantifier at line {i}:'
+                            f' Does not immediately follow an atom'
+                            ' at the same level'
+                        )
+                        good = False
+                    prevAtom = tokens[-1]
+                    curQuLine = i
                     curQuKind = lineQuKind
                     curQuIndent = lineIndent
+                    curQuTemplates = [[]]
+                    quantifiers = prevAtom.setdefault('quantifiers', [])
+                    quantifiers.append((curQuKind, curQuTemplates))
                     continue
                 if qpp:
                     # inside a quantifier
                     # lines are passed with stripped indentation
-                    if curQuTemplateIndent is None:
-                        # the amount of indentation is dependent
-                        # on the first line
-                        # of the quantified template
-                        curQuTemplateIndent = lineIndent
-                    strippedLine = line[curQuTemplateIndent:]
+                    strippedLine = line[curQuIndent:]
                     curQuTemplates[-1].append(strippedLine)
                     continue
                 if qpc:
@@ -1545,37 +1531,24 @@ One of the above relations on nodes and/or slots will suit you better!
                         self.badSyntax.append(
                             f'Quantifier at line {i}:'
                             f' Can not follow "{curQuKind}:"'
+                            f' (see line {curQuLine}'
                         )
                         good = False
-                    continue
                     curQuTemplates.append([])
                     curQuKind = lineQuKind
-                if qps:
-                    if eqps:
-                        self.badSyntax.append(
-                            f'Quantifier at line {i}:'
-                            f' Incomplete "{curQuKind}:"'
-                        )
-                        good = False
                     continue
-                    curQuTemplates = []
-                    tokens.append((
-                        i, 'quant', lineIndent, lineQuKind, curQuTemplates
-                    ))
-                    curQuTemplates.append([])
-                    curQuKind = lineQuKind
-                    curQuIndent = lineIndent
                 if qpe:
                     if eqpe:
                         self.badSyntax.append(
                             f'Quantifier at line {i}:'
                             f' Incomplete "{curQuKind}:"'
+                            f' (see line {curQuLine}'
                         )
-                        good = False
-                        curQuKind = None
-                        curQuIndent = None
-                        curQuTemplateIndent = None
-                        curQuTemplates = None
+                    good = False
+                    curQuKind = None
+                    curQuLine = None
+                    curQuIndent = None
+                    curQuTemplates = None
                     continue
 
             if nnn:
@@ -1585,7 +1558,7 @@ One of the above relations on nodes and/or slots will suit you better!
                 # quantifiers stuff has been dealt with
                 continue
 
-            # QUANTIFIER FREEE HANDLING
+            # QUANTIFIER FREE HANDLING
 
             for x in [True]:
                 match = opLineRe.match(line)
@@ -1598,7 +1571,14 @@ One of the above relations on nodes and/or slots will suit you better!
                     else:
                         if opFeatures:
                             op = (op, opFeatures)
-                        tokens.append((i, 'atom', len(indent), op))
+                        tokens.append(
+                            dict(
+                                ln=i,
+                                kind='atom',
+                                indent=len(indent),
+                                op=op,
+                            )
+                        )
                         good = True
                     break
                 match = relRe.match(line)
@@ -1612,7 +1592,13 @@ One of the above relations on nodes and/or slots will suit you better!
                         if opFeatures:
                             op = (op, opFeatures)
                         tokens.append(
-                            (i, 'rel', match.group(2), op, match.group(4))
+                            dict(
+                                ln=i,
+                                kind='rel',
+                                f=match.group(2),
+                                op=op,
+                                t=match.group(4),
+                            )
                         )
                         good = True
                     break
@@ -1629,9 +1615,10 @@ One of the above relations on nodes and/or slots will suit you better!
                     atomComps = atom.split(':', 1)
                     if len(atomComps) == 1:
                         name = ''
+                        otype = unesc(atomComps[0])
                     else:
                         name = unesc(atomComps[0])
-                        atom = unesc(atomComps[1])
+                        otype = unesc(atomComps[1])
                         mt = nameRe.match(name)
                         if not mt:
                             self.badSyntax.append(
@@ -1650,20 +1637,42 @@ One of the above relations on nodes and/or slots will suit you better!
                         if good:
                             if opFeatures:
                                 op = (op, opFeatures)
-                            tokens.append((
-                                i, 'atom', len(indent), op, name, atom,
-                                features
-                            ))
+                            tokens.append(
+                                dict(
+                                    ln=i,
+                                    kind='atom',
+                                    indent=len(indent),
+                                    op=op,
+                                    name=name,
+                                    otype=otype,
+                                    src=line.lstrip(),
+                                    features=features,
+                                )
+                            )
                     break
                 features = getFeatures(esc(line), i)
                 if features is None:
                     good = False
                 else:
-                    tokens.append((i, 'feat', features))
+                    tokens.append(
+                        dict(
+                            ln=i,
+                            kind='feat',
+                            features=features,
+                        )
+                    )
                     good = True
                 break
             if not good:
                 allGood = False
+        if curQuKind:
+            self.badSyntax.append(
+                f'Quantifier at line {i}:'
+                f' Unterminated quantifier"'
+                f' (see line {curQuLine}'
+            )
+            good = False
+            allGood = False
         if allGood:
             self.tokens = tokens
         else:
@@ -1696,7 +1705,9 @@ One of the above relations on nodes and/or slots will suit you better!
         nodeLine = {}
         tokens = sorted(
             self.tokens,
-            key=lambda t: (len(self.tokens) + t[0]) if t[1] == 'rel' else t[0]
+            key=lambda t: (
+                (len(self.tokens) + t['ln']) if t['kind'] == 'rel' else t['ln']
+            )
         )
 
         # atomStack is a stack of qnodes with their indent levels
@@ -1706,13 +1717,46 @@ One of the above relations on nodes and/or slots will suit you better!
         # keyed by the indent, and valued by the qnode
         atomStack = {}
 
-        for (i, kind, *fields) in tokens:
+        for token in tokens:
+            i = token['ln']
+            kind = token['kind']
             if kind == 'atom':
-                if len(fields) == 2:
-                    (indent, op) = fields
-                else:
-                    (indent, op, name, otype, features) = fields
-                    qnodes.append((otype, features))
+                if 'quantifiers' in token:
+                    newQuantifiers = []
+                    for (quKind, quTemplates) in token['quantifiers']:
+                        newQuantifiers.append((quKind, []))
+                        minIndent = None
+                        newTemplate = []
+                        for template in quTemplates:
+                            newTemplate.append([])
+                            for line in template:
+                                match = indentLineRe.match(line)
+                                (indent, sline) = match.groups()
+                                thisIndent = len(indent)
+                                newTemplate[-1].append((thisIndent, sline))
+                                if minIndent is None or minIndent > thisIndent:
+                                    minIndent = thisIndent
+                        for template in newTemplate:
+                            newLines = []
+                            for (indent, sline) in template:
+                                newLine = (
+                                    f'{" " * (indent - minIndent)}{sline}'
+                                )
+                                if newLine.startswith('^'):
+                                    newLine = newLine.replace('^', ' ', 1)
+                                newLines.append(newLine)
+                            templateStr = '\n'.join(newLines)
+                            newQuantifiers[-1][1].append(templateStr)
+                    token['quantifiers'] = newQuantifiers or []
+                indent = token['indent']
+                op = token['op']
+                if 'name' in token:
+                    name = token['name']
+                    otype = token['otype']
+                    features = token['features']
+                    src = token.get('src', '')
+                    quantifiers = token.get('quantifiers', [])
+                    qnodes.append((otype, features, src, quantifiers))
                     q = len(qnodes) - 1
                     nodeLine[q] = i
                     name = f':{i}' if name == '' else name
@@ -1730,7 +1774,7 @@ One of the above relations on nodes and/or slots will suit you better!
                             ' not allowed at outermost level'
                         ))
                         good = False
-                    if len(fields) > 2:
+                    if 'name' in token:
                         atomStack[0] = q
                 else:
                     atomNest = sorted(atomStack.items(), key=lambda x: x[0])
@@ -1738,7 +1782,7 @@ One of the above relations on nodes and/or slots will suit you better!
                     if indent == top[0]:
                         # sibling of previous atom
                         if len(atomNest) > 1:
-                            if len(fields) == 2:
+                            if 'name' not in token:
                                 # lonely operator:
                                 # left is previous atom, right is parent atom
                                 qedges.append((top[1], op, atomNest[-2][1]))
@@ -1756,7 +1800,7 @@ One of the above relations on nodes and/or slots will suit you better!
                                 qedges.append((top[1], op, q))
                                 edgeLine[len(qedges) - 1] = i
                     elif indent > top[0]:
-                        if len(fields) == 2:
+                        if 'name' not in token:
                             self.badSemantics.append((
                                 f'Lonely relation at line {i}:'
                                 ' not allowed as first child'
@@ -1793,9 +1837,8 @@ One of the above relations on nodes and/or slots will suit you better!
                             if len(
                                 parents
                             ) != 0:  # if not already at outermost level
-                                if len(
-                                    fields
-                                ) == 2:  # connect previous sibling to parent
+                                if 'name' not in token:
+                                    # connect previous sibling to parent
                                     qedges.append(
                                         (atomStack[indent], op, parents[-1])
                                     )
@@ -1815,7 +1858,7 @@ One of the above relations on nodes and/or slots will suit you better!
                                 del atomStack[rk]
                     atomStack[indent] = q
             elif kind == 'feat':
-                features = fields[0]
+                features = token['features']
                 if prevKind is not None and prevKind != 'atom':
                     self.badSemantics.append(
                         f'Features without atom at line {i}: "{features}"'
@@ -1824,7 +1867,9 @@ One of the above relations on nodes and/or slots will suit you better!
                 else:
                     qnodes[-1][1].update(features)
             elif kind == 'rel':
-                (fName, op, tName) = fields
+                fName = token['f']
+                tName = token['t']
+                op = token['op']
                 f = qnames.get(fName, None)
                 t = qnames.get(tName, None)
                 namesGood = True
@@ -1887,6 +1932,7 @@ One of the above relations on nodes and/or slots will suit you better!
             else:
                 valuesCast = set()
                 if requiredType == 'int':
+                    (ident, values) = values
                     for val in values:
                         try:
                             valCast = int(val)
@@ -1896,7 +1942,7 @@ One of the above relations on nodes and/or slots will suit you better!
                                 val, []
                             ).append(q)
                         valuesCast.add(valCast)
-                    features[fName] = frozenset(valuesCast)
+                    features[fName] = (ident, frozenset(valuesCast))
 
     def _validation(self):
         if not self.good:
@@ -1915,7 +1961,8 @@ One of the above relations on nodes and/or slots will suit you better!
 
         otypesGood = True
         sets = self.sets
-        for (q, (otype, xx)) in enumerate(qnodes):
+        for (q, qdata) in enumerate(qnodes):
+            otype = qdata[0]
             if sets is not None and otype in sets:
                 continue
             if otype not in otypes:
@@ -1944,7 +1991,8 @@ One of the above relations on nodes and/or slots will suit you better!
         missingFeatures = {}
         wrongValues = {}
         hasValues = {}
-        for (q, (xx, features)) in enumerate(qnodes):
+        for (q, qdata) in enumerate(qnodes):
+            features = qdata[1]
             for fName in sorted(features):
                 self._validateFeature(
                     q, fName, features, missingFeatures, wrongValues
@@ -2059,7 +2107,8 @@ One of the above relations on nodes and/or slots will suit you better!
             if efName is not None:
                 eFeatsUsed.add(efName)
         nFeatsUsed = set()
-        for (xx, features) in qnodes:
+        for qdata in qnodes:
+            features = qdata[1]
             for nfName in features:
                 nFeatsUsed.add(nfName)
 
@@ -2188,7 +2237,7 @@ One of the above relations on nodes and/or slots will suit you better!
         qnodes = self.qnodes
         sets = self.sets
 
-        (otype, features) = qnodes[q]
+        (otype, features, src, quantifiers) = qnodes[q]
         featureList = sorted(features.items())
         yarn = set()
         nodeSet = sets[
@@ -2215,12 +2264,70 @@ One of the above relations on nodes and/or slots will suit you better!
                         good = False
                         break
                 else:
-                    if fval not in val:
-                        good = False
-                        break
+                    (ident, val) = val
+                    if ident:
+                        if fval not in val:
+                            good = False
+                            break
+                    else:
+                        if fval in val:
+                            good = False
+                            break
             if good:
                 yarn.add(n)
+        if quantifiers:
+            for (quKind, quTemplates) in quantifiers:
+                yarn = self._doQuantifier(yarn, src, quKind, quTemplates)
         self.yarns[q] = yarn
+
+    def _doQuantifier(self, yarn, atom, quKind, quTemplates):
+        showQuantifiers = self.showQuantifiers
+        universe = yarn
+        if quKind == 'no':
+            queryN = '\n'.join((atom, quTemplates[0]))
+            exe = SearchExe(self.api, queryN, sets=self.sets, shallow=True)
+            noResults = exe.search()
+            resultYarn = universe - noResults
+        elif quKind == 'all':
+            # compute the atom+antecedent:
+            #   as result tuples
+            queryA = '\n'.join((atom, quTemplates[0]))
+            exe = SearchExe(self.api, queryA, sets=self.sets, shallow=False)
+            aResultTuples = exe.search(limit=-1)
+            if not aResultTuples:
+                return yarn
+            sizeA = len(aResultTuples[0])
+
+            # compute the atom+antecedent+consequent:
+            #   as shallow result tuples (same length as atom+antecedent)
+            queryAH = '\n'.join((atom, *quTemplates))
+            exe = SearchExe(self.api, queryAH, sets=self.sets, shallow=sizeA)
+            ahResults = exe.search()
+
+            # determine the shallow tuples that correspond to
+            #   atom+antecedent but not consequent
+            #   and then take the projection to their first components
+            resultsAnotH = project(set(aResultTuples) - ahResults, 1)
+
+            # now have the atoms that do NOT qualify:
+            #   we subtract them from the universe
+            resultYarn = universe - resultsAnotH
+        elif quKind == 'either':
+            # compute the atom+alternative for all alternatives and union them
+            resultYarn = set()
+            for alt in quTemplates:
+                queryAlt = '\n'.join((atom, alt))
+                exe = SearchExe(
+                    self.api, queryAlt, sets=self.sets, shallow=True
+                )
+                altResults = exe.search()
+                resultYarn |= altResults
+        if showQuantifiers:
+            print(
+                f'\tQuantifier "{quKind} reduced "{atom}"'
+                f'from {len(yarn)} nodes to {len(resultYarn)}'
+            )
+        return resultYarn
 
     def _spinAtoms(self):
         qnodes = self.qnodes
@@ -2298,7 +2405,8 @@ One of the above relations on nodes and/or slots will suit you better!
         qedges = self.qedges
         spreads = self.spreads
         sets = self.sets
-        for (q, (otype, xx)) in enumerate(qnodes):
+        for (q, qdata) in enumerate(qnodes):
+            otype = qdata[0]
             if sets is not None and otype in sets:
                 nodeSet = sets[otype]
                 nOtype = len(nodeSet)
@@ -2730,7 +2838,10 @@ In plan    : {newCedgesO}''',
                 for n in yarn:
                     yield (n, )
 
-            self.results = deliver
+            if self.shallow:
+                self.results = yarn
+            else:
+                self.results = deliver
             return
 
 # The next function must be optimized, and the lookup of functions and data
@@ -2807,6 +2918,7 @@ In plan    : {newCedgesO}''',
         def deliver(remap=True):
             stitch = [None for q in range(len(qPermuted))]
             lStitch = len(stitch)
+            qs = tuple(range(lStitch))
             edgesC = edgesCompiled
             yarnsP = yarnsPermuted
 
@@ -2814,7 +2926,7 @@ In plan    : {newCedgesO}''',
                 if e >= len(edgesC):
                     if remap:
                         yield tuple(
-                            stitch[qPermutedInv[q]] for q in range(lStitch)
+                            stitch[qPermutedInv[q]] for q in qs
                         )
                     else:
                         yield tuple(stitch)
@@ -2853,10 +2965,15 @@ In plan    : {newCedgesO}''',
                 yield s
 
         def delivered():
-            stitch = [None for q in range(len(qPermuted))]
+            tupleSize = len(qPermuted)
+            shallowTupleSize = max(tupleSize, shallow)
+            stitch = [None for q in range(tupleSize)]
             edgesC = edgesCompiled
             yarnsP = yarnsPermuted
             resultQ = qPermutedInv[0]
+            resultQmax = max(
+                qPermutedInv[q] for q in range(shallowTupleSize)
+            )
             resultSet = set()
 
             def stitchOn(e):
@@ -2867,7 +2984,7 @@ In plan    : {newCedgesO}''',
                 yarnT = yarnsP[t]
                 if e == 0 and stitch[f] is None:
                     yarnF = yarnsP[f]
-                    if f == resultQ:
+                    if f == resultQmax:
                         for sN in yarnF:
                             if sN in resultSet:
                                 continue
@@ -2881,12 +2998,12 @@ In plan    : {newCedgesO}''',
                                 yield s
                     return
                 sN = stitch[f]
-                if f == resultQ:
+                if f == resultQmax:
                     if sN in resultSet:
                         return
                 sM = stitch[t]
                 if sM is not None:
-                    if t == resultQ:
+                    if t == resultQmax:
                         if sM in resultSet:
                             return
                     if nparams == 1:
@@ -2907,9 +3024,15 @@ In plan    : {newCedgesO}''',
                         yield s
                 stitch[t] = None
 
-            for s in stitchOn(0):
-                result = s[resultQ]
-                resultSet.add(result)
+            if shallow == 1:
+                for s in stitchOn(0):
+                    result = s[resultQ]
+                    resultSet.add(result)
+            else:  # shallow > 1
+                qs = tuple(range(shallow))
+                for s in stitchOn(0):
+                    result = tuple(s[qPermutedInv[q]] for q in qs)
+                    resultSet.add(result)
 
             return resultSet
 

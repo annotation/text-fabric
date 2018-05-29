@@ -864,6 +864,10 @@
             *   Everywhere allowed.
             *   Always ignored.
 
+        Atom lines that contain an otype or set may be followed by *quantifiers*.
+        Quantifiers consist of search templates themselves, demarcated by some
+        special keywords: `no: end:`, `all: have: end:`, and `either: or: or: end:`.
+
     ??? info "Features"
         The **features** above is a specification of what features with which values to
         search for. This specification must be written as a white-space separated list
@@ -876,8 +880,9 @@
         form | meaning
         ---- | -------
         | feature *name* may have any value except `None`
-        `!` | feature *name* must have value `None` (synonymous for: *name* has no value)
+        `#` | feature *name* must have value `None` (synonymous for: *name* has no value)
         `=`*values* | feature *name* has one of the values specified
+        `#`*values* | feature *name* has none of the values specified
         `>`*value* | feature *name* must be greater than *value*
         `<`*value* | feature *name* must be less than *value*
         `~`*regular expression* | feature *name* has a value and it matches *regular expression*
@@ -889,7 +894,7 @@
 
         **Additional constraints**
 
-        *   There may be no space around the `=`, nor the `~`.
+        *   There may be no space around the `=#<>~`.
         *   *name* must be a feature name that exists in the dataset. If it references a
             feature that is not yet loaded, the feature will be loaded automatically.
         *   *values* must be a `|` separated list of feature values, no quotes. No spaces
@@ -980,6 +985,198 @@
             *   these forms work only for edges that do have values.
 
             ![op](/images/Spatial/Spatial.019.png)
+
+#### Quantifiers
+
+??? info "Quantifiers"
+    ???+ caution "Experimental"
+        This part of search templates is still experimental.
+
+        * bugs may be discovered
+        * the syntax of quantifiers may change
+
+    ??? abstract "Quantifiers are conditions"
+        Quantifiers are a powerful kind of conditions in templates.
+        With the help of quantifiers you can say pretty sophisticated things in a template.
+
+        They state conditions on what can happen within the neighborhood of a node.
+        Whereas normal templates only state that certain configurations must exists,
+        with quantifiers you are able to express that all things in the neighborhood
+        have certain properties or that some things cannot occur there.
+
+        Their requirements have the shape of a quantifier: 
+
+        ```
+        node-or-set
+        no:
+          templateN
+        end:
+        ```
+
+        ```
+        node-or-set
+        all:
+          templateA
+        have:
+          templateH
+        end:
+        ```
+
+        ```
+        node-or-set
+        either:
+          templateO1
+        or:
+          templateO2
+        or:
+          templateO3
+        end:
+        ```
+
+        ???+ note "Not in result tuples"
+            Whereas a the search for a normal template
+            proceeds by finding a tuples that instantiates all it nodes
+            in such a way that all relationships expressed in the template hold, a quantifier template
+            is not instantiated.
+            It asserts a condition that has to be tested for all nodes relative
+            an other node. None of the atoms in a template of a quantifier corresponds to
+            a node in a result tuple.
+
+        ???+ note "May be nested"
+            Templates within a quantifier may contain other quantifiers.
+
+    ??? caution "Restrictions"
+        Due to the implementation of quantifiers there are certain restrictions.
+
+        * The keywords of a quantifier must appear on lines with exactly the same indentation
+          as the atom they quantify.
+        * The names accessible to the templates inside the templates of a quantifier are:
+          * the name of the atom that is quantified (if that atom has a name);
+          * names defined in the template itself;
+          * `templateH` may use names defined in `templateA`;
+          * `templateO`*i* may not use names defined in `templateO`*j*
+          * names defined outer quantifiers are not accessible in inner quantifiers
+          * quantifiers cannot be nested *directly* in each other. Each quantifier must
+            refer to an atom.
+
+    ??? caution "Indentation"
+        Indentation in quantifiers will be stripped. All templates in a quantifier will be 
+        examined, and all common indentation will be stripped. The remaining indentation
+        is interpreted relative to the atom which is being quantified.
+
+        ???+ note "Caret"
+            If your quantifier templates have just one line, by the rule just mentioned,
+            all its indentation will be stripped. 
+            But it might have been your intention to indent the quantifier line relative to 
+            the atom line.
+            To enforce indentation, you can put a `^` on the place that corresponds to zero
+            indentation relative the atom.
+
+        ??? example "Caret example"
+            The outermost quantifier (`all: have:`) postulates a `phrase`.
+            Without the `^`, all indentation would be stripped, and the `phrase`
+            would appear at the same level as the `clause`, destroying the requirement
+            that the `phrase` lies embedded in the `clause`. The `^` defines the point of 
+            zero indentation, so only the indentation before the `^` will be stripped.
+            The `^` itself wil be replaced by a ` ` once it has done its work.
+
+            ```
+            clause
+            all:
+              ^ phrase function=Pred
+            have:
+                no:
+                  ^ word sp#verb
+                end:
+            end:
+              phrase function=Subj
+            ```
+
+    ??? info "Implementation"
+        Here is a description of the implementation of the quantifiers.
+        It is not the real implementation, but it makes clear what is going on, and why
+        the quantifiers have certain limitations, and how indentation works.
+
+        The basic idea is:
+
+        * a quantifier leads to the execution of one or more separate searches;
+        * the results of these searches are combined by means of set operations;
+          (difference, intersection, union), dependent on the nature of the quantifier;
+        * the end result of this combination will fed as a custom set to the original template.
+
+        ??? info "General case"
+            Suppose we have
+
+            ```
+            clause typ=Wx0
+            QUANTIFIERS
+              rest of template
+            ```
+
+            We compute a set of clauses `filteredClauses` based on 
+
+            ```
+            clause typ=Wx0
+            QUANTIFIER1
+            ```
+
+            and deliver the results of
+
+            ```
+            S.search('''
+            fclause
+              rest of template
+            ''',
+                customSets=dict(fclause=filteredClauses)
+            ```
+
+            Then we repeat this for `QUANTIFIER2`, `QUANTIFIER3`, etc,
+            until we have done all quantifiers.
+            In this process the set `filteredClauses` gets smaller and smaller.
+
+        ??? info "Particular quantifiers"
+            Every quantifier will have recombine its templates with other templates
+            and this combinations will be run.
+            The fact that the combined template has to be run in isolation, is the main source of
+            restrictions on the usage of names.
+            It also forces us to juggle with the indentation. 
+
+            It is important which templates will be run for each kind of quantifier.
+            
+            All templates of all quantifiers will be combined with the
+            atom line that is being quantified on top, without indent.
+
+            So all qunatifier templates can see their own names, and the name of the
+            atom if it exists.
+            In one case, a template can see additional names:
+
+        ??? info "all: have: end:"
+
+            ```
+            atom
+            all:
+              templateA
+            have:
+              templateH
+            end:
+            ```
+
+            This quantifier gives rise to running search for the following templates:
+
+            ```
+            atom
+            templateA
+            ```
+
+            ```
+            atom
+            templateA
+            templateH
+            ```
+
+            This means that `templateH` may use names defined in `templateH`,
+            but only if these names are not defined in inner quantifiers inside
+            `templateA`.
 
 ??? abstract "S.relationsLegend()"
     ```python

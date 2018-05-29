@@ -6,13 +6,50 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.3.0
+
+2018-05-29
+
+### API Change in Search
+
+In search templates I recently added things like
+
+```
+  word vt!
+```
+
+which checks for words that do not have a value for feature `vt`.
+
+The syntax for this has now changed to
+
+```
+  word vt#
+```
+
+### New in Search
+
+Now you can say things like
+
+```
+  word vt#infa|infc
+```
+
+meaning that the value of feature is not one of `infa`, `infc`.
+
+So, in addition to `=` we have `#` for "not equal".
+
+### Quantifiers
+
+You can now use quantifiers in search. One of them is like `NOTEXIST` in MQL.
+See the [docs](/Api#quantifiers)
+
 ## 4.2.1
 
 2018-05-25
 
-* Several imporvements in the pretty display in Bhsa and Cunei APIs
-* Inder the hood changes in `S.search()` to prepare for *quantifiers* in search templates.
-  * Tokenization of quantifiers already works
+* Several improvements in the pretty display in Bhsa and Cunei APIs
+* Under the hood changes in `S.search()` to prepare for *quantifiers* in search templates.
+  * Tokenisation of quantifiers already works
   * Searches can now spawn auxiliary searches without polluting intermediate data
   * This has been done by promoting the `S` API to a factory of search engines.
     By deafault, `S` creates and maintains a single factory, so to the user
@@ -41,7 +78,7 @@ but is also a powerful addition to search in its own right.
 
 Bhsa and Cunei APIs:
 
-*   custom highlight colors also work for condensed results.
+*   custom highlight colours also work for condensed results.
 *   you can pass the `highlights` parameter also to `show` and `prettyTuple`
 
 
@@ -57,8 +94,8 @@ Bhsa API: you can customize the features that are shown in pretty displays.
 
 Bhsa and Cunei APIs: you can customize the highlighting of search results:
 
-*   different colors for different parts of the results
-*   you can choose your colors freely from all that CSS has to offer.
+*   different colours for different parts of the results
+*   you can choose your colours freely from all that CSS has to offer.
 
 See the updated search tutorials.
 
@@ -88,7 +125,7 @@ Documentation updates.
     Like `F.freqList`, you can pass parameters to constrain the frequency list to certain node types.
     You can constrain the node types from which the edges start (`nodeTypesFrom`) and where they arrive
     (`nodeTypesTo`).
-*   New documentation system based on [mkdocs](https://mkdocs.readthedocs.io/en/stable/).
+*   New documentation system based on [MkDocs](https://mkdocs.readthedocs.io/en/stable/).
 
 ## 3.4.12
 
@@ -102,7 +139,7 @@ The Cunei and Bhsa APIs show the version of Text-Fabric that is being called.
 
 Cunei
 
-*   cases are divided horizontally and vertically, alternatingly with their
+*   cases are divided horizontally and vertically, alternating with their
     nesting level;
 *   cases have a feature **depth** now, indicating at which level of nesting they
     are.
@@ -115,7 +152,7 @@ Various small fixes, such as:
 
 *   Bhsa: Lexeme links in pretty displays.
 
-*   Cunei: Prevented spurious `</div>` in nbviewer.
+*   Cunei: Prevented spurious `</div>` in NbViewer.
 
 ## 3.4.7
 
@@ -177,7 +214,7 @@ Cunei API:
 
 [Search](/Api#search):
 
-*   You can use regular expressions to specifify feature values in queries.
+*   You can use regular expressions to specify feature values in queries.
 *   You could already search for nodes which have a non-None value for a certain
     feature. Now you can also search for the complement: nodes that do not have a
     certain feature.
@@ -202,7 +239,7 @@ Cunei API: `casesByLevel()` returns case nodes in corpus order.
 
 2018-04-18
 
-Change in the cunei api reflecting that undivided lines have no cases now (was:
+Change in the Cunei api reflecting that undivided lines have no cases now (was:
 they had a single case with the same material as the line). Also: the feature
 `fullNumber` on cases is now called `number`, and contains the full hierarchical
 part leading to a case. There is an extra feature `terminal` on lines and cases
@@ -210,13 +247,13 @@ if they are not subdivided.
 
 Changes in Cunei and Bhsa api:
 
-*   fixed a bug that occurred when working outside a github repository.
+*   fixed a bug that occurred when working outside a GitHub repository.
 
 ## 3.3.1
 
 2018-04-18
 
-Change in the cunei api. `casesByLevel()` now takes an optional argument
+Change in the Cunei api. `casesByLevel()` now takes an optional argument
 `terminal` instead of `withChildren`, with opposite values.
 
 `withChildren=False` is ambiguous: will it deliver only cases that have no
@@ -241,7 +278,7 @@ Bumped the version number because of the inclusion of corpus specific APIs.
 
 *   Text-Fabric now contains corpus specific extras:
     *   `bhsa.py` for the Hebrew Bible (BHSA)
-    *   `cunei.py` for the Proto-cuneiform corpus Uruk
+    *   `cunei.py` for the Proto-Cuneiform corpus Uruk
 *   The `Fabric(locations=locations, modules=modules)` constructor now uses `['']`
     as default value for modules. Now you can use the `locations` parameter on its
     own to specify the search paths for TF features, leaving the `modules`
@@ -293,7 +330,7 @@ account. In the Hebrew Bible, that means that `L.d(sentence)` will not return a
 verse, even if the verse is contained in the sentence.
 
 This might be handy for sentences and verses, but in general this behaviour
-causes problems. It also disturbs the expectiation that with these functions you
+causes problems. It also disturbs the expectation that with these functions you
 get *all* embedders and embeddees.
 
 So we have lifted this restriction. Still, the results of the `L` functions have
@@ -316,7 +353,7 @@ the *otext* feature. See the [api](/Api#levels-of-node-types).
 2018-02-15
 
 Fixed a small problem in `sectionFromNode(n)` when `n` is a node within a
-primary section but outside secundary/tertiary sections.
+primary section but outside secondary/tertiary sections.
 
 ## 3.1.4
 
@@ -326,7 +363,7 @@ Small fix in the Text API. If your data set does not have language dependent
 features, for section level 1 headings, such as `book@en`, `book@sw`, the Text
 API will not break, and the plain `book` feature will be taken always.
 
-We also reformatted all code with a pep8 code formatter.
+We also reformatted all code with a PEP8 code formatter.
 
 ## 3.1.3
 
@@ -340,7 +377,7 @@ coming from CALAP dataset (Syriac).
 2018-01-27
 
 Nothing changed, only the names of some variables and the text of some messages.
-The terminology has been maed more consistent with the fabric metaphor, in
+The terminology has been made more consistent with the fabric metaphor, in
 particular, *grid* has been replaced by *warp*.
 
 ## 3.1.1
@@ -348,8 +385,8 @@ particular, *grid* has been replaced by *warp*.
 2017-10-21
 
 The `exportMQL()` function now generates one single enumeration type that serves
-for all enum features. That makes it possible to compare values of different
-enum features with each other, such as `ps` and `prs_ps`.
+for all enumeration features. That makes it possible to compare values of different
+enumeration features with each other, such as `ps` and `prs_ps`.
 
 ## 3.1
 

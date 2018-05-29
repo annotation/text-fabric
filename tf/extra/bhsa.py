@@ -216,6 +216,8 @@ STANDARD_FEATURES = set('''
     number label book
 '''.strip().split())
 
+# for 4, 4b: voc_lex => g_lex, voc_lex_utf8 => g_lex_utf8
+
 
 def _dm(md):
     display(Markdown(md))
@@ -445,6 +447,9 @@ This notebook online:
                     break
                 collected.append((i + 1, result))
         else:
+            typeResults = type(results)
+            if typeResults is set or typeResults is frozenset:
+                results = sorted(results)
             if end is None or end > len(results):
                 end = len(results)
             rest = 0

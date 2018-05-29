@@ -188,3 +188,9 @@ def itemize(string, sep=None):
     if not sep:
         return string.strip().split()
     return string.strip().split(sep)
+
+
+def project(iterableOfTuples, maxDimension):
+    if maxDimension == 1:
+        return {r[0] for r in iterableOfTuples}
+    return {r[0:maxDimension] for r in iterableOfTuples}
