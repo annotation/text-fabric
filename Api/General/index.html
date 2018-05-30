@@ -393,6 +393,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#search-api" title="Search API" class="md-nav__link">
+    Search API
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#search-results" title="Search results" class="md-nav__link">
     Search results
   </a>
@@ -775,6 +782,13 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#search-api" title="Search API" class="md-nav__link">
+    Search API
+  </a>
   
 </li>
         
@@ -1336,9 +1350,10 @@ the query itself when you call <code>S.search()</code> or <code>S.study()</code>
     See below.
 </em>   <em>white-space or empty</em> lines
 <em>   Everywhere allowed.
-</em>   Always ignored.</p></li></ul><p>Atom lines that contain an otype or set may be followed by <em>quantifiers</em>.
+</em>   Always ignored.</p></li></ul><p>Atom lines that contain an otype or set may be followed by
+<a href="#quantifiers"><em>quantifiers</em></a>.
 Quantifiers consist of search templates themselves, demarcated by some
-special keywords: <code>no: end:</code>, <code>all: have: end:</code>, and <code>either: or: or: end:</code>.</p></details><details class="info"><summary>Features</summary><p>The <strong>features</strong> above is a specification of what features with which values to
+special keywords:</p><ul><li><code>no: end:</code></li><li><code>all: have: end:</code></li><li><code>either: or: or: end:</code></li></ul></details><details class="info"><summary>Features</summary><p>The <strong>features</strong> above is a specification of what features with which values to
 search for. This specification must be written as a white-space separated list
 of <strong>feature specs</strong>.</p><p>A <strong>feature spec</strong> has the form <em>name</em> <em>valueSpec</em>, with no space between the <em>name</em>
 and the <em>valueSpec</em>.
@@ -1533,7 +1548,8 @@ templateH
 </td></tr></table>
 <p>This means that <code>templateH</code> may use names defined in <code>templateH</code>,
 but only if these names are not defined in inner quantifiers inside
-<code>templateA</code>.</p></details></details></details><details class="abstract"><summary>S.relationsLegend()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">relationsLegend</span><span class="p">()</span>
+<code>templateA</code>.</p></details></details></details><h3 id="search-api">Search API<a class="headerlink" href="#search-api" title="Permanent link">&para;</a></h3>
+<details class="abstract"><summary>S.relationsLegend()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">relationsLegend</span><span class="p">()</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Gives dynamic help about the basic relations that you can use in your search
@@ -1554,7 +1570,8 @@ between the nodes in each result tuple and your search template.</p></details></
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Your search template will be checked, studied, the search
 space will be narrowed down, and a plan for retrieving the results will be set
-up.</p></details><details class="info"><summary>searchTemplate</summary><p>The search template is a string that conforms to the rules described above.</p></details><details class="danger"><summary>strategy</summary><p>In order to tame the performance of search, the strategy by which results are fetched
+up.</p><p>If your query has quantifiers, the asscociated search templates will be constructed
+and executed. These searches will be reported clearly.</p></details><details class="info"><summary>searchTemplate</summary><p>The search template is a string that conforms to the rules described above.</p></details><details class="danger"><summary>strategy</summary><p>In order to tame the performance of search, the strategy by which results are fetched
 matters a lot.
 The search strategy is an implementation detail, but we bring
 it to the surface nevertheless.</p><p>To see the names of the available strategies, just call

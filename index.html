@@ -690,17 +690,33 @@
 <p>Text-Fabric is a Python3 package for Text plus Annotations.</p>
 <p>It provides a data model, a text file format, and a binary format for (ancient) text plus
 (linguistic) annotations.</p>
+<p>A defining characteristic is that Text-Fabric does not make use of XML or JSON,
+but stores text as a bunch of features.
+These features are interpreted against a <em>graph</em> of nodes and edges, which make up the
+abstract fabric of the text.</p>
+<p>Based on this model, Text-Fabric offers an API to search, navigate and process text
+and its annotations.
+The search API works with search templates that define relational patterns
+which will be instantiated by nodes and edges of the fabric.</p>
 <p>The emphasis of this all is on:</p>
 <ul>
-<li>data processing</li>
-<li>sharing data</li>
-<li>contributing modules</li>
+<li><a href="./Api/General/">data processing</a></li>
+<li><a href="./Api/General/#loading">sharing data</a></li>
+<li><a href="./Api/General/#saving-features">contributing modules</a></li>
+<li><a href="./Api/General/#searching">search for patterns</a></li>
 </ul>
-<p>A defining characteristic is that Text-Fabric does not make use of XML or JSON,
-but stores text as a bunch of plain text files.
-Each of these files contains the data of a single feature,
-aligned with a <em>graph</em> of nodes and edges, which make up the
-abstract fabric of the text.</p>
+<p>The intended use case is ancient writings, such as the
+<a href="https://github.com/ETCBC/bhsa">Hebrew Bible</a> or
+<a href="https://github.com/Nino-cunei/uruk">(Proto)-Cuneifrom tablets</a>.
+Also the
+<a href="https://github.com/Dans-labs/text-fabric-data/tree/master/greek/sblgnt">Greek</a> and
+<a href="https://github.com/ETCBC/linksyr/tree/master/data/tf/syrnt">Syriac</a>
+New Testament have been converted to TF.</p>
+<p>Text-Fabric not only deals with the text, but also with rich sets of linguistic annotations added to them.
+It has been used to construct the website
+<a href="https://shebanq.ancient-data.org">SHEBANQ</a> and it is being
+used by researchers to analyse such texts. 
+Text-Fabric is a Python3 package for Text plus Annotations.</p>
 <h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
 <p>Have <a href="https://www.python.org/downloads/">Python3</a> on your system.</p>
 <p>Optionally install <a href="http://jupyter.org">Jupyter</a> as well:</p>
@@ -713,7 +729,16 @@ abstract fabric of the text.</p>
 </pre></div>
 </td></tr></table>
 
-<h2 id="corpora">Corpora<a class="headerlink" href="#corpora" title="Permanent link">&para;</a></h2>
+<details class="hint" open="open"><summary>Jupyter Lab</summary><p><em>Jupyter lab</em> is a nice context to work with Jupyter notebooks.
+Recommended for working with the
+the tutorials of Text-Fabric.
+Also when you want to copy and paste cells from one notebook
+to another.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install jupyterlab
+jupyter labextension install jupyterlab-toc
+</pre></div>
+</td></tr></table>
+</details><h2 id="corpora">Corpora<a class="headerlink" href="#corpora" title="Permanent link">&para;</a></h2>
 <p>There are a few corpora in Text-Fabric that are being supported
 with extra modules.</p>
 <h3 id="hebrew-bible">Hebrew Bible<a class="headerlink" href="#hebrew-bible" title="Permanent link">&para;</a></h3>
