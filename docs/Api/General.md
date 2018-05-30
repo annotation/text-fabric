@@ -864,9 +864,14 @@
             *   Everywhere allowed.
             *   Always ignored.
 
-        Atom lines that contain an otype or set may be followed by *quantifiers*.
+        Atom lines that contain an otype or set may be followed by
+        [*quantifiers*](#quantifiers).
         Quantifiers consist of search templates themselves, demarcated by some
-        special keywords: `no: end:`, `all: have: end:`, and `either: or: or: end:`.
+        special keywords:
+        
+        *   `no: end:`
+        *   `all: have: end:`
+        *   `either: or: or: end:`
 
     ??? info "Features"
         The **features** above is a specification of what features with which values to
@@ -1186,6 +1191,8 @@
             but only if these names are not defined in inner quantifiers inside
             `templateA`.
 
+### Search API
+
 ??? abstract "S.relationsLegend()"
     ```python
     S.relationsLegend()
@@ -1243,6 +1250,9 @@
         Your search template will be checked, studied, the search
         space will be narrowed down, and a plan for retrieving the results will be set
         up.
+
+        If your query has quantifiers, the asscociated search templates will be constructed
+        and executed. These searches will be reported clearly.
 
     ??? info "searchTemplate"
         The search template is a string that conforms to the rules described above.

@@ -5,17 +5,36 @@ Text-Fabric is a Python3 package for Text plus Annotations.
 It provides a data model, a text file format, and a binary format for (ancient) text plus
 (linguistic) annotations.
 
+A defining characteristic is that Text-Fabric does not make use of XML or JSON,
+but stores text as a bunch of features.
+These features are interpreted against a *graph* of nodes and edges, which make up the
+abstract fabric of the text.
+
+Based on this model, Text-Fabric offers an API to search, navigate and process text
+and its annotations.
+The search API works with search templates that define relational patterns
+which will be instantiated by nodes and edges of the fabric.
+
 The emphasis of this all is on:
 
-* data processing
-* sharing data
-* contributing modules
+* [data processing](/Api/General/)
+* [sharing data](/Api/General/#loading)
+* [contributing modules](/Api/General/#saving-features)
+* [search for patterns](/Api/General/#searching)
 
-A defining characteristic is that Text-Fabric does not make use of XML or JSON,
-but stores text as a bunch of plain text files.
-Each of these files contains the data of a single feature,
-aligned with a *graph* of nodes and edges, which make up the
-abstract fabric of the text.
+The intended use case is ancient writings, such as the
+[Hebrew Bible](https://github.com/ETCBC/bhsa) or
+[(Proto)-Cuneifrom tablets](https://github.com/Nino-cunei/uruk).
+Also the
+[Greek](https://github.com/Dans-labs/text-fabric-data/tree/master/greek/sblgnt) and
+[Syriac](https://github.com/ETCBC/linksyr/tree/master/data/tf/syrnt)
+New Testament have been converted to TF.
+
+Text-Fabric not only deals with the text, but also with rich sets of linguistic annotations added to them.
+It has been used to construct the website
+[SHEBANQ](https://shebanq.ancient-data.org) and it is being
+used by researchers to analyse such texts. 
+Text-Fabric is a Python3 package for Text plus Annotations.
 
 ## Install
 
@@ -32,6 +51,18 @@ Install Text-Fabric:
 ```sh
 pip3 install text-fabric
 ```
+
+???+ hint "Jupyter Lab"
+    *Jupyter lab* is a nice context to work with Jupyter notebooks.
+    Recommended for working with the
+    the tutorials of Text-Fabric.
+    Also when you want to copy and paste cells from one notebook
+    to another.
+
+    ```sh
+    pip3 install jupyterlab
+    jupyter labextension install jupyterlab-toc
+    ```
 
 ## Corpora
 
