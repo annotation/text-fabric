@@ -42,6 +42,27 @@ noneRe = re.compile(nonePat)
 indentLinePat = '^(\s*)(.*)'
 indentLineRe = re.compile(indentLinePat)
 
+opPat = '(?:[#&|\[\]<>:=-]+\S*)'
+quPat = '(?:all|have|no|either|or|end)'
+atomPat = '(\s*)([^ \t=#!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
+atomOpPat = (
+    '(\s*)({op})\s+([^ \t=#!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(op=opPat)
+)
+opLinePat = '^(\s*)({op})\s*$'.format(op=opPat)
+opStripPat = '^\s*{op}\s+(.*)$'.format(op=opPat)
+quLinePat = '^(\s*)({qu}):\s*$'.format(qu=quPat)
+namePat = '[A-Za-z0-9_-]+'
+relPat = '^(\s*)({nm})\s+({op})\s+({nm})\s*$'.format(nm=namePat, op=opPat)
+
+atomOpRe = re.compile(atomOpPat)
+atomRe = re.compile(atomPat)
+opLineRe = re.compile(opLinePat)
+opStripRe = re.compile(opStripPat)
+quLineRe = re.compile(quLinePat)
+nameRe = re.compile('^{}$'.format(namePat))
+relRe = re.compile(relPat)
+whiteRe = re.compile('^\s*$')
+
 
 def makeLimit(n, isLower):
     if isLower:
@@ -147,8 +168,12 @@ class Search(object):
         here=True,
     ):
         exe = SearchExe(
-            self.api, searchTemplate, sets=sets, shallow=shallow,
-            silent=False, showQuantifiers=True,
+            self.api,
+            searchTemplate,
+            sets=sets,
+            shallow=shallow,
+            silent=False,
+            showQuantifiers=True,
         )
         if here:
             self.exe = exe
@@ -214,11 +239,18 @@ class Search(object):
 
 class SearchExe(object):
     def __init__(
-        self, api, searchTemplate, sets=None, shallow=False,
-        silent=True, showQuantifiers=False,
+        self,
+        api,
+        searchTemplate,
+        level=0,
+        sets=None,
+        shallow=False,
+        silent=True,
+        showQuantifiers=False,
     ):
         self.api = api
         self.searchTemplate = searchTemplate
+        self.level = level
         self.sets = sets
         self.shallow = 0 if not shallow else 1 if shallow is True else shallow
         self.silent = silent
@@ -1355,29 +1387,6 @@ One of the above relations on nodes and/or slots will suit you better!
         if not self.good:
             return
 
-        opPat = '(?:[#&|\[\]<>:=-]+\S*)'
-        quPat = '(?:all|have|no|either|or|end)'
-        atomPat = '(\s*)([^ \t=#!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
-        atomOpPat = (
-            '(\s*)({op})\s+([^ \t=#!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(
-                op=opPat
-            )
-        )
-        opLinePat = '^(\s*)({op})\s*$'.format(op=opPat)
-        quLinePat = '^(\s*)({qu}):\s*$'.format(qu=quPat)
-        namePat = '[A-Za-z0-9_-]+'
-        relPat = '^(\s*)({nm})\s+({op})\s+({nm})\s*$'.format(
-            nm=namePat, op=opPat
-        )
-
-        atomOpRe = re.compile(atomOpPat)
-        atomRe = re.compile(atomPat)
-        opLineRe = re.compile(opLinePat)
-        quLineRe = re.compile(quLinePat)
-        nameRe = re.compile('^{}$'.format(namePat))
-        relRe = re.compile(relPat)
-        whiteRe = re.compile('^\s*$')
-
         def getFeatures(x, i):
             features = {}
             featureString = x.replace('\\ ', chr(1)) if x is not None else ''
@@ -1703,12 +1712,12 @@ One of the above relations on nodes and/or slots will suit you better!
         qedges = []
         edgeLine = {}
         nodeLine = {}
-        tokens = sorted(
-            self.tokens,
-            key=lambda t: (
-                (len(self.tokens) + t['ln']) if t['kind'] == 'rel' else t['ln']
-            )
-        )
+        nTokens = len(self.tokens)
+
+        def tokenSort(t):
+            return (nTokens + t['ln']) if t['kind'] == 'rel' else t['ln']
+
+        tokens = sorted(self.tokens, key=tokenSort)
 
         # atomStack is a stack of qnodes with their indent levels
         # such that every next member is one level deeper
@@ -2282,50 +2291,113 @@ One of the above relations on nodes and/or slots will suit you better!
 
     def _doQuantifier(self, yarn, atom, quKind, quTemplates):
         showQuantifiers = self.showQuantifiers
+        level = self.level
         universe = yarn
+        cleanAtom = atom
+        match = opStripRe.match(atom)
+        if match:
+            cleanAtom = match.group(1)
+
+        if showQuantifiers:
+            print(f'\nQuantifier at level {level} "{quKind}:" acting on "{cleanAtom}"\n')
+
         if quKind == 'no':
-            queryN = '\n'.join((atom, quTemplates[0]))
-            exe = SearchExe(self.api, queryN, sets=self.sets, shallow=True)
+            queryN = '\n'.join((cleanAtom, quTemplates[0]))
+            exe = SearchExe(
+                self.api,
+                queryN,
+                level=level + 1,
+                sets=self.sets,
+                shallow=True,
+                showQuantifiers=showQuantifiers
+            )
+            if showQuantifiers:
+                print(f'!!!\n{queryN}\n!!!\n')
             noResults = exe.search()
             resultYarn = universe - noResults
+            if showQuantifiers:
+                print(f'{len(noResults)} nodes to exclude')
         elif quKind == 'all':
             # compute the atom+antecedent:
             #   as result tuples
-            queryA = '\n'.join((atom, quTemplates[0]))
-            exe = SearchExe(self.api, queryA, sets=self.sets, shallow=False)
+            queryA = '\n'.join((cleanAtom, quTemplates[0]))
+            exe = SearchExe(
+                self.api,
+                queryA,
+                level=level + 1,
+                sets=self.sets,
+                shallow=False,
+                showQuantifiers=showQuantifiers
+            )
+            if showQuantifiers:
+                print(f'\tANTECEDENT part\n' f'---\n{queryA}\n---\n')
             aResultTuples = exe.search(limit=-1)
+            if showQuantifiers:
+                print(f'\t{len(aResultTuples)} matching nodes')
             if not aResultTuples:
-                return yarn
-            sizeA = len(aResultTuples[0])
+                resultYarn = yarn
+            else:
+                sizeA = len(aResultTuples[0])
 
-            # compute the atom+antecedent+consequent:
-            #   as shallow result tuples (same length as atom+antecedent)
-            queryAH = '\n'.join((atom, *quTemplates))
-            exe = SearchExe(self.api, queryAH, sets=self.sets, shallow=sizeA)
-            ahResults = exe.search()
+                # compute the atom+antecedent+consequent:
+                #   as shallow result tuples (same length as atom+antecedent)
+                queryAH = '\n'.join((cleanAtom, *quTemplates))
+                exe = SearchExe(
+                    self.api,
+                    queryAH,
+                    level=level + 1,
+                    sets=self.sets,
+                    shallow=sizeA,
+                    showQuantifiers=showQuantifiers
+                )
+                if showQuantifiers:
+                    print(f'\tCONSEQUENT part\n' f'>>>\n{queryAH}\n>>>\n')
+                ahResults = exe.search()
+                if showQuantifiers:
+                    print(f'\t{len(ahResults)} matching nodes')
 
-            # determine the shallow tuples that correspond to
-            #   atom+antecedent but not consequent
-            #   and then take the projection to their first components
-            resultsAnotH = project(set(aResultTuples) - ahResults, 1)
+                # determine the shallow tuples that correspond to
+                #   atom+antecedent but not consequent
+                #   and then take the projection to their first components
+                resultsAnotH = project(set(aResultTuples) - ahResults, 1)
+                if showQuantifiers:
+                    print(
+                        f'\t{len(resultsAnotH)} match'
+                        ' antecedent but not consequent'
+                    )
 
-            # now have the atoms that do NOT qualify:
-            #   we subtract them from the universe
-            resultYarn = universe - resultsAnotH
+                # now have the atoms that do NOT qualify:
+                #   we subtract them from the universe
+                resultYarn = universe - resultsAnotH
         elif quKind == 'either':
             # compute the atom+alternative for all alternatives and union them
             resultYarn = set()
-            for alt in quTemplates:
-                queryAlt = '\n'.join((atom, alt))
+            for (i, alt) in enumerate(quTemplates):
+                queryAlt = '\n'.join((cleanAtom, alt))
                 exe = SearchExe(
-                    self.api, queryAlt, sets=self.sets, shallow=True
+                    self.api,
+                    queryAlt,
+                    level=level + 1,
+                    sets=self.sets,
+                    shallow=True,
+                    showQuantifiers=showQuantifiers
                 )
+                if showQuantifiers:
+                    print(
+                        f'\tALTERNATIVE {i} of {len(quTemplates)}\n'
+                        f'|||\n{queryAlt}\n|||\n'
+                    )
                 altResults = exe.search()
                 resultYarn |= altResults
+                if showQuantifiers:
+                    print(
+                        f'\t{len(altResults)} nodes to add\n'
+                        f'\t{len(resultYarn)} nodes added so far'
+                    )
         if showQuantifiers:
             print(
-                f'\tQuantifier "{quKind} reduced "{atom}"'
-                f'from {len(yarn)} nodes to {len(resultYarn)}'
+                f'\n* Quantifier at level {level} "{quKind}:"'
+                f' reduction from {len(yarn)} to {len(resultYarn)} nodes\n'
             )
         return resultYarn
 
@@ -2925,9 +2997,7 @@ In plan    : {newCedgesO}''',
             def stitchOn(e):
                 if e >= len(edgesC):
                     if remap:
-                        yield tuple(
-                            stitch[qPermutedInv[q]] for q in qs
-                        )
+                        yield tuple(stitch[qPermutedInv[q]] for q in qs)
                     else:
                         yield tuple(stitch)
                     return
@@ -2971,9 +3041,7 @@ In plan    : {newCedgesO}''',
             edgesC = edgesCompiled
             yarnsP = yarnsPermuted
             resultQ = qPermutedInv[0]
-            resultQmax = max(
-                qPermutedInv[q] for q in range(shallowTupleSize)
-            )
+            resultQmax = max(qPermutedInv[q] for q in range(shallowTupleSize))
             resultSet = set()
 
             def stitchOn(e):

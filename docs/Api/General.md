@@ -1044,20 +1044,28 @@
 
         ???+ note "May be nested"
             Templates within a quantifier may contain other quantifiers.
+            The idea is, that whenever a search template is evaluated, the outer level of 
+            quantifiers in it gets interpreted.
+            This interpretation gives rise to one or more templates to be constructed and run.
+            Those new templates have been stripped of the outer layer of quantifiers,
+            and when these templates are executed, the 2nd level quantifiers have become outer.
 
     ??? caution "Restrictions"
         Due to the implementation of quantifiers there are certain restrictions.
 
+        * Quantifiers always come beneath an atom line; the list of quantifiers must follow
+          that atom line immediately; no ordinary atoms may come between an atom and its
+          quantifier list.`
         * The keywords of a quantifier must appear on lines with exactly the same indentation
           as the atom they quantify.
         * The names accessible to the templates inside the templates of a quantifier are:
           * the name of the atom that is quantified (if that atom has a name);
           * names defined in the template itself;
           * `templateH` may use names defined in `templateA`;
-          * `templateO`*i* may not use names defined in `templateO`*j*
-          * names defined outer quantifiers are not accessible in inner quantifiers
-          * quantifiers cannot be nested *directly* in each other. Each quantifier must
-            refer to an atom.
+          * `templateO`*i* may not use names defined in `templateO`*j* ;
+          * names defined outer quantifiers are not accessible in inner quantifiers.
+          * when you nest quantifiers, think of the way they will be recomposed into
+            ordinary templates. This dictates whether your quantifier can be valid or not.
 
     ??? caution "Indentation"
         Indentation in quantifiers will be stripped. All templates in a quantifier will be 

@@ -209,12 +209,12 @@ SECTION = {'book', 'chapter', 'verse', 'half_verse'}
 
 NONE_VALUES = {None, 'NA', 'none', 'unknown'}
 
-STANDARD_FEATURES = set('''
+STANDARD_FEATURES = '''
     sp vs vt
     lex language gloss voc_lex voc_lex_utf8
     function typ rela
     number label book
-'''.strip().split())
+'''
 
 # for 4, 4b: voc_lex => g_lex, voc_lex_utf8 => g_lex_utf8
 
@@ -236,8 +236,14 @@ class Bhsa(object):
         version='c',
     ):
         self.version = version
-        api.TF.load(STANDARD_FEATURES, add=True, silent=True)
-        self.prettyFeaturesLoaded = STANDARD_FEATURES
+        standardFeatures = (
+            STANDARD_FEATURES.replace('voc_', 'g_')
+            if version in {'4', '4b'}
+            else STANDARD_FEATURES
+        )
+        self.standardFeatures = set(standardFeatures.strip().split())
+        api.TF.load(self.standardFeatures, add=True, silent=True)
+        self.prettyFeaturesLoaded = self.standardFeatures
         self.prettyFeatures = ()
         self.api = api
         self.cwd = os.getcwd()

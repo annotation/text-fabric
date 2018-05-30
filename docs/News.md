@@ -8,7 +8,7 @@
 
 ## 4.3.0
 
-2018-05-29
+2018-05-30
 
 ### API Change in Search
 
@@ -42,6 +42,10 @@ So, in addition to `=` we have `#` for "not equal".
 
 You can now use quantifiers in search. One of them is like `NOTEXIST` in MQL.
 See the [docs](/Api#quantifiers)
+
+### Fixes
+
+A number of minor fixes.
 
 ## 4.2.1
 
