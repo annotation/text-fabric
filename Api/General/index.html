@@ -380,6 +380,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#quantifiers" title="Quantifiers" class="md-nav__link">
+    Quantifiers
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -755,6 +762,13 @@
           <li class="md-nav__item">
   <a href="#relational-operators" title="Relational operators" class="md-nav__link">
     Relational operators
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quantifiers" title="Quantifiers" class="md-nav__link">
+    Quantifiers
   </a>
   
 </li>
@@ -1322,14 +1336,16 @@ the query itself when you call <code>S.search()</code> or <code>S.study()</code>
     See below.
 </em>   <em>white-space or empty</em> lines
 <em>   Everywhere allowed.
-</em>   Always ignored.</p></li></ul></details><details class="info"><summary>Features</summary><p>The <strong>features</strong> above is a specification of what features with which values to
+</em>   Always ignored.</p></li></ul><p>Atom lines that contain an otype or set may be followed by <em>quantifiers</em>.
+Quantifiers consist of search templates themselves, demarcated by some
+special keywords: <code>no: end:</code>, <code>all: have: end:</code>, and <code>either: or: or: end:</code>.</p></details><details class="info"><summary>Features</summary><p>The <strong>features</strong> above is a specification of what features with which values to
 search for. This specification must be written as a white-space separated list
 of <strong>feature specs</strong>.</p><p>A <strong>feature spec</strong> has the form <em>name</em> <em>valueSpec</em>, with no space between the <em>name</em>
 and the <em>valueSpec</em>.
-The <em>valueSpec</em> may have the following forms:</p><table><thead><tr><th>form</th><th>meaning</th></tr></thead><tbody><tr><td></td><td>feature <em>name</em> may have any value except <code>None</code></td></tr><tr><td><code>!</code></td><td>feature <em>name</em> must have value <code>None</code> (synonymous for: <em>name</em> has no value)</td></tr><tr><td><code>=</code><em>values</em></td><td>feature <em>name</em> has one of the values specified</td></tr><tr><td><code>&gt;</code><em>value</em></td><td>feature <em>name</em> must be greater than <em>value</em></td></tr><tr><td><code>&lt;</code><em>value</em></td><td>feature <em>name</em> must be less than <em>value</em></td></tr><tr><td><code>~</code><em>regular expression</em></td><td>feature <em>name</em> has a value and it matches <em>regular expression</em></td></tr></tbody></table><p>All these forms are also valid as <code>-</code><em>name</em> <em>form</em><code>&gt;</code> and <code>&lt;</code><em>name</em> <em>form</em><code>-</code>, in which case
+The <em>valueSpec</em> may have the following forms:</p><table><thead><tr><th>form</th><th>meaning</th></tr></thead><tbody><tr><td></td><td>feature <em>name</em> may have any value except <code>None</code></td></tr><tr><td><code>#</code></td><td>feature <em>name</em> must have value <code>None</code> (synonymous for: <em>name</em> has no value)</td></tr><tr><td><code>=</code><em>values</em></td><td>feature <em>name</em> has one of the values specified</td></tr><tr><td><code>#</code><em>values</em></td><td>feature <em>name</em> has none of the values specified</td></tr><tr><td><code>&gt;</code><em>value</em></td><td>feature <em>name</em> must be greater than <em>value</em></td></tr><tr><td><code>&lt;</code><em>value</em></td><td>feature <em>name</em> must be less than <em>value</em></td></tr><tr><td><code>~</code><em>regular expression</em></td><td>feature <em>name</em> has a value and it matches <em>regular expression</em></td></tr></tbody></table><p>All these forms are also valid as <code>-</code><em>name</em> <em>form</em><code>&gt;</code> and <code>&lt;</code><em>name</em> <em>form</em><code>-</code>, in which case
 they specify value constraints on edge features.
 This is only meaningful if the edge feature is declared to have values (most edge features
-do not have values).</p><p><strong>Additional constraints</strong></p><ul><li>There may be no space around the <code>=</code>, nor the <code>~</code>.</li><li><em>name</em> must be a feature name that exists in the dataset. If it references a
+do not have values).</p><p><strong>Additional constraints</strong></p><ul><li>There may be no space around the <code>=#&lt;&gt;~</code>.</li><li><em>name</em> must be a feature name that exists in the dataset. If it references a
     feature that is not yet loaded, the feature will be loaded automatically.</li><li><em>values</em> must be a <code>|</code> separated list of feature values, no quotes. No spaces
     around the <code>|</code>. If you need a space or <code>|</code> or <code>\</code> in a value, escape it by a
     <code>\</code>. Escape tabs and newlines as <code>\t</code> and <code>\n</code>.</li><li>When comparing values with <code>&lt;</code> and <code>&gt;</code>:<ul><li><em>value</em> must be an integer (negative values allowed);</li><li>You can do numeric comparisons only on number-valued features, not on
@@ -1365,7 +1381,159 @@ that. Instead of typing the letter <code>k</code>, provide the actual number you
     <img alt="op" src="../../images/Spatial/Spatial.014.png" /></li><li><code>:k=</code> left and right end at <code>k</code>-near slots
     <img alt="op" src="../../images/Spatial/Spatial.015.png" /></li><li><code>:k:</code> left and right start and end at <code>k</code>-near slots
     <img alt="op" src="../../images/Spatial/Spatial.016.png" /></li></ul></details><details class="info"><summary>Based on edge features</summary><ul><li><p><code>-</code><em>name</em><code>&gt;</code> <code>&lt;</code><em>name</em><code>-</code>: connected by the edge feature <em>name</em></p><ul><li>in both directions;</li><li>these forms work for edges that do and do not have values;</li></ul><p><img alt="op" src="../../images/Spatial/Spatial.018.png" />
-<em>   <code>-</code></em>name<em> </em>valueSpec<em><code>&gt;</code> <code>&lt;</code></em>name<em> </em>valueSpec<em><code>-</code>: connected by the edge feature </em>name*</p><ul><li>in both directions;</li><li>these forms work only for edges that do have values.</li></ul><p><img alt="op" src="../../images/Spatial/Spatial.019.png" /></p></li></ul></details></details><details class="abstract"><summary>S.relationsLegend()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">relationsLegend</span><span class="p">()</span>
+<em>   <code>-</code></em>name<em> </em>valueSpec<em><code>&gt;</code> <code>&lt;</code></em>name<em> </em>valueSpec<em><code>-</code>: connected by the edge feature </em>name*</p><ul><li>in both directions;</li><li>these forms work only for edges that do have values.</li></ul><p><img alt="op" src="../../images/Spatial/Spatial.019.png" /></p></li></ul></details></details><h4 id="quantifiers">Quantifiers<a class="headerlink" href="#quantifiers" title="Permanent link">&para;</a></h4>
+<details class="info"><summary>Quantifiers</summary><details class="caution" open="open"><summary>Experimental</summary><p>This part of search templates is still experimental.</p><ul><li>bugs may be discovered</li><li>the syntax of quantifiers may change</li></ul></details><details class="abstract"><summary>Quantifiers are conditions</summary><p>Quantifiers are a powerful kind of conditions in templates.
+With the help of quantifiers you can say pretty sophisticated things in a template.</p><p>They state conditions on what can happen within the neighborhood of a node.
+Whereas normal templates only state that certain configurations must exists,
+with quantifiers you are able to express that all things in the neighborhood
+have certain properties or that some things cannot occur there.</p><p>Their requirements have the shape of a quantifier: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>node-or-set
+no:
+  templateN
+end:
+</pre></div>
+</td></tr></table>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>node-or-set
+all:
+  templateA
+have:
+  templateH
+end:
+</pre></div>
+</td></tr></table>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>node-or-set
+either:
+  templateO1
+or:
+  templateO2
+or:
+  templateO3
+end:
+</pre></div>
+</td></tr></table>
+<details class="note" open="open"><summary>Not in result tuples</summary><p>Whereas a the search for a normal template
+proceeds by finding a tuples that instantiates all it nodes
+in such a way that all relationships expressed in the template hold, a quantifier template
+is not instantiated.
+It asserts a condition that has to be tested for all nodes relative
+an other node. None of the atoms in a template of a quantifier corresponds to
+a node in a result tuple.</p></details><details class="note" open="open"><summary>May be nested</summary><p>Templates within a quantifier may contain other quantifiers.
+The idea is, that whenever a search template is evaluated, the outer level of 
+quantifiers in it gets interpreted.
+This interpretation gives rise to one or more templates to be constructed and run.
+Those new templates have been stripped of the outer layer of quantifiers,
+and when these templates are executed, the 2nd level quantifiers have become outer.</p></details></details><details class="caution"><summary>Restrictions</summary><p>Due to the implementation of quantifiers there are certain restrictions.</p><ul><li>Quantifiers always come beneath an atom line; the list of quantifiers must follow
+  that atom line immediately; no ordinary atoms may come between an atom and its
+  quantifier list.`</li><li>The keywords of a quantifier must appear on lines with exactly the same indentation
+  as the atom they quantify.</li><li>The names accessible to the templates inside the templates of a quantifier are:</li><li>the name of the atom that is quantified (if that atom has a name);</li><li>names defined in the template itself;</li><li><code>templateH</code> may use names defined in <code>templateA</code>;</li><li><code>templateO</code><em>i</em> may not use names defined in <code>templateO</code><em>j</em> ;</li><li>names defined outer quantifiers are not accessible in inner quantifiers.</li><li>when you nest quantifiers, think of the way they will be recomposed into
+    ordinary templates. This dictates whether your quantifier can be valid or not.</li></ul></details><details class="caution"><summary>Indentation</summary><p>Indentation in quantifiers will be stripped. All templates in a quantifier will be 
+examined, and all common indentation will be stripped. The remaining indentation
+is interpreted relative to the atom which is being quantified.</p><details class="note" open="open"><summary>Caret</summary><p>If your quantifier templates have just one line, by the rule just mentioned,
+all its indentation will be stripped. 
+But it might have been your intention to indent the quantifier line relative to 
+the atom line.
+To enforce indentation, you can put a <code>^</code> on the place that corresponds to zero
+indentation relative the atom.</p></details><details class="example"><summary>Caret example</summary><p>The outermost quantifier (<code>all: have:</code>) postulates a <code>phrase</code>.
+Without the <code>^</code>, all indentation would be stripped, and the <code>phrase</code>
+would appear at the same level as the <code>clause</code>, destroying the requirement
+that the <code>phrase</code> lies embedded in the <code>clause</code>. The <code>^</code> defines the point of 
+zero indentation, so only the indentation before the <code>^</code> will be stripped.
+The <code>^</code> itself wil be replaced by a <code></code> once it has done its work.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>clause
+all:
+  ^ phrase function=Pred
+have:
+    no:
+      ^ word sp#verb
+    end:
+end:
+  phrase function=Subj
+</pre></div>
+</td></tr></table>
+</details></details><details class="info"><summary>Implementation</summary><p>Here is a description of the implementation of the quantifiers.
+It is not the real implementation, but it makes clear what is going on, and why
+the quantifiers have certain limitations, and how indentation works.</p><p>The basic idea is:</p><ul><li>a quantifier leads to the execution of one or more separate searches;</li><li>the results of these searches are combined by means of set operations;
+  (difference, intersection, union), dependent on the nature of the quantifier;</li><li>the end result of this combination will fed as a custom set to the original template.</li></ul><details class="info"><summary>General case</summary><p>Suppose we have</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>clause typ=Wx0
+QUANTIFIERS
+  rest of template
+</pre></div>
+</td></tr></table>
+<p>We compute a set of clauses <code>filteredClauses</code> based on </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>clause typ=Wx0
+QUANTIFIER1
+</pre></div>
+</td></tr></table>
+<p>and deliver the results of</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>S.search(&#39;&#39;&#39;
+fclause
+  rest of template
+&#39;&#39;&#39;,
+    customSets=dict(fclause=filteredClauses)
+</pre></div>
+</td></tr></table>
+<p>Then we repeat this for <code>QUANTIFIER2</code>, <code>QUANTIFIER3</code>, etc,
+until we have done all quantifiers.
+In this process the set <code>filteredClauses</code> gets smaller and smaller.</p></details><details class="info"><summary>Particular quantifiers</summary><p>Every quantifier will have recombine its templates with other templates
+and this combinations will be run.
+The fact that the combined template has to be run in isolation, is the main source of
+restrictions on the usage of names.
+It also forces us to juggle with the indentation. </p><p>It is important which templates will be run for each kind of quantifier.</p><p>All templates of all quantifiers will be combined with the
+atom line that is being quantified on top, without indent.</p><p>So all qunatifier templates can see their own names, and the name of the
+atom if it exists.
+In one case, a template can see additional names:</p></details><details class="info"><summary>all: have: end:</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>atom
+all:
+  templateA
+have:
+  templateH
+end:
+</pre></div>
+</td></tr></table>
+<p>This quantifier gives rise to running search for the following templates:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>atom
+templateA
+</pre></div>
+</td></tr></table>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>atom
+templateA
+templateH
+</pre></div>
+</td></tr></table>
+<p>This means that <code>templateH</code> may use names defined in <code>templateH</code>,
+but only if these names are not defined in inner quantifiers inside
+<code>templateA</code>.</p></details></details></details><details class="abstract"><summary>S.relationsLegend()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">relationsLegend</span><span class="p">()</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Gives dynamic help about the basic relations that you can use in your search
