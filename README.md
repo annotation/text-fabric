@@ -1,6 +1,6 @@
 # text-fabric
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1008899.svg)](https://doi.org/10.5281/zenodo.592193)
-![text-fabric](https://raw.github.com/Dans-labs/text-fabric/master/docs/tf.png)
+![text-fabric](https://raw.github.com/Dans-labs/text-fabric/master/docs/images/tf.png)
 
 
 Text-Fabric is a Python3 package for Text plus Annotations.
@@ -8,18 +8,26 @@ Text-Fabric is a Python3 package for Text plus Annotations.
 It provides a data model, a text file format, and a binary format for (ancient) text plus
 (linguistic) annotations.
 
-The emphasis of this all is on:
-
-* data processing
-* sharing data
-* contributing modules
-
 A defining characteristic is that Text-Fabric does not make use of XML or JSON,
 but stores text as a bunch of features.
 These features are interpreted against a *graph* of nodes and edges, which make up the
 abstract fabric of the text.
 
-The intended use case is ancient writings, such as the Hebrew Bible or the Greek New Testament.
+Based on this model, Text-Fabric offers an API to search, navigate and process text
+and its annotations.
+The search API works with search templates that define relational patterns
+which will be instantiated by nodes and edges of the fabric.
+
+The emphasis of this all is on:
+
+* data processing
+* sharing data
+* contributing modules
+* search for patterns
+
+The intended use case is ancient writings, such as the Hebrew Bible or (Proto)-Cuneifrom tablets.
+Also the Greek and Syriac New Testament have been converted to TF.
+
 Text-Fabric not only deals with the text, but also with rich sets of linguistic annotations added to them.
 It has been used to construct the website
 [SHEBANQ](https://shebanq.ancient-data.org) and it is being
@@ -42,16 +50,13 @@ There is extensive documentation.
 2. Included in this repo are also tutorials and exercises to guide you into increasingly involved tasks
    1. [general tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb)
    1. [search tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb)
-   1. [from MQL to search](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchFromMQL.ipynb) if you know already
-      [MQL](http://emdros.org)
-   1. [exercises](https://github.com/Dans-labs/text-fabric/tree/master/exercises) various Jupyter notebooks, with tasks in the
-      Hebrew Bible and the Greek New Testament.
 3. For more background information (earlier work, institutes, people, datasets), consult the
-   [sources](https://shebanq.ancient-data.org/sources)
-   page of SHEBANQ.
+   [wiki](https://github.com/ETCBC/shebanq/wiki)
+   pages of SHEBANQ.
 4. Papers (preprints on [arxiv](https://arxiv.org)), most of them published:
    1. [Parallel Texts in the Hebrew Bible, New Methods and Visualizations ](https://arxiv.org/abs/1603.01541)
-   1. [The Hebrew Bible as Data: Laboratory - Sharing - Experiences](https://arxiv.org/abs/1501.01866)
+   1. [The Hebrew Bible as Data: Laboratory - Sharing - Experiences](https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/)
+      [arxiv](https://arxiv.org/abs/1501.01866)
    1. [LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible](https://arxiv.org/abs/1410.0286)
    1. [Annotation as a New Paradigm in Research Archiving](https://arxiv.org/abs/1412.6069)
 
