@@ -48,8 +48,9 @@ There is extensive documentation.
    2. It specifies the [file format](https://dans-labs.github.io/text-fabric/Model/File-formats/)
    3. It holds the [api docs](https://dans-labs.github.io/text-fabric/Api/General/)
 2. Included in this repo are also tutorials and exercises to guide you into increasingly involved tasks
-   1. [general tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb)
-   1. [search tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb)
+   on specific corpora:
+   1. [Biblia Hebraica Stuttgartensia Amstelodamensis](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
+   1. [Proto-Cuneiform tablets from Uruk IV/III](https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 3. For more background information (earlier work, institutes, people, datasets), consult the
    [wiki](https://github.com/ETCBC/shebanq/wiki)
    pages of SHEBANQ.
@@ -67,7 +68,12 @@ There is extensive documentation.
 # Data
 
 In order to work with Text-Fabric, you need a dataset to operate on.
-Here is a
+The most developed corpora in TF are
+
+1. [Biblia Hebraica Stuttgartensia Amstelodamensis](https://github/etcbc/bhsa)
+1. [Proto-Cuneiform tablets from Uruk IV/III](https://github/nino-cunei/uruk)
+
+There is a also
 [collection of datasets and additional modules](https://Dans-labs.github.io/text-fabric-data/)
 ready to be used in text-fabric. The link points to the data documentation, and from there you find the GitHub
 repo where the data resides.
