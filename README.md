@@ -47,8 +47,8 @@ There is extensive documentation.
    1. It explains the [data model](https://dans-labs.github.io/text-fabric/Model/Data-Model/)
    2. It specifies the [file format](https://dans-labs.github.io/text-fabric/Model/File-formats/)
    3. It holds the [api docs](https://dans-labs.github.io/text-fabric/Api/General/)
-2. Included in this repo are also tutorials and exercises to guide you into increasingly involved tasks
-   on specific corpora:
+2. There are tutorials and exercises to guide you into increasingly involved tasks
+   on specific corpora (outside this repo):
    1. [Biblia Hebraica Stuttgartensia Amstelodamensis](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
    1. [Proto-Cuneiform tablets from Uruk IV/III](https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 3. For more background information (earlier work, institutes, people, datasets), consult the
@@ -57,7 +57,7 @@ There is extensive documentation.
 4. Papers (preprints on [arxiv](https://arxiv.org)), most of them published:
    1. [Parallel Texts in the Hebrew Bible, New Methods and Visualizations ](https://arxiv.org/abs/1603.01541)
    1. [The Hebrew Bible as Data: Laboratory - Sharing - Experiences](https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/)
-      [arxiv](https://arxiv.org/abs/1501.01866)
+      (preprint: [arxiv](https://arxiv.org/abs/1501.01866))
    1. [LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible](https://arxiv.org/abs/1410.0286)
    1. [Annotation as a New Paradigm in Research Archiving](https://arxiv.org/abs/1412.6069)
 
