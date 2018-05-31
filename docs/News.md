@@ -6,6 +6,16 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.3.2
+
+2018-05-31
+
+Search API: 
+
+* quantifiers may use the name `..` to refer to their parents
+* you may use names in the place of atoms, which lessens the need for constructs with `p = q`
+* stricter checks on the syntax and position of quantifiers
+
 ## 4.3.1
 
 2018-05-30

@@ -832,10 +832,32 @@
             *   You cannot comment out parts of lines, only whole lines.
         *   *atom* lines
             *   (simple): **indent name:otype-or-set features**
-                *   `vb:word pos=verb gender=feminine`
+                *   Examples
+                    1.  `word pos=verb gender=feminine`
+                    2.  `vb:word pos=verb gender=feminine`
+                    3.  `vb pos=verb gender=feminine`
                 *   The indent is significant. Indent is counted as the number of white space
                     characters, where tabs count for just 1. **Avoid tabs!**.
-                *   The **name:** part is optional.
+                *   The **name:** part is optional (2 above).
+                    If present, it defines a name for this atom that can be used
+                    in relational comparisons and other atoms.
+                *   The **otype-or-set** part is optional (3 above).
+                    If it is absent, the **name** part must be present.
+                    The meaning of
+
+                    ```
+                    p:phrase sp=verb
+                    p vs=qal
+                    ```
+
+                    is identical to the meaning of
+
+                    ```
+                    p:phrase sp=verb
+                    pnew:phrase vs=qal
+                    p = pnew
+                    ```
+
             *   (with relop): **indent op name:otype-or-set features**
                 *   `<: word pos=verb gender=feminine`
                 *   The relation operator specifies an extra constraint between a preceding atom
@@ -1004,10 +1026,10 @@
         Quantifiers are a powerful kind of conditions in templates.
         With the help of quantifiers you can say pretty sophisticated things in a template.
 
-        They state conditions on what can happen within the neighborhood of a node.
+        They state conditions on the relatives of a given node.
         Whereas normal templates only state that certain configurations must exists,
-        with quantifiers you are able to express that all things in the neighborhood
-        have certain properties or that some things cannot occur there.
+        with quantifiers you are able to express that all relatives of a certain kind
+        have certain properties or that some relatives do not exist.
 
         Their requirements have the shape of a quantifier: 
 
@@ -1038,6 +1060,12 @@
         end:
         ```
 
+        ???+ note "Parent"
+            The `node-or-set` bit is an atom line, it acts as the *parent* of the quantifier.
+
+        ???+ note "Multiple quantifiers"
+            You may have multiple quantifiers for one parent.
+
         ???+ note "Not in result tuples"
             Whereas a the search for a normal template
             proceeds by finding a tuples that instantiates all it nodes
@@ -1058,12 +1086,14 @@
     ??? caution "Restrictions"
         Due to the implementation of quantifiers there are certain restrictions.
 
-        * Quantifiers always come beneath an atom line; the list of quantifiers must follow
-          that atom line immediately; no ordinary atoms may come between an atom and its
-          quantifier list.`
+        * Quantifiers must be put immediately below their parents or below
+          preceding quantifiers of the same parent.
         * The keywords of a quantifier must appear on lines with exactly the same indentation
           as the atom they quantify.
+        * The templates of a quantifier must be indented relative the level of its keywords.
         * The names accessible to the templates inside the templates of a quantifier are:
+          * the name `..`, which is the name of the atom that is quantified;
+            this name is automagically valid in quantified templates;
           * the name of the atom that is quantified (if that atom has a name);
           * names defined in the template itself;
           * `templateH` may use names defined in `templateA`;
@@ -1074,7 +1104,8 @@
 
     ??? caution "Indentation"
         Indentation in quantifiers will be stripped. All templates in a quantifier will be 
-        examined, and all common indentation will be stripped. The remaining indentation
+        examined, and the block of indentation common to all lines will be stripped.
+        The remaining indentation
         is interpreted relative to the atom which is being quantified.
 
         ???+ note "Caret"

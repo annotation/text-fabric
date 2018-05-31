@@ -23,6 +23,8 @@ escapes = (
     '\\=',
 )
 
+PARENT_REF = '..'
+
 rePat = '^([a-zA-Z0-9-@_]+)~(.*)$'
 reRe = re.compile(rePat)
 reTp = type(reRe)
@@ -44,24 +46,183 @@ indentLineRe = re.compile(indentLinePat)
 
 opPat = '(?:[#&|\[\]<>:=-]+\S*)'
 quPat = '(?:all|have|no|either|or|end)'
-atomPat = '(\s*)([^ \t=#!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
+atomPat = '(\s*)([^ \t=#<>~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
 atomOpPat = (
-    '(\s*)({op})\s+([^ \t=#!~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(op=opPat)
+    '(\s*)({op})\s+([^ \t=#<>~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(op=opPat)
 )
 opLinePat = '^(\s*)({op})\s*$'.format(op=opPat)
 opStripPat = '^\s*{op}\s+(.*)$'.format(op=opPat)
 quLinePat = '^(\s*)({qu}):\s*$'.format(qu=quPat)
-namePat = '[A-Za-z0-9_-]+'
+namePat = '[A-Za-z0-9_.-]+'
 relPat = '^(\s*)({nm})\s+({op})\s+({nm})\s*$'.format(nm=namePat, op=opPat)
+kPat = '^([^0-9]*)([0-9]+)([^0-9]*)$'
 
-atomOpRe = re.compile(atomOpPat)
+namesPat = '^\s*(?:{op}\s+)?([^ \t:=#<>~]+):'
+
 atomRe = re.compile(atomPat)
+atomOpRe = re.compile(atomOpPat)
 opLineRe = re.compile(opLinePat)
 opStripRe = re.compile(opStripPat)
 quLineRe = re.compile(quLinePat)
+namesRe = re.compile(namesPat)
 nameRe = re.compile('^{}$'.format(namePat))
 relRe = re.compile(relPat)
+kRe = re.compile(kPat)
 whiteRe = re.compile('^\s*$')
+
+
+def _parseLine(line):
+    for x in [True]:
+        escLine = esc(line)
+
+        match = opLineRe.match(escLine)
+        if match:
+            (indent, op) = match.groups()
+            kind = 'op'
+            data = (indent, op)
+            break
+
+        match = relRe.match(escLine)
+        if match:
+            (indent, f, op, t) = match.groups()
+            kind = 'rel'
+            data = (indent, f, op, t)
+            break
+
+        matchOp = atomOpRe.match(escLine)
+        if matchOp:
+            (indent, op, atom, features) = matchOp.groups()
+        else:
+            match = atomRe.match(escLine)
+            if match:
+                op = None
+                (indent, atom, features) = match.groups()
+        if matchOp or match:
+            atomComps = atom.split(':', 1)
+            if len(atomComps) == 1:
+                name = ''
+                otype = atomComps[0]
+            else:
+                name = atomComps[0]
+                otype = atomComps[1]
+            kind = 'atom'
+            if features is None:
+                features = ''
+            data = (indent, op, name, otype, features)
+            break
+
+        kind = 'feat'
+        data = (escLine,)
+
+    return (kind, data)
+
+
+def _genLine(kind, data):
+    result = None
+
+    for x in [True]:
+        if kind == 'op':
+            (indent, op) = data
+            result = f'{indent}{unesc(op)}'
+            break
+
+        if kind == 'rel':
+            (indent, f, op, t) = data
+            result = f'{indent}{f} {unesc(op)} {t}'
+            break
+
+        if kind == 'atom':
+            (indent, op, name, otype, features) = data
+            opRep = '' if op is None else f'{unesc(op)} '
+            nameRep = '' if name == '' else f'{name}:'
+            featRep = unesc(features)
+            if featRep:
+                featRep = f' {featRep}'
+            result = f'{indent}{opRep}{nameRep}{otype}{featRep}'
+            break
+
+        features = data[0]
+        result = unesc(features)
+
+    return result
+
+
+def _cleanParent(atom, parentName):
+    (kind, data) = _parseLine(atom)
+    (indent, op, name, otype, features) = data
+    if name == '':
+        name = parentName
+    return _genLine(kind, (indent, None, name, otype, features))
+
+
+def _deContext(quantifier, parentName):
+    (quKind, quTemplates) = quantifier
+
+    # choose a name for the parent
+    # either the given name
+    if not parentName:
+        # or make a new name
+        # collect all used names
+        # to avoid choosing a name that is already used
+        usedNames = set()
+        for template in quTemplates:
+            for line in template:
+                for name in namesRe.findall(line):
+                    usedNames.add(name)
+        parentName = 'parent'
+        while parentName in usedNames:
+            parentName += 'x'
+
+    newQuTemplates = []
+    newQuantifier = (quKind, newQuTemplates, parentName)
+
+    # determine minimum indent of
+    # all templates of quantifier
+    minIndent = None
+    newTemplates = []
+    for template in quTemplates:
+        newTemplate = []
+        for line in template:
+            match = indentLineRe.match(line)
+            (indent, sline) = match.groups()
+            thisIndent = len(indent)
+            newTemplate.append((thisIndent, sline))
+            if minIndent is None or minIndent > thisIndent:
+                minIndent = thisIndent
+        newTemplates.append(newTemplate)
+
+    # subtract minimum indent from all lines
+    # and replace carets by spaces
+    for template in newTemplates:
+        newLines = []
+        for (indent, sline) in template:
+            line = (
+                f'{" " * (indent - minIndent)}{sline}'
+            )
+            if line.startswith('^'):
+                line = line.replace('^', ' ', 1)
+
+            # replace .. (PARENT_REF) by parentName
+            # wherever it is applicable
+            (kind, data) = _parseLine(line)
+            newLine = line
+            if kind == 'rel':
+                (indent, f, op, t) = data
+                if f == PARENT_REF or t == PARENT_REF:
+                    newF = parentName if f == PARENT_REF else f
+                    newT = parentName if t == PARENT_REF else t
+                    newData = (indent, newF, op, newT)
+                    newLine = _genLine(kind, newData)
+            elif kind == 'atom':
+                (indent, op, name, otype, features) = data
+                if name == '' and otype == PARENT_REF:
+                    newData = (indent, op, name, parentName, features)
+                    newLine = _genLine(kind, newData)
+
+            newLines.append(newLine)
+        templateStr = '\n'.join(newLines)
+        newQuTemplates.append(templateStr)
+    return newQuantifier
 
 
 def makeLimit(n, isLower):
@@ -397,7 +558,7 @@ class SearchExe(object):
             resultNode[nodeLine[q]] = q
         for (i, line) in enumerate(self.searchLines):
             rNode = resultNode.get(i, '')
-            prefix = 'R' if rNode != '' else ''
+            prefix = '' if rNode == '' else 'R'
             info(f'{i:>2} {prefix:<1}{rNode:<2} {line}', tm=False)
 
 # LOW-LEVEL NODE RELATIONS SEMANTICS ###
@@ -1231,7 +1392,7 @@ class SearchExe(object):
         )
         self.relationLegend += f'''
 The warp feature "{WARP[1]}" cannot be used in searches.
-One of the above relations on nodes and/or slots will suit you better!
+One of the above relations on nodes and/or slots will suit you better.
 '''
         self.converse = dict(
             tuple((2 * i, 2 * i + 1)
@@ -1424,7 +1585,6 @@ One of the above relations on nodes and/or slots will suit you better!
         for (i, line) in enumerate(searchLines):
             if line.startswith('#') or whiteRe.match(line):
                 continue
-            good = False
             opFeatures = {}
 
             # first check whether we have a line with a quantifier
@@ -1496,6 +1656,8 @@ One of the above relations on nodes and/or slots will suit you better!
             # * we handle quantifier lines
             # * we let all other lines pass through
 
+            good = True
+
             for x in [True]:
                 if nnn:
                     # no quantifier business
@@ -1514,7 +1676,7 @@ One of the above relations on nodes and/or slots will suit you better!
                             f' No preceding tokens'
                         )
                         good = False
-                    elif enqsb or enqsc:
+                    if enqsb or enqsc:
                         self.badSyntax.append(
                             f'Quantifier at line {i}:'
                             f' Does not immediately follow an atom'
@@ -1553,12 +1715,15 @@ One of the above relations on nodes and/or slots will suit you better!
                             f' Incomplete "{curQuKind}:"'
                             f' (see line {curQuLine}'
                         )
-                    good = False
+                        good = False
                     curQuKind = None
                     curQuLine = None
                     curQuIndent = None
                     curQuTemplates = None
                     continue
+
+            if not good:
+                allGood = False
 
             if nnn:
                 # go on with normal template tokenization
@@ -1569,10 +1734,13 @@ One of the above relations on nodes and/or slots will suit you better!
 
             # QUANTIFIER FREE HANDLING
 
+            good = False
+
             for x in [True]:
-                match = opLineRe.match(line)
-                if match:
-                    (indent, op) = match.groups()
+                (kind, data) = _parseLine(line)
+
+                if kind == 'op':
+                    (indent, op) = data
                     if not self._parseFeatureVals(
                         op, opFeatures, i, asEdge=True
                     ):
@@ -1590,9 +1758,9 @@ One of the above relations on nodes and/or slots will suit you better!
                         )
                         good = True
                     break
-                match = relRe.match(line)
-                if match:
-                    op = match.group(3)
+
+                if kind == 'rel':
+                    (indent, f, op, t) = data
                     if not self._parseFeatureVals(
                         op, opFeatures, i, asEdge=True
                     ):
@@ -1604,30 +1772,18 @@ One of the above relations on nodes and/or slots will suit you better!
                             dict(
                                 ln=i,
                                 kind='rel',
-                                f=match.group(2),
+                                f=f,
                                 op=op,
-                                t=match.group(4),
+                                t=t,
                             )
                         )
                         good = True
                     break
-                matchOp = atomOpRe.match(esc(line))
-                if not matchOp:
-                    match = atomRe.match(esc(line))
-                if matchOp:
-                    (indent, op, atom, features) = matchOp.groups()
-                elif match:
-                    op = None
-                    (indent, atom, features) = match.groups()
-                if matchOp or match:
+
+                if kind == 'atom':
+                    (indent, op, name, otype, features) = data
                     good = True
-                    atomComps = atom.split(':', 1)
-                    if len(atomComps) == 1:
-                        name = ''
-                        otype = unesc(atomComps[0])
-                    else:
-                        name = unesc(atomComps[0])
-                        otype = unesc(atomComps[1])
+                    if name != '':
                         mt = nameRe.match(name)
                         if not mt:
                             self.badSyntax.append(
@@ -1638,7 +1794,7 @@ One of the above relations on nodes and/or slots will suit you better!
                     if features is None:
                         good = False
                     else:
-                        if matchOp:
+                        if op is not None:
                             if not self._parseFeatureVals(
                                 op, opFeatures, i, asEdge=True
                             ):
@@ -1659,21 +1815,31 @@ One of the above relations on nodes and/or slots will suit you better!
                                 )
                             )
                     break
-                features = getFeatures(esc(line), i)
-                if features is None:
-                    good = False
-                else:
-                    tokens.append(
-                        dict(
-                            ln=i,
-                            kind='feat',
-                            features=features,
+
+                if kind == 'feat':
+                    features = data[0]
+                    features = getFeatures(features, i)
+                    if features is None:
+                        good = False
+                    else:
+                        tokens.append(
+                            dict(
+                                ln=i,
+                                kind='feat',
+                                features=features,
+                            )
                         )
-                    )
-                    good = True
-                break
+                        good = True
+                    break
+
+                good = False
+                self.badSyntax.append(
+                    f'Unrecognized line {i}: {line}'
+                )
+
             if not good:
                 allGood = False
+
         if curQuKind:
             self.badSyntax.append(
                 f'Quantifier at line {i}:'
@@ -1731,32 +1897,10 @@ One of the above relations on nodes and/or slots will suit you better!
             kind = token['kind']
             if kind == 'atom':
                 if 'quantifiers' in token:
-                    newQuantifiers = []
-                    for (quKind, quTemplates) in token['quantifiers']:
-                        newQuantifiers.append((quKind, []))
-                        minIndent = None
-                        newTemplate = []
-                        for template in quTemplates:
-                            newTemplate.append([])
-                            for line in template:
-                                match = indentLineRe.match(line)
-                                (indent, sline) = match.groups()
-                                thisIndent = len(indent)
-                                newTemplate[-1].append((thisIndent, sline))
-                                if minIndent is None or minIndent > thisIndent:
-                                    minIndent = thisIndent
-                        for template in newTemplate:
-                            newLines = []
-                            for (indent, sline) in template:
-                                newLine = (
-                                    f'{" " * (indent - minIndent)}{sline}'
-                                )
-                                if newLine.startswith('^'):
-                                    newLine = newLine.replace('^', ' ', 1)
-                                newLines.append(newLine)
-                            templateStr = '\n'.join(newLines)
-                            newQuantifiers[-1][1].append(templateStr)
-                    token['quantifiers'] = newQuantifiers or []
+                    token['quantifiers'] = [
+                        _deContext(q, token['name'])
+                        for q in token['quantifiers']
+                    ]
                 indent = token['indent']
                 op = token['op']
                 if 'name' in token:
@@ -1895,6 +2039,16 @@ One of the above relations on nodes and/or slots will suit you better!
                     qedges.append((f, op, t))
                     edgeLine[len(qedges) - 1] = i
             prevKind = kind
+
+        # resolve names when used in atoms
+        for (q, qdata) in enumerate(qnodes):
+            otype = qdata[0]
+            referQ = qnames.get(otype, None)
+            if referQ is not None:
+                referOtype = qnodes[referQ][0]
+                qnodes[q] = (referOtype, *qdata[1:])
+                qedges.append((q, '=', referQ))
+
         if good:
             self.qnames = qnames
             self.qnodes = qnodes
@@ -2015,7 +2169,6 @@ One of the above relations on nodes and/or slots will suit you better!
 
         # relations may have a variable number k in them (k-nearness, etc.)
         # make an entry in the relation map for each value of k
-        kRe = re.compile('^([^0-9]*)([0-9]+)([^0-9]*)$')
         addRels = {}
         for (e, (f, op, t)) in enumerate(self.qedgesRaw):
             if (
@@ -2285,21 +2438,25 @@ One of the above relations on nodes and/or slots will suit you better!
             if good:
                 yarn.add(n)
         if quantifiers:
-            for (quKind, quTemplates) in quantifiers:
-                yarn = self._doQuantifier(yarn, src, quKind, quTemplates)
+            for quantifier in quantifiers:
+                yarn = self._doQuantifier(yarn, src, quantifier)
         self.yarns[q] = yarn
 
-    def _doQuantifier(self, yarn, atom, quKind, quTemplates):
+    def _doQuantifier(self, yarn, atom, quantifier):
+        (quKind, quTemplates, parentName) = quantifier
+        info = self.api.info
+        indent = self.api.indent
         showQuantifiers = self.showQuantifiers
         level = self.level
         universe = yarn
-        cleanAtom = atom
-        match = opStripRe.match(atom)
-        if match:
-            cleanAtom = match.group(1)
+        cleanAtom = _cleanParent(atom, parentName)
 
         if showQuantifiers:
-            print(f'\nQuantifier at level {level} "{quKind}:" acting on "{cleanAtom}"\n')
+            indent(level=level + 1)
+            info(
+                f'Quantifier at level {level} "{quKind}:"'
+                f' acting on "{cleanAtom}"'
+            )
 
         if quKind == 'no':
             queryN = '\n'.join((cleanAtom, quTemplates[0]))
@@ -2312,11 +2469,13 @@ One of the above relations on nodes and/or slots will suit you better!
                 showQuantifiers=showQuantifiers
             )
             if showQuantifiers:
-                print(f'!!!\n{queryN}\n!!!\n')
+                indent(level=level + 1)
+                info(f'!!!\n{queryN}\n!!!', tm=False)
             noResults = exe.search()
             resultYarn = universe - noResults
             if showQuantifiers:
-                print(f'{len(noResults)} nodes to exclude')
+                indent(level=level + 1)
+                info(f'{len(noResults)} nodes to exclude')
         elif quKind == 'all':
             # compute the atom+antecedent:
             #   as result tuples
@@ -2330,10 +2489,13 @@ One of the above relations on nodes and/or slots will suit you better!
                 showQuantifiers=showQuantifiers
             )
             if showQuantifiers:
-                print(f'\tANTECEDENT part\n' f'---\n{queryA}\n---\n')
+                indent(level=level + 1)
+                info(f'ANTECEDENT part')
+                info(f'---\n{queryA}\n---', tm=False)
             aResultTuples = exe.search(limit=-1)
             if showQuantifiers:
-                print(f'\t{len(aResultTuples)} matching nodes')
+                indent(level=level + 1)
+                info(f'{len(aResultTuples)} matching nodes')
             if not aResultTuples:
                 resultYarn = yarn
             else:
@@ -2351,18 +2513,21 @@ One of the above relations on nodes and/or slots will suit you better!
                     showQuantifiers=showQuantifiers
                 )
                 if showQuantifiers:
-                    print(f'\tCONSEQUENT part\n' f'>>>\n{queryAH}\n>>>\n')
+                    indent(level=level + 1)
+                    info(f'CONSEQUENT part')
+                    info(f'>>>\n{queryAH}\n>>>', tm=False)
                 ahResults = exe.search()
                 if showQuantifiers:
-                    print(f'\t{len(ahResults)} matching nodes')
+                    info(f'{len(ahResults)} matching nodes')
 
                 # determine the shallow tuples that correspond to
                 #   atom+antecedent but not consequent
                 #   and then take the projection to their first components
                 resultsAnotH = project(set(aResultTuples) - ahResults, 1)
                 if showQuantifiers:
-                    print(
-                        f'\t{len(resultsAnotH)} match'
+                    indent(level=level + 1)
+                    info(
+                        f'{len(resultsAnotH)} match'
                         ' antecedent but not consequent'
                     )
 
@@ -2383,22 +2548,24 @@ One of the above relations on nodes and/or slots will suit you better!
                     showQuantifiers=showQuantifiers
                 )
                 if showQuantifiers:
-                    print(
-                        f'\tALTERNATIVE {i} of {len(quTemplates)}\n'
-                        f'|||\n{queryAlt}\n|||\n'
-                    )
+                    indent(level=level + 1)
+                    info(f'ALTERNATIVE {i} of {len(quTemplates)}')
+                    info(f'|||\n{queryAlt}\n|||')
                 altResults = exe.search()
                 resultYarn |= altResults
                 if showQuantifiers:
-                    print(
-                        f'\t{len(altResults)} nodes to add\n'
-                        f'\t{len(resultYarn)} nodes added so far'
+                    indent(level=level + 1)
+                    info(
+                        f'{len(altResults)} nodes to add to'
+                        f'{len(resultYarn)} so far'
                     )
         if showQuantifiers:
-            print(
-                f'\n* Quantifier at level {level} "{quKind}:"'
-                f' reduction from {len(yarn)} to {len(resultYarn)} nodes\n'
+            indent(level=level + 1)
+            info(
+                f'Results at level {level} of "{quKind}:"'
+                f' reduction from {len(yarn)} to {len(resultYarn)} nodes'
             )
+            indent(level=0)
         return resultYarn
 
     def _spinAtoms(self):
