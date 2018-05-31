@@ -1329,8 +1329,24 @@ In both cases you can also use the other constructs, such as</p><table class="co
 </td></tr></table>
 <p>To get a more specific introduction to search, consult the search tutorials for
 <a href="https://github.com/ETCBC/bhsa/blob/master/tutorial/search.ipynb">Hebrew</a> and
-<a href="https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb">Cuneiform</a>.</p></details><details class="info"><summary>Search template reference</summary><details class="info"><summary>General</summary><p>We have these kinds of lines in a template:</p><ul><li><em>comment</em> lines<ul><li>If a line starts with <code>#</code> it is ignored.</li><li>You cannot comment out parts of lines, only whole lines.</li></ul></li><li><p><em>atom</em> lines</p><ul><li>(simple): <strong>indent name:otype-or-set features</strong><ul><li><code>vb:word pos=verb gender=feminine</code></li><li>The indent is significant. Indent is counted as the number of white space
-    characters, where tabs count for just 1. <strong>Avoid tabs!</strong>.</li><li>The <strong>name:</strong> part is optional.</li></ul></li><li>(with relop): <strong>indent op name:otype-or-set features</strong><ul><li><code>&lt;: word pos=verb gender=feminine</code></li><li>The relation operator specifies an extra constraint between a preceding atom
+<a href="https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb">Cuneiform</a>.</p></details><details class="info"><summary>Search template reference</summary><details class="info"><summary>General</summary><p>We have these kinds of lines in a template:</p><ul><li><em>comment</em> lines<ul><li>If a line starts with <code>#</code> it is ignored.</li><li>You cannot comment out parts of lines, only whole lines.</li></ul></li><li><p><em>atom</em> lines</p><ul><li><p>(simple): <strong>indent name:otype-or-set features</strong></p><ul><li>Examples<ol><li><code>word pos=verb gender=feminine</code></li><li><code>vb:word pos=verb gender=feminine</code></li><li><code>vb pos=verb gender=feminine</code></li></ol></li><li>The indent is significant. Indent is counted as the number of white space
+    characters, where tabs count for just 1. <strong>Avoid tabs!</strong>.</li><li>The <strong>name:</strong> part is optional (2 above).
+    If present, it defines a name for this atom that can be used
+    in relational comparisons and other atoms.</li><li><p>The <strong>otype-or-set</strong> part is optional (3 above).
+    If it is absent, the <strong>name</strong> part must be present.
+    The meaning of</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>p:phrase sp=verb
+p vs=qal
+</pre></div>
+</td></tr></table>
+<p>is identical to the meaning of</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>p:phrase sp=verb
+pnew:phrase vs=qal
+p = pnew
+</pre></div>
+</td></tr></table>
+</li></ul></li><li><p>(with relop): <strong>indent op name:otype-or-set features</strong></p><ul><li><code>&lt;: word pos=verb gender=feminine</code></li><li>The relation operator specifies an extra constraint between a preceding atom
     and this atom.</li><li>The preceding atom may be the parent, provided we are at its first child, or
     it may the preceding sibling.</li><li>You can leave out the <strong>name:otype-or-set features</strong> bit. In that case, the
     relation holds between the preceding atom and its parent.</li></ul></li></ul><p>The otype-or-set is either a node type that exists in your TF data set,
@@ -1398,10 +1414,10 @@ that. Instead of typing the letter <code>k</code>, provide the actual number you
     <img alt="op" src="../../images/Spatial/Spatial.016.png" /></li></ul></details><details class="info"><summary>Based on edge features</summary><ul><li><p><code>-</code><em>name</em><code>&gt;</code> <code>&lt;</code><em>name</em><code>-</code>: connected by the edge feature <em>name</em></p><ul><li>in both directions;</li><li>these forms work for edges that do and do not have values;</li></ul><p><img alt="op" src="../../images/Spatial/Spatial.018.png" />
 <em>   <code>-</code></em>name<em> </em>valueSpec<em><code>&gt;</code> <code>&lt;</code></em>name<em> </em>valueSpec<em><code>-</code>: connected by the edge feature </em>name*</p><ul><li>in both directions;</li><li>these forms work only for edges that do have values.</li></ul><p><img alt="op" src="../../images/Spatial/Spatial.019.png" /></p></li></ul></details></details><h4 id="quantifiers">Quantifiers<a class="headerlink" href="#quantifiers" title="Permanent link">&para;</a></h4>
 <details class="info"><summary>Quantifiers</summary><details class="caution" open="open"><summary>Experimental</summary><p>This part of search templates is still experimental.</p><ul><li>bugs may be discovered</li><li>the syntax of quantifiers may change</li></ul></details><details class="abstract"><summary>Quantifiers are conditions</summary><p>Quantifiers are a powerful kind of conditions in templates.
-With the help of quantifiers you can say pretty sophisticated things in a template.</p><p>They state conditions on what can happen within the neighborhood of a node.
+With the help of quantifiers you can say pretty sophisticated things in a template.</p><p>They state conditions on the relatives of a given node.
 Whereas normal templates only state that certain configurations must exists,
-with quantifiers you are able to express that all things in the neighborhood
-have certain properties or that some things cannot occur there.</p><p>Their requirements have the shape of a quantifier: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+with quantifiers you are able to express that all relatives of a certain kind
+have certain properties or that some relatives do not exist.</p><p>Their requirements have the shape of a quantifier: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>node-or-set
@@ -1440,7 +1456,7 @@ or:
 end:
 </pre></div>
 </td></tr></table>
-<details class="note" open="open"><summary>Not in result tuples</summary><p>Whereas a the search for a normal template
+<details class="note" open="open"><summary>Parent</summary><p>The <code>node-or-set</code> bit is an atom line, it acts as the <em>parent</em> of the quantifier.</p></details><details class="note" open="open"><summary>Multiple quantifiers</summary><p>You may have multiple quantifiers for one parent.</p></details><details class="note" open="open"><summary>Not in result tuples</summary><p>Whereas a the search for a normal template
 proceeds by finding a tuples that instantiates all it nodes
 in such a way that all relationships expressed in the template hold, a quantifier template
 is not instantiated.
@@ -1451,12 +1467,13 @@ The idea is, that whenever a search template is evaluated, the outer level of
 quantifiers in it gets interpreted.
 This interpretation gives rise to one or more templates to be constructed and run.
 Those new templates have been stripped of the outer layer of quantifiers,
-and when these templates are executed, the 2nd level quantifiers have become outer.</p></details></details><details class="caution"><summary>Restrictions</summary><p>Due to the implementation of quantifiers there are certain restrictions.</p><ul><li>Quantifiers always come beneath an atom line; the list of quantifiers must follow
-  that atom line immediately; no ordinary atoms may come between an atom and its
-  quantifier list.`</li><li>The keywords of a quantifier must appear on lines with exactly the same indentation
-  as the atom they quantify.</li><li>The names accessible to the templates inside the templates of a quantifier are:</li><li>the name of the atom that is quantified (if that atom has a name);</li><li>names defined in the template itself;</li><li><code>templateH</code> may use names defined in <code>templateA</code>;</li><li><code>templateO</code><em>i</em> may not use names defined in <code>templateO</code><em>j</em> ;</li><li>names defined outer quantifiers are not accessible in inner quantifiers.</li><li>when you nest quantifiers, think of the way they will be recomposed into
+and when these templates are executed, the 2nd level quantifiers have become outer.</p></details></details><details class="caution"><summary>Restrictions</summary><p>Due to the implementation of quantifiers there are certain restrictions.</p><ul><li>Quantifiers must be put immediately below their parents or below
+  preceding quantifiers of the same parent.</li><li>The keywords of a quantifier must appear on lines with exactly the same indentation
+  as the atom they quantify.</li><li>The templates of a quantifier must be indented relative the level of its keywords.</li><li>The names accessible to the templates inside the templates of a quantifier are:</li><li>the name <code>..</code>, which is the name of the atom that is quantified;
+    this name is automagically valid in quantified templates;</li><li>the name of the atom that is quantified (if that atom has a name);</li><li>names defined in the template itself;</li><li><code>templateH</code> may use names defined in <code>templateA</code>;</li><li><code>templateO</code><em>i</em> may not use names defined in <code>templateO</code><em>j</em> ;</li><li>names defined outer quantifiers are not accessible in inner quantifiers.</li><li>when you nest quantifiers, think of the way they will be recomposed into
     ordinary templates. This dictates whether your quantifier can be valid or not.</li></ul></details><details class="caution"><summary>Indentation</summary><p>Indentation in quantifiers will be stripped. All templates in a quantifier will be 
-examined, and all common indentation will be stripped. The remaining indentation
+examined, and the block of indentation common to all lines will be stripped.
+The remaining indentation
 is interpreted relative to the atom which is being quantified.</p><details class="note" open="open"><summary>Caret</summary><p>If your quantifier templates have just one line, by the rule just mentioned,
 all its indentation will be stripped. 
 But it might have been your intention to indent the quantifier line relative to 
