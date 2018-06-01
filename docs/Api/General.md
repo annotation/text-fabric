@@ -828,20 +828,26 @@
         We have these kinds of lines in a template:
 
         *   *comment* lines
+
             *   If a line starts with `#` it is ignored.
             *   You cannot comment out parts of lines, only whole lines.
+
         *   *atom* lines
+
             *   (simple): **indent name:otype-or-set features**
+
                 *   Examples
+
                     1.  `word pos=verb gender=feminine`
                     2.  `vb:word pos=verb gender=feminine`
                     3.  `vb pos=verb gender=feminine`
+
                 *   The indent is significant. Indent is counted as the number of white space
                     characters, where tabs count for just 1. **Avoid tabs!**.
-                *   The **name:** part is optional (2 above).
+                *   The **name:** part is optional.
                     If present, it defines a name for this atom that can be used
                     in relational comparisons and other atoms.
-                *   The **otype-or-set** part is optional (3 above).
+                *   The **otype-or-set** part is optional.
                     If it is absent, the **name** part must be present.
                     The meaning of
 
@@ -859,6 +865,7 @@
                     ```
 
             *   (with relop): **indent op name:otype-or-set features**
+
                 *   `<: word pos=verb gender=feminine`
                 *   The relation operator specifies an extra constraint between a preceding atom
                     and this atom.
@@ -866,15 +873,21 @@
                     it may the preceding sibling.
                 *   You can leave out the **name:otype-or-set features** bit. In that case, the
                     relation holds between the preceding atom and its parent.
+                *   The **name:** part is optional. Exactly as in the case without relop.
+                *   The **otype-or-set** part is optional. Exactly as in the case without relop.
 
             The otype-or-set is either a node type that exists in your TF data set,
             or it is the name of a set that you have passed in the `sets` parameter alongside
             the query itself when you call `S.search()` or `S.study()`.
+
         *   *feature* lines: **features**
+
             *   Indent is not significant. Continuation of feature constraints after a
                 preceding atom line or other feature line. This way you can divide lengthy
                 feature constraints over multiple lines.
+
         *   *relation* lines: **name operator name**
+
             *   `s := w`
             *   `m -sub> s`
             *   `m <sub- s`
@@ -882,7 +895,9 @@
             *   There must be white-space around the operator.
             *   Operators that come from edge features may be enriched with values.
                 See below.
+
         *   *white-space or empty* lines
+
             *   Everywhere allowed.
             *   Always ignored.
 
@@ -903,17 +918,17 @@
 
         A **feature spec** has the form *name* *valueSpec*, with no space between the *name*
         and the *valueSpec*.
-        The *valueSpec* may have the following forms:
+        The *valueSpec* may have the following forms and meanings:
 
-        form | meaning
+        form | evaluates to `True` the feature *name* ...
         ---- | -------
-        | feature *name* may have any value except `None`
-        `#` | feature *name* must have value `None` (synonymous for: *name* has no value)
-        `=`*values* | feature *name* has one of the values specified
-        `#`*values* | feature *name* has none of the values specified
-        `>`*value* | feature *name* must be greater than *value*
-        `<`*value* | feature *name* must be less than *value*
-        `~`*regular expression* | feature *name* has a value and it matches *regular expression*
+        | has any value except `None`
+        `#` | has value `None`
+        `=`*values* | has one of the values specified
+        `#`*values* | has none of the values specified
+        `>`*value* | is greater than *value*
+        `<`*value* | is less than *value*
+        `~`*regular expression* | has a value and it matches *regular expression*
 
         All these forms are also valid as `-`*name* *form*`>` and `<`*name* *form*`-`, in which case
         they specify value constraints on edge features.
