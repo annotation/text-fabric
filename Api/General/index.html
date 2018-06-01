@@ -1329,10 +1329,10 @@ In both cases you can also use the other constructs, such as</p><table class="co
 </td></tr></table>
 <p>To get a more specific introduction to search, consult the search tutorials for
 <a href="https://github.com/ETCBC/bhsa/blob/master/tutorial/search.ipynb">Hebrew</a> and
-<a href="https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb">Cuneiform</a>.</p></details><details class="info"><summary>Search template reference</summary><details class="info"><summary>General</summary><p>We have these kinds of lines in a template:</p><ul><li><em>comment</em> lines<ul><li>If a line starts with <code>#</code> it is ignored.</li><li>You cannot comment out parts of lines, only whole lines.</li></ul></li><li><p><em>atom</em> lines</p><ul><li><p>(simple): <strong>indent name:otype-or-set features</strong></p><ul><li>Examples<ol><li><code>word pos=verb gender=feminine</code></li><li><code>vb:word pos=verb gender=feminine</code></li><li><code>vb pos=verb gender=feminine</code></li></ol></li><li>The indent is significant. Indent is counted as the number of white space
-    characters, where tabs count for just 1. <strong>Avoid tabs!</strong>.</li><li>The <strong>name:</strong> part is optional (2 above).
+<a href="https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb">Cuneiform</a>.</p></details><details class="info"><summary>Search template reference</summary><details class="info"><summary>General</summary><p>We have these kinds of lines in a template:</p><ul><li><p><em>comment</em> lines</p><ul><li>If a line starts with <code>#</code> it is ignored.</li><li>You cannot comment out parts of lines, only whole lines.</li></ul></li><li><p><em>atom</em> lines</p><ul><li><p>(simple): <strong>indent name:otype-or-set features</strong></p><ul><li><p>Examples</p><ol><li><code>word pos=verb gender=feminine</code></li><li><code>vb:word pos=verb gender=feminine</code></li><li><code>vb pos=verb gender=feminine</code></li></ol></li><li><p>The indent is significant. Indent is counted as the number of white space
+    characters, where tabs count for just 1. <strong>Avoid tabs!</strong>.</p></li><li>The <strong>name:</strong> part is optional.
     If present, it defines a name for this atom that can be used
-    in relational comparisons and other atoms.</li><li><p>The <strong>otype-or-set</strong> part is optional (3 above).
+    in relational comparisons and other atoms.</li><li><p>The <strong>otype-or-set</strong> part is optional.
     If it is absent, the <strong>name</strong> part must be present.
     The meaning of</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>p:phrase sp=verb
@@ -1349,31 +1349,19 @@ p = pnew
 </li></ul></li><li><p>(with relop): <strong>indent op name:otype-or-set features</strong></p><ul><li><code>&lt;: word pos=verb gender=feminine</code></li><li>The relation operator specifies an extra constraint between a preceding atom
     and this atom.</li><li>The preceding atom may be the parent, provided we are at its first child, or
     it may the preceding sibling.</li><li>You can leave out the <strong>name:otype-or-set features</strong> bit. In that case, the
-    relation holds between the preceding atom and its parent.</li></ul></li></ul><p>The otype-or-set is either a node type that exists in your TF data set,
+    relation holds between the preceding atom and its parent.</li><li>The <strong>name:</strong> part is optional. Exactly as in the case without relop.</li><li>The <strong>otype-or-set</strong> part is optional. Exactly as in the case without relop.</li></ul></li></ul><p>The otype-or-set is either a node type that exists in your TF data set,
 or it is the name of a set that you have passed in the <code>sets</code> parameter alongside
-the query itself when you call <code>S.search()</code> or <code>S.study()</code>.
-<em>   </em>feature<em> lines: <strong>features</strong>
-</em>   Indent is not significant. Continuation of feature constraints after a
+the query itself when you call <code>S.search()</code> or <code>S.study()</code>.</p></li><li><p><em>feature</em> lines: <strong>features</strong></p><ul><li>Indent is not significant. Continuation of feature constraints after a
     preceding atom line or other feature line. This way you can divide lengthy
-    feature constraints over multiple lines.
-<em>   </em>relation<em> lines: <strong>name operator name</strong>
-</em>   <code>s := w</code>
-<em>   <code>m -sub&gt; s</code>
-</em>   <code>m &lt;sub- s</code>
-<em>   Indents and spacing are ignored.
-</em>   There must be white-space around the operator.
-<em>   Operators that come from edge features may be enriched with values.
-    See below.
-</em>   <em>white-space or empty</em> lines
-<em>   Everywhere allowed.
-</em>   Always ignored.</p></li></ul><p>Atom lines that contain an otype or set may be followed by
+    feature constraints over multiple lines.</li></ul></li><li><p><em>relation</em> lines: <strong>name operator name</strong></p><ul><li><code>s := w</code></li><li><code>m -sub&gt; s</code></li><li><code>m &lt;sub- s</code></li><li>Indents and spacing are ignored.</li><li>There must be white-space around the operator.</li><li>Operators that come from edge features may be enriched with values.
+    See below.</li></ul></li><li><p><em>white-space or empty</em> lines</p><ul><li>Everywhere allowed.</li><li>Always ignored.</li></ul></li></ul><p>Atom lines that contain an otype or set may be followed by
 <a href="#quantifiers"><em>quantifiers</em></a>.
 Quantifiers consist of search templates themselves, demarcated by some
 special keywords:</p><ul><li><code>/without/</code></li><li><code>/where/</code> and <code>/have/</code></li><li><code>/with/</code> and <code>/or/</code></li><li><code>/-/</code></li></ul></details><details class="info"><summary>Features</summary><p>The <strong>features</strong> above is a specification of what features with which values to
 search for. This specification must be written as a white-space separated list
 of <strong>feature specs</strong>.</p><p>A <strong>feature spec</strong> has the form <em>name</em> <em>valueSpec</em>, with no space between the <em>name</em>
 and the <em>valueSpec</em>.
-The <em>valueSpec</em> may have the following forms:</p><table><thead><tr><th>form</th><th>meaning</th></tr></thead><tbody><tr><td></td><td>feature <em>name</em> may have any value except <code>None</code></td></tr><tr><td><code>#</code></td><td>feature <em>name</em> must have value <code>None</code> (synonymous for: <em>name</em> has no value)</td></tr><tr><td><code>=</code><em>values</em></td><td>feature <em>name</em> has one of the values specified</td></tr><tr><td><code>#</code><em>values</em></td><td>feature <em>name</em> has none of the values specified</td></tr><tr><td><code>&gt;</code><em>value</em></td><td>feature <em>name</em> must be greater than <em>value</em></td></tr><tr><td><code>&lt;</code><em>value</em></td><td>feature <em>name</em> must be less than <em>value</em></td></tr><tr><td><code>~</code><em>regular expression</em></td><td>feature <em>name</em> has a value and it matches <em>regular expression</em></td></tr></tbody></table><p>All these forms are also valid as <code>-</code><em>name</em> <em>form</em><code>&gt;</code> and <code>&lt;</code><em>name</em> <em>form</em><code>-</code>, in which case
+The <em>valueSpec</em> may have the following forms and meanings:</p><table><thead><tr><th>form</th><th>evaluates to <code>True</code> the feature <em>name</em> ...</th></tr></thead><tbody><tr><td></td><td>has any value except <code>None</code></td></tr><tr><td><code>#</code></td><td>has value <code>None</code></td></tr><tr><td><code>=</code><em>values</em></td><td>has one of the values specified</td></tr><tr><td><code>#</code><em>values</em></td><td>has none of the values specified</td></tr><tr><td><code>&gt;</code><em>value</em></td><td>is greater than <em>value</em></td></tr><tr><td><code>&lt;</code><em>value</em></td><td>is less than <em>value</em></td></tr><tr><td><code>~</code><em>regular expression</em></td><td>has a value and it matches <em>regular expression</em></td></tr></tbody></table><p>All these forms are also valid as <code>-</code><em>name</em> <em>form</em><code>&gt;</code> and <code>&lt;</code><em>name</em> <em>form</em><code>-</code>, in which case
 they specify value constraints on edge features.
 This is only meaningful if the edge feature is declared to have values (most edge features
 do not have values).</p><p><strong>Additional constraints</strong></p><ul><li>There may be no space around the <code>=#&lt;&gt;~</code>.</li><li><em>name</em> must be a feature name that exists in the dataset. If it references a
