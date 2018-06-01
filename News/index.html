@@ -300,40 +300,6 @@
     4.3.0
   </a>
   
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#api-change-in-search" title="API Change in Search" class="md-nav__link">
-    API Change in Search
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#new-in-search" title="New in Search" class="md-nav__link">
-    New in Search
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#quantifiers" title="Quantifiers" class="md-nav__link">
-    Quantifiers
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#fixes" title="Fixes" class="md-nav__link">
-    Fixes
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -765,7 +731,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixes_1" title="Fixes" class="md-nav__link">
+  <a href="#fixes" title="Fixes" class="md-nav__link">
     Fixes
   </a>
   
@@ -1191,40 +1157,6 @@
     4.3.0
   </a>
   
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#api-change-in-search" title="API Change in Search" class="md-nav__link">
-    API Change in Search
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#new-in-search" title="New in Search" class="md-nav__link">
-    New in Search
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#quantifiers" title="Quantifiers" class="md-nav__link">
-    Quantifiers
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#fixes" title="Fixes" class="md-nav__link">
-    Fixes
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -1656,7 +1588,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixes_1" title="Fixes" class="md-nav__link">
+  <a href="#fixes" title="Fixes" class="md-nav__link">
     Fixes
   </a>
   
@@ -1854,7 +1786,9 @@ all possibilities:
 <p>Docs and metadata update</p>
 <h2 id="430">4.3.0<a class="headerlink" href="#430" title="Permanent link">&para;</a></h2>
 <p>2018-05-30</p>
-<h3 id="api-change-in-search">API Change in Search<a class="headerlink" href="#api-change-in-search" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>API Change in Search.</p>
 <p>In search templates I recently added things like</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>  word vt!
 </pre></div>
@@ -1866,19 +1800,24 @@ all possibilities:
 </pre></div>
 </td></tr></table>
 
-<h3 id="new-in-search">New in Search<a class="headerlink" href="#new-in-search" title="Permanent link">&para;</a></h3>
+</li>
+<li>
+<p>Unequal (#) in feature value conditions.</p>
 <p>Now you can say things like</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>  word vt#infa|infc
 </pre></div>
 </td></tr></table>
 
 <p>meaning that the value of feature is not one of <code>infa</code>, <code>infc</code>.</p>
-<p>So, in addition to <code>=</code> we have <code>#</code> for "not equal".</p>
-<h3 id="quantifiers">Quantifiers<a class="headerlink" href="#quantifiers" title="Permanent link">&para;</a></h3>
+<p>So, in addition to <code>=</code> we have <code>#</code> for "not equal".
+*   Quantifiers.</p>
 <p>You can now use quantifiers in search. One of them is like <code>NOTEXIST</code> in MQL.
 See the <a href="../Api#quantifiers">docs</a></p>
-<h3 id="fixes">Fixes<a class="headerlink" href="#fixes" title="Permanent link">&para;</a></h3>
+</li>
+<li>
 <p>A number of minor fixes.</p>
+</li>
+</ul>
 <h2 id="421">4.2.1<a class="headerlink" href="#421" title="Permanent link">&para;</a></h2>
 <p>2018-05-25</p>
 <ul>
@@ -2296,7 +2235,7 @@ nodes were delivered as integers, instead of 1-tuples of integers.</p>
 examples the end of the
 <a href="../Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb">searchTutorial</a>.
 Thanks to James Cuénod for requesting nearness operators.</p>
-<h3 id="fixes_1">Fixes<a class="headerlink" href="#fixes_1" title="Permanent link">&para;</a></h3>
+<h3 id="fixes">Fixes<a class="headerlink" href="#fixes" title="Permanent link">&para;</a></h3>
 <ul>
 <li>in <code>S.glean()</code> word nodes were not printed;</li>
 <li>the check whether the search graph consists of a single connected component
