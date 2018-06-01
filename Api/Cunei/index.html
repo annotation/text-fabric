@@ -862,10 +862,10 @@ It does not harm performance if <code>highlights</code> maps lots of nodes outsi
 The elements of the list are displayed by <code>CN.prettyTuple()</code>.</p></details><details class="info"><summary>results</summary><p><code>results</code> an iterable of tuples of nodes.
 The results of a search qualify, but it works
 no matter which process has produced the tuples.</p></details><details class="info"><summary>condensed</summary><p><code>condensed</code> indicates one of two modes of displaying the result list:</p><ul><li><code>True</code>: instead of showing all results one by one,
-  we show all tablets with all results in it highlighted.
-  That way, we blur the distinction between the individual results,
-  but it is easier to oversee where the results are.</li><li><code>False</code>: make a separate display for each result tuple.
-  This gives the best account of the exact result set.</li></ul></details><details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
+    we show all tablets with all results in it highlighted.
+    That way, we blur the distinction between the individual results,
+    but it is easier to oversee where the results are.</li><li><code>False</code>: make a separate display for each result tuple.
+    This gives the best account of the exact result set.</li></ul></details><details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
 Default 1.</p></details><details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
 Default the length of the iterable.</p></details><details class="info"><summary>withNodes, lineart, lineNumbers, suppress, colorMap, highlights</summary><p>Same as in <code>B.prettyTuple()</code>.</p></details></details><h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>CN.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">shallow</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
