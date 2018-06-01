@@ -333,13 +333,13 @@ contains a number of handy functions on top of Text-Fabric and especially its
     ??? info "condensed"
         `condensed` indicates one of two modes of displaying the result list:
 
-        * `True`: instead of showing all results one by one,
-          we show all verses with all results in it highlighted.
-          That way, we blur the distinction between the individual results,
-          but it is easier to oversee where the results are.
-          This is how SHEBANQ displays its query results.
-        * `False`: make a separate display for each result tuple.
-          This gives the best account of the exact result set.
+        *   `True`: instead of showing all results one by one,
+            we show all verses with all results in it highlighted.
+            That way, we blur the distinction between the individual results,
+            but it is easier to oversee where the results are.
+            This is how SHEBANQ displays its query results.
+        *   `False`: make a separate display for each result tuple.
+            This gives the best account of the exact result set.
 
         ???+ caution "mixing up highlights"
             Condensing may mix-up the highlight coloring.

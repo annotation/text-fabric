@@ -17,10 +17,10 @@ which will be instantiated by nodes and edges of the fabric.
 
 The emphasis of this all is on:
 
-* [data processing](/Api/General/)
-* [sharing data](/Api/General/#loading)
-* [contributing modules](/Api/General/#saving-features)
-* [search for patterns](/Api/General/#searching)
+*   [data processing](/Api/General/)
+*   [sharing data](/Api/General/#loading)
+*   [contributing modules](/Api/General/#saving-features)
+*   [search for patterns](/Api/General/#searching)
 
 The intended use case is ancient writings, such as the
 [Hebrew Bible](https://github.com/ETCBC/bhsa) or

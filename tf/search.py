@@ -25,6 +25,17 @@ escapes = (
 
 PARENT_REF = '..'
 
+QALL = '/where/'
+QHAVE = '/have/'
+QNO = '/without/'
+QEITHER = '/with/'
+QOR = '/or/'
+QEND = '/-/'
+
+QINIT = {QALL, QNO, QEITHER}
+QCONT = {QHAVE, QOR}
+QTERM = {QEND}
+
 rePat = '^([a-zA-Z0-9-@_]+)~(.*)$'
 reRe = re.compile(rePat)
 reTp = type(reRe)
@@ -45,14 +56,14 @@ indentLinePat = '^(\s*)(.*)'
 indentLineRe = re.compile(indentLinePat)
 
 opPat = '(?:[#&|\[\]<>:=-]+\S*)'
-quPat = '(?:all|have|no|either|or|end)'
+quPat = f'(?:{QALL}|{QHAVE}|{QNO}|{QEITHER}|{QOR}|{QEND})'
 atomPat = '(\s*)([^ \t=#<>~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
 atomOpPat = (
     '(\s*)({op})\s+([^ \t=#<>~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(op=opPat)
 )
 opLinePat = '^(\s*)({op})\s*$'.format(op=opPat)
 opStripPat = '^\s*{op}\s+(.*)$'.format(op=opPat)
-quLinePat = '^(\s*)({qu}):\s*$'.format(qu=quPat)
+quLinePat = '^(\s*)({qu})\s*$'.format(qu=quPat)
 namePat = '[A-Za-z0-9_.-]+'
 relPat = '^(\s*)({nm})\s+({op})\s+({nm})\s*$'.format(nm=namePat, op=opPat)
 kPat = '^([^0-9]*)([0-9]+)([^0-9]*)$'
@@ -176,34 +187,11 @@ def _deContext(quantifier, parentName):
     newQuTemplates = []
     newQuantifier = (quKind, newQuTemplates, parentName)
 
-    # determine minimum indent of
-    # all templates of quantifier
-    minIndent = None
-    newTemplates = []
+    # replace .. (PARENT_REF) by parentName
+    # wherever it is applicable
     for template in quTemplates:
-        newTemplate = []
-        for line in template:
-            match = indentLineRe.match(line)
-            (indent, sline) = match.groups()
-            thisIndent = len(indent)
-            newTemplate.append((thisIndent, sline))
-            if minIndent is None or minIndent > thisIndent:
-                minIndent = thisIndent
-        newTemplates.append(newTemplate)
-
-    # subtract minimum indent from all lines
-    # and replace carets by spaces
-    for template in newTemplates:
         newLines = []
-        for (indent, sline) in template:
-            line = (
-                f'{" " * (indent - minIndent)}{sline}'
-            )
-            if line.startswith('^'):
-                line = line.replace('^', ' ', 1)
-
-            # replace .. (PARENT_REF) by parentName
-            # wherever it is applicable
+        for line in template:
             (kind, data) = _parseLine(line)
             newLine = line
             if kind == 'rel':
@@ -218,7 +206,6 @@ def _deContext(quantifier, parentName):
                 if name == '' and otype == PARENT_REF:
                     newData = (indent, op, name, parentName, features)
                     newLine = _genLine(kind, newData)
-
             newLines.append(newLine)
         templateStr = '\n'.join(newLines)
         newQuTemplates.append(templateStr)
@@ -1567,19 +1554,19 @@ One of the above relations on nodes and/or slots will suit you better.
         # Everything contained in a quantifiers is collected in
         # a new search template, verbatim, without interpretion,
         # because it will be fed to search() on another instance.
-        # We only strip the quantified lines of the leading indentation
-        # that corresponds to the level of the first line of the quantifier
+        # We only strip the quantified lines of the outermost quantifiers.
 
         # We can maintain the current quantifier, None if there is none.
         # We also remember the current indentation of the current quantifier
         # We collect the templates within the quantifier in a list of strings.
         # We add all the material into a quantifier token of the shape
         #
-        # (linenr, 'quant', indent-length, quKind, quTemplates)
+        # Because indentation is not indicative of quantifier nesting
+        # we need to maintain a stack of inner quantifiers,
+        # just to be able to determine wich quantifier words
+        # belong to the outerlevel quantifiers.
 
-        curQuLine = None
-        curQuKind = None
-        curQuIndent = None
+        curQu = []
         curQuTemplates = None
 
         for (i, line) in enumerate(searchLines):
@@ -1607,47 +1594,85 @@ One of the above relations on nodes and/or slots will suit you better.
 
             # we have the following possible situations:
             #
-            # nnn no quantifier in progress - no start of new one
-            # nqs no quantifier in progress - start of new one
-            #     enqs but with wrong quantifier
-            #     enqsa no preceding token
-            #     enqsb no preceding atom
-            #     enqsc preceding atom not the same indentation
-            # qpp quantifier in progress - no start or end
-            # qpc quantifier in progress - ends - is continued with other part
-            #     eqpc but with wrong precursor for the continuation
-            # qpe quantifier in progress - ends -
-            #     eqpe but with unterminated precursor
+            # UUO no outer              - no q-keyword
+            #
+            # UBO no outer              - q-keyword
+            #     * ES no start keyword
+            #     * ET no preceding token
+            #     * EA no preceding atom
+            #     * EI preceding atom not the same indentation
+            #
+            # PBI outer                 - q-keyword init
+            #
+            # PPO outer                 - no q-keyword
+            #
+            # PPI inner                 - no q-keyword
+            #
+            # PCO outer                 - q-keyword continue
+            #     * EP wrong precursor
+            #     * EK preceding keyword not the same indentation
+            #
+            # PCI inner                 - q-keyword continue
+            #     * EP wrong precursor
+            #     * EK preceding keyword not the same indentation
+            #
+            # PEO outer                 - q-keyword end
+            #     * EP wrong precursor
+            #     * EK preceding keyword not the same indentation
+            #
+            # PEI inner                 - q-keyword end
+            #     * EP wrong precursor
+            #     * EK preceding keyword not the same indentation
+            #
+            # at the end we may have a non-empty quantifier stack:
+            #     * generate an unterminated quantifier error for each member
+            #       of the stack
 
             # first we determine what is the case and we store it in booleans
 
-            nnn = (not curQuKind and not lineQuKind)
-            nqs = (not curQuKind and lineQuKind)
-            enqs = (nqs and lineQuKind in {'have', 'or', 'end'})
-            enqsa = (nqs and not enqs and len(tokens) == 0)
-            enqsb = (
-                nqs and not enqs and not enqsa and
-                (tokens[-1]['kind'] != 'atom' or 'otype' not in tokens[-1])
-            )
-            enqsc = (
-                nqs and not enqs and not enqsa and not enqsb
-                and tokens[-1]['indent'] != lineIndent
-            )
-            qpp = (curQuKind and lineIndent > curQuIndent)
-            qpc = (
-                curQuKind and lineQuKind and lineIndent == curQuIndent
-                and lineQuKind in {'have', 'or'}
-            )
-            eqpc = (
-                qpc and
-                ((curQuKind != 'all' and lineQuKind == 'have') or
-                 (curQuKind not in {'either', 'or'} and lineQuKind == 'or'))
-            )
-            qpe = (
-                curQuKind and lineQuKind and lineIndent == curQuIndent
-                and lineQuKind == 'end'
-            )
-            eqpe = (qpe and curQuKind in {'all', 'either'})
+            curQuLine = None
+            curQuKind = None
+            curQuIndent = None
+            curQuDepth = len(curQu)
+            if curQuDepth:
+                (curQuLine, curQuKind, curQuIndent) = curQu[-1]
+
+            UUO = not curQuDepth and not lineQuKind
+            UBO = not curQuDepth and lineQuKind
+            PBI = curQuDepth and lineQuKind in QINIT
+            PPO = curQuDepth == 1 and not lineQuKind
+            PPI = curQuDepth > 1 and not lineQuKind
+            PCO = curQuDepth == 1 and lineQuKind in QCONT
+            PCI = curQuDepth > 1 and lineQuKind in QCONT
+            PEO = curQuDepth == 1 and lineQuKind in QTERM
+            PEI = curQuDepth > 1 and lineQuKind in QTERM
+
+            (ES, ET, EA, EI, EP, EK) = (False,) * 6
+
+            if UBO:
+                ES = lineQuKind not in QINIT
+                ET = len(tokens) == 0
+                EA = (
+                    len(tokens) and
+                    tokens[-1]['kind'] != 'atom' and
+                    'otype' not in tokens[-1]
+                )
+                EI = (
+                    len(tokens) and
+                    tokens[-1]['indent'] != lineIndent
+                )
+
+            if PCO or PCI:
+                EP = (
+                    (lineQuKind == QHAVE and curQuKind != QALL)
+                    or
+                    (lineQuKind == QOR and curQuKind not in {QEITHER, QOR})
+                )
+                EK = curQu[-1][2] != lineIndent
+
+            if PEO or PEI:
+                EP = curQuKind in {QALL, QEITHER}
+                EK = curQu[-1][2] != lineIndent
 
             # QUANTIFIER HANDLING
             #
@@ -1659,24 +1684,24 @@ One of the above relations on nodes and/or slots will suit you better.
             good = True
 
             for x in [True]:
-                if nnn:
+                if UUO:
                     # no quantifier business
                     continue
-                if nqs:
+                if UBO:
                     # start new quantifier from nothing
-                    if enqs:
+                    if ES:
                         self.badSyntax.append(
                             f'Quantifier at line {i}:'
                             f' Can not start with "{lineQuKind}:"'
                         )
                         good = False
-                    if enqsa:
+                    if ET:
                         self.badSyntax.append(
                             f'Quantifier at line {i}:'
                             f' No preceding tokens'
                         )
                         good = False
-                    if enqsb or enqsc:
+                    if EA or EI:
                         self.badSyntax.append(
                             f'Quantifier at line {i}:'
                             f' Does not immediately follow an atom'
@@ -1684,48 +1709,83 @@ One of the above relations on nodes and/or slots will suit you better.
                         )
                         good = False
                     prevAtom = tokens[-1]
-                    curQuLine = i
-                    curQuKind = lineQuKind
-                    curQuIndent = lineIndent
+                    curQu.append((i, lineQuKind, lineIndent))
                     curQuTemplates = [[]]
                     quantifiers = prevAtom.setdefault('quantifiers', [])
-                    quantifiers.append((curQuKind, curQuTemplates))
+                    quantifiers.append((lineQuKind, curQuTemplates))
                     continue
-                if qpp:
-                    # inside a quantifier
+                if PBI:
+                    # start inner quantifier
+                    # lines are passed with stripped indentation
+                    # based on the outermost quantifier level
+                    outerIndent = curQu[0][2]
+                    strippedLine = line[outerIndent:]
+                    curQuTemplates[-1].append(strippedLine)
+                    curQu.append((i, lineQuKind, lineIndent))
+                if PPO:
+                    # inside an outer quantifier
                     # lines are passed with stripped indentation
                     strippedLine = line[curQuIndent:]
                     curQuTemplates[-1].append(strippedLine)
                     continue
-                if qpc:
-                    if eqpc:
+                if PPI:
+                    # inside an inner quantifier
+                    # lines are passed with stripped indentation
+                    # based on the outermost quantifier level
+                    outerIndent = curQu[0][2]
+                    strippedLine = line[outerIndent:]
+                    curQuTemplates[-1].append(strippedLine)
+                if PCO or PCI:
+                    if EP:
                         self.badSyntax.append(
                             f'Quantifier at line {i}:'
-                            f' Can not follow "{curQuKind}:"'
-                            f' (see line {curQuLine}'
+                            f' "{lineQuKind}" can not follow "{curQuKind}"'
+                            f' on line {curQuLine}'
                         )
                         good = False
-                    curQuTemplates.append([])
-                    curQuKind = lineQuKind
+                    if EK:
+                        self.badSyntax.append(
+                            f'Quantifier at line {i}:'
+                            f' "{lineQuKind}" has not same indentation as'
+                            f' "{curQuKind}" on line {curQuLine}'
+                        )
+                        good = False
+                    if PCO:
+                        curQuTemplates.append([])
+                    else:
+                        outerIndent = curQu[0][2]
+                        strippedLine = line[outerIndent:]
+                        curQuTemplates[-1].append(strippedLine)
+                    curQu[-1] = (i, lineQuKind, lineIndent)
                     continue
-                if qpe:
-                    if eqpe:
+                if PEO or PEI:
+                    if EP:
                         self.badSyntax.append(
                             f'Quantifier at line {i}:'
-                            f' Incomplete "{curQuKind}:"'
-                            f' (see line {curQuLine}'
+                            f' "{lineQuKind}": premature end of "{curQuKind}"'
+                            f' on line {curQuLine}'
                         )
                         good = False
-                    curQuKind = None
-                    curQuLine = None
-                    curQuIndent = None
-                    curQuTemplates = None
+                    if EK:
+                        self.badSyntax.append(
+                            f'Quantifier at line {i}:'
+                            f' "{lineQuKind}" has not same indentation as'
+                            f' "{curQuKind}" on line {curQuLine}'
+                        )
+                        good = False
+                    if PEO:
+                        curQuTemplates = None
+                    else:
+                        outerIndent = curQu[0][2]
+                        strippedLine = line[outerIndent:]
+                        curQuTemplates[-1].append(strippedLine)
+                    curQu.pop()
                     continue
 
             if not good:
                 allGood = False
 
-            if nnn:
+            if UUO:
                 # go on with normal template tokenization
                 pass
             else:
@@ -1840,12 +1900,12 @@ One of the above relations on nodes and/or slots will suit you better.
             if not good:
                 allGood = False
 
-        if curQuKind:
-            self.badSyntax.append(
-                f'Quantifier at line {i}:'
-                f' Unterminated quantifier"'
-                f' (see line {curQuLine}'
-            )
+        if curQu:
+            for (curQuLine, curQuKind, curQuIndent) in curQu:
+                self.badSyntax.append(
+                    f'Quantifier at line {curQuLine}:'
+                    f' Unterminated "{curQuKind}"'
+                )
             good = False
             allGood = False
         if allGood:
@@ -2452,13 +2512,12 @@ One of the above relations on nodes and/or slots will suit you better.
         cleanAtom = _cleanParent(atom, parentName)
 
         if showQuantifiers:
-            indent(level=level + 1)
+            indent(level=level + 1, reset=True)
             info(
-                f'Quantifier at level {level} "{quKind}:"'
-                f' acting on "{cleanAtom}"'
+                f'"Quantifier on "{cleanAtom}"'
             )
 
-        if quKind == 'no':
+        if quKind == QNO:
             queryN = '\n'.join((cleanAtom, quTemplates[0]))
             exe = SearchExe(
                 self.api,
@@ -2469,14 +2528,14 @@ One of the above relations on nodes and/or slots will suit you better.
                 showQuantifiers=showQuantifiers
             )
             if showQuantifiers:
-                indent(level=level + 1)
-                info(f'!!!\n{queryN}\n!!!', tm=False)
+                indent(level=level + 2, reset=True)
+                info(f'{quKind}\n{queryN}\n{QEND}', tm=False)
             noResults = exe.search()
             resultYarn = universe - noResults
             if showQuantifiers:
-                indent(level=level + 1)
+                indent(level=level + 2)
                 info(f'{len(noResults)} nodes to exclude')
-        elif quKind == 'all':
+        elif quKind == QALL:
             # compute the atom+antecedent:
             #   as result tuples
             queryA = '\n'.join((cleanAtom, quTemplates[0]))
@@ -2489,12 +2548,11 @@ One of the above relations on nodes and/or slots will suit you better.
                 showQuantifiers=showQuantifiers
             )
             if showQuantifiers:
-                indent(level=level + 1)
-                info(f'ANTECEDENT part')
-                info(f'---\n{queryA}\n---', tm=False)
+                indent(level=level + 2, reset=True)
+                info(f'{quKind}\n{queryA}', tm=False)
             aResultTuples = exe.search(limit=-1)
             if showQuantifiers:
-                indent(level=level + 1)
+                indent(level=level + 2)
                 info(f'{len(aResultTuples)} matching nodes')
             if not aResultTuples:
                 resultYarn = yarn
@@ -2513,11 +2571,11 @@ One of the above relations on nodes and/or slots will suit you better.
                     showQuantifiers=showQuantifiers
                 )
                 if showQuantifiers:
-                    indent(level=level + 1)
-                    info(f'CONSEQUENT part')
-                    info(f'>>>\n{queryAH}\n>>>', tm=False)
+                    indent(level=level + 2, reset=True)
+                    info(f'{QHAVE}\n{queryAH}\n{QEND}', tm=False)
                 ahResults = exe.search()
                 if showQuantifiers:
+                    indent(level=level + 2)
                     info(f'{len(ahResults)} matching nodes')
 
                 # determine the shallow tuples that correspond to
@@ -2525,7 +2583,7 @@ One of the above relations on nodes and/or slots will suit you better.
                 #   and then take the projection to their first components
                 resultsAnotH = project(set(aResultTuples) - ahResults, 1)
                 if showQuantifiers:
-                    indent(level=level + 1)
+                    indent(level=level + 2)
                     info(
                         f'{len(resultsAnotH)} match'
                         ' antecedent but not consequent'
@@ -2534,9 +2592,10 @@ One of the above relations on nodes and/or slots will suit you better.
                 # now have the atoms that do NOT qualify:
                 #   we subtract them from the universe
                 resultYarn = universe - resultsAnotH
-        elif quKind == 'either':
+        elif quKind == QEITHER:
             # compute the atom+alternative for all alternatives and union them
             resultYarn = set()
+            nAlts = len(quTemplates)
             for (i, alt) in enumerate(quTemplates):
                 queryAlt = '\n'.join((cleanAtom, alt))
                 exe = SearchExe(
@@ -2548,22 +2607,28 @@ One of the above relations on nodes and/or slots will suit you better.
                     showQuantifiers=showQuantifiers
                 )
                 if showQuantifiers:
-                    indent(level=level + 1)
-                    info(f'ALTERNATIVE {i} of {len(quTemplates)}')
-                    info(f'|||\n{queryAlt}\n|||')
-                altResults = exe.search()
-                resultYarn |= altResults
-                if showQuantifiers:
-                    indent(level=level + 1)
+                    indent(level=level + 2, reset=True)
                     info(
-                        f'{len(altResults)} nodes to add to'
-                        f'{len(resultYarn)} so far'
+                            (
+                                f'{quKind if i == 0 else QOR}\n'
+                                f'{queryAlt}{QEND if i == nAlts - 1 else ""}'
+                            ),
+                            tm=False
+                    )
+                altResults = exe.search()
+                nAlt = len(altResults)
+                nYarn = len(resultYarn)
+                resultYarn |= altResults
+                nNew = len(resultYarn)
+                if showQuantifiers:
+                    indent(level=level + 2)
+                    info(
+                        f'adding {nAlt} to {nYarn} yields {nNew} nodes'
                     )
         if showQuantifiers:
             indent(level=level + 1)
             info(
-                f'Results at level {level} of "{quKind}:"'
-                f' reduction from {len(yarn)} to {len(resultYarn)} nodes'
+                f'reduction from {len(yarn)} to {len(resultYarn)} nodes'
             )
             indent(level=0)
         return resultYarn

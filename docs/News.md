@@ -6,15 +6,27 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.3.3
+
+2018-06-01
+
+Search API:
+
+Improved quantifiers in search: 
+
+*   `/where/` `/have/` `/without/` `/with/` `/or/` `/-/`;
+*   much clearer indentation rules (no caret anymore);
+*   better reporting by `S.study()`.
+
 ## 4.3.2
 
 2018-05-31
 
 Search API: 
 
-* quantifiers may use the name `..` to refer to their parents
-* you may use names in the place of atoms, which lessens the need for constructs with `p = q`
-* stricter checks on the syntax and position of quantifiers
+*   quantifiers may use the name `..` to refer to their parents
+*   you may use names in the place of atoms, which lessens the need for constructs with `p = q`
+*   stricter checks on the syntax and position of quantifiers
 
 ## 4.3.1
 
@@ -67,16 +79,18 @@ A number of minor fixes.
 
 2018-05-25
 
-* Several improvements in the pretty display in Bhsa and Cunei APIs
-* Under the hood changes in `S.search()` to prepare for *quantifiers* in search templates.
-  * Tokenisation of quantifiers already works
-  * Searches can now spawn auxiliary searches without polluting intermediate data
-  * This has been done by promoting the `S` API to a factory of search engines.
-    By deafault, `S` creates and maintains a single factory, so to the user
-    it is the same `S`. But when it needs to run a query in the middle of processing another query
-    it can just spawn another search engine to do that, without interfering with the
-    original search.
-* NB: the search tutorial for the Bhsa got too big. It has thoroughly been rewritten.
+*   Several improvements in the pretty display in Bhsa and Cunei APIs
+*   Under the hood changes in `S.search()` to prepare for *quantifiers* in search templates.
+
+    *   Tokenisation of quantifiers already works
+    *   Searches can now spawn auxiliary searches without polluting intermediate data
+    *   This has been done by promoting the `S` API to a factory of search engines.
+        By deafault, `S` creates and maintains a single factory, so to the user
+        it is the same `S`. But when it needs to run a query in the middle of processing another query
+        it can just spawn another search engine to do that, without interfering with the
+        original search.
+
+*   NB: the search tutorial for the Bhsa got too big. It has thoroughly been rewritten.
 
 ## 4.2
 

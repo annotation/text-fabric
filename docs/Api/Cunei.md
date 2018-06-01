@@ -348,12 +348,12 @@ See also
     ??? info "condensed"
         `condensed` indicates one of two modes of displaying the result list:
 
-        * `True`: instead of showing all results one by one,
-          we show all tablets with all results in it highlighted.
-          That way, we blur the distinction between the individual results,
-          but it is easier to oversee where the results are.
-        * `False`: make a separate display for each result tuple.
-          This gives the best account of the exact result set.
+        *   `True`: instead of showing all results one by one,
+            we show all tablets with all results in it highlighted.
+            That way, we blur the distinction between the individual results,
+            but it is easier to oversee where the results are.
+        *   `False`: make a separate display for each result tuple.
+            This gives the best account of the exact result set.
 
     ??? info "start"
         `start` is the starting point in the results iterable (1 is the first one).

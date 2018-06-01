@@ -14,8 +14,8 @@
     However, Text-Fabric comes with several additions that make working
     with specific corpora easier.
 
-    * Hebrew Bible: [BHSA](Bhsa)
-    * Proto-cuneiform tablets from Uruk: [Cunei](Cunei)
+    *   Hebrew Bible: [BHSA](Bhsa)
+    *   Proto-cuneiform tablets from Uruk: [Cunei](Cunei)
 
 ## Loading
 
@@ -891,9 +891,10 @@
         Quantifiers consist of search templates themselves, demarcated by some
         special keywords:
         
-        *   `no: end:`
-        *   `all: have: end:`
-        *   `either: or: or: end:`
+        *   `/without/`
+        *   `/where/` and `/have/`
+        *   `/with/` and `/or/`
+        *   `/-/`
 
     ??? info "Features"
         The **features** above is a specification of what features with which values to
@@ -1006,6 +1007,7 @@
             *   these forms work for edges that do and do not have values;
 
             ![op](/images/Spatial/Spatial.018.png)
+
         *   `-`*name* *valueSpec*`>` `<`*name* *valueSpec*`-`: connected by the edge feature *name*
 
             *   in both directions;
@@ -1019,49 +1021,58 @@
     ???+ caution "Experimental"
         This part of search templates is still experimental.
 
-        * bugs may be discovered
-        * the syntax of quantifiers may change
+        *   bugs may be discovered
+        *   the syntax of quantifiers may change
 
     ??? abstract "Quantifiers are conditions"
         Quantifiers are a powerful kind of conditions in templates.
-        With the help of quantifiers you can say pretty sophisticated things in a template.
 
-        They state conditions on the relatives of a given node.
-        Whereas normal templates only state that certain configurations must exists,
-        with quantifiers you are able to express that all relatives of a certain kind
-        have certain properties or that some relatives do not exist.
+        They state conditions on a given atom in your template.
+        The atom in question is called the *parent* atom.
+        The conditions may involve *many* nodes that are related to the parent,
+        as in:
 
-        Their requirements have the shape of a quantifier: 
+        *all embedded words are a verb*;
 
-        ```
-        node-or-set
-        no:
-          templateN
-        end:
-        ```
+        *without a following predicate phrase*;
 
-        ```
-        node-or-set
-        all:
-          templateA
-        have:
-          templateH
-        end:
-        ```
+        *with a mother clause or a mother phrase*.
+
+        That is where the term *quantifier* comes from.
+
+        A quantifier *quantifies* its parent atom.
+
+        Here is the syntax of the quantifiers:
 
         ```
-        node-or-set
-        either:
-          templateO1
-        or:
-          templateO2
-        or:
-          templateO3
-        end:
+        atom
+        /without/
+        templateN
+        /-/
+        ```
+
+        ```
+        atom
+        /where/
+        templateA
+        /have/
+        templateH
+        /-/
+        ```
+
+        ```
+        atom
+        /with/
+        templateO1
+        /or/
+        templateO2
+        /or/
+        templateO3
+        /-/
         ```
 
         ???+ note "Parent"
-            The `node-or-set` bit is an atom line, it acts as the *parent* of the quantifier.
+            The `atom` bit is an atom line, it acts as the *parent* of the quantifier.
 
         ???+ note "Multiple quantifiers"
             You may have multiple quantifiers for one parent.
@@ -1082,59 +1093,80 @@
             This interpretation gives rise to one or more templates to be constructed and run.
             Those new templates have been stripped of the outer layer of quantifiers,
             and when these templates are executed, the 2nd level quantifiers have become outer.
+            And so on.
 
     ??? caution "Restrictions"
         Due to the implementation of quantifiers there are certain restrictions.
 
-        * Quantifiers must be put immediately below their parents or below
-          preceding quantifiers of the same parent.
-        * The keywords of a quantifier must appear on lines with exactly the same indentation
-          as the atom they quantify.
-        * The templates of a quantifier must be indented relative the level of its keywords.
-        * The names accessible to the templates inside the templates of a quantifier are:
-          * the name `..`, which is the name of the atom that is quantified;
-            this name is automagically valid in quantified templates;
-          * the name of the atom that is quantified (if that atom has a name);
-          * names defined in the template itself;
-          * `templateH` may use names defined in `templateA`;
-          * `templateO`*i* may not use names defined in `templateO`*j* ;
-          * names defined outer quantifiers are not accessible in inner quantifiers.
-          * when you nest quantifiers, think of the way they will be recomposed into
-            ordinary templates. This dictates whether your quantifier can be valid or not.
+        *   Quantifiers must be put immediately below their parents or below
+            preceding quantifiers of the same parent.
+        *   The keywords of a quantifier must appear on lines with exactly the same indentation
+            as the atom they quantify.
+        *   The templates of a quantifier must have equal or greater indent than its keywords;
+        *   The names accessible to the templates inside a quantifier are:
 
-    ??? caution "Indentation"
-        Indentation in quantifiers will be stripped. All templates in a quantifier will be 
-        examined, and the block of indentation common to all lines will be stripped.
-        The remaining indentation
-        is interpreted relative to the atom which is being quantified.
+            *   the name `..`, which is the name of the atom that is quantified;
+                this name is automagically valid in quantifier templates;
+            *   the name of the atom that is quantified (if that atom has a given name);
+            *   names defined in the template itself;
+            *   `templateH` may use names defined in `templateA`;
 
-        ???+ note "Caret"
-            If your quantifier templates have just one line, by the rule just mentioned,
-            all its indentation will be stripped. 
-            But it might have been your intention to indent the quantifier line relative to 
-            the atom line.
-            To enforce indentation, you can put a `^` on the place that corresponds to zero
-            indentation relative the atom.
+        *   The following situations block the visibility of names:
 
-        ??? example "Caret example"
-            The outermost quantifier (`all: have:`) postulates a `phrase`.
-            Without the `^`, all indentation would be stripped, and the `phrase`
-            would appear at the same level as the `clause`, destroying the requirement
-            that the `phrase` lies embedded in the `clause`. The `^` defines the point of 
-            zero indentation, so only the indentation before the `^` will be stripped.
-            The `^` itself wil be replaced by a ` ` once it has done its work.
+            *   `templateO`*i* may not use names defined in `templateO`*j* for *j* other than *i*;
+            *   names defined outer quantifiers are not accessible in inner quantifiers;
+            *   names defined inner quantifiers are not accessible in outer quantifiers;
+
+        When you nest quantifiers, think of the way they will be recomposed into
+        ordinary templates. This dictates whether your quantifier can be valid or not.
+
+    ??? note "Indentation"
+        The indentation in quantifiers relative to their parent atom will be preserved.
+        
+        ??? example "Nested quantifiers"
+            Consider
 
             ```
             clause
-            all:
-              ^ phrase function=Pred
-            have:
-                no:
-                  ^ word sp#verb
-                end:
-            end:
+            /where/
+              phrase function=Pred
+            /have/
+              /without/
+                word sp#verb
+              /-/
+            /-/
               phrase function=Subj
             ```
+
+            The auxiliary templates that will be run are:
+
+            For the outer quantifier:
+
+            ```
+            clause
+              phrase function=Pred
+            ```
+
+            and
+
+            ```
+            clause
+              phrase function=Pred
+              /without/
+                word sp#verb
+              /-/
+            ```
+
+            For the inner quantifier:
+
+            ```
+            phrase function=Pred
+              word sp#verb
+            ```
+
+            Note that the auxiliary template for the inner quantifier
+            is shifted in its entirety to the left, but that the 
+            relative indentation is exactly as it shows in the original template.
 
     ??? info "Implementation"
         Here is a description of the implementation of the quantifiers.
@@ -1143,10 +1175,10 @@
 
         The basic idea is:
 
-        * a quantifier leads to the execution of one or more separate searches;
-        * the results of these searches are combined by means of set operations;
-          (difference, intersection, union), dependent on the nature of the quantifier;
-        * the end result of this combination will fed as a custom set to the original template.
+        *   a quantifier leads to the execution of one or more separate searches;
+        *   the results of these searches are combined by means of set operations;
+            (difference, intersection, union), dependent on the nature of the quantifier;
+        *   the end result of this combination will fed as a custom set to the original template.
 
         ??? info "General case"
             Suppose we have
@@ -1183,26 +1215,25 @@
             and this combinations will be run.
             The fact that the combined template has to be run in isolation, is the main source of
             restrictions on the usage of names.
-            It also forces us to juggle with the indentation. 
 
             It is important which templates will be run for each kind of quantifier.
             
             All templates of all quantifiers will be combined with the
             atom line that is being quantified on top, without indent.
 
-            So all qunatifier templates can see their own names, and the name of the
+            So all quantifier templates can see their own names, and the name of the
             atom if it exists.
             In one case, a template can see additional names:
 
-        ??? info "all: have: end:"
+        ??? info "/where/ /have/"
 
             ```
             atom
-            all:
-              templateA
-            have:
-              templateH
-            end:
+            /where/
+            templateA
+            /have/
+            templateH
+            /-/
             ```
 
             This quantifier gives rise to running search for the following templates:
@@ -1516,9 +1547,9 @@
 
         In most cases `F` works just fine, but `Fs` is needed in two cases:
 
-        * if we need to work with a feature whose name is not a valid
-          Python name;
-        * if we determine the feature we work with dynamically, at run time.
+        *   if we need to work with a feature whose name is not a valid
+            Python name;
+        *   if we determine the feature we work with dynamically, at run time.
 
     ??? note "Simple forms"
         In the sequel we'll give examples based on the simple form only.
@@ -1638,9 +1669,9 @@
 
         In most cases `E` works just fine, but `Es` is needed in two cases:
 
-        * if we need to work with a feature whose name is not a valid
-          Python name;
-        * if we determine the feature we work with dynamically, at run time.
+        *   if we need to work with a feature whose name is not a valid
+            Python name;
+        *   if we determine the feature we work with dynamically, at run time.
 
     ??? note "Simple forms"
         In the sequel we'll give examples based on the simple form only.
@@ -1733,8 +1764,9 @@
     
     ???+ info "Description"
         Sends a message to standard output, possibly with time and newline.
-        * if `info()` is being used, the message is sent to `stdout`;
-        * if `error()` is being used, the message is sent to `stderr`;
+
+        *   if `info()` is being used, the message is sent to `stdout`;
+        *   if `error()` is being used, the message is sent to `stderr`;
 
         In a Jupyter notebook, the standard error is displayed with
         a reddish background colour.
