@@ -378,8 +378,13 @@ contains a number of handy functions on top of Text-Fabric and especially its
         `silent`: if `True` it will suppress the reporting of the number of results.
 
     ??? info "shallow"
-        If `True`, the result is a set of things that match the top-level element
+        If `True` or `1`, the result is a set of things that match the top-level element
         of the `query`.
+
+        If `2` or a bigger number *n*, return the set of truncated result tuples: only
+        the first *n* members of each tuple is retained.
+
+        If `False` or `0`, a sorted list of all result tuples will be returned.
 
     ??? info "sets"
         If not `None`, it should be a dictionary of sets, keyed by a names.

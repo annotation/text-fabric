@@ -38,42 +38,39 @@ Docs and metadata update
 
 2018-05-30
 
-### API Change in Search
+*   API Change in Search.
 
-In search templates I recently added things like
+    In search templates I recently added things like
 
-```
-  word vt!
-```
+    ```
+      word vt!
+    ```
 
-which checks for words that do not have a value for feature `vt`.
+    which checks for words that do not have a value for feature `vt`.
 
-The syntax for this has now changed to
+    The syntax for this has now changed to
 
-```
-  word vt#
-```
+    ```
+      word vt#
+    ```
 
-### New in Search
+*   Unequal (#) in feature value conditions.
 
-Now you can say things like
+    Now you can say things like
 
-```
-  word vt#infa|infc
-```
+    ```
+      word vt#infa|infc
+    ```
 
-meaning that the value of feature is not one of `infa`, `infc`.
+    meaning that the value of feature is not one of `infa`, `infc`.
 
-So, in addition to `=` we have `#` for "not equal".
+    So, in addition to `=` we have `#` for "not equal".
+*   Quantifiers.
 
-### Quantifiers
+    You can now use quantifiers in search. One of them is like `NOTEXIST` in MQL.
+    See the [docs](/Api#quantifiers)
 
-You can now use quantifiers in search. One of them is like `NOTEXIST` in MQL.
-See the [docs](/Api#quantifiers)
-
-### Fixes
-
-A number of minor fixes.
+*   A number of minor fixes.
 
 ## 4.2.1
 

@@ -1039,7 +1039,7 @@
         *   bugs may be discovered
         *   the syntax of quantifiers may change
 
-    ??? abstract "Quantifiers are conditions"
+    ??? info "Quantifiers are conditions"
         Quantifiers are a powerful kind of conditions in templates.
 
         They state conditions on a given atom in your template.
@@ -1057,7 +1057,9 @@
 
         A quantifier *quantifies* its parent atom.
 
-        Here is the syntax of the quantifiers:
+    ??? abstract "/without/"
+
+        Syntax:
 
         ```
         atom
@@ -1065,6 +1067,20 @@
         templateN
         /-/
         ```
+
+        Meaning:
+        
+        node *r* is a result of this template if *r* is a result of `atom` and
+        if *r* cannot be extended to a tuple (*r*, *RN*) that is the result of
+
+        ```
+        atom
+        templateN
+        ```
+
+    ??? abstract "/where/"
+
+        Syntax:
 
         ```
         atom
@@ -1074,6 +1090,29 @@
         templateH
         /-/
         ```
+
+        Meaning:
+        
+        node *r* is a result of this template if *r* is a result of `atom` and
+        if *r* all extensions (*r*, *RA*) that are results of
+        
+        ```
+        atom
+        templateA
+        ```
+          
+        can be extended to a tuples (*r*, *RA*, *RH*) that are results of
+
+        ```
+        atom
+        templateA
+        templateH
+        ```
+          
+
+    ??? abstract "/with/"
+
+        Syntax:
 
         ```
         atom
@@ -1086,29 +1125,53 @@
         /-/
         ```
 
-        ???+ note "Parent"
-            The `atom` bit is an atom line, it acts as the *parent* of the quantifier.
+        Meaning:
+        
+        node *r* is a result of this template if *r* is a result of `atom` and
+        there is an extension (*r*, *R1*) that is a result of
 
-        ???+ note "Multiple quantifiers"
-            You may have multiple quantifiers for one parent.
+        ```
+        atom
+        templateO1
+        ```
 
-        ???+ note "Not in result tuples"
-            Whereas a the search for a normal template
-            proceeds by finding a tuples that instantiates all it nodes
-            in such a way that all relationships expressed in the template hold, a quantifier template
-            is not instantiated.
-            It asserts a condition that has to be tested for all nodes relative
-            an other node. None of the atoms in a template of a quantifier corresponds to
-            a node in a result tuple.
+        or there is an extension (*r*, *R2*) that is a result of
 
-        ???+ note "May be nested"
-            Templates within a quantifier may contain other quantifiers.
-            The idea is, that whenever a search template is evaluated, the outer level of 
-            quantifiers in it gets interpreted.
-            This interpretation gives rise to one or more templates to be constructed and run.
-            Those new templates have been stripped of the outer layer of quantifiers,
-            and when these templates are executed, the 2nd level quantifiers have become outer.
-            And so on.
+        ```
+        atom
+        templateO2
+        ```
+
+        or there is an extension (*r*, *R3*) that is a result of
+
+        ```
+        atom
+        templateO3
+        ```
+
+    ???+ note "Parent"
+        The `atom` bit is an atom line, it acts as the *parent* of the quantifier.
+
+    ???+ note "Multiple quantifiers"
+        You may have multiple quantifiers for one parent.
+
+    ???+ note "Not in result tuples"
+        Whereas a the search for a normal template
+        proceeds by finding a tuples that instantiates all it nodes
+        in such a way that all relationships expressed in the template hold, a quantifier template
+        is not instantiated.
+        It asserts a condition that has to be tested for all nodes relative
+        an other node. None of the atoms in a template of a quantifier corresponds to
+        a node in a result tuple.
+
+    ???+ note "May be nested"
+        Templates within a quantifier may contain other quantifiers.
+        The idea is, that whenever a search template is evaluated, the outer level of 
+        quantifiers in it gets interpreted.
+        This interpretation gives rise to one or more templates to be constructed and run.
+        Those new templates have been stripped of the outer layer of quantifiers,
+        and when these templates are executed, the 2nd level quantifiers have become outer.
+        And so on.
 
     ??? caution "Restrictions"
         Due to the implementation of quantifiers there are certain restrictions.
@@ -1282,7 +1345,7 @@
 
 ??? abstract "S.search()"
     ```python
-    S.search(searchTemplate, limit=None, shallow=False, sets=None)
+    S.search(query, limit=None, shallow=False, sets=None)
     ```
 
     ???+ info "Description"
@@ -1291,12 +1354,17 @@
         is a tuple of nodes, where each node corresponds to an *atom*-line in your
         [search template](#search-template-introduction).
         
-    ??? info "searchTemplate"
-        The search template is a string that conforms to the rules described above.
+    ??? info "query"
+        The query is a search template, i.e. a string that conforms to the rules described above.
         
     ??? info "shallow"
-        If `True`, the result is a set of things that match the top-level element
+        If `True` or `1`, the result is a set of things that match the top-level element
         of the `query`.
+
+        If `2` or a bigger number *n*, return the set of truncated result tuples: only
+        the first *n* members of each tuple is retained.
+
+        If `False` or `0`, a sorted list of all result tuples will be returned.
 
     ??? info "sets"
         If not `None`, it should be a dictionary of sets, keyed by a names.

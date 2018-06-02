@@ -2611,7 +2611,7 @@ One of the above relations on nodes and/or slots will suit you better.
                     info(
                             (
                                 f'{quKind if i == 0 else QOR}\n'
-                                f'{queryAlt}{QEND if i == nAlts - 1 else ""}'
+                                f'{queryAlt}'
                             ),
                             tm=False
                     )
@@ -2625,6 +2625,8 @@ One of the above relations on nodes and/or slots will suit you better.
                     info(
                         f'adding {nAlt} to {nYarn} yields {nNew} nodes'
                     )
+                    if i == nAlts - 1:
+                        info(QEND, tm=False)
         if showQuantifiers:
             indent(level=level + 1)
             info(

@@ -1,5 +1,16 @@
 # Text-Fabric Data Model
 
+> Everything about us, everything around us, everything we know and can know of
+> is composed ultimately of patterns of nothing;
+> that’s the bottom line, the final truth.
+> So where we find we have any control over those patterns,
+> why not make the most elegant ones, the most enjoyable and good ones,
+> in our own terms?"
+>
+> -- **Iain M. Banks**.
+"[Consider Phlebas](https://read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system):
+A Culture Novel (Culture series)"
+
 ## At a glance
 
 Take a text, put a grid around the words, and then leave out the words. What is
