@@ -20,7 +20,7 @@ pages:
   - Home: 'index.md'
   - News: 'News.md'
   - Api:
-    - 'Text-Fabric': 'Api/General.md'
+    - 'General': 'Api/General.md'
     - 'Hebrew Bible': 'Api/Bhsa.md'
     - 'Cuneiform Tablets': 'Api/Cunei.md'
     - 'Auxiliary': 'Api/Lib.md'

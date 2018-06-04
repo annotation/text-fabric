@@ -34,7 +34,6 @@ Text-Fabric not only deals with the text, but also with rich sets of linguistic 
 It has been used to construct the website
 [SHEBANQ](https://shebanq.ancient-data.org) and it is being
 used by researchers to analyse such texts. 
-Text-Fabric is a Python3 package for Text plus Annotations.
 
 ## Install
 
@@ -63,6 +62,11 @@ pip3 install text-fabric
     pip3 install jupyterlab
     jupyter labextension install jupyterlab-toc
     ```
+
+    The toc-extension is handy to get an overview
+    when working with the lengthy tutorial. It will create an extra
+    tab in the Jupyter Lab interface with a table of contents of the
+    current notebook.
 
 ## Corpora
 

@@ -5,7 +5,7 @@
     [Hebrew Bible](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     and the
     [Uruk Cuneiform Tablets](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
-    put the Text-Fabric API on show for two distinguished (and vastly distinct) corpora.
+    put the Text-Fabric API on show for two distinguished (and vastly different) corpora.
 
 ???+ note "Generic API"
     This is the API of Text-Fabric in general.
@@ -645,6 +645,15 @@
     interested in has to be written as a *search template*, offered to `S.search()`
     which returns the matching results as tuples of nodes.
 
+    A search template expresses a pattern of nodes and edges with additional conditions
+    also known as *quantifiers*.
+
+    A result of a search template is a tuple of nodes that instantiate the nodes in
+    the pattern, in such a way that the edges of the pattern are also instantiated
+    between the nodes of the result tuple.
+
+    Moreover, the quantifiers will hold for each result tuple.
+
 ???+ info "S"
     The Search API is exposed as `S` or `Search`.
 
@@ -823,86 +832,106 @@
     [Hebrew](https://github.com/ETCBC/bhsa/blob/master/tutorial/search.ipynb) and
     [Cuneiform](https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb).
 
+    Finally an example with quantifiers. We want all clauses where Pred-phrases
+    consist of verbs only:
+
+    ```
+      clause
+      /where/
+        phrase function=Pred
+      /have/
+        /without/
+          word sp#verb
+        /-/
+      /-/
+    ```
+
 ??? info "Search template reference"
-    ??? info "General"
-        We have these kinds of lines in a template:
+    We have these kinds of lines in a template:
 
-        *   *comment* lines
+    *   *comment* lines
 
-            *   If a line starts with `#` it is ignored.
-            *   You cannot comment out parts of lines, only whole lines.
+        *   if a line starts with `#` it is a comment line`;
+        *   you cannot comment out parts of lines, only whole lines;
+        *   if a line is empty or has whitespace only, it is a comment line;
+        *   comment lines are allowed everywhere;
+        *   comment lines are ignored.
 
-        *   *atom* lines
+    *   *atom* lines
 
-            *   (simple): **indent name:otype-or-set features**
+        *   (simple): **indent name:otype-or-set features**
 
-                *   Examples
+            *   Examples
 
-                    1.  `word pos=verb gender=feminine`
-                    2.  `vb:word pos=verb gender=feminine`
-                    3.  `vb pos=verb gender=feminine`
+                1.  `word pos=verb gender=feminine`
+                2.  `vb:word pos=verb gender=feminine`
+                3.  `vb pos=verb gender=feminine`
 
-                *   The indent is significant. Indent is counted as the number of white space
-                    characters, where tabs count for just 1. **Avoid tabs!**.
-                *   The **name:** part is optional.
-                    If present, it defines a name for this atom that can be used
-                    in relational comparisons and other atoms.
-                *   The **otype-or-set** part is optional.
-                    If it is absent, the **name** part must be present.
-                    The meaning of
+            *   The indent is significant. Indent is counted as the number of white space
+                characters, where tabs count for just 1. **Avoid tabs!**.
+            *   The **name:** part is optional.
+                If present, it defines a name for this atom that can be used
+                in relational comparisons and other atoms.
+            *   The **otype-or-set** part is optional.
+                If it is absent, the **name** part must be present.
+                The meaning of
 
-                    ```
-                    p:phrase sp=verb
-                    p vs=qal
-                    ```
+                ```
+                p:phrase sp=verb
+                p vs=qal
+                ```
 
-                    is identical to the meaning of
+                is identical to the meaning of
 
-                    ```
-                    p:phrase sp=verb
-                    pnew:phrase vs=qal
-                    p = pnew
-                    ```
+                ```
+                p:phrase sp=verb
+                pnew:phrase vs=qal
+                p = pnew
+                ```
 
-            *   (with relop): **indent op name:otype-or-set features**
+        *   (with relop): **indent op name:otype-or-set features**
 
-                *   `<: word pos=verb gender=feminine`
-                *   The relation operator specifies an extra constraint between a preceding atom
-                    and this atom.
-                *   The preceding atom may be the parent, provided we are at its first child, or
-                    it may the preceding sibling.
-                *   You can leave out the **name:otype-or-set features** bit. In that case, the
-                    relation holds between the preceding atom and its parent.
-                *   The **name:** part is optional. Exactly as in the case without relop.
-                *   The **otype-or-set** part is optional. Exactly as in the case without relop.
+            *   `<: word pos=verb gender=feminine`
+            *   The relation operator specifies an extra constraint between a preceding atom
+                and this atom.
+            *   The preceding atom may be the parent, provided we are at its first child, or
+                it may the preceding sibling.
+            *   You can leave out the **name:otype-or-set features** bit. In that case, the
+                relation holds between the preceding atom and its parent.
+            *   The **name:** part is optional. Exactly as in the case without relop.
+            *   The **otype-or-set** part is optional. Exactly as in the case without relop.
 
-            The otype-or-set is either a node type that exists in your TF data set,
-            or it is the name of a set that you have passed in the `sets` parameter alongside
-            the query itself when you call `S.search()` or `S.study()`.
+        The otype-or-set is either a node type that exists in your TF data set,
+        or it is the name of a set that you have passed in the `sets` parameter alongside
+        the query itself when you call `S.search()` or `S.study()`.
 
-        *   *feature* lines: **features**
+        See [*feature specifications*](#feature-specifications) below for all
+        full variety of feature constraints on nodes and edges.
 
-            *   Indent is not significant. Continuation of feature constraints after a
-                preceding atom line or other feature line. This way you can divide lengthy
-                feature constraints over multiple lines.
+    *   *feature* lines: **features**
 
-        *   *relation* lines: **name operator name**
+        *   Indent is not significant. Continuation of feature constraints after a
+            preceding atom line or other feature line. This way you can divide lengthy
+            feature constraints over multiple lines.
 
-            *   `s := w`
-            *   `m -sub> s`
-            *   `m <sub- s`
-            *   Indents and spacing are ignored.
-            *   There must be white-space around the operator.
-            *   Operators that come from edge features may be enriched with values.
-                See below.
+        See [*feature specifications*](#feature-specifications) below for the
+        full variety of feature constraints on nodes and edges.
 
-        *   *white-space or empty* lines
+    *   *relation* lines: **name operator name**
 
-            *   Everywhere allowed.
-            *   Always ignored.
+        *   `s := w`
+        *   `m -sub> s`
+        *   `m <sub- s`
+        *   Indents and spacing are ignored.
+        *   There must be white-space around the operator.
+        *   Operators that come from edge features may be enriched with values.
 
+        See [*relational operators*](#relational-operators) below for the
+        whole spectrum of relational constraints on nodes.
+
+
+    *   *quantifier* sub-templates:
         Atom lines that contain an otype or set may be followed by
-        [*quantifiers*](#quantifiers).
         Quantifiers consist of search templates themselves, demarcated by some
         special keywords:
         
@@ -911,50 +940,53 @@
         *   `/with/` and `/or/`
         *   `/-/`
 
-    ??? info "Features"
-        The **features** above is a specification of what features with which values to
-        search for. This specification must be written as a white-space separated list
-        of **feature specs**.
+        See [*quantifiers*](#quantifiers) below for all the syntax and semantics.
 
-        A **feature spec** has the form *name* *valueSpec*, with no space between the *name*
-        and the *valueSpec*.
-        The *valueSpec* may have the following forms and meanings:
+#### Feature specifications
 
-        form | evaluates to `True` the feature *name* ...
-        ---- | -------
-        | has any value except `None`
-        `#` | has value `None`
-        `=`*values* | has one of the values specified
-        `#`*values* | has none of the values specified
-        `>`*value* | is greater than *value*
-        `<`*value* | is less than *value*
-        `~`*regular expression* | has a value and it matches *regular expression*
+??? info "Features specs"
+    The **features** above is a specification of what features with which values to
+    search for. This specification must be written as a white-space separated list
+    of **feature specs**.
 
-        All these forms are also valid as `-`*name* *form*`>` and `<`*name* *form*`-`, in which case
-        they specify value constraints on edge features.
-        This is only meaningful if the edge feature is declared to have values (most edge features
-        do not have values).
+    A **feature spec** has the form *name* *valueSpec*, with no space between the *name*
+    and the *valueSpec*.
+    The *valueSpec* may have the following forms and meanings:
 
-        **Additional constraints**
+    form | evaluates to `True` the feature *name* ...
+    ---- | -------
+    | has any value except `None`
+    `#` | has value `None`
+    `=`*values* | has one of the values specified
+    `#`*values* | has none of the values specified
+    `>`*value* | is greater than *value*
+    `<`*value* | is less than *value*
+    `~`*regular expression* | has a value and it matches *regular expression*
 
-        *   There may be no space around the `=#<>~`.
-        *   *name* must be a feature name that exists in the dataset. If it references a
-            feature that is not yet loaded, the feature will be loaded automatically.
-        *   *values* must be a `|` separated list of feature values, no quotes. No spaces
-            around the `|`. If you need a space or `|` or `\` in a value, escape it by a
-            `\`. Escape tabs and newlines as `\t` and `\n`.
-        *   When comparing values with `<` and `>`:
-            *    *value* must be an integer (negative values allowed);
-            *   You can do numeric comparisons only on number-valued features, not on
-                string-valued features.
-        *   *regular expression* must be a string that conforms to the Python
-            [regular axpression syntax](https://docs.python.org/3/library/re.html#regular-expression-syntax)
-            *   If that syntax prescribes a`\`, you have to write it twice: `\` `\`.
-            *   If you need a space in your regular expression, you have to escape it with a
-                `\`.
-            *   You can do regular expressions only on string-valued features, not on
-                number-valued features.
+    All these forms are also valid as `-`*name* *form*`>` and `<`*name* *form*`-`, in which case
+    they specify value constraints on edge features.
+    This is only meaningful if the edge feature is declared to have values (most edge features
+    do not have values).
 
+    **Additional constraints**
+
+    *   There may be no space around the `=#<>~`.
+    *   *name* must be a feature name that exists in the dataset. If it references a
+        feature that is not yet loaded, the feature will be loaded automatically.
+    *   *values* must be a `|` separated list of feature values, no quotes. No spaces
+        around the `|`. If you need a space or `|` or `\` in a value, escape it by a
+        `\`. Escape tabs and newlines as `\t` and `\n`.
+    *   When comparing values with `<` and `>`:
+        *    *value* must be an integer (negative values allowed);
+        *   You can do numeric comparisons only on number-valued features, not on
+            string-valued features.
+    *   *regular expression* must be a string that conforms to the Python
+        [regular axpression syntax](https://docs.python.org/3/library/re.html#regular-expression-syntax)
+        *   If that syntax prescribes a`\`, you have to write it twice: `\` `\`.
+        *   If you need a space in your regular expression, you have to escape it with a
+            `\`.
+        *   You can do regular expressions only on string-valued features, not on
+            number-valued features.
 
 #### Relational operators
 
@@ -1039,8 +1071,8 @@
         *   bugs may be discovered
         *   the syntax of quantifiers may change
 
-    ??? info "Quantifiers are conditions"
-        Quantifiers are a powerful kind of conditions in templates.
+    ??? info "What is a quantifier?"
+        Quantifiers are powerful expressions in templates.
 
         They state conditions on a given atom in your template.
         The atom in question is called the *parent* atom.
@@ -1070,8 +1102,8 @@
 
         Meaning:
         
-        node *r* is a result of this template if *r* is a result of `atom` and
-        if *r* cannot be extended to a tuple (*r*, *RN*) that is the result of
+        node *r* is a result of this template if and only if *r* is a result of `atom` and
+        there is no tuple *RN* such that (*r*, *RN*) is a result of
 
         ```
         atom
@@ -1093,15 +1125,15 @@
 
         Meaning:
         
-        node *r* is a result of this template if *r* is a result of `atom` and
-        if *r* all extensions (*r*, *RA*) that are results of
+        node *r* is a result of this template if and only if *r* is a result of `atom` and
+        for all tuples (*RA*) such that (*r*, *RA*) is a result of
         
         ```
         atom
         templateA
         ```
           
-        can be extended to a tuples (*r*, *RA*, *RH*) that are results of
+        there is a tuple *RH* such that (*r*, *RA*, *RH*)  is a result of
 
         ```
         atom
@@ -1127,22 +1159,22 @@
 
         Meaning:
         
-        node *r* is a result of this template if *r* is a result of `atom` and
-        there is an extension (*r*, *R1*) that is a result of
+        node *r* is a result of this template if and only if:
+        there is a tuple *R1* such that (*r*, *R1*) is a result of
 
         ```
         atom
         templateO1
         ```
 
-        or there is an extension (*r*, *R2*) that is a result of
+        or there is a tuple *R2* such that (*r*, *R2*) is a result of
 
         ```
         atom
         templateO2
         ```
 
-        or there is an extension (*r*, *R3*) that is a result of
+        or there is a tuple *R3* such that (*r*, *R3*) is a result of
 
         ```
         atom
@@ -1161,16 +1193,16 @@
         in such a way that all relationships expressed in the template hold, a quantifier template
         is not instantiated.
         It asserts a condition that has to be tested for all nodes relative
-        an other node. None of the atoms in a template of a quantifier corresponds to
-        a node in a result tuple.
+        its parent. None of the atoms in a template of a quantifier corresponds to
+        a node in a final result tuple.
 
     ???+ note "May be nested"
         Templates within a quantifier may contain other quantifiers.
-        The idea is, that whenever a search template is evaluated, the outer level of 
-        quantifiers in it gets interpreted.
+        The idea is, that whenever a search template is evaluated, quantifiers at the outer level of 
+        get interpreted.
         This interpretation gives rise to one or more templates to be constructed and run.
         Those new templates have been stripped of the outer layer of quantifiers,
-        and when these templates are executed, the 2nd level quantifiers have become outer.
+        and when these templates are executed, the quantifiers at the next level have become outer.
         And so on.
 
     ??? caution "Restrictions"
@@ -1187,16 +1219,18 @@
                 this name is automagically valid in quantifier templates;
             *   the name of the atom that is quantified (if that atom has a given name);
             *   names defined in the template itself;
-            *   `templateH` may use names defined in `templateA`;
+            *   in `/where/`, `templateH` may use names defined in `templateA`;
+                but only if these names are defined outside any quantifier of
+                `templateA`.
 
         *   The following situations block the visibility of names:
 
-            *   `templateO`*i* may not use names defined in `templateO`*j* for *j* other than *i*;
+            *   in `/with/`, `templateO`*i* may not use names defined in `templateO`*j* for *j* other than *i*;
             *   names defined outer quantifiers are not accessible in inner quantifiers;
-            *   names defined inner quantifiers are not accessible in outer quantifiers;
+            *   names defined inner quantifiers are not accessible in outer quantifiers.
 
         When you nest quantifiers, think of the way they will be recomposed into
-        ordinary templates. This dictates whether your quantifier can be valid or not.
+        ordinary templates. This dictates whether your quantifier is syntactically valid or not.
 
     ??? note "Indentation"
         The indentation in quantifiers relative to their parent atom will be preserved.
@@ -1253,83 +1287,56 @@
 
         The basic idea is:
 
-        *   a quantifier leads to the execution of one or more separate searches;
-        *   the results of these searches are combined by means of set operations;
-            (difference, intersection, union), dependent on the nature of the quantifier;
-        *   the end result of this combination will fed as a custom set to the original template.
+        *   a quantifier leads to the execution of one or more separate searche templates;
+        *   the results of these searches are combined by means of set operations:
+            *difference*, *intersection*, *union*, dependent on the nature of the quantifier;
+        *   the end result of this combination will fed as a custom set to the original template after
+            stripping the whole quantifier from that template.
+            So we replace a quantifier by a custom set.
 
-        ??? info "General case"
-            Suppose we have
+        Suppose we have
 
-            ```
-            clause typ=Wx0
-            QUANTIFIERS
-              rest of template
-            ```
+        ```
+        clause typ=Wx0
+        QUANTIFIER1
+        QUANTIFIER2
+        ...
+        QUANTIFIERn
+          rest-of-template
+        ```
 
-            We compute a set of clauses `filteredClauses` based on 
+        We compute a set of clauses `filteredClauses1` based on 
 
-            ```
-            clause typ=Wx0
-            QUANTIFIER1
-            ```
+        ```
+        clause typ=Wx0
+        QUANTIFIER1
+        ```
 
-            and deliver the results of
+        and then compute a new set `filteredClauses2` based on
 
-            ```
-            S.search('''
-            fclause
-              rest of template
-            ''',
-                customSets=dict(fclause=filteredClauses)
-            ```
+        ```
+        S.search('''
+        fclause typ=Wx0
+        QUANTIFIER2
+        ''',
+            customSets=dict(fclause=filteredClauses1)
+        ```
 
-            Then we repeat this for `QUANTIFIER2`, `QUANTIFIER3`, etc,
-            until we have done all quantifiers.
-            In this process the set `filteredClauses` gets smaller and smaller.
+        and so on until we have had QUANTIFIERn,
+        leading to a set `filteredClausesN` of clauses
+        that pass all filters set by the quantifiers.
 
-        ??? info "Particular quantifiers"
-            Every quantifier will have recombine its templates with other templates
-            and this combinations will be run.
-            The fact that the combined template has to be run in isolation, is the main source of
-            restrictions on the usage of names.
+        Finally, we deliver the results of
 
-            It is important which templates will be run for each kind of quantifier.
-            
-            All templates of all quantifiers will be combined with the
-            atom line that is being quantified on top, without indent.
+        ```
+        S.search('''
+        fclause
+          rest-of-template
+        ''',
+            customSets=dict(fclause=filteredClausesN)
+        ```
 
-            So all quantifier templates can see their own names, and the name of the
-            atom if it exists.
-            In one case, a template can see additional names:
 
-        ??? info "/where/ /have/"
-
-            ```
-            atom
-            /where/
-            templateA
-            /have/
-            templateH
-            /-/
-            ```
-
-            This quantifier gives rise to running search for the following templates:
-
-            ```
-            atom
-            templateA
-            ```
-
-            ```
-            atom
-            templateA
-            templateH
-            ```
-
-            This means that `templateH` may use names defined in `templateH`,
-            but only if these names are not defined in inner quantifiers inside
-            `templateA`.
 
 ### Search API
 
