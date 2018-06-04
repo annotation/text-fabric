@@ -25,14 +25,14 @@ escapes = (
 
 PARENT_REF = '..'
 
-QALL = '/where/'
+QWHERE = '/where/'
 QHAVE = '/have/'
-QNO = '/without/'
-QEITHER = '/with/'
+QWITHOUT = '/without/'
+QWITH = '/with/'
 QOR = '/or/'
 QEND = '/-/'
 
-QINIT = {QALL, QNO, QEITHER}
+QINIT = {QWHERE, QWITHOUT, QWITH}
 QCONT = {QHAVE, QOR}
 QTERM = {QEND}
 
@@ -56,7 +56,7 @@ indentLinePat = '^(\s*)(.*)'
 indentLineRe = re.compile(indentLinePat)
 
 opPat = '(?:[#&|\[\]<>:=-]+\S*)'
-quPat = f'(?:{QALL}|{QHAVE}|{QNO}|{QEITHER}|{QOR}|{QEND})'
+quPat = f'(?:{QWHERE}|{QHAVE}|{QWITHOUT}|{QWITH}|{QOR}|{QEND})'
 atomPat = '(\s*)([^ \t=#<>~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
 atomOpPat = (
     '(\s*)({op})\s+([^ \t=#<>~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(op=opPat)
@@ -1664,14 +1664,14 @@ One of the above relations on nodes and/or slots will suit you better.
 
             if PCO or PCI:
                 EP = (
-                    (lineQuKind == QHAVE and curQuKind != QALL)
+                    (lineQuKind == QHAVE and curQuKind != QWHERE)
                     or
-                    (lineQuKind == QOR and curQuKind not in {QEITHER, QOR})
+                    (lineQuKind == QOR and curQuKind not in {QWITH, QOR})
                 )
                 EK = curQu[-1][2] != lineIndent
 
             if PEO or PEI:
-                EP = curQuKind in {QALL, QEITHER}
+                EP = curQuKind in {QWHERE, QWITH}
                 EK = curQu[-1][2] != lineIndent
 
             # QUANTIFIER HANDLING
@@ -2517,7 +2517,7 @@ One of the above relations on nodes and/or slots will suit you better.
                 f'"Quantifier on "{cleanAtom}"'
             )
 
-        if quKind == QNO:
+        if quKind == QWITHOUT:
             queryN = '\n'.join((cleanAtom, quTemplates[0]))
             exe = SearchExe(
                 self.api,
@@ -2535,7 +2535,7 @@ One of the above relations on nodes and/or slots will suit you better.
             if showQuantifiers:
                 indent(level=level + 2)
                 info(f'{len(noResults)} nodes to exclude')
-        elif quKind == QALL:
+        elif quKind == QWHERE:
             # compute the atom+antecedent:
             #   as result tuples
             queryA = '\n'.join((cleanAtom, quTemplates[0]))
@@ -2592,7 +2592,7 @@ One of the above relations on nodes and/or slots will suit you better.
                 # now have the atoms that do NOT qualify:
                 #   we subtract them from the universe
                 resultYarn = universe - resultsAnotH
-        elif quKind == QEITHER:
+        elif quKind == QWITH:
             # compute the atom+alternative for all alternatives and union them
             resultYarn = set()
             nAlts = len(quTemplates)
