@@ -2615,7 +2615,7 @@ One of the above relations on nodes and/or slots will suit you better.
                             ),
                             tm=False
                     )
-                altResults = exe.search()
+                altResults = exe.search() & universe
                 nAlt = len(altResults)
                 nYarn = len(resultYarn)
                 resultYarn |= altResults
