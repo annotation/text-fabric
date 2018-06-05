@@ -1181,6 +1181,31 @@
         templateO3
         ```
 
+        ???+ note "1 or more alternatives
+            This quantifier can be used with any number of `/or/` keywords, including
+            none at all. If there is no `/or/`, there is just one alternative.
+            The only difference between
+
+            ```
+            atom
+            /with/
+            template
+            /-/
+            ```
+
+            and
+
+            ```
+            atom
+            template
+            ```
+
+            is that the results of the first query contain tuples with only one
+            element, corresponding to the `atom`.
+            The second query contains tuples of which the first element
+            corresponds to the `atom`, and the remaining members correspond to
+            the `template`.
+
     ???+ note "Parent"
         The `atom` bit is an atom line, it acts as the *parent* of the quantifier.
 

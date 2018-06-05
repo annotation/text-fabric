@@ -1671,7 +1671,7 @@ One of the above relations on nodes and/or slots will suit you better.
                 EK = curQu[-1][2] != lineIndent
 
             if PEO or PEI:
-                EP = curQuKind in {QWHERE, QWITH}
+                EP = curQuKind in {QWHERE}
                 EK = curQu[-1][2] != lineIndent
 
             # QUANTIFIER HANDLING

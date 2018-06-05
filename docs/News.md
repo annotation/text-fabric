@@ -6,6 +6,14 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.3.4
+
+2018-06-05
+
+Search API:
+
+The `/with/ /or/ /or/ /-/' quantifier is also allowed with zero `/or/` s.
+
 ## 4.3.3
 
 2018-06-01
