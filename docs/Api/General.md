@@ -1377,7 +1377,7 @@
 
 ??? abstract "S.search()"
     ```python
-    S.search(query, limit=None, shallow=False, sets=None)
+    S.search(query, limit=None, shallow=False, sets=None, withContext=None)
     ```
 
     ???+ info "Description"
@@ -1404,6 +1404,45 @@
 
     ??? info "limit"
         If `limit` is a number, it will fetch only that many results.
+
+    ??? info "withContext"
+        Specifies that for all nodes in the result-(tuple)s context information
+        has to be supplied.
+
+        If `withContext` is `True`, all features in the current TF dataset will
+        be looked up for all nodes in the results of the query.
+
+        If it is a list, the list will be split on white-space into a list of
+        feature names. These are the features that will be looked up for all result nodes.
+
+        You can also pass an iterable of feature names.
+
+        You may ask for node features and for edge features. For edge features, only
+        node pairs within the result set will be delivered. If edge features carry values,
+        the values will also be delivered.
+
+        If you ask for any features at all, the warp features `otype` and `oslots` will
+        always be in the result.
+
+        If `withContext` is not `None`, the result of `search()` is a tuple
+        `(` *queryResults* `,` *contextInfo* `)`,
+        where *queryResults* is a sorted list of results, never a generator,
+        even if `limit` is `None`).
+
+        *contextInfo* is a dictionary of feature data, keyed by the name of the feature.
+        The values are dictionaries keyed by node (integers) and valued by the values of
+        that feature for those nodes. `None` values will not be included in the dictionary. 
+
+    ??? hint "TF as Database"
+        By means of `S.search(query, withContext=True)` you can use one `TF` instance as a
+        database that multiple clients can use without the need for each client to call the 
+        costly `load` methods.
+        You have to come up with a process that runs TF, has all features loaded, and
+        that can respond to queries from other processes.
+
+        Webservers can use such a daemonized TF to build efficient controllers.
+
+        Support for TF as daemon is upcoming, it will be included in the Text-Fabric code base.
 
     ??? note "Generator versus tuple"
         If `limit` is specified, the result is not a generator but a tuple of results.

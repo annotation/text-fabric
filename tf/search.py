@@ -295,6 +295,7 @@ class Search(object):
         shallow=False,
         silent=True,
         here=True,
+        withContext=None,
     ):
         exe = SearchExe(
             self.api,
@@ -302,6 +303,7 @@ class Search(object):
             sets=sets,
             shallow=shallow,
             silent=silent,
+            withContext=withContext,
         )
         if here:
             self.exe = exe
@@ -395,6 +397,7 @@ class SearchExe(object):
         shallow=False,
         silent=True,
         showQuantifiers=False,
+        withContext=None,
     ):
         self.api = api
         self.searchTemplate = searchTemplate
@@ -403,6 +406,7 @@ class SearchExe(object):
         self.shallow = 0 if not shallow else 1 if shallow is True else shallow
         self.silent = silent
         self.showQuantifiers = showQuantifiers
+        self.context = withContext
         self.good = True
         self._basicRelations()
 
@@ -452,17 +456,24 @@ class SearchExe(object):
 
     def fetch(self, limit=None):
         if not self.good:
-            return set() if self.shallow else []
-        if self.shallow:
-            return self.results
-        if limit is None:
-            return self.results()
-        results = []
-        for r in self.results():
-            results.append(r)
-            if len(results) == limit:
-                break
-        return tuple(results)
+            queryResults = set() if self.shallow else []
+        elif self.shallow:
+            queryResults = self.results
+        elif limit is None:
+            queryResults = self.results()
+        else:
+            queryResults = []
+            for r in self.results():
+                queryResults.append(r)
+                if len(queryResults) == limit:
+                    break
+            queryResults = tuple(queryResults)
+        if self.context:
+            queryResults = sorted(queryResults)
+            context = self._gatherContext(queryResults)
+            return (queryResults, context)
+        else:
+            return queryResults
 
     def count(self, progress=None, limit=None):
         info = self.api.info
@@ -2335,17 +2346,103 @@ One of the above relations on nodes and/or slots will suit you better.
                 nFeatsUsed.add(nfName)
 
         if self.good:
-            needToLoad = []
-            for fName in sorted(eFeatsUsed | nFeatsUsed):
-                fObj = self.api.TF.features[fName]
-                if not fObj.dataLoaded or not hasattr(self.api.F, fName):
-                    needToLoad.append((fName, fObj))
-            if len(needToLoad):
-                self.api.TF.load(
-                    [x[0] for x in needToLoad],
-                    add=True,
-                    silent=True,
-                )
+            self._ensureLoaded(eFeatsUsed | nFeatsUsed)
+
+    def _ensureLoaded(self, features):
+        api = self.api
+        F = api.F
+        TF = api.TF
+        info = api.info
+
+        needToLoad = set()
+        loadedFeatures = set()
+        for fName in sorted(features):
+            fObj = TF.features.get(fName, None)
+            if not fObj:
+                info(f'Cannot load feature "{fName}": not in dataset')
+                continue
+            if fObj.dataLoaded and hasattr(F, fName):
+                loadedFeatures.add(fName)
+            else:
+                needToLoad.add(fName)
+        if len(needToLoad):
+            TF.load(
+                needToLoad,
+                add=True,
+                silent=True,
+            )
+            loadedFeatures |= needToLoad
+        return loadedFeatures
+
+    def _gatherContext(self, results):
+        api = self.api
+        Fs = api.Fs
+        Es = api.Es
+        TF = api.TF
+
+        if type(self.context) is str:
+            contextFeatures = set(self.context.strip().split())
+        elif self.context is True:
+            contextFeatures = {
+                f[0]
+                for f in TF.features.items()
+                if not (f[1].isConfig or f[1].method)
+            }
+        else:
+            contextFeatures = {fName for fName in self.context}
+        loadedFeatures = self._ensureLoaded(contextFeatures)
+        allNodes = reduce(
+            set.union,
+            (set(r) for r in results),
+            set(),
+        )
+        context = {}
+        for f in sorted(loadedFeatures):
+            fObj = TF.features[f]
+            isEdge = fObj.isEdge
+            isNode = not(isEdge or fObj.isConfig or fObj.method)
+            if isNode:
+                data = {}
+                for n in allNodes:
+                    val = Fs(f).v(n)
+                    if val is not None:
+                        data[n] = val
+                context[f] = data
+            elif isEdge:
+                if f == 'oslots':
+                    data = {}
+                    for n in allNodes:
+                        vals = tuple(m for m in Es(f).s(n) if m in allNodes)
+                        if vals:
+                            data[n] = vals
+                    context[f] = data
+                else:
+                    hasValues = TF.features[f].edgeValues
+                    print(f'applying edge {f} hasValues={hasValues}')
+                    dataF = {}
+                    dataT = {}
+                    if hasValues:
+                        for n in allNodes:
+                            valsF = tuple(
+                                x for x in Es(f).f(n) if x[0] in allNodes
+                            )
+                            valsT = tuple(
+                                x for x in Es(f).t(n) if x[0] in allNodes
+                            )
+                            if valsF:
+                                dataF[n] = valsF
+                            if valsT:
+                                dataT[n] = valsT
+                    else:
+                        for n in allNodes:
+                            valsF = tuple(m for m in Es(f).f(n) if m in allNodes)
+                            valsT = tuple(m for m in Es(f).t(n) if m in allNodes)
+                            if valsF:
+                                dataF[n] = valsF
+                            if valsT:
+                                dataT[n] = valsT
+                    context[f] = (dataF, dataT)
+        return context
 
     def _semantics(self):
         self.badSemantics = []

@@ -6,13 +6,24 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
-## 4.3.4
+## 4.3.6
+
+2018-06-06
+
+Search API:
+
+S.search() accepts a new optional parameter: `withContext`.
+It triggers the output of context information for nodes in the result tuples.
+
+## 4.3.4, 4.3.5
 
 2018-06-05
 
 Search API:
 
 The `/with/ /or/ /or/ /-/' quantifier is also allowed with zero `/or/` s.
+
+Small fix in the `/with/` quantifier if there are quantifiers between this one and its parent atom.
 
 ## 4.3.3
 
