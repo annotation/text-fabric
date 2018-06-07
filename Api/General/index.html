@@ -532,6 +532,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../Service/" title="Service" class="md-nav__link">
+      Service
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../Lib/" title="Auxiliary" class="md-nav__link">
       Auxiliary
     </a>
@@ -1674,7 +1686,7 @@ fclause
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Gives dynamic help about the basic relations that you can use in your search
-template. It includes the edge features that are available in your dataset.</p></details></details><details class="abstract"><summary>S.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">shallow</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+template. It includes the edge features that are available in your dataset.</p></details></details><details class="abstract"><summary>S.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">shallow</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">withContext</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Searches for combinations of nodes that together match a search template.
@@ -1683,7 +1695,22 @@ is a tuple of nodes, where each node corresponds to an <em>atom</em>-line in you
 <a href="#search-template-introduction">search template</a>.</p></details><details class="info"><summary>query</summary><p>The query is a search template, i.e. a string that conforms to the rules described above.</p></details><details class="info"><summary>shallow</summary><p>If <code>True</code> or <code>1</code>, the result is a set of things that match the top-level element
 of the <code>query</code>.</p><p>If <code>2</code> or a bigger number <em>n</em>, return the set of truncated result tuples: only
 the first <em>n</em> members of each tuple is retained.</p><p>If <code>False</code> or <code>0</code>, a sorted list of all result tuples will be returned.</p></details><details class="info"><summary>sets</summary><p>If not <code>None</code>, it should be a dictionary of sets, keyed by a names.
-In <code>query</code> you can refer to those names to invoke those sets.</p></details><details class="info"><summary>limit</summary><p>If <code>limit</code> is a number, it will fetch only that many results.</p></details><details class="note"><summary>Generator versus tuple</summary><p>If <code>limit</code> is specified, the result is not a generator but a tuple of results.</p></details><details class="explanation"><summary>More info on the search plan</summary><p>Searching is complex. The search template must be parsed, interpreted, and
+In <code>query</code> you can refer to those names to invoke those sets.</p></details><details class="info"><summary>limit</summary><p>If <code>limit</code> is a number, it will fetch only that many results.</p></details><details class="info"><summary>withContext</summary><p>Specifies that for all nodes in the result-(tuple)s context information
+has to be supplied.</p><p>If <code>withContext</code> is <code>True</code>, all features in the current TF dataset will
+be looked up for all nodes in the results of the query.</p><p>If it is a list, the list will be split on white-space into a list of
+feature names. These are the features that will be looked up for all result nodes.</p><p>You can also pass an iterable of feature names.</p><p>You may ask for node features and for edge features. For edge features, only
+node pairs within the result set will be delivered. If edge features carry values,
+the values will also be delivered.</p><p>If you ask for any features at all, the warp features <code>otype</code> and <code>oslots</code> will
+always be in the result.</p><p>If <code>withContext</code> is not <code>None</code>, the result of <code>search()</code> is a tuple
+<code>(</code> <em>queryResults</em> <code>,</code> <em>contextInfo</em> <code>)</code>,
+where <em>queryResults</em> is a sorted list of results, never a generator,
+even if <code>limit</code> is <code>None</code>).</p><p><em>contextInfo</em> is a dictionary of feature data, keyed by the name of the feature.
+The values are dictionaries keyed by node (integers) and valued by the values of
+that feature for those nodes. <code>None</code> values will not be included in the dictionary. </p></details><details class="hint"><summary>TF as Database</summary><p>By means of <code>S.search(query, withContext=True)</code> you can use one <code>TF</code> instance as a
+database that multiple clients can use without the need for each client to call the 
+costly <code>load</code> methods.
+You have to come up with a process that runs TF, has all features loaded, and
+that can respond to queries from other processes.</p><p>Webservers can use such a daemonized TF to build efficient controllers.</p><p>Support for TF as daemon is upcoming, it will be included in the Text-Fabric code base.</p></details><details class="note"><summary>Generator versus tuple</summary><p>If <code>limit</code> is specified, the result is not a generator but a tuple of results.</p></details><details class="explanation"><summary>More info on the search plan</summary><p>Searching is complex. The search template must be parsed, interpreted, and
 translated into a search plan. The following methods expose parts of the search
 process, and may provide you with useful information in case the search does not
 deliver what you expect.</p></details><details class="hint"><summary>see the plan</summary><p>the method <code>S.showPlan()</code> below shows you at a glance the correspondence
