@@ -681,6 +681,7 @@ This notebook online:
 
     def search(self, query, silent=False, sets=None, shallow=False):
         api = self.api
+        info = api.info
         S = api.S
         results = S.search(query, sets=sets, shallow=shallow)
         if not shallow:
@@ -688,7 +689,7 @@ This notebook online:
         nResults = len(results)
         plural = '' if nResults == 1 else 's'
         if not silent:
-            print(f'{nResults} result{plural}')
+            info(f'{nResults} result{plural}')
         return results
 
     def _condense(self, results):

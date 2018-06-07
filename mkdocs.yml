@@ -23,6 +23,7 @@ pages:
     - 'General': 'Api/General.md'
     - 'Hebrew Bible': 'Api/Bhsa.md'
     - 'Cuneiform Tablets': 'Api/Cunei.md'
+    - 'Service': 'Api/Service.md'
     - 'Auxiliary': 'Api/Lib.md'
   - Model:
     - 'Data': 'Model/Data-Model.md'

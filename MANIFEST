@@ -9,6 +9,7 @@ tf/locality.py
 tf/mql.py
 tf/prepare.py
 tf/search.py
+tf/service.py
 tf/text.py
 tf/timestamp.py
 tf/transcription.py

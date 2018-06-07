@@ -2418,7 +2418,6 @@ One of the above relations on nodes and/or slots will suit you better.
                     context[f] = data
                 else:
                     hasValues = TF.features[f].edgeValues
-                    print(f'applying edge {f} hasValues={hasValues}')
                     dataF = {}
                     dataT = {}
                     if hasValues:
