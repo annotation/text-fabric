@@ -4,7 +4,8 @@
 ![text-fabric](/docs/images/tf.png)
 
 
-[![SH](/docs/images/swh-logo-archive.png)](https://archive.softwareheritage.org/browse/origin/https://github.com/Dans-labs/text-fabric/directory/)
+<a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/Dans-labs/text-fabric/directory/"><img src="/docs/images/swh-logo-archive.png" width="100" align="left"/></a>
+
 **This repository is being archived continuously by the 
 [Software Heritage Archive](https://archive.softwareheritage.org).
 If you want to cite snippets of the code of this repository, the Software Archive
