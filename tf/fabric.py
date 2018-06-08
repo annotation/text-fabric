@@ -37,10 +37,6 @@ LOCATIONS = [
     '/mnt/shared/text-fabric-data',
 ]
 
-DATASETS = [
-    'hebrew/etcbc4c',
-]
-
 MODULES = [
     'core',
     'phono',

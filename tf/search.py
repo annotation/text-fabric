@@ -158,6 +158,13 @@ def _genLine(kind, data):
     return result
 
 
+def depLang(feature):
+    if '@' not in feature:
+        return None
+    else:
+        return feature.rsplit('@', 1)
+
+
 def _cleanParent(atom, parentName):
     (kind, data) = _parseLine(atom)
     (indent, op, name, otype, features) = data
@@ -2376,27 +2383,47 @@ One of the above relations on nodes and/or slots will suit you better.
 
     def _gatherContext(self, results):
         api = self.api
+        F = api.F
         Fs = api.Fs
         Es = api.Es
+        L = api.L
+        T = api.T
         TF = api.TF
 
-        if type(self.context) is str:
-            contextFeatures = set(self.context.strip().split())
-        elif self.context is True:
+        if not self.context:
+            return {}
+
+        langs = self.context.get('languages', None)
+        if type(langs) is str:
+            langs = set(langs.strip().split())
+        elif langs is True:
+            langs = set(T.languages)
+
+        featureSpec = self.context.get('features', None)
+        if type(featureSpec) is str:
+            contextFeatures = set(featureSpec.strip().split())
+        elif featureSpec is True:
             contextFeatures = {
                 f[0]
                 for f in TF.features.items()
                 if not (f[1].isConfig or f[1].method)
             }
         else:
-            contextFeatures = {fName for fName in self.context}
+            contextFeatures = {fName for fName in featureSpec}
+
+        contextFeatures = {
+            fName
+            for fName in contextFeatures
+            if depLang(fName) in langs
+        }
+
         loadedFeatures = self._ensureLoaded(contextFeatures)
         allNodes = reduce(
             set.union,
             (set(r) for r in results),
             set(),
         )
-        context = {}
+        features = {}
         for f in sorted(loadedFeatures):
             fObj = TF.features[f]
             isEdge = fObj.isEdge
@@ -2407,7 +2434,7 @@ One of the above relations on nodes and/or slots will suit you better.
                     val = Fs(f).v(n)
                     if val is not None:
                         data[n] = val
-                context[f] = data
+                features[f] = data
             elif isEdge:
                 if f == 'oslots':
                     data = {}
@@ -2415,7 +2442,7 @@ One of the above relations on nodes and/or slots will suit you better.
                         vals = tuple(m for m in Es(f).s(n) if m in allNodes)
                         if vals:
                             data[n] = vals
-                    context[f] = data
+                    features[f] = data
                 else:
                     hasValues = TF.features[f].edgeValues
                     dataF = {}
@@ -2434,14 +2461,54 @@ One of the above relations on nodes and/or slots will suit you better.
                                 dataT[n] = valsT
                     else:
                         for n in allNodes:
-                            valsF = tuple(m for m in Es(f).f(n) if m in allNodes)
-                            valsT = tuple(m for m in Es(f).t(n) if m in allNodes)
+                            valsF = tuple(
+                                m for m in Es(f).f(n) if m in allNodes
+                            )
+                            valsT = tuple(
+                                m for m in Es(f).t(n) if m in allNodes
+                            )
                             if valsF:
                                 dataF[n] = valsF
                             if valsT:
                                 dataT[n] = valsT
-                    context[f] = (dataF, dataT)
-        return context
+                    features[f] = (dataF, dataT)
+
+        doLocality = self.context.get('locality', None)
+        locality = {}
+        if doLocality:
+            u = {}
+            d = {}
+            n = {}
+            p = {}
+            for n in allNodes:
+                u[n] = tuple(m for m in L.u(n) if m in allNodes)
+                d[n] = tuple(m for m in L.d(n) if m in allNodes)
+                n[n] = tuple(m for m in L.n(n) if m in allNodes)
+                p[n] = tuple(m for m in L.p(n) if m in allNodes)
+            locality['u'] = u
+            locality['d'] = d
+            locality['n'] = n
+            locality['p'] = p
+
+        textFormats = self.context.get('formats', set())
+        if type(textFormats) is str:
+            textFormats = set(textFormats.strip().split())
+        elif textFormats is True:
+            textFormats = T.formats
+        slotType = F.slotType
+        text = {}
+        slots = tuple(n for n in allNodes if F.otype.v(n) == slotType)
+        for fmt in textFormats:
+            data = {}
+            for n in slots:
+                data[n] = T.text([n], fmt=fmt)
+            text[fmt] = data
+
+        return dict(
+            features=features,
+            locality=locality,
+            text=text,
+        )
 
     def _semantics(self):
         self.badSemantics = []
