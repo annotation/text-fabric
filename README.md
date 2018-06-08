@@ -4,20 +4,16 @@
 ![text-fabric](/docs/images/tf.png)
 
 
-[![SH](/docs/images/swh-archive-logo.png)](https://archive.softwareheritage.org/browse/origin/https://github.com/Dans-labs/text-fabric/directory/)
+[![SH](/docs/images/swh-logo-archive.png)](https://archive.softwareheritage.org/browse/origin/https://github.com/Dans-labs/text-fabric/directory/)
 **This repository is being archived continuously by the 
-[Software Heritage Archive](https://archive.softwareheritage.org)**
-
-**If you want to cite snippets of the code of this repository, the Software Archive
-offers an easy and elegant way to do so.**
-
-**As an example, here I quote the 
+[Software Heritage Archive](https://archive.softwareheritage.org).
+If you want to cite snippets of the code of this repository, the Software Archive
+offers an easy and elegant way to do so.
+As an example, here I quote the 
 [*stitching* algorithm](https://archive.softwareheritage.org/swh:1:cnt:6169c074089ddc8a0e048cb67e1fec57857ef54d;lines=3224-3270/),
-by means of which
-Text-Fabric Search collect the solutions of a
-[search template](https://dans-labs.github.io/text-fabric/Api/General/#searching).**
-
-**The quote refers directly to specific lines of code, deeply buried in
+by means of which Text-Fabric Search collect the solutions of a
+[search template](https://dans-labs.github.io/text-fabric/Api/General/#searching).
+The quote refers directly to specific lines of code, deeply buried in
 a Python file within a particular version of Text-Fabric.**
 
 Text-Fabric is a Python3 package for Text plus Annotations.
