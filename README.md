@@ -12,7 +12,7 @@ If you want to cite snippets of the code of this repository, the Software Archiv
 offers an easy and elegant way to do so.
 As an example, here I quote the 
 [*stitching* algorithm](https://archive.softwareheritage.org/swh:1:cnt:6169c074089ddc8a0e048cb67e1fec57857ef54d;lines=3224-3270/),
-by means of which Text-Fabric Search collect the solutions of a
+by means of which Text-Fabric Search collects the solutions of a
 [search template](https://dans-labs.github.io/text-fabric/Api/General/#searching).
 The quote refers directly to specific lines of code, deeply buried in
 a Python file within a particular version of Text-Fabric.**
