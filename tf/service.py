@@ -27,7 +27,7 @@ def makeTfServer(locations, modules, port):
       S = api.S
       return S.search(query, withContext=context)
 
-  return ThreadedServer(TfService, port=port)
+  return ThreadedServer(TfService, port=port, protocol_config={'allow_public_attrs': True})
 
 
 def makeTfConnection(host, port):

@@ -47,8 +47,8 @@ while answer:
     # Must be a bug in RPYC.
     # Hence, we fetch the results in local datastructures.
 
-    results = tuple(results)
-    context = {feature: context[feature] for feature in context}
+    # results = tuple(results)
+    # context = {feature: context[feature] for feature in context}
 
     headResults = '\n'.join(f'{r}' for r in results[0:10])
     print(f'{len(results)} results.\n{headResults}')

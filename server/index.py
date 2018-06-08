@@ -28,9 +28,6 @@ def serveSearch(anything):
     api = TF.connect()
     (results, context) = api.search(searchTemplate, True)
 
-    results = tuple(results)
-    context = {feature: context[feature] for feature in context}
-
     table = compose(results, context)
   else:
     table = 'no results'

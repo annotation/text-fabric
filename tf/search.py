@@ -14,7 +14,7 @@ STRATEGY = '''
     big_choice_first
 '''.strip().split()
 
-escapes = (
+ESCAPES = (
     '\\\\',
     '\\ ',
     '\\t',
@@ -160,7 +160,7 @@ def depLang(feature):
   if '@' not in feature:
     return None
   else:
-    return feature.rsplit('@', 1)
+    return feature.rsplit('@', 1)[1]
 
 
 def _cleanParent(atom, parentName):
@@ -224,13 +224,13 @@ def makeLimit(n, isLower):
 
 
 def esc(x):
-  for (i, c) in enumerate(escapes):
+  for (i, c) in enumerate(ESCAPES):
     x = x.replace(c, chr(i))
   return x
 
 
 def unesc(x):
-  for (i, c) in enumerate(escapes):
+  for (i, c) in enumerate(ESCAPES):
     x = x.replace(chr(i), c[1])
   return x
 
@@ -2111,26 +2111,49 @@ One of the above relations on nodes and/or slots will suit you better.
     T = api.T
     TF = api.TF
 
+    # quit quickly if no context is required
     if not self.context:
       return {}
 
-    langs = self.context.get('languages', None)
+    # parse the context requirements
+    if not self.context:
+      langs = set()
+      featureSpec = set()
+      doLocality = False
+      textFormats = set()
+    elif self.context is True:
+      langs = True
+      featureSpec = True
+      doLocality = True
+      textFormats = True
+    else:
+      langs = self.context.get('languages', set())
+      featureSpec = self.context.get('features', set())
+      doLocality = self.context.get('locality', False)
+      textFormats = self.context.get('formats', set())
+
     if type(langs) is str:
       langs = set(langs.strip().split())
     elif langs is True:
       langs = set(T.languages)
 
-    featureSpec = self.context.get('features', None)
     if type(featureSpec) is str:
-      contextFeatures = set(featureSpec.strip().split())
+      featureSpec = set(featureSpec.strip().split())
     elif featureSpec is True:
-      contextFeatures = {f[0] for f in TF.features.items() if not (f[1].isConfig or f[1].method)}
+      featureSpec = {f[0] for f in TF.features.items() if not (f[1].isConfig or f[1].method)}
     else:
-      contextFeatures = {fName for fName in featureSpec}
+      featureSpec = {fName for fName in featureSpec}
 
-    contextFeatures = {fName for fName in contextFeatures if depLang(fName) in langs}
+    featureSpec = {fName for fName in featureSpec if depLang(fName) in langs}
 
-    loadedFeatures = self._ensureLoaded(contextFeatures)
+    if type(textFormats) is str:
+      textFormats = set(textFormats.strip().split())
+    elif textFormats is True:
+      textFormats = T.formats
+
+    # generate context: features
+
+    loadedFeatures = self._ensureLoaded(featureSpec)
     allNodes = reduce(
         set.union,
         (set(r) for r in results),
@@ -2178,29 +2201,27 @@ One of the above relations on nodes and/or slots will suit you better.
                 dataT[n] = valsT
           features[f] = (dataF, dataT)
 
-    doLocality = self.context.get('locality', None)
+    # generate context: locality
+
     locality = {}
     if doLocality:
-      u = {}
-      d = {}
-      n = {}
-      p = {}
+      lu = {}
+      ld = {}
+      ln = {}
+      lp = {}
       for n in allNodes:
-        u[n] = tuple(m for m in L.u(n) if m in allNodes)
-        d[n] = tuple(m for m in L.d(n) if m in allNodes)
-        n[n] = tuple(m for m in L.n(n) if m in allNodes)
-        p[n] = tuple(m for m in L.p(n) if m in allNodes)
-      locality['u'] = u
-      locality['d'] = d
-      locality['n'] = n
-      locality['p'] = p
+        lu[n] = tuple(m for m in L.u(n) if m in allNodes)
+        ld[n] = tuple(m for m in L.d(n) if m in allNodes)
+        ln[n] = tuple(m for m in L.n(n) if m in allNodes)
+        lp[n] = tuple(m for m in L.p(n) if m in allNodes)
+      locality['u'] = lu
+      locality['d'] = ld
+      locality['n'] = ln
+      locality['p'] = lp
 
-    textFormats = self.context.get('formats', set())
-    if type(textFormats) is str:
-      textFormats = set(textFormats.strip().split())
-    elif textFormats is True:
-      textFormats = T.formats
-    slotType = F.slotType
+    # generate context: formats
+
+    slotType = F.otype.slotType
     text = {}
     slots = tuple(n for n in allNodes if F.otype.v(n) == slotType)
     for fmt in textFormats:
