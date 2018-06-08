@@ -1,9 +1,4 @@
-from bottle import (
-    post, get, route, template,
-    request,
-    static_file,
-    run
-)
+from bottle import (post, get, route, template, request, static_file, run)
 
 from tf.service import makeTfConnection
 
@@ -16,36 +11,36 @@ TF = makeTfConnection(HOST, PORT)
 
 
 def getq(name):
-    return request.query.get(name, '')
+  return request.query.get(name, '')
 
 
 @route('/static/<filepath:path>')
 def serveStatic(filepath):
-    return static_file(filepath)
+  return static_file(filepath)
 
 
 @post('/<anything:re:.*>')
 @get('/<anything:re:.*>')
 def serveSearch(anything):
-    searchTemplate = getq('searchTemplate')
+  searchTemplate = getq('searchTemplate')
 
-    if searchTemplate:
-        api = TF.connect()
-        (results, context) = api.search(searchTemplate, True)
+  if searchTemplate:
+    api = TF.connect()
+    (results, context) = api.search(searchTemplate, True)
 
-        results = tuple(results)
-        context = {feature: context[feature] for feature in context}
+    results = tuple(results)
+    context = {feature: context[feature] for feature in context}
 
-        table = compose(results, context)
-    else:
-        table = 'no results'
-        searchTemplate = ''
+    table = compose(results, context)
+  else:
+    table = 'no results'
+    searchTemplate = ''
 
-    return template(
-        'index',
-        table=table,
-        searchTemplate=searchTemplate,
-    )
+  return template(
+      'index',
+      table=table,
+      searchTemplate=searchTemplate,
+  )
 
 
 run(
