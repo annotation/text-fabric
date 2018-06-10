@@ -22,6 +22,10 @@ ESCAPES = (
     '\\|',
     '\\=',
 )
+VAL_ESCAPES = {
+    '\\|',
+    '\\=',
+}
 
 PARENT_REF = '..'
 
@@ -229,9 +233,12 @@ def esc(x):
   return x
 
 
-def unesc(x):
+def unesc(x, inRe=False):
   for (i, c) in enumerate(ESCAPES):
-    x = x.replace(chr(i), c[1])
+    if inRe and c in VAL_ESCAPES:
+      x = x.replace(chr(i), f'\\{c[1]}')
+    else:
+      x = x.replace(chr(i), c[1])
   return x
 
 
@@ -1363,6 +1370,7 @@ One of the above relations on nodes and/or slots will suit you better.
       if match:
         (featN, valRe) = match.groups()
         featName = unesc(featN)
+        valRe = unesc(valRe, inRe=True)
         try:
           featVals = re.compile(valRe)
         except Exception() as err:

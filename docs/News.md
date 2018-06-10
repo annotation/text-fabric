@@ -6,6 +6,21 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.4.1
+
+2018-06-10
+
+Search API:
+
+Escapes in regular expression search was buggy and convoluted.
+If a feature value contains a `|` then in an RE you have to enter `\|` to match it.
+But to have that work in a TF search, you needed to say `\\\|`. 
+
+On the other hand, in the same case for `.` instead of `|`, you could just sat `\.`
+
+In the new situation you do not have to double escape in REs anymore.
+You can just say `\|` and `\.`.
+
 ## 4.4
 
 2018-06-06

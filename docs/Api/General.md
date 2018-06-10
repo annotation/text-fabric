@@ -982,7 +982,6 @@
             string-valued features.
     *   *regular expression* must be a string that conforms to the Python
         [regular axpression syntax](https://docs.python.org/3/library/re.html#regular-expression-syntax)
-        *   If that syntax prescribes a`\`, you have to write it twice: `\` `\`.
         *   If you need a space in your regular expression, you have to escape it with a
             `\`.
         *   You can do regular expressions only on string-valued features, not on

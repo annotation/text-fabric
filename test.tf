@@ -1,0 +1,21 @@
+@node
+@author=Dirk
+@dataset=BHSA
+@datasetName=Biblia Hebraica Stuttgartensia Amstelodamensis
+@valueType=str
+@version=2017
+@writtenBy=Text-Fabric
+@dateWritten=2018-01-17T17:27:35Z
+
+1.003001005|1.003001009
+1a003001005|1a003001009
+1.003001005b1.003001009
+1a003001005b1a003001009
+1.003001005
+1.003001009
+2.003001005
+2.003001009
+1c003001005
+1c003001009
+2c003001005
+2c003001009
