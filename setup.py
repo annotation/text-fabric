@@ -8,7 +8,7 @@ setup(
         'tf.extra',
     ],
     install_requires=['rpyc', 'bottle'],
-    version='4.4.2',
+    version='4.4.3',
     description='''Processor for Text Fabric Data''',
     author='Dirk Roorda',
     author_email='dirk.roorda@dans.knaw.nl',

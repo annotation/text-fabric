@@ -4,7 +4,7 @@ from rpyc.utils.server import ThreadedServer
 
 def makeTfServer(locations, modules, port):
   from tf.fabric import Fabric
-  print(f'Setting up Text-Fabric service for {locations} / {modules}')
+  print(f'Setting up Text-Fabric service for {locations} / {modules} XXX')
   TF = Fabric(locations=locations, modules=modules, silent=False)
   api = TF.load('', silent=True)
   allFeatures = TF.explore(silent=True, show=True)
@@ -14,11 +14,11 @@ def makeTfServer(locations, modules, port):
   print(f'Listening at port {port}')
 
   class TfService(rpyc.Service):
-    def on_connect(self):
+    def on_connect(self, conn):
       self.api = api
       pass
 
-    def on_disconnect(self):
+    def on_disconnect(self, conn):
       self.api = None
       pass
 
