@@ -99,7 +99,7 @@ class Data(object):
     if self.isConfig:
       self.cleanDataBin()
     if good:
-      if actionRep != '=':
+      if actionRep != '=' and not(silent and actionRep == 'M'):
         self.tm.info(
             msgFormat.format(actionRep, self.fileName, sourceRep),
             cache=1 if (not silent) or (actionRep in 'CT') else -1,

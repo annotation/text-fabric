@@ -1,2 +1,2 @@
 def compose(results, context):
-  return 'Isaiah'
+  return len(results)

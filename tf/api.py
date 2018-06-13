@@ -2,7 +2,7 @@ import collections
 from .helpers import makeInverse, makeInverseVal
 from .locality import Locality
 from .text import Text
-from .search import Search
+from .search.search import Search
 
 
 class OtypeFeature(object):
@@ -188,6 +188,8 @@ class Api(object):
     self.Computed = self.C
     self.info = TF.tm.info
     self.error = TF.tm.error
+    self.cache = TF.tm.cache
+    self.reset = TF.tm.reset
     self.indent = TF.tm.indent
     self.loadLog = TF.tm.cache
     setattr(self, 'FeatureString', self.Fs)
@@ -237,6 +239,31 @@ class Api(object):
     for member in dir(self):
       if '_' not in member and member != 'makeAvailableIn':
         scope[member] = getattr(self, member)
+
+  def ensureLoaded(self, features):
+    F = self.F
+    TF = self.TF
+    info = self.info
+
+    needToLoad = set()
+    loadedFeatures = set()
+    for fName in sorted(features):
+      fObj = TF.features.get(fName, None)
+      if not fObj:
+        info(f'Cannot load feature "{fName}": not in dataset')
+        continue
+      if fObj.dataLoaded and hasattr(F, fName):
+        loadedFeatures.add(fName)
+      else:
+        needToLoad.add(fName)
+    if len(needToLoad):
+      TF.load(
+          needToLoad,
+          add=True,
+          silent=True,
+      )
+      loadedFeatures |= needToLoad
+    return loadedFeatures
 
 
 def addSortKey(api):

@@ -28,13 +28,24 @@ class Timestamp(object):
       channel.write('{}{}'.format(msgRep, '\n' if nl else ''))
       channel.flush()
 
-  def cache(self):
-    for (error, nl, msgRep) in self.log:
-      channel = sys.stderr if error else sys.stdout
-      channel.write('{}{}'.format(msgRep, '\n' if nl else ''))
-    sys.stderr.flush()
-    sys.stdout.flush()
+  def reset(self):
     self.log = []
+
+  def cache(self, asString=False):
+    if asString:
+      lines = []
+      for (error, nl, msgRep) in self.log:
+        lines.append('{}{}'.format(msgRep, '\n' if nl else ''))
+      result = ''.join(lines)
+    else:
+      for (error, nl, msgRep) in self.log:
+        channel = sys.stderr if error else sys.stdout
+        channel.write('{}{}'.format(msgRep, '\n' if nl else ''))
+      sys.stderr.flush()
+      sys.stdout.flush()
+    self.log = []
+    if asString:
+      return result
 
   def info(self, msg, tm=True, nl=True, cache=False):
     self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
