@@ -258,12 +258,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
     
     <label class="md-nav__link" for="nav-3">
       Api
@@ -281,7 +279,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../General/" title="General" class="md-nav__link">
+    <a href="../../Api/General/" title="General" class="md-nav__link">
       General
     </a>
   </li>
@@ -293,7 +291,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Bhsa/" title="Hebrew Bible" class="md-nav__link">
+    <a href="../../Api/Bhsa/" title="Hebrew Bible" class="md-nav__link">
       Hebrew Bible
     </a>
   </li>
@@ -305,11 +303,49 @@
 
 
   <li class="md-nav__item">
-    <a href="../Cunei/" title="Cuneiform Tablets" class="md-nav__link">
+    <a href="../../Api/Cunei/" title="Cuneiform Tablets" class="md-nav__link">
       Cuneiform Tablets
     </a>
   </li>
 
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Lib/" title="Auxiliary" class="md-nav__link">
+      Auxiliary
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
+    
+    <label class="md-nav__link" for="nav-4">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
         
           
           
@@ -338,8 +374,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../Lib/" title="Auxiliary" class="md-nav__link">
-      Auxiliary
+    <a href="../Web/" title="Web" class="md-nav__link">
+      Web
     </a>
   </li>
 
@@ -356,13 +392,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
     
-    <label class="md-nav__link" for="nav-4">
+    <label class="md-nav__link" for="nav-5">
       Model
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-4">
+      <label class="md-nav__title" for="nav-5">
         Model
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -416,13 +452,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
     
-    <label class="md-nav__link" for="nav-5">
+    <label class="md-nav__link" for="nav-6">
       Create
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-5">
+      <label class="md-nav__title" for="nav-6">
         Create
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -464,13 +500,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
     
-    <label class="md-nav__link" for="nav-6">
+    <label class="md-nav__link" for="nav-7">
       Details
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-6">
+      <label class="md-nav__title" for="nav-7">
         Details
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -520,7 +556,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/Api/Service.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/Server/Service.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
                 <h1 id="text-fabric-as-a-service">Text-Fabric as a service<a class="headerlink" href="#text-fabric-as-a-service" title="Permanent link">&para;</a></h1>
@@ -597,11 +633,7 @@ all looking at the same (read-only) data.</p>
 </td></tr></table>
 
 <p>To get data from the server:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="n">feature</span><span class="p">:</span> <span class="n">context</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">context</span><span class="p">}</span>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">messages</span><span class="p">)</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
@@ -628,7 +660,7 @@ all looking at the same (read-only) data.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../Cunei/" title="Cuneiform Tablets" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../../Api/Lib/" title="Auxiliary" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -637,19 +669,19 @@ all looking at the same (read-only) data.</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Cuneiform Tablets
+                Auxiliary
               </span>
             </div>
           </a>
         
         
-          <a href="../Lib/" title="Auxiliary" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../Web/" title="Web" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Auxiliary
+                Web
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
