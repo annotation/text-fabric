@@ -1,14 +1,9 @@
-from setuptools import setup
+from distutils.core import setup
 
 setup(
     name='text-fabric',
-    packages=[
-        'tf',
-        'tf.search',
-        'tf.extra',
-    ],
-    install_requires=['rpyc', 'bottle'],
-    version='4.4.2',
+    packages=['tf', 'tf.search', 'tf.extra', 'tf.server'],
+    version='4.4.1',
     description='''Processor for Text Fabric Data''',
     author='Dirk Roorda',
     author_email='dirk.roorda@dans.knaw.nl',

@@ -1,0 +1,35 @@
+Metadata-Version: 1.1
+Name: text-fabric
+Version: 4.4.2
+Summary: Processor for Text Fabric Data
+Home-page: https://github.com/Dans-labs/text-fabric
+Author: Dirk Roorda
+Author-email: dirk.roorda@dans.knaw.nl
+License: UNKNOWN
+Description: Tools to read text corpora with (linguistic) annotations
+        and process them efficiently.
+        More info on https://dans-labs.github.io/text-fabric/
+        
+Keywords: text,linguistics,database,graph,hebrew,cuneiform,greek,syriac
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Other Environment
+Classifier: Framework :: Jupyter
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Religion
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: Public Domain
+Classifier: Natural Language :: English
+Classifier: Natural Language :: Hebrew
+Classifier: Natural Language :: Greek
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Topic :: Religion
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Classifier: Topic :: Text Processing :: Filters
+Classifier: Topic :: Text Processing :: Linguistic
+Classifier: Topic :: Text Processing :: Markup :: XML

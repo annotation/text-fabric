@@ -6,6 +6,16 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 4.4.2
+
+2018-06-13
+
+New distribution method with setuptools.
+Text-Fabric has now dependencies on modules rpyc and bottle,
+because it contains a built-in data service and webserver.
+
+This website is still barely functional, though.
+
 ## 4.4.1
 
 2018-06-10

@@ -55,9 +55,7 @@ api = TF.connect()
 To get data from the server:
 
 ```python
-    (results, context) = api.search(query, True)
-    results = tuple(results)
-    context = {feature: context[feature] for feature in context}
+    (results, context, messages) = api.search(query, True)
 ```
 
 See the

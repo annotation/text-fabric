@@ -21,9 +21,10 @@ except Exception as e:
   print(f'Controller "{dataSource}" not found')
   sys.exit(1)
 
+
 from bottle import (post, get, route, template, request, static_file, run)
 
-from service import makeTfConnection
+from tf.service import makeTfConnection
 
 TF = makeTfConnection(config.host, config.port)
 
@@ -63,3 +64,4 @@ run(
     host=config.host,
     port=config.webport,
 )
+

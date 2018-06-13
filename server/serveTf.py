@@ -1,17 +1,19 @@
 import sys
 from importlib import import_module
 
-from service import makeTfServer
+from tf.service import makeTfServer
 
 try:
   dataSource = sys.argv[1]
-except Exception:
+except Exception as e:
+  print(e)
   print('Pass a data source as first argument')
   sys.exit(1)
 
 try:
   config = import_module(f'.{dataSource}', package='config')
 except Exception as e:
+  print(e)
   print(f'Data source "{dataSource}" not found')
   sys.exit(1)
 
