@@ -4,7 +4,7 @@ from rpyc.utils.server import ThreadedServer
 
 def makeTfServer(locations, modules, port):
   from tf.fabric import Fabric
-  print(f'Setting up Text-Fabric service for {locations} / {modules} XXX')
+  print(f'Setting up Text-Fabric service for {locations} / {modules}')
   TF = Fabric(locations=locations, modules=modules, silent=False)
   api = TF.load('', silent=True)
   allFeatures = TF.explore(silent=True, show=True)

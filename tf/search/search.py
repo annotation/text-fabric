@@ -68,6 +68,7 @@ class Search(object):
       withContext=None,
       msgCache=False,
   ):
+    print('testA')
     exe = SearchExe(
         self.api,
         searchTemplate,
