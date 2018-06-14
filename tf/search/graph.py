@@ -5,7 +5,7 @@ def connectedness(searchExe):
   error = searchExe.api.error
   qnodes = searchExe.qnodes
   qedges = searchExe.qedges
-  doCache = searchExe.doCache
+  msgCache = searchExe.msgCache
 
   componentIndex = dict(((q, {q}) for q in range(len(qnodes))))
   for (f, rela, t) in qedges:
@@ -27,12 +27,12 @@ def connectedness(searchExe):
     searchExe.components.append([sorted(c), componentEdges.get(c, [])])
   lComps = len(searchExe.components)
   if lComps == 0:
-    error('Search without instructions. Tell me what to look for.', cache=doCache)
+    error('Search without instructions. Tell me what to look for.', cache=msgCache)
     searchExe.good = False
   elif lComps > 1:
-    error(f'More than one connected components ({len(searchExe.components)}):', cache=doCache)
+    error(f'More than one connected components ({len(searchExe.components)}):', cache=msgCache)
     error(
         'Either run the subqueries one by one, or connect the components by a relation',
-        tm=False, cache=doCache
+        tm=False, cache=msgCache
     )
     searchExe.good = False

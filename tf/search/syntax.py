@@ -69,16 +69,16 @@ reTp = type(reRe)
 
 def syntax(searchExe):
   error = searchExe.api.error
-  doCache = searchExe.doCache
+  msgCache = searchExe.msgCache
   searchExe.good = True
   searchExe.badSyntax = []
   searchExe.searchLines = searchExe.searchTemplate.split('\n')
   _tokenize(searchExe)
   if not searchExe.good:
     for (i, line) in enumerate(searchExe.searchLines):
-      error(f'{i:>2} {line}', tm=False, cache=doCache)
+      error(f'{i:>2} {line}', tm=False, cache=msgCache)
     for eline in searchExe.badSyntax:
-      error(eline, tm=False, cache=doCache)
+      error(eline, tm=False, cache=msgCache)
 
 
 def _tokenize(searchExe):

@@ -1,4 +1,3 @@
-from .context import gatherContext
 from .relations import basicRelations
 from .syntax import syntax
 from .semantics import semantics
@@ -17,7 +16,6 @@ class SearchExe(object):
       shallow=False,
       silent=True,
       showQuantifiers=False,
-      withContext=None,
       msgCache=False,
   ):
     self.api = api
@@ -27,8 +25,7 @@ class SearchExe(object):
     self.shallow = 0 if not shallow else 1 if shallow is True else shallow
     self.silent = silent
     self.showQuantifiers = showQuantifiers
-    self.context = withContext
-    self.doCache = -1 if msgCache else 0
+    self.msgCache = -1 if msgCache else 0
     self.good = True
     basicRelations(self, api, silent)
 
@@ -41,7 +38,7 @@ class SearchExe(object):
 
   def study(self, strategy=None):
     info = self.api.info
-    doCache = self.doCache
+    msgCache = self.msgCache
     self.api.indent(level=0, reset=True)
     self.good = True
 
@@ -50,33 +47,33 @@ class SearchExe(object):
       return
 
     if not self.silent:
-      info('Checking search template ...', cache=doCache)
+      info('Checking search template ...', cache=msgCache)
 
     self._parse()
     self._prepare()
     if not self.good:
       return
     if not self.silent:
-      info(f'Setting up search space for {len(self.qnodes)} objects ...', cache=doCache)
+      info(f'Setting up search space for {len(self.qnodes)} objects ...', cache=msgCache)
     spinAtoms(self)
     if not self.silent:
-      info(f'Constraining search space with {len(self.qedges)} relations ...', cache=doCache)
+      info(f'Constraining search space with {len(self.qedges)} relations ...', cache=msgCache)
     spinEdges(self)
     if not self.silent:
-      info('Setting up retrieval plan ...', cache=doCache)
+      info('Setting up retrieval plan ...', cache=msgCache)
     stitch(self)
     if self.good:
       if not self.silent:
         yarnContent = sum(len(y) for y in self.yarns.values())
-        info(f'Ready to deliver results from {yarnContent} nodes', cache=doCache)
+        info(f'Ready to deliver results from {yarnContent} nodes', cache=msgCache)
       if not self.silent:
-        info('Iterate over S.fetch() to get the results', tm=False, cache=doCache)
+        info('Iterate over S.fetch() to get the results', tm=False, cache=msgCache)
       if not self.silent:
-        info('See S.showPlan() to interpret the results', tm=False, cache=doCache)
+        info('See S.showPlan() to interpret the results', tm=False, cache=msgCache)
 
   def fetch(self, limit=None):
     cache = self.api.cache
-    doCache = self.doCache
+    msgCache = self.msgCache
     if not self.good:
       queryResults = set() if self.shallow else []
     elif self.shallow:
@@ -90,28 +87,21 @@ class SearchExe(object):
         if len(queryResults) == limit:
           break
       queryResults = tuple(queryResults)
-    if self.context:
-      queryResults = sorted(queryResults)
-      context = gatherContext(self.api, self.context, queryResults)
-    if doCache:
+    if msgCache:
       messages = cache(asString=True)
-    if self.context and doCache:
-      return (queryResults, context, messages)
-    if self.context:
-      return (queryResults, context)
-    if doCache:
+    if msgCache:
       return (queryResults, messages)
     return queryResults
 
   def count(self, progress=None, limit=None):
     info = self.api.info
     error = self.api.error
-    doCache = self.doCache
+    msgCache = self.msgCache
     indent = self.api.indent
     indent(level=0, reset=True)
 
     if not self.good:
-      error('This search has problems. No results to count.', tm=False, cache=doCache)
+      error('This search has problems. No results to count.', tm=False, cache=msgCache)
       return
 
     PROGRESS = 100
@@ -127,7 +117,7 @@ class SearchExe(object):
             progress,
             limit if limit > 0 else ' the end of the results',
         ),
-        cache=doCache
+        cache=msgCache
     )
     indent(level=1, reset=True)
 
@@ -138,7 +128,7 @@ class SearchExe(object):
       j += 1
       if j == progress:
         j = 0
-        info(i, cache=doCache)
+        info(i, cache=msgCache)
       if limit > 0 and i >= limit:
         break
 
@@ -151,17 +141,17 @@ class SearchExe(object):
     if not self.good:
       return
     info = self.api.info
-    doCache = self.doCache
+    msgCache = self.msgCache
     nodeLine = self.nodeLine
     qedges = self.qedges
     (qs, es) = self.stitchPlan
     if details:
-      info(f'Search with {len(qs)} objects and {len(es)} relations', tm=False, cache=doCache)
+      info(f'Search with {len(qs)} objects and {len(es)} relations', tm=False, cache=msgCache)
       info('Results are instantiations of the following objects:', tm=False)
       for q in qs:
         self._showNode(q)
       if len(es) != 0:
-        info('Instantiations are computed along the following relations:', tm=False, cache=doCache)
+        info('Instantiations are computed along the following relations:', tm=False, cache=msgCache)
         (firstE, firstDir) = es[0]
         (f, rela, t) = qedges[firstE]
         if firstDir == -1:
@@ -169,7 +159,7 @@ class SearchExe(object):
         self._showNode(f, pos2=True)
         for e in es:
           self._showEdge(*e)
-    info('The results are connected to the original search template as follows:', cache=doCache)
+    info('The results are connected to the original search template as follows:', cache=msgCache)
 
     resultNode = {}
     for q in qs:
@@ -177,11 +167,11 @@ class SearchExe(object):
     for (i, line) in enumerate(self.searchLines):
       rNode = resultNode.get(i, '')
       prefix = '' if rNode == '' else 'R'
-      info(f'{i:>2} {prefix:<1}{rNode:<2} {line}', tm=False, cache=doCache)
+      info(f'{i:>2} {prefix:<1}{rNode:<2} {line}', tm=False, cache=msgCache)
 
   def _showNode(self, q, pos2=False):
     info = self.api.info
-    doCache = self.doCache
+    msgCache = self.msgCache
     qnodes = self.qnodes
     yarns = self.yarns
     space = ' ' * 19
@@ -196,11 +186,11 @@ class SearchExe(object):
         space,
         len(yarns[q]),
     )
-    info(nodeInfo, tm=False, cache=doCache)
+    info(nodeInfo, tm=False, cache=msgCache)
 
   def _showEdge(self, e, dir):
     info = self.api.info
-    doCache = self.doCache
+    msgCache = self.msgCache
     qnodes = self.qnodes
     qedges = self.qedges
     converse = self.converse
@@ -219,7 +209,7 @@ class SearchExe(object):
             qnodes[t][0],
             spreads.get(e, -1) if dir == 1 else spreadsC.get(e, -1),
         ),
-        tm=False, cache=doCache
+        tm=False, cache=msgCache
     )
 
   def _showYarns(self):

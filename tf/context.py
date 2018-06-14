@@ -11,16 +11,11 @@ def gatherContext(api, context, results):
   sortNodes = api.sortNodes
 
   # quit quickly if no context is required
-  if not context:
+  if not context or not results:
     return {}
 
   # parse the context requirements
-  if not context:
-    langs = set()
-    featureSpec = set()
-    doLocality = False
-    textFormats = set()
-  elif context is True:
+  if context is True:
     langs = True
     featureSpec = True
     doLocality = True
@@ -43,7 +38,8 @@ def gatherContext(api, context, results):
   else:
     featureSpec = {fName for fName in featureSpec}
 
-  featureSpec = {fName for fName in featureSpec if _depLang(fName) in langs}
+  testLangs = langs | {None}
+  featureSpec = {fName for fName in featureSpec if _depLang(fName) in testLangs}
 
   if type(textFormats) is str:
     textFormats = set(textFormats.strip().split())
@@ -134,7 +130,7 @@ def gatherContext(api, context, results):
     text[fmt] = data
 
   return dict(
-      nodes=allNodes,
+      nodes=','.join(str(n) for n in sortNodes(allNodes)),
       features=features,
       featureType=featureType,
       locality=locality,

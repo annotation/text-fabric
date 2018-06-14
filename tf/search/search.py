@@ -65,17 +65,14 @@ class Search(object):
       shallow=False,
       silent=True,
       here=True,
-      withContext=None,
       msgCache=False,
   ):
-    print('testA')
     exe = SearchExe(
         self.api,
         searchTemplate,
         sets=sets,
         shallow=shallow,
         silent=silent,
-        withContext=withContext,
         msgCache=msgCache,
     )
     if here:
@@ -106,8 +103,7 @@ class Search(object):
     exe = self.exe
     if exe is None:
       error = self.api.error
-      doCache = self.doCache
-      error('Cannot fetch if there is no previous "study()"', cache=doCache)
+      error('Cannot fetch if there is no previous "study()"')
     else:
       return exe.fetch(limit=limit)
 
@@ -115,8 +111,7 @@ class Search(object):
     exe = self.exe
     if exe is None:
       error = self.api.error
-      doCache = self.doCache
-      error('Cannot count if there is no previous "study()"', cache=doCache)
+      error('Cannot count if there is no previous "study()"')
     else:
       exe.count(progress=progress, limit=limit)
 
@@ -124,8 +119,7 @@ class Search(object):
     exe = self.exe
     if exe is None:
       error = self.api.error
-      doCache = self.doCache
-      error('Cannot show plan if there is no previous "study()"', cache=doCache)
+      error('Cannot show plan if there is no previous "study()"')
     else:
       exe.showPlan(details=details)
 

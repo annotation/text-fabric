@@ -1,11 +1,12 @@
 <html> 
     <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Text-Fabric {{dataSource}}</title>
-    <meta name="application-name" content="Text-Fabric Search Box"/>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Text-Fabric {{dataSource}}</title>
+        <meta name="application-name" content="Text-Fabric Search Box"/>
 
-    <link rel="stylesheet" href="/server/static/main.css"/>
+        <link rel="stylesheet" href="/server/static/main.css"/>
+        {{!css}}
     </head>
     <body>
         <div id="body"/>
@@ -24,9 +25,13 @@
         <div>
             <label>Results</label>
             <div class="resultlist">
-            {{table}}
+            {{!table}}
             </div>
         <div>
+        <div>
+            <label>Navigation</label>
+            <div class="navigation"/>
+        </div>
         <div>
             <label>Detail</label>
             <div class="resultitem"/>

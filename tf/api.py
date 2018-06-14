@@ -91,9 +91,13 @@ class NodeFeature(object):
 class EdgeFeature(object):
   def __init__(self, api, data, doValues):
     self.api = api
-    self.data = data
     self.doValues = doValues
-    self.dataInv = makeInverseVal(self.data) if doValues else makeInverse(self.data)
+    if type(data) is tuple:
+      self.data = data[0]
+      self.dataInv = data[1]
+    else:
+      self.data = data
+      self.dataInv = makeInverseVal(self.data) if doValues else makeInverse(self.data)
 
   def f(self, n):
     Crank = self.api.C.rank.data
@@ -242,6 +246,7 @@ class Api(object):
 
   def ensureLoaded(self, features):
     F = self.F
+    E = self.E
     TF = self.TF
     info = self.info
 
@@ -252,7 +257,7 @@ class Api(object):
       if not fObj:
         info(f'Cannot load feature "{fName}": not in dataset')
         continue
-      if fObj.dataLoaded and hasattr(F, fName):
+      if fObj.dataLoaded and (hasattr(F, fName) or hasattr(E, fName)):
         loadedFeatures.add(fName)
       else:
         needToLoad.add(fName)

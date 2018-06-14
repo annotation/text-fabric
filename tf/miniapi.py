@@ -1,5 +1,3 @@
-from functools import reduce
-
 from .api import NodeFeature, EdgeFeature
 
 DEFAULT_FORMAT = 'text-orig-full'
@@ -8,33 +6,30 @@ DEFAULT_FORMAT = 'text-orig-full'
 class MiniApi(object):
   def __init__(
       self,
-      nodes=(),
+      nodes=None,
       features={},
       featureType={},
       locality={},
       text={},
       langs=set(),
   ):
-    self.nodes = nodes,
+    self.isMini = True
+    self.nodes = () if nodes is None else tuple(int(n) for n in nodes.split(','))
     self.F = NodeFeatures()
     self.E = EdgeFeatures()
-    setattr(self, 'Nodes', self.N)
-    setattr(self, 'AllFeatures', self.Fall)
-    setattr(self, 'AllEdges', self.Eall)
-    setattr(self, 'AllComputeds', self.Call)
 
-    rank = {n: i for (n, i) in enumerate(nodes)}
+    rank = {n: i for (i, n) in enumerate(self.nodes)}
     self.rank = rank
     self.sortKey = lambda n: rank[n]
 
     for f in features:
       fType = featureType[f]
       if fType:
-          fObj = EdgeFeature(self, features[f], fType == 1)
-          setattr(self.E, f, fObj)
+        fObj = EdgeFeature(self, features[f], fType == 1)
+        setattr(self.E, f, fObj)
       else:
-          fObj = NodeFeature(self, features[f])
-          setattr(self.F, f, fObj)
+        fObj = NodeFeature(self, features[f])
+        setattr(self.F, f, fObj)
 
     self.L = Locality(self, locality)
     self.T = Text(self, text, langs)
@@ -92,13 +87,14 @@ class Text(object):
 
 
 def _makeLmember(dest, member):
-  def memberFunction(self, n, otype=None):
-    data = self.data
+  def memberFunction(n, otype=None):
+    data = dest.data
     if n not in data.get(member, {}):
       return ()
+    ms = data[member][n]
     if otype is None:
-      return data[member][n]
-    api = self.api
+      return ms
+    api = dest.api
     F = api.F
-    return tuple(m for m in data[member][n] if F.otype.v(n) == otype)
+    return tuple(m for m in ms if F.otype.v(m) == otype)
   setattr(dest, member, memberFunction)

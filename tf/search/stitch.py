@@ -13,22 +13,22 @@ STRATEGY = '''
 
 def setStrategy(searchExe, strategy, keep=False):
   error = searchExe.api.error
-  doCache = searchExe.doCache
+  msgCache = searchExe.msgCache
   if strategy is None:
     if keep:
       return
     strategy = STRATEGY[0]
   if strategy not in STRATEGY:
-    error(f'Strategy not defined: "{strategy}"', cache=doCache)
+    error(f'Strategy not defined: "{strategy}"', cache=msgCache)
     error(
         'Allowed strategies:\n{}'.format('\n'.join(f'    {s}' for s in STRATEGY)),
-        tm=False, cache=doCache,
+        tm=False, cache=msgCache,
     )
     searchExe.good = False
 
   func = globals().get(f'_{strategy}', None)
   if not func:
-    error('Strategy is defined, but not implemented: "{}"'.format(strategy), cache=doCache)
+    error('Strategy is defined, but not implemented: "{}"'.format(strategy), cache=msgCache)
     searchExe.good = False
   searchExe.strategy = types.MethodType(func, searchExe)
 
@@ -281,7 +281,7 @@ def _stitchPlan(searchExe, strategy=None):
   qnodes = searchExe.qnodes
   qedges = searchExe.qedges
   error = searchExe.api.error
-  doCache = searchExe.doCache
+  msgCache = searchExe.msgCache
 
   setStrategy(searchExe, strategy, keep=True)
   if not searchExe.good:
@@ -317,7 +317,7 @@ def _stitchPlan(searchExe, strategy=None):
     error(
         f'''Object mismatch in plan:
 In template: {qnodesO}
-In plan    : {newNodesO}''', tm=False, cache=doCache
+In plan    : {newNodesO}''', tm=False, cache=msgCache
     )
     good = False
 
@@ -328,7 +328,7 @@ In plan    : {newNodesO}''', tm=False, cache=doCache
         f'''Relation mismatch in plan:
 In template: {qedgesO}
 In plan    : {newCedgesO}''',
-        tm=False, cache=doCache
+        tm=False, cache=msgCache
     )
     good = False
 

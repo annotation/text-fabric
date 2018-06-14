@@ -63,7 +63,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
   from .searchexe import SearchExe
   (quKind, quTemplates, parentName) = quantifier
   info = searchExe.api.info
-  doCache = searchExe.doCache
+  msgCache = searchExe.msgCache
   indent = searchExe.api.indent
   showQuantifiers = searchExe.showQuantifiers
   level = searchExe.level
@@ -72,7 +72,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
 
   if showQuantifiers:
     indent(level=level + 1, reset=True)
-    info(f'"Quantifier on "{cleanAtom}"', cache=doCache)
+    info(f'"Quantifier on "{cleanAtom}"', cache=msgCache)
 
   if quKind == QWITHOUT:
     queryN = '\n'.join((cleanAtom, quTemplates[0]))
@@ -86,12 +86,12 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
     )
     if showQuantifiers:
       indent(level=level + 2, reset=True)
-      info(f'{quKind}\n{queryN}\n{QEND}', tm=False, cache=doCache)
+      info(f'{quKind}\n{queryN}\n{QEND}', tm=False, cache=msgCache)
     noResults = exe.search()
     resultYarn = universe - noResults
     if showQuantifiers:
       indent(level=level + 2)
-      info(f'{len(noResults)} nodes to exclude', cache=doCache)
+      info(f'{len(noResults)} nodes to exclude', cache=msgCache)
   elif quKind == QWHERE:
     # compute the atom+antecedent:
     #   as result tuples
@@ -106,11 +106,11 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
     )
     if showQuantifiers:
       indent(level=level + 2, reset=True)
-      info(f'{quKind}\n{queryA}', tm=False, cache=doCache)
+      info(f'{quKind}\n{queryA}', tm=False, cache=msgCache)
     aResultTuples = exe.search(limit=-1)
     if showQuantifiers:
       indent(level=level + 2)
-      info(f'{len(aResultTuples)} matching nodes', cache=doCache)
+      info(f'{len(aResultTuples)} matching nodes', cache=msgCache)
     if not aResultTuples:
       resultYarn = yarn
     else:
@@ -129,11 +129,11 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
       )
       if showQuantifiers:
         indent(level=level + 2, reset=True)
-        info(f'{QHAVE}\n{queryAH}\n{QEND}', tm=False, cache=doCache)
+        info(f'{QHAVE}\n{queryAH}\n{QEND}', tm=False, cache=msgCache)
       ahResults = exe.search()
       if showQuantifiers:
         indent(level=level + 2)
-        info(f'{len(ahResults)} matching nodes', cache=doCache)
+        info(f'{len(ahResults)} matching nodes', cache=msgCache)
 
       # determine the shallow tuples that correspond to
       #   atom+antecedent but not consequent
@@ -141,7 +141,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
       resultsAnotH = project(set(aResultTuples) - ahResults, 1)
       if showQuantifiers:
         indent(level=level + 2)
-        info(f'{len(resultsAnotH)} match antecedent but not consequent', cache=doCache)
+        info(f'{len(resultsAnotH)} match antecedent but not consequent', cache=msgCache)
 
       # now have the atoms that do NOT qualify:
       #   we subtract them from the universe
@@ -162,7 +162,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
       )
       if showQuantifiers:
         indent(level=level + 2, reset=True)
-        info((f'{quKind if i == 0 else QOR}\n{queryAlt}'), tm=False, cache=doCache)
+        info((f'{quKind if i == 0 else QOR}\n{queryAlt}'), tm=False, cache=msgCache)
       altResults = exe.search() & universe
       nAlt = len(altResults)
       nYarn = len(resultYarn)
@@ -170,12 +170,12 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
       nNew = len(resultYarn)
       if showQuantifiers:
         indent(level=level + 2)
-        info(f'adding {nAlt} to {nYarn} yields {nNew} nodes', cache=doCache)
+        info(f'adding {nAlt} to {nYarn} yields {nNew} nodes', cache=msgCache)
         if i == nAlts - 1:
-          info(QEND, tm=False, cache=doCache)
+          info(QEND, tm=False, cache=msgCache)
   if showQuantifiers:
     indent(level=level + 1)
-    info(f'reduction from {len(yarn)} to {len(resultYarn)} nodes', cache=doCache)
+    info(f'reduction from {len(yarn)} to {len(resultYarn)} nodes', cache=msgCache)
     indent(level=0)
   return resultYarn
 

@@ -1,32 +1,32 @@
-import sys
 from importlib import import_module
-
-try:
-  dataSource = sys.argv[1]
-except Exception:
-  print('Pass a data source as first argument')
-  sys.exit(1)
-
-try:
-  config = import_module(f'.{dataSource}', package='config')
-except Exception as e:
-  print(e)
-  print(f'Data source "{dataSource}" not found')
-  sys.exit(1)
-
-try:
-  controller = import_module(f'.{dataSource}', package='controllers')
-except Exception as e:
-  print(e)
-  print(f'Controller "{dataSource}" not found')
-  sys.exit(1)
-
 
 from bottle import (post, get, route, template, request, static_file, run)
 
 from tf.service import makeTfConnection
+from tf.miniapi import MiniApi
 
-TF = makeTfConnection(config.host, config.port)
+from serveTf import getParam
+
+
+def getStuff(dataSource):
+  global controller
+  global TF
+  try:
+    config = import_module(f'.{dataSource}', package='config')
+  except Exception as e:
+    print(e)
+    print(f'Data source "{dataSource}" not found')
+    return None
+
+  try:
+    controller = import_module(f'.{dataSource}', package='controllers')
+  except Exception as e:
+    print(e)
+    print(f'Controller "{dataSource}" not found')
+    return None
+
+  TF = makeTfConnection(config.host, config.port)
+  return config
 
 
 @route('/static/<filepath:path>')
@@ -41,9 +41,12 @@ def serveSearch(anything):
 
   if searchTemplate:
     api = TF.connect()
-    (results, context, messages) = api.search(searchTemplate, True)
+    (results, context, messages) = api.search(searchTemplate, position=0, context=True)
+    print('make miniapi')
+    miniApi = MiniApi(**context)
+    print('miniapi ready')
 
-    table = controller.compose(results, context)
+    table = controller.compose(results, miniApi)
   else:
     table = 'no results'
     searchTemplate = ''
@@ -52,16 +55,25 @@ def serveSearch(anything):
   return template(
       'index',
       dataSource=dataSource,
+      css=controller.C_CSS,
       messages=messages.replace('\n', '<br/>'),
       table=table,
       searchTemplate=searchTemplate,
   )
 
 
-run(
-    debug=True,
-    reloader=True,
-    host=config.host,
-    port=config.webport,
-)
+def runweb(dataSource):
+  config = getStuff(dataSource)
+  if config is not None:
+    run(
+        debug=True,
+        reloader=True,
+        host=config.host,
+        port=config.webport,
+    )
 
+
+if __name__ == "__main__":
+  dataSource = getParam()
+  if dataSource is not None:
+    runweb(dataSource)

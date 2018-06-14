@@ -125,7 +125,7 @@ ATF_TYPES = set('''
 '''.strip().split())
 
 CSS = '''
-<style>
+<style type="text/css">
 .pnum {
     font-family: sans-serif;
     font-size: small;
@@ -359,62 +359,10 @@ def _wrapLink(piece, objectType, kind, identifier, pos='bottom', caption=None):
   return result
 
 
-class Cunei(object):
-  def __init__(self, repoBase, repoRel, name):
-    repoBase = os.path.expanduser(repoBase)
-    repo = f'{repoBase}/{repoRel}'
-    self.repo = repo
-    self.version = VERSION
-    self.sourceDir = f'{repo}/{SOURCE_DIR}'
-    self.imageDir = f'{repo}/{IMAGE_DIR}'
-    self._imagery = {}
-    self.corpus = f'{repo}/{CORPUS}'
-    self.corpusFull = CORPUS_FULL
-    TF = Fabric(locations=[self.corpus], modules=[''], silent=True)
-    api = TF.load('', silent=True)
-    allFeatures = TF.explore(silent=True, show=True)
-    loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
-    TF.load(loadableFeatures, add=True, silent=True)
-    self.api = api
-    self._getImagery()
-    self.cwd = os.getcwd()
-    cwdPat = re.compile(f'^.*/github/([^/]+)/([^/]+)((?:/.+)?)$', re.I)
-    cwdRel = cwdPat.findall(self.cwd)
-    if cwdRel:
-      (thisOrg, thisRepo, thisPath) = cwdRel[0]
-      onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{name}.ipynb')
-    else:
-      cwdRel = None
-    nbLink = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
-    ghLink = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
-    docLink = f'https://github.com/{repoRel}/blob/master/docs'
-    extraLink = f'https://dans-labs.github.io/text-fabric/Api/Cunei/'
-    dataLink = _outLink(self.corpusFull, f'{docLink}/about.md', 'provenance of this corpus')
-    featureLink = _outLink('Feature docs', f'{docLink}/transcription.md', 'feature documentation')
-    cuneiLink = _outLink('Cunei API', extraLink, 'cunei api documentation')
-    tfLink = _outLink(
-        f'Text-Fabric API {api.TF.version}', 'https://dans-labs.github.io/text-fabric/Api/General/',
-        'text-fabric-api'
-    )
-    tfsLink = _outLink(
-        'Search Reference', 'https://dans-labs.github.io/text-fabric/Api/General/#search-templates',
-        'Search Templates Introduction and Reference'
-    )
-    dm('**Documentation:**' f' {dataLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}')
-    if nbLink:
-      dm(f'''
-This notebook online:
-{_outLink('NBViewer', nbLink)}
-{_outLink('GitHub', ghLink)}
-''')
-    thisRepoDir = (None if cwdRel is None else f'{repoBase}/{thisOrg}/{thisRepo}')
-    self.tempDir = (None if cwdRel is None else f'{thisRepoDir}/{TEMP_DIR}')
-    self.reportDir = (None if cwdRel is None else f'{thisRepoDir}/{REPORT_DIR}')
-    for cdir in (self.tempDir, self.reportDir):
-      if cdir:
-        os.makedirs(cdir, exist_ok=True)
-
-    self._loadCSS()
+class Atf(object):
+  def __init__(self, api=None):
+    if api:
+      self.api = api
 
   def getSource(self, node, nodeType=None, lineNumbers=False):
     api = self.api
@@ -599,6 +547,64 @@ This notebook online:
             and all(F.otype.v(parent) != 'quad' for parent in E.sub.t(quad))
         )
     ]
+
+
+class Cunei(Atf):
+  def __init__(self, repoBase, repoRel, name):
+    repoBase = os.path.expanduser(repoBase)
+    repo = f'{repoBase}/{repoRel}'
+    self.repo = repo
+    self.version = VERSION
+    self.sourceDir = f'{repo}/{SOURCE_DIR}'
+    self.imageDir = f'{repo}/{IMAGE_DIR}'
+    self._imagery = {}
+    self.corpus = f'{repo}/{CORPUS}'
+    self.corpusFull = CORPUS_FULL
+    TF = Fabric(locations=[self.corpus], modules=[''], silent=True)
+    api = TF.load('', silent=True)
+    allFeatures = TF.explore(silent=True, show=True)
+    loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
+    TF.load(loadableFeatures, add=True, silent=True)
+    self.api = api
+    self._getImagery()
+    self.cwd = os.getcwd()
+    cwdPat = re.compile(f'^.*/github/([^/]+)/([^/]+)((?:/.+)?)$', re.I)
+    cwdRel = cwdPat.findall(self.cwd)
+    if cwdRel:
+      (thisOrg, thisRepo, thisPath) = cwdRel[0]
+      onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{name}.ipynb')
+    else:
+      cwdRel = None
+    nbLink = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
+    ghLink = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
+    docLink = f'https://github.com/{repoRel}/blob/master/docs'
+    extraLink = f'https://dans-labs.github.io/text-fabric/Api/Cunei/'
+    dataLink = _outLink(self.corpusFull, f'{docLink}/about.md', 'provenance of this corpus')
+    featureLink = _outLink('Feature docs', f'{docLink}/transcription.md', 'feature documentation')
+    cuneiLink = _outLink('Cunei API', extraLink, 'cunei api documentation')
+    tfLink = _outLink(
+        f'Text-Fabric API {api.TF.version}', 'https://dans-labs.github.io/text-fabric/Api/General/',
+        'text-fabric-api'
+    )
+    tfsLink = _outLink(
+        'Search Reference', 'https://dans-labs.github.io/text-fabric/Api/General/#search-templates',
+        'Search Templates Introduction and Reference'
+    )
+    dm('**Documentation:**' f' {dataLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}')
+    if nbLink:
+      dm(f'''
+This notebook online:
+{_outLink('NBViewer', nbLink)}
+{_outLink('GitHub', ghLink)}
+''')
+    thisRepoDir = (None if cwdRel is None else f'{repoBase}/{thisOrg}/{thisRepo}')
+    self.tempDir = (None if cwdRel is None else f'{thisRepoDir}/{TEMP_DIR}')
+    self.reportDir = (None if cwdRel is None else f'{thisRepoDir}/{REPORT_DIR}')
+    for cdir in (self.tempDir, self.reportDir):
+      if cdir:
+        os.makedirs(cdir, exist_ok=True)
+
+    self._loadCSS()
 
   def lineFromNode(self, n):
     api = self.api

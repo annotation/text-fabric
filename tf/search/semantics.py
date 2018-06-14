@@ -10,24 +10,24 @@ def semantics(searchExe):
   if not searchExe.good:
     return
   error = searchExe.api.error
-  doCache = searchExe.doCache
+  msgCache = searchExe.msgCache
   searchExe.badSemantics = []
 
   _grammar(searchExe)
   if not searchExe.good:
     for (i, line) in enumerate(searchExe.searchLines):
-      error(f'{i:>2} {line}', tm=False, cache=doCache)
+      error(f'{i:>2} {line}', tm=False, cache=msgCache)
     for eline in searchExe.badSemantics:
-      error(eline, tm=False, cache=doCache)
+      error(eline, tm=False, cache=msgCache)
     return
 
   if searchExe.good:
     _validation(searchExe)
   if not searchExe.good:
     for (i, line) in enumerate(searchExe.searchLines):
-      error(f'{i:>2} {line}', tm=False, cache=doCache)
+      error(f'{i:>2} {line}', tm=False, cache=msgCache)
     for eline in searchExe.badSemantics:
-      error(eline, tm=False, cache=doCache)
+      error(eline, tm=False, cache=msgCache)
 
 
 def _grammar(searchExe):

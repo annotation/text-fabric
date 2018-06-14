@@ -14,7 +14,7 @@ def basicRelations(searchExe, api, silent):
   F = api.F
   E = api.E
   info = api.info
-  doCache = searchExe.doCache
+  msgCache = searchExe.msgCache
   Crank = C.rank.data
   ClevDown = C.levDown.data
   ClevUp = C.levUp.data
@@ -173,14 +173,14 @@ def basicRelations(searchExe, api, silent):
           return (yF, yT)
 
         if not silent:
-          info(f'1. reducing over {len(nyS)} elements', cache=doCache)
+          info(f'1. reducing over {len(nyS)} elements', cache=msgCache)
         nyF = reduce(
             set.union,
             (sindexF[s] for s in nyS),
             set(),
         )
         if not silent:
-          info(f'2. reducing over {len(nyS)} elements', cache=doCache)
+          info(f'2. reducing over {len(nyS)} elements', cache=msgCache)
         nyT = reduce(
             set.union,
             (sindexT[s] for s in nyS),

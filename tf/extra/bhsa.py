@@ -19,7 +19,7 @@ LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
 
 CSS = '''
-<style>
+<style type="text/css">
 .verse {
     display: flex;
     flex-flow: row wrap;
