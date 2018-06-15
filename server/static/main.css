@@ -1,3 +1,17 @@
-body {
+body,td {
     font-family: sans-serif;
+}
+.pnav {
+    font-size: 10px;
+    color: #6666ff;
+    background-color: #eeeeff;
+    border-radius: 4px;
+    border: 1px solid #cccccc;
+    padding: 2px 4px;
+    line-height: 12px;
+    text-decoration: none;
+}
+
+.pline {
+    text-align: center;
 }

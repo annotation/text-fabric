@@ -7,6 +7,7 @@ text_fabric.egg-info/requires.txt
 text_fabric.egg-info/top_level.txt
 tf/__init__.py
 tf/api.py
+tf/context.py
 tf/data.py
 tf/fabric.py
 tf/helpers.py
@@ -22,7 +23,6 @@ tf/extra/__init__.py
 tf/extra/bhsa.py
 tf/extra/cunei.py
 tf/search/__init__.py
-tf/search/context.py
 tf/search/graph.py
 tf/search/relations.py
 tf/search/search.py

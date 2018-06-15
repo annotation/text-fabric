@@ -7,6 +7,8 @@ from tf.extra.cunei import (
 
 C_CSS = CSS
 
+BATCH = 100
+
 
 def _outLink(text, href, title=None):
   titleAtt = '' if title is None else f' title="{title}"'
@@ -153,7 +155,7 @@ class Cunei(Atf):
   def table(
       self,
       results,
-      position=0,
+      start=0,
       linked=1,
       withNodes=False,
       lineNumbers=False,
@@ -177,7 +179,7 @@ class Cunei(Atf):
         '\n'.join(
             self.plainTuple(
                 ns,
-                i + position + 1,
+                i + start + 1,
                 linked=linked,
                 withNodes=withNodes,
                 lineNumbers=lineNumbers,
@@ -191,7 +193,7 @@ class Cunei(Atf):
     return html
 
 
-def compose(results, api):
+def compose(results, start, api):
   CN = Cunei(api)
-  return CN.table(results, linked=1, withNodes=False)
+  return CN.table(results, start=start, linked=1, withNodes=False)
   # return f'{len(api.nodes)} nodes in {len(results)} results'

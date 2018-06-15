@@ -7,6 +7,8 @@ from tf.miniapi import MiniApi
 
 from serveTf import getParam
 
+from controllers.common import pageLinks
+
 
 def getStuff(dataSource):
   global controller
@@ -29,24 +31,42 @@ def getStuff(dataSource):
   return config
 
 
-@route('/static/<filepath:path>')
+def getInt(x, default=1):
+  if len(x) > 15:
+    return default
+  if not x.isdecimal():
+    return default
+  return int(x)
+
+
+@route('/server/static/<filepath:path>')
 def serveStatic(filepath):
-  return static_file(filepath)
+  return static_file(filepath, root='static')
 
 
 @post('/<anything:re:.*>')
 @get('/<anything:re:.*>')
 def serveSearch(anything):
   searchTemplate = request.forms.searchTemplate.replace('\r', '')
+  position = getInt(request.forms.position, default=1)
+  batch = getInt(request.forms.batch, default=controller.BATCH)
+  pages = ''
 
   if searchTemplate:
     api = TF.connect()
-    (results, context, messages) = api.search(searchTemplate, position=0, context=True)
+    (results, context, messages, start, end, total) = api.search(
+        searchTemplate,
+        batch=batch,
+        position=position,
+        context=True,
+    )
+    if results is not None:
+      pages = pageLinks(total, position)
     print('make miniapi')
     miniApi = MiniApi(**context)
     print('miniapi ready')
 
-    table = controller.compose(results, miniApi)
+    table = controller.compose(results, start, miniApi)
   else:
     table = 'no results'
     searchTemplate = ''
@@ -59,6 +79,9 @@ def serveSearch(anything):
       messages=messages.replace('\n', '<br/>'),
       table=table,
       searchTemplate=searchTemplate,
+      batch=batch,
+      position=position,
+      pages=pages,
   )
 
 

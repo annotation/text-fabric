@@ -9,32 +9,36 @@
         {{!css}}
     </head>
     <body>
-        <div id="body"/>
-        <!--<script src="/server/static/tf.js"></script>-->
-        <form method="post">
+        <form id="go" method="post">
             <label>Query</label>
             <textarea name="searchTemplate">{{searchTemplate}}</textarea>
+            Goto result <input type="text" id="pos" name="position" value="{{position}}"/> with
+            <input type="text" name="batch" value="{{batch}}"/> results per page
             <button type="submit">Go</button>
         </form>
         <div>
             <label>Messages</label>
             <div class="messages">
-            {{!messages}}
+                {{!messages}}
             </div>
-        <div>
+        </div>
         <div>
             <label>Results</label>
             <div class="resultlist">
-            {{!table}}
+                {{!table}}
             </div>
-        <div>
+        </div>
         <div>
             <label>Navigation</label>
-            <div class="navigation"/>
+            <div class="navigation">
+                {{!pages}}
+            </div>
         </div>
         <div>
             <label>Detail</label>
             <div class="resultitem"/>
         </div>
+        <script src="/server/static/jquery.js"></script>
+        <script src="/server/static/tf.js"/></script>
     </body>
 </html>

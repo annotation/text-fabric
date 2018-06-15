@@ -1,7 +1,12 @@
 import rpyc
 from rpyc.utils.server import ThreadedServer
 
-BATCH = 100
+
+def batchAround(nResults, position, batch):
+  halfBatch = int(round((batch + 1) / 2))
+  left = min(max(position - halfBatch, 1), nResults)
+  right = max(min(position + halfBatch, nResults), 1)
+  return (left, right)
 
 
 def makeTfServer(locations, modules, port):
@@ -26,7 +31,7 @@ def makeTfServer(locations, modules, port):
       self.api = None
       pass
 
-    def exposed_search(self, query, position=None, batch=BATCH, context=None):
+    def exposed_search(self, query, batch, position=1, context=None):
       print('start search')
       api = self.api
       if query in cache:
@@ -44,17 +49,14 @@ def makeTfServer(locations, modules, port):
       theContext = {}
       if messages:
         queryResults = ()
-      if position is not None:
-        if position >= len(queryResults):
-          queryResults = ()
-          messages = f'position {position} is past last result at {len(queryResults) - 1}'
-        else:
-          queryResults = queryResults[position:position + batch]
+      total = len(queryResults)
+      (start, end) = batchAround(total, position, batch)
+      queryResults = queryResults[start - 1:end]
       if queryResults:
         print('start gather context')
         theContext = gatherContext(api, context, queryResults)
         print('context gathered')
-      return (queryResults, theContext, messages)
+      return (queryResults, theContext, messages, start, end, total)
 
   return ThreadedServer(TfService, port=port, protocol_config={'allow_public_attrs': True})
 
