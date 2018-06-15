@@ -1,3 +1,5 @@
+import os
+
 from importlib import import_module
 
 from bottle import (post, get, route, template, request, static_file, run)
@@ -5,23 +7,73 @@ from bottle import (post, get, route, template, request, static_file, run)
 from tf.service import makeTfConnection
 from tf.miniapi import MiniApi
 
-from serveTf import getParam
+from tf.server.serveTf import getParam
 
-from controllers.common import pageLinks
+from tf.server.controllers.common import pageLinks
+
+
+tpl = '''
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Text-Fabric {{dataSource}}</title>
+        <meta name="application-name" content="Text-Fabric Search Box"/>
+
+        <link rel="stylesheet" href="/server/static/main.css"/>
+        {{!css}}
+    </head>
+    <body>
+        <form id="go" method="post">
+            <label>Query</label>
+            <textarea name="searchTemplate">{{searchTemplate}}</textarea>
+            Goto result <input type="text" id="pos" name="position" value="{{position}}"/> with
+            <input type="text" name="batch" value="{{batch}}"/> results per page
+            <button type="submit">Go</button>
+        </form>
+        <div>
+            <label>Messages</label>
+            <div class="messages">
+                {{!messages}}
+            </div>
+        </div>
+        <div>
+            <label>Results</label>
+            <div class="resultlist">
+                {{!table}}
+            </div>
+        </div>
+        <div>
+            <label>Navigation</label>
+            <div class="navigation">
+                {{!pages}}
+            </div>
+        </div>
+        <div>
+            <label>Detail</label>
+            <div class="resultitem"/>
+        </div>
+        <script src="/server/static/jquery.js"></script>
+        <script src="/server/static/tf.js"/></script>
+    </body>
+</html>
+'''
+
+myDir = os.path.dirname(os.path.abspath(__file__))
 
 
 def getStuff(dataSource):
   global controller
   global TF
   try:
-    config = import_module(f'.{dataSource}', package='config')
+    config = import_module(f'.{dataSource}', package='tf.server.config')
   except Exception as e:
     print(e)
     print(f'Data source "{dataSource}" not found')
     return None
 
   try:
-    controller = import_module(f'.{dataSource}', package='controllers')
+    controller = import_module(f'.{dataSource}', package='tf.server.controllers')
   except Exception as e:
     print(e)
     print(f'Controller "{dataSource}" not found')
@@ -41,7 +93,7 @@ def getInt(x, default=1):
 
 @route('/server/static/<filepath:path>')
 def serveStatic(filepath):
-  return static_file(filepath, root='static')
+  return static_file(filepath, root=f'{myDir}/static')
 
 
 @post('/<anything:re:.*>')
@@ -66,14 +118,14 @@ def serveSearch(anything):
     miniApi = MiniApi(**context)
     print('miniapi ready')
 
-    table = controller.compose(results, start, miniApi)
+    table = controller.compose(results, start, position, miniApi)
   else:
     table = 'no results'
     searchTemplate = ''
     messages = ''
 
   return template(
-      'index',
+      tpl,
       dataSource=dataSource,
       css=controller.C_CSS,
       messages=messages.replace('\n', '<br/>'),
@@ -90,7 +142,7 @@ def runweb(dataSource):
   if config is not None:
     run(
         debug=True,
-        reloader=True,
+        reloader=False,
         host=config.host,
         port=config.webport,
     )

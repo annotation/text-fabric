@@ -1,5 +1,6 @@
 README.md
 setup.py
+tfs
 text_fabric.egg-info/PKG-INFO
 text_fabric.egg-info/SOURCES.txt
 text_fabric.egg-info/dependency_links.txt
@@ -31,3 +32,6 @@ tf/search/semantics.py
 tf/search/spin.py
 tf/search/stitch.py
 tf/search/syntax.py
+tf/server/__init__.py
+tf/server/index.py
+tf/server/serveTf.py

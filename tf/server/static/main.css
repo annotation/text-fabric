@@ -15,3 +15,6 @@ body,td {
 .pline {
     text-align: center;
 }
+.focus {
+    background-color: #ffeebb;
+}

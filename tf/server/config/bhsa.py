@@ -7,6 +7,7 @@ PARALLELS = f'parallels/tf/{VERSION}'
 locations = [DATABASE]
 modules = [BHSA, PHONO, PARALLELS]
 
+protocol = 'http://'
 host = 'localhost'
 port = 18981
 webport = 8001

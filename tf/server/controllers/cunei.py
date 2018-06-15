@@ -7,7 +7,7 @@ from tf.extra.cunei import (
 
 C_CSS = CSS
 
-BATCH = 100
+BATCH = 10
 
 
 def _outLink(text, href, title=None):
@@ -112,6 +112,7 @@ class Cunei(Atf):
       self,
       ns,
       seqNumber,
+      position,
       linked=1,
       withNodes=False,
       lineNumbers=False,
@@ -119,17 +120,18 @@ class Cunei(Atf):
   ):
     api = self.api
     F = api.F
+    current = ' class="focus"' if seqNumber == position else ''
     html = ''
     if alone:
       html = f'''
 <table>
-  <tr>
+  <tr{current}>
     <th>n</th><th>{"</th><th>".join(F.otype.v(n) for n in ns)}</th>
   </tr>
 '''
     html += (
         f'''
-  <tr>
+  <tr{current}>
     <td>{seqNumber}</td>
 '''
         +
@@ -155,7 +157,8 @@ class Cunei(Atf):
   def table(
       self,
       results,
-      start=0,
+      start=1,
+      position=1,
       linked=1,
       withNodes=False,
       lineNumbers=False,
@@ -179,7 +182,8 @@ class Cunei(Atf):
         '\n'.join(
             self.plainTuple(
                 ns,
-                i + start + 1,
+                i + start,
+                position,
                 linked=linked,
                 withNodes=withNodes,
                 lineNumbers=lineNumbers,
@@ -193,7 +197,7 @@ class Cunei(Atf):
     return html
 
 
-def compose(results, start, api):
+def compose(results, start, position, api):
   CN = Cunei(api)
-  return CN.table(results, start=start, linked=1, withNodes=False)
+  return CN.table(results, start=start, position=position, linked=1, withNodes=False)
   # return f'{len(api.nodes)} nodes in {len(results)} results'
