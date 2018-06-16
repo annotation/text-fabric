@@ -2,64 +2,19 @@ import os
 
 from importlib import import_module
 
+import bottle
 from bottle import (post, get, route, template, request, static_file, run)
 
-from tf.service import makeTfConnection
+from tf.server.service import makeTfConnection
 from tf.miniapi import MiniApi
 
-from tf.server.serveTf import getParam
+from tf.server.data import getParam, getDebug
 
-from tf.server.controllers.common import pageLinks
+from tf.server.controllers.common import pageLinks, shapeMessages
 
-
-tpl = '''
-<html>
-    <head>
-        <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Text-Fabric {{dataSource}}</title>
-        <meta name="application-name" content="Text-Fabric Search Box"/>
-
-        <link rel="stylesheet" href="/server/static/main.css"/>
-        {{!css}}
-    </head>
-    <body>
-        <form id="go" method="post">
-            <label>Query</label>
-            <textarea name="searchTemplate">{{searchTemplate}}</textarea>
-            Goto result <input type="text" id="pos" name="position" value="{{position}}"/> with
-            <input type="text" name="batch" value="{{batch}}"/> results per page
-            <button type="submit">Go</button>
-        </form>
-        <div>
-            <label>Messages</label>
-            <div class="messages">
-                {{!messages}}
-            </div>
-        </div>
-        <div>
-            <label>Results</label>
-            <div class="resultlist">
-                {{!table}}
-            </div>
-        </div>
-        <div>
-            <label>Navigation</label>
-            <div class="navigation">
-                {{!pages}}
-            </div>
-        </div>
-        <div>
-            <label>Detail</label>
-            <div class="resultitem"/>
-        </div>
-        <script src="/server/static/jquery.js"></script>
-        <script src="/server/static/tf.js"/></script>
-    </body>
-</html>
-'''
 
 myDir = os.path.dirname(os.path.abspath(__file__))
+bottle.TEMPLATE_PATH = [f'{myDir}/views']
 
 
 def getStuff(dataSource):
@@ -104,6 +59,8 @@ def serveSearch(anything):
   batch = getInt(request.forms.batch, default=controller.BATCH)
   pages = ''
 
+  header = controller.header()
+
   if searchTemplate:
     api = TF.connect()
     (results, context, messages, start, end, total) = api.search(
@@ -111,12 +68,14 @@ def serveSearch(anything):
         batch=batch,
         position=position,
         context=True,
+        nodeTypes={controller.CONTAINER_TYPE},
     )
     if results is not None:
       pages = pageLinks(total, position)
-    print('make miniapi')
     miniApi = MiniApi(**context)
-    print('miniapi ready')
+
+    if messages:
+      messages = shapeMessages(messages)
 
     table = controller.compose(results, start, position, miniApi)
   else:
@@ -125,10 +84,11 @@ def serveSearch(anything):
     messages = ''
 
   return template(
-      tpl,
+      'index',
       dataSource=dataSource,
       css=controller.C_CSS,
-      messages=messages.replace('\n', '<br/>'),
+      header=header,
+      messages=messages,
       table=table,
       searchTemplate=searchTemplate,
       batch=batch,
@@ -137,12 +97,12 @@ def serveSearch(anything):
   )
 
 
-def runweb(dataSource):
+def runweb(dataSource, debug=False):
   config = getStuff(dataSource)
   if config is not None:
     run(
-        debug=True,
-        reloader=False,
+        debug=debug,
+        reloader=debug,
         host=config.host,
         port=config.webport,
     )
@@ -150,5 +110,6 @@ def runweb(dataSource):
 
 if __name__ == "__main__":
   dataSource = getParam()
+  debug = getDebug()
   if dataSource is not None:
-    runweb(dataSource)
+    runweb(dataSource, debug=debug)

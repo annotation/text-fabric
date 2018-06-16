@@ -3,7 +3,7 @@ from time import sleep
 from importlib import import_module
 from subprocess import Popen, run
 
-from tf.server.serveTf import getParam
+from tf.server.data import getParam, getDebug
 
 def getConfig(dataSource):
   try:
@@ -16,12 +16,13 @@ def getConfig(dataSource):
 
 def main():
   dataSource = getParam()
+  ddataSource = ('-d', dataSource) if getDebug() else (dataSource,)
   if dataSource is not None:
     config = getConfig(dataSource)
     if config is not None:
         try:
-            pData = Popen(['python3', '-m', 'tf.server.serveTf', dataSource])
-            pWeb = Popen(['python3', '-m', 'tf.server.index', dataSource])
+            pData = Popen(['python3', '-m', 'tf.server.data', dataSource])
+            pWeb = Popen(['python3', '-m', 'tf.server.web', *ddataSource])
             sleep(2)
             webbrowser.open(f'{config.protocol}{config.host}:{config.webport}', new=2, autoraise=True)
             pWeb.wait()

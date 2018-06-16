@@ -9,7 +9,7 @@ setup(
         'tf.server',
     ],
     install_requires=['rpyc', 'bottle'],
-    scripts=['tfs'],
+    scripts=['text-fabric'],
     version='4.4.3',
     description='''Processor for Text Fabric Data''',
     author='Dirk Roorda',

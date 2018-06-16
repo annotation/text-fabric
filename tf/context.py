@@ -1,7 +1,7 @@
 from functools import reduce
 
 
-def gatherContext(api, context, results):
+def gatherContext(api, context, nodeTypes, results):
   F = api.F
   Fs = api.Fs
   Es = api.Es
@@ -46,14 +46,25 @@ def gatherContext(api, context, results):
   elif textFormats is True:
     textFormats = T.formats
 
-  # generate context: features
+  # get all nodes
 
-  loadedFeatures = api.ensureLoaded(featureSpec)
   allNodes = reduce(
       set.union,
       (set(r) for r in results),
       set(),
   )
+
+  if nodeTypes:
+    nodeTypes = set(nodeTypes)
+    newNodes = set()
+    for n in allNodes:
+      newNodes |= {m for m in L.d(n) if F.otype.v(m) in nodeTypes}
+      newNodes |= {m for m in L.u(n) if F.otype.v(m) in nodeTypes}
+  allNodes |= newNodes
+
+  # generate context: features
+
+  loadedFeatures = api.ensureLoaded(featureSpec)
   features = {}
   featureType = {}
   for f in sorted(loadedFeatures):

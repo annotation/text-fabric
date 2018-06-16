@@ -1,3 +1,9 @@
+import re
+
+msgLinePat = '^( *[0-9]+) (.*)$'
+msgLineRe = re.compile(msgLinePat)
+
+
 def _coarsify(n, spread):
   nAbs = int(round(abs(n) / spread)) * spread
   return nAbs if n >= 0 else -nAbs
@@ -14,11 +20,11 @@ def pageLinks(nResults, position, spread=10):
     lines = [(1, 2)]
   else:
     if position == 1 or position == nResults:
-      lastLine = (1, nResults)
+      commonLine = (1, nResults)
     else:
-      lastLine = (1, position, nResults)
-
+      commonLine = (1, position, nResults)
     lines = []
+
     factor = 1
     while factor <= nResults:
       curSpread = factor * spread
@@ -35,16 +41,31 @@ def pageLinks(nResults, position, spread=10):
 
       factor *= spread
 
-    lines.append(lastLine)
+    lines.append(commonLine)
 
   html = '\n'.join(
-      '<p class="pline">' +
+      '<div class="pline">' +
       ' '.join(
           f'<a href="#" class="pnav {" focus" if position == p else ""}">{p}</a>'
           for p in line
       )
       +
-      '</p>'
-      for line in lines
+      '</div>'
+      for line in reversed(lines)
   )
   return html
+
+
+def shapeMessages(messages):
+  messages = messages.split('\n')
+  html = []
+  for msg in messages:
+    match = msgLineRe.match(msg)
+    if match:
+      continue
+    html.append(f'''
+      <div class="eline">
+        {msg}
+      </div>
+    ''')
+  return ''.join(html)

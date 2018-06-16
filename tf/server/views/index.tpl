@@ -10,34 +10,31 @@
     </head>
     <body>
         <form id="go" method="post">
-            <label>Query</label>
-            <textarea name="searchTemplate">{{searchTemplate}}</textarea>
-            Goto result <input type="text" id="pos" name="position" value="{{position}}"/> with
-            <input type="text" name="batch" value="{{batch}}"/> results per page
-            <button type="submit">Go</button>
-        </form>
-        <div>
-            <label>Messages</label>
-            <div class="messages">
-                {{!messages}}
+        <div class="page">
+            <div class="leftcol">
+                <div class="header">
+                    {{!header}}
+                </div>
+                <textarea class="template" name="searchTemplate">{{searchTemplate}}</textarea>
+                <p class="go"><button class="go" type="submit">Go</button></p>
+                <div class="messages">
+                    {{!messages}}
+                </div>
             </div>
-        </div>
-        <div>
-            <label>Results</label>
-            <div class="resultlist">
+            <div class="midcol">
+                <div class="navigation">
+                    <div><input class="int" type="text" id="pos" name="position" value="{{position}}"/> current position</div>
+                    <div><input class="int" type="text" name="batch" value="{{batch}}"/> results per page</div>
+                </div>
+                <div class="pages">
+                    {{!pages}}
+                </div>
+            </div>
+            <div class="rightcol">
                 {{!table}}
             </div>
         </div>
-        <div>
-            <label>Navigation</label>
-            <div class="navigation">
-                {{!pages}}
-            </div>
-        </div>
-        <div>
-            <label>Detail</label>
-            <div class="resultitem"/>
-        </div>
+        </form>
         <script src="/server/static/jquery.js"></script>
         <script src="/server/static/tf.js"/></script>
     </body>

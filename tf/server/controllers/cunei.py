@@ -5,9 +5,34 @@ from tf.extra.cunei import (
     Atf,
 )
 
+from tf.server.config.cunei import (
+    ORG,
+    REPO,
+)
+
 C_CSS = CSS
 
-BATCH = 10
+ABOUT_URL = f'https://github.com/{ORG}/{REPO}/blob/master/docs/about.md'
+FEATURE_URL = f'https://github.com/{ORG}/{REPO}/blob/master/docs/transcription.md'
+SEARCH_URL = f'https://dans-labs.github.io/text-fabric/Api/General/#searching'
+TUT_URL = f'https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/search.ipynb'
+
+BATCH = 20
+
+CONTAINER_TYPE = 'tablet'
+
+
+def header():
+  return f'''
+    <img class="hdlogo" src="/server/static/cunei.png"/>
+    <div class="hdlinks">
+      <a target="_blank" href="{ABOUT_URL}">{REPO}</a>
+      <a target="_blank" href="{FEATURE_URL}">features</a>
+      <a target="_blank" href="{SEARCH_URL}">help</a>
+      <a target="_blank" href="{TUT_URL}">tutorial</a>
+    </div>
+    <img class="hdlogo" src="/server/static/tf.png"/>
+  '''
 
 
 def _outLink(text, href, title=None):
@@ -120,38 +145,44 @@ class Cunei(Atf):
   ):
     api = self.api
     F = api.F
-    current = ' class="focus"' if seqNumber == position else ''
+    current = ' focus' if seqNumber == position else ''
     html = ''
     if alone:
       html = f'''
-<table>
-  <tr{current}>
-    <th>n</th><th>{"</th><th>".join(F.otype.v(n) for n in ns)}</th>
-  </tr>
+  <div class="dtheadrow{current}">
+    <div>n</div><div>{"</div><div>".join(F.otype.v(n) for n in ns)}</div>
+  </div>
 '''
     html += (
         f'''
-  <tr{current}>
-    <td>{seqNumber}</td>
+  <details class="dtrow">
+    <summary>
+      <div class="{current}">
+      <span>{seqNumber}</span>
 '''
         +
         ''.join(
-            f'''<td>{self.plain(
+            f'''<span>{self.plain(
                         n,
                         linked=i == linked - 1,
                         withNodes=withNodes,
                         lineNumbers=lineNumbers,
                       ).replace("|", "&#124;")
                     }
-                </td>
+                </span>
             '''
             for (i, n) in enumerate(ns)
         )
         +
-        '</tr>'
+        '''
+      </div>
+    </summary>
+    <div class="dtdetails">
+      Details
+    </div>
+  </details>
+'''
     )
-    if alone:
-      html += '</table>'
     return html
 
   def table(
@@ -169,14 +200,12 @@ class Cunei(Atf):
     api = self.api
     F = api.F
 
-    print('generate table')
     firstResult = results[0]
     html = (
         f'''
-<table>
-  <tr>
-    <th>n</th><th>{"</th><th>".join(F.otype.v(n) for n in firstResult)}</th>
-  </tr>
+  <div class="dtheadrow">
+    <div>n</div><div>{"</div><div>".join(F.otype.v(n) for n in firstResult)}</div>
+  </div>
 '''
         +
         '\n'.join(
@@ -190,10 +219,7 @@ class Cunei(Atf):
             )
             for (i, ns) in enumerate(results)
         )
-        +
-        '<table>'
     )
-    print('table generated')
     return html
 
 

@@ -31,20 +31,15 @@ def makeTfServer(locations, modules, port):
       self.api = None
       pass
 
-    def exposed_search(self, query, batch, position=1, context=None):
-      print('start search')
+    def exposed_search(self, query, batch, position=1, context=None, nodeTypes=None):
       api = self.api
       if query in cache:
         (queryResults, messages) = cache[query]
-        print('results from cache')
       else:
         S = api.S
         (queryResults, messages) = S.search(query, msgCache=True)
-        print('results from search')
         queryResults = sorted(queryResults)
-        print('results sorted')
         cache[query] = (queryResults, messages)
-        print('results cached')
 
       theContext = {}
       if messages:
@@ -53,9 +48,7 @@ def makeTfServer(locations, modules, port):
       (start, end) = batchAround(total, position, batch)
       queryResults = queryResults[start - 1:end]
       if queryResults:
-        print('start gather context')
-        theContext = gatherContext(api, context, queryResults)
-        print('context gathered')
+        theContext = gatherContext(api, context, nodeTypes, queryResults)
       return (queryResults, theContext, messages, start, end, total)
 
   return ThreadedServer(TfService, port=port, protocol_config={'allow_public_attrs': True})

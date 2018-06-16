@@ -4,7 +4,7 @@ from glob import glob
 
 from importlib import import_module
 
-from tf.service import makeTfServer
+from tf.server.service import makeTfServer
 
 
 def getParam():
@@ -17,15 +17,27 @@ def getParam():
       dataSources.add(d)
   dPrompt = '/'.join(dataSources)
 
-  try:
-    dataSource = sys.argv[1]
-  except Exception as e:
+  dataSource = None
+  for arg in sys.argv[1:]:
+    if arg.startswith('-'):
+      continue
+    dataSource = arg
+    break
+
+  if dataSource is None:
     dataSource = input(f'specify data source [{dPrompt}] > ')
   if dataSource not in dataSources:
     dataSource = None
   if dataSource is None:
     print(f'Pass a data source [{dPrompt}] as first argument')
   return dataSource
+
+
+def getDebug():
+  for arg in sys.argv[1:]:
+    if arg == '-d':
+      return True
+  return False
 
 
 def tfService(dataSource):

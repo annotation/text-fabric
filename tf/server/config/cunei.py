@@ -1,9 +1,11 @@
+ORG = 'Nino-cunei'
+REPO = 'uruk'
 VERSION = '1.0'
-DATABASE = '~/github/Nino-cunei'
-URUK = f'uruk/tf/uruk/{VERSION}'
+DATABASE = f'~/github/{ORG}'
+TF = f'{REPO}/tf/uruk/{VERSION}'
 
 locations = [DATABASE]
-modules = [URUK]
+modules = [TF]
 
 protocol = 'http://'
 host = 'localhost'
