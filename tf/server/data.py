@@ -48,7 +48,7 @@ def tfService(dataSource):
     print(f'Data source "{dataSource}" not found')
     return None
 
-  return makeTfServer(config.locations, config.modules, config.port)
+  return makeTfServer(dataSource, config.locations, config.modules, config.port)
 
 
 if __name__ == "__main__":

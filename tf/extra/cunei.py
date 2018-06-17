@@ -550,7 +550,8 @@ class Atf(object):
 
 
 class Cunei(Atf):
-  def __init__(self, repoBase, repoRel, name):
+  def __init__(self, repoBase, repoRel, name, asApi=False):
+    self.asApi = asApi
     repoBase = os.path.expanduser(repoBase)
     repo = f'{repoBase}/{repoRel}'
     self.repo = repo
@@ -590,9 +591,10 @@ class Cunei(Atf):
         'Search Reference', 'https://dans-labs.github.io/text-fabric/Api/General/#search-templates',
         'Search Templates Introduction and Reference'
     )
-    dm('**Documentation:**' f' {dataLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}')
-    if nbLink:
-      dm(f'''
+    if not asApi:
+      dm('**Documentation:**' f' {dataLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}')
+      if nbLink:
+        dm(f'''
 This notebook online:
 {_outLink('NBViewer', nbLink)}
 {_outLink('GitHub', ghLink)}
@@ -600,11 +602,13 @@ This notebook online:
     thisRepoDir = (None if cwdRel is None else f'{repoBase}/{thisOrg}/{thisRepo}')
     self.tempDir = (None if cwdRel is None else f'{thisRepoDir}/{TEMP_DIR}')
     self.reportDir = (None if cwdRel is None else f'{thisRepoDir}/{REPORT_DIR}')
-    for cdir in (self.tempDir, self.reportDir):
-      if cdir:
-        os.makedirs(cdir, exist_ok=True)
+    if not asApi:
+      for cdir in (self.tempDir, self.reportDir):
+        if cdir:
+          os.makedirs(cdir, exist_ok=True)
 
-    self._loadCSS()
+    if not asApi:
+      self._loadCSS()
 
   def lineFromNode(self, n):
     api = self.api
@@ -937,6 +941,8 @@ This notebook online:
         highlights=highlights,
     )
     htmlStr = '\n'.join(html)
+    if self.asApi:
+      return htmlStr
     display(HTML(htmlStr))
 
   def prettyTuple(
@@ -978,11 +984,14 @@ This notebook online:
         tablets.add(t)
         if thisHighlight is not None:
           newHighlights[n] = thisHighlight
-    dm(f'''
+    if not self.asApi:
+      dm(f'''
 ##### {item} {seqNumber}
 ''')
+    if self.asApi:
+      html = []
     for t in sortNodes(tablets):
-      self.pretty(
+      h = self.pretty(
           t,
           lineart=lineart,
           withNodes=withNodes,
@@ -990,6 +999,10 @@ This notebook online:
           suppress=suppress,
           highlights=newHighlights,
       )
+      if self.asApi:
+        html.append(h)
+    if self.asApi:
+      return '\n'.join(html)
 
   def show(
       self,

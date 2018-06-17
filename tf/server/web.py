@@ -55,29 +55,47 @@ def serveStatic(filepath):
 @get('/<anything:re:.*>')
 def serveSearch(anything):
   searchTemplate = request.forms.searchTemplate.replace('\r', '')
+  condensed = request.forms.condensed
+  withNodes = request.forms.withNodes
+  condensedAtt = ' checked ' if condensed else ''
+  withNodesAtt = ' checked ' if withNodes else ''
+  openedStr = request.forms.opened
   position = getInt(request.forms.position, default=1)
   batch = getInt(request.forms.batch, default=controller.BATCH)
   pages = ''
+  pretty = set()
 
   header = controller.header()
 
+  opened = set(openedStr.split(',')) if openedStr else set()
+
   if searchTemplate:
     api = TF.connect()
-    (results, context, messages, start, end, total) = api.search(
+    (results, context, messages, start, total) = api.search(
         searchTemplate,
-        batch=batch,
+        batch,
         position=position,
+        opened=opened,
         context=True,
         nodeTypes={controller.CONTAINER_TYPE},
     )
     if results is not None:
+      miniApi = MiniApi(**context)
       pages = pageLinks(total, position)
-    miniApi = MiniApi(**context)
+      if condensed:
+        results = controller.condense(miniApi, results)
+
+      askPretty = {seq: r for (seq, r) in results if seq in opened}
+      pretty = api.pretty(askPretty)
 
     if messages:
       messages = shapeMessages(messages)
 
-    table = controller.compose(results, start, position, miniApi)
+    table = controller.compose(
+        results, pretty, start, position, opened, miniApi,
+        condensed=condensed,
+        withNodes=withNodes,
+    )
   else:
     table = 'no results'
     searchTemplate = ''
@@ -91,8 +109,11 @@ def serveSearch(anything):
       messages=messages,
       table=table,
       searchTemplate=searchTemplate,
+      condensedAtt=condensedAtt,
+      withNodesAtt=withNodesAtt,
       batch=batch,
       position=position,
+      opened=openedStr,
       pages=pages,
   )
 

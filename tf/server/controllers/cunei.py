@@ -138,6 +138,8 @@ class Cunei(Atf):
       ns,
       seqNumber,
       position,
+      opened=False,
+      pretty=None,
       linked=1,
       withNodes=False,
       lineNumbers=False,
@@ -146,6 +148,7 @@ class Cunei(Atf):
     api = self.api
     F = api.F
     current = ' focus' if seqNumber == position else ''
+    attOpen = ' open ' if opened else ''
     html = ''
     if alone:
       html = f'''
@@ -155,32 +158,30 @@ class Cunei(Atf):
 '''
     html += (
         f'''
-  <details class="dtrow">
-    <summary>
-      <div class="{current}">
-      <span>{seqNumber}</span>
+  <div class="dtrow{current}">
+      <details class="pretty" seq="{seqNumber}" {attOpen}>
+        <summary>{seqNumber}</summary>
+        <div class="pretty">
+          {pretty}
+        </div>
+      </details>
 '''
         +
         ''.join(
-            f'''<span>{self.plain(
+            f'''<div>{self.plain(
                         n,
                         linked=i == linked - 1,
                         withNodes=withNodes,
                         lineNumbers=lineNumbers,
                       ).replace("|", "&#124;")
                     }
-                </span>
+                </div>
             '''
             for (i, n) in enumerate(ns)
         )
         +
         '''
-      </div>
-    </summary>
-    <div class="dtdetails">
-      Details
-    </div>
-  </details>
+  </div>
 '''
     )
     return html
@@ -188,9 +189,12 @@ class Cunei(Atf):
   def table(
       self,
       results,
+      pretty,
       start=1,
       position=1,
+      opened=set(),
       linked=1,
+      condensed=False,
       withNodes=False,
       lineNumbers=False,
   ):
@@ -200,7 +204,7 @@ class Cunei(Atf):
     api = self.api
     F = api.F
 
-    firstResult = results[0]
+    firstResult = results[0][1]
     html = (
         f'''
   <div class="dtheadrow">
@@ -211,19 +215,59 @@ class Cunei(Atf):
         '\n'.join(
             self.plainTuple(
                 ns,
-                i + start,
+                i,
                 position,
+                opened=i in opened,
+                pretty=pretty.get(i, None),
                 linked=linked,
                 withNodes=withNodes,
                 lineNumbers=lineNumbers,
             )
-            for (i, ns) in enumerate(results)
+            for (i, ns) in results
         )
     )
     return html
 
 
-def compose(results, start, position, api):
+def condense(api, results):
+  otype = api.F.otype.v
+  up = api.L.u
+  TABLET = 'tablet'
+  tablets = {}
+  minT = {}
+  maxT = {}
+  for (seq, ns) in results:
+    for n in ns:
+      if otype(n) == TABLET:
+        if n not in tablets:
+          tablets.setdefault(n, set())
+          if n not in minT or minT[n] > seq:
+            minT[n] = seq
+          if n not in maxT or maxT[n] > seq:
+            maxT[n] = seq
+      else:
+        t = up(n, otype=TABLET)[0]
+        tablets.setdefault(t, set()).add(n)
+        if t not in minT or minT[t] > seq:
+          minT[t] = seq
+        if n not in maxT or maxT[t] > seq:
+          maxT[t] = seq
+  return tuple(
+      (f'{minT[t]}-{maxT[t]}', (t, ) + tuple(tablets[t]))
+      for (i, t) in enumerate(sorted(tablets))
+  )
+
+
+def compose(
+    results, pretty, start, position, opened, api,
+    condensed=False,
+    withNodes=False,
+):
   CN = Cunei(api)
-  return CN.table(results, start=start, position=position, linked=1, withNodes=False)
-  # return f'{len(api.nodes)} nodes in {len(results)} results'
+  return CN.table(
+      results,
+      pretty,
+      start=start, position=position, opened=opened, linked=1,
+      condensed=condensed,
+      withNodes=withNodes,
+  )

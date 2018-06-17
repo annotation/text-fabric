@@ -11,13 +11,11 @@ div.page {
 div.leftcol {
     flex: 0 0 20rem;
     border-right: 1pt solid #aaaaaa;
-    height: 100vh;
     padding-left: 0.2rem;
     padding-right: 0.4rem;
 }
 div.midcol {
     flex: 0 0 auto;
-    height: 100vh;
     padding-left: 0.4rem;
     padding-right: 0.4rem;
 }
@@ -28,7 +26,6 @@ div.rightcol {
     justify-content: flex-start;
     align-items: stretch;
     border-left: 1pt solid #aaaaaa;
-    height: 100vh;
     padding-left: 0.4rem;
     padding-right: 0.2rem;
 }
@@ -70,19 +67,6 @@ textarea.template {
 	margin: 0.3rem 0.3rem;
     background-color: #ffeedd;
 }
-p.go {
-    text-align: center;
-}
-button.go {
-    font-size: large;
-    font-weight: bold;
-    padding: 0.5em;
-    width: 90%;
-    background-color: #888888;
-    color: #ffffff; 
-    border-radius: 1rem;
-    border-color: #444444;
-}
 
 div.messages {
     display: flex;
@@ -105,6 +89,19 @@ input.int {
     width: 3rem;
 }
 
+p.go {
+    text-align: center;
+}
+button.go {
+    font-size: large;
+    font-weight: bold;
+    padding: 0.5em;
+    width: 90%;
+    background-color: #888888;
+    color: #ffffff; 
+    border-radius: 1rem;
+    border-color: #444444;
+}
 div.pages {
     display: flex;
     flex-flow: row nowrap;
@@ -130,28 +127,36 @@ div.pline {
     background-color: #ffeebb;
 }
 
-.dtheadrow {
+div.dtheadrow {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: baseline;
     font-weight: bold;
     background-color: #aaaaaa;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
-.dtheadrow > div {
+div.dtheadrow > div {
+    flex: 0 1 auto;
+    text-align: left;
+    padding: 0.2rem;
+    border-right: 0.1rem solid #bbbbbb;
+}
+div.dtrow {
     flex: 1 1 auto;
-    text-align: center
-}
-details.dtrow {
-    flex: 1 1 auto;
-}
-details.dtrow > summary > div {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
+    display: inline-flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
     align-items: baseline;
+    border: 0.1rem solid #bbbbbb;
 }
-details.dtrow > summary > div > span {
-    flex: 1 1 auto;
-    text-align: center
+div.dtrow > div {
+    flex: 0 1 auto;
+    text-align: left;
+    padding: 0.2rem;
+    border-right: 0.1rem solid #bbbbbb;
+}
+div.pretty {
+    width: 100%;
 }

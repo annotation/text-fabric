@@ -16,9 +16,13 @@
                     {{!header}}
                 </div>
                 <textarea class="template" name="searchTemplate">{{searchTemplate}}</textarea>
-                <p class="go"><button class="go" type="submit">Go</button></p>
                 <div class="messages">
                     {{!messages}}
+                </div>
+                <p class="go"><button class="go" type="submit">Go</button></p>
+                <div class="setting">
+                    <div><input type="checkbox" id="cond" name="condensed" {{condensedAtt}}/> condense results</div>
+                    <div><input type="checkbox" id="withn" name="withNodes" {{withNodesAtt}}/> show nodes</div>
                 </div>
             </div>
             <div class="midcol">
@@ -30,6 +34,7 @@
                     {{!pages}}
                 </div>
             </div>
+            <input type="hidden" id="op" name="opened" value="{{opened}}"/>
             <div class="rightcol">
                 {{!table}}
             </div>
