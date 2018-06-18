@@ -562,24 +562,11 @@
                 <h1 id="web-site">Web site<a class="headerlink" href="#web-site" title="Permanent link">&para;</a></h1>
 <p>TF contains a web-server (based on <a href="http://bottlepy.org">bottle</a>,
 in which you can enter a search template and it will show you the results.</p>
-<p><strong>Disclaimer: this is work in process, and the website is not yet fully functional,
-but the plumbing works</strong>.</p>
-<details class="info"><summary>Start up</summary><p>In order to run the server, you need to have the <code>server</code> directory of the <code>text-fabric</code> repo
-cloned somewhere on your system.</p><p>Open a bash shell, go to <code>text-fabric/server</code> and run</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>./serve.sh bhsa
-</pre></div>
-</td></tr></table>
-<p>or </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>./serve.sh cunei
-</pre></div>
-</td></tr></table>
-<p>This will start up the TF service that can respond to queries, and a Bottle web-server.
-The output will show you to which (local) url you have to navigate in your web browser.</p><p>Close the webserver with Ctrl-C (twice).
-After that, the TF service will also be closed.</p><p>If you want to check for stray python processes still running on your system, say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>ps
-</pre></div>
-</td></tr></table>
-<p>on your terminal.</p><p>If there are processes you want to kill, say a process with id 50975:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">kill</span> <span class="m">50975</span>
-</pre></div>
-</td></tr></table>
-<p>Later I'll make a pure Python command to start up the processes.</p></details>
+<p>See the code in
+<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py">tf.server.web</a>
+and
+<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/data.py">tf.server.data</a>
+to get started.</p>
                 
                   
                 

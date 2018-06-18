@@ -565,81 +565,10 @@ The full API of Text-Fabric needs a lot of memory, which makes it unusably for
 rapid successions of loading and unloading, like when used in a web server context.</p>
 <p>However, you can start TF as a server, after which many clients can connect to it,
 all looking at the same (read-only) data.</p>
-<p>The API that the TF server offers is limited, currently only template search is offered.</p>
-<p>Here is a quick tutorial.</p>
-<p>To create a server:</p>
-<p>Write a script like this:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.service</span> <span class="kn">import</span> <span class="n">makeTfServer</span>
-
-<span class="n">PORT</span> <span class="o">=</span> <span class="mi">18981</span>
-
-<span class="c1"># say where your corpus files are: locations, modules</span>
-
-<span class="n">VERSION</span> <span class="o">=</span> <span class="s1">&#39;2017&#39;</span>
-<span class="n">DATABASE</span> <span class="o">=</span> <span class="s1">&#39;~/github/etcbc&#39;</span>
-<span class="n">BHSA</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;bhsa/tf/{VERSION}&#39;</span>
-<span class="n">PHONO</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;phono/tf/{VERSION}&#39;</span>
-<span class="n">PARALLELS</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;parallels/tf/{VERSION}&#39;</span>
-<span class="n">locations</span> <span class="o">=</span> <span class="p">[</span><span class="n">DATABASE</span><span class="p">]</span>
-<span class="n">modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">BHSA</span><span class="p">,</span> <span class="n">PHONO</span><span class="p">,</span> <span class="n">PARALLELS</span><span class="p">]</span>
-
-<span class="c1"># generate a server and run it</span>
-
-<span class="n">makeTfServer</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">PORT</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</pre></div>
-</td></tr></table>
-
-<p>To make connection to the server in a client:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.service</span> <span class="kn">import</span> <span class="n">makeTfConnection</span>
-
-<span class="c1"># say where the server is (host, port)</span>
-
-<span class="n">HOST</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span>
-<span class="n">PORT</span> <span class="o">=</span> <span class="mi">18981</span>
-
-
-<span class="c1"># create a connector and use it</span>
-
-<span class="n">TF</span> <span class="o">=</span> <span class="n">makeTfConnection</span><span class="p">(</span><span class="n">HOST</span><span class="p">,</span> <span class="n">PORT</span><span class="p">)</span>
-<span class="n">api</span> <span class="o">=</span> <span class="n">TF</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-</pre></div>
-</td></tr></table>
-
-<p>To get data from the server:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">messages</span><span class="p">)</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
-</pre></div>
-</td></tr></table>
-
-<p>See the
-<a href="https://github.com/Dans-labs/text-fabric/tree/master/test/bhsa">BHSA test</a>
- directory for a concrete example.</p>
+<p>The API that the TF server offers is limited, it is primarily template search that is offered.</p>
+<p>See the code in
+<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/service.py">tf.server.service</a>
+to get started.</p>
                 
                   
                 

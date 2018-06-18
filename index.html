@@ -241,105 +241,12 @@
     
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
     
+      
     
-      <label class="md-nav__link md-nav__link--active" for="toc">
-        Home
-      </label>
     
     <a href="." title="Home" class="md-nav__link md-nav__link--active">
       Home
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-  
-    <label class="md-nav__title" for="toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#install" title="Install" class="md-nav__link">
-    Install
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#corpora" title="Corpora" class="md-nav__link">
-    Corpora
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hebrew-bible" title="Hebrew Bible" class="md-nav__link">
-    Hebrew Bible
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cuneiform-tablets-from-uruk" title="Cuneiform tablets from Uruk" class="md-nav__link">
-    Cuneiform tablets from Uruk
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#more" title="More" class="md-nav__link">
-    More
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-started" title="Getting started" class="md-nav__link">
-    Getting started
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#using-hebrew-data" title="Using Hebrew data" class="md-nav__link">
-    Using Hebrew data
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#using-cuneiform-data" title="Using Cuneiform data" class="md-nav__link">
-    Using Cuneiform data
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#history" title="History" class="md-nav__link">
-    History
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
     
   </li>
 
@@ -634,90 +541,8 @@
 <nav class="md-nav md-nav--secondary">
   
   
+    
   
-    <label class="md-nav__title" for="toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#install" title="Install" class="md-nav__link">
-    Install
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#corpora" title="Corpora" class="md-nav__link">
-    Corpora
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hebrew-bible" title="Hebrew Bible" class="md-nav__link">
-    Hebrew Bible
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cuneiform-tablets-from-uruk" title="Cuneiform tablets from Uruk" class="md-nav__link">
-    Cuneiform tablets from Uruk
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#more" title="More" class="md-nav__link">
-    More
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-started" title="Getting started" class="md-nav__link">
-    Getting started
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#using-hebrew-data" title="Using Hebrew data" class="md-nav__link">
-    Using Hebrew data
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#using-cuneiform-data" title="Using Cuneiform data" class="md-nav__link">
-    Using Cuneiform data
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#history" title="History" class="md-nav__link">
-    History
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
   
 </nav>
                   </div>
@@ -732,50 +557,24 @@
                   <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                  <h1>Home</h1>
-                
                 <p><img alt="logo" src="./images/tf.png" /></p>
-<p>Text-Fabric is a Python3 package for Text plus Annotations.</p>
-<p>It provides a data model, a text file format, and a binary format for (ancient) text plus
-(linguistic) annotations.</p>
-<p>A defining characteristic is that Text-Fabric does not make use of XML or JSON,
-but stores text as a bunch of features.
-These features are interpreted against a <em>graph</em> of nodes and edges, which make up the
-abstract fabric of the text.</p>
-<p>Based on this model, Text-Fabric offers an API to search, navigate and process text
-and its annotations.
-The search API works with search templates that define relational patterns
-which will be instantiated by nodes and edges of the fabric.</p>
-<p>The emphasis of this all is on:</p>
+<p>Text-Fabric is several things:</p>
 <ul>
-<li><a href="./Api/General/">data processing</a></li>
-<li><a href="./Api/General/#loading">sharing data</a></li>
-<li><a href="./Api/General/#saving-features">contributing modules</a></li>
-<li><a href="./Api/General/#searching">search for patterns</a></li>
+<li>a <em>browser</em> for ancient text corpora</li>
+<li>a Python3 package for processing ancient corpora</li>
 </ul>
-<p>The intended use case is ancient writings, such as the
-<a href="https://github.com/ETCBC/bhsa">Hebrew Bible</a> or
-<a href="https://github.com/Nino-cunei/uruk">(Proto)-Cuneifrom tablets</a>.
-Also the
-<a href="https://github.com/Dans-labs/text-fabric-data/tree/master/greek/sblgnt">Greek</a> and
-<a href="https://github.com/ETCBC/linksyr/tree/master/data/tf/syrnt">Syriac</a>
-New Testament have been converted to TF.</p>
-<p>Text-Fabric not only deals with the text, but also with rich sets of linguistic annotations added to them.
-It has been used to construct the website
-<a href="https://shebanq.ancient-data.org">SHEBANQ</a> and it is being
-used by researchers to analyse such texts. </p>
-<h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
-<p>Have <a href="https://www.python.org/downloads/">Python3</a> on your system.</p>
-<p>Optionally install <a href="http://jupyter.org">Jupyter</a> as well:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install jupyter
+<p>A corpus of ancient texts and linguistic annotations represents a large body of knowledge.
+Text-Fabric makes that knowledge accessible to non-programmers by means of 
+built-in a search interface that runs in your browser.</p>
+<p>From there the step to program your own analytics is not so big anymore.
+Because you can call the Text-Fabric API from your Python programs, and
+it works really well in Jupyter notebooks.</p>
+<h1 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h1>
+<p>Text Fabric is a Python(3) package on the Python Package Index, so you can install it easily with <code>pip</code> from
+the command line.</p>
+<details class="abstract" open="open"><summary>Python</summary><p>Install or upgrade <a href="https://www.python.org/downloads/">Python3</a> on your system to at least version 3.6.</p></details><details class="hint"><summary>Jupyter</summary><p>Optionally install <a href="http://jupyter.org">Jupyter</a> as well:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install jupyter
 </pre></div>
 </td></tr></table>
-
-<p>Install Text-Fabric:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install text-fabric
-</pre></div>
-</td></tr></table>
-
 <details class="hint" open="open"><summary>Jupyter Lab</summary><p><em>Jupyter lab</em> is a nice context to work with Jupyter notebooks.
 Recommended for working with the
 the tutorials of Text-Fabric.
@@ -788,35 +587,77 @@ jupyter labextension install jupyterlab-toc
 <p>The toc-extension is handy to get an overview
 when working with the lengthy tutorial. It will create an extra
 tab in the Jupyter Lab interface with a table of contents of the
-current notebook.</p></details><h2 id="corpora">Corpora<a class="headerlink" href="#corpora" title="Permanent link">&para;</a></h2>
+current notebook.</p></details></details><details class="abstract" open="open"><summary>Text-Fabric</summary><p>Install Text-Fabric:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install text-fabric
+</pre></div>
+</td></tr></table>
+</details><h1 id="get-corpora">Get corpora<a class="headerlink" href="#get-corpora" title="Permanent link">&para;</a></h1>
 <p>There are a few corpora in Text-Fabric that are being supported
 with extra modules.</p>
-<h3 id="hebrew-bible">Hebrew Bible<a class="headerlink" href="#hebrew-bible" title="Permanent link">&para;</a></h3>
-<p>Get the corpus:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<details class="abstract"><summary>Hebrew Bible</summary><p>Get the corpus:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github/etcbc
 git clone https://github.com/etcbc/bhsa
 </pre></div>
 </td></tr></table>
-
-<h3 id="cuneiform-tablets-from-uruk">Cuneiform tablets from Uruk<a class="headerlink" href="#cuneiform-tablets-from-uruk" title="Permanent link">&para;</a></h3>
-<p>Get the corpus:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+</details><details class="abstract"><summary>Cuneiform tablets from Uruk</summary><p>Get the corpus:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github/Nino-cunei
 git clone https://github.com/Nino-cunei/uruk
 </pre></div>
 </td></tr></table>
-
-<h3 id="more">More<a class="headerlink" href="#more" title="Permanent link">&para;</a></h3>
-<p>We have example corpora (Greek, Sanskrit, Babylonian),
-but these are not supported by extra modules.</p>
+</details><details class="hint"><summary>More</summary><p>The
+<a href="https://github.com/Dans-labs/text-fabric-data/tree/master/greek/sblgnt">Greek</a> and
+<a href="https://github.com/ETCBC/linksyr/tree/master/data/tf/syrnt">Syriac</a>
+New Testament have been converted to TF.</p><p>We have example corpora in Sanskrit, and Babylonian.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github
+git clone https://github.com/etcbc/linksyr
+</pre></div>
+</td></tr></table>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github
 git clone https://github.com/Dans-labs/text-fabric-data
 </pre></div>
 </td></tr></table>
+<p>All these are not supported by extra innterfaces.</p></details><h1 id="use-the-built-in-search-interface">Use the built-in search interface<a class="headerlink" href="#use-the-built-in-search-interface" title="Permanent link">&para;</a></h1>
+<p>Provided you have the data repositories for the Hebrew Bible (bhsa) or the Proto-Cuneiform Uruk corpus (cunei)
+in place (see below),
+you can open a terminal (command prompt), and just say</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric bhsa
+</pre></div>
+</td></tr></table>
 
-<h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<p>or </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric cunei
+</pre></div>
+</td></tr></table>
+
+<p>After loading the data your browser will open and load the search interface.
+There you'll find links to further help.</p>
+<p>
+<img src="images/bhsa-app.png" width="45%"/>
+&nbsp;
+&nbsp;
+<img src="images/cunei-app.png" width="45%"/>
+</p>
+
+<details class="hint" open="open"><summary>Multiple windows</summary><p>After you have issued the <code>text-fabric</code> command, you can open many connections
+in different browsers and windows and tabs.
+They all use the same data, which only gets loaded when the command <code>text-fabric</code> is run.
+If you leave it on all day, you have instant access to the data.</p></details><details class="hint"><summary>Close</summary><p>You can close the data server by pressing Ctrl-C in the terminal where you have
+started <code>text-fabric</code> up.</p></details><h1 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h1>
+<p>There is extensive documentation.
+If you start using the Text-Fabric API in your programs, you'll need it.</p>
+<details class="note"><summary>Reference</summary><p>The pages you are reading now are the reference docs.
+<em> It explains the <a href="https://dans-labs.github.io/text-fabric/Model/Data-Model/">data model</a>
+</em> It specifies the <a href="https://dans-labs.github.io/text-fabric/Model/File-formats/">file format</a>
+* It holds the <a href="https://dans-labs.github.io/text-fabric/Api/General/">api docs</a></p></details><details class="note" open="open"><summary>Tutorials</summary><p>There are tutorials and exercises to guide you into increasingly involved tasks
+on specific corpora (outside this repo):
+<em> <a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">Biblia Hebraica Stuttgartensia Amstelodamensis</a>
+</em> <a href="https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">Proto-Cuneiform tablets from Uruk IV/III</a></p></details><details class="note"><summary>Background</summary><p>For more background information (earlier work, institutes, people, datasets), consult the
+<a href="https://github.com/ETCBC/shebanq/wiki">wiki</a> pages of SHEBANQ.</p></details><details class="note"><summary>Papers</summary><p>Papers (preprints on <a href="https://arxiv.org">arxiv</a>), most of them published:
+<em> <a href="https://arxiv.org/abs/1603.01541">Parallel Texts in the Hebrew Bible, New Methods and Visualizations </a>
+</em> <a href="https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/">The Hebrew Bible as Data: Laboratory - Sharing - Experiences</a>
+   (preprint: <a href="https://arxiv.org/abs/1501.01866">arxiv</a>)
+<em> <a href="https://arxiv.org/abs/1410.0286">LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible</a>
+</em> <a href="https://arxiv.org/abs/1412.6069">Annotation as a New Paradigm in Research Archiving</a></p></details><h1 id="getting-started-with-the-api">Getting started with the API<a class="headerlink" href="#getting-started-with-the-api" title="Permanent link">&para;</a></h1>
 <p>Start programming: write a python script or code in the Jupyter notebook</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> somewhere-else
@@ -835,26 +676,32 @@ jupyter notebook
 </pre></div>
 </td></tr></table>
 
-<p>Maybe you have to tell Text-Fabric exactly where your data is.
+<details class="note"><summary>locations</summary><p>Maybe you have to tell Text-Fabric exactly where your data is.
 If you have the data in a directory <code>text-fabric-data</code>
 under your home directory  or under <code>~/github</code>, Text-Fabric can find it.
 In your <code>modules</code> argument you then specify one or more subdirectories of
-<code>text-fabric-data</code>.</p>
-<h3 id="using-hebrew-data">Using Hebrew data<a class="headerlink" href="#using-hebrew-data" title="Permanent link">&para;</a></h3>
-<p>To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
-<a href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">start</a>.</p>
-<p>Or go straight to the
-<a href="./Api/Bhsa">bhsa-api-docs</a>.</p>
-<h3 id="using-cuneiform-data">Using Cuneiform data<a class="headerlink" href="#using-cuneiform-data" title="Permanent link">&para;</a></h3>
-<p>To get started with the Uruk corpus, use its tutorial in the Nino-cunei repo:
-<a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">start</a>.</p>
-<p>Or go straight to the
-<a href="./Api/Cunei">cunei-api-docs</a>.</p>
-<h2 id="history">History<a class="headerlink" href="#history" title="Permanent link">&para;</a></h2>
-<p>Most ideas derive from an earlier project, 
+<code>text-fabric-data</code>.</p></details><details class="abstract"><summary>Using Hebrew data</summary><p>To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
+<a href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">start</a>.</p><p>Or go straight to the
+<a href="./Api/Bhsa">bhsa-api-docs</a>.</p></details><details class="abstract"><summary>Using Cuneiform data</summary><p>To get started with the Uruk corpus, use its tutorial in the Nino-cunei repo:
+<a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">start</a>.</p><p>Or go straight to the
+<a href="./Api/Cunei">cunei-api-docs</a>.</p></details><h1 id="design-principles">Design principles<a class="headerlink" href="#design-principles" title="Permanent link">&para;</a></h1>
+<details class="abstract"><summary>Minimalistic model</summary><p>Text-Fabric is based on a minimalistic data model for text plus annotations.</p><p>A defining characteristic is that Text-Fabric does not make use of XML or JSON,
+but stores text as a bunch of features in plain text files.</p><p>These features are interpreted against a <em>graph</em> of nodes and edges, which make up the
+abstract fabric of the text.</p></details><details class="abstract"><summary>Processing API</summary><p><a href="./Api/General/">efficient data processing</a>
+Based on this model, Text-Fabric offers an API to search, navigate and process text
+and its annotations.</p></details><details class="abstract"><summary>Graph search</summary><p><a href="./Api/General/#searching">search for patterns</a>
+The search API works with search templates that define relational patterns
+which will be instantiated by nodes and edges of the fabric.</p></details><details class="abstract"><summary>Sharing data</summary><p><a href="./Api/General/#loading">easy sharing of sharing data</a>
+Students can pick and choose the feature data they need.</p></details><details class="abstract"><summary>Contributing data</summary><p><a href="./Api/General/#saving-features">facilitating the contribution of new data modules</a>
+Researchers can easily produce new modules of text-fabric data out of their
+findings.</p></details><details class="abstract"><summary>Factory</summary><p>Text-Fabric can be and has been used to construct websites,
+for example <a href="https://shebanq.ancient-data.org">SHEBANQ</a>.
+In the case of SHEBANQ, data has been converted to mysql databases.
+However, with the built-in data server, it is also possible to
+have one Text-Fabric process serve multiple connections and requests.</p></details><details class="explanation"><summary>History</summary><p>Most ideas derive from an earlier project, 
 <a href="https://github.com/Dans-labs/laf-fabric">LAF-Fabric</a>.
 We have taken out everything that makes LAF-Fabric complicated and
-all things that are not essential for the sake of raw data processing.</p>
+all things that are not essential for the sake of raw data processing.</p></details>
                 
                   
                 
