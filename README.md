@@ -6,56 +6,53 @@
 
 <a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/Dans-labs/text-fabric/directory/"><img src="/docs/images/swh-logo-archive.png" width="100" align="left"/></a>
 
-**This repository is being archived continuously by the 
-[Software Heritage Archive](https://archive.softwareheritage.org).
-If you want to cite snippets of the code of this repository, the Software Archive
-offers an easy and elegant way to do so.
-As an example, here I quote the 
-[*stitching* algorithm](https://archive.softwareheritage.org/swh:1:cnt:6169c074089ddc8a0e048cb67e1fec57857ef54d;lines=3224-3270/),
-by means of which Text-Fabric Search collects the solutions of a
-[search template](https://dans-labs.github.io/text-fabric/Api/General/#searching).
-The quote refers directly to specific lines of code, deeply buried in
-a Python file within a particular version of Text-Fabric.**
+Text-Fabric is several things:
 
-Text-Fabric is a Python3 package for Text plus Annotations.
+* a *browser* for ancient text corpora
+* a Python3 package for processing ancient corpora
 
-It provides a data model, a text file format, and a binary format for (ancient) text plus
-(linguistic) annotations.
+A corpus of ancient texts and linguistic annotations represents a large body of knowledge.
+Text-Fabric makes that knowledge accessible to non-programmers by means of 
+built-in a search interface that runs in your browser.
 
-A defining characteristic is that Text-Fabric does not make use of XML or JSON,
-but stores text as a bunch of features.
-These features are interpreted against a *graph* of nodes and edges, which make up the
-abstract fabric of the text.
-
-Based on this model, Text-Fabric offers an API to search, navigate and process text
-and its annotations.
-The search API works with search templates that define relational patterns
-which will be instantiated by nodes and edges of the fabric.
-
-The emphasis of this all is on:
-
-* data processing
-* sharing data
-* contributing modules
-* search for patterns
-
-The intended use case is ancient writings, such as the Hebrew Bible or (Proto)-Cuneifrom tablets.
-Also the Greek and Syriac New Testament have been converted to TF.
-
-Text-Fabric not only deals with the text, but also with rich sets of linguistic annotations added to them.
-It has been used to construct the website
-[SHEBANQ](https://shebanq.ancient-data.org) and it is being
-used by researchers to analyse such texts. 
-
+From there the step to program your own analytics is not so big anymore.
+Because you can call the Text-Fabric API from your Python programs, and
+it works really well in Jupyter notebooks.
+ 
 # Install
 
 Text Fabric is a Python(3) package on the Python Package Index, so you can install it easily with `pip` from
 the command line. Here are the precise
 [installation instructions](https://dans-labs.github.io/text-fabric/).
 
+# Use
+
+Provided you have the data repositories for the Hebrew Bible (bhsa) or the Proto-Cuneiform Uruk corpus (cunei)
+in place (see below),
+you can open a terminal (command prompt), and just say
+
+```sh
+text-fabric bhsa
+```
+
+or 
+
+```sh
+text-fabric cunei
+```
+
+After loading the data your browser will open and load the search interface.
+There you'll find links to further help.
+
+<p>
+<img src="/docs/images/bhsa-app.png" height="200" align="left"/>
+<img src="/docs/images/cunei-app.png" height="200" align="right"/>
+</p>
+
 # Documentation
 
 There is extensive documentation.
+If you start using the Text-Fabric API in your programs, you'll need it.
 
 1. The [github pages associated with this repo](https://dans-labs.github.io/text-fabric/) are meant as a reference.
    1. It explains the [data model](https://dans-labs.github.io/text-fabric/Model/Data-Model/)
@@ -91,6 +88,48 @@ There is a also
 [collection of datasets and additional modules](https://Dans-labs.github.io/text-fabric-data/)
 ready to be used in text-fabric. The link points to the data documentation, and from there you find the GitHub
 repo where the data resides.
+
+It is based on
+
+* a minimalistic data model for text plus annotations
+* a text file format for such corpora
+* and a binary format optimized for processing.
+
+A defining characteristic is that Text-Fabric does not make use of XML or JSON,
+but stores text as a bunch of features.
+These features are interpreted against a *graph* of nodes and edges, which make up the
+abstract fabric of the text.
+
+Based on this model, Text-Fabric offers an API to search, navigate and process text
+and its annotations.
+The search API works with search templates that define relational patterns
+which will be instantiated by nodes and edges of the fabric.
+
+The emphasis of this all is on:
+
+* data processing
+* sharing data
+* contributing modules
+* search for patterns
+
+The intended use case is ancient writings, such as the Hebrew Bible or (Proto)-Cuneifrom tablets.
+Also the Greek and Syriac New Testament have been converted to TF.
+
+Text-Fabric not only deals with the text, but also with rich sets of linguistic annotations added to them.
+It has been used to construct the website
+[SHEBANQ](https://shebanq.ancient-data.org) and it is being
+used by researchers to analyse such texts. 
+
+**This repository is being archived continuously by the 
+[Software Heritage Archive](https://archive.softwareheritage.org).
+If you want to cite snippets of the code of this repository, the Software Archive
+offers an easy and elegant way to do so.
+As an example, here I quote the 
+[*stitching* algorithm](https://archive.softwareheritage.org/swh:1:cnt:6169c074089ddc8a0e048cb67e1fec57857ef54d;lines=3224-3270/),
+by means of which Text-Fabric Search collects the solutions of a
+[search template](https://dans-labs.github.io/text-fabric/Api/General/#searching).
+The quote refers directly to specific lines of code, deeply buried in
+a Python file within a particular version of Text-Fabric.**
 
 ---
 

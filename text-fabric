@@ -1,26 +1,3 @@
-import webbrowser
-from time import sleep
-from subprocess import Popen, run
-
-from tf.server.common import getParam, getDebug, getConfig
-
-def main():
-  dataSource = getParam()
-  ddataSource = ('-d', dataSource) if getDebug() else (dataSource,)
-  if dataSource is not None:
-    config = getConfig(dataSource)
-    if config is not None:
-        try:
-            pService = Popen(['python3', '-m', 'tf.server.service', dataSource])
-            pWeb = Popen(['python3', '-m', 'tf.server.web', *ddataSource])
-            sleep(2)
-            webbrowser.open(f'{config.protocol}{config.host}:{config.webport}', new=2, autoraise=True)
-            pWeb.wait()
-        except KeyboardInterrupt:
-            pWeb.terminate()
-            pService.terminate()
-            print('Web server has stopped')
-            print('TF service has stopped')
-
+from tf.server.start import main
 
 main()

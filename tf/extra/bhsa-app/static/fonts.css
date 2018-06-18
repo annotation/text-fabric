@@ -1,0 +1,16 @@
+@font-face {
+	font-family: "Ezra SIL";
+	src: url('/data/static/fonts/SILEOT.eot'); /* IE9 Compat Modes */
+	src: url('/data/static/fonts/SILEOT.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+	     url('/data/static/fonts/SILEOT.woff') format('woff'), /* Modern Browsers */
+	     url('/data/static/fonts/SILEOT.ttf')  format('truetype'); /* Safari, Android, iOS */
+}
+
+@font-face {
+	font-family: "SBL Hebrew";
+	src: url('/data/static/fonts/SBL_Hbrw.eot'); /* IE9 Compat Modes */
+	src: url('/data/static/fonts/SBL_Hbrw.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+	     url('/data/static/fonts/SBL_Hbrw.woff') format('woff'), /* Modern Browsers */
+	     url('/data/static/fonts/SBL_Hbrw.ttf')  format('truetype'); /* Safari, Android, iOS */
+}
+

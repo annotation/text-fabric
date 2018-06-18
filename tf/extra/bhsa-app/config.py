@@ -24,4 +24,11 @@ options = ()
 
 
 def extraApi(locations, modules):
-  return Bhsa(BASE, f'{ORG}/{REPO}', None, asApi=True)
+  return Bhsa(
+      None,
+      None,
+      version=VERSION,
+      locations=locations,
+      modules=modules,
+      asApi=True
+  )

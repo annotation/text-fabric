@@ -1,9 +1,12 @@
+import sys
 import rpyc
 from rpyc.utils.server import ThreadedServer
 
 from .common import getConfig, runSearch, runSearchCondensed, compose
 
 TIMEOUT = 120
+
+TF_DONE = 'TF setup done.'
 
 
 def batchAround(nResults, position, batch):
@@ -27,7 +30,8 @@ def makeTfServer(dataSource, locations, modules, port):
   extraApi = config.extraApi(locations, modules)
   extraApi.api.reset()
   cache = {}
-  print(f'TF setup done.\nListening at port {port}')
+  print(f'{TF_DONE}\nListening at port {port}')
+  sys.stdout.flush()
 
   class TfService(rpyc.Service):
     def on_connect(self, conn):
@@ -42,7 +46,7 @@ def makeTfServer(dataSource, locations, modules, port):
       extraApi = self.extraApi
       return extraApi.header()
 
-    def exposed_css(self):
+    def exposed_css(self, appDir=None):
       extraApi = self.extraApi
       return extraApi.loadCSS()
 

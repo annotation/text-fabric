@@ -581,7 +581,7 @@ class Cunei(Atf):
     nbUrl = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
     ghUrl = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
     docUrl = f'{URL_GH}/{repoRel}/blob/master/docs'
-    tutUrl = f'{URL_NB}/{ORG}/tutorials/search.ipynb'
+    tutUrl = f'{URL_NB}/{ORG}/tutorials/blob/master/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Cunei/'
     dataLink = _outLink(self.corpusFull, f'{docUrl}/about.md', 'provenance of this corpus')
     featureLink = _outLink('Feature docs', f'{docUrl}/transcription.md', 'feature documentation')

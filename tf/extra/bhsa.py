@@ -9,7 +9,7 @@ ORG = 'etcbc'
 URL_GH = 'https://github.com'
 URL_NB = 'http://nbviewer.jupyter.org/github'
 
-CORPUS = 'BHSA'
+CORPUS = 'bhsa'
 
 SHEBANQ_URL = 'https://shebanq.ancient-data.org/hebrew'
 SHEBANQ = (
@@ -129,6 +129,12 @@ CSS = '''
     direction: rtl;
     text-decoration: none;
 }
+.hb,.hb :visited,.hb :link {
+    font-family: "Ezra SIL", "SBL Hebrew", sans-serif;
+    font-size: large;
+    direction: rtl;
+    text-decoration: none;
+}
 .rela,.function,.typ {
     font-family: monospace;
     font-size: small;
@@ -189,6 +195,8 @@ CSS = '''
 </style>
 '''
 
+CSS_FONT = '<link rel="stylesheet" href="/data/static/fonts.css"/>'
+
 CLASS_NAMES = dict(
     verse='verse',
     sentence='atoms',
@@ -238,6 +246,8 @@ class Bhsa(object):
       api,
       name,
       version='c',
+      locations=None,
+      modules=None,
       asApi=False,
   ):
     self.asApi = asApi
@@ -248,7 +258,7 @@ class Bhsa(object):
     self.standardFeatures = set(standardFeatures.strip().split())
 
     if asApi:
-      TF = Fabric(locations=[self.corpus], modules=[''], silent=True)
+      TF = Fabric(locations=locations, modules=modules, silent=True)
       api = TF.load('', silent=True)
       allFeatures = TF.explore(silent=True, show=True)
       loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
@@ -261,20 +271,22 @@ class Bhsa(object):
     self.cwd = os.getcwd()
     cwdPat = re.compile(f'^.*/github/([^/]+)/([^/]+)((?:/.+)?)$', re.I)
     cwdRel = cwdPat.findall(self.cwd)
-    if cwdRel:
-      (thisOrg, thisRepo, thisPath) = cwdRel[0]
-      onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{name}.ipynb')
-    else:
-      cwdRel = None
-    nbUrl = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
-    ghUrl = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
+
+    if not asApi:
+      if cwdRel:
+        (thisOrg, thisRepo, thisPath) = cwdRel[0]
+        onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{name}.ipynb')
+      else:
+        cwdRel = None
+      nbUrl = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
+      ghUrl = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
     docUrl = f'https://etcbc.github.io/bhsa'
-    tutUrl = f'{URL_NB}/{ORG}/{CORPUS}/tutorial/search.ipynb'
+    tutUrl = f'{URL_NB}/{ORG}/{CORPUS}/blob/master/tutorial/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
-    dataLink = _outLink(CORPUS, docUrl, '{provenance of this corpus}')
+    dataLink = _outLink(CORPUS.upper(), docUrl, '{provenance of this corpus}')
     featureLink = _outLink(
         'Feature docs', f'{docUrl}/features/hebrew/{self.version}/0_home.html',
-        '{CORPUS} feature documentation'
+        '{CORPUS.upper()} feature documentation'
     )
     bhsaLink = _outLink('BHSA API', extraUrl, 'BHSA API documentation')
     tfLink = _outLink(
@@ -312,7 +324,7 @@ This notebook online:
   def loadCSS(self):
     asApi = self.asApi
     if asApi:
-      return CSS
+      return CSS_FONT + CSS
     display(HTML(CSS))
 
   def header(self):
@@ -399,6 +411,7 @@ This notebook online:
     else:
       nodeRep = f' *{n}* ' if withNodes else ''
 
+    hebrew = True
     if nType == 'word':
       rep = T.text([n])
       if linked:
@@ -406,6 +419,7 @@ This notebook online:
     elif nType in SECTION:
       fmt = ('{}' if nType == 'book' else '{} {}' if nType == 'chapter' else '{} {}:{}')
       rep = fmt.format(*T.sectionFromNode(n))
+      hebrew = False
       if nType == 'half_verse':
         rep += F.label.v(n)
       if linked:
@@ -419,6 +433,8 @@ This notebook online:
       if linked:
         rep = self.shbLink(n, text=rep, asString=True)
 
+    if hebrew:
+      rep = f'<span class="hb">{rep}</span>'
     result = f'{rep}{nodeRep}'
 
     if asString or asApi:
@@ -767,6 +783,7 @@ This notebook online:
     return results
 
   def condense(self, results):
+    asApi = self.asApi
     api = self.api
     F = api.F
     L = api.L
@@ -784,10 +801,9 @@ This notebook online:
           fw = n if nType == 'word' else L.d(n, otype='word')[0]
           v = L.u(fw, otype='verse')[0]
           verses.setdefault(v, set()).add(n)
-    return (
-        tuple(sortNodes(passages)),
-        tuple((p, ) + tuple(verses[p]) for p in sortNodes(verses)),
-    )
+    passages = tuple(sortNodes(passages))
+    verses = tuple((p, ) + tuple(verses[p]) for p in sortNodes(verses))
+    return verses if asApi else (passages, verses)
 
   def _pretty(
       self,
@@ -965,6 +981,3 @@ This notebook online:
     L = api.L
     superNode = L.u(n, otype=tp)[0]
     return (superNode, *self._getBoundary(superNode))
-
-  def _loadCSS(self):
-    display(HTML(CSS))
