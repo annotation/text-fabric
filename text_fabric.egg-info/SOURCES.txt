@@ -33,4 +33,5 @@ tf/server/__init__.py
 tf/server/common.py
 tf/server/data.py
 tf/server/service.py
+tf/server/start.py
 tf/server/web.py

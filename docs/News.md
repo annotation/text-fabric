@@ -6,6 +6,13 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.0
+
+2018-06-18
+
+Built in web server and client for local query running.
+It is implemented for Bhsa and Cunei.
+
 ## 4.4.2,3
 
 2018-06-13

@@ -4,8 +4,6 @@
 ![text-fabric](/docs/images/tf.png)
 
 
-<a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/Dans-labs/text-fabric/directory/"><img src="/docs/images/swh-logo-archive.png" width="100" align="left"/></a>
-
 Text-Fabric is several things:
 
 * a *browser* for ancient text corpora
@@ -45,14 +43,16 @@ After loading the data your browser will open and load the search interface.
 There you'll find links to further help.
 
 <p>
-<img src="/docs/images/bhsa-app.png" height="200" align="left"/>
-<img src="/docs/images/cunei-app.png" height="200" align="right"/>
+<img src="/docs/images/bhsa-app.png" height="50%" align="left"/>
+<img src="/docs/images/cunei-app.png" height="50%" align="right"/>
 </p>
 
 # Documentation
 
 There is extensive documentation.
 If you start using the Text-Fabric API in your programs, you'll need it.
+
+Jump off to the [docs](https://dans-labs.github.io/text-fabric/)
 
 1. The [github pages associated with this repo](https://dans-labs.github.io/text-fabric/) are meant as a reference.
    1. It explains the [data model](https://dans-labs.github.io/text-fabric/Model/Data-Model/)
@@ -120,6 +120,8 @@ It has been used to construct the website
 [SHEBANQ](https://shebanq.ancient-data.org) and it is being
 used by researchers to analyse such texts. 
 
+<a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/Dans-labs/text-fabric/directory/"><img src="/docs/images/swh-logo-archive.png" width="100" align="left"/></a>
+
 **This repository is being archived continuously by the 
 [Software Heritage Archive](https://archive.softwareheritage.org).
 If you want to cite snippets of the code of this repository, the Software Archive
@@ -133,6 +135,5 @@ a Python file within a particular version of Text-Fabric.**
 
 ---
 
-[Motivation](http://www.slideshare.net/dirkroorda/text-fabric) - 
-[Data](https://github.com/Dans-labs/text-fabric-data)
+[Motivation](http://www.slideshare.net/dirkroorda/text-fabric) 
 
