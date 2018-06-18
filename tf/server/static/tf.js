@@ -6,6 +6,12 @@ function pageLinks() {
   })
 }
 
+function reactive() {
+  $('input').change(function(e) {
+    $('#go').submit()
+  })
+}
+
 function details() {
   $('details.pretty').on('toggle', function() {
     //var opened = $('details.pretty').get()
@@ -35,6 +41,7 @@ function details() {
 }
 
 $(function(){
-    pageLinks()
-    details()
+  pageLinks()
+  details()
+  reactive()
 })

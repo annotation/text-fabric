@@ -1,40 +1,33 @@
 import os
 
-from importlib import import_module
-
 import bottle
 from bottle import (post, get, route, template, request, static_file, run)
 
-from tf.server.service import makeTfConnection
-from tf.miniapi import MiniApi
+from tf.server.data import makeTfConnection
+from tf.server.common import (
+    getParam, getDebug, getConfig, getAppDir, pageLinks, shapeMessages, getValues, shapeOptions
+)
 
-from tf.server.data import getParam, getDebug
 
-from tf.server.controllers.common import pageLinks, shapeMessages
-
+BATCH = 20
 
 myDir = os.path.dirname(os.path.abspath(__file__))
+appDir = None
 bottle.TEMPLATE_PATH = [f'{myDir}/views']
 
+dataSource = None
 
-def getStuff(dataSource):
-  global controller
+
+def getStuff():
   global TF
-  try:
-    config = import_module(f'.{dataSource}', package='tf.server.config')
-  except Exception as e:
-    print(e)
-    print(f'Data source "{dataSource}" not found')
-    return None
+  global appDir
 
-  try:
-    controller = import_module(f'.{dataSource}', package='tf.server.controllers')
-  except Exception as e:
-    print(e)
-    print(f'Controller "{dataSource}" not found')
+  config = getConfig(dataSource)
+  if config is None:
     return None
 
   TF = makeTfConnection(config.host, config.port)
+  appDir = getAppDir(myDir, dataSource)
   return config
 
 
@@ -51,51 +44,56 @@ def serveStatic(filepath):
   return static_file(filepath, root=f'{myDir}/static')
 
 
+@route('/data/static/<filepath:path>')
+def serveData(filepath):
+  return static_file(filepath, root=f'{appDir}/static')
+
+
+@route('/local/<filepath:path>')
+def serveLocal(filepath):
+  return static_file(filepath, root=f'{config.localDir}')
+
+
 @post('/<anything:re:.*>')
 @get('/<anything:re:.*>')
 def serveSearch(anything):
   searchTemplate = request.forms.searchTemplate.replace('\r', '')
   condensed = request.forms.condensed
   withNodes = request.forms.withNodes
+  linked = getInt(request.forms.linked, default=1)
   condensedAtt = ' checked ' if condensed else ''
   withNodesAtt = ' checked ' if withNodes else ''
+
+  options = config.options
+  values = getValues(options, request.forms)
+
   openedStr = request.forms.opened
   position = getInt(request.forms.position, default=1)
-  batch = getInt(request.forms.batch, default=controller.BATCH)
+  batch = getInt(request.forms.batch, default=BATCH)
   pages = ''
-  pretty = set()
 
-  header = controller.header()
+  opened = {int(n) for n in openedStr.split(',')} if openedStr else set()
 
-  opened = set(openedStr.split(',')) if openedStr else set()
+  api = TF.connect()
+  header = api.header()
+  css = api.css()
 
   if searchTemplate:
-    api = TF.connect()
-    (results, context, messages, start, total) = api.search(
+    (table, messages, start, total) = api.search(
         searchTemplate,
+        condensed,
         batch,
         position=position,
         opened=opened,
-        context=True,
-        nodeTypes={controller.CONTAINER_TYPE},
+        withNodes=withNodes,
+        linked=linked,
+        **values,
     )
-    if results is not None:
-      miniApi = MiniApi(**context)
+    if table is not None:
       pages = pageLinks(total, position)
-      if condensed:
-        results = controller.condense(miniApi, results)
-
-      askPretty = {seq: r for (seq, r) in results if seq in opened}
-      pretty = api.pretty(askPretty)
 
     if messages:
       messages = shapeMessages(messages)
-
-    table = controller.compose(
-        results, pretty, start, position, opened, miniApi,
-        condensed=condensed,
-        withNodes=withNodes,
-    )
   else:
     table = 'no results'
     searchTemplate = ''
@@ -104,13 +102,15 @@ def serveSearch(anything):
   return template(
       'index',
       dataSource=dataSource,
-      css=controller.C_CSS,
+      css=css,
       header=header,
+      options=shapeOptions(options, values),
       messages=messages,
       table=table,
       searchTemplate=searchTemplate,
       condensedAtt=condensedAtt,
       withNodesAtt=withNodesAtt,
+      linked=linked,
       batch=batch,
       position=position,
       opened=openedStr,
@@ -118,19 +118,15 @@ def serveSearch(anything):
   )
 
 
-def runweb(dataSource, debug=False):
-  config = getStuff(dataSource)
-  if config is not None:
-    run(
-        debug=debug,
-        reloader=debug,
-        host=config.host,
-        port=config.webport,
-    )
-
-
 if __name__ == "__main__":
   dataSource = getParam()
-  debug = getDebug()
   if dataSource is not None:
-    runweb(dataSource, debug=debug)
+    debug = getDebug()
+    config = getStuff()
+    if config is not None:
+      run(
+          debug=debug,
+          reloader=debug,
+          host=config.host,
+          port=config.webport,
+      )

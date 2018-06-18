@@ -1,59 +1,106 @@
-import sys
-import os
-from glob import glob
+import rpyc
+from rpyc.utils.server import ThreadedServer
 
-from importlib import import_module
+from .common import getConfig, runSearch, runSearchCondensed, compose
 
-from tf.server.service import makeTfServer
-
-
-def getParam():
-  myDir = os.path.dirname(os.path.abspath(__file__))
-  dataSourcesPre = glob(f'{myDir}/config/*.py')
-  dataSources = set()
-  for p in dataSourcesPre:
-    d = os.path.splitext(os.path.basename(p))[0]
-    if d != '__init__':
-      dataSources.add(d)
-  dPrompt = '/'.join(dataSources)
-
-  dataSource = None
-  for arg in sys.argv[1:]:
-    if arg.startswith('-'):
-      continue
-    dataSource = arg
-    break
-
-  if dataSource is None:
-    dataSource = input(f'specify data source [{dPrompt}] > ')
-  if dataSource not in dataSources:
-    dataSource = None
-  if dataSource is None:
-    print(f'Pass a data source [{dPrompt}] as first argument')
-  return dataSource
+TIMEOUT = 120
 
 
-def getDebug():
-  for arg in sys.argv[1:]:
-    if arg == '-d':
-      return True
-  return False
+def batchAround(nResults, position, batch):
+  halfBatch = int((batch + 1) / 2)
+  left = min(max(position - halfBatch, 1), nResults)
+  right = max(min(position + halfBatch, nResults), 1)
+  discrepancy = batch - (right - left + 1)
+  if discrepancy != 0:
+    right += discrepancy
+  if right > nResults:
+    right = nResults
+  return (left, right)
 
 
-def tfService(dataSource):
-  try:
-    config = import_module(f'.{dataSource}', package='tf.server.config')
-  except Exception as e:
-    print(e)
-    print(f'Data source "{dataSource}" not found')
+def makeTfServer(dataSource, locations, modules, port):
+  config = getConfig(dataSource)
+  if config is None:
     return None
 
-  return makeTfServer(dataSource, config.locations, config.modules, config.port)
+  print(f'Setting up Text-Fabric service for {locations} / {modules}')
+  extraApi = config.extraApi(locations, modules)
+  extraApi.api.reset()
+  cache = {}
+  print(f'TF setup done.\nListening at port {port}')
+
+  class TfService(rpyc.Service):
+    def on_connect(self, conn):
+      self.extraApi = extraApi
+      pass
+
+    def on_disconnect(self, conn):
+      self.extraApi = None
+      pass
+
+    def exposed_header(self):
+      extraApi = self.extraApi
+      return extraApi.header()
+
+    def exposed_css(self):
+      extraApi = self.extraApi
+      return extraApi.loadCSS()
+
+    def exposed_search(
+        self, query, condensed, batch,
+        position=1, opened=set(),
+        withNodes=False,
+        linked=1,
+        **options,
+    ):
+      extraApi = self.extraApi
+      api = extraApi.api
+      search = api.S.search
+
+      (queryResults, messages) = (
+          runSearchCondensed(search, query, cache, extraApi.condense)
+          if condensed else
+          runSearch(search, query, cache)
+      )
+
+      if messages:
+        queryResults = ()
+      total = len(queryResults)
+
+      (start, end) = batchAround(total, position, batch)
+
+      selectedResults = queryResults[start - 1:end]
+
+      before = {n for n in opened if n > 0 and n < start}
+      after = {n for n in opened if n > end and n <= len(queryResults)}
+      beforeResults = tuple((n, queryResults[n - 1]) for n in sorted(before))
+      afterResults = tuple((n, queryResults[n - 1]) for n in sorted(after))
+
+      allResults = (
+          beforeResults +
+          tuple((i + start, r) for (i, r) in enumerate(selectedResults)) +
+          afterResults
+      )
+      table = compose(
+          extraApi,
+          allResults, start, position, opened,
+          withNodes=withNodes,
+          linked=linked,
+          **options,
+      )
+      return (table, messages, start, total)
+
+  return ThreadedServer(TfService, port=port, protocol_config={
+      'allow_public_attrs': True,
+      'sync_request_timeout': TIMEOUT,
+  })
 
 
-if __name__ == "__main__":
-  dataSource = getParam()
-  if dataSource is not None:
-    service = tfService(dataSource)
-    if service:
-      service.start()
+def makeTfConnection(host, port):
+  class TfConnection(object):
+    def connect(self):
+      connection = rpyc.connect(host, port)
+      self.connection = connection
+      return connection.root
+
+  return TfConnection()

@@ -21,8 +21,10 @@
                 </div>
                 <p class="go"><button class="go" type="submit">Go</button></p>
                 <div class="setting">
+                    <div><input class="int" type="text" id="lnk" name="linked" value="{{linked}}"/> link column</div>
                     <div><input type="checkbox" id="cond" name="condensed" {{condensedAtt}}/> condense results</div>
                     <div><input type="checkbox" id="withn" name="withNodes" {{withNodesAtt}}/> show nodes</div>
+                    {{!options}}
                 </div>
             </div>
             <div class="midcol">

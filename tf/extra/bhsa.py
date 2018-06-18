@@ -2,6 +2,10 @@ import os
 import re
 from IPython.display import display, Markdown, HTML
 
+from tf.fabric import Fabric
+
+ORG = 'etcbc'
+
 URL_GH = 'https://github.com'
 URL_NB = 'http://nbviewer.jupyter.org/github'
 
@@ -219,7 +223,7 @@ STANDARD_FEATURES = '''
 # for 4, 4b: voc_lex => g_lex, voc_lex_utf8 => g_lex_utf8
 
 
-def _dm(md):
+def dm(md):
   display(Markdown(md))
 
 
@@ -234,13 +238,23 @@ class Bhsa(object):
       api,
       name,
       version='c',
+      asApi=False,
   ):
+    self.asApi = asApi
     self.version = version
     standardFeatures = (
         STANDARD_FEATURES.replace('voc_', 'g_') if version in {'4', '4b'} else STANDARD_FEATURES
     )
     self.standardFeatures = set(standardFeatures.strip().split())
-    api.TF.load(self.standardFeatures, add=True, silent=True)
+
+    if asApi:
+      TF = Fabric(locations=[self.corpus], modules=[''], silent=True)
+      api = TF.load('', silent=True)
+      allFeatures = TF.explore(silent=True, show=True)
+      loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
+      TF.load(loadableFeatures, add=True, silent=True)
+    else:
+      api.TF.load(self.standardFeatures, add=True, silent=True)
     self.prettyFeaturesLoaded = self.standardFeatures
     self.prettyFeatures = ()
     self.api = api
@@ -252,16 +266,17 @@ class Bhsa(object):
       onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{name}.ipynb')
     else:
       cwdRel = None
-    nbLink = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
-    ghLink = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
-    docLink = f'https://etcbc.github.io/bhsa'
-    extraLink = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
-    dataLink = _outLink(CORPUS, docLink, '{provenance of this corpus}')
+    nbUrl = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
+    ghUrl = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
+    docUrl = f'https://etcbc.github.io/bhsa'
+    tutUrl = f'{URL_NB}/{ORG}/{CORPUS}/tutorial/search.ipynb'
+    extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
+    dataLink = _outLink(CORPUS, docUrl, '{provenance of this corpus}')
     featureLink = _outLink(
-        'Feature docs', f'{docLink}/features/hebrew/{self.version}/0_home.html',
+        'Feature docs', f'{docUrl}/features/hebrew/{self.version}/0_home.html',
         '{CORPUS} feature documentation'
     )
-    bhsaLink = _outLink('BHSA API', extraLink, 'BHSA API documentation')
+    bhsaLink = _outLink('BHSA API', extraUrl, 'BHSA API documentation')
     tfLink = _outLink(
         f'Text-Fabric API {api.TF.version}', 'https://dans-labs.github.io/text-fabric/Api/General/',
         'text-fabric-api'
@@ -271,16 +286,46 @@ class Bhsa(object):
         'https://dans-labs.github.io/text-fabric/Api/General/#search-templates',
         'Search Templates Introduction and Reference'
     )
-    _dm('**Documentation:**' f' {dataLink} {featureLink} {bhsaLink} {tfLink} {tfsLink}')
-    if nbLink:
-      _dm(
-          f'''
+    tutLink = _outLink(
+        'Search tutorial', tutUrl,
+        'Search tutorial in Jupyter Notebook'
+    )
+    if asApi:
+      self.dataLink = dataLink
+      self.featureLink = featureLink
+      self.tfsLink = tfsLink
+      self.tutLink = tutLink
+    else:
+      dm('**Documentation:**' f' {dataLink} {featureLink} {bhsaLink} {tfLink} {tfsLink}')
+      if nbUrl:
+        dm(
+            f'''
 This notebook online:
-{_outLink('NBViewer', nbLink)}
-{_outLink('GitHub', ghLink)}
+{_outLink('NBViewer', nbUrl)}
+{_outLink('GitHub', ghUrl)}
 '''
-      )
-    self._loadCSS()
+        )
+
+    if not asApi:
+      self.loadCSS()
+
+  def loadCSS(self):
+    asApi = self.asApi
+    if asApi:
+      return CSS
+    display(HTML(CSS))
+
+  def header(self):
+    return f'''
+      <img class="hdlogo" src="/data/static/logo.png"/>
+      <div class="hdlinks">
+        {self.dataLink}
+        {self.featureLink}
+        {self.tfsLink}
+        {self.tutLink}
+      </div>
+      <img class="hdlogo" src="/server/static/logo.png"/>
+    '''
 
   def shbLink(self, n, text=None, asString=False):
     api = self.api
@@ -341,14 +386,18 @@ This notebook online:
       withNodes=False,
       asString=False,
   ):
+    asApi = self.asApi
     api = self.api
     L = api.L
     T = api.T
     F = api.F
 
     nType = F.otype.v(n)
-    markdown = ''
-    nodeRep = f' *{n}* ' if withNodes else ''
+    result = ''
+    if asApi:
+      nodeRep = f' <span class="nd">{n}</span> ' if withNodes else ''
+    else:
+      nodeRep = f' *{n}* ' if withNodes else ''
 
     if nType == 'word':
       rep = T.text([n])
@@ -370,31 +419,78 @@ This notebook online:
       if linked:
         rep = self.shbLink(n, text=rep, asString=True)
 
-    markdown = f'{rep}{nodeRep}'
+    result = f'{rep}{nodeRep}'
 
-    if asString:
-      return markdown
-    _dm((markdown))
+    if asString or asApi:
+      return result
+    dm((result))
 
   def plainTuple(
       self,
       ns,
       seqNumber,
+      position=None,
+      opened=False,
       linked=1,
       withNodes=False,
       asString=False,
   ):
+    asApi = self.asApi
+    api = self.api
+    F = api.F
+    if asApi:
+      pretty = self.prettyTuple(
+          ns, seqNumber,
+          withNodes=withNodes,
+      ) if opened else ''
+      current = ' focus' if seqNumber == position else ''
+      attOpen = ' open ' if opened else ''
+      html = (
+          f'''
+    <div class="dtrow{current}">
+        <details class="pretty" seq="{seqNumber}" {attOpen}>
+          <summary>{seqNumber}</summary>
+          <div class="pretty">
+            {pretty}
+          </div>
+        </details>
+  '''
+          +
+          ''.join(
+              f'''<div>{self.plain(
+                          n,
+                          linked=i == linked - 1,
+                          withNodes=withNodes,
+                        ).replace("|", "&#124;")
+                      }
+                  </div>
+              '''
+              for (i, n) in enumerate(ns)
+          )
+          +
+          '''
+    </div>
+  '''
+      )
+      return html
     markdown = [str(seqNumber)]
     for (i, n) in enumerate(ns):
-      markdown.append(self.plain(
-          n,
-          linked=i == linked - 1,
-          withNodes=withNodes,
-          asString=True,
-      ))
+      markdown.append(
+          self.plain(
+              n,
+              linked=i == linked - 1,
+              withNodes=withNodes,
+              asString=True,
+          ).replace('|', '&#124;')
+      )
+    markdown = '|'.join(markdown)
     if asString:
-      return ' | '.join(markdown)
-    _dm(' , '.join(markdown))
+      return markdown
+    head = ['n | ' + (' | '.join(F.otype.v(n) for n in ns))]
+    head.append(' | '.join('---' for n in range(len(ns) + 1)))
+    head.append(markdown)
+
+    dm('\n'.join(head))
 
   def table(
       self,
@@ -455,9 +551,9 @@ This notebook online:
     markdown = '\n'.join(markdown)
     if asString:
       return markdown
-    _dm(markdown)
+    dm(markdown)
     if rest:
-      _dm(
+      dm(
           f'**{rest} more results skipped** because we show a maximum of'
           f' {LIMIT_TABLE} results at a time'
       )
@@ -485,6 +581,7 @@ This notebook online:
       suppress=set(),
       highlights={},
   ):
+    asApi = self.asApi
     html = []
     if type(highlights) is set:
       highlights = {m: '' for m in highlights}
@@ -498,6 +595,8 @@ This notebook online:
         highlights=highlights,
     )
     htmlStr = '\n'.join(html)
+    if asApi:
+      return htmlStr
     display(HTML(htmlStr))
 
   def prettyTuple(
@@ -510,6 +609,7 @@ This notebook online:
       colorMap=None,
       highlights=None,
   ):
+    asApi = self.asApi
     api = self.api
     L = api.L
     F = api.F
@@ -547,23 +647,32 @@ This notebook online:
           else:
             if thisHighlight is not None:
               newHighlights[n] = thisHighlight
-    _dm(f'''
+    if not asApi:
+      dm(f'''
 ##### {item} {seqNumber}
 ''')
+    if asApi:
+      html = []
     for l in sortNodes(lexemes):
-      self.pretty(
+      h = self.pretty(
           l,
           withNodes=withNodes,
           suppress=suppress,
           highlights=newHighlights,
       )
+      if asApi:
+        html.append(h)
     for v in sortNodes(verses):
-      self.pretty(
+      h = self.pretty(
           v,
           withNodes=withNodes,
           suppress=suppress,
           highlights=newHighlights,
       )
+      if asApi:
+        html.append(h)
+    if asApi:
+      return '\n'.join(html)
 
   def show(
       self,
@@ -597,7 +706,7 @@ This notebook online:
               thisHighlight = ''
             newHighlights[n] = thisHighlight
 
-      (passages, verses) = self._condense(results)
+      (passages, verses) = self.condense(results)
       results = passages if len(verses) == 0 else verses
 
     if start is None:
@@ -639,7 +748,7 @@ This notebook online:
             highlights=newHighlights,
         )
       if rest:
-        _dm(
+        dm(
             f'**{rest} more results skipped** because we show a maximum of'
             f' {LIMIT_SHOW} results at a time'
         )
@@ -657,7 +766,7 @@ This notebook online:
       info(f'{nResults} result{plural}')
     return results
 
-  def _condense(self, results):
+  def condense(self, results):
     api = self.api
     F = api.F
     L = api.L

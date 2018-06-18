@@ -8,6 +8,7 @@ from IPython.display import display, Markdown, HTML
 
 from tf.fabric import Fabric
 
+ORG = 'Nino-cunei'
 SOURCE = 'uruk'
 SOURCE_FULL = 'Uruk IV-III'
 VERSION = '1.0'
@@ -558,6 +559,7 @@ class Cunei(Atf):
     self.version = VERSION
     self.sourceDir = f'{repo}/{SOURCE_DIR}'
     self.imageDir = f'{repo}/{IMAGE_DIR}'
+    self.repoTempDir = f'{repo}/{TEMP_DIR}'
     self._imagery = {}
     self.corpus = f'{repo}/{CORPUS}'
     self.corpusFull = CORPUS_FULL
@@ -576,28 +578,38 @@ class Cunei(Atf):
       onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{name}.ipynb')
     else:
       cwdRel = None
-    nbLink = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
-    ghLink = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
-    docLink = f'https://github.com/{repoRel}/blob/master/docs'
-    extraLink = f'https://dans-labs.github.io/text-fabric/Api/Cunei/'
-    dataLink = _outLink(self.corpusFull, f'{docLink}/about.md', 'provenance of this corpus')
-    featureLink = _outLink('Feature docs', f'{docLink}/transcription.md', 'feature documentation')
-    cuneiLink = _outLink('Cunei API', extraLink, 'cunei api documentation')
+    nbUrl = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
+    ghUrl = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
+    docUrl = f'{URL_GH}/{repoRel}/blob/master/docs'
+    tutUrl = f'{URL_NB}/{ORG}/tutorials/search.ipynb'
+    extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Cunei/'
+    dataLink = _outLink(self.corpusFull, f'{docUrl}/about.md', 'provenance of this corpus')
+    featureLink = _outLink('Feature docs', f'{docUrl}/transcription.md', 'feature documentation')
+    cuneiLink = _outLink('Cunei API', extraUrl, 'cunei api documentation')
     tfLink = _outLink(
         f'Text-Fabric API {api.TF.version}', 'https://dans-labs.github.io/text-fabric/Api/General/',
         'text-fabric-api'
     )
     tfsLink = _outLink(
-        'Search Reference', 'https://dans-labs.github.io/text-fabric/Api/General/#search-templates',
+        'Search help', 'https://dans-labs.github.io/text-fabric/Api/General/#search-templates',
         'Search Templates Introduction and Reference'
     )
-    if not asApi:
+    tutLink = _outLink(
+        'Search tutorial', tutUrl,
+        'Search tutorial in Jupyter Notebook'
+    )
+    if asApi:
+      self.dataLink = dataLink
+      self.featureLink = featureLink
+      self.tfsLink = tfsLink
+      self.tutLink = tutLink
+    else:
       dm('**Documentation:**' f' {dataLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}')
-      if nbLink:
+      if nbUrl:
         dm(f'''
 This notebook online:
-{_outLink('NBViewer', nbLink)}
-{_outLink('GitHub', ghLink)}
+{_outLink('NBViewer', nbUrl)}
+{_outLink('GitHub', ghUrl)}
 ''')
     thisRepoDir = (None if cwdRel is None else f'{repoBase}/{thisOrg}/{thisRepo}')
     self.tempDir = (None if cwdRel is None else f'{thisRepoDir}/{TEMP_DIR}')
@@ -608,7 +620,25 @@ This notebook online:
           os.makedirs(cdir, exist_ok=True)
 
     if not asApi:
-      self._loadCSS()
+      self.loadCSS()
+
+  def loadCSS(self):
+    asApi = self.asApi
+    if asApi:
+      return CSS
+    display(HTML(CSS))
+
+  def header(self):
+    return f'''
+      <img class="hdlogo" src="/data/static/logo.png"/>
+      <div class="hdlinks">
+        {self.dataLink}
+        {self.featureLink}
+        {self.tfsLink}
+        {self.tutLink}
+      </div>
+      <img class="hdlogo" src="/server/static/logo.png"/>
+    '''
 
   def lineFromNode(self, n):
     api = self.api
@@ -739,12 +769,16 @@ This notebook online:
       lineNumbers=False,
       asString=False,
   ):
+    asApi = self.asApi
     api = self.api
     F = api.F
 
     nType = F.otype.v(n)
-    markdown = ''
-    nodeRep = f' *{n}* ' if withNodes else ''
+    result = ''
+    if asApi:
+      nodeRep = f' <span class="nd">{n}</span> ' if withNodes else ''
+    else:
+      nodeRep = f' *{n}* ' if withNodes else ''
 
     if nType in ATF_TYPES:
       isSign = nType == 'sign'
@@ -770,12 +804,12 @@ This notebook online:
               warning=False
           )
           theLineart = f' {theLineart}'
-      markdown = (f'{rep}{nodeRep}{theLineart}') if theLineart else f'{rep}{nodeRep}'
+      result = (f'{rep}{nodeRep}{theLineart}') if theLineart else f'{rep}{nodeRep}'
     elif nType == 'comment':
       rep = F.type.v(n)
       if linked:
         rep = self.tabletLink(n, text=rep, asString=True)
-      markdown = f'{rep}{nodeRep}: {F.text.v(n)}'
+      result = f'{rep}{nodeRep}: {F.text.v(n)}'
     elif nType == 'line' or nType == 'case':
       rep = f'{nType} {F.number.v(n)}'
       if linked:
@@ -784,7 +818,7 @@ This notebook online:
       if lineNumbers:
         if F.terminal.v(n):
           theLine = f' @{F.srcLnNum.v(n)} '
-      markdown = f'{rep}{nodeRep}{theLine}'
+      result = f'{rep}{nodeRep}{theLine}'
     elif nType == 'column':
       rep = f'{nType} {F.number.v(n)}'
       if linked:
@@ -792,7 +826,7 @@ This notebook online:
       theLine = ''
       if lineNumbers:
         theLine = f' @{F.srcLnNum.v(n)} '
-      markdown = f'{rep}{nodeRep}{theLine}'
+      result = f'{rep}{nodeRep}{theLine}'
     elif nType == 'face':
       rep = f'{nType} {F.type.v(n)}'
       if linked:
@@ -800,7 +834,7 @@ This notebook online:
       theLine = ''
       if lineNumbers:
         theLine = f' @{F.srcLnNum.v(n)} '
-      markdown = f'{rep}{nodeRep}{theLine}'
+      result = f'{rep}{nodeRep}{theLine}'
     elif nType == 'tablet':
       rep = f'{nType} {F.catalogId.v(n)}'
       if linked:
@@ -808,22 +842,66 @@ This notebook online:
       theLine = ''
       if lineNumbers:
         theLine = f' @{F.srcLnNum.v(n)} '
-      markdown = f'{rep}{nodeRep}{theLine}'
+      result = f'{rep}{nodeRep}{theLine}'
 
-    if asString:
-      return markdown
-    dm(markdown)
+    if asString or asApi:
+      return result
+    dm(result)
 
   def plainTuple(
       self,
       ns,
       seqNumber,
+      position=None,
+      opened=False,
       linked=1,
-      lineart=True,
       withNodes=False,
+      lineart=True,
       lineNumbers=False,
       asString=False,
   ):
+    asApi = self.asApi
+    api = self.api
+    F = api.F
+    if asApi:
+      pretty = self.prettyTuple(
+          ns, seqNumber,
+          withNodes=withNodes,
+          lineart=lineart,
+          lineNumbers=lineNumbers,
+      ) if opened else ''
+      current = ' focus' if seqNumber == position else ''
+      attOpen = ' open ' if opened else ''
+      html = (
+          f'''
+    <div class="dtrow{current}">
+        <details class="pretty" seq="{seqNumber}" {attOpen}>
+          <summary>{seqNumber}</summary>
+          <div class="pretty">
+            {pretty}
+          </div>
+        </details>
+  '''
+          +
+          ''.join(
+              f'''<div>{self.plain(
+                          n,
+                          linked=i == linked - 1,
+                          withNodes=withNodes,
+                          lineart=lineart,
+                          lineNumbers=lineNumbers,
+                        ).replace("|", "&#124;")
+                      }
+                  </div>
+              '''
+              for (i, n) in enumerate(ns)
+          )
+          +
+          '''
+    </div>
+  '''
+      )
+      return html
     markdown = [str(seqNumber)]
     for (i, n) in enumerate(ns):
       markdown.append(
@@ -839,8 +917,6 @@ This notebook online:
     markdown = '|'.join(markdown)
     if asString:
       return markdown
-    api = self.api
-    F = api.F
     head = ['n | ' + (' | '.join(F.otype.v(n) for n in ns))]
     head.append(' | '.join('---' for n in range(len(ns) + 1)))
     head.append(markdown)
@@ -920,12 +996,13 @@ This notebook online:
   def pretty(
       self,
       n,
-      lineart=True,
       withNodes=False,
+      lineart=True,
       lineNumbers=False,
       suppress=set(),
       highlights={},
   ):
+    asApi = self.asApi
     html = []
     if type(highlights) is set:
       highlights = {m: '' for m in highlights}
@@ -941,7 +1018,7 @@ This notebook online:
         highlights=highlights,
     )
     htmlStr = '\n'.join(html)
-    if self.asApi:
+    if asApi:
       return htmlStr
     display(HTML(htmlStr))
 
@@ -957,6 +1034,7 @@ This notebook online:
       colorMap=None,
       highlights=None,
   ):
+    asApi = self.asApi
     api = self.api
     L = api.L
     F = api.F
@@ -984,11 +1062,11 @@ This notebook online:
         tablets.add(t)
         if thisHighlight is not None:
           newHighlights[n] = thisHighlight
-    if not self.asApi:
+    if not asApi:
       dm(f'''
 ##### {item} {seqNumber}
 ''')
-    if self.asApi:
+    if asApi:
       html = []
     for t in sortNodes(tablets):
       h = self.pretty(
@@ -999,9 +1077,9 @@ This notebook online:
           suppress=suppress,
           highlights=newHighlights,
       )
-      if self.asApi:
+      if asApi:
         html.append(h)
-    if self.asApi:
+    if asApi:
       return '\n'.join(html)
 
   def show(
@@ -1038,7 +1116,7 @@ This notebook online:
               thisHighlight = ''
             newHighlights[n] = thisHighlight
 
-      results = self._condense(results)
+      results = self.condense(results)
 
     if start is None:
       start = 1
@@ -1101,7 +1179,7 @@ This notebook online:
       info(f'{nResults} result{plural}')
     return results
 
-  def _condense(self, results):
+  def condense(self, results):
     api = self.api
     F = api.F
     L = api.L
@@ -1354,9 +1432,6 @@ This notebook online:
     featurePart = f' <span class="srcLn">{atf}</span>'
     return featurePart
 
-  def _loadCSS(self):
-    display(HTML(CSS))
-
   def _imageClass(self, n):
     api = self.api
     F = api.F
@@ -1469,11 +1544,13 @@ This notebook online:
       return True
 
   def _useImage(self, image, kind, key, node):
+    asApi = self.asApi
     api = self.api
     F = api.F
     (imageDir, imageName) = os.path.split(image)
     (base, ext) = os.path.splitext(imageName)
-    localDir = f'{self.cwd}/{LOCAL_DIR}'
+    localBase = self.repoTempDir if asApi else self.cwd
+    localDir = f'{localBase}/{LOCAL_DIR}'
     if not os.path.exists(localDir):
       os.makedirs(localDir, exist_ok=True)
     if type(node) is int:
@@ -1498,7 +1575,8 @@ This notebook online:
         or os.path.getmtime(image) > os.path.getmtime(localImagePath)
     ):
       copyfile(image, localImagePath)
-    return f'{LOCAL_DIR}/{localImageName}'
+    base = '/local/' if asApi else ''
+    return f'{base}{LOCAL_DIR}/{localImageName}'
 
   def _getImagery(self):
     for (dirFmt, ext, kind, objectType) in (
