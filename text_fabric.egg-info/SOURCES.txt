@@ -56,5 +56,10 @@ tf/server/data.py
 tf/server/service.py
 tf/server/start.py
 tf/server/web.py
+tf/server/static/.DS_Store
+tf/server/static/jquery.js
+tf/server/static/logo.png
+tf/server/static/main.css
+tf/server/static/tf.js
 tf/server/views/.DS_Store
 tf/server/views/index.tpl

@@ -1,2 +1,3 @@
 recursive-include tf/server/views *
+recursive-include tf/server/static *
 recursive-include tf/extra/*-app *
