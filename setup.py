@@ -10,7 +10,7 @@ setup(
     ],
     install_requires=['rpyc', 'bottle'],
     scripts=['text-fabric'],
-    version='5.0.0',
+    version='5.0.1',
     description='''Processor for Text Fabric Data''',
     author='Dirk Roorda',
     author_email='dirk.roorda@dans.knaw.nl',
