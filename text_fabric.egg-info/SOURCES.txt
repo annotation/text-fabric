@@ -20,6 +20,10 @@ tf/transcription.py
 tf/extra/__init__.py
 tf/extra/bhsa.py
 tf/extra/cunei.py
+tf/extra/bhsa-app/__init__.py
+tf/extra/bhsa-app/config.py
+tf/extra/cunei-app/__init__.py
+tf/extra/cunei-app/config.py
 tf/search/__init__.py
 tf/search/graph.py
 tf/search/relations.py
