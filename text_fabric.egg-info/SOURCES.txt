@@ -1,3 +1,4 @@
+MANIFEST.in
 README.md
 setup.py
 text-fabric
@@ -22,8 +23,24 @@ tf/extra/bhsa.py
 tf/extra/cunei.py
 tf/extra/bhsa-app/__init__.py
 tf/extra/bhsa-app/config.py
+tf/extra/bhsa-app/__pycache__/__init__.cpython-36.pyc
+tf/extra/bhsa-app/__pycache__/config.cpython-36.pyc
+tf/extra/bhsa-app/static/.DS_Store
+tf/extra/bhsa-app/static/fonts.css
+tf/extra/bhsa-app/static/logo.png
+tf/extra/bhsa-app/static/fonts/.DS_Store
+tf/extra/bhsa-app/static/fonts/SBL_Hbrw.eot
+tf/extra/bhsa-app/static/fonts/SBL_Hbrw.ttf
+tf/extra/bhsa-app/static/fonts/SBL_Hbrw.woff
+tf/extra/bhsa-app/static/fonts/SILEOT.eot
+tf/extra/bhsa-app/static/fonts/SILEOT.ttf
+tf/extra/bhsa-app/static/fonts/SILEOT.woff
+tf/extra/cunei-app/.DS_Store
 tf/extra/cunei-app/__init__.py
 tf/extra/cunei-app/config.py
+tf/extra/cunei-app/__pycache__/__init__.cpython-36.pyc
+tf/extra/cunei-app/__pycache__/config.cpython-36.pyc
+tf/extra/cunei-app/static/logo.png
 tf/search/__init__.py
 tf/search/graph.py
 tf/search/relations.py
@@ -39,3 +56,5 @@ tf/server/data.py
 tf/server/service.py
 tf/server/start.py
 tf/server/web.py
+tf/server/views/.DS_Store
+tf/server/views/index.tpl
