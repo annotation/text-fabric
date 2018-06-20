@@ -22,6 +22,8 @@ webport = 8001
 
 options = ()
 
+condenseType = 'verse'
+
 
 def extraApi(locations, modules):
   return Bhsa(

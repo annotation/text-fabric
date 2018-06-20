@@ -15,6 +15,7 @@ from .api import (
     addSortKey,
     addOtype,
     addLocality,
+    addRank,
     addText,
     addSearch,
 )
@@ -419,6 +420,7 @@ Example data  : {}
     addSortKey(api)
     addOtype(api)
     addLocality(api)
+    addRank(api)
     addText(api)
     addSearch(api, silent)
     self.tm.indent(level=0)

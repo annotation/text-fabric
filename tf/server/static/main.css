@@ -1,6 +1,9 @@
 body,td {
     font-family: sans-serif;
 }
+
+/* PAGE */
+
 div.page {
     display: flex;
     flex-flow: row nowrap;
@@ -29,6 +32,8 @@ div.rightcol {
     padding-left: 0.4rem;
     padding-right: 0.2rem;
 }
+
+/* LEFT-COL */
 
 div.header {
     display: flex;
@@ -80,15 +85,6 @@ div.eline {
     background-color: #ffbbbb;
 }
 
-div.navigation {
-    font-size: small;
-}
-input.int {
-	font-size: medium;
-	font-family: monospace;
-    width: 3rem;
-}
-
 p.go {
     text-align: center;
 }
@@ -102,6 +98,42 @@ button.go {
     border-radius: 1rem;
     border-color: #444444;
 }
+
+input.int {
+	font-size: medium;
+	font-family: monospace;
+    width: 3rem;
+}
+
+div.cline {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: baseline;
+    margin-left: 1rem;
+    background-color: #fafafa;
+}
+span.cradio, input.cradio {
+    flex: 0 0 2rem;
+    margin-right: 0rem;
+}
+span.ctype {
+    flex: 0 0 4rem;
+    padding-right: 0.5rem;
+    font-size: x-small;
+    font-style: italic;
+}
+span.cinfo {
+    flex: 0 1 auto;
+    font-size: x-small;
+}
+
+/* MID-COL */
+
+div.navigation {
+    font-size: small;
+}
+
 div.pages {
     display: flex;
     flex-flow: row nowrap;
@@ -126,6 +158,8 @@ div.pline {
 .focus {
     background-color: #ffeebb;
 }
+
+/* RIGHT-COL */
 
 div.dtheadrow {
     display: flex;

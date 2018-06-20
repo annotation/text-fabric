@@ -1,8 +1,17 @@
 import os
 import re
-from IPython.display import display, Markdown, HTML
+import types
+from IPython.display import display, HTML
 
 from tf.fabric import Fabric
+from tf.apphelpers import (
+    search,
+    table, plainTuple,
+    show, prettyPre, pretty, prettyTuple, prettySetup,
+    getBoundary, getFeatures,
+    htmlEsc, mdEsc,
+    dm, header, outLink,
+)
 
 ORG = 'etcbc'
 
@@ -19,8 +28,7 @@ SHEBANQ = (
 )
 SHEBANQ_LEX = (f'{SHEBANQ_URL}/word' '?version={version}&id={lid}')
 
-LIMIT_SHOW = 100
-LIMIT_TABLE = 2000
+CONDENSE_TYPE = 'verse'
 
 CSS = '''
 <style type="text/css">
@@ -32,7 +40,15 @@ CSS = '''
 .vl {
     display: flex;
     flex-flow: column nowrap;
+    justify-content: flex-end;
+    align-items: flex-end;
     direction: ltr;
+    width: 100%;
+}
+.outeritem {
+    display: flex;
+    flex-flow: row wrap;
+    direction: rtl;
 }
 .sentence,.clause,.phrase {
     margin-top: -1.2em;
@@ -110,6 +126,9 @@ CSS = '''
     direction: rtl;
     background-color: #ffffff;
 }
+.occs {
+    font-size: x-small;
+}
 .satom.l,.catom.l,.patom.l {
     border-left-style: dotted
 }
@@ -122,14 +141,14 @@ CSS = '''
 .satom.R,.catom.R,.patom.R {
     border-right-style: none
 }
-.h,.h :visited,.h :link {
+.h,.h a:visited,.h a:link {
     font-family: "Ezra SIL", "SBL Hebrew", sans-serif;
     font-size: large;
     color: #000044;
     direction: rtl;
     text-decoration: none;
 }
-.hb,.hb :visited,.hb :link {
+.hb,.hb a:visited,.hb a:link {
     font-family: "Ezra SIL", "SBL Hebrew", sans-serif;
     font-size: large;
     direction: rtl;
@@ -140,34 +159,36 @@ CSS = '''
     font-size: small;
     color: #0000bb;
 }
-.sp,.sp :visited,.sp :link {
+.pdp,.pdp a:visited,.pdp a:link {
     font-family: monospace;
     font-size: medium;
     color: #0000bb;
     text-decoration: none;
 }
-.vl {
+.voc_lex {
     font-family: monospace;
     font-size: medium;
     color: #0000bb;
 }
-.vvs {
+.vs {
     font-family: monospace;
     font-size: medium;
     font-weight: bold;
     color: #0000bb;
 }
-.vvt {
+.vt {
     font-family: monospace;
     font-size: medium;
+    font-weight: bold;
     color: #0000bb;
 }
-.gl {
+.gloss {
     font-family: sans-serif;
     font-size: small;
+    font-weight: normal;
     color: #aaaaaa;
 }
-.vs {
+.vrs {
     font-family: sans-serif;
     font-size: small;
     font-weight: bold;
@@ -178,17 +199,27 @@ CSS = '''
     font-size: x-small;
     color: #999999;
 }
-.feat {
+.features {
     font-family: monospace;
     font-size: medium;
     font-weight: bold;
     color: #0a6611;
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 0.1em;
+    margin: 0.1em;
 }
-.feat .f {
+.features .f {
     font-family: sans-serif;
     font-size: x-small;
+    font-weight: normal;
     color: #5555bb;
 }
+.word .features div,.word .features span {
+    padding: 0;
+    margin: -0.1rem 0;
+}
+
 .hl {
     background-color: #ffee66;
 }
@@ -222,22 +253,13 @@ SECTION = {'book', 'chapter', 'verse', 'half_verse'}
 NONE_VALUES = {None, 'NA', 'none', 'unknown'}
 
 STANDARD_FEATURES = '''
-    sp vs vt
+    pdp vs vt
     lex language gloss voc_lex voc_lex_utf8
     function typ rela
     number label book
 '''
 
 # for 4, 4b: voc_lex => g_lex, voc_lex_utf8 => g_lex_utf8
-
-
-def dm(md):
-  display(Markdown(md))
-
-
-def _outLink(text, href, title=None):
-  titleAtt = '' if title is None else f' title="{title}"'
-  return f'<a target="_blank" href="{href}"{titleAtt}>{text}</a>'
 
 
 class Bhsa(object):
@@ -252,6 +274,8 @@ class Bhsa(object):
   ):
     self.asApi = asApi
     self.version = version
+    self.condenseType = CONDENSE_TYPE
+
     standardFeatures = (
         STANDARD_FEATURES.replace('voc_', 'g_') if version in {'4', '4b'} else STANDARD_FEATURES
     )
@@ -283,22 +307,22 @@ class Bhsa(object):
     docUrl = f'https://etcbc.github.io/bhsa'
     tutUrl = f'{URL_NB}/{ORG}/{CORPUS}/blob/master/tutorial/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
-    dataLink = _outLink(CORPUS.upper(), docUrl, '{provenance of this corpus}')
-    featureLink = _outLink(
+    dataLink = outLink(CORPUS.upper(), docUrl, '{provenance of this corpus}')
+    featureLink = outLink(
         'Feature docs', f'{docUrl}/features/hebrew/{self.version}/0_home.html',
         '{CORPUS.upper()} feature documentation'
     )
-    bhsaLink = _outLink('BHSA API', extraUrl, 'BHSA API documentation')
-    tfLink = _outLink(
+    bhsaLink = outLink('BHSA API', extraUrl, 'BHSA API documentation')
+    tfLink = outLink(
         f'Text-Fabric API {api.TF.version}', 'https://dans-labs.github.io/text-fabric/Api/General/',
         'text-fabric-api'
     )
-    tfsLink = _outLink(
+    tfsLink = outLink(
         'Search Reference',
         'https://dans-labs.github.io/text-fabric/Api/General/#search-templates',
         'Search Templates Introduction and Reference'
     )
-    tutLink = _outLink(
+    tutLink = outLink(
         'Search tutorial', tutUrl,
         'Search tutorial in Jupyter Notebook'
     )
@@ -313,31 +337,30 @@ class Bhsa(object):
         dm(
             f'''
 This notebook online:
-{_outLink('NBViewer', nbUrl)}
-{_outLink('GitHub', ghUrl)}
+{outLink('NBViewer', nbUrl)}
+{outLink('GitHub', ghUrl)}
 '''
         )
 
+    self.classNames = CLASS_NAMES
+    self.noneValues = NONE_VALUES
+
     if not asApi:
       self.loadCSS()
+    self.table = types.MethodType(table, self)
+    self.plainTuple = types.MethodType(plainTuple, self)
+    self.show = types.MethodType(show, self)
+    self.prettyTuple = types.MethodType(prettyTuple, self)
+    self.pretty = types.MethodType(pretty, self)
+    self.prettySetup = types.MethodType(prettySetup, self)
+    self.search = types.MethodType(search, self)
+    self.header = types.MethodType(header, self)
 
   def loadCSS(self):
     asApi = self.asApi
     if asApi:
       return CSS_FONT + CSS
     display(HTML(CSS))
-
-  def header(self):
-    return f'''
-      <img class="hdlogo" src="/data/static/logo.png"/>
-      <div class="hdlinks">
-        {self.dataLink}
-        {self.featureLink}
-        {self.tfsLink}
-        {self.tutLink}
-      </div>
-      <img class="hdlogo" src="/server/static/logo.png"/>
-    '''
 
   def shbLink(self, n, text=None, asString=False):
     api = self.api
@@ -360,8 +383,8 @@ This notebook online:
       )
       title = 'show this lexeme in SHEBANQ'
       if text is None:
-        text = F.voc_lex_utf8.v(n)
-      result = _outLink(text, href, title=title)
+        text = htmlEsc(F.voc_lex_utf8.v(n))
+      result = outLink(text, href, title=title)
       if asString:
         return result
       display(HTML(result))
@@ -386,7 +409,7 @@ This notebook online:
       title = 'show this passage in SHEBANQ'
     else:
       title = passageText
-    result = _outLink(text, href, title=title)
+    result = outLink(text, href, title=title)
     if asString:
       return result
     display(HTML(result))
@@ -413,25 +436,21 @@ This notebook online:
 
     hebrew = True
     if nType == 'word':
-      rep = T.text([n])
-      if linked:
-        rep = self.shbLink(n, text=rep, asString=True)
+      rep = mdEsc(htmlEsc(T.text([n])))
     elif nType in SECTION:
       fmt = ('{}' if nType == 'book' else '{} {}' if nType == 'chapter' else '{} {}:{}')
       rep = fmt.format(*T.sectionFromNode(n))
       hebrew = False
       if nType == 'half_verse':
         rep += F.label.v(n)
-      if linked:
-        rep = self.shbLink(n, text=rep, asString=True)
+      rep = mdEsc(htmlEsc(rep))
     elif nType == 'lex':
-      rep = F.voc_lex_utf8.v(n)
-      if linked:
-        rep = self.shbLink(n, text=rep, asString=True)
+      rep = mdEsc(htmlEsc(F.voc_lex_utf8.v(n)))
     else:
-      rep = T.text(L.d(n, otype='word'))
-      if linked:
-        rep = self.shbLink(n, text=rep, asString=True)
+      rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'))))
+
+    if linked:
+      rep = self.shbLink(n, text=rep, asString=True)
 
     if hebrew:
       rep = f'<span class="hb">{rep}</span>'
@@ -441,423 +460,57 @@ This notebook online:
       return result
     dm((result))
 
-  def plainTuple(
-      self,
-      ns,
-      seqNumber,
-      position=None,
-      opened=False,
-      linked=1,
-      withNodes=False,
-      asString=False,
-  ):
-    asApi = self.asApi
-    api = self.api
-    F = api.F
-    if asApi:
-      pretty = self.prettyTuple(
-          ns, seqNumber,
-          withNodes=withNodes,
-      ) if opened else ''
-      current = ' focus' if seqNumber == position else ''
-      attOpen = ' open ' if opened else ''
-      html = (
-          f'''
-    <div class="dtrow{current}">
-        <details class="pretty" seq="{seqNumber}" {attOpen}>
-          <summary>{seqNumber}</summary>
-          <div class="pretty">
-            {pretty}
-          </div>
-        </details>
-  '''
-          +
-          ''.join(
-              f'''<div>{self.plain(
-                          n,
-                          linked=i == linked - 1,
-                          withNodes=withNodes,
-                        ).replace("|", "&#124;")
-                      }
-                  </div>
-              '''
-              for (i, n) in enumerate(ns)
-          )
-          +
-          '''
-    </div>
-  '''
-      )
-      return html
-    markdown = [str(seqNumber)]
-    for (i, n) in enumerate(ns):
-      markdown.append(
-          self.plain(
-              n,
-              linked=i == linked - 1,
-              withNodes=withNodes,
-              asString=True,
-          ).replace('|', '&#124;')
-      )
-    markdown = '|'.join(markdown)
-    if asString:
-      return markdown
-    head = ['n | ' + (' | '.join(F.otype.v(n) for n in ns))]
-    head.append(' | '.join('---' for n in range(len(ns) + 1)))
-    head.append(markdown)
-
-    dm('\n'.join(head))
-
-  def table(
-      self,
-      results,
-      start=None,
-      end=None,
-      linked=1,
-      withNodes=False,
-      asString=False,
-  ):
-    api = self.api
-    F = api.F
-
-    collected = []
-    if start is None:
-      start = 1
-    i = -1
-    rest = 0
-    if not hasattr(results, '__len__'):
-      if end is None or end - start + 1 > LIMIT_SHOW:
-        end = start - 1 + LIMIT_SHOW
-      for result in results:
-        i += 1
-        if i < start - 1:
-          continue
-        if i >= end:
-          break
-        collected.append((i + 1, result))
-    else:
-      typeResults = type(results)
-      if typeResults is set or typeResults is frozenset:
-        results = sorted(results)
-      if end is None or end > len(results):
-        end = len(results)
-      rest = 0
-      if end - (start - 1) > LIMIT_TABLE:
-        rest = end - (start - 1) - LIMIT_TABLE
-        end = start - 1 + LIMIT_TABLE
-      for i in range(start - 1, end):
-        collected.append((i + 1, results[i]))
-
-    if len(collected) == 0:
-      return
-    (firstSeq, firstResult) = collected[0]
-    nColumns = len(firstResult)
-    markdown = ['n | ' + (' | '.join(F.otype.v(n) for n in firstResult))]
-    markdown.append(' | '.join('---' for n in range(nColumns + 1)))
-    for (seqNumber, ns) in collected:
-      markdown.append(
-          self.plainTuple(
-              ns,
-              seqNumber,
-              linked=linked,
-              withNodes=withNodes,
-              asString=True,
-          )
-      )
-    markdown = '\n'.join(markdown)
-    if asString:
-      return markdown
-    dm(markdown)
-    if rest:
-      dm(
-          f'**{rest} more results skipped** because we show a maximum of'
-          f' {LIMIT_TABLE} results at a time'
-      )
-
-  def prettySetup(self, features=None, noneValues=None):
-    if features is None:
-      self.prettyFeatures = ()
-    else:
-      featuresRequested = (tuple(features.strip().split()
-                                 )) if type(features) is str else tuple(features)
-      tobeLoaded = set(featuresRequested) - self.prettyFeaturesLoaded
-      if tobeLoaded:
-        self.api.TF.load(tobeLoaded, add=True, silent=True)
-        self.prettyFeaturesLoaded |= tobeLoaded
-      self.prettyFeatures = featuresRequested
-    if noneValues is None:
-      self.noneValues = NONE_VALUES
-    else:
-      self.noneValues = noneValues
-
-  def pretty(
-      self,
-      n,
-      withNodes=False,
-      suppress=set(),
-      highlights={},
-  ):
-    asApi = self.asApi
-    html = []
-    if type(highlights) is set:
-      highlights = {m: '' for m in highlights}
-    self._pretty(
-        n,
-        html,
-        firstSlot=None,
-        lastSlot=None,
-        withNodes=withNodes,
-        suppress=suppress,
-        highlights=highlights,
-    )
-    htmlStr = '\n'.join(html)
-    if asApi:
-      return htmlStr
-    display(HTML(htmlStr))
-
-  def prettyTuple(
-      self,
-      ns,
-      seqNumber,
-      item='Result',
-      withNodes=False,
-      suppress=set(),
-      colorMap=None,
-      highlights=None,
-  ):
-    asApi = self.asApi
-    api = self.api
-    L = api.L
-    F = api.F
-    sortNodes = api.sortNodes
-    verses = set()
-    lexemes = set()
-    newHighlights = {}
-    if type(highlights) is set:
-      highlights = {m: '' for m in highlights}
-    if highlights:
-      newHighlights.update(highlights)
-    for (i, n) in enumerate(ns):
-      thisHighlight = None
-      if highlights is not None:
-        thisHighlight = highlights.get(n, None)
-      elif colorMap is not None:
-        thisHighlight = colorMap.get(i + 1, None)
-      else:
-        thisHighlight = ''
-
-      nType = F.otype.v(n)
-      if nType not in SECTION:
-        firstSlot = n if nType == 'word' else L.d(n, otype='word')[0]
-        if nType == 'lex':
-          lexemes.add(n)
-          if thisHighlight is not None:
-            newHighlights[n] = thisHighlight
-        else:
-          verses.add(L.u(firstSlot, otype='verse')[0])
-          atomType = SUPER.get(nType, None)
-          if atomType:
-            if thisHighlight is not None:
-              for m in L.d(n, otype=atomType):
-                newHighlights[m] = thisHighlight
-          else:
-            if thisHighlight is not None:
-              newHighlights[n] = thisHighlight
-    if not asApi:
-      dm(f'''
-##### {item} {seqNumber}
-''')
-    if asApi:
-      html = []
-    for l in sortNodes(lexemes):
-      h = self.pretty(
-          l,
-          withNodes=withNodes,
-          suppress=suppress,
-          highlights=newHighlights,
-      )
-      if asApi:
-        html.append(h)
-    for v in sortNodes(verses):
-      h = self.pretty(
-          v,
-          withNodes=withNodes,
-          suppress=suppress,
-          highlights=newHighlights,
-      )
-      if asApi:
-        html.append(h)
-    if asApi:
-      return '\n'.join(html)
-
-  def show(
-      self,
-      results,
-      condensed=True,
-      start=None,
-      end=None,
-      withNodes=False,
-      suppress=set(),
-      colorMap=None,
-      highlights=None,
-  ):
-    newHighlights = None
-    if type(highlights) is set:
-      highlights = {m: '' for m in highlights}
-    if highlights:
-      newHighlights = {}
-      newHighlights.update(highlights)
-    if condensed:
-      if colorMap is not None:
-        if newHighlights is None:
-          newHighlights = {}
-        for ns in results:
-          for (i, n) in enumerate(ns):
-            thisHighlight = None
-            if highlights is not None:
-              thisHighlight = highlights.get(n, None)
-            elif colorMap is not None:
-              thisHighlight = colorMap.get(i + 1, None)
-            else:
-              thisHighlight = ''
-            newHighlights[n] = thisHighlight
-
-      (passages, verses) = self.condense(results)
-      results = passages if len(verses) == 0 else verses
-
-    if start is None:
-      start = 1
-    i = -1
-    if not hasattr(results, '__len__'):
-      if end is None or end - start + 1 > LIMIT_SHOW:
-        end = start - 1 + LIMIT_SHOW
-      for result in results:
-        i += 1
-        if i < start - 1:
-          continue
-        if i >= end:
-          break
-        self.prettyTuple(
-            result,
-            i + 1,
-            item='Verse' if condensed else 'Result',
-            withNodes=withNodes,
-            suppress=suppress,
-            colorMap=colorMap,
-            highlights=newHighlights,
-        )
-    else:
-      if end is None or end > len(results):
-        end = len(results)
-      rest = 0
-      if end - (start - 1) > LIMIT_SHOW:
-        rest = end - (start - 1) - LIMIT_SHOW
-        end = start - 1 + LIMIT_SHOW
-      for i in range(start - 1, end):
-        self.prettyTuple(
-            results[i],
-            i + 1,
-            item='Passage' if condensed else 'Result',
-            withNodes=withNodes,
-            suppress=suppress,
-            colorMap=colorMap,
-            highlights=newHighlights,
-        )
-      if rest:
-        dm(
-            f'**{rest} more results skipped** because we show a maximum of'
-            f' {LIMIT_SHOW} results at a time'
-        )
-
-  def search(self, query, silent=False, sets=None, shallow=False):
-    api = self.api
-    info = api.info
-    S = api.S
-    results = S.search(query, sets=sets, shallow=shallow)
-    if not shallow:
-      results = sorted(results)
-    nResults = len(results)
-    plural = '' if nResults == 1 else 's'
-    if not silent:
-      info(f'{nResults} result{plural}')
-    return results
-
-  def condense(self, results):
-    asApi = self.asApi
-    api = self.api
-    F = api.F
-    L = api.L
-    sortNodes = api.sortNodes
-    verses = {}
-    passages = set()
-    for ns in results:
-      for n in ns:
-        nType = F.otype.v(n)
-        if nType in SECTION:
-          if nType == 'verse':
-            verses.setdefault(n, set())
-          passages.add(n)
-        else:
-          fw = n if nType == 'word' else L.d(n, otype='word')[0]
-          v = L.u(fw, otype='verse')[0]
-          verses.setdefault(v, set()).add(n)
-    passages = tuple(sortNodes(passages))
-    verses = tuple((p, ) + tuple(verses[p]) for p in sortNodes(verses))
-    return verses if asApi else (passages, verses)
-
   def _pretty(
       self,
       n,
+      outer,
       html,
-      firstSlot=None,
-      lastSlot=None,
+      firstSlot,
+      lastSlot,
+      condenseType=None,
       withNodes=True,
       suppress=set(),
       highlights={},
   ):
+    goOn = prettyPre(
+        self,
+        n,
+        firstSlot,
+        lastSlot,
+        withNodes,
+        highlights,
+    )
+    if not goOn:
+      return
+    (
+        slotType, nType,
+        className, boundaryClass, hlClass, hlStyle,
+        nodePart,
+        myStart, myEnd,
+    ) = goOn
+
     api = self.api
+    F = api.F
     L = api.L
     T = api.T
-    F = api.F
     sortNodes = api.sortNodes
-    hl = highlights.get(n, None)
-    hlClass = ''
-    hlStyle = ''
-    if hl == '':
-      hlClass = ' hl'
-    else:
-      hlStyle = f' style="background-color: {hl};"'
+    otypeRank = api.otypeRank
+    if condenseType is not None and otypeRank[nType] > otypeRank[condenseType]:
+      html.append(self.shbLink(n, asString=True))
 
-    nType = F.otype.v(n)
-    className = CLASS_NAMES.get(nType, None)
-    superType = ATOMS.get(nType, None)
-    boundaryClass = ''
-    (myStart, myEnd) = (n, n) if nType == 'word' else self._getBoundary(n)
-    if superType:
-      (superNode, superStart, superEnd) = self._getSuper(n, superType)
-      if superStart < myStart:
-        boundaryClass += ' r'
-      if superEnd > myEnd:
-        boundaryClass += ' l'
-    if ((firstSlot and myEnd < firstSlot) or (lastSlot and myStart > lastSlot)):  # noqa 129
-      return
-    if firstSlot and (myStart < firstSlot):
-      boundaryClass += ' R'
-    if lastSlot and (myEnd > lastSlot):
-      boundaryClass += ' L'
     if nType == 'book':
       html.append(self.shbLink(n, asString=True))
       return
-    elif nType == 'chapter':
+    if nType == 'chapter':
       html.append(self.shbLink(n, asString=True))
       return
-    elif nType in {'verse', 'half_verse'}:
-      label = self.shbLink(n, asString=True)
-      (firstSlot, lastSlot) = self._getBoundary(n)
+
+    if nType in {'verse', 'half_verse'}:
+      (thisFirstSlot, thisLastSlot) = getBoundary(api, n)
       children = sortNodes(
           set(L.d(n, otype='sentence_atom')) | {
-              L.u(firstSlot, otype='sentence_atom')[0],
-              L.u(lastSlot, otype='sentence_atom')[0],
+              L.u(thisFirstSlot, otype='sentence_atom')[0],
+              L.u(thisLastSlot, otype='sentence_atom')[0],
           }
       )
     elif nType == 'sentence':
@@ -867,74 +520,76 @@ This notebook online:
     elif nType == 'clause_atom' or nType == 'phrase':
       children = L.d(n, otype='phrase_atom')
     elif nType == 'phrase_atom' or nType == 'subphrase':
-      children = L.d(n, otype='word')
+      children = L.d(n, otype=slotType)
     elif nType == 'lex':
       children = ()
-    elif nType == 'word':
+    elif nType == slotType:
       children = ()
       lx = L.u(n, otype='lex')[0]
-    html.append(f'<div class="{className} {boundaryClass}{hlClass}"{hlStyle}>')
-    if nType in {'verse', 'half_verse'}:
-      nodePart = f'<div class="nd">{n}</div>' if withNodes else ''
-      html.append(
-          f'''
-    <div class="vl">
-        <div class="vs">{label}</div>{nodePart}
-    </div>
-'''
-      )
-    elif nType == 'word':
-      nodePart = f'<div class="nd">{n}</div>' if withNodes else ''
-      if nodePart:
-        html.append(nodePart)
-      lx = L.u(n, otype='lex')[0]
-      lexLink = (self.shbLink(lx, text=T.text([n]), asString=True))
-      html.append(f'<div class="h">{lexLink}</div>')
-      if 'sp' not in suppress:
-        spLink = (self.shbLink(n, text=F.sp.v(n), asString=True))
-        html.append(f'<div class="sp">{spLink}</div>')
-      if 'gloss' not in suppress:
-        html.append(f'<div class="gl">' f'{F.gloss.v(lx).replace("<", "&lt;")}</div>')
-      if F.sp.v(n) == 'verb':
-        if 'vs' not in suppress:
-          html.append(f'<div class="vvs">{F.vs.v(n)}</div>')
-        if 'vt' not in suppress:
-          html.append(f'<div class="vvt">{F.vt.v(n)}</div>')
-      self._extraFeatures(n, suppress, html)
-    elif nType == 'lex':
-      nodePart = f'<div class="nd">{n}</div>' if withNodes else ''
-      if nodePart:
-        html.append(nodePart)
-      html.append(f'<div class="h">{F.voc_lex_utf8.v(n)}</div>')
-      if 'voc_lex' not in suppress:
-        llink = self.shbLink(n, text=F.voc_lex.v(n).replace("<", "&lt;"), asString=True)
-        html.append(f'<div class="vl">{llink}</div>')
-      if 'gloss' not in suppress:
-        html.append(f'<div class="gl">' f'{F.gloss.v(n).replace("<", "&lt;")}</div>')
-      self._extraFeatures(n, suppress, html)
-    elif superType:
+
+    superType = ATOMS.get(nType, None)
+    if superType:
+      (superNode, superStart, superEnd) = self._getSuper(n, superType)
+      if superStart < myStart:
+        boundaryClass += ' r'
+      if superEnd > myEnd:
+        boundaryClass += ' l'
       nodePart = (f'<span class="nd">{superNode}</span>' if withNodes else '')
-      typePart = self.shbLink(superNode, text=superType, asString=True)
-      featurePart = []
-      if superType == 'clause':
-        if 'rela' not in suppress:
-          featurePart.append(f' <span class="rela">{F.rela.v(superNode)}</span>')
-        if 'typ' not in suppress:
-          featurePart.append(f' <span class="typ">{F.typ.v(superNode)}</span>')
-      elif superType == 'phrase':
-        if 'function' not in suppress:
-          featurePart.append(f' <span class="function">' f'{F.function.v(superNode)}</span>')
-        if 'typ' not in suppress:
-          featurePart.append(f' <span class="typ">{F.typ.v(superNode)}</span>')
-      self._extraFeatures(n, suppress, featurePart)
-      featurePart = '\n'.join(featurePart)
       shl = highlights.get(superNode, None)
       shlClass = ''
       shlStyle = ''
-      if shl == '':
-        shlClass = ' hl'
-      else:
-        shlStyle = f' style="background-color: {shl};"'
+      if shl is not None:
+        if shl == '':
+          shlClass = ' hl'
+        else:
+          shlStyle = f' style="background-color: {shl};"'
+        if not hlClass:
+          hlClass = shlClass
+          hlStyle = shlStyle
+
+    doOuter = outer and nType in {slotType, 'lex'}
+    if doOuter:
+      html.append('<div class="outeritem">')
+
+    html.append(f'<div class="{className} {boundaryClass}{hlClass}"{hlStyle}>')
+
+    if nType in {'verse', 'half_verse'}:
+      passage = self.shbLink(n, asString=True)
+      html.append(
+          f'''
+    <div class="vl">
+        <div class="vrs">{passage}</div>
+        {nodePart}
+    </div>
+'''
+      )
+    elif superType:
+      typePart = self.shbLink(superNode, text=superType, asString=True)
+      featurePart = ''
+      if superType == 'sentence':
+        featurePart = getFeatures(
+            self,
+            superNode,
+            suppress,
+            ('number',),
+            plain=True,
+        )
+      elif superType == 'clause':
+        featurePart = getFeatures(
+            self,
+            superNode,
+            suppress,
+            ('rela', 'typ'),
+            plain=True,
+        )
+      elif superType == 'phrase':
+        featurePart = getFeatures(
+            self,
+            superNode,
+            suppress,
+            ('function', 'typ'),
+            plain=True,
+        )
       html.append(
           f'''
     <div class="{superType}{shlClass}"{shlStyle}>
@@ -943,12 +598,54 @@ This notebook online:
     <div class="atoms">
 '''
       )
+    else:
+      if nodePart:
+        html.append(nodePart)
+
+      heading = ''
+      featurePart = ''
+      occs = ''
+      if nType == slotType:
+        lx = L.u(n, otype='lex')[0]
+        lexLink = (self.shbLink(lx, text=htmlEsc(T.text([n])), asString=True))
+        heading = f'<div class="h">{lexLink}</div>'
+        featurePart = getFeatures(
+            self,
+            n,
+            suppress,
+            ('pdp', 'gloss', 'vs', 'vt'),
+            givenValue=dict(
+                pdp=self.shbLink(n, text=htmlEsc(F.pdp.v(n)), asString=True),
+                gloss=htmlEsc(F.gloss.v(lx)),
+            ),
+        )
+      elif nType == 'lex':
+        occs = L.d(n, otype='word')
+        extremeOccs = sorted({occs[0], occs[-1]})
+        linkOccs = ' - '.join(self.shbLink(lo, asString=True) for lo in extremeOccs)
+        heading = f'<div class="h">{htmlEsc(F.voc_lex_utf8.v(n))}</div>'
+        occs = f'<div class="occs">{linkOccs}</div>'
+        featurePart = getFeatures(
+            self,
+            n,
+            suppress,
+            ('voc_lex', 'gloss'),
+            givenValue=dict(
+                voc_lex=self.shbLink(n, text=htmlEsc(F.voc_lex.v(n)), asString=True)
+            ),
+        )
+      html.append(heading)
+      html.append(featurePart)
+      html.append(occs)
+
     for ch in children:
       self._pretty(
           ch,
+          False,
           html,
-          firstSlot=firstSlot,
-          lastSlot=lastSlot,
+          firstSlot,
+          lastSlot,
+          condenseType=condenseType,
           withNodes=withNodes,
           suppress=suppress,
           highlights=highlights,
@@ -960,24 +657,11 @@ This notebook online:
     html.append('''
 </div>
 ''')
-
-  def _extraFeatures(self, n, suppress, html):
-    api = self.api
-    Fs = api.Fs
-    for ef in self.prettyFeatures:
-      if ef not in suppress:
-        efVal = Fs(ef).v(n)
-        if efVal not in self.noneValues:
-          html.append(f'<div class="feat"><span class="f">{ef}=' f'</span>{efVal}</div>')
-
-  def _getBoundary(self, n):
-    api = self.api
-    L = api.L
-    words = L.d(n, otype='word')
-    return (words[0], words[-1])
+    if doOuter:
+      html.append('</div>')
 
   def _getSuper(self, n, tp):
     api = self.api
     L = api.L
     superNode = L.u(n, otype=tp)[0]
-    return (superNode, *self._getBoundary(superNode))
+    return (superNode, *getBoundary(api, superNode))

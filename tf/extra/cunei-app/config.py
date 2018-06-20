@@ -23,6 +23,8 @@ options = (
     ('linenumbers', 'lineNumbers', 'checkbox', 'linen', 'show line numbers'),
 )
 
+condenseType = 'tablet'
+
 
 def extraApi(locations, modules):
   return Cunei(BASE, f'{ORG}/{REPO}', None, asApi=True)

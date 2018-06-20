@@ -4,6 +4,8 @@ import re
 from glob import glob
 from importlib import import_module
 
+from tf.apphelpers import plainTuple
+
 appPat = '^(.*)-app$'
 appRe = re.compile(appPat)
 
@@ -116,62 +118,6 @@ def pageLinks(nResults, position, spread=10):
   return html
 
 
-def runSearch(search, query, cache):
-  cacheKey = (query, False)
-  if cacheKey in cache:
-    return cache[cacheKey]
-  (queryResults, messages) = search(query, msgCache=True)
-  queryResults = sorted(queryResults)
-  cache[cacheKey] = (queryResults, messages)
-  return (queryResults, messages)
-
-
-def runSearchCondensed(search, query, cache, condenseFunc):
-  cacheKey = (query, True)
-  if cacheKey in cache:
-    return cache[cacheKey]
-  (queryResults, messages) = runSearch(search, query, cache)
-  queryResults = condenseFunc(queryResults)
-  cache[cacheKey] = (queryResults, messages)
-  return (queryResults, messages)
-
-
-def compose(
-    extraApi, results, start, position, opened,
-    withNodes=False,
-    linked=1,
-    **options,
-):
-  if len(results) == 0:
-    return 'no results'
-
-  api = extraApi.api
-  F = api.F
-
-  firstResult = results[0][1]
-  html = (
-      f'''
-<div class="dtheadrow">
-  <div>n</div><div>{"</div><div>".join(F.otype.v(n) for n in firstResult)}</div>
-</div>
-'''
-      +
-      '\n'.join(
-          extraApi.plainTuple(
-              ns,
-              i,
-              position=position,
-              opened=i in opened,
-              withNodes=withNodes,
-              linked=linked,
-              **options,
-          )
-          for (i, ns) in results
-      )
-  )
-  return html
-
-
 def shapeMessages(messages):
   messages = messages.split('\n')
   html = []
@@ -208,4 +154,26 @@ def shapeOptions(options, values):
     html.append(
         f'<div><input type="{typ}" id="{acro}" name="{name}" {value}/> {desc}</div>'
     )
+  return '\n'.join(html)
+
+
+def shapeCondense(condenseTypes, value):
+  html = []
+  lastType = len(condenseTypes) - 1
+  for (i, (otype, av, b, e)) in enumerate(condenseTypes):
+    checked = ' checked ' if value == otype else ''
+    radio = (
+        '<span class="cradio">&nbsp;</span>'
+        if i == lastType else
+        f'''<input class="cradio" type="radio" id="ctp{i}"
+              name="condensetp" value="{otype}" {checked}
+            "/>'''
+    )
+    html.append(f'''
+    <div class="cline">
+      {radio}
+      <span class="ctype">{otype}</span>
+      <span class="cinfo">{e - b + 1: 8.6g} x av length {av: 4.2g}</span>
+    </div>
+  ''')
   return '\n'.join(html)

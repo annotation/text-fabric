@@ -14,7 +14,6 @@ function reactive() {
 
 function details() {
   $('details.pretty').on('toggle', function() {
-    //var opened = $('details.pretty').get()
     var openedDetails = $('details.pretty').filter(
       function(index) {return this.open}
     )
