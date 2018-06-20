@@ -495,8 +495,10 @@ This notebook online:
     T = api.T
     sortNodes = api.sortNodes
     otypeRank = api.otypeRank
+
+    bigType = False
     if condenseType is not None and otypeRank[nType] > otypeRank[condenseType]:
-      html.append(self.shbLink(n, asString=True))
+      bigType = True
 
     if nType == 'book':
       html.append(self.shbLink(n, asString=True))
@@ -505,7 +507,9 @@ This notebook online:
       html.append(self.shbLink(n, asString=True))
       return
 
-    if nType in {'verse', 'half_verse'}:
+    if bigType:
+      children = ()
+    elif nType in {'verse', 'half_verse'}:
       (thisFirstSlot, thisLastSlot) = getBoundary(api, n)
       children = sortNodes(
           set(L.d(n, otype='sentence_atom')) | {

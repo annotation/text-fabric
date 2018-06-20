@@ -6,6 +6,17 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.1
+
+2018-06-21
+
+When displaying results in condensed mode, you
+can now choose the level of the container in which results are highlighted.
+So far it was fixed to `verse` for the bhsa and `tablet` for cunei.
+
+The docs are lagging behind!
+But it is shown in the tutorials and you can observer it in the text-fabric browser.
+
 ## 5.0.1,2,3,4
 
 2018-06-19

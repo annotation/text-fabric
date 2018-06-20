@@ -25,9 +25,10 @@ def main():
             print(line)
             if line.rstrip() == TF_DONE:
               break
+        sleep(1)
         print(f'Opening {dataSource} in browser')
         pWeb = Popen(['python3', '-m', 'tf.server.web', *ddataSource])
-        sleep(2)
+        sleep(1)
         webbrowser.open(
             f'{config.protocol}{config.host}:{config.webport}',
             new=2,
