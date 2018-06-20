@@ -453,6 +453,7 @@ def show(
     **options,
 ):
   api = extraApi.api
+  F = api.F
 
   if condenseType is None:
     condenseType = extraApi.condenseType
@@ -469,6 +470,7 @@ def show(
     rawHighlights = None
 
   for (i, tup) in _tupleEnum(tuples, start, end, LIMIT_SHOW, item):
+    item = F.otype.v(tup[0]) if condenseType else RESULT
     prettyTuple(
         extraApi,
         tup,
@@ -601,8 +603,8 @@ def _condense(api, tuples, condenseType, multiple=False):
         for up in allUps:
           containers.setdefault(up, set()).add(n)
       else:
-        containers.setdefault(n, set())
-      # we skip nodes with a higher rank than that of the container
+        pass
+        # containers.setdefault(n, set())
   return tuple((c, ) + tuple(containers[c]) for c in sortNodes(containers))
 
 

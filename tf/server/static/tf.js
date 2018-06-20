@@ -12,6 +12,12 @@ function reactive() {
   })
 }
 
+function radios() {
+  $('.cradio').change(function(e) {
+    $('#cond').prop('checked', true)
+  })
+}
+
 function details() {
   $('details.pretty').on('toggle', function() {
     var openedDetails = $('details.pretty').filter(
@@ -42,5 +48,6 @@ function details() {
 $(function(){
   pageLinks()
   details()
+  radios()
   reactive()
 })

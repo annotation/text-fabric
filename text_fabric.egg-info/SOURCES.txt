@@ -9,6 +9,7 @@ text_fabric.egg-info/requires.txt
 text_fabric.egg-info/top_level.txt
 tf/__init__.py
 tf/api.py
+tf/apphelpers.py
 tf/data.py
 tf/fabric.py
 tf/helpers.py
