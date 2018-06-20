@@ -1,12 +1,19 @@
 import os
 import re
-import operator
+import types
 from glob import glob
 from shutil import copyfile
-from functools import reduce
-from IPython.display import display, Markdown, HTML
+from IPython.display import display, HTML
 
 from tf.fabric import Fabric
+from tf.apphelpers import (
+    search,
+    table, plainTuple,
+    show, prettyPre, pretty, prettyTuple, prettySetup,
+    getFeatures,
+    htmlEsc, mdEsc,
+    dm, header, outLink,
+)
 
 ORG = 'Nino-cunei'
 SOURCE = 'uruk'
@@ -19,8 +26,7 @@ IMAGE_DIR = f'{SOURCE_DIR}/images'
 TEMP_DIR = '_temp'
 REPORT_DIR = 'reports'
 
-LIMIT_SHOW = 100
-LIMIT_TABLE = 2000
+CONDENSE_TYPE = 'tablet'
 
 PHOTO_TO = '{}/tablets/photos'
 PHOTO_EXT = 'jpg'
@@ -333,33 +339,6 @@ CSS = '''
 '''
 
 
-def dm(md):
-  display(Markdown(md))
-
-
-def _outLink(text, href, title=None):
-  titleAtt = '' if title is None else f' title="{title}"'
-  return f'<a target="_blank" href="{href}"{titleAtt}>{text}</a>'
-
-
-def _wrapLink(piece, objectType, kind, identifier, pos='bottom', caption=None):
-  title = (
-      'to CDLI main page for this item'
-      if kind == 'main' else f'to higher resolution {kind} on CDLI'
-  )
-  url = URL_FORMAT.get(objectType, {}).get(kind, '').format(identifier)
-
-  result = _outLink(piece, url, title=title) if url else piece
-  if caption:
-    result = (
-        f'<div style="{CAPTION_STYLE[pos]}">'
-        f'<div>{result}</div>'
-        f'<div>{caption}</div>'
-        '</div>'
-    )
-  return result
-
-
 class Atf(object):
   def __init__(self, api=None):
     if api:
@@ -563,11 +542,14 @@ class Cunei(Atf):
     self._imagery = {}
     self.corpus = f'{repo}/{CORPUS}'
     self.corpusFull = CORPUS_FULL
+    self.condenseType = CONDENSE_TYPE
     TF = Fabric(locations=[self.corpus], modules=[''], silent=True)
     api = TF.load('', silent=True)
     allFeatures = TF.explore(silent=True, show=True)
     loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
     TF.load(loadableFeatures, add=True, silent=True)
+    self.prettyFeaturesLoaded = loadableFeatures
+    self.prettyFeatures = ()
     self.api = api
     self._getImagery()
     self.cwd = os.getcwd()
@@ -583,18 +565,18 @@ class Cunei(Atf):
     docUrl = f'{URL_GH}/{repoRel}/blob/master/docs'
     tutUrl = f'{URL_NB}/{ORG}/tutorials/blob/master/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Cunei/'
-    dataLink = _outLink(self.corpusFull, f'{docUrl}/about.md', 'provenance of this corpus')
-    featureLink = _outLink('Feature docs', f'{docUrl}/transcription.md', 'feature documentation')
-    cuneiLink = _outLink('Cunei API', extraUrl, 'cunei api documentation')
-    tfLink = _outLink(
+    dataLink = outLink(self.corpusFull, f'{docUrl}/about.md', 'provenance of this corpus')
+    featureLink = outLink('Feature docs', f'{docUrl}/transcription.md', 'feature documentation')
+    cuneiLink = outLink('Cunei API', extraUrl, 'cunei api documentation')
+    tfLink = outLink(
         f'Text-Fabric API {api.TF.version}', 'https://dans-labs.github.io/text-fabric/Api/General/',
         'text-fabric-api'
     )
-    tfsLink = _outLink(
+    tfsLink = outLink(
         'Search help', 'https://dans-labs.github.io/text-fabric/Api/General/#search-templates',
         'Search Templates Introduction and Reference'
     )
-    tutLink = _outLink(
+    tutLink = outLink(
         'Search tutorial', tutUrl,
         'Search tutorial in Jupyter Notebook'
     )
@@ -608,8 +590,8 @@ class Cunei(Atf):
       if nbUrl:
         dm(f'''
 This notebook online:
-{_outLink('NBViewer', nbUrl)}
-{_outLink('GitHub', ghUrl)}
+{outLink('NBViewer', nbUrl)}
+{outLink('GitHub', ghUrl)}
 ''')
     thisRepoDir = (None if cwdRel is None else f'{repoBase}/{thisOrg}/{thisRepo}')
     self.tempDir = (None if cwdRel is None else f'{thisRepoDir}/{TEMP_DIR}')
@@ -619,26 +601,25 @@ This notebook online:
         if cdir:
           os.makedirs(cdir, exist_ok=True)
 
+    self.classNames = {nType[0]: nType[0] for nType in api.C.levels.data}
+    self.noneValues = set()
+
     if not asApi:
       self.loadCSS()
+    self.table = types.MethodType(table, self)
+    self.plainTuple = types.MethodType(plainTuple, self)
+    self.show = types.MethodType(show, self)
+    self.prettyTuple = types.MethodType(prettyTuple, self)
+    self.pretty = types.MethodType(pretty, self)
+    self.prettySetup = types.MethodType(prettySetup, self)
+    self.search = types.MethodType(search, self)
+    self.header = types.MethodType(header, self)
 
   def loadCSS(self):
     asApi = self.asApi
     if asApi:
       return CSS
     display(HTML(CSS))
-
-  def header(self):
-    return f'''
-      <img class="hdlogo" src="/data/static/logo.png"/>
-      <div class="hdlinks">
-        {self.dataLink}
-        {self.featureLink}
-        {self.tfsLink}
-        {self.tutLink}
-      </div>
-      <img class="hdlogo" src="/server/static/logo.png"/>
-    '''
 
   def lineFromNode(self, n):
     api = self.api
@@ -681,42 +662,21 @@ This notebook online:
     else:
       return section
 
-  # this is a slow implementation!
-  def _casesByLevelM(self, lev, terminal=True):
-    api = self.api
-    E = api.E
-    F = api.F
-    if lev == 0:
-      results = F.otype.s('line')
-    else:
-      parents = self._casesByLevelM(lev - 1, terminal=False)
-      results = reduce(
-          operator.add,
-          [tuple(s for s in E.sub.f(p) if F.otype.v(s) == 'case') for p in parents],
-          (),
-      )
-    return (tuple(r for r in results if F.terminal.v(r)) if terminal else results)
-
-  # this is a fast implementation!
-  def _casesByLevelS(self, lev, terminal=True):
-    api = self.api
-    S = api.S
-    sortNodes = api.sortNodes
-    query = ''
-    for i in range(lev + 1):
-      extra = (' terminal' if i == lev and terminal else '')
-      nodeType = 'line' if i == 0 else 'case'
-      query += ('  ' * i) + f'w{i}:{nodeType}{extra}\n'
-    for i in range(lev):
-      query += f'w{i} -sub> w{i+1}\n'
-    results = list(S.search(query))
-    return sortNodes(tuple(r[-1] for r in results))
-
   def casesByLevel(self, lev, terminal=True):
     api = self.api
     F = api.F
-    lkey = 'line' if lev == 0 else lev
-    return (tuple(c for c in F.otype.s(lkey) if F.terminal.v(c)) if terminal else F.otype.s(lkey))
+    lkey = 'line' if lev == 0 else 'case'
+    if lev == 0:
+      return (
+          tuple(c for c in F.otype.s(lkey) if F.terminal.v(c))
+          if terminal else
+          F.otype.s(lkey)
+      )
+    return (
+        tuple(c for c in F.otype.s(lkey) if F.depth.v(c) == lev and F.terminal.v(c))
+        if terminal else
+        tuple(c for c in F.otype.s(lkey) if F.depth.v(c) == lev)
+    )
 
   def lineart(self, ns, key=None, asLink=False, withCaption=None, **options):
     return self._getImages(
@@ -755,7 +715,7 @@ This notebook online:
     linkText = pNum if text is None else text
     url = URL_FORMAT['tablet']['main'].format(pNum)
 
-    result = _outLink(linkText, url, title=title)
+    result = outLink(linkText, url, title=title)
     if asString:
       return result
     display(HTML(result))
@@ -764,10 +724,10 @@ This notebook online:
       self,
       n,
       linked=True,
-      lineart=True,
       withNodes=False,
-      lineNumbers=False,
       asString=False,
+      lineart=True,
+      lineNumbers=False,
   ):
     asApi = self.asApi
     api = self.api
@@ -806,433 +766,99 @@ This notebook online:
           theLineart = f' {theLineart}'
       result = (f'{rep}{nodeRep}{theLineart}') if theLineart else f'{rep}{nodeRep}'
     elif nType == 'comment':
-      rep = F.type.v(n)
+      rep = mdEsc(F.type.v(n))
       if linked:
         rep = self.tabletLink(n, text=rep, asString=True)
-      result = f'{rep}{nodeRep}: {F.text.v(n)}'
-    elif nType == 'line' or nType == 'case':
-      rep = f'{nType} {F.number.v(n)}'
-      if linked:
-        rep = self.tabletLink(n, text=rep, asString=True)
-      theLine = ''
-      if lineNumbers:
-        if F.terminal.v(n):
-          theLine = f' @{F.srcLnNum.v(n)} '
-      result = f'{rep}{nodeRep}{theLine}'
-    elif nType == 'column':
-      rep = f'{nType} {F.number.v(n)}'
-      if linked:
-        rep = self.tabletLink(n, text=rep, asString=True)
-      theLine = ''
-      if lineNumbers:
-        theLine = f' @{F.srcLnNum.v(n)} '
-      result = f'{rep}{nodeRep}{theLine}'
-    elif nType == 'face':
-      rep = f'{nType} {F.type.v(n)}'
-      if linked:
-        rep = self.tabletLink(n, text=rep, asString=True)
-      theLine = ''
-      if lineNumbers:
-        theLine = f' @{F.srcLnNum.v(n)} '
-      result = f'{rep}{nodeRep}{theLine}'
-    elif nType == 'tablet':
-      rep = f'{nType} {F.catalogId.v(n)}'
-      if linked:
-        rep = self.tabletLink(n, text=rep, asString=True)
-      theLine = ''
-      if lineNumbers:
-        theLine = f' @{F.srcLnNum.v(n)} '
-      result = f'{rep}{nodeRep}{theLine}'
+      result = f'{rep}{nodeRep}: {mdEsc(F.text.v(n))}'
+    else:
+      lineNumbersCondition = lineNumbers
+      if nType == 'line' or nType == 'case':
+        rep = mdEsc(f'{nType} {F.number.v(n)}')
+        lineNumbersCondition = lineNumbers and F.terminal.v(n)
+      elif nType == 'column':
+        rep = mdEsc(f'{nType} {F.number.v(n)}')
+      elif nType == 'face':
+        rep = mdEsc(f'{nType} {F.type.v(n)}')
+      elif nType == 'tablet':
+        rep = mdEsc(f'{nType} {F.catalogId.v(n)}')
+      result = self._addLink(
+          n, rep, nodeRep,
+          linked=linked, lineNumbers=lineNumbersCondition,
+      )
 
     if asString or asApi:
       return result
     dm(result)
 
-  def plainTuple(
-      self,
-      ns,
-      seqNumber,
-      position=None,
-      opened=False,
-      linked=1,
-      withNodes=False,
-      lineart=True,
-      lineNumbers=False,
-      asString=False,
-  ):
-    asApi = self.asApi
-    api = self.api
-    F = api.F
-    if asApi:
-      pretty = self.prettyTuple(
-          ns, seqNumber,
-          withNodes=withNodes,
-          lineart=lineart,
-          lineNumbers=lineNumbers,
-      ) if opened else ''
-      current = ' focus' if seqNumber == position else ''
-      attOpen = ' open ' if opened else ''
-      html = (
-          f'''
-    <div class="dtrow{current}">
-        <details class="pretty" seq="{seqNumber}" {attOpen}>
-          <summary>{seqNumber}</summary>
-          <div class="pretty">
-            {pretty}
-          </div>
-        </details>
-  '''
-          +
-          ''.join(
-              f'''<div>{self.plain(
-                          n,
-                          linked=i == linked - 1,
-                          withNodes=withNodes,
-                          lineart=lineart,
-                          lineNumbers=lineNumbers,
-                        ).replace("|", "&#124;")
-                      }
-                  </div>
-              '''
-              for (i, n) in enumerate(ns)
-          )
-          +
-          '''
-    </div>
-  '''
-      )
-      return html
-    markdown = [str(seqNumber)]
-    for (i, n) in enumerate(ns):
-      markdown.append(
-          self.plain(
-              n,
-              linked=i == linked - 1,
-              lineart=lineart,
-              withNodes=withNodes,
-              lineNumbers=lineNumbers,
-              asString=True,
-          ).replace('|', '&#124;')
-      )
-    markdown = '|'.join(markdown)
-    if asString:
-      return markdown
-    head = ['n | ' + (' | '.join(F.otype.v(n) for n in ns))]
-    head.append(' | '.join('---' for n in range(len(ns) + 1)))
-    head.append(markdown)
-
-    dm('\n'.join(head))
-
-  def table(
-      self,
-      results,
-      start=None,
-      end=None,
-      linked=1,
-      lineart=True,
-      withNodes=False,
-      lineNumbers=False,
-      asString=False,
-  ):
-    api = self.api
-    F = api.F
-
-    collected = []
-    if start is None:
-      start = 1
-    i = -1
-    rest = 0
-    if not hasattr(results, '__len__'):
-      if end is None or end - start + 1 > LIMIT_SHOW:
-        end = start - 1 + LIMIT_SHOW
-      for result in results:
-        i += 1
-        if i < start - 1:
-          continue
-        if i >= end:
-          break
-        collected.append((i + 1, result))
-    else:
-      typeResults = type(results)
-      if typeResults is set or typeResults is frozenset:
-        results = sorted(results)
-      if end is None or end > len(results):
-        end = len(results)
-      rest = 0
-      if end - (start - 1) > LIMIT_TABLE:
-        rest = end - (start - 1) - LIMIT_TABLE
-        end = start - 1 + LIMIT_TABLE
-      for i in range(start - 1, end):
-        collected.append((i + 1, results[i]))
-
-    if len(collected) == 0:
-      return
-    (firstSeq, firstResult) = collected[0]
-    nColumns = len(firstResult)
-    markdown = ['n | ' + (' | '.join(F.otype.v(n) for n in firstResult))]
-    markdown.append(' | '.join('---' for n in range(nColumns + 1)))
-    for (seqNumber, ns) in collected:
-      markdown.append(
-          self.plainTuple(
-              ns,
-              seqNumber,
-              linked=linked,
-              lineart=lineart,
-              withNodes=withNodes,
-              lineNumbers=lineNumbers,
-              asString=True,
-          )
-      )
-    markdown = '\n'.join(markdown)
-    if asString:
-      return markdown
-    dm(markdown)
-    if rest:
-      dm(
-          f'**{rest} more results skipped** because we show a maximum of'
-          f' {LIMIT_TABLE} results at a time'
-      )
-
-  def pretty(
-      self,
-      n,
-      withNodes=False,
-      lineart=True,
-      lineNumbers=False,
-      suppress=set(),
-      highlights={},
-  ):
-    asApi = self.asApi
-    html = []
-    if type(highlights) is set:
-      highlights = {m: '' for m in highlights}
-    self._pretty(
-        n,
-        True,
-        html,
-        seen=set(),
-        lineart=lineart,
-        withNodes=withNodes,
-        lineNumbers=lineNumbers,
-        suppress=suppress,
-        highlights=highlights,
-    )
-    htmlStr = '\n'.join(html)
-    if asApi:
-      return htmlStr
-    display(HTML(htmlStr))
-
-  def prettyTuple(
-      self,
-      ns,
-      seqNumber,
-      item='Result',
-      lineart=True,
-      withNodes=False,
-      lineNumbers=False,
-      suppress=set(),
-      colorMap=None,
-      highlights=None,
-  ):
-    asApi = self.asApi
-    api = self.api
-    L = api.L
-    F = api.F
-    sortNodes = api.sortNodes
-    tablets = set()
-    newHighlights = {}
-    if type(highlights) is set:
-      highlights = {m: '' for m in highlights}
-    if highlights:
-      newHighlights.update(highlights)
-    for (i, n) in enumerate(ns):
-      thisHighlight = None
-      if highlights is not None:
-        thisHighlight = highlights.get(n, None)
-      elif colorMap is not None:
-        thisHighlight = colorMap.get(i + 1, None)
-      else:
-        thisHighlight = ''
-
-      nType = F.otype.v(n)
-      if nType == 'tablet':
-        tablets.add(n)
-      else:
-        t = L.u(n, otype='tablet')[0]
-        tablets.add(t)
-        if thisHighlight is not None:
-          newHighlights[n] = thisHighlight
-    if not asApi:
-      dm(f'''
-##### {item} {seqNumber}
-''')
-    if asApi:
-      html = []
-    for t in sortNodes(tablets):
-      h = self.pretty(
-          t,
-          lineart=lineart,
-          withNodes=withNodes,
-          lineNumbers=lineNumbers,
-          suppress=suppress,
-          highlights=newHighlights,
-      )
-      if asApi:
-        html.append(h)
-    if asApi:
-      return '\n'.join(html)
-
-  def show(
-      self,
-      results,
-      condensed=True,
-      start=None,
-      end=None,
-      lineart=True,
-      withNodes=False,
-      lineNumbers=False,
-      suppress=set(),
-      colorMap=None,
-      highlights=None,
-  ):
-    newHighlights = None
-    if type(highlights) is set:
-      highlights = {m: '' for m in highlights}
-    if highlights:
-      newHighlights = {}
-      newHighlights.update(highlights)
-    if condensed:
-      if colorMap is not None:
-        if newHighlights is None:
-          newHighlights = {}
-        for ns in results:
-          for (i, n) in enumerate(ns):
-            thisHighlight = None
-            if highlights is not None:
-              thisHighlight = highlights.get(n, None)
-            elif colorMap is not None:
-              thisHighlight = colorMap.get(i + 1, None)
-            else:
-              thisHighlight = ''
-            newHighlights[n] = thisHighlight
-
-      results = self.condense(results)
-
-    if start is None:
-      start = 1
-    i = -1
-    if not hasattr(results, '__len__'):
-      if end is None or end - start + 1 > LIMIT_SHOW:
-        end = start - 1 + LIMIT_SHOW
-      for result in results:
-        i += 1
-        if i < start - 1:
-          continue
-        if i >= end:
-          break
-        self.prettyTuple(
-            result,
-            i + 1,
-            item='Tablet' if condensed else 'Result',
-            lineart=lineart,
-            withNodes=withNodes,
-            lineNumbers=lineNumbers,
-            suppress=suppress,
-            colorMap=colorMap,
-            highlights=newHighlights,
-        )
-    else:
-      if end is None or end > len(results):
-        end = len(results)
-      rest = 0
-      if end - (start - 1) > LIMIT_SHOW:
-        rest = end - (start - 1) - LIMIT_SHOW
-        end = start - 1 + LIMIT_SHOW
-      for i in range(start - 1, end):
-        self.prettyTuple(
-            results[i],
-            i + 1,
-            item='Tablet' if condensed else 'Result',
-            lineart=lineart,
-            withNodes=withNodes,
-            lineNumbers=lineNumbers,
-            suppress=suppress,
-            colorMap=colorMap,
-            highlights=newHighlights,
-        )
-      if rest:
-        dm(
-            f'**{rest} more results skipped** because we show a maximum of'
-            f' {LIMIT_SHOW} results at a time'
-        )
-
-  def search(self, query, silent=False, sets=None, shallow=False):
-    api = self.api
-    info = api.info
-    S = api.S
-    results = S.search(query, sets=sets, shallow=shallow)
-    if not shallow:
-      results = sorted(results)
-    nResults = len(results)
-    plural = '' if nResults == 1 else 's'
-    if not silent:
-      info(f'{nResults} result{plural}')
-    return results
-
-  def condense(self, results):
-    api = self.api
-    F = api.F
-    L = api.L
-    sortNodes = api.sortNodes
-    tablets = {}
-    for ns in results:
-      for n in ns:
-        if F.otype.v(n) == 'tablet':
-          tablets.setdefault(n, set())
-        else:
-          t = L.u(n, otype='tablet')[0]
-          tablets.setdefault(t, set()).add(n)
-    return tuple((t, ) + tuple(tablets[t]) for t in sortNodes(tablets))
+  def _addLink(self, n, rep, nodeRep, linked=True, lineNumbers=True):
+    F = self.api.F
+    if linked:
+      rep = self.tabletLink(n, text=rep, asString=True)
+    theLine = ''
+    if lineNumbers:
+      theLine = mdEsc(f' @{F.srcLnNum.v(n)} ')
+    return f'{rep}{nodeRep}{theLine}'
 
   def _pretty(
       self,
       n,
       outer,
       html,
-      lineart=True,
+      firstSlot,
+      lastSlot,
+      condenseType=None,
       withNodes=False,
-      lineNumbers=False,
-      seen=set(),
       suppress=set(),
       highlights={},
+      seen=set(),
+      lineNumbers=False,
+      lineart=True,
   ):
+    goOn = prettyPre(
+        self,
+        n,
+        firstSlot,
+        lastSlot,
+        withNodes,
+        highlights,
+    )
+    if not goOn:
+      return
+    (
+        slotType, nType,
+        className, boundaryClass, hlClass, hlStyle,
+        nodePart,
+        myStart, myEnd,
+    ) = goOn
+
     api = self.api
-    L = api.L
     F = api.F
+    L = api.L
     E = api.E
     sortNodes = api.sortNodes
-    hl = highlights.get(n, None)
-    hlClass = ''
-    hlStyle = ''
-    if hl == '':
-      hlClass = ' hl'
-    else:
-      hlStyle = f' style="background-color: {hl};"'
 
-    nType = F.otype.v(n)
-    className = nType
-    nodePart = (f'<span class="nd">{n}</span>' if withNodes else '')
+    if outer:
+      seen = set()
+
     heading = ''
     featurePart = ''
     commentsPart = self._getComments(
-        n, withNodes=withNodes, lineNumbers=lineNumbers
+        n,
+        firstSlot,
+        lastSlot,
+        withNodes,
+        suppress,
+        highlights,
+        lineNumbers,
+        seen,
     ) if nType in COMMENT_TYPES else ''
     children = ()
 
     if nType == 'tablet':
-      heading = F.catalogId.v(n)
+      heading = htmlEsc(F.catalogId.v(n))
       heading += ' '
-      heading += self._getFeatures(
+      heading += getFeatures(
+          self,
           n,
           suppress,
           ('name', 'period', 'excavation'),
@@ -1240,26 +866,28 @@ This notebook online:
       )
       children = L.d(n, otype='face')
     elif nType == 'face':
-      heading = F.type.v(n)
-      featurePart = self._getFeatures(
+      heading = htmlEsc(F.type.v(n))
+      featurePart = getFeatures(
+          self,
           n,
           suppress,
           ('identifier', 'fragment'),
       )
       children = L.d(n, otype='column')
     elif nType == 'column':
-      heading = F.number.v(n)
+      heading = htmlEsc(F.number.v(n))
       if F.prime.v(n):
         heading += "'"
       children = L.d(n, otype='line')
     elif nType == 'line' or nType == 'case':
-      heading = F.number.v(n)
+      heading = htmlEsc(F.number.v(n))
       if F.prime.v(n):
         heading += "'"
       if F.terminal.v(n):
         className = 'trminal'
         theseFeats = ('srcLnNum', ) if lineNumbers else ()
-        featurePart = self._getFeatures(
+        featurePart = getFeatures(
+            self,
             n,
             suppress,
             theseFeats,
@@ -1272,15 +900,16 @@ This notebook online:
       else:
         children = E.sub.f(n)
     elif nType == 'comment':
-      heading = F.type.v(n)
-      featurePart = self._getFeatures(
+      heading = htmlEsc(F.type.v(n))
+      featurePart = getFeatures(
+          self,
           n,
           suppress,
           ('text', ),
       )
     elif nType == 'cluster':
       seen.add(n)
-      heading = CLUSTER_TYPES.get(F.type.v(n), '')
+      heading = htmlEsc(CLUSTER_TYPES.get(F.type.v(n), ''))
       children = sortNodes(
           set(L.d(n, otype='cluster'))
           | set(L.d(n, otype='quad'))
@@ -1289,7 +918,7 @@ This notebook online:
     elif nType == 'quad':
       seen.add(n)
       children = E.sub.f(n)
-    elif nType == 'sign':
+    elif nType == slotType:
       featurePart = self._getAtf(n)
       seen.add(n)
       if not outer and F.type.v(n) == 'empty':
@@ -1361,12 +990,15 @@ This notebook online:
             ch,
             False,
             html,
-            seen=seen,
-            lineart=lineart,
+            firstSlot,
+            lastSlot,
+            condenseType=condenseType,
             withNodes=withNodes,
-            lineNumbers=lineNumbers,
             suppress=suppress,
             highlights=highlights,
+            lineart=lineart,
+            lineNumbers=lineNumbers,
+            seen=seen,
         )
         if nType == 'quad':
           nextChildren = E.op.f(ch)
@@ -1393,20 +1025,17 @@ This notebook online:
 </div>
 ''')
 
-  def _getFeatures(self, n, suppress, features, plain=False):
-    api = self.api
-    Fs = api.Fs
-    featurePart = '' if plain else '<div class="features">'
-    for name in features:
-      if 'name' not in suppress:
-        value = Fs(name).v(n)
-        if value is not None:
-          featurePart += (f' <span class="{name}">{Fs(name).v(n)}</span>')
-    if not plain:
-      featurePart += '</div>'
-    return featurePart
-
-  def _getComments(self, n, withNodes=False, lineNumbers=False):
+  def _getComments(
+      self,
+      n,
+      firstSlot,
+      lastSlot,
+      withNodes,
+      suppress,
+      highlights,
+      lineNumbers,
+      seen,
+  ):
     api = self.api
     E = api.E
     cns = E.comments.f(n)
@@ -1417,9 +1046,15 @@ This notebook online:
             c,
             False,
             html,
-            lineart=False,
+            firstSlot,
+            lastSlot,
+            condenseType=None,
             withNodes=withNodes,
+            suppress=suppress,
+            highlights=highlights,
+            lineart=False,
             lineNumbers=lineNumbers,
+            seen=seen,
         )
       html.append('</div>')
       commentsPart = ''.join(html)
@@ -1604,3 +1239,21 @@ This notebook online:
         images.setdefault(identifier, {})[key] = filePath
       self._imagery.setdefault(objectType, {})[kind] = images
       print(f'Found {len(images)} {objectType} {kind}s')
+
+
+def _wrapLink(piece, objectType, kind, identifier, pos='bottom', caption=None):
+  title = (
+      'to CDLI main page for this item'
+      if kind == 'main' else f'to higher resolution {kind} on CDLI'
+  )
+  url = URL_FORMAT.get(objectType, {}).get(kind, '').format(identifier)
+
+  result = outLink(piece, url, title=title) if url else piece
+  if caption:
+    result = (
+        f'<div style="{CAPTION_STYLE[pos]}">'
+        f'<div>{result}</div>'
+        f'<div>{caption}</div>'
+        '</div>'
+    )
+  return result

@@ -42,3 +42,7 @@ def main():
         if pService:
           pService.terminate()
           print('TF service has stopped')
+
+
+if __name__ == "__main__":
+  main()

@@ -5,7 +5,9 @@ from bottle import (post, get, route, template, request, static_file, run)
 
 from tf.server.data import makeTfConnection
 from tf.server.common import (
-    getParam, getDebug, getConfig, getAppDir, pageLinks, shapeMessages, getValues, shapeOptions
+    getParam, getDebug, getConfig, getAppDir, getValues,
+    pageLinks,
+    shapeMessages, shapeOptions, shapeCondense,
 )
 
 
@@ -16,6 +18,7 @@ appDir = None
 bottle.TEMPLATE_PATH = [f'{myDir}/views']
 
 dataSource = None
+config = None
 
 
 def getStuff():
@@ -58,8 +61,8 @@ def serveLocal(filepath):
 @get('/<anything:re:.*>')
 def serveSearch(anything):
   searchTemplate = request.forms.searchTemplate.replace('\r', '')
-  condensed = request.forms.condensed
   withNodes = request.forms.withNodes
+  condensed = request.forms.condensed
   linked = getInt(request.forms.linked, default=1)
   condensedAtt = ' checked ' if condensed else ''
   withNodesAtt = ' checked ' if withNodes else ''
@@ -78,10 +81,15 @@ def serveSearch(anything):
   header = api.header()
   css = api.css()
 
+  (defaultCondenseType, condenseTypes) = api.condenseTypes()
+  condenseType = request.forms.condensetp or defaultCondenseType
+  condenseOpts = shapeCondense(condenseTypes, condenseType)
+
   if searchTemplate:
     (table, messages, start, total) = api.search(
         searchTemplate,
         condensed,
+        condenseType,
         batch,
         position=position,
         opened=opened,
@@ -109,12 +117,14 @@ def serveSearch(anything):
       table=table,
       searchTemplate=searchTemplate,
       condensedAtt=condensedAtt,
+      condenseOpts=condenseOpts,
       withNodesAtt=withNodesAtt,
       linked=linked,
       batch=batch,
       position=position,
       opened=openedStr,
       pages=pages,
+      test=condensed and condenseType,
   )
 
 

@@ -2,7 +2,8 @@ import sys
 import rpyc
 from rpyc.utils.server import ThreadedServer
 
-from .common import getConfig, runSearch, runSearchCondensed, compose
+from tf.apphelpers import runSearch, runSearchCondensed, compose
+from .common import getConfig
 
 TIMEOUT = 120
 
@@ -50,21 +51,25 @@ def makeTfServer(dataSource, locations, modules, port):
       extraApi = self.extraApi
       return extraApi.loadCSS()
 
+    def exposed_condenseTypes(self):
+      extraApi = self.extraApi
+      api = extraApi.api
+      return (extraApi.condenseType, api.C.levels.data)
+
     def exposed_search(
-        self, query, condensed, batch,
+        self, query, condensed, condenseType, batch,
         position=1, opened=set(),
         withNodes=False,
         linked=1,
         **options,
     ):
       extraApi = self.extraApi
-      api = extraApi.api
-      search = api.S.search
+      api = self.extraApi.api
 
       (queryResults, messages) = (
-          runSearchCondensed(search, query, cache, extraApi.condense)
-          if condensed else
-          runSearch(search, query, cache)
+          runSearchCondensed(api, query, cache, condenseType)
+          if condensed and condenseType else
+          runSearch(api, query, cache)
       )
 
       if messages:
@@ -88,6 +93,8 @@ def makeTfServer(dataSource, locations, modules, port):
       table = compose(
           extraApi,
           allResults, start, position, opened,
+          condensed,
+          condenseType,
           withNodes=withNodes,
           linked=linked,
           **options,

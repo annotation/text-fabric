@@ -286,6 +286,11 @@ def addLocality(api):
   api.Locality = api.L
 
 
+def addRank(api):
+  C = api.C
+  api.otypeRank = {d[0]: i for (i, d) in enumerate(reversed(C.levels.data))}
+
+
 def addText(api):
   api.T = Text(api)
   api.Text = api.T

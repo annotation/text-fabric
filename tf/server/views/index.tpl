@@ -22,8 +22,11 @@
                 <p class="go"><button class="go" type="submit">Go</button></p>
                 <div class="setting">
                     <div><input class="int" type="text" id="lnk" name="linked" value="{{linked}}"/> link column</div>
-                    <div><input type="checkbox" id="cond" name="condensed" {{condensedAtt}}/> condense results</div>
                     <div><input type="checkbox" id="withn" name="withNodes" {{withNodesAtt}}/> show nodes</div>
+                    <div>
+                        <div><input type="checkbox" id="cond" name="condensed" {{condensedAtt}}/> condense results</div>
+                        {{!condenseOpts}}
+                    </div>
                     {{!options}}
                 </div>
             </div>
@@ -40,6 +43,10 @@
             <div class="rightcol">
                 {{!table}}
             </div>
+        </div>
+        <div>
+            <div>Test</div>
+            <div>{{test}}</div>
         </div>
         </form>
         <script src="/server/static/jquery.js"></script>
