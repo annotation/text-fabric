@@ -152,7 +152,7 @@ def shapeOptions(options, values):
     else:
       value = f'value="{value}"'
     html.append(
-        f'<div><input type="{typ}" id="{acro}" name="{name}" {value}/> {desc}</div>'
+        f'<div><input class="r" type="{typ}" id="{acro}" name="{name}" {value}/> {desc}</div>'
     )
   return '\n'.join(html)
 
@@ -165,7 +165,7 @@ def shapeCondense(condenseTypes, value):
     radio = (
         '<span class="cradio">&nbsp;</span>'
         if i == lastType else
-        f'''<input class="cradio" type="radio" id="ctp{i}"
+        f'''<input class="r cradio" type="radio" id="ctp{i}"
               name="condensetp" value="{otype}" {checked}
             "/>'''
     )

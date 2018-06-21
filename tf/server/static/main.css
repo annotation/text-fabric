@@ -162,33 +162,23 @@ div.pline {
 /* RIGHT-COL */
 
 div.dtheadrow {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-start;
-    align-items: baseline;
     font-weight: bold;
     background-color: #aaaaaa;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
-div.dtheadrow > div {
-    flex: 0 1 auto;
-    text-align: left;
-    padding: 0.2rem;
+div.dtheadrow > span {
+    margin: 0.2rem;
     border-right: 0.1rem solid #bbbbbb;
 }
-div.dtrow {
-    flex: 1 1 auto;
-    display: inline-flex;
-    flex-flow: row wrap;
-    justify-content: flex-start;
-    align-items: baseline;
+details.dtrow {
     border: 0.1rem solid #bbbbbb;
 }
-div.dtrow > div {
-    flex: 0 1 auto;
-    text-align: left;
-    padding: 0.2rem;
+details.dtrow > summary {
+    background-color: #f0f0f0;
+}
+details.dtrow > summary > span {
+    margin: 0.2rem;
     border-right: 0.1rem solid #bbbbbb;
 }
 div.pretty {
