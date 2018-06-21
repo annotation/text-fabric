@@ -88,15 +88,22 @@ div.eline {
 p.go {
     text-align: center;
 }
-button.go {
-    font-size: large;
+button {
     font-weight: bold;
-    padding: 0.5em;
     width: 90%;
     background-color: #888888;
     color: #ffffff; 
-    border-radius: 1rem;
     border-color: #444444;
+}
+button.xl {
+    font-size: large;
+    padding: 0.5em;
+    border-radius: 1rem;
+}
+button.l {
+    font-size: medium;
+    padding: 0.3em;
+    border-radius: 0.5rem;
 }
 
 input.int {
@@ -169,7 +176,8 @@ div.dtheadrow {
 }
 div.dtheadrow > span {
     margin: 0.2rem;
-    border-right: 0.1rem solid #bbbbbb;
+    padding: 0 0.2rem;
+    border-right: 0.1rem solid #dddddd;
 }
 details.dtrow {
     border: 0.1rem solid #bbbbbb;
@@ -179,8 +187,11 @@ details.dtrow > summary {
 }
 details.dtrow > summary > span {
     margin: 0.2rem;
+    padding: 0 0.2rem;
     border-right: 0.1rem solid #bbbbbb;
 }
 div.pretty {
     width: 100%;
+    margin: 0.2rem 0 0.5rem 0;
+    background-color: #fafafa;
 }

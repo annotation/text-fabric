@@ -27,12 +27,13 @@ div.dtheadrow {
     margin-bottom: 0.5rem;
 }
 div.dtheadrow > span {
-    padding: 0.2rem;
-    border-right: 0.1rem solid #bbbbbb;
+    margin: 0.2rem;
+    padding: 0 0.2rem;
+    border-right: 0.1rem solid #dddddd;
 }
 details.dtrow {
     border: 0.1rem solid #bbbbbb;
-    padding: 0.1rem 0;
+    margin: 0.1rem 0;
 }
 details.dtrow[open] {
     page-break-before: always;
@@ -44,12 +45,13 @@ details.dtrow > summary {
     background-color: #f0f0f0;
 }
 details.dtrow > summary > span {
-    padding: 0.2rem;
+    margin: 0.2rem;
+    padding: 0 0.2rem;
     border-right: 0.1rem solid #bbbbbb;
 }
 div.pretty {
     width: 100%;
-    padding: 0.2rem 0 0.5rem 0;
+    margin: 0.2rem 0 0.5rem 0;
 }
 div.colofon {
     display: flex;
