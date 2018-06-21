@@ -60,32 +60,26 @@ def plainTuple(
     ) if opened else ''
     current = ' focus' if seqNumber == position else ''
     attOpen = ' open ' if opened else ''
+    plainRep = ''.join(
+        f'''<span>{mdEsc(extraApi.plain(
+                    n,
+                    linked=i == linked - 1,
+                    withNodes=withNodes,
+                    **options,
+                  ))
+                }
+            </span>
+        '''
+        for (i, n) in enumerate(tup)
+    )
     html = (
         f'''
-  <div class="dtrow{current}">
-      <details class="pretty" seq="{seqNumber}" {attOpen}>
-        <summary>{seqNumber}</summary>
-        <div class="pretty">
-          {prettyRep}
-        </div>
-      </details>
-'''
-        +
-        ''.join(
-            f'''<div>{mdEsc(extraApi.plain(
-                        n,
-                        linked=i == linked - 1,
-                        withNodes=withNodes,
-                        **options,
-                      ))
-                    }
-                </div>
-            '''
-            for (i, n) in enumerate(tup)
-        )
-        +
-        '''
-  </div>
+  <details class="pretty dtrow{current}" seq="{seqNumber}" {attOpen}>
+      <summary>{seqNumber} {plainRep}</summary>
+      <div class="pretty">
+        {prettyRep}
+      </div>
+  </details>
 '''
     )
     return html
@@ -364,7 +358,7 @@ def compose(
   html = (
       f'''
 <div class="dtheadrow">
-  <div>n</div><div>{"</div><div>".join(F.otype.v(n) for n in firstResult)}</div>
+  <span>n</span><span>{"</span><span>".join(F.otype.v(n) for n in firstResult)}</span>
 </div>
 '''
       +

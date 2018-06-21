@@ -79,6 +79,7 @@ def makeTfServer(dataSource, locations, modules, port):
       (start, end) = batchAround(total, position, batch)
 
       selectedResults = queryResults[start - 1:end]
+      opened = set(opened)
 
       before = {n for n in opened if n > 0 and n < start}
       after = {n for n in opened if n > end and n <= len(queryResults)}

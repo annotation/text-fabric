@@ -6,6 +6,16 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.2
+
+2018-06-21
+
+* Added an `expand all` checkbox in the text-fabric browser,
+  to expand all shown rows or to collapse them.
+* Export function for search results in the text-fabric browser.
+  What you see is what you get, 1 pretty display per page if you have
+  the browser save it to pdf.
+
 ## 5.1
 
 2018-06-21

@@ -9,6 +9,7 @@ from tf.server.common import (
     pageLinks,
     shapeMessages, shapeOptions, shapeCondense,
 )
+from tf.apphelpers import RESULT
 
 
 BATCH = 20
@@ -63,6 +64,8 @@ def serveSearch(anything):
   searchTemplate = request.forms.searchTemplate.replace('\r', '')
   withNodes = request.forms.withNodes
   condensed = request.forms.condensed
+  export = request.forms.export
+  expandAll = request.forms.expandAll
   linked = getInt(request.forms.linked, default=1)
   condensedAtt = ' checked ' if condensed else ''
   withNodesAtt = ' checked ' if withNodes else ''
@@ -85,6 +88,10 @@ def serveSearch(anything):
   condenseType = request.forms.condensetp or defaultCondenseType
   condenseOpts = shapeCondense(condenseTypes, condenseType)
 
+  resultKind = condenseType if condensed else RESULT
+  resultPl = 's' if batch != 1 else ''
+  resultItems = f'{batch} {resultKind}{resultPl}'
+
   if searchTemplate:
     (table, messages, start, total) = api.search(
         searchTemplate,
@@ -103,28 +110,48 @@ def serveSearch(anything):
     if messages:
       messages = shapeMessages(messages)
   else:
-    table = 'no results'
+    table = f'no {resultKind}s'
     searchTemplate = ''
     messages = ''
 
-  return template(
-      'index',
-      dataSource=dataSource,
-      css=css,
-      header=header,
-      options=shapeOptions(options, values),
-      messages=messages,
-      table=table,
-      searchTemplate=searchTemplate,
-      condensedAtt=condensedAtt,
-      condenseOpts=condenseOpts,
-      withNodesAtt=withNodesAtt,
-      linked=linked,
-      batch=batch,
-      position=position,
-      opened=openedStr,
-      pages=pages,
-      test=condensed and condenseType,
+  fileName = f'{dataSource}-{resultItems} around {position}'
+
+  return (
+      template(
+          'index',
+          dataSource=dataSource,
+          css=css,
+          header=header,
+          options=shapeOptions(options, values),
+          messages=messages,
+          table=table,
+          searchTemplate=searchTemplate,
+          condensedAtt=condensedAtt,
+          condenseOpts=condenseOpts,
+          withNodesAtt=withNodesAtt,
+          expandAll=expandAll,
+          linked=linked,
+          batch=batch,
+          position=position,
+          opened=openedStr,
+          pages=pages,
+          test=condensed and condenseType,
+          fileName=fileName,
+      )
+      if not export else
+      template(
+          'export',
+          dataSource=dataSource,
+          css=css,
+          searchTemplate=searchTemplate,
+          table=table,
+          condensed=condensed,
+          condenseType=condenseType,
+          batch=batch,
+          position=position,
+          colofon=header,
+          fileName=fileName,
+      )
   )
 
 

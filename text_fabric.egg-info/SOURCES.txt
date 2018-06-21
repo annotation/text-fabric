@@ -63,4 +63,5 @@ tf/server/static/logo.png
 tf/server/static/main.css
 tf/server/static/tf.js
 tf/server/views/.DS_Store
+tf/server/views/export.tpl
 tf/server/views/index.tpl
