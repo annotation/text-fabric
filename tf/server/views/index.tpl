@@ -19,7 +19,7 @@
                 <div class="messages">
                     {{!messages}}
                 </div>
-                <p class="go"><button class="go" type="submit">Go</button></p>
+                <p class="go"><button class="xl" type="submit">Go</button></p>
                 <div class="setting">
                     <div>
                         <input
@@ -46,7 +46,7 @@
                 <div class="navigation">
                     <div>
                         <button
-                            type="submit" formtarget="_new" name="export" value="1"
+                            class="l" type="submit" formtarget="_new" name="export" value="1"
                         > export
                         </button>
                     </div>
