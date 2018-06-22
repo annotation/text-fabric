@@ -6,7 +6,7 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
-## 5.3
+## 5.3.1
 
 2018-06-22
 
@@ -34,10 +34,15 @@
     append the node tuple of that row to the tuple input field.
     That way you can collect interesting results.
 
-??? abstract "Description"
+??? abstract "Name and Description"
+    You can enter a name which will be used as title and file name during export.
+
     You can enter a description in Markdown.
     When you export your query, the description appears
     formatted on top.
+
+??? abstract "Small fixes"
+    No more blank pages due to double page breaks.
 
 ## 5.2.1
 

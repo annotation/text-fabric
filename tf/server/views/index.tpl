@@ -2,7 +2,7 @@
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Text-Fabric {{fileName}}</title>
+        <title>TF {{fileName}}</title>
         <meta name="application-name" content="Text-Fabric Search Box"/>
 
         <link rel="stylesheet" href="/server/static/main.css"/>
@@ -23,7 +23,7 @@
                 <div class="messages">
                     {{!queryMessages}}
                 </div>
-                <p class="go"><button class="xl" type="submit">Go</button></p>
+                <p class="buttons"><button class="xl" type="submit">Go</button></p>
                 <div class="setting">
                     <div>
                         <input
@@ -36,14 +36,27 @@
                         /> show nodes
                     </div>
                     <div>
-                        <div>
-                            <input
-                                class="r" type="checkbox" id="cond" name="condensed" {{condensedAtt}}
-                            /> condense results
-                            </div>
-                        {{!condenseOpts}}
+                        <details id="condd" {{'open' if condensedAtt else ''}}>
+                            <summary>
+                                <input
+                                    class="r" type="checkbox" id="cond" name="condensed" {{condensedAtt}}
+                                /> condense results
+                            </summary>
+                            {{!condenseOpts}}
+                        </details>
                     </div>
                     {{!options}}
+                </div>
+                <p class="buttons">
+                    <button
+                        class="l" type="submit" formtarget="_new" name="export" value="1"
+                    > export
+                    </button>
+                </p>
+                <div>
+                    <input
+                        class="name" type="text" name="fileName" value="{{fileName}}"
+                    />
                 </div>
                 <div class="description">
                     <textarea class="description" name="description">{{description}}</textarea>
@@ -51,12 +64,6 @@
             </div>
             <div class="midcol">
                 <div class="navigation">
-                    <div>
-                        <button
-                            class="l" type="submit" formtarget="_new" name="export" value="1"
-                        > export
-                        </button>
-                    </div>
                     <div>
                         <input
                             type="checkbox" id="expac"

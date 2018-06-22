@@ -65,6 +65,7 @@ def serveLocal(filepath):
 def serveSearch(anything):
   searchTemplate = request.forms.searchTemplate.replace('\r', '')
   tuples = request.forms.tuples.replace('\r', '')
+  fileName = request.forms.fileName.strip()
   description = request.forms.description.replace('\r', '')
   withNodes = request.forms.withNodes
   condensed = request.forms.condensed
@@ -122,7 +123,8 @@ def serveSearch(anything):
     tupleMessages = ''
     queryMessages = ''
 
-  fileName = f'{dataSource}-{resultItems} around {position}'
+  if not fileName:
+    fileName = f'{dataSource}-{resultItems} around {position}'
 
   return (
       template(
