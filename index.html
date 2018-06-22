@@ -632,10 +632,11 @@ you can open a terminal (command prompt), and just say</p>
 <p>After loading the data your browser will open and load the search interface.
 There you'll find links to further help.</p>
 <p>
-<img src="images/bhsa-app.png" width="45%"/>
-&nbsp;
-&nbsp;
-<img src="images/cunei-app.png" width="45%"/>
+<img src="images/bhsa-app.png"/>
+</p>
+
+<p>
+<img src="images/cunei-app.png"/>
 </p>
 
 <details class="hint" open="open"><summary>Multiple windows</summary><p>After you have issued the <code>text-fabric</code> command, you can open many connections
@@ -645,19 +646,14 @@ If you leave it on all day, you have instant access to the data.</p></details><d
 started <code>text-fabric</code> up.</p></details><h1 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h1>
 <p>There is extensive documentation.
 If you start using the Text-Fabric API in your programs, you'll need it.</p>
-<details class="note"><summary>Reference</summary><p>The pages you are reading now are the reference docs.
-<em> It explains the <a href="https://dans-labs.github.io/text-fabric/Model/Data-Model/">data model</a>
-</em> It specifies the <a href="https://dans-labs.github.io/text-fabric/Model/File-formats/">file format</a>
-* It holds the <a href="https://dans-labs.github.io/text-fabric/Api/General/">api docs</a></p></details><details class="note" open="open"><summary>Tutorials</summary><p>There are tutorials and exercises to guide you into increasingly involved tasks
-on specific corpora (outside this repo):
-<em> <a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">Biblia Hebraica Stuttgartensia Amstelodamensis</a>
-</em> <a href="https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">Proto-Cuneiform tablets from Uruk IV/III</a></p></details><details class="note"><summary>Background</summary><p>For more background information (earlier work, institutes, people, datasets), consult the
-<a href="https://github.com/ETCBC/shebanq/wiki">wiki</a> pages of SHEBANQ.</p></details><details class="note"><summary>Papers</summary><p>Papers (preprints on <a href="https://arxiv.org">arxiv</a>), most of them published:
-<em> <a href="https://arxiv.org/abs/1603.01541">Parallel Texts in the Hebrew Bible, New Methods and Visualizations </a>
-</em> <a href="https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/">The Hebrew Bible as Data: Laboratory - Sharing - Experiences</a>
-   (preprint: <a href="https://arxiv.org/abs/1501.01866">arxiv</a>)
-<em> <a href="https://arxiv.org/abs/1410.0286">LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible</a>
-</em> <a href="https://arxiv.org/abs/1412.6069">Annotation as a New Paradigm in Research Archiving</a></p></details><h1 id="getting-started-with-the-api">Getting started with the API<a class="headerlink" href="#getting-started-with-the-api" title="Permanent link">&para;</a></h1>
+<details class="note"><summary>Reference</summary><p>The pages you are reading now are the reference docs.</p><ul><li>It explains the <a href="https://dans-labs.github.io/text-fabric/Model/Data-Model/">data model</a></li><li>It specifies the <a href="https://dans-labs.github.io/text-fabric/Model/File-formats/">file format</a></li><li>It holds the <a href="https://dans-labs.github.io/text-fabric/Api/General/">api docs</a></li></ul></details><details class="note" open="open"><summary>Tutorials</summary><p>There are tutorials and exercises to guide you into increasingly involved tasks
+on specific corpora (outside this repo):</p><ul><li><a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">Biblia Hebraica Stuttgartensia Amstelodamensis</a></li><li><a href="https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">Proto-Cuneiform tablets from Uruk IV/III</a></li></ul></details><details class="note"><summary>Background</summary><p>For more background information (earlier work, institutes, people, datasets), consult the
+<a href="https://github.com/ETCBC/shebanq/wiki">wiki</a> pages of SHEBANQ.</p></details><details class="note"><summary>Papers</summary><p>Papers (preprints on <a href="https://arxiv.org">arxiv</a>), most of them published:</p><ul><li><a href="https://arxiv.org/abs/1603.01541">Parallel Texts in the Hebrew Bible, New Methods and Visualizations </a></li><li><a href="https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/">The Hebrew Bible as Data: Laboratory - Sharing - Experiences</a>
+   (preprint: <a href="https://arxiv.org/abs/1501.01866">arxiv</a>)</li><li><a href="https://arxiv.org/abs/1410.0286">LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible</a></li><li><a href="https://arxiv.org/abs/1412.6069">Annotation as a New Paradigm in Research Archiving</a></li></ul></details><details class="note"><summary>Presentation</summary><p>Here is a motivational
+<a href="http://www.slideshare.net/dirkroorda/text-fabric">presentation</a>,
+given just before
+<a href="https://global-learning.org/mod/forum/discuss.php?d=22">SBL 2016</a>
+in the Lutheran Church of San Antonio.</p></details><h1 id="getting-started-with-the-api">Getting started with the API<a class="headerlink" href="#getting-started-with-the-api" title="Permanent link">&para;</a></h1>
 <p>Start programming: write a python script or code in the Jupyter notebook</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> somewhere-else
@@ -687,21 +683,31 @@ In your <code>modules</code> argument you then specify one or more subdirectorie
 <a href="./Api/Cunei">cunei-api-docs</a>.</p></details><h1 id="design-principles">Design principles<a class="headerlink" href="#design-principles" title="Permanent link">&para;</a></h1>
 <details class="abstract"><summary>Minimalistic model</summary><p>Text-Fabric is based on a minimalistic data model for text plus annotations.</p><p>A defining characteristic is that Text-Fabric does not make use of XML or JSON,
 but stores text as a bunch of features in plain text files.</p><p>These features are interpreted against a <em>graph</em> of nodes and edges, which make up the
-abstract fabric of the text.</p></details><details class="abstract"><summary>Processing API</summary><p><a href="./Api/General/">efficient data processing</a>
-Based on this model, Text-Fabric offers an API to search, navigate and process text
-and its annotations.</p></details><details class="abstract"><summary>Graph search</summary><p><a href="./Api/General/#searching">search for patterns</a>
-The search API works with search templates that define relational patterns
+abstract fabric of the text.</p></details><details class="abstract"><summary>Efficient data processing</summary><p>Based on this model, Text-Fabric offers a <a href="./Api/General/">processing API</a>
+to search, navigate and process text and its annotations.</p></details><details class="abstract"><summary>Search for patterns</summary><p>The <a href="./Api/Genral/#searching">search API</a>
+works with search templates that define relational patterns
 which will be instantiated by nodes and edges of the fabric.</p></details><details class="abstract"><summary>Sharing data</summary><p><a href="./Api/General/#loading">easy sharing of sharing data</a>
-Students can pick and choose the feature data they need.</p></details><details class="abstract"><summary>Contributing data</summary><p><a href="./Api/General/#saving-features">facilitating the contribution of new data modules</a>
-Researchers can easily produce new modules of text-fabric data out of their
-findings.</p></details><details class="abstract"><summary>Factory</summary><p>Text-Fabric can be and has been used to construct websites,
+Students can pick and choose the feature data they need.
+When the time comes to share the fruits of their thought,
+they can do so in various ways:</p><ul><li>when using the TF browser, results can be exported as PDF and stored
+  in a repository[</li><li>when programming in a notebook, these notebooks can easily be shared online
+  by using GitHub of NBViewer.</li></ul></details><details class="abstract"><summary>Contributing data</summary><p>Researchers can easily
+<a href="./Api/General/#saving-features">produce new data modules</a>
+of text-fabric data out of their findings.</p></details><details class="abstract"><summary>Factory</summary><p>Text-Fabric can be and has been used to construct websites,
 for example <a href="https://shebanq.ancient-data.org">SHEBANQ</a>.
 In the case of SHEBANQ, data has been converted to mysql databases.
 However, with the built-in data server, it is also possible to
-have one Text-Fabric process serve multiple connections and requests.</p></details><details class="explanation"><summary>History</summary><p>Most ideas derive from an earlier project, 
-<a href="https://github.com/Dans-labs/laf-fabric">LAF-Fabric</a>.
-We have taken out everything that makes LAF-Fabric complicated and
-all things that are not essential for the sake of raw data processing.</p></details>
+have one Text-Fabric process serve multiple connections and requests.</p></details><details class="explanation" open="open"><summary>History</summary><p>The foundational ideas derive from work done in and around the
+<a href="http://etcbc.nl">ETCBC</a>
+by Eep Talstra, Crist-Jan Doedens, Henk Harmsen, Ulrik Sandborg-Petersen
+and many others.</p><p>The author entered in that world in 2007 as a 
+<a href="https://www.dans.knaw.nl">DANS</a> employee, doing a joint small data project,
+and a bigger project SHEBANQ in 2013/2014.
+In 2013 I developed
+<a href="https://github.com/Dans-labs/laf-fabric">LAF-Fabric</a>
+in order to be able to construct the website
+<a href="https://shebanq.ancient-data.org">SHEBANQ</a>.</p><p>I have taken out everything that makes LAF-Fabric complicated and
+all things that are not essential for the sake of raw data processing.</p></details><details class="note" open="open"><summary>Author</summary><p><a href="https://dans.knaw.nl/en/about/organisation-and-policy/staff/roorda?set_language=en">Dirk Roorda</a></p></details>
                 
                   
                 
