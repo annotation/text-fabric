@@ -43,8 +43,11 @@ After loading the data your browser will open and load the search interface.
 There you'll find links to further help.
 
 <p>
-<img src="/docs/images/bhsa-app.png" width="49%"/>
-<img src="/docs/images/cunei-app.png" width="49%"/>
+<img src="/docs/images/bhsa-app.png"/>
+</p>
+
+<p>
+<img src="/docs/images/cunei-app.png"/>
 </p>
 
 # Documentation
