@@ -85,7 +85,7 @@ textarea.template {
 }
 textarea.description {
 	font-size: small;
-	font-family: sans-serif;
+	font-family: monospace;
 	width: calc(100% - 1rem);
 	height: 20rem;
 	margin: 0.3rem 0.3rem;

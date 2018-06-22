@@ -34,7 +34,8 @@ div.description {
 	font-size: medium;
 	font-family: sans-serif;
 }
-div.description a:link, div.description a:visited {
+div.description a:link, div.description a:visited,
+div.prov a:link, div.prov a:visited {
     color: #0000ee;
     text-decoration: underline;
 }
@@ -117,10 +118,34 @@ div.hdlinks > a {
     text-align: center;
     text-decoration: none;
 }
+div.prov {
+    margin: 2rem;
+    padding: 1rem;
+    border: 0.1rem solid #aaaaaa;
+}
+div.pline {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: stretch;
+    align-items: baseline;
+}
+div.pname {
+    flex: 0 0 5rem;
+    font-weight: bold;
+}
+div.pval {
+    flex: 1 1 auto;
+}
 </style>
         {{!css}}
     </head>
     <body>
+        <div class="colofon">
+            {{!colofon}}
+        </div>
+        <div class="prov">
+            {{!provenance}}
+        </div>
         <div class="header">
             <div class="hline">{{fileName}}</div>
         </div>
@@ -138,8 +163,5 @@ div.hdlinks > a {
             {{!table}}
         </div>
         <hr/>
-        <div class="colofon">
-            {{!colofon}}
-        </div>
     </body>
 </html>

@@ -1,10 +1,13 @@
 import os
+import datetime
+import time
 
-from markdown import markdown
+import markdown
 
 import bottle
 from bottle import (post, get, route, template, request, static_file, run)
 
+from tf.fabric import NAME, VERSION, DOI, DOI_URL
 from tf.server.data import makeTfConnection
 from tf.server.common import (
     getParam, getDebug, getConfig, getAppDir, getValues,
@@ -35,6 +38,32 @@ def getStuff():
   TF = makeTfConnection(config.host, config.port)
   appDir = getAppDir(myDir, dataSource)
   return config
+
+
+def getProvenance():
+  utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
+  utc_offset = datetime.timedelta(seconds=-utc_offset_sec)
+  now = datetime.datetime.now().replace(
+      microsecond=0, tzinfo=datetime.timezone(offset=utc_offset)
+  ).isoformat()
+
+  prov = config.PROVENANCE
+  tool = f'{NAME} {VERSION}'
+  toolDoi = f'<a href="{DOI_URL}">{DOI}</a>'
+
+  return f'''
+    <div class="pline">
+      <div class="pname">Created:</div><div class="pval">{now}</div>
+    </div>
+    <div class="pline">
+      <div class="pname">Corpus:</div>
+      <div class="pval">{prov["corpus"]} {prov["corpusDoi"]}</div>
+    </div>
+    <div class="pline">
+      <div class="pname">Tool:</div>
+      <div class="pval">{tool} {toolDoi}</div>
+    </div>
+  '''
 
 
 def getInt(x, default=1):
@@ -88,6 +117,7 @@ def serveSearch(anything):
   api = TF.connect()
   header = api.header()
   css = api.css()
+  provenance = getProvenance()
 
   (defaultCondenseType, condenseTypes) = api.condenseTypes()
   condenseType = request.forms.condensetp or defaultCondenseType
@@ -126,6 +156,14 @@ def serveSearch(anything):
   if not fileName:
     fileName = f'{dataSource}-{resultItems} around {position}'
 
+  descriptionMd = markdown.markdown(
+      description,
+      extensions=[
+          'markdown.extensions.tables',
+          'markdown.extensions.fenced_code',
+      ]
+  )
+
   return (
       template(
           'index',
@@ -157,7 +195,7 @@ def serveSearch(anything):
           dataSource=dataSource,
           css=css,
           searchTemplate=searchTemplate,
-          description=markdown(description),
+          description=descriptionMd,
           tuples=tuples,
           table=table,
           condensed=condensed,
@@ -165,6 +203,7 @@ def serveSearch(anything):
           batch=batch,
           position=position,
           colofon=header,
+          provenance=provenance,
           fileName=fileName,
       )
   )

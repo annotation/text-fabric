@@ -10,6 +10,11 @@ BHSA = f'{REPO}/tf/{VERSION}'
 PHONO = f'phono/tf/{VERSION}'
 PARALLELS = f'parallels/tf/{VERSION}'
 
+PROVENANCE = dict(
+    corpus=f'BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis ({VERSION})',
+    corpusDoi=f'<a href="https://doi.org/10.5281/zenodo.1007624">10.5281/zenodo.1007624</a>',
+)
+
 locations = [DATABASE]
 modules = [BHSA, PHONO, PARALLELS]
 
