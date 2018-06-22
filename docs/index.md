@@ -113,11 +113,13 @@ After loading the data your browser will open and load the search interface.
 There you'll find links to further help.
 
 <p>
-<img src="images/bhsa-app.png" width="45%"/>
-&nbsp;
-&nbsp;
-<img src="images/cunei-app.png" width="45%"/>
+<img src="images/bhsa-app.png"/>
 </p>
+
+<p>
+<img src="images/cunei-app.png"/>
+</p>
+
 
 ???+ hint "Multiple windows"
     After you have issued the `text-fabric` command, you can open many connections
@@ -136,6 +138,7 @@ If you start using the Text-Fabric API in your programs, you'll need it.
 
 ??? note "Reference"
     The pages you are reading now are the reference docs.
+
     * It explains the [data model](https://dans-labs.github.io/text-fabric/Model/Data-Model/)
     * It specifies the [file format](https://dans-labs.github.io/text-fabric/Model/File-formats/)
     * It holds the [api docs](https://dans-labs.github.io/text-fabric/Api/General/)
@@ -143,6 +146,7 @@ If you start using the Text-Fabric API in your programs, you'll need it.
 ???+ note "Tutorials"
     There are tutorials and exercises to guide you into increasingly involved tasks
     on specific corpora (outside this repo):
+
     * [Biblia Hebraica Stuttgartensia Amstelodamensis](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     * [Proto-Cuneiform tablets from Uruk IV/III](https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
@@ -152,11 +156,19 @@ If you start using the Text-Fabric API in your programs, you'll need it.
 
 ??? note "Papers"
     Papers (preprints on [arxiv](https://arxiv.org)), most of them published:
+
     * [Parallel Texts in the Hebrew Bible, New Methods and Visualizations ](https://arxiv.org/abs/1603.01541)
     * [The Hebrew Bible as Data: Laboratory - Sharing - Experiences](https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/)
        (preprint: [arxiv](https://arxiv.org/abs/1501.01866))
     * [LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible](https://arxiv.org/abs/1410.0286)
     * [Annotation as a New Paradigm in Research Archiving](https://arxiv.org/abs/1412.6069)
+
+??? note "Presentation"
+    Here is a motivational
+    [presentation](http://www.slideshare.net/dirkroorda/text-fabric),
+    given just before
+    [SBL 2016](https://global-learning.org/mod/forum/discuss.php?d=22)
+    in the Lutheran Church of San Antonio.
 
 
 # Getting started with the API
@@ -209,24 +221,30 @@ api.makeAvailableIn(globals())
     These features are interpreted against a *graph* of nodes and edges, which make up the
     abstract fabric of the text.
 
-??? abstract "Processing API"
-    [efficient data processing](/Api/General/)
-    Based on this model, Text-Fabric offers an API to search, navigate and process text
-    and its annotations.
+??? abstract "Efficient data processing"
+    Based on this model, Text-Fabric offers a [processing API](/Api/General/)
+    to search, navigate and process text and its annotations.
 
-??? abstract "Graph search"
-    [search for patterns](/Api/General/#searching)
-    The search API works with search templates that define relational patterns
+??? abstract "Search for patterns"
+    The [search API](/Api/Genral/#searching)
+    works with search templates that define relational patterns
     which will be instantiated by nodes and edges of the fabric.
 
 ??? abstract "Sharing data"
     [easy sharing of sharing data](/Api/General/#loading)
     Students can pick and choose the feature data they need.
+    When the time comes to share the fruits of their thought,
+    they can do so in various ways:
+
+    * when using the TF browser, results can be exported as PDF and stored
+      in a repository[
+    * when programming in a notebook, these notebooks can easily be shared online
+      by using GitHub of NBViewer.
 
 ??? abstract "Contributing data"
-    [facilitating the contribution of new data modules](/Api/General/#saving-features)
-    Researchers can easily produce new modules of text-fabric data out of their
-    findings.
+    Researchers can easily
+    [produce new data modules](/Api/General/#saving-features)
+    of text-fabric data out of their findings.
 
 ??? abstract "Factory"
     Text-Fabric can be and has been used to construct websites,
@@ -235,8 +253,22 @@ api.makeAvailableIn(globals())
     However, with the built-in data server, it is also possible to
     have one Text-Fabric process serve multiple connections and requests.
 
-??? explanation "History"
-    Most ideas derive from an earlier project, 
-    [LAF-Fabric](https://github.com/Dans-labs/laf-fabric).
-    We have taken out everything that makes LAF-Fabric complicated and
+???+ explanation "History"
+    The foundational ideas derive from work done in and around the
+    [ETCBC](http://etcbc.nl)
+    by Eep Talstra, Crist-Jan Doedens, Henk Harmsen, Ulrik Sandborg-Petersen
+    and many others.
+
+    The author entered in that world in 2007 as a 
+    [DANS](https://www.dans.knaw.nl) employee, doing a joint small data project,
+    and a bigger project SHEBANQ in 2013/2014.
+    In 2013 I developed
+    [LAF-Fabric](https://github.com/Dans-labs/laf-fabric)
+    in order to be able to construct the website
+    [SHEBANQ](https://shebanq.ancient-data.org).
+
+    I have taken out everything that makes LAF-Fabric complicated and
     all things that are not essential for the sake of raw data processing.
+
+???+ note "Author"
+    [Dirk Roorda](https://dans.knaw.nl/en/about/organisation-and-policy/staff/roorda?set_language=en)
