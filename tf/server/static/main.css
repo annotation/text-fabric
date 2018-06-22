@@ -104,7 +104,7 @@ div.eline {
     background-color: #ffbbbb;
 }
 
-p.go {
+p.buttons {
     text-align: center;
 }
 button {
@@ -129,6 +129,12 @@ input.int {
 	font-size: medium;
 	font-family: monospace;
     width: 3rem;
+}
+input.name {
+	font-size: small;
+	font-family: sans-serif;
+    font-weight: bold;
+	width: calc(100% - 1rem);
 }
 
 div.cline {

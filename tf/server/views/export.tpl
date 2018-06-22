@@ -2,7 +2,7 @@
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Text-Fabric {{fileName}}</title>
+        <title>{{fileName}}</title>
         <meta name="application-name" content="Text-Fabric Search Box"/>
 <style type="text/css">
 body {
@@ -54,12 +54,20 @@ details.dtrow {
     margin: 0.2rem 0;
     padding: 0.2rem;
 }
+
 details.dtrow[open] {
     page-break-before: always;
     break-before: always;
+}
+details.dtrow[open] {
     page-break-after: always;
     break-after: always;
 }
+details.dtrow[open]+details.dtrow[open] {
+    page-break-before: auto;
+    break-before: auto;
+}
+
 details.dtrow > summary {
     background-color: #f0f0f0;
     margin: 0.2rem 0;
