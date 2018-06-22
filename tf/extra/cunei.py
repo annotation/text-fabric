@@ -701,7 +701,7 @@ This notebook online:
     else:
       display(HTML(result))
 
-  def tabletLink(self, t, text=None, asString=False):
+  def tabletLink(self, t, text=None, className=None, asString=False):
     api = self.api
     L = api.L
     F = api.F
@@ -715,10 +715,13 @@ This notebook online:
     linkText = pNum if text is None else text
     url = URL_FORMAT['tablet']['main'].format(pNum)
 
-    result = outLink(linkText, url, title=title)
+    result = outLink(linkText, url, title=title, className=className)
     if asString:
       return result
     display(HTML(result))
+
+  def webLink(self, n):
+    return self.tabletLink(n, className='rwh', asString=True)
 
   def plain(
       self,

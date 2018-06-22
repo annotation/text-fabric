@@ -6,7 +6,40 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
-## 5.2,1
+## 5.3
+
+2018-06-22
+
+??? abstract "Better process management"
+    When the TF server is started, it cleans up remnant process that might get in the way otherwise.
+    You can also say
+
+    ```
+    text-fabric -k
+    ```
+
+    to kill all remnant processes,
+    or
+
+    ```
+    text-fabric -k datasource
+    ```
+
+    to kill the processes for a specific datasource only.
+
+??? abstract "Manual node entry"
+    You can enter nodes manually in the TF browser.
+    Handy for quick inspection.
+    You can click on the sequence number to
+    append the node tuple of that row to the tuple input field.
+    That way you can collect interesting results.
+
+??? abstract "Description"
+    You can enter a description in Markdown.
+    When you export your query, the description appears
+    formatted on top.
+
+## 5.2.1
 
 2018-06-21
 

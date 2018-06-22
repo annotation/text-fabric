@@ -362,7 +362,7 @@ This notebook online:
       return CSS_FONT + CSS
     display(HTML(CSS))
 
-  def shbLink(self, n, text=None, asString=False):
+  def shbLink(self, n, text=None, className=None, asString=False):
     api = self.api
     L = api.L
     T = api.T
@@ -384,7 +384,7 @@ This notebook online:
       title = 'show this lexeme in SHEBANQ'
       if text is None:
         text = htmlEsc(F.voc_lex_utf8.v(n))
-      result = outLink(text, href, title=title)
+      result = outLink(text, href, title=title, className=className)
       if asString:
         return result
       display(HTML(result))
@@ -409,10 +409,13 @@ This notebook online:
       title = 'show this passage in SHEBANQ'
     else:
       title = passageText
-    result = outLink(text, href, title=title)
+    result = outLink(text, href, title=title, className=className)
     if asString:
       return result
     display(HTML(result))
+
+  def webLink(self, n):
+    return self.shbLink(n, className='rwh', asString=True)
 
   def plain(
       self,

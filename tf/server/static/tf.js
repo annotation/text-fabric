@@ -33,6 +33,17 @@ function detailc() {
   })
 }
 
+function tuples() {
+  var tups = $('#tuples') 
+  $('.sq').click(function(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    var tup = $(this).attr('tup')
+    var orig = tups.val()
+    tups.val(orig + '\n' + tup)
+  })
+}
+
 function detailSet(xpa) {
   var expac = $('#expac')
   var expa = $('#expa')
@@ -103,6 +114,7 @@ function details() {
 
 $(function(){
   pageLinks()
+  tuples()
   detailSet()
   details()
   detailc()

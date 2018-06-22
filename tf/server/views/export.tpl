@@ -8,10 +8,20 @@
 body {
     padding: 2rem;
 }
+a:link, a:visited {
+    text-decoration: None;
+}
 div.hline {
     font-size: large;
     font-style: italic;
     text-align: center;
+}
+pre.tuples {
+	font-size: medium;
+	font-family: monospace;
+	width: calc(100% - 1rem);
+	margin: 0.3rem 0.3rem;
+    background-color: #eeffdd;
 }
 pre.template {
 	font-size: medium;
@@ -20,20 +30,29 @@ pre.template {
 	margin: 0.3rem 0.3rem;
     background-color: #ffeedd;
 }
+div.description {
+	font-size: medium;
+	font-family: sans-serif;
+}
+div.description a:link, div.description a:visited {
+    color: #0000ee;
+    text-decoration: underline;
+}
 div.dtheadrow {
     font-weight: bold;
-    background-color: #aaaaaa;
+    background-color: #dddddd;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
 div.dtheadrow > span {
     margin: 0.2rem;
-    padding: 0 0.2rem;
-    border-right: 0.1rem solid #dddddd;
+    padding: 0 0.5rem;
+    border-right: 0.2rem solid #ffffff;
 }
 details.dtrow {
     border: 0.1rem solid #bbbbbb;
-    margin: 0.1rem 0;
+    margin: 0.2rem 0;
+    padding: 0.2rem;
 }
 details.dtrow[open] {
     page-break-before: always;
@@ -43,15 +62,24 @@ details.dtrow[open] {
 }
 details.dtrow > summary {
     background-color: #f0f0f0;
+    margin: 0.2rem 0;
+    padding: 0.2rem;
 }
 details.dtrow > summary > span {
-    margin: 0.2rem;
-    padding: 0 0.2rem;
-    border-right: 0.1rem solid #bbbbbb;
+    padding: 0 0.5rem;
+    border-right: 0.2rem solid #bbbbbb;
 }
 div.pretty {
     width: 100%;
     margin: 0.2rem 0 0.5rem 0;
+}
+a.rwh {
+    font-size: x-small;
+    color: #333333;
+}
+.sq {
+    font-size: small;
+    color: #66aa55;
 }
 div.colofon {
     display: flex;
@@ -88,7 +116,13 @@ div.hdlinks > a {
         <div class="header">
             <div class="hline">{{fileName}}</div>
         </div>
+        <div class="description">
+            {{!description}}
+        </div>
         <hr/>
+        <div>
+            <pre class="template">{{tuples}}</pre>
+        </div>
         <div>
             <pre class="template">{{searchTemplate}}</pre>
         </div>

@@ -15,9 +15,13 @@
                 <div class="header">
                     {{!header}}
                 </div>
+                <textarea id="tuples" class="tuples" name="tuples">{{tuples}}</textarea>
+                <div class="messages">
+                    {{!tupleMessages}}
+                </div>
                 <textarea class="template" name="searchTemplate">{{searchTemplate}}</textarea>
                 <div class="messages">
-                    {{!messages}}
+                    {{!queryMessages}}
                 </div>
                 <p class="go"><button class="xl" type="submit">Go</button></p>
                 <div class="setting">
@@ -40,6 +44,9 @@
                         {{!condenseOpts}}
                     </div>
                     {{!options}}
+                </div>
+                <div class="description">
+                    <textarea class="description" name="description">{{description}}</textarea>
                 </div>
             </div>
             <div class="midcol">

@@ -1,6 +1,9 @@
 body,td {
     font-family: sans-serif;
 }
+a:link, a:visited {
+    text-decoration: None;
+}
 
 /* PAGE */
 
@@ -64,6 +67,14 @@ div.hdlinks > a {
     text-decoration: none;
 }
 
+textarea.tuples {
+	font-size: large;
+	font-family: monospace;
+	width: calc(100% - 1rem);
+	height: 5rem;
+	margin: 0.3rem 0.3rem;
+    background-color: #eeffdd;
+}
 textarea.template {
 	font-size: large;
 	font-family: monospace;
@@ -71,6 +82,14 @@ textarea.template {
 	height: 20rem;
 	margin: 0.3rem 0.3rem;
     background-color: #ffeedd;
+}
+textarea.description {
+	font-size: small;
+	font-family: sans-serif;
+	width: calc(100% - 1rem);
+	height: 20rem;
+	margin: 0.3rem 0.3rem;
+    background-color: #ffffff;
 }
 
 div.messages {
@@ -170,28 +189,37 @@ div.pline {
 
 div.dtheadrow {
     font-weight: bold;
-    background-color: #aaaaaa;
+    background-color: #dddddd;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
 div.dtheadrow > span {
     margin: 0.2rem;
-    padding: 0 0.2rem;
-    border-right: 0.1rem solid #dddddd;
+    padding: 0 0.5rem;
+    border-right: 0.2rem solid #ffffff;
 }
 details.dtrow {
     border: 0.1rem solid #bbbbbb;
 }
 details.dtrow > summary {
     background-color: #f0f0f0;
+    margin: 0.2rem 0;
+    padding: 0.2rem;
 }
 details.dtrow > summary > span {
-    margin: 0.2rem;
-    padding: 0 0.2rem;
-    border-right: 0.1rem solid #bbbbbb;
+    padding: 0 0.5rem;
+    border-right: 0.2rem solid #bbbbbb;
 }
 div.pretty {
     width: 100%;
     margin: 0.2rem 0 0.5rem 0;
     background-color: #fafafa;
+}
+a.rwh {
+    font-size: x-small;
+    color: #333333;
+}
+.sq {
+    font-size: small;
+    color: #66aa55;
 }

@@ -1,5 +1,7 @@
 import os
 
+from markdown import markdown
+
 import bottle
 from bottle import (post, get, route, template, request, static_file, run)
 
@@ -62,6 +64,8 @@ def serveLocal(filepath):
 @get('/<anything:re:.*>')
 def serveSearch(anything):
   searchTemplate = request.forms.searchTemplate.replace('\r', '')
+  tuples = request.forms.tuples.replace('\r', '')
+  description = request.forms.description.replace('\r', '')
   withNodes = request.forms.withNodes
   condensed = request.forms.condensed
   export = request.forms.export
@@ -92,9 +96,10 @@ def serveSearch(anything):
   resultPl = 's' if batch != 1 else ''
   resultItems = f'{batch} {resultKind}{resultPl}'
 
-  if searchTemplate:
-    (table, messages, start, total) = api.search(
+  if searchTemplate or tuples:
+    (table, tupleMessages, queryMessages, start, total) = api.search(
         searchTemplate,
+        tuples,
         condensed,
         condenseType,
         batch,
@@ -107,12 +112,15 @@ def serveSearch(anything):
     if table is not None:
       pages = pageLinks(total, position)
 
-    if messages:
-      messages = shapeMessages(messages)
+    if tupleMessages:
+      tupleMessages = shapeMessages(tupleMessages)
+    if queryMessages:
+      queryMessages = shapeMessages(queryMessages)
   else:
     table = f'no {resultKind}s'
     searchTemplate = ''
-    messages = ''
+    tupleMessages = ''
+    queryMessages = ''
 
   fileName = f'{dataSource}-{resultItems} around {position}'
 
@@ -123,9 +131,12 @@ def serveSearch(anything):
           css=css,
           header=header,
           options=shapeOptions(options, values),
-          messages=messages,
+          tupleMessages=tupleMessages,
+          queryMessages=queryMessages,
           table=table,
           searchTemplate=searchTemplate,
+          tuples=tuples,
+          description=description,
           condensedAtt=condensedAtt,
           condenseOpts=condenseOpts,
           withNodesAtt=withNodesAtt,
@@ -144,6 +155,8 @@ def serveSearch(anything):
           dataSource=dataSource,
           css=css,
           searchTemplate=searchTemplate,
+          description=markdown(description),
+          tuples=tuples,
           table=table,
           condensed=condensed,
           condenseType=condenseType,
@@ -156,7 +169,7 @@ def serveSearch(anything):
 
 
 if __name__ == "__main__":
-  dataSource = getParam()
+  dataSource = getParam(interactive=True)
   if dataSource is not None:
     debug = getDebug()
     config = getStuff()

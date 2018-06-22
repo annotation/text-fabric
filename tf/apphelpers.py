@@ -60,6 +60,11 @@ def plainTuple(
     ) if opened else ''
     current = ' focus' if seqNumber == position else ''
     attOpen = ' open ' if opened else ''
+    refColumn = 1 if isCondensed else linked
+    refNode = tup[refColumn - 1] if refColumn <= len(tup) else None
+    refRef = '' if refNode is None else extraApi.webLink(refNode)
+    tupSeq = ','.join(str(n) for n in tup)
+
     plainRep = ''.join(
         f'''<span>{mdEsc(extraApi.plain(
                     n,
@@ -74,11 +79,15 @@ def plainTuple(
     )
     html = (
         f'''
-  <details class="pretty dtrow{current}" seq="{seqNumber}" {attOpen}>
-      <summary>{seqNumber} {plainRep}</summary>
-      <div class="pretty">
-        {prettyRep}
-      </div>
+  <details
+    class="pretty dtrow{current}"
+    seq="{seqNumber}"
+    {attOpen}
+  >
+    <summary><a href="#" class="sq" tup="{tupSeq}">{seqNumber}</span> {refRef} {plainRep}</summary>
+    <div class="pretty">
+      {prettyRep}
+    </div>
   </details>
 '''
     )
@@ -517,9 +526,10 @@ def runSearchCondensed(api, query, cache, condenseType):
   return (queryResults, messages)
 
 
-def outLink(text, href, title=None):
+def outLink(text, href, title=None, className=None):
   titleAtt = '' if title is None else f' title="{title}"'
-  return f'<a target="_blank" href="{href}"{titleAtt}>{text}</a>'
+  classAtt = f' class="{className}"' if className else ''
+  return f'<a{classAtt} target="_blank" href="{href}"{titleAtt}>{text}</a>'
 
 
 def getBoundary(api, n):
