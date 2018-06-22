@@ -6,7 +6,7 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
-## 5.3.1
+## 5.3.0-2
 
 2018-06-22
 
@@ -40,6 +40,9 @@
     You can enter a description in Markdown.
     When you export your query, the description appears
     formatted on top.
+
+??? abstract "Provenance"
+    If you export a query, provenance is added, using DOIs.
 
 ??? abstract "Small fixes"
     No more blank pages due to double page breaks.

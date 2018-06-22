@@ -47,6 +47,10 @@ def makeTfServer(dataSource, locations, modules, port):
       extraApi = self.extraApi
       return extraApi.header()
 
+    def exposed_provenance(self):
+      extraApi = self.extraApi
+      return extraApi.provenance()
+
     def exposed_css(self, appDir=None):
       extraApi = self.extraApi
       return extraApi.loadCSS()

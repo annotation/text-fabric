@@ -22,7 +22,9 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '5.3.1'
+VERSION = '5.3.2'
+DOI = '10.5281/zenodo.592193'
+DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'
 TUTORIAL = ('https://github.com/Dans-labs/text-fabric' '/blob/master/docs/tutorial.ipynb')
 DATA = 'https://github.com/Dans-labs/text-fabric-data'
