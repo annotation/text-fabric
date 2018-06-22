@@ -1,2 +1,4 @@
 rpyc
 bottle
+psutil
+markdown

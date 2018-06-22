@@ -4,8 +4,6 @@ import re
 from glob import glob
 from importlib import import_module
 
-from tf.apphelpers import plainTuple
-
 appPat = '^(.*)-app$'
 appRe = re.compile(appPat)
 
@@ -36,7 +34,7 @@ def getDebug():
   return False
 
 
-def getParam():
+def getParam(interactive=False):
   myDir = os.path.dirname(os.path.abspath(__file__))
   dataSourcesParent = getAppDir(myDir, '')
   dataSourcesPre = glob(f'{dataSourcesParent}/*/config.py')
@@ -57,12 +55,21 @@ def getParam():
     dataSource = arg
     break
 
+  if interactive:
+    if dataSource is None:
+      dataSource = input(f'specify data source [{dPrompt}] > ')
+    if dataSource not in dataSources:
+      print('Unknown data source')
+      dataSource = None
+    if dataSource is None:
+      print(f'Pass a data source [{dPrompt}] as first argument')
+    return dataSource
+
   if dataSource is None:
-    dataSource = input(f'specify data source [{dPrompt}] > ')
+    return None
   if dataSource not in dataSources:
-    dataSource = None
-  if dataSource is None:
-    print(f'Pass a data source [{dPrompt}] as first argument')
+    print('Unknown data source')
+    return False
   return dataSource
 
 
