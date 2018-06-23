@@ -128,6 +128,9 @@ def getKill():
 
 
 def main():
+  if len(sys.argv) < 2:
+    print('Usage: {} [-h] [-d] [-k] DATASOURCE'.format(sys.argv[0]))
+    return
   if sys.argv[1] in {'--help', '-help', '-h', '?', '-?'}:
     print(HELP)
 
