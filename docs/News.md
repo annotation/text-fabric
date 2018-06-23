@@ -6,6 +6,10 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.3.3
+
+Small fix: command line args for text-fabric.
+
 ## 5.3.0-2
 
 2018-06-22

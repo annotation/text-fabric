@@ -128,13 +128,13 @@ def getKill():
 
 
 def main():
-  if sys.argv[1] in {'--help', '-help', '-h', '?', '-?'}:
+  if len(sys.argv) >= 2 and sys.argv[1] in {'--help', '-help', '-h', '?', '-?'}:
     print(HELP)
 
   kill = getKill()
 
   if kill:
-    dataSource = getParam()
+    dataSource = getParam(interactive=False)
     if dataSource is False:
       return
     killProcesses(dataSource)
