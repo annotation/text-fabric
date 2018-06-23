@@ -3,7 +3,7 @@ from .common import getParam, getConfig
 
 
 def tfService():
-  dataSource = getParam()
+  dataSource = getParam(interactive=True)
   if dataSource is not None:
     config = getConfig(dataSource)
     if config is not None:

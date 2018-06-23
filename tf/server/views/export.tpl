@@ -154,7 +154,7 @@ div.pval {
         </div>
         <hr/>
         <div>
-            <pre class="template">{{tuples}}</pre>
+            <pre class="tuples">{{tuples}}</pre>
         </div>
         <div>
             <pre class="template">{{searchTemplate}}</pre>
