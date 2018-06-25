@@ -137,11 +137,3 @@ def makeTfServer(dataSource, locations, modules, port):
   })
 
 
-def makeTfConnection(host, port):
-  class TfConnection(object):
-    def connect(self):
-      connection = rpyc.connect(host, port)
-      self.connection = connection
-      return connection.root
-
-  return TfConnection()

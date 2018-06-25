@@ -1,3 +1,4 @@
+import rpyc
 from .data import makeTfServer
 from .common import getParam, getConfig
 
@@ -10,6 +11,16 @@ def tfService():
       service = makeTfServer(dataSource, config.locations, config.modules, config.port)
       if service:
         service.start()
+
+
+def makeTfConnection(host, port):
+  class TfConnection(object):
+    def connect(self):
+      connection = rpyc.connect(host, port)
+      self.connection = connection
+      return connection.root
+
+  return TfConnection()
 
 
 if __name__ == "__main__":
