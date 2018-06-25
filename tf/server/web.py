@@ -2,13 +2,14 @@ import os
 import datetime
 import time
 
+import json
 import markdown
 
 import bottle
 from bottle import (post, get, route, template, request, static_file, run)
 
 from tf.fabric import NAME, VERSION, DOI, DOI_URL
-from tf.server.data import makeTfConnection
+from tf.server.service import makeTfConnection
 from tf.server.common import (
     getParam, getDebug, getConfig, getAppDir, getValues,
     pageLinks,
@@ -103,6 +104,9 @@ def serveSearch(anything):
   linked = getInt(request.forms.linked, default=1)
   condensedAtt = ' checked ' if condensed else ''
   withNodesAtt = ' checked ' if withNodes else ''
+
+  formJson = json.dumps(request.forms)
+  print(formJson)
 
   options = config.options
   values = getValues(options, request.forms)
