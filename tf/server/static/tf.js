@@ -6,8 +6,29 @@ function pageLinks() {
   })
 }
 
+function sidebar() {
+  var headers = $('#sidebar div')
+  var bodies = $('#sidebarcont div')
+  $('#sidebar a').click(function(e) {
+    e.preventDefault()
+    var header = $(this).closest('div')
+    var part = header.attr('status')
+    var body = $('#sidebarcont div[status="'+part+'"]')
+    var isActive = header.hasClass('active')
+    headers.removeClass('active')
+    bodies.removeClass('active')
+    if (isActive) {
+      body.removeClass('active')
+      header.removeClass('active')
+    }
+    else {
+      body.addClass('active')
+      header.addClass('active')
+    }
+  })
+}
 function reactive() {
-  $('input.r').change(function(e) {
+  $('.r').change(function(e) {
     $('#go').submit()
   })
 }
@@ -33,6 +54,16 @@ function detailc() {
   })
 }
 
+function sections() {
+  var secs = $('#sections') 
+  $('.rwh').click(function(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    var sec = $(this).html()
+    var orig = secs.val()
+    secs.val(orig + '\n' + sec)
+  })
+}
 function tuples() {
   var tups = $('#tuples') 
   $('.sq').click(function(e) {
@@ -43,6 +74,17 @@ function tuples() {
     tups.val(orig + '\n' + tup)
   })
 }
+function nodes() {
+  var tups = $('#tuples') 
+  $('.nd').click(function(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    var nd = $(this).html()
+    var orig = tups.val()
+    tups.val(orig + '\n' + nd)
+  })
+}
+
 
 function detailSet(xpa) {
   var expac = $('#expac')
@@ -113,8 +155,11 @@ function details() {
 }
 
 $(function(){
+  sidebar()
   pageLinks()
+  sections()
   tuples()
+  nodes()
   detailSet()
   details()
   detailc()

@@ -621,6 +621,14 @@ This notebook online:
       return CSS
     display(HTML(CSS))
 
+  def nodeFromDefaultSection(self, sectionStr):
+    api = self.api
+    T = api.T
+    tabletNode = T.nodeFromSection((sectionStr,))
+    if tabletNode is None:
+      return (f'Not a valid tablet number: "{sectionStr}"', None)
+    return ('', tabletNode)
+
   def lineFromNode(self, n):
     api = self.api
     F = api.F
@@ -701,7 +709,7 @@ This notebook online:
     else:
       display(HTML(result))
 
-  def tabletLink(self, t, text=None, className=None, asString=False):
+  def tabletLink(self, t, text=None, className=None, asString=False, noUrl=False):
     api = self.api
     L = api.L
     F = api.F
@@ -711,17 +719,18 @@ This notebook online:
       n = t if F.otype.v(t) == 'tablet' else L.u(t, otype='tablet')[0]
       pNum = F.catalogId.v(n)
 
-    title = ('to CDLI main page for this tablet')
+    title = None if noUrl else ('to CDLI main page for this tablet')
     linkText = pNum if text is None else text
-    url = URL_FORMAT['tablet']['main'].format(pNum)
+    url = '#' if noUrl else URL_FORMAT['tablet']['main'].format(pNum)
+    target = '' if noUrl else None
 
-    result = outLink(linkText, url, title=title, className=className)
+    result = outLink(linkText, url, title=title, className=className, target=target)
     if asString:
       return result
     display(HTML(result))
 
   def webLink(self, n):
-    return self.tabletLink(n, className='rwh', asString=True)
+    return self.tabletLink(n, className='rwh', asString=True, noUrl=True)
 
   def plain(
       self,
@@ -739,7 +748,7 @@ This notebook online:
     nType = F.otype.v(n)
     result = ''
     if asApi:
-      nodeRep = f' <span class="nd">{n}</span> ' if withNodes else ''
+      nodeRep = f' <a href="#" class="nd">{n}</a> ' if withNodes else ''
     else:
       nodeRep = f' *{n}* ' if withNodes else ''
 

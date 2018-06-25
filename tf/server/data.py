@@ -61,7 +61,7 @@ def makeTfServer(dataSource, locations, modules, port):
       return (extraApi.condenseType, api.C.levels.data)
 
     def exposed_search(
-        self, query, tuples, condensed, condenseType, batch,
+        self, query, tuples, sections, condensed, condenseType, batch,
         position=1, opened=set(),
         withNodes=False,
         linked=1,
@@ -72,6 +72,21 @@ def makeTfServer(dataSource, locations, modules, port):
 
       total = 0
 
+      sectionResults = []
+      sectionMessages = []
+      if sections:
+        sectionLines = sections.split('\n')
+        for (i, sectionLine) in enumerate(sectionLines):
+          sectionLine = sectionLine.strip()
+          (message, node) = extraApi.nodeFromDefaultSection(sectionLine)
+          if message:
+            sectionMessages.append(message)
+          else:
+            sectionResults.append((-i - 1, (node,)))
+        total += len(sectionResults)
+      sectionResults = tuple(sectionResults)
+      sectionMessages = '\n'.join(sectionMessages)
+
       tupleResults = ()
       tupleMessages = ''
       if tuples:
@@ -79,13 +94,13 @@ def makeTfServer(dataSource, locations, modules, port):
         try:
           tupleResults = tuple(
               (
-                  -i - 1,
+                  -i - 1 - total,
                   tuple(
                       int(n) for n in t.strip().split(',')
                   )
               )
               for (i, t) in enumerate(tupleLines)
-              if t
+              if t.strip()
           )
         except Exception as e:
           tupleMessages = f'{e}'
@@ -115,7 +130,11 @@ def makeTfServer(dataSource, locations, modules, port):
       afterResults = tuple((n, queryResults[n - 1]) for n in sorted(after))
 
       allResults = (
+          ((None, 'sections'),) +
+          sectionResults +
+          ((None, 'tuples'),) +
           tupleResults +
+          ((None, 'results'),) +
           beforeResults +
           tuple((i + start, r) for (i, r) in enumerate(selectedResults)) +
           afterResults
@@ -129,11 +148,9 @@ def makeTfServer(dataSource, locations, modules, port):
           linked=linked,
           **options,
       )
-      return (table, tupleMessages, queryMessages, start, total)
+      return (table, tupleMessages, queryMessages, sectionMessages, start, total)
 
   return ThreadedServer(TfService, port=port, protocol_config={
       'allow_public_attrs': True,
       'sync_request_timeout': TIMEOUT,
   })
-
-

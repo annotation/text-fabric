@@ -1,6 +1,7 @@
 import os
 import datetime
 import time
+from glob import glob
 
 import json
 import markdown
@@ -11,7 +12,7 @@ from bottle import (post, get, route, template, request, static_file, run)
 from tf.fabric import NAME, VERSION, DOI, DOI_URL
 from tf.server.service import makeTfConnection
 from tf.server.common import (
-    getParam, getDebug, getConfig, getAppDir, getValues,
+    getParam, getDebug, getConfig, getAppDir, getValues, setValues,
     pageLinks,
     shapeMessages, shapeOptions, shapeCondense,
 )
@@ -41,18 +42,26 @@ def getStuff():
   return config
 
 
-def getProvenance():
+def getProvenance(form):
   utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
   utc_offset = datetime.timedelta(seconds=-utc_offset_sec)
   now = datetime.datetime.now().replace(
       microsecond=0, tzinfo=datetime.timezone(offset=utc_offset)
   ).isoformat()
+  job = form['fileName']
+  author = form['author']
 
   prov = config.PROVENANCE
   tool = f'{NAME} {VERSION}'
   toolDoi = f'<a href="{DOI_URL}">{DOI}</a>'
 
   return f'''
+    <div class="pline">
+      <div class="pname">Job:</div><div class="pval">{job}</div>
+    </div>
+    <div class="pline">
+      <div class="pname">Author:</div><div class="pval">{author}</div>
+    </div>
     <div class="pline">
       <div class="pname">Created:</div><div class="pval">{now}</div>
     </div>
@@ -75,6 +84,62 @@ def getInt(x, default=1):
   return int(x)
 
 
+def getFormData():
+  form = {}
+  form['searchTemplate'] = request.forms.searchTemplate.replace('\r', '')
+  form['tuples'] = request.forms.tuples.replace('\r', '')
+  form['sections'] = request.forms.sections.replace('\r', '')
+  form['fileName'] = request.forms.fileName.strip()
+  form['previous'] = request.forms.previous
+  form['fileNameHidden'] = request.forms.fileNameHidden.strip()
+  form['author'] = request.forms.author.strip()
+  form['title'] = request.forms.title.strip()
+  form['description'] = request.forms.description.replace('\r', '')
+  form['withNodes'] = request.forms.withNodes
+  form['condensed'] = request.forms.condensed
+  form['condensetp'] = request.forms.condensetp
+  form['export'] = request.forms.export
+  form['expandAll'] = request.forms.expandAll
+  form['linked'] = getInt(request.forms.linked, default=1)
+  form['opened'] = request.forms.opened
+  form['position'] = getInt(request.forms.position, default=1)
+  form['batch'] = getInt(request.forms.batch, default=BATCH)
+  setValues(config.options, request.forms, form)
+  return form
+
+
+def writeFormData(form):
+  thisFileName = form['fileName'] or ''
+  with open(f'{dataSource}-{thisFileName}.tfquery', 'w') as tfj:
+    json.dump(form, tfj)
+
+
+def readFormData(source):
+  sourceFile = f'{dataSource}-{source}.tfquery'
+  if os.path.exists(sourceFile):
+    with open(sourceFile) as tfj:
+      form = json.load(tfj)
+    for item in '''
+        searchTemplate tuples sections fileName fileNameHidden
+        condensetp opened author title
+    '''.strip().split():
+      if form.get(item, None) is None:
+        form[item] = ''
+    return form
+  return None
+
+
+def getPrevOptions(current):
+  prevs = glob(f'{dataSource}-*.tfquery')
+  options = ['<option value=''>none</option>']
+  for prev in prevs:
+    prevRep = prev[0:-8].split('-', 1)[1]
+    if prevRep == current:
+      continue
+    options.append(f'<option value="{prevRep}">{prevRep}</option>')
+  return '\n'.join(options)
+
+
 @route('/server/static/<filepath:path>')
 def serveStatic(filepath):
   return static_file(filepath, root=f'{myDir}/static')
@@ -93,75 +158,71 @@ def serveLocal(filepath):
 @post('/<anything:re:.*>')
 @get('/<anything:re:.*>')
 def serveSearch(anything):
-  searchTemplate = request.forms.searchTemplate.replace('\r', '')
-  tuples = request.forms.tuples.replace('\r', '')
-  fileName = request.forms.fileName.strip()
-  description = request.forms.description.replace('\r', '')
-  withNodes = request.forms.withNodes
-  condensed = request.forms.condensed
-  export = request.forms.export
-  expandAll = request.forms.expandAll
-  linked = getInt(request.forms.linked, default=1)
-  condensedAtt = ' checked ' if condensed else ''
-  withNodesAtt = ' checked ' if withNodes else ''
+  form = getFormData()
+  if form['previous'] != '':
+    previous = readFormData(form['previous'])
+    if previous is not None:
+      form = previous
+  form['previous'] = ''
+  condensedAtt = ' checked ' if form['condensed'] else ''
+  withNodesAtt = ' checked ' if form['withNodes'] else ''
 
-  formJson = json.dumps(request.forms)
-  print(formJson)
+  openedSet = {int(n) for n in form['opened'].split(',')} if form['opened'] else set()
 
   options = config.options
-  values = getValues(options, request.forms)
+  values = getValues(options, form)
 
-  openedStr = request.forms.opened
-  position = getInt(request.forms.position, default=1)
-  batch = getInt(request.forms.batch, default=BATCH)
   pages = ''
-
-  opened = {int(n) for n in openedStr.split(',')} if openedStr else set()
 
   api = TF.connect()
   header = api.header()
   css = api.css()
-  provenance = getProvenance()
+  provenance = getProvenance(form)
 
   (defaultCondenseType, condenseTypes) = api.condenseTypes()
-  condenseType = request.forms.condensetp or defaultCondenseType
+  condenseType = form['condensetp'] or defaultCondenseType
   condenseOpts = shapeCondense(condenseTypes, condenseType)
 
-  resultKind = condenseType if condensed else RESULT
-  resultPl = 's' if batch != 1 else ''
-  resultItems = f'{batch} {resultKind}{resultPl}'
+  resultKind = condenseType if form['condensed'] else RESULT
 
-  if searchTemplate or tuples:
-    (table, tupleMessages, queryMessages, start, total) = api.search(
-        searchTemplate,
-        tuples,
-        condensed,
+  if form['searchTemplate'] or form['tuples'] or form['sections']:
+    (
+        table,
+        sectionMessages, tupleMessages, queryMessages,
+        start, total,
+    ) = api.search(
+        form['searchTemplate'],
+        form['tuples'],
+        form['sections'],
+        form['condensed'],
         condenseType,
-        batch,
-        position=position,
-        opened=opened,
-        withNodes=withNodes,
-        linked=linked,
+        form['batch'],
+        position=form['position'],
+        opened=openedSet,
+        withNodes=form['withNodes'],
+        linked=form['linked'],
         **values,
     )
     if table is not None:
-      pages = pageLinks(total, position)
+      pages = pageLinks(total, form['position'])
 
+    if sectionMessages:
+      sectionMessages = shapeMessages(sectionMessages)
     if tupleMessages:
       tupleMessages = shapeMessages(tupleMessages)
     if queryMessages:
       queryMessages = shapeMessages(queryMessages)
   else:
     table = f'no {resultKind}s'
-    searchTemplate = ''
     tupleMessages = ''
     queryMessages = ''
 
-  if not fileName:
-    fileName = f'{dataSource}-{resultItems} around {position}'
+  writeFormData(form)
+
+  prevOptions = getPrevOptions(form['fileName'])
 
   descriptionMd = markdown.markdown(
-      description,
+      form['description'],
       extensions=[
           'markdown.extensions.tables',
           'markdown.extensions.fenced_code',
@@ -178,37 +239,24 @@ def serveSearch(anything):
           tupleMessages=tupleMessages,
           queryMessages=queryMessages,
           table=table,
-          searchTemplate=searchTemplate,
-          tuples=tuples,
-          description=description,
           condensedAtt=condensedAtt,
           condenseOpts=condenseOpts,
           withNodesAtt=withNodesAtt,
-          expandAll=expandAll,
-          linked=linked,
-          batch=batch,
-          position=position,
-          opened=openedStr,
           pages=pages,
-          test=condensed and condenseType,
-          fileName=fileName,
+          prevOptions=prevOptions,
+          **form,
       )
-      if not export else
+      if not form['export'] else
       template(
           'export',
           dataSource=dataSource,
           css=css,
-          searchTemplate=searchTemplate,
-          description=descriptionMd,
-          tuples=tuples,
+          descriptionMd=descriptionMd,
           table=table,
-          condensed=condensed,
           condenseType=condenseType,
-          batch=batch,
-          position=position,
           colofon=header,
           provenance=provenance,
-          fileName=fileName,
+          **form,
       )
   )
 

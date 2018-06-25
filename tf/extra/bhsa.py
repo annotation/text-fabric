@@ -261,6 +261,8 @@ STANDARD_FEATURES = '''
 
 # for 4, 4b: voc_lex => g_lex, voc_lex_utf8 => g_lex_utf8
 
+PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
+
 
 class Bhsa(object):
   def __init__(
@@ -362,7 +364,7 @@ This notebook online:
       return CSS_FONT + CSS
     display(HTML(CSS))
 
-  def shbLink(self, n, text=None, className=None, asString=False):
+  def shbLink(self, n, text=None, className=None, asString=False, noUrl=False):
     api = self.api
     L = api.L
     T = api.T
@@ -398,7 +400,7 @@ This notebook online:
         if nType == 'chapter' else '{} {}:{}{}'.format(bookE, chapter, verse, F.label.v(n))
         if nType == 'half_verse' else '{} {}:{}'.format(bookE, chapter, verse)
     )
-    href = SHEBANQ.format(
+    href = '#' if noUrl else SHEBANQ.format(
         version=version,
         book=book,
         chapter=chapter,
@@ -409,13 +411,28 @@ This notebook online:
       title = 'show this passage in SHEBANQ'
     else:
       title = passageText
-    result = outLink(text, href, title=title, className=className)
+    if noUrl:
+      title = None
+    target = '' if noUrl else None
+    result = outLink(text, href, title=title, className=className, target=target)
     if asString:
       return result
     display(HTML(result))
 
   def webLink(self, n):
-    return self.shbLink(n, className='rwh', asString=True)
+    return self.shbLink(n, className='rwh', asString=True, noUrl=True)
+
+  def nodeFromDefaultSection(self, sectionStr):
+    api = self.api
+    T = api.T
+    match = PASSAGE_RE.match(sectionStr)
+    if not match:
+      return (f'Wrong shape: "{sectionStr}". Must be "book chapter:verse"', None)
+    (book, chapter, verse) = match.groups()
+    verseNode = T.nodeFromSection((book, int(chapter), int(verse)))
+    if verseNode is None:
+      return (f'Not a valid verse: "{sectionStr}"', None)
+    return ('', verseNode)
 
   def plain(
       self,
@@ -433,7 +450,7 @@ This notebook online:
     nType = F.otype.v(n)
     result = ''
     if asApi:
-      nodeRep = f' <span class="nd">{n}</span> ' if withNodes else ''
+      nodeRep = f' <a href="#" class="nd">{n}</a> ' if withNodes else ''
     else:
       nodeRep = f' *{n}* ' if withNodes else ''
 
@@ -541,7 +558,7 @@ This notebook online:
         boundaryClass += ' r'
       if superEnd > myEnd:
         boundaryClass += ' l'
-      nodePart = (f'<span class="nd">{superNode}</span>' if withNodes else '')
+      nodePart = (f'<a href="#" class="nd">{superNode}</a>' if withNodes else '')
       shl = highlights.get(superNode, None)
       shlClass = ''
       shlStyle = ''

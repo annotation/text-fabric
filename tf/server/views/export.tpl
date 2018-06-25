@@ -11,10 +11,32 @@ body {
 a:link, a:visited {
     text-decoration: None;
 }
-div.hline {
-    font-size: large;
-    font-style: italic;
+
+*,
+*:before,
+*:after {
+	box-sizing: border-box;
+}
+
+div.tline,.aline {
     text-align: center;
+}
+div.tline {
+    font-size: x-large;
+    font-style: italic;
+    padding: 2rem;
+}
+div.aline {
+    font-size: large;
+    font-weight: bold;
+    padding: 1rem;
+}
+pre.sections {
+	font-size: medium;
+	font-family: monospace;
+	width: calc(100% - 1rem);
+	margin: 0.3rem 0.3rem;
+    background-color: #ddeeff;
 }
 pre.tuples {
 	font-size: medium;
@@ -52,8 +74,6 @@ div.dtheadrow > span {
 }
 details.dtrow {
     border: 0.1rem solid #bbbbbb;
-    margin: 0.2rem 0;
-    padding: 0.2rem;
 }
 
 details.dtrow[open] {
@@ -101,6 +121,10 @@ img.hdlogo {
     max-width: 5rem;
     height: 4rem;
 }
+img.mainlogo {
+    max-width: 15rem;
+    height: 5rem;
+}
 div.hdlinks {
     flex: 0 1 auto;
     display: flex;
@@ -147,10 +171,11 @@ div.pval {
             {{!provenance}}
         </div>
         <div class="header">
-            <div class="hline">{{fileName}}</div>
+            <div class="tline">{{title}}</div>
+            <div class="aline">{{author}}</div>
         </div>
         <div class="description">
-            {{!description}}
+            {{!descriptionMd}}
         </div>
         <hr/>
         <div>
@@ -163,5 +188,11 @@ div.pval {
             {{!table}}
         </div>
         <hr/>
+        <div>
+            <p>
+               <a target="_blank" href="https://dans.knaw.nl/en">DANS (Data Archiving and Networked Services</a>
+              <img class="mainlogo" src="/server/static/dans.png" align="right"/>
+            </p>
+        </div>
     </body>
 </html>
