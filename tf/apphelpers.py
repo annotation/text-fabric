@@ -151,7 +151,7 @@ def prettyPre(
   else:
     hlStyle = f' style="background-color: {hl};"'
 
-  nodePart = (f'<span class="nd">{n}</span>' if withNodes else '')
+  nodePart = (f'<a href="#" class="nd">{n}</a>' if withNodes else '')
   className = extraApi.classNames.get(nType, None)
 
   return (
@@ -353,9 +353,6 @@ def compose(
     linked=1,
     **options,
 ):
-  if len(tuples) == 0:
-    return 'no results'
-
   api = extraApi.api
   F = api.F
 
@@ -363,33 +360,44 @@ def compose(
     condenseType = extraApi.condenseType
   item = condenseType if condensed else RESULT
 
-  firstResult = tuples[0][1]
-  html = (
-      f'''
+  tuplesHtml = []
+  doHeader = False
+  for (i, tup) in tuples:
+    if i is None:
+      if tup == 'results':
+        doHeader = True
+      else:
+        tuplesHtml.append(f'''
 <div class="dtheadrow">
-  <span>n</span><span>{"</span><span>".join(F.otype.v(n) for n in firstResult)}</span>
+  <span>n</span><span>{tup}</span>
 </div>
-'''
-      +
-      '\n'.join(
-          plainTuple(
-              extraApi,
-              tup,
-              i,
-              isCondensed=condensed,
-              condenseType=condenseType,
-              item=item,
-              linked=linked,
-              withNodes=withNodes,
-              position=position,
-              opened=i in opened,
-              asString=True,
-              **options,
-          )
-          for (i, tup) in tuples
-      )
-  )
-  return html
+''')
+      continue
+
+    if doHeader:
+      doHeader = False
+      tuplesHtml.append(f'''
+<div class="dtheadrow">
+  <span>n</span><span>{"</span><span>".join(F.otype.v(n) for n in tup)}</span>
+</div>
+''')
+    tuplesHtml.append(
+        plainTuple(
+            extraApi,
+            tup,
+            i,
+            isCondensed=condensed,
+            condenseType=condenseType,
+            item=item,
+            linked=linked,
+            withNodes=withNodes,
+            position=position,
+            opened=i in opened,
+            asString=True,
+            **options,
+        )
+    )
+  return '\n'.join(tuplesHtml)
 
 
 def table(
@@ -526,10 +534,11 @@ def runSearchCondensed(api, query, cache, condenseType):
   return (queryResults, messages)
 
 
-def outLink(text, href, title=None, className=None):
+def outLink(text, href, title=None, className=None, target='_blank'):
   titleAtt = '' if title is None else f' title="{title}"'
   classAtt = f' class="{className}"' if className else ''
-  return f'<a{classAtt} target="_blank" href="{href}"{titleAtt}>{text}</a>'
+  targetAtt = f' target="{target}"' if target else ''
+  return f'<a{classAtt}{targetAtt} href="{href}"{titleAtt}>{text}</a>'
 
 
 def getBoundary(api, n):

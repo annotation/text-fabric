@@ -5,6 +5,12 @@ a:link, a:visited {
     text-decoration: None;
 }
 
+*,
+*:before,
+*:after {
+	box-sizing: border-box;
+}
+
 /* PAGE */
 
 div.page {
@@ -19,6 +25,67 @@ div.leftcol {
     border-right: 1pt solid #aaaaaa;
     padding-left: 0.2rem;
     padding-right: 0.4rem;
+}
+#sidebar {
+    flex: 0 0 2rem;
+    height: 100%;
+    background-color: #dddddd;
+    border: 0.1rem solid #aaaaaa;
+}
+#sidebar a:link, #sidebar a:visited {
+    color: #333333;
+}
+#sidebar > div {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-end;
+    height: 8rem;
+    width: 2rem;
+    border-bottom: 0.1rem solid #aaaaaa;
+}
+#sidebar > div > a {
+    flex: 0 1 auto;
+    height: 2rem;
+    width: 8rem;
+    font-size: large;
+    transform: rotate(270deg);
+    transform-origin: left top;
+    text-align: left;
+}
+#sidebar > div.active {
+    background-color: #ffffff;
+    font-weight: bold;
+}
+#sidebarcont {
+    flex: 0 1 auto;
+    background-color: #dddddd;
+    height: 100%;
+}
+#sidebarcont > div {
+    display: none;
+    background-color: #ffffff;
+    border: 0.1rem solid #aaaaaa;
+    border-radius: 0.2rem;
+    padding: 0.5rem 0.3rem;
+    margin: 0rem 0.2rem;
+    width: 20rem;
+}
+#sidebarcont > div.active {
+    display: block;
+}
+div[status=help] {
+}
+div[status=load] {
+}
+div[status=options] {
+}
+div[status=export] {
+}
+details.help {
+    border: 0.1rem solid #aaaaaa;
+    border-radius: 0.2rem;
+    padding: 0.5rem 0.3rem;
+    margin: 0rem 0.2rem;
 }
 div.midcol {
     flex: 0 0 auto;
@@ -49,6 +116,10 @@ img.hdlogo {
     max-width: 5rem;
     height: 4rem;
 }
+img.mainlogo {
+    max-width: 15rem;
+    height: 5rem;
+}
 div.hdlinks {
     flex: 0 1 auto;
     display: flex;
@@ -67,6 +138,14 @@ div.hdlinks > a {
     text-decoration: none;
 }
 
+textarea.sections {
+	font-size: large;
+	font-family: monospace;
+	width: calc(100% - 1rem);
+	height: 4rem;
+	margin: 0.3rem 0.3rem;
+    background-color: #ddeeff;
+}
 textarea.tuples {
 	font-size: large;
 	font-family: monospace;
@@ -84,7 +163,7 @@ textarea.template {
     background-color: #ffeedd;
 }
 textarea.description {
-	font-size: small;
+	font-size: medium;
 	font-family: monospace;
 	width: calc(100% - 1rem);
 	height: 20rem;

@@ -140,6 +140,12 @@ def shapeMessages(messages):
   return ''.join(html)
 
 
+def setValues(options, source, form):
+  for (name, option, typ, acro, desc) in options:
+    value = source.get(name, None)
+    form[option] = value
+
+
 def getValues(options, form):
   values = {}
   for (name, option, typ, acro, desc) in options:
