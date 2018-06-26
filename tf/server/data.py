@@ -58,7 +58,7 @@ def makeTfServer(dataSource, locations, modules, port):
     def exposed_condenseTypes(self):
       extraApi = self.extraApi
       api = extraApi.api
-      return (extraApi.condenseType, api.C.levels.data)
+      return (extraApi.condenseType, extraApi.exampleSection, api.C.levels.data)
 
     def exposed_search(
         self, query, tuples, sections, condensed, condenseType, batch,

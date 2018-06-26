@@ -27,6 +27,13 @@ function sidebar() {
     }
   })
 }
+
+function jobs() {
+  var jobh = $('#jobh')
+  $('#job').change(function(e) {
+    jobh.val(e.target.value)
+  })
+}
 function reactive() {
   $('.r').change(function(e) {
     $('#go').submit()
@@ -156,6 +163,7 @@ function details() {
 
 $(function(){
   sidebar()
+  jobs()
   pageLinks()
   sections()
   tuples()

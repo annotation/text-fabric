@@ -1,3 +1,4 @@
+import sys
 import os
 import datetime
 import time
@@ -91,6 +92,7 @@ def getFormData():
   form['sections'] = request.forms.sections.replace('\r', '')
   form['fileName'] = request.forms.fileName.strip()
   form['previous'] = request.forms.previous
+  form['previousdo'] = request.forms.previousdo
   form['fileNameHidden'] = request.forms.fileNameHidden.strip()
   form['author'] = request.forms.author.strip()
   form['title'] = request.forms.title.strip()
@@ -131,12 +133,13 @@ def readFormData(source):
 
 def getPrevOptions(current):
   prevs = glob(f'{dataSource}-*.tfquery')
-  options = ['<option value=''>none</option>']
+  options = []
   for prev in prevs:
-    prevRep = prev[0:-8].split('-', 1)[1]
-    if prevRep == current:
-      continue
-    options.append(f'<option value="{prevRep}">{prevRep}</option>')
+    prevVal = prev[0:-8].split('-', 1)[1]
+    if prevVal == '':
+      prevVal = 'DefaulT'
+    selected = ' selected ' if prevVal == current else ''
+    options.append(f'<option value="{prevVal}"{selected}>{prevVal}</option>')
   return '\n'.join(options)
 
 
@@ -159,11 +162,14 @@ def serveLocal(filepath):
 @get('/<anything:re:.*>')
 def serveSearch(anything):
   form = getFormData()
-  if form['previous'] != '':
-    previous = readFormData(form['previous'])
+  previousDo = form['previousdo']
+  if previousDo != '' or form['fileName'] == '':
+    prev = previousDo if previousDo else 'DefaulT'
+    previous = readFormData(prev)
     if previous is not None:
       form = previous
-  form['previous'] = ''
+    form['fileName'] = prev
+  form['previousdo'] = ''
   condensedAtt = ' checked ' if form['condensed'] else ''
   withNodesAtt = ' checked ' if form['withNodes'] else ''
 
@@ -179,7 +185,7 @@ def serveSearch(anything):
   css = api.css()
   provenance = getProvenance(form)
 
-  (defaultCondenseType, condenseTypes) = api.condenseTypes()
+  (defaultCondenseType, exampleSection, condenseTypes) = api.condenseTypes()
   condenseType = form['condensetp'] or defaultCondenseType
   condenseOpts = shapeCondense(condenseTypes, condenseType)
 
@@ -241,6 +247,8 @@ def serveSearch(anything):
           table=table,
           condensedAtt=condensedAtt,
           condenseOpts=condenseOpts,
+          defaultCondenseType=defaultCondenseType,
+          exampleSection=exampleSection,
           withNodesAtt=withNodesAtt,
           pages=pages,
           prevOptions=prevOptions,
