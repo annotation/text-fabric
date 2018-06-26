@@ -249,6 +249,7 @@ ATOMS = dict(
 SUPER = dict((y, x) for (x, y) in ATOMS.items())
 
 SECTION = {'book', 'chapter', 'verse', 'half_verse'}
+VERSE = {'verse', 'half_verse'}
 
 NONE_VALUES = {None, 'NA', 'none', 'unknown'}
 
@@ -465,14 +466,16 @@ This notebook online:
       if nType == 'half_verse':
         rep += F.label.v(n)
       rep = mdEsc(htmlEsc(rep))
-      if nType in {'verse', '_half_verse'}:
+      if nType in VERSE:
+        if linked:
+          rep = self.shbLink(n, text=rep, asString=True)
         rep += ' <span class="hb">' + T.text(L.d(n, otype="word")) + '</span>'
     elif nType == 'lex':
       rep = mdEsc(htmlEsc(F.voc_lex_utf8.v(n)))
     else:
       rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'))))
 
-    if linked:
+    if linked and nType not in VERSE:
       rep = self.shbLink(n, text=rep, asString=True)
 
     if hebrew:

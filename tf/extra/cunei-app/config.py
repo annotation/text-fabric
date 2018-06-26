@@ -24,8 +24,8 @@ port = 18982
 webport = 8002
 
 options = (
-    ('lineart', 'lineart', 'checkbox', 'linea', 'show lineart'),
-    ('linenumbers', 'lineNumbers', 'checkbox', 'linen', 'show line numbers'),
+    ('lineart', 'checkbox', 'linea', 'show lineart'),
+    ('lineNumbers', 'checkbox', 'linen', 'show line numbers'),
 )
 
 condenseType = 'tablet'

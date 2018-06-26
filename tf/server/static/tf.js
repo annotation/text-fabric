@@ -7,23 +7,36 @@ function pageLinks() {
 }
 
 function sidebar() {
+  var side = $('#side')
+  var part = side.val()
   var headers = $('#sidebar div')
   var bodies = $('#sidebarcont div')
+  if (part) {
+    var header = $('#sidebar div[status="'+part+'"]')
+    var body = $('#sidebarcont div[status="'+part+'"]')
+    headers.removeClass('active')
+    bodies.removeClass('active')
+    header.addClass('active')
+    body.addClass('active')
+  }
   $('#sidebar a').click(function(e) {
     e.preventDefault()
     var header = $(this).closest('div')
     var part = header.attr('status')
+    var side = $('#side')
     var body = $('#sidebarcont div[status="'+part+'"]')
     var isActive = header.hasClass('active')
     headers.removeClass('active')
     bodies.removeClass('active')
     if (isActive) {
-      body.removeClass('active')
       header.removeClass('active')
+      body.removeClass('active')
+      side.val('')
     }
     else {
-      body.addClass('active')
       header.addClass('active')
+      body.addClass('active')
+      side.val(part)
     }
   })
 }
