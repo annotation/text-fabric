@@ -104,12 +104,21 @@ div.pretty {
 }
 a.rwh {
     font-size: x-small;
-    color: #333333;
+    background-color: #ddeeff;
 }
-.sq {
+a.sq {
     font-size: small;
-    color: #66aa55;
+    background-color: #eeffdd;
 }
+a.nd {
+    font-size: small;
+    background-color: #eeffdd;
+}
+a.rwh:link,a.rwh:visited,
+a.sq:link,a.sq:visited,
+a.nd:link,a.nd:visited {
+    color: #444444;
+} 
 div.colofon {
     display: flex;
     flex-flow: row nowrap;

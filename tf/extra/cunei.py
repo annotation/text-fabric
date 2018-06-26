@@ -543,6 +543,7 @@ class Cunei(Atf):
     self.corpus = f'{repo}/{CORPUS}'
     self.corpusFull = CORPUS_FULL
     self.condenseType = CONDENSE_TYPE
+    self.exampleSection = 'P005381'
     TF = Fabric(locations=[self.corpus], modules=[''], silent=True)
     api = TF.load('', silent=True)
     allFeatures = TF.explore(silent=True, show=True)

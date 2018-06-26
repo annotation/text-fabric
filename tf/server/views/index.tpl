@@ -34,13 +34,12 @@
                         {{!header}}
                     </div>
                     <details class="help">
-                        <summary>Section Pad</summary>
-                        <p>You can enter a reference here,
-                           such as <code>Genesis 1:1</code> (Hebrew Bible) or
-                           <code>P003581</code> (cuneiform)
+                        <summary>{{defaultCondenseType.capitalize()}} pad</summary>
+                        <p>Enter a reference here,
+                           such as <code>{{exampleSection}}</code>
                         </p>
-                        <p>You can also get references here by clicking on a
-                           reference in the result list.
+                        <p>Get {{defaultCondenseType}}s here by clicking on a
+                           {{defaultCondenseType}} reference in the result list.
                         </p>
                         <p>Click go to fetch the results</p>
                         <p>The results of the references appear in the result list,
@@ -81,7 +80,7 @@
                         <p>Click the reference, to add it to the *reference pad*</p>
                         <p>Use the navigation button to walk through the results.<p>
                         <p>Results that you have expanded remain in view</p>
-                        <p>group results by container: see the *condense* option</p>
+                        <p>group results by {{defaultCondenseType}}: see the *condense* option</p>
                     </details>
                     <details class="help">
                         <summary>Load</summary>
@@ -92,7 +91,7 @@
                     </details>
                     <details class="help">
                         <summary>Export</summary>
-                        <p>Export your results. Provide name, title, and description (markdown is supported),
+                        <p>Export your results. Provide your name, title, and description (markdown is supported),
                            and click *export*.</p>
                         <p>The exported page opens in a new window or tab, formatted for saving as PDF.</p>
                         <p>Use your browser to export this page to PDF.</p>
@@ -106,24 +105,36 @@
                         <p><b>Link column</b> The column number whose contents will be hyperlinked to the online version
                            of the corpus.</p>
                         <p><b>Condense results</b> Show the results grouping all nodes in result tuples into
-                           containers. The containers are *pretty*-displayed, with the result nodes in it highlighted.
-                           Choose the container type as you whish.</p>
+                           containers, such as {{defaultCondenseType}}s.
+                           The containers are *pretty*-displayed, with the result nodes in it highlighted.
+                           Choose the container type as you wish.</p>
                         <p><b>Show nodes</b> Show the node number for every object in the results.
-                           The node number is your access to all information about that object.</p>
+                           The node number is your access to all information about that object.
+                           If you click on it, it will be copied to the *node pad*.</p>
                     </details>
                 </div>
                 <div status="load">
                     <div>
-                        Name of this query:
+                        Name of this job:
                     </div>
                     <div>
                         <input
-                            class="name" type="text" name="fileName" value="{{fileName}}"
+                            class="r name" type="text"
+                            name="fileName" value="{{fileName}}"
                             placeholder="save as"
                         />
                     </div>
                     <div>Other queries in this directory (click to load):</div>
-                    <select class="r" name="previous" value="{{previous}}">
+                    <input
+                        type="hidden"
+                        id="jobh"
+                        name="previousdo" value=""
+                    />
+                    <select
+                        class="r"
+                        id="job"
+                        name="previous" value="{{previous}}"
+                    >
                         {{!prevOptions}}
                     </select>
                 </div>
@@ -193,20 +204,23 @@
                 </div>
             </div>
             <div class="leftcol">
+                <p class="padh">{{defaultCondenseType}} pad</p>
                 <textarea
                     id="sections" class="sections" name="sections"
-                    placeholder="section pad"
+                    placeholder="{{exampleSection}}"
                 >{{sections}}</textarea>
+                <p class="padh">node pad</p>
                 <textarea
                     id="tuples" class="tuples" name="tuples"
-                    placeholder="node pad"
+                    placeholder="100,101,102"
                 >{{tuples}}</textarea>
                 <div class="messages">
                     {{!tupleMessages}}
                 </div>
+                <p class="padh">search pad</p>
                 <textarea
                     class="template" name="searchTemplate"
-                    placeholder="search pad"
+                    placeholder="{{defaultCondenseType}}"
                 >{{searchTemplate}}</textarea>
                 <div class="messages">
                     {{!queryMessages}}

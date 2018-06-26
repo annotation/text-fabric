@@ -277,6 +277,7 @@ class Bhsa(object):
     self.asApi = asApi
     self.version = version
     self.condenseType = CONDENSE_TYPE
+    self.exampleSection = 'Genesis 1:1'
 
     standardFeatures = (
         STANDARD_FEATURES.replace('voc_', 'g_') if version in {'4', '4b'} else STANDARD_FEATURES
@@ -464,6 +465,8 @@ This notebook online:
       if nType == 'half_verse':
         rep += F.label.v(n)
       rep = mdEsc(htmlEsc(rep))
+      if nType in {'verse', '_half_verse'}:
+        rep += ' <span class="hb">' + T.text(L.d(n, otype="word")) + '</span>'
     elif nType == 'lex':
       rep = mdEsc(htmlEsc(F.voc_lex_utf8.v(n)))
     else:
