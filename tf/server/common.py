@@ -141,15 +141,15 @@ def shapeMessages(messages):
 
 
 def setValues(options, source, form):
-  for (name, option, typ, acro, desc) in options:
-    value = source.get(name, None)
+  for (option, typ, acro, desc) in options:
+    value = source.get(option, None)
     form[option] = value
 
 
 def getValues(options, form):
   values = {}
-  for (name, option, typ, acro, desc) in options:
-    value = form.get(name, None)
+  for (option, typ, acro, desc) in options:
+    value = form.get(option, None)
     if typ == 'checkbox':
       value = True if value else False
     values[option] = value
@@ -158,14 +158,19 @@ def getValues(options, form):
 
 def shapeOptions(options, values):
   html = []
-  for (name, option, typ, acro, desc) in options:
+  for (option, typ, acro, desc) in options:
     value = values[option]
     if typ == 'checkbox':
       value = 'checked' if value else ''
     else:
       value = f'value="{value}"'
     html.append(
-        f'<div><input class="r" type="{typ}" id="{acro}" name="{name}" {value}/> {desc}</div>'
+        f'''
+      <div>
+        <input
+          class="r" type="{typ}" id="{acro}" name="{option}" {value}
+        /> <span class="ilab">{desc}</span>
+      </div>'''
     )
   return '\n'.join(html)
 

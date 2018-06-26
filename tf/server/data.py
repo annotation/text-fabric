@@ -148,7 +148,7 @@ def makeTfServer(dataSource, locations, modules, port):
           linked=linked,
           **options,
       )
-      return (table, tupleMessages, queryMessages, sectionMessages, start, total)
+      return (table, sectionMessages, tupleMessages, queryMessages, start, total)
 
   return ThreadedServer(TfService, port=port, protocol_config={
       'allow_public_attrs': True,

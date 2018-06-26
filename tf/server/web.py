@@ -93,6 +93,7 @@ def getFormData():
   form['fileName'] = request.forms.fileName.strip()
   form['previous'] = request.forms.previous
   form['previousdo'] = request.forms.previousdo
+  form['side'] = request.forms.side
   form['fileNameHidden'] = request.forms.fileNameHidden.strip()
   form['author'] = request.forms.author.strip()
   form['title'] = request.forms.title.strip()
@@ -220,6 +221,7 @@ def serveSearch(anything):
       queryMessages = shapeMessages(queryMessages)
   else:
     table = f'no {resultKind}s'
+    sectionMessages = ''
     tupleMessages = ''
     queryMessages = ''
 
@@ -242,6 +244,7 @@ def serveSearch(anything):
           css=css,
           header=header,
           options=shapeOptions(options, values),
+          sectionMessages=sectionMessages,
           tupleMessages=tupleMessages,
           queryMessages=queryMessages,
           table=table,

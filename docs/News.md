@@ -6,6 +6,20 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.4
+
+Improved interface and functionality of the text-fabric browser:
+
+* you can save your work
+* you can enter verse references and tablet P numbers
+* there is help
+* there is a side bar
+
+???+ cautions "Docs not up to date"
+    The API docs are not up-to-date: there are new functions in the Bhsa and Cunei APIs.
+    The server/service/client apis are not completely spelled out.
+    However, the help for the text-fabric browser is included in the interface itself.
+
 ## 5.3.3
 
 Small fix: command line args for text-fabric.
