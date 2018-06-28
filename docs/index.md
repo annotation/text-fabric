@@ -131,6 +131,66 @@ There you'll find links to further help.
     You can close the data server by pressing Ctrl-C in the terminal where you have
     started `text-fabric` up.
 
+# Frequently Occurring Trouble
+
+??? caution "Older versions"
+    Older versions of Python and Text-Fabric may be in the way.
+    The following hygenic measures are known to be beneficial:
+
+    ??? abstract "Python related"
+        When you have upgraded Python, remove PATH statements for older versions from your system startup files.
+      
+        * For the Macos: look at `.bashrc`, `.bash_profile` in your home directory.
+        * For Windows: on the command prompt, say `echo %path%` to see what the content of your PATH
+          variable is. If you see references to older versions of python than you actually work with,
+          they need to be removed. [Here is how](https://www.computerhope.com/issues/ch000549.htm)
+        
+        ???+ caution "Only for Python3"
+            Do not remove references to Python 2.*, but only outdated Python 3.* versions. 
+
+    ??? abstract "Text-Fabric related"
+        Sometimes `pip3 uninstall text-fabric` fails to remove all traces of Text-Fabric.
+        Here is how you can remove them manually:
+
+        * locate the `bin` directory of the current Python, it is something like
+
+          * (Macos regular Python) `/Library/Frameworks/Python.framework/Versions/3.7/bin`
+          * (Windows Anaconda) `C:\Users\You\Anaconda3\Scripts`
+
+          Remove the file `text-fabric` from this directory if it exists.
+
+        * locate the `site-packages` directory of the current Python, it is something like
+
+          * (Macos regular Python)
+            `/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages`
+
+            Remove the subdirectory `tf` from this location, plus all files with `text-fabric` in the name.
+
+        * After this, you can make a fresh install of `text-fabric`:
+
+          ```sh
+          pip3 install text-fabric
+          ```
+
+??? caution "Newest version of Text-Fabric does not show up"
+    When you get errors doing `pip3 install text-fabric`, there is probably an older version around.
+    You have to say
+
+    ```sh
+    pip3 install --upgrade text-fabric
+    ```
+
+    If this still does not download the most recent version of `text-fabric`, it may have been cauched by caching.
+    Then say:
+
+    ```sh
+    pip3 install --upgrade --no-cache-dir text-fabric
+    ```
+
+    You can check what the newest distributed version of Text-Fabric is on
+    [PyPi](https://pypi.org/project/text-fabric/).
+
+
 # Documentation
 
 There is extensive documentation.

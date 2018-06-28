@@ -61,9 +61,9 @@ Jump off to the [docs](https://dans-labs.github.io/text-fabric/)
 
 In order to work with Text-Fabric, you need a dataset to operate on,
 such as the
-[Biblia Hebraica Stuttgartensia Amstelodamensis](https://github/etcbc/bhsa)
+[Biblia Hebraica Stuttgartensia Amstelodamensis](https://github.com/etcbc/bhsa)
 or the
-[Proto-Cuneiform tablets from Uruk IV/III](https://github/nino-cunei/uruk)
+[Proto-Cuneiform tablets from Uruk IV/III](https://github.com/nino-cunei/uruk)
 
 
 <a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/Dans-labs/text-fabric/directory/"><img src="/docs/images/swh-logo-archive.png" width="100" align="left"/></a>

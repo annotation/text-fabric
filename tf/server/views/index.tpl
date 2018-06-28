@@ -46,9 +46,10 @@
                            to compare them to each other.</p>
                         <p>Describe your study and export your work as a PDF with links
                            to archived copies of the {{dataSource}} corpus and this tool.</p>
-                        <p>You can open multiple windows and tabs with this address,
+                        <p>Open <b>multiple windows</b> and tabs** with this address,
                            they all communicate with one and the same process that serves the data;
-                           as long as that process runs, new tabs and windows open quickly.</p>
+                           as long as that process runs, new tabs and windows open quickly.
+                           See <i>Load</i>.</p>
                         <p>When you terminate <code>text-fabric</code> on the command line,
                            the data process will also be terminated.</p>
                     </details>
@@ -85,13 +86,18 @@
                     </details>
                     <details class="help">
                         <summary>Result list</summary>
+                        <p>Group results by {{defaultCondenseType}}:
+                           see the <i>condense</i> option.</p>
                         <p>Click the triangle to expand a result into a pretty view.</p>
+                        <p>If nothing happens, check the <i>condense</i> option:
+                           objects that are bigger than the condense object type,
+                           will not be expanded into pretty view. Either uncheck the 
+                           <i>condense</i> option or select a bigger condense type.</p>
                         <p>Click the <i>expand all</i> checkbox to collapse and open all results.</p>
                         <p>Click the sequence number to add the nodes in this result to the <i>node pad</i>.</p>
                         <p>Click the reference, to add it to the <i>reference pad</i>.</p>
                         <p>Use the navigation button to walk through the results.<p>
                         <p>Results that you have expanded remain in view.</p>
-                        <p>group results by {{defaultCondenseType}}: see the <i>condense</i> option.</p>
                     </details>
                     <details class="help">
                         <summary>Load</summary>
@@ -99,7 +105,9 @@
                            current directory.</p>
                         <p>By default this is <code>{{dataSource}}-DefaulT.tfquery</code>.</p>
                         <p>Save your work under an other name, by typing a new name in the name field.</p>
-                        <p>Load a previous job by selecting the name under which it has been saved.</p>
+                        <p>Load a previous job by selecting the name under which it has been saved.
+                           Work with multiple queries in multiple tabs with only one running
+                           <code>text-fabric</code> instance.</p>
                     </details>
                     <details class="help">
                         <summary>Options</summary>
@@ -141,19 +149,23 @@
                             placeholder="save as"
                         />
                     </div>
-                    <p class="ilab">Other queries in this directory (click to load):</p>
+                    <p class="ilab">Other queries in this directory:</p>
                     <input
                         type="hidden"
                         id="jobh"
                         name="previousdo" value=""
                     />
                     <select
-                        class="r"
+                        class=""
                         id="job"
                         name="previous" value="{{previous}}"
                     >
                         {{!prevOptions}}
                     </select>
+                    <button
+                        class="xl" type="submit" formtarget="_new"
+                    > Load in new tab
+                    </button>
                 </div>
                 <div status="options">
                     <div>
