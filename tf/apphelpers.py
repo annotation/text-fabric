@@ -19,16 +19,18 @@ def dm(md):
 
 
 def header(extraApi):
-  return f'''
-    <img class="hdlogo" src="/data/static/logo.png"/>
-    <div class="hdlinks">
-      {extraApi.dataLink}
-      {extraApi.featureLink}
-      {extraApi.tfsLink}
-      {extraApi.tutLink}
-    </div>
-    <img class="hdlogo" src="/server/static/logo.png"/>
-  '''
+  return (
+      f'''
+<div class="hdlinks">
+  {extraApi.dataLink}
+  {extraApi.featureLink}
+  {extraApi.tfsLink}
+  {extraApi.tutLink}
+</div>
+''',
+      f'<img class="hdlogo" src="/data/static/logo.png"/>',
+      f'<img class="hdlogo" src="/server/static/logo.png"/>',
+  )
 
 
 def plainTuple(
@@ -685,3 +687,15 @@ def _getHighlights(api, tuples, highlights, colorMap, condenseType, multiple=Fal
         if thisHighlight is not None:
           newHighlights[n] = thisHighlight
   return newHighlights
+
+
+def getContext(api, nodes):
+  Fs = api.Fs
+  Fall = api.Fall
+
+  rows = []
+  feats = tuple(sorted(Fall()))
+  rows.append(('node',) + feats)
+  for n in sorted(nodes):
+    rows.append((n,) + tuple(Fs(f).v(n) for f in feats))
+  return tuple(rows)

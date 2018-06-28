@@ -6,6 +6,12 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.4.1
+
+Text-Fabric browser: at export a csv file with all results is created, and also a markdown file with metadata.
+
+Small fixes.
+
 ## 5.4
 
 Improved interface and functionality of the text-fabric browser:
