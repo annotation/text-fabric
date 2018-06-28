@@ -4,7 +4,7 @@
     
     <url>
      <loc>/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -12,7 +12,7 @@
     
     <url>
      <loc>/News/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -21,25 +21,25 @@
         
     <url>
      <loc>/Api/General/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/Api/Bhsa/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/Api/Cunei/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/Api/Lib/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -49,13 +49,13 @@
         
     <url>
      <loc>/Server/Service/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/Server/Web/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -65,19 +65,19 @@
         
     <url>
      <loc>/Model/Data-Model/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/Model/File-formats/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/Model/Optimizations/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -87,13 +87,13 @@
         
     <url>
      <loc>/Create/CreateTF/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/Create/ExampleText/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -103,7 +103,7 @@
         
     <url>
      <loc>/Search/</loc>
-     <lastmod>2018-06-23</lastmod>
+     <lastmod>2018-06-28</lastmod>
      <changefreq>daily</changefreq>
     </url>
         

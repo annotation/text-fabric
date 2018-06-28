@@ -643,7 +643,25 @@ There you'll find links to further help.</p>
 in different browsers and windows and tabs.
 They all use the same data, which only gets loaded when the command <code>text-fabric</code> is run.
 If you leave it on all day, you have instant access to the data.</p></details><details class="hint"><summary>Close</summary><p>You can close the data server by pressing Ctrl-C in the terminal where you have
-started <code>text-fabric</code> up.</p></details><h1 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h1>
+started <code>text-fabric</code> up.</p></details><h1 id="frequently-occurring-trouble">Frequently Occurring Trouble<a class="headerlink" href="#frequently-occurring-trouble" title="Permanent link">&para;</a></h1>
+<details class="caution"><summary>Older versions</summary><p>Older versions of Python and Text-Fabric may be in the way.
+The following hygenic measures are known to be beneficial:</p><details class="abstract"><summary>Python related</summary><p>When you have upgraded Python, remove PATH statements for older versions from your system startup files.</p><ul><li>For the Macos: look at <code>.bashrc</code>, <code>.bash_profile</code> in your home directory.</li><li>For Windows: on the command prompt, say <code>echo %path%</code> to see what the content of your PATH
+  variable is. If you see references to older versions of python than you actually work with,
+  they need to be removed. <a href="https://www.computerhope.com/issues/ch000549.htm">Here is how</a></li></ul><details class="caution" open="open"><summary>Only for Python3</summary><p>Do not remove references to Python 2.<em>, but only outdated Python 3.</em> versions. </p></details></details><details class="abstract"><summary>Text-Fabric related</summary><p>Sometimes <code>pip3 uninstall text-fabric</code> fails to remove all traces of Text-Fabric.
+Here is how you can remove them manually:</p><ul><li><p>locate the <code>bin</code> directory of the current Python, it is something like</p></li><li><p>(Macos regular Python) <code>/Library/Frameworks/Python.framework/Versions/3.7/bin</code></p></li><li>(Windows Anaconda) <code>C:\Users\You\Anaconda3\Scripts</code></li></ul><p>Remove the file <code>text-fabric</code> from this directory if it exists.</p><ul><li><p>locate the <code>site-packages</code> directory of the current Python, it is something like</p></li><li><p>(Macos regular Python)
+    <code>/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages</code></p><p>Remove the subdirectory <code>tf</code> from this location, plus all files with <code>text-fabric</code> in the name.</p></li><li><p>After this, you can make a fresh install of <code>text-fabric</code>:</p></li></ul><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install text-fabric
+</pre></div>
+</td></tr></table>
+</details></details><details class="caution"><summary>Newest version of Text-Fabric does not show up</summary><p>When you get errors doing <code>pip3 install text-fabric</code>, there is probably an older version around.
+You have to say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install --upgrade text-fabric
+</pre></div>
+</td></tr></table>
+<p>If this still does not download the most recent version of <code>text-fabric</code>, it may have been cauched by caching.
+Then say:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install --upgrade --no-cache-dir text-fabric
+</pre></div>
+</td></tr></table>
+<p>You can check what the newest distributed version of Text-Fabric is on
+<a href="https://pypi.org/project/text-fabric/">PyPi</a>.</p></details><h1 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h1>
 <p>There is extensive documentation.
 If you start using the Text-Fabric API in your programs, you'll need it.</p>
 <details class="note"><summary>Reference</summary><p>The pages you are reading now are the reference docs.</p><ul><li>It explains the <a href="https://dans-labs.github.io/text-fabric/Model/Data-Model/">data model</a></li><li>It specifies the <a href="https://dans-labs.github.io/text-fabric/Model/File-formats/">file format</a></li><li>It holds the <a href="https://dans-labs.github.io/text-fabric/Api/General/">api docs</a></li></ul></details><details class="note" open="open"><summary>Tutorials</summary><p>There are tutorials and exercises to guide you into increasingly involved tasks
