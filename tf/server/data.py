@@ -2,7 +2,10 @@ import sys
 import rpyc
 from rpyc.utils.server import ThreadedServer
 
-from tf.apphelpers import runSearch, runSearchCondensed, compose
+from tf.apphelpers import (
+    runSearch, runSearchCondensed,
+    compose, getContext
+)
 from .common import getConfig
 
 TIMEOUT = 120
@@ -20,6 +23,13 @@ def batchAround(nResults, position, batch):
   if right > nResults:
     right = nResults
   return (left, right)
+
+
+def allNodes(table):
+  allN = set()
+  for tup in table:
+    allN |= set(tup)
+  return allN
 
 
 def makeTfServer(dataSource, locations, modules, port):
@@ -132,7 +142,7 @@ def makeTfServer(dataSource, locations, modules, port):
       allResults = (
           ((None, 'sections'),) +
           sectionResults +
-          ((None, 'tuples'),) +
+          ((None, 'nodes'),) +
           tupleResults +
           ((None, 'results'),) +
           beforeResults +
@@ -149,6 +159,56 @@ def makeTfServer(dataSource, locations, modules, port):
           **options,
       )
       return (table, sectionMessages, tupleMessages, queryMessages, start, total)
+
+    def exposed_csvs(self, query, tuples, sections, condensed, condenseType):
+      extraApi = self.extraApi
+      api = self.extraApi.api
+
+      sectionResults = []
+      if sections:
+        sectionLines = sections.split('\n')
+        for sectionLine in sectionLines:
+          sectionLine = sectionLine.strip()
+          (message, node) = extraApi.nodeFromDefaultSection(sectionLine)
+          if not message:
+            sectionResults.append((node,))
+      sectionResults = tuple(sectionResults)
+
+      tupleResults = ()
+      if tuples:
+        tupleLines = tuples.split('\n')
+        try:
+          tupleResults = tuple(
+              tuple(
+                  int(n) for n in t.strip().split(',')
+              )
+              for t in tupleLines
+              if t.strip()
+          )
+        except Exception as e:
+          pass
+
+      queryResults = ()
+      if query:
+        (queryResults, queryMessages) = (
+            runSearchCondensed(api, query, cache, condenseType)
+            if condensed and condenseType else
+            runSearch(api, query, cache)
+        )
+
+        if queryMessages:
+          queryResults = ()
+
+      csvs = (
+          ('sections', sectionResults),
+          ('nodes', tupleResults),
+          ('results', queryResults),
+      )
+      context = getContext(
+          api,
+          allNodes(sectionResults) | allNodes(tupleResults) | allNodes(queryResults)
+      )
+      return (csvs, context)
 
   return ThreadedServer(TfService, port=port, protocol_config={
       'allow_public_attrs': True,

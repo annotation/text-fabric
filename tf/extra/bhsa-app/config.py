@@ -12,7 +12,7 @@ PARALLELS = f'parallels/tf/{VERSION}'
 
 PROVENANCE = dict(
     corpus=f'BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis ({VERSION})',
-    corpusDoi=f'<a href="https://doi.org/10.5281/zenodo.1007624">10.5281/zenodo.1007624</a>',
+    corpusDoi=('10.5281/zenodo.1007624', 'https://doi.org/10.5281/zenodo.1007624'),
 )
 
 locations = [DATABASE]

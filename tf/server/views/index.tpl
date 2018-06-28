@@ -46,6 +46,11 @@
                            to compare them to each other.</p>
                         <p>Describe your study and export your work as a PDF with links
                            to archived copies of the {{dataSource}} corpus and this tool.</p>
+                        <p>You can open multiple windows and tabs with this address,
+                           they all communicate with one and the same process that serves the data;
+                           as long as that process runs, new tabs and windows open quickly.</p>
+                        <p>When you terminate <code>text-fabric</code> on the command line,
+                           the data process will also be terminated.</p>
                     </details>
                     <details class="help sections">
                         <summary>{{defaultCondenseType.capitalize()}} pad</summary>
@@ -112,6 +117,11 @@
                         <summary>Export</summary>
                         <p>Export your results. Provide your name, title, and description (markdown is supported),
                            and click <b>Export</b>.</p>
+                        <p>Several things will be exported: a PDF that reflects the results you see on your screen,
+                           complete with metadata and description; a markdown file with the metadata and description;
+                           tab-separated files corresponding to the results of the the contents of the pads: these
+                           files contain the node numbers only, but there is also a file <code>CONTEXT.tsv</code>
+                           that contains full corpus information of every node in every result. 
                         <p>The exported page opens in a new window or tab, formatted for saving as PDF.</p>
                         <p>Use your browser to export this page to PDF.</p>
                         <p>The PDF will contain a complete description of your work, with persistent links
@@ -194,7 +204,7 @@
                         </div>
                         <p class="buttons">
                             <button
-                                class="xl" type="submit" formtarget="_new" name="export" value="1"
+                                class="xl" type="submit" formtarget="_new" id="exph" name="export" value="1"
                             > Export
                             </button>
                         </p>

@@ -48,7 +48,9 @@ stray processes.
 
 
 def filterProcess(proc):
-  commandName = proc.info['name'].lower()
+  procName = proc.info['name']
+  commandName = '' if procName is None else procName.lower()
+  # commandName = proc.info['name'].lower()
 
   found = False
   kind = None

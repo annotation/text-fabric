@@ -1,4 +1,3 @@
-import sys
 import os
 import datetime
 import time
@@ -53,10 +52,17 @@ def getProvenance(form):
   author = form['author']
 
   prov = config.PROVENANCE
-  tool = f'{NAME} {VERSION}'
-  toolDoi = f'<a href="{DOI_URL}">{DOI}</a>'
 
-  return f'''
+  corpus = prov['corpus']
+  (corpusDoi, corpusUrl) = prov['corpusDoi']
+  corpusDoiHtml = f'<a href="{corpusUrl}">{corpusDoi}</a>'
+  corpusDoiMd = f'[{corpusDoi}]({corpusUrl})'
+
+  tool = f'{NAME} {VERSION}'
+  toolDoiHtml = f'<a href="{DOI_URL}">{DOI}</a>'
+  toolDoiMd = f'[{DOI}]({DOI_URL})'
+
+  html = f'''
     <div class="pline">
       <div class="pname">Job:</div><div class="pval">{job}</div>
     </div>
@@ -68,13 +74,59 @@ def getProvenance(form):
     </div>
     <div class="pline">
       <div class="pname">Corpus:</div>
-      <div class="pval">{prov["corpus"]} {prov["corpusDoi"]}</div>
+      <div class="pval">{corpus} {corpusDoiHtml}</div>
     </div>
     <div class="pline">
       <div class="pname">Tool:</div>
-      <div class="pval">{tool} {toolDoi}</div>
+      <div class="pval">{tool} {toolDoiHtml}</div>
     </div>
   '''
+
+  md = f'''
+meta | data
+--- | ---
+Job | {job}
+Author | {author}
+Created | {now}
+Corpus | {corpus} {corpusDoiMd}
+Tool | {tool} {toolDoiMd}
+'''
+
+  return (html, md)
+
+
+def writeAbout(header, provenance, form):
+  fileName = form['fileName']
+  dirName = f'{dataSource}-{fileName}'
+  if not os.path.exists(dirName):
+    os.makedirs(dirName, exist_ok=True)
+  with open(f'{dirName}/about.md', 'w') as ph:
+    ph.write(f'''
+{header}
+
+{provenance}
+
+# {form["title"]}
+
+## {form["author"]}
+
+{form["description"]}
+
+''')
+
+
+def writeCsvs(csvs, context, form):
+  fileName = form['fileName']
+  dirName = f'{dataSource}-{fileName}'
+  if not os.path.exists(dirName):
+    os.makedirs(dirName, exist_ok=True)
+  for (csv, data) in csvs:
+    with open(f'{dirName}/{csv}.tsv', 'w') as th:
+      for tup in data:
+        th.write('\t'.join(str(t) for t in tup) + '\n')
+  with open(f'{dirName}/CONTEXT.tsv', 'w') as th:
+      for tup in context:
+        th.write('\t'.join('' if t is None else str(t) for t in tup) + '\n')
 
 
 def getInt(x, default=1):
@@ -112,9 +164,10 @@ def getFormData():
 
 
 def writeFormData(form):
+  excludedFields = {'export'}
   thisFileName = form['fileName'] or ''
   with open(f'{dataSource}-{thisFileName}.tfquery', 'w') as tfj:
-    json.dump(form, tfj)
+    json.dump({f: form[f] for f in form if f not in excludedFields}, tfj)
 
 
 def readFormData(source):
@@ -124,7 +177,8 @@ def readFormData(source):
       form = json.load(tfj)
     for item in '''
         searchTemplate tuples sections fileName fileNameHidden
-        condensetp opened author title
+        condensetp opened author title export
+        previous previousdo side author title description
     '''.strip().split():
       if form.get(item, None) is None:
         form[item] = ''
@@ -182,9 +236,9 @@ def serveSearch(anything):
   pages = ''
 
   api = TF.connect()
-  header = api.header()
+  (header, appLogo, tfLogo) = api.header()
   css = api.css()
-  provenance = getProvenance(form)
+  (provenanceHtml, provenanceMd) = getProvenance(form)
 
   (defaultCondenseType, exampleSection, condenseTypes) = api.condenseTypes()
   condenseType = form['condensetp'] or defaultCondenseType
@@ -237,38 +291,51 @@ def serveSearch(anything):
       ]
   )
 
-  return (
-      template(
-          'index',
-          dataSource=dataSource,
-          css=css,
-          header=header,
-          options=shapeOptions(options, values),
-          sectionMessages=sectionMessages,
-          tupleMessages=tupleMessages,
-          queryMessages=queryMessages,
-          table=table,
-          condensedAtt=condensedAtt,
-          condenseOpts=condenseOpts,
-          defaultCondenseType=defaultCondenseType,
-          exampleSection=exampleSection,
-          withNodesAtt=withNodesAtt,
-          pages=pages,
-          prevOptions=prevOptions,
-          **form,
-      )
-      if not form['export'] else
-      template(
-          'export',
-          dataSource=dataSource,
-          css=css,
-          descriptionMd=descriptionMd,
-          table=table,
-          condenseType=condenseType,
-          colofon=header,
-          provenance=provenance,
-          **form,
-      )
+  if form['export']:
+    form['export'] = ''
+    writeAbout(
+        header,
+        provenanceMd,
+        form,
+    )
+    (csvs, context) = api.csvs(
+        form['searchTemplate'],
+        form['tuples'],
+        form['sections'],
+        form['condensed'],
+        condenseType,
+    )
+    writeCsvs(csvs, context, form)
+
+    return template(
+        'export',
+        dataSource=dataSource,
+        css=css,
+        descriptionMd=descriptionMd,
+        table=table,
+        condenseType=condenseType,
+        colofon=f'{appLogo}{header}{tfLogo}',
+        provenance=provenanceHtml,
+        **form,
+    )
+  return template(
+      'index',
+      dataSource=dataSource,
+      css=css,
+      header=f'{appLogo}{header}{tfLogo}',
+      options=shapeOptions(options, values),
+      sectionMessages=sectionMessages,
+      tupleMessages=tupleMessages,
+      queryMessages=queryMessages,
+      table=table,
+      condensedAtt=condensedAtt,
+      condenseOpts=condenseOpts,
+      defaultCondenseType=defaultCondenseType,
+      exampleSection=exampleSection,
+      withNodesAtt=withNodesAtt,
+      pages=pages,
+      prevOptions=prevOptions,
+      **form,
   )
 
 

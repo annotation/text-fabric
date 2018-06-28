@@ -10,7 +10,7 @@ TF = f'{REPO}/tf/uruk/{VERSION}'
 
 PROVENANCE = dict(
     corpus=f'Uruk IV/III: Proto-cuneiform tablets ({VERSION})',
-    corpusDoi=f'<a href="https://doi.org/10.5281/zenodo.1193841">10.5281/zenodo.1193841</a>',
+    corpusDoi=('10.5281/zenodo.1193841', 'https://doi.org/10.5281/zenodo.1193841'),
 )
 
 locations = [DATABASE]
