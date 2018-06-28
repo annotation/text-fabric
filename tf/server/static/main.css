@@ -25,6 +25,9 @@ div.leftcol {
     border-right: 1pt solid #aaaaaa;
     padding-left: 0.2rem;
     padding-right: 0.4rem;
+    height: 98vh;
+    overflow: auto;
+	-webkit-overflow-scrolling: touch;
 }
 #sidebar {
     flex: 0 0 2rem;
@@ -94,6 +97,9 @@ div.midcol {
     flex: 0 0 auto;
     padding-left: 0.4rem;
     padding-right: 0.4rem;
+    height: 98vh;
+    overflow: auto;
+	-webkit-overflow-scrolling: touch;
 }
 div.rightcol {
     flex: 10 2 auto;
@@ -104,6 +110,9 @@ div.rightcol {
     border-left: 1pt solid #aaaaaa;
     padding-left: 0.4rem;
     padding-right: 0.2rem;
+    height: 98vh;
+    overflow: auto;
+	-webkit-overflow-scrolling: touch;
 }
 
 /* LEFT-COL */
