@@ -74,7 +74,7 @@ def _grammar(searchExe):
       if len(atomStack) == 0:
         if indent > 0:
           searchExe.badSemantics.append(
-              'Unexpected indent at line {i}: {indent}, expected 0'
+              f'Unexpected indent at line {i}: {indent}, expected 0'
           )
           good = False
         if op is not None:
@@ -165,7 +165,7 @@ def _grammar(searchExe):
       namesGood = True
       for (q, n) in ((f, fName), (t, tName)):
         if q is None:
-          searchExe.badSemantics.append('Relation with undefined name at line {i}: "{n}"')
+          searchExe.badSemantics.append(f'Relation with undefined name at line {i}: "{n}"')
           namesGood = False
       if not namesGood:
         good = False
