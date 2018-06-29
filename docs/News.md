@@ -6,13 +6,23 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.4.3
+
+2018-06-29
+
+Small fixes in error reporting in search.
+
 ## 5.4.1-2
+
+2018-06-28
 
 Text-Fabric browser: at export a csv file with all results is created, and also a markdown file with metadata.
 
 Small fixes.
 
 ## 5.4
+
+2018-06-26
 
 Improved interface and functionality of the text-fabric browser:
 
@@ -27,6 +37,8 @@ Improved interface and functionality of the text-fabric browser:
     However, the help for the text-fabric browser is included in the interface itself.
 
 ## 5.3.3
+
+2018-06-23
 
 Small fix: command line args for text-fabric.
 
