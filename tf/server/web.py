@@ -1,3 +1,4 @@
+import sys
 import os
 import datetime
 import time
@@ -20,6 +21,8 @@ from tf.apphelpers import RESULT
 
 
 BATCH = 20
+DEFAULT_NAME = 'DefaulT'
+EXTENSION = '.tfjob'
 
 myDir = os.path.dirname(os.path.abspath(__file__))
 appDir = None
@@ -48,7 +51,7 @@ def getProvenance(form):
   now = datetime.datetime.now().replace(
       microsecond=0, tzinfo=datetime.timezone(offset=utc_offset)
   ).isoformat()
-  job = form['fileName']
+  job = form['jobName']
   author = form['author']
 
   prov = config.PROVENANCE
@@ -96,8 +99,8 @@ Tool | {tool} {toolDoiMd}
 
 
 def writeAbout(header, provenance, form):
-  fileName = form['fileName']
-  dirName = f'{dataSource}-{fileName}'
+  jobName = form['jobName']
+  dirName = f'{dataSource}-{jobName}'
   if not os.path.exists(dirName):
     os.makedirs(dirName, exist_ok=True)
   with open(f'{dirName}/about.md', 'w') as ph:
@@ -116,8 +119,8 @@ def writeAbout(header, provenance, form):
 
 
 def writeCsvs(csvs, context, form):
-  fileName = form['fileName']
-  dirName = f'{dataSource}-{fileName}'
+  jobName = form['jobName']
+  dirName = f'{dataSource}-{jobName}'
   if not os.path.exists(dirName):
     os.makedirs(dirName, exist_ok=True)
   for (csv, data) in csvs:
@@ -142,11 +145,15 @@ def getFormData():
   form['searchTemplate'] = request.forms.searchTemplate.replace('\r', '')
   form['tuples'] = request.forms.tuples.replace('\r', '')
   form['sections'] = request.forms.sections.replace('\r', '')
-  form['fileName'] = request.forms.fileName.strip()
-  form['previous'] = request.forms.previous
-  form['previousdo'] = request.forms.previousdo
+  form['jobDir'] = request.forms.jobDir.strip()
+  form['jobName'] = request.forms.jobName.strip()
+  form['jobNameHidden'] = request.forms.jobNameHidden.strip()
+  form['chdir'] = request.forms.chdir
+  form['rename'] = request.forms.rename
+  form['duplicate'] = request.forms.duplicate
+  form['otherJob'] = request.forms.otherJob
+  form['otherJobDo'] = request.forms.otherJobDo
   form['side'] = request.forms.side
-  form['fileNameHidden'] = request.forms.fileNameHidden.strip()
   form['author'] = request.forms.author.strip()
   form['title'] = request.forms.title.strip()
   form['description'] = request.forms.description.replace('\r', '')
@@ -164,37 +171,45 @@ def getFormData():
 
 
 def writeFormData(form):
-  excludedFields = {'export'}
-  thisFileName = form['fileName'] or ''
-  with open(f'{dataSource}-{thisFileName}.tfquery', 'w') as tfj:
+  excludedFields = {
+    'export', 'chdir', 'rename', 'duplicate',
+    'jobName', 'jobNameHidden', 'jobDir', 'otherJobDo', 'otherJob',
+  }
+  thisJobName = form['jobName'] or ''
+  with open(f'{dataSource}-{thisJobName}{EXTENSION}', 'w') as tfj:
     json.dump({f: form[f] for f in form if f not in excludedFields}, tfj)
 
 
 def readFormData(source):
-  sourceFile = f'{dataSource}-{source}.tfquery'
+  sourceFile = f'{dataSource}-{source}{EXTENSION}'
   if os.path.exists(sourceFile):
     with open(sourceFile) as tfj:
       form = json.load(tfj)
     for item in '''
-        searchTemplate tuples sections fileName fileNameHidden
+        searchTemplate tuples sections
+        jobNameHidden
+        chdir rename duplicate
         condensetp opened author title export
-        previous previousdo side author title description
+        otherJob otherJobDo side author title description
     '''.strip().split():
       if form.get(item, None) is None:
         form[item] = ''
+      form['jobName'] = source
+      form['jobDir'] = os.getcwd()
     return form
   return None
 
 
-def getPrevOptions(current):
-  prevs = glob(f'{dataSource}-*.tfquery')
+def getOtherOptions(current):
+  others = glob(f'{dataSource}-*{EXTENSION}')
+  trimLength = len(EXTENSION)
   options = []
-  for prev in prevs:
-    prevVal = prev[0:-8].split('-', 1)[1]
-    if prevVal == '':
-      prevVal = 'DefaulT'
-    selected = ' selected ' if prevVal == current else ''
-    options.append(f'<option value="{prevVal}"{selected}>{prevVal}</option>')
+  for other in others:
+    otherVal = other[0:-trimLength].split('-', 1)[1]
+    if otherVal == '':
+      otherVal = DEFAULT_NAME
+    selected = ' selected ' if otherVal == current else ''
+    options.append(f'<option value="{otherVal}"{selected}>{otherVal}</option>')
   return '\n'.join(options)
 
 
@@ -217,14 +232,44 @@ def serveLocal(filepath):
 @get('/<anything:re:.*>')
 def serveSearch(anything):
   form = getFormData()
-  previousDo = form['previousdo']
-  if previousDo != '' or form['fileName'] == '':
-    prev = previousDo if previousDo else 'DefaulT'
-    previous = readFormData(prev)
-    if previous is not None:
-      form = previous
-    form['fileName'] = prev
-  form['previousdo'] = ''
+  # sys.stderr.write(f'{form}')
+  curJobDir = os.getcwd()
+  newDir = form['jobDir']
+  dirMsg = ''
+  if newDir != curJobDir:
+    if form['chdir']:
+      good = True
+      if not os.path.exists(newDir):
+        try:
+          os.makedirs(newDir, exist_ok=True)
+          os.chdir(newDir)
+        except Exception:
+          good = False
+      if good:
+        os.chdir(newDir)
+        form['jobName'] = ''
+      else:
+        dirMsg = f'Cannot create directory "{newDir}"'
+      form['chdir'] = ''
+    else:
+      form['jobDir'] = curJobDir
+  if form['jobName'] != form['jobNameHidden']:
+    src = f'{dataSource}-{form["jobNameHidden"] or DEFAULT_NAME}{EXTENSION}'
+    dst = f'{dataSource}-{form["jobName"]}{EXTENSION}'
+    form['jobNameHidden'] = form['jobName']
+    if form['rename']:
+      if os.path.exists(src):
+        os.unlink(src)
+    form['rename'] = ''
+    form['duplicate'] = ''
+  otherJobDo = form['otherJobDo']
+  if otherJobDo != '' or form['jobName'] == '':
+    other = otherJobDo if otherJobDo else DEFAULT_NAME
+    otherJob = readFormData(other)
+    if otherJob is not None:
+      form = otherJob
+    form['jobName'] = other
+  form['otherJobDo'] = ''
   condensedAtt = ' checked ' if form['condensed'] else ''
   withNodesAtt = ' checked ' if form['withNodes'] else ''
 
@@ -281,7 +326,7 @@ def serveSearch(anything):
 
   writeFormData(form)
 
-  prevOptions = getPrevOptions(form['fileName'])
+  otherJobs = getOtherOptions(form['jobName'])
 
   descriptionMd = markdown.markdown(
       form['description'],
@@ -334,7 +379,9 @@ def serveSearch(anything):
       exampleSection=exampleSection,
       withNodesAtt=withNodesAtt,
       pages=pages,
-      prevOptions=prevOptions,
+      otherJobs=otherJobs,
+      dirMsg=dirMsg,
+      EXTENSION=EXTENSION,
       **form,
   )
 

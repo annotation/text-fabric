@@ -205,7 +205,7 @@ div.messages {
     align-items: stretch;
     width: 100%;
 }
-div.eline {
+.eline {
     color: #552222;
     background-color: #ffbbbb;
 }
@@ -215,18 +215,26 @@ p.buttons {
 }
 button {
     font-weight: bold;
-    width: 90%;
     background-color: #888888;
     color: #ffffff; 
     border-color: #444444;
 }
 button.xl {
     font-size: large;
+    width: 95%;
     padding: 0.5em;
     border-radius: 1rem;
 }
 button.l {
     font-size: medium;
+    width: 80%;
+    padding: 0.3em;
+    border-radius: 0.5rem;
+}
+button.m {
+    display: inline;
+    font-size: medium;
+    width: 40%;
     padding: 0.3em;
     border-radius: 0.5rem;
 }

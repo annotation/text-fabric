@@ -6,6 +6,12 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.4.4
+
+2018-07-02
+
+Added renaming/duplicating of jobs and change of directory.
+
 ## 5.4.3
 
 2018-06-29
