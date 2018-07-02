@@ -42,7 +42,9 @@ tf/extra/cunei-app/.DS_Store
 tf/extra/cunei-app/__init__.py
 tf/extra/cunei-app/config.py
 tf/extra/cunei-app/__pycache__/__init__.cpython-36.pyc
+tf/extra/cunei-app/__pycache__/__init__.cpython-37.pyc
 tf/extra/cunei-app/__pycache__/config.cpython-36.pyc
+tf/extra/cunei-app/__pycache__/config.cpython-37.pyc
 tf/extra/cunei-app/static/logo.png
 tf/search/__init__.py
 tf/search/graph.py

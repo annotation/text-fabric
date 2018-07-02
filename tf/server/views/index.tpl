@@ -2,7 +2,7 @@
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>TF {{fileName}}</title>
+        <title>TF {{jobName}}</title>
         <meta name="application-name" content="Text-Fabric Search Box"/>
 
         <link rel="stylesheet" href="/server/static/main.css"/>
@@ -15,8 +15,8 @@
                 <div status="help">
                     <a href="#">Help</a>
                 </div>
-                <div status="load">
-                    <a href="#">Load</a>
+                <div status="jobs">
+                    <a href="#">Jobs</a>
                 </div>
                 <div status="options">
                     <a href="#">Options</a>
@@ -49,7 +49,7 @@
                         <p>Open <b>multiple windows</b> and tabs** with this address,
                            they all communicate with one and the same process that serves the data;
                            as long as that process runs, new tabs and windows open quickly.
-                           See <i>Load</i>.</p>
+                           See <i>Jobs</i>.</p>
                         <p>When you terminate <code>text-fabric</code> on the command line,
                            the data process will also be terminated.</p>
                     </details>
@@ -100,13 +100,17 @@
                         <p>Results that you have expanded remain in view.</p>
                     </details>
                     <details class="help">
-                        <summary>Load</summary>
-                        <p>Your work will be saved in a file with extension <code>.tfquery</code> in the
-                           current directory.</p>
-                        <p>By default this is <code>{{dataSource}}-DefaulT.tfquery</code>.</p>
-                        <p>Save your work under an other name, by typing a new name in the name field.</p>
-                        <p>Load a previous job by selecting the name under which it has been saved.
-                           Work with multiple queries in multiple tabs with only one running
+                        <summary>Jobs</summary>
+                        <p>Your job will be saved in a file with extension <code>{{EXTENSION}}</code>
+                           in the current directory.</p>
+                        <p>By default this is <code>{{dataSource}}-DefaulT{{EXTENSION}}</code>.</p>
+                        <p>Go to another directory by typing (or pasting) the other directory
+                           and hitting <b>change directory</b>. 
+                        <p>Rename or duplicate your job, by typing a new name in the name field.</p>
+                        <p>Load an other job from the same directory by selecting
+                           the name under which it has been saved.
+                           This job will be loaded in a new tab.
+                           So you can work with multiple jobs in multiple tabs with only one running
                            <code>text-fabric</code> instance.</p>
                     </details>
                     <details class="help">
@@ -138,29 +142,55 @@
                         <p><b>Tip</b> Archive this PDF in a repository, and you can cite your work properly.</p>
                     </details>
                 </div>
-                <div status="load">
+                <div status="jobs">
+                    <p class="ilab">
+                        Working directory
+                    </p>
+                    <div>
+                        <input
+                            class="name{{' eline' if dirMsg else ''}}" type="text"
+                            name="jobDir" value="{{jobDir}}"
+                            placeholder="working directory"
+                        />
+                        <p class="eline">{{dirMsg}}</p>
+                        <button
+                            class="l" type="submit" name="chdir" id="chdir" value="1"
+                        > change directory
+                        </button>
+                    </div>
                     <p class="ilab">
                         Name of this job:
                     </p>
                     <div>
                         <input
-                            class="r name" type="text"
-                            name="fileName" value="{{fileName}}"
-                            placeholder="save as"
+                            class="name" type="text"
+                            name="jobName" value="{{jobName}}"
+                            placeholder="job name"
                         />
+                        <input type="hidden" name="jobNameHidden" value="{{jobNameHidden}}"/>
+                        <span>
+                            <button
+                                class="m" type="submit" name="rename" id="rename" value="1"
+                            > rename
+                            </button>
+                            <button
+                                class="m" type="submit" name="duplicate" id="duplicate" value="1"
+                            > duplicate
+                            </button>
+                        </span>
                     </div>
-                    <p class="ilab">Other queries in this directory:</p>
+                    <p class="ilab">Jobs in this directory:</p>
                     <input
                         type="hidden"
                         id="jobh"
-                        name="previousdo" value=""
+                        name="otherJobDo" value=""
                     />
                     <select
                         class=""
                         id="job"
-                        name="previous" value="{{previous}}"
+                        name="otherJob" value="{{otherJob}}"
                     >
-                        {{!prevOptions}}
+                        {{!otherJobs}}
                     </select>
                     <button
                         class="xl" type="submit" formtarget="_new"
