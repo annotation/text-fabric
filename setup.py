@@ -14,13 +14,14 @@ setup(
     python_requires='>=3.6.3',
     include_package_data=True,
     exclude_package_data={'': ['text_fabric.egg-info', '__pycache__', '.DS_Store']},
+    zip_safe=False,
     scripts=['text-fabric'],
     entry_points={
         'console_scripts': [
-            'tf = tf.server.start:main',
+            'text-fabric-w = tf.server.start:main',
         ]
     },
-    version='5.4.5',
+    version='5.4.6',
     description='''Processor for Text Fabric Data''',
     author='Dirk Roorda',
     author_email='dirk.roorda@dans.knaw.nl',
