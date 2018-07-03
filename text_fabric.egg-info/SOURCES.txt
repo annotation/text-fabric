@@ -6,6 +6,7 @@ text_fabric.egg-info/PKG-INFO
 text_fabric.egg-info/SOURCES.txt
 text_fabric.egg-info/dependency_links.txt
 text_fabric.egg-info/entry_points.txt
+text_fabric.egg-info/not-zip-safe
 text_fabric.egg-info/requires.txt
 text_fabric.egg-info/top_level.txt
 tf/__init__.py
