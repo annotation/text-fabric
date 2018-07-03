@@ -10,18 +10,17 @@ setup(
         'tf.extra.bhsa-app',
         'tf.extra.cunei-app',
     ],
-    install_requires=['rpyc', 'bottle', 'psutil', 'markdown'],
+    install_requires=['rpyc', 'bottle', 'psutil', 'markdown', 'ipython'],
     python_requires='>=3.6.3',
     include_package_data=True,
     exclude_package_data={'': ['text_fabric.egg-info', '__pycache__', '.DS_Store']},
     zip_safe=False,
-    scripts=['text-fabric'],
     entry_points={
         'console_scripts': [
-            'text-fabric-w = tf.server.start:main',
+            'text-fabric = tf.server.start:main',
         ]
     },
-    version='5.4.6',
+    version='5.4.7',
     description='''Processor for Text Fabric Data''',
     author='Dirk Roorda',
     author_email='dirk.roorda@dans.knaw.nl',

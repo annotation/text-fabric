@@ -1,5 +1,6 @@
 import sys
 import os
+from platform import system
 
 import psutil
 import webbrowser
@@ -133,6 +134,8 @@ def main():
   if len(sys.argv) >= 2 and sys.argv[1] in {'--help', '-help', '-h', '?', '-?'}:
     print(HELP)
 
+  isWin = system().lower().startswith('win')
+
   kill = getKill()
 
   if kill:
@@ -152,11 +155,14 @@ def main():
     if config is not None:
       print(f'Cleaning up remnant processes, if any ...')
       killProcesses(dataSource, kill=True)
+      pythonExe = 'python' if isWin else 'python3'
       try:
+
         pService = Popen(
-            ['python3', '-m', 'tf.server.service', dataSource],
+            [pythonExe, '-m', 'tf.server.service', dataSource],
             stdout=PIPE, encoding='utf-8',
         )
+
         print(f'Loading data for {dataSource}. Please wait ...')
         with pService.stdout as ph:
           for line in ph:
@@ -164,8 +170,10 @@ def main():
             if line.rstrip() == TF_DONE:
               break
         sleep(1)
+
         print(f'Opening {dataSource} in browser')
-        pWeb = Popen(['python3', '-m', 'tf.server.web', *ddataSource])
+        pWeb = Popen([pythonExe, '-m', 'tf.server.web', *ddataSource])
+
         sleep(1)
         webbrowser.open(
             f'{config.protocol}{config.host}:{config.webport}',
