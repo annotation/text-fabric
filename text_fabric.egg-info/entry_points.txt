@@ -1,0 +1,3 @@
+[console_scripts]
+tf = tf.server.start:main
+
