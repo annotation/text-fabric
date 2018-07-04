@@ -1,6 +1,8 @@
 import os
 import io
 from shutil import rmtree
+from glob import glob
+
 import requests
 from zipfile import ZipFile
 from IPython.display import display, Markdown, HTML
@@ -72,14 +74,16 @@ def getDataCustom(dataUrl, dest):
 
 
 def hasData(dataRel, ghBase, version):
+  ghBase = os.path.expanduser(ghBase)
   expressBase = os.path.expanduser(EXPRESS_BASE)
   expressTfAll = f'{expressBase}/{dataRel}'
   expressTf = f'{expressTfAll}/{version}'
   ghTf = f'{ghBase}/{dataRel}/{version}'
-  testFeature = 'otype.tf'
-  if os.path.exists(f'{ghTf}/{testFeature}'):
+  features = glob(f'{ghTf}/*.tf')
+  if len(features):
     return ghBase
-  if os.path.exists(f'{expressTf}/{testFeature}'):
+  features = glob(f'{expressTf}/*.tf')
+  if len(features):
     return expressBase
   return False
 

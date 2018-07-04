@@ -16,9 +16,13 @@ from tf.apphelpers import (
 ORG = 'etcbc'
 CORPUS = 'bhsa'
 
-DATA_REL = f'{ORG}/{CORPUS}/tf'
 GH_BASE = '~/github'
 RELEASE = '1.3'
+
+PHONO = 'phono'
+PHONO_RL = '1.0.1'
+PARA = 'parallels'
+PARA_RL = '1.0.1'
 
 URL_GH = 'https://github.com'
 URL_NB = 'http://nbviewer.jupyter.org/github'
@@ -299,12 +303,13 @@ EXCLUDED_FEATURES = set('''
 PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
 
 
-class Bhsa(object):
-  @staticmethod
-  def getData(version):
-    dataUrl = f'https://github.com/{ORG}/{CORPUS}/releases/download/{RELEASE}/{version}.zip'
-    getData(dataUrl, DATA_REL, GH_BASE, version)
+def getTf(source='bhsa', release='1.3', version='c', relative='{}/tf'):
+  dataUrl = f'https://github.com/{ORG}/{source}/releases/download/{release}/{version}.zip'
+  dataRel = f'{ORG}/' + relative.format(source)
+  return getData(dataUrl, dataRel, GH_BASE, version)
 
+
+class Bhsa(object):
   def __init__(
       self,
       api,
@@ -325,14 +330,15 @@ class Bhsa(object):
     self.standardFeatures = set(standardFeatures.strip().split())
 
     if asApi:
-      dataUrl = f'https://github.com/{ORG}/{CORPUS}/releases/download/{RELEASE}/{version}.zip'
-      getData(dataUrl, DATA_REL, GH_BASE, version)
+      getTf(CORPUS, RELEASE, version)
+      getTf(PHONO, PHONO_RL, version)
+      getTf(PARA, PARA_RL, version)
       TF = Fabric(locations=locations, modules=modules, silent=True)
-      api = TF.load('', silent=False)
+      api = TF.load('', silent=True)
       allFeatures = TF.explore(silent=True, show=True)
       loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
       useFeatures = [f for f in loadableFeatures if f not in EXCLUDED_FEATURES]
-      TF.load(useFeatures, add=True, silent=False)
+      TF.load(useFeatures, add=True, silent=True)
     else:
       api.TF.load(self.standardFeatures, add=True, silent=True)
     self.prettyFeaturesLoaded = self.standardFeatures
