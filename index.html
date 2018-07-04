@@ -301,6 +301,18 @@
 
 
   <li class="md-nav__item">
+    <a href="Api/Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="Api/Bhsa/" title="Hebrew Bible" class="md-nav__link">
       Hebrew Bible
     </a>
@@ -573,7 +585,19 @@ it works really well in Jupyter notebooks.</p>
 <h1 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h1>
 <p>Text Fabric is a Python(3) package on the Python Package Index, so you can install it easily with <code>pip</code> from
 the command line.</p>
-<details class="abstract" open="open"><summary>Python</summary><p>Install or upgrade <a href="https://www.python.org/downloads/">Python3</a> on your system to at least version 3.6.</p></details><details class="hint"><summary>Jupyter</summary><p>Optionally install <a href="http://jupyter.org">Jupyter</a> as well:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install jupyter
+<details class="abstract" open="open"><summary>Prerequisites</summary><p>Your computer should be a 64-bit machine and it needs at least 8 GB RAM memory.</p><details class="caution"><summary>Web browser on Windows</summary><p>If you are on windows: the Text-Fabric browser does not display well in Microsoft Edge,
+for it does not support the
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details">details</a>
+element.</p><p>Install Chrome of Firefox and set it as your default browser.</p></details></details><details class="abstract"><summary>Python</summary><p>Install or upgrade <a href="https://www.python.org/downloads/">Python3</a> on your system to at least version 3.6.</p><p>Go for the 64-bit version. Otherwise Python may not be able to address all the memory it needs.</p></details><details class="abstract" open="open"><summary>Text-Fabric</summary><p>Install Text-Fabric:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install text-fabric
+</pre></div>
+</td></tr></table>
+<p>On Windows:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip install text-fabric
+</pre></div>
+</td></tr></table>
+<details class="note" open="open"><summary>3</summary><p>From now on we always use <code>python3</code> and <code>pip3</code> in instructions.
+On Windows you have to say <code>python</code> and <code>pip</code>.
+There are more differences, when you go further with programming.</p><p>Advice: if you are serious on programming, consider switching to a <code>Unix</code>-like
+platform, such as Linux or the Mac (macos).</p></details></details><details class="hint"><summary>Jupyter</summary><p>Optionally install <a href="http://jupyter.org">Jupyter</a> as well:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install jupyter
 </pre></div>
 </td></tr></table>
 <details class="hint" open="open"><summary>Jupyter Lab</summary><p><em>Jupyter lab</em> is a nice context to work with Jupyter notebooks.
@@ -588,23 +612,63 @@ jupyter labextension install jupyterlab-toc
 <p>The toc-extension is handy to get an overview
 when working with the lengthy tutorial. It will create an extra
 tab in the Jupyter Lab interface with a table of contents of the
-current notebook.</p></details></details><details class="abstract" open="open"><summary>Text-Fabric</summary><p>Install Text-Fabric:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install text-fabric
+current notebook.</p></details></details><h1 id="use-the-text-fabric-browser">Use the Text-Fabric browser<a class="headerlink" href="#use-the-text-fabric-browser" title="Permanent link">&para;</a></h1>
+<p>You can open a terminal (such as <code>bash</code> on Unix and <code>cmd.exe</code> on Windows), and just say</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric bhsa
 </pre></div>
 </td></tr></table>
-</details><h1 id="get-corpora">Get corpora<a class="headerlink" href="#get-corpora" title="Permanent link">&para;</a></h1>
+
+<p>or </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric cunei
+</pre></div>
+</td></tr></table>
+
+<p>After (down)-loading the data your browser will open and load the search interface.
+There you'll find links to further help.</p>
+<p>
+<img src="images/bhsa-app.png"/>
+</p>
+
+<p><em>Above: Querying the BHSA data</em></p>
+<p><em>Below: Querying the Cunei data</em></p>
+<p>
+<img src="images/cunei-app.png"/>
+</p>
+
+<details class="hint" open="open"><summary>Saving your session</summary><p>Your session will be saved in a file with extension <code>.tfjob</code> in the directory
+from where you have issued the <code>text-fabric</code> command.
+From within the browser you can rename and duplicate sessions and move to
+other directories. You can also load other sessions in other tabs.</p></details><details class="hint" open="open"><summary>Multiple windows</summary><p>After you have issued the <code>text-fabric</code> command, you can open many 
+browsers and windows and tabs with the same url.
+They all use the same data, which only gets loaded when the command <code>text-fabric</code> is run.
+If you leave it on all day, you have instant access to the data.</p></details><details class="hint"><summary>Close</summary><p>You can close the data server by pressing Ctrl-C in the terminal where you have
+started <code>text-fabric</code> up.</p></details><h1 id="get-corpora">Get corpora<a class="headerlink" href="#get-corpora" title="Permanent link">&para;</a></h1>
 <p>There are a few corpora in Text-Fabric that are being supported
-with extra modules.</p>
-<details class="abstract"><summary>Hebrew Bible</summary><p>Get the corpus:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+with extra modules. Text-Fabric will fetch them for you if you use the Text-Fabric browser.</p>
+<details class="abstract"><summary>Manually fetching data</summary><p>There are basically two ways:</p><ul><li><p>go to the relevant GitHub repository, click on releases, and choose the relevant binary
+  that has been attached to the release.
+  Download it to your system.
+  This is the most economical way to get data.</p></li><li><p>clone the relevant GitHub repository to your system.
+  This will get you lots of additional data that you might not directly need.</p></li></ul></details><details class="abstract"><summary>Hebrew Bible</summary><p>If you are in a Jupyter notebook or Python script, this will fetch the data (25MB)</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">getTf</span>
+<span class="n">getTf</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+<p>If you want to be in complete control, you can get the complete data repository
+from GitHub (5GB):</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github/etcbc
 git clone https://github.com/etcbc/bhsa
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>Cuneiform tablets from Uruk</summary><p>Get the corpus:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<p>If you are on Windows, you have to install <code>git</code> in some way for this step.</p></details><details class="abstract"><summary>Cuneiform tablets from Uruk</summary><p>Get the corpus:</p><p>In a Jupyter notebook, the Cunei API will fetch it for you automatically.
+The TF is 1.6 MB, but the photos and lineart are 550MB.
+So do this only when you have a good internet connection.</p><p>If you want to be in complete control, you can get the complete data repository
+from GitHub (1.5GB):</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github/Nino-cunei
 git clone https://github.com/Nino-cunei/uruk
 </pre></div>
 </td></tr></table>
-</details><details class="hint"><summary>More</summary><p>The
+<p>If you are on Windows, you have to install <code>git</code> in some way for this step.</p></details><details class="hint"><summary>More</summary><p>The
 <a href="https://github.com/Dans-labs/text-fabric-data/tree/master/greek/sblgnt">Greek</a> and
 <a href="https://github.com/ETCBC/linksyr/tree/master/data/tf/syrnt">Syriac</a>
 New Testament have been converted to TF.</p><p>We have example corpora in Sanskrit, and Babylonian.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -617,34 +681,7 @@ git clone https://github.com/etcbc/linksyr
 git clone https://github.com/Dans-labs/text-fabric-data
 </pre></div>
 </td></tr></table>
-<p>All these are not supported by extra innterfaces.</p></details><h1 id="use-the-built-in-search-interface">Use the built-in search interface<a class="headerlink" href="#use-the-built-in-search-interface" title="Permanent link">&para;</a></h1>
-<p>Provided you have the data repositories for the Hebrew Bible (bhsa) or the Proto-Cuneiform Uruk corpus (cunei)
-in place (see below),
-you can open a terminal (command prompt), and just say</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric bhsa
-</pre></div>
-</td></tr></table>
-
-<p>or </p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric cunei
-</pre></div>
-</td></tr></table>
-
-<p>After loading the data your browser will open and load the search interface.
-There you'll find links to further help.</p>
-<p>
-<img src="images/bhsa-app.png"/>
-</p>
-
-<p>
-<img src="images/cunei-app.png"/>
-</p>
-
-<details class="hint" open="open"><summary>Multiple windows</summary><p>After you have issued the <code>text-fabric</code> command, you can open many connections
-in different browsers and windows and tabs.
-They all use the same data, which only gets loaded when the command <code>text-fabric</code> is run.
-If you leave it on all day, you have instant access to the data.</p></details><details class="hint"><summary>Close</summary><p>You can close the data server by pressing Ctrl-C in the terminal where you have
-started <code>text-fabric</code> up.</p></details><h1 id="frequently-occurring-trouble">Frequently Occurring Trouble<a class="headerlink" href="#frequently-occurring-trouble" title="Permanent link">&para;</a></h1>
+<p>All these are not supported by extra innterfaces.</p></details><h1 id="frequently-occurring-trouble">Frequently Occurring Trouble<a class="headerlink" href="#frequently-occurring-trouble" title="Permanent link">&para;</a></h1>
 <details class="caution"><summary>Older versions</summary><p>Older versions of Python and Text-Fabric may be in the way.
 The following hygenic measures are known to be beneficial:</p><details class="abstract"><summary>Python related</summary><p>When you have upgraded Python, remove PATH statements for older versions from your system startup files.</p><ul><li>For the Macos: look at <code>.bashrc</code>, <code>.bash_profile</code> in your home directory.</li><li>For Windows: on the command prompt, say <code>echo %path%</code> to see what the content of your PATH
   variable is. If you see references to older versions of python than you actually work with,

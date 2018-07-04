@@ -292,6 +292,18 @@
           
           
 
+
+  <li class="md-nav__item">
+    <a href="../Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
   
 
 
@@ -330,6 +342,13 @@
         <li class="md-nav__item">
   <a href="#set-up" title="Set up" class="md-nav__link">
     Set up
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get-data" title="Get data" class="md-nav__link">
+    Get data
   </a>
   
 </li>
@@ -636,6 +655,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#get-data" title="Get data" class="md-nav__link">
+    Get data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#initialisation" title="Initialisation" class="md-nav__link">
     Initialisation
   </a>
@@ -695,8 +721,64 @@
 contains a number of handy functions on top of Text-Fabric and especially its 
 <a href="../../Api/General/#search">Search</a> part.</p>
 <h2 id="set-up">Set up<a class="headerlink" href="#set-up" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>from tf.extra.bhsa import Bhsa</summary><details class="explanation"><summary>import Bhsa</summary><p>The <code>Bhsa</code> API is distributed with Text-Fabric.
-You have to import it into your program.</p></details></details><h2 id="initialisation">Initialisation<a class="headerlink" href="#initialisation" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>from tf.extra.bhsa import Bhsa, hasTf, getTf</summary><details class="explanation"><summary>import Bhsa</summary><p>The <code>Bhsa</code> API is distributed with Text-Fabric.
+You have to import it into your program.</p><p>The <code>getTf</code> function is only needed if you want to
+automatically download BHSA TF data from one of the
+ETCBC repositories on GitHub</p></details></details><h2 id="get-data">Get data<a class="headerlink" href="#get-data" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>hasTf(source, version, relative)</summary><p>Checks whether the TF data for a source/version of a release of an
+ETCBC repository is locally present.</p><p>If the data is already present under your local
+<code>~/github</code> directory,
+it will return the full path to <code>~/github</code> on your machine.</p><p>If not, but the data is already present under your local
+<code>~/text-fabric-data</code> directory,
+it will return the full path to <code>~/text-fabric-data</code> on your machine.</p><p>If no data is present locally, it will return <code>False</code>.</p></details><details class="abstract"><summary>getTf(source, release, version, relative)</summary><p>Gets the TF data for a source/version of a release of an
+ETCBC repository.</p><p>If the data is already present under your local
+<code>~/github</code> directory or <code>~/text-fabric-data</code> directory,
+it will not be downloaded. </p><p>If not, it will be downloaded to a location within
+<code>~/text-fabric-data</code>.</p><p>All arguments are optional, the defaults are:</p><table><thead><tr><th>argument</th><th>default</th><th>description</th></tr></thead><tbody><tr><td>source</td><td><code>bhsa</code></td><td>repo within ETCBC organization</td></tr><tr><td>release</td><td><code>1.3</code></td><td>release version of repo</td></tr><tr><td>version</td><td><code>c</code></td><td>version of the BHSA</td></tr><tr><td>relative</td><td><code>{}/tf</code></td><td>relative path of TF data within repo. The <code>{}</code> will be substituted with the value of <code>source</code>.</td></tr></tbody></table><details class="example"><summary>Main data</summary><p>Most recent version of the main BHSA data</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">getTf</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+</details><details class="example"><summary>Phono</summary><p>Most recent version of the <em>phono</em> features:
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">getTf</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s1">&#39;phono&#39;</span><span class="p">,</span> <span class="n">release</span><span class="o">=</span><span class="s1">&#39;1.0.1&#39;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></p></details></details><details class="abstract"><summary>get and load data</summary><p>Here is an incantation to auto-load data:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">hasTf</span><span class="p">,</span> <span class="n">getTf</span><span class="p">,</span> <span class="n">Bhsa</span>
+
+<span class="n">getTf</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s1">&#39;2017&#39;</span><span class="p">)</span>
+<span class="n">loc</span> <span class="o">=</span> <span class="n">hasTf</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s1">&#39;2017&#39;</span><span class="p">)</span>
+<span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="s1">&#39;{loc}/etcbc/bhsa&#39;</span><span class="p">],</span> <span class="n">modules</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;tf/2017&#39;</span><span class="p">])</span>
+</pre></div>
+</td></tr></table>
+<p>And if you want to load phono data as well:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">hasTf</span><span class="p">,</span> <span class="n">getTf</span><span class="p">,</span> <span class="n">Bhsa</span>
+
+<span class="n">getTf</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s1">&#39;bhsa&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s1">&#39;2017&#39;</span><span class="p">)</span>
+<span class="n">locMain</span> <span class="o">=</span> <span class="n">hasTf</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s1">&#39;bhsa&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s1">&#39;2017&#39;</span><span class="p">)</span>
+
+<span class="n">getTf</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s1">&#39;phono&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s1">&#39;2017&#39;</span><span class="p">)</span>
+<span class="n">locPhono</span> <span class="o">=</span> <span class="n">hasTf</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s1">&#39;phono&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s1">&#39;2017&#39;</span><span class="p">)</span>
+
+<span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span>
+  <span class="n">locations</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="s1">&#39;{locMain}/etcbc/bhsa&#39;</span><span class="p">,</span> <span class="n">f</span><span class="s1">&#39;{locPhono}/etcbc/phono&#39;</span><span class="p">],</span>
+  <span class="n">modules</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;tf/2017&#39;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</td></tr></table>
+<p>This will work also in cases where the main BHSA data is in your
+<code>~/github</code> directory and the phono data is in your <code>~/text-fabric-data</code>
+directory or vice versa.</p></details><h2 id="initialisation">Initialisation<a class="headerlink" href="#initialisation" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>Bhsa()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">B</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="s1">&#39;notebook&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">VERSION</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
@@ -894,7 +976,7 @@ you can pass <code>sets=dict(gphrase=gappedPhrases)</code>, and then in your que
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../General/" title="General" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../Apps/" title="Apps" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -903,7 +985,7 @@ you can pass <code>sets=dict(gphrase=gappedPhrases)</code>, and then in your que
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                General
+                Apps
               </span>
             </div>
           </a>
