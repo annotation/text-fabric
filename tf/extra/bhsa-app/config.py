@@ -1,6 +1,5 @@
 import os
-from tf.extra.bhsa import Bhsa
-from tf.apphelpers import hasData
+from tf.extra.bhsa import Bhsa, hasTf
 
 ORG = 'etcbc'
 REPO = 'bhsa'
@@ -11,17 +10,17 @@ PARA = 'parallels'
 
 GH_BASE = '~/github'
 
-base = hasData(f'{ORG}/{REPO}/tf', GH_BASE, VERSION)
+base = hasTf(source=REPO, version=VERSION)
 if not base:
   base = '~/text-fabric-data'
 base = f'{base}/{ORG}'
 
-basePhono = hasData(f'{ORG}/{PHONO}/tf', GH_BASE, VERSION)
+basePhono = hasTf(source=PHONO, version=VERSION)
 if not basePhono:
   basePhono = '~/text-fabric-data'
 basePhono = f'{basePhono}/{ORG}'
 
-basePara = hasData(f'{ORG}/{PARA}/tf', GH_BASE, VERSION)
+basePara = hasTf(source=PARA, version=VERSION)
 if not basePara:
   basePara = '~/text-fabric-data'
 basePara = f'{basePara}/{ORG}'

@@ -21,6 +21,7 @@ pages:
   - News: 'News.md'
   - Api:
     - 'General': 'Api/General.md'
+    - 'Apps': 'Api/Apps.md'
     - 'Hebrew Bible': 'Api/Bhsa.md'
     - 'Cuneiform Tablets': 'Api/Cunei.md'
     - 'Auxiliary': 'Api/Lib.md'
