@@ -8,7 +8,8 @@ from tf.apphelpers import (
     search,
     table, plainTuple,
     show, prettyPre, pretty, prettyTuple, prettySetup,
-    getData, getBoundary, getFeatures,
+    hasData, getData,
+    getBoundary, getFeatures,
     htmlEsc, mdEsc,
     dm, header, outLink,
 )
@@ -306,7 +307,12 @@ PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
 def getTf(source='bhsa', release='1.3', version='c', relative='{}/tf'):
   dataUrl = f'https://github.com/{ORG}/{source}/releases/download/{release}/{version}.zip'
   dataRel = f'{ORG}/' + relative.format(source)
-  return getData(dataUrl, dataRel, GH_BASE, version)
+  getData(dataUrl, dataRel, GH_BASE, version)
+
+
+def hasTf(source='bhsa', version='c', relative='{}/tf'):
+  dataRel = f'{ORG}/' + relative.format(source)
+  return hasData(dataRel, GH_BASE, version)
 
 
 class Bhsa(object):
@@ -330,9 +336,9 @@ class Bhsa(object):
     self.standardFeatures = set(standardFeatures.strip().split())
 
     if asApi:
-      getTf(CORPUS, RELEASE, version)
-      getTf(PHONO, PHONO_RL, version)
-      getTf(PARA, PARA_RL, version)
+      getTf(source=CORPUS, release=RELEASE, version=version)
+      getTf(source=PHONO, release=PHONO_RL, version=version)
+      getTf(source=PARA, release=PARA_RL, version=version)
       TF = Fabric(locations=locations, modules=modules, silent=True)
       api = TF.load('', silent=True)
       allFeatures = TF.explore(silent=True, show=True)

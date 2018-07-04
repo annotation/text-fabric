@@ -21,10 +21,39 @@ the command line.
 ???+ abstract "Prerequisites"
     Your computer should be a 64-bit machine and it needs at least 8 GB RAM memory.
 
-???+ abstract "Python"
+    ??? caution "Web browser on Windows"
+        If you are on windows: the Text-Fabric browser does not display well in Microsoft Edge,
+        for it does not support the
+        [details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+        element.
+
+        Install Chrome of Firefox and set it as your default browser.
+
+??? abstract "Python"
     Install or upgrade [Python3](https://www.python.org/downloads/) on your system to at least version 3.6.
 
     Go for the 64-bit version. Otherwise Python may not be able to address all the memory it needs.
+
+???+ abstract "Text-Fabric"
+    Install Text-Fabric:
+
+    ```sh
+    pip3 install text-fabric
+    ```
+
+    On Windows:
+
+    ```sh
+    pip install text-fabric
+    ```
+
+    ???+ note "3"
+        From now on we always use `python3` and `pip3` in instructions.
+        On Windows you have to say `python` and `pip`.
+        There are more differences, when you go further with programming.
+
+        Advice: if you are serious on programming, consider switching to a `Unix`-like
+        platform, such as Linux or the Mac (macos).
 
 ??? hint "Jupyter"
     Optionally install [Jupyter](http://jupyter.org) as well:
@@ -50,33 +79,103 @@ the command line.
         tab in the Jupyter Lab interface with a table of contents of the
         current notebook.
 
-???+ abstract "Text-Fabric"
-    Install Text-Fabric:
+# Use the Text-Fabric browser
 
-    ```sh
-    pip3 install text-fabric
-    ```
+You can open a terminal (such as `bash` on Unix and `cmd.exe` on Windows), and just say
+
+```sh
+text-fabric bhsa
+```
+
+or 
+
+```sh
+text-fabric cunei
+```
+
+After (down)-loading the data your browser will open and load the search interface.
+There you'll find links to further help.
+
+<p>
+<img src="images/bhsa-app.png"/>
+</p>
+
+*Above: Querying the BHSA data*
+
+*Below: Querying the Cunei data*
+
+<p>
+<img src="images/cunei-app.png"/>
+</p>
+
+
+
+???+ hint "Saving your session"
+    Your session will be saved in a file with extension `.tfjob` in the directory
+    from where you have issued the `text-fabric` command.
+    From within the browser you can rename and duplicate sessions and move to
+    other directories. You can also load other sessions in other tabs.
+
+???+ hint "Multiple windows"
+    After you have issued the `text-fabric` command, you can open many 
+    browsers and windows and tabs with the same url.
+    They all use the same data, which only gets loaded when the command `text-fabric` is run.
+    If you leave it on all day, you have instant access to the data.
+
+??? hint "Close"
+    You can close the data server by pressing Ctrl-C in the terminal where you have
+    started `text-fabric` up.
 
 # Get corpora
 
 There are a few corpora in Text-Fabric that are being supported
-with extra modules.
+with extra modules. Text-Fabric will fetch them for you if you use the Text-Fabric browser.
+
+??? abstract "Manually fetching data"
+    There are basically two ways:
+
+    * go to the relevant GitHub repository, click on releases, and choose the relevant binary
+      that has been attached to the release.
+      Download it to your system.
+      This is the most economical way to get data.
+
+    * clone the relevant GitHub repository to your system.
+      This will get you lots of additional data that you might not directly need.
 
 ??? abstract "Hebrew Bible"
-    Get the corpus:
+    If you are in a Jupyter notebook or Python script, this will fetch the data (25MB)
+
+    ```python
+    from tf.extra.bhsa import getTf
+    getTf()
+    ```
+
+    If you want to be in complete control, you can get the complete data repository
+    from GitHub (5GB):
 
     ```sh
     cd ~/github/etcbc
     git clone https://github.com/etcbc/bhsa
     ```
 
+    If you are on Windows, you have to install `git` in some way for this step.
+
 ??? abstract "Cuneiform tablets from Uruk"
     Get the corpus:
+
+    In a Jupyter notebook, the Cunei API will fetch it for you automatically.
+    The TF is 1.6 MB, but the photos and lineart are 550MB.
+    So do this only when you have a good internet connection.
+
+    If you want to be in complete control, you can get the complete data repository
+    from GitHub (1.5GB):
 
     ```sh
     cd ~/github/Nino-cunei
     git clone https://github.com/Nino-cunei/uruk
     ```
+
+    If you are on Windows, you have to install `git` in some way for this step.
 
 ??? hint "More"
     The
@@ -97,44 +196,6 @@ with extra modules.
     ```
 
     All these are not supported by extra innterfaces.
-
-# Use the built-in search interface
-
-Provided you have the data repositories for the Hebrew Bible (bhsa) or the Proto-Cuneiform Uruk corpus (cunei)
-in place (see below),
-you can open a terminal (command prompt), and just say
-
-```sh
-text-fabric bhsa
-```
-
-or 
-
-```sh
-text-fabric cunei
-```
-
-After loading the data your browser will open and load the search interface.
-There you'll find links to further help.
-
-<p>
-<img src="images/bhsa-app.png"/>
-</p>
-
-<p>
-<img src="images/cunei-app.png"/>
-</p>
-
-
-???+ hint "Multiple windows"
-    After you have issued the `text-fabric` command, you can open many connections
-    in different browsers and windows and tabs.
-    They all use the same data, which only gets loaded when the command `text-fabric` is run.
-    If you leave it on all day, you have instant access to the data.
-
-??? hint "Close"
-    You can close the data server by pressing Ctrl-C in the terminal where you have
-    started `text-fabric` up.
 
 # Frequently Occurring Trouble
 
