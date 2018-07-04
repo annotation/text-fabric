@@ -1,9 +1,15 @@
+import os
+import io
+from shutil import rmtree
+import requests
+from zipfile import ZipFile
 from IPython.display import display, Markdown, HTML
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
 
 RESULT = 'result'
+EXPRESS_BASE = '~/text-fabric-data'
 
 
 def htmlEsc(val):
@@ -31,6 +37,72 @@ def header(extraApi):
       f'<img class="hdlogo" src="/data/static/logo.png"/>',
       f'<img class="hdlogo" src="/server/static/logo.png"/>',
   )
+
+
+def getDataCustom(dataUrl, dest):
+  print(f'Downloading data from {dataUrl} ...')
+  try:
+    r = requests.get(dataUrl, allow_redirects=True)
+    zf = io.BytesIO(r.content)
+  except Exception as e:
+    print(str(e))
+    print('Could not download data')
+    return False
+
+  print(f'Saving data in {dest}')
+
+  try:
+    z = ZipFile(zf)
+    if not os.path.exists(dest):
+      os.makedirs(dest, exist_ok=True)
+    cwd = os.getcwd()
+    os.chdir(dest)
+    z.extractall()
+    if os.path.exists(f'{dest}/__MACOSX'):
+      rmtree(f'{dest}/__MACOSX')
+  except Exception as e:
+    print(str(e))
+    print('Could not save downloaded data')
+    os.chdir(cwd)
+    return False
+
+  print('Saved')
+  os.chdir(cwd)
+  return dest
+
+
+def hasData(dataRel, ghBase, version):
+  expressBase = os.path.expanduser(EXPRESS_BASE)
+  expressTfAll = f'{expressBase}/{dataRel}'
+  expressTf = f'{expressTfAll}/{version}'
+  ghTf = f'{ghBase}/{dataRel}/{version}'
+  testFeature = 'otype.tf'
+  if os.path.exists(f'{ghTf}/{testFeature}'):
+    return ghBase
+  if os.path.exists(f'{expressTf}/{testFeature}'):
+    return expressBase
+  return False
+
+
+def getData(dataUrl, dataRel, ghBase, version):
+  expressBase = os.path.expanduser(EXPRESS_BASE)
+  expressTfAll = f'{expressBase}/{dataRel}'
+  expressTf = f'{expressTfAll}/{version}'
+  ghBase = os.path.expanduser(ghBase)
+  ghTf = f'{ghBase}/{dataRel}/{version}'
+
+  dataBase = hasData(dataRel, ghBase, version)
+  if dataBase == ghBase:
+    print(f'Found data in GitHub repo: {ghTf}')
+    return dataBase
+  if dataBase == expressBase:
+    print(f'Found data downloaded from GitHub release: {expressTf}')
+    return dataBase
+
+  result = getDataCustom(dataUrl, expressTfAll)
+  if result:
+    return expressBase
+  return False
 
 
 def plainTuple(

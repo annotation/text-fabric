@@ -1,20 +1,26 @@
 import os
 from tf.extra.cunei import Cunei
+from tf.apphelpers import hasData
 
-BASE = '~/github'
 ORG = 'Nino-cunei'
 REPO = 'uruk'
 VERSION = '1.0'
-DATABASE = f'{BASE}/{ORG}'
-TF = f'{REPO}/tf/uruk/{VERSION}'
+
+GH_BASE = '~/github'
+
+base = hasData(f'{ORG}/{REPO}/tf/{REPO}', GH_BASE, VERSION)
+if not base:
+  base = '~/text-fabric-data'
+
+DATABASE = f'{base}/{ORG}'
 
 PROVENANCE = dict(
     corpus=f'Uruk IV/III: Proto-cuneiform tablets ({VERSION})',
     corpusDoi=('10.5281/zenodo.1193841', 'https://doi.org/10.5281/zenodo.1193841'),
 )
 
-locations = [DATABASE]
-modules = [TF]
+locations = [f'{DATABASE}/{REPO}/tf/{REPO}/{VERSION}']
+modules = ['']
 
 localDir = os.path.expanduser(f'{DATABASE}/{REPO}/_temp')
 
@@ -32,4 +38,4 @@ condenseType = 'tablet'
 
 
 def extraApi(locations, modules):
-  return Cunei(BASE, f'{ORG}/{REPO}', None, asApi=True)
+  return Cunei(None, asApi=True)

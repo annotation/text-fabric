@@ -8,17 +8,21 @@ from tf.apphelpers import (
     search,
     table, plainTuple,
     show, prettyPre, pretty, prettyTuple, prettySetup,
-    getBoundary, getFeatures,
+    getData, getBoundary, getFeatures,
     htmlEsc, mdEsc,
     dm, header, outLink,
 )
 
 ORG = 'etcbc'
+CORPUS = 'bhsa'
+
+DATA_REL = f'{ORG}/{CORPUS}/tf'
+GH_BASE = '~/github'
+RELEASE = '1.3'
 
 URL_GH = 'https://github.com'
 URL_NB = 'http://nbviewer.jupyter.org/github'
 
-CORPUS = 'bhsa'
 
 SHEBANQ_URL = 'https://shebanq.ancient-data.org/hebrew'
 SHEBANQ = (
@@ -266,6 +270,11 @@ PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
 
 
 class Bhsa(object):
+  @staticmethod
+  def getData(version):
+    dataUrl = f'https://github.com/{ORG}/{CORPUS}/releases/download/{RELEASE}/{version}.zip'
+    getData(dataUrl, DATA_REL, GH_BASE, version)
+
   def __init__(
       self,
       api,
@@ -286,6 +295,8 @@ class Bhsa(object):
     self.standardFeatures = set(standardFeatures.strip().split())
 
     if asApi:
+      dataUrl = f'https://github.com/{ORG}/{CORPUS}/releases/download/{RELEASE}/{version}.zip'
+      getData(dataUrl, DATA_REL, GH_BASE, version)
       TF = Fabric(locations=locations, modules=modules, silent=True)
       api = TF.load('', silent=True)
       allFeatures = TF.explore(silent=True, show=True)

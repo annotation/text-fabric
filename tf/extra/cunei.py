@@ -10,7 +10,7 @@ from tf.apphelpers import (
     search,
     table, plainTuple,
     show, prettyPre, pretty, prettyTuple, prettySetup,
-    getFeatures,
+    getData, getDataCustom, getFeatures,
     htmlEsc, mdEsc,
     dm, header, outLink,
 )
@@ -19,6 +19,15 @@ ORG = 'Nino-cunei'
 SOURCE = 'uruk'
 SOURCE_FULL = 'Uruk IV-III'
 VERSION = '1.0'
+
+DATA_REL = f'{ORG}/{SOURCE}/tf/uruk'
+GH_BASE = '~/github'
+RELEASE = '1.1.0'
+
+DATA_URL = f'https://github.com/{ORG}/{SOURCE}/releases/download/{RELEASE}/{VERSION}.zip'
+IMAGE_URL = f'https://github.com/{ORG}/{SOURCE}/releases/download/{RELEASE}/images.zip'
+
+
 CORPUS = f'tf/{SOURCE}/{VERSION}'
 CORPUS_FULL = f'{SOURCE_FULL} (v{VERSION})'
 SOURCE_DIR = 'sources/cdli'
@@ -530,14 +539,19 @@ class Atf(object):
 
 
 class Cunei(Atf):
-  def __init__(self, repoBase, repoRel, name, asApi=False):
+  def __init__(self, name, asApi=False):
     self.asApi = asApi
-    repoBase = os.path.expanduser(repoBase)
+    repoBase = getData(DATA_URL, DATA_REL, GH_BASE, VERSION)
+    if not repoBase:
+      return
+    repoRel = f'{ORG}/{SOURCE}'
     repo = f'{repoBase}/{repoRel}'
     self.repo = repo
     self.version = VERSION
     self.sourceDir = f'{repo}/{SOURCE_DIR}'
     self.imageDir = f'{repo}/{IMAGE_DIR}'
+    if not os.path.exists(self.imageDir):
+      getDataCustom(IMAGE_URL, self.sourceDir)
     self.repoTempDir = f'{repo}/{TEMP_DIR}'
     self._imagery = {}
     self.corpus = f'{repo}/{CORPUS}'
@@ -1212,8 +1226,13 @@ This notebook online:
     else:
       nodeRep = node
     nodeRep = (
-        nodeRep.lower().replace('|', 'q').replace('~', '-').replace('@', '(a)').replace('&', '(e)')
-        .replace('+', '(p)').replace('.', '(d)')
+        nodeRep.lower()
+        .replace('|', 'q')
+        .replace('~', '-')
+        .replace('@', '(a)')
+        .replace('&', '(e)')
+        .replace('+', '(p)')
+        .replace('.', '(d)')
     )
     keyRep = '' if key == '' else f'-{key}'
     localImageName = f'{kind}-{nodeRep}{keyRep}{ext}'
@@ -1248,6 +1267,10 @@ This notebook online:
           key = base.replace('_l', '').replace(identifier, '')
         else:
           identifier = base
+          if identifier.startswith('['):
+            identifier = '|' + identifier[1:]
+          if identifier.endswith(']'):
+            identifier = identifier[0:-1] + '|'
           key = ''
         images.setdefault(identifier, {})[key] = filePath
       self._imagery.setdefault(objectType, {})[kind] = images
