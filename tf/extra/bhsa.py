@@ -264,6 +264,36 @@ STANDARD_FEATURES = '''
     number label book
 '''
 
+EXCLUDED_FEATURES = set('''
+    crossrefLCS
+    crossrefSET
+    g_cons
+    g_cons_utf8
+    g_lex
+    g_lex_utf8
+    g_nme
+    g_nme_utf8
+    g_pfm
+    g_pfm_utf8
+    g_prs
+    g_prs_utf8
+    g_uvf
+    g_uvf_utf8
+    g_vbe
+    g_vbe_utf8
+    g_vbs
+    g_vbs_utf8
+    kq_hybrid
+    kq_hybrid_utf8
+    languageISO
+    lex0
+    lexeme_count
+    mother_object_type
+    suffix_gender
+    suffix_number
+    suffix_person
+'''.strip().split())
+
 # for 4, 4b: voc_lex => g_lex, voc_lex_utf8 => g_lex_utf8
 
 PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
@@ -298,10 +328,11 @@ class Bhsa(object):
       dataUrl = f'https://github.com/{ORG}/{CORPUS}/releases/download/{RELEASE}/{version}.zip'
       getData(dataUrl, DATA_REL, GH_BASE, version)
       TF = Fabric(locations=locations, modules=modules, silent=True)
-      api = TF.load('', silent=True)
+      api = TF.load('', silent=False)
       allFeatures = TF.explore(silent=True, show=True)
       loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
-      TF.load(loadableFeatures, add=True, silent=True)
+      useFeatures = [f for f in loadableFeatures if f not in EXCLUDED_FEATURES]
+      TF.load(useFeatures, add=True, silent=False)
     else:
       api.TF.load(self.standardFeatures, add=True, silent=True)
     self.prettyFeaturesLoaded = self.standardFeatures

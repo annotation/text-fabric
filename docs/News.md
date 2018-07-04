@@ -6,6 +6,13 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.1
+
+2018-07-4
+
+In the TF browser, use a selection of all the features when working with the BHSA.
+Otherwise in Windows you might run out of memory, even if you have 8GB RAM.
+
 ## 5.5
 
 2018-07-4

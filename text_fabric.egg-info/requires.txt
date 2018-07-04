@@ -3,3 +3,4 @@ bottle
 psutil
 markdown
 ipython
+requests
