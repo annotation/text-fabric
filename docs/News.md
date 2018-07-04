@@ -6,6 +6,13 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5
+
+2018-07-4
+
+Text-Fabric can download data for BHSA and Cunei. You do not have to clone github repositories for that.
+The data downloaded by Text-Fabric ends up in `text-fabric-data` under your home directory.
+
 ## 5.4.5-7
 
 2018-07-03
