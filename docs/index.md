@@ -18,8 +18,13 @@ it works really well in Jupyter notebooks.
 Text Fabric is a Python(3) package on the Python Package Index, so you can install it easily with `pip` from
 the command line.
 
+???+ abstract "Prerequisites"
+    Your computer should be a 64-bit machine and it needs at least 8 GB RAM memory.
+
 ???+ abstract "Python"
     Install or upgrade [Python3](https://www.python.org/downloads/) on your system to at least version 3.6.
+
+    Go for the 64-bit version. Otherwise Python may not be able to address all the memory it needs.
 
 ??? hint "Jupyter"
     Optionally install [Jupyter](http://jupyter.org) as well:
