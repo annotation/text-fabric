@@ -3,7 +3,7 @@ from .data import makeTfServer
 from .common import getParam, getConfig
 
 
-def tfService():
+def main():
   dataSource = getParam(interactive=True)
   if dataSource is not None:
     config = getConfig(dataSource)
@@ -24,4 +24,4 @@ def makeTfConnection(host, port):
 
 
 if __name__ == "__main__":
-    tfService()
+    main()

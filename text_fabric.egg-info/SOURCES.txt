@@ -1,7 +1,6 @@
 MANIFEST.in
 README.md
 setup.py
-text-fabric
 text_fabric.egg-info/PKG-INFO
 text_fabric.egg-info/SOURCES.txt
 text_fabric.egg-info/dependency_links.txt

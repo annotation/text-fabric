@@ -1,4 +1,3 @@
-import sys
 import os
 import datetime
 import time
@@ -172,8 +171,8 @@ def getFormData():
 
 def writeFormData(form):
   excludedFields = {
-    'export', 'chdir', 'rename', 'duplicate',
-    'jobName', 'jobNameHidden', 'jobDir', 'otherJobDo', 'otherJob',
+      'export', 'chdir', 'rename', 'duplicate',
+      'jobName', 'jobNameHidden', 'jobDir', 'otherJobDo', 'otherJob',
   }
   thisJobName = form['jobName'] or ''
   with open(f'{dataSource}-{thisJobName}{EXTENSION}', 'w') as tfj:
@@ -255,7 +254,6 @@ def serveSearch(anything):
       form['jobDir'] = curJobDir
   if form['jobName'] != form['jobNameHidden']:
     src = f'{dataSource}-{form["jobNameHidden"] or DEFAULT_NAME}{EXTENSION}'
-    dst = f'{dataSource}-{form["jobName"]}{EXTENSION}'
     form['jobNameHidden'] = form['jobName']
     if form['rename']:
       if os.path.exists(src):

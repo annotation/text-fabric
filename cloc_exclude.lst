@@ -1,0 +1,10 @@
+build
+dist
+legacydocs
+docs/Stats.md
+site
+test
+text_fabric.egg-info
+cloc_exclude.lst
+MANIFEST
+UNLICENSE.txt
