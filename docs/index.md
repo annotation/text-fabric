@@ -1,38 +1,52 @@
 ![logo](/images/tf.png)
 
-Text-Fabric is several things:
+# Text-Fabric
 
-* a *browser* for ancient text corpora
-* a Python3 package for processing ancient corpora
+??? abstract "About"
+    Text-Fabric is several things:
 
-A corpus of ancient texts and linguistic annotations represents a large body of knowledge.
-Text-Fabric makes that knowledge accessible to non-programmers by means of 
-built-in a search interface that runs in your browser.
+    * a *browser* for ancient text corpora
+    * a Python3 package for processing ancient corpora
 
-From there the step to program your own analytics is not so big anymore.
-Because you can call the Text-Fabric API from your Python programs, and
-it works really well in Jupyter notebooks.
+    A corpus of ancient texts and linguistic annotations represents a large body of knowledge.
+    Text-Fabric makes that knowledge accessible to non-programmers by means of 
+    built-in a search interface that runs in your browser.
+
+    From there the step to program your own analytics is not so big anymore.
+    Because you can call the Text-Fabric API from your Python programs, and
+    it works really well in Jupyter notebooks.
  
-# Install
+## Install
 
-Text Fabric is a Python(3) package on the Python Package Index, so you can install it easily with `pip` from
+Text Fabric is a Python(3) package on the Python Package Index,
+so you can install it easily with `pip3` or `pip` from
 the command line.
 
 ???+ abstract "Prerequisites"
-    Your computer should be a 64-bit machine and it needs at least 8 GB RAM memory.
 
-    ??? caution "Web browser on Windows"
-        If you are on windows: the Text-Fabric browser does not display well in Microsoft Edge,
-        for it does not support the
-        [details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
-        element.
+    ??? note "Computer"
+        Your computer should be a 64-bit machine and it needs at least 8 GB RAM memory.
+        It should run Linux, Macos, or Windows.
 
-        Install Chrome of Firefox and set it as your default browser.
+    ??? abstract "Python"
+        Install or upgrade Python on your system to at least version 3.6.3.
+        Go for the 64-bit version. Otherwise Python may not be able to address all the memory it needs.
 
-??? abstract "Python"
-    Install or upgrade [Python3](https://www.python.org/downloads/) on your system to at least version 3.6.
+        The leanest install is provided by [python.org](https://www.python.org/downloads/).
+        You can also install it from [anaconda.com](https://www.anaconda.com/download).
 
-    Go for the 64-bit version. Otherwise Python may not be able to address all the memory it needs.
+    ??? caution "on Windows?"
+        * Choose Anaconda over standard Python. The reason is that when you want to add Jupyter to the mix,
+          you need to have additional developers' tools installed.
+          The Anaconda distribution has Jupyter out of the box.
+        * When installing Python, make sure that the installer adds the path to Python to 
+          your environment variables.
+        * **Install Chrome of Firefox and set it as your default browser.**
+          The Text-Fabric browser does not display well in Microsoft Edge,
+          for Edge does not support the
+          [details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+          element.
+
 
 ???+ abstract "Text-Fabric"
     Install Text-Fabric:
@@ -47,7 +61,7 @@ the command line.
     pip install text-fabric
     ```
 
-    ???+ note "3"
+    ??? note "to 3 or not to 3?"
         From now on we always use `python3` and `pip3` in instructions.
         On Windows you have to say `python` and `pip`.
         There are more differences, when you go further with programming.
@@ -79,22 +93,25 @@ the command line.
         tab in the Jupyter Lab interface with a table of contents of the
         current notebook.
 
-# Use the Text-Fabric browser
+## Use the Text-Fabric browser
 
-You can open a terminal (such as `bash` on Unix and `cmd.exe` on Windows), and just say
+Explore your corpus without programming.
 
-```sh
-text-fabric bhsa
-```
+??? abstract "Start up"
+    You can open a terminal (such as `bash` on Unix and `cmd.exe` on Windows), and just say
 
-or 
+    ```sh
+    text-fabric bhsa
+    ```
 
-```sh
-text-fabric cunei
-```
+    or 
 
-After (down)-loading the data your browser will open and load the search interface.
-There you'll find links to further help.
+    ```sh
+    text-fabric cunei
+    ```
+
+    After (down)-loading the data your browser will open and load the search interface.
+    There you'll find links to further help.
 
 <p>
 <img src="images/bhsa-app.png"/>
@@ -109,14 +126,22 @@ There you'll find links to further help.
 </p>
 
 
+??? hint "Fetching corpora"
+    The Text-Fabric browser fetches the corpora it needs from GitHub automatically.
+    The TF data is fairly compact (25 MB for the Hebrew Bible, 1.6 MB for the Cunei corpus).
 
-???+ hint "Saving your session"
+    ??? caution "Size of data"
+        There might be sizable additional data (550 MB images for the Cunei corpus).
+        In that case, take care to have a good internet connection when you use the
+        Text-Fabric browser for the first time.
+
+??? hint "Saving your session"
     Your session will be saved in a file with extension `.tfjob` in the directory
     from where you have issued the `text-fabric` command.
     From within the browser you can rename and duplicate sessions and move to
     other directories. You can also load other sessions in other tabs.
 
-???+ hint "Multiple windows"
+??? hint "Multiple windows"
     After you have issued the `text-fabric` command, you can open many 
     browsers and windows and tabs with the same url.
     They all use the same data, which only gets loaded when the command `text-fabric` is run.
@@ -126,29 +151,66 @@ There you'll find links to further help.
     You can close the data server by pressing Ctrl-C in the terminal where you have
     started `text-fabric` up.
 
-# Get corpora
+## Get corpora
 
-There are a few corpora in Text-Fabric that are being supported
-with extra modules. Text-Fabric will fetch them for you if you use the Text-Fabric browser.
+More about the data that Text-Fabric works with.
 
-??? abstract "Manually fetching data"
+??? abstract "About"
+    Corpora are usually stored in an online repository, such as GitHub or a research data archive
+    such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
+
+??? abstract "Automatically"
+    There are a few corpora in Text-Fabric that are being supported
+    with extra modules.
+    Text-Fabric will fetch them for you if you use the Text-Fabric browser.
+    And if you work with them from within a Python program (e.g. in a Jupyter Notebook),
+    Text-Fabric either fetches data automatically, or there is an easy function
+    that you can call to fetch data.
+
+??? abstract "Manually"
+    You can also download the data you need up-front.
     There are basically two ways:
 
-    * go to the relevant GitHub repository, click on releases, and choose the relevant binary
-      that has been attached to the release.
-      Download it to your system.
-      This is the most economical way to get data.
+    ??? abstract "from a release binary"
+        Go to the relevant GitHub repository, click on releases, and choose the relevant binary
+        that has been attached to the release.
+        Download it to your system.
+        This is the most economical way to get data.
 
-    * clone the relevant GitHub repository to your system.
-      This will get you lots of additional data that you might not directly need.
+    ??? abstract "clone the complete repository"
+        Clone the relevant GitHub repository to your system.
+        This will get you lots of additional data that you might not directly need.
+
+        ??? caution "On Windows?"
+            You have to install `git` in
+            [some way](https://git-scm.com/downloads)
+            for this step.
 
 ??? abstract "Hebrew Bible"
-    If you are in a Jupyter notebook or Python script, this will fetch the data (25MB)
+    If you are in a Jupyter notebook or Python script,
+    this will fetch the data (25MB)
 
     ```python
     from tf.extra.bhsa import getTf
     getTf()
     ```
+
+    Or if you want to fetch related modules, such as the `phono` transcriptions, you can say
+
+    ```python
+    getTf(source='phono', release='1.0.1')
+    ```
+
+    ??? hint "ETCBC data"
+        Inspect the repositories of the [etcbc organization on GitHub](https://github.com/etcbc)
+        to see what is available. Per repository, click the *Releases* button so see
+        the release version that holds the relevant binaries with TF-data.
+        For example, try [crossrefs](https://github.com/etcbc/parallels/releases).
+
+    ??? hint "ETCBC versions"
+        The data of the ETCBC comes in major versions, ranging from `3` (2011) via
+        `4`, `4b`, `2016`, `2017` to `c` (2018).
+        The latter is a *continuous* version, which will change over time.
 
     If you want to be in complete control, you can get the complete data repository
     from GitHub (5GB):
@@ -158,14 +220,17 @@ with extra modules. Text-Fabric will fetch them for you if you use the Text-Fabr
     git clone https://github.com/etcbc/bhsa
     ```
 
-    If you are on Windows, you have to install `git` in some way for this step.
+    and likewise you can get other ETCBC data modules such as `phono`.
 
 ??? abstract "Cuneiform tablets from Uruk"
-    Get the corpus:
+    If you are in a Jupyter notebook or Python script,
+    the Cunei API will fetch the data for you automatically:
 
-    In a Jupyter notebook, the Cunei API will fetch it for you automatically.
-    The TF is 1.6 MB, but the photos and lineart are 550MB.
-    So do this only when you have a good internet connection.
+    * The TF-part is 1.6 MB
+    * the photos and lineart are 550MB!
+    
+    ???+ caution
+        So do this only when you have a good internet connection.
 
     If you want to be in complete control, you can get the complete data repository
     from GitHub (1.5GB):
@@ -175,9 +240,7 @@ with extra modules. Text-Fabric will fetch them for you if you use the Text-Fabr
     git clone https://github.com/Nino-cunei/uruk
     ```
 
-    If you are on Windows, you have to install `git` in some way for this step.
-
-??? hint "More"
+??? abstract "More"
     The
     [Greek](https://github.com/Dans-labs/text-fabric-data/tree/master/greek/sblgnt) and
     [Syriac](https://github.com/ETCBC/linksyr/tree/master/data/tf/syrnt)
@@ -195,72 +258,35 @@ with extra modules. Text-Fabric will fetch them for you if you use the Text-Fabr
     git clone https://github.com/Dans-labs/text-fabric-data
     ```
 
-    All these are not supported by extra innterfaces.
+    All these are not supported by extra interfaces.
 
-# Frequently Occurring Trouble
+## Documentation
 
-??? caution "Older versions"
-    Older versions of Python and Text-Fabric may be in the way.
-    The following hygenic measures are known to be beneficial:
+??? abstract "About"
+    There is extensive documentation.
 
-    ??? abstract "Python related"
-        When you have upgraded Python, remove PATH statements for older versions from your system startup files.
-      
-        * For the Macos: look at `.bashrc`, `.bash_profile` in your home directory.
-        * For Windows: on the command prompt, say `echo %path%` to see what the content of your PATH
-          variable is. If you see references to older versions of python than you actually work with,
-          they need to be removed. [Here is how](https://www.computerhope.com/issues/ch000549.htm)
-        
-        ???+ caution "Only for Python3"
-            Do not remove references to Python 2.*, but only outdated Python 3.* versions. 
+    If you start using the Text-Fabric API in your programs, you'll definitely need it.
 
-    ??? abstract "Text-Fabric related"
-        Sometimes `pip3 uninstall text-fabric` fails to remove all traces of Text-Fabric.
-        Here is how you can remove them manually:
+    If you are just starting with the Text-Fabric browser, it might help to
+    look at the online tutorials for the BHSA and the Cunei corpus to see what
+    Text-Fabric can reveal about the data.
 
-        * locate the `bin` directory of the current Python, it is something like
+??? abstract "Tutorials"
+    There are tutorials and exercises to guide you into increasingly involved tasks
+    on specific corpora (outside this repo):
 
-          * (Macos regular Python) `/Library/Frameworks/Python.framework/Versions/3.7/bin`
-          * (Windows Anaconda) `C:\Users\You\Anaconda3\Scripts`
+    * [Biblia Hebraica Stuttgartensia Amstelodamensis](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
+    * [Proto-Cuneiform tablets from Uruk IV/III](https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
-          Remove the file `text-fabric` from this directory if it exists.
+    These links point to the *static* online versions.
+    If you want to get these Jupyter notebooks on your system in order to execute them yourself, 
+    you can download them from a release:
 
-        * locate the `site-packages` directory of the current Python, it is something like
+    * [BHSA tutorial download](https://github.com/ETCBC/bhsa/releases/download/1.3/tutorial.zip)
+    * [Cunei tutorial download](https://github.com/Nino-cunei/tutorials/releases/download/v1.0.0/tutorial.zip)
 
-          * (Macos regular Python)
-            `/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages`
-
-            Remove the subdirectory `tf` from this location, plus all files with `text-fabric` in the name.
-
-        * After this, you can make a fresh install of `text-fabric`:
-
-          ```sh
-          pip3 install text-fabric
-          ```
-
-??? caution "Newest version of Text-Fabric does not show up"
-    When you get errors doing `pip3 install text-fabric`, there is probably an older version around.
-    You have to say
-
-    ```sh
-    pip3 install --upgrade text-fabric
-    ```
-
-    If this still does not download the most recent version of `text-fabric`, it may have been cauched by caching.
-    Then say:
-
-    ```sh
-    pip3 install --upgrade --no-cache-dir text-fabric
-    ```
-
-    You can check what the newest distributed version of Text-Fabric is on
-    [PyPi](https://pypi.org/project/text-fabric/).
-
-
-# Documentation
-
-There is extensive documentation.
-If you start using the Text-Fabric API in your programs, you'll need it.
+    These are zip files, you can unpack them where you want.
+    You have to have Jupyter installed.
 
 ??? note "Reference"
     The pages you are reading now are the reference docs.
@@ -269,13 +295,6 @@ If you start using the Text-Fabric API in your programs, you'll need it.
     * It specifies the [file format](https://dans-labs.github.io/text-fabric/Model/File-formats/)
     * It holds the [api docs](https://dans-labs.github.io/text-fabric/Api/General/)
    
-???+ note "Tutorials"
-    There are tutorials and exercises to guide you into increasingly involved tasks
-    on specific corpora (outside this repo):
-
-    * [Biblia Hebraica Stuttgartensia Amstelodamensis](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
-    * [Proto-Cuneiform tablets from Uruk IV/III](https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
-
 ??? note "Background"
     For more background information (earlier work, institutes, people, datasets), consult the
     [wiki](https://github.com/ETCBC/shebanq/wiki) pages of SHEBANQ.
@@ -297,23 +316,24 @@ If you start using the Text-Fabric API in your programs, you'll need it.
     in the Lutheran Church of San Antonio.
 
 
-# Getting started with the API
+## Getting started with the API
 
-Start programming: write a python script or code in the Jupyter notebook
+??? abstract "Into the notebook"
+    Start programming: write a python script or code in the Jupyter notebook
 
-```sh
-cd somewhere-else
-jupyter notebook
-```
+    ```sh
+    cd somewhere-else
+    jupyter notebook
+    ```
 
-Enter the following text in a code cell
+    Enter the following text in a code cell
 
-```python
-from tf.fabric import Fabric
-TF = Fabric(modules=['my/dataset'])
-api = TF.load('sp lex')
-api.makeAvailableIn(globals())
-```
+    ```python
+    from tf.fabric import Fabric
+    TF = Fabric(modules=['my/dataset'])
+    api = TF.load('sp lex')
+    api.makeAvailableIn(globals())
+    ```
 
 ??? note "locations"
     Maybe you have to tell Text-Fabric exactly where your data is.
@@ -336,7 +356,7 @@ api.makeAvailableIn(globals())
     Or go straight to the
     [cunei-api-docs](/Api/Cunei).
 
-# Design principles
+## Design principles
 
 ??? abstract "Minimalistic model"
     Text-Fabric is based on a minimalistic data model for text plus annotations.
@@ -396,5 +416,83 @@ api.makeAvailableIn(globals())
     I have taken out everything that makes LAF-Fabric complicated and
     all things that are not essential for the sake of raw data processing.
 
-???+ note "Author"
-    [Dirk Roorda](https://dans.knaw.nl/en/about/organisation-and-policy/staff/roorda?set_language=en)
+## Frequently Occurring Trouble
+
+??? caution "Older versions"
+    Older versions of Python and Text-Fabric may be in the way.
+    The following hygenic measures are known to be beneficial:
+
+    ??? abstract "Python related"
+        When you have upgraded Python, remove PATH statements for older versions from your system startup files.
+      
+        * For the Macos: look at `.bashrc`, `.bash_profile` in your home directory.
+        * For Windows: on the command prompt, say `echo %path%` to see what the content of your PATH
+          variable is. If you see references to older versions of python than you actually work with,
+          they need to be removed. [Here is how](https://www.computerhope.com/issues/ch000549.htm)
+        
+        ???+ caution "Only for Python3"
+            Do not remove references to Python 2.*, but only outdated Python 3.* versions. 
+
+    ??? abstract "Text-Fabric related"
+        Sometimes `pip3 uninstall text-fabric` fails to remove all traces of Text-Fabric.
+        Here is how you can remove them manually:
+
+        * locate the `bin` directory of the current Python, it is something like
+
+          * (Macos regular Python) `/Library/Frameworks/Python.framework/Versions/3.7/bin`
+          * (Windows Anaconda) `C:\Users\You\Anaconda3\Scripts`
+
+          Remove the file `text-fabric` from this directory if it exists.
+
+        * locate the `site-packages` directory of the current Python, it is something like
+
+          * (Macos regular Python)
+            `/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages`
+
+            Remove the subdirectory `tf` from this location, plus all files with `text-fabric` in the name.
+
+        * After this, you can make a fresh install of `text-fabric`:
+
+          ```sh
+          pip3 install text-fabric
+          ```
+
+??? caution "Newest version of Text-Fabric does not show up"
+    When you get errors doing `pip3 install text-fabric`, there is probably an older version around.
+    You have to say
+
+    ```sh
+    pip3 install --upgrade text-fabric
+    ```
+
+    If this still does not download the most recent version of `text-fabric`, it may have been cauched by caching.
+    Then say:
+
+    ```sh
+    pip3 install --upgrade --no-cache-dir text-fabric
+    ```
+
+    You can check what the newest distributed version of Text-Fabric is on
+    [PyPi](https://pypi.org/project/text-fabric/).
+
+
+## Author
+[Dirk Roorda](https://dans.knaw.nl/en/about/organisation-and-policy/staff/roorda?set_language=en)
+
+??? abstract "Co-creation"
+    While I wrote most of the code, a product like Text-Fabric is unthinkable without
+    the contributions of avid users that take the trouble to give feedback and file issues,
+    and have the zeal and stamina to hold on when things are frustrating and bugs overwhelming.
+
+??? abstract "Acknowledgements"
+    In particular I owe a lot to
+
+    * Martijn Naaijer
+    * Cody Kingham
+    * Christiaan Erwich
+    * Cale Johnson
+    * Christian Høygaard-Jensen
+    * Camil Staps
+    * Stephen Ku
+    * James Cuénod
+    * Johan de Joode
