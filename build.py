@@ -131,12 +131,12 @@ def makeDist():
 
 
 def commit(task, msg):
-  commitMessage = f'Release {newVersion}: {msg}'
-  tagVersion = f'v{newVersion}'
   run(['git', 'add', '--all', '.'])
-  run(['git', 'commit', '-m', f'"{commitMessage}"'])
+  run(['git', 'commit', '-m', msg])
   if task in {'r1', 'r2', 'r3'}:
-    run(['git', 'tag', '-a', tagVersion, '-m', f'"{commitMessage}"'])
+    tagVersion = f'v{newVersion}'
+    commitMessage = f'Release {newVersion}: {msg}'
+    run(['git', 'tag', '-a', tagVersion, '-m', commitMessage])
 
 
 def shipDocs():
