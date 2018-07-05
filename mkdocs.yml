@@ -29,6 +29,7 @@ pages:
   - Server:
     - 'Service': 'Server/Service.md'
     - 'Web': 'Server/Web.md'
+    - 'Common': 'Server/Common.md'
   - Model:
     - 'Data': 'Model/Data-Model.md'
     - 'Format': 'Model/File-formats.md'
