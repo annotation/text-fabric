@@ -130,7 +130,8 @@ def commit(task, msg):
   tagVersion = f'v{newVersion}'
   run(['git', 'add', '--all', '.'])
   run(['git', 'commit', '-m', f'"{commitMessage}"'])
-  run(['git', 'tag', '-a', tagVersion, '-m', f'"{commitMessage}"'])
+  if task in {'r1', 'r2', 'r3'}:
+    run(['git', 'tag', '-a', tagVersion, '-m', f'"{commitMessage}"'])
 
 
 def main():
