@@ -1,12 +1,12 @@
-cloc|github.com/AlDanial/cloc v 1.74  T=1.07 s (49.7 files/s, 16944.9 lines/s)
+cloc|github.com/AlDanial/cloc v 1.74  T=1.12 s (48.4 files/s, 16304.0 lines/s)
 --- | ---
 
 Language|files|blank|comment|code
 :-------|-------:|-------:|-------:|-------:
 Python|32|1128|1157|7943
-Markdown|16|1928|0|5316
+Markdown|17|1962|0|5386
 CSS|2|17|4|349
 JavaScript|2|10|1|180
-YAML|1|4|0|47
+YAML|1|4|0|48
 --------|--------|--------|--------|--------
-SUM:|53|3087|1162|13835
+SUM:|54|3121|1162|13906
