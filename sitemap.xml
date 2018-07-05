@@ -51,6 +51,11 @@
      <changefreq>daily</changefreq>
     </url>
     <url>
+     <loc>/Server/Common/</loc>
+     <lastmod>2018-07-05</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
      <loc>/Model/Data-Model/</loc>
      <lastmod>2018-07-05</lastmod>
      <changefreq>daily</changefreq>
