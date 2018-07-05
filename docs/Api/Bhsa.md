@@ -8,14 +8,17 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
 ## Set up
 
-??? abstract "from tf.extra.bhsa import Bhsa, hasTf, getTf"
-    ??? explanation "import Bhsa"
-        The `Bhsa` API is distributed with Text-Fabric.
-        You have to import it into your program.
+??? abstract "import Bhsa"
+    The `Bhsa` API is distributed with Text-Fabric.
+    You have to import it into your program:
 
-        The `getTf` function is only needed if you want to
-        automatically download BHSA TF data from one of the
-        ETCBC repositories on GitHub
+    ```python
+    from tf.extra.bhsa import Bhsa, hasTf, getTf
+    ```
+
+    The `hasTf` and `getTf` functions are only needed if you want to
+    automatically download TF data from one of the
+    ETCBC repositories on GitHub.
 
 ## Get data
 
@@ -117,19 +120,19 @@ contains a number of handy functions on top of Text-Fabric and especially its
     ??? info "api"
         The API resulting from an earlier call `TF.load()`
 
-    ??? explanation "Set up"
-        This module comes in action after you have set up TF and loaded some features, e.g.
+        ??? explanation "Set up"
+            This module comes in action after you have set up TF and loaded some features, e.g.
 
-        ```python
-        VERSION = '2017'
-        TF = Fabric(locations=f'~/github/etcbc/bhsa/tf/{VERSION}')
-        api = TF.load('''
-          function sp gn nu
-        ''')
-        api.makeAvailableIn(globals())
-        ```
+            ```python
+            VERSION = '2017'
+            TF = Fabric(locations=f'~/github/etcbc/bhsa/tf/{VERSION}')
+            api = TF.load('''
+              function sp gn nu
+            ''')
+            api.makeAvailableIn(globals())
+            ```
 
-        Then we add the functionality of the `bhsa` module by a call to `Bhsa()`.
+            Then we add the functionality of the `bhsa` module by a call to `Bhsa()`.
 
     ??? info "notebook"
         This should be the name
