@@ -2,25 +2,31 @@ import sys
 import os
 import re
 
+from time import sleep
 from shutil import rmtree
-from subprocess import run
+from subprocess import run, Popen
 
+import psutil
 
 HELP = '''
 python3 build.py command
 
 command:
 
--h --help help: print help and exit
+-h
+--help
+help  : print help and exit
 
-l   : local develop build
-c   : clean local develop build
-r   : build for shipping, leave version as is
-r1  : build for shiping, version becomes r1+1.0.0
-r2  : build for shiping, version becomes r1.r2+1.0
-r3  : build for shiping, version becomes r1.r2.r3+1
+docs  : serve docs locally
+clean : clean local develop build
+l     : local develop build
+g     : push to github, code and docs
+r     : build for shipping, leave version as is
+r1    : build for shiping, version becomes r1+1.0.0
+r2    : build for shiping, version becomes r1.r2+1.0
+r3    : build for shiping, version becomes r1.r2.r3+1
 
-For r-commands you need to pass a commit message as well.
+For g and the r-commands you need to pass a commit message as well.
 '''
 
 DIST = 'dist'
@@ -54,17 +60,16 @@ def readArgs():
   if not len(args) or args[0] in {'-h', '--help', 'help'}:
     print(HELP)
     return (False, None)
-  else:
-    arg = args[0]
-    if arg in {'l', 'c', 'r', 'r1', 'r2', 'r3'}:
-      if arg in {'r', 'r1', 'r2', 'r3'}:
-        if len(args) < 2:
-          print('Provide a commit message')
-          return (False, None)
-        return (arg, args[1])
-      return (arg, None)
+  arg = args[0]
+  if arg not in {'docs', 'clean', 'l', 'g', 'r', 'r1', 'r2', 'r3'}:
     print(HELP)
     return (False, None)
+  if arg in {'g', 'r', 'r1', 'r2', 'r3'}:
+    if len(args) < 2:
+      print('Provide a commit message')
+      return (False, None)
+    return (arg, args[1])
+  return (arg, None)
 
 
 def incVersion(version, task):
@@ -134,17 +139,88 @@ def commit(task, msg):
     run(['git', 'tag', '-a', tagVersion, '-m', f'"{commitMessage}"'])
 
 
+def shipDocs():
+  codestats()
+  run(['mkdocs', 'gh-deploy'])
+
+
+def serveDocs():
+  codestats()
+  killProcesses()
+  proc = Popen(['mkdocs', 'serve'])
+  sleep(3)
+  run('open http://127.0.0.1:8000', shell=True)
+  try:
+    proc.wait()
+  except KeyboardInterrupt:
+    pass
+  proc.terminate()
+
+
+def killProcesses():
+  myself = os.getpid()
+  for proc in psutil.process_iter(attrs=['pid', 'name']):
+    pid = proc.info['pid']
+    if pid == myself:
+      continue
+    if filterProcess(proc):
+      try:
+        proc.terminate()
+        print(f'mkdocs [{pid}] terminated')
+      except psutil.NoSuchProcess:
+        print(f'mkdocs [{pid}] already terminated')
+
+
+def filterProcess(proc):
+  procName = proc.info['name']
+  commandName = '' if procName is None else procName.lower()
+  found = False
+  if commandName.endswith('python'):
+    parts = proc.cmdline()
+    if len(parts) >= 3:
+      if parts[1].endswith('mkdocs') and parts[2] == 'serve':
+        found = True
+      if parts[1] == 'build.py' and parts[2] == 'docs':
+        found = True
+  return found
+
+
+def codestats():
+  xd = (
+      '__pycache__,node_modules,.tmp,.git,_temp,'
+      '.ipynb_checkpoints,images,fonts,favicons,compiled'
+  )
+  xf = 'cloc_exclude.lst'
+  rf = 'docs/Stats.md'
+  run(
+      'cloc'
+      ' --no-autogen'
+      f' --exclude_dir={xd}'
+      f' --exclude-list-file={xf}'
+      f' --report-file={rf}'
+      ' --md'
+      ' .',
+      shell=True,
+  )
+
+
 def main():
   (task, msg) = readArgs()
   if not task:
     return
-  adjustVersion(task)
-  if task == 'l':
-    run(['python3', 'setup.py', 'develop'])
-  elif task == 'c':
+  elif task == 'docs':
+    serveDocs()
+  elif task == 'clean':
     run(['python3', 'setup.py', 'develop', '-u'])
     os.unlink(SCRIPT)
+  elif task == 'l':
+    run(['python3', 'setup.py', 'develop'])
+  elif task == 'g':
+    shipDocs()
+    commit(task, msg)
   elif task in {'r', 'r1', 'r2', 'r3'}:
+    adjustVersion(task)
+    shipDocs()
     makeDist()
     commit(task, msg)
 

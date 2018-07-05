@@ -19,6 +19,7 @@ repo_url: 'https://github.com/dans-labs/text-fabric/'
 pages:
   - Home: 'index.md'
   - News: 'News.md'
+  - Lines of code: 'Stats.md'
   - Api:
     - 'General': 'Api/General.md'
     - 'Apps': 'Api/Apps.md'

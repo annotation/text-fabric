@@ -113,11 +113,10 @@ def killProcesses(dataSource, kill=False):
             continue
           try:
             proc = psutil.Process(pid=pid)
-            if True:
-              if kill:
-                proc.kill()
-              else:
-                proc.terminate()
+            if kill:
+              proc.kill()
+            else:
+              proc.terminate()
             print(f'Process {kind} server for {ds}: {item}')
           except psutil.NoSuchProcess:
             print(f'Process {kind} server for {ds}: already {item}')
