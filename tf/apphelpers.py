@@ -11,66 +11,11 @@ LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
 
 RESULT = 'result'
+GH_BASE = '~/github'
 EXPRESS_BASE = '~/text-fabric-data'
 
-
-def htmlEsc(val):
-  return '' if val is None else str(val).replace('&', '&amp;').replace('<', '&lt;')
-
-
-def mdEsc(val):
-  return '' if val is None else str(val).replace('|', '&#124;')
-
-
-def dm(md):
-  display(Markdown(md))
-
-
-def header(extraApi):
-  return (
-      f'''
-<div class="hdlinks">
-  {extraApi.dataLink}
-  {extraApi.featureLink}
-  {extraApi.tfsLink}
-  {extraApi.tutLink}
-</div>
-''',
-      f'<img class="hdlogo" src="/data/static/logo.png"/>',
-      f'<img class="hdlogo" src="/server/static/logo.png"/>',
-  )
-
-
-def getDataCustom(dataUrl, dest):
-  print(f'Downloading data from {dataUrl} ...')
-  try:
-    r = requests.get(dataUrl, allow_redirects=True)
-    zf = io.BytesIO(r.content)
-  except Exception as e:
-    print(str(e))
-    print('Could not download data')
-    return False
-
-  print(f'Saving data in {dest}')
-
-  try:
-    z = ZipFile(zf)
-    if not os.path.exists(dest):
-      os.makedirs(dest, exist_ok=True)
-    cwd = os.getcwd()
-    os.chdir(dest)
-    z.extractall()
-    if os.path.exists(f'{dest}/__MACOSX'):
-      rmtree(f'{dest}/__MACOSX')
-  except Exception as e:
-    print(str(e))
-    print('Could not save downloaded data')
-    os.chdir(cwd)
-    return False
-
-  print('Saved')
-  os.chdir(cwd)
-  return dest
+URL_GH = 'https://github.com'
+URL_NB = 'http://nbviewer.jupyter.org/github'
 
 
 def hasData(dataRel, ghBase, version):
@@ -109,314 +54,72 @@ def getData(dataUrl, dataRel, ghBase, version):
   return False
 
 
-def plainTuple(
-    extraApi,
-    tup,
-    seqNumber,
-    isCondensed=False,
-    condenseType=None,
-    item=RESULT,
-    linked=1,
-    withNodes=False,
-    position=None,
-    opened=False,
-    asString=False,
-    **options,
-):
-  asApi = extraApi.asApi
+def getDataCustom(dataUrl, dest):
+  print(f'Downloading data from {dataUrl} ...')
+  try:
+    r = requests.get(dataUrl, allow_redirects=True)
+    zf = io.BytesIO(r.content)
+  except Exception as e:
+    print(str(e))
+    print('Could not download data')
+    return False
+
+  print(f'Saving data in {dest}')
+
+  try:
+    z = ZipFile(zf)
+    if not os.path.exists(dest):
+      os.makedirs(dest, exist_ok=True)
+    cwd = os.getcwd()
+    os.chdir(dest)
+    z.extractall()
+    if os.path.exists(f'{dest}/__MACOSX'):
+      rmtree(f'{dest}/__MACOSX')
+  except Exception as e:
+    print(str(e))
+    print('Could not save downloaded data')
+    os.chdir(cwd)
+    return False
+
+  print('Saved')
+  os.chdir(cwd)
+  return dest
+
+
+def search(extraApi, query, silent=False, sets=None, shallow=False):
   api = extraApi.api
-  F = api.F
-  if asApi:
-    prettyRep = prettyTuple(
-        extraApi,
-        tup,
-        seqNumber,
-        isCondensed=isCondensed,
-        condenseType=condenseType,
-        withNodes=withNodes,
-        **options,
-    ) if opened else ''
-    current = ' focus' if seqNumber == position else ''
-    attOpen = ' open ' if opened else ''
-    refColumn = 1 if isCondensed else linked
-    refNode = tup[refColumn - 1] if refColumn <= len(tup) else None
-    refRef = '' if refNode is None else extraApi.webLink(refNode)
-    tupSeq = ','.join(str(n) for n in tup)
-
-    plainRep = ''.join(
-        f'''<span>{mdEsc(extraApi.plain(
-                    n,
-                    linked=i == linked - 1,
-                    withNodes=withNodes,
-                    **options,
-                  ))
-                }
-            </span>
-        '''
-        for (i, n) in enumerate(tup)
-    )
-    html = (
-        f'''
-  <details
-    class="pretty dtrow{current}"
-    seq="{seqNumber}"
-    {attOpen}
-  >
-    <summary><a href="#" class="sq" tup="{tupSeq}">{seqNumber}</span> {refRef} {plainRep}</summary>
-    <div class="pretty">
-      {prettyRep}
-    </div>
-  </details>
-'''
-    )
-    return html
-  markdown = [str(seqNumber)]
-  for (i, n) in enumerate(tup):
-    markdown.append(
-        mdEsc(extraApi.plain(
-            n,
-            linked=i == linked - 1,
-            withNodes=withNodes,
-            asString=True,
-            **options,
-        ))
-    )
-  markdown = '|'.join(markdown)
-  if asString:
-    return markdown
-  head = ['n | ' + (' | '.join(F.otype.v(n) for n in tup))]
-  head.append(' | '.join('---' for n in range(len(tup) + 1)))
-  head.append(markdown)
-
-  dm('\n'.join(head))
+  info = api.info
+  S = api.S
+  results = S.search(query, sets=sets, shallow=shallow)
+  if not shallow:
+    results = sorted(results)
+  nResults = len(results)
+  plural = '' if nResults == 1 else 's'
+  if not silent:
+    info(f'{nResults} result{plural}')
+  return results
 
 
-def prettyPre(
-    extraApi,
-    n,
-    firstSlot,
-    lastSlot,
-    withNodes,
-    highlights,
-):
-  api = extraApi.api
-  F = api.F
+def runSearch(api, query, cache):
+  plainSearch = api.S.search
 
-  slotType = F.otype.slotType
-  nType = F.otype.v(n)
-  boundaryClass = ''
-  myStart = None
-  myEnd = None
-
-  (myStart, myEnd) = getBoundary(api, n)
-
-  if firstSlot is not None:
-    if myEnd < firstSlot:
-      return False
-    if myStart < firstSlot:
-      boundaryClass += ' R'
-  if lastSlot is not None:
-    if myStart > lastSlot:
-      return False
-    if myEnd > lastSlot:
-      boundaryClass += ' L'
-
-  hl = highlights.get(n, None)
-  hlClass = ''
-  hlStyle = ''
-  if hl == '':
-    hlClass = ' hl'
-  else:
-    hlStyle = f' style="background-color: {hl};"'
-
-  nodePart = (f'<a href="#" class="nd">{n}</a>' if withNodes else '')
-  className = extraApi.classNames.get(nType, None)
-
-  return (
-      slotType, nType,
-      className, boundaryClass, hlClass, hlStyle,
-      nodePart,
-      myStart, myEnd,
-  )
+  cacheKey = (query, False)
+  if cacheKey in cache:
+    return cache[cacheKey]
+  (queryResults, messages) = plainSearch(query, msgCache=True)
+  queryResults = sorted(queryResults)
+  cache[cacheKey] = (queryResults, messages)
+  return (queryResults, messages)
 
 
-def prettySetup(extraApi, features=None, noneValues=None):
-  if features is None:
-    extraApi.prettyFeatures = ()
-  else:
-    featuresRequested = (tuple(features.strip().split()
-                               )) if type(features) is str else tuple(features)
-    tobeLoaded = set(featuresRequested) - extraApi.prettyFeaturesLoaded
-    if tobeLoaded:
-      extraApi.api.TF.load(tobeLoaded, add=True, silent=True)
-      extraApi.prettyFeaturesLoaded |= tobeLoaded
-    extraApi.prettyFeatures = featuresRequested
-  if noneValues is None:
-    extraApi.noneValues = extraApi.noneValues
-  else:
-    extraApi.noneValues = noneValues
-
-
-def getFeatures(
-    extraApi, n, suppress, features,
-    withName=set(),
-    givenValue={},
-    plain=False,
-):
-  api = extraApi.api
-  Fs = api.Fs
-
-  featurePartB = '<div class="features">'
-  featurePartE = '</div>'
-
-  givenFeatureSet = set(features)
-  extraFeatures = (
-      tuple(f for f in extraApi.prettyFeatures if f not in givenFeatureSet)
-  )
-  featureList = tuple(features) + extraFeatures
-  nFeatures = len(features)
-
-  withName |= set(extraApi.prettyFeatures)
-
-  if not plain:
-    featurePart = featurePartB
-    hasB = True
-  else:
-    featurePart = ''
-    hasB = False
-  for (i, name) in enumerate(featureList):
-    if name not in suppress:
-      value = (
-          givenValue[name]
-          if name in givenValue else
-          Fs(name).v(n)
-      )
-      if value not in extraApi.noneValues:
-        if name not in givenValue:
-          value = htmlEsc(value)
-        nameRep = f'<span class="f">{name}=</span>' if name in withName else ''
-        featureRep = f' <span class="{name}">{nameRep}{value}</span>'
-
-        if i >= nFeatures:
-          if not hasB:
-            featurePart += featurePartB
-            hasB = True
-        featurePart += featureRep
-  if hasB:
-    featurePart += featurePartE
-  return featurePart
-
-
-def pretty(
-    extraApi,
-    n,
-    condenseType=None,
-    withNodes=False,
-    suppress=set(),
-    highlights={},
-    **options,
-):
-  asApi = extraApi.asApi
-  api = extraApi.api
-  F = api.F
-  L = api.L
-  otypeRank = api.otypeRank
-
-  containerN = None
-
-  if condenseType:
-    nType = F.otype.v(n)
-    if nType == condenseType:
-      containerN = n
-    elif otypeRank[nType] < otypeRank[condenseType]:
-      ups = L.u(n, otype=condenseType)
-      if ups:
-        containerN = ups[0]
-
-  (firstSlot, lastSlot) = (
-      getBoundary(api, n)
-      if condenseType is None else
-      (None, None)
-      if containerN is None else
-      getBoundary(api, containerN)
-  )
-
-  html = []
-  if type(highlights) is set:
-    highlights = {m: '' for m in highlights}
-  extraApi._pretty(
-      n,
-      True,
-      html,
-      firstSlot,
-      lastSlot,
-      condenseType=condenseType,
-      withNodes=withNodes,
-      suppress=suppress,
-      highlights=highlights,
-      **options,
-  )
-  htmlStr = '\n'.join(html)
-  if asApi:
-    return htmlStr
-  display(HTML(htmlStr))
-
-
-def prettyTuple(
-    extraApi,
-    tup,
-    seqNumber,
-    item='Result',
-    condenseType=None,
-    isCondensed=False,
-    withNodes=False,
-    suppress=set(),
-    colorMap=None,
-    highlights={},
-    rawHighlights=None,
-    **options,
-):
-  asApi = extraApi.asApi
-
-  if len(tup) == 0:
-    if asApi:
-      return ''
-    else:
-      return
-
-  api = extraApi.api
-
-  if condenseType is None:
-    condenseType = extraApi.condenseType
-
-  containers = {tup[0]} if isCondensed else _condenseSet(api, tup, condenseType)
-  newHighlights = (
-      _getHighlights(api, tup, highlights, colorMap, condenseType)
-      if rawHighlights is None else
-      rawHighlights
-  )
-
-  if not asApi:
-    dm(f'''
-
-**{item}** *{seqNumber}*
-
-''')
-  if asApi:
-    html = []
-  for t in containers:
-    h = extraApi.pretty(
-        t,
-        condenseType=condenseType,
-        withNodes=withNodes,
-        suppress=suppress,
-        highlights=newHighlights,
-        **options,
-    )
-    if asApi:
-      html.append(h)
-  if asApi:
-    return '\n'.join(html)
+def runSearchCondensed(api, query, cache, condenseType):
+  cacheKey = (query, True, condenseType)
+  if cacheKey in cache:
+    return cache[cacheKey]
+  (queryResults, messages) = runSearch(api, query, cache)
+  queryResults = _condense(api, queryResults, condenseType, multiple=True)
+  cache[cacheKey] = (queryResults, messages)
+  return (queryResults, messages)
 
 
 def compose(
@@ -528,6 +231,88 @@ def table(
   dm(markdown)
 
 
+def plainTuple(
+    extraApi,
+    tup,
+    seqNumber,
+    isCondensed=False,
+    condenseType=None,
+    item=RESULT,
+    linked=1,
+    withNodes=False,
+    position=None,
+    opened=False,
+    asString=False,
+    **options,
+):
+  asApi = extraApi.asApi
+  api = extraApi.api
+  F = api.F
+  if asApi:
+    prettyRep = prettyTuple(
+        extraApi,
+        tup,
+        seqNumber,
+        isCondensed=isCondensed,
+        condenseType=condenseType,
+        withNodes=withNodes,
+        **options,
+    ) if opened else ''
+    current = ' focus' if seqNumber == position else ''
+    attOpen = ' open ' if opened else ''
+    refColumn = 1 if isCondensed else linked
+    refNode = tup[refColumn - 1] if refColumn <= len(tup) else None
+    refRef = '' if refNode is None else extraApi.webLink(refNode)
+    tupSeq = ','.join(str(n) for n in tup)
+
+    plainRep = ''.join(
+        f'''<span>{mdEsc(extraApi.plain(
+                    n,
+                    linked=i == linked - 1,
+                    withNodes=withNodes,
+                    **options,
+                  ))
+                }
+            </span>
+        '''
+        for (i, n) in enumerate(tup)
+    )
+    html = (
+        f'''
+  <details
+    class="pretty dtrow{current}"
+    seq="{seqNumber}"
+    {attOpen}
+  >
+    <summary><a href="#" class="sq" tup="{tupSeq}">{seqNumber}</span> {refRef} {plainRep}</summary>
+    <div class="pretty">
+      {prettyRep}
+    </div>
+  </details>
+'''
+    )
+    return html
+  markdown = [str(seqNumber)]
+  for (i, n) in enumerate(tup):
+    markdown.append(
+        mdEsc(extraApi.plain(
+            n,
+            linked=i == linked - 1,
+            withNodes=withNodes,
+            asString=True,
+            **options,
+        ))
+    )
+  markdown = '|'.join(markdown)
+  if asString:
+    return markdown
+  head = ['n | ' + (' | '.join(F.otype.v(n) for n in tup))]
+  head.append(' | '.join('---' for n in range(len(tup) + 1)))
+  head.append(markdown)
+
+  dm('\n'.join(head))
+
+
 def show(
     extraApi,
     tuples,
@@ -576,47 +361,182 @@ def show(
     )
 
 
-def search(extraApi, query, silent=False, sets=None, shallow=False):
+def prettyTuple(
+    extraApi,
+    tup,
+    seqNumber,
+    item='Result',
+    condenseType=None,
+    isCondensed=False,
+    withNodes=False,
+    suppress=set(),
+    colorMap=None,
+    highlights={},
+    rawHighlights=None,
+    **options,
+):
+  asApi = extraApi.asApi
+
+  if len(tup) == 0:
+    if asApi:
+      return ''
+    else:
+      return
+
   api = extraApi.api
-  info = api.info
-  S = api.S
-  results = S.search(query, sets=sets, shallow=shallow)
-  if not shallow:
-    results = sorted(results)
-  nResults = len(results)
-  plural = '' if nResults == 1 else 's'
-  if not silent:
-    info(f'{nResults} result{plural}')
-  return results
+
+  if condenseType is None:
+    condenseType = extraApi.condenseType
+
+  containers = {tup[0]} if isCondensed else _condenseSet(api, tup, condenseType)
+  newHighlights = (
+      _getHighlights(api, tup, highlights, colorMap, condenseType)
+      if rawHighlights is None else
+      rawHighlights
+  )
+
+  if not asApi:
+    dm(f'''
+
+**{item}** *{seqNumber}*
+
+''')
+  if asApi:
+    html = []
+  for t in containers:
+    h = extraApi.pretty(
+        t,
+        condenseType=condenseType,
+        withNodes=withNodes,
+        suppress=suppress,
+        highlights=newHighlights,
+        **options,
+    )
+    if asApi:
+      html.append(h)
+  if asApi:
+    return '\n'.join(html)
 
 
-def runSearch(api, query, cache):
-  plainSearch = api.S.search
+def pretty(
+    extraApi,
+    n,
+    condenseType=None,
+    withNodes=False,
+    suppress=set(),
+    highlights={},
+    **options,
+):
+  asApi = extraApi.asApi
+  api = extraApi.api
+  F = api.F
+  L = api.L
+  otypeRank = api.otypeRank
 
-  cacheKey = (query, False)
-  if cacheKey in cache:
-    return cache[cacheKey]
-  (queryResults, messages) = plainSearch(query, msgCache=True)
-  queryResults = sorted(queryResults)
-  cache[cacheKey] = (queryResults, messages)
-  return (queryResults, messages)
+  containerN = None
+
+  if condenseType:
+    nType = F.otype.v(n)
+    if nType == condenseType:
+      containerN = n
+    elif otypeRank[nType] < otypeRank[condenseType]:
+      ups = L.u(n, otype=condenseType)
+      if ups:
+        containerN = ups[0]
+
+  (firstSlot, lastSlot) = (
+      getBoundary(api, n)
+      if condenseType is None else
+      (None, None)
+      if containerN is None else
+      getBoundary(api, containerN)
+  )
+
+  html = []
+  if type(highlights) is set:
+    highlights = {m: '' for m in highlights}
+  extraApi._pretty(
+      n,
+      True,
+      html,
+      firstSlot,
+      lastSlot,
+      condenseType=condenseType,
+      withNodes=withNodes,
+      suppress=suppress,
+      highlights=highlights,
+      **options,
+  )
+  htmlStr = '\n'.join(html)
+  if asApi:
+    return htmlStr
+  display(HTML(htmlStr))
 
 
-def runSearchCondensed(api, query, cache, condenseType):
-  cacheKey = (query, True, condenseType)
-  if cacheKey in cache:
-    return cache[cacheKey]
-  (queryResults, messages) = runSearch(api, query, cache)
-  queryResults = _condense(api, queryResults, condenseType, multiple=True)
-  cache[cacheKey] = (queryResults, messages)
-  return (queryResults, messages)
+def prettyPre(
+    extraApi,
+    n,
+    firstSlot,
+    lastSlot,
+    withNodes,
+    highlights,
+):
+  api = extraApi.api
+  F = api.F
+
+  slotType = F.otype.slotType
+  nType = F.otype.v(n)
+  boundaryClass = ''
+  myStart = None
+  myEnd = None
+
+  (myStart, myEnd) = getBoundary(api, n)
+
+  if firstSlot is not None:
+    if myEnd < firstSlot:
+      return False
+    if myStart < firstSlot:
+      boundaryClass += ' R'
+  if lastSlot is not None:
+    if myStart > lastSlot:
+      return False
+    if myEnd > lastSlot:
+      boundaryClass += ' L'
+
+  hl = highlights.get(n, None)
+  hlClass = ''
+  hlStyle = ''
+  if hl == '':
+    hlClass = ' hl'
+  else:
+    hlStyle = f' style="background-color: {hl};"'
+
+  nodePart = (f'<a href="#" class="nd">{n}</a>' if withNodes else '')
+  className = extraApi.classNames.get(nType, None)
+
+  return (
+      slotType, nType,
+      className, boundaryClass, hlClass, hlStyle,
+      nodePart,
+      myStart, myEnd,
+  )
 
 
-def outLink(text, href, title=None, className=None, target='_blank'):
-  titleAtt = '' if title is None else f' title="{title}"'
-  classAtt = f' class="{className}"' if className else ''
-  targetAtt = f' target="{target}"' if target else ''
-  return f'<a{classAtt}{targetAtt} href="{href}"{titleAtt}>{text}</a>'
+def prettySetup(extraApi, features=None, noneValues=None):
+  if features is None:
+    extraApi.prettyFeatures = ()
+  else:
+    featuresRequested = (tuple(features.strip().split()
+                               )) if type(features) is str else tuple(features)
+    tobeLoaded = set(featuresRequested) - extraApi.prettyFeaturesLoaded
+    if tobeLoaded:
+      extraApi.api.TF.load(tobeLoaded, add=True, silent=True)
+      extraApi.prettyFeaturesLoaded |= tobeLoaded
+    extraApi.prettyFeatures = featuresRequested
+  if noneValues is None:
+    extraApi.noneValues = extraApi.noneValues
+  else:
+    extraApi.noneValues = noneValues
 
 
 def getBoundary(api, n):
@@ -627,6 +547,102 @@ def getBoundary(api, n):
   L = api.L
   slots = L.d(n, otype=slotType)
   return (slots[0], slots[-1])
+
+
+def getFeatures(
+    extraApi, n, suppress, features,
+    withName=set(),
+    givenValue={},
+    plain=False,
+):
+  api = extraApi.api
+  Fs = api.Fs
+
+  featurePartB = '<div class="features">'
+  featurePartE = '</div>'
+
+  givenFeatureSet = set(features)
+  extraFeatures = (
+      tuple(f for f in extraApi.prettyFeatures if f not in givenFeatureSet)
+  )
+  featureList = tuple(features) + extraFeatures
+  nFeatures = len(features)
+
+  withName |= set(extraApi.prettyFeatures)
+
+  if not plain:
+    featurePart = featurePartB
+    hasB = True
+  else:
+    featurePart = ''
+    hasB = False
+  for (i, name) in enumerate(featureList):
+    if name not in suppress:
+      value = (
+          givenValue[name]
+          if name in givenValue else
+          Fs(name).v(n)
+      )
+      if value not in extraApi.noneValues:
+        if name not in givenValue:
+          value = htmlEsc(value)
+        nameRep = f'<span class="f">{name}=</span>' if name in withName else ''
+        featureRep = f' <span class="{name}">{nameRep}{value}</span>'
+
+        if i >= nFeatures:
+          if not hasB:
+            featurePart += featurePartB
+            hasB = True
+        featurePart += featureRep
+  if hasB:
+    featurePart += featurePartE
+  return featurePart
+
+
+def getContext(api, nodes):
+  Fs = api.Fs
+  Fall = api.Fall
+
+  rows = []
+  feats = tuple(sorted(Fall()))
+  rows.append(('node',) + feats)
+  for n in sorted(nodes):
+    rows.append((n,) + tuple(Fs(f).v(n) for f in feats))
+  return tuple(rows)
+
+
+def header(extraApi):
+  return (
+      f'''
+<div class="hdlinks">
+  {extraApi.dataLink}
+  {extraApi.featureLink}
+  {extraApi.tfsLink}
+  {extraApi.tutLink}
+</div>
+''',
+      f'<img class="hdlogo" src="/data/static/logo.png"/>',
+      f'<img class="hdlogo" src="/server/static/logo.png"/>',
+  )
+
+
+def outLink(text, href, title=None, className=None, target='_blank'):
+  titleAtt = '' if title is None else f' title="{title}"'
+  classAtt = f' class="{className}"' if className else ''
+  targetAtt = f' target="{target}"' if target else ''
+  return f'<a{classAtt}{targetAtt} href="{href}"{titleAtt}>{text}</a>'
+
+
+def htmlEsc(val):
+  return '' if val is None else str(val).replace('&', '&amp;').replace('<', '&lt;')
+
+
+def mdEsc(val):
+  return '' if val is None else str(val).replace('|', '&#124;')
+
+
+def dm(md):
+  display(Markdown(md))
 
 
 def _tupleEnum(tuples, start, end, limit, item):
@@ -763,15 +779,3 @@ def _getHighlights(api, tuples, highlights, colorMap, condenseType, multiple=Fal
         if thisHighlight is not None:
           newHighlights[n] = thisHighlight
   return newHighlights
-
-
-def getContext(api, nodes):
-  Fs = api.Fs
-  Fall = api.Fall
-
-  rows = []
-  feats = tuple(sorted(Fall()))
-  rows.append(('node',) + feats)
-  for n in sorted(nodes):
-    rows.append((n,) + tuple(Fs(f).v(n) for f in feats))
-  return tuple(rows)

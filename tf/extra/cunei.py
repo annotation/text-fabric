@@ -13,6 +13,8 @@ from tf.apphelpers import (
     getData, getDataCustom, getFeatures,
     htmlEsc, mdEsc,
     dm, header, outLink,
+    GH_BASE,
+    URL_GH, URL_NB,
 )
 
 ORG = 'Nino-cunei'
@@ -21,7 +23,6 @@ SOURCE_FULL = 'Uruk IV-III'
 VERSION = '1.0'
 
 DATA_REL = f'{ORG}/{SOURCE}/tf/uruk'
-GH_BASE = '~/github'
 RELEASE = '1.1.0'
 
 DATA_URL = f'https://github.com/{ORG}/{SOURCE}/releases/download/{RELEASE}/{VERSION}.zip'
@@ -45,9 +46,6 @@ IDEO_TO = '{}/ideographs/lineart'
 LINEART_EXT = 'jpg'
 
 LOCAL_DIR = 'cdli-imagery'
-
-URL_GH = 'https://github.com'
-URL_NB = 'http://nbviewer.jupyter.org/github'
 
 URL_FORMAT = dict(
     tablet=dict(

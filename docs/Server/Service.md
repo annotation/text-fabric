@@ -67,6 +67,26 @@
     See especially the docs on
     [services](https://rpyc.readthedocs.io/en/latest/docs/services.html#services).
 
+    ??? caution "Shadow objects"
+        The way rpyc works in the case of data transmission has a pitfall.
+        When server returns a Python object to the client, it
+        does not return the object itself, but only a shadow object
+        so called *netref* objects. This strategy is called
+        [boxing](https://rpyc.readthedocs.io/en/latest/docs/theory.html#boxing).
+        To the client the shadow object looks like the real thing,
+        but when the client needs to access members, they will be fetched
+        on the fly.
+
+        This is a performance problem when the server sends a big list or dict,
+        and the client iterates over all its items. Each item will be fetched in
+        a separate interprocess call, which causes an enormous overhead.
+
+        Boxing only happens for mutable objects. And here lies the work-around:
+
+        The server must send big chunks of data as immutable objects,
+        such as tuples. They are sent within a single interprocess call,
+        and fly swiftly through the connecting pipe. 
+
 ??? abstract "header()"
     Calls the `header()` method of the extraApi,
     which fetches all the stuff to create a header

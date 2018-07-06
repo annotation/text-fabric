@@ -8,8 +8,6 @@ VERSION = 'c'
 PHONO = 'phono'
 PARA = 'parallels'
 
-GH_BASE = '~/github'
-
 base = hasTf(source=REPO, version=VERSION)
 if not base:
   base = '~/text-fabric-data'

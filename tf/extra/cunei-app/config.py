@@ -1,12 +1,10 @@
 import os
 from tf.extra.cunei import Cunei
-from tf.apphelpers import hasData
+from tf.apphelpers import hasData, GH_BASE
 
 ORG = 'Nino-cunei'
 REPO = 'uruk'
 VERSION = '1.0'
-
-GH_BASE = '~/github'
 
 base = hasData(f'{ORG}/{REPO}/tf/{REPO}', GH_BASE, VERSION)
 if not base:

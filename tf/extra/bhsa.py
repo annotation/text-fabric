@@ -12,21 +12,19 @@ from tf.apphelpers import (
     getBoundary, getFeatures,
     htmlEsc, mdEsc,
     dm, header, outLink,
+    GH_BASE,
+    URL_GH, URL_NB,
 )
 
 ORG = 'etcbc'
 CORPUS = 'bhsa'
 
-GH_BASE = '~/github'
 RELEASE = '1.3'
 
 PHONO = 'phono'
 PHONO_RL = '1.0.1'
 PARA = 'parallels'
 PARA_RL = '1.0.1'
-
-URL_GH = 'https://github.com'
-URL_NB = 'http://nbviewer.jupyter.org/github'
 
 
 SHEBANQ_URL = 'https://shebanq.ancient-data.org/hebrew'

@@ -11,22 +11,6 @@ msgLinePat = '^( *[0-9]+) (.*)$'
 msgLineRe = re.compile(msgLinePat)
 
 
-def getAppDir(myDir, dataSource):
-  parentDir = os.path.dirname(myDir)
-  tail = '' if dataSource == '' else f'{dataSource}-app'
-  return f'{parentDir}/extra/{tail}'
-
-
-def getConfig(dataSource):
-  try:
-    config = import_module('.config', package=f'tf.extra.{dataSource}-app')
-  except Exception as e:
-    print('getConfig:', e)
-    print(f'getConfig: Data source "{dataSource}" not found')
-    return None
-  return config
-
-
 def getDebug():
   for arg in sys.argv[1:]:
     if arg == '-d':
@@ -73,9 +57,36 @@ def getParam(interactive=False):
   return dataSource
 
 
-def _coarsify(n, spread):
-  nAbs = int(round(abs(n) / spread)) * spread
-  return nAbs if n >= 0 else -nAbs
+def getConfig(dataSource):
+  try:
+    config = import_module('.config', package=f'tf.extra.{dataSource}-app')
+  except Exception as e:
+    print('getConfig:', e)
+    print(f'getConfig: Data source "{dataSource}" not found')
+    return None
+  return config
+
+
+def getAppDir(myDir, dataSource):
+  parentDir = os.path.dirname(myDir)
+  tail = '' if dataSource == '' else f'{dataSource}-app'
+  return f'{parentDir}/extra/{tail}'
+
+
+def getValues(options, form):
+  values = {}
+  for (option, typ, acro, desc) in options:
+    value = form.get(option, None)
+    if typ == 'checkbox':
+      value = True if value else False
+    values[option] = value
+  return values
+
+
+def setValues(options, source, form):
+  for (option, typ, acro, desc) in options:
+    value = source.get(option, None)
+    form[option] = value
 
 
 def pageLinks(nResults, position, spread=10):
@@ -140,22 +151,6 @@ def shapeMessages(messages):
   return ''.join(html)
 
 
-def setValues(options, source, form):
-  for (option, typ, acro, desc) in options:
-    value = source.get(option, None)
-    form[option] = value
-
-
-def getValues(options, form):
-  values = {}
-  for (option, typ, acro, desc) in options:
-    value = form.get(option, None)
-    if typ == 'checkbox':
-      value = True if value else False
-    values[option] = value
-  return values
-
-
 def shapeOptions(options, values):
   html = []
   for (option, typ, acro, desc) in options:
@@ -195,3 +190,8 @@ def shapeCondense(condenseTypes, value):
     </div>
   ''')
   return '\n'.join(html)
+
+
+def _coarsify(n, spread):
+  nAbs = int(round(abs(n) / spread)) * spread
+  return nAbs if n >= 0 else -nAbs
