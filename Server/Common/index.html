@@ -260,10 +260,94 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Code
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Code
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../Stats/" title="Lines of code" class="md-nav__link">
-      Lines of code
+    <a href="../../Code/Overview/" title="Overview" class="md-nav__link">
+      Overview
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/Stats/" title="Stats (overall)" class="md-nav__link">
+      Stats (overall)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsBase/" title="Stats (TF-base)" class="md-nav__link">
+      Stats (TF-base)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsSearch/" title="Stats (TF-search)" class="md-nav__link">
+      Stats (TF-search)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsApps/" title="Stats (TF-apps)" class="md-nav__link">
+      Stats (TF-apps)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsServer/" title="Stats (TF-server)" class="md-nav__link">
+      Stats (TF-server)
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -715,13 +799,13 @@ in advance, because it is dependent on how the text-fabric package has been
 installed by <code>pip3</code> on your machine.</p><p>Yet we have found a way through the labyrinth!</p></details><details class="abstract"><summary>getConfig(dataSource)</summary><p>Retrieves the <code>config.py</code> from the specified <em>dataSource</em> by
 dynamically importing it as a module from one of the
 <code>*-app</code> packages in
-<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/extra">tf.extra</a></p></details><details class="abstract"><summary>getAppdir(myDir, dataSource)</summary><p>The code in
+<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/extra">tf.extra</a></p><p>See also <a href="../../Api/Apps/#the-structure-of-apps">App structure</a></p></details><details class="abstract"><summary>getAppdir(myDir, dataSource)</summary><p>The code in
 <a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py">web.py</a>
 will pass its file location as <code>myDir</code>.
 Form there this function computes the locstion of the file in which
 the webapp of the <em>dataSource</em> resides: the location of the
 <em>dataSource</em> <code>-app</code> package in
-<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/extra">tf.extra</a>.</p></details><h2 id="getting-and-setting-form-values">Getting and setting form values<a class="headerlink" href="#getting-and-setting-form-values" title="Permanent link">&para;</a></h2>
+<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/extra">tf.extra</a>.</p><p>See also <a href="../../Api/Apps/#the-structure-of-apps">App structure</a></p></details><h2 id="getting-and-setting-form-values">Getting and setting form values<a class="headerlink" href="#getting-and-setting-form-values" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>Request and response</summary><p>The TF browser user interacts with the web app by clicking and typing,
 as a result of which a HTML form gets filled in.
 This form as regularly submitted to the server with a request
@@ -742,7 +826,16 @@ so that it can be passed as a whole (<code>**values</code>) to the app specific 
 but only insofar the keys to be filled out occur in the <code>options</code> specs,
 and with a cast of checkbox values to booleans. </p><p>This function is used right after reading the form off a request.
 Raw form data is turned into logical data for further processing by the web server.</p></details><h2 id="html-formatting">HTML formatting<a class="headerlink" href="#html-formatting" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>HTML generation</summary><p>Here we generate the HTML for bigger chunks on the page.</p></details><details class="abstract"><summary>pageLinks(nResults, position, spread=10)</summary></details><details class="abstract"><summary>shapeMessages</summary></details><details class="abstract"><summary>shapeOptions</summary></details><details class="abstract"><summary>shapeCondense</summary></details>
+<details class="abstract"><summary>HTML generation</summary><p>Here we generate the HTML for bigger chunks on the page.</p></details><details class="abstract"><summary>pageLinks(nResults, position, spread=10)</summary><p>Provide navigation links for results sets, big or small.</p><p>It creates links around <em>position</em> in a set of <em>nResults</em>.
+The spread indicates how many links before and after <em>position</em> are generated
+in each column.</p><p>There will be multiple columns. The right most column contains links
+to results <code>position - spread</code> to <code>position + spread</code>.</p><p>Left of that there is a column for results <code>position - spread*spread</code>
+to <code>position + spread*spread</code>, stepping by <code>spread</code>.</p><p>And so on, until the stepping factor becomes bigger than the result set.</p></details><details class="abstract"><summary>shapeMessages</summary><p>Wraps error messages into HTML. The messages come from the TF API,
+through the TF data server, in response to wrong search templates
+and other mistaken user input.</p></details><details class="abstract"><summary>shapeOptions</summary><p>Wraps the options, specified by the option specification in <code>config.py</code>
+into HTML.
+See also <a href="../../Api/Apps/#the-structure-of-apps">App structure</a></p></details><details class="abstract"><summary>shapeCondense</summary><p>Provides a radio-buttoned chooser for the
+<a href="../../Server/Service/#data-service-api">condense types</a>.</p></details>
                 
                   
                 

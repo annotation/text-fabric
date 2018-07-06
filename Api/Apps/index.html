@@ -260,10 +260,94 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Code
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Code
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../Stats/" title="Lines of code" class="md-nav__link">
-      Lines of code
+    <a href="../../Code/Overview/" title="Overview" class="md-nav__link">
+      Overview
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/Stats/" title="Stats (overall)" class="md-nav__link">
+      Stats (overall)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsBase/" title="Stats (TF-base)" class="md-nav__link">
+      Stats (TF-base)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsSearch/" title="Stats (TF-search)" class="md-nav__link">
+      Stats (TF-search)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsApps/" title="Stats (TF-apps)" class="md-nav__link">
+      Stats (TF-apps)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsServer/" title="Stats (TF-server)" class="md-nav__link">
+      Stats (TF-server)
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -340,6 +424,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-structure-of-apps" title="The structure of apps" class="md-nav__link">
+    The structure of apps
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-generic-part-of-apps" title="The generic part of apps" class="md-nav__link">
     The generic part of apps
   </a>
@@ -347,8 +438,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-structure-of-apps" title="The structure of apps" class="md-nav__link">
-    The structure of apps
+  <a href="#tf-data-getters" title="TF Data getters" class="md-nav__link">
+    TF Data getters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tf-search-performers" title="TF search performers" class="md-nav__link">
+    TF search performers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tabular-display" title="Tabular display" class="md-nav__link">
+    Tabular display
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pretty-display" title="Pretty display" class="md-nav__link">
+    Pretty display
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#html-and-markdown" title="HTML and Markdown" class="md-nav__link">
+    HTML and Markdown
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#constants" title="Constants" class="md-nav__link">
+    Constants
   </a>
   
 </li>
@@ -637,6 +763,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-structure-of-apps" title="The structure of apps" class="md-nav__link">
+    The structure of apps
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-generic-part-of-apps" title="The generic part of apps" class="md-nav__link">
     The generic part of apps
   </a>
@@ -644,8 +777,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-structure-of-apps" title="The structure of apps" class="md-nav__link">
-    The structure of apps
+  <a href="#tf-data-getters" title="TF Data getters" class="md-nav__link">
+    TF Data getters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tf-search-performers" title="TF search performers" class="md-nav__link">
+    TF search performers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tabular-display" title="Tabular display" class="md-nav__link">
+    Tabular display
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pretty-display" title="Pretty display" class="md-nav__link">
+    Pretty display
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#html-and-markdown" title="HTML and Markdown" class="md-nav__link">
+    HTML and Markdown
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#constants" title="Constants" class="md-nav__link">
+    Constants
   </a>
   
 </li>
@@ -672,77 +840,96 @@
                 <h1 id="apps">Apps<a class="headerlink" href="#apps" title="Permanent link">&para;</a></h1>
 <details class="abstract"><summary>About</summary><p>Text-Fabric is a generic engine to process text and annotations.</p><p>When working with specific corpora, we want to have more power at our fingertips.</p><p>We need extra power on top of the TF engine.</p><p>The way we have chosen to do it is via <em>apps</em>.
 An app is a bunch of extra functions that <em>know</em> the structure of a specific corpus.</p></details><h2 id="current-apps">Current apps<a class="headerlink" href="#current-apps" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>Current apps</summary><p>At the moment we have these apps</p><ul><li>bhsa</li><li>cunei</li></ul></details><h2 id="the-generic-part-of-apps">The generic part of apps<a class="headerlink" href="#the-generic-part-of-apps" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>Current apps</summary><p>At the moment we have these apps</p><ul><li>bhsa</li><li>cunei</li></ul></details><h2 id="the-structure-of-apps">The structure of apps<a class="headerlink" href="#the-structure-of-apps" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>App components</summary><p>The apps themselves are modules inside 
+<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/extra">tf.extra</a></p><p>For each <em>app</em>, you find there:</p><details class="abstract"><summary>module</summary><p><em>app</em><code>.py</code>
+contains all the functionality specific to the corpus in question, organized as an extended
+TF api. In the code this is referred to as the <code>extraApi</code>.</p></details><details class="abstract"><summary>webapp</summary><p>the package <em>app</em><code>-app</code>
+is used by the text-fabric browser, and contain settings and assets
+to set up a browsing experience.</p><ul><li><code>config.py</code>: settings</li><li>a <code>static</code> folder with fonts and logos.</li></ul><details class="abstract"><summary>config.py</summary><p>Contains values for parameters and an API calling function.</p><details class="abstract"><summary>extraApi(locations, modules)</summary><p>Responsible for calling the extra Api for the corpus
+with the desired locations and modules.</p><p>This extraApi will be active as a TF data server,
+interacting with a local webserver that serves local
+web page in the browser.</p></details><details class="abstract"><summary>web browsing settings</summary><p>The Text-Fabric data server, webserver and browser need settings:</p><table><thead><tr><th>setting</th><th>example</th><th>description</th></tr></thead><tbody><tr><td>protocol</td><td><code>http://</code></td><td>protocol of local website</td></tr><tr><td>host</td><td><code>localhost</code></td><td>server address of local website</td></tr><tr><td>webport</td><td><code>8001</code></td><td>port for the local website</td></tr><tr><td>port</td><td><code>18981</code></td><td>port through wich the data server and the web server communicate</td></tr></tbody></table></details><details class="abstract"><summary>data settings</summary><p>The Text-Fabric data server needs context information:</p><table><thead><tr><th>setting</th><th>type</th><th>description</th></tr></thead><tbody><tr><td>locations</td><td>list</td><td>where to look for tf features</td></tr><tr><td>modules</td><td>list</td><td>combines with locations to search paths for tf features</td></tr><tr><td>localDir</td><td>directory name</td><td>temporary directory for writing and reading</td></tr><tr><td>options</td><td>tuple</td><td>names of extra options for seaerching and displaying query results</td></tr><tr><td>condenseType</td><td>string</td><td>the default container type to which query results may be condensed</td></tr><tr><td>PROVENANCE</td><td>dict</td><td>corpus specific provenance metadata: name and DOI</td></tr></tbody></table></details></details></details></details><h2 id="the-generic-part-of-apps">The generic part of apps<a class="headerlink" href="#the-generic-part-of-apps" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>App helpers</summary><p>Apps turn out to have several things in common that we want to deal with generically.
 These functions are collected in the
 <a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/apphelpers.py">apphelpers</a>
-module of TF.</p></details><h2 id="the-structure-of-apps">The structure of apps<a class="headerlink" href="#the-structure-of-apps" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>App components</summary><p>The apps themselves are modules inside 
-<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/extra">tf.extra</a></p><p>For each <em>app</em>, you find there:</p><details class="abstract"><summary>module</summary></details><p><em>app</em><code>.py</code>
-  contains all the functionality specific to the corpus in question, organized as an extended
-  TF api. In the code this is referred to as the <code>extraApi</code>.</p><details class="abstract"><summary>webapp</summary></details><p>the package <em>app</em><code>-app</code>
-  is used by the text-fabric browser, and contain settings and assets
-  to set up a browsing experience.</p><ul><li><code>config.py</code>: settings</li><li>a <code>static</code> folder with fonts and logos.</li></ul><p>??? abstract "config.py"
-      Contains values for parameters and an API calling function.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>  ??? abstract &quot;extraApi(locations, modules)&quot;
-      Responsible for calling the extra Api for the corpus
-      with the desired locations and modules.
-
-      This extraApi will be active as a TF data server,
-      interacting with a local webserver that serves local
-      web page in the browser.
-
-  ??? abstract &quot;web browsing settings&quot;
-      The Text-Fabric data server, webserver and browser need settings:
-
-      setting | example | description
-      --- | --- | ---
-      protocol | `http://` | protocol of local website
-      host | `localhost` | server address of local website
-      webport | `8001` | port for the local website
-      port | `18981` | port through wich the data server and the web server communicate
-
-  ??? abstract &quot;data settings&quot;
-      The Text-Fabric data server needs context information:
-
-      setting | type | description
-      --- | --- | ---
-      locations | list | where to look for tf features
-      modules | list | combines with locations to search paths for tf features
-      localDir | directory name | temporary directory for writing and reading
-      options | tuple | names of extra options for seaerching and displaying query results
-      condenseType | string | the default container type to which query results may be condensed
-      PROVENANCE | dict | corpus specific provenance metadata: name and DOI
+module of TF.</p></details><details class="abstract"><summary>Generic/specific</summary><p>Sometimes there is an intricate mix of functionality that is shared by all apps and that
+is specific to some app.
+Here is our logistics of functionality.</p><p>There are a number of methods that are offered as a generic function and
+just added as a method to the <em>extraApi</em> of the app, e.g. <code>pretty()</code>
+For example, the Bhsa app imports <code>pretty</code> first:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.apphelpers</span> <span class="kn">import</span> <span class="n">pretty</span>
 </pre></div>
 </td></tr></table>
-</details>
+<p>and in the Bhsa <code>__init__()</code> function it says:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">pretty</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">pretty</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+<p>which adds the function <code>pretty</code> as an instance method to the class Bhsa.
+The first argument <code>extraApi</code> of the function <code>pretty</code> acts as the <code>self</code> when 
+<code>pretty()</code> is used as a method of Bhsa.</p><p>So although we define <code>pretty(extraApi, ...)</code> as a generic function,
+through its argument <code>extraApi</code> we can call app specific functionality.</p><p>We follow this pattern for quite a bit of functions.
+They all have <code>extraApi</code> as first argument.</p></details><details class="abstract"><summary>Two contexts</summary><p>Most functions with the <code>extraApi</code> argument are meant to perform their duty in two contexts:</p><ul><li>when called in a Jupyter notebook they deliver output meant for a notebook output cell,
+  using methods provided by the <code>ipython</code> package.</li><li>when called by the web app they deliver output meant for the TF browser website,
+  generating raw HTML.</li></ul><p>The <code>extraApi</code> is the rich app specific API, and when we construct this API, we pass the information
+whether it is constructed for the purposes of the Jupyter notebook, or for the purposes of the web app.</p><p>We pass this information by setting the attribute <code>asApi</code> on the <code>extraApi</code>. 
+If it is set, we use the <code>extraApi</code> in the web app context.</p><p>Most of the code in such functions is independent of <code>asApi</code>.
+The main difference is how to output the result: by a call to an IPython display method, or by
+returning raw HTML.</p></details><h2 id="tf-data-getters">TF Data getters<a class="headerlink" href="#tf-data-getters" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>Auto loading of TF data</summary><p>The specific apps have functions to load and download data from github.
+They check first whether there is local data in a github repository,
+and if not, they check a local text-fabric-data directory,
+and if not, they download data from a know online GitHub repo into the local
+text-fabric-data directory.</p><p>The data functions provided take parameters with these meanings:</p><details class="note"><summary>dataUrl</summary><p>The complete url from which to download data.</p></details><details class="note"><summary>ghBase</summary><p>The location of the local github directory, usually <code>~/github</code>.
+This directory is expected to be subdivided by org and then by repo, just as the online
+GitHub.</p></details><details class="note datarel"><summary>Note</summary><p>The relative path within the local github/text-fabric-data directory to the directory
+that holds versions of TF data.</p></details><details class="note version"><summary>Note</summary><p>The version of the TF data of interest.</p></details></details><details class="abstract"><summary>hasData(dataRel, ghBase, version)</summary><p>Checks whether there is TF data in standard locations.
+Returns the full path of the local github directory if the data is found in the expected place below it.
+Returns the full path of the local text-fabric-data directory if the data is found in the expected place below it.
+Returns <code>False</code> if there no offline copy of the data has been found in these locations.</p></details><details class="abstract"><summary>getData(dataUrl, dataRel, ghBase, version)</summary><p>Checks whether there is TF data in standard locations.
+If not, downloads data from <code>dataUrl</code> and places it in <code>~/text-fabric-data/dataRel/version</code></p></details><details class="abstract"><summary>getDataCustom(dataUrl, dest)</summary><p>Retrieves a zip file from <code>dataUrl</code>, and unpacks it at directory <code>dest</code> locally.</p></details><h2 id="tf-search-performers">TF search performers<a class="headerlink" href="#tf-search-performers" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>search(extraApi, query, silent=False, sets=None, shallow=False)</summary><p>This is a thin wrapper around the generic search interface of TF:
+<a href="../../Api/General/#searching">S.search</a></p><p>The extra thing it does it collecting the results.
+<code>S.search()</code> may yield a generator, and this <code>search()</code> makes sure to iterate
+over that generator, collect the results, and return them as a sorted list.</p><details class="note"><summary>Context Jupyter</summary><p>The intended context of this function is: an ordinary Python program (including
+the Jupyter notebook).
+Web apps can better use <code>runSearch</code> below.</p></details></details><details class="abstract"><summary>runSearch(api, query, cache)</summary><p>A wrapper around the generic search interface of TF.
+Before running the TF search, the <em>query</em> will be looked up in the <em>cache</em>.
+If present, its cached results/error messages will be returned.
+If not, the query will be run, results/error messages collected, put in the <em>cache</em>, and returned.</p><details class="note"><summary>Context web app</summary><p>The intended context of this function is: web app.</p></details></details><details class="abstract"><summary>runSearchCondensed(api, query, cache, condenseType)</summary><p>When query results need to be condensed into a container, this function takes care of that.
+It first tries the <em>cache</em> for condensed query results.
+If that fails,
+it collects the bare query results from the cache or by running the query.
+Then it condenses the results, puts them in the <em>cache</em>, and returns them.</p><details class="note"><summary>Context web app</summary><p>The intended context of this function is: web app.</p></details></details><h2 id="tabular-display">Tabular display<a class="headerlink" href="#tabular-display" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>table(extraApi, tuples, ...)</summary><p>Takes a list of <em>tuples</em> and
+composes it into a Markdown table.</p><details class="note"><summary>Context Jupyter</summary><p>The intended context of this function is:
+the Jupyter notebook.</p></details></details><details class="abstract"><summary>compose(extraApi, tuples, start. position, opened, ...)</summary><p>Takes a list of <em>tuples</em> and
+composes it into an HTML table.
+Some of the rows will be expandable, namely the rows specified by <code>opened</code>,
+for which extra data has been fetched.</p><details class="note"><summary>Context web app</summary><p>The intended context of this function is: web app.</p></details></details><details class="abstract"><summary>plainTuple(extraApi, tuple)</summary><p>Displays a <em>tuple</em> of nodes as a table row:</p><ul><li>a markdown row in the context Jupyter;</li><li>an HTML row in the context web app.</li></ul></details><h2 id="pretty-display">Pretty display<a class="headerlink" href="#pretty-display" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>What is pretty?</summary><p>Nodes are just numbers, but they stand for all the information that the corpus
+has about a certain item.
+<code>pretty(node)</code> makes a lot of that information visible in an app dependent way.</p><p>For the Bhsa it means showing nested and intruding sentences, clauses and phrases.</p><p>For the Cunei tablets it means showing alternating vertical and horizontal
+subdivisions of faces into columns, lines and cases.</p><p>When you show a pretty representation of a node,
+usually pretty representations of "contained" nodes will also be drawn.</p><p>You can selectively highlight those nodes with custom colors.</p><p>When pretty-displaying a tuple of nodes, container nodes that contain those nodes
+will be looked up and displayed, and the actual tuple nodes will be highlighted.</p><p>You can customize the highlight colors by selecting colors on the basis of the
+postions of nodes in their tuples, or you can explicitly pass a micro-managed
+colormap of nodes to colors.</p><p>In pretty displays you can opt for showing/hiding the node numbers,
+for suppressing certain standard features, and there are app dependent options.</p><p>In the case of Cunei tablets, you can opt to show the lineart of signs and quads,
+and to show the line numbers of the source transcriptions.</p></details><details class="abstract"><summary>show(extraApi, tuples, ...)</summary><p>Takes a list of <em>tuples</em> and
+composes it into a sequence of pretty displays per tuple.</p><details class="note"><summary>Context Jupyter</summary><p>The intended context of this function is:
+the Jupyter notebook.</p></details></details><details class="abstract"><summary>prettyTuple(extraApi, tuple)</summary><p>Displays a <em>tuple</em> of nodes as an expanded display, both</p><ul><li>in the context Jupyter and</li><li>in the context web app.</li></ul></details><details class="abstract"><summary>pretty(extrApi, node, ...)</summary><p>Displays a single <em>node</em> as an expanded display, both</p><ul><li>in the context Jupyter and</li><li>in the context web app.</li></ul></details><details class="abstract"><summary>prettyPre(extraApi, node, ...)</summary><p>Helper for <code>pretty</code>.
+Pretty display is pretty complicated.
+There are large portions of functionality that are generic,
+and large portions that are app specific.</p><p>This function computes a lot of generic things, based on which
+a pretty display can be constructed.</p></details><details class="abstract"><summary>prettySetup(extraApi, features=None, noneValues=None)</summary><p>Pretty displays show a chosen set of standard features for nodes.
+By means of the parameter <code>suppress</code> you can leave out certain features.
+But what if you want to add features to the display?</p><p>That is what <code>prettySetup()</code> does.
+It adds a list of <em>features</em> to the display, provided they are loadable.
+If they are not yet loaded, they will be loaded.</p><p>Features with values that represent no information, will be suppressed.
+But you can customise what counts as no information, by passing a set
+of such values as <code>noneValues</code>. </p></details><h2 id="html-and-markdown">HTML and Markdown<a class="headerlink" href="#html-and-markdown" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>getBoundary(api, node)</summary><p>Utility function to ask from the TF API the first slot and the last slot contained in a node.</p></details><details class="abstract"><summary>getFeatures(extraApi, node, ...)</summary><p>Helper for <code>pretty()</code>: wrap the requested features and their values for <em>node</em> in HTML for pretty display.</p></details><details class="abstract"><summary>getContext(api, nodes)</summary><p>Get the features and values for a set of <em>nodes</em>. 
+All loaded features will be retrieved.</p></details><details class="abstract"><summary>header(extraApi)</summary><p>Get the app-specific links to data and documentation and wrap it into HTML for display in the TF browser.</p></details><details class="abstract"><summary>outLink(text, href, title=None, ...)</summary><p>Produce a formatted HTML link.</p></details><details class="abstract"><summary>htmlEsc(val)</summary><p>Produce a representation of <em>val</em> that is safe for usage in a HTML context.</p></details><details class="abstract"><summary>mdEsc(val)</summary><p>Produce a representation of <em>val</em> that is safe for usage in a Markdown context.</p></details><details class="abstract"><summary>dm(markdown)</summary><p>Display a <em>markdown</em> string in a Jupyter notebook.</p></details><h2 id="constants">Constants<a class="headerlink" href="#constants" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>Fixed values</summary><p>The following values are used by other parts of the program:</p><table><thead><tr><th>name</th><th>description</th></tr></thead><tbody><tr><td><code>RESULT</code></td><td>the label of a query result: <code>result</code></td></tr><tr><td><code>GH_BASE</code></td><td>the location of the local github directory</td></tr><tr><td><code>URL_GH</code></td><td>the url to the GitHub site</td></tr><tr><td><code>URL_NB</code></td><td>the url to the NBViewer site</td></tr></tbody></table></details>
                 
                   
                 
