@@ -110,7 +110,6 @@ def adjustVersion(task):
         print(text[586:607])
       if key == 'fabric':
         print(text[516:534])
-      continue
       with open(c['file'], 'w') as fh:
         fh.write(text)
     if currentVersion == newVersion:
@@ -126,8 +125,7 @@ def makeDist():
     rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)
     run(['python3', 'setup.py', 'sdist'])
-    # run(['twine', 'upload', distPath])
-    print(f'twine upload {distPath}')
+    run(['twine', 'upload', distPath])
 
 
 def commit(task, msg):
