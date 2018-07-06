@@ -82,7 +82,7 @@
             all tf-browser-related processes will be killed.
 
             ```sh
-            text-fabric -k
+            text-fabric -k ddd
             ```
 
             will kill all such processes as far as they are for data source `ddd`.

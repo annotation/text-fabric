@@ -28,7 +28,7 @@
 ???+ abstract "TF search"
     TF contains a
     [search engine](/Code/StatsSearch)
-    based on templates, with are little graphs
+    based on templates, which are little graphs
     of nodes and edges that must be instantiated against the corpus.
     The template language is inspired by MQL, but has a different syntax.
     It is both weaker and stronger than MQL.
