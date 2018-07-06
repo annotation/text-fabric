@@ -192,18 +192,22 @@ def codestats():
       '__pycache__,node_modules,.tmp,.git,_temp,'
       '.ipynb_checkpoints,images,fonts,favicons,compiled'
   )
-  xf = 'cloc_exclude.lst'
-  rf = 'docs/Stats.md'
-  run(
+  xdtf = xd + ',search,server,extra'
+  rfFmt = 'docs/Code/Stats{}.md'
+  cmdLine = (
       'cloc'
       ' --no-autogen'
-      f' --exclude_dir={xd}'
-      f' --exclude-list-file={xf}'
-      f' --report-file={rf}'
+      ' --exclude_dir={}'
+      f' --exclude-list-file=cloc_exclude.lst'
+      f' --report-file={rfFmt}'
       ' --md'
-      ' .',
-      shell=True,
+      ' {}'
   )
+  run(cmdLine.format(xd, '', '.'), shell=True)
+  run(cmdLine.format(xdtf, 'Base', 'tf'), shell=True)
+  run(cmdLine.format(xd, 'Search', 'tf/search'), shell=True)
+  run(cmdLine.format(xd, 'Server', 'tf/server'), shell=True)
+  run(cmdLine.format(xd, 'Apps', 'tf/extra'), shell=True)
 
 
 def main():

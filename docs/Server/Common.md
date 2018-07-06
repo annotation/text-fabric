@@ -45,6 +45,8 @@
     `*-app` packages in
     [tf.extra](https://github.com/Dans-labs/text-fabric/tree/master/tf/extra)
 
+    See also [App structure](/Api/Apps/#the-structure-of-apps)
+
 ??? abstract "getAppdir(myDir, dataSource)"
     The code in
     [web.py](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py)
@@ -53,6 +55,8 @@
     the webapp of the *dataSource* resides: the location of the
     *dataSource* `-app` package in
     [tf.extra](https://github.com/Dans-labs/text-fabric/tree/master/tf/extra).
+
+    See also [App structure](/Api/Apps/#the-structure-of-apps)
 
 ## Getting and setting form values
 
@@ -110,10 +114,31 @@
     Here we generate the HTML for bigger chunks on the page.
 
 ??? abstract "pageLinks(nResults, position, spread=10)"
+    Provide navigation links for results sets, big or small.
+
+    It creates links around *position* in a set of *nResults*.
+    The spread indicates how many links before and after *position* are generated
+    in each column.
+
+    There will be multiple columns. The right most column contains links
+    to results `position - spread` to `position + spread`.
+
+    Left of that there is a column for results `position - spread*spread`
+    to `position + spread*spread`, stepping by `spread`.
+
+    And so on, until the stepping factor becomes bigger than the result set.
 
 ??? abstract "shapeMessages"
+    Wraps error messages into HTML. The messages come from the TF API,
+    through the TF data server, in response to wrong search templates
+    and other mistaken user input.
 
 ??? abstract "shapeOptions"
+    Wraps the options, specified by the option specification in `config.py`
+    into HTML.
+    See also [App structure](/Api/Apps/#the-structure-of-apps)
 
 ??? abstract "shapeCondense"
+    Provides a radio-buttoned chooser for the
+    [condense types](/Server/Service/#data-service-api).
 

@@ -19,7 +19,13 @@ repo_url: 'https://github.com/dans-labs/text-fabric/'
 pages:
   - Home: 'index.md'
   - News: 'News.md'
-  - Lines of code: 'Stats.md'
+  - Code:
+    - 'Overview' : 'Code/Overview.md'
+    - 'Stats (overall)' : 'Code/Stats.md'
+    - 'Stats (TF-base)' : 'Code/StatsBase.md'
+    - 'Stats (TF-search)' : 'Code/StatsSearch.md'
+    - 'Stats (TF-apps)' : 'Code/StatsApps.md'
+    - 'Stats (TF-server)' : 'Code/StatsServer.md'
   - Api:
     - 'General': 'Api/General.md'
     - 'Apps': 'Api/Apps.md'
