@@ -12,6 +12,9 @@
         <form id="go" method="post">
         <div class="page">
             <div id="sidebar">
+                <div class="icon">
+                    <img class="icon" src="/server/static/icon.png"/>
+                </div>
                 <div status="help">
                     <a href="#">Help</a>
                 </div>

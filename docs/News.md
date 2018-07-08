@@ -1,3 +1,5 @@
+![tf](images/tficon-small.png)
+
 # Changes
 
 ???+ hint "Consult the tutorials after changes"
@@ -5,6 +7,12 @@
     all possibilities:
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
+
+## 5.5.5
+
+2018-07-08
+
+Crisper icon.
 
 ## 5.5.4
 
