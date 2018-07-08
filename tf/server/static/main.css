@@ -33,7 +33,6 @@ div.leftcol {
     flex: 0 0 2rem;
     height: 100%;
     background-color: #dddddd;
-    border: 0.1rem solid #aaaaaa;
 }
 #sidebar a:link, #sidebar a:visited {
     color: #333333;
@@ -45,6 +44,8 @@ div.leftcol {
     height: 8rem;
     width: 2rem;
     border-bottom: 0.1rem solid #aaaaaa;
+    border-left: 0.1rem solid #aaaaaa;
+    border-right: 0.1rem solid #aaaaaa;
 }
 #sidebar > div > a {
     flex: 0 1 auto;
@@ -58,6 +59,17 @@ div.leftcol {
 #sidebar > div.active {
     background-color: #ffffff;
     font-weight: bold;
+}
+#sidebar > div.icon {
+    background-color: #ffffff;
+    height: 2rem;
+    width: 2rem;
+    border: 0;
+    margin-bottom: -0.2rem;
+}
+img.icon {
+    height: 2rem;
+    width: 2rem;
 }
 #sidebarcont {
     flex: 0 1 auto;

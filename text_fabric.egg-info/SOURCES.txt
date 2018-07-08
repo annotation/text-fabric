@@ -64,6 +64,7 @@ tf/server/start.py
 tf/server/web.py
 tf/server/static/.DS_Store
 tf/server/static/dans.png
+tf/server/static/icon.png
 tf/server/static/jquery.js
 tf/server/static/logo.png
 tf/server/static/main.css
