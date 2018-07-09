@@ -831,8 +831,9 @@ it works really well in Jupyter notebooks.</p></details><h2 id="install">Install
 <p>Text Fabric is a Python(3) package on the Python Package Index,
 so you can install it easily with <code>pip3</code> or <code>pip</code> from
 the command line.</p>
-<details class="abstract" open="open"><summary>Prerequisites</summary><details class="note"><summary>Computer</summary><p>Your computer should be a 64-bit machine and it needs at least 8 GB RAM memory.
-It should run Linux, Macos, or Windows.</p></details><details class="abstract"><summary>Python</summary><p>Install or upgrade Python on your system to at least version 3.6.3.
+<details class="abstract" open="open"><summary>Prerequisites</summary><details class="note"><summary>Computer</summary><p>Your computer should be a 64-bit machine and it needs at least 3 GB RAM memory.
+It should run Linux, Macos, or Windows.</p><details class="caution"><summary>close other programs</summary><p>When you run the Text-Fabric browser for the first time, make sure that most of that minimum
+of 3GB RAM is actually available, and not in use by other programs.</p></details></details><details class="abstract"><summary>Python</summary><p>Install or upgrade Python on your system to at least version 3.6.3.
 Go for the 64-bit version. Otherwise Python may not be able to address all the memory it needs.</p><p>The leanest install is provided by <a href="https://www.python.org/downloads/">python.org</a>.
 You can also install it from <a href="https://www.anaconda.com/download">anaconda.com</a>.</p></details><details class="caution"><summary>on Windows?</summary><ul><li>Choose Anaconda over standard Python. The reason is that when you want to add Jupyter to the mix,
   you need to have additional developers' tools installed.
@@ -874,7 +875,8 @@ current notebook.</p></details></details><h2 id="use-the-text-fabric-browser">Us
 </pre></div>
 </td></tr></table>
 <p>After (down)-loading the data your browser will open and load the search interface.
-There you'll find links to further help.</p></details><p>
+There you'll find links to further help.</p><p>caution "trouble?"
+    See the section Trouble below.</p></details><p>
 <img src="images/bhsa-app.png"/>
 </p>
 
@@ -1021,7 +1023,14 @@ Here is how you can remove them manually:</p><ul><li><p>locate the <code>bin</co
     <code>/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages</code></p><p>Remove the subdirectory <code>tf</code> from this location, plus all files with <code>text-fabric</code> in the name.</p></li><li><p>After this, you can make a fresh install of <code>text-fabric</code>:</p></li></ul><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install text-fabric
 </pre></div>
 </td></tr></table>
-</details></details><details class="caution"><summary>Newest version of Text-Fabric does not show up</summary><p>When you get errors doing <code>pip3 install text-fabric</code>, there is probably an older version around.
+</details></details><details class="caution"><summary>Internal Server Error</summary><p>When the TF browser opens with an Internal Server error, the most likely reason is that
+the TF data server has not started up without errors.</p><p>Look back at the command prompt where you started <code>text-fabric</code>.
+Probably somewhere down the road you see <code>Memory Error</code>.</p><p>It means that during loading TF did not have access too enough RAM memory.
+Maybe you had too many programs (or browser tabs) open at that time.</p><p>Simply closing text-fabric and trying again is not enough, due to the memory error some
+compiled TF data may have become corrupt.</p><p>I am working toward a graceful solution to automatically recover from this.
+For now, you have to manually remove the compiled data.</p><p>You find that data in directories named <code>.tf</code> (hidden in Macos and Linux, visible in Windows).
+Look into <code>text-fabric-data/etcbc/*/tf/c</code> for <code>*</code> one of <code>bhsa</code>, <code>phono</code>, <code>parallels</code>.
+Just delete these <code>.tf</code> directories.</p><p>The free up some RAM and try again.</p></details><details class="caution"><summary>Newest version of Text-Fabric does not show up</summary><p>When you get errors doing <code>pip3 install text-fabric</code>, there is probably an older version around.
 You have to say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install --upgrade text-fabric
 </pre></div>
 </td></tr></table>
