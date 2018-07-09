@@ -107,7 +107,7 @@ def runSearch(api, query, cache):
   if cacheKey in cache:
     return cache[cacheKey]
   (queryResults, messages) = plainSearch(query, msgCache=True)
-  queryResults = sorted(queryResults)
+  queryResults = tuple(sorted(queryResults))
   cache[cacheKey] = (queryResults, messages)
   return (queryResults, messages)
 

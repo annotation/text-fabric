@@ -25,8 +25,12 @@ the command line.
 ???+ abstract "Prerequisites"
 
     ??? note "Computer"
-        Your computer should be a 64-bit machine and it needs at least 8 GB RAM memory.
+        Your computer should be a 64-bit machine and it needs at least 3 GB RAM memory.
         It should run Linux, Macos, or Windows.
+
+        ??? caution "close other programs"
+            When you run the Text-Fabric browser for the first time, make sure that most of that minimum
+            of 3GB RAM is actually available, and not in use by other programs.
 
     ??? abstract "Python"
         Install or upgrade Python on your system to at least version 3.6.3.
@@ -112,6 +116,9 @@ Explore your corpus without programming.
 
     After (down)-loading the data your browser will open and load the search interface.
     There you'll find links to further help.
+
+    caution "trouble?"
+        See the section Trouble below.
 
 <p>
 <img src="images/bhsa-app.png"/>
@@ -456,6 +463,29 @@ More about the data that Text-Fabric works with.
           ```sh
           pip3 install text-fabric
           ```
+
+??? caution "Internal Server Error"
+    When the TF browser opens with an Internal Server error, the most likely reason is that
+    the TF data server has not started up without errors.
+
+    Look back at the command prompt where you started `text-fabric`.
+    Probably somewhere down the road you see `Memory Error`.
+
+    It means that during loading TF did not have access too enough RAM memory.
+    Maybe you had too many programs (or browser tabs) open at that time.
+
+    Simply closing text-fabric and trying again is not enough, due to the memory error some
+    compiled TF data may have become corrupt.
+
+    I am working toward a graceful solution to automatically recover from this.
+    For now, you have to manually remove the compiled data.
+
+    You find that data in directories named `.tf` (hidden in Macos and Linux, visible in Windows).
+    Look into `text-fabric-data/etcbc/*/tf/c` for `*` one of `bhsa`, `phono`, `parallels`.
+    Just delete these `.tf` directories.
+
+    The free up some RAM and try again.
+
 
 ??? caution "Newest version of Text-Fabric does not show up"
     When you get errors doing `pip3 install text-fabric`, there is probably an older version around.

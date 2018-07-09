@@ -166,10 +166,10 @@
                            to compare them to each other.</p>
                         <p>Describe your study and export your work as a PDF with links
                            to archived copies of the {{dataSource}} corpus and this tool.</p>
-                        <p>Open <b>multiple windows</b> and tabs** with this address,
-                           they all communicate with one and the same process that serves the data;
-                           as long as that process runs, new tabs and windows open quickly.
-                           See <i>Jobs</i>.</p>
+                        <p>Open <b>multiple windows and tabs</b> with this url,
+                           they all communicate with one and the same TF data server;
+                           the lengthy data loading is not needed as long as the server is active.
+                           See <i>Jobs</i> for ways to perform other queries.</p>
                         <p>When you terminate <code>text-fabric</code> on the command line,
                            the data process will also be terminated.</p>
                     </details>
