@@ -8,6 +8,15 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.6
+
+2018-07-09
+
+Better help display.
+
+* The opened-state of help sections is remembered.
+* You can open help next to an other open section in the sidebar.
+
 ## 5.5.5
 
 2018-07-08

@@ -9,8 +9,14 @@ function pageLinks() {
 function sidebar() {
   var side = $('#side')
   var part = side.val()
-  var headers = $('#sidebar div')
-  var bodies = $('#sidebarcont div')
+  var headers = $('#sidebar div').filter(function() {
+    var stat = $(this).attr('status')
+    return (stat != 'help' && stat != 'about')
+  })
+  var bodies = $('#sidebarcont div').filter(function() {
+    var stat = $(this).attr('status')
+    return (stat != 'help' && stat != 'about')
+  })
   if (part) {
     var header = $('#sidebar div[status="'+part+'"]')
     var body = $('#sidebarcont div[status="'+part+'"]')
@@ -26,8 +32,10 @@ function sidebar() {
     var side = $('#side')
     var body = $('#sidebarcont div[status="'+part+'"]')
     var isActive = header.hasClass('active')
-    headers.removeClass('active')
-    bodies.removeClass('active')
+    if (part != 'help') {
+      headers.removeClass('active')
+      bodies.removeClass('active')
+    }
     if (isActive) {
       header.removeClass('active')
       body.removeClass('active')
@@ -38,6 +46,31 @@ function sidebar() {
       body.addClass('active')
       side.val(part)
     }
+  })
+}
+
+function help() {
+  var help = $('#help')
+  var openedStr = help.val()
+  var helpOpened = (openedStr == '')?[]:openedStr.split(',');
+  helpOpened.forEach(function(helpId) {
+    helpDetails = $('#'+helpId)
+    helpDetails.prop('open', true)
+  })
+  $('details.help').on('toggle', function(e) {
+    var dHelp = $('details.help')
+    var op = $('#help')
+    var go = $('#go')
+    var thisHelp = $(this)
+    var thisId = thisHelp.attr('id')
+    var thisOpen = thisHelp.prop('open')
+    var openedDetails = dHelp.filter(
+      function() {return ($(this).prop('open') && $(this).attr('id') != thisId)}
+    ).map(function() {return $(this).attr('id')}).get()
+    if (thisOpen) {
+      openedDetails.push(thisId)
+    }
+    op.val(openedDetails.join(','))
   })
 }
 
@@ -163,7 +196,7 @@ function details() {
     var nAll = openedNumbers.length + closedNumbers.length
     
     currentOpenedStr = op.val()
-    currentOpened = (currentOpenedStr == '')?[]:op.val().split(',');
+    currentOpened = (currentOpenedStr == '')?[]:currentOpenedStr.split(',');
     reduceOpened = currentOpened.filter(function(n) {
       return ((closedNumbers.indexOf(n) < 0) && (openedNumbers.indexOf(n) < 0))
     })
@@ -185,5 +218,6 @@ $(function(){
   details()
   detailc()
   radios()
+  help()
   reactive()
 })
