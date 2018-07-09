@@ -499,4 +499,4 @@ More about the data that Text-Fabric works with.
 
 ??? note "Code statistics"
     For a feel of the size of this project, in terms of lines of code,
-    see [Code lines](/Stats)
+    see [Code lines](/Code/Stats)
