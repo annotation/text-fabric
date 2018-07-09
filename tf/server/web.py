@@ -153,6 +153,7 @@ def getFormData():
   form['otherJob'] = request.forms.otherJob
   form['otherJobDo'] = request.forms.otherJobDo
   form['side'] = request.forms.side
+  form['help'] = request.forms.help
   form['author'] = request.forms.author.strip()
   form['title'] = request.forms.title.strip()
   form['description'] = request.forms.description.replace('\r', '')
@@ -189,7 +190,7 @@ def readFormData(source):
         jobNameHidden
         chdir rename duplicate
         condensetp opened author title export
-        otherJob otherJobDo side author title description
+        otherJob otherJobDo side help author title description
     '''.strip().split():
       if form.get(item, None) is None:
         form[item] = ''
