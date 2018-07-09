@@ -39,8 +39,8 @@ div.leftcol {
 }
 #sidebar {
     flex: 0 0 2rem;
-    height: 99vh;
     background-color: #dddddd;
+    height: 99vh;
 }
 #sidebar a:link, #sidebar a:visited {
     color: #333333;
@@ -92,9 +92,10 @@ img.icon {
     width: 2rem;
 }
 #sidebarcont {
-    flex: 0 1 auto;
+    flex: 1 0 auto;
     background-color: #dddddd;
     height: 99vh;
+    overflow-y: auto;
 }
 #sidebarcont > div {
     display: none;

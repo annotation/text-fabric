@@ -8,6 +8,12 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.7
+
+2018-07-09
+
+Optimization is export from TF browser.
+
 ## 5.5.6
 
 2018-07-09
