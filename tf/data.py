@@ -98,7 +98,10 @@ class Data(object):
             else:
               good = self._readDataBin()
       except MemoryError:
-        self.tm.error('TF is out of memory. Try again with more RAM')
+        print('''TF is out of memory!
+If this happens and your computer has more than 3GB RAM on board:
+Close all other programs and try again.
+''')
         good = False
     if self.isConfig:
       self.cleanDataBin()

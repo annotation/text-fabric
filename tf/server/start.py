@@ -8,7 +8,7 @@ from time import sleep
 from subprocess import PIPE, Popen
 
 from tf.server.common import getParam, getDebug, getConfig
-from tf.server.data import TF_DONE
+from tf.server.data import TF_DONE, TF_ERROR
 
 HELP = '''
 USAGE
@@ -166,6 +166,8 @@ def main():
         with pService.stdout as ph:
           for line in ph:
             print(line)
+            if line.rstrip() == TF_ERROR:
+              return
             if line.rstrip() == TF_DONE:
               break
         sleep(1)

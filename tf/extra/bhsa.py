@@ -339,10 +339,15 @@ class Bhsa(object):
       getTf(source=PARA, release=PARA_RL, version=version)
       TF = Fabric(locations=locations, modules=modules, silent=True)
       api = TF.load('', silent=True)
+      self.api = api
+      if api is False:
+        return
       allFeatures = TF.explore(silent=True, show=True)
       loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
       useFeatures = [f for f in loadableFeatures if f not in EXCLUDED_FEATURES]
-      TF.load(useFeatures, add=True, silent=True)
+      result = TF.load(useFeatures, add=True, silent=True)
+      if result is False:
+        return
     else:
       api.TF.load(self.standardFeatures, add=True, silent=True)
     self.prettyFeaturesLoaded = self.standardFeatures

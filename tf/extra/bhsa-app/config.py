@@ -45,7 +45,7 @@ condenseType = 'verse'
 
 
 def extraApi(locations, modules):
-  return Bhsa(
+  result = Bhsa(
       None,
       None,
       version=VERSION,
@@ -53,3 +53,6 @@ def extraApi(locations, modules):
       modules=modules,
       asApi=True
   )
+  if result.api:
+    return result
+  return False
