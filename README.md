@@ -27,9 +27,13 @@ the command line. Here are the precise
 
 # Use
 
-Provided you have the data repositories for the Hebrew Bible (bhsa) or the Proto-Cuneiform Uruk corpus (cunei)
-in place (see below),
-you can open a terminal (command prompt), and just say
+## On Windows?
+
+You can click the Start Menu, and type `text-fabric bhsa` or `text-fabric cunei`
+in the search box, and then Enter.
+
+## On Linux or Macos?
+You can open a terminal (command prompt), and just say
 
 ```sh
 text-fabric bhsa
@@ -41,7 +45,9 @@ or
 text-fabric cunei
 ```
 
-After loading the data your browser will open and load the search interface.
+The corpus data will be downloaded automatically,
+and be loaded into text-fabric.
+Then your browser will open and load the search interface.
 There you'll find links to further help.
 
 <p>

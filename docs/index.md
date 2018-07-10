@@ -100,9 +100,14 @@ the command line.
 ## Use the Text-Fabric browser
 
 Explore your corpus without programming.
+Here is how to start up text-fabric.
 
-??? abstract "Start up"
-    You can open a terminal (such as `bash` on Unix and `cmd.exe` on Windows), and just say
+??? hint "On Windows?"
+    You can click the Start Menu, and type `text-fabric bhsa` or `text-fabric cunei`
+    in the search box, and then Enter.
+
+??? hint "On Linux or Macos?"
+    You can open a terminal (command prompt), and just say
 
     ```sh
     text-fabric bhsa
@@ -114,11 +119,91 @@ Explore your corpus without programming.
     text-fabric cunei
     ```
 
-    After (down)-loading the data your browser will open and load the search interface.
+??? abstract "All platforms"
+    The corpus data will be downloaded automatically,
+    and be loaded into text-fabric.
+    Then your browser will open and load the search interface.
     There you'll find links to further help.
 
-    caution "trouble?"
-        See the section Trouble below.
+??? caution "Frequently Occurring Trouble"
+    If you are new to Python, it might be tricky to set up Python the right way.
+    If you make unlucky choices, and work with trial and error, things might get messed up.
+    Most of the times when `text-fabric` does not appear to work, it is because of this.
+    Here are some hints to recover from that.
+
+    ??? hint "Older versions"
+        Older versions of Python and Text-Fabric may be in the way.
+        The following hygenic measures are known to be beneficial:
+
+        ??? abstract "Python related"
+            When you have upgraded Python, remove PATH statements for older versions from your system startup files.
+          
+            * For the Macos: look at `.bashrc`, `.bash_profile` in your home directory.
+            * For Windows: on the command prompt, say `echo %path%` to see what the content of your PATH
+              variable is. If you see references to older versions of python than you actually work with,
+              they need to be removed. [Here is how](https://www.computerhope.com/issues/ch000549.htm)
+            
+            ???+ caution "Only for Python3"
+                Do not remove references to Python 2.*, but only outdated Python 3.* versions. 
+
+        ??? abstract "Text-Fabric related"
+            Sometimes `pip3 uninstall text-fabric` fails to remove all traces of Text-Fabric.
+            Here is how you can remove them manually:
+
+            * locate the `bin` directory of the current Python, it is something like
+
+              * (Macos regular Python) `/Library/Frameworks/Python.framework/Versions/3.7/bin`
+              * (Windows Anaconda) `C:\Users\You\Anaconda3\Scripts`
+
+              Remove the file `text-fabric` from this directory if it exists.
+
+            * locate the `site-packages` directory of the current Python, it is something like
+
+              * (Macos regular Python)
+                `/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages`
+
+                Remove the subdirectory `tf` from this location, plus all files with `text-fabric` in the name.
+
+            * After this, you can make a fresh install of `text-fabric`:
+
+              ```sh
+              pip3 install text-fabric
+              ```
+
+    ??? hint "Internal Server Error"
+        When the TF browser opens with an Internal Server error, the most likely reason is that
+        the TF data server has not started up without errors.
+
+        Look back at the command prompt where you started `text-fabric`.
+        Probably somewhere down the road you see `Error`.
+
+        Or you see that TF has run out of memory.
+
+        Tha latter case means that during loading TF did not have access too enough RAM memory.
+        Maybe you had too many programs (or browser tabs) open at that time.
+
+        Close as many programs as possible (even better, restart your machine) and try again.
+        TF is know to work on Windows 10 machines with only 3GB RAM on board.
+
+    ??? hint "Newest version of Text-Fabric does not show up"
+        When you get errors doing `pip3 install text-fabric`, there is probably an older version around.
+        You have to say
+
+        ```sh
+        pip3 install --upgrade text-fabric
+        ```
+
+        If this still does not download the most recent version of `text-fabric`, it may have been cauched by caching.
+        Then say:
+
+        ```sh
+        pip3 install --upgrade --no-cache-dir text-fabric
+        ```
+
+        You can check what the newest distributed version of Text-Fabric is on
+        [PyPi](https://pypi.org/project/text-fabric/).
+
+
 
 <p>
 <img src="images/bhsa-app.png"/>
@@ -422,89 +507,6 @@ More about the data that Text-Fabric works with.
 
     I have taken out everything that makes LAF-Fabric complicated and
     all things that are not essential for the sake of raw data processing.
-
-## Frequently Occurring Trouble
-
-??? caution "Older versions"
-    Older versions of Python and Text-Fabric may be in the way.
-    The following hygenic measures are known to be beneficial:
-
-    ??? abstract "Python related"
-        When you have upgraded Python, remove PATH statements for older versions from your system startup files.
-      
-        * For the Macos: look at `.bashrc`, `.bash_profile` in your home directory.
-        * For Windows: on the command prompt, say `echo %path%` to see what the content of your PATH
-          variable is. If you see references to older versions of python than you actually work with,
-          they need to be removed. [Here is how](https://www.computerhope.com/issues/ch000549.htm)
-        
-        ???+ caution "Only for Python3"
-            Do not remove references to Python 2.*, but only outdated Python 3.* versions. 
-
-    ??? abstract "Text-Fabric related"
-        Sometimes `pip3 uninstall text-fabric` fails to remove all traces of Text-Fabric.
-        Here is how you can remove them manually:
-
-        * locate the `bin` directory of the current Python, it is something like
-
-          * (Macos regular Python) `/Library/Frameworks/Python.framework/Versions/3.7/bin`
-          * (Windows Anaconda) `C:\Users\You\Anaconda3\Scripts`
-
-          Remove the file `text-fabric` from this directory if it exists.
-
-        * locate the `site-packages` directory of the current Python, it is something like
-
-          * (Macos regular Python)
-            `/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages`
-
-            Remove the subdirectory `tf` from this location, plus all files with `text-fabric` in the name.
-
-        * After this, you can make a fresh install of `text-fabric`:
-
-          ```sh
-          pip3 install text-fabric
-          ```
-
-??? caution "Internal Server Error"
-    When the TF browser opens with an Internal Server error, the most likely reason is that
-    the TF data server has not started up without errors.
-
-    Look back at the command prompt where you started `text-fabric`.
-    Probably somewhere down the road you see `Memory Error`.
-
-    It means that during loading TF did not have access too enough RAM memory.
-    Maybe you had too many programs (or browser tabs) open at that time.
-
-    Simply closing text-fabric and trying again is not enough, due to the memory error some
-    compiled TF data may have become corrupt.
-
-    I am working toward a graceful solution to automatically recover from this.
-    For now, you have to manually remove the compiled data.
-
-    You find that data in directories named `.tf` (hidden in Macos and Linux, visible in Windows).
-    Look into `text-fabric-data/etcbc/*/tf/c` for `*` one of `bhsa`, `phono`, `parallels`.
-    Just delete these `.tf` directories.
-
-    The free up some RAM and try again.
-
-
-??? caution "Newest version of Text-Fabric does not show up"
-    When you get errors doing `pip3 install text-fabric`, there is probably an older version around.
-    You have to say
-
-    ```sh
-    pip3 install --upgrade text-fabric
-    ```
-
-    If this still does not download the most recent version of `text-fabric`, it may have been cauched by caching.
-    Then say:
-
-    ```sh
-    pip3 install --upgrade --no-cache-dir text-fabric
-    ```
-
-    You can check what the newest distributed version of Text-Fabric is on
-    [PyPi](https://pypi.org/project/text-fabric/).
-
 
 ## Author
 [Dirk Roorda](https://dans.knaw.nl/en/about/organisation-and-policy/staff/roorda?set_language=en)

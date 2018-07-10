@@ -1,7 +1,7 @@
 import os
 import collections
 from glob import glob
-from .data import Data, WARP
+from .data import Data, WARP, MEM_MSG
 from .helpers import itemize, expandDir, collectFormats, cleanName
 from .timestamp import Timestamp
 from .prepare import (levels, order, rank, levUp, levDown, boundary, sections)
@@ -22,7 +22,7 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '5.5.10'
+VERSION = '5.5.11'
 DOI = '10.5281/zenodo.592193'
 DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'
@@ -158,9 +158,18 @@ Example data  : {}
       self.tm.cache()
       return False
     if add:
-      self._updateApi(silent)
+      try:
+        self._updateApi(silent)
+      except MemoryError:
+        print(MEM_MSG)
+        return False
     else:
-      return self._makeApi(silent)
+      try:
+        result = self._makeApi(silent)
+      except MemoryError:
+        print(MEM_MSG)
+        return False
+      return result
 
   def explore(self, silent=True, show=True):
     nodes = set()
