@@ -347,6 +347,7 @@ class Bhsa(object):
       useFeatures = [f for f in loadableFeatures if f not in EXCLUDED_FEATURES]
       result = TF.load(useFeatures, add=True, silent=True)
       if result is False:
+        self.api = False
         return
     else:
       api.TF.load(self.standardFeatures, add=True, silent=True)

@@ -558,9 +558,15 @@ class Cunei(Atf):
     self.exampleSection = 'P005381'
     TF = Fabric(locations=[self.corpus], modules=[''], silent=True)
     api = TF.load('', silent=True)
+    self.api = api
+    if api is False:
+      return
     allFeatures = TF.explore(silent=True, show=True)
     loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
-    TF.load(loadableFeatures, add=True, silent=True)
+    result = TF.load(loadableFeatures, add=True, silent=True)
+    if result is False:
+      self.api = False
+      return
     self.prettyFeaturesLoaded = loadableFeatures
     self.prettyFeatures = ()
     self.api = api
