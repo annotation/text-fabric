@@ -7,8 +7,20 @@ that have to be assembled from the source text, and how to compose that into a
 Text-Fabric resource, which is a set of features.
 
 How you turn this insight into an executable program is dependent on how the
-source text is encoded and organized. See some
-[examples](https://github.com/Dans-labs/text-fabric-data/tree/master/programs).
+source text is encoded and organized.
+
+Have a look at the following examples:
+
+* the book of John in the Greek New Testament from XML-TEI to TF:
+  [pilot](https://github.com/pthu/pilot);
+* the Syriac New Testament:
+  [linksyr](https://github.com/ETCBC/linksyr/tree/master/programs/tfgen);
+* the Greek New Testament:
+  [tfFromSblgnt](https://github.com/Dans-labs/text-fabric-data/blob/master/programs/tfFromSblgnt.ipynb);
+* Sanskrit writings:
+  [tfFromSanskrit](https://github.com/Dans-labs/text-fabric-data/blob/master/programs/tfFromSanskrit.ipynb);
+* Sanskrit writings:
+  [tfFromSumerianTEI](https://github.com/Dans-labs/text-fabric-data/blob/master/programs/tfFromSumerianTEI.ipynb).
 
 ## Analysis
 
