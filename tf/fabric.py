@@ -22,7 +22,7 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '5.5.8'
+VERSION = '5.5.9'
 DOI = '10.5281/zenodo.592193'
 DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'
@@ -156,7 +156,7 @@ Example data  : {}
       self.tm.indent(level=0)
       self.tm.error('Not all features could be loaded/computed')
       self.tm.cache()
-      return None
+      return False
     if add:
       self._updateApi(silent)
     else:

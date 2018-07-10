@@ -11,6 +11,7 @@ from .common import getConfig
 TIMEOUT = 120
 
 TF_DONE = 'TF setup done.'
+TF_ERROR = 'Could not set up TF'
 
 
 def batchAround(nResults, position, batch):
@@ -39,6 +40,10 @@ def makeTfServer(dataSource, locations, modules, port):
 
   print(f'Setting up Text-Fabric service for {locations} / {modules}')
   extraApi = config.extraApi(locations, modules)
+  if not extraApi:
+    print(f'{TF_ERROR}')
+    sys.stdout.flush()
+    return False
   extraApi.api.reset()
   cache = {}
   print(f'{TF_DONE}\nListening at port {port}')
