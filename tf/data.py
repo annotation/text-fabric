@@ -77,25 +77,29 @@ class Data(object):
       actionRep = 'X'  # no source and no binary present
       good = False
     else:
-      if not origTime:
-        actionRep = 'b'
-        good = self._readDataBin()
-      elif not binTime or origTime > binTime:
-        actionRep = 'C' if self.method else 'T'
-        good = self._compute() if self.method else self._readTf(metaOnly=metaOnly)
-        if good:
-          if self.isConfig or metaOnly:
-            actionRep = 'M'
-          else:
-            self._writeDataBin()
-      else:
-        actionRep = 'B'
-        good = True if self.method else self._readTf(metaOnly=True)
-        if good:
-          if self.isConfig or metaOnly:
-            actionRep = 'M'
-          else:
-            good = self._readDataBin()
+      try:
+        if not origTime:
+          actionRep = 'b'
+          good = self._readDataBin()
+        elif not binTime or origTime > binTime:
+          actionRep = 'C' if self.method else 'T'
+          good = self._compute() if self.method else self._readTf(metaOnly=metaOnly)
+          if good:
+            if self.isConfig or metaOnly:
+              actionRep = 'M'
+            else:
+              self._writeDataBin()
+        else:
+          actionRep = 'B'
+          good = True if self.method else self._readTf(metaOnly=True)
+          if good:
+            if self.isConfig or metaOnly:
+              actionRep = 'M'
+            else:
+              good = self._readDataBin()
+      except MemoryError:
+        self.tm.error('TF is out of memory. Try again with more RAM')
+        good = False
     if self.isConfig:
       self.cleanDataBin()
     if good:
@@ -466,8 +470,9 @@ class Data(object):
     try:
       with gzip.open(self.binPath, "wb", compresslevel=GZIP_LEVEL) as f:
         pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
-    except Exception:
-      self.tm.error('Cannot write to file "{}"'.format(self.binPath))
+    except Exception as e:
+      self.tm.error(f'Cannot write to file "{self.binPath}" because: {str(e)}')
+      self.cleanDataBin()
       good = False
     self.dataLoaded = time.time()
     return True

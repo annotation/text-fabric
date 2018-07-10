@@ -8,6 +8,13 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.8
+
+2018-07-10
+
+Better in catching out-of-memory errors.
+Prevents creation of corrupt compiled binary TF data.
+
 ## 5.5.7
 
 2018-07-09
