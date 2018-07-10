@@ -306,13 +306,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#frequently-occurring-trouble" title="Frequently Occurring Trouble" class="md-nav__link">
-    Frequently Occurring Trouble
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#author" title="Author" class="md-nav__link">
     Author
   </a>
@@ -789,13 +782,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#frequently-occurring-trouble" title="Frequently Occurring Trouble" class="md-nav__link">
-    Frequently Occurring Trouble
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#author" title="Author" class="md-nav__link">
     Author
   </a>
@@ -867,16 +853,43 @@ jupyter labextension install jupyterlab-toc
 when working with the lengthy tutorial. It will create an extra
 tab in the Jupyter Lab interface with a table of contents of the
 current notebook.</p></details></details><h2 id="use-the-text-fabric-browser">Use the Text-Fabric browser<a class="headerlink" href="#use-the-text-fabric-browser" title="Permanent link">&para;</a></h2>
-<p>Explore your corpus without programming.</p>
-<details class="abstract"><summary>Start up</summary><p>You can open a terminal (such as <code>bash</code> on Unix and <code>cmd.exe</code> on Windows), and just say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric bhsa
+<p>Explore your corpus without programming.
+Here is how to start up text-fabric.</p>
+<details class="hint"><summary>On Windows?</summary><p>You can click the Start Menu, and type <code>text-fabric bhsa</code> or <code>text-fabric cunei</code>
+in the search box, and then Enter.</p></details><details class="hint"><summary>On Linux or Macos?</summary><p>You can open a terminal (command prompt), and just say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric bhsa
 </pre></div>
 </td></tr></table>
 <p>or </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric cunei
 </pre></div>
 </td></tr></table>
-<p>After (down)-loading the data your browser will open and load the search interface.
-There you'll find links to further help.</p><p>caution "trouble?"
-    See the section Trouble below.</p></details><p>
+</details><details class="abstract"><summary>All platforms</summary><p>The corpus data will be downloaded automatically,
+and be loaded into text-fabric.
+Then your browser will open and load the search interface.
+There you'll find links to further help.</p></details><details class="caution"><summary>Frequently Occurring Trouble</summary><p>If you are new to Python, it might be tricky to set up Python the right way.
+If you make unlucky choices, and work with trial and error, things might get messed up.
+Most of the times when <code>text-fabric</code> does not appear to work, it is because of this.
+Here are some hints to recover from that.</p><details class="hint"><summary>Older versions</summary><p>Older versions of Python and Text-Fabric may be in the way.
+The following hygenic measures are known to be beneficial:</p><details class="abstract"><summary>Python related</summary><p>When you have upgraded Python, remove PATH statements for older versions from your system startup files.</p><ul><li>For the Macos: look at <code>.bashrc</code>, <code>.bash_profile</code> in your home directory.</li><li>For Windows: on the command prompt, say <code>echo %path%</code> to see what the content of your PATH
+  variable is. If you see references to older versions of python than you actually work with,
+  they need to be removed. <a href="https://www.computerhope.com/issues/ch000549.htm">Here is how</a></li></ul><details class="caution" open="open"><summary>Only for Python3</summary><p>Do not remove references to Python 2.<em>, but only outdated Python 3.</em> versions. </p></details></details><details class="abstract"><summary>Text-Fabric related</summary><p>Sometimes <code>pip3 uninstall text-fabric</code> fails to remove all traces of Text-Fabric.
+Here is how you can remove them manually:</p><ul><li><p>locate the <code>bin</code> directory of the current Python, it is something like</p></li><li><p>(Macos regular Python) <code>/Library/Frameworks/Python.framework/Versions/3.7/bin</code></p></li><li>(Windows Anaconda) <code>C:\Users\You\Anaconda3\Scripts</code></li></ul><p>Remove the file <code>text-fabric</code> from this directory if it exists.</p><ul><li><p>locate the <code>site-packages</code> directory of the current Python, it is something like</p></li><li><p>(Macos regular Python)
+    <code>/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages</code></p><p>Remove the subdirectory <code>tf</code> from this location, plus all files with <code>text-fabric</code> in the name.</p></li><li><p>After this, you can make a fresh install of <code>text-fabric</code>:</p></li></ul><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install text-fabric
+</pre></div>
+</td></tr></table>
+</details></details><details class="hint"><summary>Internal Server Error</summary><p>When the TF browser opens with an Internal Server error, the most likely reason is that
+the TF data server has not started up without errors.</p><p>Look back at the command prompt where you started <code>text-fabric</code>.
+Probably somewhere down the road you see <code>Error</code>.</p><p>Or you see that TF has run out of memory.</p><p>Tha latter case means that during loading TF did not have access too enough RAM memory.
+Maybe you had too many programs (or browser tabs) open at that time.</p><p>Close as many programs as possible (even better, restart your machine) and try again.
+TF is know to work on Windows 10 machines with only 3GB RAM on board.</p></details><details class="hint"><summary>Newest version of Text-Fabric does not show up</summary><p>When you get errors doing <code>pip3 install text-fabric</code>, there is probably an older version around.
+You have to say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install --upgrade text-fabric
+</pre></div>
+</td></tr></table>
+<p>If this still does not download the most recent version of <code>text-fabric</code>, it may have been cauched by caching.
+Then say:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install --upgrade --no-cache-dir text-fabric
+</pre></div>
+</td></tr></table>
+<p>You can check what the newest distributed version of Text-Fabric is on
+<a href="https://pypi.org/project/text-fabric/">PyPi</a>.</p></details></details><p>
 <img src="images/bhsa-app.png"/>
 </p>
 
@@ -1014,32 +1027,7 @@ In 2013 I developed
 <a href="https://github.com/Dans-labs/laf-fabric">LAF-Fabric</a>
 in order to be able to construct the website
 <a href="https://shebanq.ancient-data.org">SHEBANQ</a>.</p><p>I have taken out everything that makes LAF-Fabric complicated and
-all things that are not essential for the sake of raw data processing.</p></details><h2 id="frequently-occurring-trouble">Frequently Occurring Trouble<a class="headerlink" href="#frequently-occurring-trouble" title="Permanent link">&para;</a></h2>
-<details class="caution"><summary>Older versions</summary><p>Older versions of Python and Text-Fabric may be in the way.
-The following hygenic measures are known to be beneficial:</p><details class="abstract"><summary>Python related</summary><p>When you have upgraded Python, remove PATH statements for older versions from your system startup files.</p><ul><li>For the Macos: look at <code>.bashrc</code>, <code>.bash_profile</code> in your home directory.</li><li>For Windows: on the command prompt, say <code>echo %path%</code> to see what the content of your PATH
-  variable is. If you see references to older versions of python than you actually work with,
-  they need to be removed. <a href="https://www.computerhope.com/issues/ch000549.htm">Here is how</a></li></ul><details class="caution" open="open"><summary>Only for Python3</summary><p>Do not remove references to Python 2.<em>, but only outdated Python 3.</em> versions. </p></details></details><details class="abstract"><summary>Text-Fabric related</summary><p>Sometimes <code>pip3 uninstall text-fabric</code> fails to remove all traces of Text-Fabric.
-Here is how you can remove them manually:</p><ul><li><p>locate the <code>bin</code> directory of the current Python, it is something like</p></li><li><p>(Macos regular Python) <code>/Library/Frameworks/Python.framework/Versions/3.7/bin</code></p></li><li>(Windows Anaconda) <code>C:\Users\You\Anaconda3\Scripts</code></li></ul><p>Remove the file <code>text-fabric</code> from this directory if it exists.</p><ul><li><p>locate the <code>site-packages</code> directory of the current Python, it is something like</p></li><li><p>(Macos regular Python)
-    <code>/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages</code></p><p>Remove the subdirectory <code>tf</code> from this location, plus all files with <code>text-fabric</code> in the name.</p></li><li><p>After this, you can make a fresh install of <code>text-fabric</code>:</p></li></ul><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install text-fabric
-</pre></div>
-</td></tr></table>
-</details></details><details class="caution"><summary>Internal Server Error</summary><p>When the TF browser opens with an Internal Server error, the most likely reason is that
-the TF data server has not started up without errors.</p><p>Look back at the command prompt where you started <code>text-fabric</code>.
-Probably somewhere down the road you see <code>Memory Error</code>.</p><p>It means that during loading TF did not have access too enough RAM memory.
-Maybe you had too many programs (or browser tabs) open at that time.</p><p>Simply closing text-fabric and trying again is not enough, due to the memory error some
-compiled TF data may have become corrupt.</p><p>I am working toward a graceful solution to automatically recover from this.
-For now, you have to manually remove the compiled data.</p><p>You find that data in directories named <code>.tf</code> (hidden in Macos and Linux, visible in Windows).
-Look into <code>text-fabric-data/etcbc/*/tf/c</code> for <code>*</code> one of <code>bhsa</code>, <code>phono</code>, <code>parallels</code>.
-Just delete these <code>.tf</code> directories.</p><p>The free up some RAM and try again.</p></details><details class="caution"><summary>Newest version of Text-Fabric does not show up</summary><p>When you get errors doing <code>pip3 install text-fabric</code>, there is probably an older version around.
-You have to say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install --upgrade text-fabric
-</pre></div>
-</td></tr></table>
-<p>If this still does not download the most recent version of <code>text-fabric</code>, it may have been cauched by caching.
-Then say:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install --upgrade --no-cache-dir text-fabric
-</pre></div>
-</td></tr></table>
-<p>You can check what the newest distributed version of Text-Fabric is on
-<a href="https://pypi.org/project/text-fabric/">PyPi</a>.</p></details><h2 id="author">Author<a class="headerlink" href="#author" title="Permanent link">&para;</a></h2>
+all things that are not essential for the sake of raw data processing.</p></details><h2 id="author">Author<a class="headerlink" href="#author" title="Permanent link">&para;</a></h2>
 <p><a href="https://dans.knaw.nl/en/about/organisation-and-policy/staff/roorda?set_language=en">Dirk Roorda</a></p>
 <details class="abstract"><summary>Co-creation</summary><p>While I wrote most of the code, a product like Text-Fabric is unthinkable without
 the contributions of avid users that take the trouble to give feedback and file issues,
