@@ -1,3 +1,4 @@
+![logo](/images/tficon-small.png)
 ![logo](/images/tf.png)
 
 # Text-Fabric
@@ -512,12 +513,32 @@ More about the data that Text-Fabric works with.
 [Dirk Roorda](https://dans.knaw.nl/en/about/organisation-and-policy/staff/roorda?set_language=en)
 
 ??? abstract "Co-creation"
+    Text-Fabric is not so much an original idea as well putting a few good ideas by others
+    into practice. The idea for the Text-Fabric data model ultimately derives from ideas floating
+    in the ETCBC-avant-la-lettre 30 years ago: 
+    [Crist-Jan Doedens](https://books.google.nl/books/about/Text_Databases.html?id=9ggOBRz1dO4C&redir_esc=y).
+    The fact that Ulrik Sandborg Petersen has made that idea practical in his
+    [Emdros](https://emdros.org)
+    database system has helped a lot.
+
+    But time moves on: programming becomes easier, humanists become better programmers.
+    That leads to exciting *tipping points*
+
+    > In sociology, a tipping point is a point in time when a group - or
+      a large number of group members — rapidly and dramatically changes
+      its behavior by widely adopting a previously rare practice.
+
+    > [WikiPedia](https://en.wikipedia.org/wiki/Tipping_point_(sociology))
+
+    **Text-Fabric is an attempt to tip the scales.**
+
+
+??? abstract "Acknowledgements"
     While I wrote most of the code, a product like Text-Fabric is unthinkable without
     the contributions of avid users that take the trouble to give feedback and file issues,
     and have the zeal and stamina to hold on when things are frustrating and bugs overwhelming.
 
-??? abstract "Acknowledgements"
-    In particular I owe a lot to
+    In particular I thank
 
     * Martijn Naaijer
     * Cody Kingham
@@ -528,6 +549,9 @@ More about the data that Text-Fabric works with.
     * Stephen Ku
     * James Cuénod
     * Johan de Joode
+    * Gyusang Jin
+    * Kyoungsik Kim
+    * Ernst Boogert
 
 ??? note "Code statistics"
     For a feel of the size of this project, in terms of lines of code,
