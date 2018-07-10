@@ -18,6 +18,11 @@ WARP = (
 
 DATA_TYPES = ('str', 'int')
 
+MEM_MSG = '''TF is out of memory!
+If this happens and your computer has more than 3GB RAM on board:
+Close all other programs and try again.
+'''
+
 
 class Data(object):
   def __init__(
@@ -98,10 +103,7 @@ class Data(object):
             else:
               good = self._readDataBin()
       except MemoryError:
-        print('''TF is out of memory!
-If this happens and your computer has more than 3GB RAM on board:
-Close all other programs and try again.
-''')
+        print(MEM_MSG)
         good = False
     if self.isConfig:
       self.cleanDataBin()
