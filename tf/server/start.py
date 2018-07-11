@@ -1,6 +1,5 @@
 import sys
 import os
-import time
 from platform import system
 
 import psutil
@@ -159,21 +158,23 @@ def main():
 
       pKernel = Popen(
           [pythonExe, '-m', 'tf.server.kernel', dataSource],
-          stdout=PIPE, encoding='utf-8',
+          stdout=PIPE, bufsize=1, encoding='utf-8',
       )
 
       print(f'Loading data for {dataSource}. Please wait ...')
-      with pKernel.stdout as ph:
-        for line in ph:
-          print(line)
-          if line.rstrip() == TF_ERROR:
-            return
-          if line.rstrip() == TF_DONE:
-            break
+      for line in pKernel.stdout:
+        print(line)
+        if line.rstrip() == TF_ERROR:
+          return
+        if line.rstrip() == TF_DONE:
+          break
       sleep(1)
 
       print(f'Opening {dataSource} in browser')
-      pWeb = Popen([pythonExe, '-m', 'tf.server.web', *ddataSource])
+      pWeb = Popen(
+          [pythonExe, '-m', 'tf.server.web', *ddataSource],
+          bufsize=0,
+      )
 
       sleep(1)
       webbrowser.open(
@@ -182,10 +183,10 @@ def main():
           autoraise=True,
       )
 
-      if pWeb:
+      if pWeb and pKernel:
         try:
-          while True:
-            time.sleep(1000)
+          for line in pKernel.stdout:
+            sys.stdout.write(line)
         except KeyboardInterrupt:
           print('')
           if pWeb:
@@ -193,6 +194,8 @@ def main():
             print('TF webserver has stopped')
           if pKernel:
             pKernel.terminate()
+            for line in pKernel.stdout:
+              sys.stdout.write(line)
             print('TF kernel has stopped')
 
 

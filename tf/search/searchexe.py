@@ -72,9 +72,6 @@ class SearchExe(object):
         info('See S.showPlan() to interpret the results', tm=False, cache=msgCache)
 
   def fetch(self, limit=None):
-    api = self.api
-    cache = api.cache
-    msgCache = self.msgCache
     if not self.good:
       queryResults = set() if self.shallow else []
     elif self.shallow:
@@ -89,10 +86,6 @@ class SearchExe(object):
           if len(queryResults) == limit:
             break
         queryResults = tuple(queryResults)
-    if msgCache:
-      messages = cache(asString=True)
-    if msgCache:
-      return (queryResults, messages)
     return queryResults
 
   def count(self, progress=None, limit=None):

@@ -106,10 +106,6 @@ def adjustVersion(task):
           replaceVersion(task, c['mask']),
           text,
       )
-      if key == 'setup':
-        print(text[586:607])
-      if key == 'fabric':
-        print(text[516:534])
       with open(c['file'], 'w') as fh:
         fh.write(text)
     if currentVersion == newVersion:

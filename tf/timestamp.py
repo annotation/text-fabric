@@ -47,10 +47,10 @@ class Timestamp(object):
     if asString:
       return result
 
-  def info(self, msg, tm=True, nl=True, cache=False):
+  def info(self, msg, tm=True, nl=True, cache=0):
     self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
-  def error(self, msg, tm=True, nl=True, cache=False):
+  def error(self, msg, tm=True, nl=True, cache=0):
     self.raw_msg(msg, tm=tm, nl=nl, cache=cache, error=True)
 
   def indent(self, level=None, reset=False, verbose=None):
