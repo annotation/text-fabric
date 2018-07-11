@@ -540,8 +540,8 @@
 
 
   <li class="md-nav__item">
-    <a href="Server/Service/" title="Service" class="md-nav__link">
-      Service
+    <a href="Server/Kernel/" title="Kernel" class="md-nav__link">
+      Kernel
     </a>
   </li>
 
@@ -878,7 +878,7 @@ Here is how you can remove them manually:</p><ul><li><p>locate the <code>bin</co
 </pre></div>
 </td></tr></table>
 </details></details><details class="hint"><summary>Internal Server Error</summary><p>When the TF browser opens with an Internal Server error, the most likely reason is that
-the TF data server has not started up without errors.</p><p>Look back at the command prompt where you started <code>text-fabric</code>.
+the TF kernel has not started up without errors.</p><p>Look back at the command prompt where you started <code>text-fabric</code>.
 Probably somewhere down the road you see <code>Error</code>.</p><p>Or you see that TF has run out of memory.</p><p>Tha latter case means that during loading TF did not have access too enough RAM memory.
 Maybe you had too many programs (or browser tabs) open at that time.</p><p>Close as many programs as possible (even better, restart your machine) and try again.
 TF is know to work on Windows 10 machines with only 3GB RAM on board.</p></details><details class="hint"><summary>Newest version of Text-Fabric does not show up</summary><p>When you get errors doing <code>pip3 install text-fabric</code>, there is probably an older version around.
@@ -909,7 +909,7 @@ From within the browser you can rename and duplicate sessions and move to
 other directories. You can also load other sessions in other tabs.</p></details><details class="hint"><summary>Multiple windows</summary><p>After you have issued the <code>text-fabric</code> command, you can open many 
 browsers and windows and tabs with the same url.
 They all use the same data, which only gets loaded when the command <code>text-fabric</code> is run.
-If you leave it on all day, you have instant access to the data.</p></details><details class="hint"><summary>Close</summary><p>You can close the data server by pressing Ctrl-C in the terminal where you have
+If you leave it on all day, you have instant access to the data.</p></details><details class="hint"><summary>Close</summary><p>You can close the TF kernel by pressing Ctrl-C in the terminal where you have
 started <code>text-fabric</code> up.</p></details><h2 id="get-corpora">Get corpora<a class="headerlink" href="#get-corpora" title="Permanent link">&para;</a></h2>
 <p>More about the data that Text-Fabric works with.</p>
 <details class="abstract"><summary>About</summary><p>Corpora are usually stored in an online repository, such as GitHub or a research data archive
@@ -1017,8 +1017,8 @@ they can do so in various ways:</p><ul><li>when using the TF browser, results ca
 of text-fabric data out of their findings.</p></details><details class="abstract"><summary>Factory</summary><p>Text-Fabric can be and has been used to construct websites,
 for example <a href="https://shebanq.ancient-data.org">SHEBANQ</a>.
 In the case of SHEBANQ, data has been converted to mysql databases.
-However, with the built-in data server, it is also possible to
-have one Text-Fabric process serve multiple connections and requests.</p></details><details class="explanation" open="open"><summary>History</summary><p>The foundational ideas derive from work done in and around the
+However, with the built-in <a href="./Server/Kernel">TF kernel</a>, it is also possible to
+have one process serve multiple connections and requests.</p></details><details class="explanation" open="open"><summary>History</summary><p>The foundational ideas derive from work done in and around the
 <a href="http://etcbc.nl">ETCBC</a>
 by Eep Talstra, Crist-Jan Doedens, Henk Harmsen, Ulrik Sandborg-Petersen
 and many others.</p><p>The author entered in that world in 2007 as a 

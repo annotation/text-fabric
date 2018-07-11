@@ -677,8 +677,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Server/Service/" title="Service" class="md-nav__link">
-      Service
+    <a href="../../Server/Kernel/" title="Kernel" class="md-nav__link">
+      Kernel
     </a>
   </li>
 
@@ -1867,7 +1867,8 @@ that feature for those nodes. <code>None</code> values will not be included in t
 database that multiple clients can use without the need for each client to call the 
 costly <code>load</code> methods.
 You have to come up with a process that runs TF, has all features loaded, and
-that can respond to queries from other processes.</p><p>Webservers can use such a daemonized TF to build efficient controllers.</p><p>Support for TF as daemon is upcoming, it will be included in the Text-Fabric code base.</p></details><details class="note"><summary>Generator versus tuple</summary><p>If <code>limit</code> is specified, the result is not a generator but a tuple of results.</p></details><details class="explanation"><summary>More info on the search plan</summary><p>Searching is complex. The search template must be parsed, interpreted, and
+that can respond to queries from other processes.
+We call such a process a <strong>TF kernel</strong>. See the docs on <a href="../../Server/Kernel">kernel</a></p><p>Webservers can use such a daemonized TF to build efficient controllers.</p><p>Support for TF as daemon is upcoming, it will be included in the Text-Fabric code base.</p></details><details class="note"><summary>Generator versus tuple</summary><p>If <code>limit</code> is specified, the result is not a generator but a tuple of results.</p></details><details class="explanation"><summary>More info on the search plan</summary><p>Searching is complex. The search template must be parsed, interpreted, and
 translated into a search plan. The following methods expose parts of the search
 process, and may provide you with useful information in case the search does not
 deliver what you expect.</p></details><details class="hint"><summary>see the plan</summary><p>the method <code>S.showPlan()</code> below shows you at a glance the correspondence
