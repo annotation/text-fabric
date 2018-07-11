@@ -82,7 +82,8 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
         level=level + 1,
         sets=searchExe.sets,
         shallow=True,
-        showQuantifiers=showQuantifiers
+        showQuantifiers=showQuantifiers,
+        msgCache=msgCache
     )
     if showQuantifiers:
       indent(level=level + 2, reset=True)
@@ -102,7 +103,8 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
         level=level + 1,
         sets=searchExe.sets,
         shallow=False,
-        showQuantifiers=showQuantifiers
+        showQuantifiers=showQuantifiers,
+        msgCache=msgCache
     )
     if showQuantifiers:
       indent(level=level + 2, reset=True)
@@ -125,7 +127,8 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
           level=level + 1,
           sets=searchExe.sets,
           shallow=sizeA,
-          showQuantifiers=showQuantifiers
+          showQuantifiers=showQuantifiers,
+          msgCache=msgCache
       )
       if showQuantifiers:
         indent(level=level + 2, reset=True)
@@ -158,12 +161,14 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
           level=level + 1,
           sets=searchExe.sets,
           shallow=True,
-          showQuantifiers=showQuantifiers
+          showQuantifiers=showQuantifiers,
+          msgCache=msgCache
       )
       if showQuantifiers:
         indent(level=level + 2, reset=True)
         info((f'{quKind if i == 0 else QOR}\n{queryAlt}'), tm=False, cache=msgCache)
-      altResults = exe.search() & universe
+      altResults = exe.search()
+      altResults &= universe
       nAlt = len(altResults)
       nYarn = len(resultYarn)
       resultYarn |= altResults

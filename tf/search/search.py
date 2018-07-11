@@ -77,7 +77,11 @@ class Search(object):
     )
     if here:
       self.exe = exe
-    return exe.search(limit=limit)
+    queryResults = exe.search(limit=limit)
+    if msgCache:
+      messages = self.api.cache(asString=True)
+      return (queryResults, messages)
+    return queryResults
 
   def study(
       self,
@@ -105,7 +109,11 @@ class Search(object):
       error = self.api.error
       error('Cannot fetch if there is no previous "study()"')
     else:
-      return exe.fetch(limit=limit)
+      queryResults = exe.fetch(limit=limit)
+      if self.msgCache:
+        messages = self.api.cache(asString=True)
+        return (queryResults, messages)
+      return queryResults
 
   def count(self, progress=None, limit=None):
     exe = self.exe
