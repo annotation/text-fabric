@@ -1438,6 +1438,7 @@
         costly `load` methods.
         You have to come up with a process that runs TF, has all features loaded, and
         that can respond to queries from other processes.
+        We call such a process a **TF kernel**. See the docs on [kernel](/Server/Kernel)
 
         Webservers can use such a daemonized TF to build efficient controllers.
 

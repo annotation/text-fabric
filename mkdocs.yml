@@ -33,7 +33,7 @@ pages:
     - 'Cuneiform Tablets': 'Api/Cunei.md'
     - 'Auxiliary': 'Api/Lib.md'
   - Server:
-    - 'Service': 'Server/Service.md'
+    - 'Kernel': 'Server/Kernel.md'
     - 'Web': 'Server/Web.md'
     - 'Common': 'Server/Common.md'
   - Model:

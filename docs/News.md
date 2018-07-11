@@ -8,13 +8,22 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.12
+
+2018-07-11
+
+* Faster export of big csv lists.
+* Tweaks in the web interface.
+* Cleaner termination of processes.
+* The concept *TF data server* is now called *TF kernel*
+
 ## 5.5.8-11
 
 2018-07-10
 
 * Better in catching out-of-memory errors.
 * Prevents creation of corrupt compiled binary TF data.
-* Prevents starting the webserver if the TF data server fails to load.
+* Prevents starting the webserver if the TF kernel fails to load.
 
 ## 5.5.7
 
@@ -97,7 +106,7 @@ Improved interface and functionality of the text-fabric browser:
 
 ???+ cautions "Docs not up to date"
     The API docs are not up-to-date: there are new functions in the Bhsa and Cunei APIs.
-    The server/service/client apis are not completely spelled out.
+    The server/kernel/client apis are not completely spelled out.
     However, the help for the text-fabric browser is included in the interface itself.
 
 ## 5.3.3
@@ -111,7 +120,7 @@ Small fix: command line args for text-fabric.
 2018-06-22
 
 ??? abstract "Better process management"
-    When the TF server is started, it cleans up remnant process that might get in the way otherwise.
+    When the TF web interface is started, it cleans up remnant process that might get in the way otherwise.
     You can also say
 
     ```
@@ -179,7 +188,7 @@ Addressed start-up problems.
 
 2018-06-18
 
-Built in web server and client for local query running.
+Built in webserver and client for local query running.
 It is implemented for Bhsa and Cunei.
 
 ## 4.4.2,3
@@ -188,7 +197,7 @@ It is implemented for Bhsa and Cunei.
 
 New distribution method with setuptools.
 Text-Fabric has now dependencies on modules rpyc and bottle,
-because it contains a built-in data service and webserver.
+because it contains a built-in TF kernel and webserver.
 
 This website is still barely functional, though.
 

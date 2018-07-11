@@ -1,12 +1,13 @@
 import os
+import pickle
 from glob import glob
 
-from tf.service import makeTfConnection
+from tf.server.kernel import makeTfConnection
 
 HOST = 'localhost'
 PORT = 18981
 
-print(f'Connecting to TF service at port {PORT}')
+print(f'Connecting to TF kernel at port {PORT}')
 
 TF = makeTfConnection(HOST, PORT)
 api = TF.connect()
@@ -29,30 +30,27 @@ while answer:
     with open(queryFile) as qh:
         query = qh.read()
 
-    # Here we call the TF server
-    # api.search(query, context) here
-    # calls S.search(query, withContext=context)
-    # on the server.
-    # Hint: look up the S.search() method
-    # and note the withContext argument.
-
-    (results, context) = api.search(query, True)
-
-    # The results are still on the server
-    # The next two statements fetch them physically
-    # It seems that you can do as if the data is already
-    # fetched, but there are glitches:
-    # none of the named methods of a dict work with
-    # these shadowed objects.
-    # Must be a bug in RPYC.
-    # Hence, we fetch the results in local datastructures.
-
-    # results = tuple(results)
-    # context = {feature: context[feature] for feature in context}
-
-    headResults = '\n'.join(f'{r}' for r in results[0:10])
-    print(f'{len(results)} results.\n{headResults}')
-    for (feature, values) in context.items():
-        showValues = values[0] if type(values) is tuple else values
-        if len(showValues):
-            print(f'{feature:>15} : {len(showValues):>7} values')
+    print('Call TF kernel')
+    (csvs, context) = api.csvs(
+        query,
+        '',
+        '',
+        False,
+        None,
+    )
+    print('TF kernel has answered')
+    print('Fetching CSV results')
+    csvs = pickle.loads(csvs)
+    for (csv, data) in csvs:
+      print(f'{csv} ...')
+      i = 0
+      for tup in data:
+        i += 1
+      print(f'{i} tuples')
+    print('CSVS done')
+    print('Fetching context')
+    context = pickle.loads(context)
+    i = 0
+    for tup in context:
+      i += 1
+    print(f'{i} tuples')

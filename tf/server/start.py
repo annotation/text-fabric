@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 from platform import system
 
 import psutil
@@ -8,7 +9,7 @@ from time import sleep
 from subprocess import PIPE, Popen
 
 from tf.server.common import getParam, getDebug, getConfig
-from tf.server.data import TF_DONE, TF_ERROR
+from tf.server.kernel import TF_DONE, TF_ERROR
 
 HELP = '''
 USAGE
@@ -24,8 +25,8 @@ text-fabric -k datasource
 EFFECT
 
 If a datasource is given and the -k flag is not passed,
-a TF data server for that data source is started.
-When the data server is ready, a webserver is started
+a TF kernel for that data source is started.
+When the TF kernel is ready, a webserver is started
 serving a local website that exposes the data through
 a query interface.
 It will open in the default browser.
@@ -36,15 +37,15 @@ It will open in the default browser.
 
 CLEAN UP
 
-If you press Ctrl-C the webserver is stopped, and after that the data server
+If you press Ctrl-C the webserver is stopped, and after that the TF kernel
 as well.
 Normally, you do not have to do any clean up.
 But if the termination is done in an irregular way, you may end up with
 stray processes.
 
--k  Kill mode. If a data source is given, the data server and webserver for that
+-k  Kill mode. If a data source is given, the TF kernel and webserver for that
     data source are killed.
-    Without a data source, all text-fabric server processes are killed.
+    Without a data source, all web-interface related processes are killed.
 '''
 
 
@@ -69,7 +70,7 @@ def filterProcess(proc):
       if part.endswith(trigger) or part.endswith(f'{trigger}.exe'):
         kind = 'tf'
         continue
-      if part == 'tf.server.service':
+      if part == 'tf.server.kernel':
         kind = 'data'
         good = True
         continue
@@ -149,47 +150,50 @@ def main():
   ddataSource = ('-d', dataSource) if getDebug() else (dataSource,)
   if dataSource is not None:
     config = getConfig(dataSource)
-    pService = None
+    pKernel = None
     pWeb = None
     if config is not None:
       print(f'Cleaning up remnant processes, if any ...')
       killProcesses(dataSource, kill=True)
       pythonExe = 'python' if isWin else 'python3'
-      try:
 
-        pService = Popen(
-            [pythonExe, '-m', 'tf.server.service', dataSource],
-            stdout=PIPE, encoding='utf-8',
-        )
+      pKernel = Popen(
+          [pythonExe, '-m', 'tf.server.kernel', dataSource],
+          stdout=PIPE, encoding='utf-8',
+      )
 
-        print(f'Loading data for {dataSource}. Please wait ...')
-        with pService.stdout as ph:
-          for line in ph:
-            print(line)
-            if line.rstrip() == TF_ERROR:
-              return
-            if line.rstrip() == TF_DONE:
-              break
-        sleep(1)
+      print(f'Loading data for {dataSource}. Please wait ...')
+      with pKernel.stdout as ph:
+        for line in ph:
+          print(line)
+          if line.rstrip() == TF_ERROR:
+            return
+          if line.rstrip() == TF_DONE:
+            break
+      sleep(1)
 
-        print(f'Opening {dataSource} in browser')
-        pWeb = Popen([pythonExe, '-m', 'tf.server.web', *ddataSource])
+      print(f'Opening {dataSource} in browser')
+      pWeb = Popen([pythonExe, '-m', 'tf.server.web', *ddataSource])
 
-        sleep(1)
-        webbrowser.open(
-            f'{config.protocol}{config.host}:{config.webport}',
-            new=2,
-            autoraise=True,
-        )
-        if pWeb:
-          pWeb.wait()
-      except KeyboardInterrupt:
-        if pWeb:
-          pWeb.terminate()
-          print('Web server has stopped')
-        if pService:
-          pService.terminate()
-          print('TF service has stopped')
+      sleep(1)
+      webbrowser.open(
+          f'{config.protocol}{config.host}:{config.webport}',
+          new=2,
+          autoraise=True,
+      )
+
+      if pWeb:
+        try:
+          while True:
+            time.sleep(1000)
+        except KeyboardInterrupt:
+          print('')
+          if pWeb:
+            pWeb.terminate()
+            print('TF webserver has stopped')
+          if pKernel:
+            pKernel.terminate()
+            print('TF kernel has stopped')
 
 
 if __name__ == "__main__":

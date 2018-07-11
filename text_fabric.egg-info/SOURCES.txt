@@ -58,8 +58,7 @@ tf/search/stitch.py
 tf/search/syntax.py
 tf/server/__init__.py
 tf/server/common.py
-tf/server/data.py
-tf/server/service.py
+tf/server/kernel.py
 tf/server/start.py
 tf/server/web.py
 tf/server/static/.DS_Store

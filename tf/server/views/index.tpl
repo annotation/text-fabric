@@ -167,11 +167,12 @@
                         <p>Describe your study and export your work as a PDF with links
                            to archived copies of the {{dataSource}} corpus and this tool.</p>
                         <p>Open <b>multiple windows and tabs</b> with this url,
-                           they all communicate with one and the same TF data server;
-                           the lengthy data loading is not needed as long as the server is active.
+                           they all communicate with one and the same TF kernel;
+                           the lengthy data loading only happens when the TF kernel starts up,
+                           not when multiple web-interfaces communicate with the TF kernel.
                            See <i>Jobs</i> for ways to perform other queries.</p>
                         <p>When you terminate <code>text-fabric</code> on the command line,
-                           the data process will also be terminated.</p>
+                           the TF kernel will also be terminated.</p>
                     </details>
                     <details id="helpSections" class="help sections">
                         <summary>{{defaultCondenseType.capitalize()}} pad</summary>

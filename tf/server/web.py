@@ -1,6 +1,7 @@
 import os
 import datetime
 import time
+import pickle
 from glob import glob
 
 import json
@@ -10,7 +11,7 @@ import bottle
 from bottle import (post, get, route, template, request, static_file, run)
 
 from tf.fabric import NAME, VERSION, DOI, DOI_URL
-from tf.server.service import makeTfConnection
+from tf.server.kernel import makeTfConnection
 from tf.server.common import (
     getParam, getDebug, getConfig, getAppDir, getValues, setValues,
     pageLinks,
@@ -349,6 +350,8 @@ def serveSearch(anything):
         form['condensed'],
         condenseType,
     )
+    csvs = pickle.loads(csvs)
+    context = pickle.loads(context)
     writeCsvs(csvs, context, form)
 
     return template(
