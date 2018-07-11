@@ -6,8 +6,7 @@
     Here are functions that are being used by various parts of the
     TF browser infrastructure, such as 
 
-    * [service.py](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/service.py)
-    * [data.py](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/data.py)
+    * [kernel.py](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/kernel.py)
     * [web.py](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py)
     * [start.py](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/start.py)
 
@@ -63,7 +62,7 @@
 ??? abstract "Request and response"
     The TF browser user interacts with the web app by clicking and typing,
     as a result of which a HTML form gets filled in.
-    This form as regularly submitted to the server with a request
+    This form as regularly submitted to the webserver with a request
     for a new incarnation of the page: a response.
 
     The values that come with a request, must be peeled out of the form,
@@ -106,7 +105,7 @@
     and with a cast of checkbox values to booleans. 
 
     This function is used right after reading the form off a request.
-    Raw form data is turned into logical data for further processing by the web server.
+    Raw form data is turned into logical data for further processing by the webserver.
 
 ## HTML formatting
 
@@ -130,7 +129,7 @@
 
 ??? abstract "shapeMessages"
     Wraps error messages into HTML. The messages come from the TF API,
-    through the TF data server, in response to wrong search templates
+    through the TF kernel, in response to wrong search templates
     and other mistaken user input.
 
 ??? abstract "shapeOptions"
@@ -140,5 +139,5 @@
 
 ??? abstract "shapeCondense"
     Provides a radio-buttoned chooser for the
-    [condense types](/Server/Service/#data-service-api).
+    [condense types](/Server/Kernel/#data-service-api).
 

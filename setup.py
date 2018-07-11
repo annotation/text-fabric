@@ -20,8 +20,8 @@ setup(
             'text-fabric = tf.server.start:main',
         ]
     },
-    version='5.5.11',
-    description='''Processor for Text Fabric Data''',
+    version='5.5.12',
+    description='''Processor and browser for Text Fabric Data''',
     author='Dirk Roorda',
     author_email='dirk.roorda@dans.knaw.nl',
     url='https://github.com/Dans-labs/text-fabric',
@@ -57,6 +57,7 @@ setup(
     long_description='''\
 Tools to read text corpora with (linguistic) annotations
 and process them efficiently.
+With a built in web-interface for querying a corpus.
 More info on https://dans-labs.github.io/text-fabric/
 ''',
 )

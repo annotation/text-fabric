@@ -1,29 +1,29 @@
-# Text-Fabric as a service
+# Text-Fabric kernel
 
 ## About
 
-??? abstract "TF as a service"
+??? abstract "TF kernel"
     Text-Fabric can be used as a service.
     The full API of Text-Fabric needs a lot of memory, which makes it unusably for
-    rapid successions of loading and unloading, like when used in a web server context.
+    rapid successions of loading and unloading, like when used in a webserver context.
 
-    However, you can start TF as a server, after which many clients can connect to it,
-    all looking at the same (read-only) data.
+    However, you can start TF as a service process, after which many clients can connect to it,
+    all looking at the same (read-only) data. We call this a **TF kernel**.
 
-    The API that the TF server offers is limited, it is primarily template search that is offered.
-    See *Data service API* below.
+    The API that the TF kernel offers is limited, it is primarily template search that is offered.
+    see *Kernel API* below.
 
-    See the code in
-    [tf.server.service](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/service.py)
-    to get started.
+    The code in
+    [tf.server.kernel](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/kernel.py)
+    explains how it works.
 
 ### Start
 
 ??? abstract "Run"
-    You can run the TF data server as follows:
+    You can run the TF kernel as follows:
 
     ```sh
-    python3 -m tf.server.service ddd
+    python3 -m tf.server.kernel ddd
     ```
 
     where `ddd` is one of the [supported apps](/Api/Apps#current-apps)
@@ -36,30 +36,30 @@
 ### Connect
 
 ??? abstract "Connect"
-    The TF data service can be connected by an other Python program as follows:
+    The TF kernel can be connected by an other Python program as follows:
 
     ```python
-    from tf.server.service import makeTfConnection
+    from tf.server.kernel import makeTfConnection
     TF = makeTfConnection(host, port)
     api = TF.connect()
     ```
 
-    After this, `api` can be used to obtain information from the Text-Fabric data service.
+    After this, `api` can be used to obtain information from the TF kernel.
 
     ??? example
         See the
-        [web server](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py)
+        [webserver](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py)
         of the text-fabric browser.
 
-## Data service API
+## Kernel API
 
 ??? abstract "About"
-    The API of the Text-Fabric data service is created
-    by the function `makeTfServer` in the 
-    [data](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/data.py)
+    The API of the TF kernel is created
+    by the function `makeTfKernel` in the 
+    [data](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/kernel.py)
     module of the server subpackage.
 
-    It returns a class `TfService` with a number
+    It returns a class `TfKernel` with a number
     of exposed methods that can be called by other programs.
 
     For the machinery of interprocess communication we rely on the
@@ -69,7 +69,7 @@
 
     ??? caution "Shadow objects"
         The way rpyc works in the case of data transmission has a pitfall.
-        When server returns a Python object to the client, it
+        When a service returns a Python object to the client, it
         does not return the object itself, but only a shadow object
         so called *netref* objects. This strategy is called
         [boxing](https://rpyc.readthedocs.io/en/latest/docs/theory.html#boxing).
@@ -77,13 +77,13 @@
         but when the client needs to access members, they will be fetched
         on the fly.
 
-        This is a performance problem when the server sends a big list or dict,
+        This is a performance problem when the service sends a big list or dict,
         and the client iterates over all its items. Each item will be fetched in
         a separate interprocess call, which causes an enormous overhead.
 
         Boxing only happens for mutable objects. And here lies the work-around:
 
-        The server must send big chunks of data as immutable objects,
+        The service must send big chunks of data as immutable objects,
         such as tuples. They are sent within a single interprocess call,
         and fly swiftly through the connecting pipe. 
 

@@ -47,22 +47,22 @@
                 Responsible for calling the extra Api for the corpus
                 with the desired locations and modules.
 
-                This extraApi will be active as a TF data server,
+                This extraApi will be active as a TF kernel,
                 interacting with a local webserver that serves local
                 web page in the browser.
 
             ??? abstract "web browsing settings"
-                The Text-Fabric data server, webserver and browser need settings:
+                The TF kernel, webserver and browser need settings:
 
                 setting | example | description
                 --- | --- | ---
                 protocol | `http://` | protocol of local website
                 host | `localhost` | server address of local website
                 webport | `8001` | port for the local website
-                port | `18981` | port through wich the data server and the web server communicate
+                port | `18981` | port through wich the TF kernel and the webserver communicate
 
             ??? abstract "data settings"
-                The Text-Fabric data server needs context information:
+                The TF kernel needs context information:
 
                 setting | type | description
                 --- | --- | ---

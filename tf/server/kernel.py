@@ -1,4 +1,5 @@
 import sys
+import pickle
 import rpyc
 from rpyc.utils.server import ThreadedServer
 
@@ -6,7 +7,7 @@ from tf.apphelpers import (
     runSearch, runSearchCondensed,
     compose, getContext
 )
-from .common import getConfig
+from .common import getParam, getConfig
 
 TIMEOUT = 120
 
@@ -33,12 +34,14 @@ def allNodes(table):
   return allN
 
 
-def makeTfServer(dataSource, locations, modules, port):
+def makeTfKernel(dataSource, locations, modules, port):
   config = getConfig(dataSource)
   if config is None:
     return None
 
-  print(f'Setting up Text-Fabric service for {locations} / {modules}')
+  locRep = locations if type(locations) is str else '\n\t\t'.join(locations)
+  modRep = modules if type(modules) is str else '\n\t\t'.join(modules)
+  print(f'Setting up TF kernel for:\n\tlocations:\n\t\t{locRep}\n\tmodules:\n\t\t{modRep}')
   extraApi = config.extraApi(locations, modules)
   if not extraApi:
     print(f'{TF_ERROR}')
@@ -49,7 +52,7 @@ def makeTfServer(dataSource, locations, modules, port):
   print(f'{TF_DONE}\nListening at port {port}')
   sys.stdout.flush()
 
-  class TfService(rpyc.Service):
+  class TfKernel(rpyc.Service):
     def on_connect(self, conn):
       self.extraApi = extraApi
       pass
@@ -213,9 +216,34 @@ def makeTfServer(dataSource, locations, modules, port):
           api,
           allNodes(sectionResults) | allNodes(tupleResults) | allNodes(queryResults)
       )
-      return (csvs, context)
+      return (pickle.dumps(csvs), pickle.dumps(context))
 
-  return ThreadedServer(TfService, port=port, protocol_config={
-      'allow_public_attrs': True,
+  return ThreadedServer(TfKernel, port=port, protocol_config={
+      # 'allow_pickle': True,
+      # 'allow_public_attrs': True,
       'sync_request_timeout': TIMEOUT,
   })
+
+
+def makeTfConnection(host, port):
+  class TfConnection(object):
+    def connect(self):
+      connection = rpyc.connect(host, port)
+      self.connection = connection
+      return connection.root
+
+  return TfConnection()
+
+
+def main():
+  dataSource = getParam(interactive=True)
+  if dataSource is not None:
+    config = getConfig(dataSource)
+    if config is not None:
+      kernel = makeTfKernel(dataSource, config.locations, config.modules, config.port)
+      if kernel:
+        kernel.start()
+
+
+if __name__ == "__main__":
+  main()

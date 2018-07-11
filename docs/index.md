@@ -173,7 +173,7 @@ Here is how to start up text-fabric.
 
     ??? hint "Internal Server Error"
         When the TF browser opens with an Internal Server error, the most likely reason is that
-        the TF data server has not started up without errors.
+        the TF kernel has not started up without errors.
 
         Look back at the command prompt where you started `text-fabric`.
         Probably somewhere down the road you see `Error`.
@@ -241,7 +241,7 @@ Here is how to start up text-fabric.
     If you leave it on all day, you have instant access to the data.
 
 ??? hint "Close"
-    You can close the data server by pressing Ctrl-C in the terminal where you have
+    You can close the TF kernel by pressing Ctrl-C in the terminal where you have
     started `text-fabric` up.
 
 ## Get corpora
@@ -489,8 +489,8 @@ More about the data that Text-Fabric works with.
     Text-Fabric can be and has been used to construct websites,
     for example [SHEBANQ](https://shebanq.ancient-data.org).
     In the case of SHEBANQ, data has been converted to mysql databases.
-    However, with the built-in data server, it is also possible to
-    have one Text-Fabric process serve multiple connections and requests.
+    However, with the built-in [TF kernel](/Server/Kernel), it is also possible to
+    have one process serve multiple connections and requests.
 
 ???+ explanation "History"
     The foundational ideas derive from work done in and around the
