@@ -8,11 +8,11 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
-## 5.5.13
+## 5.5.13-14
 
-2018-07-11
+2018-07-12
 
-Fixed a bug in the error reporting of quantified queries when used in the web interface.
+Better error reporting of quantified queries.
 
 ## 5.5.12
 

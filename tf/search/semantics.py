@@ -12,22 +12,28 @@ def semantics(searchExe):
   error = searchExe.api.error
   msgCache = searchExe.msgCache
   searchExe.badSemantics = []
+  offset = searchExe.offset
 
   _grammar(searchExe)
+
   if not searchExe.good:
+    searchExe.showOuterTemplate(msgCache)
     for (i, line) in enumerate(searchExe.searchLines):
-      error(f'{i:>2} {line}', tm=False, cache=msgCache)
-    for eline in searchExe.badSemantics:
-      error(eline, tm=False, cache=msgCache)
+      error(f'{i + offset:>2} {line}', tm=False, cache=msgCache)
+    for (ln, eline) in searchExe.badSemantics:
+      txt = eline if ln is None else f'line {ln + offset}: {eline}'
+      error(txt, tm=False, cache=msgCache)
     return
 
   if searchExe.good:
     _validation(searchExe)
   if not searchExe.good:
+    searchExe.showOuterTemplate(msgCache)
     for (i, line) in enumerate(searchExe.searchLines):
-      error(f'{i:>2} {line}', tm=False, cache=msgCache)
-    for eline in searchExe.badSemantics:
-      error(eline, tm=False, cache=msgCache)
+      error(f'{i + offset:>2} {line}', tm=False, cache=msgCache)
+    for (ln, eline) in searchExe.badSemantics:
+      txt = eline if ln is None else f'line {ln + offset}: {eline}'
+      error(txt, tm=False, cache=msgCache)
 
 
 def _grammar(searchExe):
@@ -74,12 +80,12 @@ def _grammar(searchExe):
       if len(atomStack) == 0:
         if indent > 0:
           searchExe.badSemantics.append(
-              f'Unexpected indent at line {i}: {indent}, expected 0'
+              (i, f'Unexpected indent: {indent}, expected 0')
           )
           good = False
         if op is not None:
           searchExe.badSemantics.append(
-              f'Lonely relation at line {i}: not allowed at outermost level'
+              (i, f'Lonely relation: not allowed at outermost level')
           )
           good = False
         if 'name' in token:
@@ -110,7 +116,7 @@ def _grammar(searchExe):
         elif indent > top[0]:
           if 'name' not in token:
             searchExe.badSemantics.append(
-                f'Lonely relation at line {i}: not allowed as first child')
+                (i, f'Lonely relation: not allowed as first child'))
             good = False
           else:
             # child of previous atom
@@ -125,10 +131,12 @@ def _grammar(searchExe):
           if indent not in atomStack:
             # parent cannot be found: indentation error
             searchExe.badSemantics.append(
-                'Unexpected indent at line {}: {}, expected one of {}'.format(
+                (
                     i,
-                    indent,
-                    ','.join(str(at[0]) for at in atomNest if at[0] < indent),
+                    'Unexpected indent: {}, expected one of {}'.format(
+                        indent,
+                        ', '.join(str(at[0]) for at in atomNest if at[0] < indent),
+                    )
                 )
             )
             good = False
@@ -152,7 +160,7 @@ def _grammar(searchExe):
     elif kind == 'feat':
       features = token['features']
       if prevKind is not None and prevKind != 'atom':
-        searchExe.badSemantics.append(f'Features without atom at line {i}: "{features}"')
+        searchExe.badSemantics.append((i, f'Features without atom: "{features}"'))
         good = False
       else:
         qnodes[-1][1].update(features)
@@ -165,7 +173,7 @@ def _grammar(searchExe):
       namesGood = True
       for (q, n) in ((f, fName), (t, tName)):
         if q is None:
-          searchExe.badSemantics.append(f'Relation with undefined name at line {i}: "{n}"')
+          searchExe.badSemantics.append((i, f'Relation with undefined name: "{n}"'))
           namesGood = False
       if not namesGood:
         good = False
@@ -241,6 +249,8 @@ def _validation(searchExe):
   edgeLine = searchExe.edgeLine
   relationFromName = searchExe.relationFromName
 
+  offset = searchExe.offset
+
   # check the object types of atoms
 
   good = True
@@ -251,15 +261,15 @@ def _validation(searchExe):
     if sets is not None and otype in sets:
       continue
     if otype not in otypes:
-      searchExe.badSemantics.append(f'Unknown object type in line {nodeLine[q]}: "{otype}"')
+      searchExe.badSemantics.append((nodeLine[q], f'Unknown object type: "{otype}"'))
       otypesGood = False
   if not otypesGood:
     searchExe.badSemantics.append(
-        'Valid object types are: {}'.format(','.join(x[0] for x in levels), )
+        (None, 'Valid object types are: {}'.format(', '.join(x[0] for x in levels), ))
     )
     if sets is not None:
       searchExe.badSemantics.append(
-          'Or choose a custom set from: {}'.format(','.join(x for x in sorted(sets)), )
+          (None, 'Or choose a custom set from: {}'.format(', '.join(x for x in sorted(sets)), ))
       )
     good = False
 
@@ -315,46 +325,49 @@ def _validation(searchExe):
     theOp = op[0] if type(op) is tuple else op
     rela = relationFromName.get(theOp, None)
     if rela is None:
-      searchExe.badSemantics.append(f'Unknown relation in line {edgeLine[e]}: "{theOp}"')
+      searchExe.badSemantics.append((edgeLine[e], f'Unknown relation: "{theOp}"'))
       edgesGood = False
     qedges.append((f, rela, t))
   if not edgesGood:
-    searchExe.badSemantics.append(f'Allowed relations:\n{searchExe.relationLegend}')
+    searchExe.badSemantics.append((None, f'Allowed relations:\n{searchExe.relationLegend}'))
     good = False
 
   # report error found above
   if len(missingFeatures):
     for (fName, qs) in sorted(missingFeatures.items()):
-      searchExe.badSemantics.append(
+      searchExe.badSemantics.append((
+          None,
           'Missing feature "{}" in line(s) {}'.format(
               fName,
-              ','.join(str(nodeLine[q]) for q in qs),
+              ', '.join(str(nodeLine[q] + offset) for q in qs),
           )
-      )
+      ))
     good = False
 
   if len(hasValues):
     for (fName, wrongs) in sorted(hasValues.items()):
-      searchExe.badSemantics.append(f'Feature "{fName}" has cannot have values:')
+      searchExe.badSemantics.append((None, f'Feature "{fName}" has cannot have values:'))
       for (val, qs) in sorted(wrongs.items()):
-        searchExe.badSemantics.append(
+        searchExe.badSemantics.append((
+            None,
             '    "{}" superfluous: line(s) {}'.format(
                 val,
-                ','.join(str(nodeLine[q]) for q in qs),
+                ', '.join(str(nodeLine[q] + offset) for q in qs),
             )
-        )
+        ))
     good = False
 
   if len(wrongValues):
     for (fName, wrongs) in sorted(wrongValues.items()):
-      searchExe.badSemantics.append(f'Feature "{fName}" has wrong values:')
+      searchExe.badSemantics.append((None, f'Feature "{fName}" has wrong values:'))
       for (val, qs) in sorted(wrongs.items()):
-        searchExe.badSemantics.append(
+        searchExe.badSemantics.append((
+            None,
             '    "{}" is not a number: line(s) {}'.format(
                 val,
-                ','.join(str(nodeLine[q]) for q in qs),
+                ', '.join(str(nodeLine[q] + offset) for q in qs),
             )
-        )
+        ))
     good = False
 
   searchExe.qedges = qedges
