@@ -70,6 +70,9 @@ class Search(object):
     exe = SearchExe(
         self.api,
         searchTemplate,
+        outerTemplate=searchTemplate,
+        quKind=None,
+        offset=0,
         sets=sets,
         shallow=shallow,
         silent=silent,
@@ -94,6 +97,9 @@ class Search(object):
     exe = SearchExe(
         self.api,
         searchTemplate,
+        outerTemplate=searchTemplate,
+        quKind=None,
+        offset=0,
         sets=sets,
         shallow=shallow,
         silent=False,

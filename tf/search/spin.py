@@ -61,7 +61,7 @@ def _spinAtom(searchExe, q):
 
 def _doQuantifier(searchExe, yarn, atom, quantifier):
   from .searchexe import SearchExe
-  (quKind, quTemplates, parentName) = quantifier
+  (quKind, quTemplates, parentName, ln) = quantifier
   info = searchExe.api.info
   msgCache = searchExe.msgCache
   indent = searchExe.api.indent
@@ -69,6 +69,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
   level = searchExe.level
   universe = yarn
   cleanAtom = cleanParent(atom, parentName)
+  offset = searchExe.offset + ln
 
   if showQuantifiers:
     indent(level=level + 1, reset=True)
@@ -79,7 +80,10 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
     exe = SearchExe(
         searchExe.api,
         queryN,
+        outerTemplate=searchExe.outerTemplate,
+        quKind=quKind,
         level=level + 1,
+        offset=offset,
         sets=searchExe.sets,
         shallow=True,
         showQuantifiers=showQuantifiers,
@@ -100,6 +104,9 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
     exe = SearchExe(
         searchExe.api,
         queryA,
+        outerTemplate=searchExe.outerTemplate,
+        quKind=quKind,
+        offset=offset,
         level=level + 1,
         sets=searchExe.sets,
         shallow=False,
@@ -121,9 +128,13 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
       # compute the atom+antecedent+consequent:
       #   as shallow result tuples (same length as atom+antecedent)
       queryAH = '\n'.join((cleanAtom, *quTemplates))
+      offset += len(quTemplates[0].split('\n'))
       exe = SearchExe(
           searchExe.api,
           queryAH,
+          outerTemplate=searchExe.outerTemplate,
+          quKind=QHAVE,
+          offset=offset,
           level=level + 1,
           sets=searchExe.sets,
           shallow=sizeA,
@@ -158,12 +169,16 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
       exe = SearchExe(
           searchExe.api,
           queryAlt,
+          outerTemplate=searchExe.outerTemplate,
+          quKind=quKind if i == 0 else QOR,
+          offset=offset,
           level=level + 1,
           sets=searchExe.sets,
           shallow=True,
           showQuantifiers=showQuantifiers,
           msgCache=msgCache
       )
+      offset += len(alt.split('\n')) + 1
       if showQuantifiers:
         indent(level=level + 2, reset=True)
         info((f'{quKind if i == 0 else QOR}\n{queryAlt}'), tm=False, cache=msgCache)

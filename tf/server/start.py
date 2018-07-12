@@ -163,7 +163,7 @@ def main():
 
       print(f'Loading data for {dataSource}. Please wait ...')
       for line in pKernel.stdout:
-        print(line)
+        sys.stdout.write(line)
         if line.rstrip() == TF_ERROR:
           return
         if line.rstrip() == TF_DONE:

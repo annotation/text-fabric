@@ -234,8 +234,16 @@ div.messages {
     width: 100%;
 }
 .eline {
+    font-size: small;
     color: #552222;
     background-color: #ffbbbb;
+}
+.tline {
+	font-size: small;
+	font-family: monospace;
+    color: #bb0000;
+    background-color: #ffeedd;
+    white-space: pre;
 }
 
 p.buttons {

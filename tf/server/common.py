@@ -141,12 +141,9 @@ def shapeMessages(messages):
   html = []
   for msg in messages:
     match = msgLineRe.match(msg)
-    if match:
-      continue
+    className = 'tline' if match else 'eline'
     html.append(f'''
-      <div class="eline">
-        {msg}
-      </div>
+      <div class="{className}">{msg.rstrip()}</div>
     ''')
   return ''.join(html)
 

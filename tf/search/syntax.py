@@ -73,12 +73,17 @@ def syntax(searchExe):
   searchExe.good = True
   searchExe.badSyntax = []
   searchExe.searchLines = searchExe.searchTemplate.split('\n')
+  offset = searchExe.offset
+
   _tokenize(searchExe)
+
   if not searchExe.good:
+    searchExe.showOuterTemplate(msgCache)
     for (i, line) in enumerate(searchExe.searchLines):
-      error(f'{i:>2} {line}', tm=False, cache=msgCache)
-    for eline in searchExe.badSyntax:
-      error(eline, tm=False, cache=msgCache)
+      error(f'{i + offset:>2} {line}', tm=False, cache=msgCache)
+    for (ln, eline) in searchExe.badSyntax:
+      txt = eline if ln is None else f'line {ln + offset}: {eline}'
+      error(txt, tm=False, cache=msgCache)
 
 
 def _tokenize(searchExe):
@@ -227,21 +232,21 @@ def _tokenize(searchExe):
       if UBO:
         # start new quantifier from nothing
         if ES:
-          searchExe.badSyntax.append(f'Quantifier at line {i}: Can not start with "{lineQuKind}:"')
+          searchExe.badSyntax.append((i, f'Quantifier: Can not start with "{lineQuKind}:"'))
           good = False
         if ET:
-          searchExe.badSyntax.append(f'Quantifier at line {i}: No preceding tokens')
+          searchExe.badSyntax.append((i, f'Quantifier: No preceding tokens'))
           good = False
         if EA or EI:
-          searchExe.badSyntax.append(
-              f'Quantifier at line {i}: Does not immediately follow an atom at the same level'
-          )
+          searchExe.badSyntax.append((
+              i, f'Quantifier: Does not immediately follow an atom at the same level'
+          ))
           good = False
         prevAtom = tokens[-1]
         curQu.append((i, lineQuKind, lineIndent))
         curQuTemplates = [[]]
         quantifiers = prevAtom.setdefault('quantifiers', [])
-        quantifiers.append((lineQuKind, curQuTemplates))
+        quantifiers.append((lineQuKind, curQuTemplates, i))
         continue
       if PBI:
         # start inner quantifier
@@ -266,16 +271,19 @@ def _tokenize(searchExe):
         curQuTemplates[-1].append(strippedLine)
       if PCO or PCI:
         if EP:
-          searchExe.badSyntax.append(
-              f'Quantifier at line {i}:'
-              f' "{lineQuKind}" can not follow "{curQuKind}" on line {curQuLine}'
-          )
+          searchExe.badSyntax.append((
+              i,
+              f'Quantifier: "{lineQuKind}" can not follow "{curQuKind}" on line {curQuLine}'
+          ))
           good = False
         if EK:
-          searchExe.badSyntax.append(
-              f'Quantifier at line {i}:'
-              f' "{lineQuKind}" has not same indentation as "{curQuKind}" on line {curQuLine}'
-          )
+          searchExe.badSyntax.append((
+              i,
+              (
+                  f'Quantifier "{lineQuKind}"'
+                  f' has not same indentation as "{curQuKind}" on line {curQuLine}'
+              )
+          ))
           good = False
         if PCO:
           curQuTemplates.append([])
@@ -287,16 +295,22 @@ def _tokenize(searchExe):
         continue
       if PEO or PEI:
         if EP:
-          searchExe.badSyntax.append(
-              f'Quantifier at line {i}:'
-              f' "{lineQuKind}": premature end of "{curQuKind}" on line {curQuLine}'
-          )
+          searchExe.badSyntax.append((
+              i,
+              (
+                  f'Quantifier: "{lineQuKind}"'
+                  f' : premature end of "{curQuKind}" on line {curQuLine}'
+              )
+          ))
           good = False
         if EK:
-          searchExe.badSyntax.append(
-              f'Quantifier at line {i}:'
-              f' "{lineQuKind}" has not same indentation as "{curQuKind}" on line {curQuLine}'
-          )
+          searchExe.badSyntax.append((
+              i,
+              (
+                  f'Quantifier "{lineQuKind}"'
+                  f' has not same indentation as "{curQuKind}" on line {curQuLine}'
+              )
+          ))
           good = False
         if PEO:
           curQuTemplates = None
@@ -363,7 +377,7 @@ def _tokenize(searchExe):
         if name != '':
           mt = nameRe.match(name)
           if not mt:
-            searchExe.badSyntax.append(f'Illegal name at line {i}: "{name}"')
+            searchExe.badSyntax.append((i, f'Illegal name: "{name}"'))
             good = False
         features = getFeatures(features, i)
         if features is None:
@@ -404,14 +418,17 @@ def _tokenize(searchExe):
         break
 
       good = False
-      searchExe.badSyntax.append(f'Unrecognized line {i}: {line}')
+      searchExe.badSyntax.append((i, f'Unrecognized line: {line}'))
 
     if not good:
       allGood = False
 
   if curQu:
     for (curQuLine, curQuKind, curQuIndent) in curQu:
-      searchExe.badSyntax.append(f'Quantifier at line {curQuLine}: Unterminated "{curQuKind}"')
+      searchExe.badSyntax.append((
+          curQuLine,
+          f'Quantifier: Unterminated "{curQuKind}"'
+      ))
     good = False
     allGood = False
   if allGood:
@@ -494,7 +511,7 @@ def parseFeatureVals(searchExe, featStr, features, i, asEdge=False):
       (featN, comp, limit) = match.groups()
       featName = _unesc(featN)
       if not numRe.match(limit):
-        searchExe.badSyntax.append(f'Limit is non numeric "{limit}" in line {i}')
+        searchExe.badSyntax.append((i, f'Limit is non numeric "{limit}"'))
         good = False
         featVals = None
       else:
@@ -508,11 +525,11 @@ def parseFeatureVals(searchExe, featStr, features, i, asEdge=False):
       try:
         featVals = re.compile(valRe)
       except Exception() as err:
-        searchExe.badSyntax.append(f'Wrong regular expression "{valRe}" in line {i}: "{err}"')
+        searchExe.badSyntax.append((i, f'Wrong regular expression "{valRe}": "{err}"'))
         good = False
         featVals = None
       break
-    searchExe.badSyntax.append(f'Unrecognized feature condition "{feat}" in line {i}')
+    searchExe.badSyntax.append((i, f'Unrecognized feature condition "{feat}"'))
     good = False
     featVals = None
   if good:
@@ -559,7 +576,7 @@ def cleanParent(atom, parentName):
 
 
 def deContext(quantifier, parentName):
-  (quKind, quTemplates) = quantifier
+  (quKind, quTemplates, ln) = quantifier
 
   # choose a name for the parent
   # either the given name
@@ -577,7 +594,7 @@ def deContext(quantifier, parentName):
       parentName += 'x'
 
   newQuTemplates = []
-  newQuantifier = (quKind, newQuTemplates, parentName)
+  newQuantifier = (quKind, newQuTemplates, parentName, ln)
 
   # replace .. (PARENT_REF) by parentName
   # wherever it is applicable

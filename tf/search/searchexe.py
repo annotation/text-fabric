@@ -11,6 +11,9 @@ class SearchExe(object):
       self,
       api,
       searchTemplate,
+      outerTemplate=None,
+      quKind=None,
+      offset=0,
       level=0,
       sets=None,
       shallow=False,
@@ -20,7 +23,10 @@ class SearchExe(object):
   ):
     self.api = api
     self.searchTemplate = searchTemplate
+    self.outerTemplate = outerTemplate
+    self.quKind = quKind
     self.level = level
+    self.offset = offset
     self.sets = sets
     self.shallow = 0 if not shallow else 1 if shallow is True else shallow
     self.silent = silent
@@ -140,6 +146,7 @@ class SearchExe(object):
     nodeLine = self.nodeLine
     qedges = self.qedges
     (qs, es) = self.stitchPlan
+    offset = self.offset
     if details:
       info(f'Search with {len(qs)} objects and {len(es)} relations', tm=False, cache=msgCache)
       info('Results are instantiations of the following objects:', tm=False)
@@ -162,7 +169,17 @@ class SearchExe(object):
     for (i, line) in enumerate(self.searchLines):
       rNode = resultNode.get(i, '')
       prefix = '' if rNode == '' else 'R'
-      info(f'{i:>2} {prefix:<1}{rNode:<2} {line}', tm=False, cache=msgCache)
+      info(f'{i + offset:>2} {prefix:<1}{rNode:<2} {line}', tm=False, cache=msgCache)
+
+  def showOuterTemplate(self, msgCache):
+    error = self.api.error
+    offset = self.offset
+    outerTemplate = self.outerTemplate
+    quKind = self.quKind
+    if offset and outerTemplate is not None:
+      for (i, line) in enumerate(outerTemplate.split('\n')):
+        error(f'{i:>2} {line}', tm=False, cache=msgCache)
+      error(f'line {offset:>2}: Error under {quKind}:', tm=False, cache=msgCache)
 
   def _showNode(self, q, pos2=False):
     info = self.api.info
