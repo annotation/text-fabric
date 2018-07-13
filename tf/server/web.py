@@ -1,4 +1,3 @@
-import sys
 import os
 import datetime
 import time
@@ -281,12 +280,12 @@ def serveSearch(anything):
 
   pages = ''
 
-  api = TF.connect()
-  (header, appLogo, tfLogo) = api.header()
-  css = api.css()
+  kernelApi = TF.connect()
+  (header, appLogo, tfLogo) = kernelApi.header()
+  css = kernelApi.css()
   (provenanceHtml, provenanceMd) = getProvenance(form)
 
-  (defaultCondenseType, exampleSection, condenseTypes) = api.condenseTypes()
+  (defaultCondenseType, exampleSection, condenseTypes) = kernelApi.condenseTypes()
   condenseType = form['condensetp'] or defaultCondenseType
   condenseOpts = shapeCondense(condenseTypes, condenseType)
 
@@ -297,7 +296,7 @@ def serveSearch(anything):
         table,
         sectionMessages, tupleMessages, queryMessages,
         start, total,
-    ) = api.search(
+    ) = kernelApi.search(
         form['searchTemplate'],
         form['tuples'],
         form['sections'],
@@ -344,7 +343,7 @@ def serveSearch(anything):
         provenanceMd,
         form,
     )
-    (csvs, context) = api.csvs(
+    (csvs, context) = kernelApi.csvs(
         form['searchTemplate'],
         form['tuples'],
         form['sections'],

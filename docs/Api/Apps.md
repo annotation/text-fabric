@@ -10,6 +10,9 @@
     The way we have chosen to do it is via *apps*.
     An app is a bunch of extra functions that *know* the structure of a specific corpus.
 
+    In particular, an app knows how to produce plain representations
+    and pretty displays of nodes of each type in the corpus.
+
 ## Current apps
 
 ??? abstract "Current apps"
@@ -30,6 +33,45 @@
         *app*`.py`
         contains all the functionality specific to the corpus in question, organized as an extended
         TF api. In the code this is referred to as the `extraApi`.
+
+        In order to be an app that TF can use, `extraApi` should provide the following attributes:
+
+        attribute | kind | description
+        --- | --- | ---
+        api | object | the generic TF api obtained by loading the features: ``api = TF.load(...)`
+        asApi | boolean | `True` if working for the web-interface, `False` otherwise
+        classNames | dict | mapping from node types to CSS class names to be used in plain and pretty displays of nodes of that type
+        condenseType | string | the default node type to which results will be condensed, e.g. `verse`, `tablet`
+        dataLink | html link | points to the repository where the TF data of the corpus is stored 
+        exampleSection | text | a concrete section indicator that points to an object of the `condenseType` (e.g. `Genesis 1:1`, `P005381`)
+        featureLink | html link | points to the documentation of the TF features of the corpus
+        loadCSS | method | deliver CSS styling to notebook or web interface (depending on `asApi`)
+        nodeFromDefaultSection | method | given a section string pointing to an object of `condenseType`, return the corresponding node (or an error message)
+        noneValues | set | feature values that are deemed uninteresting; features with those values will be suppressed in pretty displays
+        plain | method | given a node, produce a plain representation of the corresponding object: not the full structure, but something that identifies it
+        pretty | method | given a node, produce a pretty display of the corresponding object: the full structure
+        prettyFeaturesLoaded | set | initial set of features that should be loaded for pretty displays
+        tfsLink | html link | points to the documentation of the TF search engine
+        tutLink | html link | points to the tutorial for TF search
+        webLink | method | given a node, produces a link to an online description of the corresponding object (to [shebanq](https://shebanq.ancient-data.org) or [cdli](https://cdli.ucla.edu) 
+
+        ??? note "asApi"
+            The `extraApi` contain several display functions. By default
+            they suppose that there is a Jupyter notebook context in which
+            results can be rendered with `IPython.display` methods.
+            But if we operate in the context of a web-interface, we need to generate
+            straight HTML. We flag the web-interface case as `asApi == True`.
+
+        ??? note "pretty"
+            Not all of the `pretty` method needs to be defined by the app.
+            In fact, the function itself is defined generically in
+            [apphelpers](https://github.com/Dans-labs/text-fabric/blob/master/tf/apphelpers.py).
+            But it calls the method `_pretty`, which must be definedin the app.
+            In turn, parth of `_pretty` is taking care of by the
+            generic `prettyPre` in *apphelpers.py*.
+            What remains in `_pretty` is the pure, app-dependent
+            code for displaying nodes.
+
 
     ??? abstract "webapp"
         the package *app*`-app`
@@ -70,7 +112,6 @@
                 modules | list | combines with locations to search paths for tf features
                 localDir | directory name | temporary directory for writing and reading
                 options | tuple | names of extra options for seaerching and displaying query results
-                condenseType | string | the default container type to which query results may be condensed
                 PROVENANCE | dict | corpus specific provenance metadata: name and DOI
 
 ## The generic part of apps
