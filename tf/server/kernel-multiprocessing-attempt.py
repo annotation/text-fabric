@@ -1,7 +1,6 @@
 import sys
 import pickle
-import rpyc
-from rpyc.utils.server import ThreadedServer
+from multiprocessing.managers import BaseManager
 
 from tf.apphelpers import (
     runSearch, runSearchCondensed,
@@ -34,6 +33,10 @@ def allNodes(table):
   return allN
 
 
+class TfKernel(BaseManager):
+  pass
+
+
 def makeTfKernel(dataSource, locations, modules, port):
   config = getConfig(dataSource)
   if config is None:
@@ -52,36 +55,25 @@ def makeTfKernel(dataSource, locations, modules, port):
   print(f'{TF_DONE}\nListening at port {port}')
   sys.stdout.flush()
 
-  class TfKernel(rpyc.Service):
-    def on_connect(self, conn):
-      self.extraApi = extraApi
-      pass
+  class ExtraApi(object):
 
-    def on_disconnect(self, conn):
-      self.extraApi = None
-      pass
-
-    def exposed_header(self):
-      extraApi = self.extraApi
+    def header(self):
       return extraApi.header()
 
-    def exposed_css(self, appDir=None):
-      extraApi = self.extraApi
+    def css(self, appDir=None):
       return extraApi.loadCSS()
 
-    def exposed_condenseTypes(self):
-      extraApi = self.extraApi
+    def condenseTypes(self):
       api = extraApi.api
       return (extraApi.condenseType, extraApi.exampleSection, api.C.levels.data)
 
-    def exposed_search(
+    def search(
         self, query, tuples, sections, condensed, condenseType, batch,
         position=1, opened=set(),
         withNodes=False,
         linked=1,
         **options,
     ):
-      extraApi = self.extraApi
       api = self.extraApi.api
 
       total = 0
@@ -164,8 +156,7 @@ def makeTfKernel(dataSource, locations, modules, port):
       )
       return (table, sectionMessages, tupleMessages, queryMessages, start, total)
 
-    def exposed_csvs(self, query, tuples, sections, condensed, condenseType):
-      extraApi = self.extraApi
+    def csvs(self, query, tuples, sections, condensed, condenseType):
       api = self.extraApi.api
 
       sectionResults = []
@@ -214,19 +205,22 @@ def makeTfKernel(dataSource, locations, modules, port):
       )
       return (pickle.dumps(csvs), pickle.dumps(context))
 
-  return ThreadedServer(TfKernel, port=port, protocol_config={
-      # 'allow_pickle': True,
-      # 'allow_public_attrs': True,
-      'sync_request_timeout': TIMEOUT,
-  })
+  TfKernel.register('EA', ExtraApi)
+
+  manager = TfKernel(address=('', port), authkey=b'x')
+  # ea = manager.ExtraApi()
+  kernel = manager.get_server()
+  return kernel
 
 
 def makeTfConnection(host, port):
   class TfConnection(object):
     def connect(self):
-      connection = rpyc.connect(host, port)
-      self.connection = connection
-      return connection.root
+      with TfKernel(address=(host, port), authkey=b'x') as manager:
+        manager.connect()
+        print(manager.__dict__)
+        extraApi = manager.EA()
+      return extraApi
 
   return TfConnection()
 
@@ -238,7 +232,7 @@ def main():
     if config is not None:
       kernel = makeTfKernel(dataSource, config.locations, config.modules, config.port)
       if kernel:
-        kernel.start()
+        kernel.serve_forever()
 
 
 if __name__ == "__main__":

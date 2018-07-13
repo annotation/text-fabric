@@ -32,8 +32,6 @@ options = (
     ('lineNumbers', 'checkbox', 'linen', 'show line numbers'),
 )
 
-condenseType = 'tablet'
-
 
 def extraApi(locations, modules):
   return Cunei(None, asApi=True)

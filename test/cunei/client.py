@@ -10,7 +10,7 @@ PORT = 18982
 print(f'Connecting to TF kernel at port {PORT}')
 
 TF = makeTfConnection(HOST, PORT)
-api = TF.connect()
+extraApi = TF.connect()
 
 queries = [(f[5:-4], f) for f in sorted(glob('query[0-9]*.txt'))]
 
@@ -31,7 +31,7 @@ while answer:
         query = qh.read()
 
     print('Call TF kernel')
-    (csvs, context) = api.csvs(
+    (csvs, context) = extraApi.csvs(
         query,
         '',
         '',
