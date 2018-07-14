@@ -22,9 +22,9 @@ clean : clean local develop build
 l     : local develop build
 g     : push to github, code and docs
 r     : build for shipping, leave version as is
-r1    : build for shiping, version becomes r1+1.0.0
-r2    : build for shiping, version becomes r1.r2+1.0
-r3    : build for shiping, version becomes r1.r2.r3+1
+r1    : build for shipping, version becomes r1+1.0.0
+r2    : build for shipping, version becomes r1.r2+1.0
+r3    : build for shipping, version becomes r1.r2.r3+1
 
 For g and the r-commands you need to pass a commit message as well.
 '''

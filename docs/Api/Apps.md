@@ -18,8 +18,8 @@
 ??? abstract "Current apps"
     At the moment we have these apps
 
-    * bhsa
-    * cunei
+    * [bhsa](/Api/Bhsa)
+    * [cunei](/Api/Cunei)
 
 ## The structure of apps
 
@@ -189,11 +189,11 @@
         This directory is expected to be subdivided by org and then by repo, just as the online
         GitHub.
 
-    ??? note dataRel
+    ??? note "dataRel"
         The relative path within the local github/text-fabric-data directory to the directory
         that holds versions of TF data.
 
-    ??? note version
+    ??? note "version"
         The version of the TF data of interest.
 
 ??? abstract "hasData(dataRel, ghBase, version)"
