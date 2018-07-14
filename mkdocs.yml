@@ -19,6 +19,10 @@ repo_url: 'https://github.com/dans-labs/text-fabric/'
 pages:
   - Home: 'index.md'
   - News: 'News.md'
+  - Install: 'Install.md'
+  - Use: 'Use.md'
+  - Corpora: 'Corpora.md'
+  - Faq: 'Faq.md'
   - Code:
     - 'Overview' : 'Code/Overview.md'
     - 'Stats (overall)' : 'Code/Stats.md'
@@ -26,6 +30,11 @@ pages:
     - 'Stats (TF-search)' : 'Code/StatsSearch.md'
     - 'Stats (TF-apps)' : 'Code/StatsApps.md'
     - 'Stats (TF-server)' : 'Code/StatsServer.md'
+  - Model:
+    - 'Data': 'Model/Data-Model.md'
+    - 'Format': 'Model/File-formats.md'
+    - 'Tweaks': 'Model/Optimizations.md'
+    - 'Search': 'Model/Search.md'
   - Api:
     - 'General': 'Api/General.md'
     - 'Apps': 'Api/Apps.md'
@@ -36,15 +45,9 @@ pages:
     - 'Kernel': 'Server/Kernel.md'
     - 'Web': 'Server/Web.md'
     - 'Common': 'Server/Common.md'
-  - Model:
-    - 'Data': 'Model/Data-Model.md'
-    - 'Format': 'Model/File-formats.md'
-    - 'Tweaks': 'Model/Optimizations.md'
   - Create:
     - 'Make TF': 'Create/CreateTF.md'
     - 'Example data': 'Create/ExampleText.md'
-  - Details:
-    - 'Search': 'Search.md'
 
 markdown_extensions:
   - admonition

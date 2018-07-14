@@ -1,4 +1,4 @@
-# Web site
+# Web interface
 
 ## About
 
