@@ -279,7 +279,7 @@ results. We call this *stitching* and we'll get there in a moment.
 
 ### The spread of a qedge
 
-A very important property of a qedge is its *spread*. A qedge links a every node
+A very important property of a qedge is its *spread*. A qedge links every node
 *n* in its *from*-yarn to zero, one, or more nodes in its *to*-yarn. The number
 of nodes in the *to*-yarn is a key property. The average number of nodes *m* in
 the *to*-yarn per linked node *n* in the *from*-yarn is the *spread* of the
@@ -330,7 +330,7 @@ A few key questions need to be addressed:
 Yes, spinning qedges until nothing changes any more, terminates, provided you do
 not try to spin qedges that are up-to-date. If the yarns around an edge have not
 changed, it does not make sense to spin that qedge. See
-[here](/Dans-labs/text-fabric/blob/master/docs/searchProofs.ipynb) for proof.
+[here](/Dans-labs/text-fabric/blob/master/docs/Model/searchProofs.ipynb) for proof.
 
 ### What have we got? ###
 
@@ -342,7 +342,7 @@ part of a result? Yes, that is possible.
 
 Only when the graph of qnodes and qedges does not have a cycle, we know that all
 members of all yarns occur at least once in a result. See
-[here](/Dans-labs/text-fabric/blob/master/docs/searchProofs.ipynb) for proof.
+[here](/Dans-labs/text-fabric/blob/master/docs/Model/searchProofs.ipynb) for proof.
 
 Quite a few interesting queries, however, have cycles in in their graphs. So, in
 those cases, spinning qedges will not cause the maximal narrowing down of the
