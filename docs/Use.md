@@ -29,17 +29,13 @@ Here is how to start up text-fabric.
     There you'll find links to further help.
 
 
-<p>
-<img src="/images/bhsa-app.png"/>
-</p>
+![bhsa](/images/bhsa-app.png)
 
 *Above: Querying the BHSA data*
 
 *Below: Querying the Cunei data*
 
-<p>
-<img src="/images/cunei-app.png"/>
-</p>
+![cunei](/images/cunei-app.png)
 
 
 ??? hint "Fetching corpora"
