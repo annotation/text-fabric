@@ -702,27 +702,27 @@
         },
         {
             "location": "/Code/Stats/",
-            "text": "cloc\n\n\ngithub.com/AlDanial/cloc v 1.74  T=1.61 s (39.6 files/s, 11990.7 lines/s)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLanguage\n\n\nfiles\n\n\nblank\n\n\ncomment\n\n\ncode\n\n\n\n\n\n\n\n\n\n\nPython\n\n\n32\n\n\n1170\n\n\n1227\n\n\n8181\n\n\n\n\n\n\nMarkdown\n\n\n27\n\n\n2165\n\n\n0\n\n\n5917\n\n\n\n\n\n\nCSS\n\n\n2\n\n\n17\n\n\n4\n\n\n392\n\n\n\n\n\n\nJavaScript\n\n\n2\n\n\n11\n\n\n1\n\n\n213\n\n\n\n\n\n\nYAML\n\n\n1\n\n\n4\n\n\n0\n\n\n57\n\n\n\n\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n\n\n\n\nSUM:\n\n\n64\n\n\n3367\n\n\n1232\n\n\n14760",
+            "text": "cloc\n\n\ngithub.com/AlDanial/cloc v 1.74  T=1.67 s (38.4 files/s, 11614.4 lines/s)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLanguage\n\n\nfiles\n\n\nblank\n\n\ncomment\n\n\ncode\n\n\n\n\n\n\n\n\n\n\nPython\n\n\n32\n\n\n1170\n\n\n1227\n\n\n8181\n\n\n\n\n\n\nMarkdown\n\n\n27\n\n\n2165\n\n\n0\n\n\n5916\n\n\n\n\n\n\nCSS\n\n\n2\n\n\n17\n\n\n4\n\n\n392\n\n\n\n\n\n\nJavaScript\n\n\n2\n\n\n11\n\n\n1\n\n\n213\n\n\n\n\n\n\nYAML\n\n\n1\n\n\n4\n\n\n0\n\n\n58\n\n\n\n\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n\n\n\n\nSUM:\n\n\n64\n\n\n3367\n\n\n1232\n\n\n14760",
             "title": "Stats (overall)"
         },
         {
             "location": "/Code/StatsBase/",
-            "text": "cloc\n\n\ngithub.com/AlDanial/cloc v 1.74  T=0.12 s (101.6 files/s, 30838.9 lines/s)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLanguage\n\n\nfiles\n\n\nblank\n\n\ncomment\n\n\ncode\n\n\n\n\n\n\n\n\n\n\nPython\n\n\n12\n\n\n397\n\n\n232\n\n\n3014\n\n\n\n\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n\n\n\n\nSUM:\n\n\n12\n\n\n397\n\n\n232\n\n\n3014",
+            "text": "cloc\n\n\ngithub.com/AlDanial/cloc v 1.74  T=0.11 s (111.0 files/s, 33704.0 lines/s)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLanguage\n\n\nfiles\n\n\nblank\n\n\ncomment\n\n\ncode\n\n\n\n\n\n\n\n\n\n\nPython\n\n\n12\n\n\n397\n\n\n232\n\n\n3014\n\n\n\n\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n\n\n\n\nSUM:\n\n\n12\n\n\n397\n\n\n232\n\n\n3014",
             "title": "Stats (TF-base)"
         },
         {
             "location": "/Code/StatsSearch/",
-            "text": "cloc\n\n\ngithub.com/AlDanial/cloc v 1.74  T=0.09 s (97.4 files/s, 34745.5 lines/s)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLanguage\n\n\nfiles\n\n\nblank\n\n\ncomment\n\n\ncode\n\n\n\n\n\n\n\n\n\n\nPython\n\n\n9\n\n\n364\n\n\n305\n\n\n2542\n\n\n\n\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n\n\n\n\nSUM:\n\n\n9\n\n\n364\n\n\n305\n\n\n2542",
+            "text": "cloc\n\n\ngithub.com/AlDanial/cloc v 1.74  T=0.08 s (107.3 files/s, 38265.8 lines/s)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLanguage\n\n\nfiles\n\n\nblank\n\n\ncomment\n\n\ncode\n\n\n\n\n\n\n\n\n\n\nPython\n\n\n9\n\n\n364\n\n\n305\n\n\n2542\n\n\n\n\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n\n\n\n\nSUM:\n\n\n9\n\n\n364\n\n\n305\n\n\n2542",
             "title": "Stats (TF-search)"
         },
         {
             "location": "/Code/StatsApps/",
-            "text": "cloc\n\n\ngithub.com/AlDanial/cloc v 1.74  T=0.13 s (46.0 files/s, 16607.6 lines/s)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLanguage\n\n\nfiles\n\n\nblank\n\n\ncomment\n\n\ncode\n\n\n\n\n\n\n\n\n\n\nPython\n\n\n5\n\n\n162\n\n\n487\n\n\n1499\n\n\n\n\n\n\nCSS\n\n\n1\n\n\n2\n\n\n0\n\n\n14\n\n\n\n\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n\n\n\n\nSUM:\n\n\n6\n\n\n164\n\n\n487\n\n\n1513",
+            "text": "cloc\n\n\ngithub.com/AlDanial/cloc v 1.74  T=0.09 s (63.7 files/s, 22984.8 lines/s)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLanguage\n\n\nfiles\n\n\nblank\n\n\ncomment\n\n\ncode\n\n\n\n\n\n\n\n\n\n\nPython\n\n\n5\n\n\n162\n\n\n487\n\n\n1499\n\n\n\n\n\n\nCSS\n\n\n1\n\n\n2\n\n\n0\n\n\n14\n\n\n\n\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n\n\n\n\nSUM:\n\n\n6\n\n\n164\n\n\n487\n\n\n1513",
             "title": "Stats (TF-apps)"
         },
         {
             "location": "/Code/StatsServer/",
-            "text": "cloc\n\n\ngithub.com/AlDanial/cloc v 1.74  T=0.18 s (49.1 files/s, 10404.4 lines/s)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLanguage\n\n\nfiles\n\n\nblank\n\n\ncomment\n\n\ncode\n\n\n\n\n\n\n\n\n\n\nPython\n\n\n6\n\n\n211\n\n\n183\n\n\n890\n\n\n\n\n\n\nCSS\n\n\n1\n\n\n15\n\n\n4\n\n\n378\n\n\n\n\n\n\nJavaScript\n\n\n2\n\n\n11\n\n\n1\n\n\n213\n\n\n\n\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n\n\n\n\nSUM:\n\n\n9\n\n\n237\n\n\n188\n\n\n1481",
+            "text": "cloc\n\n\ngithub.com/AlDanial/cloc v 1.74  T=0.10 s (92.8 files/s, 19653.9 lines/s)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLanguage\n\n\nfiles\n\n\nblank\n\n\ncomment\n\n\ncode\n\n\n\n\n\n\n\n\n\n\nPython\n\n\n6\n\n\n211\n\n\n183\n\n\n890\n\n\n\n\n\n\nCSS\n\n\n1\n\n\n15\n\n\n4\n\n\n378\n\n\n\n\n\n\nJavaScript\n\n\n2\n\n\n11\n\n\n1\n\n\n213\n\n\n\n\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n--------\n\n\n\n\n\n\nSUM:\n\n\n9\n\n\n237\n\n\n188\n\n\n1481",
             "title": "Stats (TF-server)"
         },
         {
