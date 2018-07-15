@@ -4,7 +4,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>TF {{jobName}}</title>
         <meta name="application-name" content="Text-Fabric Search Box"/>
-
+        <link rel="shortcut icon" href="/server/static/favicon.ico">
         <link rel="stylesheet" href="/server/static/main.css"/>
         {{!css}}
     </head>
