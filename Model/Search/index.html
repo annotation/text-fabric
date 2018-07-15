@@ -1256,7 +1256,7 @@ we loose all clauses that do not embed one of the few phrases left.</p>
 good starting point for the last stage: picking members from each yarn to form
 results. We call this <em>stitching</em> and we'll get there in a moment.</p>
 <h3 id="the-spread-of-a-qedge">The spread of a qedge<a class="headerlink" href="#the-spread-of-a-qedge" title="Permanent link">&para;</a></h3>
-<p>A very important property of a qedge is its <em>spread</em>. A qedge links a every node
+<p>A very important property of a qedge is its <em>spread</em>. A qedge links every node
 <em>n</em> in its <em>from</em>-yarn to zero, one, or more nodes in its <em>to</em>-yarn. The number
 of nodes in the <em>to</em>-yarn is a key property. The average number of nodes <em>m</em> in
 the <em>to</em>-yarn per linked node <em>n</em> in the <em>from</em>-yarn is the <em>spread</em> of the
@@ -1301,7 +1301,7 @@ that are involved in the changed yarns.</p>
 <p>Yes, spinning qedges until nothing changes any more, terminates, provided you do
 not try to spin qedges that are up-to-date. If the yarns around an edge have not
 changed, it does not make sense to spin that qedge. See
-<a href="../../Dans-labs/text-fabric/blob/master/docs/searchProofs.ipynb">here</a> for proof.</p>
+<a href="../../Dans-labs/text-fabric/blob/master/docs/Model/searchProofs.ipynb">here</a> for proof.</p>
 <h3 id="what-have-we-got">What have we got?<a class="headerlink" href="#what-have-we-got" title="Permanent link">&para;</a></h3>
 <p>After spinning, it is guaranteed that we have not thrown away results. All nodes
 that are parts of valid results, are still in the yarns.</p>
@@ -1309,7 +1309,7 @@ that are parts of valid results, are still in the yarns.</p>
 part of a result? Yes, that is possible.</p>
 <p>Only when the graph of qnodes and qedges does not have a cycle, we know that all
 members of all yarns occur at least once in a result. See
-<a href="../../Dans-labs/text-fabric/blob/master/docs/searchProofs.ipynb">here</a> for proof.</p>
+<a href="../../Dans-labs/text-fabric/blob/master/docs/Model/searchProofs.ipynb">here</a> for proof.</p>
 <p>Quite a few interesting queries, however, have cycles in in their graphs. So, in
 those cases, spinning qedges will not cause the maximal narrowing down of the
 search space.</p>
