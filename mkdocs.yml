@@ -12,6 +12,7 @@ site_author: Dirk Roorda
 theme:
   name: material
   logo: 'images/tficon-small.png'
+  favicon: 'images/icon/favicon.ico'
   feature:
     tabs: false
 repo_url: 'https://github.com/dans-labs/text-fabric/'

@@ -523,4 +523,4 @@ back-tracking occurs, by which the current stitch will get partly undefined,
 only to be filled up again by further searching.
 
 Read it all in the source code:
-[`def stitchOn(e)`](https://github.com/Dans-labs/text-fabric/blob/master/tf/search.py#L1332).
+[`def stitchOn(e)`](https://github.com/Dans-labs/text-fabric/blob/master/tf/search/stitch.py#L442).
