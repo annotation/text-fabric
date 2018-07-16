@@ -18,6 +18,13 @@ def getDebug():
   return False
 
 
+def getNoweb():
+  for arg in sys.argv[1:]:
+    if arg == '-noweb':
+      return True
+  return False
+
+
 def getParam(interactive=False):
   myDir = os.path.dirname(os.path.abspath(__file__))
   dataSourcesParent = getAppDir(myDir, '')

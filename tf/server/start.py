@@ -7,7 +7,7 @@ import webbrowser
 from time import sleep
 from subprocess import PIPE, Popen
 
-from tf.server.common import getParam, getDebug, getConfig
+from tf.server.common import getParam, getDebug, getNoweb, getConfig
 from tf.server.kernel import TF_DONE, TF_ERROR
 
 HELP = '''
@@ -146,6 +146,8 @@ def main():
 
   dataSource = getParam(interactive=True)
 
+  noweb = getNoweb()
+
   ddataSource = ('-d', dataSource) if getDebug() else (dataSource,)
   if dataSource is not None:
     config = getConfig(dataSource)
@@ -170,18 +172,19 @@ def main():
           break
       sleep(1)
 
-      print(f'Opening {dataSource} in browser')
       pWeb = Popen(
           [pythonExe, '-m', 'tf.server.web', *ddataSource],
           bufsize=0,
       )
 
-      sleep(1)
-      webbrowser.open(
-          f'{config.protocol}{config.host}:{config.webport}',
-          new=2,
-          autoraise=True,
-      )
+      if not noweb:
+        sleep(1)
+        print(f'Opening {dataSource} in browser')
+        webbrowser.open(
+            f'{config.protocol}{config.host}:{config.webport}',
+            new=2,
+            autoraise=True,
+        )
 
       if pWeb and pKernel:
         try:

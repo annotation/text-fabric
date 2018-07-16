@@ -8,6 +8,13 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.15
+
+2018-07-16
+
+Extra option when starting up the text-fabric web interface: to not start the web browser.
+So that it can be used in a Docker container.
+
 ## 5.5.13-14
 
 2018-07-12
