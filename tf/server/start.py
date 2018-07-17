@@ -7,7 +7,7 @@ import webbrowser
 from time import sleep
 from subprocess import PIPE, Popen
 
-from tf.server.common import getParam, getDebug, getNoweb, getConfig
+from tf.server.common import getParam, getDebug, getNoweb, getDocker, getConfig
 from tf.server.kernel import TF_DONE, TF_ERROR
 
 HELP = '''
@@ -16,7 +16,7 @@ USAGE
 text-fabric --help
 
 text-fabric datasource
-text-fabric -d datasource
+text-fabric [-d] [-noweb] [-docker] datasource
 
 text-fabric -k
 text-fabric -k datasource
@@ -33,6 +33,11 @@ It will open in the default browser.
 -d  Debug mode. For developers of Text-Fabric itself.
     The webserver reloads when its code changes.
     The webserver is a bottle instance, started with reload=True.
+
+-noweb Do not start the web browser
+
+-docker Assume you are on docker. The web server is passed 0.0.0.0 as host.
+
 
 CLEAN UP
 
@@ -149,6 +154,7 @@ def main():
   noweb = getNoweb()
 
   ddataSource = ('-d', dataSource) if getDebug() else (dataSource,)
+  ddataSource = ('-docker', *ddataSource) if getDocker() else ddataSource
   if dataSource is not None:
     config = getConfig(dataSource)
     pKernel = None

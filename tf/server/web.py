@@ -13,7 +13,7 @@ from bottle import (post, get, route, template, request, static_file, run)
 from tf.fabric import NAME, VERSION, DOI, DOI_URL
 from tf.server.kernel import makeTfConnection
 from tf.server.common import (
-    getParam, getDebug, getConfig, getAppDir, getValues, setValues,
+    getParam, getDebug, getConfig, getDocker, getAppDir, getValues, setValues,
     pageLinks,
     shapeMessages, shapeOptions, shapeCondense,
 )
@@ -393,10 +393,12 @@ if __name__ == "__main__":
   if dataSource is not None:
     debug = getDebug()
     config = getStuff()
+    onDocker = getDocker()
+    print(f'onDocker={onDocker}')
     if config is not None:
       run(
           debug=debug,
           reloader=debug,
-          host=config.host,
+          host='0.0.0.0' if onDocker else config.host,
           port=config.webport,
       )
