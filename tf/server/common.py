@@ -25,6 +25,13 @@ def getNoweb():
   return False
 
 
+def getDocker():
+  for arg in sys.argv[1:]:
+    if arg == '-docker':
+      return True
+  return False
+
+
 def getParam(interactive=False):
   myDir = os.path.dirname(os.path.abspath(__file__))
   dataSourcesParent = getAppDir(myDir, '')
