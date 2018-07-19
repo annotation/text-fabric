@@ -44,8 +44,8 @@ class Data(object):
     self.dirName = dirName
     self.fileName = fileName
     self.extension = extension
-    self.binDir = '{}/.tf'.format(dirName)
-    self.binPath = '{}/{}.tfx'.format(self.binDir, self.fileName)
+    self.binDir = f'{dirName}/.tf'
+    self.binPath = f'{self.binDir}/{self.fileName}.tfx'
     self.edgeValues = edgeValues
     self.isEdge = isEdge
     self.isConfig = isConfig
@@ -128,26 +128,24 @@ class Data(object):
   def _setDataType(self):
     if self.isConfig:
       return
+    dataTypesStr = ', '.join(DATA_TYPES)
     if 'valueType' in self.metaData:
       dataType = self.metaData['valueType']
       if dataType not in DATA_TYPES:
         self.tm.error(
-            'Unknown @valueType: "{}". Should be one of {}'.format(
-                dataType,
-                ','.join(DATA_TYPES),
-            )
+            f'Unknown @valueType: "{dataType}". Should be one of {dataTypesStr}'
         )
         self.dataType = DATA_TYPES[0]
       else:
         self.dataType = dataType
     else:
-      self.tm.error('Missing @valueType. Should be one of {}'.format(','.join(DATA_TYPES), ))
+      self.tm.error(f'Missing @valueType. Should be one of {dataTypesStr}')
       self.dataType = DATA_TYPES[0]
 
   def _readTf(self, metaOnly=False):
     path = self.path
     if not os.path.exists(path):
-      self.tm.error('TF reading: feature file "{}" does not exist'.format(path))
+      self.tm.error(f'TF reading: feature file "{path}" does not exist')
       return False
     fh = open(path, encoding='utf8')
     i = 0
@@ -164,7 +162,7 @@ class Data(object):
         elif text == '@config':
           self.isConfig = True
         else:
-          self.tm.error('Line {}: missing @node/@edge/@config'.format(i))
+          self.tm.error(f'Line {i}: missing @node/@edge/@config')
           fh.close()
           return False
         continue
@@ -178,7 +176,7 @@ class Data(object):
         continue
       else:
         if text != '':
-          self.tm.error('Line {}: missing blank line after metadata'.format(i))
+          self.tm.error(f'Line {i}: missing blank line after metadata')
           fh.close()
           return False
         else:
@@ -274,7 +272,7 @@ class Data(object):
           '{} in lines {}'.format(kind, ','.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF]))
       )
       if lnk > ERROR_CUTOFF:
-        self.tm.error('\t and {} more cases'.format(lnk - ERROR_CUTOFF), tm=False)
+        self.tm.error(f'\t and {lnk - ERROR_CUTOFF} more cases', tm=False)
     self.data = data
     if not errors:
       if self.fileName == WARP[0]:
@@ -344,9 +342,9 @@ class Data(object):
       try:
         os.makedirs(dirName, exist_ok=True)
       except Exception:
-        self.tm.error('Cannot create directory "{}"'.format(dirName))
+        self.tm.error(f'Cannot create directory "{dirName}"')
         return False
-    fpath = '{}/{}{}'.format(dirName, fileName, extension)
+    fpath = f'{dirName}/{fileName}{extension}'
     if fpath == self.path:
       if os.path.exists(fpath):
         if not overwrite:
@@ -357,13 +355,13 @@ class Data(object):
     try:
       fh = open(fpath, 'w', encoding='utf8')
     except Exception:
-      self.tm.error('Cannot write to feature file "{}"'.format(fpath))
+      self.tm.error(f'Cannot write to feature file "{path}"')
       return False
     fh.write('@{}\n'.format('config' if self.isConfig else 'edge' if self.isEdge else 'node'))
     if self.edgeValues:
       fh.write('@edgeValues\n')
     for meta in sorted(self.metaData):
-      fh.write('@{}={}\n'.format(meta, self.metaData[meta]))
+      fh.write(f'@{meta}={self.metaData[meta]}\n')
     fh.write('@writtenBy=Text-Fabric\n')
     fh.write('@dateWritten={}\n'.format(datetime.utcnow().replace(microsecond=0).isoformat() + 'Z'))
     fh.write('\n')
@@ -451,7 +449,7 @@ class Data(object):
 
   def _readDataBin(self):
     if not os.path.exists(self.binPath):
-      self.tm.error('TF reading: feature file "{}" does not exist'.format(self.binPath))
+      self.tm.error(f'TF reading: feature file "{self.binPath}" does not exist')
       return False
     with gzip.open(self.binPath, "rb") as f:
       self.data = pickle.load(f)
@@ -468,7 +466,7 @@ class Data(object):
       try:
         os.makedirs(self.binDir, exist_ok=True)
       except Exception:
-        self.tm.error('Cannot create directory "{}"'.format(self.binDir))
+        self.tm.error(f'Cannot create directory "{self.binDir}"')
         good = False
     if not good:
       return False
