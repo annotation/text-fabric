@@ -8,6 +8,15 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.18
+
+2018-07-19
+
+No change, only in the build script.
+This is a test whether after uploading to PyPi, users
+can upgrade without using the `--no-cache-dir` in their
+pip commands.
+
 ## 5.5.17
 
 2018-07-19
