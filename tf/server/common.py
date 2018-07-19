@@ -11,28 +11,28 @@ msgLinePat = '^( *[0-9]+) (.*)$'
 msgLineRe = re.compile(msgLinePat)
 
 
-def getDebug():
-  for arg in sys.argv[1:]:
+def getDebug(cargs=sys.argv):
+  for arg in cargs[1:]:
     if arg == '-d':
       return True
   return False
 
 
-def getNoweb():
-  for arg in sys.argv[1:]:
+def getNoweb(cargs=sys.argv):
+  for arg in cargs[1:]:
     if arg == '-noweb':
       return True
   return False
 
 
-def getDocker():
-  for arg in sys.argv[1:]:
+def getDocker(cargs=sys.argv):
+  for arg in cargs[1:]:
     if arg == '-docker':
       return True
   return False
 
 
-def getParam(interactive=False):
+def getParam(cargs=sys.argv, interactive=False):
   myDir = os.path.dirname(os.path.abspath(__file__))
   dataSourcesParent = getAppDir(myDir, '')
   dataSourcesPre = glob(f'{dataSourcesParent}/*/config.py')
@@ -47,7 +47,7 @@ def getParam(interactive=False):
   dPrompt = '/'.join(dataSources)
 
   dataSource = None
-  for arg in sys.argv[1:]:
+  for arg in cargs[1:]:
     if arg.startswith('-'):
       continue
     dataSource = arg

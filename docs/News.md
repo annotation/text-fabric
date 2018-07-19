@@ -8,6 +8,15 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.17
+
+2018-07-19
+
+The main functions in kernel and web can be passed arguments, instead that they always
+read from sys.argv.
+
+So that it can be used packaged apps.
+
 ## 5.5.16
 
 2018-07-17
