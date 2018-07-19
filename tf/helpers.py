@@ -36,7 +36,7 @@ def setFromSpec(spec):
     else:
       b = int(bounds[0])
       e = int(bounds[1])
-      if (e < b):
+      if e < b:
         (b, e) = (e, b)
       for n in range(b, e + 1):
         covered.add(n)
