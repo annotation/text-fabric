@@ -127,34 +127,34 @@ def killProcesses(dataSource, kill=False):
             print(f'Process {kind} server for {ds}: already {item}')
 
 
-def getKill():
-  for arg in sys.argv[1:]:
+def getKill(cargs=sys.argv):
+  for arg in cargs[1:]:
     if arg == '-k':
       return True
   return False
 
 
-def main():
-  if len(sys.argv) >= 2 and sys.argv[1] in {'--help', '-help', '-h', '?', '-?'}:
+def main(cargs=sys.argv):
+  if len(cargs) >= 2 and cargs[1] in {'--help', '-help', '-h', '?', '-?'}:
     print(HELP)
 
   isWin = system().lower().startswith('win')
 
-  kill = getKill()
+  kill = getKill(cargs=cargs)
 
   if kill:
-    dataSource = getParam(interactive=False)
+    dataSource = getParam(cargs=cargs, interactive=False)
     if dataSource is False:
       return
     killProcesses(dataSource)
     return
 
-  dataSource = getParam(interactive=True)
+  dataSource = getParam(cargs=cargs, interactive=True)
 
-  noweb = getNoweb()
+  noweb = getNoweb(cargs=cargs)
 
-  ddataSource = ('-d', dataSource) if getDebug() else (dataSource,)
-  ddataSource = ('-docker', *ddataSource) if getDocker() else ddataSource
+  ddataSource = ('-d', dataSource) if getDebug(cargs=cargs) else (dataSource,)
+  ddataSource = ('-docker', *ddataSource) if getDocker(cargs=cargs) else ddataSource
   if dataSource is not None:
     config = getConfig(dataSource)
     pKernel = None

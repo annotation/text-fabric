@@ -231,8 +231,8 @@ def makeTfConnection(host, port):
   return TfConnection()
 
 
-def main():
-  dataSource = getParam(interactive=True)
+def main(cargs=sys.argv):
+  dataSource = getParam(cargs=cargs, interactive=True)
   if dataSource is not None:
     config = getConfig(dataSource)
     if config is not None:
