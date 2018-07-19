@@ -114,14 +114,16 @@ def adjustVersion(task):
       print(f'Replacing version {currentVersion} by {newVersion}')
 
 
-def makeDist():
+def makeDist(task):
     distFile = "{}-{}".format(PACKAGE, newVersion)
     distFileCompressed = f'{distFile}.tar.gz'
     distPath = f'{DIST}/{distFileCompressed}'
     rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)
     run(['python3', 'setup.py', 'sdist'])
-    run(['twine', 'upload', distPath])
+    if task != 'r':
+      run(['twine', 'upload', distPath])
+      run('./purge.sh', shell=True)
 
 
 def commit(task, msg):
@@ -221,7 +223,7 @@ def main():
   elif task in {'r', 'r1', 'r2', 'r3'}:
     adjustVersion(task)
     shipDocs()
-    makeDist()
+    makeDist(task)
     commit(task, msg)
 
 
