@@ -1180,7 +1180,7 @@
         templateO3
         ```
 
-        ???+ note "1 or more alternatives
+        ???+ note "1 or more alternatives"
             This quantifier can be used with any number of `/or/` keywords, including
             none at all. If there is no `/or/`, there is just one alternative.
             The only difference between
@@ -1207,6 +1207,8 @@
 
     ???+ note "Parent"
         The `atom` bit is an atom line, it acts as the *parent* of the quantifier.
+        Inside a quantifier, you may refer to the parent by the special name `..`.
+        So you do not have to give a name to the parent.
 
     ???+ note "Multiple quantifiers"
         You may have multiple quantifiers for one parent.
