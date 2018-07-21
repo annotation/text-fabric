@@ -1713,49 +1713,29 @@ templateO2
 templateO3
 </pre></div>
 </td></tr></table>
-<p>???+ note "1 or more alternatives
-    This quantifier can be used with any number of <code>/or/</code> keywords, including
-    none at all. If there is no <code>/or/</code>, there is just one alternative.
-    The only difference between</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>```
-atom
+<details class="note" open="open"><summary>1 or more alternatives</summary><p>This quantifier can be used with any number of <code>/or/</code> keywords, including
+none at all. If there is no <code>/or/</code>, there is just one alternative.
+The only difference between</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>atom
 /with/
 template
 /-/
-```
-
-and
-
-```
-atom
-template
-```
-
-is that the results of the first query contain tuples with only one
-element, corresponding to the `atom`.
-The second query contains tuples of which the first element
-corresponds to the `atom`, and the remaining members correspond to
-the `template`.
 </pre></div>
 </td></tr></table>
-</details><details class="note" open="open"><summary>Parent</summary><p>The <code>atom</code> bit is an atom line, it acts as the <em>parent</em> of the quantifier.</p></details><details class="note" open="open"><summary>Multiple quantifiers</summary><p>You may have multiple quantifiers for one parent.</p></details><details class="note" open="open"><summary>Not in result tuples</summary><p>Whereas a the search for a normal template
+<p>and</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>atom
+template
+</pre></div>
+</td></tr></table>
+<p>is that the results of the first query contain tuples with only one
+element, corresponding to the <code>atom</code>.
+The second query contains tuples of which the first element
+corresponds to the <code>atom</code>, and the remaining members correspond to
+the <code>template</code>.</p></details></details><details class="note" open="open"><summary>Parent</summary><p>The <code>atom</code> bit is an atom line, it acts as the <em>parent</em> of the quantifier.
+Inside a quantifier, you may refer to the parent by the special name <code>..</code>.
+So you do not have to give a name to the parent.</p></details><details class="note" open="open"><summary>Multiple quantifiers</summary><p>You may have multiple quantifiers for one parent.</p></details><details class="note" open="open"><summary>Not in result tuples</summary><p>Whereas a the search for a normal template
 proceeds by finding a tuples that instantiates all it nodes
 in such a way that all relationships expressed in the template hold, a quantifier template
 is not instantiated.
