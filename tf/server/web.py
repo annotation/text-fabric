@@ -103,7 +103,7 @@ def writeAbout(header, provenance, form):
   dirName = f'{dataSource}-{jobName}'
   if not os.path.exists(dirName):
     os.makedirs(dirName, exist_ok=True)
-  with open(f'{dirName}/about.md', 'w') as ph:
+  with open(f'{dirName}/about.md', 'w', encoding='utf8') as ph:
     ph.write(f'''
 {header}
 
@@ -124,10 +124,10 @@ def writeCsvs(csvs, context, form):
   if not os.path.exists(dirName):
     os.makedirs(dirName, exist_ok=True)
   for (csv, data) in csvs:
-    with open(f'{dirName}/{csv}.tsv', 'w') as th:
+    with open(f'{dirName}/{csv}.tsv', 'w', encoding='utf8') as th:
       for tup in data:
         th.write('\t'.join(str(t) for t in tup) + '\n')
-  with open(f'{dirName}/CONTEXT.tsv', 'w') as th:
+  with open(f'{dirName}/CONTEXT.tsv', 'w', encoding='utf8') as th:
       for tup in context:
         th.write('\t'.join('' if t is None else str(t) for t in tup) + '\n')
 
@@ -177,14 +177,14 @@ def writeFormData(form):
       'jobName', 'jobNameHidden', 'jobDir', 'otherJobDo', 'otherJob',
   }
   thisJobName = form['jobName'] or ''
-  with open(f'{dataSource}-{thisJobName}{EXTENSION}', 'w') as tfj:
+  with open(f'{dataSource}-{thisJobName}{EXTENSION}', 'w', encoding='utf8') as tfj:
     json.dump({f: form[f] for f in form if f not in excludedFields}, tfj)
 
 
 def readFormData(source):
   sourceFile = f'{dataSource}-{source}{EXTENSION}'
   if os.path.exists(sourceFile):
-    with open(sourceFile) as tfj:
+    with open(sourceFile, encoding='utf8') as tfj:
       form = json.load(tfj)
     for item in '''
         searchTemplate tuples sections

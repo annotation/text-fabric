@@ -8,6 +8,14 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.19
+
+2018-07-19
+
+Fixed: when opening files for reading and writing for an export of a TF browser session: specify that
+the encoding is `utf8`. 
+This is needed on those windowses where the default encoding is something else, usually `cp1252`.
+
 ## 5.5.18
 
 2018-07-19
