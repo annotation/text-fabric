@@ -10,7 +10,7 @@ import markdown
 import bottle
 from bottle import (post, get, route, template, request, static_file, run)
 
-from tf.fabric import NAME, VERSION, DOI, DOI_URL
+from tf.fabric import NAME, VERSION, DOI, DOI_URL, COMPOSE_URL
 from tf.server.kernel import makeTfConnection
 from tf.server.common import (
     getParam, getDebug, getConfig, getDocker, getAppDir, getValues, setValues,
@@ -19,6 +19,8 @@ from tf.server.common import (
 )
 from tf.apphelpers import RESULT
 
+
+COMPOSE = 'Compose results example'
 
 BATCH = 20
 DEFAULT_NAME = 'DefaulT'
@@ -65,6 +67,9 @@ def getProvenance(form):
   toolDoiHtml = f'<a href="{DOI_URL}">{DOI}</a>'
   toolDoiMd = f'[{DOI}]({DOI_URL})'
 
+  composeHtml = f'<a href="{COMPOSE_URL}">{COMPOSE}</a>'
+  composeMd = f'[{COMPOSE}]({COMPOSE_URL})'
+
   html = f'''
     <div class="pline">
       <div class="pname">Job:</div><div class="pval">{job}</div>
@@ -83,6 +88,10 @@ def getProvenance(form):
       <div class="pname">Tool:</div>
       <div class="pval">{tool} {toolDoiHtml}</div>
     </div>
+    <div class="pline">
+      <div class="pname">See also:</div>
+      <div class="pval">{composeHtml}</div>
+    </div>
   '''
 
   md = f'''
@@ -93,6 +102,7 @@ Author | {author}
 Created | {now}
 Corpus | {corpus} {corpusDoiMd}
 Tool | {tool} {toolDoiMd}
+See also | {composeMd}
 '''
 
   return (html, md)

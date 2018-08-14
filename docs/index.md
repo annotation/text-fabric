@@ -195,6 +195,7 @@ Text-Fabric can reveal about the data.
 ??? note "Papers"
     Papers (preprints on [arxiv](https://arxiv.org)), most of them published:
 
+    * [Coding the Hebrew Bible](https://doi.org/10.1163/24523666-01000011)
     * [Parallel Texts in the Hebrew Bible, New Methods and Visualizations ](https://arxiv.org/abs/1603.01541)
     * [The Hebrew Bible as Data: Laboratory - Sharing - Experiences](https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/)
        (preprint: [arxiv](https://arxiv.org/abs/1501.01866))
