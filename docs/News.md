@@ -8,6 +8,12 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.20
+
+2018-08-16
+
+BHSA app: adjusted the color of the gloss attribute: darker.
+
 ## 5.5.19
 
 2018-07-19

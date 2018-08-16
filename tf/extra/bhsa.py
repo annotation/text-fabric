@@ -193,7 +193,7 @@ CSS = '''
     font-family: sans-serif;
     font-size: small;
     font-weight: normal;
-    color: #aaaaaa;
+    color: #444444;
 }
 .vrs {
     font-family: sans-serif;
