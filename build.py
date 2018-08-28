@@ -25,6 +25,7 @@ r     : build for shipping, leave version as is
 r1    : build for shipping, version becomes r1+1.0.0
 r2    : build for shipping, version becomes r1.r2+1.0
 r3    : build for shipping, version becomes r1.r2.r3+1
+t     : open text-fabric browser on specific dataset (bhsa, cunei)
 
 For g and the r-commands you need to pass a commit message as well.
 '''
@@ -48,6 +49,7 @@ VERSION_CONFIG = dict(
     ),
 )
 
+TEST_BASE = os.path.expanduser('~/github/Dans-labs/text-fabric/test')
 PACKAGE = 'text-fabric'
 SCRIPT = '/Library/Frameworks/Python.framework/Versions/3.7/bin/text-fabric'
 
@@ -61,12 +63,17 @@ def readArgs():
     print(HELP)
     return (False, None)
   arg = args[0]
-  if arg not in {'docs', 'clean', 'l', 'g', 'r', 'r1', 'r2', 'r3'}:
+  if arg not in {'t', 'docs', 'clean', 'l', 'g', 'r', 'r1', 'r2', 'r3'}:
     print(HELP)
     return (False, None)
   if arg in {'g', 'r', 'r1', 'r2', 'r3'}:
     if len(args) < 2:
       print('Provide a commit message')
+      return (False, None)
+    return (arg, args[1])
+  if arg in {'t'}:
+    if len(args) < 2:
+      print('Provide a data source [bhsa|cunei]')
       return (False, None)
     return (arg, args[1])
   return (arg, None)
@@ -206,10 +213,29 @@ def codestats():
   run(cmdLine.format(xd, 'Apps', 'tf/extra'), shell=True)
 
 
+def tfbrowse(dataset):
+  datadir = f'{TEST_BASE}/{dataset}'
+  good = True
+  try:
+    os.chdir(datadir)
+  except Exception:
+    good = False
+    print(f'Cannot find TF test directory "{datadir}"')
+  if not good:
+    return
+  cmdLine = f'text-fabric {dataset}'
+  try:
+    run(cmdLine, shell=True)
+  except KeyboardInterrupt:
+    pass
+
+
 def main():
   (task, msg) = readArgs()
   if not task:
     return
+  elif task == 't':
+    tfbrowse(msg)
   elif task == 'docs':
     serveDocs()
   elif task == 'clean':
