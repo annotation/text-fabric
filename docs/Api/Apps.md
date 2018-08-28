@@ -66,7 +66,7 @@
             Not all of the `pretty` method needs to be defined by the app.
             In fact, the function itself is defined generically in
             [apphelpers](https://github.com/Dans-labs/text-fabric/blob/master/tf/apphelpers.py).
-            But it calls the method `_pretty`, which must be definedin the app.
+            But it calls the method `_pretty`, which must be defined in the app.
             In turn, parth of `_pretty` is taking care of by the
             generic `prettyPre` in *apphelpers.py*.
             What remains in `_pretty` is the pure, app-dependent
@@ -75,7 +75,7 @@
 
     ??? abstract "webapp"
         the package *app*`-app`
-        is used by the text-fabric browser, and contain settings and assets
+        is used by the text-fabric browser, and contains settings and assets
         to set up a browsing experience.
 
         * `config.py`: settings
