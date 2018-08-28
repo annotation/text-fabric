@@ -876,12 +876,12 @@ But if we operate in the context of a web-interface, we need to generate
 straight HTML. We flag the web-interface case as <code>asApi == True</code>.</p></details><details class="note"><summary>pretty</summary><p>Not all of the <code>pretty</code> method needs to be defined by the app.
 In fact, the function itself is defined generically in
 <a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/apphelpers.py">apphelpers</a>.
-But it calls the method <code>_pretty</code>, which must be definedin the app.
+But it calls the method <code>_pretty</code>, which must be defined in the app.
 In turn, parth of <code>_pretty</code> is taking care of by the
 generic <code>prettyPre</code> in <em>apphelpers.py</em>.
 What remains in <code>_pretty</code> is the pure, app-dependent
 code for displaying nodes.</p></details></details><details class="abstract"><summary>webapp</summary><p>the package <em>app</em><code>-app</code>
-is used by the text-fabric browser, and contain settings and assets
+is used by the text-fabric browser, and contains settings and assets
 to set up a browsing experience.</p><ul><li><code>config.py</code>: settings</li><li>a <code>static</code> folder with fonts and logos.</li></ul><details class="abstract"><summary>config.py</summary><p>Contains values for parameters and an API calling function.</p><details class="abstract"><summary>extraApi(locations, modules)</summary><p>Responsible for calling the extra Api for the corpus
 with the desired locations and modules.</p><p>This extraApi will be active as a TF kernel,
 interacting with a local webserver that serves local
