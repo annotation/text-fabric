@@ -159,6 +159,9 @@ class Transcription(object):
     self.hebrew_mappingi = dict((v, k)
                                 for (k, v) in Transcription.hebrew_mapping.items()
                                 if k != '')
+    self.syriac_mappingi = dict((v, k)
+                                for (k, v) in Transcription.syriac_mapping.items()
+                                if k != '')
     # special treatment needed for nun hafukha,
     # since it is consists of two characters
     self.hebrew_mappingi['\u05C6'] = 'ñ'
