@@ -8,6 +8,12 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.21
+
+2018-08-30
+
+Bug fix in transcription.py w.r.t. to Syriac transcriptions.
+
 ## 5.5.20
 
 2018-08-16
