@@ -6,7 +6,8 @@
 ## About
 
 Before diving head-on into Text-Fabric, you might want to read a bit more about
-what it is and where it came from.
+what it is and where it came from. And after it, if you want to cite it, use this
+[DOI: 10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193).
 
 ??? abstract "Intro"
     Text-Fabric is several things:
