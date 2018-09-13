@@ -797,7 +797,11 @@ but stores text as a bunch of features in plain text files.</p><p>These features
 abstract fabric of the text.</p></details><details class="abstract"><summary>Performance matters</summary><p>Based on this model, Text-Fabric offers a <a href="./Api/General/">processing API</a>
 to search, navigate and process text and its annotations.
 A lot of care has been taken to make this API work as fast as possible.
-Efficiency in data processing has been a design criterion from the start.</p></details><details class="abstract"><summary>Search for patterns</summary><p>The <a href="./Api/General/#searching">search API</a>
+Efficiency in data processing has been a design criterion from the start.</p><p>See e.g. the comparisons between the Text-Fabric way of serializing (pickle + gzip)
+and
+<a href="https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/avro/avro.ipynb">avro</a>,
+<a href="https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/joblib/joblib.ipynb">joblib</a>, and
+<a href="https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/marshal/marshal.ipynb">marshal</a>.</p></details><details class="abstract"><summary>Search for patterns</summary><p>The <a href="./Api/General/#searching">search API</a>
 works with search templates that define relational patterns
 which will be instantiated by nodes and edges of the fabric.</p></details><details class="abstract"><summary>Pick and choose data</summary><p>Students can selectively
 <a href="./Api/General/#loading">load</a>
