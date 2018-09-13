@@ -13,9 +13,10 @@ meta | data
 --- | ---
 Job | DefaulT
 Author | Dirk Roorda
-Created | 2018-08-30T11:39:48+02:00
+Created | 2018-09-11T11:55:08+02:00
 Corpus | Uruk IV/III: Proto-cuneiform tablets (1.0) [10.5281/zenodo.1193841](https://doi.org/10.5281/zenodo.1193841)
-Tool | Text-Fabric 5.5.18 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
+Tool | Text-Fabric 5.5.21 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
+See also | [Compose results example](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/examples/compose.ipynb)
 
 
 # Iets leuks
