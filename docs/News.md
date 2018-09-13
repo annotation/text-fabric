@@ -8,6 +8,12 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.22
+
+2018-09-13
+
+Fix in left-to-right displays of extra features in `pretty()` displays in the BHSA.
+
 ## 5.5.21
 
 2018-08-30

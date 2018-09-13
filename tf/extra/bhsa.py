@@ -122,7 +122,7 @@ CSS = '''
     direction: rtl;
     background-color: #ffffff;
 }
-.lex {
+.lextp {
     padding: 0.1em;
     margin: 0.1em;
     border-radius: 0.1em;
@@ -215,6 +215,7 @@ CSS = '''
     flex-flow: column nowrap;
     padding: 0.1em;
     margin: 0.1em;
+    direction: ltr;
 }
 .features .f {
     font-family: sans-serif;
@@ -245,7 +246,7 @@ CLASS_NAMES = dict(
     phrase_atom='patom',
     subphrase='subphrase',
     word='word',
-    lex='lex',
+    lex='lextp',
 )
 
 ATOMS = dict(
