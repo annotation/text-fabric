@@ -53,6 +53,12 @@ what it is and where it came from. And after it, if you want to cite it, use thi
         A lot of care has been taken to make this API work as fast as possible.
         Efficiency in data processing has been a design criterion from the start.
 
+        See e.g. the comparisons between the Text-Fabric way of serializing (pickle + gzip)
+        and
+        [avro](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/avro/avro.ipynb),
+        [joblib](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/joblib/joblib.ipynb), and
+        [marshal](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/marshal/marshal.ipynb).
+
     ??? abstract "Search for patterns"
         The [search API](/Api/General/#searching)
         works with search templates that define relational patterns
