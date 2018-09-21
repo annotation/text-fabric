@@ -109,14 +109,14 @@ class Search(object):
       self.exe = exe
     return exe.study(strategy=strategy)
 
-  def fetch(self, limit=None):
+  def fetch(self, limit=None, msgCache=False):
     exe = self.exe
     if exe is None:
       error = self.api.error
       error('Cannot fetch if there is no previous "study()"')
     else:
       queryResults = exe.fetch(limit=limit)
-      if self.msgCache:
+      if msgCache:
         messages = self.api.cache(asString=True)
         return (queryResults, messages)
       return queryResults

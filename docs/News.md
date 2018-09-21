@@ -8,6 +8,12 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.23
+
+2018-09-21
+
+Problem in use of `msgCache` in the search engine, which caused `fetch()` to fail in some cases. Fixed.
+
 ## 5.5.22
 
 2018-09-13
