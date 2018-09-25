@@ -327,7 +327,12 @@ class Bhsa(object):
     self.asApi = asApi
     self.version = version
     self.condenseType = CONDENSE_TYPE
-    self.exampleSection = 'Genesis 1:1'
+    self.exampleSection = (
+        '<code>Genesis 1:1</code> (use'
+        ' <a href="https://github.com/ETCBC/bhsa/blob/master/tf/c/book%40en.tf" target="_blank">'
+        'English book names</a>)'
+    )
+    self.exampleSectionText = 'Genesis 1:1'
 
     standardFeatures = (
         STANDARD_FEATURES.replace('voc_', 'g_') if version in {'4', '4b'} else STANDARD_FEATURES

@@ -177,7 +177,7 @@
                     <details id="helpSections" class="help sections">
                         <summary>{{defaultCondenseType.capitalize()}} pad</summary>
                         <p>Enter a reference here,
-                           such as <code>{{exampleSection}}.</code></p>
+                           such as {{!exampleSection}}.</p>
                         <p>Copy {{defaultCondenseType}}s to here by clicking on a
                            {{defaultCondenseType}} reference in the result list.</p>
                         <p>Click <b>Go</b> to fetch the results.</p>
@@ -268,7 +268,7 @@
                 <p class="ilab">{{defaultCondenseType}} pad</p>
                 <textarea
                     id="sections" class="sections" name="sections"
-                    placeholder="{{exampleSection}}"
+                    placeholder="{{exampleSectionText}}"
                 >{{sections}}</textarea>
                 <div class="messages">
                     {{!sectionMessages}}
