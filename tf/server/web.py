@@ -295,7 +295,12 @@ def serveSearch(anything):
   css = kernelApi.css()
   (provenanceHtml, provenanceMd) = getProvenance(form)
 
-  (defaultCondenseType, exampleSection, condenseTypes) = kernelApi.condenseTypes()
+  (
+      defaultCondenseType,
+      exampleSection,
+      exampleSectionText,
+      condenseTypes
+  ) = kernelApi.condenseTypes()
   condenseType = form['condensetp'] or defaultCondenseType
   condenseOpts = shapeCondense(condenseTypes, condenseType)
 
@@ -389,6 +394,7 @@ def serveSearch(anything):
       condenseOpts=condenseOpts,
       defaultCondenseType=defaultCondenseType,
       exampleSection=exampleSection,
+      exampleSectionText=exampleSectionText,
       withNodesAtt=withNodesAtt,
       pages=pages,
       otherJobs=otherJobs,

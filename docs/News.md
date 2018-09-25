@@ -8,6 +8,13 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.24
+
+2018-09-25
+
+BHSA app in Text-Fabric Browser: the book names on the verse pad should be the English book names.
+That is now in the help texts, including a link to the list of English book names.
+
 ## 5.5.23
 
 2018-09-21

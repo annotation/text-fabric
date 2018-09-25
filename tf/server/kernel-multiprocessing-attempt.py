@@ -65,7 +65,12 @@ def makeTfKernel(dataSource, locations, modules, port):
 
     def condenseTypes(self):
       api = extraApi.api
-      return (extraApi.condenseType, extraApi.exampleSection, api.C.levels.data)
+      return (
+          extraApi.condenseType,
+          extraApi.exampleSection,
+          extraApi.exampleSectionText,
+          api.C.levels.data
+      )
 
     def search(
         self, query, tuples, sections, condensed, condenseType, batch,

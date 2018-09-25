@@ -555,7 +555,8 @@ class Cunei(Atf):
     self.corpus = f'{repo}/{CORPUS}'
     self.corpusFull = CORPUS_FULL
     self.condenseType = CONDENSE_TYPE
-    self.exampleSection = 'P005381'
+    self.exampleSection = '<code>P005381</code>'
+    self.exampleSectionText = 'P005381'
     TF = Fabric(locations=[self.corpus], modules=[''], silent=True)
     api = TF.load('', silent=True)
     self.api = api
