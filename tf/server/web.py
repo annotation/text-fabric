@@ -125,6 +125,25 @@ def writeAbout(header, provenance, form):
 
 {form["description"]}
 
+## Information requests:
+
+### Sections
+
+```
+{form["sections"]}
+```
+
+### Nodes
+
+```
+{form["tuples"]}
+```
+
+### Search
+
+```
+{form["searchTemplate"]}
+```
 ''')
 
 
@@ -138,8 +157,9 @@ def writeCsvs(csvs, context, form):
       for tup in data:
         th.write('\t'.join(str(t) for t in tup) + '\n')
   with open(f'{dirName}/CONTEXT.tsv', 'w', encoding='utf8') as th:
-      for tup in context:
-        th.write('\t'.join('' if t is None else str(t) for t in tup) + '\n')
+    th.write('﻿')  # utf8 bom mark, useful for opening file in Excel
+    for tup in context:
+      th.write('\t'.join('' if t is None else str(t) for t in tup) + '\n')
 
 
 def getInt(x, default=1):

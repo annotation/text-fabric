@@ -8,6 +8,19 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.5.25
+
+2018-10-03
+
+The Text-Fabric browser exports results as node lists and produces also a CONTEXT.csv with all feature
+values for all nodes in the results.
+However, it does not contain full text representations of the nodes and it is also not possible to see in what verses
+the nodes occur.
+
+That has changed. The last column of CONTEXT.tsv contains the full text of a node.
+And there are three columns at the beginning that contain the references to the sections the node is in.
+For the BHSA that is the book, chapter and verse.
+
 ## 5.5.24
 
 2018-09-25

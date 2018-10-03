@@ -378,7 +378,7 @@ class Bhsa(object):
     dataLink = outLink(CORPUS.upper(), docUrl, '{provenance of this corpus}')
     featureLink = outLink(
         'Feature docs', f'{docUrl}/features/hebrew/{self.version}/0_home.html',
-        '{CORPUS.upper()} feature documentation'
+        f'{CORPUS.upper()} feature documentation'
     )
     bhsaLink = outLink('BHSA API', extraUrl, 'BHSA API documentation')
     tfLink = outLink(

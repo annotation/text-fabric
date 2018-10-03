@@ -599,7 +599,7 @@ def getFeatures(
   return featurePart
 
 
-def getContext(api, nodes):
+def getContextOld(api, nodes):
   Fs = api.Fs
   Fall = api.Fall
 
@@ -608,6 +608,32 @@ def getContext(api, nodes):
   rows.append(('node',) + feats)
   for n in sorted(nodes):
     rows.append((n,) + tuple(Fs(f).v(n) for f in feats))
+  return tuple(rows)
+
+
+def getContext(api, nodes):
+  F = api.F
+  Fs = api.Fs
+  Fall = api.Fall
+  T = api.T
+  L = api.L
+  slotType = F.otype.slotType
+  sectionTypes = set(T.sectionTypes)
+
+  rows = []
+  feats = tuple(sorted(Fall()))
+  rows.append(('node',) + tuple(T.sectionTypes) + feats + ('text',))
+  for n in sorted(nodes):
+    nType = F.otype.v(n)
+    sParts = T.sectionFromNode(n)
+    nParts = len(sParts)
+    section = sParts + ((None,) * (3 - nParts))
+    if nType in sectionTypes:
+      text = ''
+    else:
+      sns = [n] if nType == slotType else L.d(n, otype=slotType)
+      text = T.text(sns)
+    rows.append((n,) + section + tuple(Fs(f).v(n) for f in feats) + (text,))
   return tuple(rows)
 
 

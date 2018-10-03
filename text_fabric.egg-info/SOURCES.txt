@@ -58,7 +58,6 @@ tf/search/stitch.py
 tf/search/syntax.py
 tf/server/__init__.py
 tf/server/common.py
-tf/server/kernel-multiprocessing-attempt.py
 tf/server/kernel.py
 tf/server/start.py
 tf/server/web.py
