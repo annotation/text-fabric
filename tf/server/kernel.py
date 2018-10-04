@@ -5,7 +5,7 @@ from rpyc.utils.server import ThreadedServer
 
 from tf.apphelpers import (
     runSearch, runSearchCondensed,
-    compose, getContext
+    compose, getContext, getResultsX
 )
 from .common import getParam, getConfig
 
@@ -128,7 +128,7 @@ def makeTfKernel(dataSource, locations, modules, port):
       queryResults = ()
       queryMessages = ''
       if query:
-        (queryResults, queryMessages) = (
+        (queryResults, queryMessages, features) = (
             runSearchCondensed(api, query, cache, condenseType)
             if condensed and condenseType else
             runSearch(api, query, cache)
@@ -198,26 +198,45 @@ def makeTfKernel(dataSource, locations, modules, port):
           pass
 
       queryResults = ()
+      features = ()
       if query:
-        (queryResults, queryMessages) = (
+        (queryResults, queryMessages, features) = (
+            runSearch(api, query, cache)
+        )
+        (queryResultsC, queryMessagesC, featuresC) = (
             runSearchCondensed(api, query, cache, condenseType)
             if condensed and condenseType else
-            runSearch(api, query, cache)
+            (None, None, None)
         )
 
         if queryMessages:
           queryResults = ()
+        if queryMessagesC:
+          queryResultsC = ()
 
       csvs = (
           ('sections', sectionResults),
           ('nodes', tupleResults),
           ('results', queryResults),
       )
+      if condensed and condenseType:
+        csvs += (
+            ('resultsCondensed', queryResultsC),
+        )
       context = getContext(
           api,
-          allNodes(sectionResults) | allNodes(tupleResults) | allNodes(queryResults)
+          (
+              allNodes(sectionResults) |
+              allNodes(tupleResults) |
+              allNodes(queryResultsC if condensed and condenseType else queryResults)
+          )
       )
-      return (pickle.dumps(csvs), pickle.dumps(context))
+      resultsX = getResultsX(
+          api,
+          queryResults,
+          features,
+      )
+      return (pickle.dumps(csvs), pickle.dumps(context), pickle.dumps(resultsX))
 
   return ThreadedServer(TfKernel, port=port, protocol_config={
       # 'allow_pickle': True,

@@ -13,17 +13,57 @@ meta | data
 --- | ---
 Job | DefaulT
 Author | Dirk Roorda
-Created | 2018-09-11T11:55:08+02:00
+Created | 2018-10-04T12:30:18+02:00
 Corpus | Uruk IV/III: Proto-cuneiform tablets (1.0) [10.5281/zenodo.1193841](https://doi.org/10.5281/zenodo.1193841)
-Tool | Text-Fabric 5.5.21 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
+Tool | Text-Fabric 5.5.25 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
 See also | [Compose results example](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/examples/compose.ipynb)
 
 
-# Iets leuks
+# Uncased numerals
 
 ## Dirk Roorda
 
-Spijkers, **hamers**
+# Where are the numerals?
 
-En al de rest
+We are interested in tablets that lack numerals in their cases.
 
+But we do want to see numerals at the top level: in lines that are not subdivided into cases.
+
+One more constraint: we also require that the tablet does contains cases.
+
+This query finds all witnesses of the fact that there are tablets with numerals and lines with cases, while none of these cases contains any numerals.
+
+For the sake of export, we mention the features `excavation` and `repeat` in our query. The `*` means that these features do not pose extra restrictions. But mentioning them will include them in the exported CSV.
+
+## Information requests:
+
+### Sections
+
+```
+P001195
+P464179
+```
+
+### Nodes
+
+```
+151512,18052
+154571
+```
+
+### Search
+
+```
+tablet catalogId~P excavation*
+/where/
+  case
+/have/
+  /without/
+    sign type=numeral
+  /-/
+/-/
+/with/
+  case
+/-/
+  sign type=numeral repeat*
+```

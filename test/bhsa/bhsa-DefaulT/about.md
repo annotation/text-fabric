@@ -13,9 +13,9 @@ meta | data
 --- | ---
 Job | DefaulT
 Author | Dirk Roorda
-Created | 2018-10-02T21:31:12+02:00
+Created | 2018-10-04T12:34:51+02:00
 Corpus | BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis (c) [10.5281/zenodo.1007624](https://doi.org/10.5281/zenodo.1007624)
-Tool | Text-Fabric 5.5.24 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
+Tool | Text-Fabric 5.5.25 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
 See also | [Compose results example](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/examples/compose.ipynb)
 
 
@@ -33,6 +33,7 @@ There turn out to be **229** results.
 
 We show the first and last result on the verse pad, and we store two examples in between on the *notepad*.
 
+For the sake of export, we mention the features `typ` and `vs` (verbal stem) in our query. The `*` means that these features do not pose extra restrictions. But mentioning them will include them in the exported CSV.
 
 ## Information requests:
 
@@ -53,12 +54,12 @@ Genesis 10:19
 ### Search
 
 ```
-clause rela=Attr
+clause rela=Attr typ*
 /without/
   phrase function=Rela
 /-/
 /without/
   word vt=ptca|ptcp
 /-/
-  word pdp=verb
+  word pdp=verb vs*
 ```

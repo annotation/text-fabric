@@ -957,11 +957,22 @@
     ---- | -------
     | has any value except `None`
     `#` | has value `None`
+    `*` | has arbitrary value
     `=`*values* | has one of the values specified
     `#`*values* | has none of the values specified
     `>`*value* | is greater than *value*
     `<`*value* | is less than *value*
     `~`*regular expression* | has a value and it matches *regular expression*
+
+    ??? hint "Why `*` ?"
+        The operator `*` after a feature name does not pose any restriction at all.
+        It will not influence the search results.
+        
+        *Why would you want to include such a "criterion"?*
+        
+        Some applications, such as the Text-Fabric browser collect the features used in a query
+        to retrieve result information to be presented to the user. So if you want to include
+        the values of a particular feature, mention that feature with a `*`.
 
     All these forms are also valid as `-`*name* *form*`>` and `<`*name* *form*`-`, in which case
     they specify value constraints on edge features.

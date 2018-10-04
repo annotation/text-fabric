@@ -30,15 +30,16 @@ VAL_ESCAPES = {
 
 opPat = '(?:[#&|\[\]<>:=-]+\S*)'
 
-atomOpPat = ('(\s*)({op})\s+([^ \t=#<>~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(op=opPat))
-atomPat = '(\s*)([^ \t=#<>~]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
+atomOpPat = ('(\s*)({op})\s+([^ \t=#<>~*]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(op=opPat))
+atomPat = '(\s*)([^ \t=#<>~*]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
 compPat = '^([a-zA-Z0-9-@_]+)([<>])(.*)$'
 identPat = '^([a-zA-Z0-9-@_]+)([=#])(.+)$'
 indentLinePat = '^(\s*)(.*)'
 kPat = '^([^0-9]*)([0-9]+)([^0-9]*)$'
 namePat = '[A-Za-z0-9_.-]+'
-namesPat = '^\s*(?:{op}\s+)?([^ \t:=#<>~]+):'
+namesPat = '^\s*(?:{op}\s+)?([^ \t:=#<>~*]+):'
 nonePat = '^([a-zA-Z0-9-@_]+)(#?)\s*$'
+truePat = '^([a-zA-Z0-9-@_]+)[*]\s*$'
 numPat = '^-?[0-9]+$'
 opLinePat = '^(\s*)({op})\s*$'.format(op=opPat)
 opStripPat = '^\s*{op}\s+(.*)$'.format(op=opPat)
@@ -57,6 +58,7 @@ nameRe = re.compile('^{}$'.format(namePat))
 namesRe = re.compile(namesPat)
 numRe = re.compile(numPat)
 noneRe = re.compile(nonePat)
+trueRe = re.compile(truePat)
 opLineRe = re.compile(opLinePat)
 opStripRe = re.compile(opStripPat)
 quLineRe = re.compile(quLinePat)
@@ -493,6 +495,12 @@ def parseFeatureVals(searchExe, featStr, features, i, asEdge=False):
     feat = featStr.replace(chr(1), ' ')
   good = True
   for x in [True]:
+    match = trueRe.match(feat)
+    if match:
+      (featN,) = match.groups()
+      featName = _unesc(featN)
+      featVals = (None, True)
+      break
     match = noneRe.match(feat)
     if match:
       (featN, unequal) = match.groups()

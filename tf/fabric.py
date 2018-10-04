@@ -22,7 +22,7 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '5.5.25'
+VERSION = '5.6.0'
 DOI = '10.5281/zenodo.592193'
 DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'

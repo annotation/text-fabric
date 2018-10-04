@@ -565,7 +565,9 @@ def basicRelations(searchExe, api, silent):
           )
         else:
           (ident, value) = value
-          if ident:
+          if (ident is None and value is True):
+            return lambda n: tuple(m[0] for m in eFunc(n))
+          elif ident:
             return lambda n: tuple(m[0] for m in eFunc(n) if m[1] in value)
           else:
             return lambda n: tuple(m[0] for m in eFunc(n) if m[1] not in value)
