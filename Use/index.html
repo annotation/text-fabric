@@ -307,6 +307,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#work-with-exported-results" title="Work with exported results" class="md-nav__link">
+    Work with exported results
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#use-the-text-fabric-api" title="Use the Text-Fabric API" class="md-nav__link">
     Use the Text-Fabric API
   </a>
@@ -736,6 +743,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#work-with-exported-results" title="Work with exported results" class="md-nav__link">
+    Work with exported results
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#use-the-text-fabric-api" title="Use the Text-Fabric API" class="md-nav__link">
     Use the Text-Fabric API
   </a>
@@ -789,7 +803,21 @@ other directories. You can also load other sessions in other tabs.</p></details>
 This is a process that holds all the data and can deliver it to other processes,
 such as your web browser.</p><p>As long as you leave the TF kernel on, you have instant access to your corpus.</p><p>You can open other browsers and windows and tabs with the same url,
 and they will load quickly, without the long wait you experienced when the TF kernel was loading.</p></details><details class="hint"><summary>Close</summary><p>You can close the TF kernel by pressing Ctrl-C in the terminal or command prompt where you have
-started <code>text-fabric</code> up.</p></details><h2 id="use-the-text-fabric-api">Use the Text-Fabric API<a class="headerlink" href="#use-the-text-fabric-api" title="Permanent link">&para;</a></h2>
+started <code>text-fabric</code> up.</p></details><h2 id="work-with-exported-results">Work with exported results<a class="headerlink" href="#work-with-exported-results" title="Permanent link">&para;</a></h2>
+<p>You can export your results to CSV files which you can process with various tools,
+including your own.</p>
+<details class="hint"><summary>Exporting your results</summary><p>You can use the "Export" tab to tell the story behind your query and then export all your
+results. A new page will open, which you can save as a PDF.</p><p>There is also a markdown file <code>about.md</code> with
+your description and some provenance metadata.</p><p>Moreover, a file <code>RESULTSX.csv</code> is written into a local directory corresponding to the
+job you are in, which contains your precise search results, decorated with the features
+you have used in your searchTemplate.</p><p>In addition, some extra data files will be written along side.
+Your results as tuples of nodes, your condensed results (if you have opted for them),
+and a CONTEXT.csv that contains all feature values for every node in the results.</p><p>Now, if you want to share your results for checking and replication, put all this in a GitHub repository:</p><details class="note" open="open"><summary>Examples</summary><p><strong>Cunei</strong>:
+<a href="https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/about.md">about.md</a>
+<a href="https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/RESULTSX.csv">RESULTSX.csv</a></p><p><strong>BHSA</strong>:
+<a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/about.md">about.md</a>
+<a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/RESULTSX.csv">RESULTSX.csv</a></p></details><p>If you want to be able to cite those results in a journal article, archive the GitHub repo
+in question to <a href="https://zenodo.org">ZENODO</a> and obtain a DOI.</p></details><h2 id="use-the-text-fabric-api">Use the Text-Fabric API<a class="headerlink" href="#use-the-text-fabric-api" title="Permanent link">&para;</a></h2>
 <p>Explore your corpus by means of programming.</p>
 <details class="abstract"><summary>Into the notebook</summary><p>Start programming: write a python script or code in the Jupyter notebook</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> somewhere-else
