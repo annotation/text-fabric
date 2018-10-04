@@ -234,7 +234,12 @@ CSS = '''
 </style>
 '''
 
-CSS_FONT = '<link rel="stylesheet" href="/data/static/fonts.css"/>'
+CSS_FONT = '''
+    <link rel="stylesheet" href="/data/static/fonts.css"/>
+'''
+CSS_FONT_API = '''
+    <link rel="stylesheet" href="https://fontlibrary.org/face/ezra" type="text/css"/>
+'''
 
 CLASS_NAMES = dict(
     verse='verse',
@@ -428,7 +433,7 @@ This notebook online:
     asApi = self.asApi
     if asApi:
       return CSS_FONT + CSS
-    display(HTML(CSS))
+    display(HTML(CSS_FONT_API + CSS))
 
   def shbLink(self, n, text=None, className=None, asString=False, noUrl=False):
     api = self.api
