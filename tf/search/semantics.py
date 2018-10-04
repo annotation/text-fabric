@@ -229,14 +229,15 @@ def _validateFeature(
       valuesCast = set()
       if requiredType == 'int':
         (ident, values) = values
-        for val in values:
-          try:
-            valCast = int(val)
-          except Exception:
-            valCast = val
-            wrongValues.setdefault(fName, {}).setdefault(val, []).append(q)
-          valuesCast.add(valCast)
-        features[fName] = (ident, frozenset(valuesCast))
+        if type(values) is not bool:
+          for val in values:
+            try:
+              valCast = int(val)
+            except Exception:
+              valCast = val
+              wrongValues.setdefault(fName, {}).setdefault(val, []).append(q)
+            valuesCast.add(valCast)
+          features[fName] = (ident, frozenset(valuesCast))
 
 
 def _validation(searchExe):

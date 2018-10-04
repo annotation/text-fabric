@@ -43,7 +43,9 @@ def _spinAtom(searchExe, q):
           break
       else:
         (ident, val) = val
-        if ident:
+        if ident is None and val is True:
+          pass
+        elif ident:
           if fval not in val:
             good = False
             break

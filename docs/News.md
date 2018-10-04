@@ -8,6 +8,18 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.6.0
+
+2018-10-04
+
+Better exporting from TF browser: a good RESULTSX.csv with results, sensibly augmented with information, directly openable
+in Excel, even when non-latin unicode code characters are present .
+All features that occur in the searchTemplate are drawn in into the RESULTSX.csv, onto the nodes they filter.
+
+An additonal feature filtering is now possible in searchTemplates: `feature*`. 
+This acts as "no additional constraint", so it does not influence the result set.
+But it will be picked up and used to add information into the RESULTSX.csv.
+
 ## 5.5.25
 
 2018-10-03

@@ -101,25 +101,31 @@ def search(extraApi, query, silent=False, sets=None, shallow=False):
 
 
 def runSearch(api, query, cache):
-  plainSearch = api.S.search
+  S = api.S
+  plainSearch = S.search
 
   cacheKey = (query, False)
   if cacheKey in cache:
     return cache[cacheKey]
   (queryResults, messages) = plainSearch(query, msgCache=True)
+  features = {}
+  exe = getattr(S, 'exe', None)
+  if exe:
+    qnodes = getattr(exe, 'qnodes', [])
+    features = {i: list(q[1].keys()) for (i, q) in enumerate(qnodes)}
   queryResults = tuple(sorted(queryResults))
-  cache[cacheKey] = (queryResults, messages)
-  return (queryResults, messages)
+  cache[cacheKey] = (queryResults, messages, features)
+  return (queryResults, messages, features)
 
 
 def runSearchCondensed(api, query, cache, condenseType):
   cacheKey = (query, True, condenseType)
   if cacheKey in cache:
     return cache[cacheKey]
-  (queryResults, messages) = runSearch(api, query, cache)
+  (queryResults, messages, features) = runSearch(api, query, cache)
   queryResults = _condense(api, queryResults, condenseType, multiple=True)
-  cache[cacheKey] = (queryResults, messages)
-  return (queryResults, messages)
+  cache[cacheKey] = (queryResults, messages, features)
+  return (queryResults, messages, features)
 
 
 def compose(
@@ -599,18 +605,6 @@ def getFeatures(
   return featurePart
 
 
-def getContextOld(api, nodes):
-  Fs = api.Fs
-  Fall = api.Fall
-
-  rows = []
-  feats = tuple(sorted(Fall()))
-  rows.append(('node',) + feats)
-  for n in sorted(nodes):
-    rows.append((n,) + tuple(Fs(f).v(n) for f in feats))
-  return tuple(rows)
-
-
 def getContext(api, nodes):
   F = api.F
   Fs = api.Fs
@@ -634,6 +628,53 @@ def getContext(api, nodes):
       sns = [n] if nType == slotType else L.d(n, otype=slotType)
       text = T.text(sns)
     rows.append((n,) + section + tuple(Fs(f).v(n) for f in feats) + (text,))
+  return tuple(rows)
+
+
+def getResultsX(api, results, features):
+  F = api.F
+  Fs = api.Fs
+  T = api.T
+  L = api.L
+  slotType = F.otype.slotType
+  sectionTypes = set(T.sectionTypes)
+  if len(results) == 0:
+    return ()
+  firstResult = results[0]
+  nTuple = len(firstResult)
+  refColumns = [
+      i for (i, n) in enumerate(firstResult) if F.otype.v(n) not in sectionTypes
+  ]
+  refColumn = refColumns[0] if refColumns else nTuple - 1
+  header = ['R', 'S1', 'S2', 'S3']
+  emptyA = []
+  for j in range(nTuple):
+    i = j + 1
+    n = firstResult[j]
+    nType = F.otype.v(n)
+    header.extend([f'NODE{i}', f'TYPE{i}'])
+    if nType not in sectionTypes:
+      header.append(f'TEXT{i}')
+    header.extend(f'{feature}{i}' for feature in features.get(j, emptyA))
+  rows = [tuple(header)]
+  for (rm, r) in enumerate(results):
+    rn = rm + 1
+    row = [rn]
+    refN = r[refColumn]
+    sParts = T.sectionFromNode(refN)
+    nParts = len(sParts)
+    section = sParts + ((None,) * (3 - nParts))
+    row.extend(section)
+    for j in range(nTuple):
+      n = r[j]
+      nType = F.otype.v(n)
+      sns = [n] if nType == slotType else L.d(n, otype=slotType)
+      row.extend((n, nType))
+      if nType not in sectionTypes:
+        text = T.text(sns)
+        row.append(text)
+      row.extend(Fs(feature).v(n) for feature in features.get(j, emptyA))
+    rows.append(tuple(row))
   return tuple(rows)
 
 

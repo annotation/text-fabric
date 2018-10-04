@@ -191,22 +191,36 @@ def makeTfKernel(dataSource, locations, modules, port):
       queryResults = ()
       if query:
         (queryResults, queryMessages) = (
-            runSearchCondensed(api, query, cache, condenseType)
-            if condensed and condenseType else
             runSearch(api, query, cache)
         )
+        (queryResultsC, queryMessagesC) = (
+            runSearchCondensed(api, query, cache, condenseType)
+            if condensed and condenseType else
+            (None, None)
+        )
 
-        if queryMessages:
+        if queryMessages or queryMessagesC:
           queryResults = ()
+          if condensed and condenseType:
+            queryResultsC = ()
 
       csvs = (
           ('sections', sectionResults),
           ('nodes', tupleResults),
           ('results', queryResults),
+          ('resultsCondensed', queryResultsC),
       )
       context = getContext(
           api,
-          allNodes(sectionResults) | allNodes(tupleResults) | allNodes(queryResults)
+          (
+              allNodes(sectionResults) |
+              allNodes(tupleResults) |
+              allNodes(
+                  queryResultsC
+                  if condensed and condenseType else
+                  queryResults
+              )
+          )
       )
       return (pickle.dumps(csvs), pickle.dumps(context))
 

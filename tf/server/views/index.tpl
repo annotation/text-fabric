@@ -250,17 +250,27 @@
                         <summary>Export</summary>
                         <p>Export your results. Provide your name, title, and description (markdown is supported),
                            and click <b>Export</b>.</p>
-                        <p>Several things will be exported: a PDF that reflects the results you see on your screen,
-                           complete with metadata and description; a markdown file with the metadata and description;
-                           tab-separated files corresponding to the results of the the contents of the pads: these
-                           files contain the node numbers only, but there is also a file <code>CONTEXT.tsv</code>
-                           that contains full corpus information of every node in every result. 
-                        <p>The exported page opens in a new window or tab, formatted for saving as PDF.</p>
-                        <p>Use your browser to export this page to PDF.</p>
-                        <p>The PDF will contain a complete description of your work, with persistent links
+                        <p>The exported page opens in a new window or tab, formatted for saving as PDF.<br/>
+                           Use your browser to export this page to PDF.<br/>
+                           The PDF will contain a complete description of your work, with persistent links
                            to the corpora and the tools, with additional metadata, and with the information
-                           you specify.</p>
-                        <p><b>Tip</b> Archive this PDF in a repository, and you can cite your work properly.</p>
+                           you specify. It reflects the results as you see them on your screen.</p>
+                        <p>Additional data will be exported as files in a subdirectory corresponding to the current job:<br/>
+                           (1) a file <code>RESULTSX.csv</code>
+                           with all your query results (uncondensed). <b>This file can directly be opened in Excel.</b>
+                           Every row corresponds with a result tuple of nodes.
+                           It contains result sequence number, a verse reference to where
+                           the result occurs, and fields for the member nodes.
+                           Every member of the result tuple corresponds to a few columns: node number, node type, full text,
+                           and features that you have used in the search template for that node.<br/>
+                           <b>Hint:</b> If you want to include more features, use them with a trivial condition in your template,
+                           like so: <code>fff*</code> where <code>fff</code> is the name of your feature. The <code>*</code>
+                           operator means: <i>no value restriction</i>.<br/>
+                           (2) a markdown file <code>about.md</code> with the metadata and description.<br/>
+                           (3) <code>.tsv</code> files corresponding to the results of the the contents of the pads: these
+                           files contain the node numbers only.<br/>
+                           (4) a file <code>CONTEXT.csv</code> with full corpus information of every node in every result.</p>
+                        <p><b>Tip</b> Archive the PDF and data files in an online repository, and you can cite your work properly.</p>
                     </details>
                 </div>
             </div>

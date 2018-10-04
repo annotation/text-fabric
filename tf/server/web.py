@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 import datetime
 import time
 import pickle
@@ -111,8 +112,9 @@ See also | {composeMd}
 def writeAbout(header, provenance, form):
   jobName = form['jobName']
   dirName = f'{dataSource}-{jobName}'
-  if not os.path.exists(dirName):
-    os.makedirs(dirName, exist_ok=True)
+  if os.path.exists(dirName):
+    rmtree(dirName)
+  os.makedirs(dirName, exist_ok=True)
   with open(f'{dirName}/about.md', 'w', encoding='utf8') as ph:
     ph.write(f'''
 {header}
@@ -147,7 +149,7 @@ def writeAbout(header, provenance, form):
 ''')
 
 
-def writeCsvs(csvs, context, form):
+def writeCsvs(csvs, context, resultsX, form):
   jobName = form['jobName']
   dirName = f'{dataSource}-{jobName}'
   if not os.path.exists(dirName):
@@ -156,10 +158,14 @@ def writeCsvs(csvs, context, form):
     with open(f'{dirName}/{csv}.tsv', 'w', encoding='utf8') as th:
       for tup in data:
         th.write('\t'.join(str(t) for t in tup) + '\n')
-  with open(f'{dirName}/CONTEXT.tsv', 'w', encoding='utf8') as th:
-    th.write('﻿')  # utf8 bom mark, useful for opening file in Excel
-    for tup in context:
-      th.write('\t'.join('' if t is None else str(t) for t in tup) + '\n')
+  for (name, data) in (
+      ('CONTEXT', context),
+      ('RESULTSX', resultsX),
+  ):
+    with open(f'{dirName}/{name}.csv', 'w', encoding='utf_16_le') as th:
+      th.write('﻿')  # utf8 bom mark, useful for opening file in Excel
+      for tup in data:
+        th.write('\t'.join('' if t is None else str(t) for t in tup) + '\n')
 
 
 def getInt(x, default=1):
@@ -378,7 +384,7 @@ def serveSearch(anything):
         provenanceMd,
         form,
     )
-    (csvs, context) = kernelApi.csvs(
+    (csvs, context, resultsX) = kernelApi.csvs(
         form['searchTemplate'],
         form['tuples'],
         form['sections'],
@@ -387,7 +393,8 @@ def serveSearch(anything):
     )
     csvs = pickle.loads(csvs)
     context = pickle.loads(context)
-    writeCsvs(csvs, context, form)
+    resultsX = pickle.loads(resultsX)
+    writeCsvs(csvs, context, resultsX, form)
 
     return template(
         'export',
