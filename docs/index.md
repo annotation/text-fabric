@@ -20,9 +20,15 @@ what it is and where it came from. And after it, if you want to cite it, use thi
     built-in a search interface that runs in your browser.
 
     From there the step to program your own analytics is not so big anymore.
-    Because you can call the Text-Fabric API from your Python programs, and
-    it works really well in Jupyter notebooks.
- 
+
+    You can
+    [export](/Use#work-with-exported-results)
+    your results to Excel and work with them from there.
+
+    And if that is not enough,
+    you can call the Text-Fabric API from your Python programs.
+    This works really well in Jupyter notebooks.
+
 ??? abstract "Factory"
     Text-Fabric can be and has been used to construct websites,
     for example [SHEBANQ](https://shebanq.ancient-data.org).
