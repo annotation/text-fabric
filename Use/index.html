@@ -817,7 +817,21 @@ and a CONTEXT.csv that contains all feature values for every node in the results
 <a href="https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/RESULTSX.csv">RESULTSX.csv</a></p><p><strong>BHSA</strong>:
 <a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/about.md">about.md</a>
 <a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/RESULTSX.csv">RESULTSX.csv</a></p></details><p>If you want to be able to cite those results in a journal article, archive the GitHub repo
-in question to <a href="https://zenodo.org">ZENODO</a> and obtain a DOI.</p></details><h2 id="use-the-text-fabric-api">Use the Text-Fabric API<a class="headerlink" href="#use-the-text-fabric-api" title="Permanent link">&para;</a></h2>
+in question to <a href="https://zenodo.org">ZENODO</a> and obtain a DOI.</p><details class="hint" open="open"><summary>Encoding</summary><p>The file <code>RESULTS.csv</code> is not in the usual <code>utf8</code> encoding, but in <code>utf_16</code> encoding.
+The reason is that this is the only encoding in which Excel handles CSV files properly.</p><p>So if you work with this file in Python, specify the encoding <code>utf_16</code>.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;RESULTSX.csv&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf_16&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+  <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">fh</span><span class="p">:</span>
+  <span class="c1"># do something with row </span>
+</pre></div>
+</td></tr></table>
+<details class="note"><summary>Gory details</summary><p>The file has been written with the <code>utf_16_le</code> encoding, and the first character is the unicode
+FEFF character. That is needed for machines so that they can see which byte in a 16 bits word is
+the least end (<code>le</code>) and which one is the big end (<code>be</code>). Knowing that the first character is FEFF,
+all machines can see whether this is in a <em>least-endian (le)</em> encoding or in a  <em>big-endian (be)</em>.
+Hence this character is called the Byte Order Mark (BOM).</p><p>See more on <a href="https://en.wikipedia.org/wiki/Byte_order_mark">wikipedia</a>.</p><p>When reading a file with encoding <code>utf_16</code>, Python reads the BOM, draws its conclusions, and strips the
+BOM. So when you iterate over its lines, you will not see the BOM, which is good.</p><p>But when you read a file with encoding <code>utf_16_le</code>, Python passes the BOM through, and you have to skip
+it yourself. That is unpleasant.</p><p>Hence, use <code>utf_16</code> for reading.  </p></details></details></details><h2 id="use-the-text-fabric-api">Use the Text-Fabric API<a class="headerlink" href="#use-the-text-fabric-api" title="Permanent link">&para;</a></h2>
 <p>Explore your corpus by means of programming.</p>
 <details class="abstract"><summary>Into the notebook</summary><p>Start programming: write a python script or code in the Jupyter notebook</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> somewhere-else
