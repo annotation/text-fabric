@@ -112,7 +112,7 @@ def runSearch(api, query, cache):
   exe = getattr(S, 'exe', None)
   if exe:
     qnodes = getattr(exe, 'qnodes', [])
-    features = {i: list(q[1].keys()) for (i, q) in enumerate(qnodes)}
+    features = tuple((i, tuple(sorted(q[1].keys()))) for (i, q) in enumerate(qnodes))
   queryResults = tuple(sorted(queryResults))
   cache[cacheKey] = (queryResults, messages, features)
   return (queryResults, messages, features)
@@ -648,6 +648,9 @@ def getResultsX(api, results, features):
   refColumn = refColumns[0] if refColumns else nTuple - 1
   header = ['R', 'S1', 'S2', 'S3']
   emptyA = []
+
+  featureDict = dict(features)
+
   for j in range(nTuple):
     i = j + 1
     n = firstResult[j]
@@ -655,7 +658,7 @@ def getResultsX(api, results, features):
     header.extend([f'NODE{i}', f'TYPE{i}'])
     if nType not in sectionTypes:
       header.append(f'TEXT{i}')
-    header.extend(f'{feature}{i}' for feature in features.get(j, emptyA))
+    header.extend(f'{feature}{i}' for feature in featureDict.get(j, emptyA))
   rows = [tuple(header)]
   for (rm, r) in enumerate(results):
     rn = rm + 1
@@ -673,7 +676,7 @@ def getResultsX(api, results, features):
       if nType not in sectionTypes:
         text = T.text(sns)
         row.append(text)
-      row.extend(Fs(feature).v(n) for feature in features.get(j, emptyA))
+      row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
     rows.append(tuple(row))
   return tuple(rows)
 

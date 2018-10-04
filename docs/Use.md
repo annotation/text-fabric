@@ -93,12 +93,14 @@ including your own.
 
     ???+ note "Examples"
         **Cunei**:
-        [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/about.md)
-        [RESULTSX.csv](https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/RESULTSX.csv)
+
+        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/about.md)
+        * [RESULTSX.csv](https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/RESULTSX.csv)
 
         **BHSA**:
-        [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/about.md)
-        [RESULTSX.csv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/RESULTSX.csv)
+
+        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/about.md)
+        * [RESULTSX.csv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/RESULTSX.csv)
 
     If you want to be able to cite those results in a journal article, archive the GitHub repo
     in question to [ZENODO](https://zenodo.org) and obtain a DOI.
@@ -113,6 +115,21 @@ including your own.
         with open('RESULTSX.csv', encoding='utf_16') as fh:
           for row in fh:
           # do something with row 
+        ```
+
+        Conversely, if you want to write a CSV with Hebrew in it, to be opened in Excel, take care to:
+
+        * give the file name extension `.csv` (not `.tsv`)
+        * make the file **tab** separated (do not use the comma or semicolon!)
+        * use the encoding `utf_16_le` (not merely `utf_16`, nor `utf8`!)
+        * start the file with a BOM mark.
+
+        ```python
+        with open('mydata.csv', 'w', encoding='utf_16_le') as fh:
+          fh.write('\uFEFF')
+          for row in myData:
+            fh.write('\t'.join(row))
+            fh.write('\n')
         ```
 
         ??? note "Gory details"
