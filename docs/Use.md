@@ -69,6 +69,40 @@ Here is how to start up text-fabric.
     You can close the TF kernel by pressing Ctrl-C in the terminal or command prompt where you have
     started `text-fabric` up.
 
+## Work with exported results
+
+You can export your results to CSV files which you can process with various tools,
+including your own.
+
+??? hint "Exporting your results"
+    You can use the "Export" tab to tell the story behind your query and then export all your
+    results. A new page will open, which you can save as a PDF.
+    
+    There is also a markdown file `about.md` with
+    your description and some provenance metadata.
+
+    Moreover, a file `RESULTSX.csv` is written into a local directory corresponding to the
+    job you are in, which contains your precise search results, decorated with the features
+    you have used in your searchTemplate.
+
+    In addition, some extra data files will be written along side.
+    Your results as tuples of nodes, your condensed results (if you have opted for them),
+    and a CONTEXT.csv that contains all feature values for every node in the results.
+
+    Now, if you want to share your results for checking and replication, put all this in a GitHub repository:
+
+    ???+ note "Examples"
+        **Cunei**:
+        [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/about.md)
+        [RESULTSX.csv](https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/RESULTSX.csv)
+
+        **BHSA**:
+        [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/about.md)
+        [RESULTSX.csv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/RESULTSX.csv)
+
+    If you want to be able to cite those results in a journal article, archive the GitHub repo
+    in question to [ZENODO](https://zenodo.org) and obtain a DOI.
+
 ## Use the Text-Fabric API
 
 Explore your corpus by means of programming.
