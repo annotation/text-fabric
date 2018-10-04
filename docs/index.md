@@ -71,7 +71,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
         When the time comes to share the fruits of their thought,
         they can do so in various ways:
 
-        * when using the TF browser, results can be exported as PDF and stored
+        * when using the TF browser, results can be [exported](/Use#work-with-exported-results) as PDF and stored
           in a repository;
         * when programming in a notebook, these notebooks can easily be shared online
           by using GitHub of NBViewer.
