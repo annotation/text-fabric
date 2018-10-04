@@ -256,7 +256,7 @@
                            to the corpora and the tools, with additional metadata, and with the information
                            you specify. It reflects the results as you see them on your screen.</p>
                         <p>Additional data will be exported as files in a subdirectory corresponding to the current job:<br/>
-                           (1) a file <code>RESULTSX.csv</code>
+                           (1) a file <code>RESULTSX.tsv</code>
                            with all your query results (uncondensed). <b>This file can directly be opened in Excel.</b>
                            Every row corresponds with a result tuple of nodes.
                            It contains result sequence number, a verse reference to where
@@ -269,7 +269,7 @@
                            (2) a markdown file <code>about.md</code> with the metadata and description.<br/>
                            (3) <code>.tsv</code> files corresponding to the results of the the contents of the pads: these
                            files contain the node numbers only.<br/>
-                           (4) a file <code>CONTEXT.csv</code> with full corpus information of every node in every result.</p>
+                           (4) a file <code>CONTEXT.tsv</code> with full corpus information of every node in every result.</p>
                         <p><b>Tip</b> Archive the PDF and data files in an online repository, and you can cite your work properly.</p>
                     </details>
                 </div>

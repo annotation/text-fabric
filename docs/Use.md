@@ -81,13 +81,13 @@ including your own.
     There is also a markdown file `about.md` with
     your description and some provenance metadata.
 
-    Moreover, a file `RESULTSX.csv` is written into a local directory corresponding to the
+    Moreover, a file `RESULTSX.tsv` is written into a local directory corresponding to the
     job you are in, which contains your precise search results, decorated with the features
     you have used in your searchTemplate.
 
     In addition, some extra data files will be written along side.
     Your results as tuples of nodes, your condensed results (if you have opted for them),
-    and a CONTEXT.csv that contains all feature values for every node in the results.
+    and a CONTEXT.tsv that contains all feature values for every node in the results.
 
     Now, if you want to share your results for checking and replication, put all this in a GitHub repository:
 
@@ -95,37 +95,37 @@ including your own.
         **Cunei**:
 
         * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/about.md)
-        * [RESULTSX.csv](https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/RESULTSX.csv)
+        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/RESULTSX.tsv)
 
         **BHSA**:
 
         * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/about.md)
-        * [RESULTSX.csv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/RESULTSX.csv)
+        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/RESULTSX.tsv)
 
     If you want to be able to cite those results in a journal article, archive the GitHub repo
     in question to [ZENODO](https://zenodo.org) and obtain a DOI.
 
     ???+ hint "Encoding"
-        The file `RESULTS.csv` is not in the usual `utf8` encoding, but in `utf_16` encoding.
+        The file `RESULTS.tsv` is not in the usual `utf8` encoding, but in `utf_16` encoding.
         The reason is that this is the only encoding in which Excel handles CSV files properly.
 
         So if you work with this file in Python, specify the encoding `utf_16`.
 
         ```python
-        with open('RESULTSX.csv', encoding='utf_16') as fh:
+        with open('RESULTSX.tsv', encoding='utf_16') as fh:
           for row in fh:
           # do something with row 
         ```
 
         Conversely, if you want to write a CSV with Hebrew in it, to be opened in Excel, take care to:
 
-        * give the file name extension `.csv` (not `.tsv`)
+        * give the file name extension `.tsv` (not `.csv`)
         * make the file **tab** separated (do not use the comma or semicolon!)
         * use the encoding `utf_16_le` (not merely `utf_16`, nor `utf8`!)
         * start the file with a BOM mark.
 
         ```python
-        with open('mydata.csv', 'w', encoding='utf_16_le') as fh:
+        with open('mydata.tsv', 'w', encoding='utf_16_le') as fh:
           fh.write('\uFEFF')
           for row in myData:
             fh.write('\t'.join(row))

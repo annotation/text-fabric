@@ -13,9 +13,9 @@ meta | data
 --- | ---
 Job | DefaulT
 Author | Dirk Roorda
-Created | 2018-10-04T19:24:17+02:00
+Created | 2018-10-04T19:44:54+02:00
 Corpus | BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis (c) [10.5281/zenodo.1007624](https://doi.org/10.5281/zenodo.1007624)
-Tool | Text-Fabric 5.6.1 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
+Tool | Text-Fabric 5.6.2 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
 See also | [Compose results example](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/examples/compose.ipynb)
 
 
