@@ -103,6 +103,36 @@ including your own.
     If you want to be able to cite those results in a journal article, archive the GitHub repo
     in question to [ZENODO](https://zenodo.org) and obtain a DOI.
 
+    ???+ hint "Encoding"
+        The file `RESULTS.csv` is not in the usual `utf8` encoding, but in `utf_16` encoding.
+        The reason is that this is the only encoding in which Excel handles CSV files properly.
+
+        So if you work with this file in Python, specify the encoding `utf_16`.
+
+        ```python
+        with open('RESULTSX.csv', encoding='utf_16') as fh:
+          for row in fh:
+          # do something with row 
+        ```
+
+        ??? note "Gory details"
+            The file has been written with the `utf_16_le` encoding, and the first character is the unicode
+            FEFF character. That is needed for machines so that they can see which byte in a 16 bits word is
+            the least end (`le`) and which one is the big end (`be`). Knowing that the first character is FEFF,
+            all machines can see whether this is in a *least-endian (le)* encoding or in a  *big-endian (be)*.
+            Hence this character is called the Byte Order Mark (BOM).
+            
+            See more on [wikipedia](https://en.wikipedia.org/wiki/Byte_order_mark).
+
+            When reading a file with encoding `utf_16`, Python reads the BOM, draws its conclusions, and strips the
+            BOM. So when you iterate over its lines, you will not see the BOM, which is good.
+            
+            But when you read a file with encoding `utf_16_le`, Python passes the BOM through, and you have to skip
+            it yourself. That is unpleasant.
+            
+            Hence, use `utf_16` for reading.  
+
+
 ## Use the Text-Fabric API
 
 Explore your corpus by means of programming.
