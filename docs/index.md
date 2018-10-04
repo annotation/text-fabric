@@ -22,7 +22,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
     From there the step to program your own analytics is not so big anymore.
 
     You can
-    [export](/Use#work-with-exported-results)
+    [export](/Use/#work-with-exported-results)
     your results to Excel and work with them from there.
 
     And if that is not enough,
@@ -77,7 +77,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
         When the time comes to share the fruits of their thought,
         they can do so in various ways:
 
-        * when using the TF browser, results can be [exported](/Use#work-with-exported-results) as PDF and stored
+        * when using the TF browser, results can be [exported](/Use/#work-with-exported-results) as PDF and stored
           in a repository;
         * when programming in a notebook, these notebooks can easily be shared online
           by using GitHub of NBViewer.
