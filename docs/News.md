@@ -8,6 +8,13 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.6.2
+
+2018-10-04
+
+Small optimization.
+More docs about reading and writing Excel compatible CSV files with Hebrew characters in it.
+
 ## 5.6.1
 
 2018-10-04
