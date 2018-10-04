@@ -8,6 +8,14 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.6.4
+
+2018-10-04
+
+Solved a font-rendering issue on Safari 12 (Macos Mojave): locally installed fonts, such as Ezra SIL are not being
+honored. So I linked to a stylesheet of the [fontlibrary](https://fontlibrary.org) which has a webfont version of
+Ezra SIL. That worked.
+
 ## 5.6.3
 
 2018-10-04
