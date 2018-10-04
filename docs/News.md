@@ -8,6 +8,12 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 5.6.3
+
+2018-10-04
+
+Exported tab-separated files get extension `.tsv` instead of `.csv`, because then they render better in GitHub. 
+
 ## 5.6.2
 
 2018-10-04
@@ -19,19 +25,19 @@ More docs about reading and writing Excel compatible CSV files with Hebrew chara
 
 2018-10-04
 
-Better exporting from TF browser: a good RESULTSX.csv with results, sensibly augmented with information, directly openable
+Better exporting from TF browser: a good RESULTSX.tsv with results, sensibly augmented with information, directly openable
 in Excel, even when non-latin unicode code characters are present .
-All features that occur in the searchTemplate are drawn in into the RESULTSX.csv, onto the nodes they filter.
+All features that occur in the searchTemplate are drawn in into the RESULTSX.tsv, onto the nodes they filter.
 
 An additonal feature filtering is now possible in searchTemplates: `feature*`. 
 This acts as "no additional constraint", so it does not influence the result set.
-But it will be picked up and used to add information into the RESULTSX.csv.
+But it will be picked up and used to add information into the RESULTSX.tsv.
 
 ## 5.5.25
 
 2018-10-03
 
-The Text-Fabric browser exports results as node lists and produces also a CONTEXT.csv with all feature
+The Text-Fabric browser exports results as node lists and produces also a CONTEXT.tsv with all feature
 values for all nodes in the results.
 However, it does not contain full text representations of the nodes and it is also not possible to see in what verses
 the nodes occur.

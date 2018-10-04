@@ -162,7 +162,7 @@ def writeCsvs(csvs, context, resultsX, form):
       ('CONTEXT', context),
       ('RESULTSX', resultsX),
   ):
-    with open(f'{dirName}/{name}.csv', 'w', encoding='utf_16_le') as th:
+    with open(f'{dirName}/{name}.tsv', 'w', encoding='utf_16_le') as th:
       th.write('﻿')  # utf8 bom mark, useful for opening file in Excel
       for tup in data:
         th.write('\t'.join('' if t is None else str(t) for t in tup) + '\n')
