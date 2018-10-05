@@ -276,6 +276,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#60" title="6.0" class="md-nav__link">
+    6.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#564" title="5.6.4" class="md-nav__link">
     5.6.4
   </a>
@@ -1598,6 +1605,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#60" title="6.0" class="md-nav__link">
+    6.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#564" title="5.6.4" class="md-nav__link">
     5.6.4
   </a>
@@ -2504,7 +2518,66 @@
 <details class="hint" open="open"><summary>Consult the tutorials after changes</summary><p>When we change the API, we make sure that the tutorials shows off
 all possibilities:
 <a href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">bhsa</a>
-<a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">cunei</a></p></details><h2 id="564">5.6.4<a class="headerlink" href="#564" title="Permanent link">&para;</a></h2>
+<a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">cunei</a></p></details><h2 id="60">6.0<a class="headerlink" href="#60" title="Permanent link">&para;</a></h2>
+<p>2018-10-05</p>
+<p>A big update with several changes:</p>
+<ul>
+<li>An API change: <code>T.text()</code> has more behaviours.
+  This change was needed for the Text-Fabric browser, in order to represent <em>lexemes</em> in exported files.
+  It might also be handy for the programmers amongst you.
+  See the updated <a href="../Api/General/#text-representation">API doc on T</a>.</li>
+</ul>
+<p>!!! hint "Showcase: how to export the BHSA dictionary"
+      * <a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/about.md">about.md</a>
+      * <a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv">RESULTSX.tsv</a></p>
+<ul>
+<li>The Text-Fabric browser checks if you are using the most recent release of the data.</li>
+<li>A font rendering issue in Safari 12 in macos Mojave prevented the use of Ezra SIL for Hebrew in notebooks.
+  We now work around this by relying on the distribution of Ezra SIL as webfont
+  in the <a href="../fontlibrary.org">font library</a>.</li>
+<li>Additional small fixes.</li>
+</ul>
+<div class="admonition caution">
+<p class="admonition-title">Data update needed</p>
+<div class="admonition hint">
+<p class="admonition-title">Text-Fabric itself</p>
+<p>To update Text-Fabric itself to version 6.0, consult <a href="../Install/#text-fabric">Install</a>.
+Perform this step first, because the new TF may download the new data for you.</p>
+</div>
+<p>In order to work successfully with the new <code>T.text()</code> function, you need a newer release (1.4) of the BHSA <em>data</em>.
+(In fact, only one line in one feature has changed (<code>otext.tf</code>).</p>
+<p>Here is how you get it:</p>
+<ul>
+<li>If your Text-Fabric browser has automatically downloaded the data for you, it will detect the new release
+  and download it automatically. You do not have to do anything, except increase your patience.
+  The data has to be downloaded (24 MB) and after that Text-Fabric will precompute related data, which may take
+  a few minutes. This is a one time step after a data update.</li>
+<li>
+<p>If you have a clone of the BHSA repository, then go to that directory and say <code>git pull origin master</code>.
+  If you get error messages, then you have local changes in your local BHSA repository that conflict with
+  the github version. Probably you have run the tutorials in place. Best thing to do is:</p>
+</li>
+<li>
+<p>copy your BHSA tutorial directory to somehwere else;</p>
+</li>
+<li>remove your local BHSA repository entirely;</li>
+<li>
+<p>decide whether you really want the whole repo back (nearly 4 GB):</p>
+<ul>
+<li>if not: you're done, and TF will download automatically the data it needs;</li>
+<li>if you still need it: move one directory up (into the <code>etcbc</code> directory) and do <code>git clone https://github.com/ETCBC/bhsa</code></li>
+</ul>
+</li>
+<li>
+<p>if you want to consult the tutorials:</p>
+<ul>
+<li>view them on <a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/tree/master/tutorial/">nbviewer</a>;</li>
+<li>run them in a directory outside the BHSA repo (where you have copied it a minute ago).</li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="564">5.6.4<a class="headerlink" href="#564" title="Permanent link">&para;</a></h2>
 <p>2018-10-04</p>
 <p>Solved a font-rendering issue on Safari 12 (Macos Mojave): locally installed fonts, such as Ezra SIL are not being
 honored. So I linked to a stylesheet of the <a href="https://fontlibrary.org">fontlibrary</a> which has a webfont version of
