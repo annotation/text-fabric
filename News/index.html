@@ -2522,20 +2522,23 @@ all possibilities:
 <p>2018-10-05</p>
 <p>A big update with several changes:</p>
 <ul>
-<li>An API change: <code>T.text()</code> has more behaviours.
-  This change was needed for the Text-Fabric browser, in order to represent <em>lexemes</em> in exported files.
-  It might also be handy for the programmers amongst you.
-  See the updated <a href="../Api/General/#text-representation">API doc on T</a>.</li>
-</ul>
-<p>!!! hint "Showcase: how to export the BHSA dictionary"
-      * <a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/about.md">about.md</a>
-      * <a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv">RESULTSX.tsv</a></p>
-<ul>
-<li>The Text-Fabric browser checks if you are using the most recent release of the data.</li>
-<li>A font rendering issue in Safari 12 in macos Mojave prevented the use of Ezra SIL for Hebrew in notebooks.
-  We now work around this by relying on the distribution of Ezra SIL as webfont
-  in the <a href="../fontlibrary.org">font library</a>.</li>
-<li>Additional small fixes.</li>
+<li>
+<p>An API change: <code>T.text()</code> has more behaviours.
+    This change was needed for the Text-Fabric browser, in order to represent <em>lexemes</em> in exported files.</p>
+<div class="admonition hint">
+<p class="admonition-title">Showcase: BHSA dictionary</p>
+<p>Here is how you can collect the BHSA lexemes in an Excel sheet.
+<em> <a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/about.md">about.md</a>
+</em> <a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv">RESULTSX.tsv</a></p>
+</div>
+<p>It might also be handy for the programmers amongst you.
+See the updated <a href="../Api/General/#text-representation">API doc on T</a>.
+<em>   The Text-Fabric browser checks if you are using the most recent release of the data.
+</em>   A font rendering issue in Safari 12 in macos Mojave prevented the use of Ezra SIL for Hebrew in notebooks.
+We now work around this by relying on the distribution of Ezra SIL as webfont
+in the <a href="../fontlibrary.org">font library</a>.
+*   Additional small fixes.</p>
+</li>
 </ul>
 <div class="admonition caution">
 <p class="admonition-title">Data update needed</p>
