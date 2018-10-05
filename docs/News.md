@@ -14,20 +14,21 @@
 
 A big update with several changes:
 
-* An API change: `T.text()` has more behaviours.
-  This change was needed for the Text-Fabric browser, in order to represent *lexemes* in exported files.
-  It might also be handy for the programmers amongst you.
-  See the updated [API doc on T](/Api/General/#text-representation).
+*   An API change: `T.text()` has more behaviours.
+    This change was needed for the Text-Fabric browser, in order to represent *lexemes* in exported files.
 
-  !!! hint "Showcase: how to export the BHSA dictionary"
-      * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/about.md)
-      * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
+    !!! hint "Showcase: how to export the BHSA dictionary"
+        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/about.md)
+        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
 
-* The Text-Fabric browser checks if you are using the most recent release of the data.
-* A font rendering issue in Safari 12 in macos Mojave prevented the use of Ezra SIL for Hebrew in notebooks.
-  We now work around this by relying on the distribution of Ezra SIL as webfont
-  in the [font library](fontlibrary.org).
-* Additional small fixes.
+    It might also be handy for the programmers amongst you.
+    See the updated [API doc on T](/Api/General/#text-representation).
+*   The Text-Fabric browser checks if you are using the most recent release of the data.
+*   A font rendering issue in Safari 12 in macos Mojave prevented the use of Ezra SIL for Hebrew in notebooks.
+    We now work around this by relying on the distribution of Ezra SIL as webfont
+    in the [font library](fontlibrary.org).
+*   Additional small fixes.
+
 
 !!! caution "Data update needed"
     !!! hint "Text-Fabric itself"
