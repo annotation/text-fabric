@@ -62,15 +62,16 @@ the github version. Probably you have run the tutorials in place. Best thing to 
 
 * copy your BHSA tutorial directory to somehwere else;
 * remove your local BHSA repository entirely;
-* decide whether you really want the whole repo back (nearly 4 GB):
-    
-  * if not: you're done, and TF will download automatically the data it needs;
-  * if you still need it: move one directory up (into the `etcbc` directory) and do `git clone https://github.com/ETCBC/bhsa`
+* decide whether you really want the whole repo back (nearly 4 GB).
 
-* if you want to consult the tutorials:
+If not: you're done, and TF will download automatically the data it needs.
 
-  * view them on [nbviewer](https://nbviewer.jupyter.org/github/etcbc/bhsa/tree/master/tutorial/);
-  * run them in a directory outside the BHSA repo (where you have copied it a minute ago).
+If you still need it: move one directory up (into the `etcbc` directory) and do `git clone https://github.com/ETCBC/bhsa`.
+
+If you want to consult the tutorials, either:
+
+* view them on [nbviewer](https://nbviewer.jupyter.org/github/etcbc/bhsa/tree/master/tutorial/); or
+* run them in a directory outside the BHSA repo (where you have copied it a minute ago).
 
 ## 5.6.4
 
