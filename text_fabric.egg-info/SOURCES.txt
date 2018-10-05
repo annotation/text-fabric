@@ -25,6 +25,7 @@ tf/extra/bhsa.py
 tf/extra/cunei.py
 tf/extra/bhsa-app/__init__.py
 tf/extra/bhsa-app/config.py
+tf/extra/bhsa-app/zips.py
 tf/extra/bhsa-app/__pycache__/__init__.cpython-36.pyc
 tf/extra/bhsa-app/__pycache__/__init__.cpython-37.pyc
 tf/extra/bhsa-app/__pycache__/config.cpython-36.pyc

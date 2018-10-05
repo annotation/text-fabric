@@ -41,7 +41,7 @@ the command line.
 
 ## Text-Fabric
 
-Install Text-Fabric:
+### Install Text-Fabric:
 
 ```sh
 pip3 install text-fabric
@@ -60,6 +60,12 @@ pip install text-fabric
 
     Advice: if you are serious on programming, consider switching to a `Unix`-like
     platform, such as Linux or the Mac (macos).
+
+### Upgrade Text-Fabric:
+
+```sh
+pip3 install --upgrade text-fabric
+```
 
 ## Jupyter notebook
     Optionally install [Jupyter](http://jupyter.org) as well:

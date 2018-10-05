@@ -2,6 +2,7 @@ from .data import WARP
 from .helpers import itemize, compileFormats
 
 DEFAULT_FORMAT = 'text-orig-full'
+DEFAULT_FORMAT_TYPE = '{}-default'
 
 
 class Text(object):
@@ -92,10 +93,35 @@ class Text(object):
     else:
       return sec2.get(sec0node, {}).get(section[1], {}).get(section[2], None)
 
-  def text(self, slots, fmt=None):
-    if fmt is None:
-      fmt = DEFAULT_FORMAT
+  def text(self, nodes, fmt=None, descend=False):
+    F = self.api.F
+    L = self.api.L
+    slotType = F.otype.slotType
+    if type(nodes) is int:
+      nType = F.otype.v(nodes)
+      if fmt is None:
+        fmt = DEFAULT_FORMAT_TYPE.format(nType)
+      repf = self._xformats.get(fmt, None)
+      if repf is None or descend:
+        if repf is None:
+          fmt = DEFAULT_FORMAT
+        nodes = [nodes] if nType == slotType else L.d(nodes, otype=slotType)
+      else:
+        return repf(nodes)
+    else:
+      if fmt is None:
+        fmt = DEFAULT_FORMAT
     repf = self._xformats.get(fmt, None)
     if repf is None:
-      return ' '.join(str(s) for s in slots)
-    return ''.join(repf(s) for s in slots)
+      return ' '.join(f'{F.otype.v(n)}_{n}' for n in nodes)
+    return ''.join(repf(n) for n in nodes)
+
+  '''
+    else:
+      if fmt is None:
+        fmt = DEFAULT_FORMAT
+      repf = self._xformats.get(fmt, None)
+      if repf is None:
+        return ' '.join(str(s) for s in slots)
+      return ''.join(repf(s) for s in slots)
+  '''

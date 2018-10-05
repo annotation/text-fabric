@@ -13,6 +13,7 @@ LIMIT_TABLE = 2000
 RESULT = 'result'
 GH_BASE = '~/github'
 EXPRESS_BASE = '~/text-fabric-data'
+EXPRESS_INFO = 'release.txt'
 
 URL_GH = 'https://github.com'
 URL_NB = 'http://nbviewer.jupyter.org/github'
@@ -33,10 +34,11 @@ def hasData(dataRel, ghBase, version):
   return False
 
 
-def getData(dataUrl, dataRel, ghBase, version):
+def getData(release, dataUrl, dataRel, ghBase, version):
   expressBase = os.path.expanduser(EXPRESS_BASE)
   expressTfAll = f'{expressBase}/{dataRel}'
   expressTf = f'{expressTfAll}/{version}'
+  expressInfoFile = f'{expressTfAll}/{EXPRESS_INFO}'
   ghBase = os.path.expanduser(ghBase)
   ghTf = f'{ghBase}/{dataRel}/{version}'
 
@@ -45,17 +47,28 @@ def getData(dataUrl, dataRel, ghBase, version):
     print(f'Found data in GitHub repo: {ghTf}')
     return dataBase
   if dataBase == expressBase:
-    print(f'Found data downloaded from GitHub release: {expressTf}')
-    return dataBase
+    currentRelease = '1.3'
+    if os.path.exists(expressInfoFile):
+      with open(expressInfoFile) as eh:
+        for line in eh:
+          currentRelease = line.strip()
+    print(f'Found data downloaded from GitHub release {currentRelease}: {expressTf}')
+    if currentRelease != release:
+      print(f'A newer data release is available: {release}')
+    else:
+      return dataBase
 
-  result = getDataCustom(dataUrl, expressTfAll)
+  result = getDataCustom(release, dataUrl, expressTfAll)
   if result:
     return expressBase
-  return False
+  if release == currentRelease:
+    return False
+  print(f'Continuing with data release {currentRelease}')
+  return expressBase
 
 
-def getDataCustom(dataUrl, dest):
-  print(f'Downloading data from {dataUrl} ...')
+def getDataCustom(release, dataUrl, dest):
+  print(f'Downloading data from {dataUrl} to {dest} ...')
   try:
     r = requests.get(dataUrl, allow_redirects=True)
     zf = io.BytesIO(r.content)
@@ -81,7 +94,10 @@ def getDataCustom(dataUrl, dest):
     os.chdir(cwd)
     return False
 
-  print('Saved')
+  expressInfoFile = f'{dest}/{EXPRESS_INFO}'
+  with open(expressInfoFile, 'w') as rh:
+    rh.write(f'{release}')
+  print(f'Saved data release {release}')
   os.chdir(cwd)
   return dest
 
@@ -610,8 +626,8 @@ def getContext(api, nodes):
   Fs = api.Fs
   Fall = api.Fall
   T = api.T
-  L = api.L
-  slotType = F.otype.slotType
+  # L = api.L
+  # slotType = F.otype.slotType
   sectionTypes = set(T.sectionTypes)
 
   rows = []
@@ -625,8 +641,9 @@ def getContext(api, nodes):
     if nType in sectionTypes:
       text = ''
     else:
-      sns = [n] if nType == slotType else L.d(n, otype=slotType)
-      text = T.text(sns)
+      # sns = [n] if nType == slotType else L.d(n, otype=slotType)
+      # text = T.text(sns)
+      text = T.text(n)
     rows.append((n,) + section + tuple(Fs(f).v(n) for f in feats) + (text,))
   return tuple(rows)
 
@@ -635,8 +652,8 @@ def getResultsX(api, results, features):
   F = api.F
   Fs = api.Fs
   T = api.T
-  L = api.L
-  slotType = F.otype.slotType
+  # L = api.L
+  # slotType = F.otype.slotType
   sectionTypes = set(T.sectionTypes)
   if len(results) == 0:
     return ()
@@ -671,10 +688,11 @@ def getResultsX(api, results, features):
     for j in range(nTuple):
       n = r[j]
       nType = F.otype.v(n)
-      sns = [n] if nType == slotType else L.d(n, otype=slotType)
+      # sns = [n] if nType == slotType else L.d(n, otype=slotType)
       row.extend((n, nType))
       if nType not in sectionTypes:
-        text = T.text(sns)
+        text = T.text(n)
+        # text = T.text(sns)
         row.append(text)
       row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
     rows.append(tuple(row))

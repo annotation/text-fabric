@@ -8,6 +8,57 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 6.0
+
+2018-10-05
+
+A big update with several changes:
+
+* An API change: `T.text()` has more behaviours.
+  This change was needed for the Text-Fabric browser, in order to represent *lexemes* in exported files.
+  It might also be handy for the programmers amongst you.
+  See the updated [API doc on T](/Api/General/#text-representation).
+
+  !!! hint "Showcase: how to export the BHSA dictionary"
+      * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/about.md)
+      * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
+
+* The Text-Fabric browser checks if you are using the most recent release of the data.
+* A font rendering issue in Safari 12 in macos Mojave prevented the use of Ezra SIL for Hebrew in notebooks.
+  We now work around this by relying on the distribution of Ezra SIL as webfont
+  in the [font library](fontlibrary.org).
+* Additional small fixes.
+
+!!! caution "Data update needed"
+    !!! hint "Text-Fabric itself"
+        To update Text-Fabric itself to version 6.0, consult [Install](/Install/#text-fabric).
+        Perform this step first, because the new TF may download the new data for you.
+
+    In order to work successfully with the new `T.text()` function, you need a newer release (1.4) of the BHSA *data*.
+    (In fact, only one line in one feature has changed (`otext.tf`).
+
+    Here is how you get it:
+
+    * If your Text-Fabric browser has automatically downloaded the data for you, it will detect the new release
+      and download it automatically. You do not have to do anything, except increase your patience.
+      The data has to be downloaded (24 MB) and after that Text-Fabric will precompute related data, which may take
+      a few minutes. This is a one time step after a data update.
+    * If you have a clone of the BHSA repository, then go to that directory and say `git pull origin master`.
+      If you get error messages, then you have local changes in your local BHSA repository that conflict with
+      the github version. Probably you have run the tutorials in place. Best thing to do is:
+
+      * copy your BHSA tutorial directory to somehwere else;
+      * remove your local BHSA repository entirely;
+      * decide whether you really want the whole repo back (nearly 4 GB):
+        
+        * if not: you're done, and TF will download automatically the data it needs;
+        * if you still need it: move one directory up (into the `etcbc` directory) and do `git clone https://github.com/ETCBC/bhsa`
+
+      * if you want to consult the tutorials:
+
+        * view them on [nbviewer](https://nbviewer.jupyter.org/github/etcbc/bhsa/tree/master/tutorial/);
+        * run them in a directory outside the BHSA repo (where you have copied it a minute ago).
+
 ## 5.6.4
 
 2018-10-04

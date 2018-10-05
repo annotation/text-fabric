@@ -11,55 +11,46 @@
 
 meta | data
 --- | ---
-Job | DefaulT
+Job | Dictionary
 Author | Dirk Roorda
-Created | 2018-10-05T10:29:14+02:00
+Created | 2018-10-05T13:59:26+02:00
 Corpus | BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis (c) [10.5281/zenodo.1007624](https://doi.org/10.5281/zenodo.1007624)
 Tool | Text-Fabric 5.6.4 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
 See also | [Compose results example](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/examples/compose.ipynb)
 
 
-# Relativeless, unparticipled clauses
+# Simple glossary
 
 ## Dirk Roorda
 
-# Attributive clauses
+# Lexemes
 
-*Are there attributive clauses that lack a relativum and are not constructed with a participle?*
+This query fetches all lexemes,
+plus additional information.
 
-As an extra constraint, we do want the clause to contain a verb.
-
-There turn out to be **229** results.
-
-We show the first and last result on the verse pad, and we store two examples in between on the *notepad*.
-
-For the sake of export, we mention the features `typ` and `vs` (verbal stem) in our query. The `*` means that these features do not pose extra restrictions. But mentioning them will include them in the exported CSV.
+In order to see that extra information, you have to do an export and look into the file RESULTSX.tsv. You can do that in Excel.
 
 ## Information requests:
 
 ### Sections
 
 ```
-Genesis 10:19
-2_Chronicles 20:22
+
 ```
 
 ### Nodes
 
 ```
-475492
-487739
+
 ```
 
 ### Search
 
 ```
-clause rela=Attr typ*
-/without/
-  phrase function=Rela
-/-/
-/without/
-  word vt=ptca|ptcp
-/-/
-  word pdp=verb vs*
+lex language* 
+    sp* ls*
+    nametype* 
+    gloss*
+    freq_lex*
+    rank_lex*
 ```

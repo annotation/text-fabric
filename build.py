@@ -26,8 +26,10 @@ r1    : build for shipping, version becomes r1+1.0.0
 r2    : build for shipping, version becomes r1.r2+1.0
 r3    : build for shipping, version becomes r1.r2.r3+1
 t     : open text-fabric browser on specific dataset (bhsa, cunei)
+data  : build data files for github release
 
 For g and the r-commands you need to pass a commit message as well.
+For data you need to pass an app argument: bhsa or cunei
 '''
 
 DIST = 'dist'
@@ -63,7 +65,7 @@ def readArgs():
     print(HELP)
     return (False, None)
   arg = args[0]
-  if arg not in {'t', 'docs', 'clean', 'l', 'g', 'r', 'r1', 'r2', 'r3'}:
+  if arg not in {'t', 'docs', 'clean', 'l', 'g', 'data', 'r', 'r1', 'r2', 'r3'}:
     print(HELP)
     return (False, None)
   if arg in {'g', 'r', 'r1', 'r2', 'r3'}:
@@ -71,7 +73,7 @@ def readArgs():
       print('Provide a commit message')
       return (False, None)
     return (arg, args[1])
-  if arg in {'t'}:
+  if arg in {'t', 'data'}:
     if len(args) < 2:
       print('Provide a data source [bhsa|cunei]')
       return (False, None)
@@ -147,6 +149,14 @@ def commit(task, msg):
 def shipDocs():
   codestats()
   run(['mkdocs', 'gh-deploy'])
+
+
+def shipData(app):
+  dataBuildScript = f'tf/extra/{app}-app/zips.py'
+  if not os.path.exists(dataBuildScript):
+    print(f'No data build script {dataBuildScript}')
+    return
+  run(['python3', dataBuildScript])
 
 
 def serveDocs():
@@ -246,6 +256,8 @@ def main():
   elif task == 'g':
     shipDocs()
     commit(task, msg)
+  elif task == 'data':
+    shipData(msg)
   elif task in {'r', 'r1', 'r2', 'r3'}:
     adjustVersion(task)
     shipDocs()

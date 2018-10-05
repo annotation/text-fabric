@@ -159,8 +159,8 @@ def _grammar(searchExe):
         atomStack[indent] = q
     elif kind == 'feat':
       features = token['features']
-      if prevKind is not None and prevKind != 'atom':
-        searchExe.badSemantics.append((i, f'Features without atom: "{features}"'))
+      if prevKind is not None and prevKind not in {'atom', 'feat'}:
+        searchExe.badSemantics.append((i, f'Features after {prevKind}: "{features}"'))
         good = False
       else:
         qnodes[-1][1].update(features)
