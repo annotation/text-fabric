@@ -17,7 +17,8 @@ A big update with several changes:
 *   An API change: `T.text()` has more behaviours.
     This change was needed for the Text-Fabric browser, in order to represent *lexemes* in exported files.
 
-    !!! hint "Showcase: how to export the BHSA dictionary"
+    !!! hint "Showcase: BHSA dictionary"
+        Here is how you can collect the BHSA lexemes in an Excel sheet.
         * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/about.md)
         * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
 
