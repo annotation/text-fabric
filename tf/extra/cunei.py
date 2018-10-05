@@ -539,7 +539,7 @@ class Atf(object):
 class Cunei(Atf):
   def __init__(self, name, asApi=False):
     self.asApi = asApi
-    repoBase = getData(DATA_URL, DATA_REL, GH_BASE, VERSION)
+    repoBase = getData(RELEASE, DATA_URL, DATA_REL, GH_BASE, VERSION)
     if not repoBase:
       return
     repoRel = f'{ORG}/{SOURCE}'
@@ -549,7 +549,7 @@ class Cunei(Atf):
     self.sourceDir = f'{repo}/{SOURCE_DIR}'
     self.imageDir = f'{repo}/{IMAGE_DIR}'
     if not os.path.exists(self.imageDir):
-      getDataCustom(IMAGE_URL, self.sourceDir)
+      getDataCustom(RELEASE, IMAGE_URL, self.sourceDir)
     self.repoTempDir = f'{repo}/{TEMP_DIR}'
     self._imagery = {}
     self.corpus = f'{repo}/{CORPUS}'

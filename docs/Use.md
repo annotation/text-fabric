@@ -91,7 +91,7 @@ including your own.
 
     Now, if you want to share your results for checking and replication, put all this in a GitHub repository:
 
-    ???+ note "Examples"
+    ???+ note "Example"
         **Cunei**:
 
         * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/about.md)
@@ -101,6 +101,14 @@ including your own.
 
         * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/about.md)
         * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/RESULTSX.tsv)
+
+    ???+ note "Example with lexemes"
+        **BHSA**:
+
+        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/about.md)
+        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
+
+        This example shows how you can get a complete dictionary in your pocket by issuing a simple TF query.
 
     If you want to be able to cite those results in a journal article, archive the GitHub repo
     in question to [ZENODO](https://zenodo.org) and obtain a DOI.

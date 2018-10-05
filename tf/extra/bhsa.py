@@ -19,7 +19,7 @@ from tf.apphelpers import (
 ORG = 'etcbc'
 CORPUS = 'bhsa'
 
-RELEASE = '1.3'
+RELEASE = '1.4'
 
 PHONO = 'phono'
 PHONO_RL = '1.0.1'
@@ -308,10 +308,10 @@ EXCLUDED_FEATURES = set('''
 PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
 
 
-def getTf(source='bhsa', release='1.3', version='c', relative='{}/tf'):
+def getTf(source='bhsa', release=RELEASE, version='c', relative='{}/tf'):
   dataUrl = f'https://github.com/{ORG}/{source}/releases/download/{release}/{version}.zip'
   dataRel = f'{ORG}/' + relative.format(source)
-  getData(dataUrl, dataRel, GH_BASE, version)
+  getData(release, dataUrl, dataRel, GH_BASE, version)
 
 
 def hasTf(source='bhsa', version='c', relative='{}/tf'):
