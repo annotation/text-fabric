@@ -34,7 +34,7 @@ def hasData(dataRel, ghBase, version):
   return False
 
 
-def getData(release, dataUrl, dataRel, ghBase, version):
+def getData(release, firstRelease, dataUrl, dataRel, ghBase, version):
   expressBase = os.path.expanduser(EXPRESS_BASE)
   expressTfAll = f'{expressBase}/{dataRel}'
   expressTf = f'{expressTfAll}/{version}'
@@ -47,7 +47,7 @@ def getData(release, dataUrl, dataRel, ghBase, version):
     print(f'Found data in GitHub repo: {ghTf}')
     return dataBase
   if dataBase == expressBase:
-    currentRelease = '1.3'
+    currentRelease = firstRelease
     if os.path.exists(expressInfoFile):
       with open(expressInfoFile) as eh:
         for line in eh:

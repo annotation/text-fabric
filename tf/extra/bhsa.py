@@ -20,11 +20,14 @@ ORG = 'etcbc'
 CORPUS = 'bhsa'
 
 RELEASE = '1.4'
+RELEASE_FIRST = '1.3'
 
 PHONO = 'phono'
-PHONO_RL = '1.0.1'
+PHONO_RL = '1.1'
+PHONO_RL_FIRST = '1.0.1'
 PARA = 'parallels'
-PARA_RL = '1.0.1'
+PARA_RL = '1.1'
+PARA_RL_FIRST = '1.0.1'
 
 
 SHEBANQ_URL = 'https://shebanq.ancient-data.org/hebrew'
@@ -308,10 +311,15 @@ EXCLUDED_FEATURES = set('''
 PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
 
 
-def getTf(source='bhsa', release=RELEASE, version='c', relative='{}/tf'):
+def getTf(
+    source='bhsa',
+    release=RELEASE, firstRelease=RELEASE_FIRST,
+    version='c',
+    relative='{}/tf',
+):
   dataUrl = f'https://github.com/{ORG}/{source}/releases/download/{release}/{version}.zip'
   dataRel = f'{ORG}/' + relative.format(source)
-  getData(release, dataUrl, dataRel, GH_BASE, version)
+  getData(release, firstRelease, dataUrl, dataRel, GH_BASE, version)
 
 
 def hasTf(source='bhsa', version='c', relative='{}/tf'):
@@ -345,9 +353,9 @@ class Bhsa(object):
     self.standardFeatures = set(standardFeatures.strip().split())
 
     if asApi:
-      getTf(source=CORPUS, release=RELEASE, version=version)
-      getTf(source=PHONO, release=PHONO_RL, version=version)
-      getTf(source=PARA, release=PARA_RL, version=version)
+      getTf(source=CORPUS, release=RELEASE, firstRelease=RELEASE_FIRST, version=version)
+      getTf(source=PHONO, release=PHONO_RL, firstRelease=PHONO_RL_FIRST, version=version)
+      getTf(source=PARA, release=PARA_RL, firstRelease=PARA_RL_FIRST, version=version)
       TF = Fabric(locations=locations, modules=modules, silent=True)
       api = TF.load('', silent=True)
       self.api = api
