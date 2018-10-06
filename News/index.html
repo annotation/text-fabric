@@ -276,6 +276,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#601" title="6.0.1" class="md-nav__link">
+    6.0.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#60" title="6.0" class="md-nav__link">
     6.0
   </a>
@@ -1659,6 +1666,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#601" title="6.0.1" class="md-nav__link">
+    6.0.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#60" title="6.0" class="md-nav__link">
     6.0
   </a>
@@ -2626,7 +2640,20 @@
 <details class="hint" open="open"><summary>Consult the tutorials after changes</summary><p>When we change the API, we make sure that the tutorials shows off
 all possibilities:
 <a href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">bhsa</a>
-<a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">cunei</a></p></details><h2 id="60">6.0<a class="headerlink" href="#60" title="Permanent link">&para;</a></h2>
+<a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">cunei</a></p></details><h2 id="601">6.0.1<a class="headerlink" href="#601" title="Permanent link">&para;</a></h2>
+<p>2018-10-06</p>
+<p>Not only the core BHSA data will auto load, also the related PHONO and PARALLELS data.
+A new release has been made of the related data, and they are now in sync with the release of the core data.</p>
+<p>If you use auto load already, you do not have to do anything.</p>
+<p>But if you have the etcbc/phono and etcbc/parallels repos in your <code>~/github</code> folder, you should do 
+a <code>git pull origin master</code> on those repos.</p>
+<p><strong>N.B.</strong>: I am contemplating to have the Text-Fabric browser always use data from <code>~/text-fabric-data</code> and no longer
+from <code>~/github/etcbc</code>. Then the TF browser always controls its own data, and it will not occur that
+the version of the TF browser is not compatible with the version of the TF data in your github repos, or that
+the main data and the related data are out of synch.</p>
+<p>The disadvantage is that if you have the github repos on your system, you get redundant data in <code>~/text-fabric-data</code>.
+However, there is only one version kept in <code>~/text-fabric-data</code>, so this is not much.</p>
+<h2 id="60">6.0<a class="headerlink" href="#60" title="Permanent link">&para;</a></h2>
 <p>2018-10-05</p>
 <p>A big update with several changes:</p>
 <h3 id="api-change">API change:<a class="headerlink" href="#api-change" title="Permanent link">&para;</a></h3>
