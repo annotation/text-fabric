@@ -8,6 +8,26 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 6.0.1
+
+2018-10-06
+
+Not only the core BHSA data will auto load, also the related PHONO and PARALLELS data.
+A new release has been made of the related data, and they are now in sync with the release of the core data.
+
+If you use auto load already, you do not have to do anything.
+
+But if you have the etcbc/phono and etcbc/parallels repos in your `~/github` folder, you should do 
+a `git pull origin master` on those repos.
+
+**N.B.**: I am contemplating to have the Text-Fabric browser always use data from `~/text-fabric-data` and no longer
+from `~/github/etcbc`. Then the TF browser always controls its own data, and it will not occur that
+the version of the TF browser is not compatible with the version of the TF data in your github repos, or that
+the main data and the related data are out of synch.
+
+The disadvantage is that if you have the github repos on your system, you get redundant data in `~/text-fabric-data`.
+However, there is only one version kept in `~/text-fabric-data`, so this is not much.
+
 ## 6.0
 
 2018-10-05
