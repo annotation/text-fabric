@@ -13,7 +13,6 @@ from tf.apphelpers import (
     getData, getDataCustom, getFeatures,
     htmlEsc, mdEsc,
     dm, header, outLink,
-    GH_BASE,
     URL_GH, URL_NB,
 )
 
@@ -24,6 +23,7 @@ VERSION = '1.0'
 
 DATA_REL = f'{ORG}/{SOURCE}/tf/uruk'
 RELEASE = '1.1.0'
+RELEASE_FIRST = '1.1.0'
 
 DATA_URL = f'https://github.com/{ORG}/{SOURCE}/releases/download/{RELEASE}/{VERSION}.zip'
 IMAGE_URL = f'https://github.com/{ORG}/{SOURCE}/releases/download/{RELEASE}/images.zip'
@@ -537,9 +537,9 @@ class Atf(object):
 
 
 class Cunei(Atf):
-  def __init__(self, name, asApi=False):
+  def __init__(self, name, asApi=False, lgc=False):
     self.asApi = asApi
-    repoBase = getData(RELEASE, DATA_URL, DATA_REL, GH_BASE, VERSION)
+    repoBase = getData(SOURCE, RELEASE, RELEASE_FIRST, DATA_URL, DATA_REL, VERSION, lgc)
     if not repoBase:
       return
     repoRel = f'{ORG}/{SOURCE}'
@@ -549,7 +549,7 @@ class Cunei(Atf):
     self.sourceDir = f'{repo}/{SOURCE_DIR}'
     self.imageDir = f'{repo}/{IMAGE_DIR}'
     if not os.path.exists(self.imageDir):
-      getDataCustom(RELEASE, IMAGE_URL, self.sourceDir)
+      getDataCustom(SOURCE, RELEASE, IMAGE_URL, self.sourceDir)
     self.repoTempDir = f'{repo}/{TEMP_DIR}'
     self._imagery = {}
     self.corpus = f'{repo}/{CORPUS}'

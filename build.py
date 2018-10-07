@@ -63,22 +63,22 @@ def readArgs():
   args = sys.argv[1:]
   if not len(args) or args[0] in {'-h', '--help', 'help'}:
     print(HELP)
-    return (False, None)
+    return (False, None, [])
   arg = args[0]
   if arg not in {'t', 'docs', 'clean', 'l', 'g', 'data', 'r', 'r1', 'r2', 'r3'}:
     print(HELP)
-    return (False, None)
+    return (False, None, [])
   if arg in {'g', 'r', 'r1', 'r2', 'r3'}:
     if len(args) < 2:
       print('Provide a commit message')
-      return (False, None)
-    return (arg, args[1])
+      return (False, None, [])
+    return (arg, args[1], args[1:])
   if arg in {'t', 'data'}:
     if len(args) < 2:
       print('Provide a data source [bhsa|cunei]')
-      return (False, None)
-    return (arg, args[1])
-  return (arg, None)
+      return (False, None, [])
+    return (arg, args[1], args[1:])
+  return (arg, None, [])
 
 
 def incVersion(version, task):
@@ -151,12 +151,12 @@ def shipDocs():
   run(['mkdocs', 'gh-deploy'])
 
 
-def shipData(app):
+def shipData(app, remaining):
   dataBuildScript = f'tf/extra/{app}-app/zips.py'
   if not os.path.exists(dataBuildScript):
     print(f'No data build script {dataBuildScript}')
     return
-  run(['python3', dataBuildScript])
+  run(['python3', dataBuildScript] + remaining)
 
 
 def serveDocs():
@@ -223,7 +223,7 @@ def codestats():
   run(cmdLine.format(xd, 'Apps', 'tf/extra'), shell=True)
 
 
-def tfbrowse(dataset):
+def tfbrowse(dataset, remaining):
   datadir = f'{TEST_BASE}/{dataset}'
   good = True
   try:
@@ -233,7 +233,8 @@ def tfbrowse(dataset):
     print(f'Cannot find TF test directory "{datadir}"')
   if not good:
     return
-  cmdLine = f'text-fabric {dataset}'
+  rargs = ' '.join(remaining)
+  cmdLine = f'text-fabric {dataset} {rargs}'
   try:
     run(cmdLine, shell=True)
   except KeyboardInterrupt:
@@ -241,11 +242,11 @@ def tfbrowse(dataset):
 
 
 def main():
-  (task, msg) = readArgs()
+  (task, msg, remaining) = readArgs()
   if not task:
     return
   elif task == 't':
-    tfbrowse(msg)
+    tfbrowse(msg, remaining)
   elif task == 'docs':
     serveDocs()
   elif task == 'clean':
@@ -257,7 +258,7 @@ def main():
     shipDocs()
     commit(task, msg)
   elif task == 'data':
-    shipData(msg)
+    shipData(msg, remaining)
   elif task in {'r', 'r1', 'r2', 'r3'}:
     adjustVersion(task)
     shipDocs()

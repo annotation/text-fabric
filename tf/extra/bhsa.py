@@ -12,7 +12,6 @@ from tf.apphelpers import (
     getBoundary, getFeatures,
     htmlEsc, mdEsc,
     dm, header, outLink,
-    GH_BASE,
     URL_GH, URL_NB,
 )
 
@@ -312,6 +311,7 @@ PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
 
 
 def getTf(
+    lgc,
     source='bhsa',
     release=RELEASE, firstRelease=RELEASE_FIRST,
     version='c',
@@ -319,12 +319,12 @@ def getTf(
 ):
   dataUrl = f'https://github.com/{ORG}/{source}/releases/download/{release}/{version}.zip'
   dataRel = f'{ORG}/' + relative.format(source)
-  getData(release, firstRelease, dataUrl, dataRel, GH_BASE, version)
+  getData(source, release, firstRelease, dataUrl, dataRel, version, lgc)
 
 
-def hasTf(source='bhsa', version='c', relative='{}/tf'):
+def hasTf(lgc, source='bhsa', version='c', relative='{}/tf'):
   dataRel = f'{ORG}/' + relative.format(source)
-  return hasData(dataRel, GH_BASE, version)
+  return hasData(lgc, dataRel, version)
 
 
 class Bhsa(object):
@@ -336,6 +336,7 @@ class Bhsa(object):
       locations=None,
       modules=None,
       asApi=False,
+      lgc=False,
   ):
     self.asApi = asApi
     self.version = version
@@ -353,9 +354,9 @@ class Bhsa(object):
     self.standardFeatures = set(standardFeatures.strip().split())
 
     if asApi:
-      getTf(source=CORPUS, release=RELEASE, firstRelease=RELEASE_FIRST, version=version)
-      getTf(source=PHONO, release=PHONO_RL, firstRelease=PHONO_RL_FIRST, version=version)
-      getTf(source=PARA, release=PARA_RL, firstRelease=PARA_RL_FIRST, version=version)
+      getTf(lgc, source=CORPUS, release=RELEASE, firstRelease=RELEASE_FIRST, version=version)
+      getTf(lgc, source=PHONO, release=PHONO_RL, firstRelease=PHONO_RL_FIRST, version=version)
+      getTf(lgc, source=PARA, release=PARA_RL, firstRelease=PARA_RL_FIRST, version=version)
       TF = Fabric(locations=locations, modules=modules, silent=True)
       api = TF.load('', silent=True)
       self.api = api

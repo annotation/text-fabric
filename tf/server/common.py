@@ -32,6 +32,13 @@ def getDocker(cargs=sys.argv):
   return False
 
 
+def getLocalClones(cargs=sys.argv):
+  for arg in cargs[1:]:
+    if arg == '-lgc':
+      return True
+  return False
+
+
 def getParam(cargs=sys.argv, interactive=False):
   myDir = os.path.dirname(os.path.abspath(__file__))
   dataSourcesParent = getAppDir(myDir, '')

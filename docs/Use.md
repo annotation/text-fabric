@@ -28,6 +28,13 @@ Here is how to start up text-fabric.
     Then your browser will open and load the search interface.
     There you'll find links to further help.
 
+??? hint "Local Github Clones"
+    If you pass the option `-lgc` to `text-fabric`, than Text-Fabric will
+    check whether you have data in your local github clones under `~/github`.
+    If you have relevant data there, Text-Fabric will use it.
+
+    This is useful if your local data is better/newer than the data on the last
+    published github release.
 
 ![bhsa](/images/bhsa-app.png)
 
