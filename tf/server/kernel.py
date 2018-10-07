@@ -7,7 +7,7 @@ from tf.apphelpers import (
     runSearch, runSearchCondensed,
     compose, getContext, getResultsX
 )
-from .common import getParam, getConfig
+from .common import getParam, getConfig, getLocalClones
 
 TIMEOUT = 120
 
@@ -34,15 +34,13 @@ def allNodes(table):
   return allN
 
 
-def makeTfKernel(dataSource, locations, modules, port):
+def makeTfKernel(dataSource, lgc, port):
   config = getConfig(dataSource)
   if config is None:
     return None
 
-  locRep = locations if type(locations) is str else '\n\t\t'.join(locations)
-  modRep = modules if type(modules) is str else '\n\t\t'.join(modules)
-  print(f'Setting up TF kernel for:\n\tlocations:\n\t\t{locRep}\n\tmodules:\n\t\t{modRep}')
-  extraApi = config.extraApi(locations, modules)
+  print(f'Setting up TF kernel for {dataSource}')
+  extraApi = config.extraApi(lgc=lgc)
   if not extraApi:
     print(f'{TF_ERROR}')
     sys.stdout.flush()
@@ -257,10 +255,11 @@ def makeTfConnection(host, port):
 
 def main(cargs=sys.argv):
   dataSource = getParam(cargs=cargs, interactive=True)
+  lgc = getLocalClones(cargs=cargs)
   if dataSource is not None:
     config = getConfig(dataSource)
     if config is not None:
-      kernel = makeTfKernel(dataSource, config.locations, config.modules, config.port)
+      kernel = makeTfKernel(dataSource, lgc, config.port)
       if kernel:
         kernel.start()
 

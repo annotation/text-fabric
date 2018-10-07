@@ -8,6 +8,17 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## 6.0.2
+
+2018-10-07
+
+The Text-Fabric browser takes it data by default from `~/text-fabric-data`.
+It will not check local github clones for data.
+
+But if you pass the option `-lgc`, it will first check your local github clones.
+
+So it you do nothing special, the TF browser always works with the auto-downloaded data.
+
 ## 6.0.1
 
 2018-10-06

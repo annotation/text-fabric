@@ -1,3 +1,4 @@
+import sys
 import os
 import io
 from shutil import rmtree
@@ -19,32 +20,35 @@ URL_GH = 'https://github.com'
 URL_NB = 'http://nbviewer.jupyter.org/github'
 
 
-def hasData(dataRel, ghBase, version):
-  ghBase = os.path.expanduser(ghBase)
+def hasData(lgc, dataRel, version):
+  if lgc:
+    ghBase = os.path.expanduser(GH_BASE)
+    ghTf = f'{ghBase}/{dataRel}/{version}'
+    features = glob(f'{ghTf}/*.tf')
+    if len(features):
+      return ghBase
+
   expressBase = os.path.expanduser(EXPRESS_BASE)
   expressTfAll = f'{expressBase}/{dataRel}'
   expressTf = f'{expressTfAll}/{version}'
-  ghTf = f'{ghBase}/{dataRel}/{version}'
-  features = glob(f'{ghTf}/*.tf')
-  if len(features):
-    return ghBase
   features = glob(f'{expressTf}/*.tf')
   if len(features):
     return expressBase
   return False
 
 
-def getData(release, firstRelease, dataUrl, dataRel, ghBase, version):
+def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc):
   expressBase = os.path.expanduser(EXPRESS_BASE)
   expressTfAll = f'{expressBase}/{dataRel}'
   expressTf = f'{expressTfAll}/{version}'
   expressInfoFile = f'{expressTfAll}/{EXPRESS_INFO}'
-  ghBase = os.path.expanduser(ghBase)
+  ghBase = os.path.expanduser(GH_BASE)
   ghTf = f'{ghBase}/{dataRel}/{version}'
 
-  dataBase = hasData(dataRel, ghBase, version)
+  dataBase = hasData(lgc, dataRel, version)
   if dataBase == ghBase:
-    print(f'Found data in GitHub repo: {ghTf}')
+    print(f'Found {source} data in GitHub repo: {ghTf}')
+    sys.stdout.flush()
     return dataBase
   if dataBase == expressBase:
     currentRelease = firstRelease
@@ -52,32 +56,38 @@ def getData(release, firstRelease, dataUrl, dataRel, ghBase, version):
       with open(expressInfoFile) as eh:
         for line in eh:
           currentRelease = line.strip()
-    print(f'Found data downloaded from GitHub release {currentRelease}: {expressTf}')
+    print(f'Found {source} data downloaded from GitHub release {currentRelease}: {expressTf}')
+    sys.stdout.flush()
     if currentRelease != release:
-      print(f'A newer data release is available: {release}')
+      print(f'A newer {source} data release is available: {release}')
+      sys.stdout.flush()
     else:
       return dataBase
 
-  result = getDataCustom(release, dataUrl, expressTfAll)
+  result = getDataCustom(source, release, dataUrl, expressTfAll)
   if result:
     return expressBase
   if release == currentRelease:
     return False
-  print(f'Continuing with data release {currentRelease}')
+  print(f'Continuing with {source} data release {currentRelease}')
+  sys.stdout.flush()
   return expressBase
 
 
-def getDataCustom(release, dataUrl, dest):
-  print(f'Downloading data from {dataUrl} to {dest} ...')
+def getDataCustom(source, release, dataUrl, dest):
+  print(f'Downloading {source} data from {dataUrl} to {dest} ...')
+  sys.stdout.flush()
   try:
     r = requests.get(dataUrl, allow_redirects=True)
     zf = io.BytesIO(r.content)
   except Exception as e:
     print(str(e))
-    print('Could not download data')
+    print(f'Could not download {source} data')
+    sys.stdout.flush()
     return False
 
-  print(f'Saving data in {dest}')
+  print(f'Saving {source} data in {dest}')
+  sys.stdout.flush()
 
   try:
     z = ZipFile(zf)
@@ -90,14 +100,16 @@ def getDataCustom(release, dataUrl, dest):
       rmtree(f'{dest}/__MACOSX')
   except Exception as e:
     print(str(e))
-    print('Could not save downloaded data')
+    print(f'Could not save downloaded {source} data')
+    sys.stdout.flush()
     os.chdir(cwd)
     return False
 
   expressInfoFile = f'{dest}/{EXPRESS_INFO}'
   with open(expressInfoFile, 'w') as rh:
     rh.write(f'{release}')
-  print(f'Saved data release {release}')
+  print(f'Saved {source} data release {release}')
+  sys.stdout.flush()
   os.chdir(cwd)
   return dest
 

@@ -14,7 +14,8 @@ from bottle import (post, get, route, template, request, static_file, run)
 from tf.fabric import NAME, VERSION, DOI, DOI_URL, COMPOSE_URL
 from tf.server.kernel import makeTfConnection
 from tf.server.common import (
-    getParam, getDebug, getConfig, getDocker, getAppDir, getValues, setValues,
+    getParam, getDebug, getConfig, getDocker, getLocalClones,
+    getAppDir, getValues, setValues,
     pageLinks,
     shapeMessages, shapeOptions, shapeCondense,
 )
@@ -29,15 +30,17 @@ EXTENSION = '.tfjob'
 
 myDir = os.path.dirname(os.path.abspath(__file__))
 appDir = None
+localDir = None
 bottle.TEMPLATE_PATH = [f'{myDir}/views']
 
 dataSource = None
 config = None
 
 
-def getStuff():
+def getStuff(lgc):
   global TF
   global appDir
+  global localDir
 
   config = getConfig(dataSource)
   if config is None:
@@ -45,6 +48,8 @@ def getStuff():
 
   TF = makeTfConnection(config.host, config.port)
   appDir = getAppDir(myDir, dataSource)
+  cfg = config.configure(lgc)
+  localDir = cfg['localDir']
   return config
 
 
@@ -262,7 +267,7 @@ def serveData(filepath):
 
 @route('/local/<filepath:path>')
 def serveLocal(filepath):
-  return static_file(filepath, root=f'{config.localDir}')
+  return static_file(filepath, root=f'{localDir}')
 
 
 @post('/<anything:re:.*>')
@@ -434,8 +439,9 @@ def serveSearch(anything):
 if __name__ == "__main__":
   dataSource = getParam(interactive=True)
   if dataSource is not None:
+    lgc = getLocalClones()
     debug = getDebug()
-    config = getStuff()
+    config = getStuff(lgc)
     onDocker = getDocker()
     print(f'onDocker={onDocker}')
     if config is not None:

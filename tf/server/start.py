@@ -7,7 +7,7 @@ import webbrowser
 from time import sleep
 from subprocess import PIPE, Popen
 
-from tf.server.common import getParam, getDebug, getNoweb, getDocker, getConfig
+from tf.server.common import getParam, getDebug, getNoweb, getDocker, getConfig, getLocalClones
 from tf.server.kernel import TF_DONE, TF_ERROR
 
 HELP = '''
@@ -16,7 +16,7 @@ USAGE
 text-fabric --help
 
 text-fabric datasource
-text-fabric [-d] [-noweb] [-docker] datasource
+text-fabric [-lgc] [-d] [-noweb] [-docker] datasource
 
 text-fabric -k
 text-fabric -k datasource
@@ -29,6 +29,18 @@ When the TF kernel is ready, a webserver is started
 serving a local website that exposes the data through
 a query interface.
 It will open in the default browser.
+
+DATA LOADING
+
+Text-Fabric looks for data in ~/text-fabric-data.
+If data is not found there, it first downloads the relevant data from
+github.
+
+-lgc Look for data first in local github clones under ~/github.
+  If data is not found there, get data in the normal way. 
+
+
+MISCELLANEOUS
 
 -d  Debug mode. For developers of Text-Fabric itself.
     The webserver reloads when its code changes.
@@ -53,6 +65,14 @@ stray processes.
 '''
 
 
+FLAGS = set('''
+    -d
+    -lgc
+    -noweb
+    -docker
+'''.strip().split())
+
+
 def filterProcess(proc):
   procName = proc.info['name']
   commandName = '' if procName is None else procName.lower()
@@ -68,7 +88,7 @@ def filterProcess(proc):
     parts = proc.cmdline()
     for part in parts:
       part = part.lower()
-      if part == '-d':
+      if part in FLAGS:
         continue
       trigger = 'text-fabric'
       if part.endswith(trigger) or part.endswith(f'{trigger}.exe'):
@@ -155,6 +175,8 @@ def main(cargs=sys.argv):
 
   ddataSource = ('-d', dataSource) if getDebug(cargs=cargs) else (dataSource,)
   ddataSource = ('-docker', *ddataSource) if getDocker(cargs=cargs) else ddataSource
+  ddataSource = ('-lgc', *ddataSource) if getLocalClones(cargs=cargs) else ddataSource
+  kdataSource = ('-lgc', dataSource) if getLocalClones(cargs=cargs) else (dataSource,)
   if dataSource is not None:
     config = getConfig(dataSource)
     pKernel = None
@@ -165,7 +187,7 @@ def main(cargs=sys.argv):
       pythonExe = 'python' if isWin else 'python3'
 
       pKernel = Popen(
-          [pythonExe, '-m', 'tf.server.kernel', dataSource],
+          [pythonExe, '-m', 'tf.server.kernel', *kdataSource],
           stdout=PIPE, bufsize=1, encoding='utf-8',
       )
 
