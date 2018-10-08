@@ -8,6 +8,18 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
+## Queued for next release
+
+None
+
+## 6.0.3
+
+2018-10-08
+
+The Text-Fabric browser will always print a banner with its name and version.
+If you pass it the argument --help or -h or --version or -v it will show the relevant information
+and stop executing.
+
 ## 6.0.2
 
 2018-10-07
