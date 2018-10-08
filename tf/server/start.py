@@ -7,6 +7,7 @@ import webbrowser
 from time import sleep
 from subprocess import PIPE, Popen
 
+from tf.fabric import NAME, VERSION
 from tf.server.common import getParam, getDebug, getNoweb, getDocker, getConfig, getLocalClones
 from tf.server.kernel import TF_DONE, TF_ERROR
 
@@ -14,6 +15,7 @@ HELP = '''
 USAGE
 
 text-fabric --help
+text-fabric --version
 
 text-fabric datasource
 text-fabric [-lgc] [-d] [-noweb] [-docker] datasource
@@ -71,6 +73,8 @@ FLAGS = set('''
     -noweb
     -docker
 '''.strip().split())
+
+BANNER = f'This is {NAME} {VERSION}'
 
 
 def filterProcess(proc):
@@ -155,8 +159,12 @@ def getKill(cargs=sys.argv):
 
 
 def main(cargs=sys.argv):
-  if len(cargs) >= 2 and cargs[1] in {'--help', '-help', '-h', '?', '-?'}:
+  print(BANNER)
+  if len(cargs) >= 2 and any(arg in {'--help', '-help', '-h', '?', '-?'} for arg in cargs[1:]):
     print(HELP)
+    return
+  if len(cargs) >= 2 and any(arg in {'--version', '-version', '-v'} for arg in cargs[1:]):
+    return
 
   isWin = system().lower().startswith('win')
 
