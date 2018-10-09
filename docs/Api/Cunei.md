@@ -18,8 +18,7 @@ See also
 
 ```python
 from tf.extra.bhsa import Cunei
-CN = Cunei()
-CN.makeAvailableIn(globals())
+CN = Cunei(hoist=globals())
 ```
 
 ??? abstract "Explanation"
@@ -30,10 +29,13 @@ CN.makeAvailableIn(globals())
     During start-up the following happens:
 
     (1) the Cunei data is downloaded to your `~/text-fabric-data` directory, if not already present there;
+
     (2) if your data has been freshly downloaded, a series of optimizations are executed;
+
     (3) most optimized features of the Cunei dataset are loaded;
 
-    The third line makes the API elements directly available: you can refer to `F`, `L`, `T`, etc. directly,
+    (4) `hoist=globals()` makes the API elements directly available:
+    you can refer to `F`, `L`, `T`, etc. directly,
     instead of the more verbose `CN.api.F`, `CN.api.L`, `CN.api.T` etc.
 
 If you are content with the minimal incantation, you can skip **Set up** and **Initialisation**.
@@ -49,8 +51,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
 ??? abstract "Cunei()"
     ```python
-        CN = Cunei(name=None)
-        CN.api.makeAvailableIn(globals())
+        CN = Cunei(name=None, hoist=globals())
     ```
 
     ???+ info "Description"
