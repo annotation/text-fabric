@@ -544,7 +544,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Api/Lib/" title="Auxiliary" class="md-nav__link">
+    <a href="../../Api/Transcription/" title="Auxiliary" class="md-nav__link">
       Auxiliary
     </a>
   </li>
@@ -836,7 +836,7 @@ This form as regularly submitted to the webserver with a request
 for a new incarnation of the page: a response.</p><p>The values that come with a request, must be peeled out of the form,
 and stored as logical values.</p><p>Most of the data has a known function to the webserver,
 but there is also a list of webapp dependent options.</p><p>The following functions deal with option values.</p></details><details class="abstract"><summary>getValues(options, form)</summary><p>Given a tuple of option specifications and form data from a web request,
-returns a dictionary of filled in values for those options.</p><p>The options are specified in the <code>config.py</code> of an app.</p><p>An option specification is a tuple of the following bits of information:</p><ul><li>name of the input element in the HTML form</li><li>type of input (e.g. checkbox)</li><li>value of html id attribute of the input element</li><li>label for the input element</li></ul><details class="example"><summary>Cunei options</summary><p>The options for the Cunei app are:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+returns a dictionary of filled in values for those options.</p><p>The options are specified in the <code>config.py</code> of an app.</p><p>An option specification is a tuple of the following bits of information:</p><ul><li>name of the input element in the HTML form</li><li>type of input (e.g. checkbox)</li><li>value of html id attribute of the input element</li><li>label for the input element</li></ul><details class="example"><summary>Cunei options</summary><p>The options for the C, such as the <code>phono</code> transcriptions, you can sayunei app are:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">options</span> <span class="o">=</span> <span class="p">(</span>

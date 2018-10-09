@@ -603,7 +603,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Api/Lib/" title="Auxiliary" class="md-nav__link">
+    <a href="../Api/Transcription/" title="Auxiliary" class="md-nav__link">
       Auxiliary
     </a>
   </li>
@@ -797,8 +797,7 @@ such as <a href="https://dans.knaw.nl/en/front-page?set_language=en">DANS</a>.</
 with extra modules.
 Text-Fabric will fetch them for you if you use the Text-Fabric browser.
 And if you work with them from within a Python program (e.g. in a Jupyter Notebook),
-Text-Fabric either fetches data automatically, or there is an easy function
-that you can call to fetch data.</p></details><details class="abstract"><summary>Manually</summary><p>You can also download the data you need up-front.
+you get the data when you just say <code>B = Bhsa()</code>.</p></details><details class="abstract"><summary>Manually</summary><p>You can also download the data you need up-front.
 There are basically two ways:</p><details class="abstract"><summary>from a release binary</summary><p>Go to the relevant GitHub repository, click on releases, and choose the relevant binary
 that has been attached to the release.
 Download it to your system.
@@ -808,11 +807,16 @@ This will get you lots of additional data that you might not directly need.</p><
 for this step.</p></details></details></details><h2 id="hebrew-bible">Hebrew Bible<a class="headerlink" href="#hebrew-bible" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>From within a program</summary><p>If you are in a Jupyter notebook or Python script,
 this will fetch the data (25MB)</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Bhsa</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+<p>Or if you want more control and fetch specific related modules, you can say:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">getTf</span>
 <span class="n">getTf</span><span class="p">()</span>
 </pre></div>
 </td></tr></table>
-<p>Or if you want to fetch related modules, such as the <code>phono</code> transcriptions, you can say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">getTf</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s1">&#39;phono&#39;</span><span class="p">,</span> <span class="n">release</span><span class="o">=</span><span class="s1">&#39;1.0.1&#39;</span><span class="p">)</span>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">getTf</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s1">&#39;phono&#39;</span><span class="p">,</span> <span class="n">release</span><span class="o">=</span><span class="s1">&#39;1.1&#39;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="hint"><summary>ETCBC data</summary><p>Inspect the repositories of the <a href="https://github.com/etcbc">etcbc organization on GitHub</a>

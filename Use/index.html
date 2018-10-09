@@ -596,7 +596,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Api/Lib/" title="Auxiliary" class="md-nav__link">
+    <a href="../Api/Transcription/" title="Auxiliary" class="md-nav__link">
       Auxiliary
     </a>
   </li>
@@ -848,20 +848,24 @@ it yourself. That is unpleasant.</p><p>Hence, use <code>utf_16</code> for readin
 jupyter notebook
 </pre></div>
 </td></tr></table>
-<p>Enter the following text in a code cell</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<p>Enter the following text in a code cell</p><p><strong>BHSA</strong>:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
-3
-4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.fabric</span> <span class="kn">import</span> <span class="n">Fabric</span>
-<span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">modules</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;my/dataset&#39;</span><span class="p">])</span>
-<span class="n">api</span> <span class="o">=</span> <span class="n">TF</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;sp lex&#39;</span><span class="p">)</span>
-<span class="n">api</span><span class="o">.</span><span class="n">makeAvailableIn</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Bhsa</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">()</span>
+<span class="n">B</span><span class="o">.</span><span class="n">makeAvailableIn</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
-<p>Adapt <code>my/dataset</code> to where your particalur dataset is"</p><details class="note"><summary>locations</summary><p>Maybe you have to tell Text-Fabric exactly where your data is.
-If you have the data in a directory <code>text-fabric-data</code>
-under your home directory  or under <code>~/github</code>, Text-Fabric can find it.
-In your <code>modules</code> argument you then specify one or more subdirectories of
-<code>text-fabric-data</code>.</p></details></details><details class="abstract"><summary>Using Hebrew data</summary><p>To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
+<p><strong>Cunei</strong>:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.cunei</span> <span class="kn">import</span> <span class="n">Cunei</span>
+<span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">()</span>
+<span class="n">CN</span><span class="o">.</span><span class="n">makeAvailableIn</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+</pre></div>
+</td></tr></table>
+<details class="note"><summary>data</summary><p>With these incantations, Text-Fabric will download the data automatically
+and store it in a directory <code>text-fabric-data</code> directly in your home
+directory.</p><p>If you have data in other places, you can also use that by means of
+extra arguments supplied to <code>Bhsa()</code> and <code>Cunei()</code>.</p></details></details><details class="abstract"><summary>Using Hebrew data</summary><p>To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
 <a href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">start</a>.</p><p>Or go straight to the
 <a href="../Api/Bhsa">bhsa-api-docs</a>.</p></details><details class="abstract"><summary>Using Cuneiform data</summary><p>To get started with the Uruk corpus, use its tutorial in the Nino-cunei repo:
 <a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">start</a>.</p><p>Or go straight to the
