@@ -14,25 +14,41 @@ from tf.apphelpers import (
     htmlEsc, mdEsc,
     dm, header, outLink,
     URL_GH, URL_NB,
+    makeAvailableIn,
 )
+from tf.notebook import location
 
 ORG = 'Nino-cunei'
 SOURCE = 'uruk'
 SOURCE_FULL = 'Uruk IV-III'
-VERSION = '1.0'
 
 DATA_REL = f'{ORG}/{SOURCE}/tf/uruk'
 RELEASE = '1.1.0'
 RELEASE_FIRST = '1.1.0'
 
-DATA_URL = f'https://github.com/{ORG}/{SOURCE}/releases/download/{RELEASE}/{VERSION}.zip'
+
+def DATA_URL(version):
+  return f'https://github.com/{ORG}/{SOURCE}/releases/download/{RELEASE}/{version}.zip'
+
+
 IMAGE_URL = f'https://github.com/{ORG}/{SOURCE}/releases/download/{RELEASE}/images.zip'
 
 
-CORPUS = f'tf/{SOURCE}/{VERSION}'
-CORPUS_FULL = f'{SOURCE_FULL} (v{VERSION})'
+def CORPUS(version):
+  return f'tf/{SOURCE}/{version}'
+
+
+def CORPUS_FULL(version):
+  return f'{SOURCE_FULL} (v{version})'
+
+
 SOURCE_DIR = 'sources/cdli'
-IMAGE_DIR = f'{SOURCE_DIR}/images'
+
+
+def IMAGE_DIR(version):
+  return f'{SOURCE_DIR}/{version}/images'
+
+
 TEMP_DIR = '_temp'
 REPORT_DIR = 'reports'
 
@@ -537,23 +553,23 @@ class Atf(object):
 
 
 class Cunei(Atf):
-  def __init__(self, name, asApi=False, lgc=False):
+  def __init__(self, name=None, asApi=False, version='1.0', lgc=False):
     self.asApi = asApi
-    repoBase = getData(SOURCE, RELEASE, RELEASE_FIRST, DATA_URL, DATA_REL, VERSION, lgc)
+    repoBase = getData(SOURCE, RELEASE, RELEASE_FIRST, DATA_URL(version), DATA_REL, version, lgc)
     if not repoBase:
       return
     repoRel = f'{ORG}/{SOURCE}'
     repo = f'{repoBase}/{repoRel}'
     self.repo = repo
-    self.version = VERSION
+    self.version = version
     self.sourceDir = f'{repo}/{SOURCE_DIR}'
-    self.imageDir = f'{repo}/{IMAGE_DIR}'
+    self.imageDir = f'{repo}/{IMAGE_DIR(version)}'
     if not os.path.exists(self.imageDir):
-      getDataCustom(SOURCE, RELEASE, IMAGE_URL, self.sourceDir)
+      getDataCustom(SOURCE, RELEASE, IMAGE_URL, self.sourceDir, version, withPaths=True)
     self.repoTempDir = f'{repo}/{TEMP_DIR}'
     self._imagery = {}
-    self.corpus = f'{repo}/{CORPUS}'
-    self.corpusFull = CORPUS_FULL
+    self.corpus = f'{repo}/{CORPUS(version)}'
+    self.corpusFull = CORPUS_FULL(version)
     self.condenseType = CONDENSE_TYPE
     self.exampleSection = '<code>P005381</code>'
     self.exampleSectionText = 'P005381'
@@ -575,13 +591,17 @@ class Cunei(Atf):
     self.cwd = os.getcwd()
     cwdPat = re.compile(f'^.*/github/([^/]+)/([^/]+)((?:/.+)?)$', re.I)
     cwdRel = cwdPat.findall(self.cwd)
-    if cwdRel:
-      (thisOrg, thisRepo, thisPath) = cwdRel[0]
-      onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{name}.ipynb')
-    else:
-      cwdRel = None
-    nbUrl = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
-    ghUrl = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
+    if not asApi:
+      if name is None:
+        (nbDir, nbName, nbExt) = location()
+        name = nbName
+      if cwdRel:
+        (thisOrg, thisRepo, thisPath) = cwdRel[0]
+        onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{name}.ipynb')
+      else:
+        cwdRel = None
+      nbUrl = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
+      ghUrl = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
     docUrl = f'{URL_GH}/{repoRel}/blob/master/docs'
     tutUrl = f'{URL_NB}/{ORG}/tutorials/blob/master/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Cunei/'
@@ -634,6 +654,7 @@ This notebook online:
     self.prettySetup = types.MethodType(prettySetup, self)
     self.search = types.MethodType(search, self)
     self.header = types.MethodType(header, self)
+    self.makeAvailableIn = types.MethodType(makeAvailableIn, self)
 
   def loadCSS(self):
     asApi = self.asApi

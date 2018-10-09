@@ -48,7 +48,7 @@ def getStuff(lgc):
 
   TF = makeTfConnection(config.host, config.port)
   appDir = getAppDir(myDir, dataSource)
-  cfg = config.configure(lgc)
+  cfg = config.configure(lgc, version=config.VERSION)
   localDir = cfg['localDir']
   return config
 
@@ -62,7 +62,11 @@ def getProvenance(form):
   job = form['jobName']
   author = form['author']
 
-  prov = config.PROVENANCE
+  prov = ''
+  config = getConfig(dataSource)
+  if config is not None:
+    cfg = config.configure(lgc, version=config.VERSION)
+    prov = cfg['provenance']
 
   corpus = prov['corpus']
   (corpusDoi, corpusUrl) = prov['corpusDoi']

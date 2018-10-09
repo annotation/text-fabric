@@ -1,4 +1,4 @@
-# Lib
+# Transcription
 
 While Text-Fabric is a generic package to deal with text and annotations
 in a model of nodes, edges, and features, there is need for some additions.

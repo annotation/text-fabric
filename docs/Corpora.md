@@ -10,8 +10,7 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
     with extra modules.
     Text-Fabric will fetch them for you if you use the Text-Fabric browser.
     And if you work with them from within a Python program (e.g. in a Jupyter Notebook),
-    Text-Fabric either fetches data automatically, or there is an easy function
-    that you can call to fetch data.
+    you get the data when you just say `B = Bhsa()`.
 
 ??? abstract "Manually"
     You can also download the data you need up-front.
@@ -39,14 +38,19 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
     this will fetch the data (25MB)
 
     ```python
+    from tf.extra.bhsa import Bhsa
+    B = Bhsa()
+    ```
+
+    Or if you want more control and fetch specific related modules, you can say:
+
+    ```python
     from tf.extra.bhsa import getTf
     getTf()
     ```
 
-    Or if you want to fetch related modules, such as the `phono` transcriptions, you can say
-
     ```python
-    getTf(source='phono', release='1.0.1')
+    getTf(source='phono', release='1.1')
     ```
 
     ??? hint "ETCBC data"

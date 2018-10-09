@@ -87,7 +87,7 @@
     * label for the input element
 
     ??? example "Cunei options"
-        The options for the Cunei app are:
+        The options for the C, such as the `phono` transcriptions, you can sayunei app are:
 
         ```python
         options = (

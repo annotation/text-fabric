@@ -16,6 +16,7 @@ tf/fabric.py
 tf/helpers.py
 tf/locality.py
 tf/mql.py
+tf/notebook.py
 tf/prepare.py
 tf/text.py
 tf/timestamp.py
