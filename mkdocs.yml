@@ -41,7 +41,7 @@ pages:
     - 'Apps': 'Api/Apps.md'
     - 'Hebrew Bible': 'Api/Bhsa.md'
     - 'Cuneiform Tablets': 'Api/Cunei.md'
-    - 'Auxiliary': 'Api/Lib.md'
+    - 'Auxiliary': 'Api/Transcription.md'
   - Server:
     - 'Kernel': 'Server/Kernel.md'
     - 'Web': 'Server/Web.md'
