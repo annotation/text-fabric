@@ -849,17 +849,13 @@ jupyter notebook
 </pre></div>
 </td></tr></table>
 <p>Enter the following text in a code cell</p><p><strong>BHSA</strong>:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Bhsa</span>
-<span class="n">B</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">()</span>
-<span class="n">B</span><span class="o">.</span><span class="n">makeAvailableIn</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Bhsa</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
 <p><strong>Cunei</strong>:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.cunei</span> <span class="kn">import</span> <span class="n">Cunei</span>
-<span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">()</span>
-<span class="n">CN</span><span class="o">.</span><span class="n">makeAvailableIn</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.cunei</span> <span class="kn">import</span> <span class="n">Cunei</span>
+<span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
 <details class="note"><summary>data</summary><p>With these incantations, Text-Fabric will download the data automatically

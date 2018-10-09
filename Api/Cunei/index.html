@@ -903,25 +903,20 @@ transcriptions of them and <a href="https://cdli.ucla.edu">CDLI</a> photos and l
 <a href="https://github.com/Nino-cunei/uruk/blob/master/docs/transcription.md">transcription</a>.</p>
 <h2 id="minimal-incantation">Minimal incantation<a class="headerlink" href="#minimal-incantation" title="Permanent link">&para;</a></h2>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Cunei</span>
-<span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">()</span>
-<span class="n">CN</span><span class="o">.</span><span class="n">makeAvailableIn</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Cunei</span>
+<span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
 
 <details class="abstract"><summary>Explanation</summary><p>The first line makes the Cunei API code, which is an app on top of Text-Fabric,
 accessible to your notebook.</p><p>The second line starts up the Cunei API and gives it the name <code>CN</code>. 
-During start-up the following happens:</p><p>(1) the Cunei data is downloaded to your <code>~/text-fabric-data</code> directory, if not already present there;
-(2) if your data has been freshly downloaded, a series of optimizations are executed;
-(3) most optimized features of the Cunei dataset are loaded;</p><p>The third line makes the API elements directly available: you can refer to <code>F</code>, <code>L</code>, <code>T</code>, etc. directly,
+During start-up the following happens:</p><p>(1) the Cunei data is downloaded to your <code>~/text-fabric-data</code> directory, if not already present there;</p><p>(2) if your data has been freshly downloaded, a series of optimizations are executed;</p><p>(3) most optimized features of the Cunei dataset are loaded;</p><p>(4) <code>hoist=globals()</code> makes the API elements directly available:
+you can refer to <code>F</code>, <code>L</code>, <code>T</code>, etc. directly,
 instead of the more verbose <code>CN.api.F</code>, <code>CN.api.L</code>, <code>CN.api.T</code> etc.</p></details><p>If you are content with the minimal incantation, you can skip <strong>Set up</strong> and <strong>Initialisation</strong>.</p>
 <h2 id="set-up">Set up<a class="headerlink" href="#set-up" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>from tf.extra.cunei import Cunei</summary><details class="explanation"><summary>import Cunei</summary><p>The <code>Cunei</code> API is distributed with Text-Fabric.
 You have to import it into your program.</p></details></details><h2 id="initialisation">Initialisation<a class="headerlink" href="#initialisation" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>Cunei()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-    <span class="n">CN</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">makeAvailableIn</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+<details class="abstract"><summary>Cunei()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Text-Fabric will be started for you and load all features as explained above in the minimal incantation..
