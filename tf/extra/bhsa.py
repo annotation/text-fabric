@@ -13,7 +13,10 @@ from tf.apphelpers import (
     htmlEsc, mdEsc,
     dm, header, outLink,
     URL_GH, URL_NB,
+    makeAvailableIn,
 )
+from tf.server.common import getConfig
+from tf.notebook import location
 
 ORG = 'etcbc'
 CORPUS = 'bhsa'
@@ -330,8 +333,8 @@ def hasTf(lgc, source='bhsa', version='c', relative='{}/tf'):
 class Bhsa(object):
   def __init__(
       self,
-      api,
-      name,
+      api=None,
+      name=None,
       version='c',
       locations=None,
       modules=None,
@@ -353,10 +356,15 @@ class Bhsa(object):
     )
     self.standardFeatures = set(standardFeatures.strip().split())
 
-    if asApi:
+    if asApi or not api:
       getTf(lgc, source=CORPUS, release=RELEASE, firstRelease=RELEASE_FIRST, version=version)
       getTf(lgc, source=PHONO, release=PHONO_RL, firstRelease=PHONO_RL_FIRST, version=version)
       getTf(lgc, source=PARA, release=PARA_RL, firstRelease=PARA_RL_FIRST, version=version)
+      if not asApi:
+        config = getConfig('bhsa')
+        cfg = config.configure(lgc, version=version)
+        locations = cfg['locations']
+        modules = cfg['modules']
       TF = Fabric(locations=locations, modules=modules, silent=True)
       api = TF.load('', silent=True)
       self.api = api
@@ -379,6 +387,9 @@ class Bhsa(object):
     cwdRel = cwdPat.findall(self.cwd)
 
     if not asApi:
+      if name is None:
+        (nbDir, nbName, nbExt) = location()
+        name = nbName
       if cwdRel:
         (thisOrg, thisRepo, thisPath) = cwdRel[0]
         onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{name}.ipynb')
@@ -437,6 +448,7 @@ This notebook online:
     self.prettySetup = types.MethodType(prettySetup, self)
     self.search = types.MethodType(search, self)
     self.header = types.MethodType(header, self)
+    self.makeAvailableIn = types.MethodType(makeAvailableIn, self)
 
   def loadCSS(self):
     asApi = self.asApi

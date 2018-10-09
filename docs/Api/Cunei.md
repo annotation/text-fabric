@@ -14,6 +14,30 @@ See also
 [images](https://github.com/Nino-cunei/uruk/blob/master/docs/images.md),
 [transcription](https://github.com/Nino-cunei/uruk/blob/master/docs/transcription.md).
 
+## Minimal incantation
+
+```python
+from tf.extra.bhsa import Cunei
+CN = Cunei()
+CN.makeAvailableIn(globals())
+```
+
+??? abstract "Explanation"
+    The first line makes the Cunei API code, which is an app on top of Text-Fabric,
+    accessible to your notebook.
+
+    The second line starts up the Cunei API and gives it the name `CN`. 
+    During start-up the following happens:
+
+    (1) the Cunei data is downloaded to your `~/text-fabric-data` directory, if not already present there;
+    (2) if your data has been freshly downloaded, a series of optimizations are executed;
+    (3) most optimized features of the Cunei dataset are loaded;
+
+    The third line makes the API elements directly available: you can refer to `F`, `L`, `T`, etc. directly,
+    instead of the more verbose `CN.api.F`, `CN.api.L`, `CN.api.T` etc.
+
+If you are content with the minimal incantation, you can skip **Set up** and **Initialisation**.
+
 ## Set up
 
 ??? abstract "from tf.extra.cunei import Cunei"
@@ -25,36 +49,25 @@ See also
 
 ??? abstract "Cunei()"
     ```python
-        CN = Cunei('~/github', 'Nino-cunei/uruk', 'notebook')
+        CN = Cunei(name=None)
         CN.api.makeAvailableIn(globals())
     ```
 
     ???+ info "Description"
-        Text-Fabric will be started for you and load all features.
+        Text-Fabric will be started for you and load all features as explained above in the minimal incantation..
         When `Cunei` is
-        initializing, it scans the image directory of the repo and reports how many
+        initializing, it scans the image directory of the data and reports how many
         photos and lineart images it sees.
 
-    ??? info "local GitHub"
-        The argument `~/github`
-        should point to the directory where your local
-        github repositories reside.
+    ??? info "name"
+        If you leave this argument out, Text-Fabric will determine the name of your notebook for you.
 
-    ??? info "Uruk location"
-        The argument `Nino-cunei/uruk`
-        should point to the local GitHub repository
-        where the Uruk corpus resides.
+        If Text-Fabric finds the wrong name, you can override it here.
 
-    ??? info "notebook"
-        The third argument of `Cunei()` should be the name
+        This should be the name
         of your current notebook (without the `.ipynb` extension).
         The Cunei API will use this to generate a link to your notebook
         on GitHub and NBViewer.
-
-        ??? note
-            Your current notebook can be anywhere on your system.
-            `Cunei()` can find its
-            location, but not its name, hence you have to pass its name.
 
 ## Linking
 

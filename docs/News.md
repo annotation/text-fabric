@@ -12,7 +12,23 @@
 
 None
 
+## 6.0.4
+
+2018-10-09
+
+When using BHSA and Cunei in a notebook, there is a simpler incantation which auto downloads features.
+
+Some issues concerning paths in zipfiles of downloaded data have been solved.
+
 ## 6.0.3
+
+Easier incantations for `Bhsa()` and `Cunei()`.
+
+* It is no longer needed to pass the name of the notebook, but you can still do so: `name='mynotebook'`
+* You can leave out the `api` argument in `Bhsa()`. Then you do not have to load features by means of `TF.load()`,
+  `Bhsa()` will load a standard set of features, and if the BHSA data is missing, it will download them first.
+
+The former ways of calling `Bhsa()` and `Cunei()` are still valid. Note that all arguments have become optional.
 
 2018-10-08
 

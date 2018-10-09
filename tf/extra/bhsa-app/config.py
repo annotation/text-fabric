@@ -8,11 +8,6 @@ VERSION = 'c'
 PHONO = 'phono'
 PARA = 'parallels'
 
-PROVENANCE = dict(
-    corpus=f'BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis ({VERSION})',
-    corpusDoi=('10.5281/zenodo.1007624', 'https://doi.org/10.5281/zenodo.1007624'),
-)
-
 
 protocol = 'http://'
 host = 'localhost'
@@ -22,35 +17,39 @@ webport = 8001
 options = ()
 
 
-def configure(lgc):
-  base = hasTf(lgc, source=REPO, version=VERSION)
+def configure(lgc, version=VERSION):
+  base = hasTf(lgc, source=REPO, version=version)
   if not base:
     base = '~/text-fabric-data'
   base = f'{base}/{ORG}'
 
-  basePhono = hasTf(lgc, source=PHONO, version=VERSION)
+  basePhono = hasTf(lgc, source=PHONO, version=version)
   if not basePhono:
     basePhono = '~/text-fabric-data'
   basePhono = f'{basePhono}/{ORG}'
 
-  basePara = hasTf(lgc, source=PARA, version=VERSION)
+  basePara = hasTf(lgc, source=PARA, version=version)
   if not basePara:
     basePara = '~/text-fabric-data'
   basePara = f'{basePara}/{ORG}'
 
   locations = [f'{base}/{REPO}', f'{basePhono}/{PHONO}', f'{basePara}/{PARA}']
-  modules = [f'tf/{VERSION}']
+  modules = [f'tf/{version}']
   localDir = os.path.expanduser(f'{base}/{REPO}/_temp')
 
   return dict(
       locations=locations,
       modules=modules,
       localDir=localDir,
+      provenance=dict(
+          corpus=f'BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis ({version})',
+          corpusDoi=('10.5281/zenodo.1007624', 'https://doi.org/10.5281/zenodo.1007624'),
+      ),
   )
 
 
 def extraApi(lgc=None):
-  cfg = configure(lgc)
+  cfg = configure(lgc, version=VERSION)
   result = Bhsa(
       None,
       None,

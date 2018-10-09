@@ -14,7 +14,7 @@ LIMIT_TABLE = 2000
 RESULT = 'result'
 GH_BASE = '~/github'
 EXPRESS_BASE = '~/text-fabric-data'
-EXPRESS_INFO = 'release.txt'
+EXPRESS_INFO = '__release.txt'
 
 URL_GH = 'https://github.com'
 URL_NB = 'http://nbviewer.jupyter.org/github'
@@ -41,7 +41,7 @@ def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc):
   expressBase = os.path.expanduser(EXPRESS_BASE)
   expressTfAll = f'{expressBase}/{dataRel}'
   expressTf = f'{expressTfAll}/{version}'
-  expressInfoFile = f'{expressTfAll}/{EXPRESS_INFO}'
+  expressInfoFile = f'{expressTf}/{EXPRESS_INFO}'
   ghBase = os.path.expanduser(GH_BASE)
   ghTf = f'{ghBase}/{dataRel}/{version}'
 
@@ -64,8 +64,7 @@ def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc):
     else:
       return dataBase
 
-  result = getDataCustom(source, release, dataUrl, expressTfAll)
-  if result:
+  if getDataCustom(source, release, dataUrl, expressTfAll, version):
     return expressBase
   if release == currentRelease:
     return False
@@ -74,8 +73,9 @@ def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc):
   return expressBase
 
 
-def getDataCustom(source, release, dataUrl, dest):
-  print(f'Downloading {source} data from {dataUrl} to {dest} ...')
+def getDataCustom(source, release, dataUrl, dest, version, withPaths=False):
+  versionDest = f'{dest}/{version}'
+  print(f'Downloading {source} data from {dataUrl} to {versionDest} ...')
   sys.stdout.flush()
   try:
     r = requests.get(dataUrl, allow_redirects=True)
@@ -86,18 +86,27 @@ def getDataCustom(source, release, dataUrl, dest):
     sys.stdout.flush()
     return False
 
-  print(f'Saving {source} data in {dest}')
+  print(f'Saving {source} data in {versionDest}')
   sys.stdout.flush()
 
   try:
     z = ZipFile(zf)
-    if not os.path.exists(dest):
-      os.makedirs(dest, exist_ok=True)
+    if not os.path.exists(versionDest):
+      os.makedirs(versionDest, exist_ok=True)
     cwd = os.getcwd()
-    os.chdir(dest)
-    z.extractall()
-    if os.path.exists(f'{dest}/__MACOSX'):
-      rmtree(f'{dest}/__MACOSX')
+    os.chdir(versionDest)
+    if withPaths:
+      z.extractall()
+      if os.path.exists('__MACOSX'):
+        rmtree('__MACOSX')
+    else:
+      for zInfo in z.infolist():
+        if zInfo.filename[-1] == '/':
+          continue
+        if zInfo.filename.startswith('__MACOS'):
+          continue
+        zInfo.filename = os.path.basename(zInfo.filename)
+        z.extract(zInfo)
   except Exception as e:
     print(str(e))
     print(f'Could not save downloaded {source} data')
@@ -105,13 +114,17 @@ def getDataCustom(source, release, dataUrl, dest):
     os.chdir(cwd)
     return False
 
-  expressInfoFile = f'{dest}/{EXPRESS_INFO}'
+  expressInfoFile = f'{versionDest}/{EXPRESS_INFO}'
   with open(expressInfoFile, 'w') as rh:
     rh.write(f'{release}')
   print(f'Saved {source} data release {release}')
   sys.stdout.flush()
   os.chdir(cwd)
-  return dest
+  return True
+
+
+def makeAvailableIn(extraApi, scope):
+  extraApi.api.makeAvailableIn(scope)
 
 
 def search(extraApi, query, silent=False, sets=None, shallow=False):

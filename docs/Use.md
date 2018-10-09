@@ -179,21 +179,29 @@ Explore your corpus by means of programming.
 
     Enter the following text in a code cell
 
+    **BHSA**:
+
     ```python
-    from tf.fabric import Fabric
-    TF = Fabric(modules=['my/dataset'])
-    api = TF.load('sp lex')
-    api.makeAvailableIn(globals())
+    from tf.extra.bhsa import Bhsa
+    B = Bhsa()
+    B.makeAvailableIn(globals())
     ```
 
-    Adapt `my/dataset` to where your particalur dataset is"
+    **Cunei**:
 
-    ??? note "locations"
-        Maybe you have to tell Text-Fabric exactly where your data is.
-        If you have the data in a directory `text-fabric-data`
-        under your home directory  or under `~/github`, Text-Fabric can find it.
-        In your `modules` argument you then specify one or more subdirectories of
-        `text-fabric-data`.
+    ```python
+    from tf.extra.cunei import Cunei
+    CN = Cunei()
+    CN.makeAvailableIn(globals())
+    ```
+
+    ??? note "data"
+        With these incantations, Text-Fabric will download the data automatically
+        and store it in a directory `text-fabric-data` directly in your home
+        directory.
+
+        If you have data in other places, you can also use that by means of
+        extra arguments supplied to `Bhsa()` and `Cunei()`.
 
 ??? abstract "Using Hebrew data"
     To get started with the Hebrew corpus, use its tutorial in the BHSA repo:

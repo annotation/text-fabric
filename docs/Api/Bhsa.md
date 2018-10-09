@@ -6,6 +6,30 @@ The module [bhsa.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/ext
 contains a number of handy functions on top of Text-Fabric and especially its 
 [Search](/Api/General/#search) part.
 
+## Minimal incantation
+
+```python
+from tf.extra.bhsa import Bhsa
+B = Bhsa()
+B.makeAvailableIn(globals())
+```
+
+??? abstract "Explanation"
+    The first line makes the Bhsa API code, which is an app on top of Text-Fabric,
+    accessible to your notebook.
+
+    The second line starts up the Bhsa API and gives it the name `B`. 
+    During start-up the following happens:
+
+    (1) the Bhsa data is downloaded to your `~/text-fabric-data` directory, if not already present there;
+    (2) if your data has been freshly downloaded, a series of optimizations are executed;
+    (3) most optimized features of the Bhsa dataset are loaded;
+
+    The third line makes the API elements directly available: you can refer to `F`, `L`, `T`, etc. directly,
+    instead of the more verbose `B.api.F`, `B.api.L`, `B.api.T` etc.
+
+If you are content with the minimal incantation, you can skip **Set up** and **Initialisation**.
+
 ## Set up
 
 ??? abstract "import Bhsa"
@@ -13,112 +37,31 @@ contains a number of handy functions on top of Text-Fabric and especially its
     You have to import it into your program:
 
     ```python
-    from tf.extra.bhsa import Bhsa, hasTf, getTf
+    from tf.extra.bhsa import Bhsa
     ```
 
-    The `hasTf` and `getTf` functions are only needed if you want to
-    automatically download TF data from one of the
-    ETCBC repositories on GitHub.
-
-## Get data
-
-??? abstract "hasTf(source, version, relative)"
-    Checks whether the TF data for a source/version of a release of an
-    ETCBC repository is locally present.
-
-    If the data is already present under your local
-    `~/github` directory,
-    it will return the full path to `~/github` on your machine.
-    
-    If not, but the data is already present under your local
-    `~/text-fabric-data` directory,
-    it will return the full path to `~/text-fabric-data` on your machine.
-
-    If no data is present locally, it will return `False`.
-
-??? abstract "getTf(source, release, version, relative)"
-    Gets the TF data for a source/version of a release of an
-    ETCBC repository.
-
-    If the data is already present under your local
-    `~/github` directory or `~/text-fabric-data` directory,
-    it will not be downloaded. 
-
-    If not, it will be downloaded to a location within
-    `~/text-fabric-data`.
-
-    All arguments are optional, the defaults are:
-
-    argument | default | description
-    --- | --- | ---
-    source | `bhsa` | repo within ETCBC organization
-    release | `1.3` | release version of repo
-    version | `c` | version of the BHSA
-    relative | `{}/tf` | relative path of TF data within repo. The `{}` will be substituted with the value of `source`.
-
-    ??? example "Main data"
-        Most recent version of the main BHSA data
-
-        ```python
-        getTf()
-        ```
-
-    ??? example "Phono"
-        Most recent version of the *phono* features:
-        ```python
-        getTf(source='phono', release='1.0.1')
-        ```
-    
-    ??? example "Crossrefs"
-        Most recent version of the *crossref* features:
-        ```python
-        getTf(source='parallels', release='1.0.1')
-        ```
-??? abstract "get and load data"
-    Here is an incantation to auto-load data:
-
-    ```python
-    from tf.extra.bhsa import hasTf, getTf, Bhsa
-
-    getTf(version='2017')
-    loc = hasTf(version='2017')
-    TF = Fabric(locations=[f'{loc}/etcbc/bhsa'], modules=['tf/2017'])
-    ```
-
-    And if you want to load phono data as well:
-
-    ```python
-    from tf.extra.bhsa import hasTf, getTf, Bhsa
-
-    getTf(source='bhsa', version='2017')
-    locMain = hasTf(source='bhsa', version='2017')
-
-    getTf(source='phono', version='2017')
-    locPhono = hasTf(source='phono', version='2017')
-
-    TF = Fabric(
-      locations=[f'{locMain}/etcbc/bhsa', f'{locPhono}/etcbc/phono'],
-      modules=['tf/2017'],
-    )
-    ```
-
-    This will work also in cases where the main BHSA data is in your
-    `~/github` directory and the phono data is in your `~/text-fabric-data`
-    directory or vice versa.
-    
 ## Initialisation
 
 ??? abstract "Bhsa()"
     ```python
-    B = Bhsa(api, 'notebook', version=VERSION)
+    B = Bhsa(api=api, name=None, version=VERSION)
     ```
 
     ???+ info "Description"
         Silently loads some additional features, and `B`
         will give access to some extra functions.
 
+    ??? hint "Specific BHSA version"
+        The easiest way to load a specific version of the BHSA is like so:
+
+        ```python
+        B = Bhsa(version='2017')
+        ```
+
     ??? info "api"
         The API resulting from an earlier call `TF.load()`
+        If you leave it out, an API will be created exactly like the TF-browser does it,
+        with the same data version and the same set of data features.
 
         ??? explanation "Set up"
             This module comes in action after you have set up TF and loaded some features, e.g.
@@ -134,11 +77,16 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
             Then we add the functionality of the `bhsa` module by a call to `Bhsa()`.
 
-    ??? info "notebook"
+    ??? info "name"
+        If you leave this argument out, Text-Fabric will determine the name of your notebook for you.
+
+        If Text-Fabric finds the wrong name, you can override it here.
+
         This should be the name
         of your current notebook (without the `.ipynb` extension).
         The Bhsa API will use this to generate a link to your notebook
         on GitHub and NBViewer.
+
 
 ## Linking
 
