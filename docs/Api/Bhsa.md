@@ -10,8 +10,7 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
 ```python
 from tf.extra.bhsa import Bhsa
-B = Bhsa()
-B.makeAvailableIn(globals())
+B = Bhsa(hoist=globals())
 ```
 
 ??? abstract "Explanation"
@@ -22,10 +21,13 @@ B.makeAvailableIn(globals())
     During start-up the following happens:
 
     (1) the Bhsa data is downloaded to your `~/text-fabric-data` directory, if not already present there;
+
     (2) if your data has been freshly downloaded, a series of optimizations are executed;
+
     (3) most optimized features of the Bhsa dataset are loaded;
 
-    The third line makes the API elements directly available: you can refer to `F`, `L`, `T`, etc. directly,
+    (4) `hoist=globals()` makes the API elements directly available:
+    you can refer to `F`, `L`, `T`, etc. directly,
     instead of the more verbose `B.api.F`, `B.api.L`, `B.api.T` etc.
 
 If you are content with the minimal incantation, you can skip **Set up** and **Initialisation**.

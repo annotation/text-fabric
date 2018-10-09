@@ -183,16 +183,14 @@ Explore your corpus by means of programming.
 
     ```python
     from tf.extra.bhsa import Bhsa
-    B = Bhsa()
-    B.makeAvailableIn(globals())
+    B = Bhsa(hoist=globals())
     ```
 
     **Cunei**:
 
     ```python
     from tf.extra.cunei import Cunei
-    CN = Cunei()
-    CN.makeAvailableIn(globals())
+    CN = Cunei(hoist=globals())
     ```
 
     ??? note "data"

@@ -312,6 +312,13 @@ EXCLUDED_FEATURES = set('''
 
 PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
 
+DOC_URL = f'https://etcbc.github.io/bhsa'
+DOC_INTRO = '0_home'
+
+
+def FEATURE_URL(version, feature):
+  return f'{DOC_URL}/features/hebrew/{version}/{feature}.html'
+
 
 def getTf(
     lgc,
@@ -340,6 +347,7 @@ class Bhsa(object):
       modules=None,
       asApi=False,
       lgc=False,
+      hoist=False,
   ):
     self.asApi = asApi
     self.version = version
@@ -397,12 +405,11 @@ class Bhsa(object):
         cwdRel = None
       nbUrl = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
       ghUrl = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
-    docUrl = f'https://etcbc.github.io/bhsa'
     tutUrl = f'{URL_NB}/{ORG}/{CORPUS}/blob/master/tutorial/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
-    dataLink = outLink(CORPUS.upper(), docUrl, '{provenance of this corpus}')
+    dataLink = outLink(CORPUS.upper(), DOC_URL, '{provenance of this corpus}')
     featureLink = outLink(
-        'Feature docs', f'{docUrl}/features/hebrew/{self.version}/0_home.html',
+        'Feature docs', FEATURE_URL(self.version, DOC_INTRO),
         f'{CORPUS.upper()} feature documentation'
     )
     bhsaLink = outLink('BHSA API', extraUrl, 'BHSA API documentation')
@@ -426,6 +433,12 @@ class Bhsa(object):
       self.tutLink = tutLink
     else:
       dm('**Documentation:**' f' {dataLink} {featureLink} {bhsaLink} {tfLink} {tfsLink}')
+      dm('**Loaded features** (click them for info):')
+      lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f]
+      dm(' '.join(
+          outLink(feature, FEATURE_URL(self.version, feature), title='info')
+          for feature in lf
+      ))
       if nbUrl:
         dm(
             f'''
@@ -440,6 +453,8 @@ This notebook online:
 
     if not asApi:
       self.loadCSS()
+      if hoist:
+        makeAvailableIn(self, hoist)
     self.table = types.MethodType(table, self)
     self.plainTuple = types.MethodType(plainTuple, self)
     self.show = types.MethodType(show, self)
@@ -448,7 +463,6 @@ This notebook online:
     self.prettySetup = types.MethodType(prettySetup, self)
     self.search = types.MethodType(search, self)
     self.header = types.MethodType(header, self)
-    self.makeAvailableIn = types.MethodType(makeAvailableIn, self)
 
   def loadCSS(self):
     asApi = self.asApi

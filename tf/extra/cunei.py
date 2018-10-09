@@ -553,7 +553,7 @@ class Atf(object):
 
 
 class Cunei(Atf):
-  def __init__(self, name=None, asApi=False, version='1.0', lgc=False):
+  def __init__(self, name=None, asApi=False, version='1.0', lgc=False, hoist=False):
     self.asApi = asApi
     repoBase = getData(SOURCE, RELEASE, RELEASE_FIRST, DATA_URL(version), DATA_REL, version, lgc)
     if not repoBase:
@@ -646,6 +646,8 @@ This notebook online:
 
     if not asApi:
       self.loadCSS()
+      if hoist:
+        makeAvailableIn(self, hoist)
     self.table = types.MethodType(table, self)
     self.plainTuple = types.MethodType(plainTuple, self)
     self.show = types.MethodType(show, self)
@@ -654,7 +656,6 @@ This notebook online:
     self.prettySetup = types.MethodType(prettySetup, self)
     self.search = types.MethodType(search, self)
     self.header = types.MethodType(header, self)
-    self.makeAvailableIn = types.MethodType(makeAvailableIn, self)
 
   def loadCSS(self):
     asApi = self.asApi

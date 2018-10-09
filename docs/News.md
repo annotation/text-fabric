@@ -12,6 +12,14 @@
 
 None
 
+## 6.0.5
+
+2018-10-09
+
+When using BHSA and Cunei in a notebook, there is an even simpler incantation which auto downloads features.
+
+In the BHSA it is shown which features are loaded, with direct links to the feature docs.
+
 ## 6.0.4
 
 2018-10-09

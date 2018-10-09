@@ -42,12 +42,13 @@ def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc):
   expressTfAll = f'{expressBase}/{dataRel}'
   expressTf = f'{expressTfAll}/{version}'
   expressInfoFile = f'{expressTf}/{EXPRESS_INFO}'
+  exTf = f'{EXPRESS_BASE}/{dataRel}/{version}'
   ghBase = os.path.expanduser(GH_BASE)
-  ghTf = f'{ghBase}/{dataRel}/{version}'
+  ghTf = f'{GH_BASE}/{dataRel}/{version}'
 
   dataBase = hasData(lgc, dataRel, version)
   if dataBase == ghBase:
-    print(f'Found {source} data in GitHub repo: {ghTf}')
+    print(f'Using {source}-{version} local in {ghTf}')
     sys.stdout.flush()
     return dataBase
   if dataBase == expressBase:
@@ -56,37 +57,38 @@ def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc):
       with open(expressInfoFile) as eh:
         for line in eh:
           currentRelease = line.strip()
-    print(f'Found {source} data downloaded from GitHub release {currentRelease}: {expressTf}')
-    sys.stdout.flush()
-    if currentRelease != release:
-      print(f'A newer {source} data release is available: {release}')
+    if currentRelease == release:
+      print(f'Using {source}-{version} r{release} in {exTf}')
       sys.stdout.flush()
-    else:
       return dataBase
+    else:
+      print(f'Found {source}-{version} r{currentRelease} in {exTf}')
+      sys.stdout.flush()
 
   if getDataCustom(source, release, dataUrl, expressTfAll, version):
+    print(f'Using {source}-{version} r{release} in {exTf}')
     return expressBase
   if release == currentRelease:
     return False
-  print(f'Continuing with {source} data release {currentRelease}')
+  print(f'Using {source}-{version} r{currentRelease} in {exTf}')
   sys.stdout.flush()
   return expressBase
 
 
 def getDataCustom(source, release, dataUrl, dest, version, withPaths=False):
   versionDest = f'{dest}/{version}'
-  print(f'Downloading {source} data from {dataUrl} to {versionDest} ...')
+  print(f'\tdownloading {source}-{version} r{release} ...')
   sys.stdout.flush()
   try:
     r = requests.get(dataUrl, allow_redirects=True)
     zf = io.BytesIO(r.content)
   except Exception as e:
     print(str(e))
-    print(f'Could not download {source} data')
+    print(f'\tcould not download {source}-{version} r{release} from {dataUrl} to {versionDest}')
     sys.stdout.flush()
     return False
 
-  print(f'Saving {source} data in {versionDest}')
+  print(f'\tsaving {source}-{version} r{release}')
   sys.stdout.flush()
 
   try:
@@ -109,7 +111,7 @@ def getDataCustom(source, release, dataUrl, dest, version, withPaths=False):
         z.extract(zInfo)
   except Exception as e:
     print(str(e))
-    print(f'Could not save downloaded {source} data')
+    print(f'\tcould not save {source}-{version} r{release}')
     sys.stdout.flush()
     os.chdir(cwd)
     return False
@@ -117,7 +119,7 @@ def getDataCustom(source, release, dataUrl, dest, version, withPaths=False):
   expressInfoFile = f'{versionDest}/{EXPRESS_INFO}'
   with open(expressInfoFile, 'w') as rh:
     rh.write(f'{release}')
-  print(f'Saved {source} data release {release}')
+  print(f'\tsaved {source}-{version} r{release}')
   sys.stdout.flush()
   os.chdir(cwd)
   return True
