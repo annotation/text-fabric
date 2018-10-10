@@ -13,8 +13,7 @@ from tf.apphelpers import (
     getData, getDataCustom, getFeatures,
     htmlEsc, mdEsc,
     dm, header, outLink,
-    URL_GH, URL_NB,
-    makeAvailableIn,
+    URL_GH, URL_NB, API_URL,
 )
 from tf.notebook import location
 
@@ -609,11 +608,11 @@ class Cunei(Atf):
     featureLink = outLink('Feature docs', f'{docUrl}/transcription.md', 'feature documentation')
     cuneiLink = outLink('Cunei API', extraUrl, 'cunei api documentation')
     tfLink = outLink(
-        f'Text-Fabric API {api.TF.version}', 'https://dans-labs.github.io/text-fabric/Api/General/',
+        f'Text-Fabric API {api.TF.version}', API_URL(''),
         'text-fabric-api'
     )
     tfsLink = outLink(
-        'Search help', 'https://dans-labs.github.io/text-fabric/Api/General/#search-templates',
+        'Search help', API_URL('search-templates'),
         'Search Templates Introduction and Reference'
     )
     tutLink = outLink(
@@ -647,7 +646,14 @@ This notebook online:
     if not asApi:
       self.loadCSS()
       if hoist:
-        makeAvailableIn(self, hoist)
+        docs = api.makeAvailableIn(hoist)
+        dm('**API members:**<br/>\n' + '<br/>\n'.join(
+            ', '.join(
+                outLink(entry, API_URL(ref), title='doc')
+                for entry in entries
+            )
+            for (ref, entries) in docs
+        ))
     self.table = types.MethodType(table, self)
     self.plainTuple = types.MethodType(plainTuple, self)
     self.show = types.MethodType(show, self)

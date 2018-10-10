@@ -278,6 +278,15 @@
         sorted(nodeSet, key=lambda r: sortKey(r[0]))
         ```
 
+??? abstract "otypeRank"
+    ```python
+    otypeRank['sentence']
+    ```
+    The node types are ordered in `C.levels.data`, and if you reverse that list, you get
+    the rank of a type by looking at the position in which that type occurs.
+
+    The *slotType* has otypeRank 0, and the more comprehensive a type is, the higher its rank.
+    
 ## Locality
 
 ??? explanation "Local navigation"
@@ -2256,6 +2265,15 @@
 
     Normally, you do not use this data, but since it is there, it might be valuable,
     so we have made it accessible in the `C`-api, which we document here.
+
+??? abstract "Call() aka AllComputeds()"
+    ```python
+    Call()
+    AllComputeds()
+    ```
+
+    ???+ info "Description"
+        Returns a sorted list of all usable, loaded computed data names.
 
 ??? abstract "C.levels.data"
     ???+ info "Description"

@@ -12,8 +12,7 @@ from tf.apphelpers import (
     getBoundary, getFeatures,
     htmlEsc, mdEsc,
     dm, header, outLink,
-    URL_GH, URL_NB,
-    makeAvailableIn,
+    URL_GH, URL_NB, API_URL, DOC_URL, DOC_INTRO
 )
 from tf.server.common import getConfig
 from tf.notebook import location
@@ -312,9 +311,6 @@ EXCLUDED_FEATURES = set('''
 
 PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
 
-DOC_URL = f'https://etcbc.github.io/bhsa'
-DOC_INTRO = '0_home'
-
 
 def FEATURE_URL(version, feature):
   return f'{DOC_URL}/features/hebrew/{version}/{feature}.html'
@@ -414,12 +410,12 @@ class Bhsa(object):
     )
     bhsaLink = outLink('BHSA API', extraUrl, 'BHSA API documentation')
     tfLink = outLink(
-        f'Text-Fabric API {api.TF.version}', 'https://dans-labs.github.io/text-fabric/Api/General/',
+        f'Text-Fabric API {api.TF.version}', API_URL(''),
         'text-fabric-api'
     )
     tfsLink = outLink(
         'Search Reference',
-        'https://dans-labs.github.io/text-fabric/Api/General/#search-templates',
+        API_URL('search-templates'),
         'Search Templates Introduction and Reference'
     )
     tutLink = outLink(
@@ -434,7 +430,7 @@ class Bhsa(object):
     else:
       dm('**Documentation:**' f' {dataLink} {featureLink} {bhsaLink} {tfLink} {tfsLink}')
       dm('**Loaded features** (click them for info):')
-      lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f]
+      lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f] + api.Eall()
       dm(' '.join(
           outLink(feature, FEATURE_URL(self.version, feature), title='info')
           for feature in lf
@@ -454,7 +450,14 @@ This notebook online:
     if not asApi:
       self.loadCSS()
       if hoist:
-        makeAvailableIn(self, hoist)
+        docs = api.makeAvailableIn(hoist)
+        dm('**API members:**<br/>\n' + '<br/>\n'.join(
+            ', '.join(
+                outLink(entry, API_URL(ref), title='doc')
+                for entry in entries
+            )
+            for (ref, entries) in docs
+        ))
     self.table = types.MethodType(table, self)
     self.plainTuple = types.MethodType(plainTuple, self)
     self.show = types.MethodType(show, self)

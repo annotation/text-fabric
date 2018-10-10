@@ -12,6 +12,15 @@
 
 None
 
+## 6.0.6
+
+2018-10-10
+
+In the BHSA, the edge features are now shown too after the incantation.
+
+If you hoist the API members into your namespace, you will get a list of hoisted names,
+linked to the API documentation.
+
 ## 6.0.5
 
 2018-10-09
