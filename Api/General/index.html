@@ -1228,7 +1228,11 @@ nodes in it, e.g. search results: if <code>results</code> is a list of tuples of
 could sort them in canonical order like this:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">sorted</span><span class="p">(</span><span class="n">nodeSet</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">sortKey</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 </pre></div>
 </td></tr></table>
-</details></details><h2 id="locality">Locality<a class="headerlink" href="#locality" title="Permanent link">&para;</a></h2>
+</details></details><details class="abstract"><summary>otypeRank</summary><p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">otypeRank</span><span class="p">[</span><span class="s1">&#39;sentence&#39;</span><span class="p">]</span>
+</pre></div>
+</td></tr></table>
+The node types are ordered in <code>C.levels.data</code>, and if you reverse that list, you get
+the rank of a type by looking at the position in which that type occurs.</p><p>The <em>slotType</em> has otypeRank 0, and the more comprehensive a type is, the higher its rank.</p></details><h2 id="locality">Locality<a class="headerlink" href="#locality" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Local navigation</summary><p>Here are the methods by which you can navigate easily from a node to its
 neighbours: parents and children, previous and next siblings.</p></details><details class="info" open="open"><summary>L</summary><p>The Locality API is exposed as <code>L</code> or <code>Locality</code>.</p></details><details class="hint"><summary>otype parameter</summary><p>In all of the following <code>L</code>-functions, if the <code>otype</code> parameter is passed, the result is filtered and
 only nodes with <code>otype=nodeType</code> are retained.</p></details><details class="caution"><summary>Results of the <code>L.</code> functions are tuples, not single nodes</summary><p>Even if an <code>L</code>-function returns a single node, it is packed in a <em>tuple</em>.
@@ -2209,7 +2213,12 @@ metadata of all features. Handy to add provenance data here:</p><table class="co
 <details class="explanation"><summary>Pre-computing</summary><p>In order to make the API work, Text-Fabric prepares some data and saves it in
 quick-load format. Most of this data are the features, but there is some extra
 data needed for the special functions of the WARP features and the L-API.</p><p>Normally, you do not use this data, but since it is there, it might be valuable,
-so we have made it accessible in the <code>C</code>-api, which we document here.</p></details><details class="abstract"><summary>C.levels.data</summary><details class="info" open="open"><summary>Description</summary><p>A sorted list of object types plus basic information about them.</p><p>Each entry in the list has the shape</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="p">(</span><span class="n">otype</span><span class="p">,</span> <span class="n">averageSlots</span><span class="p">,</span> <span class="n">minNode</span><span class="p">,</span> <span class="n">maxNode</span><span class="p">)</span>
+so we have made it accessible in the <code>C</code>-api, which we document here.</p></details><details class="abstract"><summary>Call() aka AllComputeds()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">Call</span><span class="p">()</span>
+<span class="n">AllComputeds</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+<details class="info" open="open"><summary>Description</summary><p>Returns a sorted list of all usable, loaded computed data names.</p></details></details><details class="abstract"><summary>C.levels.data</summary><details class="info" open="open"><summary>Description</summary><p>A sorted list of object types plus basic information about them.</p><p>Each entry in the list has the shape</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="p">(</span><span class="n">otype</span><span class="p">,</span> <span class="n">averageSlots</span><span class="p">,</span> <span class="n">minNode</span><span class="p">,</span> <span class="n">maxNode</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <p>where <code>otype</code> is the name of the node type, <code>averageSlots</code> the average size of
