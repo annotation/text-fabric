@@ -19,6 +19,14 @@ EXPRESS_INFO = '__release.txt'
 URL_GH = 'https://github.com'
 URL_NB = 'http://nbviewer.jupyter.org/github'
 
+DOC_URL = f'https://etcbc.github.io/bhsa'
+DOC_INTRO = '0_home'
+
+
+def API_URL(member):
+  member = f'#{member}' if member else ''
+  return f'https://dans-labs.github.io/text-fabric/Api/General/{member}'
+
 
 def hasData(lgc, dataRel, version):
   if lgc:
@@ -123,10 +131,6 @@ def getDataCustom(source, release, dataUrl, dest, version, withPaths=False):
   sys.stdout.flush()
   os.chdir(cwd)
   return True
-
-
-def makeAvailableIn(extraApi, scope):
-  extraApi.api.makeAvailableIn(scope)
 
 
 def search(extraApi, query, silent=False, sets=None, shallow=False):

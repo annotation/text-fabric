@@ -5,6 +5,48 @@ from .text import Text
 from .search.search import Search
 
 
+API_REFS = dict(
+    AllComputeds=('features', 'computedall', 'computed-data'),
+    AllEdges=('features', 'edgeall', 'edge-features'),
+    AllFeatures=('features', 'nodeall', 'node-features'),
+    C=('features', 'computed', 'computed-data'),
+    Call=('features', 'computedall', 'computed-data'),
+    Computed=('features', 'computed', 'computed-data'),
+    ComputedString=('features', 'computedstr', 'computed-data'),
+    Cs=('features', 'computedstr', 'computed-data'),
+    E=('features', 'edge', 'edge-features'),
+    Eall=('features', 'edgeall', 'edge-features'),
+    Edge=('features', 'edge', 'edge-features'),
+    EdgeString=('features', 'edgestr', 'edge-features'),
+    Es=('features', 'edgestr', 'edge-features'),
+    F=('features', 'node', 'node-features'),
+    Fall=('features', 'nodeall', 'node-features'),
+    Feature=('features', 'node', 'node-features'),
+    FeatureString=('features', 'nodestr', 'node-features'),
+    Fs=('features', 'nodestr', 'node-features'),
+    L=('locality', 'locality', 'locality'),
+    Locality=('locality', 'locality', 'locality'),
+    N=('nodes', 'generator', 'navigating-nodes'),
+    Nodes=('nodes', 'generator', 'navigating-nodes'),
+    S=('search', 'search', 'searching'),
+    Search=('search', 'search', 'searching'),
+    T=('text', 'text', 'text'),
+    TF=('fabric', 'fabric', 'loading'),
+    Text=('text', 'text', 'text'),
+    cache=('messages', 'cache', 'messaging'),
+    ensureLoaded=('loading', 'ensure', 'loading'),
+    error=('messages', 'error', 'messaging'),
+    ignored=('loading', 'ignored', 'loading'),
+    indent=('messages', 'indent', 'messaging'),
+    info=('messages', 'info', 'messaging'),
+    loadLog=('loading', 'loadlog', 'loading'),
+    otypeRank=('nodes', 'rank', 'navigating-nodes'),
+    reset=('messages', 'reset', 'messaging'),
+    sortKey=('nodes', 'key', 'navigating-nodes'),
+    sortNodes=('nodes', 'sort', 'navigating-nodes'),
+)
+
+
 class OtypeFeature(object):
   def __init__(self, api, data=None):
     self.api = api
@@ -243,6 +285,20 @@ class Api(object):
     for member in dir(self):
       if '_' not in member and member != 'makeAvailableIn':
         scope[member] = getattr(self, member)
+        if member not in API_REFS:
+          print(f'WARNING: API member "{member}" not documented')
+
+    grouped = {}
+    for (member, (head, sub, ref)) in API_REFS.items():
+      grouped.setdefault(ref, {}).setdefault((head, sub), []).append(member)
+
+    docs = []
+    for (ref, groups) in sorted(grouped.items()):
+      chunks = []
+      for ((head, sub), members) in sorted(groups.items()):
+        chunks.append(' '.join(sorted(members, key=lambda x: (len(x), x))))
+      docs.append((ref, tuple(chunks)))
+    return docs
 
   def ensureLoaded(self, features):
     F = self.F
