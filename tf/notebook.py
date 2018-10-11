@@ -26,6 +26,8 @@ def repoLocation(cwd):
 
 def location(cwd, name):
   repoLoc = repoLocation(cwd)
+  if name is not None:
+     return (('', name, '.ipynb'), repoLoc)
 
   hasKernel = False
   try:
@@ -33,23 +35,26 @@ def location(cwd, name):
     hasKernel = True
   except Exception:
     pass
-  servers = list_running_servers()
 
   found = None
-  if hasKernel:
-    for ss in servers:
-      response = requests.get(
-          urljoin(ss['url'], 'api/sessions'), params={'token': ss.get('token', '')}
-      )
-      for nn in json.loads(response.text):
-        if nn['kernel']['id'] == kernelId:
-          relPath = nn['notebook']['path']
-          absPath = os.path.join(ss['notebook_dir'], relPath)
-          (dirName, filePart) = os.path.split(absPath)
-          (fileName, extension) = os.path.splitext(filePart)
-          if name is not None:
-            fileName = name
-          found = (dirName, fileName, extension)
-          break
+
+  try:
+    servers = list_running_servers()
+    if hasKernel:
+      for ss in servers:
+          response = requests.get(
+              urljoin(ss['url'], 'api/sessions'), params={'token': ss.get('token', '')}
+          )
+          for nn in json.loads(response.text):
+            if nn['kernel']['id'] == kernelId:
+              relPath = nn['notebook']['path']
+              absPath = os.path.join(ss['notebook_dir'], relPath)
+              (dirName, filePart) = os.path.split(absPath)
+              (fileName, extension) = os.path.splitext(filePart)
+              found = (dirName, fileName, extension)
+              break
+  except Exception:
+    print('Cannot determine the name of this notebook')
+    pass
 
   return (found, repoLoc)

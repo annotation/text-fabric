@@ -126,7 +126,7 @@ class Transcription(object):
     ''', re.X
   )
 
-  syriac_mapping = {
+  syriac_mapping_simple = {
       '>': "\u0710",  # alaph
       'B': "\u0712",  # beth
       'G': "\u0713",  # gamal
@@ -152,6 +152,172 @@ class Transcription(object):
       's': "\u0724",  # semkath final
       'p': "\u0727",  # pe reversed
   }
+
+  syriac_mapping_pil = {
+
+      # LETTERS
+
+      "'": "\u0710",  # alaph
+      'b': "\u0712",  # beth
+      'g': "\u0713",  # gamal
+      'd': "\u0715",  # dalat
+      'h': "\u0717",  # he
+      'w': "\u0718",  # waw
+      'z': "\u0719",  # zain
+      'H': "\u071A",  # heth
+      'T': "\u071B",  # teth
+      'y': "\u071D",  # yod
+      'k': "\u071F",  # kaf
+      'l': "\u0720",  # lamad
+      'm': "\u0721",  # mim
+      'n': "\u0722",  # nun
+      's': "\u0723",  # semkath
+      '`': "\u0725",  # 'e
+      'p': "\u0726",  # pe
+      'S': "\u0728",  # tsade
+      'q': "\u0729",  # qof
+      'r': "\u072A",  # resh
+      '$': "\u072B",  # shin
+      't': "\u072C",  # taw
+
+      # WORD-BOUND DIACRITICS
+
+      '"': "\u0308",  # seyame
+      '#': "\u0323",  # diacritical dot below
+      '^': "\u0307",  # diacritical dot above
+      '~': "\u0307",  # abbreviation mark
+
+      # NON-VOCALIC LETTER-BOUND DIACRITICS
+
+      '#,': "\u0742",  # rukkakha
+      '#"': "\u0342",  # unclear (COMBINING DIAERESIS BELOW)
+      '#!': "\u0744",  # unclear (SYRIAC TWO VERTICAL DOTS BELOW)
+      '#_': "\u0331",  # linea occultans infera
+      '^,': "\u0741",  # qushshaya
+      '^!': "\u0743",  # unclear (SYRIAC TWO VERTICAL DOTS ABOVE)
+      '^_': "\u0304",  # linea occultans supera
+
+      # VOCALIC LETTER-BOUND DIACRITICS
+
+      ':': "",         # shewa
+      'A': "\u0733",   # qamets
+      'A1': "\u0734",  # zeqapa
+      'A2': "\u0735",  # zeqofo
+      'E': "\u0739",   # tsere, revasa karya
+      'O': "\u073F",   # holem, rewaha
+      'a': "\u0730",   # patah
+      'a1': "\u0731",  # petaha
+      'a2': "\u0732",  # petoho
+      'e': "\u0736",   # segol
+      'e1': "\u0737",  # revasa arrika
+      'e2': "\u0738",  # revoso
+      'i': "\u073A",   # hireq
+      'i1': "\u073B",  # hevoso
+      'y#': "\u071D\u073C",  # hevasa
+      'u': "\u073D",   # qubbuts
+      'u1': "\u073E",  # esoso
+      'w#': "\u0718\u073C",  # esasa allisa
+      'w^': "\u0718\u073F",  # esasa rewiha
+
+      # INTERPUNCTION
+
+      '#.': "\u0702",   # menachta, meshalyana (ES), metdamrana, samka
+      '#:': "\u0704",   # metkashpana (ES)
+      '#\\': "\u0709",  # tahtaya, metkashpana (WS), meshalyana (WS)
+      '=.': "\u002E",   # pasuqa
+      '=/': "\u0707",   # elaya
+      '=:': "\u003A",   # shewaya (WS), zauga (ES)
+      '=\\': "\u0706",  # unclear (SYRIAC COLON SKEWED LEFT)
+      '^.': "\u0701",   # paquda, metkashpana (ES), meshalyana (ES), etsyana, meshalana?
+      '^"': "\u0705",   # rahta
+      '^:': "\u0703",   # taksa (WS), zauga elaya (ES)
+      '^\\': "\u0708",  # unclear (SYRIAC SUPRALINEAR COLON SKEWED LEFT)
+
+      # PERICOPE MARKERS
+
+      '*': "\u0700",  # rosette
+      '.': "\u00B7",  # common dot in caesuras
+      '@': "\u2722",  # vignette
+      '_': "\u2014",  # dash in caesuras
+      'o': "\u2022",  # large dot in caesuras
+  }
+
+  syriac_mapping = {  # this is WIT
+
+      # LETTERS
+
+      '>': "\u0710",  # alaph
+      'B': "\u0712",  # beth
+      'G': "\u0713",  # gamal
+      'D': "\u0715",  # dalat
+      'H': "\u0717",  # he
+      'W': "\u0718",  # waw
+      'Z': "\u0719",  # zain
+      'X': "\u071A",  # heth
+      'V': "\u071B",  # teth
+      'J': "\u071D",  # yod
+      'K': "\u071F",  # kaf
+      'L': "\u0720",  # lamad
+      'M': "\u0721",  # mim
+      'N': "\u0722",  # nun
+      'S': "\u0723",  # semkath
+      '<': "\u0725",  # 'e
+      'P': "\u0726",  # pe
+      'Y': "\u0728",  # tsade
+      'Q': "\u0729",  # qof
+      'R': "\u072A",  # resh
+      'C': "\u072B",  # shin
+      'T': "\u072C",  # taw
+
+      # WORD-BOUND DIACRITICS
+
+      '"': "\u0308",  # seyame
+      '#': "\u0323",  # diacritical dot below
+      '^': "\u0307",  # diacritical dot above
+
+      # NON-VOCALIC LETTER-BOUND DIACRITICS
+
+      '^!': "\u0743",  # unclear (SYRIAC TWO VERTICAL DOTS ABOVE)
+
+      # VOCALIC LETTER-BOUND DIACRITICS
+
+      ':': "",         # shewa
+      'A': "\u0733",   # qamets
+      'A1': "\u0734",  # zeqapa
+      'A2': "\u0735",  # zeqofo
+      'O': "\u073F",   # holem, rewaha
+      '@': "\u0730",   # patah
+      '@1': "\u0731",  # petaha
+      '@2': "\u0732",  # petoho
+      'E': "\u0736",   # segol
+      'E1': "\u0737",  # revasa arrika
+      'E2': "\u0738",  # revoso
+      'I': "\u073A",   # hireq
+      'I1': "\u073B",  # hevoso
+      'U': "\u073D",   # qubbuts
+      'U1': "\u073E",  # esoso
+
+      # INTERPUNCTION
+
+      '#\\': "\u0709",  # tahtaya, metkashpana (WS), meshalyana (WS)
+      '=.': "\u002E",  # pasuqa
+      '=#': "\u0707",  # elaya
+      '=:': "\u003A",  # shewaya (WS), zauga (ES)
+      '=^': "\u0706",  # unclear (SYRIAC COLON SKEWED LEFT)
+      '=/': "\u0707",   # elaya
+      '=\\': "\u0706",  # unclear (SYRIAC COLON SKEWED LEFT)
+      '^:': "\u0703",   # taksa (WS), zauga elaya (ES)
+      '^\\': "\u0708",  # unclear (SYRIAC SUPRALINEAR COLON SKEWED LEFT)
+
+      # PERICOPE MARKERS
+
+      '*': "\u0700",  # rosette
+      '.': "\u00B7",  # common dot in caesuras
+      '_': "\u2014",  # dash in caesuras
+      'o': "\u2022",  # large dot in caesuras
+  }
+
+  trans_syriac_pat = re.compile(r'([AE@IU][12]?|=[.#:\^/\\]|[\^#][!:\\]|.)')
 
   def __init__(self):
     self.hebrew_consonants = {Transcription.hebrew_mapping[x] for x in Transcription.hebrew_cons}
@@ -224,6 +390,9 @@ class Transcription(object):
   def _map_hebrew(m):
     return Transcription.hebrew_mapping.get(m.group(1), m.group(1))
 
+  def _map_syriac(m):
+    return Transcription.syriac_mapping.get(m.group(1), m.group(1))
+
   def _swap_accent(m):
     return m.group(1) + m.group(3) + m.group(4) + m.group(2)
 
@@ -280,9 +449,21 @@ class Transcription(object):
     return ''.join(self.hebrew_mappingi.get(x, x) for x in Transcription._comp(word))
 
   def to_syriac(self, word):
-    return Transcription._decomp(
-        ''.join(self.syriac_mapping.get(x, x) for x in Transcription._comp(word))
-    )
+    return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)
 
   def from_syriac(self, word):
-    return ''.join(self.syriac_mappingi.get(x, x) for x in Transcription._comp(word))
+    return ''.join(self.syriac_mappingi.get(x, x) for x in word)
+
+  def can_to_syriac(self, word):
+    return all(
+        candidate in Transcription.syriac_mapping
+        for candidate in Transcription.trans_syriac_pat.findall(word)
+        if candidate != ' '
+    )
+
+  def can_from_syriac(self, word):
+    return all(
+        c in self.syriac_mappingi
+        for c in word
+        if c != ' '
+    )

@@ -17,7 +17,7 @@ EXPRESS_BASE = '~/text-fabric-data'
 EXPRESS_INFO = '__release.txt'
 
 URL_GH = 'https://github.com'
-URL_NB = 'http://nbviewer.jupyter.org/github'
+URL_NB = 'https://nbviewer.jupyter.org/github'
 
 DOC_URL = f'https://etcbc.github.io/bhsa'
 DOC_INTRO = '0_home'
