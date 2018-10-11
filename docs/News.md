@@ -12,12 +12,14 @@
 
 None
 
-## 6.0.7-8
+## 6.0.7-8-9
 
 2018-10-11
 
+* Avoid computing the notebook name when the user passes a name for the notebook to `Cunei()` or `Bhsa()`.
+  And when the computing needs to be done, all exceptions will be caught, because the code for determining
+  the notebook name is brittle, and may crash if the Jupyter version does not match.
 * Fixed the bug that the Bhsa and Cunei did not run properly outside a notebook or outside a github repo.
-
 * In Bhsa and Cunei, the generated info after the incantation can be collapsed (features, API members).
 
 ## 6.0.6

@@ -618,11 +618,11 @@ class Cunei(Atf):
     else:
       if inNb:
         dm('**Documentation:**' f' {dataLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}')
-      if repoLoc:
-        dm(f'''
-This notebook online:
-{outLink('NBViewer', nbUrl)}
-{outLink('GitHub', ghUrl)}
+        if repoLoc:
+          dm(f'''
+  This notebook online:
+  {outLink('NBViewer', f'{nbUrl}/{nbName}{nbExt}')}
+  {outLink('GitHub', f'{ghUrl}/{nbName}{nbExt}')}
 ''')
     thisRepoDir = None
     self.tempDir = None

@@ -437,8 +437,8 @@ class Bhsa(object):
           dm(
               f'''
 This notebook online:
-{outLink('NBViewer', f'{nbUrl}/{nbName}.{nbExt}')}
-{outLink('GitHub', f'{ghUrl}/{nbName}.{nbExt}')}
+{outLink('NBViewer', f'{nbUrl}/{nbName}{nbExt}')}
+{outLink('GitHub', f'{ghUrl}/{nbName}{nbExt}')}
 '''
           )
 
