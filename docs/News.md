@@ -12,11 +12,11 @@
 
 None
 
-## 6.0.7
+## 6.0.7-8
 
 2018-10-11
 
-* Fixed the bug that the Bhsa and Cunei did not run properly outside a notebook.
+* Fixed the bug that the Bhsa and Cunei did not run properly outside a notebook or outside a github repo.
 
 * In Bhsa and Cunei, the generated info after the incantation can be collapsed (features, API members).
 
