@@ -3,7 +3,6 @@ import re
 import types
 from glob import glob
 from shutil import copyfile
-from IPython.display import display, HTML
 
 from tf.fabric import Fabric
 from tf.apphelpers import (
@@ -12,10 +11,10 @@ from tf.apphelpers import (
     show, prettyPre, pretty, prettyTuple, prettySetup,
     getData, getDataCustom, getFeatures,
     htmlEsc, mdEsc,
-    dm, header, outLink,
+    dm, dh, header, outLink,
     URL_GH, URL_NB, API_URL,
 )
-from tf.notebook import location
+from tf.notebook import location, repoLocation
 
 ORG = 'Nino-cunei'
 SOURCE = 'uruk'
@@ -588,19 +587,14 @@ class Cunei(Atf):
     self.api = api
     self._getImagery()
     self.cwd = os.getcwd()
-    cwdPat = re.compile(f'^.*/github/([^/]+)/([^/]+)((?:/.+)?)$', re.I)
-    cwdRel = cwdPat.findall(self.cwd)
+    repoLoc = repoLocation(self.cwd)
     if not asApi:
-      if name is None:
-        (nbDir, nbName, nbExt) = location()
-        name = nbName
-      if cwdRel:
-        (thisOrg, thisRepo, thisPath) = cwdRel[0]
-        onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{name}.ipynb')
-      else:
-        cwdRel = None
-      nbUrl = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
-      ghUrl = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
+      inNb = location(name, self.cwd)
+      if inNb:
+        (nbDir, nbName, nbExt, thisOrg, thisRepo, thisPath) = inNb
+        onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{nbName}.ipynb')
+        nbUrl = f'{URL_NB}/{onlineTail}'
+        ghUrl = f'{URL_GH}/{onlineTail}'
     docUrl = f'{URL_GH}/{repoRel}/blob/master/docs'
     tutUrl = f'{URL_NB}/{ORG}/tutorials/blob/master/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Cunei/'
@@ -625,16 +619,16 @@ class Cunei(Atf):
       self.tfsLink = tfsLink
       self.tutLink = tutLink
     else:
-      dm('**Documentation:**' f' {dataLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}')
-      if nbUrl:
+      if inNb:
+        dm('**Documentation:**' f' {dataLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}')
         dm(f'''
 This notebook online:
 {outLink('NBViewer', nbUrl)}
 {outLink('GitHub', ghUrl)}
 ''')
-    thisRepoDir = (None if cwdRel is None else f'{repoBase}/{thisOrg}/{thisRepo}')
-    self.tempDir = (None if cwdRel is None else f'{thisRepoDir}/{TEMP_DIR}')
-    self.reportDir = (None if cwdRel is None else f'{thisRepoDir}/{REPORT_DIR}')
+    thisRepoDir = (None if repoLoc is None else f'{repoBase}/{thisOrg}/{thisRepo}')
+    self.tempDir = (None if repoLoc is None else f'{thisRepoDir}/{TEMP_DIR}')
+    self.reportDir = (None if repoLoc is None else f'{thisRepoDir}/{REPORT_DIR}')
     if not asApi:
       for cdir in (self.tempDir, self.reportDir):
         if cdir:
@@ -644,16 +638,24 @@ This notebook online:
     self.noneValues = set()
 
     if not asApi:
-      self.loadCSS()
+      if inNb:
+        self.loadCSS()
       if hoist:
         docs = api.makeAvailableIn(hoist)
-        dm('**API members:**<br/>\n' + '<br/>\n'.join(
-            ', '.join(
-                outLink(entry, API_URL(ref), title='doc')
-                for entry in entries
-            )
-            for (ref, entries) in docs
-        ))
+        if inNb:
+          dh(
+              '<details open><summary><b>API members</b>:</summary>\n'
+              +
+              '<br/>\n'.join(
+                  ', '.join(
+                      outLink(entry, API_URL(ref), title='doc')
+                      for entry in entries
+                  )
+                  for (ref, entries) in docs
+              )
+              +
+              '</details>'
+          )
     self.table = types.MethodType(table, self)
     self.plainTuple = types.MethodType(plainTuple, self)
     self.show = types.MethodType(show, self)
@@ -667,7 +669,7 @@ This notebook online:
     asApi = self.asApi
     if asApi:
       return CSS
-    display(HTML(CSS))
+    dh(CSS)
 
   def nodeFromDefaultSection(self, sectionStr):
     api = self.api
@@ -755,7 +757,7 @@ This notebook online:
     if asString:
       return result
     else:
-      display(HTML(result))
+      dh(result)
 
   def tabletLink(self, t, text=None, className=None, asString=False, noUrl=False):
     api = self.api
@@ -775,7 +777,7 @@ This notebook online:
     result = outLink(linkText, url, title=title, className=className, target=target)
     if asString:
       return result
-    display(HTML(result))
+    dh(result)
 
   def webLink(self, n):
     return self.tabletLink(n, className='rwh', asString=True, noUrl=True)
@@ -1234,7 +1236,7 @@ This notebook online:
     html = (f'<div style="{FLEX_STYLE}">'
             f'<div style="{ITEM_STYLE}">'
             f'{resultStr}</div></div>').replace('\n', '')
-    display(HTML(html))
+    dh(html)
     if not warning:
       return True
 

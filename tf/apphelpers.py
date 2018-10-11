@@ -523,7 +523,7 @@ def pretty(
   htmlStr = '\n'.join(html)
   if asApi:
     return htmlStr
-  display(HTML(htmlStr))
+  dh(htmlStr)
 
 
 def prettyPre(
@@ -762,6 +762,10 @@ def mdEsc(val):
 
 def dm(md):
   display(Markdown(md))
+
+
+def dh(html):
+  display(HTML(html))
 
 
 def _tupleEnum(tuples, start, end, limit, item):

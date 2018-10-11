@@ -1,7 +1,6 @@
 import os
 import re
 import types
-from IPython.display import display, HTML
 
 from tf.fabric import Fabric
 from tf.apphelpers import (
@@ -11,7 +10,7 @@ from tf.apphelpers import (
     hasData, getData,
     getBoundary, getFeatures,
     htmlEsc, mdEsc,
-    dm, header, outLink,
+    dm, dh, header, outLink,
     URL_GH, URL_NB, API_URL, DOC_URL, DOC_INTRO
 )
 from tf.server.common import getConfig
@@ -387,20 +386,14 @@ class Bhsa(object):
     self.prettyFeatures = ()
     self.api = api
     self.cwd = os.getcwd()
-    cwdPat = re.compile(f'^.*/github/([^/]+)/([^/]+)((?:/.+)?)$', re.I)
-    cwdRel = cwdPat.findall(self.cwd)
 
     if not asApi:
-      if name is None:
-        (nbDir, nbName, nbExt) = location()
-        name = nbName
-      if cwdRel:
-        (thisOrg, thisRepo, thisPath) = cwdRel[0]
-        onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{name}.ipynb')
-      else:
-        cwdRel = None
-      nbUrl = (None if name is None or cwdRel is None else f'{URL_NB}/{onlineTail}')
-      ghUrl = (None if name is None or cwdRel is None else f'{URL_GH}/{onlineTail}')
+      inNb = location(name, self.cwd)
+      if inNb:
+        (nbDir, nbName, nbExt, thisOrg, thisRepo, thisPath) = inNb
+        onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{nbName}.ipynb')
+        nbUrl = f'{URL_NB}/{onlineTail}'
+        ghUrl = f'{URL_GH}/{onlineTail}'
     tutUrl = f'{URL_NB}/{ORG}/{CORPUS}/blob/master/tutorial/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
     dataLink = outLink(CORPUS.upper(), DOC_URL, '{provenance of this corpus}')
@@ -428,14 +421,19 @@ class Bhsa(object):
       self.tfsLink = tfsLink
       self.tutLink = tutLink
     else:
-      dm('**Documentation:**' f' {dataLink} {featureLink} {bhsaLink} {tfLink} {tfsLink}')
-      dm('**Loaded features** (click them for info):')
-      lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f] + api.Eall()
-      dm(' '.join(
-          outLink(feature, FEATURE_URL(self.version, feature), title='info')
-          for feature in lf
-      ))
-      if nbUrl:
+      if inNb:
+        lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f] + api.Eall()
+        dm('**Documentation:**' f' {dataLink} {featureLink} {bhsaLink} {tfLink} {tfsLink}')
+        dh(
+            '<details open><summary><b>Loaded features</b>:</summary>\n'
+            +
+            ' '.join(
+                outLink(feature, FEATURE_URL(self.version, feature), title='info')
+                for feature in lf
+            )
+            +
+            '</details>'
+        )
         dm(
             f'''
 This notebook online:
@@ -448,16 +446,24 @@ This notebook online:
     self.noneValues = NONE_VALUES
 
     if not asApi:
-      self.loadCSS()
+      if inNb:
+        self.loadCSS()
       if hoist:
         docs = api.makeAvailableIn(hoist)
-        dm('**API members:**<br/>\n' + '<br/>\n'.join(
-            ', '.join(
-                outLink(entry, API_URL(ref), title='doc')
-                for entry in entries
-            )
-            for (ref, entries) in docs
-        ))
+        if inNb:
+          dh(
+              '<details open><summary><b>API members</b>:</summary>\n'
+              +
+              '<br/>\n'.join(
+                  ', '.join(
+                      outLink(entry, API_URL(ref), title='doc')
+                      for entry in entries
+                  )
+                  for (ref, entries) in docs
+              )
+              +
+              '</details>'
+          )
     self.table = types.MethodType(table, self)
     self.plainTuple = types.MethodType(plainTuple, self)
     self.show = types.MethodType(show, self)
@@ -471,7 +477,7 @@ This notebook online:
     asApi = self.asApi
     if asApi:
       return CSS_FONT + CSS
-    display(HTML(CSS_FONT_API + CSS))
+    dh(CSS_FONT_API + CSS)
 
   def shbLink(self, n, text=None, className=None, asString=False, noUrl=False):
     api = self.api
@@ -498,7 +504,7 @@ This notebook online:
       result = outLink(text, href, title=title, className=className)
       if asString:
         return result
-      display(HTML(result))
+      dh(result)
       return
 
     (bookE, chapter, verse) = T.sectionFromNode(n)
@@ -526,7 +532,7 @@ This notebook online:
     result = outLink(text, href, title=title, className=className, target=target)
     if asString:
       return result
-    display(HTML(result))
+    dh(result)
 
   def webLink(self, n):
     return self.shbLink(n, className='rwh', asString=True, noUrl=True)
