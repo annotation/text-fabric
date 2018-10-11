@@ -283,8 +283,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#607-8" title="6.0.7-8" class="md-nav__link">
-    6.0.7-8
+  <a href="#607-8-9" title="6.0.7-8-9" class="md-nav__link">
+    6.0.7-8-9
   </a>
   
 </li>
@@ -1722,8 +1722,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#607-8" title="6.0.7-8" class="md-nav__link">
-    6.0.7-8
+  <a href="#607-8-9" title="6.0.7-8-9" class="md-nav__link">
+    6.0.7-8-9
   </a>
   
 </li>
@@ -2740,15 +2740,14 @@ all possibilities:
 <a href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">bhsa</a>
 <a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">cunei</a></p></details><h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
 <p>None</p>
-<h2 id="607-8">6.0.7-8<a class="headerlink" href="#607-8" title="Permanent link">&para;</a></h2>
+<h2 id="607-8-9">6.0.7-8-9<a class="headerlink" href="#607-8-9" title="Permanent link">&para;</a></h2>
 <p>2018-10-11</p>
 <ul>
-<li>
-<p>Fixed the bug that the Bhsa and Cunei did not run properly outside a notebook or outside a github repo.</p>
-</li>
-<li>
-<p>In Bhsa and Cunei, the generated info after the incantation can be collapsed (features, API members).</p>
-</li>
+<li>Avoid computing the notebook name when the user passes a name for the notebook to <code>Cunei()</code> or <code>Bhsa()</code>.
+  And when the computing needs to be done, all exceptions will be caught, because the code for determining
+  the notebook name is brittle, and may crash if the Jupyter version does not match.</li>
+<li>Fixed the bug that the Bhsa and Cunei did not run properly outside a notebook or outside a github repo.</li>
+<li>In Bhsa and Cunei, the generated info after the incantation can be collapsed (features, API members).</li>
 </ul>
 <h2 id="606">6.0.6<a class="headerlink" href="#606" title="Permanent link">&para;</a></h2>
 <p>2018-10-10</p>
