@@ -11,7 +11,7 @@ from tf.apphelpers import (
     getBoundary, getFeatures,
     htmlEsc, mdEsc,
     dm, dh, header, outLink,
-    URL_GH, URL_NB, API_URL, DOC_URL, DOC_INTRO
+    URL_NB, API_URL, DOC_URL, DOC_INTRO
 )
 from tf.server.common import getConfig
 from tf.notebook import location
@@ -388,12 +388,11 @@ class Bhsa(object):
     self.cwd = os.getcwd()
 
     if not asApi:
-      inNb = location(name, self.cwd)
+      (inNb, repoLoc) = location(self.cwd, name)
       if inNb:
-        (nbDir, nbName, nbExt, thisOrg, thisRepo, thisPath) = inNb
-        onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{nbName}.ipynb')
-        nbUrl = f'{URL_NB}/{onlineTail}'
-        ghUrl = f'{URL_GH}/{onlineTail}'
+        (nbDir, nbName, nbExt) = inNb
+      if repoLoc:
+        (thisOrg, thisRepo, thisPath, nbUrl, ghUrl) = repoLoc
     tutUrl = f'{URL_NB}/{ORG}/{CORPUS}/blob/master/tutorial/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
     dataLink = outLink(CORPUS.upper(), DOC_URL, '{provenance of this corpus}')
@@ -434,13 +433,14 @@ class Bhsa(object):
             +
             '</details>'
         )
-        dm(
-            f'''
+        if repoLoc:
+          dm(
+              f'''
 This notebook online:
-{outLink('NBViewer', nbUrl)}
-{outLink('GitHub', ghUrl)}
+{outLink('NBViewer', f'{nbUrl}/{nbName}.{nbExt}')}
+{outLink('GitHub', f'{ghUrl}/{nbName}.{nbExt}')}
 '''
-        )
+          )
 
     self.classNames = CLASS_NAMES
     self.noneValues = NONE_VALUES

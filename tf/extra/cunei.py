@@ -14,7 +14,7 @@ from tf.apphelpers import (
     dm, dh, header, outLink,
     URL_GH, URL_NB, API_URL,
 )
-from tf.notebook import location, repoLocation
+from tf.notebook import location
 
 ORG = 'Nino-cunei'
 SOURCE = 'uruk'
@@ -587,14 +587,11 @@ class Cunei(Atf):
     self.api = api
     self._getImagery()
     self.cwd = os.getcwd()
-    repoLoc = repoLocation(self.cwd)
-    if not asApi:
-      inNb = location(name, self.cwd)
-      if inNb:
-        (nbDir, nbName, nbExt, thisOrg, thisRepo, thisPath) = inNb
-        onlineTail = (f'{thisOrg}/{thisRepo}' f'/blob/master{thisPath}/{nbName}.ipynb')
-        nbUrl = f'{URL_NB}/{onlineTail}'
-        ghUrl = f'{URL_GH}/{onlineTail}'
+    (inNb, repoLoc) = location(self.cwd, name)
+    if inNb:
+      (nbDir, nbName, nbExt) = inNb
+    if repoLoc:
+      (thisOrg, thisRepo, thisPath, nbUrl, ghUrl) = repoLoc
     docUrl = f'{URL_GH}/{repoRel}/blob/master/docs'
     tutUrl = f'{URL_NB}/{ORG}/tutorials/blob/master/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Cunei/'
@@ -621,14 +618,19 @@ class Cunei(Atf):
     else:
       if inNb:
         dm('**Documentation:**' f' {dataLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}')
+      if repoLoc:
         dm(f'''
 This notebook online:
 {outLink('NBViewer', nbUrl)}
 {outLink('GitHub', ghUrl)}
 ''')
-    thisRepoDir = (None if repoLoc is None else f'{repoBase}/{thisOrg}/{thisRepo}')
-    self.tempDir = (None if repoLoc is None else f'{thisRepoDir}/{TEMP_DIR}')
-    self.reportDir = (None if repoLoc is None else f'{thisRepoDir}/{REPORT_DIR}')
+    thisRepoDir = None
+    self.tempDir = None
+    self.reportDir = None
+    if repoLoc:
+      thisRepoDir = f'{repoBase}/{thisOrg}/{thisRepo}'
+      self.tempDir = f'{thisRepoDir}/{TEMP_DIR}'
+      self.reportDir = f'{thisRepoDir}/{REPORT_DIR}'
     if not asApi:
       for cdir in (self.tempDir, self.reportDir):
         if cdir:
