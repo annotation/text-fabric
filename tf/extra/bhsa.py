@@ -16,30 +16,6 @@ from tf.apphelpers import (
 from tf.server.common import getConfig
 from tf.notebook import location
 
-ORG = 'etcbc'
-CORPUS = 'bhsa'
-
-RELEASE = '1.4'
-RELEASE_FIRST = '1.3'
-
-PHONO = 'phono'
-PHONO_RL = '1.1'
-PHONO_RL_FIRST = '1.0.1'
-PARA = 'parallels'
-PARA_RL = '1.1'
-PARA_RL_FIRST = '1.0.1'
-
-
-SHEBANQ_URL = 'https://shebanq.ancient-data.org/hebrew'
-SHEBANQ = (
-    f'{SHEBANQ_URL}/text'
-    '?book={book}&chapter={chapter}&verse={verse}&version={version}'
-    '&mr=m&qw=q&tp=txt_p&tr=hb&wget=v&qget=v&nget=vt'
-)
-SHEBANQ_LEX = (f'{SHEBANQ_URL}/word' '?version={version}&id={lid}')
-
-CONDENSE_TYPE = 'verse'
-
 CSS = '''
 <style type="text/css">
 .verse {
@@ -317,19 +293,13 @@ def FEATURE_URL(version, feature):
 
 def getTf(
     lgc,
-    source='bhsa',
-    release=RELEASE, firstRelease=RELEASE_FIRST,
-    version='c',
-    relative='{}/tf',
+    url,
+    org,
+    source,
+    release, firstRelease,
+    version,
 ):
-  dataUrl = f'https://github.com/{ORG}/{source}/releases/download/{release}/{version}.zip'
-  dataRel = f'{ORG}/' + relative.format(source)
-  getData(source, release, firstRelease, dataUrl, dataRel, version, lgc)
-
-
-def hasTf(lgc, source='bhsa', version='c', relative='{}/tf'):
-  dataRel = f'{ORG}/' + relative.format(source)
-  return hasData(lgc, dataRel, version)
+  getData(source, release, firstRelease, url, f'{org}/{source}/tf', version, lgc)
 
 
 class Bhsa(object):
@@ -344,9 +314,13 @@ class Bhsa(object):
       lgc=False,
       hoist=False,
   ):
+    config = getConfig('bhsa')
+    cfg = config.configure(lgc=lgc, version=version)
     self.asApi = asApi
     self.version = version
-    self.condenseType = CONDENSE_TYPE
+    self.condenseType = cfg['condenseType']
+    self.shebanq = cfg['shebanq']
+    self.shebanqLex = cfg['shebanqLex']
     self.exampleSection = (
         '<code>Genesis 1:1</code> (use'
         ' <a href="https://github.com/ETCBC/bhsa/blob/master/tf/c/book%40en.tf" target="_blank">'
@@ -360,14 +334,27 @@ class Bhsa(object):
     self.standardFeatures = set(standardFeatures.strip().split())
 
     if asApi or not api:
-      getTf(lgc, source=CORPUS, release=RELEASE, firstRelease=RELEASE_FIRST, version=version)
-      getTf(lgc, source=PHONO, release=PHONO_RL, firstRelease=PHONO_RL_FIRST, version=version)
-      getTf(lgc, source=PARA, release=PARA_RL, firstRelease=PARA_RL_FIRST, version=version)
-      if not asApi:
-        config = getConfig('bhsa')
-        cfg = config.configure(lgc, version=version)
-        locations = cfg['locations']
-        modules = cfg['modules']
+      getData(
+          cfg['repo'],
+          cfg['release'],
+          cfg['firstRelease'],
+          cfg['url'],
+          f'{cfg["org"]}/{cfg["repo"]}/tf',
+          version,
+          lgc,
+      )
+      for m in cfg['moduleSpecs']:
+        getData(
+            m['repo'],
+            m['release'],
+            m['firstRelease'],
+            m['url'],
+            f'{m["org"]}/{m["repo"]}/tf',
+            version,
+            lgc,
+        )
+      locations = cfg['locations']
+      modules = cfg['modules']
       TF = Fabric(locations=locations, modules=modules, silent=True)
       api = TF.load('', silent=True)
       self.api = api
@@ -393,12 +380,13 @@ class Bhsa(object):
         (nbDir, nbName, nbExt) = inNb
       if repoLoc:
         (thisOrg, thisRepo, thisPath, nbUrl, ghUrl) = repoLoc
-    tutUrl = f'{URL_NB}/{ORG}/{CORPUS}/blob/master/tutorial/search.ipynb'
+    repo = cfg['repo']
+    tutUrl = f'{URL_NB}/{cfg["org"]}/{repo}/blob/master/tutorial/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
-    dataLink = outLink(CORPUS.upper(), DOC_URL, '{provenance of this corpus}')
+    dataLink = outLink(repo.upper(), DOC_URL, '{provenance of this corpus}')
     featureLink = outLink(
         'Feature docs', FEATURE_URL(self.version, DOC_INTRO),
-        f'{CORPUS.upper()} feature documentation'
+        f'{repo.upper()} feature documentation'
     )
     bhsaLink = outLink('BHSA API', extraUrl, 'BHSA API documentation')
     tfLink = outLink(
@@ -494,7 +482,7 @@ This notebook online:
           lex.replace('>', 'A').replace('<', 'O').replace('[', 'v').replace('/',
                                                                             'n').replace('=', 'i'),
       )
-      href = SHEBANQ_LEX.format(
+      href = self.shebanqLex.format(
           version=version,
           lid=lexId,
       )
@@ -515,7 +503,7 @@ This notebook online:
         if nType == 'chapter' else '{} {}:{}{}'.format(bookE, chapter, verse, F.label.v(n))
         if nType == 'half_verse' else '{} {}:{}'.format(bookE, chapter, verse)
     )
-    href = '#' if noUrl else SHEBANQ.format(
+    href = '#' if noUrl else self.shebanq.format(
         version=version,
         book=book,
         chapter=chapter,

@@ -62,16 +62,52 @@ def getProvenance(form):
   job = form['jobName']
   author = form['author']
 
-  prov = ''
+  prov = ()
   config = getConfig(dataSource)
   if config is not None:
     cfg = config.configure(lgc, version=config.VERSION)
     prov = cfg['provenance']
 
-  corpus = prov['corpus']
-  (corpusDoi, corpusUrl) = prov['corpusDoi']
-  corpusDoiHtml = f'<a href="{corpusUrl}">{corpusDoi}</a>'
-  corpusDoiMd = f'[{corpusDoi}]({corpusUrl})'
+  dataHtml = ''
+  dataMd = ''
+
+  for dataset in prov:
+    corpusName = dataset['corpus']
+    corpusVersion = dataset['version']
+    corpusRelease = dataset['release']
+    (corpusLive, corpusLiveUrl) = dataset['live']
+    corpusLiveHtml = f'<a href="{corpusLiveUrl}">{corpusLive}</a>'
+    corpusLiveMd = f'[{corpusLive}]({corpusLiveUrl})'
+    (corpusDoi, corpusDoiUrl) = dataset['doi']
+    corpusDoiHtml = f'<a href="{corpusDoiUrl}">{corpusDoi}</a>'
+    corpusDoiMd = f'[{corpusDoi}]({corpusDoiUrl})'
+    dataHtml += f'''
+    <div class="pline">
+      <div class="pname">Data:</div>
+      <div class="pval">{corpusName}</div>
+    </div>
+    <div class="p2line">
+      <div class="pname">version</div>
+      <div class="pval">{corpusVersion}</div>
+    </div>
+    <div class="p2line">
+      <div class="pname">release</div>
+      <div class="pval">{corpusRelease}</div>
+    </div>
+    <div class="p2line">
+      <div class="pname">download</div>
+      <div class="pval">{corpusLiveHtml}</div>
+    </div>
+    <div class="p2line">
+      <div class="pname">DOI</div>
+      <div class="pval">{corpusDoiHtml}</div>
+    </div>
+'''
+    dataMd += f'''Data source | {corpusName}
+version | {corpusVersion}
+release | {corpusRelease}
+download   | {corpusLiveMd}
+DOI | {corpusDoiMd}'''
 
   tool = f'{NAME} {VERSION}'
   toolDoiHtml = f'<a href="{DOI_URL}">{DOI}</a>'
@@ -90,10 +126,7 @@ def getProvenance(form):
     <div class="pline">
       <div class="pname">Created:</div><div class="pval">{now}</div>
     </div>
-    <div class="pline">
-      <div class="pname">Corpus:</div>
-      <div class="pval">{corpus} {corpusDoiHtml}</div>
-    </div>
+    {dataHtml}
     <div class="pline">
       <div class="pname">Tool:</div>
       <div class="pval">{tool} {toolDoiHtml}</div>
@@ -110,7 +143,7 @@ meta | data
 Job | {job}
 Author | {author}
 Created | {now}
-Corpus | {corpus} {corpusDoiMd}
+{dataMd}
 Tool | {tool} {toolDoiMd}
 See also | {composeMd}
 '''

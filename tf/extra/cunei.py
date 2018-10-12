@@ -14,43 +14,18 @@ from tf.apphelpers import (
     dm, dh, header, outLink,
     URL_GH, URL_NB, API_URL,
 )
+
+from tf.server.common import getConfig
 from tf.notebook import location
 
-ORG = 'Nino-cunei'
-SOURCE = 'uruk'
-SOURCE_FULL = 'Uruk IV-III'
 
-DATA_REL = f'{ORG}/{SOURCE}/tf/uruk'
-RELEASE = '1.1.0'
-RELEASE_FIRST = '1.1.0'
+def IMAGE_URL(org, source, release):
+  return f'https://github.com/{org}/{source}/releases/download/{release}/images.zip'
 
 
-def DATA_URL(version):
-  return f'https://github.com/{ORG}/{SOURCE}/releases/download/{RELEASE}/{version}.zip'
+def IMAGE_DIR(sourceDir, version):
+  return f'{sourceDir}/{version}/images'
 
-
-IMAGE_URL = f'https://github.com/{ORG}/{SOURCE}/releases/download/{RELEASE}/images.zip'
-
-
-def CORPUS(version):
-  return f'tf/{SOURCE}/{version}'
-
-
-def CORPUS_FULL(version):
-  return f'{SOURCE_FULL} (v{version})'
-
-
-SOURCE_DIR = 'sources/cdli'
-
-
-def IMAGE_DIR(version):
-  return f'{SOURCE_DIR}/{version}/images'
-
-
-TEMP_DIR = '_temp'
-REPORT_DIR = 'reports'
-
-CONDENSE_TYPE = 'tablet'
 
 PHOTO_TO = '{}/tablets/photos'
 PHOTO_EXT = 'jpg'
@@ -58,8 +33,6 @@ PHOTO_EXT = 'jpg'
 TABLET_TO = '{}/tablets/lineart'
 IDEO_TO = '{}/ideographs/lineart'
 LINEART_EXT = 'jpg'
-
-LOCAL_DIR = 'cdli-imagery'
 
 URL_FORMAT = dict(
     tablet=dict(
@@ -552,23 +525,41 @@ class Atf(object):
 
 class Cunei(Atf):
   def __init__(self, name=None, asApi=False, version='1.0', lgc=False, hoist=False):
+    config = getConfig('cunei')
+    cfg = config.configure(lgc=lgc, version=version)
     self.asApi = asApi
-    repoBase = getData(SOURCE, RELEASE, RELEASE_FIRST, DATA_URL(version), DATA_REL, version, lgc)
+    repoBase = getData(
+        cfg['source'],
+        cfg['release'],
+        cfg['firstRelease'],
+        cfg['url'],
+        f'{cfg["org"]}/{cfg["source"]}/tf/{cfg["source"]}',
+        version,
+        lgc,
+    )
     if not repoBase:
       return
-    repoRel = f'{ORG}/{SOURCE}'
+    repoRel = f'{cfg["org"]}/{cfg["source"]}'
     repo = f'{repoBase}/{repoRel}'
     self.repo = repo
     self.version = version
-    self.sourceDir = f'{repo}/{SOURCE_DIR}'
-    self.imageDir = f'{repo}/{IMAGE_DIR(version)}'
+    self.sourceDir = f'{repo}/{cfg["sourceDir"]}'
+    self.imageDir = f'{repo}/{IMAGE_DIR(cfg["sourceDir"], version)}'
+    self.localImageDir = cfg['localImageDir']
     if not os.path.exists(self.imageDir):
-      getDataCustom(SOURCE, RELEASE, IMAGE_URL, self.sourceDir, version, withPaths=True)
-    self.repoTempDir = f'{repo}/{TEMP_DIR}'
+      getDataCustom(
+          cfg['source'],
+          cfg['release'],
+          IMAGE_URL(cfg['org'], cfg['source'], cfg['release']),
+          self.sourceDir,
+          version,
+          withPaths=True,
+      )
+    self.repoTempDir = f'{repo}/{cfg["tempDir"]}'
     self._imagery = {}
-    self.corpus = f'{repo}/{CORPUS(version)}'
-    self.corpusFull = CORPUS_FULL(version)
-    self.condenseType = CONDENSE_TYPE
+    self.corpus = f'{repo}/tf/{cfg["source"]}/{version}'
+    self.corpusFull = f'{cfg["sourceFull"]} (v:{version})'
+    self.condenseType = cfg['condenseType']
     self.exampleSection = '<code>P005381</code>'
     self.exampleSectionText = 'P005381'
     TF = Fabric(locations=[self.corpus], modules=[''], silent=True)
@@ -593,7 +584,7 @@ class Cunei(Atf):
     if repoLoc:
       (thisOrg, thisRepo, thisPath, nbUrl, ghUrl) = repoLoc
     docUrl = f'{URL_GH}/{repoRel}/blob/master/docs'
-    tutUrl = f'{URL_NB}/{ORG}/tutorials/blob/master/search.ipynb'
+    tutUrl = f'{URL_NB}/{cfg["org"]}/tutorials/blob/master/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Cunei/'
     dataLink = outLink(self.corpusFull, f'{docUrl}/about.md', 'provenance of this corpus')
     featureLink = outLink('Feature docs', f'{docUrl}/transcription.md', 'feature documentation')
@@ -629,8 +620,8 @@ class Cunei(Atf):
     self.reportDir = None
     if repoLoc:
       thisRepoDir = f'{repoBase}/{thisOrg}/{thisRepo}'
-      self.tempDir = f'{thisRepoDir}/{TEMP_DIR}'
-      self.reportDir = f'{thisRepoDir}/{REPORT_DIR}'
+      self.tempDir = f'{thisRepoDir}/{cfg["tempDir"]}'
+      self.reportDir = f'{thisRepoDir}/{cfg["reportDir"]}'
     if not asApi:
       for cdir in (self.tempDir, self.reportDir):
         if cdir:
@@ -1249,7 +1240,7 @@ class Cunei(Atf):
     (imageDir, imageName) = os.path.split(image)
     (base, ext) = os.path.splitext(imageName)
     localBase = self.repoTempDir if asApi else self.cwd
-    localDir = f'{localBase}/{LOCAL_DIR}'
+    localDir = f'{localBase}/{self.localImageDir}'
     if not os.path.exists(localDir):
       os.makedirs(localDir, exist_ok=True)
     if type(node) is int:
@@ -1280,7 +1271,7 @@ class Cunei(Atf):
     ):
       copyfile(image, localImagePath)
     base = '/local/' if asApi else ''
-    return f'{base}{LOCAL_DIR}/{localImageName}'
+    return f'{base}{self.localImageDir}/{localImageName}'
 
   def _getImagery(self):
     for (dirFmt, ext, kind, objectType) in (
