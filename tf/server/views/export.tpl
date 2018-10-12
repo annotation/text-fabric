@@ -163,6 +163,13 @@ div.pline {
     justify-content: stretch;
     align-items: baseline;
 }
+div.p2line {
+    margin-left: 2em;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: stretch;
+    align-items: baseline;
+}
 div.pname {
     flex: 0 0 5rem;
     font-weight: bold;

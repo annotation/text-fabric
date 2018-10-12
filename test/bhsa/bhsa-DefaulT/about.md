@@ -4,7 +4,7 @@
   <a target="_blank" href="https://etcbc.github.io/bhsa" title="{provenance of this corpus}">BHSA</a>
   <a target="_blank" href="https://etcbc.github.io/bhsa/features/hebrew/c/0_home.html" title="BHSA feature documentation">Feature docs</a>
   <a target="_blank" href="https://dans-labs.github.io/text-fabric/Api/General/#search-templates" title="Search Templates Introduction and Reference">Search Reference</a>
-  <a target="_blank" href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/search.ipynb" title="Search tutorial in Jupyter Notebook">Search tutorial</a>
+  <a target="_blank" href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/search.ipynb" title="Search tutorial in Jupyter Notebook">Search tutorial</a>
 </div>
 
 
@@ -13,9 +13,21 @@ meta | data
 --- | ---
 Job | DefaulT
 Author | Dirk Roorda
-Created | 2018-10-05T10:29:14+02:00
-Corpus | BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis (c) [10.5281/zenodo.1007624](https://doi.org/10.5281/zenodo.1007624)
-Tool | Text-Fabric 5.6.4 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
+Created | 2018-10-12T17:05:47+02:00
+Data source | BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis
+version | c
+release | 1.4
+download   | [etcbc/bhsa vc (r1.4)](https://github.com/etcbc/bhsa/releases/download/1.4/c.zip)
+DOI | [10.5281/zenodo.1007624](https://doi.org/10.5281/zenodo.1007624)Data source | Phonetic Transcriptions
+version | c
+release | 1.1
+download   | [etcbc/phono vc (r1.1)](https://github.com/etcbc/phono/releases/download/1.1/c.zip)
+DOI | [10.5281/zenodo.1007636](https://doi.org/10.5281/zenodo.1007636)Data source | Parallel Passages
+version | c
+release | 1.1
+download   | [etcbc/parallels vc (r1.1)](https://github.com/etcbc/parallels/releases/download/1.1/c.zip)
+DOI | [10.5281/zenodo.1007642](https://doi.org/10.5281/zenodo.1007642)
+Tool | Text-Fabric 6.0.9 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
 See also | [Compose results example](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/examples/compose.ipynb)
 
 

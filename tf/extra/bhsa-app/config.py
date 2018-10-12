@@ -1,13 +1,72 @@
 import os
-from tf.extra.bhsa import Bhsa, hasTf
+from tf.extra.bhsa import Bhsa
+from tf.apphelpers import hasData
 
 ORG = 'etcbc'
 REPO = 'bhsa'
+CORPUS = 'BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis'
 VERSION = 'c'
+RELEASE = '1.4'
+RELEASE_FIRST = '1.3'
+DOI = '10.5281/zenodo.1007624'
+DOI_URL = 'https://doi.org/10.5281/zenodo.1007624'
 
-PHONO = 'phono'
-PARA = 'parallels'
+RELATIVE = '{}/tf'
 
+
+def LIVE(org, repo, version, release):
+  return f'{org}/{repo} v:{version} (r{release})'
+
+
+def LIVE_URL(org, repo, version, release):
+  return f'https://github.com/{org}/{repo}/releases/download/{release}/{version}.zip'
+
+
+MODULES = (
+    dict(
+        org=ORG,
+        repo='phono',
+        corpus='Phonetic Transcriptions',
+        release='1.1',
+        firstRelease='1.0.1',
+        doi=('10.5281/zenodo.1007636', 'https://doi.org/10.5281/zenodo.1007636'),
+    ),
+    dict(
+        org=ORG,
+        repo='parallels',
+        corpus='Parallel Passages',
+        release='1.1',
+        firstRelease='1.0.1',
+        doi=('10.5281/zenodo.1007642', 'https://doi.org/10.5281/zenodo.1007642'),
+    ),
+)
+
+
+def VMODULES(version):
+  vmodules = []
+  for mod in MODULES:
+    repo = mod['repo']
+    release = mod['release']
+    live = LIVE(ORG, repo, version, release)
+    liveUrl = LIVE_URL(ORG, repo, version, release)
+    vmod = {}
+    vmod.update(mod)
+    vmod['version'] = version
+    vmod['live'] = (live, liveUrl)
+    vmod['url'] = liveUrl
+    vmodules.append(vmod)
+  return tuple(vmodules)
+
+
+CONDENSE_TYPE = 'verse'
+
+SHEBANQ_URL = 'https://shebanq.ancient-data.org/hebrew'
+SHEBANQ = (
+    f'{SHEBANQ_URL}/text'
+    '?book={book}&chapter={chapter}&verse={verse}&version={version}'
+    '&mr=m&qw=q&tp=txt_p&tr=hb&wget=v&qget=v&nget=vt'
+)
+SHEBANQ_LEX = (f'{SHEBANQ_URL}/word' '?version={version}&id={lid}')
 
 protocol = 'http://'
 host = 'localhost'
@@ -18,33 +77,58 @@ options = ()
 
 
 def configure(lgc, version=VERSION):
-  base = hasTf(lgc, source=REPO, version=version)
+  base = hasData(lgc, f'{ORG}/{REPO}/tf', version)
+
   if not base:
     base = '~/text-fabric-data'
   base = f'{base}/{ORG}'
 
-  basePhono = hasTf(lgc, source=PHONO, version=version)
-  if not basePhono:
-    basePhono = '~/text-fabric-data'
-  basePhono = f'{basePhono}/{ORG}'
+  baseModules = []
+  for module in MODULES:
+    repo = module['repo']
+    baseModule = hasData(lgc, f'{ORG}/{repo}/tf', version)
+    if not baseModule:
+      baseModule = '~/text-fabric-data'
+    baseModule = f'{baseModule}/{ORG}'
+    baseModules.append(f'{baseModule}/{repo}')
 
-  basePara = hasTf(lgc, source=PARA, version=version)
-  if not basePara:
-    basePara = '~/text-fabric-data'
-  basePara = f'{basePara}/{ORG}'
-
-  locations = [f'{base}/{REPO}', f'{basePhono}/{PHONO}', f'{basePara}/{PARA}']
+  locations = [f'{base}/{REPO}'] + baseModules
   modules = [f'tf/{version}']
   localDir = os.path.expanduser(f'{base}/{REPO}/_temp')
+
+  live = LIVE(ORG, REPO, version, RELEASE)
+  liveUrl = LIVE_URL(ORG, REPO, version, RELEASE)
+
+  vModules = VMODULES(version)
 
   return dict(
       locations=locations,
       modules=modules,
-      localDir=localDir,
-      provenance=dict(
-          corpus=f'BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis ({version})',
-          corpusDoi=('10.5281/zenodo.1007624', 'https://doi.org/10.5281/zenodo.1007624'),
+      moduleSpecs=tuple(
+          {
+              k: v
+              for (k, v) in m.items()
+              if k in {'url', 'org', 'repo', 'release', 'firstRelease'}
+          }
+          for m in vModules
       ),
+      localDir=localDir,
+      provenance=(dict(
+          corpus=CORPUS,
+          version=version,
+          release=RELEASE,
+          live=(live, liveUrl),
+          doi=(DOI, DOI_URL),
+      ),) + vModules,
+      url=liveUrl,
+      org=ORG,
+      repo=REPO,
+      version=VERSION,
+      release=RELEASE,
+      firstRelease=RELEASE_FIRST,
+      condenseType=CONDENSE_TYPE,
+      shebanq=SHEBANQ,
+      shebanqLex=SHEBANQ_LEX,
   )
 
 

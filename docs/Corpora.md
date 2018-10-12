@@ -42,17 +42,6 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
     B = Bhsa()
     ```
 
-    Or if you want more control and fetch specific related modules, you can say:
-
-    ```python
-    from tf.extra.bhsa import getTf
-    getTf()
-    ```
-
-    ```python
-    getTf(source='phono', release='1.1')
-    ```
-
     ??? hint "ETCBC data"
         Inspect the repositories of the [etcbc organization on GitHub](https://github.com/etcbc)
         to see what is available. Per repository, click the *Releases* button so see
