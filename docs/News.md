@@ -12,6 +12,15 @@
 
 None
 
+## 6.1
+
+* More precise provenance data when you export results from the Text-Fabric data;
+* Under the hood reorganization of configuration data of apps like Bhsa and Cunei;
+* App-specific parts of the code have moved to more generic parts: a big cleanup has performed;
+* This will make it easier to add new apps.
+
+2018-10-11
+
 ## 6.0.7-8-9
 
 2018-10-11
