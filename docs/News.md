@@ -10,10 +10,14 @@
 
 ## Queued for next release
 
-New app: Peshitta.
+None
 
-Fixed a bug in exportMQL: when there are no enumerated values, do not write out an empty
-`CREATE ENUMERATION` statement to the MQL file. 
+## 6.2
+
+* New app: Peshitta.
+* Fixed a bug in exportMQL:
+  when there are no enumerated values, do not write out an empty
+  `CREATE ENUMERATION` statement to the MQL file. 
 
 ## 6.1
 

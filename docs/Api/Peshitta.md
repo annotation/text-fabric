@@ -1,63 +1,63 @@
-# BHSA
+# Peshitta
 
 ## About
 
-The module [bhsa.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/bhsa.py)
+The module [peshitta.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/peshitta.py)
 contains a number of handy functions on top of Text-Fabric and especially its 
 [Search](/Api/General/#search) part.
 
 ## Minimal incantation
 
 ```python
-from tf.extra.bhsa import Bhsa
-B = Bhsa(hoist=globals())
+from tf.extra.peshitta import Peshitta
+P = Peshitta(hoist=globals())
 ```
 
 ??? abstract "Explanation"
-    The first line makes the Bhsa API code, which is an app on top of Text-Fabric,
+    The first line makes the Peshitta API code, which is an app on top of Text-Fabric,
     accessible to your notebook.
 
-    The second line starts up the Bhsa API and gives it the name `B`. 
+    The second line starts up the Peshitta API and gives it the name `P`. 
     During start-up the following happens:
 
-    (1) the Bhsa data is downloaded to your `~/text-fabric-data` directory, if not already present there;
+    (1) the Peshitta data is downloaded to your `~/text-fabric-data` directory, if not already present there;
 
     (2) if your data has been freshly downloaded, a series of optimizations are executed;
 
-    (3) most optimized features of the Bhsa dataset are loaded;
+    (3) all optimized features of the Peshitta dataset are loaded;
 
     (4) `hoist=globals()` makes the API elements directly available:
     you can refer to `F`, `L`, `T`, etc. directly,
-    instead of the more verbose `B.api.F`, `B.api.L`, `B.api.T` etc.
+    instead of the more verbose `P.api.F`, `P.api.L`, `P.api.T` etc.
 
 If you are content with the minimal incantation, you can skip **Set up** and **Initialisation**.
 
 ## Set up
 
-??? abstract "import Bhsa"
-    The `Bhsa` API is distributed with Text-Fabric.
+??? abstract "import Peshitta"
+    The `Peshitta` API is distributed with Text-Fabric.
     You have to import it into your program:
 
     ```python
-    from tf.extra.bhsa import Bhsa
+    from tf.extra.peshitta import Peshitta
     ```
 
 ## Initialisation
 
-??? abstract "Bhsa()"
+??? abstract "Peshitta()"
     ```python
-    B = Bhsa(api=api, name=None, version=VERSION)
+    P = Peshitta(api=api, name=None, version=VERSION)
     ```
 
     ???+ info "Description"
         Silently loads some additional features, and `B`
         will give access to some extra functions.
 
-    ??? hint "Specific BHSA version"
-        The easiest way to load a specific version of the BHSA is like so:
+    ??? hint "Specific Peshitta version"
+        The easiest way to load a specific version of the Peshitta is like so:
 
         ```python
-        B = Bhsa(version='2017')
+        P = Peshitta(version='0.1')
         ```
 
     ??? info "api"
@@ -69,15 +69,15 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
             This module comes in action after you have set up TF and loaded some features, e.g.
 
             ```python
-            VERSION = '2017'
-            TF = Fabric(locations=f'~/github/etcbc/bhsa/tf/{VERSION}')
+            VERSION = '0.1'
+            TF = Fabric(locations=f'~/github/etcbc/peshitta/tf/{VERSION}')
             api = TF.load('''
-              function sp gn nu
+              word_etcbc
             ''')
             api.makeAvailableIn(globals())
             ```
 
-            Then we add the functionality of the `bhsa` module by a call to `Bhsa()`.
+            Then we add the functionality of the `peshitta` module by a call to `Peshitta()`.
 
     ??? info "name"
         If you leave this argument out, Text-Fabric will determine the name of your notebook for you.
@@ -86,22 +86,24 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
         This should be the name
         of your current notebook (without the `.ipynb` extension).
-        The Bhsa API will use this to generate a link to your notebook
+        The Peshitta API will use this to generate a link to your notebook
         on GitHub and NBViewer.
 
 
 ## Linking
 
-??? abstract "B.shbLink()"
+??? abstract "P.pshLink()"
     ```python
-    B.shbLink(node, text=None)
+    P.pshLink(node, text=None)
     ```
 
     ???+ "Description"
-        Produces a link to SHEBANQ
+        Produces a link to ETCBC source of this node.
+        The link ends at a file corresponding to a book, having the
+        ETCBC/WIT format.
 
     ??? info "node"
-        `node` can be an arbitrary node. The link targets the verse that
+        `node` can be an arbitrary node. The link targets the book that
         contains the first word contained by the node.
     
     ??? info "text"
@@ -112,9 +114,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         If you do not provide a link text,
         the passage indicator (book chapter:verse) will be chosen.
 
-    ??? example "Word 100000 on SHEBANQ"
+    ??? example "Word 100000 in ETCBC/WIT"
         ```python
-        B.shbLink(100000)
+        P.pshLink(100000)
         ```
 
 ## Plain display
@@ -123,9 +125,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     There are functions to display nodes, tuples of nodes, and iterables of tuples
     of nodes in a simple way, as rows and as a table.
 
-??? abstract "B.plain()"
+??? abstract "P.plain()"
     ```python
-    B.plain(node, linked=True, withNodes=False, asString=False)
+    P.plain(node, linked=True, withNodes=False, asString=False)
     ```
 
     ???+ info "Description"
@@ -135,8 +137,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         `node` is a node of arbitrary type.
 
     ??? info "linked"
-        `linked` indicates whether the result should be a link to SHEBANQ
-        to the appropriate book/chapter/verse.
+        `linked` indicates whether the result should be a link to the source.
 
     ??? info "withNodes"
         `withNodes` indicates whether node numbers should be displayed.
@@ -146,9 +147,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         code cell in a notebook, you can also deliver the markdown as string,
         just say `asString=True`.
 
-??? abstract "B.plainTuple()"
+??? abstract "P.plainTuple()"
     ```python
-    B.plainTuple(nodes, seqNumber, linked=1, withNodes=False, asString=False)
+    P.plainTuple(nodes, seqNumber, linked=1, withNodes=False, asString=False)
     ```
 
     ???+ info "Description"
@@ -167,15 +168,15 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     ??? info "linked"
         `linked=1` the column number where the cell contents is
         linked to
-        the relevant passage in to SHEBANQ;
+        the relevant passage in the source;
         (the first data column is column 1)
 
     ??? info "withNodes, asString"
-        Same as in `B.plain()`.
+        Same as in `P.plain()`.
 
-??? abstract "B.table()"
+??? abstract "P.table()"
     ```python
-    B.table(
+    P.table(
       results,
       start=1, end=len(results),
       linked=1,
@@ -203,7 +204,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         Default the length of the iterable.
 
     ??? info "linked, withNodes, asString"
-        Same as in `B.plainTuple()`.
+        Same as in `P.plainTuple()`.
 
 ## Pretty display
 
@@ -211,9 +212,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     There are functions to display nodes, tuples of nodes, and iterables of tuples
     of nodes in a graphical way.
 
-??? abstract "B.prettySetup()"
+??? abstract "P.prettySetup()"
     ```python
-    B.pretty(features=None, noneValues=None)
+    P.pretty(features=None, noneValues=None)
     ```
     ???+ info "Description"
         In pretty displays, nodes are shown together with the values of a selected
@@ -241,20 +242,16 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
         ??? hint "Suppress common values"
             You can use `noneValues` also to suppress the normal values of a feature,
-            in order to attrect attention to the more special values, e.g.
-            
-            ```python
-            noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}
-            ```
+            in order to attract attention to the more special values.
 
         ??? caution "None values affect all features"
             Beware of putting to much in `noneValues`.
             The contents of `noneValues` affect the display of
             all features, not only the custom features.
 
-??? abstract "B.pretty()"
+??? abstract "P.pretty()"
     ```python
-    B.pretty(node, withNodes=False, suppress=set(), highlights={})
+    P.pretty(node, withNodes=False, suppress=set(), highlights={})
     ```
 
     ???+ info "Description"
@@ -293,9 +290,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         ??? hint "color names"
             The link above points to a series of handy color names and their previews.
 
-??? abstract "B.prettyTuple()"
+??? abstract "P.prettyTuple()"
     ```python
-    B.prettyTuple(
+    P.prettyTuple(
       nodes, seqNumber,
       withNodes=False,
       suppress=set(),
@@ -315,10 +312,10 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         The highlighting can be tweaked by the optional `colorMap` parameter.
 
     ??? info "nodes, seqNumber, withNodes"
-        Same as in `B.plainTuple()`.
+        Same as in `P.plainTuple()`.
 
     ??? info "suppress"
-        Same as in `B.pretty()`.
+        Same as in `P.pretty()`.
 
     ??? info "colorMap"
         The nodes of the tuple will be highlighted.
@@ -338,7 +335,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
             The link above points to a series of handy color names and their previews.
 
     ??? info "highlights"
-        Same as in `B.pretty()`.
+        Same as in `P.pretty()`.
 
     ???+ note "highlights takes precedence over colorMap"
         If both `highlights` and `colorMap` are given, `colorMap` is ignored.
@@ -351,9 +348,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         and then run `prettyTuple()` for many different tuples with the same `highlights`.
         It does not harm performance if `highlights` maps lots of nodes outside the tuple as well.
 
-??? abstract "B.show()"
+??? abstract "P.show()"
     ```python
-    B.show(
+    P.show(
       results,
       condensed=True,
       start=1, end=len(results),
@@ -380,7 +377,6 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
             we show all verses with all results in it highlighted.
             That way, we blur the distinction between the individual results,
             but it is easier to oversee where the results are.
-            This is how SHEBANQ displays its query results.
         *   `False`: make a separate display for each result tuple.
             This gives the best account of the exact result set.
 
@@ -399,19 +395,19 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         Default the length of the iterable.
 
     ??? info "withNodes, suppress, colorMap, highlights"
-        Same as in `B.prettyTuple()`.
+        Same as in `P.prettyTuple()`.
 
 ## Search
 
-??? abstract "B.search()" 
+??? abstract "P.search()" 
     ```python
-    B.search(query, silent=False, shallow=False, sets=None)
+    P.search(query, silent=False, shallow=False, sets=None)
     ```
     
     ???+ "Description"
         Searches in the same way as the generic Text-Fabric `S.search()`.
         But whereas the `S` version returns a generator which yields the results
-        one by one, the `B` version collects all results and sorts them.
+        one by one, the `P` version collects all results and sorts them.
         It then reports the number of results.
 
     ??? info "query"
@@ -432,16 +428,6 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     ??? info "sets"
         If not `None`, it should be a dictionary of sets, keyed by a names.
         In `query` you can refer to those names to invoke those sets.
-
-        For example, if you have a set `gappedPhrases` of all phrase nodes that have a gap,
-        you can pass `sets=dict(gphrase=gappedPhrases)`, and then in your query you can say
-
-        ```
-        gphrase function=Pred
-          word sp=verb
-        ```
-
-        etc.
 
     ??? hint "search template reference"
         See the [search template reference](/Api/General#search-templates)

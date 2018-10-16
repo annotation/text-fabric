@@ -8,6 +8,7 @@ setup(
         'tf.server',
         'tf.extra',
         'tf.extra.bhsa-app',
+        'tf.extra.peshitta-app',
         'tf.extra.cunei-app',
     ],
     install_requires=['rpyc', 'bottle', 'psutil', 'markdown', 'ipython', 'requests'],

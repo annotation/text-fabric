@@ -8,9 +8,8 @@ CORPUS = 'Peshitta'
 VERSION = '0.1'
 RELEASE = '0.1'
 RELEASE_FIRST = '0.1'
-DOI = '10.5281/zenodo.1463676'
-DOI_URL = 'https://doi.org/10.5281/zenodo.1463676'
-
+DOI = '10.5281/zenodo.1463675'
+DOI_URL = 'https://doi.org/10.5281/zenodo.1463675'
 DOC_URL = f'https://github.com/{ORG}/{REPO}/blob/master/docs/transcription'
 
 
@@ -19,7 +18,7 @@ def LIVE(org, repo, version, release):
 
 
 def LIVE_URL(org, repo, version, release):
-  return f'https://github.com/{org}/{repo}/releases/download/{release}/peshitta-{version}.zip'
+  return f'https://github.com/{org}/{repo}/releases/download/{release}/{version}.zip'
 
 
 CONDENSE_TYPE = 'verse'

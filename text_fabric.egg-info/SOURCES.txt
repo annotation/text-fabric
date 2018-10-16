@@ -24,6 +24,7 @@ tf/transcription.py
 tf/extra/__init__.py
 tf/extra/bhsa.py
 tf/extra/cunei.py
+tf/extra/peshitta.py
 tf/extra/bhsa-app/__init__.py
 tf/extra/bhsa-app/config.py
 tf/extra/bhsa-app/zips.py
@@ -49,6 +50,16 @@ tf/extra/cunei-app/__pycache__/__init__.cpython-37.pyc
 tf/extra/cunei-app/__pycache__/config.cpython-36.pyc
 tf/extra/cunei-app/__pycache__/config.cpython-37.pyc
 tf/extra/cunei-app/static/logo.png
+tf/extra/peshitta-app/.DS_Store
+tf/extra/peshitta-app/__init__.py
+tf/extra/peshitta-app/config.py
+tf/extra/peshitta-app/zips.py
+tf/extra/peshitta-app/static/.DS_Store
+tf/extra/peshitta-app/static/fonts.css
+tf/extra/peshitta-app/static/fontsweb.css
+tf/extra/peshitta-app/static/logo.png
+tf/extra/peshitta-app/static/fonts/SyrCOMEdessa.otf
+tf/extra/peshitta-app/static/fonts/SyrCOMEdessa.woff
 tf/search/__init__.py
 tf/search/graph.py
 tf/search/relations.py
