@@ -319,9 +319,29 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#etcbc" title="ETCBC" class="md-nav__link">
+    ETCBC
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#hebrew-bible" title="Hebrew Bible" class="md-nav__link">
     Hebrew Bible
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#peshitta" title="Peshitta" class="md-nav__link">
+    Peshitta
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -750,9 +770,29 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#etcbc" title="ETCBC" class="md-nav__link">
+    ETCBC
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#hebrew-bible" title="Hebrew Bible" class="md-nav__link">
     Hebrew Bible
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#peshitta" title="Peshitta" class="md-nav__link">
+    Peshitta
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -804,17 +844,18 @@ Download it to your system.
 This is the most economical way to get data.</p></details><details class="abstract"><summary>clone the complete repository</summary><p>Clone the relevant GitHub repository to your system.
 This will get you lots of additional data that you might not directly need.</p><details class="caution"><summary>On Windows?</summary><p>You have to install <code>git</code> in
 <a href="https://git-scm.com/downloads">some way</a>
-for this step.</p></details></details></details><h2 id="hebrew-bible">Hebrew Bible<a class="headerlink" href="#hebrew-bible" title="Permanent link">&para;</a></h2>
+for this step.</p></details></details></details><h2 id="etcbc">ETCBC<a class="headerlink" href="#etcbc" title="Permanent link">&para;</a></h2>
+<details class="hint"><summary>ETCBC data</summary><p>Inspect the repositories of the <a href="https://github.com/etcbc">etcbc organization on GitHub</a>
+to see what is available. Per repository, click the <em>Releases</em> button so see
+the release version that holds the relevant binaries with TF-data.
+For example, try <a href="https://github.com/etcbc/parallels/releases">crossrefs</a>.</p></details><h3 id="hebrew-bible">Hebrew Bible<a class="headerlink" href="#hebrew-bible" title="Permanent link">&para;</a></h3>
 <details class="abstract"><summary>From within a program</summary><p>If you are in a Jupyter notebook or Python script,
 this will fetch the data (25MB)</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Bhsa</span>
 <span class="n">B</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">()</span>
 </pre></div>
 </td></tr></table>
-<details class="hint"><summary>ETCBC data</summary><p>Inspect the repositories of the <a href="https://github.com/etcbc">etcbc organization on GitHub</a>
-to see what is available. Per repository, click the <em>Releases</em> button so see
-the release version that holds the relevant binaries with TF-data.
-For example, try <a href="https://github.com/etcbc/parallels/releases">crossrefs</a>.</p></details><details class="hint"><summary>ETCBC versions</summary><p>The data of the ETCBC comes in major versions, ranging from <code>3</code> (2011) via
+<details class="hint"><summary>ETCBC versions</summary><p>The data of the BHSA comes in major versions, ranging from <code>3</code> (2011) via
 <code>4</code>, <code>4b</code>, <code>2016</code>, <code>2017</code> to <code>c</code> (2018).
 The latter is a <em>continuous</em> version, which will change over time.</p></details></details><details class="abstract"><summary>From GitHub</summary><p>If you want to be in complete control, you can get the complete data repository
 from GitHub (5GB):</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -822,7 +863,20 @@ from GitHub (5GB):</p><table class="codehilitetable"><tr><td class="linenos"><di
 git clone https://github.com/etcbc/bhsa
 </pre></div>
 </td></tr></table>
-<p>and likewise you can get other ETCBC data modules such as <code>phono</code>.</p></details><h2 id="cuneiform-tablets-from-uruk">Cuneiform tablets from Uruk<a class="headerlink" href="#cuneiform-tablets-from-uruk" title="Permanent link">&para;</a></h2>
+<p>and likewise you can get other ETCBC data modules such as <code>phono</code>.</p></details><h3 id="peshitta">Peshitta<a class="headerlink" href="#peshitta" title="Permanent link">&para;</a></h3>
+<details class="abstract"><summary>From within a program</summary><p>If you are in a Jupyter notebook or Python script,
+this will fetch the data (2MB)</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.peshitta</span> <span class="kn">import</span> <span class="n">Peshitta</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">Peshitta</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+</details><details class="abstract"><summary>From GitHub</summary><p>If you want to be in complete control, you can get the complete data repository
+from GitHub:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github/etcbc
+git clone https://github.com/etcbc/peshitta
+</pre></div>
+</td></tr></table>
+</details><h2 id="cuneiform-tablets-from-uruk">Cuneiform tablets from Uruk<a class="headerlink" href="#cuneiform-tablets-from-uruk" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>From within a program</summary><p>If you are in a Jupyter notebook or Python script,
 the Cunei API will fetch the data for you automatically:</p><ul><li>The TF-part is 1.6 MB</li><li>the photos and lineart are 550MB!</li></ul><details class="caution" open="open"><summary>Caution</summary><p>So do this only when you have a good internet connection.</p></details></details><details class="abstract"><summary>From GitHub</summary><p>If you want to be in complete control, you can get the complete data repository
 from GitHub (1.5GB):</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
