@@ -64,12 +64,17 @@ def VMODULES(version):
 CONDENSE_TYPE = 'verse'
 
 SHEBANQ_URL = 'https://shebanq.ancient-data.org/hebrew'
+
 SHEBANQ = (
     f'{SHEBANQ_URL}/text'
     '?book={book}&chapter={chapter}&verse={verse}&version={version}'
     '&mr=m&qw=q&tp=txt_p&tr=hb&wget=v&qget=v&nget=vt'
 )
-SHEBANQ_LEX = (f'{SHEBANQ_URL}/word' '?version={version}&id={lid}')
+
+SHEBANQ_LEX = (
+    f'{SHEBANQ_URL}/word'
+    '?version={version}&id={lid}'
+)
 
 protocol = 'http://'
 host = 'localhost'

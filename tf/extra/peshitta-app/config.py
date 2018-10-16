@@ -24,6 +24,12 @@ def LIVE_URL(org, repo, version, release):
 
 CONDENSE_TYPE = 'verse'
 
+PESHITTA = (
+    f'https://github.com/{ORG}/{REPO}/blob/master'
+    '/source/{version}/{book}'
+)
+
+
 protocol = 'http://'
 host = 'localhost'
 port = 18983
@@ -65,6 +71,7 @@ def configure(lgc, version=VERSION):
       firstRelease=RELEASE_FIRST,
       docUrl=DOC_URL,
       condenseType=CONDENSE_TYPE,
+      peshitta=PESHITTA,
   )
 
 

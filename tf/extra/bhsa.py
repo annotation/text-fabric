@@ -217,6 +217,7 @@ CSS_FONT = '''
     <link rel="stylesheet" href="/data/static/fonts.css"/>
 '''
 CSS_FONT_API = '''
+    <link rel="stylesheet" href="/data/static/fonts.css"/>
     <link rel="stylesheet" href="https://fontlibrary.org/face/ezra" type="text/css"/>
 '''
 
@@ -309,9 +310,10 @@ class Bhsa(object):
     self.shebanq = cfg['shebanq']
     self.shebanqLex = cfg['shebanqLex']
     self.exampleSection = (
-        '<code>Genesis 1:1</code> (use'
-        ' <a href="https://github.com/{cfg["org"]}/{cfg["repo"]}/blob/master/tf/{version}/book%40en.tf" target="_blank">'
-        'English book names</a>)'
+        f'<code>Genesis 1:1</code> (use'
+        f' <a href="https://github.com/{cfg["org"]}/{cfg["repo"]}'
+        f'/blob/master/tf/{version}/book%40en.tf" target="_blank">'
+        f'English book names</a>)'
     )
     self.exampleSectionText = 'Genesis 1:1'
 
