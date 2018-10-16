@@ -36,61 +36,6 @@ CSS = '''
     flex-flow: row wrap;
     direction: rtl;
 }
-.sentence,.clause,.phrase {
-    margin-top: -1.2em;
-    margin-left: 1em;
-    background: #ffffff none repeat scroll 0 0;
-    padding: 0 0.3em;
-    border-style: solid;
-    border-radius: 0.2em;
-    font-size: small;
-    display: block;
-    width: fit-content;
-    max-width: fit-content;
-    direction: ltr;
-}
-.atoms {
-    display: flex;
-    flex-flow: row wrap;
-    margin: 0.3em;
-    padding: 0.3em;
-    direction: rtl;
-    background-color: #ffffff;
-}
-.satom,.catom,.patom {
-    margin: 0.3em;
-    padding: 0.3em;
-    border-radius: 0.3em;
-    border-style: solid;
-    display: flex;
-    flex-flow: column nowrap;
-    direction: rtl;
-    background-color: #ffffff;
-}
-.sentence {
-    border-color: #aa3333;
-    border-width: 1px;
-}
-.clause {
-    border-color: #aaaa33;
-    border-width: 1px;
-}
-.phrase {
-    border-color: #33aaaa;
-    border-width: 1px;
-}
-.satom {
-    border-color: #aa3333;
-    border-width: 4px;
-}
-.catom {
-    border-color: #aaaa33;
-    border-width: 3px;
-}
-.patom {
-    border-color: #33aaaa;
-    border-width: 3px;
-}
 .word {
     padding: 0.1em;
     margin: 0.1em;
@@ -101,84 +46,21 @@ CSS = '''
     direction: rtl;
     background-color: #ffffff;
 }
-.lextp {
-    padding: 0.1em;
-    margin: 0.1em;
-    border-radius: 0.1em;
-    border: 2px solid #888888;
-    width: fit-content;
-    display: flex;
-    flex-flow: column nowrap;
-    direction: rtl;
-    background-color: #ffffff;
-}
 .occs {
     font-size: x-small;
 }
-.satom.l,.catom.l,.patom.l {
-    border-left-style: dotted
-}
-.satom.r,.catom.r,.patom.r {
-    border-right-style: dotted
-}
-.satom.L,.catom.L,.patom.L {
-    border-left-style: none
-}
-.satom.R,.catom.R,.patom.R {
-    border-right-style: none
-}
-.h,.h a:visited,.h a:link {
-    font-family: "Ezra SIL", "SBL Hebrew", sans-serif;
+.sy,.sy a:visited,.sy a:link {
+    font-family: "Estrangelo Edessa", sans-serif;
     font-size: large;
     color: #000044;
     direction: rtl;
     text-decoration: none;
 }
-.hb,.hb a:visited,.hb a:link {
-    font-family: "Ezra SIL", "SBL Hebrew", sans-serif;
+.syb,.syb a:visited,.syb a:link {
+    font-family: "Estrangelo Edessa", sans-serif;
     font-size: large;
     direction: rtl;
     text-decoration: none;
-}
-.rela,.function,.typ {
-    font-family: monospace;
-    font-size: small;
-    color: #0000bb;
-}
-.pdp,.pdp a:visited,.pdp a:link {
-    font-family: monospace;
-    font-size: medium;
-    color: #0000bb;
-    text-decoration: none;
-}
-.voc_lex {
-    font-family: monospace;
-    font-size: medium;
-    color: #0000bb;
-}
-.vs {
-    font-family: monospace;
-    font-size: medium;
-    font-weight: bold;
-    color: #0000bb;
-}
-.vt {
-    font-family: monospace;
-    font-size: medium;
-    font-weight: bold;
-    color: #0000bb;
-}
-.gloss {
-    font-family: sans-serif;
-    font-size: small;
-    font-weight: normal;
-    color: #444444;
-}
-.vrs {
-    font-family: sans-serif;
-    font-size: small;
-    font-weight: bold;
-    color: #444444;
 }
 .nd {
     font-family: monospace;
@@ -213,101 +95,49 @@ CSS = '''
 </style>
 '''
 
-CSS_FONT = '''
-    <link rel="stylesheet" href="/data/static/fonts.css"/>
-'''
-CSS_FONT_API = '''
-    <link rel="stylesheet" href="https://fontlibrary.org/face/ezra" type="text/css"/>
-'''
-
 CLASS_NAMES = dict(
     verse='verse',
-    sentence='atoms',
-    sentence_atom='satom',
-    clause='atoms',
-    clause_atom='catom',
-    phrase='atoms',
-    phrase_atom='patom',
-    subphrase='subphrase',
     word='word',
-    lex='lextp',
 )
 
-ATOMS = dict(
-    sentence_atom='sentence',
-    clause_atom='clause',
-    phrase_atom='phrase',
-)
-SUPER = dict((y, x) for (x, y) in ATOMS.items())
-
-SECTION = {'book', 'chapter', 'verse', 'half_verse'}
-VERSE = {'verse', 'half_verse'}
+SECTION = {'book', 'chapter', 'verse'}
+VERSE = {'verse'}
 
 NONE_VALUES = {None, 'NA', 'none', 'unknown'}
 
 STANDARD_FEATURES = '''
-    pdp vs vt
-    lex language gloss voc_lex voc_lex_utf8
-    function typ rela
-    number label book
+    word word_etcbc
+    trailer trailer_etcbc
+    book book@en
+    chapter verse
 '''
 
-EXCLUDED_FEATURES = set('''
-    crossrefLCS
-    crossrefSET
-    g_cons
-    g_cons_utf8
-    g_lex
-    g_lex_utf8
-    g_nme
-    g_nme_utf8
-    g_pfm
-    g_pfm_utf8
-    g_prs
-    g_prs_utf8
-    g_uvf
-    g_uvf_utf8
-    g_vbe
-    g_vbe_utf8
-    g_vbs
-    g_vbs_utf8
-    kq_hybrid
-    kq_hybrid_utf8
-    languageISO
-    lex0
-    lexeme_count
-    mother_object_type
-    suffix_gender
-    suffix_number
-    suffix_person
-'''.strip().split())
-
-# for 4, 4b: voc_lex => g_lex, voc_lex_utf8 => g_lex_utf8
+EXCLUDED_FEATURES = set()
 
 PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
 
 
-class Bhsa(object):
+def featureUrl(self, version):
+  return f'{self.docUrl}{version}.md'
+
+
+class Peshitta(object):
   def __init__(
       self,
       api=None,
       name=None,
-      version='c',
+      version='0.1',
       locations=None,
       modules=None,
       asApi=False,
       lgc=False,
       hoist=False,
   ):
-    config = getConfig('bhsa')
+    config = getConfig('peshitta')
     cfg = config.configure(lgc=lgc, version=version)
     self.asApi = asApi
     self.version = version
-    self.docUrl = cfg['docUrl']
-    self.docIntro = cfg['docIntro']
     self.condenseType = cfg['condenseType']
-    self.shebanq = cfg['shebanq']
-    self.shebanqLex = cfg['shebanqLex']
     self.exampleSection = (
         '<code>Genesis 1:1</code> (use'
         ' <a href="https://github.com/{cfg["org"]}/{cfg["repo"]}/blob/master/tf/{version}/book%40en.tf" target="_blank">'
@@ -315,10 +145,7 @@ class Bhsa(object):
     )
     self.exampleSectionText = 'Genesis 1:1'
 
-    standardFeatures = (
-        STANDARD_FEATURES.replace('voc_', 'g_') if version in {'4', '4b'} else STANDARD_FEATURES
-    )
-    self.standardFeatures = set(standardFeatures.strip().split())
+    self.standardFeatures = set(STANDARD_FEATURES.strip().split())
 
     if asApi or not api:
       getData(
@@ -330,16 +157,6 @@ class Bhsa(object):
           version,
           lgc,
       )
-      for m in cfg['moduleSpecs']:
-        getData(
-            m['repo'],
-            m['release'],
-            m['firstRelease'],
-            m['url'],
-            f'{m["org"]}/{m["repo"]}/tf',
-            version,
-            lgc,
-        )
       locations = cfg['locations']
       modules = cfg['modules']
       TF = Fabric(locations=locations, modules=modules, silent=True)
@@ -369,13 +186,13 @@ class Bhsa(object):
         (thisOrg, thisRepo, thisPath, nbUrl, ghUrl) = repoLoc
     repo = cfg['repo']
     tutUrl = f'{URL_NB}/{cfg["org"]}/{repo}/blob/master/tutorial/search.ipynb'
-    extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
+    extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Peshitta/'
     dataLink = outLink(repo.upper(), self.docUrl, '{provenance of this corpus}')
     featureLink = outLink(
-        'Feature docs', self.featureUrl(self.version, self.docIntro),
+        'Feature docs', self.featureUrl(self.version),
         f'{repo.upper()} feature documentation'
     )
-    bhsaLink = outLink('BHSA API', extraUrl, 'BHSA API documentation')
+    peshittaLink = outLink('Peshitta API', extraUrl, 'Peshitta API documentation')
     tfLink = outLink(
         f'Text-Fabric API {api.TF.version}', API_URL(''),
         'text-fabric-api'
@@ -397,12 +214,12 @@ class Bhsa(object):
     else:
       if inNb:
         lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f] + api.Eall()
-        dm('**Documentation:**' f' {dataLink} {featureLink} {bhsaLink} {tfLink} {tfsLink}')
+        dm('**Documentation:**' f' {dataLink} {featureLink} {peshittaLink} {tfLink} {tfsLink}')
         dh(
             '<details open><summary><b>Loaded features</b>:</summary>\n'
             +
             ' '.join(
-                outLink(feature, self.featureUrl(self.version, feature), title='info')
+                outLink(feature, self.featureUrl(self.version), title='info')
                 for feature in lf
             )
             +
@@ -448,14 +265,11 @@ This notebook online:
     self.search = types.MethodType(search, self)
     self.header = types.MethodType(header, self)
 
-  def featureUrl(self, version, feature):
-    return f'{self.docUrl}/features/hebrew/{version}/{feature}.html'
-
   def loadCSS(self):
     asApi = self.asApi
     if asApi:
-      return CSS_FONT + CSS
-    dh(CSS_FONT_API + CSS)
+      return CSS
+    dh(CSS)
 
   def shbLink(self, n, text=None, className=None, asString=False, noUrl=False):
     api = self.api
@@ -560,7 +374,7 @@ This notebook online:
       if nType in VERSE:
         if linked:
           rep = self.shbLink(n, text=rep, asString=True)
-        rep += ' <span class="hb">' + T.text(L.d(n, otype="word")) + '</span>'
+        rep += ' <span class="syb">' + T.text(L.d(n, otype="word")) + '</span>'
     elif nType == 'lex':
       rep = mdEsc(htmlEsc(F.voc_lex_utf8.v(n)))
     else:
@@ -570,7 +384,7 @@ This notebook online:
       rep = self.shbLink(n, text=rep, asString=True)
 
     if hebrew:
-      rep = f'<span class="hb">{rep}</span>'
+      rep = f'<span class="syb">{rep}</span>'
     result = f'{rep}{nodeRep}'
 
     if asString or asApi:
@@ -729,7 +543,7 @@ This notebook online:
       if nType == slotType:
         lx = L.u(n, otype='lex')[0]
         lexLink = (self.shbLink(lx, text=htmlEsc(T.text([n])), asString=True))
-        heading = f'<div class="h">{lexLink}</div>'
+        heading = f'<div class="sy">{lexLink}</div>'
         featurePart = getFeatures(
             self,
             n,
@@ -744,7 +558,7 @@ This notebook online:
         occs = L.d(n, otype='word')
         extremeOccs = sorted({occs[0], occs[-1]})
         linkOccs = ' - '.join(self.shbLink(lo, asString=True) for lo in extremeOccs)
-        heading = f'<div class="h">{htmlEsc(F.voc_lex_utf8.v(n))}</div>'
+        heading = f'<div class="sy">{htmlEsc(F.voc_lex_utf8.v(n))}</div>'
         occs = f'<div class="occs">{linkOccs}</div>'
         featurePart = getFeatures(
             self,

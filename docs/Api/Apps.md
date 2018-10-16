@@ -20,6 +20,7 @@
 
     * [bhsa](/Api/Bhsa)
     * [cunei](/Api/Cunei)
+    * [peshitta](/Api/Peshitta)
 
 ## The structure of apps
 
@@ -279,6 +280,9 @@
 
     For the Cunei tablets it means showing alternating vertical and horizontal
     subdivisions of faces into columns, lines and cases.
+
+    For the Peshitta it currently means showing the words of verses in unicode and ETCBC/WIT
+    transcription.
 
     When you show a pretty representation of a node,
     usually pretty representations of "contained" nodes will also be drawn.

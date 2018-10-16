@@ -332,6 +332,24 @@ class Transcription(object):
     # since it is consists of two characters
     self.hebrew_mappingi['\u05C6'] = 'ñ'
     self.hebrew_mappingi['\u0307'] = ''
+    self.syriac_punctuation_trans = (
+        '#\\',
+        '=.',
+        '=#',
+        '=:',
+        '=^',
+        '=/',
+        '=\\',
+        '^:',
+        '^\\',
+    )
+    self.syriac_punctuation_syc = tuple(
+        Transcription.syriac_mapping[c]
+        for c in self.syriac_punctuation_trans
+    )
+
+  def sycSplitPunc(self):
+    pass
 
   def _comp(s):
     for (d, c) in Transcription.decomp.items():

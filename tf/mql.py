@@ -158,9 +158,12 @@ GO
         (set(fV) for fV in self.enums.values()),
         set(),
     )
-    self.tm.info('Writing an all-in-one enum with {:>4} values'.format(len(fValues)))
-    fValuesEnumerated = ',\n\t'.join('{} = {}'.format(fVal, i) for (i, fVal) in enumerate(fValues))
-    self.fm.write('''
+    if len(fValues):
+      self.tm.info('Writing an all-in-one enum with {:>4} values'.format(len(fValues)))
+      fValuesEnumerated = ',\n\t'.join(
+          '{} = {}'.format(fVal, i) for (i, fVal) in enumerate(fValues)
+      )
+      self.fm.write('''
 CREATE ENUMERATION all_enum = {{
     {}
 }}
@@ -169,16 +172,19 @@ GO
 
   def _writeEnum(self, ft):
     fValues = self.enums[ft]
-    self.tm.info('enum {:<15} with {:>4} values'.format(ft, len(fValues)))
-    fValuesEnumerated = ',\n\t'.join('{} = {}'.format(fVal, i) for (i, fVal) in enumerate(fValues))
-    self.fm.write(
-        '''
+    if len(fValues):
+      self.tm.info('enum {:<15} with {:>4} values'.format(ft, len(fValues)))
+      fValuesEnumerated = ',\n\t'.join(
+          '{} = {}'.format(fVal, i) for (i, fVal) in enumerate(fValues)
+      )
+      self.fm.write(
+          '''
 CREATE ENUMERATION {}_enum = {{
     {}
 }}
 GO
 '''.format(ft, fValuesEnumerated)
-    )
+      )
 
   def _writeTypes(self):
     def valInt(n):

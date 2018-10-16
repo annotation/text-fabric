@@ -31,7 +31,15 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
             [some way](https://git-scm.com/downloads)
             for this step.
 
-## Hebrew Bible
+## ETCBC
+
+??? hint "ETCBC data"
+    Inspect the repositories of the [etcbc organization on GitHub](https://github.com/etcbc)
+    to see what is available. Per repository, click the *Releases* button so see
+    the release version that holds the relevant binaries with TF-data.
+    For example, try [crossrefs](https://github.com/etcbc/parallels/releases).
+
+### Hebrew Bible
 
 ??? abstract "From within a program"
     If you are in a Jupyter notebook or Python script,
@@ -42,14 +50,8 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
     B = Bhsa()
     ```
 
-    ??? hint "ETCBC data"
-        Inspect the repositories of the [etcbc organization on GitHub](https://github.com/etcbc)
-        to see what is available. Per repository, click the *Releases* button so see
-        the release version that holds the relevant binaries with TF-data.
-        For example, try [crossrefs](https://github.com/etcbc/parallels/releases).
-
     ??? hint "ETCBC versions"
-        The data of the ETCBC comes in major versions, ranging from `3` (2011) via
+        The data of the BHSA comes in major versions, ranging from `3` (2011) via
         `4`, `4b`, `2016`, `2017` to `c` (2018).
         The latter is a *continuous* version, which will change over time.
 
@@ -63,6 +65,26 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
     ```
 
     and likewise you can get other ETCBC data modules such as `phono`.
+
+### Peshitta
+
+??? abstract "From within a program"
+    If you are in a Jupyter notebook or Python script,
+    this will fetch the data (2MB)
+
+    ```python
+    from tf.extra.peshitta import Peshitta
+    P = Peshitta()
+    ```
+
+??? abstract "From GitHub"
+    If you want to be in complete control, you can get the complete data repository
+    from GitHub:
+
+    ```sh
+    cd ~/github/etcbc
+    git clone https://github.com/etcbc/peshitta
+    ```
 
 ## Cuneiform tablets from Uruk
 

@@ -167,7 +167,7 @@ There is extensive documentation here.
 If you start using the Text-Fabric API in your programs, you'll definitely need it.
 
 If you are just starting with the Text-Fabric browser, it might help to
-look at the online tutorials for the BHSA and the Cunei corpus to see what
+look at the online tutorials for the BHSA, Peshitta and Cunei corpora to see what
 Text-Fabric can reveal about the data.
 
 ??? abstract "Tutorials"
@@ -175,6 +175,7 @@ Text-Fabric can reveal about the data.
     on specific corpora (outside this repo):
 
     * [Biblia Hebraica Stuttgartensia Amstelodamensis](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
+    * [Peshitta: Syriac Old Testament](https://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb)
     * [Proto-Cuneiform tablets from Uruk IV/III](https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
     These links point to the *static* online versions.
@@ -182,6 +183,7 @@ Text-Fabric can reveal about the data.
     you can download them from a release:
 
     * [BHSA tutorial download](https://github.com/ETCBC/bhsa/releases/download/1.3/tutorial.zip)
+    * [Peshitta tutorial download](https://github.com/ETCBC/peshitta/releases/download/0.1/tutorial.zip)
     * [Cunei tutorial download](https://github.com/Nino-cunei/tutorials/releases/download/v1.0.0/tutorial.zip)
 
     These are zip files, you can unpack them where you want.
@@ -203,6 +205,7 @@ Text-Fabric can reveal about the data.
     * [TF api](/Api/General/)
     * [TF apps](/Api/Apps/)
     * [Bhsa app for the Hebrew Bible](/Api/Bhsa/)
+    * [Peshitta app for the Syriac Old Testament](/Api/Peshitta/)
     * [Cunei app for the Proto-cuneiform tablets from Uruk](/Api/Cunei/)
    
 ??? note "Papers"
