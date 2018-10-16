@@ -6,7 +6,10 @@ Explore your corpus without programming.
 Here is how to start up text-fabric.
 
 ??? hint "On Windows?"
-    You can click the Start Menu, and type `text-fabric bhsa` or `text-fabric cunei`
+    You can click the Start Menu, and type
+    `text-fabric bhsa` or
+    `text-fabric peshitta` or
+    `text-fabric cunei`
     in the search box, and then Enter.
 
 ??? hint "On Linux or Macos?"
@@ -14,6 +17,12 @@ Here is how to start up text-fabric.
 
     ```sh
     text-fabric bhsa
+    ```
+
+    or 
+
+    ```sh
+    text-fabric peshitta
     ```
 
     or 
@@ -47,7 +56,8 @@ Here is how to start up text-fabric.
 
 ??? hint "Fetching corpora"
     The Text-Fabric browser fetches the corpora it needs from GitHub automatically.
-    The TF data is fairly compact (25 MB for the Hebrew Bible, 1.6 MB for the Cunei corpus).
+    The TF data is fairly compact
+    (25 MB for the Hebrew Bible, 2,1 MB for the Peshitta, 1.6 MB for the Cunei corpus).
 
     ??? caution "Size of data"
         There might be sizable additional data (550 MB images for the Cunei corpus).
@@ -186,6 +196,13 @@ Explore your corpus by means of programming.
     B = Bhsa(hoist=globals())
     ```
 
+    **Peshitta**:
+
+    ```python
+    from tf.extra.peshitta import Peshitta
+    P = Peshitta(hoist=globals())
+    ```
+
     **Cunei**:
 
     ```python
@@ -199,11 +216,18 @@ Explore your corpus by means of programming.
         directory.
 
         If you have data in other places, you can also use that by means of
-        extra arguments supplied to `Bhsa()` and `Cunei()`.
+        extra arguments supplied to `Bhsa()`, `Peshitta()` and `Cunei()`.
 
 ??? abstract "Using Hebrew data"
     To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
     [start](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb).
+
+    Or go straight to the
+    [bhsa-api-docs](/Api/Bhsa).
+
+??? abstract "Using Syriac data"
+    To get started with the Peshitta corpus, use its tutorial in the Peshitta repo:
+    [start](http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb).
 
     Or go straight to the
     [bhsa-api-docs](/Api/Bhsa).

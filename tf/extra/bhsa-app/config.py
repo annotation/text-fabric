@@ -11,6 +11,9 @@ RELEASE_FIRST = '1.3'
 DOI = '10.5281/zenodo.1007624'
 DOI_URL = 'https://doi.org/10.5281/zenodo.1007624'
 
+DOC_URL = f'https://{ORG}.github.io/{REPO}'
+DOC_INTRO = '0_home'
+
 RELATIVE = '{}/tf'
 
 
@@ -126,6 +129,8 @@ def configure(lgc, version=VERSION):
       version=VERSION,
       release=RELEASE,
       firstRelease=RELEASE_FIRST,
+      docUrl=DOC_URL,
+      docIntro=DOC_INTRO,
       condenseType=CONDENSE_TYPE,
       shebanq=SHEBANQ,
       shebanqLex=SHEBANQ_LEX,

@@ -2,10 +2,11 @@
 
 ??? note "Tutorial"
     The tutorials for the
-    [Hebrew Bible](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
+    [Hebrew Bible](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb),
+    [Peshitta](http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb),
     and the
     [Uruk Cuneiform Tablets](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
-    put the Text-Fabric API on show for two distinguished (and vastly different) corpora.
+    put the Text-Fabric API on show for vastly different corpora.
 
 ???+ note "Generic API"
     This is the API of Text-Fabric in general.
@@ -15,6 +16,7 @@
     with specific corpora easier.
 
     *   Hebrew Bible: [BHSA](Bhsa)
+    *   Peshitta: [Peshitta](Peshitta)
     *   Proto-cuneiform tablets from Uruk: [Cunei](Cunei)
 
 ## Loading
@@ -903,7 +905,9 @@
         -crossref=66|77> verse
 
     To get a more specific introduction to search, consult the search tutorials for
-    [Hebrew](https://github.com/ETCBC/bhsa/blob/master/tutorial/search.ipynb) and
+    [Hebrew](https://github.com/ETCBC/bhsa/blob/master/tutorial/search.ipynb),
+    [Peshitta](https://github.com/ETCBC/peshitta/blob/master/tutorial/search.ipynb),
+    and
     [Cuneiform](https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb).
 
     Finally an example with quantifiers. We want all clauses where Pred-phrases
@@ -1670,7 +1674,7 @@
     ??? hint "More ways of showing results"
         If you work in one of the corpora for which the TF-API has been extended,
         you will be provided with more powerful methods `show()` and `table()`
-        to display your results. See [Cunei](Cunei) and [Bhsa](Bhsa).
+        to display your results. See [Cunei](Cunei), [Bhsa](Bhsa) and [Peshitta](Peshitta).
 
 
 ## Features
