@@ -95,6 +95,16 @@ CSS = '''
 </style>
 '''
 
+CSS_FONT = '''
+    <link rel="stylesheet" href="/data/static/fonts.css"/>
+'''
+CSS_FONT_API = '''
+    <link
+      rel="stylesheet"
+      href="https://github.com/Dans-labs/text-fabric/raw/master/tf/extra/peshitta-app/static/fontsweb.css"
+    />
+'''
+
 CLASS_NAMES = dict(
     verse='verse',
     word='word',
@@ -138,10 +148,12 @@ class Peshitta(object):
     self.asApi = asApi
     self.version = version
     self.condenseType = cfg['condenseType']
+    self.peshitta = cfg['peshitta']
     self.exampleSection = (
-        '<code>Genesis 1:1</code> (use'
-        ' <a href="https://github.com/{cfg["org"]}/{cfg["repo"]}/blob/master/tf/{version}/book%40en.tf" target="_blank">'
-        'English book names</a>)'
+        f'<code>Genesis 1:1</code> (use'
+        f' <a href="https://github.com/{cfg["org"]}/{cfg["repo"]}'
+        f'/blob/master/tf/{version}/book%40en.tf" target="_blank">'
+        f'English book names</a>)'
     )
     self.exampleSectionText = 'Genesis 1:1'
 
@@ -268,54 +280,31 @@ This notebook online:
   def loadCSS(self):
     asApi = self.asApi
     if asApi:
-      return CSS
-    dh(CSS)
+      return CSS_FONT + CSS
+    dh(CSS_FONT_API + CSS)
 
-  def shbLink(self, n, text=None, className=None, asString=False, noUrl=False):
+  def pshLink(self, n, text=None, className=None, asString=False, noUrl=False):
     api = self.api
     L = api.L
     T = api.T
     F = api.F
     version = self.version
     nType = F.otype.v(n)
-    if nType == 'lex':
-      lex = F.lex.v(n)
-      lan = F.language.v(n)
-      lexId = '{}{}'.format(
-          '1' if lan == 'Hebrew' else '2',
-          lex.replace('>', 'A').replace('<', 'O').replace('[', 'v').replace('/',
-                                                                            'n').replace('=', 'i'),
-      )
-      href = self.shebanqLex.format(
-          version=version,
-          lid=lexId,
-      )
-      title = 'show this lexeme in SHEBANQ'
-      if text is None:
-        text = htmlEsc(F.voc_lex_utf8.v(n))
-      result = outLink(text, href, title=title, className=className)
-      if asString:
-        return result
-      dh(result)
-      return
 
     (bookE, chapter, verse) = T.sectionFromNode(n)
     bookNode = n if nType == 'book' else L.u(n, otype='book')[0]
     book = F.book.v(bookNode)
     passageText = (
         bookE if nType == 'book' else '{} {}'.format(bookE, chapter)
-        if nType == 'chapter' else '{} {}:{}{}'.format(bookE, chapter, verse, F.label.v(n))
-        if nType == 'half_verse' else '{} {}:{}'.format(bookE, chapter, verse)
+        if nType == 'chapter' else '{} {}:{}'.format(bookE, chapter, verse)
     )
-    href = '#' if noUrl else self.shebanq.format(
+    href = '#' if noUrl else self.peshitta.format(
         version=version,
         book=book,
-        chapter=chapter,
-        verse=verse,
     )
     if text is None:
       text = passageText
-      title = 'show this passage in SHEBANQ'
+      title = 'show this passage in the Peshitta source'
     else:
       title = passageText
     if noUrl:
@@ -327,7 +316,7 @@ This notebook online:
     dh(result)
 
   def webLink(self, n):
-    return self.shbLink(n, className='rwh', asString=True, noUrl=True)
+    return self.pshLink(n, className='rwh', asString=True, noUrl=True)
 
   def nodeFromDefaultSection(self, sectionStr):
     api = self.api
@@ -361,29 +350,25 @@ This notebook online:
     else:
       nodeRep = f' *{n}* ' if withNodes else ''
 
-    hebrew = True
+    syriac = True
     if nType == 'word':
       rep = mdEsc(htmlEsc(T.text([n])))
     elif nType in SECTION:
       fmt = ('{}' if nType == 'book' else '{} {}' if nType == 'chapter' else '{} {}:{}')
       rep = fmt.format(*T.sectionFromNode(n))
-      hebrew = False
-      if nType == 'half_verse':
-        rep += F.label.v(n)
+      syriac = False
       rep = mdEsc(htmlEsc(rep))
       if nType in VERSE:
         if linked:
-          rep = self.shbLink(n, text=rep, asString=True)
+          rep = self.pshLink(n, text=rep, asString=True)
         rep += ' <span class="syb">' + T.text(L.d(n, otype="word")) + '</span>'
-    elif nType == 'lex':
-      rep = mdEsc(htmlEsc(F.voc_lex_utf8.v(n)))
     else:
       rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'))))
 
     if linked and nType not in VERSE:
-      rep = self.shbLink(n, text=rep, asString=True)
+      rep = self.pshLink(n, text=rep, asString=True)
 
-    if hebrew:
+    if syriac:
       rep = f'<span class="syb">{rep}</span>'
     result = f'{rep}{nodeRep}'
 
@@ -424,7 +409,6 @@ This notebook online:
     F = api.F
     L = api.L
     T = api.T
-    sortNodes = api.sortNodes
     otypeRank = api.otypeRank
 
     bigType = False
@@ -440,97 +424,26 @@ This notebook online:
 
     if bigType:
       children = ()
-    elif nType in {'verse', 'half_verse'}:
+    elif nType == 'verse':
       (thisFirstSlot, thisLastSlot) = getBoundary(api, n)
-      children = sortNodes(
-          set(L.d(n, otype='sentence_atom')) | {
-              L.u(thisFirstSlot, otype='sentence_atom')[0],
-              L.u(thisLastSlot, otype='sentence_atom')[0],
-          }
-      )
-    elif nType == 'sentence':
-      children = L.d(n, otype='sentence_atom')
-    elif nType == 'sentence_atom' or nType == 'clause':
-      children = L.d(n, otype='clause_atom')
-    elif nType == 'clause_atom' or nType == 'phrase':
-      children = L.d(n, otype='phrase_atom')
-    elif nType == 'phrase_atom' or nType == 'subphrase':
-      children = L.d(n, otype=slotType)
-    elif nType == 'lex':
-      children = ()
+      children = L.d(n, otype='word')
     elif nType == slotType:
       children = ()
-      lx = L.u(n, otype='lex')[0]
 
-    superType = ATOMS.get(nType, None)
-    if superType:
-      (superNode, superStart, superEnd) = self._getSuper(n, superType)
-      if superStart < myStart:
-        boundaryClass += ' r'
-      if superEnd > myEnd:
-        boundaryClass += ' l'
-      nodePart = (f'<a href="#" class="nd">{superNode}</a>' if withNodes else '')
-      shl = highlights.get(superNode, None)
-      shlClass = ''
-      shlStyle = ''
-      if shl is not None:
-        if shl == '':
-          shlClass = ' hl'
-        else:
-          shlStyle = f' style="background-color: {shl};"'
-        if not hlClass:
-          hlClass = shlClass
-          hlStyle = shlStyle
-
-    doOuter = outer and nType in {slotType, 'lex'}
+    doOuter = outer and nType == 'slotType'
     if doOuter:
       html.append('<div class="outeritem">')
 
     html.append(f'<div class="{className} {boundaryClass}{hlClass}"{hlStyle}>')
 
-    if nType in {'verse', 'half_verse'}:
-      passage = self.shbLink(n, asString=True)
+    if nType == 'verse':
+      passage = self.pshLink(n, asString=True)
       html.append(
           f'''
     <div class="vl">
         <div class="vrs">{passage}</div>
         {nodePart}
     </div>
-'''
-      )
-    elif superType:
-      typePart = self.shbLink(superNode, text=superType, asString=True)
-      featurePart = ''
-      if superType == 'sentence':
-        featurePart = getFeatures(
-            self,
-            superNode,
-            suppress,
-            ('number',),
-            plain=True,
-        )
-      elif superType == 'clause':
-        featurePart = getFeatures(
-            self,
-            superNode,
-            suppress,
-            ('rela', 'typ'),
-            plain=True,
-        )
-      elif superType == 'phrase':
-        featurePart = getFeatures(
-            self,
-            superNode,
-            suppress,
-            ('function', 'typ'),
-            plain=True,
-        )
-      html.append(
-          f'''
-    <div class="{superType}{shlClass}"{shlStyle}>
-        {typePart} {nodePart} {featurePart}
-    </div>
-    <div class="atoms">
 '''
       )
     else:
@@ -541,33 +454,13 @@ This notebook online:
       featurePart = ''
       occs = ''
       if nType == slotType:
-        lx = L.u(n, otype='lex')[0]
-        lexLink = (self.shbLink(lx, text=htmlEsc(T.text([n])), asString=True))
-        heading = f'<div class="sy">{lexLink}</div>'
+        text = T.text([n])
+        heading = f'<div class="sy">{text}</div>'
         featurePart = getFeatures(
             self,
             n,
             suppress,
-            ('pdp', 'gloss', 'vs', 'vt'),
-            givenValue=dict(
-                pdp=self.shbLink(n, text=htmlEsc(F.pdp.v(n)), asString=True),
-                gloss=htmlEsc(F.gloss.v(lx)),
-            ),
-        )
-      elif nType == 'lex':
-        occs = L.d(n, otype='word')
-        extremeOccs = sorted({occs[0], occs[-1]})
-        linkOccs = ' - '.join(self.shbLink(lo, asString=True) for lo in extremeOccs)
-        heading = f'<div class="sy">{htmlEsc(F.voc_lex_utf8.v(n))}</div>'
-        occs = f'<div class="occs">{linkOccs}</div>'
-        featurePart = getFeatures(
-            self,
-            n,
-            suppress,
-            ('voc_lex', 'gloss'),
-            givenValue=dict(
-                voc_lex=self.shbLink(n, text=htmlEsc(F.voc_lex.v(n)), asString=True)
-            ),
+            ('word_etcbc',),
         )
       html.append(heading)
       html.append(featurePart)
@@ -585,18 +478,8 @@ This notebook online:
           suppress=suppress,
           highlights=highlights,
       )
-    if superType:
-      html.append('''
-    </div>
-''')
     html.append('''
 </div>
 ''')
     if doOuter:
       html.append('</div>')
-
-  def _getSuper(self, n, tp):
-    api = self.api
-    L = api.L
-    superNode = L.u(n, otype=tp)[0]
-    return (superNode, *getBoundary(api, superNode))

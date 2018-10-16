@@ -1,0 +1,5 @@
+@font-face {
+	font-family: "Estrangelo Edessa";
+	src: url('https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/peshitta-app/static/fonts/SyrCOMEdessa.otf?raw=true');
+	src: url('https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/peshitta-app/static/fonts/SyrCOMEdessa.woff?raw=true') format('woff');
+}
