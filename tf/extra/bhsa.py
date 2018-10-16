@@ -372,7 +372,7 @@ class Bhsa(object):
     repo = cfg['repo']
     tutUrl = f'{URL_NB}/{cfg["org"]}/{repo}/blob/master/tutorial/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
-    dataLink = outLink(repo.upper(), self.docUrl, '{provenance of this corpus}')
+    dataLink = outLink(repo.upper(), self.docUrl, 'provenance of this corpus')
     featureLink = outLink(
         'Feature docs', self.featureUrl(self.version, self.docIntro),
         f'{repo.upper()} feature documentation'

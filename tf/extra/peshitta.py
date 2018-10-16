@@ -196,10 +196,14 @@ class Peshitta(object):
     repo = cfg['repo']
     tutUrl = f'{URL_NB}/{cfg["org"]}/{repo}/blob/master/tutorial/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Peshitta/'
-    dataLink = outLink(repo.upper(), self.docUrl, '{provenance of this corpus}')
+    dataLink = outLink(
+        repo.capitalize(),
+        f'{self.docUrl}/about.md',
+        'provenance of this corpus',
+    )
     featureLink = outLink(
         'Feature docs', self.featureUrl(self.version),
-        f'{repo.upper()} feature documentation'
+        f'{repo.capitalize()} feature documentation'
     )
     peshittaLink = outLink('Peshitta API', extraUrl, 'Peshitta API documentation')
     tfLink = outLink(
@@ -275,7 +279,7 @@ This notebook online:
     self.header = types.MethodType(header, self)
 
   def featureUrl(self, version):
-    return f'{self.docUrl}-{version}.md'
+    return f'{self.docUrl}/transcription-{version}.md'
 
   def loadCSS(self):
     asApi = self.asApi
