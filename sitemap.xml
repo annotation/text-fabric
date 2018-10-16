@@ -96,6 +96,11 @@
      <changefreq>daily</changefreq>
     </url>
     <url>
+     <loc>/Api/Peshitta/</loc>
+     <lastmod>2018-10-16</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
      <loc>/Api/Cunei/</loc>
      <lastmod>2018-10-16</lastmod>
      <changefreq>daily</changefreq>
