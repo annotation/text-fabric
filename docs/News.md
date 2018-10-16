@@ -14,7 +14,10 @@ None
 
 ## 6.2
 
-* New app: Peshitta.
+* New app: Peshitta. It works much like the BHSA, but there is one big difference: the current Peshitta data
+  does not have linguistic annotations. There are just books, chapters, verses and words.
+  We expect to add lemmatizations of words shortly.
+  After this upgrade you can browse the peshitta by saying `text-fabric peshitta` on the command line.
 * Fixed a bug in exportMQL:
   when there are no enumerated values, do not write out an empty
   `CREATE ENUMERATION` statement to the MQL file. 

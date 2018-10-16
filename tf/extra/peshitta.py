@@ -420,10 +420,10 @@ This notebook online:
       bigType = True
 
     if nType == 'book':
-      html.append(self.shbLink(n, asString=True))
+      html.append(self.pshLink(n, asString=True))
       return
     if nType == 'chapter':
-      html.append(self.shbLink(n, asString=True))
+      html.append(self.pshLink(n, asString=True))
       return
 
     if bigType:
