@@ -127,10 +127,6 @@ EXCLUDED_FEATURES = set()
 PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
 
 
-def featureUrl(self, version):
-  return f'{self.docUrl}{version}.md'
-
-
 class Peshitta(object):
   def __init__(
       self,
@@ -147,6 +143,7 @@ class Peshitta(object):
     cfg = config.configure(lgc=lgc, version=version)
     self.asApi = asApi
     self.version = version
+    self.docUrl = cfg['docUrl']
     self.condenseType = cfg['condenseType']
     self.peshitta = cfg['peshitta']
     self.exampleSection = (
@@ -276,6 +273,9 @@ This notebook online:
     self.prettySetup = types.MethodType(prettySetup, self)
     self.search = types.MethodType(search, self)
     self.header = types.MethodType(header, self)
+
+  def featureUrl(self, version):
+    return f'{self.docUrl}-{version}.md'
 
   def loadCSS(self):
     asApi = self.asApi

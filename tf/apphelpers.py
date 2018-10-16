@@ -82,10 +82,12 @@ def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc):
 
 def getDataCustom(source, release, dataUrl, dest, version, withPaths=False):
   versionDest = f'{dest}/{version}'
-  print(f'\tdownloading {source}-{version} r{release} ...')
+  print(f'\tdownloading {source}-{version} r{release}')
+  print(f'\t\tfrom {dataUrl} ... ')
   sys.stdout.flush()
   try:
     r = requests.get(dataUrl, allow_redirects=True)
+    print(f'\tunzipping ... ')
     zf = io.BytesIO(r.content)
   except Exception as e:
     print(str(e))

@@ -167,7 +167,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     ??? info "linked"
         `linked=1` the column number where the cell contents is
         linked to
-        the relevant passage in to SHEBANQ;
+        the relevant passage in SHEBANQ;
         (the first data column is column 1)
 
     ??? info "withNodes, asString"
@@ -241,7 +241,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
         ??? hint "Suppress common values"
             You can use `noneValues` also to suppress the normal values of a feature,
-            in order to attrect attention to the more special values, e.g.
+            in order to attract attention to the more special values, e.g.
             
             ```python
             noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}

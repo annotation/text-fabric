@@ -25,11 +25,11 @@ r     : build for shipping, leave version as is
 r1    : build for shipping, version becomes r1+1.0.0
 r2    : build for shipping, version becomes r1.r2+1.0
 r3    : build for shipping, version becomes r1.r2.r3+1
-t     : open text-fabric browser on specific dataset (bhsa, cunei)
+t     : open text-fabric browser on specific dataset (bhsa, peshitta, cunei)
 data  : build data files for github release
 
 For g and the r-commands you need to pass a commit message as well.
-For data you need to pass an app argument: bhsa or cunei
+For data you need to pass an app argument: bhsa, peshitta or cunei
 '''
 
 DIST = 'dist'
@@ -75,7 +75,7 @@ def readArgs():
     return (arg, args[1], args[1:])
   if arg in {'t', 'data'}:
     if len(args) < 2:
-      print('Provide a data source [bhsa|cunei]')
+      print('Provide a data source [bhsa|peshitta|cunei]')
       return (False, None, [])
     return (arg, args[1], args[1:])
   return (arg, None, [])

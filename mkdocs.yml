@@ -40,6 +40,7 @@ pages:
     - 'General': 'Api/General.md'
     - 'Apps': 'Api/Apps.md'
     - 'Hebrew Bible': 'Api/Bhsa.md'
+    - 'Syriac Old Testament': 'Api/Peshitta.md'
     - 'Cuneiform Tablets': 'Api/Cunei.md'
     - 'Auxiliary': 'Api/Transcription.md'
   - Server:
