@@ -12,7 +12,17 @@
 
 None
 
+## 6.2.1
+
+2018-10-17
+
+* New app: Syrnt (Syriac New Testament. It works much like the Peshitta, but the SyrNT data
+  has linguistic annotations at the word and lexeme levels.
+  After this upgrade you can browse the SyrNT by saying `text-fabric syrnt` on the command line.
+
 ## 6.2
+
+2018-10-16
 
 * New app: Peshitta. It works much like the BHSA, but there is one big difference: the current Peshitta data
   does not have linguistic annotations. There are just books, chapters, verses and words.
@@ -24,12 +34,12 @@ None
 
 ## 6.1
 
+2018-10-12
+
 * More precise provenance data when you export results from the Text-Fabric data;
 * Under the hood reorganization of configuration data of apps like Bhsa and Cunei;
 * App-specific parts of the code have moved to more generic parts: a big cleanup has performed;
 * This will make it easier to add new apps.
-
-2018-10-11
 
 ## 6.0.7-8-9
 

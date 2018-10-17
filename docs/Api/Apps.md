@@ -18,9 +18,12 @@
 ??? abstract "Current apps"
     At the moment we have these apps
 
-    * [bhsa](/Api/Bhsa)
-    * [cunei](/Api/Cunei)
-    * [peshitta](/Api/Peshitta)
+    name | description
+    --- | ---
+    [bhsa](/Api/Bhsa) | Biblia Hebraica Stuttgartensia (Amstelodamensis)
+    [cunei](/Api/Cunei) | Proto-cuneiform Uruk Corpus
+    [peshitta](/Api/Peshitta) | Syriac Old Testament
+    [syrnt](/Api/Syrnt) | Syriac New Testament
 
 ## The structure of apps
 
@@ -282,6 +285,9 @@
     subdivisions of faces into columns, lines and cases.
 
     For the Peshitta it currently means showing the words of verses in unicode and ETCBC/WIT
+    transcription.
+
+    For the SyrNT it currently means showing the words of verses in unicode and SEDRA
     transcription.
 
     When you show a pretty representation of a node,

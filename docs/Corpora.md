@@ -86,6 +86,26 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
     git clone https://github.com/etcbc/peshitta
     ```
 
+### Syriac New Testament
+
+??? abstract "From within a program"
+    If you are in a Jupyter notebook or Python script,
+    this will fetch the data (2MB)
+
+    ```python
+    from tf.extra.syrnt import Syrnt
+    SY = Syrnt()
+    ```
+
+??? abstract "From GitHub"
+    If you want to be in complete control, you can get the complete data repository
+    from GitHub:
+
+    ```sh
+    cd ~/github/etcbc
+    git clone https://github.com/etcbc/syrnt
+    ```
+
 ## Cuneiform tablets from Uruk
 
 ??? abstract "From within a program"

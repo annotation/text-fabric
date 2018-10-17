@@ -98,11 +98,11 @@ def getDataCustom(source, release, dataUrl, dest, version, withPaths=False):
   print(f'\tsaving {source}-{version} r{release}')
   sys.stdout.flush()
 
+  cwd = os.getcwd()
   try:
     z = ZipFile(zf)
     if not os.path.exists(versionDest):
       os.makedirs(versionDest, exist_ok=True)
-    cwd = os.getcwd()
     os.chdir(versionDest)
     if withPaths:
       z.extractall()

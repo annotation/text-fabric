@@ -9,6 +9,7 @@ setup(
         'tf.extra',
         'tf.extra.bhsa-app',
         'tf.extra.peshitta-app',
+        'tf.extra.syrnt-app',
         'tf.extra.cunei-app',
     ],
     install_requires=['rpyc', 'bottle', 'psutil', 'markdown', 'ipython', 'requests'],
@@ -21,7 +22,7 @@ setup(
             'text-fabric = tf.server.start:main',
         ]
     },
-    version='6.2.0',
+    version='6.2.1',
     description='''Processor and browser for Text Fabric Data''',
     author='Dirk Roorda',
     author_email='dirk.roorda@dans.knaw.nl',
