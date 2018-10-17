@@ -9,6 +9,7 @@ Here is how to start up text-fabric.
     You can click the Start Menu, and type
     `text-fabric bhsa` or
     `text-fabric peshitta` or
+    `text-fabric syrnt` or
     `text-fabric cunei`
     in the search box, and then Enter.
 
@@ -23,6 +24,12 @@ Here is how to start up text-fabric.
 
     ```sh
     text-fabric peshitta
+    ```
+
+    or 
+
+    ```sh
+    text-fabric syrnt
     ```
 
     or 
@@ -57,7 +64,10 @@ Here is how to start up text-fabric.
 ??? hint "Fetching corpora"
     The Text-Fabric browser fetches the corpora it needs from GitHub automatically.
     The TF data is fairly compact
-    (25 MB for the Hebrew Bible, 2,1 MB for the Peshitta, 1.6 MB for the Cunei corpus).
+    (25 MB for the Hebrew Bible,
+    2,1 MB for the Peshitta,
+    2,1 MB for the Syriac New Testament,
+    1.6 MB for the Cunei corpus).
 
     ??? caution "Size of data"
         There might be sizable additional data (550 MB images for the Cunei corpus).
@@ -203,6 +213,13 @@ Explore your corpus by means of programming.
     P = Peshitta(hoist=globals())
     ```
 
+    **SyrNT**:
+
+    ```python
+    from tf.extra.syrnt import Syrnt
+    SY = Syrnt(hoist=globals())
+    ```
+
     **Cunei**:
 
     ```python
@@ -216,7 +233,7 @@ Explore your corpus by means of programming.
         directory.
 
         If you have data in other places, you can also use that by means of
-        extra arguments supplied to `Bhsa()`, `Peshitta()` and `Cunei()`.
+        extra arguments supplied to `Bhsa()`, `Peshitta()`, `Syrnt()` and `Cunei()`.
 
 ??? abstract "Using Hebrew data"
     To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
@@ -230,7 +247,13 @@ Explore your corpus by means of programming.
     [start](http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb).
 
     Or go straight to the
-    [bhsa-api-docs](/Api/Bhsa).
+    [peshitta-api-docs](/Api/Peshitta).
+
+    To get started with the Syriac New Testament corpus, use its tutorial in the Syrnt repo:
+    [start](http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb).
+
+    Or go straight to the
+    [syrnt-api-docs](/Api/Syrnt).
 
 ??? abstract "Using Cuneiform data"
     To get started with the Uruk corpus, use its tutorial in the Nino-cunei repo:

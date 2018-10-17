@@ -71,12 +71,26 @@ Jump off to the [docs](https://dans-labs.github.io/text-fabric/)
 
 # Data
 
-In order to work with Text-Fabric, you need a dataset to operate on,
-such as the
-[Biblia Hebraica Stuttgartensia Amstelodamensis](https://github.com/etcbc/bhsa)
-or the
-[Proto-Cuneiform tablets from Uruk IV/III](https://github.com/nino-cunei/uruk)
+In order to work with Text-Fabric, you need a dataset to operate on.
+Such a data set must be in TF format.
 
+# Apps
+
+It is possible to prepare a dataset in TF format and extend Text-Fabric with an *app*
+that has further knowledge of that specific dataset.
+
+The current distribution of Text-Fabric contains the following apps:
+
+app | dataset
+--- | ---
+`bhsa` | [Biblia Hebraica Stuttgartensia Amstelodamensis](https://github.com/etcbc/bhsa)
+`peshitta` | [Peshitta (Syriac Old Testament](https://github.com/etcbc/peshitta)
+`syrnt` | [Syriac New Testament](https://github.com/etcbc/syrnt)
+`cunei` | [Proto-Cuneiform tablets from Uruk IV/III](https://github.com/nino-cunei/uruk)
+
+An app takes care of automatic downloading of the dataset and it supports the Text-Fabric browser.
+
+---
 
 <a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/Dans-labs/text-fabric/directory/"><img src="/docs/images/swh-logo-archive.png" width="100" align="left"/></a>
 

@@ -43,6 +43,7 @@ MODULES = (
         doi=('10.5281/zenodo.1007642', 'https://doi.org/10.5281/zenodo.1007642'),
     ),
 )
+ZIP = [REPO] + [m['repo'] for m in MODULES]
 
 
 def VMODULES(version):

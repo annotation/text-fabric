@@ -1,15 +1,15 @@
 import os
-from tf.extra.peshitta import Peshitta
+from tf.extra.syrnt import Syrnt
 from tf.apphelpers import hasData
 
 ORG = 'etcbc'
-REPO = 'peshitta'
-CORPUS = 'Peshitta'
+REPO = 'syrnt'
+CORPUS = 'SyrNT'
 VERSION = '0.1'
-RELEASE = '0.3'
+RELEASE = '0.1'
 RELEASE_FIRST = '0.1'
-DOI = '10.5281/zenodo.1463675'
-DOI_URL = 'https://doi.org/10.5281/zenodo.1463675'
+DOI = '10.5281/zenodo.1464787'
+DOI_URL = 'https://doi.org/10.5281/zenodo.1464787'
 DOC_URL = f'https://github.com/{ORG}/{REPO}/blob/master/docs'
 ZIP = [REPO]
 
@@ -26,14 +26,14 @@ CONDENSE_TYPE = 'verse'
 
 PLAIN_LINK = (
     f'https://github.com/{ORG}/{REPO}/blob/master'
-    '/source/{version}/{book}'
+    '/plain/{version}/{book}.txt'
 )
 
 
 protocol = 'http://'
 host = 'localhost'
-port = 18983
-webport = 8003
+port = 18984
+webport = 8004
 
 options = ()
 
@@ -77,7 +77,7 @@ def configure(lgc, version=VERSION):
 
 def extraApi(lgc=None):
   cfg = configure(lgc, version=VERSION)
-  result = Peshitta(
+  result = Syrnt(
       None,
       None,
       version=VERSION,

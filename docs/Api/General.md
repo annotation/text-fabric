@@ -4,6 +4,7 @@
     The tutorials for the
     [Hebrew Bible](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb),
     [Peshitta](http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb),
+    [Syriac New Testament](http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb),
     and the
     [Uruk Cuneiform Tablets](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
     put the Text-Fabric API on show for vastly different corpora.
@@ -17,6 +18,7 @@
 
     *   Hebrew Bible: [BHSA](Bhsa)
     *   Peshitta: [Peshitta](Peshitta)
+    *   Syriac New Testament: [SyrNT](Syrnt)
     *   Proto-cuneiform tablets from Uruk: [Cunei](Cunei)
 
 ## Loading
@@ -907,6 +909,7 @@
     To get a more specific introduction to search, consult the search tutorials for
     [Hebrew](https://github.com/ETCBC/bhsa/blob/master/tutorial/search.ipynb),
     [Peshitta](https://github.com/ETCBC/peshitta/blob/master/tutorial/search.ipynb),
+    [SyrNT](https://github.com/ETCBC/syrnt/blob/master/tutorial/search.ipynb),
     and
     [Cuneiform](https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb).
 
@@ -1674,7 +1677,8 @@
     ??? hint "More ways of showing results"
         If you work in one of the corpora for which the TF-API has been extended,
         you will be provided with more powerful methods `show()` and `table()`
-        to display your results. See [Cunei](Cunei), [Bhsa](Bhsa) and [Peshitta](Peshitta).
+        to display your results.
+        See [Cunei](Cunei), [Bhsa](Bhsa), [Peshitta](Peshitta) and [Syrnt](Syrnt).
 
 
 ## Features

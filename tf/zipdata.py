@@ -1,19 +1,17 @@
-# create the zips of the Peshitta tf data by version
-# in order to attach them to a new release in the BHSA github repository
-
 import os
 from shutil import rmtree
 from zipfile import ZipFile, ZIP_DEFLATED
 
-
-SOURCE_BASE = os.path.expanduser('~/github/etcbc')
-DEST_BASE = os.path.expanduser('~/Downloads/etcbc-release')
+GH_BASE = os.path.expanduser(f'~/github')
+DW_BASE = os.path.expanduser(f'~/Downloads')
 TEMP = '_temp'
 
 
-def zipData(source):
-  sourceDir = f'{SOURCE_BASE}/{source}/tf'
-  destDir = f'{DEST_BASE}/{source}'
+def zipData(org, repo):
+  sourceBase = f'{GH_BASE}/{org}'
+  destBase = f'{DW_BASE}/{org}-release'
+  sourceDir = f'{sourceBase}/{repo}/tf'
+  destDir = f'{destBase}/{repo}'
   dataFiles = {}
 
   with os.scandir(sourceDir) as versionIt:
@@ -38,7 +36,7 @@ def zipData(source):
   os.makedirs(destDir, exist_ok=True)
 
   for (version, features) in sorted(dataFiles.items()):
-    print(f'zipping {source:<8} {version:>4} with {len(features)} features')
+    print(f'zipping {repo:<8} {version:>4} with {len(features)} features')
     with ZipFile(
         f'{destDir}/{version}.zip',
         'w',
@@ -50,6 +48,3 @@ def zipData(source):
             f'{sourceDir}/{version}/{featureFile}',
             arcname=featureFile,
         )
-
-
-zipData('peshitta')

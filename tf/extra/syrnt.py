@@ -46,6 +46,17 @@ CSS = '''
     direction: rtl;
     background-color: #ffffff;
 }
+.lextp {
+    padding: 0.1em;
+    margin: 0.1em;
+    border-radius: 0.1em;
+    border: 2px solid #888888;
+    width: fit-content;
+    display: flex;
+    flex-flow: column nowrap;
+    direction: rtl;
+    background-color: #ffffff;
+}
 .occs {
     font-size: x-small;
 }
@@ -61,6 +72,29 @@ CSS = '''
     font-size: large;
     direction: rtl;
     text-decoration: none;
+}
+.sp,.sp a:visited,.sp a:link {
+    font-family: monospace;
+    font-size: medium;
+    color: #0000bb;
+    text-decoration: none;
+}
+.lexeme {
+    font-family: monospace;
+    font-size: medium;
+    color: #0000bb;
+}
+.vs {
+    font-family: monospace;
+    font-size: medium;
+    font-weight: bold;
+    color: #0000bb;
+}
+.vt {
+    font-family: monospace;
+    font-size: medium;
+    font-weight: bold;
+    color: #0000bb;
 }
 .nd {
     font-family: monospace;
@@ -101,13 +135,14 @@ CSS_FONT = '''
 CSS_FONT_API = '''
     <link
       rel="stylesheet"
-      href="https://github.com/Dans-labs/text-fabric/raw/master/tf/extra/peshitta-app/static/fontsweb.css"
+      href="https://github.com/Dans-labs/text-fabric/raw/master/tf/extra/syrnt-app/static/fontsweb.css"
     />
 '''
 
 CLASS_NAMES = dict(
     verse='verse',
     word='word',
+    lex='lextp',
 )
 
 SECTION = {'book', 'chapter', 'verse'}
@@ -116,8 +151,8 @@ VERSE = {'verse'}
 NONE_VALUES = {None, 'NA', 'none', 'unknown'}
 
 STANDARD_FEATURES = '''
-    word word_etcbc
-    trailer trailer_etcbc
+    sp vs vt
+    lexeme
     book book@en
     chapter verse
 '''
@@ -127,7 +162,7 @@ EXCLUDED_FEATURES = set()
 PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
 
 
-class Peshitta(object):
+class Syrnt(object):
   def __init__(
       self,
       api=None,
@@ -139,7 +174,7 @@ class Peshitta(object):
       lgc=False,
       hoist=False,
   ):
-    config = getConfig('peshitta')
+    config = getConfig('syrnt')
     cfg = config.configure(lgc=lgc, version=version)
     self.asApi = asApi
     self.version = version
@@ -147,12 +182,12 @@ class Peshitta(object):
     self.condenseType = cfg['condenseType']
     self.plainLink = cfg['plainLink']
     self.exampleSection = (
-        f'<code>Genesis 1:1</code> (use'
+        f'<code>Matthew 1:1</code> (use'
         f' <a href="https://github.com/{cfg["org"]}/{cfg["repo"]}'
         f'/blob/master/tf/{version}/book%40en.tf" target="_blank">'
         f'English book names</a>)'
     )
-    self.exampleSectionText = 'Genesis 1:1'
+    self.exampleSectionText = 'Matthew 1:1'
 
     self.standardFeatures = set(STANDARD_FEATURES.strip().split())
 
@@ -195,7 +230,7 @@ class Peshitta(object):
         (thisOrg, thisRepo, thisPath, nbUrl, ghUrl) = repoLoc
     repo = cfg['repo']
     tutUrl = f'{URL_NB}/{cfg["org"]}/{repo}/blob/master/tutorial/search.ipynb'
-    extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Peshitta/'
+    extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Syrnt/'
     dataLink = outLink(
         repo.capitalize(),
         f'{self.docUrl}/about.md',
@@ -205,7 +240,7 @@ class Peshitta(object):
         'Feature docs', self.featureUrl(self.version),
         f'{repo.capitalize()} feature documentation'
     )
-    peshittaLink = outLink('Peshitta API', extraUrl, 'Peshitta API documentation')
+    syrntLink = outLink('SyrNT API', extraUrl, 'SyrNT API documentation')
     tfLink = outLink(
         f'Text-Fabric API {api.TF.version}', API_URL(''),
         'text-fabric-api'
@@ -227,7 +262,7 @@ class Peshitta(object):
     else:
       if inNb:
         lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f] + api.Eall()
-        dm('**Documentation:**' f' {dataLink} {featureLink} {peshittaLink} {tfLink} {tfsLink}')
+        dm('**Documentation:**' f' {dataLink} {featureLink} {syrntLink} {tfLink} {tfsLink}')
         dh(
             '<details open><summary><b>Loaded features</b>:</summary>\n'
             +
@@ -287,7 +322,7 @@ This notebook online:
       return CSS_FONT + CSS
     dh(CSS_FONT_API + CSS)
 
-  def pshLink(self, n, text=None, className=None, asString=False, noUrl=False):
+  def sntLink(self, n, text=None, className=None, asString=False, noUrl=False):
     api = self.api
     L = api.L
     T = api.T
@@ -308,7 +343,7 @@ This notebook online:
     )
     if text is None:
       text = passageText
-      title = 'show this passage in the Peshitta source'
+      title = 'show this passage in the SyrNT source'
     else:
       title = passageText
     if noUrl:
@@ -320,7 +355,7 @@ This notebook online:
     dh(result)
 
   def webLink(self, n):
-    return self.pshLink(n, className='rwh', asString=True, noUrl=True)
+    return self.sntLink(n, className='rwh', asString=True, noUrl=True)
 
   def nodeFromDefaultSection(self, sectionStr):
     api = self.api
@@ -364,13 +399,15 @@ This notebook online:
       rep = mdEsc(htmlEsc(rep))
       if nType in VERSE:
         if linked:
-          rep = self.pshLink(n, text=rep, asString=True)
+          rep = self.sntLink(n, text=rep, asString=True)
         rep += ' <span class="syb">' + T.text(L.d(n, otype="word")) + '</span>'
+    elif nType == 'lex':
+      rep = mdEsc(htmlEsc(F.lexeme.v(n)))
     else:
       rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'))))
 
     if linked and nType not in VERSE:
-      rep = self.pshLink(n, text=rep, asString=True)
+      rep = self.sntLink(n, text=rep, asString=True)
 
     if syriac:
       rep = f'<span class="syb">{rep}</span>'
@@ -420,10 +457,10 @@ This notebook online:
       bigType = True
 
     if nType == 'book':
-      html.append(self.pshLink(n, asString=True))
+      html.append(self.sntLink(n, asString=True))
       return
     if nType == 'chapter':
-      html.append(self.pshLink(n, asString=True))
+      html.append(self.sntLink(n, asString=True))
       return
 
     if bigType:
@@ -431,17 +468,19 @@ This notebook online:
     elif nType == 'verse':
       (thisFirstSlot, thisLastSlot) = getBoundary(api, n)
       children = L.d(n, otype='word')
+    elif nType == 'lex':
+      children = ()
     elif nType == slotType:
       children = ()
 
-    doOuter = outer and nType == 'slotType'
+    doOuter = outer and nType in {'slotType', 'lex'}
     if doOuter:
       html.append('<div class="outeritem">')
 
     html.append(f'<div class="{className} {boundaryClass}{hlClass}"{hlStyle}>')
 
     if nType == 'verse':
-      passage = self.pshLink(n, asString=True)
+      passage = self.sntLink(n, asString=True)
       html.append(
           f'''
     <div class="vl">
@@ -464,7 +503,19 @@ This notebook online:
             self,
             n,
             suppress,
-            ('word_etcbc',),
+            ('word_ascii', 'lexeme_ascii', 'sp', 'vs', 'vt'),
+        )
+      elif nType == 'lex':
+        occs = L.d(n, otype='word')
+        extremeOccs = sorted({occs[0], occs[-1]})
+        linkOccs = ' - '.join(self.sntLink(lo, asString=True) for lo in extremeOccs)
+        heading = f'<div class="h">{htmlEsc(F.lexeme.v(n))}</div>'
+        occs = f'<div class="occs">{linkOccs}</div>'
+        featurePart = getFeatures(
+            self,
+            n,
+            suppress,
+            ('lexeme_ascii',),
         )
       html.append(heading)
       html.append(featurePart)
