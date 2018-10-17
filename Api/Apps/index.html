@@ -628,8 +628,20 @@
 
 
   <li class="md-nav__item">
-    <a href="../Peshitta/" title="Syriac Old Testament" class="md-nav__link">
-      Syriac Old Testament
+    <a href="../Peshitta/" title="Peshitta" class="md-nav__link">
+      Peshitta
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Syrnt/" title="Syriac New Testament" class="md-nav__link">
+      Syriac New Testament
     </a>
   </li>
 
@@ -877,7 +889,7 @@
 <details class="abstract"><summary>About</summary><p>Text-Fabric is a generic engine to process text and annotations.</p><p>When working with specific corpora, we want to have more power at our fingertips.</p><p>We need extra power on top of the TF engine.</p><p>The way we have chosen to do it is via <em>apps</em>.
 An app is a bunch of extra functions that <em>know</em> the structure of a specific corpus.</p><p>In particular, an app knows how to produce plain representations
 and pretty displays of nodes of each type in the corpus.</p></details><h2 id="current-apps">Current apps<a class="headerlink" href="#current-apps" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>Current apps</summary><p>At the moment we have these apps</p><ul><li><a href="../../Api/Bhsa">bhsa</a></li><li><a href="../../Api/Cunei">cunei</a></li><li><a href="../../Api/Peshitta">peshitta</a></li></ul></details><h2 id="the-structure-of-apps">The structure of apps<a class="headerlink" href="#the-structure-of-apps" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>Current apps</summary><p>At the moment we have these apps</p><table><thead><tr><th>name</th><th>description</th></tr></thead><tbody><tr><td><a href="../../Api/Bhsa">bhsa</a></td><td>Biblia Hebraica Stuttgartensia (Amstelodamensis)</td></tr><tr><td><a href="../../Api/Cunei">cunei</a></td><td>Proto-cuneiform Uruk Corpus</td></tr><tr><td><a href="../../Api/Peshitta">peshitta</a></td><td>Syriac Old Testament</td></tr><tr><td><a href="../../Api/Syrnt">syrnt</a></td><td>Syriac New Testament</td></tr></tbody></table></details><h2 id="the-structure-of-apps">The structure of apps<a class="headerlink" href="#the-structure-of-apps" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>App components</summary><p>The apps themselves are modules inside 
 <a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/extra">tf.extra</a></p><p>For each <em>app</em>, you find there:</p><details class="abstract"><summary>module</summary><p><em>app</em><code>.py</code>
 contains all the functionality specific to the corpus in question, organized as an extended
@@ -957,6 +969,7 @@ for which extra data has been fetched.</p><details class="note"><summary>Context
 has about a certain item.
 <code>pretty(node)</code> makes a lot of that information visible in an app dependent way.</p><p>For the Bhsa it means showing nested and intruding sentences, clauses and phrases.</p><p>For the Cunei tablets it means showing alternating vertical and horizontal
 subdivisions of faces into columns, lines and cases.</p><p>For the Peshitta it currently means showing the words of verses in unicode and ETCBC/WIT
+transcription.</p><p>For the SyrNT it currently means showing the words of verses in unicode and SEDRA
 transcription.</p><p>When you show a pretty representation of a node,
 usually pretty representations of "contained" nodes will also be drawn.</p><p>You can selectively highlight those nodes with custom colors.</p><p>When pretty-displaying a tuple of nodes, container nodes that contain those nodes
 will be looked up and displayed, and the actual tuple nodes will be highlighted.</p><p>You can customize the highlight colors by selecting colors on the basis of the

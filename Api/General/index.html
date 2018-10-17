@@ -749,8 +749,20 @@
 
 
   <li class="md-nav__item">
-    <a href="../Peshitta/" title="Syriac Old Testament" class="md-nav__link">
-      Syriac Old Testament
+    <a href="../Peshitta/" title="Peshitta" class="md-nav__link">
+      Peshitta
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Syrnt/" title="Syriac New Testament" class="md-nav__link">
+      Syriac New Testament
     </a>
   </li>
 
@@ -1119,11 +1131,12 @@
 <details class="note"><summary>Tutorial</summary><p>The tutorials for the
 <a href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">Hebrew Bible</a>,
 <a href="http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb">Peshitta</a>,
+<a href="http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb">Syriac New Testament</a>,
 and the
 <a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">Uruk Cuneiform Tablets</a>
 put the Text-Fabric API on show for vastly different corpora.</p></details><details class="note" open="open"><summary>Generic API</summary><p>This is the API of Text-Fabric in general.
 Text-Fabric has no baked in knowledge of particular corpora.</p><p>However, Text-Fabric comes with several additions that make working
-with specific corpora easier.</p><ul><li>Hebrew Bible: <a href="../Bhsa">BHSA</a></li><li>Peshitta: <a href="../Peshitta">Peshitta</a></li><li>Proto-cuneiform tablets from Uruk: <a href="../Cunei">Cunei</a></li></ul></details><h2 id="loading">Loading<a class="headerlink" href="#loading" title="Permanent link">&para;</a></h2>
+with specific corpora easier.</p><ul><li>Hebrew Bible: <a href="../Bhsa">BHSA</a></li><li>Peshitta: <a href="../Peshitta">Peshitta</a></li><li>Syriac New Testament: <a href="../Syrnt">SyrNT</a></li><li>Proto-cuneiform tablets from Uruk: <a href="../Cunei">Cunei</a></li></ul></details><h2 id="loading">Loading<a class="headerlink" href="#loading" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>TF=Fabric()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.fabric</span> <span class="kn">import</span> <span class="n">Fabric</span>
 <span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">directories</span><span class="p">,</span> <span class="n">modules</span><span class="o">=</span><span class="n">subdirectories</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
@@ -1581,6 +1594,7 @@ In both cases you can also use the other constructs, such as</p><table class="co
 <p>To get a more specific introduction to search, consult the search tutorials for
 <a href="https://github.com/ETCBC/bhsa/blob/master/tutorial/search.ipynb">Hebrew</a>,
 <a href="https://github.com/ETCBC/peshitta/blob/master/tutorial/search.ipynb">Peshitta</a>,
+<a href="https://github.com/ETCBC/syrnt/blob/master/tutorial/search.ipynb">SyrNT</a>,
 and
 <a href="https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb">Cuneiform</a>.</p><p>Finally an example with quantifiers. We want all clauses where Pred-phrases
 consist of verbs only:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -1971,7 +1985,8 @@ and what text is associated with the results.</p></details><details class="examp
 <p>is a handy way to get an impression of the first bunch of results.</p></details><details class="hint"><summary>Universal</summary><p>This function works on all tuples of nodes, whether they have been
 obtained by search or not.</p></details><details class="hint"><summary>More ways of showing results</summary><p>If you work in one of the corpora for which the TF-API has been extended,
 you will be provided with more powerful methods <code>show()</code> and <code>table()</code>
-to display your results. See <a href="../Cunei">Cunei</a>, <a href="../Bhsa">Bhsa</a> and <a href="../Peshitta">Peshitta</a>.</p></details></details><h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
+to display your results.
+See <a href="../Cunei">Cunei</a>, <a href="../Bhsa">Bhsa</a>, <a href="../Peshitta">Peshitta</a> and <a href="../Syrnt">Syrnt</a>.</p></details></details><h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <details class="info" open="open"><summary>Features</summary><p>TF can give you information of all features it has encountered.</p></details><details class="abstract"><summary>TF.featureSets</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">featureSets</span>
 </pre></div>
 </td></tr></table>

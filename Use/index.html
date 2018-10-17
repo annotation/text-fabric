@@ -584,8 +584,20 @@
 
 
   <li class="md-nav__item">
-    <a href="../Api/Peshitta/" title="Syriac Old Testament" class="md-nav__link">
-      Syriac Old Testament
+    <a href="../Api/Peshitta/" title="Peshitta" class="md-nav__link">
+      Peshitta
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Api/Syrnt/" title="Syriac New Testament" class="md-nav__link">
+      Syriac New Testament
     </a>
   </li>
 
@@ -794,11 +806,15 @@ Here is how to start up text-fabric.</p>
 <details class="hint"><summary>On Windows?</summary><p>You can click the Start Menu, and type
 <code>text-fabric bhsa</code> or
 <code>text-fabric peshitta</code> or
+<code>text-fabric syrnt</code> or
 <code>text-fabric cunei</code>
 in the search box, and then Enter.</p></details><details class="hint"><summary>On Linux or Macos?</summary><p>You can open a terminal (command prompt), and just say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric bhsa
 </pre></div>
 </td></tr></table>
 <p>or </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric peshitta
+</pre></div>
+</td></tr></table>
+<p>or </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric syrnt
 </pre></div>
 </td></tr></table>
 <p>or </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric cunei
@@ -816,7 +832,10 @@ published github release.</p></details><p><img alt="bhsa" src="../images/bhsa-ap
 <p><img alt="cunei" src="../images/cunei-app.png" /></p>
 <details class="hint"><summary>Fetching corpora</summary><p>The Text-Fabric browser fetches the corpora it needs from GitHub automatically.
 The TF data is fairly compact
-(25 MB for the Hebrew Bible, 2,1 MB for the Peshitta, 1.6 MB for the Cunei corpus).</p><details class="caution"><summary>Size of data</summary><p>There might be sizable additional data (550 MB images for the Cunei corpus).
+(25 MB for the Hebrew Bible,
+2,1 MB for the Peshitta,
+2,1 MB for the Syriac New Testament,
+1.6 MB for the Cunei corpus).</p><details class="caution"><summary>Size of data</summary><p>There might be sizable additional data (550 MB images for the Cunei corpus).
 In that case, take care to have a good internet connection when you use the
 Text-Fabric browser for the first time.</p></details><p><a href="../Corpora">More about corpora</a></p></details><details class="hint"><summary>Saving your session</summary><p>Your session will be saved in a file with extension <code>.tfjob</code> in the directory
 from where you have issued the <code>text-fabric</code> command.
@@ -877,6 +896,11 @@ jupyter notebook
 <span class="n">P</span> <span class="o">=</span> <span class="n">Peshitta</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
+<p><strong>SyrNT</strong>:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.syrnt</span> <span class="kn">import</span> <span class="n">Syrnt</span>
+<span class="n">SY</span> <span class="o">=</span> <span class="n">Syrnt</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+</pre></div>
+</td></tr></table>
 <p><strong>Cunei</strong>:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.cunei</span> <span class="kn">import</span> <span class="n">Cunei</span>
 <span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
@@ -885,11 +909,13 @@ jupyter notebook
 <details class="note"><summary>data</summary><p>With these incantations, Text-Fabric will download the data automatically
 and store it in a directory <code>text-fabric-data</code> directly in your home
 directory.</p><p>If you have data in other places, you can also use that by means of
-extra arguments supplied to <code>Bhsa()</code>, <code>Peshitta()</code> and <code>Cunei()</code>.</p></details></details><details class="abstract"><summary>Using Hebrew data</summary><p>To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
+extra arguments supplied to <code>Bhsa()</code>, <code>Peshitta()</code>, <code>Syrnt()</code> and <code>Cunei()</code>.</p></details></details><details class="abstract"><summary>Using Hebrew data</summary><p>To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
 <a href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">start</a>.</p><p>Or go straight to the
 <a href="../Api/Bhsa">bhsa-api-docs</a>.</p></details><details class="abstract"><summary>Using Syriac data</summary><p>To get started with the Peshitta corpus, use its tutorial in the Peshitta repo:
 <a href="http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb">start</a>.</p><p>Or go straight to the
-<a href="../Api/Bhsa">bhsa-api-docs</a>.</p></details><details class="abstract"><summary>Using Cuneiform data</summary><p>To get started with the Uruk corpus, use its tutorial in the Nino-cunei repo:
+<a href="../Api/Peshitta">peshitta-api-docs</a>.</p><p>To get started with the Syriac New Testament corpus, use its tutorial in the Syrnt repo:
+<a href="http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb">start</a>.</p><p>Or go straight to the
+<a href="../Api/Syrnt">syrnt-api-docs</a>.</p></details><details class="abstract"><summary>Using Cuneiform data</summary><p>To get started with the Uruk corpus, use its tutorial in the Nino-cunei repo:
 <a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">start</a>.</p><p>Or go straight to the
 <a href="../Api/Cunei">cunei-api-docs</a>.</p></details>
                 
