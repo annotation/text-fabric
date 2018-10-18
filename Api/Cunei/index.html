@@ -928,19 +928,19 @@ transcriptions of them and <a href="https://cdli.ucla.edu">CDLI</a> photos and l
 <h2 id="minimal-incantation">Minimal incantation<a class="headerlink" href="#minimal-incantation" title="Permanent link">&para;</a></h2>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Cunei</span>
-<span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
 
 <details class="abstract"><summary>Explanation</summary><p>The first line makes the Cunei API code, which is an app on top of Text-Fabric,
-accessible to your notebook.</p><p>The second line starts up the Cunei API and gives it the name <code>CN</code>. 
+accessible to your notebook.</p><p>The second line starts up the Cunei API and gives it the name <code>A</code>. 
 During start-up the following happens:</p><p>(1) the Cunei data is downloaded to your <code>~/text-fabric-data</code> directory, if not already present there;</p><p>(2) if your data has been freshly downloaded, a series of optimizations are executed;</p><p>(3) most optimized features of the Cunei dataset are loaded;</p><p>(4) <code>hoist=globals()</code> makes the API elements directly available:
 you can refer to <code>F</code>, <code>L</code>, <code>T</code>, etc. directly,
-instead of the more verbose <code>CN.api.F</code>, <code>CN.api.L</code>, <code>CN.api.T</code> etc.</p></details><p>If you are content with the minimal incantation, you can skip <strong>Set up</strong> and <strong>Initialisation</strong>.</p>
+instead of the more verbose <code>A.api.F</code>, <code>A.api.L</code>, <code>A.api.T</code> etc.</p></details><p>If you are content with the minimal incantation, you can skip <strong>Set up</strong> and <strong>Initialisation</strong>.</p>
 <h2 id="set-up">Set up<a class="headerlink" href="#set-up" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>from tf.extra.cunei import Cunei</summary><details class="explanation"><summary>import Cunei</summary><p>The <code>Cunei</code> API is distributed with Text-Fabric.
 You have to import it into your program.</p></details></details><h2 id="initialisation">Initialisation<a class="headerlink" href="#initialisation" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>Cunei()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+<details class="abstract"><summary>Cunei()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="n">A</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Text-Fabric will be started for you and load all features as explained above in the minimal incantation..
@@ -950,7 +950,7 @@ photos and lineart images it sees.</p></details><details class="info"><summary>n
 of your current notebook (without the <code>.ipynb</code> extension).
 The Cunei API will use this to generate a link to your notebook
 on GitHub and NBViewer.</p></details></details><h2 id="linking">Linking<a class="headerlink" href="#linking" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>CN.cdli()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">cdli</span><span class="p">(</span><span class="n">tablet</span><span class="p">,</span> <span class="n">linkText</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<details class="abstract"><summary>A.cdli()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">cdli</span><span class="p">(</span><span class="n">tablet</span><span class="p">,</span> <span class="n">linkText</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Produces a link to a tablet page on CDLI,
@@ -959,7 +959,7 @@ or a P-number of a tablet.</p></details><details class="info"><summary>linkText<
 If you do not provide any,
 the P-number of the tablet will be used.</p></details><details class="info"><summary>asString</summary><p>Instead of displaying the result directly in the output of your
 code cell in a notebook, you can also deliver the HTML as string,
-just say <code>asString=True</code>.</p></details></details><details class="abstract"><summary>CN.tabletLink()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">tabletLink</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+just say <code>asString=True</code>.</p></details></details><details class="abstract"><summary>A.tabletLink()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">tabletLink</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Produces a link to CDLI</p></details><details class="info"><summary>node</summary><p><code>node</code> can be an arbitrary node. The link targets the tablet that
@@ -967,12 +967,12 @@ contains the material contained by the node.</p></details><details class="info">
 If you do not provide a link text,
 the P-number of the tablet will be chosen.</p></details><details class="info"><summary>asString</summary><p>Instead of displaying the result directly in the output of your
 code cell in a notebook, you can also deliver the HTML as string,
-just say <code>asString=True</code>.</p></details><details class="example"><summary>Sign 10000 on CDLI</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">tabletLink</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
+just say <code>asString=True</code>.</p></details><details class="example"><summary>Sign 10000 on CDLI</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">tabletLink</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 </details></details><h2 id="plain-display">Plain display<a class="headerlink" href="#plain-display" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Straightforward display of things</summary><p>There are functions to display nodes, tuples of nodes, and iterables of tuples
-of nodes in a simple way, as rows and as a table.</p></details><details class="abstract"><summary>CN.plain()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">plain</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">lineart</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">lineNumbers</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+of nodes in a simple way, as rows and as a table.</p></details><details class="abstract"><summary>A.plain()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">plain</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">lineart</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">lineNumbers</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a simple way.</p></details><details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p></details><details class="info"><summary>linked</summary><p><code>linked</code> indicates whether the result should be a link to CDLI
@@ -980,12 +980,12 @@ to the tablet on which the node occurs.</p></details><details class="info"><summ
 (only relevant for signs and quads)</p></details><details class="info"><summary>lineNumbers</summary><p><code>lineNumbers</code> indicates whether corresponding line numbers in the
 ATF source should be displayed.</p></details><details class="info"><summary>asString</summary><p>Instead of displaying the result directly in the output of your
 code cell in a notebook, you can also deliver the markdown as string,
-just say <code>asString=True</code>.</p></details></details><details class="abstract"><summary>CN.plainTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+just say <code>asString=True</code>.</p></details></details><details class="abstract"><summary>A.plainTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
 5
-6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">plainTuple</span><span class="p">(</span>
+6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">plainTuple</span><span class="p">(</span>
   <span class="n">nodes</span><span class="p">,</span> <span class="n">seqNumber</span><span class="p">,</span>
   <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
   <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">lineart</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">lineNumbers</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
@@ -1000,7 +1000,7 @@ This prepares the way for displaying query results, which come as
 a sequence of tuples of nodes.</p></details><details class="info"><summary>linked</summary><p><code>linked=1</code> the column number where the cell contents is
 linked to
 the CDLI page of the containing tablet;
-(the first data column is column 1)</p></details><details class="info"><summary>withNodes, lineart, lineNumbers, asString</summary><p>Same as in <code>CN.plain()</code>.</p></details></details><details class="abstract"><summary>CN.table()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+(the first data column is column 1)</p></details><details class="info"><summary>withNodes, lineart, lineNumbers, asString</summary><p>Same as in <code>A.plain()</code>.</p></details></details><details class="abstract"><summary>A.table()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
@@ -1008,7 +1008,7 @@ the CDLI page of the containing tablet;
 6
 7
 8
-9</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">table</span><span class="p">(</span>
+9</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">table</span><span class="p">(</span>
   <span class="n">results</span><span class="p">,</span>
   <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
   <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -1025,12 +1025,12 @@ Every row is prepended with the sequence number in the iterable.</p></details><d
 The results of a search qualify, but it works
 no matter which process has produced the tuples.</p></details><details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
 Default 1.</p></details><details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
-Default the length of the iterable.</p></details><details class="info"><summary>linked, withNodes, lineart, lineNumbers, asString</summary><p>Same as in <code>CN.plainTuple()</code>.</p></details></details><h2 id="pretty-display">Pretty display<a class="headerlink" href="#pretty-display" title="Permanent link">&para;</a></h2>
+Default the length of the iterable.</p></details><details class="info"><summary>linked, withNodes, lineart, lineNumbers, asString</summary><p>Same as in <code>A.plainTuple()</code>.</p></details></details><h2 id="pretty-display">Pretty display<a class="headerlink" href="#pretty-display" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Graphical display of things</summary><p>There are functions to display nodes, tuples of nodes, and iterables of tuples
-of nodes in a graphical way.</p></details><details class="abstract"><summary>CN.pretty()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">pretty</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">highlights</span><span class="o">=</span><span class="p">{})</span>
+of nodes in a graphical way.</p></details><details class="abstract"><summary>A.pretty()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">pretty</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">highlights</span><span class="o">=</span><span class="p">{})</span>
 </pre></div>
 </td></tr></table>
-<details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a graphical way.</p></details><details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p></details><details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p></details><details class="info"><summary>lineart, lineNumbers</summary><p>Same as in <code>CN.plain()</code>.</p></details><details class="info"><summary>suppress</summary><p><code>suppress=set()</code> is a set of feature names that should NOT be displayed.
+<details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a graphical way.</p></details><details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p></details><details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p></details><details class="info"><summary>lineart, lineNumbers</summary><p>Same as in <code>A.plain()</code>.</p></details><details class="info"><summary>suppress</summary><p><code>suppress=set()</code> is a set of feature names that should NOT be displayed.
 By default, quite a number of features is displayed for a node.
 If you find they clutter the display, you can turn them off
 selectively.</p></details><details class="explanation"><summary>Highlighting</summary><p>When nodes such as tablets and cases are displayed by <code>pretty()</code>,
@@ -1039,7 +1039,7 @@ those parts.</p></details><details class="info"><summary>highlights</summary><p>
 Only nodes that are involved in the display will be highlighted.</p><p>If <code>highlights</code> is a set, its nodes will be highlighted with a default color (yellow).</p><p>If it is a dictionary, it should map nodes to colors.
 Any color that is a valid 
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>
-qualifies.</p><p>If you map a node to the empty string, it will get the default highlight color.</p><details class="hint"><summary>color names</summary><p>The link above points to a series of handy color names and their previews.</p></details></details></details><details class="abstract"><summary>CN.prettyTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+qualifies.</p><p>If you map a node to the empty string, it will get the default highlight color.</p><details class="hint"><summary>color names</summary><p>The link above points to a series of handy color names and their previews.</p></details></details></details><details class="abstract"><summary>A.prettyTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
@@ -1047,7 +1047,7 @@ qualifies.</p><p>If you map a node to the empty string, it will get the default 
 6
 7
 8
-9</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">prettyTuple</span><span class="p">(</span>
+9</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">prettyTuple</span><span class="p">(</span>
   <span class="n">nodes</span><span class="p">,</span> <span class="n">seqNumber</span><span class="p">,</span>
   <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
   <span class="n">lineart</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
@@ -1062,15 +1062,15 @@ qualifies.</p><p>If you map a node to the empty string, it will get the default 
 with customizable highlighting of nodes.</p></details><details class="explanation"><summary>By tablet</summary><p>We examine all nodes in the tuple.
 We collect and show all tablets in which they
 occur and highlight the material corresponding to the all nodes in the tuple.
-The highlighting can be tweaked by the optional <code>colorMap</code> parameter.</p></details><details class="info"><summary>nodes, seqNumber, withNodes, lineart, lineNumbers</summary><p>Same as in <code>CN.plainTuple()</code>.</p></details><details class="info"><summary>suppress</summary><p>Same as in <code>CN.pretty()</code>.</p></details><details class="info"><summary>colorMap</summary><p>The nodes of the tuple will be highlighted.
+The highlighting can be tweaked by the optional <code>colorMap</code> parameter.</p></details><details class="info"><summary>nodes, seqNumber, withNodes, lineart, lineNumbers</summary><p>Same as in <code>A.plainTuple()</code>.</p></details><details class="info"><summary>suppress</summary><p>Same as in <code>A.pretty()</code>.</p></details><details class="info"><summary>colorMap</summary><p>The nodes of the tuple will be highlighted.
 If <code>colorMap</code> is <code>None</code> or missing, all nodes will be highlighted with
 the default highlight color, which is yellow.</p><p>But you can assign different colors to the members of the tuple:
 <code>colorMap</code> must be a dictionary that maps the positions in a tuple 
 to a color:</p><ul><li>If a position is not mapped, it will not be highlighted.</li><li>If it is mapped to the empty string, it gets the default highlight color.</li><li>Otherwise, it should be mapped to a string that is a valid
-    <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>.</li></ul><details class="hint"><summary>color names</summary><p>The link above points to a series of handy color names and their previews.</p></details></details><details class="info"><summary>highlights</summary><p>Same as in <code>B.pretty()</code>.</p></details><details class="note" open="open"><summary>highlights takes precedence over colorMap</summary><p>If both <code>highlights</code> and <code>colorMap</code> are given, <code>colorMap</code> is ignored.</p><p>If you need to micro-manage, <code>highlights</code> is your thing.
+    <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>.</li></ul><details class="hint"><summary>color names</summary><p>The link above points to a series of handy color names and their previews.</p></details></details><details class="info"><summary>highlights</summary><p>Same as in <code>A.pretty()</code>.</p></details><details class="note" open="open"><summary>highlights takes precedence over colorMap</summary><p>If both <code>highlights</code> and <code>colorMap</code> are given, <code>colorMap</code> is ignored.</p><p>If you need to micro-manage, <code>highlights</code> is your thing.
 Whenever possible, use <code>colorMap</code>.  </p></details><details class="note"><summary>one big highlights dictionary</summary><p>It is OK to first compose a big highlights dictionary for many tuples of nodes,
 and then run <code>prettyTuple()</code> for many different tuples with the same <code>highlights</code>.
-It does not harm performance if <code>highlights</code> maps lots of nodes outside the tuple as well.</p></details></details><details class="abstract"><summary>CN.show()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+It does not harm performance if <code>highlights</code> maps lots of nodes outside the tuple as well.</p></details></details><details class="abstract"><summary>A.show()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
  4
@@ -1080,7 +1080,7 @@ It does not harm performance if <code>highlights</code> maps lots of nodes outsi
  8
  9
 10
-11</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">show</span><span class="p">(</span>
+11</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">show</span><span class="p">(</span>
   <span class="n">results</span><span class="p">,</span>
   <span class="n">condensed</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
   <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
@@ -1094,7 +1094,7 @@ It does not harm performance if <code>highlights</code> maps lots of nodes outsi
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Displays an iterable of tuples of nodes.
-The elements of the list are displayed by <code>CN.prettyTuple()</code>.</p></details><details class="info"><summary>results</summary><p><code>results</code> an iterable of tuples of nodes.
+The elements of the list are displayed by <code>A.prettyTuple()</code>.</p></details><details class="info"><summary>results</summary><p><code>results</code> an iterable of tuples of nodes.
 The results of a search qualify, but it works
 no matter which process has produced the tuples.</p></details><details class="info"><summary>condensed</summary><p><code>condensed</code> indicates one of two modes of displaying the result list:</p><ul><li><code>True</code>: instead of showing all results one by one,
     we show all tablets with all results in it highlighted.
@@ -1102,13 +1102,13 @@ no matter which process has produced the tuples.</p></details><details class="in
     but it is easier to oversee where the results are.</li><li><code>False</code>: make a separate display for each result tuple.
     This gives the best account of the exact result set.</li></ul></details><details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
 Default 1.</p></details><details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
-Default the length of the iterable.</p></details><details class="info"><summary>withNodes, lineart, lineNumbers, suppress, colorMap, highlights</summary><p>Same as in <code>B.prettyTuple()</code>.</p></details></details><h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>CN.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">shallow</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+Default the length of the iterable.</p></details><details class="info"><summary>withNodes, lineart, lineNumbers, suppress, colorMap, highlights</summary><p>Same as in <code>A.prettyTuple()</code>.</p></details></details><h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>A.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">shallow</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Searches in the same way as the generic Text-Fabric <code>S.search()</code>.
 But whereas the <code>S</code> version returns a generator which yields the results
-one by one, the <code>CN</code> version collects all results and sorts them.
+one by one, the <code>A</code> version collects all results and sorts them.
 It then reports the number of results.</p></details><details class="info"><summary>query</summary><p><code>query</code> is the search template that has to be searched for.</p></details><details class="info"><summary>silent</summary><p><code>silent</code>: if <code>True</code> it will suppress the reporting of the number of results.</p></details><details class="info"><summary>shallow</summary><p>If <code>True</code> or <code>1</code>, the result is a set of things that match the top-level element
 of the <code>query</code>.</p><p>If <code>2</code> or a bigger number <em>n</em>, return the set of truncated result tuples: only
 the first <em>n</em> members of each tuple is retained.</p><p>If <code>False</code> or <code>0</code>, a sorted list of all result tuples will be returned.</p></details><details class="info"><summary>sets</summary><p>If not <code>None</code>, it should be a dictionary of sets, keyed by a names.
@@ -1122,15 +1122,15 @@ you can pass <code>sets=dict(scase=specialCases)</code>, and then in your query 
 <details class="explanation"><summary>Generate ATF</summary><p>Signs and quads and clusters can be represented by an ascii string,
 in the so-called Ascii Text Format,
 <a href="http://oracc.museum.upenn.edu/doc/help/editinginatf/primer/inlinetutorial/index.html">ATF</a>.</p><p>We provide a bunch of function that, given a node, generate the appropriate ATF
-representation.</p></details><details class="abstract"><summary>CN.atfFromSign()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">atfFromSign</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+representation.</p></details><details class="abstract"><summary>A.atfFromSign()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">atfFromSign</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Reproduces the ATF representation of a sign.</p></details><details class="info"><summary>node</summary><p><code>node</code> must have node type <code>sign</code>.</p></details><details class="info"><summary>flags</summary><p><code>flags</code> whether the <em>flags</em> associated with the sign
-will be included in the ATF.</p></details></details><details class="abstract"><summary>CN.atfFromQuad()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">atfFromQuad</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+will be included in the ATF.</p></details></details><details class="abstract"><summary>A.atfFromQuad()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">atfFromQuad</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Reproduces the ATF representation of a quad.</p></details><details class="info"><summary>node</summary><p><code>node</code> must have node type <code>quad</code>.</p></details><details class="info"><summary>flags</summary><p><code>flags</code> whether the <em>flags</em> associated with the quad
-will be included in the ATF.</p></details></details><details class="abstract"><summary>CN.atfFromOuterQuad()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">atfFromOuterQuad</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+will be included in the ATF.</p></details></details><details class="abstract"><summary>A.atfFromOuterQuad()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">atfFromOuterQuad</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Reproduces the ATF representation of a quad or sign.</p></details><details class="info"><summary>node</summary><p><code>node</code> must have node type <code>quad</code> or <code>sign</code>.</p></details><details class="info"><summary>flags</summary><p><code>flags</code> whether the <em>flags</em> associated with the quad
@@ -1138,18 +1138,18 @@ will be included in the ATF.</p></details><details class="explanation"><summary>
 split it on white space, and you forget the brackets that cluster quads and
 signs, then you get a sequence of outer quads and signs.</p><p>If you need to get the ATF representation for these items, this function does
 conveniently produce them. You do not have to worry yourself about the sign/quad
-distinction here.</p></details></details><details class="abstract"><summary>CN.atfFromCluster()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">atfFromCluster</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+distinction here.</p></details></details><details class="abstract"><summary>A.atfFromCluster()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">atfFromCluster</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Reproduces the ATF representation of a cluster.</p></details><details class="info"><summary>node</summary><p><code>node</code> must have node type <code>quad</code>.</p></details><details class="explanation"><summary>clusters</summary><p>Clusters are bracketings of
 quads that indicate proper names, uncertainty, or supplied material. In ATF they
 look like <code>( )a</code> or <code>[ ]</code> or <code>&lt; &gt;</code></p></details><details class="note"><summary>Sub-clusters</summary><p>Sub-clusters will also be
 represented. Signs belonging to multiple nested clusters will only be
-represented once.</p></details></details><details class="abstract"><summary>CN.getSource()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">getSource</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">nodeType</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lineNumbers</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+represented once.</p></details></details><details class="abstract"><summary>A.getSource()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">getSource</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">nodeType</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">lineNumbers</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Delivers the transcription source of nodes that correspond to the
-ATF source line level.</p><p>This in contrast with the <code>CN.atfFromXxx()</code> functions that
+ATF source line level.</p><p>This in contrast with the <code>A.atfFromXxx()</code> functions that
 work for nodes that correspond to parts of the ATF source lines.</p></details><details class="info"><summary>node</summary><p><code>node</code> must have a type in <code>tablet</code>, <code>face</code>, <code>column</code>,
 <code>comment</code>, <code>line</code>, <code>case</code>.</p></details><details class="info"><summary>nodeType</summary><p>If <code>nodeType</code> is passed, only source lines of this type are returned.</p></details><details class="info"><summary>lineNumbers</summary><p><code>lineNumbers</code>: if <code>True</code>, add line numbers to the result,
 these numbers say where the source line occurs in the source file.</p></details><details class="explanation"><summary>TF from ATF conversion</summary><p>The conversion of ATF to Text-Fabric has saved the original source lines and
@@ -1160,7 +1160,7 @@ The Uruk corpus uses them for <em>tablets</em>, <em>columns</em> and <em>lines</
 We need to mimick some functions of the Text-Fabric <code>T</code> Api for sections,
 so that we can retrieve cases more easily.</p></details><details class="caution"><summary>Consider search</summary><p>Text-Fabric Search is a generic and powerful mechanism for information retrieval.
 In most cases it is easier to extract nodes by search than by hand-written
-code using the functions here.</p></details><details class="abstract"><summary>CN.nodeFromCase()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">nodeFromCase</span><span class="p">((</span><span class="n">P</span><span class="o">-</span><span class="n">number</span><span class="p">,</span> <span class="n">face</span><span class="p">:</span><span class="n">columnNumber</span><span class="p">,</span> <span class="n">hLineNumber</span><span class="p">))</span>
+code using the functions here.</p></details><details class="abstract"><summary>A.nodeFromCase()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">nodeFromCase</span><span class="p">((</span><span class="n">P</span><span class="o">-</span><span class="n">number</span><span class="p">,</span> <span class="n">face</span><span class="p">:</span><span class="n">columnNumber</span><span class="p">,</span> <span class="n">hLineNumber</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Gives you a node, if you specify a terminal case, i.e. a
@@ -1168,7 +1168,7 @@ numbered transcription line.</p></details><details class="explanation"><summary>
 <code>T.nodeFromSection()</code> of Text-Fabric.</p></details><details class="info"><summary>case specification</summary><p>This function takes a single argument which must be
 a tuple
 (<em>tabletNumber</em>, <em>face</em>:<em>columnNumber</em>, <em>hierarchical-line-number</em>).</p></details><details class="note"><summary>dots</summary><p>The hierarchical number may contain the original <code>.</code> that they
-often have in the transcriptions, but you may also leave them out.</p></details><details class="caution"><summary>Not found</summary><p>If no such node exists, you get <code>None</code> back.</p></details></details><details class="abstract"><summary>CN.caseFromNode()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">caseFromNode</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+often have in the transcriptions, but you may also leave them out.</p></details><details class="caution"><summary>Not found</summary><p>If no such node exists, you get <code>None</code> back.</p></details></details><details class="abstract"><summary>A.caseFromNode()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">caseFromNode</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Gives you a terminal case specification,
@@ -1179,13 +1179,13 @@ The hierarchical line number will not contain dots.</p></details><details class=
 (these are the cases that have a full hierarchical
 number; these cases correspond to the individual numbered lines in the
 transcription sources).</p></details><details class="hint"><summary>other nodes</summary><p>If <code>node</code> corresponds to something inside a transcription line,
-the node of the terminal case or line in which it is contained will be used.</p></details></details><details class="abstract"><summary>CN.lineFromNode()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">lineFromNode</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+the node of the terminal case or line in which it is contained will be used.</p></details></details><details class="abstract"><summary>A.lineFromNode()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">lineFromNode</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>If called on a node corresponding to something inside a transcription line, it
 will navigate to up to the terminal case or line in which it is contained, and
 return that node.</p></details><details class="info"><summary>node</summary><p><code>node</code> must correspond to something inside a transcription line:
-<code>sign</code>, <code>quad</code>, <code>cluster</code>.</p></details></details><details class="abstract"><summary>CN.casesByLevel()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">casesByLevel</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">terminal</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<code>sign</code>, <code>quad</code>, <code>cluster</code>.</p></details></details><details class="abstract"><summary>A.casesByLevel()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">casesByLevel</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">terminal</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Grabs all (sub)cases of a specified level. You can choose to filter the result
@@ -1196,16 +1196,16 @@ subcases anymore. Such cases correspond to individual lines in the ATF.</p></det
 <code>2</code> is subcases,
 <code>3</code> is subsubcases, and so on.</p></details><details class="info"><summary>terminal</summary><p><code>terminal</code>: if <code>True</code>, only lines and cases that have the feature <code>terminal</code>
 are delivered.
-Otherwise, all lines/cases of that level will be delivered.</p></details></details><details class="abstract"><summary>CN.getOuterQuads()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">getOuterQuads</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+Otherwise, all lines/cases of that level will be delivered.</p></details></details><details class="abstract"><summary>A.getOuterQuads()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">getOuterQuads</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Collects the outer quads and isolated signs under a node.</p></details><details class="info"><summary>node</summary><p><code>node</code> is typically a tablet, face, column, line, or case.
 This is the container of the outer quads.</p></details><details class="explanation"><summary>Outer quads</summary><p>Outer quads and isolated signs is what you get
 if you split line material by white space and
 remove cluster brackets.</p></details></details><h2 id="images">Images<a class="headerlink" href="#images" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>CN.photo() and CN.lineart()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">photo</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">asLink</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withCaption</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
-<span class="n">CN</span><span class="o">.</span><span class="n">lineart</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">asLink</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withCaption</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+<details class="abstract"><summary>A.photo() and A.lineart()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">photo</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">asLink</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withCaption</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+<span class="n">A</span><span class="o">.</span><span class="n">lineart</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">asLink</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withCaption</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Fetches photos or linearts for tablets, signs or quads, and returns it in a way
@@ -1243,7 +1243,7 @@ to that of the rectangle.</p><p>The way the effect of the <code>!</code> is achi
 be copied to a sister directory of the notebook. The name of this directory is
 <code>cdli-imagery</code>. It will be created on-the-fly when needed. Copying will only be
 done if needed. The names of the images will be changed, to prevent problems
-with systems that cannot handle <code>|</code> and <code>+</code> characters in file names well.</p></details></details><details class="abstract"><summary>CN.imagery()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">CN</span><span class="o">.</span><span class="n">imagery</span><span class="p">(</span><span class="n">objectType</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
+with systems that cannot handle <code>|</code> and <code>+</code> characters in file names well.</p></details></details><details class="abstract"><summary>A.imagery()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">imagery</span><span class="p">(</span><span class="n">objectType</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details open="open"><summary>Description</summary><p>Provides the sets of locally available images by object type.
