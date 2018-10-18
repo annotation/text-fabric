@@ -12,7 +12,13 @@
 
 ## Queued for next release
 
-The older, rectangular logo makes place for the more crisp, circular one 
+## 6.2.2
+
+2018-10-18
+
+* Added ETCBC/WIT transcriptions to the SyrNT data source. Now both Peshitta
+  and Syriac New Testament have ETCBC transcriptions.
+* The older, rectangular logo makes place for the more crisp, circular one 
 
 ## 6.2.1
 

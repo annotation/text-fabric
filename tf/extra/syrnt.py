@@ -503,7 +503,7 @@ This notebook online:
             self,
             n,
             suppress,
-            ('word_ascii', 'lexeme_ascii', 'sp', 'vs', 'vt'),
+            ('word_etcbc', 'lexeme_etcbc', 'sp', 'vs', 'vt'),
         )
       elif nType == 'lex':
         occs = L.d(n, otype='word')
@@ -515,7 +515,7 @@ This notebook online:
             self,
             n,
             suppress,
-            ('lexeme_ascii',),
+            ('lexeme_etcbc',),
         )
       html.append(heading)
       html.append(featurePart)

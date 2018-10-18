@@ -101,8 +101,9 @@ def getDataCustom(source, release, dataUrl, dest, version, withPaths=False):
   cwd = os.getcwd()
   try:
     z = ZipFile(zf)
-    if not os.path.exists(versionDest):
-      os.makedirs(versionDest, exist_ok=True)
+    if os.path.exists(versionDest):
+      rmtree(versionDest)
+    os.makedirs(versionDest, exist_ok=True)
     os.chdir(versionDest)
     if withPaths:
       z.extractall()
