@@ -133,9 +133,8 @@ def makeDist(task):
     rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)
     run(['python3', 'setup.py', 'sdist'])
-    if task != 'r':
-      run(['twine', 'upload', distPath])
-      run('./purge.sh', shell=True)
+    run(['twine', 'upload', distPath])
+    run('./purge.sh', shell=True)
 
 
 def commit(task, msg):
