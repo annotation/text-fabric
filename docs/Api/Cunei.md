@@ -18,14 +18,14 @@ See also
 
 ```python
 from tf.extra.bhsa import Cunei
-CN = Cunei(hoist=globals())
+A = Cunei(hoist=globals())
 ```
 
 ??? abstract "Explanation"
     The first line makes the Cunei API code, which is an app on top of Text-Fabric,
     accessible to your notebook.
 
-    The second line starts up the Cunei API and gives it the name `CN`. 
+    The second line starts up the Cunei API and gives it the name `A`. 
     During start-up the following happens:
 
     (1) the Cunei data is downloaded to your `~/text-fabric-data` directory, if not already present there;
@@ -36,7 +36,7 @@ CN = Cunei(hoist=globals())
 
     (4) `hoist=globals()` makes the API elements directly available:
     you can refer to `F`, `L`, `T`, etc. directly,
-    instead of the more verbose `CN.api.F`, `CN.api.L`, `CN.api.T` etc.
+    instead of the more verbose `A.api.F`, `A.api.L`, `A.api.T` etc.
 
 If you are content with the minimal incantation, you can skip **Set up** and **Initialisation**.
 
@@ -51,7 +51,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
 ??? abstract "Cunei()"
     ```python
-        CN = Cunei(name=None, hoist=globals())
+        A = Cunei(name=None, hoist=globals())
     ```
 
     ???+ info "Description"
@@ -72,9 +72,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
 ## Linking
 
-??? abstract "CN.cdli()"
+??? abstract "A.cdli()"
     ```python
-    CN.cdli(tablet, linkText=None, asString=False)
+    A.cdli(tablet, linkText=None, asString=False)
     ```
 
     ???+ "Description"
@@ -95,9 +95,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         code cell in a notebook, you can also deliver the HTML as string,
         just say `asString=True`.
 
-??? abstract "CN.tabletLink()"
+??? abstract "A.tabletLink()"
     ```python
-    CN.tabletLink(node, text=None, asString=False)
+    A.tabletLink(node, text=None, asString=False)
     ```
 
     ???+ "Description"
@@ -119,7 +119,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
     ??? example "Sign 10000 on CDLI"
         ```python
-        CN.tabletLink(100000)
+        A.tabletLink(100000)
         ```
 
 ## Plain display
@@ -128,9 +128,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     There are functions to display nodes, tuples of nodes, and iterables of tuples
     of nodes in a simple way, as rows and as a table.
 
-??? abstract "CN.plain()"
+??? abstract "A.plain()"
     ```python
-    CN.plain(node, linked=True, withNodes=False, lineart=True, lineNumbers=False, asString=False)
+    A.plain(node, linked=True, withNodes=False, lineart=True, lineNumbers=False, asString=False)
     ```
 
     ???+ info "Description"
@@ -159,9 +159,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         code cell in a notebook, you can also deliver the markdown as string,
         just say `asString=True`.
 
-??? abstract "CN.plainTuple()"
+??? abstract "A.plainTuple()"
     ```python
-    CN.plainTuple(
+    A.plainTuple(
       nodes, seqNumber,
       linked=1,
       withNodes=False, lineart=True, lineNumbers=False,
@@ -189,11 +189,11 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         (the first data column is column 1)
 
     ??? info "withNodes, lineart, lineNumbers, asString"
-        Same as in `CN.plain()`.
+        Same as in `A.plain()`.
 
-??? abstract "CN.table()"
+??? abstract "A.table()"
     ```python
-    CN.table(
+    A.table(
       results,
       start=1, end=len(results),
       linked=1,
@@ -223,7 +223,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         Default the length of the iterable.
 
     ??? info "linked, withNodes, lineart, lineNumbers, asString"
-        Same as in `CN.plainTuple()`.
+        Same as in `A.plainTuple()`.
 
 ## Pretty display
 
@@ -231,9 +231,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     There are functions to display nodes, tuples of nodes, and iterables of tuples
     of nodes in a graphical way.
 
-??? abstract "CN.pretty()"
+??? abstract "A.pretty()"
     ```python
-    CN.pretty(node, withNodes=False, suppress=set(), highlights={})
+    A.pretty(node, withNodes=False, suppress=set(), highlights={})
     ```
 
     ???+ info "Description"
@@ -246,7 +246,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         `withNodes` indicates whether node numbers should be displayed.
 
     ??? info "lineart, lineNumbers"
-        Same as in `CN.plain()`.
+        Same as in `A.plain()`.
 
     ??? info "suppress"
         `suppress=set()` is a set of feature names that should NOT be displayed.
@@ -275,9 +275,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         ??? hint "color names"
             The link above points to a series of handy color names and their previews.
 
-??? abstract "CN.prettyTuple()"
+??? abstract "A.prettyTuple()"
     ```python
-    CN.prettyTuple(
+    A.prettyTuple(
       nodes, seqNumber,
       withNodes=False,
       lineart=True,
@@ -299,10 +299,10 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         The highlighting can be tweaked by the optional `colorMap` parameter.
 
     ??? info "nodes, seqNumber, withNodes, lineart, lineNumbers"
-        Same as in `CN.plainTuple()`.
+        Same as in `A.plainTuple()`.
 
     ??? info "suppress"
-        Same as in `CN.pretty()`.
+        Same as in `A.pretty()`.
 
     ??? info "colorMap"
         The nodes of the tuple will be highlighted.
@@ -322,7 +322,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
             The link above points to a series of handy color names and their previews.
 
     ??? info "highlights"
-        Same as in `B.pretty()`.
+        Same as in `A.pretty()`.
 
     ???+ note "highlights takes precedence over colorMap"
         If both `highlights` and `colorMap` are given, `colorMap` is ignored.
@@ -335,9 +335,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         and then run `prettyTuple()` for many different tuples with the same `highlights`.
         It does not harm performance if `highlights` maps lots of nodes outside the tuple as well.
 
-??? abstract "CN.show()"
+??? abstract "A.show()"
     ```python
-    CN.show(
+    A.show(
       results,
       condensed=True,
       start=1, end=len(results),
@@ -352,7 +352,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
     ???+ info "Description"
         Displays an iterable of tuples of nodes.
-        The elements of the list are displayed by `CN.prettyTuple()`.
+        The elements of the list are displayed by `A.prettyTuple()`.
 
     ??? info "results"
         `results` an iterable of tuples of nodes.
@@ -378,19 +378,19 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         Default the length of the iterable.
 
     ??? info "withNodes, lineart, lineNumbers, suppress, colorMap, highlights"
-        Same as in `B.prettyTuple()`.
+        Same as in `A.prettyTuple()`.
 
 ## Search
 
-??? abstract "CN.search()" 
+??? abstract "A.search()" 
     ```python
-    CN.search(query, silent=False, shallow=False, sets=None)
+    A.search(query, silent=False, shallow=False, sets=None)
     ```
     
     ???+ "Description"
         Searches in the same way as the generic Text-Fabric `S.search()`.
         But whereas the `S` version returns a generator which yields the results
-        one by one, the `CN` version collects all results and sorts them.
+        one by one, the `A` version collects all results and sorts them.
         It then reports the number of results.
 
     ??? info "query"
@@ -435,9 +435,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     We provide a bunch of function that, given a node, generate the appropriate ATF
     representation.
 
-??? abstract "CN.atfFromSign()"
+??? abstract "A.atfFromSign()"
     ```python
-    CN.atfFromSign(node, flags=False)
+    A.atfFromSign(node, flags=False)
     ```
 
     ???+ "Description"
@@ -450,9 +450,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         `flags` whether the *flags* associated with the sign
         will be included in the ATF.
 
-??? abstract "CN.atfFromQuad()"
+??? abstract "A.atfFromQuad()"
     ```python
-    CN.atfFromQuad(node, flags=False)
+    A.atfFromQuad(node, flags=False)
     ```
 
     ???+ "Description"
@@ -465,9 +465,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         `flags` whether the *flags* associated with the quad
         will be included in the ATF.
 
-??? abstract "CN.atfFromOuterQuad()"
+??? abstract "A.atfFromOuterQuad()"
     ```python
-    CN.atfFromOuterQuad(node, flags=False)
+    A.atfFromOuterQuad(node, flags=False)
     ```
 
     ???+ "Description"
@@ -489,9 +489,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         conveniently produce them. You do not have to worry yourself about the sign/quad
         distinction here.
 
-??? abstract "CN.atfFromCluster()"
+??? abstract "A.atfFromCluster()"
     ```python
-    CN.atfFromCluster(node, flags=False)
+    A.atfFromCluster(node, flags=False)
     ```
 
     ???+ "Description"
@@ -510,16 +510,16 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         represented. Signs belonging to multiple nested clusters will only be
         represented once.
 
-??? abstract "CN.getSource()"
+??? abstract "A.getSource()"
     ```python
-    CN.getSource(node, nodeType=None, lineNumbers=False)
+    A.getSource(node, nodeType=None, lineNumbers=False)
     ```
 
     ???+ "Description"
         Delivers the transcription source of nodes that correspond to the
         ATF source line level.
 
-        This in contrast with the `CN.atfFromXxx()` functions that
+        This in contrast with the `A.atfFromXxx()` functions that
         work for nodes that correspond to parts of the ATF source lines.
 
     ??? info "node"
@@ -553,9 +553,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     In most cases it is easier to extract nodes by search than by hand-written
     code using the functions here.
 
-??? abstract "CN.nodeFromCase()"
+??? abstract "A.nodeFromCase()"
     ```python
-    CN.nodeFromCase((P-number, face:columnNumber, hLineNumber))
+    A.nodeFromCase((P-number, face:columnNumber, hLineNumber))
     ```
 
     ???+ info "Description"
@@ -578,9 +578,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     ??? caution "Not found"
         If no such node exists, you get `None` back.
 
-??? abstract "CN.caseFromNode()"
+??? abstract "A.caseFromNode()"
     ```python
-    CN.caseFromNode(node)
+    A.caseFromNode(node)
     ```
 
     ???+ info "Description"
@@ -606,9 +606,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         If `node` corresponds to something inside a transcription line,
         the node of the terminal case or line in which it is contained will be used.
 
-??? abstract "CN.lineFromNode()"
+??? abstract "A.lineFromNode()"
     ```python
-    CN.lineFromNode(node)
+    A.lineFromNode(node)
     ```
 
     ???+ info "Description"
@@ -620,9 +620,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         `node` must correspond to something inside a transcription line:
         `sign`, `quad`, `cluster`.
 
-??? abstract "CN.casesByLevel()"
+??? abstract "A.casesByLevel()"
     ```python
-    CN.casesByLevel(k, terminal=True)
+    A.casesByLevel(k, terminal=True)
     ```
 
     ???+ info "Description"
@@ -642,9 +642,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         are delivered.
         Otherwise, all lines/cases of that level will be delivered.
 
-??? abstract "CN.getOuterQuads()"
+??? abstract "A.getOuterQuads()"
     ```python
-    CN.getOuterQuads(node)
+    A.getOuterQuads(node)
     ```
 
     ???+ "Description"
@@ -661,10 +661,10 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
 ## Images
 
-??? abstract "CN.photo() and CN.lineart()"
+??? abstract "A.photo() and A.lineart()"
     ```python
-    CN.photo(nodes, key=None, asLink=True, withCaption='bottom', **options)
-    CN.lineart(nodes, key=None, asLink=True, withCaption='bottom', **options)
+    A.photo(nodes, key=None, asLink=True, withCaption='bottom', **options)
+    A.lineart(nodes, key=None, asLink=True, withCaption='bottom', **options)
     ```
 
     ???+ info "Description"
@@ -743,9 +743,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         done if needed. The names of the images will be changed, to prevent problems
         with systems that cannot handle `|` and `+` characters in file names well.
 
-??? abstract "CN.imagery()"
+??? abstract "A.imagery()"
     ```python
-    CN.imagery(objectType, kind)
+    A.imagery(objectType, kind)
     ```
 
     ???+ "Description"

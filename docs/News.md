@@ -6,11 +6,13 @@
     When we change the API, we make sure that the tutorials shows off
     all possibilities:
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
+    [peshitta](http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb)
+    [syrnt](http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb)
     [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
 
 ## Queued for next release
 
-None
+The older, rectangular logo makes place for the more crisp, circular one 
 
 ## 6.2.1
 

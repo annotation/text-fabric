@@ -10,14 +10,14 @@ contains a number of handy functions on top of Text-Fabric and especially its
 
 ```python
 from tf.extra.bhsa import Bhsa
-B = Bhsa(hoist=globals())
+A = Bhsa(hoist=globals())
 ```
 
 ??? abstract "Explanation"
     The first line makes the Bhsa API code, which is an app on top of Text-Fabric,
     accessible to your notebook.
 
-    The second line starts up the Bhsa API and gives it the name `B`. 
+    The second line starts up the Bhsa API and gives it the name `A`. 
     During start-up the following happens:
 
     (1) the Bhsa data is downloaded to your `~/text-fabric-data` directory, if not already present there;
@@ -28,7 +28,7 @@ B = Bhsa(hoist=globals())
 
     (4) `hoist=globals()` makes the API elements directly available:
     you can refer to `F`, `L`, `T`, etc. directly,
-    instead of the more verbose `B.api.F`, `B.api.L`, `B.api.T` etc.
+    instead of the more verbose `A.api.F`, `A.api.L`, `A.api.T` etc.
 
 If you are content with the minimal incantation, you can skip **Set up** and **Initialisation**.
 
@@ -46,18 +46,18 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
 ??? abstract "Bhsa()"
     ```python
-    B = Bhsa(api=api, name=None, version=VERSION)
+    A = Bhsa(api=api, name=None, version=VERSION)
     ```
 
     ???+ info "Description"
-        Silently loads some additional features, and `B`
+        Silently loads some additional features, and `A`
         will give access to some extra functions.
 
     ??? hint "Specific BHSA version"
         The easiest way to load a specific version of the BHSA is like so:
 
         ```python
-        B = Bhsa(version='2017')
+        A = Bhsa(version='2017')
         ```
 
     ??? info "api"
@@ -92,9 +92,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
 ## Linking
 
-??? abstract "B.shbLink()"
+??? abstract "A.shbLink()"
     ```python
-    B.shbLink(node, text=None)
+    A.shbLink(node, text=None)
     ```
 
     ???+ "Description"
@@ -114,7 +114,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
     ??? example "Word 100000 on SHEBANQ"
         ```python
-        B.shbLink(100000)
+        A.shbLink(100000)
         ```
 
 ## Plain display
@@ -123,9 +123,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     There are functions to display nodes, tuples of nodes, and iterables of tuples
     of nodes in a simple way, as rows and as a table.
 
-??? abstract "B.plain()"
+??? abstract "A.plain()"
     ```python
-    B.plain(node, linked=True, withNodes=False, asString=False)
+    A.plain(node, linked=True, withNodes=False, asString=False)
     ```
 
     ???+ info "Description"
@@ -146,9 +146,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         code cell in a notebook, you can also deliver the markdown as string,
         just say `asString=True`.
 
-??? abstract "B.plainTuple()"
+??? abstract "A.plainTuple()"
     ```python
-    B.plainTuple(nodes, seqNumber, linked=1, withNodes=False, asString=False)
+    A.plainTuple(nodes, seqNumber, linked=1, withNodes=False, asString=False)
     ```
 
     ???+ info "Description"
@@ -171,11 +171,11 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         (the first data column is column 1)
 
     ??? info "withNodes, asString"
-        Same as in `B.plain()`.
+        Same as in `A.plain()`.
 
-??? abstract "B.table()"
+??? abstract "A.table()"
     ```python
-    B.table(
+    A.table(
       results,
       start=1, end=len(results),
       linked=1,
@@ -203,7 +203,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         Default the length of the iterable.
 
     ??? info "linked, withNodes, asString"
-        Same as in `B.plainTuple()`.
+        Same as in `A.plainTuple()`.
 
 ## Pretty display
 
@@ -211,9 +211,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     There are functions to display nodes, tuples of nodes, and iterables of tuples
     of nodes in a graphical way.
 
-??? abstract "B.prettySetup()"
+??? abstract "A.prettySetup()"
     ```python
-    B.pretty(features=None, noneValues=None)
+    A.pretty(features=None, noneValues=None)
     ```
     ???+ info "Description"
         In pretty displays, nodes are shown together with the values of a selected
@@ -252,9 +252,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
             The contents of `noneValues` affect the display of
             all features, not only the custom features.
 
-??? abstract "B.pretty()"
+??? abstract "A.pretty()"
     ```python
-    B.pretty(node, withNodes=False, suppress=set(), highlights={})
+    A.pretty(node, withNodes=False, suppress=set(), highlights={})
     ```
 
     ???+ info "Description"
@@ -293,9 +293,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         ??? hint "color names"
             The link above points to a series of handy color names and their previews.
 
-??? abstract "B.prettyTuple()"
+??? abstract "A.prettyTuple()"
     ```python
-    B.prettyTuple(
+    A.prettyTuple(
       nodes, seqNumber,
       withNodes=False,
       suppress=set(),
@@ -315,10 +315,10 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         The highlighting can be tweaked by the optional `colorMap` parameter.
 
     ??? info "nodes, seqNumber, withNodes"
-        Same as in `B.plainTuple()`.
+        Same as in `A.plainTuple()`.
 
     ??? info "suppress"
-        Same as in `B.pretty()`.
+        Same as in `A.pretty()`.
 
     ??? info "colorMap"
         The nodes of the tuple will be highlighted.
@@ -338,7 +338,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
             The link above points to a series of handy color names and their previews.
 
     ??? info "highlights"
-        Same as in `B.pretty()`.
+        Same as in `A.pretty()`.
 
     ???+ note "highlights takes precedence over colorMap"
         If both `highlights` and `colorMap` are given, `colorMap` is ignored.
@@ -351,9 +351,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         and then run `prettyTuple()` for many different tuples with the same `highlights`.
         It does not harm performance if `highlights` maps lots of nodes outside the tuple as well.
 
-??? abstract "B.show()"
+??? abstract "A.show()"
     ```python
-    B.show(
+    A.show(
       results,
       condensed=True,
       start=1, end=len(results),
@@ -366,7 +366,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
     ???+ info "Description"
         Displays an iterable of tuples of nodes.
-        The elements of the list are displayed by `B.prettyTuple()`.
+        The elements of the list are displayed by `A.prettyTuple()`.
 
     ??? info "results"
         `results` an iterable of tuples of nodes.
@@ -399,19 +399,19 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         Default the length of the iterable.
 
     ??? info "withNodes, suppress, colorMap, highlights"
-        Same as in `B.prettyTuple()`.
+        Same as in `A.prettyTuple()`.
 
 ## Search
 
-??? abstract "B.search()" 
+??? abstract "A.search()" 
     ```python
-    B.search(query, silent=False, shallow=False, sets=None)
+    A.search(query, silent=False, shallow=False, sets=None)
     ```
     
     ???+ "Description"
         Searches in the same way as the generic Text-Fabric `S.search()`.
         But whereas the `S` version returns a generator which yields the results
-        one by one, the `B` version collects all results and sorts them.
+        one by one, the `A` version collects all results and sorts them.
         It then reports the number of results.
 
     ??? info "query"
