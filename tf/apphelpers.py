@@ -21,14 +21,14 @@ URL_NB = 'https://nbviewer.jupyter.org/github'
 
 URL_TFDOC = 'https://dans-labs.github.io/text-fabric'
 
-FONT_BASE = 'https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/{repo}-app/static/fonts'
+FONT_BASE = 'https://github.com/Dans-labs/text-fabric/blob/master/tf/server/static/fonts'
 
 CSS_FONT_API = f'''
 <style>
 @font-face {{{{
   font-family: "{{fontName}}";
   src: url('{FONT_BASE}/{{font}}?raw=true');
-  src: url('{FONT_BASE}/static/fonts/{{fontw}}?raw=true') format('woff');
+  src: url('{FONT_BASE}/{{fontw}}?raw=true') format('woff');
 }}}}
 </style>
 '''

@@ -22,7 +22,7 @@ FONT = 'SILEOT.ttf'
 FONTW = 'SILEOT.woff'
 
 CSS_FONT = '''
-    <link rel="stylesheet" href="/data/static/fonts.css"/>
+    <link rel="stylesheet" href="/server/static/fonts.css"/>
 '''
 
 CSS = '''
@@ -467,7 +467,6 @@ This notebook online:
     if asApi:
       return CSS_FONT + CSS
     dh(CSS_FONT_API.format(
-        repo=self.repo,
         fontName=FONT_NAME,
         font=FONT,
         fontw=FONTW,
