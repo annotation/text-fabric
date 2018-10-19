@@ -38,8 +38,7 @@ pages:
     - 'Search': 'Model/Search.md'
   - Writing:
     - 'Hebrew': 'Writing/Hebrew.html'
-    - 'HebrewMD': 'Writing/Hebrew.md'
-    - 'Syriac': 'Writing/Syriac.md'
+    - 'Syriac': 'Writing/Syriac.html'
   - Api:
     - 'General': 'Api/General.md'
     - 'Apps': 'Api/Apps.md'
