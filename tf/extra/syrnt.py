@@ -11,10 +11,19 @@ from tf.apphelpers import (
     getBoundary, getFeatures,
     htmlEsc, mdEsc,
     dm, dh, header, outLink,
-    URL_NB, API_URL, TFDOC_URL
+    URL_NB, API_URL, TFDOC_URL,
+    CSS_FONT_API,
 )
 from tf.server.common import getConfig
 from tf.notebook import location
+
+FONT_NAME = 'Estrangelo Edessa'
+FONT = 'SyrCOMEdessa.otf'
+FONTW = 'SyrCOMEdessa.woff'
+
+CSS_FONT = '''
+    <link rel="stylesheet" href="/data/static/fonts.css"/>
+'''
 
 CSS = '''
 <style type="text/css">
@@ -129,16 +138,6 @@ CSS = '''
 </style>
 '''
 
-CSS_FONT = '''
-    <link rel="stylesheet" href="/data/static/fonts.css"/>
-'''
-CSS_FONT_API = '''
-    <link
-      rel="stylesheet"
-      href="https://github.com/Dans-labs/text-fabric/raw/master/tf/extra/syrnt-app/static/fontsweb.css"
-    />
-'''
-
 CLASS_NAMES = dict(
     verse='verse',
     word='word',
@@ -177,6 +176,7 @@ class Syrnt(object):
     config = getConfig('syrnt')
     cfg = config.configure(lgc=lgc, version=version)
     self.asApi = asApi
+    self.repo = cfg['repo']
     self.version = version
     self.charUrl = cfg['charUrl']
     self.docUrl = cfg['docUrl']
@@ -238,7 +238,7 @@ class Syrnt(object):
         'provenance of this corpus',
     )
     charLink = (
-        outLink('Character table', self.charUrl, 'Hebrew characters and transcriptions')
+        outLink('Character table', self.charUrl, 'Syriac characters and transcriptions')
         if self.charUrl else
         ''
     )
@@ -327,7 +327,12 @@ This notebook online:
     asApi = self.asApi
     if asApi:
       return CSS_FONT + CSS
-    dh(CSS_FONT_API + CSS)
+    dh(CSS_FONT_API.format(
+        repo=self.repo,
+        fontName=FONT_NAME,
+        font=FONT,
+        fontw=FONTW,
+    ) + CSS)
 
   def sntLink(self, n, text=None, className=None, asString=False, noUrl=False):
     api = self.api

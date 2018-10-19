@@ -18,6 +18,8 @@ REPORT_DIR = 'reports'
 
 CONDENSE_TYPE = 'tablet'
 
+CHAR_URL = ''
+
 
 def LIVE(org, repo, version, release):
   return f'{org}/{repo} v:{version} (r{release})'
@@ -65,6 +67,7 @@ def configure(lgc, version=VERSION):
       url=liveUrl,
       org=ORG,
       repo=REPO,
+      charUrl=CHAR_URL,
       source=SOURCE,
       sourceFull=SOURCE_FULL,
       sourceDir=SOURCE_DIR,
