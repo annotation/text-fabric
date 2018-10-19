@@ -178,6 +178,7 @@ class Syrnt(object):
     cfg = config.configure(lgc=lgc, version=version)
     self.asApi = asApi
     self.version = version
+    self.charUrl = cfg['charUrl']
     self.docUrl = cfg['docUrl']
     self.condenseType = cfg['condenseType']
     self.plainLink = cfg['plainLink']
@@ -236,6 +237,11 @@ class Syrnt(object):
         f'{self.docUrl}/about.md',
         'provenance of this corpus',
     )
+    charLink = (
+        outLink('Character table', self.charUrl, 'Hebrew characters and transcriptions')
+        if self.charUrl else
+        ''
+    )
     featureLink = outLink(
         'Feature docs', self.featureUrl(self.version),
         f'{repo.capitalize()} feature documentation'
@@ -256,6 +262,7 @@ class Syrnt(object):
     )
     if asApi:
       self.dataLink = dataLink
+      self.charLink = charLink
       self.featureLink = featureLink
       self.tfsLink = tfsLink
       self.tutLink = tutLink

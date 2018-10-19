@@ -735,6 +735,7 @@ def header(extraApi):
       f'''
 <div class="hdlinks">
   {extraApi.dataLink}
+  {extraApi.charLink}
   {extraApi.featureLink}
   {extraApi.tfsLink}
   {extraApi.tutLink}

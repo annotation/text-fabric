@@ -36,6 +36,9 @@ pages:
     - 'Format': 'Model/File-formats.md'
     - 'Tweaks': 'Model/Optimizations.md'
     - 'Search': 'Model/Search.md'
+  - Writing:
+    - 'Hebrew': 'Writing/Hebrew.md'
+    - 'Syriac': 'Writing/Syriac.md'
   - Api:
     - 'General': 'Api/General.md'
     - 'Apps': 'Api/Apps.md'
