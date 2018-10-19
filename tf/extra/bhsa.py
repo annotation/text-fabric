@@ -397,7 +397,7 @@ class Bhsa(object):
       self.tfsLink = tfsLink
       self.tutLink = tutLink
     else:
-      if inNb:
+      if inNb is not None:
         lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f] + api.Eall()
         dm('**Documentation:**' f' {dataLink} {featureLink} {bhsaLink} {tfLink} {tfsLink}')
         dh(
@@ -423,11 +423,11 @@ This notebook online:
     self.noneValues = NONE_VALUES
 
     if not asApi:
-      if inNb:
+      if inNb is not None:
         self.loadCSS()
       if hoist:
         docs = api.makeAvailableIn(hoist)
-        if inNb:
+        if inNb is not None:
           dh(
               '<details open><summary><b>API members</b>:</summary>\n'
               +

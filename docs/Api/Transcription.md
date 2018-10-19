@@ -12,6 +12,13 @@ in a model of nodes, edges, and features, there is need for some additions.
     It also calls functions to use these tables for converting Hebrew and Syriac ttext material to transliterated
     representations and back.
 
+    There is also a phonetic transcription for Hebrew, designed in 
+    [phono.ipynb](https://nbviewer.jupyter.org/github/etcbc/phono/blob/master/programs/phono.ipynb)
+
+???+ abstract "Character table Hebrew"
+    The full list of characters covered by the ETCBC and phonetic transcriptions is on the
+    [shebanq wiki](https://github.com/ETCBC/shebanq/wiki/BHSA-Transcription)
+
 ??? abstract "Usage"
     Invoke the transcription functionality as follows:
 
