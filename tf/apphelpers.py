@@ -19,10 +19,16 @@ EXPRESS_INFO = '__release.txt'
 URL_GH = 'https://github.com'
 URL_NB = 'https://nbviewer.jupyter.org/github'
 
+URL_TFDOC = 'https://dans-labs.github.io'
+
+
+def TFDOC_URL(path):
+  return f'{URL_TFDOC}{path}'
+
 
 def API_URL(member):
   member = f'#{member}' if member else ''
-  return f'https://dans-labs.github.io/text-fabric/Api/General/{member}'
+  return TFDOC_URL(f'/Api/General/{member}')
 
 
 def hasData(lgc, dataRel, version):

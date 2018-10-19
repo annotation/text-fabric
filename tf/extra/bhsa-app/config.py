@@ -1,6 +1,6 @@
 import os
 from tf.extra.bhsa import Bhsa
-from tf.apphelpers import hasData
+from tf.apphelpers import hasData, TFDOC_URL
 
 ORG = 'etcbc'
 REPO = 'bhsa'
@@ -12,7 +12,7 @@ DOI = '10.5281/zenodo.1007624'
 DOI_URL = 'https://doi.org/10.5281/zenodo.1007624'
 
 DOC_URL = f'https://{ORG}.github.io/{REPO}'
-CHAR_URL = '{DOC_URL}/Writing/Hebrew/'
+CHAR_URL = TFDOC_URL('/Writing/Hebrew/')
 DOC_INTRO = '0_home'
 
 RELATIVE = '{}/tf'
