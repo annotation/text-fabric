@@ -19,7 +19,7 @@ EXPRESS_INFO = '__release.txt'
 URL_GH = 'https://github.com'
 URL_NB = 'https://nbviewer.jupyter.org/github'
 
-URL_TFDOC = 'https://dans-labs.github.io'
+URL_TFDOC = 'https://dans-labs.github.io/text-fabric'
 
 
 def TFDOC_URL(path):

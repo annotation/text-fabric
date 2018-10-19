@@ -217,8 +217,17 @@ CSS_FONT = '''
     <link rel="stylesheet" href="/data/static/fonts.css"/>
 '''
 CSS_FONT_API = '''
-    <link rel="stylesheet" href="/data/static/fonts.css"/>
-    <link rel="stylesheet" href="https://fontlibrary.org/face/ezra" type="text/css"/>
+    <link
+      rel="stylesheet"
+      href="https://github.com/Dans-labs/text-fabric/raw/master/tf/extra/bhsa-app/static/fontsweb.css"
+    />
+'''
+
+CSS_FONT_API = '''
+    <link
+      rel="stylesheet"
+      href="https://github.com/Dans-labs/text-fabric/raw/master/tf/extra/bhsa-app/static/fontsweb.css"
+    />
 '''
 
 CLASS_NAMES = dict(

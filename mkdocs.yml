@@ -37,6 +37,7 @@ pages:
     - 'Tweaks': 'Model/Optimizations.md'
     - 'Search': 'Model/Search.md'
   - Writing:
+    - 'test': 'Writing/Hebrew.html'
     - 'Hebrew': 'Writing/Hebrew.md'
     - 'Syriac': 'Writing/Syriac.md'
   - Api:
