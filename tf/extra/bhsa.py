@@ -136,6 +136,19 @@ CSS = '''
 .satom.R,.catom.R,.patom.R {
     border-right-style: none
 }
+.tr,.tr a:visited,.tr a:link {
+    font-family: sans-serif;
+    font-size: large;
+    color: #000044;
+    direction: ltr;
+    text-decoration: none;
+}
+.trb,.trb a:visited,.trb a:link {
+    font-family: sans-serif;
+    font-size: large;
+    direction: ltr;
+    text-decoration: none;
+}
 .h,.h a:visited,.h a:link {
     font-family: "Ezra SIL", "SBL Hebrew", sans-serif;
     font-size: large;
@@ -242,6 +255,8 @@ ATOMS = dict(
 )
 SUPER = dict((y, x) for (x, y) in ATOMS.items())
 
+NO_DESCEND = {'lex'}
+
 SECTION = {'book', 'chapter', 'verse', 'half_verse'}
 VERSE = {'verse', 'half_verse'}
 
@@ -310,6 +325,7 @@ class Bhsa(object):
     self.charUrl = cfg['charUrl']
     self.docIntro = cfg['docIntro']
     self.condenseType = cfg['condenseType']
+    self.noDescendTypes = NO_DESCEND
     self.shebanq = cfg['shebanq']
     self.shebanqLex = cfg['shebanqLex']
     self.exampleSection = (
@@ -549,6 +565,7 @@ This notebook online:
       self,
       n,
       linked=True,
+      fmt=None,
       withNodes=False,
       asString=False,
   ):
@@ -565,12 +582,12 @@ This notebook online:
     else:
       nodeRep = f' *{n}* ' if withNodes else ''
 
-    hebrew = True
+    hebrew = fmt is None or '-orig-' in fmt
     if nType == 'word':
-      rep = mdEsc(htmlEsc(T.text([n])))
+      rep = mdEsc(htmlEsc(T.text([n], fmt=fmt)))
     elif nType in SECTION:
-      fmt = ('{}' if nType == 'book' else '{} {}' if nType == 'chapter' else '{} {}:{}')
-      rep = fmt.format(*T.sectionFromNode(n))
+      label = ('{}' if nType == 'book' else '{} {}' if nType == 'chapter' else '{} {}:{}')
+      rep = label.format(*T.sectionFromNode(n))
       hebrew = False
       if nType == 'half_verse':
         rep += F.label.v(n)
@@ -578,17 +595,18 @@ This notebook online:
       if nType in VERSE:
         if linked:
           rep = self.shbLink(n, text=rep, asString=True)
-        rep += ' <span class="hb">' + T.text(L.d(n, otype="word")) + '</span>'
+        rep += mdEsc(htmlEsc(T.text(L.d(n, otype="word"), fmt=fmt)))
+        hebrew = True
     elif nType == 'lex':
       rep = mdEsc(htmlEsc(F.voc_lex_utf8.v(n)))
     else:
-      rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'))))
+      rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'), fmt=fmt)))
 
     if linked and nType not in VERSE:
       rep = self.shbLink(n, text=rep, asString=True)
 
-    if hebrew:
-      rep = f'<span class="hb">{rep}</span>'
+    tClass = 'hb' if hebrew else 'trb'
+    rep = f'<span class="{tClass}">{rep}</span>'
     result = f'{rep}{nodeRep}'
 
     if asString or asApi:
@@ -603,6 +621,7 @@ This notebook online:
       firstSlot,
       lastSlot,
       condenseType=None,
+      fmt=None,
       withNodes=True,
       suppress=set(),
       highlights={},
@@ -746,8 +765,9 @@ This notebook online:
       occs = ''
       if nType == slotType:
         lx = L.u(n, otype='lex')[0]
-        lexLink = (self.shbLink(lx, text=htmlEsc(T.text([n])), asString=True))
-        heading = f'<div class="h">{lexLink}</div>'
+        lexLink = (self.shbLink(lx, text=htmlEsc(T.text([n], fmt=fmt)), asString=True))
+        tClass = 'h' if fmt is None or '-orig-' in fmt else 'tr'
+        heading = f'<div class="{tClass}">{lexLink}</div>'
         featurePart = getFeatures(
             self,
             n,
@@ -785,6 +805,7 @@ This notebook online:
           firstSlot,
           lastSlot,
           condenseType=condenseType,
+          fmt=fmt,
           withNodes=withNodes,
           suppress=suppress,
           highlights=highlights,

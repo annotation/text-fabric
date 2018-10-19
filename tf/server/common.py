@@ -210,6 +210,24 @@ def shapeCondense(condenseTypes, value):
   return '\n'.join(html)
 
 
+def shapeFormats(textFormats, value):
+  html = []
+  for (i, fmt) in enumerate(textFormats):
+    checked = ' checked ' if value == fmt else ''
+    radio = (
+        f'''<input class="r cradio" type="radio" id="ctp{i}"
+              name="textformat" value="{fmt}" {checked}
+            "/>'''
+    )
+    html.append(f'''
+    <div class="cline">
+      {radio}
+      <span class="ctype">{fmt}</span>
+    </div>
+  ''')
+  return '\n'.join(html)
+
+
 def _coarsify(n, spread):
   nAbs = int(round(abs(n) / spread)) * spread
   return nAbs if n >= 0 else -nAbs

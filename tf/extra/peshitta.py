@@ -58,6 +58,19 @@ CSS = '''
 .occs {
     font-size: x-small;
 }
+.tr,.tr a:visited,.tr a:link {
+    font-family: sans-serif;
+    font-size: large;
+    color: #000044;
+    direction: ltr;
+    text-decoration: none;
+}
+.trb,.trb a:visited,.trb a:link {
+    font-family: sans-serif;
+    font-size: large;
+    direction: ltr;
+    text-decoration: none;
+}
 .sy,.sy a:visited,.sy a:link {
     font-family: "Estrangelo Edessa", sans-serif;
     font-size: large;
@@ -109,6 +122,8 @@ CLASS_NAMES = dict(
     word='word',
 )
 
+NO_DESCEND = {'lex'}
+
 SECTION = {'book', 'chapter', 'verse'}
 VERSE = {'verse'}
 
@@ -146,6 +161,7 @@ class Peshitta(object):
     self.charUrl = cfg['charUrl']
     self.docUrl = cfg['docUrl']
     self.condenseType = cfg['condenseType']
+    self.noDescendTypes = NO_DESCEND
     self.plainLink = cfg['plainLink']
     self.exampleSection = (
         f'<code>Genesis 1:1</code> (use'
@@ -352,6 +368,7 @@ This notebook online:
       self,
       n,
       linked=True,
+      fmt=None,
       withNodes=False,
       asString=False,
   ):
@@ -368,26 +385,27 @@ This notebook online:
     else:
       nodeRep = f' *{n}* ' if withNodes else ''
 
-    syriac = True
+    syriac = fmt is None or '-orig-' in fmt
     if nType == 'word':
-      rep = mdEsc(htmlEsc(T.text([n])))
+      rep = mdEsc(htmlEsc(T.text([n], fmt=fmt)))
     elif nType in SECTION:
-      fmt = ('{}' if nType == 'book' else '{} {}' if nType == 'chapter' else '{} {}:{}')
-      rep = fmt.format(*T.sectionFromNode(n))
+      label = ('{}' if nType == 'book' else '{} {}' if nType == 'chapter' else '{} {}:{}')
+      rep = label.format(*T.sectionFromNode(n))
       syriac = False
       rep = mdEsc(htmlEsc(rep))
       if nType in VERSE:
         if linked:
           rep = self.pshLink(n, text=rep, asString=True)
-        rep += ' <span class="syb">' + T.text(L.d(n, otype="word")) + '</span>'
+        rep += mdEsc(htmlEsc(T.text(L.d(n, otype="word"), fmt=fmt)))
+        syriac = True
     else:
-      rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'))))
+      rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'), fmt=fmt)))
 
     if linked and nType not in VERSE:
       rep = self.pshLink(n, text=rep, asString=True)
 
-    if syriac:
-      rep = f'<span class="syb">{rep}</span>'
+    tClass = 'syb' if syriac else 'trb'
+    rep = f'<span class="{tClass}">{rep}</span>'
     result = f'{rep}{nodeRep}'
 
     if asString or asApi:
@@ -401,6 +419,7 @@ This notebook online:
       html,
       firstSlot,
       lastSlot,
+      fmt=None,
       condenseType=None,
       withNodes=True,
       suppress=set(),
@@ -447,7 +466,7 @@ This notebook online:
     elif nType == slotType:
       children = ()
 
-    doOuter = outer and nType == 'slotType'
+    doOuter = outer and nType == slotType
     if doOuter:
       html.append('<div class="outeritem">')
 
@@ -471,8 +490,9 @@ This notebook online:
       featurePart = ''
       occs = ''
       if nType == slotType:
-        text = T.text([n])
-        heading = f'<div class="sy">{text}</div>'
+        text = htmlEsc(T.text([n], fmt=fmt))
+        tClass = 'sy' if fmt is None or '-orig-' in fmt else 'tr'
+        heading = f'<div class="{tClass}">{text}</div>'
         featurePart = getFeatures(
             self,
             n,
@@ -491,6 +511,7 @@ This notebook online:
           firstSlot,
           lastSlot,
           condenseType=condenseType,
+          fmt=fmt,
           withNodes=withNodes,
           suppress=suppress,
           highlights=highlights,
