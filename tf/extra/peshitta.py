@@ -234,7 +234,10 @@ class Peshitta(object):
     else:
       if inNb:
         lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f] + api.Eall()
-        dm('**Documentation:**' f' {dataLink} {featureLink} {peshittaLink} {tfLink} {tfsLink}')
+        dm(
+            '**Documentation:**'
+            f' {dataLink} {charLink} {featureLink} {peshittaLink} {tfLink} {tfsLink}'
+        )
         dh(
             '<details open><summary><b>Loaded features</b>:</summary>\n'
             +

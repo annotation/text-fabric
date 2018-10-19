@@ -269,7 +269,10 @@ class Syrnt(object):
     else:
       if inNb:
         lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f] + api.Eall()
-        dm('**Documentation:**' f' {dataLink} {featureLink} {syrntLink} {tfLink} {tfsLink}')
+        dm(
+            '**Documentation:**'
+            f' {dataLink} {charLink} {featureLink} {syrntLink} {tfLink} {tfsLink}'
+        )
         dh(
             '<details open><summary><b>Loaded features</b>:</summary>\n'
             +

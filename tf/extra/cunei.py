@@ -615,7 +615,10 @@ class Cunei(Atf):
       self.tutLink = tutLink
     else:
       if inNb:
-        dm('**Documentation:**' f' {dataLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}')
+        dm(
+            '**Documentation:**'
+            f' {dataLink} {charLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}'
+        )
         if repoLoc:
           dm(f'''
   This notebook online:
