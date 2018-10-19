@@ -543,6 +543,7 @@ class Cunei(Atf):
     repo = f'{repoBase}/{repoRel}'
     self.repo = repo
     self.version = version
+    self.charUrl = cfg['charUrl']
     self.sourceDir = f'{repo}/{cfg["sourceDir"]}'
     self.imageDir = f'{repo}/{IMAGE_DIR(cfg["sourceDir"], version)}'
     self.localImageDir = cfg['localImageDir']
@@ -587,6 +588,11 @@ class Cunei(Atf):
     tutUrl = f'{URL_NB}/{cfg["org"]}/tutorials/blob/master/search.ipynb'
     extraUrl = TFDOC_URL(f'/Api/{cfg["repo"].capitalize()}/')
     dataLink = outLink(self.corpusFull, f'{docUrl}/about.md', 'provenance of this corpus')
+    charLink = (
+        outLink('Character table', self.charUrl, 'Cuneiform characters and transcriptions')
+        if self.charUrl else
+        ''
+    )
     featureLink = outLink('Feature docs', f'{docUrl}/transcription.md', 'feature documentation')
     cuneiLink = outLink('Cunei API', extraUrl, 'cunei api documentation')
     tfLink = outLink(
@@ -603,6 +609,7 @@ class Cunei(Atf):
     )
     if asApi:
       self.dataLink = dataLink
+      self.charLink = charLink
       self.featureLink = featureLink
       self.tfsLink = tfsLink
       self.tutLink = tutLink

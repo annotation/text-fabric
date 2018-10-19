@@ -12,12 +12,14 @@
 
 ## Queued for next release
 
+* Options to choose transcriptions as text representation in the TF browser
+
 ## 6.2.3
 
 2018-10-19
 
 * Character tables for Hebrew abd Syriac, with links to them from the TF browser
-* Options to choose transcriptions as text representation in the TF browser
+* Better font handling
 
 ## 6.2.2
 
