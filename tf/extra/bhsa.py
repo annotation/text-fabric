@@ -408,7 +408,10 @@ class Bhsa(object):
     else:
       if inNb is not None:
         lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f] + api.Eall()
-        dm('**Documentation:**' f' {dataLink} {featureLink} {bhsaLink} {tfLink} {tfsLink}')
+        dm(
+            '**Documentation:**'
+            f' {dataLink} {charLink} {featureLink} {bhsaLink} {tfLink} {tfsLink}'
+        )
         dh(
             '<details open><summary><b>Loaded features</b>:</summary>\n'
             +
