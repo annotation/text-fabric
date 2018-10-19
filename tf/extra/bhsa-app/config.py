@@ -12,6 +12,7 @@ DOI = '10.5281/zenodo.1007624'
 DOI_URL = 'https://doi.org/10.5281/zenodo.1007624'
 
 DOC_URL = f'https://{ORG}.github.io/{REPO}'
+CHAR_URL = '{DOC_URL}/Writing/Hebrew/'
 DOC_INTRO = '0_home'
 
 RELATIVE = '{}/tf'
@@ -135,6 +136,7 @@ def configure(lgc, version=VERSION):
       version=VERSION,
       release=RELEASE,
       firstRelease=RELEASE_FIRST,
+      charUrl=CHAR_URL,
       docUrl=DOC_URL,
       docIntro=DOC_INTRO,
       condenseType=CONDENSE_TYPE,

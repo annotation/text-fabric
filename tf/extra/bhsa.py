@@ -305,6 +305,7 @@ class Bhsa(object):
     self.asApi = asApi
     self.version = version
     self.docUrl = cfg['docUrl']
+    self.charUrl = cfg['charUrl']
     self.docIntro = cfg['docIntro']
     self.condenseType = cfg['condenseType']
     self.shebanq = cfg['shebanq']
@@ -373,6 +374,11 @@ class Bhsa(object):
     tutUrl = f'{URL_NB}/{cfg["org"]}/{repo}/blob/master/tutorial/search.ipynb'
     extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
     dataLink = outLink(repo.upper(), self.docUrl, 'provenance of this corpus')
+    charLink = (
+        outLink('Character table', self.charUrl, 'Hebrew characters and transcriptions')
+        if self.charUrl else
+        ''
+    )
     featureLink = outLink(
         'Feature docs', self.featureUrl(self.version, self.docIntro),
         f'{repo.upper()} feature documentation'
@@ -393,6 +399,7 @@ class Bhsa(object):
     )
     if asApi:
       self.dataLink = dataLink
+      self.charLink = charLink
       self.featureLink = featureLink
       self.tfsLink = tfsLink
       self.tutLink = tutLink

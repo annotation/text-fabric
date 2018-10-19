@@ -11,6 +11,7 @@ RELEASE_FIRST = '0.1'
 DOI = '10.5281/zenodo.1463675'
 DOI_URL = 'https://doi.org/10.5281/zenodo.1463675'
 DOC_URL = f'https://github.com/{ORG}/{REPO}/blob/master/docs'
+CHAR_URL = '{DOC_URL}/Writing/Syriac/'
 ZIP = [REPO]
 
 
@@ -69,6 +70,7 @@ def configure(lgc, version=VERSION):
       version=VERSION,
       release=RELEASE,
       firstRelease=RELEASE_FIRST,
+      charUrl=CHAR_URL,
       docUrl=DOC_URL,
       condenseType=CONDENSE_TYPE,
       plainLink=PLAIN_LINK,

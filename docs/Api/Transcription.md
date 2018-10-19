@@ -7,7 +7,11 @@ in a model of nodes, edges, and features, there is need for some additions.
 
 ??? abstract "About"
     `transcription.py` contains transliteration tables for Hebrew and Syriac that
-    are being used in the [BHSA](https://github.com/ETCBC/bhsa).
+    are being used in the
+    [BHSA](https://github.com/ETCBC/bhsa),
+    [Peshitta](https://github.com/ETCBC/peshitta),
+    [SyrNT](https://github.com/ETCBC/syrnt),
+    .
 
     It also calls functions to use these tables for converting Hebrew and Syriac ttext material to transliterated
     representations and back.
@@ -15,9 +19,10 @@ in a model of nodes, edges, and features, there is need for some additions.
     There is also a phonetic transcription for Hebrew, designed in 
     [phono.ipynb](https://nbviewer.jupyter.org/github/etcbc/phono/blob/master/programs/phono.ipynb)
 
-???+ abstract "Character table Hebrew"
-    The full list of characters covered by the ETCBC and phonetic transcriptions is on the
-    [shebanq wiki](https://github.com/ETCBC/shebanq/wiki/BHSA-Transcription)
+???+ abstract "Character tables"
+    [Hebrew](../Writing/Hebrew/): full list of characters covered by the ETCBC and phonetic transcriptions
+
+    [Syriac](../Writing/Syriac/): full list of characters covered by the ETCBC transcriptions
 
 ??? abstract "Usage"
     Invoke the transcription functionality as follows:
