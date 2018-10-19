@@ -201,6 +201,7 @@ def compose(
     opened,
     condensed,
     condenseType,
+    textFormat,
     withNodes=False,
     linked=1,
     **options,
@@ -242,6 +243,7 @@ def compose(
             condenseType=condenseType,
             item=item,
             linked=linked,
+            fmt=textFormat,
             withNodes=withNodes,
             position=position,
             opened=i in opened,
@@ -260,6 +262,7 @@ def table(
     start=None,
     end=None,
     linked=1,
+    fmt=None,
     withNodes=False,
     asString=False,
     **options,
@@ -290,6 +293,7 @@ def table(
         condenseType=condenseType,
         item=item,
         linked=linked,
+        fmt=fmt,
         withNodes=withNodes,
         position=None,
         opened=False,
@@ -310,6 +314,7 @@ def plainTuple(
     condenseType=None,
     item=RESULT,
     linked=1,
+    fmt=None,
     withNodes=False,
     position=None,
     opened=False,
@@ -326,6 +331,7 @@ def plainTuple(
         seqNumber,
         isCondensed=isCondensed,
         condenseType=condenseType,
+        fmt=fmt,
         withNodes=withNodes,
         **options,
     ) if opened else ''
@@ -340,6 +346,7 @@ def plainTuple(
         f'''<span>{mdEsc(extraApi.plain(
                     n,
                     linked=i == linked - 1,
+                    fmt=fmt,
                     withNodes=withNodes,
                     **options,
                   ))
@@ -369,6 +376,7 @@ def plainTuple(
         mdEsc(extraApi.plain(
             n,
             linked=i == linked - 1,
+            fmt=fmt,
             withNodes=withNodes,
             asString=True,
             **options,
@@ -391,6 +399,7 @@ def show(
     condenseType=None,
     start=None,
     end=None,
+    fmt=None,
     withNodes=False,
     suppress=set(),
     colorMap=None,
@@ -423,6 +432,7 @@ def show(
         isCondensed=condensed,
         condenseType=condenseType,
         item=item,
+        fmt=fmt,
         withNodes=withNodes,
         suppress=suppress,
         colorMap=colorMap,
@@ -439,6 +449,7 @@ def prettyTuple(
     item='Result',
     condenseType=None,
     isCondensed=False,
+    fmt=None,
     withNodes=False,
     suppress=set(),
     colorMap=None,
@@ -478,6 +489,7 @@ def prettyTuple(
     h = extraApi.pretty(
         t,
         condenseType=condenseType,
+        fmt=fmt,
         withNodes=withNodes,
         suppress=suppress,
         highlights=newHighlights,
@@ -493,6 +505,7 @@ def pretty(
     extraApi,
     n,
     condenseType=None,
+    fmt=None,
     withNodes=False,
     suppress=set(),
     highlights={},
@@ -533,6 +546,7 @@ def pretty(
       firstSlot,
       lastSlot,
       condenseType=condenseType,
+      fmt=fmt,
       withNodes=withNodes,
       suppress=suppress,
       highlights=highlights,
@@ -697,7 +711,7 @@ def getContext(api, nodes):
   return tuple(rows)
 
 
-def getResultsX(api, results, features):
+def getResultsX(api, results, features, noDescendTypes, fmt=None):
   F = api.F
   Fs = api.Fs
   T = api.T
@@ -740,7 +754,7 @@ def getResultsX(api, results, features):
       # sns = [n] if nType == slotType else L.d(n, otype=slotType)
       row.extend((n, nType))
       if nType not in sectionTypes:
-        text = T.text(n)
+        text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
         # text = T.text(sns)
         row.append(text)
       row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))

@@ -75,10 +75,12 @@ def makeTfKernel(dataSource, lgc, port):
           extraApi.exampleSection,
           extraApi.exampleSectionText,
           api.C.levels.data,
+          extraApi.api.T.defaultFormat,
+          tuple(fmt for fmt in extraApi.api.T.formats if fmt.startswith('text-')),
       )
 
     def exposed_search(
-        self, query, tuples, sections, condensed, condenseType, batch,
+        self, query, tuples, sections, condensed, condenseType, textFormat, batch,
         position=1, opened=set(),
         withNodes=False,
         linked=1,
@@ -161,13 +163,14 @@ def makeTfKernel(dataSource, lgc, port):
           allResults, start, position, opened,
           condensed,
           condenseType,
+          textFormat,
           withNodes=withNodes,
           linked=linked,
           **options,
       )
       return (table, sectionMessages, tupleMessages, queryMessages, start, total)
 
-    def exposed_csvs(self, query, tuples, sections, condensed, condenseType):
+    def exposed_csvs(self, query, tuples, sections, condensed, condenseType, textFormat):
       extraApi = self.extraApi
       api = self.extraApi.api
 
@@ -233,6 +236,8 @@ def makeTfKernel(dataSource, lgc, port):
           api,
           queryResults,
           features,
+          extraApi.noDescendTypes,
+          fmt=textFormat,
       )
       return (pickle.dumps(csvs), pickle.dumps(context), pickle.dumps(resultsX))
 

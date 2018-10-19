@@ -309,6 +309,11 @@ span.ctype {
     font-size: x-small;
     font-style: italic;
 }
+span.ctext {
+    flex: 0 1 auto;
+    font-size: x-small;
+    font-style: italic;
+}
 span.cinfo {
     flex: 0 1 auto;
     font-size: x-small;

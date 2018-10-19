@@ -125,7 +125,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
 ??? abstract "A.plain()"
     ```python
-    A.plain(node, linked=True, withNodes=False, asString=False)
+    A.plain(node, fmt=None, linked=True, withNodes=False, asString=False)
     ```
 
     ???+ info "Description"
@@ -133,6 +133,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
     ??? info "node"
         `node` is a node of arbitrary type.
+
+    ??? info "fmt"
+        `fmt` is the text format that will be used for the represantation.
 
     ??? info "linked"
         `linked` indicates whether the result should be a link to SHEBANQ
@@ -148,7 +151,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
 ??? abstract "A.plainTuple()"
     ```python
-    A.plainTuple(nodes, seqNumber, linked=1, withNodes=False, asString=False)
+    A.plainTuple(nodes, seqNumber, fmt=None, linked=1, withNodes=False, asString=False)
     ```
 
     ???+ info "Description"
@@ -170,13 +173,14 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         the relevant passage in SHEBANQ;
         (the first data column is column 1)
 
-    ??? info "withNodes, asString"
+    ??? info "fmt, withNodes, asString"
         Same as in `A.plain()`.
 
 ??? abstract "A.table()"
     ```python
     A.table(
       results,
+      fmt=None,
       start=1, end=len(results),
       linked=1,
       withNodes=False,
@@ -202,7 +206,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         `end` is the end point in the results iterable.
         Default the length of the iterable.
 
-    ??? info "linked, withNodes, asString"
+    ??? info "linked, fmt, withNodes, asString"
         Same as in `A.plainTuple()`.
 
 ## Pretty display
@@ -213,7 +217,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
 ??? abstract "A.prettySetup()"
     ```python
-    A.pretty(features=None, noneValues=None)
+    A.prettySetup(features=None, noneValues=None)
     ```
     ???+ info "Description"
         In pretty displays, nodes are shown together with the values of a selected
@@ -254,7 +258,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
 ??? abstract "A.pretty()"
     ```python
-    A.pretty(node, withNodes=False, suppress=set(), highlights={})
+    A.pretty(node, fmt=None, withNodes=False, suppress=set(), highlights={})
     ```
 
     ???+ info "Description"
@@ -262,6 +266,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
     ??? info "node"
         `node` is a node of arbitrary type.
+
+    ??? info "fmt"
+        `fmt` is the text format that will be used for the represantation.
 
     ??? info "withNodes"
         `withNodes` indicates whether node numbers should be displayed.
@@ -297,6 +304,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
     ```python
     A.prettyTuple(
       nodes, seqNumber,
+      fmt=None,
       withNodes=False,
       suppress=set(),
       colorMap=None,
@@ -314,7 +322,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         occur and highlight the material corresponding to all the nodes in the tuple.
         The highlighting can be tweaked by the optional `colorMap` parameter.
 
-    ??? info "nodes, seqNumber, withNodes"
+    ??? info "nodes, seqNumber, fmt, withNodes"
         Same as in `A.plainTuple()`.
 
     ??? info "suppress"
@@ -357,6 +365,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
       results,
       condensed=True,
       start=1, end=len(results),
+      fmt=None,
       withNodes=False,
       suppress=set(),
       colorMap=None,
@@ -398,7 +407,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         `end` is the end point in the results iterable.
         Default the length of the iterable.
 
-    ??? info "withNodes, suppress, colorMap, highlights"
+    ??? info "fmt, withNodes, suppress, colorMap, highlights"
         Same as in `A.prettyTuple()`.
 
 ## Search

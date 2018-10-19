@@ -2,6 +2,7 @@
 
 <div class="hdlinks">
   <a target="_blank" href="https://etcbc.github.io/bhsa" title="provenance of this corpus">BHSA</a>
+  <a target="_blank" href="https://dans-labs.github.io/text-fabric/Writing/Hebrew/" title="Hebrew characters and transcriptions">Character table</a>
   <a target="_blank" href="https://etcbc.github.io/bhsa/features/hebrew/c/0_home.html" title="BHSA feature documentation">Feature docs</a>
   <a target="_blank" href="https://dans-labs.github.io/text-fabric/Api/General/#search-templates" title="Search Templates Introduction and Reference">Search Reference</a>
   <a target="_blank" href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/search.ipynb" title="Search tutorial in Jupyter Notebook">Search tutorial</a>
@@ -13,7 +14,7 @@ meta | data
 --- | ---
 Job | DefaulT
 Author | Dirk Roorda
-Created | 2018-10-18T19:34:36+02:00
+Created | 2018-10-19T22:25:38+02:00
 Data source | BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis
 version | c
 release | 1.4

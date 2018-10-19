@@ -96,6 +96,9 @@
                 </div>
                 <div status="options">
                     <div>
+                        {{!textFormatOpts}}
+                    </div>
+                    <div>
                         <input
                             class="r int" type="text" id="lnk" name="linked" value="{{linked}}"
                             placeholder="1"
@@ -207,6 +210,8 @@
                     </details>
                     <details id="helpResults" class="help">
                         <summary>Result list</summary>
+                        <p>Show the text in the {{defaultTextFormat}} text format:
+                           see the <i>text format</i> option.</p>
                         <p>Group results by {{defaultCondenseType}}:
                            see the <i>condense</i> option.</p>
                         <p>Click the triangle to expand a result into a pretty view.</p>
@@ -238,6 +243,8 @@
                         <summary>Options</summary>
                         <p><b>Link column</b> The column number whose contents will be hyperlinked to the online version
                            of the corpus.</p>
+                        <p><b>Text format</b> Show the results in a text format of your choice: original script,
+                           transcription, or phonetic representations may be offered.</p>
                         <p><b>Condense results</b> Show the results grouping all nodes in result tuples into
                            containers, such as {{defaultCondenseType}}s.
                            The containers are <i>pretty</i>-displayed, with the result nodes in it highlighted.

@@ -17,7 +17,7 @@ from tf.server.common import (
     getParam, getDebug, getConfig, getDocker, getLocalClones,
     getAppDir, getValues, setValues,
     pageLinks,
-    shapeMessages, shapeOptions, shapeCondense,
+    shapeMessages, shapeOptions, shapeCondense, shapeFormats,
 )
 from tf.apphelpers import RESULT
 
@@ -239,6 +239,7 @@ def getFormData():
   form['withNodes'] = request.forms.withNodes
   form['condensed'] = request.forms.condensed
   form['condensetp'] = request.forms.condensetp
+  form['textformat'] = request.forms.textformat
   form['export'] = request.forms.export
   form['expandAll'] = request.forms.expandAll
   form['linked'] = getInt(request.forms.linked, default=1)
@@ -268,7 +269,7 @@ def readFormData(source):
         searchTemplate tuples sections
         jobNameHidden
         chdir rename duplicate
-        condensetp opened author title export
+        condensetp textformat opened author title export
         otherJob otherJobDo side help author title description
     '''.strip().split():
       if form.get(item, None) is None:
@@ -367,10 +368,14 @@ def serveSearch(anything):
       defaultCondenseType,
       exampleSection,
       exampleSectionText,
-      condenseTypes
+      condenseTypes,
+      defaultTextFormat,
+      textFormats,
   ) = kernelApi.condenseTypes()
   condenseType = form['condensetp'] or defaultCondenseType
   condenseOpts = shapeCondense(condenseTypes, condenseType)
+  textFormat = form['textformat'] or defaultTextFormat
+  textFormatOpts = shapeFormats(textFormats, textFormat)
 
   resultKind = condenseType if form['condensed'] else RESULT
 
@@ -385,6 +390,7 @@ def serveSearch(anything):
         form['sections'],
         form['condensed'],
         condenseType,
+        textFormat,
         form['batch'],
         position=form['position'],
         opened=openedSet,
@@ -432,6 +438,7 @@ def serveSearch(anything):
         form['sections'],
         form['condensed'],
         condenseType,
+        textFormat,
     )
     csvs = pickle.loads(csvs)
     context = pickle.loads(context)
@@ -444,7 +451,6 @@ def serveSearch(anything):
         css=css,
         descriptionMd=descriptionMd,
         table=table,
-        condenseType=condenseType,
         colofon=f'{appLogo}{header}{tfLogo}',
         provenance=provenanceHtml,
         **form,
@@ -462,6 +468,8 @@ def serveSearch(anything):
       condensedAtt=condensedAtt,
       condenseOpts=condenseOpts,
       defaultCondenseType=defaultCondenseType,
+      textFormatOpts=textFormatOpts,
+      defaultTextFormat=defaultTextFormat,
       exampleSection=exampleSection,
       exampleSectionText=exampleSectionText,
       withNodesAtt=withNodesAtt,

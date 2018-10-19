@@ -14,12 +14,15 @@
 
 * Options to choose transcriptions as text representation in the TF browser
 
-## 6.2.3
+## 6.3
 
 2018-10-19
 
 * Character tables for Hebrew abd Syriac, with links to them from the TF browser
 * Better font handling
+* In the `pretty` and `plain` functions you can pass a `fmt` parameter, to control the text representation
+  (original script, transcription, phonetics)
+* You can also control the text representation in the Text-Fabric browser.
 
 ## 6.2.2
 

@@ -16,6 +16,7 @@ class Text(object):
     sectionFeats = itemize(config.get('sectionFeatures', ''), ',')
     self.sectionFeatures = []
     self.config = config
+    self.defaultFormat = DEFAULT_FORMAT
 
     good = True
     if len(sectionFeats) != 0 and len(self.sectionTypes) != 0:
