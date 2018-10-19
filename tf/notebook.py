@@ -55,6 +55,6 @@ def location(cwd, name):
               break
   except Exception:
     print('Cannot determine the name of this notebook')
-    pass
+    print("Work around: call me with a self-chosen name: name='xxx'")
 
   return (found, repoLoc)
