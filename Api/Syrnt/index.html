@@ -984,12 +984,12 @@ the passage indicator (book chapter:verse) will be chosen.</p></details><details
 </td></tr></table>
 </details></details><h2 id="plain-display">Plain display<a class="headerlink" href="#plain-display" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Straightforward display of things</summary><p>There are functions to display nodes, tuples of nodes, and iterables of tuples
-of nodes in a simple way, as rows and as a table.</p></details><details class="abstract"><summary>A.plain()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">plain</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+of nodes in a simple way, as rows and as a table.</p></details><details class="abstract"><summary>A.plain()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">plain</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
-<details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a simple way.</p></details><details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p></details><details class="info"><summary>linked</summary><p><code>linked</code> indicates whether the result should be a link to the source.</p></details><details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p></details><details class="info"><summary>asString</summary><p>Instead of displaying the result directly in the output of your
+<details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a simple way.</p></details><details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p></details><details class="info"><summary>linked</summary><p><code>linked</code> indicates whether the result should be a link to the source.</p></details><details class="info"><summary>fmt</summary><p><code>fmt</code> is the text format that will be used for the represantation.</p></details><details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p></details><details class="info"><summary>asString</summary><p>Instead of displaying the result directly in the output of your
 code cell in a notebook, you can also deliver the markdown as string,
-just say <code>asString=True</code>.</p></details></details><details class="abstract"><summary>A.plainTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">plainTuple</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">seqNumber</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+just say <code>asString=True</code>.</p></details></details><details class="abstract"><summary>A.plainTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">plainTuple</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">seqNumber</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a tuple of nodes
@@ -999,16 +999,18 @@ This prepares the way for displaying query results, which come as
 a sequence of tuples of nodes.</p></details><details class="info"><summary>linked</summary><p><code>linked=1</code> the column number where the cell contents is
 linked to
 the relevant passage in the source;
-(the first data column is column 1)</p></details><details class="info"><summary>withNodes, asString</summary><p>Same as in <code>A.plain()</code>.</p></details></details><details class="abstract"><summary>A.table()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+(the first data column is column 1)</p></details><details class="info"><summary>fmt, withNodes, asString</summary><p>Same as in <code>A.plain()</code>.</p></details></details><details class="abstract"><summary>A.table()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
 5
 6
-7</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">table</span><span class="p">(</span>
+7
+8</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">table</span><span class="p">(</span>
   <span class="n">results</span><span class="p">,</span>
   <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
   <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+  <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
   <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
   <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
 <span class="p">)</span>
@@ -1020,7 +1022,7 @@ Every row is prepended with the sequence number in the iterable.</p></details><d
 The results of a search qualify, but it works
 no matter which process has produced the tuples.</p></details><details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
 Default 1.</p></details><details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
-Default the length of the iterable.</p></details><details class="info"><summary>linked, withNodes, asString</summary><p>Same as in <code>A.plainTuple()</code>.</p></details></details><h2 id="pretty-display">Pretty display<a class="headerlink" href="#pretty-display" title="Permanent link">&para;</a></h2>
+Default the length of the iterable.</p></details><details class="info"><summary>linked, fmt, withNodes, asString</summary><p>Same as in <code>A.plainTuple()</code>.</p></details></details><h2 id="pretty-display">Pretty display<a class="headerlink" href="#pretty-display" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Graphical display of things</summary><p>There are functions to display nodes, tuples of nodes, and iterables of tuples
 of nodes in a graphical way.</p></details><details class="abstract"><summary>A.prettySetup()</summary><details class="info" open="open"><summary>Description</summary><p>In pretty displays, nodes are shown together with the values of a selected
 set of features. 
@@ -1034,10 +1036,10 @@ for all kinds of nodes. So you will see clause types on words,
   and part of speech on clause atoms, al with value <code>None</code>.</p></details><details class="hint"><summary>Suppress common values</summary><p>You can use <code>noneValues</code> also to suppress the normal values of a feature,
 in order to attract attention to the more special values.</p></details><details class="caution"><summary>None values affect all features</summary><p>Beware of putting to much in <code>noneValues</code>.
 The contents of <code>noneValues</code> affect the display of
-all features, not only the custom features.</p></details></details></details><details class="abstract"><summary>A.pretty()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">pretty</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">highlights</span><span class="o">=</span><span class="p">{})</span>
+all features, not only the custom features.</p></details></details></details><details class="abstract"><summary>A.pretty()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">pretty</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">highlights</span><span class="o">=</span><span class="p">{})</span>
 </pre></div>
 </td></tr></table>
-<details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a graphical way.</p></details><details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p></details><details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p></details><details class="info"><summary>suppress</summary><p><code>suppress=set()</code> is a set of feature names that should NOT be displayed.
+<details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a graphical way.</p></details><details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p></details><details class="info"><summary>fmt</summary><p><code>fmt</code> is the text format that will be used for the represantation.</p></details><details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p></details><details class="info"><summary>suppress</summary><p><code>suppress=set()</code> is a set of feature names that should NOT be displayed.
 By default, quite a number of features is displayed for a node.
 If you find they clutter the display, you can turn them off
 selectively.</p></details><details class="explanation"><summary>Highlighting</summary><p>When nodes such as verses and sentences are displayed by <code>pretty()</code>,
@@ -1052,8 +1054,10 @@ qualifies.</p><p>If you map a node to the empty string, it will get the default 
 4
 5
 6
-7</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">prettyTuple</span><span class="p">(</span>
+7
+8</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">prettyTuple</span><span class="p">(</span>
   <span class="n">nodes</span><span class="p">,</span> <span class="n">seqNumber</span><span class="p">,</span>
+  <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
   <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
   <span class="n">suppress</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
   <span class="n">colorMap</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
@@ -1065,7 +1069,7 @@ qualifies.</p><p>If you map a node to the empty string, it will get the default 
 with customizable highlighting of nodes.</p></details><details class="explanation"><summary>By verse</summary><p>We examine all nodes in the tuple.
 We collect and show all verses in which they
 occur and highlight the material corresponding to all the nodes in the tuple.
-The highlighting can be tweaked by the optional <code>colorMap</code> parameter.</p></details><details class="info"><summary>nodes, seqNumber, withNodes</summary><p>Same as in <code>A.plainTuple()</code>.</p></details><details class="info"><summary>suppress</summary><p>Same as in <code>A.pretty()</code>.</p></details><details class="info"><summary>colorMap</summary><p>The nodes of the tuple will be highlighted.
+The highlighting can be tweaked by the optional <code>colorMap</code> parameter.</p></details><details class="info"><summary>nodes, seqNumber, fmt, withNodes</summary><p>Same as in <code>A.plainTuple()</code>.</p></details><details class="info"><summary>suppress</summary><p>Same as in <code>A.pretty()</code>.</p></details><details class="info"><summary>colorMap</summary><p>The nodes of the tuple will be highlighted.
 If <code>colorMap</code> is <code>None</code> or missing, all nodes will be highlighted with
 the default highlight color, which is yellow.</p><p>But you can assign different colors to the members of the tuple:
 <code>colorMap</code> must be a dictionary that maps the positions in a tuple 
@@ -1073,18 +1077,20 @@ to a color.</p><ul><li>If a position is not mapped, it will not be highlighted.<
     <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>.</li></ul><details class="hint"><summary>color names</summary><p>The link above points to a series of handy color names and their previews.</p></details></details><details class="info"><summary>highlights</summary><p>Same as in <code>A.pretty()</code>.</p></details><details class="note" open="open"><summary>highlights takes precedence over colorMap</summary><p>If both <code>highlights</code> and <code>colorMap</code> are given, <code>colorMap</code> is ignored.</p><p>If you need to micro-manage, <code>highlights</code> is your thing.
 Whenever possible, use <code>colorMap</code>.  </p></details><details class="note"><summary>one big highlights dictionary</summary><p>It is OK to first compose a big highlights dictionary for many tuples of nodes,
 and then run <code>prettyTuple()</code> for many different tuples with the same <code>highlights</code>.
-It does not harm performance if <code>highlights</code> maps lots of nodes outside the tuple as well.</p></details></details><details class="abstract"><summary>A.show()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">show</span><span class="p">(</span>
+It does not harm performance if <code>highlights</code> maps lots of nodes outside the tuple as well.</p></details></details><details class="abstract"><summary>A.show()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">show</span><span class="p">(</span>
   <span class="n">results</span><span class="p">,</span>
   <span class="n">condensed</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
   <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+  <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
   <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
   <span class="n">suppress</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
   <span class="n">colorMap</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
@@ -1104,7 +1110,7 @@ If a node occurs in two results, at different positions
 in the tuple, the <code>colorMap</code> wants to assign it two colors!
 Yet one color will be chosen, and it is unpredictable which one.</p></details></details><details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
 Default 1.</p></details><details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
-Default the length of the iterable.</p></details><details class="info"><summary>withNodes, suppress, colorMap, highlights</summary><p>Same as in <code>A.prettyTuple()</code>.</p></details></details><h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
+Default the length of the iterable.</p></details><details class="info"><summary>fmt, withNodes, suppress, colorMap, highlights</summary><p>Same as in <code>A.prettyTuple()</code>.</p></details></details><h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>A.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">shallow</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
