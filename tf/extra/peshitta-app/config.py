@@ -1,6 +1,6 @@
 import os
 from tf.extra.peshitta import Peshitta
-from tf.apphelpers import hasData
+from tf.apphelpers import hasData, TFDOC_URL
 
 ORG = 'etcbc'
 REPO = 'peshitta'
@@ -11,7 +11,8 @@ RELEASE_FIRST = '0.1'
 DOI = '10.5281/zenodo.1463675'
 DOI_URL = 'https://doi.org/10.5281/zenodo.1463675'
 DOC_URL = f'https://github.com/{ORG}/{REPO}/blob/master/docs'
-CHAR_URL = '{DOC_URL}/Writing/Syriac/'
+CHAR_URL = '{}/Writing/Syriac/'
+CHAR_URL = TFDOC_URL('/Writing/Syriac/')
 ZIP = [REPO]
 
 

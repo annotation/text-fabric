@@ -12,7 +12,7 @@ from tf.apphelpers import (
     getData, getDataCustom, getFeatures,
     htmlEsc, mdEsc,
     dm, dh, header, outLink,
-    URL_GH, URL_NB, API_URL,
+    URL_GH, URL_NB, API_URL, TFDOC_URL
 )
 
 from tf.server.common import getConfig
@@ -585,7 +585,7 @@ class Cunei(Atf):
       (thisOrg, thisRepo, thisPath, nbUrl, ghUrl) = repoLoc
     docUrl = f'{URL_GH}/{repoRel}/blob/master/docs'
     tutUrl = f'{URL_NB}/{cfg["org"]}/tutorials/blob/master/search.ipynb'
-    extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Cunei/'
+    extraUrl = TFDOC_URL(f'/Api/{cfg["repo"].capitalize()}/')
     dataLink = outLink(self.corpusFull, f'{docUrl}/about.md', 'provenance of this corpus')
     featureLink = outLink('Feature docs', f'{docUrl}/transcription.md', 'feature documentation')
     cuneiLink = outLink('Cunei API', extraUrl, 'cunei api documentation')

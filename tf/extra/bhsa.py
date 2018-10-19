@@ -11,7 +11,7 @@ from tf.apphelpers import (
     getBoundary, getFeatures,
     htmlEsc, mdEsc,
     dm, dh, header, outLink,
-    URL_NB, API_URL
+    URL_NB, API_URL, TFDOC_URL
 )
 from tf.server.common import getConfig
 from tf.notebook import location
@@ -372,7 +372,7 @@ class Bhsa(object):
         (thisOrg, thisRepo, thisPath, nbUrl, ghUrl) = repoLoc
     repo = cfg['repo']
     tutUrl = f'{URL_NB}/{cfg["org"]}/{repo}/blob/master/tutorial/search.ipynb'
-    extraUrl = f'https://dans-labs.github.io/text-fabric/Api/Bhsa/'
+    extraUrl = TFDOC_URL(f'/Api/{cfg["repo"].capitalize()}/')
     dataLink = outLink(repo.upper(), self.docUrl, 'provenance of this corpus')
     charLink = (
         outLink('Character table', self.charUrl, 'Hebrew characters and transcriptions')
