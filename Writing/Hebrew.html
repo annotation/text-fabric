@@ -20,6 +20,9 @@ table.chars tbody td {
     border: 2px solid #bbbbbb;
     padding: 0.1em 0.5em;
 }
+h1.chars {
+    margin-top: 1em;
+}
 .t {
     font-family: monospace;
     font-size: large;
@@ -50,11 +53,39 @@ table.chars tbody td {
 }
 </style>
 
-<h1>Consonants</h1>
-<p>Explanation: when a consonant contains an inner dot,
-it is mostly a <i>dagesh forte</i>.</p>
-<p>When the BGDKPT letters contain a dot, it is either <i>dagesh forte</i> or a <i>dagesh lene</i>.</p>
-<p>When the H contains a dot, it is called a <i>mappiq</i>.</p>
+<p><b>This just a look-up table, not a full exposition of the organisation of the Masoretic script.</b></p>
+
+<h1 class="chars">Consonants</h1>
+<ul>
+<li>For most  consonants: an inner dot is a <i>dagesh forte</i>.</li>
+<li>For the <span class="g">בגדכפת</span> consonants: an inner dot is either a <i>dagesh forte</i> or a <i>dagesh lene</i>.</li>
+<li>When the <span class="g">ה</span> contains a dot, it is called a <i>mappiq</i>.</li>
+<li><p>The phonetic representation is not meant as a 1-1 correspondence with the Masoretic script.
+    See
+    <a target="_blank" href="https://nbviewer.jupyter.org/github/etcbc/phono/blob/master/programs/phono.ipynb">phono.ipynb</a>,
+    where the phonetic transcription is computed and thoroughly documented.</p>
+    <ul>
+        <li>the phonetics follows the <i>qere</i>, not the <i>ketiv</i>,
+            when they are different.
+            In that case a <code>*</code> is added.</li>
+        <li>the tetragrammaton <span class="g">יהוה</span> is pointed in different ways;
+            the phonetics follows the pointing, but the tetragrammaton
+            is put between <code>[ ]</code>.</li>
+        <li>Some accents play a role in deciding whether a schwa is silent or mobile and
+            whether a qamets is gadol or qatan.
+            In the phonetics those accents appear as <code>ˈ</code> or <code>ˌ</code>.
+            Implied accents are also added.</li>
+        <li>Some specialties in the Masoretic script are not reflected in the phonetics:
+            <i>setumah</i>
+            <span class="g">ס</span>;
+            <i>petuhah</i>
+            <span class="g">ף</span>;
+            <i>nun-hafuka</i>
+            <span class="g"> ̇׆</span>.
+        </li>
+    </ul>
+</li>
+</ul>
 
 <table class="chars">
     <thead>
@@ -100,7 +131,7 @@ it is mostly a <i>dagesh forte</i>.</p>
     </tbody>
 </table>
 
-<h1>Vowels/Points/Marks</h1>
+<h1 class="chars">Vowels</h1>
 
 <table class="chars">
     <thead>
@@ -128,7 +159,7 @@ it is mostly a <i>dagesh forte</i>.</p>
     </tbody>
 </table>
 
-<h1>Points/Marks</h1>
+<h1 class="chars">Other points and marks</h1>
 
 <table class="chars">
     <thead>
@@ -155,7 +186,7 @@ it is mostly a <i>dagesh forte</i>.</p>
     </tbody>
 </table>
 
-<h1>Punctuation</h1>
+<h1 class="chars">Punctuation</h1>
 
 <table class="chars">
     <thead>
@@ -177,7 +208,7 @@ it is mostly a <i>dagesh forte</i>.</p>
     </tbody>
 </table>
 
-<h1>Accents</h1>
+<h1 class="chars">Accents</h1>
 
 <table class="chars">
     <thead>
