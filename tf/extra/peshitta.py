@@ -152,6 +152,7 @@ class Peshitta(object):
       asApi=False,
       lgc=False,
       hoist=False,
+      silent=False,
   ):
     config = getConfig('peshitta')
     cfg = config.configure(lgc=lgc, version=version)
@@ -182,6 +183,7 @@ class Peshitta(object):
           f'{cfg["org"]}/{cfg["repo"]}/tf',
           version,
           lgc,
+          silent=silent,
       )
       locations = cfg['locations']
       modules = cfg['modules']
@@ -248,30 +250,31 @@ class Peshitta(object):
       self.tfsLink = tfsLink
       self.tutLink = tutLink
     else:
-      if inNb:
-        lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f] + api.Eall()
-        dm(
-            '**Documentation:**'
-            f' {dataLink} {charLink} {featureLink} {peshittaLink} {tfLink} {tfsLink}'
-        )
-        dh(
-            '<details open><summary><b>Loaded features</b>:</summary>\n'
-            +
-            ' '.join(
-                outLink(feature, self.featureUrl(self.version), title='info')
-                for feature in lf
-            )
-            +
-            '</details>'
-        )
-        if repoLoc:
+      if not silent:
+        if inNb:
+          lf = ['book@ll'] + [f for f in api.Fall() if '@' not in f] + api.Eall()
           dm(
-              f'''
+              '**Documentation:**'
+              f' {dataLink} {charLink} {featureLink} {peshittaLink} {tfLink} {tfsLink}'
+          )
+          dh(
+              '<details open><summary><b>Loaded features</b>:</summary>\n'
+              +
+              ' '.join(
+                  outLink(feature, self.featureUrl(self.version), title='info')
+                  for feature in lf
+              )
+              +
+              '</details>'
+          )
+          if repoLoc:
+            dm(
+                f'''
 This notebook online:
 {outLink('NBViewer', f'{nbUrl}/{nbName}{nbExt}')}
 {outLink('GitHub', f'{ghUrl}/{nbName}{nbExt}')}
 '''
-          )
+            )
 
     self.classNames = CLASS_NAMES
     self.noneValues = NONE_VALUES
@@ -281,20 +284,21 @@ This notebook online:
         self.loadCSS()
       if hoist:
         docs = api.makeAvailableIn(hoist)
-        if inNb:
-          dh(
-              '<details open><summary><b>API members</b>:</summary>\n'
-              +
-              '<br/>\n'.join(
-                  ', '.join(
-                      outLink(entry, API_URL(ref), title='doc')
-                      for entry in entries
-                  )
-                  for (ref, entries) in docs
-              )
-              +
-              '</details>'
-          )
+        if not silent:
+          if inNb:
+            dh(
+                '<details open><summary><b>API members</b>:</summary>\n'
+                +
+                '<br/>\n'.join(
+                    ', '.join(
+                        outLink(entry, API_URL(ref), title='doc')
+                        for entry in entries
+                    )
+                    for (ref, entries) in docs
+                )
+                +
+                '</details>'
+            )
     self.table = types.MethodType(table, self)
     self.plainTuple = types.MethodType(plainTuple, self)
     self.show = types.MethodType(show, self)

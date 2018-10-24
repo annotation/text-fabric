@@ -46,7 +46,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
 ??? abstract "Bhsa()"
     ```python
-    A = Bhsa(api=api, name=None, version=VERSION)
+    A = Bhsa(api=api, name=None, version=VERSION, silent=False)
     ```
 
     ???+ info "Description"
@@ -88,6 +88,12 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         of your current notebook (without the `.ipynb` extension).
         The Bhsa API will use this to generate a link to your notebook
         on GitHub and NBViewer.
+
+    ??? info "silent"
+        If `True`, nearly all output of this call will be suppressed,
+        including the links to the loaded
+        data, features, API methods, and online versions of the notebook.
+        Error messages will still come through.
 
 
 ## Linking
