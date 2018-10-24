@@ -988,7 +988,7 @@ instead of the more verbose <code>A.api.F</code>, <code>A.api.L</code>, <code>A.
 <h2 id="set-up">Set up<a class="headerlink" href="#set-up" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>from tf.extra.cunei import Cunei</summary><details class="explanation"><summary>import Cunei</summary><p>The <code>Cunei</code> API is distributed with Text-Fabric.
 You have to import it into your program.</p></details></details><h2 id="initialisation">Initialisation<a class="headerlink" href="#initialisation" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>Cunei()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="n">A</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+<details class="abstract"><summary>Cunei()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="n">A</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">(),</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Text-Fabric will be started for you and load all features as explained above in the minimal incantation..
@@ -997,7 +997,9 @@ initializing, it scans the image directory of the data and reports how many
 photos and lineart images it sees.</p></details><details class="info"><summary>name</summary><p>If you leave this argument out, Text-Fabric will determine the name of your notebook for you.</p><p>If Text-Fabric finds the wrong name, you can override it here.</p><p>This should be the name
 of your current notebook (without the <code>.ipynb</code> extension).
 The Cunei API will use this to generate a link to your notebook
-on GitHub and NBViewer.</p></details></details><h2 id="linking">Linking<a class="headerlink" href="#linking" title="Permanent link">&para;</a></h2>
+on GitHub and NBViewer.</p></details><details class="info"><summary>silent</summary><p>If <code>True</code>, nearly all output will be suppressed, including the links to the loaded
+data, features, API methods, and online versions of the notebook.
+Error messages will still come through.</p></details></details><h2 id="linking">Linking<a class="headerlink" href="#linking" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>A.cdli()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">cdli</span><span class="p">(</span><span class="n">tablet</span><span class="p">,</span> <span class="n">linkText</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>

@@ -942,7 +942,7 @@ You have to import it into your program:</p><table class="codehilitetable"><tr><
 </pre></div>
 </td></tr></table>
 </details><h2 id="initialisation">Initialisation<a class="headerlink" href="#initialisation" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>Peshitta()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">Peshitta</span><span class="p">(</span><span class="n">api</span><span class="o">=</span><span class="n">api</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">VERSION</span><span class="p">)</span>
+<details class="abstract"><summary>Peshitta()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">Peshitta</span><span class="p">(</span><span class="n">api</span><span class="o">=</span><span class="n">api</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">VERSION</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 <details class="info" open="open"><summary>Description</summary><p>Silently loads some additional features, and <code>A</code>
@@ -967,7 +967,9 @@ with the same data version and the same set of data features.</p><details class=
 <p>Then we add the functionality of the <code>peshitta</code> module by a call to <code>Peshitta()</code>.</p></details></details><details class="info"><summary>name</summary><p>If you leave this argument out, Text-Fabric will determine the name of your notebook for you.</p><p>If Text-Fabric finds the wrong name, you can override it here.</p><p>This should be the name
 of your current notebook (without the <code>.ipynb</code> extension).
 The Peshitta API will use this to generate a link to your notebook
-on GitHub and NBViewer.</p></details></details><h2 id="linking">Linking<a class="headerlink" href="#linking" title="Permanent link">&para;</a></h2>
+on GitHub and NBViewer.</p></details><details class="info"><summary>silent</summary><p>If <code>True</code>, nearly all output will be suppressed, including the links to the loaded
+data, features, API methods, and online versions of the notebook.
+Error messages will still come through.</p></details></details><h2 id="linking">Linking<a class="headerlink" href="#linking" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>A.pshLink()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">pshLink</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>

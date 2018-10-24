@@ -283,6 +283,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#631" title="6.3.1" class="md-nav__link">
+    6.3.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#63" title="6.3" class="md-nav__link">
     6.3
   </a>
@@ -1829,6 +1836,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#631" title="6.3.1" class="md-nav__link">
+    6.3.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#63" title="6.3" class="md-nav__link">
     6.3
   </a>
@@ -2883,9 +2897,25 @@ all possibilities:
 <a href="http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb">peshitta</a>
 <a href="http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb">syrnt</a>
 <a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">cunei</a></p></details><h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Options to choose transcriptions as text representation in the TF browser</li>
-</ul>
+<h2 id="631">6.3.1<a class="headerlink" href="#631" title="Permanent link">&para;</a></h2>
+<p>2018-10-24</p>
+<p>An optional parameter <code>silent=False</code> has been added to the initialisation calls of the specific app APIs:
+you can say now</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">silent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">silent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">Peshitta</span><span class="p">(</span><span class="n">silent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">Syrnt</span><span class="p">(</span><span class="n">silent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>and then all non-error messages will be suppressed.
+If the underlying TF API needs to precompute data, it will still be shown, because this may cause an otherwise
+unexpected delay.
+Since this is a releatively rare case, and since this can be remedied by running the call again,
+I leave this behaviour as it is.</p>
 <h2 id="63">6.3<a class="headerlink" href="#63" title="Permanent link">&para;</a></h2>
 <p>2018-10-19</p>
 <ul>
