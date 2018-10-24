@@ -60,7 +60,7 @@ def hasData(lgc, dataRel, version):
   return False
 
 
-def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc):
+def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc, silent=False):
   expressBase = os.path.expanduser(EXPRESS_BASE)
   expressTfAll = f'{expressBase}/{dataRel}'
   expressTf = f'{expressTfAll}/{version}'
@@ -71,8 +71,9 @@ def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc):
 
   dataBase = hasData(lgc, dataRel, version)
   if dataBase == ghBase:
-    print(f'Using {source}-{version} local in {ghTf}')
-    sys.stdout.flush()
+    if not silent:
+      print(f'Using {source}-{version} local in {ghTf}')
+      sys.stdout.flush()
     return dataBase
   if dataBase == expressBase:
     currentRelease = firstRelease
@@ -81,31 +82,37 @@ def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc):
         for line in eh:
           currentRelease = line.strip()
     if currentRelease == release:
-      print(f'Using {source}-{version} r{release} in {exTf}')
-      sys.stdout.flush()
+      if not silent:
+        print(f'Using {source}-{version} r{release} in {exTf}')
+        sys.stdout.flush()
       return dataBase
     else:
-      print(f'Found {source}-{version} r{currentRelease} in {exTf}')
-      sys.stdout.flush()
+      if not silent:
+        print(f'Found {source}-{version} r{currentRelease} in {exTf}')
+        sys.stdout.flush()
 
-  if getDataCustom(source, release, dataUrl, expressTfAll, version):
-    print(f'Using {source}-{version} r{release} in {exTf}')
-    return expressBase
+  if getDataCustom(source, release, dataUrl, expressTfAll, version, silent=silent):
+    if not silent:
+      print(f'Using {source}-{version} r{release} in {exTf}')
+      return expressBase
   if release == currentRelease:
     return False
-  print(f'Using {source}-{version} r{currentRelease} in {exTf}')
-  sys.stdout.flush()
+  if not silent:
+    print(f'Using {source}-{version} r{currentRelease} in {exTf}')
+    sys.stdout.flush()
   return expressBase
 
 
-def getDataCustom(source, release, dataUrl, dest, version, withPaths=False):
+def getDataCustom(source, release, dataUrl, dest, version, withPaths=False, silent=False):
   versionDest = f'{dest}/{version}'
-  print(f'\tdownloading {source}-{version} r{release}')
-  print(f'\t\tfrom {dataUrl} ... ')
-  sys.stdout.flush()
+  if not silent:
+    print(f'\tdownloading {source}-{version} r{release}')
+    print(f'\t\tfrom {dataUrl} ... ')
+    sys.stdout.flush()
   try:
     r = requests.get(dataUrl, allow_redirects=True)
-    print(f'\tunzipping ... ')
+    if not silent:
+      print(f'\tunzipping ... ')
     zf = io.BytesIO(r.content)
   except Exception as e:
     print(str(e))
@@ -113,8 +120,9 @@ def getDataCustom(source, release, dataUrl, dest, version, withPaths=False):
     sys.stdout.flush()
     return False
 
-  print(f'\tsaving {source}-{version} r{release}')
-  sys.stdout.flush()
+  if not silent:
+    print(f'\tsaving {source}-{version} r{release}')
+    sys.stdout.flush()
 
   cwd = os.getcwd()
   try:
@@ -145,8 +153,9 @@ def getDataCustom(source, release, dataUrl, dest, version, withPaths=False):
   expressInfoFile = f'{versionDest}/{EXPRESS_INFO}'
   with open(expressInfoFile, 'w') as rh:
     rh.write(f'{release}')
-  print(f'\tsaved {source}-{version} r{release}')
-  sys.stdout.flush()
+  if not silent:
+    print(f'\tsaved {source}-{version} r{release}')
+    sys.stdout.flush()
   os.chdir(cwd)
   return True
 

@@ -12,7 +12,25 @@
 
 ## Queued for next release
 
-* Options to choose transcriptions as text representation in the TF browser
+## 6.3.1
+
+2018-10-24
+
+An optional parameter `silent=False` has been added to the initialisation calls of the specific app APIs:
+you can say now
+
+```python
+A = Bhsa(silent=True)
+A = Cunei(silent=True)
+A = Peshitta(silent=True)
+A = Syrnt(silent=True)
+```
+
+and then all non-error messages will be suppressed.
+If the underlying TF API needs to precompute data, it will still be shown, because this may cause an otherwise
+unexpected delay.
+Since this is a releatively rare case, and since this can be remedied by running the call again,
+I leave this behaviour as it is.
 
 ## 6.3
 

@@ -524,10 +524,11 @@ class Atf(object):
 
 
 class Cunei(Atf):
-  def __init__(self, name=None, asApi=False, version='1.0', lgc=False, hoist=False):
+  def __init__(self, name=None, asApi=False, version='1.0', lgc=False, hoist=False, silent=False):
     config = getConfig('cunei')
     cfg = config.configure(lgc=lgc, version=version)
     self.asApi = asApi
+    self.silent = silent
     repoBase = getData(
         cfg['source'],
         cfg['release'],
@@ -536,6 +537,7 @@ class Cunei(Atf):
         f'{cfg["org"]}/{cfg["source"]}/tf/{cfg["source"]}',
         version,
         lgc,
+        silent=silent,
     )
     if not repoBase:
       return
@@ -555,6 +557,7 @@ class Cunei(Atf):
           self.sourceDir,
           version,
           withPaths=True,
+          silent=silent,
       )
     self.repoTempDir = f'{repo}/{cfg["tempDir"]}'
     self._imagery = {}
@@ -615,15 +618,16 @@ class Cunei(Atf):
       self.tutLink = tutLink
     else:
       if inNb:
-        dm(
-            '**Documentation:**'
-            f' {dataLink} {charLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}'
-        )
-        if repoLoc:
-          dm(f'''
-  This notebook online:
-  {outLink('NBViewer', f'{nbUrl}/{nbName}{nbExt}')}
-  {outLink('GitHub', f'{ghUrl}/{nbName}{nbExt}')}
+        if not silent:
+          dm(
+              '**Documentation:**'
+              f' {dataLink} {charLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}'
+          )
+          if repoLoc:
+            dm(f'''
+This notebook online:
+{outLink('NBViewer', f'{nbUrl}/{nbName}{nbExt}')}
+{outLink('GitHub', f'{ghUrl}/{nbName}{nbExt}')}
 ''')
     thisRepoDir = None
     self.tempDir = None
@@ -646,19 +650,20 @@ class Cunei(Atf):
       if hoist:
         docs = api.makeAvailableIn(hoist)
         if inNb:
-          dh(
-              '<details open><summary><b>API members</b>:</summary>\n'
-              +
-              '<br/>\n'.join(
-                  ', '.join(
-                      outLink(entry, API_URL(ref), title='doc')
-                      for entry in entries
-                  )
-                  for (ref, entries) in docs
-              )
-              +
-              '</details>'
-          )
+          if not silent:
+            dh(
+                '<details open><summary><b>API members</b>:</summary>\n'
+                +
+                '<br/>\n'.join(
+                    ', '.join(
+                        outLink(entry, API_URL(ref), title='doc')
+                        for entry in entries
+                    )
+                    for (ref, entries) in docs
+                )
+                +
+                '</details>'
+            )
     self.table = types.MethodType(table, self)
     self.plainTuple = types.MethodType(plainTuple, self)
     self.show = types.MethodType(show, self)
@@ -1316,7 +1321,8 @@ class Cunei(Atf):
           key = ''
         images.setdefault(identifier, {})[key] = filePath
       self._imagery.setdefault(objectType, {})[kind] = images
-      print(f'Found {len(images)} {objectType} {kind}s')
+      if not self.silent:
+        print(f'Found {len(images)} {objectType} {kind}s')
 
 
 def _wrapLink(piece, objectType, kind, identifier, pos='bottom', caption=None):
