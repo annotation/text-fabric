@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.451f80e5.css">
       
       
     
@@ -52,8 +52,8 @@
       <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href="../.." title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../../images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -646,7 +646,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="../../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -658,7 +658,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="../../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -1043,7 +1043,7 @@
                 
                 <h1 id="search-design">Search Design<a class="headerlink" href="#search-design" title="Permanent link">&para;</a></h1>
 <h2 id="fabric-metaphor">Fabric metaphor<a class="headerlink" href="#fabric-metaphor" title="Permanent link">&para;</a></h2>
-<p><img alt="fabric" src="../../images/searchFabric.jpg" /></p>
+<p><img alt="fabric" src="/images/searchFabric.jpg" /></p>
 <p>The search space is a massive fabric of interconnected material. In it we
 discern the structures we are interested in: little pieces of fabric, also with
 interconnected material.</p>
@@ -1051,7 +1051,7 @@ interconnected material.</p>
 together in a specific manner.</p>
 <p>Search in Text-Fabric works exactly like this: you give a sample patch, and
 Text-Fabric fetches all pieces of the big fabric that match your patch.</p>
-<p><img alt="patch" src="../../images/SearchDesign/SearchDesign.001.png" /></p>
+<p><img alt="patch" src="/images/SearchDesign/SearchDesign.001.png" /></p>
 <p>The textile metaphor is particularly suited for grasping the search part of
 Text-Fabric, so I'm going to stick to it for a while. I have used it in the
 actual code as well, and even in the proofs that certain parts of the algorithm
@@ -1090,7 +1090,7 @@ terminate and are correct. Yet it remains a metaphor, and the fit is not exact.<
 </table>
 <p>We will explain the stages of the fabrication process in detail.</p>
 <h2 id="fleece">Fleece<a class="headerlink" href="#fleece" title="Permanent link">&para;</a></h2>
-<p><img alt="fleece" src="../../images/SearchDesign/SearchDesign.002.png" /></p>
+<p><img alt="fleece" src="/images/SearchDesign/SearchDesign.002.png" /></p>
 <p>A fleece corresponds with a very simple search template that asks for all
 objects of a given type:</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>word
@@ -1122,7 +1122,7 @@ divided into a small set of fleeces.</p>
 <p>The most important characteristic of a fleece is it size: the number of nodes in
 a node type.</p>
 <h2 id="spinning-thick-yarn">Spinning thick yarn<a class="headerlink" href="#spinning-thick-yarn" title="Permanent link">&para;</a></h2>
-<p><img alt="spin thick" src="../../images/SearchDesign/SearchDesign.003.png" /></p>
+<p><img alt="spin thick" src="/images/SearchDesign/SearchDesign.003.png" /></p>
 <p>Consider search templates where we ask for specific members of a node type, by
 giving feature constraints:</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -1242,7 +1242,7 @@ Finding results is nothing else than instantiating <em>qnodes</em> of the search
 template by text nodes in such a way that the <em>qedges</em> hold between the text
 edges.</p>
 <h3 id="spinning-a-qedge">Spinning a qedge<a class="headerlink" href="#spinning-a-qedge" title="Permanent link">&para;</a></h3>
-<p><img alt="spin edge1" src="../../images/SearchDesign/SearchDesign.004.png" /></p>
+<p><img alt="spin edge1" src="/images/SearchDesign/SearchDesign.004.png" /></p>
 <p>So, where were we? We have spun thick threads based on the <em>qnodes</em>
 individually, but we have not done anything with the <em>qedges</em>. That is going to
 change now.</p>
@@ -1277,7 +1277,7 @@ results, and the whole process stops.</p>
 <p>This pass over the yarns at both sides of a qedge is a <em>spin</em> action. We spin
 this qedge, and the result is that the two yarns become spun more thinly,
 hopefully.</p>
-<p><img alt="spin edge2" src="../../images/SearchDesign/SearchDesign.005.png" /></p>
+<p><img alt="spin edge2" src="/images/SearchDesign/SearchDesign.005.png" /></p>
 <p>With the yarn of words severely spun out, we are going to the next qedge, the
 one between words and phrases.</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -1305,7 +1305,7 @@ we throw the word out of the yarn of <code>w</code>. Similarly, we can throw out
 phrases from the yarn of <code>p</code>, namely those phrases that do not contain words in
 the yarn of <code>w</code>. In other words: the phrases without plural words and verbal
 tense are also out.</p>
-<p><img alt="spin edge3" src="../../images/SearchDesign/SearchDesign.006.png" /></p>
+<p><img alt="spin edge3" src="/images/SearchDesign/SearchDesign.006.png" /></p>
 <p>We continue spinning, now between phrases and clauses.</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>2    clause type=rela
@@ -1315,7 +1315,7 @@ tense are also out.</p>
 
 <p>Here we loose the phrases that are not contained in a clause of <code>type=rela</code>, and
 we loose all clauses that do not embed one of the few phrases left.</p>
-<p><img alt="spin edge4" src="../../images/SearchDesign/SearchDesign.007.png" /></p>
+<p><img alt="spin edge4" src="/images/SearchDesign/SearchDesign.007.png" /></p>
 <p>The last spin action corresponds with</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>1 verse book=Genesis
@@ -1411,7 +1411,7 @@ them. Also here there is complication: not every qedge is equally expensive when
 computed over a yarn. It might be better to compute a cheaper edge over a
 thicker yarn.</p>
 <h2 id="stitching">Stitching<a class="headerlink" href="#stitching" title="Permanent link">&para;</a></h2>
-<p><img alt="stitch" src="../../images/SearchDesign/SearchDesign.008.png" /></p>
+<p><img alt="stitch" src="/images/SearchDesign/SearchDesign.008.png" /></p>
 <p>The last step is actually getting results. A result is a bunch of nodes, one
 from each yarn, in such a way that result nodes on yarns fulfil the
 relationships that the qedges of the search template dictate. If we can find
@@ -1480,7 +1480,7 @@ nodes. We will visit many nodes and try many stitchings of length <em>n</em>, of
 a lot will fail.</p>
 <p>I have also tried a different, more complicated strategy, which is still
 implemented, and which can be used by means of an optional argument to
-<a href="../../Api/General/#search-templates"><code>S.study()</code></a>,
+<a href="/Api/General/#search-templates"><code>S.study()</code></a>,
 but results of this strategy were not particularly good.</p>
 <h3 id="small-first-strategy">Small-first strategy<a class="headerlink" href="#small-first-strategy" title="Permanent link">&para;</a></h3>
 <p>Here is the small-first strategy in a bit more detail.</p>
@@ -1568,7 +1568,7 @@ only to be filled up again by further searching.</p>
           </a>
         
         
-          <a href="../../Writing/Hebrew/" title="Hebrew" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../../Writing/Hebrew.html" title="Hebrew" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
@@ -1604,9 +1604,9 @@ only to be filled up again by further searching.</p>
       
     </div>
     
-      <script src="../../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
     
     

@@ -35,8 +35,8 @@
       
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
-      <link rel="shortcut icon" href="./images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <link rel="shortcut icon" href="images/icon/favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,21 +44,21 @@
       
     
     
-      <link rel="stylesheet" href="./assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="assets/stylesheets/application.451f80e5.css">
       
       
     
     
-      <script src="./assets/javascripts/modernizr.1aa3b519.js"></script>
+      <script src="assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
-    <link rel="stylesheet" href="./assets/fonts/material-icons.css">
+    <link rel="stylesheet" href="assets/fonts/material-icons.css">
     
     
   </head>
@@ -105,7 +105,7 @@
       <div class="md-flex__cell md-flex__cell--shrink">
         <a href="." title="Text-Fabric" class="md-header-nav__button md-logo">
           
-            <img src="./images/tficon-small.png" width="24" height="24">
+            <img src="images/tficon-small.png" width="24" height="24">
           
         </a>
       </div>
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href="." title="Text-Fabric" class="md-nav__button md-logo">
       
-        <img src="./images/tficon-small.png" width="48" height="48">
+        <img src="images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -548,7 +548,7 @@
 
 
   <li class="md-nav__item">
-    <a href="Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -560,7 +560,7 @@
 
 
   <li class="md-nav__item">
-    <a href="Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -847,71 +847,136 @@
                   <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <p><img alt="logo" src="./images/tficon-small.png" />
-<img alt="logo" src="./images/tf.png" /></p>
+                <p><img alt="logo" src="/images/tficon-small.png" />
+<img alt="logo" src="/images/tf.png" /></p>
 <h1 id="text-fabric">Text-Fabric<a class="headerlink" href="#text-fabric" title="Permanent link">&para;</a></h1>
 <h2 id="about">About<a class="headerlink" href="#about" title="Permanent link">&para;</a></h2>
 <p>Before diving head-on into Text-Fabric, you might want to read a bit more about
 what it is and where it came from. And after it, if you want to cite it, use this
 <a href="https://doi.org/10.5281/zenodo.592193">DOI: 10.5281/zenodo.592193</a>.</p>
-<details class="abstract"><summary>Intro</summary><p>Text-Fabric is several things:</p><ul><li>a <em>browser</em> for ancient text corpora</li><li>a Python3 package for processing ancient corpora</li></ul><p>A corpus of ancient texts and linguistic annotations represents a large body of knowledge.
+<details class="abstract"><summary>Intro</summary><p>Text-Fabric is several things:</p>
+<ul>
+<li>a <em>browser</em> for ancient text corpora</li>
+<li>a Python3 package for processing ancient corpora</li>
+</ul>
+<p>A corpus of ancient texts and linguistic annotations represents a large body of knowledge.
 Text-Fabric makes that knowledge accessible to non-programmers by means of 
-built-in a search interface that runs in your browser.</p><p>From there the step to program your own analytics is not so big anymore.</p><p>You can
-<a href="./Use/#work-with-exported-results">export</a>
-your results to Excel and work with them from there.</p><p>And if that is not enough,
+built-in a search interface that runs in your browser.</p>
+<p>From there the step to program your own analytics is not so big anymore.</p>
+<p>You can
+<a href="/Use/#work-with-exported-results">export</a>
+your results to Excel and work with them from there.</p>
+<p>And if that is not enough,
 you can call the Text-Fabric API from your Python programs.
-This works really well in Jupyter notebooks.</p></details><details class="abstract"><summary>Factory</summary><p>Text-Fabric can be and has been used to construct websites,
+This works really well in Jupyter notebooks.</p>
+</details>
+<details class="abstract"><summary>Factory</summary><p>Text-Fabric can be and has been used to construct websites,
 for example <a href="https://shebanq.ancient-data.org">SHEBANQ</a>.
 In the case of SHEBANQ, data has been converted to mysql databases.
-However, with the built-in <a href="./Server/Kernel">TF kernel</a>, it is also possible to
-have one process serve multiple connections and requests.</p></details><details class="note"><summary>Code statistics</summary><p>For a feel of the size of this project, in terms of lines of code,
-see <a href="./Code/Stats">Code lines</a></p></details><details class="abstract"><summary>Design principles</summary><p>There are a number of things that set Text-Fabric apart from most other ways to encode 
-corpora.</p><details class="abstract"><summary>Minimalistic model</summary><p>Text-Fabric is based on a minimalistic data model for text plus annotations.</p><p>A defining characteristic is that Text-Fabric does not make use of XML or JSON,
-but stores text as a bunch of features in plain text files.</p><p>These features are interpreted against a <em>graph</em> of nodes and edges, which make up the
-abstract fabric of the text.</p></details><details class="abstract"><summary>Performance matters</summary><p>Based on this model, Text-Fabric offers a <a href="./Api/General/">processing API</a>
+However, with the built-in <a href="/Server/Kernel">TF kernel</a>, it is also possible to
+have one process serve multiple connections and requests.</p>
+</details>
+<details class="note"><summary>Code statistics</summary><p>For a feel of the size of this project, in terms of lines of code,
+see <a href="/Code/Stats">Code lines</a></p>
+</details>
+<details class="abstract"><summary>Design principles</summary><p>There are a number of things that set Text-Fabric apart from most other ways to encode 
+corpora.</p>
+<details class="abstract"><summary>Minimalistic model</summary><p>Text-Fabric is based on a minimalistic data model for text plus annotations.</p>
+<p>A defining characteristic is that Text-Fabric does not make use of XML or JSON,
+but stores text as a bunch of features in plain text files.</p>
+<p>These features are interpreted against a <em>graph</em> of nodes and edges, which make up the
+abstract fabric of the text.</p>
+</details>
+<details class="abstract"><summary>Performance matters</summary><p>Based on this model, Text-Fabric offers a <a href="/Api/General/">processing API</a>
 to search, navigate and process text and its annotations.
 A lot of care has been taken to make this API work as fast as possible.
-Efficiency in data processing has been a design criterion from the start.</p><p>See e.g. the comparisons between the Text-Fabric way of serializing (pickle + gzip)
+Efficiency in data processing has been a design criterion from the start.</p>
+<p>See e.g. the comparisons between the Text-Fabric way of serializing (pickle + gzip)
 and
 <a href="https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/avro/avro.ipynb">avro</a>,
 <a href="https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/joblib/joblib.ipynb">joblib</a>, and
-<a href="https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/marshal/marshal.ipynb">marshal</a>.</p></details><details class="abstract"><summary>Search for patterns</summary><p>The <a href="./Api/General/#searching">search API</a>
+<a href="https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/marshal/marshal.ipynb">marshal</a>.</p>
+</details>
+<details class="abstract"><summary>Search for patterns</summary><p>The <a href="/Api/General/#searching">search API</a>
 works with search templates that define relational patterns
-which will be instantiated by nodes and edges of the fabric.</p></details><details class="abstract"><summary>Pick and choose data</summary><p>Students can selectively
-<a href="./Api/General/#loading">load</a>
+which will be instantiated by nodes and edges of the fabric.</p>
+</details>
+<details class="abstract"><summary>Pick and choose data</summary><p>Students can selectively
+<a href="/Api/General/#loading">load</a>
 the feature data they need.
 When the time comes to share the fruits of their thought,
-they can do so in various ways:</p><ul><li>when using the TF browser, results can be <a href="./Use/#work-with-exported-results">exported</a> as PDF and stored
-  in a repository;</li><li>when programming in a notebook, these notebooks can easily be shared online
-  by using GitHub of NBViewer.</li></ul></details><details class="abstract"><summary>Contributing data</summary><p>Researchers can easily
-<a href="./Api/General/#saving-features">produce new data modules</a>
-of text-fabric data out of their findings.</p></details></details><details class="abstract"><summary>Author and co-creation</summary><p>Text-Fabric is not so much an original idea as well putting a few good ideas by others
+they can do so in various ways:</p>
+<ul>
+<li>when using the TF browser, results can be <a href="/Use/#work-with-exported-results">exported</a> as PDF and stored
+  in a repository;</li>
+<li>when programming in a notebook, these notebooks can easily be shared online
+  by using GitHub of NBViewer.</li>
+</ul>
+</details>
+<details class="abstract"><summary>Contributing data</summary><p>Researchers can easily
+<a href="/Api/General/#saving-features">produce new data modules</a>
+of text-fabric data out of their findings.</p>
+</details>
+</details>
+<details class="abstract"><summary>Author and co-creation</summary><p>Text-Fabric is not so much an original idea as well putting a few good ideas by others
 into practice.
 The idea for the Text-Fabric data model ultimately derives from ideas floating
 in the ETCBC-avant-la-lettre 30 years ago, culminating in 
 <a href="https://books.google.nl/books/about/Text_Databases.html?id=9ggOBRz1dO4C&amp;redir_esc=y">Crist-Jan Doedens's Ph.D. thesis</a>.
 The fact that Ulrik Sandborg Petersen has made these ideas practical in his
-<a href="https://emdros.org">Emdros database system</a> 15 years ago was the next crucial step.</p><p>But time moves on, and nowhere is that felt as keenly as in computing science.
+<a href="https://emdros.org">Emdros database system</a> 15 years ago was the next crucial step.</p>
+<p>But time moves on, and nowhere is that felt as keenly as in computing science.
 Programming has become easier, humanists become better programmers, and personal computers have become powerful
-enough to do a sizable amount of data science on them.</p><p>That leads to exciting <em>tipping points</em>:</p><blockquote><p>In sociology, a tipping point is a point in time when a group - or
+enough to do a sizable amount of data science on them.</p>
+<p>That leads to exciting <em>tipping points</em>:</p>
+<blockquote>
+<p>In sociology, a tipping point is a point in time when a group - or
   a large number of group members — rapidly and dramatically changes
-  its behavior by widely adopting a previously rare practice.</p><p><a href="https://en.wikipedia.org/wiki/Tipping_point_(sociology)">WikiPedia</a></p></blockquote><p><strong>Text-Fabric is an attempt to tip the scales</strong> by providing digital humanists with the
-functions they need <em>now</em>, based on technology that appeals <em>now</em>.</p><p>Hence, my implementation of Text-Fabric search has been done from the ground up,
-and uses a strategy that is very different from Ulrik's MQL search engine.</p><p><a href="https://dans.knaw.nl/en/about/organisation-and-policy/staff/roorda?set_language=en">Dirk Roorda</a></p></details><details class="abstract"><summary>Acknowledgements</summary><p>While I wrote most of the code, a product like Text-Fabric is unthinkable without
+  its behavior by widely adopting a previously rare practice.</p>
+<p><a href="https://en.wikipedia.org/wiki/Tipping_point_(sociology)">WikiPedia</a></p>
+</blockquote>
+<p><strong>Text-Fabric is an attempt to tip the scales</strong> by providing digital humanists with the
+functions they need <em>now</em>, based on technology that appeals <em>now</em>.</p>
+<p>Hence, my implementation of Text-Fabric search has been done from the ground up,
+and uses a strategy that is very different from Ulrik's MQL search engine.</p>
+<p><a href="https://dans.knaw.nl/en/about/organisation-and-policy/staff/roorda?set_language=en">Dirk Roorda</a></p>
+</details>
+<details class="abstract"><summary>Acknowledgements</summary><p>While I wrote most of the code, a product like Text-Fabric is unthinkable without
 the contributions of avid users that take the trouble to give feedback and file issues,
-and have the zeal and stamina to hold on when things are frustrating and bugs overwhelming.</p><p>In particular I thank</p><ul><li>Martijn Naaijer</li><li>Cody Kingham</li><li>Christiaan Erwich</li><li>Cale Johnson</li><li>Christian Høygaard-Jensen</li><li>Camil Staps</li><li>Stephen Ku</li><li>James Cuénod</li><li>Johan de Joode</li><li>Gyusang Jin</li><li>Kyoungsik Kim</li><li>Ernst Boogert</li></ul></details><details class="explanation"><summary>History</summary><p>The foundational ideas derive from work done in and around the
+and have the zeal and stamina to hold on when things are frustrating and bugs overwhelming.</p>
+<p>In particular I thank</p>
+<ul>
+<li>Martijn Naaijer</li>
+<li>Cody Kingham</li>
+<li>Christiaan Erwich</li>
+<li>Cale Johnson</li>
+<li>Christian Høygaard-Jensen</li>
+<li>Camil Staps</li>
+<li>Stephen Ku</li>
+<li>James Cuénod</li>
+<li>Johan de Joode</li>
+<li>Gyusang Jin</li>
+<li>Kyoungsik Kim</li>
+<li>Ernst Boogert</li>
+</ul>
+</details>
+<details class="explanation"><summary>History</summary><p>The foundational ideas derive from work done in and around the
 <a href="http://etcbc.nl">ETCBC</a>
 by Eep Talstra, Crist-Jan Doedens, Henk Harmsen, Ulrik Sandborg-Petersen
-and many others.</p><p>The author entered in that world in 2007 as a 
+and many others.</p>
+<p>The author entered in that world in 2007 as a 
 <a href="https://www.dans.knaw.nl">DANS</a> employee, doing a joint small data project,
 and a bigger project SHEBANQ in 2013/2014.
 In 2013 I developed
 <a href="https://github.com/Dans-labs/laf-fabric">LAF-Fabric</a>
 in order to be able to construct the website
-<a href="https://shebanq.ancient-data.org">SHEBANQ</a>.</p><p>I have taken out everything that makes LAF-Fabric complicated and
-all things that are not essential for the sake of raw data processing.</p></details><h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
-<p><a href="./Install">Installation</a></p>
-<p><a href="./Use">Use</a></p>
+<a href="https://shebanq.ancient-data.org">SHEBANQ</a>.</p>
+<p>I have taken out everything that makes LAF-Fabric complicated and
+all things that are not essential for the sake of raw data processing.</p>
+</details>
+<h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<p><a href="/Install">Installation</a></p>
+<p><a href="/Use">Use</a></p>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
 <p>There is extensive documentation here.</p>
 <p>If you start using the Text-Fabric API in your programs, you'll definitely need it.</p>
@@ -919,17 +984,61 @@ all things that are not essential for the sake of raw data processing.</p></deta
 look at the online tutorials for the BHSA, Peshitta, SyrNT, and Cunei corpora to see what
 Text-Fabric can reveal about the data.</p>
 <details class="abstract"><summary>Tutorials</summary><p>There are tutorials and exercises to guide you into increasingly involved tasks
-on specific corpora (outside this repo):</p><ul><li><a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">Biblia Hebraica Stuttgartensia Amstelodamensis</a></li><li><a href="https://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb">Peshitta: Syriac Old Testament</a></li><li><a href="https://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb">Syriac New Testament</a></li><li><a href="https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">Proto-Cuneiform tablets from Uruk IV/III</a></li></ul><p>These links point to the <em>static</em> online versions.
+on specific corpora (outside this repo):</p>
+<ul>
+<li><a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">Biblia Hebraica Stuttgartensia Amstelodamensis</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb">Peshitta: Syriac Old Testament</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb">Syriac New Testament</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">Proto-Cuneiform tablets from Uruk IV/III</a></li>
+</ul>
+<p>These links point to the <em>static</em> online versions.
 If you want to get these Jupyter notebooks on your system in order to execute them yourself, 
-you can download them from a release:</p><ul><li><a href="https://github.com/ETCBC/bhsa/releases/download/1.3/tutorial.zip">BHSA tutorial download</a></li><li><a href="https://github.com/ETCBC/peshitta/releases/download/0.1/tutorial.zip">Peshitta tutorial download</a></li><li><a href="https://github.com/ETCBC/syrnt/releases/download/0.1/tutorial.zip">SyrNT tutorial download</a></li><li><a href="https://github.com/Nino-cunei/tutorials/releases/download/v1.0.0/tutorial.zip">Cunei tutorial download</a></li></ul><p>These are zip files, you can unpack them where you want.
-You have to have Jupyter installed.</p></details><details class="note"><summary>Concepts</summary><p>The conceptual model of Text-Fabric and how it is realized in a data model and an optimized file format.</p><ul><li><a href="./Model/Data-Model/">data model</a></li><li><a href="./Model/File-formats/">file format</a></li><li><a href="./Model/Optimizations/">optimizations</a></li><li><a href="./Model/Search/">search design</a></li></ul></details><details class="note"><summary>API Reference</summary><p>Text-Fabric offers lots of functionality that works for all corpora.
+you can download them from a release:</p>
+<ul>
+<li><a href="https://github.com/ETCBC/bhsa/releases/download/1.3/tutorial.zip">BHSA tutorial download</a></li>
+<li><a href="https://github.com/ETCBC/peshitta/releases/download/0.1/tutorial.zip">Peshitta tutorial download</a></li>
+<li><a href="https://github.com/ETCBC/syrnt/releases/download/0.1/tutorial.zip">SyrNT tutorial download</a></li>
+<li><a href="https://github.com/Nino-cunei/tutorials/releases/download/v1.0.0/tutorial.zip">Cunei tutorial download</a></li>
+</ul>
+<p>These are zip files, you can unpack them where you want.
+You have to have Jupyter installed.</p>
+</details>
+<details class="note"><summary>Concepts</summary><p>The conceptual model of Text-Fabric and how it is realized in a data model and an optimized file format.</p>
+<ul>
+<li><a href="/Model/Data-Model/">data model</a></li>
+<li><a href="/Model/File-formats/">file format</a></li>
+<li><a href="/Model/Optimizations/">optimizations</a></li>
+<li><a href="/Model/Search/">search design</a></li>
+</ul>
+</details>
+<details class="note"><summary>API Reference</summary><p>Text-Fabric offers lots of functionality that works for all corpora.
 Corpus designers can add <em>apps</em> to Text-Fabric that enhance its behaviours,
-especially in displaying the corpus in ways that make sense to people that study the corpus.</p><ul><li><a href="./Api/General/">TF api</a></li><li><a href="./Api/Apps/">TF apps</a></li><li><a href="./Api/Bhsa/">Bhsa app for the Hebrew Bible</a></li><li><a href="./Api/Peshitta/">Peshitta app for the Syriac Old Testament</a></li><li><a href="./Api/Syrnt/">Syrnt app for the Syriac New Testament</a></li><li><a href="./Api/Cunei/">Cunei app for the Proto-cuneiform tablets from Uruk</a></li></ul></details><details class="note"><summary>Papers</summary><p>Papers (preprints on <a href="https://arxiv.org">arxiv</a>), most of them published:</p><ul><li><a href="https://doi.org/10.1163/24523666-01000011">Coding the Hebrew Bible</a></li><li><a href="https://arxiv.org/abs/1603.01541">Parallel Texts in the Hebrew Bible, New Methods and Visualizations </a></li><li><a href="https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/">The Hebrew Bible as Data: Laboratory - Sharing - Experiences</a>
-   (preprint: <a href="https://arxiv.org/abs/1501.01866">arxiv</a>)</li><li><a href="https://arxiv.org/abs/1410.0286">LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible</a></li><li><a href="https://arxiv.org/abs/1412.6069">Annotation as a New Paradigm in Research Archiving</a></li></ul></details><details class="note"><summary>Presentation</summary><p>Here is a motivational
+especially in displaying the corpus in ways that make sense to people that study the corpus.</p>
+<ul>
+<li><a href="/Api/General/">TF api</a></li>
+<li><a href="/Api/Apps/">TF apps</a></li>
+<li><a href="/Api/Bhsa/">Bhsa app for the Hebrew Bible</a></li>
+<li><a href="/Api/Peshitta/">Peshitta app for the Syriac Old Testament</a></li>
+<li><a href="/Api/Syrnt/">Syrnt app for the Syriac New Testament</a></li>
+<li><a href="/Api/Cunei/">Cunei app for the Proto-cuneiform tablets from Uruk</a></li>
+</ul>
+</details>
+<details class="note"><summary>Papers</summary><p>Papers (preprints on <a href="https://arxiv.org">arxiv</a>), most of them published:</p>
+<ul>
+<li><a href="https://doi.org/10.1163/24523666-01000011">Coding the Hebrew Bible</a></li>
+<li><a href="https://arxiv.org/abs/1603.01541">Parallel Texts in the Hebrew Bible, New Methods and Visualizations </a></li>
+<li><a href="https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/">The Hebrew Bible as Data: Laboratory - Sharing - Experiences</a>
+   (preprint: <a href="https://arxiv.org/abs/1501.01866">arxiv</a>)</li>
+<li><a href="https://arxiv.org/abs/1410.0286">LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible</a></li>
+<li><a href="https://arxiv.org/abs/1412.6069">Annotation as a New Paradigm in Research Archiving</a></li>
+</ul>
+</details>
+<details class="note"><summary>Presentation</summary><p>Here is a motivational
 <a href="http://www.slideshare.net/dirkroorda/text-fabric">presentation</a>,
 given just before
 <a href="https://global-learning.org/mod/forum/discuss.php?d=22">SBL 2016</a>
-in the Lutheran Church of San Antonio.</p></details>
+in the Lutheran Church of San Antonio.</p>
+</details>
                 
                   
                 
@@ -987,9 +1096,9 @@ in the Lutheran Church of San Antonio.</p></details>
       
     </div>
     
-      <script src="./assets/javascripts/application.a59e2a89.js"></script>
+      <script src="assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:"."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
       
     
     

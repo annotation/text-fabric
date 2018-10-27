@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.451f80e5.css">
       
       
     
@@ -52,8 +52,8 @@
       <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href="../.." title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../../images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -496,7 +496,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="../../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -508,7 +508,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="../../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -923,35 +923,53 @@
 <h2 id="about">About<a class="headerlink" href="#about" title="Permanent link">&para;</a></h2>
 <p>The module <a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/bhsa.py">bhsa.py</a>
 contains a number of handy functions on top of Text-Fabric and especially its 
-<a href="../../Api/General/#search">Search</a> part.</p>
+<a href="/Api/General/#search">Search</a> part.</p>
 <h2 id="minimal-incantation">Minimal incantation<a class="headerlink" href="#minimal-incantation" title="Permanent link">&para;</a></h2>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Bhsa</span>
 <span class="n">A</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
 
 <details class="abstract"><summary>Explanation</summary><p>The first line makes the Bhsa API code, which is an app on top of Text-Fabric,
-accessible to your notebook.</p><p>The second line starts up the Bhsa API and gives it the name <code>A</code>. 
-During start-up the following happens:</p><p>(1) the Bhsa data is downloaded to your <code>~/text-fabric-data</code> directory, if not already present there;</p><p>(2) if your data has been freshly downloaded, a series of optimizations are executed;</p><p>(3) most optimized features of the Bhsa dataset are loaded;</p><p>(4) <code>hoist=globals()</code> makes the API elements directly available:
+accessible to your notebook.</p>
+<p>The second line starts up the Bhsa API and gives it the name <code>A</code>. 
+During start-up the following happens:</p>
+<p>(1) the Bhsa data is downloaded to your <code>~/text-fabric-data</code> directory, if not already present there;</p>
+<p>(2) if your data has been freshly downloaded, a series of optimizations are executed;</p>
+<p>(3) most optimized features of the Bhsa dataset are loaded;</p>
+<p>(4) <code>hoist=globals()</code> makes the API elements directly available:
 you can refer to <code>F</code>, <code>L</code>, <code>T</code>, etc. directly,
-instead of the more verbose <code>A.api.F</code>, <code>A.api.L</code>, <code>A.api.T</code> etc.</p></details><p>If you are content with the minimal incantation, you can skip <strong>Set up</strong> and <strong>Initialisation</strong>.</p>
+instead of the more verbose <code>A.api.F</code>, <code>A.api.L</code>, <code>A.api.T</code> etc.</p>
+</details>
+<p>If you are content with the minimal incantation, you can skip <strong>Set up</strong> and <strong>Initialisation</strong>.</p>
 <h2 id="set-up">Set up<a class="headerlink" href="#set-up" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>import Bhsa</summary><p>The <code>Bhsa</code> API is distributed with Text-Fabric.
-You have to import it into your program:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Bhsa</span>
+You have to import it into your program:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Bhsa</span>
 </pre></div>
 </td></tr></table>
-</details><h2 id="initialisation">Initialisation<a class="headerlink" href="#initialisation" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>Bhsa()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">api</span><span class="o">=</span><span class="n">api</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">VERSION</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+</details>
+<h2 id="initialisation">Initialisation<a class="headerlink" href="#initialisation" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>Bhsa()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">api</span><span class="o">=</span><span class="n">api</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">VERSION</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
+
 <details class="info" open="open"><summary>Description</summary><p>Silently loads some additional features, and <code>A</code>
-will give access to some extra functions.</p></details><details class="hint"><summary>Specific BHSA version</summary><p>The easiest way to load a specific version of the BHSA is like so:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s1">&#39;2017&#39;</span><span class="p">)</span>
+will give access to some extra functions.</p>
+</details>
+<details class="hint"><summary>Specific BHSA version</summary><p>The easiest way to load a specific version of the BHSA is like so:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s1">&#39;2017&#39;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
-</details><details class="info"><summary>api</summary><p>The API resulting from an earlier call <code>TF.load()</code>
+
+</details>
+<details class="info"><summary>api</summary><p>The API resulting from an earlier call <code>TF.load()</code>
 If you leave it out, an API will be created exactly like the TF-browser does it,
-with the same data version and the same set of data features.</p><details class="explanation"><summary>Set up</summary><p>This module comes in action after you have set up TF and loaded some features, e.g.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+with the same data version and the same set of data features.</p>
+<details class="explanation"><summary>Set up</summary><p>This module comes in action after you have set up TF and loaded some features, e.g.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -964,44 +982,93 @@ with the same data version and the same set of data features.</p><details class=
 <span class="n">api</span><span class="o">.</span><span class="n">makeAvailableIn</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
-<p>Then we add the functionality of the <code>bhsa</code> module by a call to <code>Bhsa()</code>.</p></details></details><details class="info"><summary>name</summary><p>If you leave this argument out, Text-Fabric will determine the name of your notebook for you.</p><p>If Text-Fabric finds the wrong name, you can override it here.</p><p>This should be the name
+
+<p>Then we add the functionality of the <code>bhsa</code> module by a call to <code>Bhsa()</code>.</p>
+</details>
+</details>
+<details class="info"><summary>name</summary><p>If you leave this argument out, Text-Fabric will determine the name of your notebook for you.</p>
+<p>If Text-Fabric finds the wrong name, you can override it here.</p>
+<p>This should be the name
 of your current notebook (without the <code>.ipynb</code> extension).
 The Bhsa API will use this to generate a link to your notebook
-on GitHub and NBViewer.</p></details><details class="info"><summary>silent</summary><p>If <code>True</code>, nearly all output of this call will be suppressed,
+on GitHub and NBViewer.</p>
+</details>
+<details class="info"><summary>silent</summary><p>If <code>True</code>, nearly all output of this call will be suppressed,
 including the links to the loaded
 data, features, API methods, and online versions of the notebook.
-Error messages will still come through.</p></details></details><h2 id="linking">Linking<a class="headerlink" href="#linking" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>A.shbLink()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">shbLink</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+Error messages will still come through.</p>
+</details>
+</details>
+<h2 id="linking">Linking<a class="headerlink" href="#linking" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>A.shbLink()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">shbLink</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
-<details open="open"><summary>Description</summary><p>Produces a link to SHEBANQ</p></details><details class="info"><summary>node</summary><p><code>node</code> can be an arbitrary node. The link targets the verse that
-contains the first word contained by the node.</p></details><details class="info"><summary>text</summary><p>You may provide the text to be displayed as the link.
+
+<details open="open"><summary>Description</summary><p>Produces a link to SHEBANQ</p>
+</details>
+<details class="info"><summary>node</summary><p><code>node</code> can be an arbitrary node. The link targets the verse that
+contains the first word contained by the node.</p>
+</details>
+<details class="info"><summary>text</summary><p>You may provide the text to be displayed as the link.
 Then the
 passage indicator (book chapter:verse) will be put
 in the tooltip (title) of the link.
 If you do not provide a link text,
-the passage indicator (book chapter:verse) will be chosen.</p></details><details class="example"><summary>Word 100000 on SHEBANQ</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">shbLink</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
+the passage indicator (book chapter:verse) will be chosen.</p>
+</details>
+<details class="example"><summary>Word 100000 on SHEBANQ</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">shbLink</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
-</details></details><h2 id="plain-display">Plain display<a class="headerlink" href="#plain-display" title="Permanent link">&para;</a></h2>
+
+</details>
+</details>
+<h2 id="plain-display">Plain display<a class="headerlink" href="#plain-display" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Straightforward display of things</summary><p>There are functions to display nodes, tuples of nodes, and iterables of tuples
-of nodes in a simple way, as rows and as a table.</p></details><details class="abstract"><summary>A.plain()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">plain</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+of nodes in a simple way, as rows and as a table.</p>
+</details>
+<details class="abstract"><summary>A.plain()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">plain</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
-<details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a simple way.</p></details><details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p></details><details class="info"><summary>fmt</summary><p><code>fmt</code> is the text format that will be used for the represantation.</p></details><details class="info"><summary>linked</summary><p><code>linked</code> indicates whether the result should be a link to SHEBANQ
-to the appropriate book/chapter/verse.</p></details><details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p></details><details class="info"><summary>asString</summary><p>Instead of displaying the result directly in the output of your
+
+<details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a simple way.</p>
+</details>
+<details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p>
+</details>
+<details class="info"><summary>fmt</summary><p><code>fmt</code> is the text format that will be used for the represantation.</p>
+</details>
+<details class="info"><summary>linked</summary><p><code>linked</code> indicates whether the result should be a link to SHEBANQ
+to the appropriate book/chapter/verse.</p>
+</details>
+<details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p>
+</details>
+<details class="info"><summary>asString</summary><p>Instead of displaying the result directly in the output of your
 code cell in a notebook, you can also deliver the markdown as string,
-just say <code>asString=True</code>.</p></details></details><details class="abstract"><summary>A.plainTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">plainTuple</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">seqNumber</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+just say <code>asString=True</code>.</p>
+</details>
+</details>
+<details class="abstract"><summary>A.plainTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">plainTuple</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">seqNumber</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">linked</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asString</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
+
 <details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a tuple of nodes
-in a simple way as a row of cells.</p></details><details class="info"><summary>nodes</summary><p><code>nodes</code> is an iterable (list, tuple, set, etc) of arbitrary nodes.</p></details><details class="info"><summary>seqNumber</summary><p><code>seqNumber</code> is an arbitrary number which will be displayed
+in a simple way as a row of cells.</p>
+</details>
+<details class="info"><summary>nodes</summary><p><code>nodes</code> is an iterable (list, tuple, set, etc) of arbitrary nodes.</p>
+</details>
+<details class="info"><summary>seqNumber</summary><p><code>seqNumber</code> is an arbitrary number which will be displayed
 in the first cell.
 This prepares the way for displaying query results, which come as
-a sequence of tuples of nodes.</p></details><details class="info"><summary>linked</summary><p><code>linked=1</code> the column number where the cell contents is
+a sequence of tuples of nodes.</p>
+</details>
+<details class="info"><summary>linked</summary><p><code>linked=1</code> the column number where the cell contents is
 linked to
 the relevant passage in SHEBANQ;
-(the first data column is column 1)</p></details><details class="info"><summary>fmt, withNodes, asString</summary><p>Same as in <code>A.plain()</code>.</p></details></details><details class="abstract"><summary>A.table()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+(the first data column is column 1)</p>
+</details>
+<details class="info"><summary>fmt, withNodes, asString</summary><p>Same as in <code>A.plain()</code>.</p>
+</details>
+</details>
+<details class="abstract"><summary>A.table()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1018,42 +1085,93 @@ the relevant passage in SHEBANQ;
 <span class="p">)</span>
 </pre></div>
 </td></tr></table>
+
 <details class="info" open="open"><summary>Description</summary><p>Displays an iterable of tuples of nodes.
 The list is displayed as a compact markdown table.
-Every row is prepended with the sequence number in the iterable.</p></details><details class="info"><summary>results</summary><p><code>results</code> an iterable of tuples of nodes.
+Every row is prepended with the sequence number in the iterable.</p>
+</details>
+<details class="info"><summary>results</summary><p><code>results</code> an iterable of tuples of nodes.
 The results of a search qualify, but it works
-no matter which process has produced the tuples.</p></details><details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
-Default 1.</p></details><details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
-Default the length of the iterable.</p></details><details class="info"><summary>linked, fmt, withNodes, asString</summary><p>Same as in <code>A.plainTuple()</code>.</p></details></details><h2 id="pretty-display">Pretty display<a class="headerlink" href="#pretty-display" title="Permanent link">&para;</a></h2>
+no matter which process has produced the tuples.</p>
+</details>
+<details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
+Default 1.</p>
+</details>
+<details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
+Default the length of the iterable.</p>
+</details>
+<details class="info"><summary>linked, fmt, withNodes, asString</summary><p>Same as in <code>A.plainTuple()</code>.</p>
+</details>
+</details>
+<h2 id="pretty-display">Pretty display<a class="headerlink" href="#pretty-display" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Graphical display of things</summary><p>There are functions to display nodes, tuples of nodes, and iterables of tuples
-of nodes in a graphical way.</p></details><details class="abstract"><summary>A.prettySetup()</summary><details class="info" open="open"><summary>Description</summary><p>In pretty displays, nodes are shown together with the values of a selected
+of nodes in a graphical way.</p>
+</details>
+<details class="abstract"><summary>A.prettySetup()</summary><details class="info" open="open"><summary>Description</summary><p>In pretty displays, nodes are shown together with the values of a selected
 set of features. 
-With this function you can add features to the display.</p></details><details class="info"><summary>features</summary><p>A string or iterable of feature names.
+With this function you can add features to the display.</p>
+</details>
+<details class="info"><summary>features</summary><p>A string or iterable of feature names.
 These features will be loaded automatically.
 In pretty displays these features will show up as <code>feature=value</code>,
-provided the value is not <code>None</code>, or something like None.</p><details class="hint" open="open"><summary>Automatic loading</summary><p>These features will load automatically, no explicit loading is
-necessary.</p></details></details><details class="info"><summary>noneValues</summary><p>A set of values for which no display should be generated.
-The default set is <code>None</code> and the strings <code>NA</code>, <code>none</code>, <code>unknown</code>.</p><details class="hint" open="open"><summary>None is useful</summary><p>Keep <code>None</code> in the set. If not, all custom features will be displayed
+provided the value is not <code>None</code>, or something like None.</p>
+<details class="hint" open="open"><summary>Automatic loading</summary><p>These features will load automatically, no explicit loading is
+necessary.</p>
+</details>
+</details>
+<details class="info"><summary>noneValues</summary><p>A set of values for which no display should be generated.
+The default set is <code>None</code> and the strings <code>NA</code>, <code>none</code>, <code>unknown</code>.</p>
+<details class="hint" open="open"><summary>None is useful</summary><p>Keep <code>None</code> in the set. If not, all custom features will be displayed
 for all kinds of nodes. So you will see clause types on words,
-  and part of speech on clause atoms, al with value <code>None</code>.</p></details><details class="hint"><summary>Suppress common values</summary><p>You can use <code>noneValues</code> also to suppress the normal values of a feature,
-in order to attract attention to the more special values, e.g.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">noneValues</span><span class="o">=</span><span class="p">{</span><span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;NA&#39;</span><span class="p">,</span> <span class="s1">&#39;unknown&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;sg&#39;</span><span class="p">,</span> <span class="s1">&#39;p3&#39;</span><span class="p">}</span>
+  and part of speech on clause atoms, al with value <code>None</code>.</p>
+</details>
+<details class="hint"><summary>Suppress common values</summary><p>You can use <code>noneValues</code> also to suppress the normal values of a feature,
+in order to attract attention to the more special values, e.g.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">noneValues</span><span class="o">=</span><span class="p">{</span><span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;NA&#39;</span><span class="p">,</span> <span class="s1">&#39;unknown&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;sg&#39;</span><span class="p">,</span> <span class="s1">&#39;p3&#39;</span><span class="p">}</span>
 </pre></div>
 </td></tr></table>
-</details><details class="caution"><summary>None values affect all features</summary><p>Beware of putting to much in <code>noneValues</code>.
+
+</details>
+<details class="caution"><summary>None values affect all features</summary><p>Beware of putting to much in <code>noneValues</code>.
 The contents of <code>noneValues</code> affect the display of
-all features, not only the custom features.</p></details></details></details><details class="abstract"><summary>A.pretty()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">pretty</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">highlights</span><span class="o">=</span><span class="p">{})</span>
+all features, not only the custom features.</p>
+</details>
+</details>
+</details>
+<details class="abstract"><summary>A.pretty()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">pretty</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">withNodes</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">highlights</span><span class="o">=</span><span class="p">{})</span>
 </pre></div>
 </td></tr></table>
-<details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a graphical way.</p></details><details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p></details><details class="info"><summary>fmt</summary><p><code>fmt</code> is the text format that will be used for the represantation.</p></details><details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p></details><details class="info"><summary>suppress</summary><p><code>suppress=set()</code> is a set of feature names that should NOT be displayed.
+
+<details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a node in a graphical way.</p>
+</details>
+<details class="info"><summary>node</summary><p><code>node</code> is a node of arbitrary type.</p>
+</details>
+<details class="info"><summary>fmt</summary><p><code>fmt</code> is the text format that will be used for the represantation.</p>
+</details>
+<details class="info"><summary>withNodes</summary><p><code>withNodes</code> indicates whether node numbers should be displayed.</p>
+</details>
+<details class="info"><summary>suppress</summary><p><code>suppress=set()</code> is a set of feature names that should NOT be displayed.
 By default, quite a number of features is displayed for a node.
 If you find they clutter the display, you can turn them off
-selectively.</p></details><details class="explanation"><summary>Highlighting</summary><p>When nodes such as verses and sentences are displayed by <code>pretty()</code>,
+selectively.</p>
+</details>
+<details class="explanation"><summary>Highlighting</summary><p>When nodes such as verses and sentences are displayed by <code>pretty()</code>,
 their contents is also displayed. You can selectively highlight
-those parts.</p></details><details class="info"><summary>highlights</summary><p><code>highlights={}</code> is a set or mapping of nodes that should be highlighted.
-Only nodes that are involved in the display will be highlighted.</p><p>If <code>highlights</code> is a set, its nodes will be highlighted with a default color (yellow).</p><p>If it is a dictionary, it should map nodes to colors.
+those parts.</p>
+</details>
+<details class="info"><summary>highlights</summary><p><code>highlights={}</code> is a set or mapping of nodes that should be highlighted.
+Only nodes that are involved in the display will be highlighted.</p>
+<p>If <code>highlights</code> is a set, its nodes will be highlighted with a default color (yellow).</p>
+<p>If it is a dictionary, it should map nodes to colors.
 Any color that is a valid 
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>
-qualifies.</p><p>If you map a node to the empty string, it will get the default highlight color.</p><details class="hint"><summary>color names</summary><p>The link above points to a series of handy color names and their previews.</p></details></details></details><details class="abstract"><summary>A.prettyTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+qualifies.</p>
+<p>If you map a node to the empty string, it will get the default highlight color.</p>
+<details class="hint"><summary>color names</summary><p>The link above points to a series of handy color names and their previews.</p>
+</details>
+</details>
+</details>
+<details class="abstract"><summary>A.prettyTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1070,19 +1188,46 @@ qualifies.</p><p>If you map a node to the empty string, it will get the default 
 <span class="p">)</span>
 </pre></div>
 </td></tr></table>
+
 <details class="info" open="open"><summary>Description</summary><p>Displays the material that corresponds to a tuple of nodes in a graphical way,
-with customizable highlighting of nodes.</p></details><details class="explanation"><summary>By verse</summary><p>We examine all nodes in the tuple.
+with customizable highlighting of nodes.</p>
+</details>
+<details class="explanation"><summary>By verse</summary><p>We examine all nodes in the tuple.
 We collect and show all verses in which they
 occur and highlight the material corresponding to all the nodes in the tuple.
-The highlighting can be tweaked by the optional <code>colorMap</code> parameter.</p></details><details class="info"><summary>nodes, seqNumber, fmt, withNodes</summary><p>Same as in <code>A.plainTuple()</code>.</p></details><details class="info"><summary>suppress</summary><p>Same as in <code>A.pretty()</code>.</p></details><details class="info"><summary>colorMap</summary><p>The nodes of the tuple will be highlighted.
+The highlighting can be tweaked by the optional <code>colorMap</code> parameter.</p>
+</details>
+<details class="info"><summary>nodes, seqNumber, fmt, withNodes</summary><p>Same as in <code>A.plainTuple()</code>.</p>
+</details>
+<details class="info"><summary>suppress</summary><p>Same as in <code>A.pretty()</code>.</p>
+</details>
+<details class="info"><summary>colorMap</summary><p>The nodes of the tuple will be highlighted.
 If <code>colorMap</code> is <code>None</code> or missing, all nodes will be highlighted with
-the default highlight color, which is yellow.</p><p>But you can assign different colors to the members of the tuple:
+the default highlight color, which is yellow.</p>
+<p>But you can assign different colors to the members of the tuple:
 <code>colorMap</code> must be a dictionary that maps the positions in a tuple 
-to a color.</p><ul><li>If a position is not mapped, it will not be highlighted.</li><li>If it is mapped to the empty string, it gets the default highlight color.</li><li>Otherwise, it should be mapped to a string that is a valid
-    <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>.</li></ul><details class="hint"><summary>color names</summary><p>The link above points to a series of handy color names and their previews.</p></details></details><details class="info"><summary>highlights</summary><p>Same as in <code>A.pretty()</code>.</p></details><details class="note" open="open"><summary>highlights takes precedence over colorMap</summary><p>If both <code>highlights</code> and <code>colorMap</code> are given, <code>colorMap</code> is ignored.</p><p>If you need to micro-manage, <code>highlights</code> is your thing.
-Whenever possible, use <code>colorMap</code>.  </p></details><details class="note"><summary>one big highlights dictionary</summary><p>It is OK to first compose a big highlights dictionary for many tuples of nodes,
+to a color.</p>
+<ul>
+<li>If a position is not mapped, it will not be highlighted.</li>
+<li>If it is mapped to the empty string, it gets the default highlight color.</li>
+<li>Otherwise, it should be mapped to a string that is a valid
+    <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>.</li>
+</ul>
+<details class="hint"><summary>color names</summary><p>The link above points to a series of handy color names and their previews.</p>
+</details>
+</details>
+<details class="info"><summary>highlights</summary><p>Same as in <code>A.pretty()</code>.</p>
+</details>
+<details class="note" open="open"><summary>highlights takes precedence over colorMap</summary><p>If both <code>highlights</code> and <code>colorMap</code> are given, <code>colorMap</code> is ignored.</p>
+<p>If you need to micro-manage, <code>highlights</code> is your thing.
+Whenever possible, use <code>colorMap</code>.  </p>
+</details>
+<details class="note"><summary>one big highlights dictionary</summary><p>It is OK to first compose a big highlights dictionary for many tuples of nodes,
 and then run <code>prettyTuple()</code> for many different tuples with the same <code>highlights</code>.
-It does not harm performance if <code>highlights</code> maps lots of nodes outside the tuple as well.</p></details></details><details class="abstract"><summary>A.show()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+It does not harm performance if <code>highlights</code> maps lots of nodes outside the tuple as well.</p>
+</details>
+</details>
+<details class="abstract"><summary>A.show()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span> 1
  2
  3
  4
@@ -1103,36 +1248,74 @@ It does not harm performance if <code>highlights</code> maps lots of nodes outsi
 <span class="p">)</span>
 </pre></div>
 </td></tr></table>
+
 <details class="info" open="open"><summary>Description</summary><p>Displays an iterable of tuples of nodes.
-The elements of the list are displayed by <code>A.prettyTuple()</code>.</p></details><details class="info"><summary>results</summary><p><code>results</code> an iterable of tuples of nodes.
+The elements of the list are displayed by <code>A.prettyTuple()</code>.</p>
+</details>
+<details class="info"><summary>results</summary><p><code>results</code> an iterable of tuples of nodes.
 The results of a search qualify, but it works
-no matter which process has produced the tuples.</p></details><details class="info"><summary>condensed</summary><p><code>condensed</code> indicates one of two modes of displaying the result list:</p><ul><li><code>True</code>: instead of showing all results one by one,
+no matter which process has produced the tuples.</p>
+</details>
+<details class="info"><summary>condensed</summary><p><code>condensed</code> indicates one of two modes of displaying the result list:</p>
+<ul>
+<li><code>True</code>: instead of showing all results one by one,
     we show all verses with all results in it highlighted.
     That way, we blur the distinction between the individual results,
     but it is easier to oversee where the results are.
-    This is how SHEBANQ displays its query results.</li><li><code>False</code>: make a separate display for each result tuple.
-    This gives the best account of the exact result set.</li></ul><details class="caution" open="open"><summary>mixing up highlights</summary><p>Condensing may mix-up the highlight coloring.
+    This is how SHEBANQ displays its query results.</li>
+<li><code>False</code>: make a separate display for each result tuple.
+    This gives the best account of the exact result set.</li>
+</ul>
+<details class="caution" open="open"><summary>mixing up highlights</summary><p>Condensing may mix-up the highlight coloring.
 If a node occurs in two results, at different positions
 in the tuple, the <code>colorMap</code> wants to assign it two colors!
-Yet one color will be chosen, and it is unpredictable which one.</p></details></details><details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
-Default 1.</p></details><details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
-Default the length of the iterable.</p></details><details class="info"><summary>fmt, withNodes, suppress, colorMap, highlights</summary><p>Same as in <code>A.prettyTuple()</code>.</p></details></details><h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>A.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">shallow</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+Yet one color will be chosen, and it is unpredictable which one.</p>
+</details>
+</details>
+<details class="info"><summary>start</summary><p><code>start</code> is the starting point in the results iterable (1 is the first one).
+Default 1.</p>
+</details>
+<details class="info"><summary>end</summary><p><code>end</code> is the end point in the results iterable.
+Default the length of the iterable.</p>
+</details>
+<details class="info"><summary>fmt, withNodes, suppress, colorMap, highlights</summary><p>Same as in <code>A.prettyTuple()</code>.</p>
+</details>
+</details>
+<h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>A.search()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">shallow</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
+
 <details open="open"><summary>Description</summary><p>Searches in the same way as the generic Text-Fabric <code>S.search()</code>.
 But whereas the <code>S</code> version returns a generator which yields the results
 one by one, the <code>A</code> version collects all results and sorts them.
-It then reports the number of results.</p></details><details class="info"><summary>query</summary><p><code>query</code> is the search template that has to be searched for.</p></details><details class="info"><summary>silent</summary><p><code>silent</code>: if <code>True</code> it will suppress the reporting of the number of results.</p></details><details class="info"><summary>shallow</summary><p>If <code>True</code> or <code>1</code>, the result is a set of things that match the top-level element
-of the <code>query</code>.</p><p>If <code>2</code> or a bigger number <em>n</em>, return the set of truncated result tuples: only
-the first <em>n</em> members of each tuple is retained.</p><p>If <code>False</code> or <code>0</code>, a sorted list of all result tuples will be returned.</p></details><details class="info"><summary>sets</summary><p>If not <code>None</code>, it should be a dictionary of sets, keyed by a names.
-In <code>query</code> you can refer to those names to invoke those sets.</p><p>For example, if you have a set <code>gappedPhrases</code> of all phrase nodes that have a gap,
-you can pass <code>sets=dict(gphrase=gappedPhrases)</code>, and then in your query you can say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+It then reports the number of results.</p>
+</details>
+<details class="info"><summary>query</summary><p><code>query</code> is the search template that has to be searched for.</p>
+</details>
+<details class="info"><summary>silent</summary><p><code>silent</code>: if <code>True</code> it will suppress the reporting of the number of results.</p>
+</details>
+<details class="info"><summary>shallow</summary><p>If <code>True</code> or <code>1</code>, the result is a set of things that match the top-level element
+of the <code>query</code>.</p>
+<p>If <code>2</code> or a bigger number <em>n</em>, return the set of truncated result tuples: only
+the first <em>n</em> members of each tuple is retained.</p>
+<p>If <code>False</code> or <code>0</code>, a sorted list of all result tuples will be returned.</p>
+</details>
+<details class="info"><summary>sets</summary><p>If not <code>None</code>, it should be a dictionary of sets, keyed by a names.
+In <code>query</code> you can refer to those names to invoke those sets.</p>
+<p>For example, if you have a set <code>gappedPhrases</code> of all phrase nodes that have a gap,
+you can pass <code>sets=dict(gphrase=gappedPhrases)</code>, and then in your query you can say</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>gphrase function=Pred
   word sp=verb
 </pre></div>
 </td></tr></table>
-<p>etc.</p></details><details class="hint"><summary>search template reference</summary><p>See the <a href="../../Api/General#search-templates">search template reference</a></p></details></details>
+
+<p>etc.</p>
+</details>
+<details class="hint"><summary>search template reference</summary><p>See the <a href="/Api/General#search-templates">search template reference</a></p>
+</details>
+</details>
                 
                   
                 
@@ -1204,9 +1387,9 @@ you can pass <code>sets=dict(gphrase=gappedPhrases)</code>, and then in your que
       
     </div>
     
-      <script src="../../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
     
     

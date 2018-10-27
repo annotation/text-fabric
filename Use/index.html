@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.451f80e5.css">
       
       
     
@@ -52,8 +52,8 @@
       <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href=".." title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -548,7 +548,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -560,7 +560,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -856,61 +856,124 @@ Here is how to start up text-fabric.</p>
 <code>text-fabric peshitta</code> or
 <code>text-fabric syrnt</code> or
 <code>text-fabric cunei</code>
-in the search box, and then Enter.</p></details><details class="hint"><summary>On Linux or Macos?</summary><p>You can open a terminal (command prompt), and just say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric bhsa
+in the search box, and then Enter.</p>
+</details>
+<details class="hint"><summary>On Linux or Macos?</summary><p>You can open a terminal (command prompt), and just say</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric bhsa
 </pre></div>
 </td></tr></table>
-<p>or </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric peshitta
+
+<p>or </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric peshitta
 </pre></div>
 </td></tr></table>
-<p>or </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric syrnt
+
+<p>or </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric syrnt
 </pre></div>
 </td></tr></table>
-<p>or </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric cunei
+
+<p>or </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric cunei
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>All platforms</summary><p>The corpus data will be downloaded automatically,
+
+</details>
+<details class="abstract"><summary>All platforms</summary><p>The corpus data will be downloaded automatically,
 and be loaded into text-fabric.
 Then your browser will open and load the search interface.
-There you'll find links to further help.</p></details><details class="hint"><summary>Local Github Clones</summary><p>If you pass the option <code>-lgc</code> to <code>text-fabric</code>, than Text-Fabric will
+There you'll find links to further help.</p>
+</details>
+<details class="hint"><summary>Local Github Clones</summary><p>If you pass the option <code>-lgc</code> to <code>text-fabric</code>, than Text-Fabric will
 check whether you have data in your local github clones under <code>~/github</code>.
-If you have relevant data there, Text-Fabric will use it.</p><p>This is useful if your local data is better/newer than the data on the last
-published github release.</p></details><p><img alt="bhsa" src="../images/bhsa-app.png" /></p>
+If you have relevant data there, Text-Fabric will use it.</p>
+<p>This is useful if your local data is better/newer than the data on the last
+published github release.</p>
+</details>
+<p><img alt="bhsa" src="/images/bhsa-app.png" /></p>
 <p><em>Above: Querying the BHSA data</em></p>
 <p><em>Below: Querying the Cunei data</em></p>
-<p><img alt="cunei" src="../images/cunei-app.png" /></p>
+<p><img alt="cunei" src="/images/cunei-app.png" /></p>
 <details class="hint"><summary>Fetching corpora</summary><p>The Text-Fabric browser fetches the corpora it needs from GitHub automatically.
 The TF data is fairly compact
 (25 MB for the Hebrew Bible,
 2,1 MB for the Peshitta,
 2,1 MB for the Syriac New Testament,
-1.6 MB for the Cunei corpus).</p><details class="caution"><summary>Size of data</summary><p>There might be sizable additional data (550 MB images for the Cunei corpus).
+1.6 MB for the Cunei corpus).</p>
+<details class="caution"><summary>Size of data</summary><p>There might be sizable additional data (550 MB images for the Cunei corpus).
 In that case, take care to have a good internet connection when you use the
-Text-Fabric browser for the first time.</p></details><p><a href="../Corpora">More about corpora</a></p></details><details class="hint"><summary>Saving your session</summary><p>Your session will be saved in a file with extension <code>.tfjob</code> in the directory
+Text-Fabric browser for the first time.</p>
+</details>
+<p><a href="/Corpora">More about corpora</a></p>
+</details>
+<details class="hint"><summary>Saving your session</summary><p>Your session will be saved in a file with extension <code>.tfjob</code> in the directory
 from where you have issued the <code>text-fabric</code> command.
 From within the browser you can rename and duplicate sessions and move to
-other directories. You can also load other sessions in other tabs.</p></details><details class="hint"><summary>Multiple windows</summary><p>After you have issued the <code>text-fabric</code> command, a <em>TF kernel</em> is started for you.
+other directories. You can also load other sessions in other tabs.</p>
+</details>
+<details class="hint"><summary>Multiple windows</summary><p>After you have issued the <code>text-fabric</code> command, a <em>TF kernel</em> is started for you.
 This is a process that holds all the data and can deliver it to other processes,
-such as your web browser.</p><p>As long as you leave the TF kernel on, you have instant access to your corpus.</p><p>You can open other browsers and windows and tabs with the same url,
-and they will load quickly, without the long wait you experienced when the TF kernel was loading.</p></details><details class="hint"><summary>Close</summary><p>You can close the TF kernel by pressing Ctrl-C in the terminal or command prompt where you have
-started <code>text-fabric</code> up.</p></details><h2 id="work-with-exported-results">Work with exported results<a class="headerlink" href="#work-with-exported-results" title="Permanent link">&para;</a></h2>
+such as your web browser.</p>
+<p>As long as you leave the TF kernel on, you have instant access to your corpus.</p>
+<p>You can open other browsers and windows and tabs with the same url,
+and they will load quickly, without the long wait you experienced when the TF kernel was loading.</p>
+</details>
+<details class="hint"><summary>Close</summary><p>You can close the TF kernel by pressing Ctrl-C in the terminal or command prompt where you have
+started <code>text-fabric</code> up.</p>
+</details>
+<h2 id="work-with-exported-results">Work with exported results<a class="headerlink" href="#work-with-exported-results" title="Permanent link">&para;</a></h2>
 <p>You can export your results to CSV files which you can process with various tools,
 including your own.</p>
 <details class="hint"><summary>Exporting your results</summary><p>You can use the "Export" tab to tell the story behind your query and then export all your
-results. A new page will open, which you can save as a PDF.</p><p>There is also a markdown file <code>about.md</code> with
-your description and some provenance metadata.</p><p>Moreover, a file <code>RESULTSX.tsv</code> is written into a local directory corresponding to the
+results. A new page will open, which you can save as a PDF.</p>
+<p>There is also a markdown file <code>about.md</code> with
+your description and some provenance metadata.</p>
+<p>Moreover, a file <code>RESULTSX.tsv</code> is written into a local directory corresponding to the
 job you are in, which contains your precise search results, decorated with the features
-you have used in your searchTemplate.</p><p>In addition, some extra data files will be written along side.
+you have used in your searchTemplate.</p>
+<p>In addition, some extra data files will be written along side.
 Your results as tuples of nodes, your condensed results (if you have opted for them),
-and a CONTEXT.tsv that contains all feature values for every node in the results.</p><p>Now, if you want to share your results for checking and replication, put all this in a GitHub repository:</p><details class="note" open="open"><summary>Example</summary><p><strong>Cunei</strong>:</p><ul><li><a href="https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/about.md">about.md</a></li><li><a href="https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/RESULTSX.tsv">RESULTSX.tsv</a></li></ul><p><strong>BHSA</strong>:</p><ul><li><a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/about.md">about.md</a></li><li><a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/RESULTSX.tsv">RESULTSX.tsv</a></li></ul></details><details class="note" open="open"><summary>Example with lexemes</summary><p><strong>BHSA</strong>:</p><ul><li><a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/about.md">about.md</a></li><li><a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv">RESULTSX.tsv</a></li></ul><p>This example shows how you can get a complete dictionary in your pocket by issuing a simple TF query.</p></details><p>If you want to be able to cite those results in a journal article, archive the GitHub repo
-in question to <a href="https://zenodo.org">ZENODO</a> and obtain a DOI.</p><details class="hint" open="open"><summary>Encoding</summary><p>The file <code>RESULTS.tsv</code> is not in the usual <code>utf8</code> encoding, but in <code>utf_16</code> encoding.
-The reason is that this is the only encoding in which Excel handles CSV files properly.</p><p>So if you work with this file in Python, specify the encoding <code>utf_16</code>.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+and a CONTEXT.tsv that contains all feature values for every node in the results.</p>
+<p>Now, if you want to share your results for checking and replication, put all this in a GitHub repository:</p>
+<details class="note" open="open"><summary>Example</summary><p><strong>Cunei</strong>:</p>
+<ul>
+<li><a href="https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/about.md">about.md</a></li>
+<li><a href="https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/RESULTSX.tsv">RESULTSX.tsv</a></li>
+</ul>
+<p><strong>BHSA</strong>:</p>
+<ul>
+<li><a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/about.md">about.md</a></li>
+<li><a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/RESULTSX.tsv">RESULTSX.tsv</a></li>
+</ul>
+</details>
+<details class="note" open="open"><summary>Example with lexemes</summary><p><strong>BHSA</strong>:</p>
+<ul>
+<li><a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/about.md">about.md</a></li>
+<li><a href="https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv">RESULTSX.tsv</a></li>
+</ul>
+<p>This example shows how you can get a complete dictionary in your pocket by issuing a simple TF query.</p>
+</details>
+<p>If you want to be able to cite those results in a journal article, archive the GitHub repo
+in question to <a href="https://zenodo.org">ZENODO</a> and obtain a DOI.</p>
+<details class="hint" open="open"><summary>Encoding</summary><p>The file <code>RESULTS.tsv</code> is not in the usual <code>utf8</code> encoding, but in <code>utf_16</code> encoding.
+The reason is that this is the only encoding in which Excel handles CSV files properly.</p>
+<p>So if you work with this file in Python, specify the encoding <code>utf_16</code>.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;RESULTSX.tsv&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf_16&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
   <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">fh</span><span class="p">:</span>
   <span class="c1"># do something with row </span>
 </pre></div>
 </td></tr></table>
-<p>Conversely, if you want to write a CSV with Hebrew in it, to be opened in Excel, take care to:</p><ul><li>give the file name extension <code>.tsv</code> (not <code>.csv</code>)</li><li>make the file <strong>tab</strong> separated (do not use the comma or semicolon!)</li><li>use the encoding <code>utf_16_le</code> (not merely <code>utf_16</code>, nor <code>utf8</code>!)</li><li>start the file with a BOM mark.</li></ul><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+
+<p>Conversely, if you want to write a CSV with Hebrew in it, to be opened in Excel, take care to:</p>
+<ul>
+<li>give the file name extension <code>.tsv</code> (not <code>.csv</code>)</li>
+<li>make the file <strong>tab</strong> separated (do not use the comma or semicolon!)</li>
+<li>use the encoding <code>utf_16_le</code> (not merely <code>utf_16</code>, nor <code>utf8</code>!)</li>
+<li>start the file with a BOM mark.</li>
+</ul>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -921,51 +984,85 @@ The reason is that this is the only encoding in which Excel handles CSV files pr
     <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
+
 <details class="note"><summary>Gory details</summary><p>The file has been written with the <code>utf_16_le</code> encoding, and the first character is the unicode
 FEFF character. That is needed for machines so that they can see which byte in a 16 bits word is
 the least end (<code>le</code>) and which one is the big end (<code>be</code>). Knowing that the first character is FEFF,
 all machines can see whether this is in a <em>least-endian (le)</em> encoding or in a  <em>big-endian (be)</em>.
-Hence this character is called the Byte Order Mark (BOM).</p><p>See more on <a href="https://en.wikipedia.org/wiki/Byte_order_mark">wikipedia</a>.</p><p>When reading a file with encoding <code>utf_16</code>, Python reads the BOM, draws its conclusions, and strips the
-BOM. So when you iterate over its lines, you will not see the BOM, which is good.</p><p>But when you read a file with encoding <code>utf_16_le</code>, Python passes the BOM through, and you have to skip
-it yourself. That is unpleasant.</p><p>Hence, use <code>utf_16</code> for reading.  </p></details></details></details><h2 id="use-the-text-fabric-api">Use the Text-Fabric API<a class="headerlink" href="#use-the-text-fabric-api" title="Permanent link">&para;</a></h2>
+Hence this character is called the Byte Order Mark (BOM).</p>
+<p>See more on <a href="https://en.wikipedia.org/wiki/Byte_order_mark">wikipedia</a>.</p>
+<p>When reading a file with encoding <code>utf_16</code>, Python reads the BOM, draws its conclusions, and strips the
+BOM. So when you iterate over its lines, you will not see the BOM, which is good.</p>
+<p>But when you read a file with encoding <code>utf_16_le</code>, Python passes the BOM through, and you have to skip
+it yourself. That is unpleasant.</p>
+<p>Hence, use <code>utf_16</code> for reading.  </p>
+</details>
+</details>
+</details>
+<h2 id="use-the-text-fabric-api">Use the Text-Fabric API<a class="headerlink" href="#use-the-text-fabric-api" title="Permanent link">&para;</a></h2>
 <p>Explore your corpus by means of programming.</p>
-<details class="abstract"><summary>Into the notebook</summary><p>Start programming: write a python script or code in the Jupyter notebook</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<details class="abstract"><summary>Into the notebook</summary><p>Start programming: write a python script or code in the Jupyter notebook</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> somewhere-else
 jupyter notebook
 </pre></div>
 </td></tr></table>
-<p>Enter the following text in a code cell</p><p><strong>BHSA</strong>:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+
+<p>Enter the following text in a code cell</p>
+<p><strong>BHSA</strong>:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Bhsa</span>
 <span class="n">B</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
-<p><strong>Peshitta</strong>:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+
+<p><strong>Peshitta</strong>:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.peshitta</span> <span class="kn">import</span> <span class="n">Peshitta</span>
 <span class="n">P</span> <span class="o">=</span> <span class="n">Peshitta</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
-<p><strong>SyrNT</strong>:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+
+<p><strong>SyrNT</strong>:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.syrnt</span> <span class="kn">import</span> <span class="n">Syrnt</span>
 <span class="n">SY</span> <span class="o">=</span> <span class="n">Syrnt</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
-<p><strong>Cunei</strong>:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+
+<p><strong>Cunei</strong>:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.cunei</span> <span class="kn">import</span> <span class="n">Cunei</span>
 <span class="n">CN</span> <span class="o">=</span> <span class="n">Cunei</span><span class="p">(</span><span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
 </pre></div>
 </td></tr></table>
+
 <details class="note"><summary>data</summary><p>With these incantations, Text-Fabric will download the data automatically
 and store it in a directory <code>text-fabric-data</code> directly in your home
-directory.</p><p>If you have data in other places, you can also use that by means of
-extra arguments supplied to <code>Bhsa()</code>, <code>Peshitta()</code>, <code>Syrnt()</code> and <code>Cunei()</code>.</p></details></details><details class="abstract"><summary>Using Hebrew data</summary><p>To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
-<a href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">start</a>.</p><p>Or go straight to the
-<a href="../Api/Bhsa">bhsa-api-docs</a>.</p></details><details class="abstract"><summary>Using Syriac data</summary><p>To get started with the Peshitta corpus, use its tutorial in the Peshitta repo:
-<a href="http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb">start</a>.</p><p>Or go straight to the
-<a href="../Api/Peshitta">peshitta-api-docs</a>.</p><p>To get started with the Syriac New Testament corpus, use its tutorial in the Syrnt repo:
-<a href="http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb">start</a>.</p><p>Or go straight to the
-<a href="../Api/Syrnt">syrnt-api-docs</a>.</p></details><details class="abstract"><summary>Using Cuneiform data</summary><p>To get started with the Uruk corpus, use its tutorial in the Nino-cunei repo:
-<a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">start</a>.</p><p>Or go straight to the
-<a href="../Api/Cunei">cunei-api-docs</a>.</p></details>
+directory.</p>
+<p>If you have data in other places, you can also use that by means of
+extra arguments supplied to <code>Bhsa()</code>, <code>Peshitta()</code>, <code>Syrnt()</code> and <code>Cunei()</code>.</p>
+</details>
+</details>
+<details class="abstract"><summary>Using Hebrew data</summary><p>To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
+<a href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">start</a>.</p>
+<p>Or go straight to the
+<a href="/Api/Bhsa">bhsa-api-docs</a>.</p>
+</details>
+<details class="abstract"><summary>Using Syriac data</summary><p>To get started with the Peshitta corpus, use its tutorial in the Peshitta repo:
+<a href="http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb">start</a>.</p>
+<p>Or go straight to the
+<a href="/Api/Peshitta">peshitta-api-docs</a>.</p>
+<p>To get started with the Syriac New Testament corpus, use its tutorial in the Syrnt repo:
+<a href="http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb">start</a>.</p>
+<p>Or go straight to the
+<a href="/Api/Syrnt">syrnt-api-docs</a>.</p>
+</details>
+<details class="abstract"><summary>Using Cuneiform data</summary><p>To get started with the Uruk corpus, use its tutorial in the Nino-cunei repo:
+<a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">start</a>.</p>
+<p>Or go straight to the
+<a href="/Api/Cunei">cunei-api-docs</a>.</p>
+</details>
                 
                   
                 
@@ -1037,9 +1134,9 @@ extra arguments supplied to <code>Bhsa()</code>, <code>Peshitta()</code>, <code>
       
     </div>
     
-      <script src="../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:".."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
     
     

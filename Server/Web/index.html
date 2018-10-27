@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.451f80e5.css">
       
       
     
@@ -52,8 +52,8 @@
       <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href="../.." title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../../images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -496,7 +496,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="../../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -508,7 +508,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="../../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -894,62 +894,143 @@
                 <h1 id="web-interface">Web interface<a class="headerlink" href="#web-interface" title="Permanent link">&para;</a></h1>
 <h2 id="about">About<a class="headerlink" href="#about" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>Local web interface</summary><p>TF contains a local web interface
-in which you can enter a search template and view the results.</p><p>This is realized by a web app based on 
-<a href="http://bottlepy.org">bottle</a>.</p><p>This web app connects to the <a href="../../Server/Kernel">TF kernel</a>
+in which you can enter a search template and view the results.</p>
+<p>This is realized by a web app based on 
+<a href="http://bottlepy.org">bottle</a>.</p>
+<p>This web app connects to the <a href="/Server/Kernel">TF kernel</a>
 and merges the retrieved data into a set of 
-<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/views">templates</a>.</p><p>See the code in
-<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py">tf.server.web</a>.</p></details><h2 id="start-up">Start up<a class="headerlink" href="#start-up" title="Permanent link">&para;</a></h2>
+<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/views">templates</a>.</p>
+<p>See the code in
+<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py">tf.server.web</a>.</p>
+</details>
+<h2 id="start-up">Start up<a class="headerlink" href="#start-up" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>Start up</summary><p>TF kernel, webserver and browser page are started
 up by means of a script called <code>text-fabric</code>, which will be installed in an executable
-directory by the <code>pip</code> installer.</p><p>What the script does is the same as:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>python3 -m tf.server.start
+directory by the <code>pip</code> installer.</p>
+<p>What the script does is the same as:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>python3 -m tf.server.start
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>Process management</summary><p>During start up the following happens:</p><details class="abstract"><summary>Kill previous processes</summary><p>The system is searched for non-terminated incarnations of the processes
+
+</details>
+<details class="abstract"><summary>Process management</summary><p>During start up the following happens:</p>
+<details class="abstract"><summary>Kill previous processes</summary><p>The system is searched for non-terminated incarnations of the processes
 it wants to start up.
 If they are encountered, they will be killed, so that they cannot prevent
-a successful start up.</p></details><details class="abstract"><summary>TF kernel</summary><p>A <a href="../../Server/Kernel">TF kernel</a> is started.
+a successful start up.</p>
+</details>
+<details class="abstract"><summary>TF kernel</summary><p>A <a href="/Server/Kernel">TF kernel</a> is started.
 This process loads the bulk of the TF data, so it can take a while.
 When it has loaded the data, it sends out a message that loading is done,
-which is picked up by the script.</p></details><details class="abstract"><summary>TF webserver</summary><p>A short while after receiving the "data loading done" message, the TF webserver is started.</p><details class="hint"><summary>Debug mode</summary><p>If you have passed <code>-d</code> to the <code>text-fabric</code> script, the <strong>bottle</strong> will be started
+which is picked up by the script.</p>
+</details>
+<details class="abstract"><summary>TF webserver</summary><p>A short while after receiving the "data loading done" message, the TF webserver is started.</p>
+<details class="hint"><summary>Debug mode</summary><p>If you have passed <code>-d</code> to the <code>text-fabric</code> script, the <strong>bottle</strong> will be started
 in debug and reload mode.
 That means that if you modify <code>web.py</code> or a module it imports, the webserver will
 reload itself automatically.
 When you refresh the browser you see the changes.
-If you have changed templates, the css, or the javascript, you should do a "refresh from origin".</p></details></details><details class="abstract"><summary>Load web page</summary><p>After a short while, the default web browser will be started with a url and port at which the
-webserver will listen. You see your browser being started up and the TF page being loaded.</p></details><details class="abstract"><summary>Waiting</summary><p>The script now waits till the webserver is finished.
-You finish it by pressing Ctrl-C, and if you have used the <code>-d</code> flag, you have to press it twice.</p></details><details class="abstract"><summary>Terminate the TF kernel</summary><p>At this point, the <code>text-fabric</code> script will terminate the TF kernel.</p></details><details class="abstract"><summary>Clean up</summary><p>Now all processes that have started up have been killed.</p><p>If something went wrong in this sequence, chances are that a process keeps running.
-It will be terminated next time you call the <code>text-fabric</code>.</p><details class="hint"><summary>You can kill too</summary><p>If you run</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric -k
+If you have changed templates, the css, or the javascript, you should do a "refresh from origin".</p>
+</details>
+</details>
+<details class="abstract"><summary>Load web page</summary><p>After a short while, the default web browser will be started with a url and port at which the
+webserver will listen. You see your browser being started up and the TF page being loaded.</p>
+</details>
+<details class="abstract"><summary>Waiting</summary><p>The script now waits till the webserver is finished.
+You finish it by pressing Ctrl-C, and if you have used the <code>-d</code> flag, you have to press it twice.</p>
+</details>
+<details class="abstract"><summary>Terminate the TF kernel</summary><p>At this point, the <code>text-fabric</code> script will terminate the TF kernel.</p>
+</details>
+<details class="abstract"><summary>Clean up</summary><p>Now all processes that have started up have been killed.</p>
+<p>If something went wrong in this sequence, chances are that a process keeps running.
+It will be terminated next time you call the <code>text-fabric</code>.</p>
+<details class="hint"><summary>You can kill too</summary><p>If you run</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric -k
 </pre></div>
 </td></tr></table>
-<p>all tf-browser-related processes will be killed.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric -k ddd
+
+<p>all tf-browser-related processes will be killed.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric -k ddd
 </pre></div>
 </td></tr></table>
-<p>will kill all such processes as far as they are for data source <code>ddd</code>.</p></details></details></details><h2 id="routes">Routes<a class="headerlink" href="#routes" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>Routes</summary><p>There are 4 kinds of routes in the web app:</p><table><thead><tr><th>url pattern</th><th>effect</th></tr></thead><tbody><tr><td><code>/server/static/...</code></td><td>serves a static file from the server-wide <a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/static">static folder</a></td></tr><tr><td><code>/data/static/...</code></td><td>serves a static file from the app specific static folder</td></tr><tr><td><code>/local/static/...</code></td><td>serves a static file from a local directory specified by the app</td></tr><tr><td>anything else</td><td>submits the form with user data and return the processed request</td></tr></tbody></table></details><h2 id="templates">Templates<a class="headerlink" href="#templates" title="Permanent link">&para;</a></h2>
+
+<p>will kill all such processes as far as they are for data source <code>ddd</code>.</p>
+</details>
+</details>
+</details>
+<h2 id="routes">Routes<a class="headerlink" href="#routes" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>Routes</summary><p>There are 4 kinds of routes in the web app:</p>
+<table>
+<thead>
+<tr>
+<th>url pattern</th>
+<th>effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/server/static/...</code></td>
+<td>serves a static file from the server-wide <a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/static">static folder</a></td>
+</tr>
+<tr>
+<td><code>/data/static/...</code></td>
+<td>serves a static file from the app specific static folder</td>
+</tr>
+<tr>
+<td><code>/local/static/...</code></td>
+<td>serves a static file from a local directory specified by the app</td>
+</tr>
+<tr>
+<td>anything else</td>
+<td>submits the form with user data and return the processed request</td>
+</tr>
+</tbody>
+</table>
+</details>
+<h2 id="templates">Templates<a class="headerlink" href="#templates" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>Templates</summary><p>There are two templates in
 <a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/views">views</a>
-:</p><ul><li><em>index</em>: the normal template for returning responses
-  to user requests;</li><li><em>export</em>: the template used for exporting results; it
+:</p>
+<ul>
+<li><em>index</em>: the normal template for returning responses
+  to user requests;</li>
+<li><em>export</em>: the template used for exporting results; it
   has printer/PDF-friendly formatting: good page breaks.
   Pretty displays always occur on a page by their own.
   It has very few user interaction controls.
   When saved as PDF from the browser, it is a neat record
-  of work done, with DOI links to the corpus and to Text-Fabric.</li></ul></details><h2 id="css">CSS<a class="headerlink" href="#css" title="Permanent link">&para;</a></h2>
+  of work done, with DOI links to the corpus and to Text-Fabric.</li>
+</ul>
+</details>
+<h2 id="css">CSS<a class="headerlink" href="#css" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>CSS</summary><p>We format the web pages with CSS, with extensive use
 of
-<a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox">flexbox</a>.</p><p>There are three sources of CSS formatting:</p><ul><li>the CSS loaded from the app dependent extraApi, used
-  for pretty displays;</li><li><a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/static/main.css">main.css</a>: the formatting of the 
-  <em>index</em> web page with which the user interacts;</li><li>inside the
+<a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox">flexbox</a>.</p>
+<p>There are three sources of CSS formatting:</p>
+<ul>
+<li>the CSS loaded from the app dependent extraApi, used
+  for pretty displays;</li>
+<li><a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/static/main.css">main.css</a>: the formatting of the 
+  <em>index</em> web page with which the user interacts;</li>
+<li>inside the
   <a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/views/export.tpl">export</a>
-  template, for formatting the exported page.</li></ul></details><h2 id="javascript">Javascript<a class="headerlink" href="#javascript" title="Permanent link">&para;</a></h2>
+  template, for formatting the exported page.</li>
+</ul>
+</details>
+<h2 id="javascript">Javascript<a class="headerlink" href="#javascript" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>Javascript</summary><p>We use a
 <a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/static/tf.js">modest amount of Javascript</a>
 on top of 
-<a href="https://api.jquery.com">JQuery</a>.</p><p>For collapsing and expanding elements we use the
+<a href="https://api.jquery.com">JQuery</a>.</p>
+<p>For collapsing and expanding elements we use the
 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details">details</a>
 element. This is a convenient, Javascript-free way to manage
 collapsing. Unfortunately it is not supported by the Microsoft
-browsers, not even Edge.</p><details class="caution"><summary>On Windows?</summary><p>Windows users should install Chrome of Firefox.</p></details><p>Safari is fine.</p></details>
+browsers, not even Edge.</p>
+<details class="caution"><summary>On Windows?</summary><p>Windows users should install Chrome of Firefox.</p>
+</details>
+<p>Safari is fine.</p>
+</details>
                 
                   
                 
@@ -1021,9 +1102,9 @@ browsers, not even Edge.</p><details class="caution"><summary>On Windows?</summa
       
     </div>
     
-      <script src="../../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
     
     

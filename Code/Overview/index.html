@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.451f80e5.css">
       
       
     
@@ -52,8 +52,8 @@
       <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href="../.." title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../../images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -557,7 +557,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="../../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -569,7 +569,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="../../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -865,33 +865,56 @@
                 
                 <h1 id="code-organisation">Code organisation<a class="headerlink" href="#code-organisation" title="Permanent link">&para;</a></h1>
 <p>The code base of Text-Fabric is evolving to a considerable
-<a href="../../Code/Stats">size</a>.</p>
+<a href="/Code/Stats">size</a>.</p>
 <p>However, the code can be divided into a few major parts,
 each with their own, identifiable task.</p>
 <h2 id="base">Base<a class="headerlink" href="#base" title="Permanent link">&para;</a></h2>
 <p>The
-<a href="../../Api/General">generic API</a> (<a href="../../Code/StatsBase">stats</a>)
+<a href="/Api/General">generic API</a> (<a href="/Code/StatsBase">stats</a>)
 of Text-Fabric is responsible for:</p>
 <details class="abstract"><summary>Data management</summary><p>Text-Fabric data consists of <em>feature files</em>.
-TF must be able to load them, save them, import/export from MQL.</p></details><details class="abstract"><summary>Provide an API</summary><p>TF must offer an API for handling its data in applications.
-That means: feature lookup, containment lookup, text serialization.</p></details><details class="abstract"><summary>Precomputation</summary><p>In order to make its API work efficiently, TF has to precompute certain
-compiled forms of the data.</p></details><h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
+TF must be able to load them, save them, import/export from MQL.</p>
+</details>
+<details class="abstract"><summary>Provide an API</summary><p>TF must offer an API for handling its data in applications.
+That means: feature lookup, containment lookup, text serialization.</p>
+</details>
+<details class="abstract"><summary>Precomputation</summary><p>In order to make its API work efficiently, TF has to precompute certain
+compiled forms of the data.</p>
+</details>
+<h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
 <p>TF contains a
-<a href="../../Api/General/#searching">search engine</a> (<a href="../../Code/StatsSearch">stats</a>)
+<a href="/Api/General/#searching">search engine</a> (<a href="/Code/StatsSearch">stats</a>)
 based on templates, which are little graphs
 of nodes and edges that must be instantiated against the corpus.</p>
 <details class="abstract"><summary>Search vs MQL</summary><p>The template language is inspired by MQL, but has a different syntax.
-It is both weaker and stronger than MQL.</p></details><details class="abstract"><summary>Search vs hand coding</summary><p>Search templates are the most accessible way to get at the data,
-easier than hand-coding your own little programs.</p><p>The underlying engine is quite complicated.
+It is both weaker and stronger than MQL.</p>
+</details>
+<details class="abstract"><summary>Search vs hand coding</summary><p>Search templates are the most accessible way to get at the data,
+easier than hand-coding your own little programs.</p>
+<p>The underlying engine is quite complicated.
 Sometimes it is faster than hand coding,
-sometimes (much) slower.</p></details><h2 id="apps">Apps<a class="headerlink" href="#apps" title="Permanent link">&para;</a></h2>
-<p>TF contains corpus-dependent <a href="../../Api/Apps">apps</a> (<a href="../../Code/StatsApps">stats</a>).</p>
-<details class="abstract"><summary>Display</summary><p>An app knows how to display a particular corpus.</p></details><details class="abstract"><summary>Download</summary><p>An app knows how to download a particular corpus from its online repository.</p></details><details class="abstract"><summary>Web interface</summary><p>An app can set up a local web interface for a particular corpus.</p></details><h2 id="web-interface">Web interface<a class="headerlink" href="#web-interface" title="Permanent link">&para;</a></h2>
+sometimes (much) slower.</p>
+</details>
+<h2 id="apps">Apps<a class="headerlink" href="#apps" title="Permanent link">&para;</a></h2>
+<p>TF contains corpus-dependent <a href="/Api/Apps">apps</a> (<a href="/Code/StatsApps">stats</a>).</p>
+<details class="abstract"><summary>Display</summary><p>An app knows how to display a particular corpus.</p>
+</details>
+<details class="abstract"><summary>Download</summary><p>An app knows how to download a particular corpus from its online repository.</p>
+</details>
+<details class="abstract"><summary>Web interface</summary><p>An app can set up a local web interface for a particular corpus.</p>
+</details>
+<h2 id="web-interface">Web interface<a class="headerlink" href="#web-interface" title="Permanent link">&para;</a></h2>
 <p>TF contains a 
-<a href="../../Server/Web">local web interface</a> (<a href="../../Code/StatsServer">stats</a>)
+<a href="/Server/Web">local web interface</a> (<a href="/Code/StatsServer">stats</a>)
 for interacting with your corpus without programming.</p>
 <details class="abstract"><summary>Working with your corpus</summary><p>The local web interface lets you fire queries (search templates) to TF and interact
-with the results:</p><ul><li>expanding rows to pretty displays;</li><li>condensing results to verious container types;</li><li>exporting results as PDF and CSV.</li></ul></details>
+with the results:</p>
+<ul>
+<li>expanding rows to pretty displays;</li>
+<li>condensing results to verious container types;</li>
+<li>exporting results as PDF and CSV.</li>
+</ul>
+</details>
                 
                   
                 
@@ -963,9 +986,9 @@ with the results:</p><ul><li>expanding rows to pretty displays;</li><li>condensi
       
     </div>
     
-      <script src="../../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
     
     

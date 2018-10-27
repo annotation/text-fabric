@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.451f80e5.css">
       
       
     
@@ -52,8 +52,8 @@
       <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href="../.." title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../../images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -496,7 +496,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="../../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -508,7 +508,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="../../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -1132,7 +1132,7 @@
                 
                 
                 <h1 id="create-a-tf-dataset">Create a TF dataset<a class="headerlink" href="#create-a-tf-dataset" title="Permanent link">&para;</a></h1>
-<p>We describe a conversion of an <a href="../ExampleText">example text</a> to Text-Fabric.</p>
+<p>We describe a conversion of an <a href="ExampleText">example text</a> to Text-Fabric.</p>
 <p>This is not meant as a recipe, but as a description of the pieces of information
 that have to be assembled from the source text, and how to compose that into a
 Text-Fabric resource, which is a set of features.</p>
@@ -1269,7 +1269,7 @@ as a whole, such as information about decisions that have been taken.</p>
 <p>You should also provide some special metadata to the key <code>otext</code>. This feature
 has no data, only metadata. It is not a node feature, not an edge feature, but a
 <em>config</em> feature. <code>otext</code> is responsible for sectioning and text representation.</p>
-<p>If you specify <code>otext</code> well, the <a href="../Api#text">T-API</a> can make use of it, so that
+<p>If you specify <code>otext</code> well, the <a href="Api#text">T-API</a> can make use of it, so that
 you have convenient, generic functions to get at your sections and to serialize
 your text in different formats.</p>
 <h3 id="step-6-sectioning-metadata">Step 6: sectioning metadata<a class="headerlink" href="#step-6-sectioning-metadata" title="Permanent link">&para;</a></h3>
@@ -1291,7 +1291,7 @@ that the heading at level 3 is in the feature <code>number</code>.</p>
 The names of those formats are up to you, and the values as well.</p>
 <p>If you have a list of word nodes, say <code>ws</code>, then a user of your corpus can ask
 Text-Fabric:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;text-orig-plain&#39;</span><span class="p">)</span>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;text-orig-plain&#39;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
@@ -1328,11 +1328,11 @@ fmt:text-trans-plain: &#39;{g_cons}{trailer}&#39;
 you, the corpus designer.</p>
 <h2 id="writing-out-tf">Writing out TF<a class="headerlink" href="#writing-out-tf" title="Permanent link">&para;</a></h2>
 <p>Once you have assembled your features and metadata as data structures in memory,
-you can use <a href="../Api#saving-features"><code>TF.save()</code></a> to write out your data as a bunch
+you can use <a href="Api#saving-features"><code>TF.save()</code></a> to write out your data as a bunch
 of Text-Fabric files.</p>
 <h3 id="step-8-invoke-tfsave">Step 8: invoke TF.save()<a class="headerlink" href="#step-8-invoke-tfsave" title="Permanent link">&para;</a></h3>
 <p>The call to make is</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nodeFeatures</span><span class="o">=</span><span class="p">{},</span> <span class="n">edgeFeatures</span><span class="o">=</span><span class="p">{},</span> <span class="n">metaData</span><span class="o">=</span><span class="p">{},</span> <span class="n">module</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nodeFeatures</span><span class="o">=</span><span class="p">{},</span> <span class="n">edgeFeatures</span><span class="o">=</span><span class="p">{},</span> <span class="n">metaData</span><span class="o">=</span><span class="p">{},</span> <span class="n">module</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
@@ -1367,7 +1367,7 @@ the notion of linguistic head to the BHSA
 datasource of the Hebrew Bible.</p>
 <h3 id="step-9-add-the-new-feature">Step 9: add the new feature<a class="headerlink" href="#step-9-add-the-new-feature" title="Permanent link">&para;</a></h3>
 <p>Once you have the feature <code>pos</code>, provide a bit of metadata, and call</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1389,8 +1389,8 @@ repo.</p>
 they call their Text-Fabric, they can point it to both locations, and
 Text-Fabric treats it as one dataset.</p>
 <h3 id="step-10-use-the-new-feature">Step 10: use the new feature<a class="headerlink" href="#step-10-use-the-new-feature" title="Permanent link">&para;</a></h3>
-<p>The call to <a href="../Api#importing-and-calling-text-fabric"><code>TF=Fabric()</code></a> looks like this</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="p">[</span><span class="n">corpusLocation</span><span class="p">,</span> <span class="n">moduleLocation</span><span class="p">])</span>
+<p>The call to <a href="Api#importing-and-calling-text-fabric"><code>TF=Fabric()</code></a> looks like this</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="p">[</span><span class="n">corpusLocation</span><span class="p">,</span> <span class="n">moduleLocation</span><span class="p">])</span>
 </pre></div>
 </td></tr></table>
 
@@ -1466,9 +1466,9 @@ Text-Fabric treats it as one dataset.</p>
       
     </div>
     
-      <script src="../../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
     
     

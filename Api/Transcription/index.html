@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.451f80e5.css">
       
       
     
@@ -52,8 +52,8 @@
       <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href="../.." title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../../images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -496,7 +496,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="../../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -508,7 +508,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="../../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -830,134 +830,237 @@ are being used in the
 <a href="https://github.com/ETCBC/bhsa">BHSA</a>,
 <a href="https://github.com/ETCBC/peshitta">Peshitta</a>,
 <a href="https://github.com/ETCBC/syrnt">SyrNT</a>,
-.</p><p>It also calls functions to use these tables for converting Hebrew and Syriac ttext material to transliterated
-representations and back.</p><p>There is also a phonetic transcription for Hebrew, designed in 
-<a href="https://nbviewer.jupyter.org/github/etcbc/phono/blob/master/programs/phono.ipynb">phono.ipynb</a></p></details><details class="abstract" open="open"><summary>Character tables</summary><p><a href="../../Writing/Hebrew/">Hebrew</a>: full list of characters covered by the ETCBC and phonetic transcriptions</p><p><a href="../../Writing/Syriac/">Syriac</a>: full list of characters covered by the ETCBC transcriptions</p></details><details class="abstract"><summary>Usage</summary><p>Invoke the transcription functionality as follows:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.transcription</span> <span class="kn">import</span> <span class="n">Transcription</span>
+.</p>
+<p>It also calls functions to use these tables for converting Hebrew and Syriac ttext material to transliterated
+representations and back.</p>
+<p>There is also a phonetic transcription for Hebrew, designed in 
+<a href="https://nbviewer.jupyter.org/github/etcbc/phono/blob/master/programs/phono.ipynb">phono.ipynb</a></p>
+</details>
+<details class="abstract" open="open"><summary>Character tables</summary><p><a href="../Writing/Hebrew/">Hebrew</a>: full list of characters covered by the ETCBC and phonetic transcriptions</p>
+<p><a href="../Writing/Syriac/">Syriac</a>: full list of characters covered by the ETCBC transcriptions</p>
+</details>
+<details class="abstract"><summary>Usage</summary><p>Invoke the transcription functionality as follows:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.transcription</span> <span class="kn">import</span> <span class="n">Transcription</span>
 </pre></div>
 </td></tr></table>
+
 <p>Some of the attributes and methods below are <em>class</em> attributes, others are instance attributes.
-A class attribute <code>aaa</code> can be retrieved by saying <code>Transcription.aaa</code>.</p><p>To retrieve an instance attribute, you need an instance first, like</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">tr</span> <span class="o">=</span> <span class="n">Transcription</span><span class="p">()</span>
+A class attribute <code>aaa</code> can be retrieved by saying <code>Transcription.aaa</code>.</p>
+<p>To retrieve an instance attribute, you need an instance first, like</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">tr</span> <span class="o">=</span> <span class="n">Transcription</span><span class="p">()</span>
 </pre></div>
 </td></tr></table>
-<p>and then you can say <code>tr.aaa</code>.</p><p>For each attribute we'll give a usage example.</p></details><details class="abstract"><summary>Transcription.hebrew_mapping</summary><p>Maps all ETCBC transliteration character combinations for Hebrew to Unicode.</p><p>Example: print the sof-pasuq:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">hebrew_mapping</span><span class="p">[</span><span class="s1">&#39;00&#39;</span><span class="p">])</span>
+
+<p>and then you can say <code>tr.aaa</code>.</p>
+<p>For each attribute we'll give a usage example.</p>
+</details>
+<details class="abstract"><summary>Transcription.hebrew_mapping</summary><p>Maps all ETCBC transliteration character combinations for Hebrew to Unicode.</p>
+<p>Example: print the sof-pasuq:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">hebrew_mapping</span><span class="p">[</span><span class="s1">&#39;00&#39;</span><span class="p">])</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>׃
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>׃
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>Transcription.syriac_mapping</summary><p>Maps all ETCBC transliteration character combinations for Syriac to Unicode.</p><p>Example: print the semkath-final:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">syriac_mapping</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">])</span>
+
+</details>
+<details class="abstract"><summary>Transcription.syriac_mapping</summary><p>Maps all ETCBC transliteration character combinations for Syriac to Unicode.</p>
+<p>Example: print the semkath-final:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">syriac_mapping</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">])</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>ܤ
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>ܤ
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>Transcription.suffix_and_finales(word)</summary><p>Given an ETCBC transliteration, split it into the word material and the interword material
+
+</details>
+<details class="abstract"><summary>Transcription.suffix_and_finales(word)</summary><p>Given an ETCBC transliteration, split it into the word material and the interword material
 that follows it (space, punctuation).
-Replace the last consonant of the word material by its final form, if applicable.</p><p>Output a tuple with the modified word material and the interword material.</p><p>Example: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">suffix_and_finales</span><span class="p">(</span><span class="s1">&#39;71T_H@&gt;@95REY00&#39;</span><span class="p">))</span>
+Replace the last consonant of the word material by its final form, if applicable.</p>
+<p>Output a tuple with the modified word material and the interword material.</p>
+<p>Example: </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">suffix_and_finales</span><span class="p">(</span><span class="s1">&#39;71T_H@&gt;@95REY00&#39;</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>(&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>(&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
 </pre></div>
 </td></tr></table>
-<p>Note that the <code>Y</code> has been replaced by <code>y</code>.</p></details><details class="abstract"><summary>Transcription.suppress_space(word)</summary><p>Given an ETCBC transliteration of a word,
+
+<p>Note that the <code>Y</code> has been replaced by <code>y</code>.</p>
+</details>
+<details class="abstract"><summary>Transcription.suppress_space(word)</summary><p>Given an ETCBC transliteration of a word,
 match the end of the word for interpunction and spacing characters
-(sof pasuq, paseq, nun hafukha, setumah, petuhah, space, no-space)</p><p>Example:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+(sof pasuq, paseq, nun hafukha, setumah, petuhah, space, no-space)</p>
+<p>Example:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">suppress_space</span><span class="p">(</span><span class="s1">&#39;B.:&amp;&#39;</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">suppress_space</span><span class="p">(</span><span class="s1">&#39;B.@R@74&gt;&#39;</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">suppress_space</span><span class="p">(</span><span class="s1">&#39;71T_H@&gt;@95REY00&#39;</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>&lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
 None
 &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>Transcription.to_etcbc_v(word)</summary><p>Given an ETCBC transliteration of a fully pointed word,
-strip all the non-vowel pointing (i.e. the accents).</p><p>Example: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">to_etcbc_v</span><span class="p">(</span><span class="s1">&#39;HAC.@MA73JIm&#39;</span><span class="p">))</span>
+
+</details>
+<details class="abstract"><summary>Transcription.to_etcbc_v(word)</summary><p>Given an ETCBC transliteration of a fully pointed word,
+strip all the non-vowel pointing (i.e. the accents).</p>
+<p>Example: </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">to_etcbc_v</span><span class="p">(</span><span class="s1">&#39;HAC.@MA73JIm&#39;</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>HAC.@MAJIm
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>HAC.@MAJIm
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>Transcription.to_etcbc_c(word)</summary><p>Given an ETCBC transliteration of a fully pointed word,
+
+</details>
+<details class="abstract"><summary>Transcription.to_etcbc_c(word)</summary><p>Given an ETCBC transliteration of a fully pointed word,
 strip everything except the consonants.
-Punctuation will also be stripped.</p><p>Example: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">to_etcbc_c</span><span class="p">(</span><span class="s1">&#39;HAC.@MA73JIm&#39;</span><span class="p">))</span>
+Punctuation will also be stripped.</p>
+<p>Example: </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">to_etcbc_c</span><span class="p">(</span><span class="s1">&#39;HAC.@MA73JIm&#39;</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>H#MJM
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>H#MJM
 </pre></div>
 </td></tr></table>
-<p>Note that the pointed shin (<code>C</code>) is replaced by an unpointed one (<code>#</code>).</p></details><details class="abstract"><summary>Transcription.to_hebrew(word)</summary><p>Given a transliteration of a fully pointed word,
+
+<p>Note that the pointed shin (<code>C</code>) is replaced by an unpointed one (<code>#</code>).</p>
+</details>
+<details class="abstract"><summary>Transcription.to_hebrew(word)</summary><p>Given a transliteration of a fully pointed word,
 produce the word in Unicode Hebrew.
-Care will be taken that vowel pointing will be added to consonants before accent pointing.</p><p>Example: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">to_hebrew</span><span class="p">(</span><span class="s1">&#39;HAC.@MA73JIm&#39;</span><span class="p">))</span>
+Care will be taken that vowel pointing will be added to consonants before accent pointing.</p>
+<p>Example: </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">to_hebrew</span><span class="p">(</span><span class="s1">&#39;HAC.@MA73JIm&#39;</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>הַשָּׁמַ֖יִם
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>הַשָּׁמַ֖יִם
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>Transcription.to_hebrew_x(word)</summary><p>Given a transliteration of a fully pointed word,
+
+</details>
+<details class="abstract"><summary>Transcription.to_hebrew_x(word)</summary><p>Given a transliteration of a fully pointed word,
 produce the word in Unicode Hebrew.
 Vowel pointing and accent pointing will be applied in the order given by the input word.
-produce the word in Unicode Hebrew, but without the pointing.</p><p>Example: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">to_hebrew_x</span><span class="p">(</span><span class="s1">&#39;HAC.@MA73JIm&#39;</span><span class="p">))</span>
+produce the word in Unicode Hebrew, but without the pointing.</p>
+<p>Example: </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">to_hebrew_x</span><span class="p">(</span><span class="s1">&#39;HAC.@MA73JIm&#39;</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>הַשָּׁמַ֖יִם
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>הַשָּׁמַ֖יִם
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>Transcription.to_hebrew_v(word)</summary><p>Given a transliteration of a fully pointed word,
-produce the word in Unicode Hebrew, but without the accents.</p><p>Example: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">to_hebrew_v</span><span class="p">(</span><span class="s1">&#39;HAC.@MA73JIm&#39;</span><span class="p">))</span>
+
+</details>
+<details class="abstract"><summary>Transcription.to_hebrew_v(word)</summary><p>Given a transliteration of a fully pointed word,
+produce the word in Unicode Hebrew, but without the accents.</p>
+<p>Example: </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">to_hebrew_v</span><span class="p">(</span><span class="s1">&#39;HAC.@MA73JIm&#39;</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>הַשָּׁמַיִם
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>הַשָּׁמַיִם
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>Transcription.to_hebrew_c(word)</summary><p>Given a transliteration of a fully pointed word,
-produce the word in Unicode Hebrew, but without the pointing.</p><p>Example: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">to_hebrew_c</span><span class="p">(</span><span class="s1">&#39;HAC.@MA73JIm&#39;</span><span class="p">))</span>
+
+</details>
+<details class="abstract"><summary>Transcription.to_hebrew_c(word)</summary><p>Given a transliteration of a fully pointed word,
+produce the word in Unicode Hebrew, but without the pointing.</p>
+<p>Example: </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">to_hebrew_c</span><span class="p">(</span><span class="s1">&#39;HAC.@MA73JIm&#39;</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>השמימ
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>השמימ
 </pre></div>
 </td></tr></table>
-<p>Note that final consonant forms are not being used.</p></details><details class="abstract"><summary>Transcription.ph_simplify(pword)</summary><p>Given a phonological transliteration of a fully pointed word,
-produce a more coarse phonological transliteration.</p><p>Example: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+
+<p>Note that final consonant forms are not being used.</p>
+</details>
+<details class="abstract"><summary>Transcription.ph_simplify(pword)</summary><p>Given a phonological transliteration of a fully pointed word,
+produce a more coarse phonological transliteration.</p>
+<p>Example: </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">ph_simplify</span><span class="p">(</span><span class="s1">&#39;ʔᵉlōhˈîm&#39;</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">ph_simplify</span><span class="p">(</span><span class="s1">&#39;māqˈôm&#39;</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">Transcription</span><span class="o">.</span><span class="n">ph_simplify</span><span class="p">(</span><span class="s1">&#39;kol&#39;</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>ʔlōhîm
 måqôm
 kål
 </pre></div>
 </td></tr></table>
+
 <p>Note that the simplified version transliterates the qamets gadol and qatan to the same
-character.</p></details><details class="abstract"><summary>tr.from_hebrew(word)</summary><p>Given a fully pointed word in Unicode Hebrew,
-produce the word in ETCBC transliteration.</p><p>Example: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">from_hebrew</span><span class="p">(</span><span class="s1">&#39;הָאָֽרֶץ׃&#39;</span><span class="p">))</span>
+character.</p>
+</details>
+<details class="abstract"><summary>tr.from_hebrew(word)</summary><p>Given a fully pointed word in Unicode Hebrew,
+produce the word in ETCBC transliteration.</p>
+<p>Example: </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">from_hebrew</span><span class="p">(</span><span class="s1">&#39;הָאָֽרֶץ׃&#39;</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>H@&gt;@95REy00
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>H@&gt;@95REy00
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>tr.from_syriac(word)</summary><p>Given a word in Unicode Syriac,
-produce the word in ETCBC transliteration.</p><p>Example: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">from_syriac</span><span class="p">(</span><span class="s1">&#39;ܡܟܣܝܢ&#39;</span><span class="p">))</span>
+
+</details>
+<details class="abstract"><summary>tr.from_syriac(word)</summary><p>Given a word in Unicode Syriac,
+produce the word in ETCBC transliteration.</p>
+<p>Example: </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">from_syriac</span><span class="p">(</span><span class="s1">&#39;ܡܟܣܝܢ&#39;</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>MKSJN
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>MKSJN
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>tr.to_syriac(word)</summary><p>Given a word in ETCBC transliteration,
-produce the word in Unicode Syriac.</p><p>Example: </p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">to_syriac</span><span class="p">(</span><span class="s1">&#39;MKSJN&#39;</span><span class="p">))</span>
+
+</details>
+<details class="abstract"><summary>tr.to_syriac(word)</summary><p>Given a word in ETCBC transliteration,
+produce the word in Unicode Syriac.</p>
+<p>Example: </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">to_syriac</span><span class="p">(</span><span class="s1">&#39;MKSJN&#39;</span><span class="p">))</span>
 </pre></div>
 </td></tr></table>
-<p>Output:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>ܡܟܣܝܢ
+
+<p>Output:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>ܡܟܣܝܢ
 </pre></div>
 </td></tr></table>
+
 </details>
                 
                   
@@ -1030,9 +1133,9 @@ produce the word in Unicode Syriac.</p><p>Example: </p><table class="codehilitet
       
     </div>
     
-      <script src="../../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
     
     

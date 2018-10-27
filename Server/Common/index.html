@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.451f80e5.css">
       
       
     
@@ -52,8 +52,8 @@
       <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href="../.." title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../../images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -496,7 +496,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="../../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -508,7 +508,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="../../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -880,35 +880,72 @@
                 <h1 id="common-server-related-functions">Common Server Related Functions<a class="headerlink" href="#common-server-related-functions" title="Permanent link">&para;</a></h1>
 <h2 id="about">About<a class="headerlink" href="#about" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>About</summary><p>Here are functions that are being used by various parts of the
-TF browser infrastructure, such as </p><ul><li><a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/kernel.py">kernel.py</a></li><li><a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py">web.py</a></li><li><a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/start.py">start.py</a></li></ul></details><h2 id="argument-parsing">Argument parsing<a class="headerlink" href="#argument-parsing" title="Permanent link">&para;</a></h2>
+TF browser infrastructure, such as </p>
+<ul>
+<li><a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/kernel.py">kernel.py</a></li>
+<li><a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py">web.py</a></li>
+<li><a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/start.py">start.py</a></li>
+</ul>
+</details>
+<h2 id="argument-parsing">Argument parsing<a class="headerlink" href="#argument-parsing" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>Apologies</summary><p>Really, we should replace the whole adhoc argument parsing by a decent use
 of the Python module
-<a href="https://docs.python.org/3/library/argparse.html#module-argparse">argparse</a>. </p></details><details class="abstract"><summary>getDebug()</summary><p>Checks whether one of the arguments with which the script is called is a <code>-d</code>.</p></details><details class="abstract"><summary>getParam(interactive=False)</summary><p>Checks whether a <em>dataSource</em> parameter has been passed on the command line.
+<a href="https://docs.python.org/3/library/argparse.html#module-argparse">argparse</a>. </p>
+</details>
+<details class="abstract"><summary>getDebug()</summary><p>Checks whether one of the arguments with which the script is called is a <code>-d</code>.</p>
+</details>
+<details class="abstract"><summary>getParam(interactive=False)</summary><p>Checks whether a <em>dataSource</em> parameter has been passed on the command line.
 If so, it checks whether it specifies an existing app.
 If no <em>dataSource</em> has been passed, and <code>interactive</code> is true,
-presents the user with a list of valid choices and asks for input.</p></details><h2 id="locating-the-app">Locating the app<a class="headerlink" href="#locating-the-app" title="Permanent link">&para;</a></h2>
+presents the user with a list of valid choices and asks for input.</p>
+</details>
+<h2 id="locating-the-app">Locating the app<a class="headerlink" href="#locating-the-app" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>The problem</summary><p>The data source specific apps are bundled inside the TF package.
 The webserver of the TF browser needs the files in those apps,
 not as Python modules, but just as files on disk.
 So we have to tell the webserver where they are, and we really do not know that
 in advance, because it is dependent on how the text-fabric package has been
-installed by <code>pip3</code> on your machine.</p><p>Yet we have found a way through the labyrinth!</p></details><details class="abstract"><summary>getConfig(dataSource)</summary><p>Retrieves the <code>config.py</code> from the specified <em>dataSource</em> by
+installed by <code>pip3</code> on your machine.</p>
+<p>Yet we have found a way through the labyrinth!</p>
+</details>
+<details class="abstract"><summary>getConfig(dataSource)</summary><p>Retrieves the <code>config.py</code> from the specified <em>dataSource</em> by
 dynamically importing it as a module from one of the
 <code>*-app</code> packages in
-<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/extra">tf.extra</a></p><p>See also <a href="../../Api/Apps/#the-structure-of-apps">App structure</a></p></details><details class="abstract"><summary>getAppdir(myDir, dataSource)</summary><p>The code in
+<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/extra">tf.extra</a></p>
+<p>See also <a href="/Api/Apps/#the-structure-of-apps">App structure</a></p>
+</details>
+<details class="abstract"><summary>getAppdir(myDir, dataSource)</summary><p>The code in
 <a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py">web.py</a>
 will pass its file location as <code>myDir</code>.
 Form there this function computes the locstion of the file in which
 the webapp of the <em>dataSource</em> resides: the location of the
 <em>dataSource</em> <code>-app</code> package in
-<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/extra">tf.extra</a>.</p><p>See also <a href="../../Api/Apps/#the-structure-of-apps">App structure</a></p></details><h2 id="getting-and-setting-form-values">Getting and setting form values<a class="headerlink" href="#getting-and-setting-form-values" title="Permanent link">&para;</a></h2>
+<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/extra">tf.extra</a>.</p>
+<p>See also <a href="/Api/Apps/#the-structure-of-apps">App structure</a></p>
+</details>
+<h2 id="getting-and-setting-form-values">Getting and setting form values<a class="headerlink" href="#getting-and-setting-form-values" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>Request and response</summary><p>The TF browser user interacts with the web app by clicking and typing,
 as a result of which a HTML form gets filled in.
 This form as regularly submitted to the webserver with a request
-for a new incarnation of the page: a response.</p><p>The values that come with a request, must be peeled out of the form,
-and stored as logical values.</p><p>Most of the data has a known function to the webserver,
-but there is also a list of webapp dependent options.</p><p>The following functions deal with option values.</p></details><details class="abstract"><summary>getValues(options, form)</summary><p>Given a tuple of option specifications and form data from a web request,
-returns a dictionary of filled in values for those options.</p><p>The options are specified in the <code>config.py</code> of an app.</p><p>An option specification is a tuple of the following bits of information:</p><ul><li>name of the input element in the HTML form</li><li>type of input (e.g. checkbox)</li><li>value of html id attribute of the input element</li><li>label for the input element</li></ul><details class="example"><summary>Cunei options</summary><p>The options for the C, such as the <code>phono</code> transcriptions, you can sayunei app are:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+for a new incarnation of the page: a response.</p>
+<p>The values that come with a request, must be peeled out of the form,
+and stored as logical values.</p>
+<p>Most of the data has a known function to the webserver,
+but there is also a list of webapp dependent options.</p>
+<p>The following functions deal with option values.</p>
+</details>
+<details class="abstract"><summary>getValues(options, form)</summary><p>Given a tuple of option specifications and form data from a web request,
+returns a dictionary of filled in values for those options.</p>
+<p>The options are specified in the <code>config.py</code> of an app.</p>
+<p>An option specification is a tuple of the following bits of information:</p>
+<ul>
+<li>name of the input element in the HTML form</li>
+<li>type of input (e.g. checkbox)</li>
+<li>value of html id attribute of the input element</li>
+<li>label for the input element</li>
+</ul>
+<details class="example"><summary>Cunei options</summary><p>The options for the C, such as the <code>phono</code> transcriptions, you can sayunei app are:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
@@ -917,21 +954,41 @@ returns a dictionary of filled in values for those options.</p><p>The options ar
 <span class="p">)</span>
 </pre></div>
 </td></tr></table>
-</details><p>This function isolates the option values from the rest of the form values,
-so that it can be passed as a whole (<code>**values</code>) to the app specific API.</p></details><details class="abstract"><summary>setValues(options, source, form)</summary><p>Fills in a <em>form</em> dictionary based on values in a <em>source</em> dictionary,
+
+</details>
+<p>This function isolates the option values from the rest of the form values,
+so that it can be passed as a whole (<code>**values</code>) to the app specific API.</p>
+</details>
+<details class="abstract"><summary>setValues(options, source, form)</summary><p>Fills in a <em>form</em> dictionary based on values in a <em>source</em> dictionary,
 but only insofar the keys to be filled out occur in the <code>options</code> specs,
-and with a cast of checkbox values to booleans. </p><p>This function is used right after reading the form off a request.
-Raw form data is turned into logical data for further processing by the webserver.</p></details><h2 id="html-formatting">HTML formatting<a class="headerlink" href="#html-formatting" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>HTML generation</summary><p>Here we generate the HTML for bigger chunks on the page.</p></details><details class="abstract"><summary>pageLinks(nResults, position, spread=10)</summary><p>Provide navigation links for results sets, big or small.</p><p>It creates links around <em>position</em> in a set of <em>nResults</em>.
+and with a cast of checkbox values to booleans. </p>
+<p>This function is used right after reading the form off a request.
+Raw form data is turned into logical data for further processing by the webserver.</p>
+</details>
+<h2 id="html-formatting">HTML formatting<a class="headerlink" href="#html-formatting" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>HTML generation</summary><p>Here we generate the HTML for bigger chunks on the page.</p>
+</details>
+<details class="abstract"><summary>pageLinks(nResults, position, spread=10)</summary><p>Provide navigation links for results sets, big or small.</p>
+<p>It creates links around <em>position</em> in a set of <em>nResults</em>.
 The spread indicates how many links before and after <em>position</em> are generated
-in each column.</p><p>There will be multiple columns. The right most column contains links
-to results <code>position - spread</code> to <code>position + spread</code>.</p><p>Left of that there is a column for results <code>position - spread*spread</code>
-to <code>position + spread*spread</code>, stepping by <code>spread</code>.</p><p>And so on, until the stepping factor becomes bigger than the result set.</p></details><details class="abstract"><summary>shapeMessages</summary><p>Wraps error messages into HTML. The messages come from the TF API,
+in each column.</p>
+<p>There will be multiple columns. The right most column contains links
+to results <code>position - spread</code> to <code>position + spread</code>.</p>
+<p>Left of that there is a column for results <code>position - spread*spread</code>
+to <code>position + spread*spread</code>, stepping by <code>spread</code>.</p>
+<p>And so on, until the stepping factor becomes bigger than the result set.</p>
+</details>
+<details class="abstract"><summary>shapeMessages</summary><p>Wraps error messages into HTML. The messages come from the TF API,
 through the TF kernel, in response to wrong search templates
-and other mistaken user input.</p></details><details class="abstract"><summary>shapeOptions</summary><p>Wraps the options, specified by the option specification in <code>config.py</code>
+and other mistaken user input.</p>
+</details>
+<details class="abstract"><summary>shapeOptions</summary><p>Wraps the options, specified by the option specification in <code>config.py</code>
 into HTML.
-See also <a href="../../Api/Apps/#the-structure-of-apps">App structure</a></p></details><details class="abstract"><summary>shapeCondense</summary><p>Provides a radio-buttoned chooser for the
-<a href="../../Server/Kernel/#data-service-api">condense types</a>.</p></details>
+See also <a href="/Api/Apps/#the-structure-of-apps">App structure</a></p>
+</details>
+<details class="abstract"><summary>shapeCondense</summary><p>Provides a radio-buttoned chooser for the
+<a href="/Server/Kernel/#data-service-api">condense types</a>.</p>
+</details>
                 
                   
                 
@@ -1003,9 +1060,9 @@ See also <a href="../../Api/Apps/#the-structure-of-apps">App structure</a></p></
       
     </div>
     
-      <script src="../../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
     
     

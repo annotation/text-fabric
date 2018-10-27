@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.451f80e5.css">
       
       
     
@@ -52,8 +52,8 @@
       <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href=".." title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -582,7 +582,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -594,7 +594,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -923,83 +923,130 @@ such as <a href="https://dans.knaw.nl/en/front-page?set_language=en">DANS</a>.</
 with extra modules.
 Text-Fabric will fetch them for you if you use the Text-Fabric browser.
 And if you work with them from within a Python program (e.g. in a Jupyter Notebook),
-you get the data when you just say <code>B = Bhsa()</code>.</p></details><details class="abstract"><summary>Manually</summary><p>You can also download the data you need up-front.
-There are basically two ways:</p><details class="abstract"><summary>from a release binary</summary><p>Go to the relevant GitHub repository, click on releases, and choose the relevant binary
+you get the data when you just say <code>B = Bhsa()</code>.</p>
+</details>
+<details class="abstract"><summary>Manually</summary><p>You can also download the data you need up-front.
+There are basically two ways:</p>
+<details class="abstract"><summary>from a release binary</summary><p>Go to the relevant GitHub repository, click on releases, and choose the relevant binary
 that has been attached to the release.
 Download it to your system.
-This is the most economical way to get data.</p></details><details class="abstract"><summary>clone the complete repository</summary><p>Clone the relevant GitHub repository to your system.
-This will get you lots of additional data that you might not directly need.</p><details class="caution"><summary>On Windows?</summary><p>You have to install <code>git</code> in
+This is the most economical way to get data.</p>
+</details>
+<details class="abstract"><summary>clone the complete repository</summary><p>Clone the relevant GitHub repository to your system.
+This will get you lots of additional data that you might not directly need.</p>
+<details class="caution"><summary>On Windows?</summary><p>You have to install <code>git</code> in
 <a href="https://git-scm.com/downloads">some way</a>
-for this step.</p></details></details></details><h2 id="etcbc">ETCBC<a class="headerlink" href="#etcbc" title="Permanent link">&para;</a></h2>
+for this step.</p>
+</details>
+</details>
+</details>
+<h2 id="etcbc">ETCBC<a class="headerlink" href="#etcbc" title="Permanent link">&para;</a></h2>
 <details class="hint"><summary>ETCBC data</summary><p>Inspect the repositories of the <a href="https://github.com/etcbc">etcbc organization on GitHub</a>
 to see what is available. Per repository, click the <em>Releases</em> button so see
 the release version that holds the relevant binaries with TF-data.
-For example, try <a href="https://github.com/etcbc/parallels/releases">crossrefs</a>.</p></details><h3 id="hebrew-bible">Hebrew Bible<a class="headerlink" href="#hebrew-bible" title="Permanent link">&para;</a></h3>
+For example, try <a href="https://github.com/etcbc/parallels/releases">crossrefs</a>.</p>
+</details>
+<h3 id="hebrew-bible">Hebrew Bible<a class="headerlink" href="#hebrew-bible" title="Permanent link">&para;</a></h3>
 <details class="abstract"><summary>From within a program</summary><p>If you are in a Jupyter notebook or Python script,
-this will fetch the data (25MB)</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+this will fetch the data (25MB)</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.bhsa</span> <span class="kn">import</span> <span class="n">Bhsa</span>
 <span class="n">B</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">()</span>
 </pre></div>
 </td></tr></table>
+
 <details class="hint"><summary>ETCBC versions</summary><p>The data of the BHSA comes in major versions, ranging from <code>3</code> (2011) via
 <code>4</code>, <code>4b</code>, <code>2016</code>, <code>2017</code> to <code>c</code> (2018).
-The latter is a <em>continuous</em> version, which will change over time.</p></details></details><details class="abstract"><summary>From GitHub</summary><p>If you want to be in complete control, you can get the complete data repository
-from GitHub (5GB):</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+The latter is a <em>continuous</em> version, which will change over time.</p>
+</details>
+</details>
+<details class="abstract"><summary>From GitHub</summary><p>If you want to be in complete control, you can get the complete data repository
+from GitHub (5GB):</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github/etcbc
 git clone https://github.com/etcbc/bhsa
 </pre></div>
 </td></tr></table>
-<p>and likewise you can get other ETCBC data modules such as <code>phono</code>.</p></details><h3 id="peshitta">Peshitta<a class="headerlink" href="#peshitta" title="Permanent link">&para;</a></h3>
+
+<p>and likewise you can get other ETCBC data modules such as <code>phono</code>.</p>
+</details>
+<h3 id="peshitta">Peshitta<a class="headerlink" href="#peshitta" title="Permanent link">&para;</a></h3>
 <details class="abstract"><summary>From within a program</summary><p>If you are in a Jupyter notebook or Python script,
-this will fetch the data (2MB)</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+this will fetch the data (2MB)</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.peshitta</span> <span class="kn">import</span> <span class="n">Peshitta</span>
 <span class="n">P</span> <span class="o">=</span> <span class="n">Peshitta</span><span class="p">()</span>
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>From GitHub</summary><p>If you want to be in complete control, you can get the complete data repository
-from GitHub:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+
+</details>
+<details class="abstract"><summary>From GitHub</summary><p>If you want to be in complete control, you can get the complete data repository
+from GitHub:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github/etcbc
 git clone https://github.com/etcbc/peshitta
 </pre></div>
 </td></tr></table>
-</details><h3 id="syriac-new-testament">Syriac New Testament<a class="headerlink" href="#syriac-new-testament" title="Permanent link">&para;</a></h3>
+
+</details>
+<h3 id="syriac-new-testament">Syriac New Testament<a class="headerlink" href="#syriac-new-testament" title="Permanent link">&para;</a></h3>
 <details class="abstract"><summary>From within a program</summary><p>If you are in a Jupyter notebook or Python script,
-this will fetch the data (2MB)</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+this will fetch the data (2MB)</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.extra.syrnt</span> <span class="kn">import</span> <span class="n">Syrnt</span>
 <span class="n">SY</span> <span class="o">=</span> <span class="n">Syrnt</span><span class="p">()</span>
 </pre></div>
 </td></tr></table>
-</details><details class="abstract"><summary>From GitHub</summary><p>If you want to be in complete control, you can get the complete data repository
-from GitHub:</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+
+</details>
+<details class="abstract"><summary>From GitHub</summary><p>If you want to be in complete control, you can get the complete data repository
+from GitHub:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github/etcbc
 git clone https://github.com/etcbc/syrnt
 </pre></div>
 </td></tr></table>
-</details><h2 id="cuneiform-tablets-from-uruk">Cuneiform tablets from Uruk<a class="headerlink" href="#cuneiform-tablets-from-uruk" title="Permanent link">&para;</a></h2>
+
+</details>
+<h2 id="cuneiform-tablets-from-uruk">Cuneiform tablets from Uruk<a class="headerlink" href="#cuneiform-tablets-from-uruk" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>From within a program</summary><p>If you are in a Jupyter notebook or Python script,
-the Cunei API will fetch the data for you automatically:</p><ul><li>The TF-part is 1.6 MB</li><li>the photos and lineart are 550MB!</li></ul><details class="caution" open="open"><summary>Caution</summary><p>So do this only when you have a good internet connection.</p></details></details><details class="abstract"><summary>From GitHub</summary><p>If you want to be in complete control, you can get the complete data repository
-from GitHub (1.5GB):</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+the Cunei API will fetch the data for you automatically:</p>
+<ul>
+<li>The TF-part is 1.6 MB</li>
+<li>the photos and lineart are 550MB!</li>
+</ul>
+<details class="caution" open="open"><summary>Caution</summary><p>So do this only when you have a good internet connection.</p>
+</details>
+</details>
+<details class="abstract"><summary>From GitHub</summary><p>If you want to be in complete control, you can get the complete data repository
+from GitHub (1.5GB):</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github/Nino-cunei
 git clone https://github.com/Nino-cunei/uruk
 </pre></div>
 </td></tr></table>
-</details><h2 id="more-corpora">More corpora<a class="headerlink" href="#more-corpora" title="Permanent link">&para;</a></h2>
+
+</details>
+<h2 id="more-corpora">More corpora<a class="headerlink" href="#more-corpora" title="Permanent link">&para;</a></h2>
 <p>The
 <a href="https://github.com/Dans-labs/text-fabric-data/tree/master/greek/sblgnt">Greek</a> and
 <a href="https://github.com/ETCBC/linksyr/tree/master/data/tf/syrnt">Syriac</a>
 New Testament have been converted to TF.</p>
 <p>We have example corpora in Sanskrit, and Babylonian.</p>
-<details class="abstract"><summary>From GitHub</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<details class="abstract"><summary>From GitHub</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github
 git clone https://github.com/etcbc/linksyr
 </pre></div>
 </td></tr></table>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/github
 git clone https://github.com/Dans-labs/text-fabric-data
 </pre></div>
 </td></tr></table>
-</details><p>All these are not supported by extra interfaces.</p>
+
+</details>
+<p>All these are not supported by extra interfaces.</p>
                 
                   
                 
@@ -1071,9 +1118,9 @@ git clone https://github.com/Dans-labs/text-fabric-data
       
     </div>
     
-      <script src="../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:".."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
     
     

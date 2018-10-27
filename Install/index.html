@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.451f80e5.css">
       
       
     
@@ -52,8 +52,8 @@
       <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href=".." title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -575,7 +575,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -587,7 +587,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -907,31 +907,78 @@ so you can install it easily with <code>pip3</code> or <code>pip</code> from
 the command line.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <details class="note"><summary>Computer</summary><p>Your computer should be a 64-bit machine and it needs at least 3 GB RAM memory.
-It should run Linux, Macos, or Windows.</p><details class="caution"><summary>close other programs</summary><p>When you run the Text-Fabric browser for the first time, make sure that most of that minimum
-of 3GB RAM is actually available, and not in use by other programs.</p></details></details><h2 id="python">Python<a class="headerlink" href="#python" title="Permanent link">&para;</a></h2>
-<details class="note"><summary>3.6+ 64 bit</summary><p>Install or upgrade Python on your system to at least version 3.6.3.</p><p>Go for the 64-bit version. Otherwise Python may not be able to address all the memory it needs.</p></details><details class="note"><summary>Distro</summary><p>The leanest install is provided by <a href="https://www.python.org/downloads/">python.org</a>.</p><p>You can also install it from <a href="https://www.anaconda.com/download">anaconda.com</a>.</p></details><details class="caution"><summary>on Windows?</summary><ul><li>Choose Anaconda over standard Python. The reason is that when you want to add Jupyter to the mix,
+It should run Linux, Macos, or Windows.</p>
+<details class="caution"><summary>close other programs</summary><p>When you run the Text-Fabric browser for the first time, make sure that most of that minimum
+of 3GB RAM is actually available, and not in use by other programs.</p>
+</details>
+</details>
+<h2 id="python">Python<a class="headerlink" href="#python" title="Permanent link">&para;</a></h2>
+<details class="note"><summary>3.6+ 64 bit</summary><p>Install or upgrade Python on your system to at least version 3.6.3.</p>
+<p>Go for the 64-bit version. Otherwise Python may not be able to address all the memory it needs.</p>
+</details>
+<details class="note"><summary>Distro</summary><p>The leanest install is provided by <a href="https://www.python.org/downloads/">python.org</a>.</p>
+<p>You can also install it from <a href="https://www.anaconda.com/download">anaconda.com</a>.</p>
+</details>
+<details class="caution"><summary>on Windows?</summary><ul>
+<li>Choose Anaconda over standard Python. The reason is that when you want to add Jupyter to the mix,
   you need to have additional developers' tools installed.
-  The Anaconda distribution has Jupyter out of the box.</li><li>When installing Python, make sure that the installer adds the path to Python to 
-  your environment variables.</li><li><strong>Install Chrome of Firefox and set it as your default browser.</strong>
+  The Anaconda distribution has Jupyter out of the box.</li>
+<li>When installing Python, make sure that the installer adds the path to Python to 
+  your environment variables.</li>
+<li><strong>Install Chrome of Firefox and set it as your default browser.</strong>
   The Text-Fabric browser does not display well in Microsoft Edge,
   for Edge does not support the
   <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details">details</a>
-  element.</li></ul></details><h2 id="text-fabric">Text-Fabric<a class="headerlink" href="#text-fabric" title="Permanent link">&para;</a></h2>
+  element.</li>
+</ul>
+</details>
+<details class="caution"><summary>on Linux?</summary><ul>
+<li>On Ubuntu 18.04 Python 3.6 is already installed.</li>
+<li>But you have to install pip3 in order to add the Python package text-fabric.</li>
+</ul>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>sudo apt install python3-pip
+</pre></div>
+</td></tr></table>
+
+</details>
+<h2 id="text-fabric">Text-Fabric<a class="headerlink" href="#text-fabric" title="Permanent link">&para;</a></h2>
 <h3 id="install-text-fabric">Install Text-Fabric:<a class="headerlink" href="#install-text-fabric" title="Permanent link">&para;</a></h3>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install text-fabric
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install text-fabric
 </pre></div>
 </td></tr></table>
 
 <p>On Windows:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip install text-fabric
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip install text-fabric
 </pre></div>
 </td></tr></table>
 
 <details class="note"><summary>to 3 or not to 3?</summary><p>From now on we always use <code>python3</code> and <code>pip3</code> in instructions.
 On Windows you have to say <code>python</code> and <code>pip</code>.
-There are more differences, when you go further with programming.</p><p>Advice: if you are serious on programming, consider switching to a <code>Unix</code>-like
-platform, such as Linux or the Mac (macos).</p></details><h3 id="upgrade-text-fabric">Upgrade Text-Fabric:<a class="headerlink" href="#upgrade-text-fabric" title="Permanent link">&para;</a></h3>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install --upgrade text-fabric
+There are more differences, when you go further with programming.</p>
+<p>Advice: if you are serious on programming, consider switching to a <code>Unix</code>-like
+platform, such as Linux or the Mac (macos).</p>
+</details>
+<details class="caution"><summary>on Linux?</summary><ul>
+<li>On Ubuntu the text-fabric script ends up in your <code>~/.local/bin</code> directory,
+  but this is not on your PATH.</li>
+<li>You need to execute your <code>.profile</code> file first by:</li>
+</ul>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">source</span> ~/.profile
+</pre></div>
+</td></tr></table>
+
+<p>You need to do this every time when you open a new terminal and
+want to run Text-Fabric.
+If you get tired of this, you can add this to your <code>.bashrc</code> file:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;~/.local/bin:</span><span class="si">${</span><span class="nv">PATH</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">export</span> PATH
+</pre></div>
+</td></tr></table>
+
+</details>
+<h3 id="upgrade-text-fabric">Upgrade Text-Fabric:<a class="headerlink" href="#upgrade-text-fabric" title="Permanent link">&para;</a></h3>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install --upgrade text-fabric
 </pre></div>
 </td></tr></table>
 
@@ -952,19 +999,26 @@ pip3 install jupyter
 Recommended for working with the
 the tutorials of Text-Fabric.
 Also when you want to copy and paste cells from one notebook
-to another.</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+to another.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>pip3 install jupyterlab
 jupyter labextension install jupyterlab-toc
 </pre></div>
 </td></tr></table>
+
 <p>The toc-extension is handy to get an overview
 when working with the lengthy tutorial. It will create an extra
 tab in the Jupyter Lab interface with a table of contents of the
-current notebook.</p><details class="caution"><summary>Node version</summary><p>Jupyter lab is an interesting off-spring from the marriage between the
-Python world and the Javascript world.</p><p>It is still in beta, and there are rough edges.</p><p>In order to install lab extensions you need to have 
+current notebook.</p>
+<details class="caution"><summary>Node version</summary><p>Jupyter lab is an interesting off-spring from the marriage between the
+Python world and the Javascript world.</p>
+<p>It is still in beta, and there are rough edges.</p>
+<p>In order to install lab extensions you need to have 
 <a href="https://nodejs.org/en/">Node</a> installed, but not the newest version.
 There is still a bug in the Jupyter lab that causes the installation to hang.
-With Node 8 you are fine.</p></details></details>
+With Node 8 you are fine.</p>
+</details>
+</details>
                 
                   
                 
@@ -1036,9 +1090,9 @@ With Node 8 you are fine.</p></details></details>
       
     </div>
     
-      <script src="../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:".."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
     
     

@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.451f80e5.css">
       
       
     
@@ -52,8 +52,8 @@
       <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href="../.." title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../../images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -598,7 +598,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="../../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -610,7 +610,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="../../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -960,11 +960,11 @@ A Culture Novel (Culture series)"</p>
 <h2 id="at-a-glance">At a glance<a class="headerlink" href="#at-a-glance" title="Permanent link">&para;</a></h2>
 <p>Take a text, put a grid around the words, and then leave out the words. What is
 left, are the textual positions, or <em>slots</em>.</p>
-<p><img alt="Slots" src="../../images/DataModel/DataModel.001.png" /></p>
+<p><img alt="Slots" src="/images/DataModel/DataModel.001.png" /></p>
 <p>Pieces of text correspond to phrases, clauses, sentences, verses, chapters,
 books. Draw circles around those pieces, and then leave out their contents. What
 is left, are the textual objects, or <em>nodes</em>.</p>
-<p><img alt="Nodes" src="../../images/DataModel/DataModel.002.png" /></p>
+<p><img alt="Nodes" src="/images/DataModel/DataModel.002.png" /></p>
 <p>Nodes can be connected to other nodes by <em>edges</em>. A basic function of edges is
 to indicate <em>containment</em>: <em>this</em> node corresponds to a set of slots that is
 contained in the slots of <em>that</em> node. But edges can also denote more abstract,
@@ -989,18 +989,18 @@ of text. We could represent the lexicon in this way. However, it is also
 possible to consider <em>lexeme</em> as a node type, where every lexeme node is linked
 to the set of slots that have an occurrence of that lexeme.</p>
 <h2 id="fabric-metaphor">Fabric metaphor<a class="headerlink" href="#fabric-metaphor" title="Permanent link">&para;</a></h2>
-<p><img alt="Loom" src="../../images/loom.png" />
+<p><img alt="Loom" src="/images/loom.png" />
 <a href="http://www.nuernberger-hausbuecher.de/75-Amb-2-317-4-v/data">AD 1425 Hausbücher der Nürnberger Zwölfbrüderstiftungen</a></p>
 <p>Before we go on, we invite you to look at a few basic terms in the craft of
 <a href="https://en.wikipedia.org/wiki/Weaving">weaving</a>.</p>
 <p>A weaver sets up a set of fixed, parallel threads, the <em>warp</em>. He then picks a
 thread, usually a colourful one, and sends it in a perpendicular way through the
 warp. This thread is called the <em>weft</em>.</p>
-<p><img alt="Warp" src="../../images/warp.png" /></p>
+<p><img alt="Warp" src="/images/warp.png" /></p>
 <p>The instrument that carries the wefts through the warp is called the <em>loom</em>. The
 weaver continues operating the loom, back and forth, occasionally selecting new
 wefts, until he has completed a rectangular piece of fabric, the <em>weave</em>.</p>
-<p><img alt="Weave" src="../../images/weave.png" />
+<p><img alt="Weave" src="/images/weave.png" />
 <a href="https://sew4home.com/tips-resources/buying-guide/all-about-fabric-weaves-tutorial">source</a></p>
 <p>Now Text-Fabric, the tool, can be seen as the loom that sends features (the
 wefts) through a warp (the system of nodes and edges).</p>
@@ -1009,7 +1009,7 @@ nodes and edges. That's why we call them <em>warp</em> features. Every Text-Fabr
 dataset contains these two warp features. (Later on we'll see a third member of
 the warp, <strong>otext</strong>). They provide the structure of a text and its annotations,
 without any content. Even the text itself is left out!</p>
-<p><img alt="Warp" src="../../images/DataModel/DataModel.003.png" /></p>
+<p><img alt="Warp" src="/images/DataModel/DataModel.003.png" /></p>
 <p>All other information is added to the warp as <em>features</em> (the wefts): node
 features and edge features. A feature is a special aspect of the textual
 information, isolated as a kind of module. It is a collection of values which
@@ -1026,7 +1026,7 @@ dataset, the modules must have been constructed around the warp of the dataset.<
 <p>Whenever you use Text-Fabric to generate new data, you are weaving a weave. The
 resulting dataset is a tight fabric of individual features (wefts), whose values
 are taken for a set of nodes (warp).</p>
-<p><img alt="Fabric" src="../../images/DataModel/DataModel.004.png" /></p>
+<p><img alt="Fabric" src="/images/DataModel/DataModel.004.png" /></p>
 <p>Some features deserve a privileged place. After all, we are dealing with <em>text</em>,
 so we need a bit of information about which features carry textual
 representations and sectioning information (e.g. books, chapters, verses).</p>
@@ -1041,7 +1041,7 @@ expected to have extensive sectioning and text representation definitions.
 Especially when you are in the process of converting a data source (such as a
 treebanks set) into a Text-Fabric dataset, it is handy that Text-Fabric can load
 the data without bothering about these matters.</p>
-<p><img alt="Text" src="../../images/DataModel/DataModel.005.png" /></p>
+<p><img alt="Text" src="/images/DataModel/DataModel.005.png" /></p>
 <h2 id="model">Model<a class="headerlink" href="#model" title="Permanent link">&para;</a></h2>
 <p>We summarize in brief statements our data model, including ways to represent the
 data, serialize it, and compute with it.</p>
@@ -1145,7 +1145,7 @@ role in the third, optional, warp feature <code>otext</code>.</p>
 edges from nodes to the slots they contain.</p>
 <p>From the information in <code>oslots</code> we can compute the embedding relationships
 between all nodes.</p>
-<p>It gives also rise to a canonical <a href="../Api#sorting-nodes">ordering</a> of nodes.</p>
+<p>It gives also rise to a canonical <a href="Api#sorting-nodes">ordering</a> of nodes.</p>
 <h3 id="otext-config-feature-optional">otext: config feature (optional)<a class="headerlink" href="#otext-config-feature-optional" title="Permanent link">&para;</a></h3>
 <p>Declares which node types correspond to the first three levels of sectioning,
 usually <em>book</em>, <em>chapter</em>, <em>verse</em>. Also declares the corresponding features to
@@ -1247,9 +1247,9 @@ notebook. To that end, Text-Fabric</p>
       
     </div>
     
-      <script src="../../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
     
     

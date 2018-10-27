@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../images/icon/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.5, mkdocs-material-2.9.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
@@ -44,7 +44,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.451f80e5.css">
       
       
     
@@ -52,8 +52,8 @@
       <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -199,11 +199,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href=".." title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../images/tficon-small.png" width="48" height="48">
       
-    </span>
+    </a>
     Text-Fabric
   </label>
   
@@ -278,6 +278,13 @@
         <li class="md-nav__item">
   <a href="#queued-for-next-release" title="Queued for next release" class="md-nav__link">
     Queued for next release
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#632" title="6.3.2" class="md-nav__link">
+    6.3.2
   </a>
   
 </li>
@@ -1569,7 +1576,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Writing/Hebrew/" title="Hebrew" class="md-nav__link">
+    <a href="../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -1581,7 +1588,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Writing/Syriac/" title="Syriac" class="md-nav__link">
+    <a href="../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -1831,6 +1838,13 @@
         <li class="md-nav__item">
   <a href="#queued-for-next-release" title="Queued for next release" class="md-nav__link">
     Queued for next release
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#632" title="6.3.2" class="md-nav__link">
+    6.3.2
   </a>
   
 </li>
@@ -2896,12 +2910,20 @@ all possibilities:
 <a href="http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">bhsa</a>
 <a href="http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb">peshitta</a>
 <a href="http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb">syrnt</a>
-<a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">cunei</a></p></details><h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
+<a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">cunei</a></p>
+</details>
+<h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
+<h2 id="632">6.3.2<a class="headerlink" href="#632" title="Permanent link">&para;</a></h2>
+<p>2018-10-27</p>
+<ul>
+<li>Better documentation for installation of Text-Fabric on Ubuntu.</li>
+<li>Added new module requirements: ipykernel and notebook.</li>
+</ul>
 <h2 id="631">6.3.1<a class="headerlink" href="#631" title="Permanent link">&para;</a></h2>
 <p>2018-10-24</p>
 <p>An optional parameter <code>silent=False</code> has been added to the initialisation calls of the specific app APIs:
 you can say now</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">Bhsa</span><span class="p">(</span><span class="n">silent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -3026,18 +3048,18 @@ However, there is only one version kept in <code>~/text-fabric-data</code>, so t
 </ul>
 </div>
 <p>It might also be handy for the programmers amongst you.
-See the updated <a href="../Api/General/#text-representation">API doc on T</a>, expand the T.text() item.</p>
+See the updated <a href="/Api/General/#text-representation">API doc on T</a>, expand the T.text() item.</p>
 <h3 id="auto-update">Auto update<a class="headerlink" href="#auto-update" title="Permanent link">&para;</a></h3>
 <p>The Text-Fabric browser checks if you are using the most recent release of the data.</p>
 <h3 id="font-rendering">Font rendering<a class="headerlink" href="#font-rendering" title="Permanent link">&para;</a></h3>
 <p>A font rendering issue in Safari 12 in macos Mojave prevented the use of Ezra SIL for Hebrew in notebooks.
 We now work around this by relying on the distribution of Ezra SIL as webfont
-in the <a href="../fontlibrary.org">font library</a>.</p>
+in the <a href="fontlibrary.org">font library</a>.</p>
 <h3 id="additional-small-fixes">Additional small fixes.<a class="headerlink" href="#additional-small-fixes" title="Permanent link">&para;</a></h3>
 <p>Not worth telling.</p>
 <div class="admonition hint">
 <p class="admonition-title">update Text-Fabric</p>
-<p>To update Text-Fabric itself to version 6.0, consult <a href="../Install/#text-fabric">Upgrade</a>.
+<p>To update Text-Fabric itself to version 6.0, consult <a href="/Install/#text-fabric">Upgrade</a>.
 Perform this step first, because the new TF may download the new data for you.</p>
 </div>
 <div class="admonition caution">
@@ -3204,26 +3226,43 @@ on Windows.</p>
 </ul>
 <details class="cautions" open="open"><summary>Docs not up to date</summary><p>The API docs are not up-to-date: there are new functions in the Bhsa and Cunei APIs.
 The server/kernel/client apis are not completely spelled out.
-However, the help for the text-fabric browser is included in the interface itself.</p></details><h2 id="533">5.3.3<a class="headerlink" href="#533" title="Permanent link">&para;</a></h2>
+However, the help for the text-fabric browser is included in the interface itself.</p>
+</details>
+<h2 id="533">5.3.3<a class="headerlink" href="#533" title="Permanent link">&para;</a></h2>
 <p>2018-06-23</p>
 <p>Small fix: command line args for text-fabric.</p>
 <h2 id="530-2">5.3.0-2<a class="headerlink" href="#530-2" title="Permanent link">&para;</a></h2>
 <p>2018-06-22</p>
 <details class="abstract"><summary>Better process management</summary><p>When the TF web interface is started, it cleans up remnant process that might get in the way otherwise.
-You can also say</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric -k
+You can also say</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric -k
 </pre></div>
 </td></tr></table>
+
 <p>to kill all remnant processes,
-or</p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric -k datasource
+or</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric -k datasource
 </pre></div>
 </td></tr></table>
-<p>to kill the processes for a specific datasource only.</p></details><details class="abstract"><summary>Manual node entry</summary><p>You can enter nodes manually in the TF browser.
+
+<p>to kill the processes for a specific datasource only.</p>
+</details>
+<details class="abstract"><summary>Manual node entry</summary><p>You can enter nodes manually in the TF browser.
 Handy for quick inspection.
 You can click on the sequence number to
 append the node tuple of that row to the tuple input field.
-That way you can collect interesting results.</p></details><details class="abstract"><summary>Name and Description</summary><p>You can enter a name which will be used as title and file name during export.</p><p>You can enter a description in Markdown.
+That way you can collect interesting results.</p>
+</details>
+<details class="abstract"><summary>Name and Description</summary><p>You can enter a name which will be used as title and file name during export.</p>
+<p>You can enter a description in Markdown.
 When you export your query, the description appears
-formatted on top.</p></details><details class="abstract"><summary>Provenance</summary><p>If you export a query, provenance is added, using DOIs.</p></details><details class="abstract"><summary>Small fixes</summary><p>No more blank pages due to double page breaks.</p></details><h2 id="521">5.2.1<a class="headerlink" href="#521" title="Permanent link">&para;</a></h2>
+formatted on top.</p>
+</details>
+<details class="abstract"><summary>Provenance</summary><p>If you export a query, provenance is added, using DOIs.</p>
+</details>
+<details class="abstract"><summary>Small fixes</summary><p>No more blank pages due to double page breaks.</p>
+</details>
+<h2 id="521">5.2.1<a class="headerlink" href="#521" title="Permanent link">&para;</a></h2>
 <p>2018-06-21</p>
 <ul>
 <li>Added an <code>expand all</code> checkbox in the text-fabric browser,
@@ -3298,13 +3337,13 @@ It triggers the output of context information for nodes in the result tuples.</p
 <li>
 <p>API Change in Search.</p>
 <p>In search templates I recently added things like</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>  word vt!
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>  word vt!
 </pre></div>
 </td></tr></table>
 
 <p>which checks for words that do not have a value for feature <code>vt</code>.</p>
 <p>The syntax for this has now changed to</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>  word vt#
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>  word vt#
 </pre></div>
 </td></tr></table>
 
@@ -3312,7 +3351,7 @@ It triggers the output of context information for nodes in the result tuples.</p
 <li>
 <p>Unequal (#) in feature value conditions.</p>
 <p>Now you can say things like</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>  word vt#infa|infc
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>  word vt#infa|infc
 </pre></div>
 </td></tr></table>
 
@@ -3320,7 +3359,7 @@ It triggers the output of context information for nodes in the result tuples.</p
 <p>So, in addition to <code>=</code> we have <code>#</code> for "not equal".
 *   Quantifiers.</p>
 <p>You can now use quantifiers in search. One of them is like <code>NOTEXIST</code> in MQL.
-See the <a href="../Api#quantifiers">docs</a></p>
+See the <a href="/Api#quantifiers">docs</a></p>
 </li>
 <li>
 <p>A number of minor fixes.</p>
@@ -3461,7 +3500,7 @@ but is also a powerful addition to search in its own right.</p>
 </ul>
 <h2 id="34">3.4<a class="headerlink" href="#34" title="Permanent link">&para;</a></h2>
 <p>2018-04-23</p>
-<p><a href="../Api#search">Search</a>:</p>
+<p><a href="/Api#search">Search</a>:</p>
 <ul>
 <li>You can use regular expressions to specify feature values in queries.</li>
 <li>You could already search for nodes which have a non-None value for a certain
@@ -3558,7 +3597,7 @@ have a smaller average size than contained node types. This happens when a
 container type only contains small instances of the contained type and not the
 bigger ones.</p>
 <p>Now you can override the computation by text-fabric by means of a key-value in
-the <em>otext</em> feature. See the <a href="../Api#levels-of-node-types">api</a>.</p>
+the <em>otext</em> feature. See the <a href="/Api#levels-of-node-types">api</a>.</p>
 <h2 id="315">3.1.5<a class="headerlink" href="#315" title="Permanent link">&para;</a></h2>
 <p>2018-02-15</p>
 <p>Fixed a small problem in <code>sectionFromNode(n)</code> when <code>n</code> is a node within a
@@ -3596,7 +3635,7 @@ with the <code>IN</code> relationship of MQL, like <code>[chapter book IN (Genes
 <p>Edges with edge values did not allow for the absence of values. Now they do.</p>
 <h2 id="306">3.0.6<a class="headerlink" href="#306" title="Permanent link">&para;</a></h2>
 <p>2017-10-05</p>
-<p>A major tweak in the <a href="../Api#mql-import">importMQL()</a> function so that it can
+<p>A major tweak in the <a href="/Api#mql-import">importMQL()</a> function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
 version 3 of the <a href="https://github.com/ETCBC/bhsa">BHSA</a>. In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
@@ -3604,12 +3643,12 @@ Hebrew Bible. I transform a gapped sequence of monads into a continuous sequence
 of slots.</p>
 <h2 id="305">3.0.5<a class="headerlink" href="#305" title="Permanent link">&para;</a></h2>
 <p>2017-10-05</p>
-<p>Another little tweak in the <a href="../Api#mql-import">importMQL()</a> function so that it
+<p>Another little tweak in the <a href="/Api#mql-import">importMQL()</a> function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
 MQL for version 3 of the <a href="https://github.com/ETCBC/bhsa">BHSA</a>.</p>
 <h2 id="304">3.0.4<a class="headerlink" href="#304" title="Permanent link">&para;</a></h2>
 <p>2017-10-04</p>
-<p>Little tweak in the <a href="../Api#mql-import">importMQL()</a> function so that it can handle
+<p>Little tweak in the <a href="/Api#mql-import">importMQL()</a> function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
 <a href="https://github.com/ETCBC/extrabiblical">extrabiblical</a> material.</p>
 <h2 id="302-303">3.0.2, 3.0.3<a class="headerlink" href="#302-303" title="Permanent link">&para;</a></h2>
@@ -3623,7 +3662,7 @@ has moved from <a href="https://github.com/ETCBC">ETCBC</a> to
 <h2 id="300">3.0.0<a class="headerlink" href="#300" title="Permanent link">&para;</a></h2>
 <p>2017-10-02</p>
 <p>MQL! You can now convert MQL data into a TF dataset:
-<a href="../Api#mql-import">importMQL()</a>. We had already <a href="../Api#mql-export">exportMQL()</a>.</p>
+<a href="/Api#mql-import">importMQL()</a>. We had already <a href="/Api#mql-export">exportMQL()</a>.</p>
 <p>The consequence is that we can operate with much agility between the worlds of
 MQL and TF.</p>
 <p>We can start with source data in MQL, convert it to TF, combine it with other TF
@@ -3632,24 +3671,24 @@ enriched MQL, so that the enriched data can be queried by MQL.</p>
 <h2 id="2315">2.3.15<a class="headerlink" href="#2315" title="Permanent link">&para;</a></h2>
 <p>2017-09-29</p>
 <p>Completion: TF defines the concept of
-<a href="../Api/General/#edge-features">edges</a> that
+<a href="/Api/General/#edge-features">edges</a> that
 carry a value. But so far we have not used them. It turned out that it was
 impossible to let TF know that an edge carries values, when
-<a href="../Api/General/#saving-features">saving</a> data
+<a href="/Api/General/#saving-features">saving</a> data
 as a new feature. Now it is possible.</p>
 <h2 id="2314">2.3.14<a class="headerlink" href="#2314" title="Permanent link">&para;</a></h2>
 <p>2017-09-29</p>
 <p>Bug fix: it was not possible to get
 <code>T.nodeFromSection(('2_Chronicles', 36, 23))</code>, the last verse in the Bible.</p>
 <p>This is the consequence of a bug in precomputing the sections
-<a href="../Api/General/#computed-data">sections</a>. The
+<a href="/Api/General/#computed-data">sections</a>. The
 preparation step used</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">range</span><span class="p">(</span><span class="n">firstVerse</span><span class="p">,</span> <span class="n">lastVerse</span><span class="p">)</span>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">range</span><span class="p">(</span><span class="n">firstVerse</span><span class="p">,</span> <span class="n">lastVerse</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
 <p>somewhere, which should of course have been</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">range</span><span class="p">(</span><span class="n">firstVerse</span><span class="p">,</span> <span class="n">lastVerse</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">range</span><span class="p">(</span><span class="n">firstVerse</span><span class="p">,</span> <span class="n">lastVerse</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
@@ -3661,14 +3700,14 @@ preparation step used</p>
 <ul>
 <li>
 <p>Small fix in
-    <a href="../Api/General/#saving-features">TF.save()</a>.
+    <a href="/Api/General/#saving-features">TF.save()</a>.
     The spec says that the metadata under the empty key will be inserted into all
     features, but in fact this did not happen. Instead it was used as a default
     when some feature did not have metadata specified.</p>
 <p>From now on, that metadata will spread through all features.</p>
 </li>
 <li>
-<p>New API function <a href="../Api/General#loading">explore</a>, to get a list of all known
+<p>New API function <a href="/Api/General#loading">explore</a>, to get a list of all known
     features in a dataset.</p>
 </li>
 </ul>
@@ -3678,7 +3717,7 @@ preparation step used</p>
 <li>Small fix in Search: the implementation of the relation operator <code>||</code>
     (disjoint slot sets) was faulty. Repaired.</li>
 <li>The
-    <a href="../Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb">search tutorial</a>
+    <a href="/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb">search tutorial</a>
     got an extra example: how to look for gaps. Gaps are not a primitive in the TF
     search language. Yet the language turns out to be powerful enough to look for
     gaps. This answers a question by Cody Kingham.</li>
@@ -3694,7 +3733,7 @@ newlines and tabs in the formats. Enter them as <code>\n</code> and <code>\t</co
 <h2 id="238">2.3.8<a class="headerlink" href="#238" title="Permanent link">&para;</a></h2>
 <p>2017-07-24</p>
 <p>The section levels (book, chapter, verse) were supposed to be customizable
-through the <a href="../Data-Model#otext-config-feature-optional">otext</a> feature. But in
+through the <a href="Data-Model#otext-config-feature-optional">otext</a> feature. But in
 fact, up till version 2.3.7 this did not work. From now on the names of the
 section types and the features that name/number them, are given in the <code>otext</code>
 feature. It is still the case that exactly three levels must be specified,
@@ -3714,11 +3753,11 @@ in the template got discarded after an outdent.</p>
 <p>2017-02-11</p>
 <p>Improvements:</p>
 <ul>
-<li>you can load features more silently. See <a href="../Api#loading-features"><code>TF.load()</code></a>;</li>
-<li>you can search more silently. See <a href="../Api#prepare-for-search"><code>S.study()</code></a>;</li>
-<li>you can search more concisely. See the new <a href="../Api#search-command"><code>S.search()</code></a>;</li>
+<li>you can load features more silently. See <a href="/Api#loading-features"><code>TF.load()</code></a>;</li>
+<li>you can search more silently. See <a href="/Api#prepare-for-search"><code>S.study()</code></a>;</li>
+<li>you can search more concisely. See the new <a href="/Api#search-command"><code>S.search()</code></a>;</li>
 <li>when fetching results, the <code>amount</code> parameter of
-    <a href="../Api#getting-results"><code>S.fetch()</code></a> has been renamed to <code>limit</code>;</li>
+    <a href="/Api#getting-results"><code>S.fetch()</code></a> has been renamed to <code>limit</code>;</li>
 <li>the tutorial notebooks (see links on top) have been updated.</li>
 </ul>
 <h2 id="232">2.3.2<a class="headerlink" href="#232" title="Permanent link">&para;</a></h2>
@@ -3738,10 +3777,10 @@ nodes were delivered as integers, instead of 1-tuples of integers.</p>
 <h2 id="220">2.2.0<a class="headerlink" href="#220" title="Permanent link">&para;</a></h2>
 <p>2017-01-06</p>
 <h3 id="new-sortkey">New: sortKey<a class="headerlink" href="#new-sortkey" title="Permanent link">&para;</a></h3>
-<p>The API has a new member: <a href="../Api#sorting-nodes"><code>sortKey</code></a></p>
-<p>New relationships in templates: <a href="../Api#nearness-comparison"><code>nearness</code></a>. See for
+<p>The API has a new member: <a href="/Api#sorting-nodes"><code>sortKey</code></a></p>
+<p>New relationships in templates: <a href="/Api#nearness-comparison"><code>nearness</code></a>. See for
 examples the end of the
-<a href="../Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb">searchTutorial</a>.
+<a href="/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb">searchTutorial</a>.
 Thanks to James Cuénod for requesting nearness operators.</p>
 <h3 id="fixes">Fixes<a class="headerlink" href="#fixes" title="Permanent link">&para;</a></h3>
 <ul>
@@ -3767,12 +3806,12 @@ Thanks to James Cuénod for requesting nearness operators.</p>
 <p>You can now easily make extra constraints in search templates without naming
 atoms.</p>
 <p>See the
-<a href="../Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb">searchTutorial</a>
+<a href="/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb">searchTutorial</a>
 for an updated exposition on searching.</p>
 <h2 id="200">2.0.0<a class="headerlink" href="#200" title="Permanent link">&para;</a></h2>
 <p>2016-12-23</p>
 <h3 id="new-search">New: Search<a class="headerlink" href="#new-search" title="Permanent link">&para;</a></h3>
-<p><img alt="warmXmas" src="../images/warmXmas.jpg" /></p>
+<p><img alt="warmXmas" src="/images/warmXmas.jpg" /></p>
 <p><em>Want to feel cosy with Christmas? Put your laptop on your lap, update
 Text-Fabric, and start playing with search. Your laptop will spin itself warm
 with your queries!</em></p>
@@ -3780,7 +3819,7 @@ with your queries!</em></p>
 <p>It is still very fresh, and more experimentation will be needed. Feedback is
 welcome.</p>
 <p>Start with the
-<a href="../Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb">tutorial</a>.</p>
+<a href="/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb">tutorial</a>.</p>
 <p>The implementation of this search engine can be nicely explained with a textile
 metaphor: spinning wool into yarn and then stitching the yarns together.</p>
 <p>That will be explained further in a document that I'll love to write during
@@ -3788,7 +3827,7 @@ Xmas.</p>
 <h2 id="127">1.2.7<a class="headerlink" href="#127" title="Permanent link">&para;</a></h2>
 <p>2016-12-14</p>
 <h3 id="new">New<a class="headerlink" href="#new" title="Permanent link">&para;</a></h3>
-<p><a href="../Api#warp-feature-otype"><code>F.otype.sInterval()</code></a></p>
+<p><a href="/Api#warp-feature-otype"><code>F.otype.sInterval()</code></a></p>
 <h2 id="126">1.2.6<a class="headerlink" href="#126" title="Permanent link">&para;</a></h2>
 <p>2016-12-14</p>
 <h3 id="bug-fix">bug fix<a class="headerlink" href="#bug-fix" title="Permanent link">&para;</a></h3>
@@ -3798,18 +3837,22 @@ as consequence that you could not go up from words in one-word phrases to their
 containing phrase.</p>
 <p>It has been remedied.</p>
 <details class="note"><summary>Note</summary><p>Your computed data needs to be refreshed. This can be done by calling a new
-function <a href="../Api#clearing-the-cache"><code>TF.clearCache()</code></a>. When you use TF after
-this, you will see it working quite hard to recompute a bunch of data.</p></details><h2 id="125">1.2.5<a class="headerlink" href="#125" title="Permanent link">&para;</a></h2>
+function <a href="/Api#clearing-the-cache"><code>TF.clearCache()</code></a>. When you use TF after
+this, you will see it working quite hard to recompute a bunch of data.</p>
+</details>
+<h2 id="125">1.2.5<a class="headerlink" href="#125" title="Permanent link">&para;</a></h2>
 <p>2016-12-13</p>
 <p>Documentation update</p>
 <h2 id="120">1.2.0<a class="headerlink" href="#120" title="Permanent link">&para;</a></h2>
 <p>2016-12-08</p>
-<details class="note"><summary>Note</summary><p>Data update needed</p></details><h3 id="new_1">New<a class="headerlink" href="#new_1" title="Permanent link">&para;</a></h3>
+<details class="note"><summary>Note</summary><p>Data update needed</p>
+</details>
+<h3 id="new_1">New<a class="headerlink" href="#new_1" title="Permanent link">&para;</a></h3>
 <h3 id="frequency-lists">Frequency lists<a class="headerlink" href="#frequency-lists" title="Permanent link">&para;</a></h3>
-<p><a href="../Api#node-features"><code>F.feature.freqList()</code></a>: get a sorted frequency list for any
+<p><a href="/Api#node-features"><code>F.feature.freqList()</code></a>: get a sorted frequency list for any
 feature. Handy as a first step in exploring a feature.</p>
 <h3 id="export-to-mql">Export to MQL<a class="headerlink" href="#export-to-mql" title="Permanent link">&para;</a></h3>
-<p><a href="../Api#export-to-mql"><code>TF.exportMQL()</code></a>: export a whole dataset as a MQL database.
+<p><a href="/Api#export-to-mql"><code>TF.exportMQL()</code></a>: export a whole dataset as a MQL database.
 Including all modules that you have loaded with it.</p>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <p>The slot numbers start at 0, no longer at 1. Personally I prefer the zero
@@ -3817,7 +3860,7 @@ starting point, but Emdros insists on positive monads and objects ids. Most
 important is that users do not have to add/subtract one from the numbers they
 see in TF if they want to use it in MQL and vice versa.</p>
 <p>Because of this you need to update your data too:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>    <span class="nb">cd</span> ~/github/text-fabric-data
     git pull origin master
 </pre></div>
@@ -3893,9 +3936,9 @@ see in TF if they want to use it in MQL and vice versa.</p>
       
     </div>
     
-      <script src="../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"0.17.5",url:{base:".."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
     
     
