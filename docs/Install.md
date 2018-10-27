@@ -38,6 +38,13 @@ the command line.
       [details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
       element.
 
+??? caution "on Linux?"
+    * On Ubuntu 18.04 Python 3.6 is already installed.
+    * But you have to install pip3 in order to add the Python package text-fabric.
+
+    ```sh
+    sudo apt install python3-pip
+    ```
 
 ## Text-Fabric
 
@@ -61,6 +68,24 @@ pip install text-fabric
     Advice: if you are serious on programming, consider switching to a `Unix`-like
     platform, such as Linux or the Mac (macos).
 
+??? caution "on Linux?"
+    * On Ubuntu the text-fabric script ends up in your `~/.local/bin` directory,
+      but this is not on your PATH.
+    * You need to execute your `.profile` file first by:
+
+    ```sh
+    source ~/.profile
+    ```
+
+    You need to do this every time when you open a new terminal and
+    want to run Text-Fabric.
+    If you get tired of this, you can add this to your `.bashrc` file:
+
+    ```sh
+    PATH="~/.local/bin:${PATH}"
+    export PATH
+    ```
+    
 ### Upgrade Text-Fabric:
 
 ```sh

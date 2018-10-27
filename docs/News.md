@@ -12,6 +12,13 @@
 
 ## Queued for next release
 
+## 6.3.2
+
+2018-10-27
+
+* Better documentation for installation of Text-Fabric on Ubuntu.
+* Added new module requirements: ipykernel and notebook.
+
 ## 6.3.1
 
 2018-10-24
