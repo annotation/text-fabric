@@ -1,5 +1,5 @@
-![logo](/images/tficon-small.png)
-![logo](/images/tf.png)
+![logo](images/tficon-small.png)
+![logo](images/tf.png)
 
 # Text-Fabric
 
@@ -156,9 +156,9 @@ what it is and where it came from. And after it, if you want to cite it, use thi
 
 ## Getting started
 
-[Installation](/Install)
+[Installation](Install)
 
-[Use](/Use)
+[Use](Use)
 
 ## Documentation
 
