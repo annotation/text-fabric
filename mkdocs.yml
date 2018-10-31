@@ -17,7 +17,7 @@ theme:
     tabs: false
 repo_url: 'https://github.com/dans-labs/text-fabric/'
 
-pages:
+nav:
   - Home: 'index.md'
   - News: 'News.md'
   - Install: 'Install.md'
