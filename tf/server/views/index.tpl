@@ -6,6 +6,7 @@
         <meta name="application-name" content="Text-Fabric Search Box"/>
         <link rel="shortcut icon" href="/server/static/favicon.ico">
         <link rel="stylesheet" href="/server/static/main.css"/>
+        <link rel="stylesheet" href="/server/static/fontawesome.css">
         {{!css}}
     </head>
     <body>
@@ -309,26 +310,41 @@
                 <p class="buttons"><button class="xl" type="submit">Go</button></p>
             </div>
             <div class="midcol">
-                <div class="navigation">
+                <div class="materialnav">
+                    <input type="hidden" name="mode" id="mode" value="{{mode}}"/>
                     <div>
-                        <input
-                            type="checkbox" id="expac"
-                        /> <span class="ilab">expand all</span>
-                        <input type="hidden" name="expandAll" id="expa" value="{{expandAll}}"/>
+                        <div class="navigation">
+                            <div>
+                                <input
+                                    type="checkbox" id="expac"
+                                /> <span class="ilab">expand all</span>
+                                <input type="hidden" name="expandAll" id="expa" value="{{expandAll}}"/>
+                            </div>
+                            <div>
+                                <input
+                                    class="r int" type="text" id="pos" name="position" value="{{position}}"
+                                /> <span class="ilab">current position</span>
+                            </div>
+                            <div>
+                                <input
+                                    class="r int" type="text" name="batch" value="{{batch}}"
+                                /> <span class="ilab">results per page</span>
+                            </div>
+                        </div>
+                        <p class="ilab"><a href="#" id="moderesults">Results</a></p>
+                        <div class="pages">
+                            {{!pages}}
+                        </div>
                     </div>
                     <div>
-                        <input
-                            class="r int" type="text" id="pos" name="position" value="{{position}}"
-                        /> <span class="ilab">current position</span>
+                        <p class="ilab"><a href="#" id="modepassage">Passage</a></p>
+                        <div class="passages">
+                            <input type="hidden" name="sec0" id="sec0" value="{{sec0}}"/>
+                            <input type="hidden" name="sec1" id="sec1" value="{{sec1}}"/>
+                            <input type="hidden" name="sec2" id="sec2" value="{{sec2}}"/>
+                            {{!passages}}
+                        </div>
                     </div>
-                    <div>
-                        <input
-                            class="r int" type="text" name="batch" value="{{batch}}"
-                        /> <span class="ilab">results per page</span>
-                    </div>
-                </div>
-                <div class="pages">
-                    {{!pages}}
                 </div>
             </div>
             <div class="rightcol">

@@ -325,12 +325,20 @@ div.navigation {
     font-size: small;
 }
 
+div.materialnav {
+    width: 100%;
+}
+div.passages {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
 div.pages {
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-end;
     align-items: center;
-    width: 100%;
 }
 div.pline {
     display: flex;
@@ -346,8 +354,23 @@ div.pline {
     line-height: 1.5em;
     text-decoration: none;
 }
-.pnav:hover {
+.pnav:hover, .s0nav:hover, .s1nav:hover {
     background-color: #eeffff;
+}
+div.sline {
+    display: flex;
+    flex-flow: column nowrap;
+    margin: 0.1em 0.2em;
+}
+.s0nav, .s1nav {
+    font-size: small;
+    color: #6666ff;
+    background-color: #eeeeff;
+    border-radius: 0.2rem;
+    border: 0.1rem solid #cccccc;
+    padding: 0.1rem 0.2rem;
+    line-height: 1.0em;
+    text-decoration: none;
 }
 .focus {
     background-color: #ffeebb;
@@ -369,6 +392,9 @@ div.dtheadrow > span {
 details.dtrow {
     border: 0.1rem solid #bbbbbb;
 }
+details.dtrow.focus {
+    background-color: #ffaa00;
+}
 details.dtrow > summary {
     background-color: #f0f0f0;
     margin: 0.2rem 0;
@@ -384,11 +410,11 @@ div.pretty {
     background-color: #fafafa;
 }
 a.rwh {
-    font-size: x-small;
+    font-size: small !important;
     background-color: #ddeeff;
 }
 a.sq {
-    font-size: small;
+    font-size: small !important;
     background-color: #eeffdd;
 }
 a.nd {

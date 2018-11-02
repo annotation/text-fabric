@@ -5,7 +5,7 @@ from rpyc.utils.server import ThreadedServer
 
 from tf.apphelpers import (
     runSearch, runSearchCondensed,
-    compose, getContext, getResultsX
+    compose, composeP, getContext, getResultsX
 )
 from .common import getParam, getConfig, getLocalClones
 
@@ -79,6 +79,45 @@ def makeTfKernel(dataSource, lgc, port):
           tuple(fmt for fmt in extraApi.api.T.formats if fmt.startswith('text-')),
       )
 
+    def exposed_passage(
+        self, sec0, sec1, textFormat,
+        sec2=None, opened=set(),
+        withNodes=False,
+        **options,
+    ):
+      extraApi = self.extraApi
+      api = extraApi.api
+      F = api.F
+      L = api.L
+      T = api.T
+      sectionFeatureTypes = T.sectionFeatureTypes
+      sec0Type = T.sectionTypes[0]
+      sec1Type = T.sectionTypes[1]
+      sec2Type = T.sectionTypes[2]
+      passage = ''
+      if sec0 and sec1:
+        if sectionFeatureTypes[0] == 'int':
+          sec0 = int(sec0)
+        if sectionFeatureTypes[1] == 'int':
+          sec1 = int(sec1)
+        node = T.nodeFromSection((sec0, sec1))
+        items = L.d(node, otype=sec2Type) if node else []
+        passage = composeP(
+            extraApi,
+            items, textFormat,
+            opened,
+            sec2,
+            withNodes=withNodes,
+            **options,
+        )
+      sec0s = tuple(T.sectionFromNode(s)[0] for s in F.otype.s(sec0Type))
+      sec1s = ()
+      if sec0:
+        sec0Node = T.nodeFromSection((sec0,))
+        sec1s = tuple(T.sectionFromNode(s)[1] for s in L.d(sec0Node, otype=sec1Type))
+      passages = (sec0s, sec1s)
+      return (passage, passages)
+
     def exposed_search(
         self, query, tuples, sections, condensed, condenseType, textFormat, batch,
         position=1, opened=set(),
@@ -87,7 +126,7 @@ def makeTfKernel(dataSource, lgc, port):
         **options,
     ):
       extraApi = self.extraApi
-      api = self.extraApi.api
+      api = extraApi.api
 
       total = 0
 
@@ -149,14 +188,14 @@ def makeTfKernel(dataSource, lgc, port):
       afterResults = tuple((n, queryResults[n - 1]) for n in sorted(after))
 
       allResults = (
-          ((None, 'sections'),) +
-          sectionResults +
-          ((None, 'nodes'),) +
-          tupleResults +
-          ((None, 'results'),) +
-          beforeResults +
-          tuple((i + start, r) for (i, r) in enumerate(selectedResults)) +
-          afterResults
+          ((None, 'sections'),)
+          + sectionResults
+          + ((None, 'nodes'),)
+          + tupleResults
+          + ((None, 'results'),)
+          + beforeResults
+          + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
+          + afterResults
       )
       table = compose(
           extraApi,
@@ -195,7 +234,7 @@ def makeTfKernel(dataSource, lgc, port):
               for t in tupleLines
               if t.strip()
           )
-        except Exception as e:
+        except Exception:
           pass
 
       queryResults = ()
@@ -227,9 +266,9 @@ def makeTfKernel(dataSource, lgc, port):
       context = getContext(
           api,
           (
-              allNodes(sectionResults) |
-              allNodes(tupleResults) |
-              allNodes(queryResultsC if condensed and condenseType else queryResults)
+              allNodes(sectionResults)
+              | allNodes(tupleResults)
+              | allNodes(queryResultsC if condensed and condenseType else queryResults)
           )
       )
       resultsX = getResultsX(

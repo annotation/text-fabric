@@ -1,7 +1,26 @@
+import sys
 import re
 
 LETTER = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
 VALID = set('_0123456789') | LETTER
+
+WARN32 = '''WARNING: you are not running a 64-bit implementation of Python.
+You may run into memory problems if you load a big data set.
+Consider installing a 64-bit Python.
+'''
+
+MSG64 = '''Running on 64-bit Python'''
+
+
+def check32():
+  warn = ''
+  msg = ''
+  on32 = sys.maxsize < 2**63 - 1
+  if on32 < 2**63 - 1:
+    warn = WARN32
+  else:
+    msg = MSG64
+  return (on32, warn, msg)
 
 
 def cleanName(name):

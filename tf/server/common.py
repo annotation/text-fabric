@@ -145,16 +145,39 @@ def pageLinks(nResults, position, spread=10):
     lines.append(commonLine)
 
   html = '\n'.join(
-      '<div class="pline">' +
-      ' '.join(
+      '<div class="pline">'
+      + ' '.join(
           f'<a href="#" class="pnav {" focus" if position == p else ""}">{p}</a>'
           for p in line
       )
-      +
-      '</div>'
+      + '</div>'
       for line in reversed(lines)
   )
   return html
+
+
+def passageLinks(passages, sec0, sec1):
+  sec0s = []
+  sec1s = []
+  for s0 in passages[0]:
+    selected = str(s0) == str(sec0)
+    sec0s.append(
+        f'<a href="#" class="s0nav {" focus" if selected else ""}">{s0}</a>'
+    )
+  if sec0:
+    for s1 in passages[1]:
+      selected = str(s1) == str(sec1)
+      sec1s.append(
+          f'<a href="#" class="s1nav {" focus" if selected else ""}">{s1}</a>'
+      )
+  return f'''
+  <div class="sline">
+    {''.join(sec0s)}
+  </div>
+  <div class="sline">
+    {''.join(sec1s)}
+  </div>
+'''
 
 
 def shapeMessages(messages):

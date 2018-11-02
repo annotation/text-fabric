@@ -202,6 +202,32 @@ def runSearchCondensed(api, query, cache, condenseType):
   return (queryResults, messages, features)
 
 
+def composeP(
+    extraApi,
+    items,
+    textFormat,
+    opened,
+    sec2,
+    withNodes=False,
+    **options,
+):
+  passageHtml = []
+
+  for item in items:
+    passageHtml.append(
+        _plainTextS2(
+            extraApi,
+            item,
+            opened,
+            sec2,
+            fmt=textFormat,
+            withNodes=withNodes,
+            **options,
+        )
+    )
+  return '\n'.join(passageHtml)
+
+
 def compose(
     extraApi,
     tuples,
@@ -333,6 +359,7 @@ def plainTuple(
   asApi = extraApi.asApi
   api = extraApi.api
   F = api.F
+  T = api.T
   if asApi:
     prettyRep = prettyTuple(
         extraApi,
@@ -350,6 +377,11 @@ def plainTuple(
     refNode = tup[refColumn - 1] if refColumn <= len(tup) else None
     refRef = '' if refNode is None else extraApi.webLink(refNode)
     tupSeq = ','.join(str(n) for n in tup)
+    sParts = T.sectionFromNode(refNode)
+    passageAtt = ' '.join(
+        f'sec{i}="{sParts[i] if i < len(sParts) else ""}"'
+        for i in range(3)
+    )
 
     plainRep = ''.join(
         f'''<span>{mdEsc(extraApi.plain(
@@ -371,7 +403,12 @@ def plainTuple(
     seq="{seqNumber}"
     {attOpen}
   >
-    <summary><a href="#" class="sq" tup="{tupSeq}">{seqNumber}</span> {refRef} {plainRep}</summary>
+    <summary>
+      <a href="#" class="pq fa fa-solar-panel fa-xs" title="show in context" {passageAtt}></a>
+      <a href="#" class="sq" tup="{tupSeq}">{seqNumber}</a>
+      {refRef}
+      {plainRep}
+    </summary>
     <div class="pretty">
       {prettyRep}
     </div>
@@ -399,6 +436,55 @@ def plainTuple(
   head.append(markdown)
 
   dm('\n'.join(head))
+
+
+def _plainTextS2(
+    extraApi,
+    sNode,
+    opened,
+    sec2,
+    fmt=None,
+    withNodes=False,
+    **options,
+):
+  api = extraApi.api
+  T = api.T
+  seqNumber = T.sectionFromNode(sNode)[2]
+  itemType = T.sectionTypes[2]
+  isOpened = str(seqNumber) in opened
+  tClass = '' if fmt is None else extraApi.formatClass[fmt]
+  prettyRep = prettyTuple(
+      extraApi,
+      (sNode,),
+      seqNumber,
+      isCondensed=False,
+      condenseType=itemType,
+      fmt=fmt,
+      withNodes=withNodes,
+      **options,
+  ) if isOpened else ''
+  current = ' focus' if str(seqNumber) == str(sec2) else ''
+  attOpen = ' open ' if isOpened else ''
+
+  textRep = T.text(sNode, fmt=fmt, descend=True)
+  html = (
+      f'''
+<details
+  class="pretty {current}"
+  seq="{seqNumber}"
+  {attOpen}
+>
+  <summary class="{tClass}">
+    {extraApi.webLink(sNode, text=seqNumber)}
+    {textRep}
+  </summary>
+  <div class="pretty">
+    {prettyRep}
+  </div>
+</details>
+'''
+  )
+  return html
 
 
 def show(
@@ -787,11 +873,59 @@ def header(extraApi):
   )
 
 
-def outLink(text, href, title=None, className=None, target='_blank'):
+def outLink(text, href, title=None, passage=None, className=None, target='_blank'):
   titleAtt = '' if title is None else f' title="{title}"'
   classAtt = f' class="{className}"' if className else ''
   targetAtt = f' target="{target}"' if target else ''
-  return f'<a{classAtt}{targetAtt} href="{href}"{titleAtt}>{text}</a>'
+  passageAtt = f' sec="{passage}"' if passage else ''
+  return f'<a{classAtt}{targetAtt} href="{href}"{titleAtt}{passageAtt}>{text}</a>'
+
+
+def compileFormats(formatCSS, formats, defaultCls):
+  result = {}
+  for fmt in formats:
+    for (key, cls) in formatCSS.items():
+      if f'-{key}-' in fmt:
+        result[fmt] = cls
+  for fmt in formats:
+    if fmt not in result:
+      result[fmt] = defaultCls
+  return result
+
+
+def nodeFromDefaultSection(extraApi, sectionStr):
+  api = extraApi.api
+  T = api.T
+  sep1 = extraApi.sectionSep1
+  sep2 = extraApi.sectionSep2
+  msg = f'Not a valid passage: "{sectionStr}"'
+  msgi = '{} "{}" is not a number'
+  section = sectionStr.split(sep1)
+  if len(section) > 2:
+    return (msg, None)
+  elif len(section) == 2:
+    section2 = section[1].split(sep2)
+    if len(section2) > 2:
+      return (msg, None)
+  if len(section) != 1:
+    section = [section[0]] + section2
+  dataTypes = T.sectionFeatureTypes
+  sectionTypes = T.sectionTypes
+  sectionTyped = []
+  for (i, sectionPart) in enumerate(section):
+    if dataTypes[i] == 'int':
+      try:
+        part = int(sectionPart)
+      except ValueError:
+        return (msgi.format(sectionTypes[i], sectionPart))
+    else:
+      part = sectionPart
+    sectionTyped.append(part)
+
+  sectionNode = T.nodeFromSection(sectionTyped)
+  if sectionNode is None:
+    return (msg, None)
+  return ('', sectionNode)
 
 
 def htmlEsc(val):

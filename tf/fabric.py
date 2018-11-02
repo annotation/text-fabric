@@ -1,8 +1,9 @@
 import os
+import sys
 import collections
 from glob import glob
 from .data import Data, WARP, MEM_MSG
-from .helpers import itemize, expandDir, collectFormats, cleanName
+from .helpers import itemize, expandDir, collectFormats, cleanName, check32
 from .timestamp import Timestamp
 from .prepare import (levels, order, rank, levUp, levDown, boundary, sections)
 from .api import (
@@ -22,7 +23,7 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '6.3.2'
+VERSION = '6.4.0'
 DOI = '10.5281/zenodo.592193'
 DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'
@@ -63,6 +64,12 @@ class Fabric(object):
     self.tm = Timestamp()
     self.banner = f'This is {NAME} {VERSION}'
     self.version = VERSION
+    (on32, warn, msg) = check32()
+    if on32:
+      self.tm.info(warn, tm=False)
+    if msg:
+      if not silent:
+        self.tm.info(msg, tm=False)
     if not silent:
       self.tm.info(
           '''{}

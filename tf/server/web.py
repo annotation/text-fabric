@@ -1,4 +1,5 @@
 import os
+import sys
 from shutil import rmtree
 import datetime
 import time
@@ -16,7 +17,7 @@ from tf.server.kernel import makeTfConnection
 from tf.server.common import (
     getParam, getDebug, getConfig, getDocker, getLocalClones,
     getAppDir, getValues, setValues,
-    pageLinks,
+    pageLinks, passageLinks,
     shapeMessages, shapeOptions, shapeCondense, shapeFormats,
 )
 from tf.apphelpers import RESULT
@@ -244,8 +245,12 @@ def getFormData():
   form['expandAll'] = request.forms.expandAll
   form['linked'] = getInt(request.forms.linked, default=1)
   form['opened'] = request.forms.opened
+  form['mode'] = request.forms.mode
   form['position'] = getInt(request.forms.position, default=1)
   form['batch'] = getInt(request.forms.batch, default=BATCH)
+  form['sec0'] = request.forms.sec0
+  form['sec1'] = request.forms.sec1
+  form['sec2'] = request.forms.sec2
   setValues(config.options, request.forms, form)
   return form
 
@@ -271,6 +276,7 @@ def readFormData(source):
         chdir rename duplicate
         condensetp textformat opened author title export
         otherJob otherJobDo side help author title description
+        mode sec0 sec1 sec2
     '''.strip().split():
       if form.get(item, None) is None:
         form[item] = ''
@@ -312,7 +318,6 @@ def serveLocal(filepath):
 @get('/<anything:re:.*>')
 def serveSearch(anything):
   form = getFormData()
-  # sys.stderr.write(f'{form}')
   curJobDir = os.getcwd()
   newDir = form['jobDir']
   dirMsg = ''
@@ -352,12 +357,12 @@ def serveSearch(anything):
   condensedAtt = ' checked ' if form['condensed'] else ''
   withNodesAtt = ' checked ' if form['withNodes'] else ''
 
-  openedSet = {int(n) for n in form['opened'].split(',')} if form['opened'] else set()
 
   options = config.options
   values = getValues(options, form)
 
   pages = ''
+  passages = ''
 
   kernelApi = TF.connect()
   (header, appLogo, tfLogo) = kernelApi.header()
@@ -376,42 +381,65 @@ def serveSearch(anything):
   condenseOpts = shapeCondense(condenseTypes, condenseType)
   textFormat = form['textformat'] or defaultTextFormat
   textFormatOpts = shapeFormats(textFormats, textFormat)
+  mode = form['mode']
 
   resultKind = condenseType if form['condensed'] else RESULT
 
-  if form['searchTemplate'] or form['tuples'] or form['sections']:
+  sectionMessages = ''
+  tupleMessages = ''
+  queryMessages = ''
+
+  if mode == 'results':
+    openedSet = {int(n) for n in form['opened'].split(',')} if form['opened'] else set()
+    if form['searchTemplate'] or form['tuples'] or form['sections']:
+      (
+          table,
+          sectionMessages, tupleMessages, queryMessages,
+          start, total,
+      ) = kernelApi.search(
+          form['searchTemplate'],
+          form['tuples'],
+          form['sections'],
+          form['condensed'],
+          condenseType,
+          textFormat,
+          form['batch'],
+          position=form['position'],
+          opened=openedSet,
+          withNodes=form['withNodes'],
+          linked=form['linked'],
+          **values,
+      )
+      if table is not None:
+        pages = pageLinks(total, form['position'])
+      if sectionMessages:
+        sectionMessages = shapeMessages(sectionMessages)
+      if tupleMessages:
+        tupleMessages = shapeMessages(tupleMessages)
+      if queryMessages:
+        queryMessages = shapeMessages(queryMessages)
+    else:
+      table = f'no {resultKind}s'
+      sectionMessages = ''
+      tupleMessages = ''
+      queryMessages = ''
+  else:
+    openedSet = set(form['opened'].split(',')) if form['opened'] else set()
+    sec0 = form['sec0']
+    sec1 = form['sec1']
+    sec2 = form['sec2']
     (
         table,
-        sectionMessages, tupleMessages, queryMessages,
-        start, total,
-    ) = kernelApi.search(
-        form['searchTemplate'],
-        form['tuples'],
-        form['sections'],
-        form['condensed'],
-        condenseType,
+        passages,
+    ) = kernelApi.passage(
+        sec0, sec1,
         textFormat,
-        form['batch'],
-        position=form['position'],
+        sec2=sec2,
         opened=openedSet,
         withNodes=form['withNodes'],
-        linked=form['linked'],
         **values,
     )
-    if table is not None:
-      pages = pageLinks(total, form['position'])
-
-    if sectionMessages:
-      sectionMessages = shapeMessages(sectionMessages)
-    if tupleMessages:
-      tupleMessages = shapeMessages(tupleMessages)
-    if queryMessages:
-      queryMessages = shapeMessages(queryMessages)
-  else:
-    table = f'no {resultKind}s'
-    sectionMessages = ''
-    tupleMessages = ''
-    queryMessages = ''
+    passages = passageLinks(passages, sec0, sec1)
 
   writeFormData(form)
 
@@ -474,6 +502,7 @@ def serveSearch(anything):
       exampleSectionText=exampleSectionText,
       withNodesAtt=withNodesAtt,
       pages=pages,
+      passages=passages,
       otherJobs=otherJobs,
       dirMsg=dirMsg,
       EXTENSION=EXTENSION,
@@ -489,6 +518,7 @@ if __name__ == "__main__":
     config = getStuff(lgc)
     onDocker = getDocker()
     print(f'onDocker={onDocker}')
+    sys.stdout.flush()
     if config is not None:
       run(
           debug=debug,

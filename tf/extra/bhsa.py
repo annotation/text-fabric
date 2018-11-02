@@ -9,6 +9,8 @@ from tf.apphelpers import (
     show, prettyPre, pretty, prettyTuple, prettySetup,
     getData,
     getBoundary, getFeatures,
+    compileFormats,
+    nodeFromDefaultSection,
     htmlEsc, mdEsc,
     dm, dh, header, outLink,
     URL_NB, API_URL, TFDOC_URL,
@@ -145,6 +147,12 @@ CSS = '''
 }
 .trb,.trb a:visited,.trb a:link {
     font-family: sans-serif;
+    font-size: normal;
+    direction: ltr;
+    text-decoration: none;
+}
+.prb,.prb a:visited,.prb a:link {
+    font-family: sans-serif;
     font-size: large;
     direction: ltr;
     text-decoration: none;
@@ -159,6 +167,7 @@ CSS = '''
 .hb,.hb a:visited,.hb a:link {
     font-family: "Ezra SIL", "SBL Hebrew", sans-serif;
     font-size: large;
+    line-height: 1.8;
     direction: rtl;
     text-decoration: none;
 }
@@ -235,6 +244,13 @@ CSS = '''
 </style>
 '''
 
+DEFAULT_CLS = 'trb'
+FORMAT_CSS = dict(
+    orig='hb',
+    trans=DEFAULT_CLS,
+    phono='prb',
+)
+
 CLASS_NAMES = dict(
     verse='verse',
     sentence='atoms',
@@ -301,7 +317,8 @@ EXCLUDED_FEATURES = set('''
 
 # for 4, 4b: voc_lex => g_lex, voc_lex_utf8 => g_lex_utf8
 
-PASSAGE_RE = re.compile('^([A-Za-z0-9_ -]+)\s+([0-9]+)\s*:\s*([0-9]+)$')
+SECTION_SEP1 = ' '
+SECTION_SEP2 = ':'
 
 
 class Bhsa(object):
@@ -336,6 +353,8 @@ class Bhsa(object):
         f'English book names</a>)'
     )
     self.exampleSectionText = 'Genesis 1:1'
+    self.sectionSep1 = SECTION_SEP1
+    self.sectionSep2 = SECTION_SEP2
 
     standardFeatures = (
         STANDARD_FEATURES.replace('voc_', 'g_') if version in {'4', '4b'} else STANDARD_FEATURES
@@ -382,6 +401,7 @@ class Bhsa(object):
       api.TF.load(self.standardFeatures, add=True, silent=True)
     self.prettyFeaturesLoaded = self.standardFeatures
     self.prettyFeatures = ()
+    self.formatClass = compileFormats(FORMAT_CSS, api.T.formats, DEFAULT_CLS)
     self.api = api
     self.cwd = os.getcwd()
 
@@ -434,13 +454,11 @@ class Bhsa(object):
           )
           dh(
               '<details open><summary><b>Loaded features</b>:</summary>\n'
-              +
-              ' '.join(
+              + ' '.join(
                   outLink(feature, self.featureUrl(self.version, feature), title='info')
                   for feature in lf
               )
-              +
-              '</details>'
+              + '</details>'
           )
           if repoLoc:
             dm(
@@ -463,16 +481,14 @@ This notebook online:
           if not silent:
             dh(
                 '<details open><summary><b>API members</b>:</summary>\n'
-                +
-                '<br/>\n'.join(
+                + '<br/>\n'.join(
                     ', '.join(
                         outLink(entry, API_URL(ref), title='doc')
                         for entry in entries
                     )
                     for (ref, entries) in docs
                 )
-                +
-                '</details>'
+                + '</details>'
             )
     self.table = types.MethodType(table, self)
     self.plainTuple = types.MethodType(plainTuple, self)
@@ -482,6 +498,7 @@ This notebook online:
     self.prettySetup = types.MethodType(prettySetup, self)
     self.search = types.MethodType(search, self)
     self.header = types.MethodType(header, self)
+    self.nodeFromDefaultSection = types.MethodType(nodeFromDefaultSection, self)
 
   def featureUrl(self, version, feature):
     return f'{self.docUrl}/features/hebrew/{version}/{feature}.html'
@@ -546,25 +563,15 @@ This notebook online:
     if noUrl:
       title = None
     target = '' if noUrl else None
-    result = outLink(text, href, title=title, className=className, target=target)
+    result = outLink(
+        text, href, title=title, className=className, target=target, passage=passageText,
+    )
     if asString:
       return result
     dh(result)
 
-  def webLink(self, n):
-    return self.shbLink(n, className='rwh', asString=True, noUrl=True)
-
-  def nodeFromDefaultSection(self, sectionStr):
-    api = self.api
-    T = api.T
-    match = PASSAGE_RE.match(sectionStr)
-    if not match:
-      return (f'Wrong shape: "{sectionStr}". Must be "book chapter:verse"', None)
-    (book, chapter, verse) = match.groups()
-    verseNode = T.nodeFromSection((book, int(chapter), int(verse)))
-    if verseNode is None:
-      return (f'Not a valid verse: "{sectionStr}"', None)
-    return ('', verseNode)
+  def webLink(self, n, text=None):
+    return self.shbLink(n, className='rwh', text=text, asString=True, noUrl=True)
 
   def plain(
       self,
@@ -587,13 +594,13 @@ This notebook online:
     else:
       nodeRep = f' *{n}* ' if withNodes else ''
 
-    hebrew = fmt is None or '-orig-' in fmt
+    isText = fmt is None or '-orig-' in fmt
     if nType == 'word':
       rep = mdEsc(htmlEsc(T.text([n], fmt=fmt)))
     elif nType in SECTION:
       label = ('{}' if nType == 'book' else '{} {}' if nType == 'chapter' else '{} {}:{}')
       rep = label.format(*T.sectionFromNode(n))
-      hebrew = False
+      isText = False
       if nType == 'half_verse':
         rep += F.label.v(n)
       rep = mdEsc(htmlEsc(rep))
@@ -601,7 +608,7 @@ This notebook online:
         if linked:
           rep = self.shbLink(n, text=rep, asString=True)
         rep += mdEsc(htmlEsc(T.text(L.d(n, otype="word"), fmt=fmt)))
-        hebrew = True
+        isText = True
     elif nType == 'lex':
       rep = mdEsc(htmlEsc(F.voc_lex_utf8.v(n)))
     else:
@@ -610,7 +617,7 @@ This notebook online:
     if linked and nType not in VERSE:
       rep = self.shbLink(n, text=rep, asString=True)
 
-    tClass = 'hb' if hebrew else 'trb'
+    tClass = self.formatClass[fmt] if isText else 'trb'
     rep = f'<span class="{tClass}">{rep}</span>'
     result = f'{rep}{nodeRep}'
 

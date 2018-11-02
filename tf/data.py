@@ -4,7 +4,10 @@ import gzip
 import collections
 import time
 from datetime import datetime
-from .helpers import (setFromSpec, valueFromTf, tfFromValue, specFromRanges, rangesFromSet)
+from .helpers import (
+    setFromSpec, valueFromTf, tfFromValue, specFromRanges, rangesFromSet,
+    check32
+)
 
 ERROR_CUTOFF = 20
 GZIP_LEVEL = 2
@@ -18,10 +21,12 @@ WARP = (
 
 DATA_TYPES = ('str', 'int')
 
-MEM_MSG = '''TF is out of memory!
-If this happens and your computer has more than 3GB RAM on board:
-Close all other programs and try again.
-'''
+MEM_MSG = (
+    'TF is out of memory!\n'
+    + 'If this happens and your computer has more than 3GB RAM on board:\n'
+    + ('* make sure that you run 64-bit Python and/or\n' if check32()[0] else '')
+    + '* close all other programs and try again.\n'
+)
 
 
 class Data(object):
@@ -74,8 +79,8 @@ class Data(object):
       actionRep = 'E'
       good = False
     elif self.dataLoaded and (
-        self.isConfig or (not origTime or self.dataLoaded >= origTime) and
-        (not binTime or self.dataLoaded >= binTime)
+        self.isConfig or (not origTime or self.dataLoaded >= origTime)
+        and (not binTime or self.dataLoaded >= binTime)
     ):
       actionRep = '='  # loaded and up to date
     elif not origTime and not binTime:
@@ -355,7 +360,7 @@ class Data(object):
     try:
       fh = open(fpath, 'w', encoding='utf8')
     except Exception:
-      self.tm.error(f'Cannot write to feature file "{path}"')
+      self.tm.error(f'Cannot write to feature file "{fpath}"')
       return False
     fh.write('@{}\n'.format('config' if self.isConfig else 'edge' if self.isEdge else 'node'))
     if self.edgeValues:

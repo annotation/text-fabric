@@ -12,6 +12,17 @@
 
 ## Queued for next release
 
+## 6.4
+
+2018-11-02
+
+* A passage browsing interface that interacts with the search results. 
+
+Minor things:
+
+* More refined warnings when you run out of memory
+* TF checks whether you are running 64 bit Python. If not, a warning is issued.
+
 ## 6.3.2
 
 2018-10-27
@@ -194,7 +205,7 @@ The Text-Fabric browser checks if you are using the most recent release of the d
 ### Font rendering
 A font rendering issue in Safari 12 in macos Mojave prevented the use of Ezra SIL for Hebrew in notebooks.
 We now work around this by relying on the distribution of Ezra SIL as webfont
-in the [font library](fontlibrary.org).
+in the [font library](https://fontlibrary.org).
 
 ### Additional small fixes.
 Not worth telling.
