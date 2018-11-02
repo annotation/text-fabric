@@ -274,4 +274,9 @@ $(function(){
   radios()
   help()
   reactive()
+  var rTarget = $('details.focus')
+  if (rTarget != null && rTarget[0] != null) {
+    console.warn(rTarget[0])
+    rTarget[0].scrollIntoView(false)
+  }
 })
