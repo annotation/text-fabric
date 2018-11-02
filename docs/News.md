@@ -12,11 +12,12 @@
 
 ## Queued for next release
 
-## 6.4, 6.4.1
+## 6.4, 6.4.1-2
 
 2018-11-02
 
 * A passage browsing interface that interacts with the search results. 
+* The interface scrolls to the highlighted row.
 
 Minor things:
 

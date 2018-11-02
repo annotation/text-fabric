@@ -31,7 +31,7 @@ setup(
             'text-fabric = tf.server.start:main',
         ]
     },
-    version='6.4.1',
+    version='6.4.2',
     description='''Processor and browser for Text Fabric Data''',
     author='Dirk Roorda',
     author_email='dirk.roorda@dans.knaw.nl',
