@@ -14,7 +14,7 @@ meta | data
 --- | ---
 Job | DefaulT
 Author | Dirk Roorda
-Created | 2018-10-19T22:25:38+02:00
+Created | 2018-11-02T12:22:05+01:00
 Data source | BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis
 version | c
 release | 1.4
@@ -28,7 +28,7 @@ version | c
 release | 1.1
 download   | [etcbc/parallels v:c (r1.1)](https://github.com/etcbc/parallels/releases/download/1.1/c.zip)
 DOI | [10.5281/zenodo.1007642](https://doi.org/10.5281/zenodo.1007642)
-Tool | Text-Fabric 6.2.2 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
+Tool | Text-Fabric 6.3.2 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
 See also | [Compose results example](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/examples/compose.ipynb)
 
 

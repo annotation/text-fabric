@@ -1,3 +1,24 @@
+function modes() {
+  var mode = $('#mode')
+  var nav = $('.navigation')
+  $('#moderesults').click(function(e) {
+    e.preventDefault()
+    mode.val('results')
+    $('#go').submit()
+  })
+  $('#modepassage').click(function(e) {
+    e.preventDefault()
+    mode.val('passage')
+    $('#go').submit()
+  })
+  if (mode.val() == 'results') {
+    nav.show()
+  }
+  else {
+    nav.hide()
+  }
+}
+
 function pageLinks() {
   $('.pnav').click(function(e) {
     e.preventDefault()
@@ -6,6 +27,36 @@ function pageLinks() {
   })
 }
 
+function passageLinks() {
+  $('.s0nav').click(function(e) {
+    e.preventDefault()
+    $('#sec0').val($(this).html())
+    $('#sec1').val('')
+    $('#sec2').val('')
+    $('#op').val('')
+    $('#go').submit()
+  })
+  $('.s1nav').click(function(e) {
+    e.preventDefault()
+    $('#sec1').val($(this).html())
+    $('#sec2').val('')
+    $('#op').val('')
+    $('#go').submit()
+  })
+}
+
+function switchPassage() {
+  $('.pq').click(function(e) {
+    e.preventDefault()
+    var seq = $(this).closest('details').attr('seq')
+    $('#mode').val('passages')
+    $('#sec0').val($(this).attr('sec0'))
+    $('#sec1').val($(this).attr('sec1'))
+    $('#sec2').val($(this).attr('sec2'))
+    $('#pos').val(seq)
+    $('#go').submit()
+  })
+}
 function sidebar() {
   var side = $('#side')
   var part = side.val()
@@ -112,7 +163,7 @@ function sections() {
   $('.rwh').click(function(e) {
     e.preventDefault()
     e.stopPropagation()
-    var sec = $(this).html()
+    var sec = $(this).attr('sec')
     var orig = secs.val()
     secs.val(orig + '\n' + sec)
   })
@@ -210,7 +261,10 @@ function details() {
 $(function(){
   sidebar()
   jobs()
+  modes()
   pageLinks()
+  passageLinks()
+  switchPassage()
   sections()
   tuples()
   nodes()

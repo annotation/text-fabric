@@ -15,6 +15,7 @@ class Text(object):
     self.sectionTypes = itemize(config.get('sectionTypes', ''), ',')
     sectionFeats = itemize(config.get('sectionFeatures', ''), ',')
     self.sectionFeatures = []
+    self.sectionFeatureTypes = []
     self.config = config
     self.defaultFormat = DEFAULT_FORMAT
 
@@ -37,7 +38,9 @@ class Text(object):
         if not api.TF.features[fName].load(silent=True):
           good = False
           continue
-        self.sectionFeatures.append(api.TF.features[fName].data)
+        sectionFeature = api.TF.features[fName]
+        self.sectionFeatures.append(sectionFeature.data)
+        self.sectionFeatureTypes.append(sectionFeature.dataType)
 
       sec0 = self.sectionTypes[0]
       setattr(self, '{}Name'.format(sec0), self._sec0Name)

@@ -10,6 +10,8 @@ from tf.apphelpers import (
     table, plainTuple,
     show, prettyPre, pretty, prettyTuple, prettySetup,
     getData, getDataCustom, getFeatures,
+    compileFormats,
+    nodeFromDefaultSection,
     htmlEsc, mdEsc,
     dm, dh, header, outLink,
     URL_GH, URL_NB, API_URL, TFDOC_URL
@@ -332,6 +334,15 @@ CSS = '''
 </style>
 '''
 
+DEFAULT_CLS = ''
+FORMAT_CSS = dict(
+    orig='',
+    trans=DEFAULT_CLS,
+)
+
+SECTION_SEP1 = ' '
+SECTION_SEP2 = ':'
+
 
 class Atf(object):
   def __init__(self, api=None):
@@ -566,6 +577,9 @@ class Cunei(Atf):
     self.condenseType = cfg['condenseType']
     self.exampleSection = '<code>P005381</code>'
     self.exampleSectionText = 'P005381'
+    self.sectionSep1 = SECTION_SEP1
+    self.sectionSep2 = SECTION_SEP2
+
     TF = Fabric(locations=[self.corpus], modules=[''], silent=True)
     api = TF.load('', silent=True)
     self.api = api
@@ -579,6 +593,7 @@ class Cunei(Atf):
       return
     self.prettyFeaturesLoaded = loadableFeatures
     self.prettyFeatures = ()
+    self.formatClass = compileFormats(FORMAT_CSS, api.T.formats, DEFAULT_CLS)
     self.api = api
     self._getImagery()
     self.cwd = os.getcwd()
@@ -653,16 +668,14 @@ This notebook online:
           if not silent:
             dh(
                 '<details open><summary><b>API members</b>:</summary>\n'
-                +
-                '<br/>\n'.join(
+                + '<br/>\n'.join(
                     ', '.join(
                         outLink(entry, API_URL(ref), title='doc')
                         for entry in entries
                     )
                     for (ref, entries) in docs
                 )
-                +
-                '</details>'
+                + '</details>'
             )
     self.table = types.MethodType(table, self)
     self.plainTuple = types.MethodType(plainTuple, self)
@@ -672,20 +685,13 @@ This notebook online:
     self.prettySetup = types.MethodType(prettySetup, self)
     self.search = types.MethodType(search, self)
     self.header = types.MethodType(header, self)
+    self.nodeFromDefaultSection = types.MethodType(nodeFromDefaultSection, self)
 
   def loadCSS(self):
     asApi = self.asApi
     if asApi:
       return CSS
     dh(CSS)
-
-  def nodeFromDefaultSection(self, sectionStr):
-    api = self.api
-    T = api.T
-    tabletNode = T.nodeFromSection((sectionStr,))
-    if tabletNode is None:
-      return (f'Not a valid tablet number: "{sectionStr}"', None)
-    return ('', tabletNode)
 
   def lineFromNode(self, n):
     api = self.api
@@ -782,13 +788,16 @@ This notebook online:
     url = '#' if noUrl else URL_FORMAT['tablet']['main'].format(pNum)
     target = '' if noUrl else None
 
-    result = outLink(linkText, url, title=title, className=className, target=target)
+    result = outLink(
+        linkText, url,
+        title=title, className=className, target=target, passage=pNum,
+    )
     if asString:
       return result
     dh(result)
 
-  def webLink(self, n):
-    return self.tabletLink(n, className='rwh', asString=True, noUrl=True)
+  def webLink(self, n, text=None):
+    return self.tabletLink(n, className='rwh', text=text, asString=True, noUrl=True)
 
   def plain(
       self,
