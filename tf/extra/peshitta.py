@@ -8,7 +8,7 @@ from tf.apphelpers import (
     show, prettyPre, pretty, prettyTuple, prettySetup,
     getData,
     getBoundary, getFeatures,
-    compileFormats,
+    compileFormatClass,
     nodeFromDefaultSection,
     htmlEsc, mdEsc,
     dm, dh, header, outLink,
@@ -85,6 +85,10 @@ CSS = '''
     direction: rtl;
     text-decoration: none;
 }
+.vn {
+  font-size: small !important;
+  padding-right: 1em;
+}
 .nd {
     font-family: monospace;
     font-size: x-small;
@@ -119,8 +123,9 @@ CSS = '''
 '''
 
 DEFAULT_CLS = 'trb'
+DEFAULT_CLS_ORIG = 'syb'
 FORMAT_CSS = dict(
-    orig='syb',
+    orig=DEFAULT_CLS_ORIG,
     trans=DEFAULT_CLS,
 )
 
@@ -213,7 +218,7 @@ class Peshitta(object):
       api.TF.load(self.standardFeatures, add=True, silent=True)
     self.prettyFeaturesLoaded = self.standardFeatures
     self.prettyFeatures = ()
-    self.formatClass = compileFormats(FORMAT_CSS, api.T.formats, DEFAULT_CLS)
+    self.formatClass = compileFormatClass(FORMAT_CSS, api.T.formats, DEFAULT_CLS, DEFAULT_CLS_ORIG)
     self.api = api
     self.cwd = os.getcwd()
 
@@ -397,7 +402,9 @@ This notebook online:
       rep = mdEsc(htmlEsc(rep))
       if nType in VERSE:
         if linked:
-          rep = self.pshLink(n, text=rep, asString=True)
+          rep = self.pshLink(n, text=rep, className='vn', asString=True)
+        else:
+          rep = f'<span class="vn">{rep}</span>'
         rep += mdEsc(htmlEsc(T.text(L.d(n, otype="word"), fmt=fmt)))
         isText = True
     else:

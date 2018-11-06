@@ -22,40 +22,72 @@ def basicRelations(searchExe, api, silent):
   Eoslots = E.oslots.data
   slotType = F.otype.slotType
   maxSlot = F.otype.maxSlot
+  sets = searchExe.sets
+  setInfo = searchExe.setInfo
+
+  def isSlotType(nType):
+    if sets is not None and nType in sets:
+      if nType in setInfo:
+        return setInfo[nType]
+      nodes = sets[nType]
+      allSlots = all(n <= maxSlot for n in nodes)
+      if allSlots:
+        setInfo[nType] = True
+        return True
+      allNonSlots = all(n > maxSlot for n in nodes)
+      if allNonSlots:
+        setInfo[nType] = False
+        return False
+      setInfo[nType] = None
+      return None
+    return nType == slotType
+
+  # EQUAL
 
   def equalR(fTp, tTp):
     return lambda n: (n, )
 
   def spinEqual(fTp, tTp):
+
     def doyarns(yF, yT):
       x = set(yF) & set(yT)
       return (x, x)
 
     return doyarns
 
+  # UNEQUAL
+
   def unequalR(fTp, tTp):
     return lambda n, m: n != m
+
+  # CANONICAL BEFORE
 
   def canonicalBeforeR(fTp, tTp):
     return lambda n, m: Crank[n - 1] < Crank[m - 1]
 
+  # CANONICAL AFTER
+
   def canonicalAfterR(fTp, tTp):
     return lambda n, m: Crank[n - 1] > Crank[m - 1]
 
+  # SAME SLOTS
+
   def spinSameSlots(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
 
       def doyarns(yF, yT):
         x = set(yF) & set(yT)
         return (x, x)
 
       return doyarns
-    elif fTp == slotType or tTp == slotType:
+    elif isSlotF or isSlotT:
 
       def doyarns(yS, y2):
         sindex = {}
         for m in y2:
-          ss = Eoslots[m - maxSlot - 1]
+          ss = Eoslots[m - maxSlot - 1] if m > maxSlot else (m,)
           if len(ss) == 1:
             sindex.setdefault(ss[0], set()).add(m)
         nyS = yS & set(sindex.keys())
@@ -66,7 +98,7 @@ def basicRelations(searchExe, api, silent):
         )
         return (nyS, ny2)
 
-      if fTp == slotType:
+      if isSlotF:
         return doyarns
       else:
 
@@ -80,11 +112,11 @@ def basicRelations(searchExe, api, silent):
       def doyarns(yF, yT):
         sindexF = {}
         for n in yF:
-          s = frozenset(Eoslots[n - maxSlot - 1])
+          s = frozenset(Eoslots[n - maxSlot - 1] if n > maxSlot else (n,))
           sindexF.setdefault(s, set()).add(n)
         sindexT = {}
         for m in yT:
-          s = frozenset(Eoslots[m - maxSlot - 1])
+          s = frozenset(Eoslots[m - maxSlot - 1] if m > maxSlot else (m,))
           sindexT.setdefault(s, set()).add(m)
         nyS = set(sindexF.keys()) & set(sindexT.keys())
         nyF = reduce(
@@ -102,34 +134,50 @@ def basicRelations(searchExe, api, silent):
       return doyarns
 
   def sameSlotsR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n: (n, )
-    elif tTp == slotType:
-      return lambda n, m: Eoslots[n - maxSlot - 1] == (m, )
-    elif fTp == slotType:
-      return lambda n, m: Eoslots[m - maxSlot - 1] == (n, )
+    elif isSlotT:
+      return lambda n, m: (
+          (Eoslots[n - maxSlot - 1] if n > maxSlot else (n,)) == (m, )
+      )
+    elif isSlotF:
+      return lambda n, m: (
+          (Eoslots[m - maxSlot - 1] if m > maxSlot else (m,)) == (n, )
+      )
     else:
       return (
           lambda n, m: (
-              frozenset(Eoslots[n - maxSlot - 1]) ==
-              frozenset(Eoslots[m - maxSlot - 1])
+              (
+                  n > maxSlot and m > maxSlot
+                  and (
+                      frozenset(Eoslots[n - maxSlot - 1])
+                      == frozenset(Eoslots[m - maxSlot - 1])
+                  )
+              )
+              or (n <= maxSlot and m == n)
           )
       )
 
+  # OVERLAP
+
   def spinOverlap(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
 
       def doyarns(yF, yT):
         x = set(yF) & set(yT)
         return (x, x)
 
       return doyarns
-    elif fTp == slotType or tTp == slotType:
+    elif isSlotF or isSlotT:
 
       def doyarns(yS, y2):
         sindex = {}
         for m in y2:
-          for s in Eoslots[m - maxSlot - 1]:
+          for s in Eoslots[m - maxSlot - 1] if m > maxSlot else (m,):
             sindex.setdefault(s, set()).add(m)
         nyS = yS & set(sindex.keys())
         ny2 = reduce(
@@ -139,7 +187,7 @@ def basicRelations(searchExe, api, silent):
         )
         return (nyS, ny2)
 
-      if fTp == slotType:
+      if isSlotF:
         return doyarns
       else:
 
@@ -155,11 +203,11 @@ def basicRelations(searchExe, api, silent):
         SIZE_LIMIT = 10000
         sindexF = {}
         for n in yF:
-          for s in Eoslots[n - maxSlot - 1]:
+          for s in Eoslots[n - maxSlot - 1] if n > maxSlot else (n,):
             sindexF.setdefault(s, set()).add(n)
         sindexT = {}
         for m in yT:
-          for s in Eoslots[m - maxSlot - 1]:
+          for s in Eoslots[m - maxSlot - 1] if m > maxSlot else (m,):
             sindexT.setdefault(s, set()).add(m)
         nyS = set(sindexF.keys()) & set(sindexT.keys())
 
@@ -191,250 +239,420 @@ def basicRelations(searchExe, api, silent):
       return doyarns
 
   def overlapR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n: (n, )
-    elif tTp == slotType:
-      return lambda n: Eoslots[n - maxSlot - 1]
-    elif fTp == slotType:
-      return lambda n, m: n in frozenset(Eoslots[m - maxSlot - 1])
+    elif isSlotT:
+      return lambda n: (
+          Eoslots[n - maxSlot - 1] if n > maxSlot else (n,)
+      )
+    elif isSlotF:
+      return lambda n, m: (
+          n in frozenset(Eoslots[m - maxSlot - 1] if m > maxSlot else (m,))
+      )
     else:
       return (
           lambda n, m: (
-              len(frozenset(Eoslots[n - maxSlot - 1]) &
-                  frozenset(Eoslots[m - maxSlot - 1])) != 0
+              len(
+                  frozenset(Eoslots[n - maxSlot - 1] if n > maxSlot else (n,))
+                  & frozenset(Eoslots[m - maxSlot - 1] if m > maxSlot else (m,))
+              ) != 0
           )
       )
+
+  # DIFFERENT SLOTS
 
   def diffSlotsR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n, m: m != n
-    elif tTp == slotType:
-      return lambda n, m: Eoslots[m - maxSlot - 1] != (n, )
-    elif fTp == slotType:
-      return lambda n, m: Eoslots[n - maxSlot - 1] != (m, )
+    elif isSlotT:
+      return lambda n, m: (
+          (Eoslots[m - maxSlot - 1] if m > maxSlot else (m,))
+          != (n, )
+      )
+    elif isSlotF:
+      return lambda n, m: (
+          (Eoslots[n - maxSlot - 1] if n > maxSlot else (n,))
+          != (m, )
+      )
     else:
       return (
           lambda n, m: (
-              frozenset(Eoslots[n - maxSlot - 1]) !=
-              frozenset(Eoslots[m - maxSlot - 1])
+              frozenset(Eoslots[n - maxSlot - 1] if n > maxSlot else (n,))
+              != frozenset(Eoslots[m - maxSlot - 1] if m > maxSlot else (m,))
           )
       )
+
+  # DISJOINT SLOTS
 
   def disjointSlotsR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n, m: m != n
-    elif tTp == slotType:
-      return lambda n, m: m not in frozenset(Eoslots[n - maxSlot - 1])
-    elif fTp == slotType:
-      return lambda n, m: n not in frozenset(Eoslots[m - maxSlot - 1])
+    elif isSlotT:
+      return lambda n, m: m not in frozenset(Eoslots[n - maxSlot - 1] if n > maxSlot else (n,))
+    elif isSlotF:
+      return lambda n, m: n not in frozenset(Eoslots[m - maxSlot - 1] if m > maxSlot else (m,))
     else:
       return (
           lambda n, m: (
-              len(frozenset(Eoslots[n - maxSlot - 1]) &
-                  frozenset(Eoslots[m - maxSlot - 1])) == 0
+              len(
+                  frozenset(Eoslots[n - maxSlot - 1] if n > maxSlot else (n,))
+                  & frozenset(Eoslots[m - maxSlot - 1] if m > maxSlot else (m,))
+              ) == 0
           )
       )
 
+  # EMBEDDED IN
+
   def inR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n: ()
-    elif tTp == slotType:
+    elif isSlotT:
       return lambda n: ()
-    elif fTp == slotType:
+    elif isSlotF:
       return lambda n: ClevUp[n - 1]
     else:
       return lambda n: ClevUp[n - 1]
+
+  # EMBEDS
 
   def hasR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n: ()
-    elif fTp == slotType:
+    elif isSlotF:
       return lambda n: ()
-    elif tTp == slotType:
-      return lambda n: Eoslots[n - maxSlot - 1]
+    elif isSlotT:
+      return lambda n: Eoslots[n - maxSlot - 1] if n > maxSlot else ()
     else:
-      return lambda n: ClevDown[n - maxSlot - 1]
+      if isSlotT is None:
+        return lambda n: (
+            (ClevDown[n - maxSlot - 1] + Eoslots[n - maxSlot - 1]) if n > maxSlot else ()
+        )
+      else:
+        return lambda n: (
+            ClevDown[n - maxSlot - 1] if n > maxSlot else ()
+        )
+
+  # BEFORE WRT SLOTS
 
   def slotBeforeR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n, m: n < m
-    elif fTp == slotType:
-      return lambda n, m: n < Eoslots[m - maxSlot - 1][0]
-    elif tTp == slotType:
-      return lambda n, m: Eoslots[n - maxSlot - 1][-1] < m
+    elif isSlotF:
+      return lambda n, m: n < (Eoslots[m - maxSlot - 1][0] if m > maxSlot else m)
+    elif isSlotT:
+      return lambda n, m: (Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n) < m
     else:
-      return (lambda n, m: (Eoslots[n - maxSlot - 1][-1] < Eoslots[m - maxSlot - 1][0]))
+      return lambda n, m: (
+          (Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n)
+          < (Eoslots[m - maxSlot - 1][0] if m > maxSlot else m)
+      )
+
+  # AFTER WRT SLOTS
 
   def slotAfterR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n, m: n > m
-    elif fTp == slotType:
-      return lambda n, m: n > Eoslots[m - maxSlot - 1][-1]
-    elif tTp == slotType:
-      return lambda n, m: Eoslots[n - maxSlot - 1][0] > m
+    elif isSlotF:
+      return lambda n, m: n > (Eoslots[m - maxSlot - 1][-1] if m > maxSlot else m)
+    elif isSlotT:
+      return lambda n, m: (Eoslots[n - maxSlot - 1][0] if n > maxSlot else n) > m
     else:
-      return (lambda n, m: (Eoslots[n - maxSlot - 1][0] > Eoslots[m - maxSlot - 1][-1]))
+      return lambda n, m: (
+          (Eoslots[n - maxSlot - 1][0] if n > maxSlot else n)
+          > (Eoslots[m - maxSlot - 1][-1] if m > maxSlot else m)
+      )
+
+  # START AT SAME SLOT
 
   def sameFirstSlotR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n: (n, )
-    elif fTp == slotType:
-      return lambda n: CfirstSlots[n - 1]
-    elif tTp == slotType:
-      return lambda n: (Eoslots[n - maxSlot - 1][0], )
+    elif isSlotF:
+      if isSlotT is None:
+        return lambda n: CfirstSlots[n - 1] + (n,)
+      else:
+        return lambda n: CfirstSlots[n - 1]
+    elif isSlotT:
+      return lambda n: ((Eoslots[n - maxSlot - 1][0] if n > maxSlot else n), )
     else:
 
       def xx(n):
-        fn = Eoslots[n - maxSlot - 1][0]
-        return CfirstSlots[fn - 1]
+        fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
+        if isSlotT is None:
+          return CfirstSlots[fn - 1] + (fn,)
+        else:
+          return CfirstSlots[fn - 1]
 
       return xx
+
+  # ENDS AT SAME SLOT
 
   def sameLastSlotR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n: (n, )
-    elif fTp == slotType:
-      return lambda n: ClastSlots[n - 1]
-    elif tTp == slotType:
-      return lambda n: (Eoslots[n - maxSlot - 1][-1], )
+    elif isSlotF:
+      if isSlotT is None:
+        return lambda n: ClastSlots[n - 1] + (n,)
+      else:
+        return lambda n: ClastSlots[n - 1]
+    elif isSlotT:
+      return lambda n: ((Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n), )
     else:
 
       def xx(n):
-        ln = Eoslots[n - maxSlot - 1][-1]
-        return ClastSlots[ln - 1]
+        ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
+        if isSlotT is None:
+          return ClastSlots[ln - 1] + (ln,)
+        else:
+          return ClastSlots[ln - 1]
 
       return xx
+
+  # START AND END AT SAME SLOT
 
   def sameBoundaryR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n: (n, )
-    elif fTp == slotType:
+    elif isSlotF:
+      if isSlotT is None:
 
-      def xx(n):
-        fok = set(CfirstSlots[n - 1])
-        lok = set(ClastSlots[n - 1])
-        return tuple(fok & lok)
+        def xx(n):
+          fok = set(CfirstSlots[n - 1] + (n,))
+          lok = set(ClastSlots[n - 1] + (n,))
+          return tuple(fok & lok)
+
+      else:
+
+        def xx(n):
+          fok = set(CfirstSlots[n - 1])
+          lok = set(ClastSlots[n - 1])
+          return tuple(fok & lok)
 
       return xx
-    elif tTp == slotType:
+    elif isSlotT:
 
       def xx(n):
-        slots = Eoslots[n - maxSlot - 1]
+        slots = Eoslots[n - maxSlot - 1] if n > maxSlot else (n,)
         fs = slots[0]
         ls = slots[-1]
         return (fs, ) if fs == ls else ()
 
       return xx
     else:
-
-      def xx(n):
-        fn = Eoslots[n - maxSlot - 1][0]
-        ln = Eoslots[n - maxSlot - 1][-1]
-        fok = set(CfirstSlots[fn - 1])
-        lok = set(ClastSlots[ln - 1])
-        return tuple(fok & lok)
-
-      return xx
-
-  def nearFirstSlotR(k):
-    def zz(fTp, tTp):
-      if fTp == slotType and tTp == slotType:
-        return lambda n: tuple(m for m in range(max((1, n - k)), min((maxSlot, n + k + 1))))
-      elif fTp == slotType:
+      if isSlotT is None:
 
         def xx(n):
-          near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k + 1))))
-          return tuple(reduce(
-              set.union,
-              (set(CfirstSlots[l - 1]) for l in near),
-              set(),
-          ))
+          fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
+          ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
+          fok = set(CfirstSlots[fn - 1] + (fn,))
+          lok = set(ClastSlots[ln - 1] + (ln,))
+          return tuple(fok & lok)
 
-        return xx
-      elif tTp == slotType:
-
-        def xx(n):
-          fn = Eoslots[n - maxSlot - 1][0]
-          return tuple(m for m in range(max((1, fn - k)), min((maxSlot, fn + k + 1))))
-
-        return xx
       else:
 
         def xx(n):
-          fn = Eoslots[n - maxSlot - 1][0]
-          near = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k + 1))))
-          return tuple(reduce(
-              set.union,
-              (set(CfirstSlots[l - 1]) for l in near),
-              set(),
-          ))
+          fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
+          ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
+          fok = set(CfirstSlots[fn - 1])
+          lok = set(ClastSlots[ln - 1])
+          return tuple(fok & lok)
+
+      return xx
+
+  # FIRST SLOTS ARE k-CLOSE
+
+  def nearFirstSlotR(k):
+    def zz(fTp, tTp):
+      isSlotF = isSlotType(fTp)
+      isSlotT = isSlotType(tTp)
+      if isSlotF and isSlotT:
+        return lambda n: tuple(m for m in range(max((1, n - k)), min((maxSlot, n + k + 1))))
+      elif isSlotF:
+        if isSlotT is None:
+
+          def xx(n):
+            near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k + 1))))
+            return tuple(reduce(
+                set.union,
+                (set(CfirstSlots[l - 1] + (l,)) for l in near),
+                set(),
+            ))
+        else:
+
+          def xx(n):
+            near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k + 1))))
+            return tuple(reduce(
+                set.union,
+                (set(CfirstSlots[l - 1]) for l in near),
+                set(),
+            ))
+
+        return xx
+      elif isSlotT:
+
+        def xx(n):
+          fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
+          return tuple(m for m in range(max((1, fn - k)), min((maxSlot, fn + k + 1))))
+
+        return xx
+
+      else:
+        if isSlotT is None:
+
+          def xx(n):
+            fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
+            near = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k + 1))))
+            return tuple(reduce(
+                set.union,
+                (set(CfirstSlots[l - 1] + (l,)) for l in near),
+                set(),
+            ))
+
+        else:
+
+          def xx(n):
+            fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
+            near = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k + 1))))
+            return tuple(reduce(
+                set.union,
+                (set(CfirstSlots[l - 1]) for l in near),
+                set(),
+            ))
 
         return xx
 
     return zz
 
+  # LAST SLOTS ARE k-CLOSE
+
   def nearLastSlotR(k):
     def zz(fTp, tTp):
-      if fTp == slotType and tTp == slotType:
+      isSlotF = isSlotType(fTp)
+      isSlotT = isSlotType(tTp)
+      if isSlotF and isSlotT:
         return lambda n: tuple(m for m in range(max((1, n - k)), min((maxSlot, n + k + 1))))
-      elif fTp == slotType:
+      elif isSlotF:
+        if isSlotT is None:
 
-        def xx(n):
-          near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k + 1))))
-          return tuple(reduce(
-              set.union,
-              (set(ClastSlots[l - 1]) for l in near),
-              set(),
-          ))
+          def xx(n):
+            near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k + 1))))
+            return tuple(reduce(
+                set.union,
+                (set(ClastSlots[l - 1] + (l,)) for l in near),
+                set(),
+            ))
+
+        else:
+
+          def xx(n):
+            near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k + 1))))
+            return tuple(reduce(
+                set.union,
+                (set(ClastSlots[l - 1]) for l in near),
+                set(),
+            ))
 
         return xx
-      elif tTp == slotType:
+      elif isSlotT:
 
         def xx(n):
-          ln = Eoslots[n - maxSlot - 1][-1]
+          ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
           return tuple(m for m in range(max((1, ln - k)), min((maxSlot, ln + k + 1))))
 
         return xx
       else:
+        if isSlotT is None:
 
-        def xx(n):
-          ln = Eoslots[n - maxSlot - 1][-1]
-          near = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k + 1))))
-          return tuple(reduce(
-              set.union,
-              (set(ClastSlots[l - 1]) for l in near),
-              set(),
-          ))
+          def xx(n):
+            ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
+            near = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k + 1))))
+            return tuple(reduce(
+                set.union,
+                (set(ClastSlots[l - 1] + (l,)) for l in near),
+                set(),
+            ))
+
+        else:
+
+          def xx(n):
+            ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
+            near = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k + 1))))
+            return tuple(reduce(
+                set.union,
+                (set(ClastSlots[l - 1]) for l in near),
+                set(),
+            ))
 
         return xx
 
     return zz
 
+  # FIRST SLOTS ARE k-CLOSE and LAST SLOTS ARE k-CLOSE
+
   def nearBoundaryR(k):
     def zz(fTp, tTp):
-      if fTp == slotType and tTp == slotType:
+      isSlotF = isSlotType(fTp)
+      isSlotT = isSlotType(tTp)
+      if isSlotF and isSlotT:
         return lambda n: tuple(m for m in range(max((1, n - k)), min((maxSlot, n + k + 1))))
-      elif fTp == slotType:
+      elif isSlotF:
+        if isSlotT is None:
 
-        def xx(n):
-          near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k + 1))))
-          fok = set(reduce(
-              set.union,
-              (set(CfirstSlots[l - 1]) for l in near),
-              set(),
-          ))
-          lok = set(reduce(
-              set.union,
-              (set(ClastSlots[l - 1]) for l in near),
-              set(),
-          ))
-          return tuple(fok & lok)
+          def xx(n):
+            near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k + 1))))
+            fok = set(reduce(
+                set.union,
+                (set(CfirstSlots[l - 1] + (l,)) for l in near),
+                set(),
+            ))
+            lok = set(reduce(
+                set.union,
+                (set(ClastSlots[l - 1] + (l,)) for l in near),
+                set(),
+            ))
+            return tuple(fok & lok)
+
+        else:
+
+          def xx(n):
+            near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k + 1))))
+            fok = set(reduce(
+                set.union,
+                (set(CfirstSlots[l - 1]) for l in near),
+                set(),
+            ))
+            lok = set(reduce(
+                set.union,
+                (set(ClastSlots[l - 1]) for l in near),
+                set(),
+            ))
+            return tuple(fok & lok)
 
         return xx
-      elif tTp == slotType:
+      elif isSlotT:
 
         def xx(n):
-          slots = Eoslots[n - maxSlot - 1]
+          slots = Eoslots[n - maxSlot - 1] if n > maxSlot else (n,)
           fs = slots[0]
           ls = slots[-1]
           fok = set(m for m in range(max((1, fs - k)), min((maxSlot, fs + k + 1))))
@@ -443,111 +661,240 @@ def basicRelations(searchExe, api, silent):
 
         return xx
       else:
+        if isSlotT is None:
 
-        def xx(n):
-          fn = Eoslots[n - maxSlot - 1][0]
-          ln = Eoslots[n - maxSlot - 1][-1]
-          nearf = set(ls for ls in range(max((1, fn - k)), min((maxSlot, fn + k + 1))))
-          nearl = set(ls for ls in range(max((1, ln - k)), min((maxSlot, ln + k + 1))))
-          fok = set(CfirstSlots[fn - 1])
-          lok = set(ClastSlots[ln - 1])
-          fok = set(reduce(
-              set.union,
-              (set(CfirstSlots[ls - 1]) for ls in nearf),
-              set(),
-          ))
-          lok = set(reduce(
-              set.union,
-              (set(ClastSlots[ls - 1]) for ls in nearl),
-              set(),
-          ))
-          return tuple(fok & lok)
+          def xx(n):
+            fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
+            ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
+            nearf = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k + 1))))
+            nearl = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k + 1))))
+            fok = set(reduce(
+                set.union,
+                (set(CfirstSlots[l - 1] + (l,)) for l in nearf),
+                set(),
+            ))
+            lok = set(reduce(
+                set.union,
+                (set(ClastSlots[l - 1] + (l,)) for l in nearl),
+                set(),
+            ))
+            return tuple(fok & lok)
+
+        else:
+
+          def xx(n):
+            fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
+            ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
+            nearf = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k + 1))))
+            nearl = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k + 1))))
+            fok = set(reduce(
+                set.union,
+                (set(CfirstSlots[l - 1]) for l in nearf),
+                set(),
+            ))
+            lok = set(reduce(
+                set.union,
+                (set(ClastSlots[l - 1]) for l in nearl),
+                set(),
+            ))
+            return tuple(fok & lok)
 
         return xx
 
     return zz
 
+  # FIRST ENDS WHERE SECOND STARTS
+
   def adjBeforeR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n: (n + 1, ) if n < maxSlot else ()
     else:
+      if isSlotT:
 
-      def xx(n):
-        if n == maxSlot:
-          return ()
-        myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
-        if myNext > maxSlot:
-          return ()
-        return CfirstSlots[myNext - 1] + (myNext, )
+        def xx(n):
+          if n == maxSlot:
+            return ()
+          myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
+          if myNext > maxSlot:
+            return ()
+          return (myNext, )
+
+      elif isSlotT is None:
+
+        def xx(n):
+          if n == maxSlot:
+            return ()
+          myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
+          if myNext > maxSlot:
+            return ()
+          return CfirstSlots[myNext - 1] + (myNext, )
+
+      else:
+
+        def xx(n):
+          if n == maxSlot:
+            return ()
+          myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
+          if myNext > maxSlot:
+            return ()
+          return CfirstSlots[myNext - 1]
 
       return xx
 
+  # FIRST STARTS WHERE SECOND ENDS
+
   def adjAfterR(fTp, tTp):
-    if fTp == slotType and tTp == slotType:
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
       return lambda n: (n - 1, ) if n > 1 else ()
     else:
 
-      def xx(n):
-        if n <= 1:
-          return ()
-        myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
-        if myPrev <= 1:
-          return ()
-        return (myPrev, ) + ClastSlots[myPrev - 1]
+      if isSlotT:
+
+        def xx(n):
+          if n <= 1:
+            return ()
+          myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
+          if myPrev <= 1:
+            return ()
+          return (myPrev, )
+
+      elif isSlotT is None:
+
+        def xx(n):
+          if n <= 1:
+            return ()
+          myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
+          if myPrev <= 1:
+            return ()
+          return (myPrev, ) + ClastSlots[myPrev - 1]
+
+      else:
+
+        def xx(n):
+          if n <= 1:
+            return ()
+          myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
+          if myPrev <= 1:
+            return ()
+          return ClastSlots[myPrev - 1]
 
       return xx
 
+  # FIRST ENDS WHERE SECOND STARTS WITHIN k-SLOTS
+
   def nearBeforeR(k):
     def zz(fTp, tTp):
-      if fTp == slotType and tTp == slotType:
+      isSlotF = isSlotType(fTp)
+      isSlotT = isSlotType(tTp)
+      if isSlotF and isSlotT:
         return lambda n: tuple(
             m for m in
             range(max((1, n + 1 - k)), min((maxSlot, n + 1 + k + 1)))
         )
       else:
+        if isSlotT:
 
-        def xx(n):
-          myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
-          myNextNear = tuple(
-              ls for ls in range(max((1, myNext - k)), min((maxSlot, myNext + k + 1)))
-          )
-          nextSet = set(
-              reduce(
-                  set.union,
-                  (set(CfirstSlots[ls - 1]) for ls in myNextNear),
-                  set(),
-              )
-          )
-          return tuple(nextSet) + myNextNear
+          def xx(n):
+            myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
+            myNextNear = tuple(
+                ls for ls in range(max((1, myNext - k)), min((maxSlot, myNext + k + 1)))
+            )
+            return myNextNear
+
+        elif isSlotT is None:
+
+          def xx(n):
+            myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
+            myNextNear = tuple(
+                ls for ls in range(max((1, myNext - k)), min((maxSlot, myNext + k + 1)))
+            )
+            nextSet = set(
+                reduce(
+                    set.union,
+                    (set(CfirstSlots[ls - 1]) for ls in myNextNear),
+                    set(),
+                )
+            )
+            return tuple(nextSet) + myNextNear
+
+        else:
+
+          def xx(n):
+            myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
+            myNextNear = tuple(
+                ls for ls in range(max((1, myNext - k)), min((maxSlot, myNext + k + 1)))
+            )
+            nextSet = set(
+                reduce(
+                    set.union,
+                    (set(CfirstSlots[ls - 1]) for ls in myNextNear),
+                    set(),
+                )
+            )
+            return tuple(nextSet)
 
         return xx
 
     return zz
 
+  # FIRST STARTS WHERE SECOND ENDS WITHIN k-SLOTS
+
   def nearAfterR(k):
     def zz(fTp, tTp):
-      if fTp == slotType and tTp == slotType:
+      isSlotF = isSlotType(fTp)
+      isSlotT = isSlotType(tTp)
+      if isSlotF and isSlotT:
         return lambda n: tuple(
             m for m in
             range(max((1, n - 1 - k)), min((maxSlot, n - 1 + k + 1)))
         )
       else:
+        if isSlotT:
 
-        def xx(n):
-          myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
-          myPrevNear = tuple(
-              l for l in range(max((1, myPrev - k)), min((maxSlot, myPrev + k + 1)))
-          )
-          prevSet = set(reduce(
-              set.union,
-              (set(ClastSlots[l - 1]) for l in myPrevNear),
-              set(),
-          ))
-          return tuple(prevSet) + myPrevNear
+          def xx(n):
+            myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
+            myPrevNear = tuple(
+                l for l in range(max((1, myPrev - k)), min((maxSlot, myPrev + k + 1)))
+            )
+            return myPrevNear
+
+        elif isSlotT is None:
+
+          def xx(n):
+            myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
+            myPrevNear = tuple(
+                l for l in range(max((1, myPrev - k)), min((maxSlot, myPrev + k + 1)))
+            )
+            prevSet = set(reduce(
+                set.union,
+                (set(ClastSlots[l - 1]) for l in myPrevNear),
+                set(),
+            ))
+            return tuple(prevSet) + myPrevNear
+
+        else:
+
+          def xx(n):
+            myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
+            myPrevNear = tuple(
+                l for l in range(max((1, myPrev - k)), min((maxSlot, myPrev + k + 1)))
+            )
+            prevSet = set(reduce(
+                set.union,
+                (set(ClastSlots[l - 1]) for l in myPrevNear),
+                set(),
+            ))
+            return tuple(prevSet)
 
         return xx
 
     return zz
+
+  # EDGES
 
   def makeEdgeMaps(efName):
     def edgeAccess(eFunc, doValues, value):
@@ -593,6 +940,8 @@ def basicRelations(searchExe, api, silent):
       return edgeIR
 
     return (edgeRV, edgeIRV)
+
+  # COLLECT ALL RELATIONS IN A TUPLE
 
   relations = [
       (
@@ -664,6 +1013,8 @@ def basicRelations(searchExe, api, silent):
           (':k>', True, nearAfterR, 'left k-nearly after right'),
       ),
   ]
+
+  # BUILD AND INITIALIZE ALL RELATIONAL FUNCTIONS
 
   api.TF.explore(silent=silent)
   edgeMap = {}

@@ -12,6 +12,17 @@
 
 ## Queued for next release
 
+## 6.4.3
+
+2018-11-06
+
+Big bug fix in queries: basic relationships in combination with custom sets.
+The implementation of the basic relationships did not reckon with custom sets that contains both slot nodes
+and non-slot nodes. And it did not trigger the right code when a custom set has only slot nodes.
+That has been remedied. Some of the search tutorials have been expanded to include a number of these critical
+cases. A more complete test suite outside the tutorials is still on my to do list.
+Thanks to Cody Kingham for spotting and reporting this bug.
+
 ## 6.4, 6.4.1-2
 
 2018-11-02

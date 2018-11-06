@@ -881,8 +881,8 @@ def outLink(text, href, title=None, passage=None, className=None, target='_blank
   return f'<a{classAtt}{targetAtt} href="{href}"{titleAtt}{passageAtt}>{text}</a>'
 
 
-def compileFormats(formatCSS, formats, defaultCls):
-  result = {}
+def compileFormatClass(formatCSS, formats, defaultCls, defaultClsOrig):
+  result = {None: defaultClsOrig}
   for fmt in formats:
     for (key, cls) in formatCSS.items():
       if f'-{key}-' in fmt:

@@ -77,6 +77,7 @@ class Search(object):
         shallow=shallow,
         silent=silent,
         msgCache=msgCache,
+        setInfo={},
     )
     if here:
       self.exe = exe
@@ -104,6 +105,7 @@ class Search(object):
         shallow=shallow,
         silent=False,
         showQuantifiers=True,
+        setInfo={},
     )
     if here:
       self.exe = exe
