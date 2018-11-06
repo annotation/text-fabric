@@ -10,7 +10,7 @@ from tf.apphelpers import (
     table, plainTuple,
     show, prettyPre, pretty, prettyTuple, prettySetup,
     getData, getDataCustom, getFeatures,
-    compileFormats,
+    compileFormatClass,
     nodeFromDefaultSection,
     htmlEsc, mdEsc,
     dm, dh, header, outLink,
@@ -335,8 +335,9 @@ CSS = '''
 '''
 
 DEFAULT_CLS = ''
+DEFAULT_CLS_ORIG = ''
 FORMAT_CSS = dict(
-    orig='',
+    orig=DEFAULT_CLS_ORIG,
     trans=DEFAULT_CLS,
 )
 
@@ -593,7 +594,7 @@ class Cunei(Atf):
       return
     self.prettyFeaturesLoaded = loadableFeatures
     self.prettyFeatures = ()
-    self.formatClass = compileFormats(FORMAT_CSS, api.T.formats, DEFAULT_CLS)
+    self.formatClass = compileFormatClass(FORMAT_CSS, api.T.formats, DEFAULT_CLS, DEFAULT_CLS_ORIG)
     self.api = api
     self._getImagery()
     self.cwd = os.getcwd()

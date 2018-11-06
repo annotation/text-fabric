@@ -20,6 +20,7 @@ class SearchExe(object):
       silent=True,
       showQuantifiers=False,
       msgCache=False,
+      setInfo={},
   ):
     self.api = api
     self.searchTemplate = searchTemplate
@@ -33,6 +34,7 @@ class SearchExe(object):
     self.showQuantifiers = showQuantifiers
     self.msgCache = -1 if msgCache else 0
     self.good = True
+    self.setInfo = setInfo
     basicRelations(self, api, silent)
 
 # API METHODS ###

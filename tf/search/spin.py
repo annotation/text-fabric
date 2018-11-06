@@ -89,7 +89,8 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
         sets=searchExe.sets,
         shallow=True,
         showQuantifiers=showQuantifiers,
-        msgCache=msgCache
+        msgCache=msgCache,
+        setInfo=searchExe.setInfo,
     )
     if showQuantifiers:
       indent(level=level + 2, reset=True)
@@ -113,7 +114,8 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
         sets=searchExe.sets,
         shallow=False,
         showQuantifiers=showQuantifiers,
-        msgCache=msgCache
+        msgCache=msgCache,
+        setInfo=searchExe.setInfo,
     )
     if showQuantifiers:
       indent(level=level + 2, reset=True)
@@ -141,7 +143,8 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
           sets=searchExe.sets,
           shallow=sizeA,
           showQuantifiers=showQuantifiers,
-          msgCache=msgCache
+          msgCache=msgCache,
+          setInfo=searchExe.setInfo,
       )
       if showQuantifiers:
         indent(level=level + 2, reset=True)
@@ -178,7 +181,8 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
           sets=searchExe.sets,
           shallow=True,
           showQuantifiers=showQuantifiers,
-          msgCache=msgCache
+          msgCache=msgCache,
+          setInfo=searchExe.setInfo,
       )
       offset += len(alt.split('\n')) + 1
       if showQuantifiers:
