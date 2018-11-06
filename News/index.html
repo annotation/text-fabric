@@ -283,6 +283,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#643" title="6.4.3" class="md-nav__link">
+    6.4.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#64-641-2" title="6.4, 6.4.1-2" class="md-nav__link">
     6.4, 6.4.1-2
   </a>
@@ -1850,6 +1857,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#643" title="6.4.3" class="md-nav__link">
+    6.4.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#64-641-2" title="6.4, 6.4.1-2" class="md-nav__link">
     6.4, 6.4.1-2
   </a>
@@ -2927,6 +2941,14 @@ all possibilities:
 <a href="http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb">cunei</a></p>
 </details>
 <h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
+<h2 id="643">6.4.3<a class="headerlink" href="#643" title="Permanent link">&para;</a></h2>
+<p>2018-11-06</p>
+<p>Big bug fix in queries: basic relationships in combination with custom sets.
+The implementation of the basic relationships did not reckon with custom sets that contains both slot nodes
+and non-slot nodes. And it did not trigger the right code when a custom set has only slot nodes.
+That has been remedied. Some of the search tutorials have been expanded to include a number of these critical
+cases. A more complete test suite outside the tutorials is still on my to do list.
+Thanks to Cody Kingham for spotting and reporting this bug.</p>
 <h2 id="64-641-2">6.4, 6.4.1-2<a class="headerlink" href="#64-641-2" title="Permanent link">&para;</a></h2>
 <p>2018-11-02</p>
 <ul>
