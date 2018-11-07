@@ -1,8 +1,7 @@
 import os
-import sys
 import collections
 from glob import glob
-from .data import Data, WARP, MEM_MSG
+from .data import Data, WARP, WARP2_DEFAULT, MEM_MSG
 from .helpers import itemize, expandDir, collectFormats, cleanName, check32
 from .timestamp import Timestamp
 from .prepare import (levels, order, rank, levUp, levDown, boundary, sections)
@@ -23,7 +22,7 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '6.4.4'
+VERSION = '6.4.5'
 DOI = '10.5281/zenodo.592193'
 DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'
@@ -307,8 +306,11 @@ Example data  : {}
         self.tm.error('Feature "{}" not available in\n{}'.format(fName, self.locationRep))
         self.good = False
     else:
-      if not self.features[fName].load(silent=silent or (fName not in self.featuresRequested)):
-        self.good = False
+      if fName != WARP[2]:
+        if not self.features[fName].load(
+            silent=silent or (fName not in self.featuresRequested)
+        ):
+          self.good = False
 
   def _makeIndex(self):
     self.features = {}
@@ -345,6 +347,10 @@ Example data  : {}
         if fName == WARP[2]:
           if not self.silent:
             self.tm.info((f'Warp feature "{WARP[2]}" not found. Working without Text-API\n'))
+            self.features[WARP[2]] = Data(
+                f'{WARP[2]}.tf', self.tm, isConfig=True, metaData=WARP2_DEFAULT,
+            )
+            self.features[WARP[2]].dataLoaded = True
         else:
           if not self.silent:
             self.tm.error('Warp feature "{}" not found in\n{}'.format(fName, self.locationRep))

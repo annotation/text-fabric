@@ -28,7 +28,8 @@ r     : build for shipping, leave version as is
 r1    : build for shipping, version becomes r1+1.0.0
 r2    : build for shipping, version becomes r1.r2+1.0
 r3    : build for shipping, version becomes r1.r2.r3+1
-t     : open text-fabric browser on specific dataset (bhsa, peshitta, syrnt, cunei)
+a     : open text-fabric browser on specific dataset (bhsa, peshitta, syrnt, cunei)
+t     : run test suite (relations)
 data  : build data files for github release
 
 For g and the r-commands you need to pass a commit message as well.
@@ -68,7 +69,7 @@ def readArgs():
     print(HELP)
     return (False, None, [])
   arg = args[0]
-  if arg not in {'t', 'docs', 'clean', 'l', 'g', 'data', 'r', 'r1', 'r2', 'r3'}:
+  if arg not in {'a', 't', 'docs', 'clean', 'l', 'g', 'data', 'r', 'r1', 'r2', 'r3'}:
     print(HELP)
     return (False, None, [])
   if arg in {'g', 'r', 'r1', 'r2', 'r3'}:
@@ -76,9 +77,12 @@ def readArgs():
       print('Provide a commit message')
       return (False, None, [])
     return (arg, args[1], args[1:])
-  if arg in {'t', 'data'}:
+  if arg in {'a', 't', 'data'}:
     if len(args) < 2:
-      print('Provide a data source [bhsa|peshitta|syrnt|cunei]')
+      if arg in {'t', 'data'}:
+        print('Provide a data source [bhsa|peshitta|syrnt|cunei]')
+      elif arg in {'a'}:
+        print('Provide a test suite [relations]')
       return (False, None, [])
     return (arg, args[1], args[1:])
   return (arg, None, [])
@@ -133,7 +137,7 @@ def makeDist(task):
     rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)
     run(['python3', 'setup.py', 'sdist'])
-    run(['twine', 'upload', distPath])
+    run(['twine', 'upload', '-u', 'dirkroorda', distPath])
     run('./purge.sh', shell=True)
 
 
@@ -244,12 +248,36 @@ def tfbrowse(dataset, remaining):
     pass
 
 
+def tftest(suite, remaining):
+  suiteDir = f'{TEST_BASE}/generic'
+  suiteFile = f'{suite}.py'
+  good = True
+  try:
+    os.chdir(suiteDir)
+  except Exception:
+    good = False
+    print(f'Cannot find TF test directory "{suiteDir}"')
+  if not good:
+    return
+  if not os.path.exists(suiteFile):
+    print(f'Cannot find TF test suite "{suite}"')
+    return
+  rargs = ' '.join(remaining)
+  cmdLine = f'python3 {suiteFile} {rargs}'
+  try:
+    run(cmdLine, shell=True)
+  except KeyboardInterrupt:
+    pass
+
+
 def main():
   (task, msg, remaining) = readArgs()
   if not task:
     return
-  elif task == 't':
+  elif task == 'a':
     tfbrowse(msg, remaining)
+  elif task == 't':
+    tftest(msg, remaining)
   elif task == 'docs':
     serveDocs()
   elif task == 'clean':

@@ -12,6 +12,14 @@
 
 ## Queued for next release
 
+## 6.4.5
+
+2018-11-07
+
+* Bug fix: Now TF can truly work if you do not have a feature `text.tf` in your dataset.
+* Tests added for basic relations in search: all relations are rigorously tested, a few small bugs fixed.
+* The comment sign in queries is now `%`, only at the start of a line.
+
 ## 6.4.3-4
 
 2018-11-06

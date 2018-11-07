@@ -323,6 +323,8 @@
     ??? info "node"
         The node whose embedder nodes will be delivered.
         The result never includes `node` itself.
+        But other nodes linked to the same set of slots as `node` count as embedder nodes. 
+        But slots are never embedders.
 
 ??? abstract "L.d()"
     ```python
@@ -335,6 +337,8 @@
     ??? info "node"
         The node whose embedded nodes will be delivered.
         The result never includes `node` itself.
+        But other nodes linked to the same set of slots as `node` count as embedded nodes. 
+        But nothing is embedded in slots.
 
 ??? abstract "L.n()"
     ```python
@@ -932,7 +936,7 @@
 
     *   *comment* lines
 
-        *   if a line starts with `#` it is a comment line`;
+        *   if a line starts with `%` it is a comment line`;
         *   you cannot comment out parts of lines, only whole lines;
         *   if a line is empty or has whitespace only, it is a comment line;
         *   comment lines are allowed everywhere;
@@ -1107,6 +1111,8 @@
             ![op](/images/Spatial/Spatial.007.png)
         *   `[[ ]]`: embeds and contains (slot set inclusion, in both directions)
             ![op](/images/Spatial/Spatial.008.png)
+            Never holds between the same nodes. But it holds between different nodes
+            with the same slots. But a slot can never embed an other node.
         *   `<<` `>>`: before and after (with respect to the slots occupied: left ends
             before right starts and vice versa)
             ![op](/images/Spatial/Spatial.009.png)
