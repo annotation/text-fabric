@@ -44,7 +44,7 @@
     `*-app` packages in
     [tf.extra](https://github.com/Dans-labs/text-fabric/tree/master/tf/extra)
 
-    See also [App structure](/Api/Apps/#the-structure-of-apps)
+    See also [App structure](../../Api/Apps/#the-structure-of-apps)
 
 ??? abstract "getAppdir(myDir, dataSource)"
     The code in
@@ -55,7 +55,7 @@
     *dataSource* `-app` package in
     [tf.extra](https://github.com/Dans-labs/text-fabric/tree/master/tf/extra).
 
-    See also [App structure](/Api/Apps/#the-structure-of-apps)
+    See also [App structure](../../Api/Apps/#the-structure-of-apps)
 
 ## Getting and setting form values
 
@@ -135,9 +135,9 @@
 ??? abstract "shapeOptions"
     Wraps the options, specified by the option specification in `config.py`
     into HTML.
-    See also [App structure](/Api/Apps/#the-structure-of-apps)
+    See also [App structure](../../Api/Apps/#the-structure-of-apps)
 
 ??? abstract "shapeCondense"
     Provides a radio-buttoned chooser for the
-    [condense types](/Server/Kernel/#data-service-api).
+    [condense types](../Kernel/#data-service-api).
 

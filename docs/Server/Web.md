@@ -9,7 +9,7 @@
     This is realized by a web app based on 
     [bottle](http://bottlepy.org).
 
-    This web app connects to the [TF kernel](/Server/Kernel)
+    This web app connects to the [TF kernel](../Kernel)
     and merges the retrieved data into a set of 
     [templates](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/views).
 
@@ -39,7 +39,7 @@
         a successful start up.
     
     ??? abstract "TF kernel"
-        A [TF kernel](/Server/Kernel) is started.
+        A [TF kernel](../Kernel) is started.
         This process loads the bulk of the TF data, so it can take a while.
         When it has loaded the data, it sends out a message that loading is done,
         which is picked up by the script.

@@ -2,17 +2,17 @@
 
 
 The code base of Text-Fabric is evolving to a considerable
-[size](/Code/Stats).
+[size](../Stats).
 
 However, he code can be divided into a few major parts,
 each with their own, identifiable task.
 
-Some parts of the code are covered by unit [tests](/Code/Tests).
+Some parts of the code are covered by unit [tests](../Tests).
 
 ## Base
 
 The
-[generic API](/Api/General) ([stats](/Code/StatsBase))
+[generic API](../../Api/General) ([stats](../StatsBase))
 of Text-Fabric is responsible for:
 
 ??? abstract "Data management"
@@ -30,7 +30,7 @@ of Text-Fabric is responsible for:
 ## Search
 
 TF contains a
-[search engine](/Api/General/#searching) ([stats](/Code/StatsSearch))
+[search engine](../../Api/General/#searching) ([stats](../StatsSearch))
 based on templates, which are little graphs
 of nodes and edges that must be instantiated against the corpus.
 
@@ -48,7 +48,7 @@ of nodes and edges that must be instantiated against the corpus.
 
 ## Apps
 
-TF contains corpus-dependent [apps](/Api/Apps) ([stats](/Code/StatsApps)).
+TF contains corpus-dependent [apps](../../Api/Apps) ([stats](../StatsApps)).
 
 ??? abstract "Display"
     An app knows how to display a particular corpus.
@@ -62,7 +62,7 @@ TF contains corpus-dependent [apps](/Api/Apps) ([stats](/Code/StatsApps)).
 ## Web interface
 
 TF contains a 
-[local web interface](/Server/Web) ([stats](/Code/StatsServer))
+[local web interface](../../Server/Web) ([stats](../StatsServer))
 for interacting with your corpus without programming.
 
 ??? abstract "Working with your corpus"

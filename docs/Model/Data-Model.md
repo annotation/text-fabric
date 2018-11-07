@@ -16,13 +16,13 @@ A Culture Novel (Culture series)"
 Take a text, put a grid around the words, and then leave out the words. What is
 left, are the textual positions, or *slots*.
 
-![Slots](/images/DataModel/DataModel.001.png)
+![Slots](../../images/DataModel/DataModel.001.png)
 
 Pieces of text correspond to phrases, clauses, sentences, verses, chapters,
 books. Draw circles around those pieces, and then leave out their contents. What
 is left, are the textual objects, or *nodes*.
 
-![Nodes](/images/DataModel/DataModel.002.png)
+![Nodes](../../images/DataModel/DataModel.002.png)
 
 Nodes can be connected to other nodes by *edges*. A basic function of edges is
 to indicate *containment*: *this* node corresponds to a set of slots that is
@@ -55,7 +55,7 @@ to the set of slots that have an occurrence of that lexeme.
 
 ## Fabric metaphor
 
-![Loom](/images/loom.png)
+![Loom](../../images/loom.png)
 [AD 1425 Hausbücher der Nürnberger Zwölfbrüderstiftungen](http://www.nuernberger-hausbuecher.de/75-Amb-2-317-4-v/data)
 
 Before we go on, we invite you to look at a few basic terms in the craft of
@@ -65,13 +65,13 @@ A weaver sets up a set of fixed, parallel threads, the *warp*. He then picks a
 thread, usually a colourful one, and sends it in a perpendicular way through the
 warp. This thread is called the *weft*.
 
-![Warp](/images/warp.png)
+![Warp](../../images/warp.png)
 
 The instrument that carries the wefts through the warp is called the *loom*. The
 weaver continues operating the loom, back and forth, occasionally selecting new
 wefts, until he has completed a rectangular piece of fabric, the *weave*.
 
-![Weave](/images/weave.png)
+![Weave](../../images/weave.png)
 [source](https://sew4home.com/tips-resources/buying-guide/all-about-fabric-weaves-tutorial)
 
 Now Text-Fabric, the tool, can be seen as the loom that sends features (the
@@ -83,7 +83,7 @@ dataset contains these two warp features. (Later on we'll see a third member of
 the warp, **otext**). They provide the structure of a text and its annotations,
 without any content. Even the text itself is left out!
 
-![Warp](/images/DataModel/DataModel.003.png)
+![Warp](../../images/DataModel/DataModel.003.png)
 
 All other information is added to the warp as *features* (the wefts): node
 features and edge features. A feature is a special aspect of the textual
@@ -105,7 +105,7 @@ Whenever you use Text-Fabric to generate new data, you are weaving a weave. The
 resulting dataset is a tight fabric of individual features (wefts), whose values
 are taken for a set of nodes (warp).
 
-![Fabric](/images/DataModel/DataModel.004.png)
+![Fabric](../../images/DataModel/DataModel.004.png)
 
 Some features deserve a privileged place. After all, we are dealing with *text*,
 so we need a bit of information about which features carry textual
@@ -124,7 +124,7 @@ Especially when you are in the process of converting a data source (such as a
 treebanks set) into a Text-Fabric dataset, it is handy that Text-Fabric can load
 the data without bothering about these matters.
 
-![Text](/images/DataModel/DataModel.005.png)
+![Text](../../images/DataModel/DataModel.005.png)
 
 ## Model
 

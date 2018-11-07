@@ -4,7 +4,7 @@
 
 The module [syrnt.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/syrnt.py)
 contains a number of handy functions on top of Text-Fabric and especially its 
-[Search](/Api/General/#search) part.
+[Search](../General/#search) part.
 
 ## Minimal incantation
 
@@ -444,4 +444,4 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         In `query` you can refer to those names to invoke those sets.
 
     ??? hint "search template reference"
-        See the [search template reference](/Api/General#search-templates)
+        See the [search template reference](../General#search-templates)
