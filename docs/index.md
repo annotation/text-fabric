@@ -1,4 +1,4 @@
-![logo](images/tficon-small.png)
+![logo](/images/tficon-small.png)
 
 # Text-Fabric
 
