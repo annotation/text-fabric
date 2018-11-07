@@ -26,6 +26,7 @@ nav:
   - Faq: 'Faq.md'
   - Code:
     - 'Overview' : 'Code/Overview.md'
+    - 'Tests' : 'Code/Tests.md'
     - 'Stats (overall)' : 'Code/Stats.md'
     - 'Stats (TF-base)' : 'Code/StatsBase.md'
     - 'Stats (TF-search)' : 'Code/StatsSearch.md'

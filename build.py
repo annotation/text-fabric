@@ -213,6 +213,7 @@ def codestats():
       '.ipynb_checkpoints,images,fonts,favicons,compiled'
   )
   xdtf = xd + ',search,server,extra'
+  xdtest = xd + ',tf'
   rfFmt = 'docs/Code/Stats{}.md'
   cmdLine = (
       'cloc'
@@ -228,6 +229,7 @@ def codestats():
   run(cmdLine.format(xd, 'Search', 'tf/search'), shell=True)
   run(cmdLine.format(xd, 'Server', 'tf/server'), shell=True)
   run(cmdLine.format(xd, 'Apps', 'tf/extra'), shell=True)
+  run(cmdLine.format(xdtest, 'Test', 'test/generic'), shell=True)
 
 
 def tfbrowse(dataset, remaining):

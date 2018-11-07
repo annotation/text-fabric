@@ -4,8 +4,10 @@
 The code base of Text-Fabric is evolving to a considerable
 [size](/Code/Stats).
 
-However, the code can be divided into a few major parts,
+However, he code can be divided into a few major parts,
 each with their own, identifiable task.
+
+Some parts of the code are covered by unit [tests](/Code/Tests).
 
 ## Base
 
