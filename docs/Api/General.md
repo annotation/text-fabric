@@ -16,10 +16,10 @@
     However, Text-Fabric comes with several additions that make working
     with specific corpora easier.
 
-    *   Hebrew Bible: [BHSA](Bhsa)
-    *   Peshitta: [Peshitta](Peshitta)
-    *   Syriac New Testament: [SyrNT](Syrnt)
-    *   Proto-cuneiform tablets from Uruk: [Cunei](Cunei)
+    *   Hebrew Bible: [BHSA](../Bhsa)
+    *   Peshitta: [Peshitta](../Peshitta)
+    *   Syriac New Testament: [SyrNT](../Syrnt)
+    *   Proto-cuneiform tablets from Uruk: [Cunei](../Cunei)
 
 ## Loading
 
