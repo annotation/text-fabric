@@ -909,7 +909,7 @@
 in which you can enter a search template and view the results.</p>
 <p>This is realized by a web app based on 
 <a href="http://bottlepy.org">bottle</a>.</p>
-<p>This web app connects to the <a href="/Server/Kernel">TF kernel</a>
+<p>This web app connects to the <a href="../Kernel">TF kernel</a>
 and merges the retrieved data into a set of 
 <a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/views">templates</a>.</p>
 <p>See the code in
@@ -931,7 +931,7 @@ it wants to start up.
 If they are encountered, they will be killed, so that they cannot prevent
 a successful start up.</p>
 </details>
-<details class="abstract"><summary>TF kernel</summary><p>A <a href="/Server/Kernel">TF kernel</a> is started.
+<details class="abstract"><summary>TF kernel</summary><p>A <a href="../Kernel">TF kernel</a> is started.
 This process loads the bulk of the TF data, so it can take a while.
 When it has loaded the data, it sends out a message that loading is done,
 which is picked up by the script.</p>
