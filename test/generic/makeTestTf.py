@@ -13,6 +13,10 @@ name = {i: chr(i + ord('a') - 1) for i in range(1, maxSlot + 1)}
 p = 0
 
 
+# GENERATE NODES OF TYPE PART
+
+# create a part with that name and linked to those slots
+
 def addPart(nm, signs):
   mySlots = set(s for s in signs if 1 <= s <= maxSlot)
   if not mySlots:
@@ -26,13 +30,17 @@ def addPart(nm, signs):
   name[node] = nm
 
 
+# create singlet parts, doublets, triplets, etc
+# nm is a prefix for the name of the parts
+# kind: 1 for singlets, 2 for doublets, etc.
+
 def addLet(nm, kind):
   for i in range(0, maxSlot):
     base = kind * i
     addPart(f'{nm}{i + 1}', range(base + 1, base + kind + 1))
 
 
-# SINGLETONS, DOUBLETS, TRIPLETS, etc
+# ADD ALL PARTS
 
 addLet('s', 1)
 addLet('ss', 1)
@@ -87,6 +95,8 @@ addPart('tome2n', [9, 10])
 addPart('tome2p', [5, 6])
 addPart('all', range(1, maxSlot + 1))
 
+# COLLECT THE FEATURES
+
 nodeFeatures = {
     'otype': otype,
     'name': name,
@@ -112,5 +122,7 @@ metaData = {
         'valueType': 'str',
     },
 }
+
+# SAVE THE CORPUS AS TF
 
 TF.save(nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures, metaData=metaData)

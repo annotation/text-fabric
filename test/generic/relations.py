@@ -3,17 +3,23 @@ import unittest
 
 from tf.fabric import Fabric
 
+# LOAD THE TEST CORPUS
+
 TF = Fabric('tf')
 api = TF.load('sign name')
 F = api.F
 S = api.S
 
 
+# MAKE CUSTOM SETS OF NODES
+
 Sign = set(range(1, F.otype.maxSlot + 1))
 Node = set(range(1, F.otype.maxNode + 1))
 
 sets = dict(Sign=Sign, Node=Node)
 
+
+# RUN A QUERY, OPTIONALLY WITH CUSTOM SETS
 
 def query(template, sets=None):
 
@@ -23,6 +29,8 @@ def query(template, sets=None):
       tuple(S.search(template, sets=sets))
   )
 
+
+# DEFINE THE TESTS
 
 relationKey = {
     '=': 'equal',
@@ -58,6 +66,8 @@ relationKey = {
     ':1>': 'adjacentAfter1',
     ':2>': 'adjacentAfter2',
 }
+
+# DEFINE THE PARAMETERS FOR EACH TEST
 
 comparisons = {
     '=': (
@@ -1092,9 +1102,36 @@ comparisons = {
 }
 
 
+# BUILD THE TEST CLASS
+
 def makeTests():
 
+  # See the unittest docs.
+  # setUp and tearDown are used here for counting the assertions done.
+
+  def setUp(self):
+    self.assertions = 0
+
+  def tearDown(self):
+    global assertions
+    assertions += self.assertions
+    sys.stderr.write(
+        f'assertions checked: {self.assertions:>3}'
+        f' overall {assertions} ... '
+    )
+
+  # The central tester: run a query and check the result
+
   def basicRel(self, type1, name1, type2, name2, answer):
+    '''
+    Given the test parameters, build a query and run it.
+    Depending on the node types involved, build additional
+    queries with custom sets and run them.
+    All queries should have the same result, given the parameters.
+    That result is either the empty tuple or a singleton tuple.
+    The expected answer states that whether the result is the singleton tuple.
+    '''
+
     rel = self.rel
     template = f'''
 {type1} name={name1}
@@ -1117,28 +1154,28 @@ def makeTests():
           self.assertions += 1
           self.assertTrue(hasResult if answer else not hasResult)
 
-  def setUp(self):
-    self.assertions = 0
-
-  def tearDown(self):
-    global assertions
-    assertions += self.assertions
-    sys.stderr.write(
-        f'assertions checked: {self.assertions:>3}'
-        f' overall {assertions} ... '
-    )
-
   def makeTest(relSym, params):
+    '''
+    Given a relation operator symbol and a sequence of parameters for the
+    basic tester, define a function that executes a corresponding seuqence
+    of tests
+    '''
+
     def xx(obj):
       obj.rel = relSym
       for values in params:
         obj.basicRel(*values)
     return xx
 
+  # Compose a dictionary of test functions
+
   tests = {}
   for (relSym, params) in comparisons.items():
     testName = f'test_{relationKey[relSym]}'
     tests[testName] = makeTest(relSym, params)
+
+  # build a test class and add attributes to it,
+  # in particular the tests in the dictionary just constructed
 
   testClass = type('relations', (unittest.TestCase,), {
       'longMessage': False,
@@ -1152,10 +1189,20 @@ def makeTests():
 
 
 if __name__ == '__main__':
+
+  # define the test class and call it relations
+
   relations = makeTests()
   assertions = 0
+
+  # perform tests
+
   unittest.main()
   sys.exit()
+
+  # if you need to debug, do it here,
+  # and comment out the line unittest.main() above
+
   print(query('''
 part name=upper
 :0= part name=even
