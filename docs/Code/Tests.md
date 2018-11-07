@@ -35,7 +35,7 @@ factor the framework out right now.
 ## Relations
 
 The
-[basic spatial relations](/Api/General/#relational-operators)
+[basic spatial relations](../../Api/General/#relational-operators)
 that are being used in search deserve thorough unit testing.
 
 There are quite a few of them, they describe refined but abstract relations

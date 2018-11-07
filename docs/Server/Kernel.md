@@ -26,7 +26,7 @@
     python3 -m tf.server.kernel ddd
     ```
 
-    where `ddd` is one of the [supported apps](/Api/Apps#current-apps)
+    where `ddd` is one of the [supported apps](../../Api/Apps#current-apps)
 
     ??? example
         See the
