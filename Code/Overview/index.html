@@ -877,13 +877,13 @@
                 
                 <h1 id="code-organisation">Code organisation<a class="headerlink" href="#code-organisation" title="Permanent link">&para;</a></h1>
 <p>The code base of Text-Fabric is evolving to a considerable
-<a href="/Code/Stats">size</a>.</p>
+<a href="../Stats">size</a>.</p>
 <p>However, he code can be divided into a few major parts,
 each with their own, identifiable task.</p>
-<p>Some parts of the code are covered by unit <a href="/Code/Tests">tests</a>.</p>
+<p>Some parts of the code are covered by unit <a href="../Tests">tests</a>.</p>
 <h2 id="base">Base<a class="headerlink" href="#base" title="Permanent link">&para;</a></h2>
 <p>The
-<a href="/Api/General">generic API</a> (<a href="/Code/StatsBase">stats</a>)
+<a href="../../Api/General">generic API</a> (<a href="../StatsBase">stats</a>)
 of Text-Fabric is responsible for:</p>
 <details class="abstract"><summary>Data management</summary><p>Text-Fabric data consists of <em>feature files</em>.
 TF must be able to load them, save them, import/export from MQL.</p>
@@ -896,7 +896,7 @@ compiled forms of the data.</p>
 </details>
 <h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
 <p>TF contains a
-<a href="/Api/General/#searching">search engine</a> (<a href="/Code/StatsSearch">stats</a>)
+<a href="../../Api/General/#searching">search engine</a> (<a href="../StatsSearch">stats</a>)
 based on templates, which are little graphs
 of nodes and edges that must be instantiated against the corpus.</p>
 <details class="abstract"><summary>Search vs MQL</summary><p>The template language is inspired by MQL, but has a different syntax.
@@ -909,7 +909,7 @@ Sometimes it is faster than hand coding,
 sometimes (much) slower.</p>
 </details>
 <h2 id="apps">Apps<a class="headerlink" href="#apps" title="Permanent link">&para;</a></h2>
-<p>TF contains corpus-dependent <a href="/Api/Apps">apps</a> (<a href="/Code/StatsApps">stats</a>).</p>
+<p>TF contains corpus-dependent <a href="../../Api/Apps">apps</a> (<a href="../StatsApps">stats</a>).</p>
 <details class="abstract"><summary>Display</summary><p>An app knows how to display a particular corpus.</p>
 </details>
 <details class="abstract"><summary>Download</summary><p>An app knows how to download a particular corpus from its online repository.</p>
@@ -918,7 +918,7 @@ sometimes (much) slower.</p>
 </details>
 <h2 id="web-interface">Web interface<a class="headerlink" href="#web-interface" title="Permanent link">&para;</a></h2>
 <p>TF contains a 
-<a href="/Server/Web">local web interface</a> (<a href="/Code/StatsServer">stats</a>)
+<a href="../../Server/Web">local web interface</a> (<a href="../StatsServer">stats</a>)
 for interacting with your corpus without programming.</p>
 <details class="abstract"><summary>Working with your corpus</summary><p>The local web interface lets you fire queries (search templates) to TF and interact
 with the results:</p>
