@@ -124,7 +124,7 @@ def _tokenize(searchExe):
   curQuTemplates = None
 
   for (i, line) in enumerate(searchLines):
-    if line.startswith('#') or whiteRe.match(line):
+    if line.startswith('%') or whiteRe.match(line):
       continue
     opFeatures = {}
 

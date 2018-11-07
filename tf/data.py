@@ -19,6 +19,11 @@ WARP = (
     'otext',
 )
 
+WARP2_DEFAULT = dict(
+    sectionFeatures='',
+    sectionTypes='',
+)
+
 DATA_TYPES = ('str', 'int')
 
 MEM_MSG = (
@@ -79,8 +84,11 @@ class Data(object):
       actionRep = 'E'
       good = False
     elif self.dataLoaded and (
-        self.isConfig or (not origTime or self.dataLoaded >= origTime)
-        and (not binTime or self.dataLoaded >= binTime)
+        self.isConfig
+        or (
+            (not origTime or self.dataLoaded >= origTime)
+            and (not binTime or self.dataLoaded >= binTime)
+        )
     ):
       actionRep = '='  # loaded and up to date
     elif not origTime and not binTime:

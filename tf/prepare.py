@@ -173,6 +173,8 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
   sTypes = itemize(otext['sectionTypes'], ',')
   sec1 = {}
   sec2 = {}
+  if len(sTypes) < 2:
+    return (sec1, sec2)
   c1 = 0
   c2 = 0
   support2 = support[sTypes[2]]
