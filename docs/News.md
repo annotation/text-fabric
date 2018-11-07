@@ -217,7 +217,7 @@ This change was needed for the Text-Fabric browser, in order to represent *lexem
     * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
 
 It might also be handy for the programmers amongst you.
-See the updated [API doc on T](/Api/General/#text-representation), expand the T.text() item.
+See the updated [API doc on T](Api/General/#text-representation), expand the T.text() item.
 
 ### Auto update
 The Text-Fabric browser checks if you are using the most recent release of the data.
@@ -231,7 +231,7 @@ in the [font library](https://fontlibrary.org).
 Not worth telling.
 
 !!! hint "update Text-Fabric"
-    To update Text-Fabric itself to version 6.0, consult [Upgrade](/Install/#text-fabric).
+    To update Text-Fabric itself to version 6.0, consult [Upgrade](Install/#text-fabric).
     Perform this step first, because the new TF may download the new data for you.
 
 !!! caution "Data update needed"
@@ -679,7 +679,7 @@ Docs and metadata update
 *   Quantifiers.
 
     You can now use quantifiers in search. One of them is like `NOTEXIST` in MQL.
-    See the [docs](/Api#quantifiers)
+    See the [docs](Api#quantifiers)
 
 *   A number of minor fixes.
 
@@ -854,7 +854,7 @@ Cunei API:
 
 2018-04-23
 
-[Search](/Api#search):
+[Search](Api#search):
 
 *   You can use regular expressions to specify feature values in queries.
 *   You could already search for nodes which have a non-None value for a certain
@@ -988,7 +988,7 @@ container type only contains small instances of the contained type and not the
 bigger ones.
 
 Now you can override the computation by text-fabric by means of a key-value in
-the *otext* feature. See the [api](/Api#levels-of-node-types).
+the *otext* feature. See the [api](Api#levels-of-node-types).
 
 ## 3.1.5
 
@@ -1054,7 +1054,7 @@ Edges with edge values did not allow for the absence of values. Now they do.
 
 2017-10-05
 
-A major tweak in the [importMQL()](/Api#mql-import) function so that it can
+A major tweak in the [importMQL()](Api#mql-import) function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
 version 3 of the [BHSA](https://github.com/ETCBC/bhsa). In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
@@ -1065,7 +1065,7 @@ of slots.
 
 2017-10-05
 
-Another little tweak in the [importMQL()](/Api#mql-import) function so that it
+Another little tweak in the [importMQL()](Api#mql-import) function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
 MQL for version 3 of the [BHSA](https://github.com/ETCBC/bhsa).
 
@@ -1073,7 +1073,7 @@ MQL for version 3 of the [BHSA](https://github.com/ETCBC/bhsa).
 
 2017-10-04
 
-Little tweak in the [importMQL()](/Api#mql-import) function so that it can handle
+Little tweak in the [importMQL()](Api#mql-import) function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
 [extrabiblical](https://github.com/ETCBC/extrabiblical) material.
 
@@ -1096,7 +1096,7 @@ Bug fix in reading edge features with values.
 2017-10-02
 
 MQL! You can now convert MQL data into a TF dataset:
-[importMQL()](/Api#mql-import). We had already [exportMQL()](/Api#mql-export).
+[importMQL()](Api#mql-import). We had already [exportMQL()](Api#mql-export).
 
 The consequence is that we can operate with much agility between the worlds of
 MQL and TF.
@@ -1110,10 +1110,10 @@ enriched MQL, so that the enriched data can be queried by MQL.
 2017-09-29
 
 Completion: TF defines the concept of
-[edges](/Api/General/#edge-features) that
+[edges](Api/General/#edge-features) that
 carry a value. But so far we have not used them. It turned out that it was
 impossible to let TF know that an edge carries values, when
-[saving](/Api/General/#saving-features) data
+[saving](Api/General/#saving-features) data
 as a new feature. Now it is possible.
 
 ## 2.3.14
@@ -1124,7 +1124,7 @@ Bug fix: it was not possible to get
 `T.nodeFromSection(('2_Chronicles', 36, 23))`, the last verse in the Bible.
 
 This is the consequence of a bug in precomputing the sections
-[sections](/Api/General/#computed-data). The
+[sections](Api/General/#computed-data). The
 preparation step used
 
 ```python
@@ -1148,14 +1148,14 @@ Loading TF was not completely silent if `silent=True` was passed. Better now.
 2017-09-18
 
 *   Small fix in
-    [TF.save()](/Api/General/#saving-features).
+    [TF.save()](Api/General/#saving-features).
     The spec says that the metadata under the empty key will be inserted into all
     features, but in fact this did not happen. Instead it was used as a default
     when some feature did not have metadata specified.
 
     From now on, that metadata will spread through all features.
 
-*   New API function [explore](/Api/General#loading), to get a list of all known
+*   New API function [explore](Api/General#loading), to get a list of all known
     features in a dataset.
 
 ## 2.3.11
@@ -1165,7 +1165,7 @@ Loading TF was not completely silent if `silent=True` was passed. Better now.
 *   Small fix in Search: the implementation of the relation operator `||`
     (disjoint slot sets) was faulty. Repaired.
 *   The
-    [search tutorial](/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb)
+    [search tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb)
     got an extra example: how to look for gaps. Gaps are not a primitive in the TF
     search language. Yet the language turns out to be powerful enough to look for
     gaps. This answers a question by Cody Kingham.
@@ -1221,11 +1221,11 @@ Also the `Fabric()` call can be made silent now.
 
 Improvements:
 
-*   you can load features more silently. See [`TF.load()`](/Api#loading-features);
-*   you can search more silently. See [`S.study()`](/Api#prepare-for-search);
-*   you can search more concisely. See the new [`S.search()`](/Api#search-command);
+*   you can load features more silently. See [`TF.load()`](Api#loading-features);
+*   you can search more silently. See [`S.study()`](Api#prepare-for-search);
+*   you can search more concisely. See the new [`S.search()`](Api#search-command);
 *   when fetching results, the `amount` parameter of
-    [`S.fetch()`](/Api#getting-results) has been renamed to `limit`;
+    [`S.fetch()`](Api#getting-results) has been renamed to `limit`;
 *   the tutorial notebooks (see links on top) have been updated.
 
 ## 2.3.2
@@ -1260,11 +1260,11 @@ Small fixes.
 
 ### New: sortKey
 
-The API has a new member: [`sortKey`](/Api#sorting-nodes)
+The API has a new member: [`sortKey`](Api#sorting-nodes)
 
-New relationships in templates: [`nearness`](/Api#nearness-comparison). See for
+New relationships in templates: [`nearness`](Api#nearness-comparison). See for
 examples the end of the
-[searchTutorial](/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb).
+[searchTutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb).
 Thanks to James Cuénod for requesting nearness operators.
 
 ### Fixes
@@ -1301,7 +1301,7 @@ You can now easily make extra constraints in search templates without naming
 atoms.
 
 See the
-[searchTutorial](/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb)
+[searchTutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb)
 for an updated exposition on searching.
 
 ## 2.0.0
@@ -1310,7 +1310,7 @@ for an updated exposition on searching.
 
 ### New: Search
 
-![warmXmas](/images/warmXmas.jpg)
+![warmXmas](images/warmXmas.jpg)
 
 *Want to feel cosy with Christmas? Put your laptop on your lap, update
 Text-Fabric, and start playing with search. Your laptop will spin itself warm
@@ -1322,7 +1322,7 @@ It is still very fresh, and more experimentation will be needed. Feedback is
 welcome.
 
 Start with the
-[tutorial](/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb).
+[tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb).
 
 The implementation of this search engine can be nicely explained with a textile
 metaphor: spinning wool into yarn and then stitching the yarns together.
@@ -1336,7 +1336,7 @@ Xmas.
 
 ### New
 
-[`F.otype.sInterval()`](/Api#warp-feature-otype)
+[`F.otype.sInterval()`](Api#warp-feature-otype)
 
 ## 1.2.6
 
@@ -1353,7 +1353,7 @@ It has been remedied.
 
 ??? note
     Your computed data needs to be refreshed. This can be done by calling a new
-    function [`TF.clearCache()`](/Api#clearing-the-cache). When you use TF after
+    function [`TF.clearCache()`](Api#clearing-the-cache). When you use TF after
     this, you will see it working quite hard to recompute a bunch of data.
 
 ## 1.2.5
@@ -1373,12 +1373,12 @@ Documentation update
 
 ### Frequency lists ###
 
-[`F.feature.freqList()`](/Api#node-features): get a sorted frequency list for any
+[`F.feature.freqList()`](Api#node-features): get a sorted frequency list for any
 feature. Handy as a first step in exploring a feature.
 
 ### Export to MQL ###
 
-[`TF.exportMQL()`](/Api#export-to-mql): export a whole dataset as a MQL database.
+[`TF.exportMQL()`](Api#export-to-mql): export a whole dataset as a MQL database.
 Including all modules that you have loaded with it.
 
 ### Changed

@@ -20,10 +20,10 @@
 
     name | description
     --- | ---
-    [bhsa](/Api/Bhsa) | Biblia Hebraica Stuttgartensia (Amstelodamensis)
-    [cunei](/Api/Cunei) | Proto-cuneiform Uruk Corpus
-    [peshitta](/Api/Peshitta) | Syriac Old Testament
-    [syrnt](/Api/Syrnt) | Syriac New Testament
+    [bhsa](Bhsa) | Biblia Hebraica Stuttgartensia (Amstelodamensis)
+    [cunei](Cunei) | Proto-cuneiform Uruk Corpus
+    [peshitta](Peshitta) | Syriac Old Testament
+    [syrnt](Syrnt) | Syriac New Testament
 
 ## The structure of apps
 
