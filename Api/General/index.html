@@ -1502,7 +1502,9 @@ only nodes with <code>otype=nodeType</code> are retained.</p>
 <details class="info" open="open"><summary>Description</summary><p>Produces an ordered tuple of nodes <strong>upward</strong>, i.e. embedder nodes.</p>
 </details>
 <details class="info"><summary>node</summary><p>The node whose embedder nodes will be delivered.
-The result never includes <code>node</code> itself.</p>
+The result never includes <code>node</code> itself.
+But other nodes linked to the same set of slots as <code>node</code> count as embedder nodes. 
+But slots are never embedders.</p>
 </details>
 </details>
 <details class="abstract"><summary>L.d()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">L</span><span class="o">.</span><span class="n">d</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">otype</span><span class="o">=</span><span class="n">nodeType</span><span class="p">)</span>
@@ -1512,7 +1514,9 @@ The result never includes <code>node</code> itself.</p>
 <details class="info" open="open"><summary>Description</summary><p>Produces an ordered tuple of nodes <strong>downward</strong>, i.e. embedded nodes.</p>
 </details>
 <details class="info"><summary>node</summary><p>The node whose embedded nodes will be delivered.
-The result never includes <code>node</code> itself.</p>
+The result never includes <code>node</code> itself.
+But other nodes linked to the same set of slots as <code>node</code> count as embedded nodes. 
+But nothing is embedded in slots.</p>
 </details>
 </details>
 <details class="abstract"><summary>L.n()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">L</span><span class="o">.</span><span class="n">n</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">otype</span><span class="o">=</span><span class="n">nodeType</span><span class="p">)</span>
@@ -2126,7 +2130,7 @@ consist of verbs only:</p>
 <li>
 <p><em>comment</em> lines</p>
 <ul>
-<li>if a line starts with <code>#</code> it is a comment line`;</li>
+<li>if a line starts with <code>%</code> it is a comment line`;</li>
 <li>you cannot comment out parts of lines, only whole lines;</li>
 <li>if a line is empty or has whitespace only, it is a comment line;</li>
 <li>comment lines are allowed everywhere;</li>
@@ -2343,7 +2347,9 @@ do not have values).</p>
     the other)
     <img alt="op" src="/images/Spatial/Spatial.007.png" /></li>
 <li><code>[[ ]]</code>: embeds and contains (slot set inclusion, in both directions)
-    <img alt="op" src="/images/Spatial/Spatial.008.png" /></li>
+    <img alt="op" src="/images/Spatial/Spatial.008.png" />
+    Never holds between the same nodes. But it holds between different nodes
+    with the same slots. But a slot can never embed an other node.</li>
 <li><code>&lt;&lt;</code> <code>&gt;&gt;</code>: before and after (with respect to the slots occupied: left ends
     before right starts and vice versa)
     <img alt="op" src="/images/Spatial/Spatial.009.png" /></li>
