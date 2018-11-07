@@ -52,13 +52,13 @@ Here is how to start up text-fabric.
     This is useful if your local data is better/newer than the data on the last
     published github release.
 
-![bhsa](/images/bhsa-app.png)
+![bhsa](images/bhsa-app.png)
 
 *Above: Querying the BHSA data*
 
 *Below: Querying the Cunei data*
 
-![cunei](/images/cunei-app.png)
+![cunei](images/cunei-app.png)
 
 
 ??? hint "Fetching corpora"
@@ -74,7 +74,7 @@ Here is how to start up text-fabric.
         In that case, take care to have a good internet connection when you use the
         Text-Fabric browser for the first time.
 
-    [More about corpora](/Corpora)
+    [More about corpora](Corpora)
 
 ??? hint "Saving your session"
     Your session will be saved in a file with extension `.tfjob` in the directory
@@ -240,25 +240,25 @@ Explore your corpus by means of programming.
     [start](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb).
 
     Or go straight to the
-    [bhsa-api-docs](/Api/Bhsa).
+    [bhsa-api-docs](Api/Bhsa).
 
 ??? abstract "Using Syriac data"
     To get started with the Peshitta corpus, use its tutorial in the Peshitta repo:
     [start](http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb).
 
     Or go straight to the
-    [peshitta-api-docs](/Api/Peshitta).
+    [peshitta-api-docs](Api/Peshitta).
 
     To get started with the Syriac New Testament corpus, use its tutorial in the Syrnt repo:
     [start](http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb).
 
     Or go straight to the
-    [syrnt-api-docs](/Api/Syrnt).
+    [syrnt-api-docs](Api/Syrnt).
 
 ??? abstract "Using Cuneiform data"
     To get started with the Uruk corpus, use its tutorial in the Nino-cunei repo:
     [start](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb).
 
     Or go straight to the
-    [cunei-api-docs](/Api/Cunei).
+    [cunei-api-docs](Api/Cunei).
 
