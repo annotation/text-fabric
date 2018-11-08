@@ -1106,20 +1106,6 @@ comparisons = {
 
 def makeTests():
 
-  # See the unittest docs.
-  # setUp and tearDown are used here for counting the assertions done.
-
-  def setUp(self):
-    self.assertions = 0
-
-  def tearDown(self):
-    global assertions
-    assertions += self.assertions
-    sys.stderr.write(
-        f'assertions checked: {self.assertions:>3}'
-        f' overall {assertions} ... '
-    )
-
   # The central tester: run a query and check the result
 
   def basicRel(self, type1, name1, type2, name2, answer):
@@ -1173,6 +1159,20 @@ def makeTests():
   for (relSym, params) in comparisons.items():
     testName = f'test_{relationKey[relSym]}'
     tests[testName] = makeTest(relSym, params)
+
+  # See the unittest docs.
+  # setUp and tearDown are used here for counting the assertions done.
+
+  def setUp(self):
+    self.assertions = 0
+
+  def tearDown(self):
+    global assertions
+    assertions += self.assertions
+    sys.stderr.write(
+        f'assertions checked: {self.assertions:>3}'
+        f' overall {assertions} ... '
+    )
 
   # build a test class and add attributes to it,
   # in particular the tests in the dictionary just constructed

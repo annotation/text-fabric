@@ -22,7 +22,7 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '6.4.5'
+VERSION = '6.4.6'
 DOI = '10.5281/zenodo.592193'
 DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'
@@ -306,11 +306,10 @@ Example data  : {}
         self.tm.error('Feature "{}" not available in\n{}'.format(fName, self.locationRep))
         self.good = False
     else:
-      if fName != WARP[2]:
-        if not self.features[fName].load(
-            silent=silent or (fName not in self.featuresRequested)
-        ):
-          self.good = False
+      if not self.features[fName].load(
+          silent=silent or (fName not in self.featuresRequested)
+      ):
+        self.good = False
 
   def _makeIndex(self):
     self.features = {}
