@@ -3142,7 +3142,7 @@ However, there is only one version kept in <code>~/text-fabric-data</code>, so t
 </ul>
 </div>
 <p>It might also be handy for the programmers amongst you.
-See the updated <a href="Api/General/#text-representation">API doc on T</a>, expand the T.text() item.</p>
+See the updated <a href="../Api/General/#text-representation">API doc on T</a>, expand the T.text() item.</p>
 <h3 id="auto-update">Auto update<a class="headerlink" href="#auto-update" title="Permanent link">&para;</a></h3>
 <p>The Text-Fabric browser checks if you are using the most recent release of the data.</p>
 <h3 id="font-rendering">Font rendering<a class="headerlink" href="#font-rendering" title="Permanent link">&para;</a></h3>
@@ -3153,7 +3153,7 @@ in the <a href="https://fontlibrary.org">font library</a>.</p>
 <p>Not worth telling.</p>
 <div class="admonition hint">
 <p class="admonition-title">update Text-Fabric</p>
-<p>To update Text-Fabric itself to version 6.0, consult <a href="Install/#text-fabric">Upgrade</a>.
+<p>To update Text-Fabric itself to version 6.0, consult <a href="../Install/#text-fabric">Upgrade</a>.
 Perform this step first, because the new TF may download the new data for you.</p>
 </div>
 <div class="admonition caution">
@@ -3453,7 +3453,7 @@ It triggers the output of context information for nodes in the result tuples.</p
 <p>So, in addition to <code>=</code> we have <code>#</code> for "not equal".
 *   Quantifiers.</p>
 <p>You can now use quantifiers in search. One of them is like <code>NOTEXIST</code> in MQL.
-See the <a href="Api#quantifiers">docs</a></p>
+See the <a href="../Api/General/#quantifiers">docs</a></p>
 </li>
 <li>
 <p>A number of minor fixes.</p>
@@ -3594,7 +3594,7 @@ but is also a powerful addition to search in its own right.</p>
 </ul>
 <h2 id="34">3.4<a class="headerlink" href="#34" title="Permanent link">&para;</a></h2>
 <p>2018-04-23</p>
-<p><a href="Api#search">Search</a>:</p>
+<p><a href="../Api/General/#search">Search</a>:</p>
 <ul>
 <li>You can use regular expressions to specify feature values in queries.</li>
 <li>You could already search for nodes which have a non-None value for a certain
@@ -3691,7 +3691,7 @@ have a smaller average size than contained node types. This happens when a
 container type only contains small instances of the contained type and not the
 bigger ones.</p>
 <p>Now you can override the computation by text-fabric by means of a key-value in
-the <em>otext</em> feature. See the <a href="Api#levels-of-node-types">api</a>.</p>
+the <em>otext</em> feature. See the <a href="../Api/General/#levels-of-node-types">api</a>.</p>
 <h2 id="315">3.1.5<a class="headerlink" href="#315" title="Permanent link">&para;</a></h2>
 <p>2018-02-15</p>
 <p>Fixed a small problem in <code>sectionFromNode(n)</code> when <code>n</code> is a node within a
@@ -3729,7 +3729,7 @@ with the <code>IN</code> relationship of MQL, like <code>[chapter book IN (Genes
 <p>Edges with edge values did not allow for the absence of values. Now they do.</p>
 <h2 id="306">3.0.6<a class="headerlink" href="#306" title="Permanent link">&para;</a></h2>
 <p>2017-10-05</p>
-<p>A major tweak in the <a href="Api#mql-import">importMQL()</a> function so that it can
+<p>A major tweak in the <a href="../Api/General/#mql-import">importMQL()</a> function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
 version 3 of the <a href="https://github.com/ETCBC/bhsa">BHSA</a>. In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
@@ -3737,12 +3737,12 @@ Hebrew Bible. I transform a gapped sequence of monads into a continuous sequence
 of slots.</p>
 <h2 id="305">3.0.5<a class="headerlink" href="#305" title="Permanent link">&para;</a></h2>
 <p>2017-10-05</p>
-<p>Another little tweak in the <a href="Api#mql-import">importMQL()</a> function so that it
+<p>Another little tweak in the <a href="../Api/General/#mql-import">importMQL()</a> function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
 MQL for version 3 of the <a href="https://github.com/ETCBC/bhsa">BHSA</a>.</p>
 <h2 id="304">3.0.4<a class="headerlink" href="#304" title="Permanent link">&para;</a></h2>
 <p>2017-10-04</p>
-<p>Little tweak in the <a href="Api#mql-import">importMQL()</a> function so that it can handle
+<p>Little tweak in the <a href="../Api/General/#mql-import">importMQL()</a> function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
 <a href="https://github.com/ETCBC/extrabiblical">extrabiblical</a> material.</p>
 <h2 id="302-303">3.0.2, 3.0.3<a class="headerlink" href="#302-303" title="Permanent link">&para;</a></h2>
@@ -3756,7 +3756,7 @@ has moved from <a href="https://github.com/ETCBC">ETCBC</a> to
 <h2 id="300">3.0.0<a class="headerlink" href="#300" title="Permanent link">&para;</a></h2>
 <p>2017-10-02</p>
 <p>MQL! You can now convert MQL data into a TF dataset:
-<a href="Api#mql-import">importMQL()</a>. We had already <a href="Api#mql-export">exportMQL()</a>.</p>
+<a href="../Api/General/#mql-import">importMQL()</a>. We had already <a href="../Api/General/#mql-export">exportMQL()</a>.</p>
 <p>The consequence is that we can operate with much agility between the worlds of
 MQL and TF.</p>
 <p>We can start with source data in MQL, convert it to TF, combine it with other TF
@@ -3765,17 +3765,17 @@ enriched MQL, so that the enriched data can be queried by MQL.</p>
 <h2 id="2315">2.3.15<a class="headerlink" href="#2315" title="Permanent link">&para;</a></h2>
 <p>2017-09-29</p>
 <p>Completion: TF defines the concept of
-<a href="Api/General/#edge-features">edges</a> that
+<a href="../Api/General/#edge-features">edges</a> that
 carry a value. But so far we have not used them. It turned out that it was
 impossible to let TF know that an edge carries values, when
-<a href="Api/General/#saving-features">saving</a> data
+<a href="../Api/General/#saving-features">saving</a> data
 as a new feature. Now it is possible.</p>
 <h2 id="2314">2.3.14<a class="headerlink" href="#2314" title="Permanent link">&para;</a></h2>
 <p>2017-09-29</p>
 <p>Bug fix: it was not possible to get
 <code>T.nodeFromSection(('2_Chronicles', 36, 23))</code>, the last verse in the Bible.</p>
 <p>This is the consequence of a bug in precomputing the sections
-<a href="Api/General/#computed-data">sections</a>. The
+<a href="../Api/General/#computed-data">sections</a>. The
 preparation step used</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">range</span><span class="p">(</span><span class="n">firstVerse</span><span class="p">,</span> <span class="n">lastVerse</span><span class="p">)</span>
 </pre></div>
@@ -3794,14 +3794,14 @@ preparation step used</p>
 <ul>
 <li>
 <p>Small fix in
-    <a href="Api/General/#saving-features">TF.save()</a>.
+    <a href="../Api/General/#saving-features">TF.save()</a>.
     The spec says that the metadata under the empty key will be inserted into all
     features, but in fact this did not happen. Instead it was used as a default
     when some feature did not have metadata specified.</p>
 <p>From now on, that metadata will spread through all features.</p>
 </li>
 <li>
-<p>New API function <a href="Api/General#loading">explore</a>, to get a list of all known
+<p>New API function <a href="../Api/General/#loading">explore</a>, to get a list of all known
     features in a dataset.</p>
 </li>
 </ul>
@@ -3827,7 +3827,7 @@ newlines and tabs in the formats. Enter them as <code>\n</code> and <code>\t</co
 <h2 id="238">2.3.8<a class="headerlink" href="#238" title="Permanent link">&para;</a></h2>
 <p>2017-07-24</p>
 <p>The section levels (book, chapter, verse) were supposed to be customizable
-through the <a href="Data-Model#otext-config-feature-optional">otext</a> feature. But in
+through the <a href="../Model/Data-Model.md#otext-config-feature-optional">otext</a> feature. But in
 fact, up till version 2.3.7 this did not work. From now on the names of the
 section types and the features that name/number them, are given in the <code>otext</code>
 feature. It is still the case that exactly three levels must be specified,
@@ -3847,11 +3847,11 @@ in the template got discarded after an outdent.</p>
 <p>2017-02-11</p>
 <p>Improvements:</p>
 <ul>
-<li>you can load features more silently. See <a href="Api#loading-features"><code>TF.load()</code></a>;</li>
-<li>you can search more silently. See <a href="Api#prepare-for-search"><code>S.study()</code></a>;</li>
-<li>you can search more concisely. See the new <a href="Api#search-command"><code>S.search()</code></a>;</li>
+<li>you can load features more silently. See <a href="../Api/General/#loading-features"><code>TF.load()</code></a>;</li>
+<li>you can search more silently. See <a href="../Api/General/#prepare-for-search"><code>S.study()</code></a>;</li>
+<li>you can search more concisely. See the new <a href="../Api/General/#search-command"><code>S.search()</code></a>;</li>
 <li>when fetching results, the <code>amount</code> parameter of
-    <a href="Api#getting-results"><code>S.fetch()</code></a> has been renamed to <code>limit</code>;</li>
+    <a href="../Api/General/#getting-results"><code>S.fetch()</code></a> has been renamed to <code>limit</code>;</li>
 <li>the tutorial notebooks (see links on top) have been updated.</li>
 </ul>
 <h2 id="232">2.3.2<a class="headerlink" href="#232" title="Permanent link">&para;</a></h2>
@@ -3871,8 +3871,8 @@ nodes were delivered as integers, instead of 1-tuples of integers.</p>
 <h2 id="220">2.2.0<a class="headerlink" href="#220" title="Permanent link">&para;</a></h2>
 <p>2017-01-06</p>
 <h3 id="new-sortkey">New: sortKey<a class="headerlink" href="#new-sortkey" title="Permanent link">&para;</a></h3>
-<p>The API has a new member: <a href="Api#sorting-nodes"><code>sortKey</code></a></p>
-<p>New relationships in templates: <a href="Api#nearness-comparison"><code>nearness</code></a>. See for
+<p>The API has a new member: <a href="../Api/General/#sorting-nodes"><code>sortKey</code></a></p>
+<p>New relationships in templates: <a href="../Api/General/#nearness-comparison"><code>nearness</code></a>. See for
 examples the end of the
 <a href="https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb">searchTutorial</a>.
 Thanks to James Cuénod for requesting nearness operators.</p>
@@ -3921,7 +3921,7 @@ Xmas.</p>
 <h2 id="127">1.2.7<a class="headerlink" href="#127" title="Permanent link">&para;</a></h2>
 <p>2016-12-14</p>
 <h3 id="new">New<a class="headerlink" href="#new" title="Permanent link">&para;</a></h3>
-<p><a href="Api#warp-feature-otype"><code>F.otype.sInterval()</code></a></p>
+<p><a href="../Api/General/#warp-feature-otype"><code>F.otype.sInterval()</code></a></p>
 <h2 id="126">1.2.6<a class="headerlink" href="#126" title="Permanent link">&para;</a></h2>
 <p>2016-12-14</p>
 <h3 id="bug-fix">bug fix<a class="headerlink" href="#bug-fix" title="Permanent link">&para;</a></h3>
@@ -3931,7 +3931,7 @@ as consequence that you could not go up from words in one-word phrases to their
 containing phrase.</p>
 <p>It has been remedied.</p>
 <details class="note"><summary>Note</summary><p>Your computed data needs to be refreshed. This can be done by calling a new
-function <a href="Api#clearing-the-cache"><code>TF.clearCache()</code></a>. When you use TF after
+function <a href="../Api/General/#clearing-the-cache"><code>TF.clearCache()</code></a>. When you use TF after
 this, you will see it working quite hard to recompute a bunch of data.</p>
 </details>
 <h2 id="125">1.2.5<a class="headerlink" href="#125" title="Permanent link">&para;</a></h2>
@@ -3943,10 +3943,10 @@ this, you will see it working quite hard to recompute a bunch of data.</p>
 </details>
 <h3 id="new_1">New<a class="headerlink" href="#new_1" title="Permanent link">&para;</a></h3>
 <h3 id="frequency-lists">Frequency lists<a class="headerlink" href="#frequency-lists" title="Permanent link">&para;</a></h3>
-<p><a href="Api#node-features"><code>F.feature.freqList()</code></a>: get a sorted frequency list for any
+<p><a href="../Api/General/#node-features"><code>F.feature.freqList()</code></a>: get a sorted frequency list for any
 feature. Handy as a first step in exploring a feature.</p>
 <h3 id="export-to-mql">Export to MQL<a class="headerlink" href="#export-to-mql" title="Permanent link">&para;</a></h3>
-<p><a href="Api#export-to-mql"><code>TF.exportMQL()</code></a>: export a whole dataset as a MQL database.
+<p><a href="../Api/General/#export-to-mql"><code>TF.exportMQL()</code></a>: export a whole dataset as a MQL database.
 Including all modules that you have loaded with it.</p>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <p>The slot numbers start at 0, no longer at 1. Personally I prefer the zero
