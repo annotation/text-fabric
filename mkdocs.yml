@@ -7,6 +7,8 @@ site_description: >-
   for (ancient) text plus
   (linguistic) annotations.
 
+site_url: 'https://dans-labs.github.io/text-fabric/'
+
 site_author: Dirk Roorda
 
 theme:
@@ -16,6 +18,8 @@ theme:
   feature:
     tabs: false
 repo_url: 'https://github.com/dans-labs/text-fabric/'
+
+strict: false
 
 nav:
   - Home: 'index.md'
@@ -48,7 +52,7 @@ nav:
     - 'Peshitta': 'Api/Peshitta.md'
     - 'Syriac New Testament': 'Api/Syrnt.md'
     - 'Cuneiform Tablets': 'Api/Cunei.md'
-    - 'Auxiliary': 'Api/Transcription.md'
+    - 'Transcription': 'Api/Transcription.md'
   - Server:
     - 'Kernel': 'Server/Kernel.md'
     - 'Web': 'Server/Web.md'

@@ -10,8 +10,7 @@ in a model of nodes, edges, and features, there is need for some additions.
     are being used in the
     [BHSA](https://github.com/ETCBC/bhsa),
     [Peshitta](https://github.com/ETCBC/peshitta),
-    [SyrNT](https://github.com/ETCBC/syrnt),
-    .
+    [SyrNT](https://github.com/ETCBC/syrnt).
 
     It also calls functions to use these tables for converting Hebrew and Syriac ttext material to transliterated
     representations and back.
@@ -20,9 +19,9 @@ in a model of nodes, edges, and features, there is need for some additions.
     [phono.ipynb](https://nbviewer.jupyter.org/github/etcbc/phono/blob/master/programs/phono.ipynb)
 
 ???+ abstract "Character tables"
-    [Hebrew](../Writing/Hebrew/): full list of characters covered by the ETCBC and phonetic transcriptions
+    [Hebrew](../Writing/Hebrew.html): full list of characters covered by the ETCBC and phonetic transcriptions
 
-    [Syriac](../Writing/Syriac/): full list of characters covered by the ETCBC transcriptions
+    [Syriac](../Writing/Syriac.html): full list of characters covered by the ETCBC transcriptions
 
 ??? abstract "Usage"
     Invoke the transcription functionality as follows:

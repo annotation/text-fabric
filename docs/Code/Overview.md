@@ -30,7 +30,7 @@ of Text-Fabric is responsible for:
 ## Search
 
 TF contains a
-[search engine](../../Api/General/#searching) ([stats](../StatsSearch))
+[search engine](../Api/General.md#searching) ([stats](../StatsSearch))
 based on templates, which are little graphs
 of nodes and edges that must be instantiated against the corpus.
 

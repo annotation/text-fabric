@@ -428,7 +428,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         etc.
 
     ??? hint "search template reference"
-        See the [search template reference](../General#search-templates)
+        See the [search template reference](General.md#search-templates)
 
 ## ATF representation
 
