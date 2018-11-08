@@ -3,7 +3,7 @@
 # text-fabric
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1008899.svg)](https://doi.org/10.5281/zenodo.592193)
-![text-fabric](/docs/images/tf.png)
+![text-fabric](docs/images/tf.png)
 
 
 Text-Fabric is several things:
