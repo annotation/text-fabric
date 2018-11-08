@@ -12,9 +12,9 @@
 
 ## Queued for next release
 
-## 6.4.5
+## 6.4.5-6
 
-2018-11-07
+2018-11-08
 
 * Bug fix: Now TF can truly work if you do not have a feature `text.tf` in your dataset.
 * Tests added for basic relations in search: all relations are rigorously tested, a few small bugs fixed.

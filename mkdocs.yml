@@ -32,6 +32,7 @@ nav:
     - 'Stats (TF-search)' : 'Code/StatsSearch.md'
     - 'Stats (TF-apps)' : 'Code/StatsApps.md'
     - 'Stats (TF-server)' : 'Code/StatsServer.md'
+    - 'Stats (Tests)' : 'Code/StatsTest.md'
   - Model:
     - 'Data': 'Model/Data-Model.md'
     - 'Format': 'Model/File-formats.md'

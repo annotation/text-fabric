@@ -56,6 +56,7 @@ VERSION_CONFIG = dict(
 )
 
 TEST_BASE = os.path.expanduser('~/github/Dans-labs/text-fabric/test')
+APP_BASE = f'{TEST_BASE}/apps'
 PACKAGE = 'text-fabric'
 SCRIPT = '/Library/Frameworks/Python.framework/Versions/3.7/bin/text-fabric'
 
@@ -219,21 +220,23 @@ def codestats():
       'cloc'
       ' --no-autogen'
       ' --exclude_dir={}'
-      f' --exclude-list-file=cloc_exclude.lst'
+      ' --exclude-list-file={}'
       f' --report-file={rfFmt}'
       ' --md'
       ' {}'
   )
-  run(cmdLine.format(xd, '', '.'), shell=True)
-  run(cmdLine.format(xdtf, 'Base', 'tf'), shell=True)
-  run(cmdLine.format(xd, 'Search', 'tf/search'), shell=True)
-  run(cmdLine.format(xd, 'Server', 'tf/server'), shell=True)
-  run(cmdLine.format(xd, 'Apps', 'tf/extra'), shell=True)
-  run(cmdLine.format(xdtest, 'Test', 'test/generic'), shell=True)
+  nex = 'cloc_exclude.lst'
+  tex = 'cloc_exclude_t.lst'
+  run(cmdLine.format(xd, nex, '', '.'), shell=True)
+  run(cmdLine.format(xdtf, nex, 'Base', 'tf'), shell=True)
+  run(cmdLine.format(xd, nex, 'Search', 'tf/search'), shell=True)
+  run(cmdLine.format(xd, nex, 'Server', 'tf/server'), shell=True)
+  run(cmdLine.format(xd, nex, 'Apps', 'tf/extra'), shell=True)
+  run(cmdLine.format(xdtest, tex, 'Test', 'test/generic'), shell=True)
 
 
 def tfbrowse(dataset, remaining):
-  datadir = f'{TEST_BASE}/{dataset}'
+  datadir = f'{APP_BASE}/{dataset}'
   good = True
   try:
     os.chdir(datadir)
@@ -265,7 +268,7 @@ def tftest(suite, remaining):
     print(f'Cannot find TF test suite "{suite}"')
     return
   rargs = ' '.join(remaining)
-  cmdLine = f'python3 {suiteFile} {rargs}'
+  cmdLine = f'python3 {suiteFile} -v {rargs}'
   try:
     run(cmdLine, shell=True)
   except KeyboardInterrupt:
