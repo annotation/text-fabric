@@ -16,10 +16,10 @@
     However, Text-Fabric comes with several additions that make working
     with specific corpora easier.
 
-    *   Hebrew Bible: [BHSA](../Bhsa)
-    *   Peshitta: [Peshitta](../Peshitta)
-    *   Syriac New Testament: [SyrNT](../Syrnt)
-    *   Proto-cuneiform tablets from Uruk: [Cunei](../Cunei)
+    *   Hebrew Bible: [BHSA](Bhsa.md)
+    *   Peshitta: [Peshitta](Peshitta.md)
+    *   Syriac New Testament: [SyrNT](Syrnt.md)
+    *   Proto-cuneiform tablets from Uruk: [Cunei](Cunei.md)
 
 ## Loading
 
@@ -237,7 +237,8 @@
     nodes in the slot set order, you will walk the tree in pre-order.
 
     This order is a modification of the one as described in (Doedens 1994, 3.6.3).
-    ![fabric](../../images/DoedensLO.png)
+
+    ![fabric](../images/DoedensLO.png)
 
     > Doedens, Crist-Jan (1994), *Text Databases. One Database Model and Several
     > Retrieval Languages*, number 14 in Language and Computers, Editions Rodopi,
@@ -761,7 +762,7 @@
     chapter in the book.
 
     The conditions you specify on book, chapter, word are all conditions in terms of
-    [node features](Api#node-features). You can use all features in the corpus for
+    [node features](#node-features). You can use all features in the corpus for
     this.
 
     The order of the two words is immaterial. If there are cases where the verb
@@ -845,7 +846,7 @@
                 <: word pos=verb gender=feminine number=plural
                 :=
 
-    You can also use the [edge features](Api#edge-features) in the corpus as
+    You can also use the [edge features](#edge-features) in the corpus as
     relational operators as well.
 
     Suppose we have an edge feature `sub` between clauses, such that if main clause
@@ -1090,41 +1091,41 @@
 
         *   `=`: is equal (meaning the same node, a clause and a verse that occupy the
             same slots are still unequal)
-            ![op](../../images/Spatial/Spatial.001.png)
+            ![op](../images/Spatial/Spatial.001.png)
         *   `#`: is unequal (meaning a different node, a clause and a verse that occupy
             the same slots are still unequal)
-            ![op](../../images/Spatial/Spatial.002.png)
+            ![op](../images/Spatial/Spatial.002.png)
         *   `<` `>`: before and after (in the *canonical ordering*)
-            ![op](../../images/Spatial/Spatial.003.png)
+            ![op](../images/Spatial/Spatial.003.png)
 
     ??? info "Slot comparison"
 
         *   `==`: occupy the same slots (identical slot sets)
-            ![op](../../images/Spatial/Spatial.004.png)
+            ![op](../images/Spatial/Spatial.004.png)
         *   `&&`: overlap (the intersection of both slot sets is not empty)
-            ![op](../../images/Spatial/Spatial.006.png)
+            ![op](../images/Spatial/Spatial.006.png)
         *   `##`: occupy different slots (but they may overlap, the set of slots of the
             two are different as sets)
-            ![op](../../images/Spatial/Spatial.005.png)
+            ![op](../images/Spatial/Spatial.005.png)
         *   `||`: occupy disjoint slots (no slot occupied by the one is also occupied by
             the other)
-            ![op](../../images/Spatial/Spatial.007.png)
+            ![op](../images/Spatial/Spatial.007.png)
         *   `[[ ]]`: embeds and contains (slot set inclusion, in both directions)
-            ![op](../../images/Spatial/Spatial.008.png)
+            ![op](../images/Spatial/Spatial.008.png)
             Never holds between the same nodes. But it holds between different nodes
             with the same slots. But a slot can never embed an other node.
         *   `<<` `>>`: before and after (with respect to the slots occupied: left ends
             before right starts and vice versa)
-            ![op](../../images/Spatial/Spatial.009.png)
+            ![op](../images/Spatial/Spatial.009.png)
         *   `<:` `:>`: *adjacent* before and after (with respect to the slots occupied:
             left ends immediately before right starts and vice versa)
-            ![op](../../images/Spatial/Spatial.013.png)
+            ![op](../images/Spatial/Spatial.013.png)
         *   `=:` left and right start at the same slot
-            ![op](../../images/Spatial/Spatial.010.png)
+            ![op](../images/Spatial/Spatial.010.png)
         *   `:=` left and right end at the same slot
-            ![op](../../images/Spatial/Spatial.011.png)
+            ![op](../images/Spatial/Spatial.011.png)
         *   `::` left and right start and end at the same slot
-            ![op](../../images/Spatial/Spatial.012.png)
+            ![op](../images/Spatial/Spatial.012.png)
 
     ??? info "Nearness comparison"
 
@@ -1135,13 +1136,13 @@
 
         *   `<k:` `:k>`: `k`-*adjacent* before and after (with respect to the slots
             occupied: left ends `k`-near where right starts and vice versa)
-            ![op](../../images/Spatial/Spatial.017.png)
+            ![op](../images/Spatial/Spatial.017.png)
         *   `=k:` left and right start at `k`-near slots
-            ![op](../../images/Spatial/Spatial.014.png)
+            ![op](../images/Spatial/Spatial.014.png)
         *   `:k=` left and right end at `k`-near slots
-            ![op](../../images/Spatial/Spatial.015.png)
+            ![op](../images/Spatial/Spatial.015.png)
         *   `:k:` left and right start and end at `k`-near slots
-            ![op](../../images/Spatial/Spatial.016.png)
+            ![op](../images/Spatial/Spatial.016.png)
 
     ??? info "Based on edge features"
 
@@ -1150,14 +1151,14 @@
             *   in both directions;
             *   these forms work for edges that do and do not have values;
 
-            ![op](../../images/Spatial/Spatial.018.png)
+            ![op](../images/Spatial/Spatial.018.png)
 
         *   `-`*name* *valueSpec*`>` `<`*name* *valueSpec*`-`: connected by the edge feature *name*
 
             *   in both directions;
             *   these forms work only for edges that do have values.
 
-            ![op](../../images/Spatial/Spatial.019.png)
+            ![op](../images/Spatial/Spatial.019.png)
 
 #### Quantifiers
 
@@ -1684,7 +1685,7 @@
         If you work in one of the corpora for which the TF-API has been extended,
         you will be provided with more powerful methods `show()` and `table()`
         to display your results.
-        See [Cunei](Cunei), [Bhsa](Bhsa), [Peshitta](Peshitta) and [Syrnt](Syrnt).
+        See [Cunei](Cunei.md), [Bhsa](Bhsa.md), [Peshitta](Peshitta.md) and [Syrnt](Syrnt.md).
 
 
 ## Features

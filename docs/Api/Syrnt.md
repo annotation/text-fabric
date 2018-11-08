@@ -4,7 +4,7 @@
 
 The module [syrnt.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/syrnt.py)
 contains a number of handy functions on top of Text-Fabric and especially its 
-[Search](../General/#search) part.
+[Search](General.md#search) part.
 
 ## Minimal incantation
 

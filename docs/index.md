@@ -21,7 +21,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
     From there the step to program your own analytics is not so big anymore.
 
     You can
-    [export](Use/#work-with-exported-results)
+    [export](Use.md#work-with-exported-results)
     your results to Excel and work with them from there.
 
     And if that is not enough,
@@ -32,12 +32,12 @@ what it is and where it came from. And after it, if you want to cite it, use thi
     Text-Fabric can be and has been used to construct websites,
     for example [SHEBANQ](https://shebanq.ancient-data.org).
     In the case of SHEBANQ, data has been converted to mysql databases.
-    However, with the built-in [TF kernel](Server/Kernel), it is also possible to
+    However, with the built-in [TF kernel](Server/Kernel.md), it is also possible to
     have one process serve multiple connections and requests.
 
 ??? note "Code statistics"
     For a feel of the size of this project, in terms of lines of code,
-    see [Code lines](Code/Stats)
+    see [Code lines](Code/Stats.md)
 
 ??? abstract "Design principles"
     There are a number of things that set Text-Fabric apart from most other ways to encode 
@@ -53,7 +53,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
         abstract fabric of the text.
 
     ??? abstract "Performance matters"
-        Based on this model, Text-Fabric offers a [processing API](Api/General/)
+        Based on this model, Text-Fabric offers a [processing API](Api/General.md)
         to search, navigate and process text and its annotations.
         A lot of care has been taken to make this API work as fast as possible.
         Efficiency in data processing has been a design criterion from the start.
@@ -65,25 +65,25 @@ what it is and where it came from. And after it, if you want to cite it, use thi
         [marshal](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/marshal/marshal.ipynb).
 
     ??? abstract "Search for patterns"
-        The [search API](Api/General/#searching)
+        The [search API](Api/General.md#searching)
         works with search templates that define relational patterns
         which will be instantiated by nodes and edges of the fabric.
 
     ??? abstract "Pick and choose data"
         Students can selectively
-        [load](Api/General/#loading)
+        [load](Api/General.md#loading)
         the feature data they need.
         When the time comes to share the fruits of their thought,
         they can do so in various ways:
 
-        * when using the TF browser, results can be [exported](Use/#work-with-exported-results) as PDF and stored
+        * when using the TF browser, results can be [exported](Use.md#work-with-exported-results) as PDF and stored
           in a repository;
         * when programming in a notebook, these notebooks can easily be shared online
           by using GitHub of NBViewer.
 
     ??? abstract "Contributing data"
         Researchers can easily
-        [produce new data modules](Api/General/#saving-features)
+        [produce new data modules](Api/General.md#saving-features)
         of text-fabric data out of their findings.
 
 ??? abstract "Author and co-creation"
@@ -155,9 +155,9 @@ what it is and where it came from. And after it, if you want to cite it, use thi
 
 ## Getting started
 
-[Installation](Install)
+[Installation](Install.md)
 
-[Use](Use)
+[Use](Use.md)
 
 ## Documentation
 
@@ -193,22 +193,22 @@ Text-Fabric can reveal about the data.
 ??? note "Concepts"
     The conceptual model of Text-Fabric and how it is realized in a data model and an optimized file format.
 
-    * [data model](Model/Data-Model/)
-    * [file format](Model/File-formats/)
-    * [optimizations](Model/Optimizations/)
-    * [search design](Model/Search/)
+    * [data model](Model/Data-Model.md)
+    * [file format](Model/File-formats.md)
+    * [optimizations](Model/Optimizations.md)
+    * [search design](Model/Search.md)
 
 ??? note "API Reference"
     Text-Fabric offers lots of functionality that works for all corpora.
     Corpus designers can add *apps* to Text-Fabric that enhance its behaviours,
     especially in displaying the corpus in ways that make sense to people that study the corpus.
 
-    * [TF api](Api/General/)
-    * [TF apps](Api/Apps/)
-    * [Bhsa app for the Hebrew Bible](Api/Bhsa/)
-    * [Peshitta app for the Syriac Old Testament](Api/Peshitta/)
-    * [Syrnt app for the Syriac New Testament](Api/Syrnt/)
-    * [Cunei app for the Proto-cuneiform tablets from Uruk](Api/Cunei/)
+    * [TF api](Api/General.md)
+    * [TF apps](Api/Apps.md)
+    * [Bhsa app for the Hebrew Bible](Api/Bhsa.md)
+    * [Peshitta app for the Syriac Old Testament](Api/Peshitta.md)
+    * [Syrnt app for the Syriac New Testament](Api/Syrnt.md)
+    * [Cunei app for the Proto-cuneiform tablets from Uruk](Api/Cunei.md)
    
 ??? note "Papers"
     Papers (preprints on [arxiv](https://arxiv.org)), most of them published:
@@ -226,3 +226,4 @@ Text-Fabric can reveal about the data.
     given just before
     [SBL 2016](https://global-learning.org/mod/forum/discuss.php?d=22)
     in the Lutheran Church of San Antonio.
+

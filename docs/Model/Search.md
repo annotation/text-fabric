@@ -2,7 +2,7 @@
 
 ## Fabric metaphor
 
-![fabric](../../images/searchFabric.jpg)
+![fabric](../images/searchFabric.jpg)
 
 The search space is a massive fabric of interconnected material. In it we
 discern the structures we are interested in: little pieces of fabric, also with
@@ -14,7 +14,7 @@ together in a specific manner.
 Search in Text-Fabric works exactly like this: you give a sample patch, and
 Text-Fabric fetches all pieces of the big fabric that match your patch.
 
-![patch](../../images/SearchDesign/SearchDesign.001.png)
+![patch](../images/SearchDesign/SearchDesign.001.png)
 
 The textile metaphor is particularly suited for grasping the search part of
 Text-Fabric, so I'm going to stick to it for a while. I have used it in the
@@ -34,7 +34,7 @@ We will explain the stages of the fabrication process in detail.
 
 ## Fleece
 
-![fleece](../../images/SearchDesign/SearchDesign.002.png)
+![fleece](../images/SearchDesign/SearchDesign.002.png)
 
 A fleece corresponds with a very simple search template that asks for all
 objects of a given type:
@@ -64,7 +64,7 @@ a node type.
 
 ## Spinning thick yarn
 
-![spin thick](../../images/SearchDesign/SearchDesign.003.png)
+![spin thick](../images/SearchDesign/SearchDesign.003.png)
 
 Consider search templates where we ask for specific members of a node type, by
 giving feature constraints:
@@ -192,7 +192,7 @@ edges.
 
 ### Spinning a qedge
 
-![spin edge1](../../images/SearchDesign/SearchDesign.004.png)
+![spin edge1](../images/SearchDesign/SearchDesign.004.png)
 
 So, where were we? We have spun thick threads based on the *qnodes*
 individually, but we have not done anything with the *qedges*. That is going to
@@ -230,7 +230,7 @@ This pass over the yarns at both sides of a qedge is a *spin* action. We spin
 this qedge, and the result is that the two yarns become spun more thinly,
 hopefully.
 
-![spin edge2](../../images/SearchDesign/SearchDesign.005.png)
+![spin edge2](../images/SearchDesign/SearchDesign.005.png)
 
 With the yarn of words severely spun out, we are going to the next qedge, the
 one between words and phrases.
@@ -254,7 +254,7 @@ phrases from the yarn of `p`, namely those phrases that do not contain words in
 the yarn of `w`. In other words: the phrases without plural words and verbal
 tense are also out.
 
-![spin edge3](../../images/SearchDesign/SearchDesign.006.png)
+![spin edge3](../images/SearchDesign/SearchDesign.006.png)
 
 We continue spinning, now between phrases and clauses.
 
@@ -264,7 +264,7 @@ We continue spinning, now between phrases and clauses.
 Here we loose the phrases that are not contained in a clause of `type=rela`, and
 we loose all clauses that do not embed one of the few phrases left.
 
-![spin edge4](../../images/SearchDesign/SearchDesign.007.png)
+![spin edge4](../images/SearchDesign/SearchDesign.007.png)
 
 The last spin action corresponds with
 
@@ -382,7 +382,7 @@ thicker yarn.
 
 ## Stitching
 
-![stitch](../../images/SearchDesign/SearchDesign.008.png)
+![stitch](../images/SearchDesign/SearchDesign.008.png)
 
 The last step is actually getting results. A result is a bunch of nodes, one
 from each yarn, in such a way that result nodes on yarns fulfil the
@@ -467,7 +467,7 @@ a lot will fail.
 
 I have also tried a different, more complicated strategy, which is still
 implemented, and which can be used by means of an optional argument to
-[`S.study()`](../../Api/General/#search-templates),
+[`S.study()`](../Api/General.md#search-templates),
 but results of this strategy were not particularly good.
 
 ### Small-first strategy

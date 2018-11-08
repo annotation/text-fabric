@@ -20,10 +20,10 @@
 
     name | description
     --- | ---
-    [bhsa](../Bhsa) | Biblia Hebraica Stuttgartensia (Amstelodamensis)
-    [cunei](../Cunei) | Proto-cuneiform Uruk Corpus
-    [peshitta](../Peshitta) | Syriac Old Testament
-    [syrnt](../Syrnt) | Syriac New Testament
+    [bhsa](Bhsa.md) | Biblia Hebraica Stuttgartensia (Amstelodamensis)
+    [cunei](Cunei.md) | Proto-cuneiform Uruk Corpus
+    [peshitta](Peshitta.md) | Syriac Old Testament
+    [syrnt](Syrnt.md) | Syriac New Testament
 
 ## The structure of apps
 
@@ -217,7 +217,7 @@
 
 ??? abstract "search(extraApi, query, silent=False, sets=None, shallow=False)"
     This is a thin wrapper around the generic search interface of TF:
-    [S.search](../General/#searching)
+    [S.search](General.md#searching)
 
     The extra thing it does it collecting the results.
     `S.search()` may yield a generator, and this `search()` makes sure to iterate
