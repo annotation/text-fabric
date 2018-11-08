@@ -1457,7 +1457,7 @@ embedded slot sets. Hence, if you enumerate a set of nodes that happens to
 constitute a tree hierarchy based on slot set embedding, and you enumerate those
 nodes in the slot set order, you will walk the tree in pre-order.</p>
 <p>This order is a modification of the one as described in (Doedens 1994, 3.6.3).
-<img alt="fabric" src="/images/DoedensLO.png" /></p>
+<img alt="fabric" src="../../images/DoedensLO.png" /></p>
 <blockquote>
 <p>Doedens, Crist-Jan (1994), <em>Text Databases. One Database Model and Several
 Retrieval Languages</em>, number 14 in Language and Computers, Editions Rodopi,
@@ -2351,41 +2351,41 @@ do not have values).</p>
 <details class="info"><summary>Operator lines</summary><details class="info"><summary>Node comparison</summary><ul>
 <li><code>=</code>: is equal (meaning the same node, a clause and a verse that occupy the
     same slots are still unequal)
-    <img alt="op" src="/images/Spatial/Spatial.001.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.001.png" /></li>
 <li><code>#</code>: is unequal (meaning a different node, a clause and a verse that occupy
     the same slots are still unequal)
-    <img alt="op" src="/images/Spatial/Spatial.002.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.002.png" /></li>
 <li><code>&lt;</code> <code>&gt;</code>: before and after (in the <em>canonical ordering</em>)
-    <img alt="op" src="/images/Spatial/Spatial.003.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.003.png" /></li>
 </ul>
 </details>
 <details class="info"><summary>Slot comparison</summary><ul>
 <li><code>==</code>: occupy the same slots (identical slot sets)
-    <img alt="op" src="/images/Spatial/Spatial.004.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.004.png" /></li>
 <li><code>&amp;&amp;</code>: overlap (the intersection of both slot sets is not empty)
-    <img alt="op" src="/images/Spatial/Spatial.006.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.006.png" /></li>
 <li><code>##</code>: occupy different slots (but they may overlap, the set of slots of the
     two are different as sets)
-    <img alt="op" src="/images/Spatial/Spatial.005.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.005.png" /></li>
 <li><code>||</code>: occupy disjoint slots (no slot occupied by the one is also occupied by
     the other)
-    <img alt="op" src="/images/Spatial/Spatial.007.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.007.png" /></li>
 <li><code>[[ ]]</code>: embeds and contains (slot set inclusion, in both directions)
-    <img alt="op" src="/images/Spatial/Spatial.008.png" />
+    <img alt="op" src="../../images/Spatial/Spatial.008.png" />
     Never holds between the same nodes. But it holds between different nodes
     with the same slots. But a slot can never embed an other node.</li>
 <li><code>&lt;&lt;</code> <code>&gt;&gt;</code>: before and after (with respect to the slots occupied: left ends
     before right starts and vice versa)
-    <img alt="op" src="/images/Spatial/Spatial.009.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.009.png" /></li>
 <li><code>&lt;:</code> <code>:&gt;</code>: <em>adjacent</em> before and after (with respect to the slots occupied:
     left ends immediately before right starts and vice versa)
-    <img alt="op" src="/images/Spatial/Spatial.013.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.013.png" /></li>
 <li><code>=:</code> left and right start at the same slot
-    <img alt="op" src="/images/Spatial/Spatial.010.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.010.png" /></li>
 <li><code>:=</code> left and right end at the same slot
-    <img alt="op" src="/images/Spatial/Spatial.011.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.011.png" /></li>
 <li><code>::</code> left and right start and end at the same slot
-    <img alt="op" src="/images/Spatial/Spatial.012.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.012.png" /></li>
 </ul>
 </details>
 <details class="info"><summary>Nearness comparison</summary><p>Some of the adjacency relations can actually be weakened. Instead of requiring
@@ -2395,13 +2395,13 @@ that. Instead of typing the letter <code>k</code>, provide the actual number you
 <ul>
 <li><code>&lt;k:</code> <code>:k&gt;</code>: <code>k</code>-<em>adjacent</em> before and after (with respect to the slots
     occupied: left ends <code>k</code>-near where right starts and vice versa)
-    <img alt="op" src="/images/Spatial/Spatial.017.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.017.png" /></li>
 <li><code>=k:</code> left and right start at <code>k</code>-near slots
-    <img alt="op" src="/images/Spatial/Spatial.014.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.014.png" /></li>
 <li><code>:k=</code> left and right end at <code>k</code>-near slots
-    <img alt="op" src="/images/Spatial/Spatial.015.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.015.png" /></li>
 <li><code>:k:</code> left and right start and end at <code>k</code>-near slots
-    <img alt="op" src="/images/Spatial/Spatial.016.png" /></li>
+    <img alt="op" src="../../images/Spatial/Spatial.016.png" /></li>
 </ul>
 </details>
 <details class="info"><summary>Based on edge features</summary><ul>
@@ -2411,7 +2411,7 @@ that. Instead of typing the letter <code>k</code>, provide the actual number you
 <li>in both directions;</li>
 <li>these forms work for edges that do and do not have values;</li>
 </ul>
-<p><img alt="op" src="/images/Spatial/Spatial.018.png" /></p>
+<p><img alt="op" src="../../images/Spatial/Spatial.018.png" /></p>
 </li>
 <li>
 <p><code>-</code><em>name</em> <em>valueSpec</em><code>&gt;</code> <code>&lt;</code><em>name</em> <em>valueSpec</em><code>-</code>: connected by the edge feature <em>name</em></p>
@@ -2419,7 +2419,7 @@ that. Instead of typing the letter <code>k</code>, provide the actual number you
 <li>in both directions;</li>
 <li>these forms work only for edges that do have values.</li>
 </ul>
-<p><img alt="op" src="/images/Spatial/Spatial.019.png" /></p>
+<p><img alt="op" src="../../images/Spatial/Spatial.019.png" /></p>
 </li>
 </ul>
 </details>
@@ -2778,7 +2778,7 @@ that can respond to queries from other processes.
 We call such a process a <strong>TF kernel</strong>.</p>
 <p>Webservers can use such a daemonized TF to build efficient controllers.</p>
 <p>A TF kernel and webserver are included in the Text-Fabric code base.
-See <a href="/Server/Kernel">kernel</a> and <a href="/Server/Web">web</a>.</p>
+See <a href="../../Server/Kernel">kernel</a> and <a href="../../Server/Web">web</a>.</p>
 </details>
 <details class="note"><summary>Generator versus tuple</summary><p>If <code>limit</code> is specified, the result is not a generator but a tuple of results.</p>
 </details>
