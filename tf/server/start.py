@@ -8,7 +8,9 @@ from time import sleep
 from subprocess import PIPE, Popen
 
 from tf.fabric import NAME, VERSION
-from tf.server.common import getParam, getDebug, getNoweb, getDocker, getConfig, getLocalClones
+from tf.server.common import (
+    getParam, getDebug, getCheck, getNoweb, getDocker, getConfig, getLocalClones
+)
 from tf.server.kernel import TF_DONE, TF_ERROR
 
 HELP = '''
@@ -18,7 +20,7 @@ text-fabric --help
 text-fabric --version
 
 text-fabric datasource
-text-fabric [-lgc] [-d] [-noweb] [-docker] datasource
+text-fabric [-lgc] [-d] [-c] [-noweb] [-docker] datasource
 
 text-fabric -k
 text-fabric -k datasource
@@ -39,7 +41,10 @@ If data is not found there, it first downloads the relevant data from
 github.
 
 -lgc Look for data first in local github clones under ~/github.
-  If data is not found there, get data in the normal way. 
+  If data is not found there, get data in the normal way.
+
+-c   Check for data updates online. If a newer release of the data is found,
+     it will be downloaded.
 
 
 MISCELLANEOUS
@@ -68,6 +73,7 @@ stray processes.
 
 
 FLAGS = set('''
+    -c
     -d
     -lgc
     -noweb
@@ -185,6 +191,7 @@ def main(cargs=sys.argv):
   ddataSource = ('-docker', *ddataSource) if getDocker(cargs=cargs) else ddataSource
   ddataSource = ('-lgc', *ddataSource) if getLocalClones(cargs=cargs) else ddataSource
   kdataSource = ('-lgc', dataSource) if getLocalClones(cargs=cargs) else (dataSource,)
+  kdataSource = ('-c', *kdataSource) if getCheck(cargs=cargs) else kdataSource
   if dataSource is not None:
     config = getConfig(dataSource)
     pKernel = None

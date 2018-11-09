@@ -43,13 +43,13 @@
         attribute | kind | description
         --- | --- | ---
         api | object | the generic TF api obtained by loading the features: ``api = TF.load(...)`
-        asApi | boolean | `True` if working for the web-interface, `False` otherwise
+        asApp | boolean | `True` if working for the web-interface, `False` otherwise
         classNames | dict | mapping from node types to CSS class names to be used in plain and pretty displays of nodes of that type
         condenseType | string | the default node type to which results will be condensed, e.g. `verse`, `tablet`
         dataLink | html link | points to the repository where the TF data of the corpus is stored 
         exampleSection | text | a concrete section indicator that points to an object of the `condenseType` (e.g. `Genesis 1:1`, `P005381`)
         featureLink | html link | points to the documentation of the TF features of the corpus
-        loadCSS | method | deliver CSS styling to notebook or web interface (depending on `asApi`)
+        loadCSS | method | deliver CSS styling to notebook or web interface (depending on `asApp`)
         nodeFromDefaultSection | method | given a section string pointing to an object of `condenseType`, return the corresponding node (or an error message)
         noneValues | set | feature values that are deemed uninteresting; features with those values will be suppressed in pretty displays
         plain | method | given a node, produce a plain representation of the corresponding object: not the full structure, but something that identifies it
@@ -59,12 +59,12 @@
         tutLink | html link | points to the tutorial for TF search
         webLink | method | given a node, produces a link to an online description of the corresponding object (to [shebanq](https://shebanq.ancient-data.org) or [cdli](https://cdli.ucla.edu) 
 
-        ??? note "asApi"
+        ??? note "asApp"
             The `extraApi` contain several display functions. By default
             they suppose that there is a Jupyter notebook context in which
             results can be rendered with `IPython.display` methods.
             But if we operate in the context of a web-interface, we need to generate
-            straight HTML. We flag the web-interface case as `asApi == True`.
+            straight HTML. We flag the web-interface case as `asApp == True`.
 
         ??? note "pretty"
             Not all of the `pretty` method needs to be defined by the app.
@@ -166,10 +166,10 @@
     The `extraApi` is the rich app specific API, and when we construct this API, we pass the information
     whether it is constructed for the purposes of the Jupyter notebook, or for the purposes of the web app.
 
-    We pass this information by setting the attribute `asApi` on the `extraApi`. 
+    We pass this information by setting the attribute `asApp` on the `extraApi`. 
     If it is set, we use the `extraApi` in the web app context.
 
-    Most of the code in such functions is independent of `asApi`.
+    Most of the code in such functions is independent of `asApp`.
     The main difference is how to output the result: by a call to an IPython display method, or by
     returning raw HTML.
 

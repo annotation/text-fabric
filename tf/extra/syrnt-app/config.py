@@ -6,22 +6,13 @@ ORG = 'etcbc'
 REPO = 'syrnt'
 CORPUS = 'SyrNT'
 VERSION = '0.1'
-RELEASE = '0.2'
-RELEASE_FIRST = '0.1'
+RELATIVE = 'tf'
+
 DOI = '10.5281/zenodo.1464787'
 DOI_URL = 'https://doi.org/10.5281/zenodo.1464787'
 DOC_URL = f'https://github.com/{ORG}/{REPO}/blob/master/docs'
 CHAR_URL = TFDOC_URL('/Writing/Syriac/')
 ZIP = [REPO]
-
-
-def LIVE(org, repo, version, release):
-  return f'{org}/{repo} v:{version} (r{release})'
-
-
-def LIVE_URL(org, repo, version, release):
-  return f'https://github.com/{org}/{repo}/releases/download/{release}/{version}.zip'
-
 
 CONDENSE_TYPE = 'verse'
 
@@ -40,18 +31,15 @@ options = ()
 
 
 def configure(lgc, version=VERSION):
-  base = hasData(lgc, f'{ORG}/{REPO}/tf', version)
+  base = hasData(lgc, ORG, REPO, version, RELATIVE)
 
   if not base:
     base = '~/text-fabric-data'
   base = f'{base}/{ORG}'
 
-  locations = [f'{base}/{REPO}/tf']
+  locations = [f'{base}/{REPO}/{RELATIVE}']
   modules = [version]
   localDir = os.path.expanduser(f'{base}/{REPO}/_temp')
-
-  live = LIVE(ORG, REPO, version, RELEASE)
-  liveUrl = LIVE_URL(ORG, REPO, version, RELEASE)
 
   return dict(
       locations=locations,
@@ -60,16 +48,12 @@ def configure(lgc, version=VERSION):
       provenance=(dict(
           corpus=CORPUS,
           version=version,
-          release=RELEASE,
-          live=(live, liveUrl),
           doi=(DOI, DOI_URL),
       ),),
-      url=liveUrl,
       org=ORG,
       repo=REPO,
+      relative=RELATIVE,
       version=VERSION,
-      release=RELEASE,
-      firstRelease=RELEASE_FIRST,
       charUrl=CHAR_URL,
       docUrl=DOC_URL,
       condenseType=CONDENSE_TYPE,
@@ -77,7 +61,7 @@ def configure(lgc, version=VERSION):
   )
 
 
-def extraApi(lgc=None):
+def extraApi(lgc=None, check=False):
   cfg = configure(lgc, version=VERSION)
   result = Syrnt(
       None,
@@ -85,8 +69,9 @@ def extraApi(lgc=None):
       version=VERSION,
       locations=cfg['locations'],
       modules=cfg['modules'],
-      asApi=True,
+      asApp=True,
       lgc=lgc,
+      check=check,
   )
   if result.api:
     return result

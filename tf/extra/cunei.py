@@ -21,13 +21,11 @@ from tf.server.common import getConfig
 from tf.notebook import location
 
 
-def IMAGE_URL(org, source, release):
-  return f'https://github.com/{org}/{source}/releases/download/{release}/images.zip'
-
-
 def IMAGE_DIR(sourceDir, version):
   return f'{sourceDir}/{version}/images'
 
+
+IMAGES = 'images.zip'
 
 PHOTO_TO = '{}/tablets/photos'
 PHOTO_EXT = 'jpg'
@@ -341,6 +339,8 @@ FORMAT_CSS = dict(
     trans=DEFAULT_CLS,
 )
 
+NO_DESCEND = {'lex'}
+
 SECTION_SEP1 = ' '
 SECTION_SEP2 = ':'
 
@@ -536,25 +536,40 @@ class Atf(object):
 
 
 class Cunei(Atf):
-  def __init__(self, name=None, asApi=False, version='1.0', lgc=False, hoist=False, silent=False):
+  def __init__(
+      self,
+      name=None,
+      asApp=False,
+      version='1.0',
+      lgc=False,
+      check=False,
+      hoist=False,
+      silent=False,
+  ):
     config = getConfig('cunei')
     cfg = config.configure(lgc=lgc, version=version)
-    self.asApi = asApi
+    self.asApp = asApp
     self.silent = silent
-    repoBase = getData(
-        cfg['source'],
-        cfg['release'],
-        cfg['firstRelease'],
-        cfg['url'],
-        f'{cfg["org"]}/{cfg["source"]}/tf/{cfg["source"]}',
+
+    self.release = {}
+
+    (release, base) = getData(
+        cfg['org'],
+        cfg['repo'],
+        cfg['relative'],
         version,
         lgc,
+        check,
         silent=silent,
     )
-    if not repoBase:
+    if not base:
       return
-    repoRel = f'{cfg["org"]}/{cfg["source"]}'
-    repo = f'{repoBase}/{repoRel}'
+
+    if release:
+      self.release[f'{cfg["org"]}/{cfg["repo"]}/{cfg["relative"]}'] = release
+
+    repoRel = f'{cfg["org"]}/{cfg["repo"]}'
+    repo = f'{base}/{repoRel}'
     self.repo = repo
     self.version = version
     self.charUrl = cfg['charUrl']
@@ -563,19 +578,21 @@ class Cunei(Atf):
     self.localImageDir = cfg['localImageDir']
     if not os.path.exists(self.imageDir):
       getDataCustom(
-          cfg['source'],
+          cfg['org'],
+          cfg['repo'],
           cfg['release'],
-          IMAGE_URL(cfg['org'], cfg['source'], cfg['release']),
-          self.sourceDir,
           version,
+          self.sourceDir,
+          fileName=IMAGES,
           withPaths=True,
           silent=silent,
       )
     self.repoTempDir = f'{repo}/{cfg["tempDir"]}'
     self._imagery = {}
-    self.corpus = f'{repo}/tf/{cfg["source"]}/{version}'
-    self.corpusFull = f'{cfg["sourceFull"]} (v:{version})'
+    self.corpus = f'{repo}/{cfg["relative"]}/{version}'
+    self.corpusFull = f'{cfg["corpusShort"]} (v:{version})'
     self.condenseType = cfg['condenseType']
+    self.noDescendTypes = NO_DESCEND
     self.exampleSection = '<code>P005381</code>'
     self.exampleSectionText = 'P005381'
     self.sectionSep1 = SECTION_SEP1
@@ -592,7 +609,8 @@ class Cunei(Atf):
     if result is False:
       self.api = False
       return
-    self.prettyFeaturesLoaded = loadableFeatures
+    self.standardFeatures = set(loadableFeatures)
+    self.prettyFeaturesLoaded = {f for f in self.standardFeatures}
     self.prettyFeatures = ()
     self.formatClass = compileFormatClass(FORMAT_CSS, api.T.formats, DEFAULT_CLS, DEFAULT_CLS_ORIG)
     self.api = api
@@ -626,7 +644,7 @@ class Cunei(Atf):
         'Search tutorial', tutUrl,
         'Search tutorial in Jupyter Notebook'
     )
-    if asApi:
+    if asApp:
       self.dataLink = dataLink
       self.charLink = charLink
       self.featureLink = featureLink
@@ -649,10 +667,10 @@ This notebook online:
     self.tempDir = None
     self.reportDir = None
     if repoLoc:
-      thisRepoDir = f'{repoBase}/{thisOrg}/{thisRepo}'
+      thisRepoDir = f'{base}/{thisOrg}/{thisRepo}'
       self.tempDir = f'{thisRepoDir}/{cfg["tempDir"]}'
       self.reportDir = f'{thisRepoDir}/{cfg["reportDir"]}'
-    if not asApi:
+    if not asApp:
       for cdir in (self.tempDir, self.reportDir):
         if cdir:
           os.makedirs(cdir, exist_ok=True)
@@ -660,7 +678,7 @@ This notebook online:
     self.classNames = {nType[0]: nType[0] for nType in api.C.levels.data}
     self.noneValues = set()
 
-    if not asApi:
+    if not asApp:
       if inNb:
         self.loadCSS()
       if hoist:
@@ -689,8 +707,8 @@ This notebook online:
     self.nodeFromDefaultSection = types.MethodType(nodeFromDefaultSection, self)
 
   def loadCSS(self):
-    asApi = self.asApi
-    if asApi:
+    asApp = self.asApp
+    if asApp:
       return CSS
     dh(CSS)
 
@@ -810,13 +828,13 @@ This notebook online:
       lineart=True,
       lineNumbers=False,
   ):
-    asApi = self.asApi
+    asApp = self.asApp
     api = self.api
     F = api.F
 
     nType = F.otype.v(n)
     result = ''
-    if asApi:
+    if asApp:
       nodeRep = f' <a href="#" class="nd">{n}</a> ' if withNodes else ''
     else:
       nodeRep = f' *{n}* ' if withNodes else ''
@@ -867,7 +885,7 @@ This notebook online:
           linked=linked, lineNumbers=lineNumbersCondition,
       )
 
-    if asString or asApi:
+    if asString or asApp:
       return result
     dm(result)
 
@@ -1263,12 +1281,12 @@ This notebook online:
       return True
 
   def _useImage(self, image, kind, key, node):
-    asApi = self.asApi
+    asApp = self.asApp
     api = self.api
     F = api.F
     (imageDir, imageName) = os.path.split(image)
     (base, ext) = os.path.splitext(imageName)
-    localBase = self.repoTempDir if asApi else self.cwd
+    localBase = self.repoTempDir if asApp else self.cwd
     localDir = f'{localBase}/{self.localImageDir}'
     if not os.path.exists(localDir):
       os.makedirs(localDir, exist_ok=True)
@@ -1299,7 +1317,7 @@ This notebook online:
         or os.path.getmtime(image) > os.path.getmtime(localImagePath)
     ):
       copyfile(image, localImagePath)
-    base = '/local/' if asApi else ''
+    base = '/local/' if asApp else ''
     return f'{base}{self.localImageDir}/{localImageName}'
 
   def _getImagery(self):

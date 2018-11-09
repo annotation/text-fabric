@@ -3,6 +3,7 @@ import os
 import io
 from shutil import rmtree
 from glob import glob
+from functools import reduce
 
 import requests
 from zipfile import ZipFile
@@ -16,6 +17,7 @@ GH_BASE = '~/github'
 EXPRESS_BASE = '~/text-fabric-data'
 EXPRESS_INFO = '__release.txt'
 
+URL_GH_API = 'https://api.github.com/repos'
 URL_GH = 'https://github.com'
 URL_NB = 'https://nbviewer.jupyter.org/github'
 
@@ -43,24 +45,32 @@ def API_URL(member):
   return TFDOC_URL(f'/Api/General/{member}')
 
 
-def hasData(lgc, dataRel, version):
+def hasData(lgc, org, repo, version, relative):
   if lgc:
     ghBase = os.path.expanduser(GH_BASE)
-    ghTf = f'{ghBase}/{dataRel}/{version}'
+    ghTf = f'{ghBase}/{org}/{repo}/{relative}/{version}'
     features = glob(f'{ghTf}/*.tf')
     if len(features):
       return ghBase
 
   expressBase = os.path.expanduser(EXPRESS_BASE)
-  expressTfAll = f'{expressBase}/{dataRel}'
-  expressTf = f'{expressTfAll}/{version}'
+  expressTf = f'{expressBase}/{org}/{repo}/{relative}/{version}'
   features = glob(f'{expressTf}/*.tf')
   if len(features):
     return expressBase
   return False
 
 
-def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc, silent=False):
+def getData(
+    org,
+    repo,
+    relative,
+    version,
+    lgc,
+    check,
+    silent=False
+):
+  dataRel = f'{org}/{repo}/{relative}'
   expressBase = os.path.expanduser(EXPRESS_BASE)
   expressTfAll = f'{expressBase}/{dataRel}'
   expressTf = f'{expressTfAll}/{version}'
@@ -69,44 +79,107 @@ def getData(source, release, firstRelease, dataUrl, dataRel, version, lgc, silen
   ghBase = os.path.expanduser(GH_BASE)
   ghTf = f'{GH_BASE}/{dataRel}/{version}'
 
-  dataBase = hasData(lgc, dataRel, version)
+  dataBase = hasData(lgc, org, repo, version, relative)
   if dataBase == ghBase:
     if not silent:
-      print(f'Using {source}-{version} local in {ghTf}')
+      print(f'Using {repo}-{version} local in {ghTf}')
       sys.stdout.flush()
     return dataBase
+
+  currentRelease = None
+
   if dataBase == expressBase:
-    currentRelease = firstRelease
     if os.path.exists(expressInfoFile):
       with open(expressInfoFile) as eh:
         for line in eh:
           currentRelease = line.strip()
-    if currentRelease == release:
+    if currentRelease and not check:
       if not silent:
-        print(f'Using {source}-{version} r{release} in {exTf}')
+        print(f'Using {org}/{repo} - {version} r{currentRelease} in {exTf}')
         sys.stdout.flush()
-      return dataBase
+      return (currentRelease, dataBase)
+
+  urlLatest = f'{URL_GH_API}/{org}/{repo}/releases/latest'
+
+  latestRelease = None
+  assets = ()
+  dataFile = f'{version}.zip'
+
+  online = False
+  try:
+    r = requests.get(urlLatest, allow_redirects=True).json()
+    online = True
+  except Exception:
+    print('Cannot check online for data releases. No results from:')
+    print(f'   {urlLatest}')
+  if online:
+    latestRelease = r.get('tag_name', None)
+    assets = {a['name'] for a in r.get('assets', {})}
+  if not latestRelease or not assets:
+    online = False
+  if online and dataFile not in assets:
+    versions = ', '.join(x[0:-4] if x.endswith('.zip') else x for x in sorted(assets))
+    print(
+        f'In {org}/{repo}: newest release is {latestRelease}\n'
+        f'This release has no data for version {version}.\n'
+        f'Available versions: {versions}'
+    )
+    online = False
+  if not online:
+    if currentRelease:
+      if not silent:
+        print(f'Still Using {org}/{repo} - {version} r{currentRelease} in {exTf}')
+        sys.stdout.flush()
+      return (currentRelease, expressBase)
     else:
-      if not silent:
-        print(f'Found {source}-{version} r{currentRelease} in {exTf}')
+        print(f'Could not find data in {repo}-{version} r{currentRelease} in {exTf}')
         sys.stdout.flush()
+    return (None, False)
 
-  if getDataCustom(source, release, dataUrl, expressTfAll, version, silent=silent):
+  if latestRelease == currentRelease:
     if not silent:
-      print(f'Using {source}-{version} r{release} in {exTf}')
-      return expressBase
-  if release == currentRelease:
-    return False
-  if not silent:
-    print(f'Using {source}-{version} r{currentRelease} in {exTf}')
-    sys.stdout.flush()
-  return expressBase
+      print(
+          f'No new data release available online\n'
+          f'Using {repo} - {version} r{currentRelease} (=latest) in {exTf}'
+      )
+      sys.stdout.flush()
+    return (currentRelease, expressBase)
+
+  if getDataCustom(
+      org, repo, latestRelease, version, expressTfAll, silent=silent
+  ):
+    if not silent:
+      print(f'Using {org}/{repo} - {version} r{latestRelease} (=latest) in {exTf}')
+      return (latestRelease, expressBase)
+
+  if currentRelease:
+    if not silent:
+      print(f'Still Using {org}/{repo} - {version} r{currentRelease} in {exTf}')
+      sys.stdout.flush()
+    return (currentRelease, expressBase)
+
+  print(f'No data for {org}/{repo} - {version}')
+  sys.stdout.flush()
+  return (None, False)
 
 
-def getDataCustom(source, release, dataUrl, dest, version, withPaths=False, silent=False):
+def getDataCustom(
+    org,
+    repo,
+    release,
+    version,
+    dest,
+    fileName=None,
+    withPaths=False,
+    silent=False,
+):
   versionDest = f'{dest}/{version}'
+  if fileName is None:
+    fileName = f'{version}.zip'
+  dataUrl = f'{URL_GH}/{org}/{repo}/releases/download/{release}/{fileName}'
+
   if not silent:
-    print(f'\tdownloading {source}-{version} r{release}')
+    print(f'\tdownloading {org}/{repo} - {version} r{release}')
     print(f'\t\tfrom {dataUrl} ... ')
     sys.stdout.flush()
   try:
@@ -116,12 +189,12 @@ def getDataCustom(source, release, dataUrl, dest, version, withPaths=False, sile
     zf = io.BytesIO(r.content)
   except Exception as e:
     print(str(e))
-    print(f'\tcould not download {source}-{version} r{release} from {dataUrl} to {versionDest}')
+    print(f'\tcould not download {repo}-{version} r{release} from {dataUrl} to {versionDest}')
     sys.stdout.flush()
     return False
 
   if not silent:
-    print(f'\tsaving {source}-{version} r{release}')
+    print(f'\tsaving {org}/{repo} - {version} r{release}')
     sys.stdout.flush()
 
   cwd = os.getcwd()
@@ -145,7 +218,7 @@ def getDataCustom(source, release, dataUrl, dest, version, withPaths=False, sile
         z.extract(zInfo)
   except Exception as e:
     print(str(e))
-    print(f'\tcould not save {source}-{version} r{release}')
+    print(f'\tcould not save {org}/{repo} - {version} r{release}')
     sys.stdout.flush()
     os.chdir(cwd)
     return False
@@ -154,7 +227,7 @@ def getDataCustom(source, release, dataUrl, dest, version, withPaths=False, sile
   with open(expressInfoFile, 'w') as rh:
     rh.write(f'{release}')
   if not silent:
-    print(f'\tsaved {source}-{version} r{release}')
+    print(f'\tsaved {org}/{repo} - {version} r{release}')
     sys.stdout.flush()
   os.chdir(cwd)
   return True
@@ -231,6 +304,7 @@ def composeP(
 def compose(
     extraApi,
     tuples,
+    features,
     start,
     position,
     opened,
@@ -247,6 +321,15 @@ def compose(
   if condenseType is None:
     condenseType = extraApi.condenseType
   item = condenseType if condensed else RESULT
+
+  features = set(reduce(
+      set.union,
+      (x[1] for x in features),
+      set(),
+  ))
+  extraFeatures = features - extraApi.standardFeatures
+  if extraFeatures:
+    extraApi.prettySetup(extraFeatures)
 
   tuplesHtml = []
   doHeader = False
@@ -286,6 +369,8 @@ def compose(
             **options,
         )
     )
+  if extraFeatures:
+    extraApi.prettySetup()
   return '\n'.join(tuplesHtml)
 
 
@@ -356,11 +441,11 @@ def plainTuple(
     asString=False,
     **options,
 ):
-  asApi = extraApi.asApi
+  asApp = extraApi.asApp
   api = extraApi.api
   F = api.F
   T = api.T
-  if asApi:
+  if asApp:
     prettyRep = prettyTuple(
         extraApi,
         tup,
@@ -552,10 +637,10 @@ def prettyTuple(
     rawHighlights=None,
     **options,
 ):
-  asApi = extraApi.asApi
+  asApp = extraApi.asApp
 
   if len(tup) == 0:
-    if asApi:
+    if asApp:
       return ''
     else:
       return
@@ -572,13 +657,13 @@ def prettyTuple(
       rawHighlights
   )
 
-  if not asApi:
+  if not asApp:
     dm(f'''
 
 **{item}** *{seqNumber}*
 
 ''')
-  if asApi:
+  if asApp:
     html = []
   for t in containers:
     h = extraApi.pretty(
@@ -590,9 +675,9 @@ def prettyTuple(
         highlights=newHighlights,
         **options,
     )
-    if asApi:
+    if asApp:
       html.append(h)
-  if asApi:
+  if asApp:
     return '\n'.join(html)
 
 
@@ -606,7 +691,7 @@ def pretty(
     highlights={},
     **options,
 ):
-  asApi = extraApi.asApi
+  asApp = extraApi.asApp
   api = extraApi.api
   F = api.F
   L = api.L
@@ -648,7 +733,7 @@ def pretty(
       **options,
   )
   htmlStr = '\n'.join(html)
-  if asApi:
+  if asApp:
     return htmlStr
   dh(htmlStr)
 
@@ -706,9 +791,11 @@ def prettySetup(extraApi, features=None, noneValues=None):
   if features is None:
     extraApi.prettyFeatures = ()
   else:
-    featuresRequested = (tuple(features.strip().split()
-                               )) if type(features) is str else tuple(features)
+    featuresRequested = tuple(
+        features.strip().split()
+    ) if type(features) is str else tuple(sorted(features))
     tobeLoaded = set(featuresRequested) - extraApi.prettyFeaturesLoaded
+    sys.stdout.flush()
     if tobeLoaded:
       extraApi.api.TF.load(tobeLoaded, add=True, silent=True)
       extraApi.prettyFeaturesLoaded |= tobeLoaded
@@ -746,6 +833,7 @@ def getFeatures(
       tuple(f for f in extraApi.prettyFeatures if f not in givenFeatureSet)
   )
   featureList = tuple(features) + extraFeatures
+  sys.stdout.flush()
   nFeatures = len(features)
 
   withName |= set(extraApi.prettyFeatures)

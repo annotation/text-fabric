@@ -18,6 +18,13 @@ def getDebug(cargs=sys.argv):
   return False
 
 
+def getCheck(cargs=sys.argv):
+  for arg in cargs[1:]:
+    if arg == '-c':
+      return True
+  return False
+
+
 def getNoweb(cargs=sys.argv):
   for arg in cargs[1:]:
     if arg == '-noweb':
