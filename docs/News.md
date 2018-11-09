@@ -1189,7 +1189,7 @@ TF has a list of default locations to look for data sources: `~/Downloads`,
 2017-07-24
 
 The section levels (book, chapter, verse) were supposed to be customizable
-through the [otext](../Model/Data-Model.md#otext-config-feature-optional) feature. But in
+through the [otext](Model/Data-Model.md#otext-config-feature-optional) feature. But in
 fact, up till version 2.3.7 this did not work. From now on the names of the
 section types and the features that name/number them, are given in the `otext`
 feature. It is still the case that exactly three levels must be specified,

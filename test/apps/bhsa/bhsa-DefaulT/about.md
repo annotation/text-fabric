@@ -14,7 +14,7 @@ meta | data
 --- | ---
 Job | DefaulT
 Author | Dirk Roorda
-Created | 2018-11-02T12:22:05+01:00
+Created | 2018-11-09T13:22:04+01:00
 Data source | BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis
 version | c
 release | 1.4
@@ -28,7 +28,7 @@ version | c
 release | 1.1
 download   | [etcbc/parallels v:c (r1.1)](https://github.com/etcbc/parallels/releases/download/1.1/c.zip)
 DOI | [10.5281/zenodo.1007642](https://doi.org/10.5281/zenodo.1007642)
-Tool | Text-Fabric 6.3.2 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
+Tool | Text-Fabric 6.4.6 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
 See also | [Compose results example](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/examples/compose.ipynb)
 
 
@@ -53,17 +53,16 @@ For the sake of export, we mention the features `typ` and `vs` (verbal stem) in 
 ### Sections
 
 ```
-Genesis 10:19
-2_Chronicles 20:22
+Psalms 119:100
+Exodus 9:18
+1_Samuel 27:3
+Isaiah 42:19
 ```
 
 ### Nodes
 
 ```
-475492
-487739
-475492
-428382,4790
+1420119,448401,111521
 ```
 
 ### Search
@@ -76,5 +75,5 @@ clause rela=Attr typ*
 /without/
   word vt=ptca|ptcp
 /-/
-  word pdp=verb vs*
+  word pdp=verb vs* gn*
 ```

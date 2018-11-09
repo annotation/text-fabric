@@ -4,14 +4,16 @@ from tf.apphelpers import hasData
 
 ORG = 'Nino-cunei'
 REPO = 'uruk'
+VERSION = '1.0'
+RELATIVE = f'tf/{REPO}'
+
 CORPUS = 'Uruk IV/III: Proto-cuneiform tablets '
-SOURCE = 'uruk'
-SOURCE_FULL = 'Uruk IV-III'
+CORPUS_SHORT = 'Uruk IV-III'
 SOURCE_DIR = 'sources/cdli'
 LOCAL_IMAGE_DIR = 'cdli-imagery'
-VERSION = '1.0'
-RELEASE = '1.1.0'
-RELEASE_FIRST = '1.1.0'
+
+DOI = '10.5281/zenodo.1193841'
+DOI_URL = 'https://doi.org/10.5281/zenodo.1193841'
 
 TEMP_DIR = '_temp'
 REPORT_DIR = 'reports'
@@ -19,15 +21,6 @@ REPORT_DIR = 'reports'
 CONDENSE_TYPE = 'tablet'
 
 CHAR_URL = ''
-
-
-def LIVE(org, repo, version, release):
-  return f'{org}/{repo} v:{version} (r{release})'
-
-
-def LIVE_URL(org, repo, version, release):
-  return f'https://github.com/{org}/{repo}/releases/download/{release}/{version}.zip'
-
 
 protocol = 'http://'
 host = 'localhost'
@@ -41,17 +34,14 @@ options = (
 
 
 def configure(lgc, version=VERSION):
-  base = hasData(lgc, f'{ORG}/{REPO}/tf/{REPO}', version)
+  base = hasData(lgc, ORG, REPO, version, RELATIVE)
   if not base:
     base = '~/text-fabric-data'
 
   DATABASE = f'{base}/{ORG}'
-  locations = [f'{DATABASE}/{REPO}/tf/{REPO}/{version}']
+  locations = [f'{DATABASE}/{REPO}/{RELATIVE}/{version}']
   modules = ['']
   localDir = os.path.expanduser(f'{DATABASE}/{REPO}/_temp')
-
-  live = LIVE(ORG, REPO, version, RELEASE)
-  liveUrl = LIVE_URL(ORG, REPO, version, RELEASE)
 
   return dict(
       locations=locations,
@@ -60,20 +50,15 @@ def configure(lgc, version=VERSION):
       provenance=(dict(
           corpus=CORPUS,
           version=version,
-          release=RELEASE,
-          live=(live, liveUrl),
-          doi=('10.5281/zenodo.1193841', 'https://doi.org/10.5281/zenodo.1193841'),
+          doi=(DOI, DOI_URL),
       ),),
-      url=liveUrl,
       org=ORG,
       repo=REPO,
+      relative=RELATIVE,
       charUrl=CHAR_URL,
-      source=SOURCE,
-      sourceFull=SOURCE_FULL,
+      corpusShort=CORPUS_SHORT,
       sourceDir=SOURCE_DIR,
       version=VERSION,
-      release=RELEASE,
-      firstRelease=RELEASE_FIRST,
       tempDir=TEMP_DIR,
       reportDir=REPORT_DIR,
       condenseType=CONDENSE_TYPE,
@@ -81,5 +66,5 @@ def configure(lgc, version=VERSION):
   )
 
 
-def extraApi(lgc=None):
-  return Cunei(None, asApi=True, version=VERSION, lgc=lgc)
+def extraApi(lgc=None, check=False):
+  return Cunei(None, asApp=True, version=VERSION, lgc=lgc, check=check)

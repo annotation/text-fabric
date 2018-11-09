@@ -1,5 +1,4 @@
 import os
-import re
 import types
 
 from tf.fabric import Fabric
@@ -334,14 +333,15 @@ class Bhsa(object):
       version='c',
       locations=None,
       modules=None,
-      asApi=False,
+      asApp=False,
       lgc=False,
+      check=False,
       hoist=False,
       silent=False,
   ):
     config = getConfig('bhsa')
     cfg = config.configure(lgc=lgc, version=version)
-    self.asApi = asApi
+    self.asApp = asApp
     self.repo = cfg['repo']
     self.version = version
     self.docUrl = cfg['docUrl']
@@ -366,28 +366,32 @@ class Bhsa(object):
     )
     self.standardFeatures = set(standardFeatures.strip().split())
 
-    if asApi or not api:
-      getData(
+    self.release = {}
+
+    if asApp or not api:
+      (release, base) = getData(
+          cfg['org'],
           cfg['repo'],
-          cfg['release'],
-          cfg['firstRelease'],
-          cfg['url'],
-          f'{cfg["org"]}/{cfg["repo"]}/tf',
+          cfg['relative'],
           version,
           lgc,
+          check,
           silent=silent,
       )
+      if release:
+        self.release[f'{cfg["org"]}/{cfg["repo"]}/{cfg["relative"]}'] = release
       for m in cfg['moduleSpecs']:
-        getData(
+        (release, base) = getData(
+            m['org'],
             m['repo'],
-            m['release'],
-            m['firstRelease'],
-            m['url'],
-            f'{m["org"]}/{m["repo"]}/tf',
+            m['relative'],
             version,
             lgc,
+            check,
             silent=silent,
         )
+        if release:
+          self.release[f'{m["org"]}/{m["repo"]}/{m["relative"]}'] = release
       locations = cfg['locations']
       modules = cfg['modules']
       TF = Fabric(locations=locations, modules=modules, silent=True)
@@ -404,13 +408,13 @@ class Bhsa(object):
         return
     else:
       api.TF.load(self.standardFeatures, add=True, silent=True)
-    self.prettyFeaturesLoaded = self.standardFeatures
+    self.prettyFeaturesLoaded = {f for f in self.standardFeatures}
     self.prettyFeatures = ()
     self.formatClass = compileFormatClass(FORMAT_CSS, api.T.formats, DEFAULT_CLS, DEFAULT_CLS_ORIG)
     self.api = api
     self.cwd = os.getcwd()
 
-    if not asApi:
+    if not asApp:
       (inNb, repoLoc) = location(self.cwd, name)
       if inNb:
         (nbDir, nbName, nbExt) = inNb
@@ -443,7 +447,7 @@ class Bhsa(object):
         'Search tutorial', tutUrl,
         'Search tutorial in Jupyter Notebook'
     )
-    if asApi:
+    if asApp:
       self.dataLink = dataLink
       self.charLink = charLink
       self.featureLink = featureLink
@@ -477,7 +481,7 @@ This notebook online:
     self.classNames = CLASS_NAMES
     self.noneValues = NONE_VALUES
 
-    if not asApi:
+    if not asApp:
       if inNb is not None:
         self.loadCSS()
       if hoist:
@@ -509,8 +513,8 @@ This notebook online:
     return f'{self.docUrl}/features/hebrew/{version}/{feature}.html'
 
   def loadCSS(self):
-    asApi = self.asApi
-    if asApi:
+    asApp = self.asApp
+    if asApp:
       return CSS_FONT + CSS
     dh(CSS_FONT_API.format(
         fontName=FONT_NAME,
@@ -586,7 +590,7 @@ This notebook online:
       withNodes=False,
       asString=False,
   ):
-    asApi = self.asApi
+    asApp = self.asApp
     api = self.api
     L = api.L
     T = api.T
@@ -594,7 +598,7 @@ This notebook online:
 
     nType = F.otype.v(n)
     result = ''
-    if asApi:
+    if asApp:
       nodeRep = f' <a href="#" class="nd">{n}</a> ' if withNodes else ''
     else:
       nodeRep = f' *{n}* ' if withNodes else ''
@@ -628,7 +632,7 @@ This notebook online:
     rep = f'<span class="{tClass}">{rep}</span>'
     result = f'{rep}{nodeRep}'
 
-    if asString or asApi:
+    if asString or asApp:
       return result
     dm((result))
 

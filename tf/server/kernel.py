@@ -7,7 +7,7 @@ from tf.apphelpers import (
     runSearch, runSearchCondensed,
     compose, composeP, getContext, getResultsX
 )
-from .common import getParam, getConfig, getLocalClones
+from .common import getParam, getConfig, getCheck, getLocalClones
 
 TIMEOUT = 120
 
@@ -34,13 +34,13 @@ def allNodes(table):
   return allN
 
 
-def makeTfKernel(dataSource, lgc, port):
+def makeTfKernel(dataSource, lgc, check, port):
   config = getConfig(dataSource)
   if config is None:
     return None
 
   print(f'Setting up TF kernel for {dataSource}')
-  extraApi = config.extraApi(lgc=lgc)
+  extraApi = config.extraApi(lgc=lgc, check=check)
   if not extraApi:
     print(f'{TF_ERROR}')
     sys.stdout.flush()
@@ -58,6 +58,10 @@ def makeTfKernel(dataSource, lgc, port):
     def on_disconnect(self, conn):
       self.extraApi = None
       pass
+
+    def exposed_release(self):
+      extraApi = self.extraApi
+      return tuple('\t'.join(x) for x in extraApi.release.items())
 
     def exposed_header(self):
       extraApi = self.extraApi
@@ -199,7 +203,7 @@ def makeTfKernel(dataSource, lgc, port):
       )
       table = compose(
           extraApi,
-          allResults, start, position, opened,
+          allResults, features, start, position, opened,
           condensed,
           condenseType,
           textFormat,
@@ -300,10 +304,12 @@ def makeTfConnection(host, port):
 def main(cargs=sys.argv):
   dataSource = getParam(cargs=cargs, interactive=True)
   lgc = getLocalClones(cargs=cargs)
+  check = getCheck(cargs=cargs)
+
   if dataSource is not None:
     config = getConfig(dataSource)
     if config is not None:
-      kernel = makeTfKernel(dataSource, lgc, config.port)
+      kernel = makeTfKernel(dataSource, lgc, check, config.port)
       if kernel:
         kernel.start()
 

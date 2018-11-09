@@ -20,7 +20,7 @@ from tf.server.common import (
     pageLinks, passageLinks,
     shapeMessages, shapeOptions, shapeCondense, shapeFormats,
 )
-from tf.apphelpers import RESULT
+from tf.apphelpers import RESULT, URL_GH
 
 
 COMPOSE = 'Compose results example'
@@ -28,6 +28,15 @@ COMPOSE = 'Compose results example'
 BATCH = 20
 DEFAULT_NAME = 'DefaulT'
 EXTENSION = '.tfjob'
+
+
+def liveText(org, repo, version, release):
+  return f'{org}/{repo} v:{version} (r{release})'
+
+
+def liveUrl(org, repo, version, release):
+  return f'{URL_GH}/{org}/{repo}/releases/download/{release}/{version}.zip'
+
 
 myDir = os.path.dirname(os.path.abspath(__file__))
 appDir = None
@@ -54,7 +63,7 @@ def getStuff(lgc):
   return config
 
 
-def getProvenance(form):
+def getProvenance(form, releaseInfo):
   utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
   utc_offset = datetime.timedelta(seconds=-utc_offset_sec)
   now = datetime.datetime.now().replace(
@@ -66,8 +75,13 @@ def getProvenance(form):
   prov = ()
   config = getConfig(dataSource)
   if config is not None:
-    cfg = config.configure(lgc, version=config.VERSION)
+    version = config.VERSION
+    cfg = config.configure(lgc, version=version)
     prov = cfg['provenance']
+    org = cfg['org']
+    repo = cfg['repo']
+    relative = cfg['relative']
+    release = releaseInfo[f'{org}/{repo}/{relative}']
 
   dataHtml = ''
   dataMd = ''
@@ -75,8 +89,10 @@ def getProvenance(form):
   for dataset in prov:
     corpusName = dataset['corpus']
     corpusVersion = dataset['version']
-    corpusRelease = dataset['release']
-    (corpusLive, corpusLiveUrl) = dataset['live']
+    (corpusLive, corpusLiveUrl) = (
+        liveText(org, repo, version, release),
+        liveUrl(org, repo, version, release),
+    )
     corpusLiveHtml = f'<a href="{corpusLiveUrl}">{corpusLive}</a>'
     corpusLiveMd = f'[{corpusLive}]({corpusLiveUrl})'
     (corpusDoi, corpusDoiUrl) = dataset['doi']
@@ -93,7 +109,7 @@ def getProvenance(form):
     </div>
     <div class="p2line">
       <div class="pname">release</div>
-      <div class="pval">{corpusRelease}</div>
+      <div class="pval">{release}</div>
     </div>
     <div class="p2line">
       <div class="pname">download</div>
@@ -106,7 +122,7 @@ def getProvenance(form):
 '''
     dataMd += f'''Data source | {corpusName}
 version | {corpusVersion}
-release | {corpusRelease}
+release | {release}
 download   | {corpusLiveMd}
 DOI | {corpusDoiMd}'''
 
@@ -357,7 +373,6 @@ def serveSearch(anything):
   condensedAtt = ' checked ' if form['condensed'] else ''
   withNodesAtt = ' checked ' if form['withNodes'] else ''
 
-
   options = config.options
   values = getValues(options, form)
 
@@ -367,7 +382,8 @@ def serveSearch(anything):
   kernelApi = TF.connect()
   (header, appLogo, tfLogo) = kernelApi.header()
   css = kernelApi.css()
-  (provenanceHtml, provenanceMd) = getProvenance(form)
+  releaseInfo = dict(x.split('\t') for x in kernelApi.release())
+  (provenanceHtml, provenanceMd) = getProvenance(form, releaseInfo)
 
   (
       defaultCondenseType,

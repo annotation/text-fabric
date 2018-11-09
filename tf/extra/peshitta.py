@@ -162,14 +162,15 @@ class Peshitta(object):
       version='0.1',
       locations=None,
       modules=None,
-      asApi=False,
+      asApp=False,
       lgc=False,
+      check=False,
       hoist=False,
       silent=False,
   ):
     config = getConfig('peshitta')
     cfg = config.configure(lgc=lgc, version=version)
-    self.asApi = asApi
+    self.asApp = asApp
     self.repo = cfg['repo']
     self.version = version
     self.charUrl = cfg['charUrl']
@@ -189,17 +190,21 @@ class Peshitta(object):
 
     self.standardFeatures = set(STANDARD_FEATURES.strip().split())
 
-    if asApi or not api:
-      getData(
+    if asApp or not api:
+
+      self.release = {}
+
+      (release, base) = getData(
+          cfg['org'],
           cfg['repo'],
-          cfg['release'],
-          cfg['firstRelease'],
-          cfg['url'],
-          f'{cfg["org"]}/{cfg["repo"]}/tf',
+          cfg['relative'],
           version,
           lgc,
+          check,
           silent=silent,
       )
+      if release:
+        self.release[f'{cfg["org"]}/{cfg["repo"]}/{cfg["relative"]}'] = release
       locations = cfg['locations']
       modules = cfg['modules']
       TF = Fabric(locations=locations, modules=modules, silent=True)
@@ -222,7 +227,7 @@ class Peshitta(object):
     self.api = api
     self.cwd = os.getcwd()
 
-    if not asApi:
+    if not asApp:
       (inNb, repoLoc) = location(self.cwd, name)
       if inNb:
         (nbDir, nbName, nbExt) = inNb
@@ -259,7 +264,7 @@ class Peshitta(object):
         'Search tutorial', tutUrl,
         'Search tutorial in Jupyter Notebook'
     )
-    if asApi:
+    if asApp:
       self.dataLink = dataLink
       self.charLink = charLink
       self.featureLink = featureLink
@@ -293,7 +298,7 @@ This notebook online:
     self.classNames = CLASS_NAMES
     self.noneValues = NONE_VALUES
 
-    if not asApi:
+    if not asApp:
       if inNb:
         self.loadCSS()
       if hoist:
@@ -325,8 +330,8 @@ This notebook online:
     return f'{self.docUrl}/transcription-{version}.md'
 
   def loadCSS(self):
-    asApi = self.asApi
-    if asApi:
+    asApp = self.asApp
+    if asApp:
       return CSS_FONT + CSS
     dh(CSS_FONT_API.format(
         fontName=FONT_NAME,
@@ -379,7 +384,7 @@ This notebook online:
       withNodes=False,
       asString=False,
   ):
-    asApi = self.asApi
+    asApp = self.asApp
     api = self.api
     L = api.L
     T = api.T
@@ -387,7 +392,7 @@ This notebook online:
 
     nType = F.otype.v(n)
     result = ''
-    if asApi:
+    if asApp:
       nodeRep = f' <a href="#" class="nd">{n}</a> ' if withNodes else ''
     else:
       nodeRep = f' *{n}* ' if withNodes else ''
@@ -417,7 +422,7 @@ This notebook online:
     rep = f'<span class="{tClass}">{rep}</span>'
     result = f'{rep}{nodeRep}'
 
-    if asString or asApi:
+    if asString or asApp:
       return result
     dm((result))
 
