@@ -6,11 +6,14 @@ ORG = 'Nino-cunei'
 REPO = 'uruk'
 VERSION = '1.0'
 RELATIVE = f'tf/{REPO}'
+RELATIVE_IMAGES = 'sources/cdli/images'
 
 CORPUS = 'Uruk IV/III: Proto-cuneiform tablets '
 CORPUS_SHORT = 'Uruk IV-III'
 SOURCE_DIR = 'sources/cdli'
 LOCAL_IMAGE_DIR = 'cdli-imagery'
+
+ZIP = [REPO, (REPO, RELATIVE_IMAGES)]
 
 DOI = '10.5281/zenodo.1193841'
 DOI_URL = 'https://doi.org/10.5281/zenodo.1193841'
@@ -54,6 +57,7 @@ def configure(lgc, version=VERSION):
       ),),
       org=ORG,
       repo=REPO,
+      relativeImages=RELATIVE_IMAGES,
       relative=RELATIVE,
       charUrl=CHAR_URL,
       corpusShort=CORPUS_SHORT,

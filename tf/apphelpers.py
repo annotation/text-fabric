@@ -84,7 +84,7 @@ def getData(
     if not silent:
       print(f'Using {repo}-{version} local in {ghTf}')
       sys.stdout.flush()
-    return dataBase
+    return (None, dataBase)
 
   currentRelease = None
 
@@ -146,7 +146,7 @@ def getData(
     return (currentRelease, expressBase)
 
   if getDataCustom(
-      org, repo, latestRelease, version, expressTfAll, silent=silent
+      org, repo, relative, latestRelease, version, expressTfAll, silent=silent
   ):
     if not silent:
       print(f'Using {org}/{repo} - {version} r{latestRelease} (=latest) in {exTf}')
@@ -166,6 +166,7 @@ def getData(
 def getDataCustom(
     org,
     repo,
+    relative,
     release,
     version,
     dest,
@@ -173,9 +174,14 @@ def getDataCustom(
     withPaths=False,
     silent=False,
 ):
-  versionDest = f'{dest}/{version}'
+  versionDest = f'{dest}/{version}' if version else dest
   if fileName is None:
-    fileName = f'{version}.zip'
+    relativeFlat = relative.replace('/', '-')
+    fileName = (
+        f'{relativeFlat}-{version}.zip'
+        if version else
+        f'{relativeFlat}.zip'
+    )
   dataUrl = f'{URL_GH}/{org}/{repo}/releases/download/{release}/{fileName}'
 
   if not silent:
