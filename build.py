@@ -163,8 +163,17 @@ def shipData(app, remaining):
   if not config:
     print('Data not shipped')
     return
+  seen = set()
   for repo in config.ZIP:
-    zipData(config.ORG, repo)
+    if type(repo) is tuple:
+      (repo, relative) = repo
+      keep = repo in seen
+      zipData(config.ORG, repo, relative=relative, tf=False, keep=keep)
+      seen.add(repo)
+    else:
+      keep = repo in seen
+      zipData(config.ORG, repo, relative=config.RELATIVE, keep=keep)
+      seen.add(repo)
 
 
 def serveDocs():

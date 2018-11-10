@@ -29,6 +29,7 @@ setup(
     entry_points={
         'console_scripts': [
             'text-fabric = tf.server.start:main',
+            'text-fabric-zip = tf.zipdata:main',
         ]
     },
     version='6.4.6',

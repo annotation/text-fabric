@@ -22,10 +22,8 @@ from tf.notebook import location
 
 
 def IMAGE_DIR(sourceDir, version):
-  return f'{sourceDir}/{version}/images'
+  return f'{sourceDir}/images'
 
-
-IMAGES = 'images.zip'
 
 PHOTO_TO = '{}/tablets/photos'
 PHOTO_EXT = 'jpg'
@@ -547,7 +545,7 @@ class Cunei(Atf):
       silent=False,
   ):
     config = getConfig('cunei')
-    cfg = config.configure(lgc=lgc, version=version)
+    cfg = config.configure(lgc, version=version)
     self.asApp = asApp
     self.silent = silent
 
@@ -580,10 +578,10 @@ class Cunei(Atf):
       getDataCustom(
           cfg['org'],
           cfg['repo'],
-          cfg['release'],
-          version,
+          cfg['relativeImages'],
+          release,
+          '',
           self.sourceDir,
-          fileName=IMAGES,
           withPaths=True,
           silent=silent,
       )
