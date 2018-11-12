@@ -94,13 +94,14 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
 
     def collectFiles(base, path, results):
       thisPath = f'{base}/{path}' if path else base
+      internalBase = f'{relative}/{path}' if path else relative
       with os.scandir(thisPath) as dr:
         for entry in dr:
           name = entry.name
           if name == '.DS_Store':
             continue
           if entry.is_file():
-            results.append((f'{path}/{name}', f'{base}/{path}/{name}'))
+            results.append((f'{internalBase}/{name}', f'{base}/{path}/{name}'))
           elif entry.is_dir():
             collectFiles(base, f'{path}/{name}', results)
 
@@ -113,10 +114,10 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
         compression=ZIP_DEFLATED,
         compresslevel=6,
     ) as zipFile:
-      for (name, path) in sorted(results):
+      for (internalPath, path) in sorted(results):
         zipFile.write(
             path,
-            arcname=name,
+            arcname=internalPath,
         )
 
 

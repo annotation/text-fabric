@@ -11,12 +11,14 @@ text_fabric.egg-info/top_level.txt
 tf/__init__.py
 tf/api.py
 tf/apphelpers.py
+tf/appmake.py
 tf/data.py
 tf/fabric.py
 tf/helpers.py
 tf/locality.py
 tf/mql.py
 tf/notebook.py
+tf/parameters.py
 tf/prepare.py
 tf/text.py
 tf/timestamp.py

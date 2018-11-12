@@ -1,6 +1,6 @@
 import os
 from tf.extra.cunei import Cunei
-from tf.apphelpers import hasData
+from tf.apphelpers import hasData, EXPRESS_BASE
 
 ORG = 'Nino-cunei'
 REPO = 'uruk'
@@ -10,7 +10,6 @@ RELATIVE_IMAGES = 'sources/cdli/images'
 
 CORPUS = 'Uruk IV/III: Proto-cuneiform tablets '
 CORPUS_SHORT = 'Uruk IV-III'
-SOURCE_DIR = 'sources/cdli'
 LOCAL_IMAGE_DIR = 'cdli-imagery'
 
 ZIP = [REPO, (REPO, RELATIVE_IMAGES)]
@@ -36,19 +35,17 @@ options = (
 )
 
 
-def configure(lgc, version=VERSION):
+def configure(lgc, moduleRefs=(), version=VERSION):
   base = hasData(lgc, ORG, REPO, version, RELATIVE)
-  if not base:
-    base = '~/text-fabric-data'
 
-  DATABASE = f'{base}/{ORG}'
-  locations = [f'{DATABASE}/{REPO}/{RELATIVE}/{version}']
-  modules = ['']
-  localDir = os.path.expanduser(f'{DATABASE}/{REPO}/_temp')
+  if not base:
+    base = EXPRESS_BASE
+  base = f'{base}/{ORG}'
+
+  localDir = os.path.expanduser(f'{base}/{REPO}/_temp')
 
   return dict(
-      locations=locations,
-      modules=modules,
+      modules=(),
       localDir=localDir,
       provenance=(dict(
           corpus=CORPUS,
@@ -57,12 +54,11 @@ def configure(lgc, version=VERSION):
       ),),
       org=ORG,
       repo=REPO,
-      relativeImages=RELATIVE_IMAGES,
+      version=VERSION,
       relative=RELATIVE,
+      relativeImages=RELATIVE_IMAGES,
       charUrl=CHAR_URL,
       corpusShort=CORPUS_SHORT,
-      sourceDir=SOURCE_DIR,
-      version=VERSION,
       tempDir=TEMP_DIR,
       reportDir=REPORT_DIR,
       condenseType=CONDENSE_TYPE,
@@ -70,5 +66,12 @@ def configure(lgc, version=VERSION):
   )
 
 
-def extraApi(lgc=None, check=False):
-  return Cunei(None, asApp=True, version=VERSION, lgc=lgc, check=check)
+def extraApi(moduleRefs=(), lgc=None, check=False):
+  return Cunei(
+      name=None,
+      asApp=True,
+      moduleRefs=moduleRefs,
+      version=VERSION,
+      lgc=lgc,
+      check=check,
+  )

@@ -36,9 +36,9 @@
     ??? abstract "module"
         *app*`.py`
         contains all the functionality specific to the corpus in question, organized as an extended
-        TF api. In the code this is referred to as the `extraApi`.
+        TF api. In the code this is referred to in variables with name `app`.
 
-        In order to be an app that TF can use, `extraApi` should provide the following attributes:
+        In order to be an app that TF can use, `app` should provide the following attributes:
 
         attribute | kind | description
         --- | --- | ---
@@ -58,9 +58,10 @@
         tfsLink | html link | points to the documentation of the TF search engine
         tutLink | html link | points to the tutorial for TF search
         webLink | method | given a node, produces a link to an online description of the corresponding object (to [shebanq](https://shebanq.ancient-data.org) or [cdli](https://cdli.ucla.edu) 
+        sectionLink | method | given a section node, produces a link that copies the section to the section pad (only in the TF browser)
 
         ??? note "asApp"
-            The `extraApi` contain several display functions. By default
+            The `app` contains several display functions. By default
             they suppose that there is a Jupyter notebook context in which
             results can be rendered with `IPython.display` methods.
             But if we operate in the context of a web-interface, we need to generate
@@ -87,15 +88,7 @@
 
 
         ??? abstract "config.py"
-            Contains values for parameters and an API calling function.
-
-            ??? abstract "extraApi(locations, modules)"
-                Responsible for calling the extra Api for the corpus
-                with the desired locations and modules.
-
-                This extraApi will be active as a TF kernel,
-                interacting with a local webserver that serves local
-                web page in the browser.
+            Contains values for parameters.
 
             ??? abstract "web browsing settings"
                 The TF kernel, webserver and browser need settings:
@@ -132,42 +125,40 @@
     Here is our logistics of functionality.
 
     There are a number of methods that are offered as a generic function and
-    just added as a method to the *extraApi* of the app, e.g. `pretty()`
-    For example, the Bhsa app imports `pretty` first:
+    just added as a method to the *app*, e.g. `pretty()`
+    For example, apps are setup to import `pretty` first:
 
     ```python
     from tf.apphelpers import pretty
     ```
 
-    and in the Bhsa `__init__()` function it says:
+    and in the app's setup function this happens:
 
     ```python
-    self.pretty = types.MethodType(pretty, self)
+    app.pretty = types.MethodType(pretty, app)
     ```
 
-    which adds the function `pretty` as an instance method to the class Bhsa.
-    The first argument `extraApi` of the function `pretty` acts as the `self` when 
-    `pretty()` is used as a method of Bhsa.
+    which adds the function `pretty` as an instance method to the app.
 
-    So although we define `pretty(extraApi, ...)` as a generic function,
-    through its argument `extraApi` we can call app specific functionality.
+    So although we define `pretty(app, ...)` as a generic function,
+    through its argument `app` we can call app specific functionality.
 
     We follow this pattern for quite a bit of functions.
-    They all have `extraApi` as first argument.
+    They all have `app` as first argument.
 
 ??? abstract "Two contexts"
-    Most functions with the `extraApi` argument are meant to perform their duty in two contexts:
+    Most functions with the `app` argument are meant to perform their duty in two contexts:
 
     * when called in a Jupyter notebook they deliver output meant for a notebook output cell,
       using methods provided by the `ipython` package.
     * when called by the web app they deliver output meant for the TF browser website,
       generating raw HTML.
 
-    The `extraApi` is the rich app specific API, and when we construct this API, we pass the information
+    The `app` is the rich app specific API, and when we construct this API, we pass the information
     whether it is constructed for the purposes of the Jupyter notebook, or for the purposes of the web app.
 
-    We pass this information by setting the attribute `asApp` on the `extraApi`. 
-    If it is set, we use the `extraApi` in the web app context.
+    We pass this information by setting the attribute `asApp` on the `app`. 
+    If it is set, we use the `app` in the web app context.
 
     Most of the code in such functions is independent of `asApp`.
     The main difference is how to output the result: by a call to an IPython display method, or by
@@ -215,7 +206,7 @@
 
 ## TF search performers
 
-??? abstract "search(extraApi, query, silent=False, sets=None, shallow=False)"
+??? abstract "search(app, query, silent=False, sets=None, shallow=False)"
     This is a thin wrapper around the generic search interface of TF:
     [S.search](General.md#searching)
 
@@ -249,7 +240,7 @@
 
 ## Tabular display
 
-??? abstract "table(extraApi, tuples, ...)"
+??? abstract "table(app, tuples, ...)"
     Takes a list of *tuples* and
     composes it into a Markdown table.
 
@@ -257,7 +248,7 @@
         The intended context of this function is:
         the Jupyter notebook.
 
-??? abstract "compose(extraApi, tuples, start. position, opened, ...)"
+??? abstract "compose(app, tuples, start. position, opened, ...)"
     Takes a list of *tuples* and
     composes it into an HTML table.
     Some of the rows will be expandable, namely the rows specified by `opened`,
@@ -266,7 +257,7 @@
     ??? note "Context web app"
         The intended context of this function is: web app.
 
-??? abstract "plainTuple(extraApi, tuple)"
+??? abstract "plainTuple(app, tuple)"
     Displays a *tuple* of nodes as a table row:
 
     * a markdown row in the context Jupyter;
@@ -308,7 +299,7 @@
     In the case of Cunei tablets, you can opt to show the lineart of signs and quads,
     and to show the line numbers of the source transcriptions.
 
-??? abstract "show(extraApi, tuples, ...)"
+??? abstract "show(app, tuples, ...)"
     Takes a list of *tuples* and
     composes it into a sequence of pretty displays per tuple.
 
@@ -316,7 +307,7 @@
         The intended context of this function is:
         the Jupyter notebook.
 
-??? abstract "prettyTuple(extraApi, tuple)"
+??? abstract "prettyTuple(app, tuple)"
     Displays a *tuple* of nodes as an expanded display, both
 
     * in the context Jupyter and
@@ -328,7 +319,7 @@
     * in the context Jupyter and
     * in the context web app.
 
-??? abstract "prettyPre(extraApi, node, ...)"
+??? abstract "prettyPre(app, node, ...)"
     Helper for `pretty`.
     Pretty display is pretty complicated.
     There are large portions of functionality that are generic,
@@ -337,7 +328,7 @@
     This function computes a lot of generic things, based on which
     a pretty display can be constructed.
 
-??? abstract "prettySetup(extraApi, features=None, noneValues=None)"
+??? abstract "prettySetup(app, features=None, noneValues=None)"
     Pretty displays show a chosen set of standard features for nodes.
     By means of the parameter `suppress` you can leave out certain features.
     But what if you want to add features to the display?
@@ -355,14 +346,14 @@
 ??? abstract "getBoundary(api, node)"
     Utility function to ask from the TF API the first slot and the last slot contained in a node.
 
-??? abstract "getFeatures(extraApi, node, ...)"
+??? abstract "getFeatures(app, node, ...)"
     Helper for `pretty()`: wrap the requested features and their values for *node* in HTML for pretty display.
 
 ??? abstract "getContext(api, nodes)"
     Get the features and values for a set of *nodes*. 
     All loaded features will be retrieved.
 
-??? abstract "header(extraApi)"
+??? abstract "header(app)"
     Get the app-specific links to data and documentation and wrap it into HTML for display in the TF browser.
 
 ??? abstract "outLink(text, href, title=None, ...)"

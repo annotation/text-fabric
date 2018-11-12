@@ -1,0 +1,7 @@
+URL_GH_API = 'https://api.github.com/repos'
+URL_GH = 'https://github.com'
+URL_NB = 'https://nbviewer.jupyter.org/github'
+GH_BASE = '~/github'
+EXPRESS_BASE = '~/text-fabric-data'
+EXPRESS_INFO = '__release.txt'
+URL_TFDOC = 'https://dans-labs.github.io/text-fabric'
