@@ -2,7 +2,7 @@
 
 <div class="hdlinks">
   <a target="_blank" href="https://etcbc.github.io/bhsa" title="provenance of this corpus">BHSA</a>
-  <a target="_blank" href="https://dans-labs.github.io/text-fabric/Writing/Hebrew/" title="Hebrew characters and transcriptions">Character table</a>
+  <a target="_blank" href="https://dans-labs.github.io/text-fabric/Writing/Hebrew" title="('Hebrew characters and transcriptions',)">Character table</a>
   <a target="_blank" href="https://etcbc.github.io/bhsa/features/hebrew/c/0_home.html" title="BHSA feature documentation">Feature docs</a>
   <a target="_blank" href="https://dans-labs.github.io/text-fabric/Api/General/#search-templates" title="Search Templates Introduction and Reference">Search Reference</a>
   <a target="_blank" href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/search.ipynb" title="Search tutorial in Jupyter Notebook">Search tutorial</a>
@@ -14,20 +14,20 @@ meta | data
 --- | ---
 Job | DefaulT
 Author | Dirk Roorda
-Created | 2018-11-09T13:22:04+01:00
+Created | 2018-11-12T21:56:11+01:00
 Data source | BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis
 version | c
-release | 1.4
-download   | [etcbc/bhsa v:c (r1.4)](https://github.com/etcbc/bhsa/releases/download/1.4/c.zip)
+release | 1.5
+download   | [etcbc/bhsa v:c (r1.5)](https://github.com/etcbc/bhsa/releases/download/1.5/tf-c.zip)
 DOI | [10.5281/zenodo.1007624](https://doi.org/10.5281/zenodo.1007624)Data source | Phonetic Transcriptions
 version | c
-release | 1.1
-download   | [etcbc/phono v:c (r1.1)](https://github.com/etcbc/phono/releases/download/1.1/c.zip)
-DOI | [10.5281/zenodo.1007636](https://doi.org/10.5281/zenodo.1007636)Data source | Parallel Passages
+release | 1.2
+download   | [etcbc/phono v:c (r1.2)](https://github.com/etcbc/phono/releases/download/1.2/tf-c.zip)
+DOI | [('10.5281/zenodo.1007636', 'https://doi.org/10.5281/zenodo.1007636')]()Data source | Parallel Passages
 version | c
-release | 1.1
-download   | [etcbc/parallels v:c (r1.1)](https://github.com/etcbc/parallels/releases/download/1.1/c.zip)
-DOI | [10.5281/zenodo.1007642](https://doi.org/10.5281/zenodo.1007642)
+release | 1.2
+download   | [etcbc/parallels v:c (r1.2)](https://github.com/etcbc/parallels/releases/download/1.2/tf-c.zip)
+DOI | [('10.5281/zenodo.1007642', 'https://doi.org/10.5281/zenodo.1007642')]()
 Tool | Text-Fabric 6.4.6 [10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193)
 See also | [Compose results example](https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/examples/compose.ipynb)
 

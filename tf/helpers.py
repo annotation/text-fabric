@@ -12,6 +12,13 @@ Consider installing a 64-bit Python.
 MSG64 = '''Running on 64-bit Python'''
 
 
+def camel(name):
+  if not name:
+    return name
+  temp = name.replace('_', ' ').title().replace(' ', '')
+  return temp[0].lower() + temp[1:]
+
+
 def check32():
   warn = ''
   msg = ''

@@ -7,7 +7,7 @@ from tf.apphelpers import (
     runSearch, runSearchCondensed,
     compose, composeP, getContext, getResultsX
 )
-from .common import getParam, getConfig, getCheck, getLocalClones
+from .common import getParam, getModules, getConfig, getCheck, getLocalClones
 
 TIMEOUT = 120
 
@@ -34,53 +34,60 @@ def allNodes(table):
   return allN
 
 
-def makeTfKernel(dataSource, lgc, check, port):
+def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
   config = getConfig(dataSource)
   if config is None:
     return None
 
-  print(f'Setting up TF kernel for {dataSource}')
-  extraApi = config.extraApi(lgc=lgc, check=check)
-  if not extraApi:
+  print(f'Setting up TF kernel for {dataSource} {moduleRefs}')
+  app = config.appClass(
+      asApp=True,
+      moduleRefs=moduleRefs,
+      version=config.VERSION,
+      lgc=lgc,
+      check=check,
+  )
+
+  if not app.api:
     print(f'{TF_ERROR}')
     sys.stdout.flush()
     return False
-  extraApi.api.reset()
+  app.api.reset()
   cache = {}
   print(f'{TF_DONE}\nListening at port {port}')
   sys.stdout.flush()
 
   class TfKernel(rpyc.Service):
     def on_connect(self, conn):
-      self.extraApi = extraApi
+      self.app = app
       pass
 
     def on_disconnect(self, conn):
-      self.extraApi = None
+      self.app = None
       pass
 
-    def exposed_release(self):
-      extraApi = self.extraApi
-      return tuple('\t'.join(x) for x in extraApi.release.items())
+    def exposed_provenance(self):
+      app = self.app
+      return app.provenance
 
     def exposed_header(self):
-      extraApi = self.extraApi
-      return extraApi.header()
+      app = self.app
+      return app.header()
 
     def exposed_css(self, appDir=None):
-      extraApi = self.extraApi
-      return extraApi.loadCSS()
+      app = self.app
+      return app.loadCss()
 
     def exposed_condenseTypes(self):
-      extraApi = self.extraApi
-      api = extraApi.api
+      app = self.app
+      api = app.api
       return (
-          extraApi.condenseType,
-          extraApi.exampleSection,
-          extraApi.exampleSectionText,
+          app.condenseType,
+          app.exampleSection,
+          app.exampleSectionText,
           api.C.levels.data,
-          extraApi.api.T.defaultFormat,
-          tuple(fmt for fmt in extraApi.api.T.formats if fmt.startswith('text-')),
+          app.api.T.defaultFormat,
+          tuple(fmt for fmt in app.api.T.formats if fmt.startswith('text-')),
       )
 
     def exposed_passage(
@@ -89,8 +96,8 @@ def makeTfKernel(dataSource, lgc, check, port):
         withNodes=False,
         **options,
     ):
-      extraApi = self.extraApi
-      api = extraApi.api
+      app = self.app
+      api = app.api
       F = api.F
       L = api.L
       T = api.T
@@ -107,7 +114,7 @@ def makeTfKernel(dataSource, lgc, check, port):
         node = T.nodeFromSection((sec0, sec1))
         items = L.d(node, otype=sec2Type) if node else []
         passage = composeP(
-            extraApi,
+            app,
             items, textFormat,
             opened,
             sec2,
@@ -129,8 +136,8 @@ def makeTfKernel(dataSource, lgc, check, port):
         linked=1,
         **options,
     ):
-      extraApi = self.extraApi
-      api = extraApi.api
+      app = self.app
+      api = app.api
 
       total = 0
 
@@ -140,7 +147,7 @@ def makeTfKernel(dataSource, lgc, check, port):
         sectionLines = sections.split('\n')
         for (i, sectionLine) in enumerate(sectionLines):
           sectionLine = sectionLine.strip()
-          (message, node) = extraApi.nodeFromDefaultSection(sectionLine)
+          (message, node) = app.nodeFromDefaultSection(sectionLine)
           if message:
             sectionMessages.append(message)
           else:
@@ -202,7 +209,7 @@ def makeTfKernel(dataSource, lgc, check, port):
           + afterResults
       )
       table = compose(
-          extraApi,
+          app,
           allResults, features, start, position, opened,
           condensed,
           condenseType,
@@ -214,15 +221,15 @@ def makeTfKernel(dataSource, lgc, check, port):
       return (table, sectionMessages, tupleMessages, queryMessages, start, total)
 
     def exposed_csvs(self, query, tuples, sections, condensed, condenseType, textFormat):
-      extraApi = self.extraApi
-      api = self.extraApi.api
+      app = self.app
+      api = self.app.api
 
       sectionResults = []
       if sections:
         sectionLines = sections.split('\n')
         for sectionLine in sectionLines:
           sectionLine = sectionLine.strip()
-          (message, node) = extraApi.nodeFromDefaultSection(sectionLine)
+          (message, node) = app.nodeFromDefaultSection(sectionLine)
           if not message:
             sectionResults.append((node,))
       sectionResults = tuple(sectionResults)
@@ -279,7 +286,7 @@ def makeTfKernel(dataSource, lgc, check, port):
           api,
           queryResults,
           features,
-          extraApi.noDescendTypes,
+          app.noDescendTypes,
           fmt=textFormat,
       )
       return (pickle.dumps(csvs), pickle.dumps(context), pickle.dumps(resultsX))
@@ -303,13 +310,15 @@ def makeTfConnection(host, port):
 
 def main(cargs=sys.argv):
   dataSource = getParam(cargs=cargs, interactive=True)
+  modules = getModules(cargs=cargs)
   lgc = getLocalClones(cargs=cargs)
   check = getCheck(cargs=cargs)
 
   if dataSource is not None:
+    modules = tuple(modules[6:].split(',')) if modules else ()
     config = getConfig(dataSource)
     if config is not None:
-      kernel = makeTfKernel(dataSource, lgc, check, config.port)
+      kernel = makeTfKernel(dataSource, modules, lgc, check, config.port)
       if kernel:
         kernel.start()
 

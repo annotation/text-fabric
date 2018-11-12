@@ -8,7 +8,10 @@ from requests.compat import urljoin
 
 from notebook.notebookapp import list_running_servers
 
-from tf.apphelpers import URL_GH, URL_NB
+from tf.parameters import (
+    URL_GH,
+    URL_NB,
+)
 
 
 def repoLocation(cwd):

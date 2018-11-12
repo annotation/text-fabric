@@ -1,27 +1,12 @@
-import sys
-import os
-import io
-from shutil import rmtree
-from glob import glob
 from functools import reduce
 
-import requests
-from zipfile import ZipFile
 from IPython.display import display, Markdown, HTML
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
 
 RESULT = 'result'
-GH_BASE = '~/github'
-EXPRESS_BASE = '~/text-fabric-data'
-EXPRESS_INFO = '__release.txt'
 
-URL_GH_API = 'https://api.github.com/repos'
-URL_GH = 'https://github.com'
-URL_NB = 'https://nbviewer.jupyter.org/github'
-
-URL_TFDOC = 'https://dans-labs.github.io/text-fabric'
 
 FONT_BASE = 'https://github.com/Dans-labs/text-fabric/blob/master/tf/server/static/fonts'
 
@@ -36,211 +21,8 @@ CSS_FONT_API = f'''
 '''
 
 
-def TFDOC_URL(path):
-  return f'{URL_TFDOC}{path}'
-
-
-def API_URL(member):
-  member = f'#{member}' if member else ''
-  return TFDOC_URL(f'/Api/General/{member}')
-
-
-def hasData(lgc, org, repo, version, relative):
-  if lgc:
-    ghBase = os.path.expanduser(GH_BASE)
-    ghTf = f'{ghBase}/{org}/{repo}/{relative}/{version}'
-    features = glob(f'{ghTf}/*.tf')
-    if len(features):
-      return ghBase
-
-  expressBase = os.path.expanduser(EXPRESS_BASE)
-  expressTf = f'{expressBase}/{org}/{repo}/{relative}/{version}'
-  features = glob(f'{expressTf}/*.tf')
-  if len(features):
-    return expressBase
-  return False
-
-
-def getData(
-    org,
-    repo,
-    relative,
-    version,
-    lgc,
-    check,
-    silent=False
-):
-  dataRel = f'{org}/{repo}/{relative}'
-  expressBase = os.path.expanduser(EXPRESS_BASE)
-  expressTfAll = f'{expressBase}/{dataRel}'
-  expressTf = f'{expressTfAll}/{version}'
-  expressInfoFile = f'{expressTf}/{EXPRESS_INFO}'
-  exTf = f'{EXPRESS_BASE}/{dataRel}/{version}'
-  ghBase = os.path.expanduser(GH_BASE)
-  ghTf = f'{GH_BASE}/{dataRel}/{version}'
-
-  dataBase = hasData(lgc, org, repo, version, relative)
-  if dataBase == ghBase:
-    if not silent:
-      print(f'Using {repo}-{version} local in {ghTf}')
-      sys.stdout.flush()
-    return (None, dataBase)
-
-  currentRelease = None
-
-  if dataBase == expressBase:
-    if os.path.exists(expressInfoFile):
-      with open(expressInfoFile) as eh:
-        for line in eh:
-          currentRelease = line.strip()
-    if currentRelease and not check:
-      if not silent:
-        print(f'Using {org}/{repo} - {version} r{currentRelease} in {exTf}')
-        sys.stdout.flush()
-      return (currentRelease, dataBase)
-
-  urlLatest = f'{URL_GH_API}/{org}/{repo}/releases/latest'
-
-  latestRelease = None
-  assets = ()
-  dataFile = f'{version}.zip'
-
-  online = False
-  try:
-    r = requests.get(urlLatest, allow_redirects=True).json()
-    online = True
-  except Exception:
-    print('Cannot check online for data releases. No results from:')
-    print(f'   {urlLatest}')
-  if online:
-    latestRelease = r.get('tag_name', None)
-    assets = {a['name'] for a in r.get('assets', {})}
-  if not latestRelease or not assets:
-    online = False
-  if online and dataFile not in assets:
-    versions = ', '.join(x[0:-4] if x.endswith('.zip') else x for x in sorted(assets))
-    print(
-        f'In {org}/{repo}: newest release is {latestRelease}\n'
-        f'This release has no data for version {version}.\n'
-        f'Available versions: {versions}'
-    )
-    online = False
-  if not online:
-    if currentRelease:
-      if not silent:
-        print(f'Still Using {org}/{repo} - {version} r{currentRelease} in {exTf}')
-        sys.stdout.flush()
-      return (currentRelease, expressBase)
-    else:
-        print(f'Could not find data in {repo}-{version} r{currentRelease} in {exTf}')
-        sys.stdout.flush()
-    return (None, False)
-
-  if latestRelease == currentRelease:
-    if not silent:
-      print(
-          f'No new data release available online\n'
-          f'Using {repo} - {version} r{currentRelease} (=latest) in {exTf}'
-      )
-      sys.stdout.flush()
-    return (currentRelease, expressBase)
-
-  if getDataCustom(
-      org, repo, relative, latestRelease, version, expressTfAll, silent=silent
-  ):
-    if not silent:
-      print(f'Using {org}/{repo} - {version} r{latestRelease} (=latest) in {exTf}')
-      return (latestRelease, expressBase)
-
-  if currentRelease:
-    if not silent:
-      print(f'Still Using {org}/{repo} - {version} r{currentRelease} in {exTf}')
-      sys.stdout.flush()
-    return (currentRelease, expressBase)
-
-  print(f'No data for {org}/{repo} - {version}')
-  sys.stdout.flush()
-  return (None, False)
-
-
-def getDataCustom(
-    org,
-    repo,
-    relative,
-    release,
-    version,
-    dest,
-    fileName=None,
-    withPaths=False,
-    silent=False,
-):
-  versionDest = f'{dest}/{version}' if version else dest
-  if fileName is None:
-    relativeFlat = relative.replace('/', '-')
-    fileName = (
-        f'{relativeFlat}-{version}.zip'
-        if version else
-        f'{relativeFlat}.zip'
-    )
-  dataUrl = f'{URL_GH}/{org}/{repo}/releases/download/{release}/{fileName}'
-
-  if not silent:
-    print(f'\tdownloading {org}/{repo} - {version} r{release}')
-    print(f'\t\tfrom {dataUrl} ... ')
-    sys.stdout.flush()
-  try:
-    r = requests.get(dataUrl, allow_redirects=True)
-    if not silent:
-      print(f'\tunzipping ... ')
-    zf = io.BytesIO(r.content)
-  except Exception as e:
-    print(str(e))
-    print(f'\tcould not download {repo}-{version} r{release} from {dataUrl} to {versionDest}')
-    sys.stdout.flush()
-    return False
-
-  if not silent:
-    print(f'\tsaving {org}/{repo} - {version} r{release}')
-    sys.stdout.flush()
-
-  cwd = os.getcwd()
-  try:
-    z = ZipFile(zf)
-    if os.path.exists(versionDest):
-      rmtree(versionDest)
-    os.makedirs(versionDest, exist_ok=True)
-    os.chdir(versionDest)
-    if withPaths:
-      z.extractall()
-      if os.path.exists('__MACOSX'):
-        rmtree('__MACOSX')
-    else:
-      for zInfo in z.infolist():
-        if zInfo.filename[-1] == '/':
-          continue
-        if zInfo.filename.startswith('__MACOS'):
-          continue
-        zInfo.filename = os.path.basename(zInfo.filename)
-        z.extract(zInfo)
-  except Exception as e:
-    print(str(e))
-    print(f'\tcould not save {org}/{repo} - {version} r{release}')
-    sys.stdout.flush()
-    os.chdir(cwd)
-    return False
-
-  expressInfoFile = f'{versionDest}/{EXPRESS_INFO}'
-  with open(expressInfoFile, 'w') as rh:
-    rh.write(f'{release}')
-  if not silent:
-    print(f'\tsaved {org}/{repo} - {version} r{release}')
-    sys.stdout.flush()
-  os.chdir(cwd)
-  return True
-
-
-def search(extraApi, query, silent=False, sets=None, shallow=False):
-  api = extraApi.api
+def search(app, query, silent=False, sets=None, shallow=False):
+  api = app.api
   info = api.info
   S = api.S
   results = S.search(query, sets=sets, shallow=shallow)
@@ -282,7 +64,7 @@ def runSearchCondensed(api, query, cache, condenseType):
 
 
 def composeP(
-    extraApi,
+    app,
     items,
     textFormat,
     opened,
@@ -295,7 +77,7 @@ def composeP(
   for item in items:
     passageHtml.append(
         _plainTextS2(
-            extraApi,
+            app,
             item,
             opened,
             sec2,
@@ -308,7 +90,7 @@ def composeP(
 
 
 def compose(
-    extraApi,
+    app,
     tuples,
     features,
     start,
@@ -321,11 +103,11 @@ def compose(
     linked=1,
     **options,
 ):
-  api = extraApi.api
+  api = app.api
   F = api.F
 
   if condenseType is None:
-    condenseType = extraApi.condenseType
+    condenseType = app.condenseType
   item = condenseType if condensed else RESULT
 
   features = set(reduce(
@@ -333,9 +115,8 @@ def compose(
       (x[1] for x in features),
       set(),
   ))
-  extraFeatures = features - extraApi.standardFeatures
-  if extraFeatures:
-    extraApi.prettySetup(extraFeatures)
+  if features:
+    app.prettySetup(features)
 
   tuplesHtml = []
   doHeader = False
@@ -360,7 +141,7 @@ def compose(
 ''')
     tuplesHtml.append(
         plainTuple(
-            extraApi,
+            app,
             tup,
             i,
             isCondensed=condensed,
@@ -375,13 +156,13 @@ def compose(
             **options,
         )
     )
-  if extraFeatures:
-    extraApi.prettySetup()
+  if features:
+    app.prettySetup()
   return '\n'.join(tuplesHtml)
 
 
 def table(
-    extraApi,
+    app,
     tuples,
     condensed=False,
     condenseType=None,
@@ -393,11 +174,11 @@ def table(
     asString=False,
     **options,
 ):
-  api = extraApi.api
+  api = app.api
   F = api.F
 
   if condenseType is None:
-    condenseType = extraApi.condenseType
+    condenseType = app.condenseType
   item = condenseType if condensed else RESULT
 
   if condensed:
@@ -412,7 +193,7 @@ def table(
       markdown.append(' | '.join('---' for n in range(nColumns + 1)))
       one = False
     markdown.append(plainTuple(
-        extraApi,
+        app,
         tup,
         i,
         isCondensed=condensed,
@@ -433,7 +214,7 @@ def table(
 
 
 def plainTuple(
-    extraApi,
+    app,
     tup,
     seqNumber,
     isCondensed=False,
@@ -447,13 +228,13 @@ def plainTuple(
     asString=False,
     **options,
 ):
-  asApp = extraApi.asApp
-  api = extraApi.api
+  asApp = app.asApp
+  api = app.api
   F = api.F
   T = api.T
   if asApp:
     prettyRep = prettyTuple(
-        extraApi,
+        app,
         tup,
         seqNumber,
         isCondensed=isCondensed,
@@ -466,7 +247,7 @@ def plainTuple(
     attOpen = ' open ' if opened else ''
     refColumn = 1 if isCondensed else linked
     refNode = tup[refColumn - 1] if refColumn <= len(tup) else None
-    refRef = '' if refNode is None else extraApi.webLink(refNode)
+    refRef = '' if refNode is None else app.sectionLink(refNode)
     tupSeq = ','.join(str(n) for n in tup)
     sParts = T.sectionFromNode(refNode)
     passageAtt = ' '.join(
@@ -475,7 +256,7 @@ def plainTuple(
     )
 
     plainRep = ''.join(
-        f'''<span>{mdEsc(extraApi.plain(
+        f'''<span>{mdEsc(app.plain(
                     n,
                     linked=i == linked - 1,
                     fmt=fmt,
@@ -510,7 +291,7 @@ def plainTuple(
   markdown = [str(seqNumber)]
   for (i, n) in enumerate(tup):
     markdown.append(
-        mdEsc(extraApi.plain(
+        mdEsc(app.plain(
             n,
             linked=i == linked - 1,
             fmt=fmt,
@@ -530,7 +311,7 @@ def plainTuple(
 
 
 def _plainTextS2(
-    extraApi,
+    app,
     sNode,
     opened,
     sec2,
@@ -538,14 +319,14 @@ def _plainTextS2(
     withNodes=False,
     **options,
 ):
-  api = extraApi.api
+  api = app.api
   T = api.T
   seqNumber = T.sectionFromNode(sNode)[2]
   itemType = T.sectionTypes[2]
   isOpened = str(seqNumber) in opened
-  tClass = '' if fmt is None else extraApi.formatClass[fmt]
+  tClass = '' if fmt is None else app.formatClass[fmt]
   prettyRep = prettyTuple(
-      extraApi,
+      app,
       (sNode,),
       seqNumber,
       isCondensed=False,
@@ -566,7 +347,7 @@ def _plainTextS2(
   {attOpen}
 >
   <summary class="{tClass}">
-    {extraApi.webLink(sNode, text=seqNumber)}
+    {app.sectionLink(sNode, text=seqNumber)}
     {textRep}
   </summary>
   <div class="pretty">
@@ -579,7 +360,7 @@ def _plainTextS2(
 
 
 def show(
-    extraApi,
+    app,
     tuples,
     condensed=True,
     condenseType=None,
@@ -592,11 +373,11 @@ def show(
     highlights={},
     **options,
 ):
-  api = extraApi.api
+  api = app.api
   F = api.F
 
   if condenseType is None:
-    condenseType = extraApi.condenseType
+    condenseType = app.condenseType
   item = condenseType if condensed else RESULT
 
   if condensed:
@@ -612,7 +393,7 @@ def show(
   for (i, tup) in _tupleEnum(tuples, start, end, LIMIT_SHOW, item):
     item = F.otype.v(tup[0]) if condenseType else RESULT
     prettyTuple(
-        extraApi,
+        app,
         tup,
         i,
         isCondensed=condensed,
@@ -629,7 +410,7 @@ def show(
 
 
 def prettyTuple(
-    extraApi,
+    app,
     tup,
     seqNumber,
     item='Result',
@@ -643,7 +424,7 @@ def prettyTuple(
     rawHighlights=None,
     **options,
 ):
-  asApp = extraApi.asApp
+  asApp = app.asApp
 
   if len(tup) == 0:
     if asApp:
@@ -651,10 +432,10 @@ def prettyTuple(
     else:
       return
 
-  api = extraApi.api
+  api = app.api
 
   if condenseType is None:
-    condenseType = extraApi.condenseType
+    condenseType = app.condenseType
 
   containers = {tup[0]} if isCondensed else _condenseSet(api, tup, condenseType)
   newHighlights = (
@@ -672,7 +453,7 @@ def prettyTuple(
   if asApp:
     html = []
   for t in containers:
-    h = extraApi.pretty(
+    h = app.pretty(
         t,
         condenseType=condenseType,
         fmt=fmt,
@@ -688,7 +469,7 @@ def prettyTuple(
 
 
 def pretty(
-    extraApi,
+    app,
     n,
     condenseType=None,
     fmt=None,
@@ -697,8 +478,8 @@ def pretty(
     highlights={},
     **options,
 ):
-  asApp = extraApi.asApp
-  api = extraApi.api
+  asApp = app.asApp
+  api = app.api
   F = api.F
   L = api.L
   otypeRank = api.otypeRank
@@ -725,7 +506,7 @@ def pretty(
   html = []
   if type(highlights) is set:
     highlights = {m: '' for m in highlights}
-  extraApi._pretty(
+  app._pretty(
       n,
       True,
       html,
@@ -745,14 +526,14 @@ def pretty(
 
 
 def prettyPre(
-    extraApi,
+    app,
     n,
     firstSlot,
     lastSlot,
     withNodes,
     highlights,
 ):
-  api = extraApi.api
+  api = app.api
   F = api.F
 
   slotType = F.otype.slotType
@@ -783,7 +564,7 @@ def prettyPre(
     hlStyle = f' style="background-color: {hl};"'
 
   nodePart = (f'<a href="#" class="nd">{n}</a>' if withNodes else '')
-  className = extraApi.classNames.get(nType, None)
+  className = app.classNames.get(nType, None)
 
   return (
       slotType, nType,
@@ -793,23 +574,22 @@ def prettyPre(
   )
 
 
-def prettySetup(extraApi, features=None, noneValues=None):
+def prettySetup(app, features=None, noneValues=None):
   if features is None:
-    extraApi.prettyFeatures = ()
+    app.prettyFeatures = ()
   else:
     featuresRequested = tuple(
         features.strip().split()
     ) if type(features) is str else tuple(sorted(features))
-    tobeLoaded = set(featuresRequested) - extraApi.prettyFeaturesLoaded
-    sys.stdout.flush()
+    tobeLoaded = set(featuresRequested) - app.prettyFeaturesLoaded
     if tobeLoaded:
-      extraApi.api.TF.load(tobeLoaded, add=True, silent=True)
-      extraApi.prettyFeaturesLoaded |= tobeLoaded
-    extraApi.prettyFeatures = featuresRequested
+      app.api.TF.load(tobeLoaded, add=True, silent=True)
+      app.prettyFeaturesLoaded |= tobeLoaded
+    app.prettyFeatures = featuresRequested
   if noneValues is None:
-    extraApi.noneValues = extraApi.noneValues
+    app.noneValues = app.noneValues
   else:
-    extraApi.noneValues = noneValues
+    app.noneValues = noneValues
 
 
 def getBoundary(api, n):
@@ -823,12 +603,12 @@ def getBoundary(api, n):
 
 
 def getFeatures(
-    extraApi, n, suppress, features,
+    app, n, suppress, features,
     withName=set(),
     givenValue={},
     plain=False,
 ):
-  api = extraApi.api
+  api = app.api
   Fs = api.Fs
 
   featurePartB = '<div class="features">'
@@ -836,13 +616,13 @@ def getFeatures(
 
   givenFeatureSet = set(features)
   extraFeatures = (
-      tuple(f for f in extraApi.prettyFeatures if f not in givenFeatureSet)
+      tuple(f for f in app.prettyFeatures if f not in givenFeatureSet)
   )
+  extraSet = set(extraFeatures)
   featureList = tuple(features) + extraFeatures
-  sys.stdout.flush()
   nFeatures = len(features)
 
-  withName |= set(extraApi.prettyFeatures)
+  withName |= set(app.prettyFeatures)
 
   if not plain:
     featurePart = featurePartB
@@ -857,11 +637,12 @@ def getFeatures(
           if name in givenValue else
           Fs(name).v(n)
       )
-      if value not in extraApi.noneValues:
+      if value not in app.noneValues:
         if name not in givenValue:
           value = htmlEsc(value)
         nameRep = f'<span class="f">{name}=</span>' if name in withName else ''
-        featureRep = f' <span class="{name}">{nameRep}{value}</span>'
+        xClass = ' xft' if name in extraSet else ''
+        featureRep = f' <span class="{name}{xClass}">{nameRep}{value}</span>'
 
         if i >= nFeatures:
           if not hasB:
@@ -951,15 +732,15 @@ def getResultsX(api, results, features, noDescendTypes, fmt=None):
   return tuple(rows)
 
 
-def header(extraApi):
+def header(app):
   return (
       f'''
 <div class="hdlinks">
-  {extraApi.dataLink}
-  {extraApi.charLink}
-  {extraApi.featureLink}
-  {extraApi.tfsLink}
-  {extraApi.tutLink}
+  {app.dataLink}
+  {app.charLink}
+  {app.featureLink}
+  {app.tfsLink}
+  {app.tutLink}
 </div>
 ''',
       f'<img class="hdlogo" src="/data/static/logo.png"/>',
@@ -967,31 +748,11 @@ def header(extraApi):
   )
 
 
-def outLink(text, href, title=None, passage=None, className=None, target='_blank'):
-  titleAtt = '' if title is None else f' title="{title}"'
-  classAtt = f' class="{className}"' if className else ''
-  targetAtt = f' target="{target}"' if target else ''
-  passageAtt = f' sec="{passage}"' if passage else ''
-  return f'<a{classAtt}{targetAtt} href="{href}"{titleAtt}{passageAtt}>{text}</a>'
-
-
-def compileFormatClass(formatCSS, formats, defaultCls, defaultClsOrig):
-  result = {None: defaultClsOrig}
-  for fmt in formats:
-    for (key, cls) in formatCSS.items():
-      if f'-{key}-' in fmt:
-        result[fmt] = cls
-  for fmt in formats:
-    if fmt not in result:
-      result[fmt] = defaultCls
-  return result
-
-
-def nodeFromDefaultSection(extraApi, sectionStr):
-  api = extraApi.api
+def nodeFromDefaultSection(app, sectionStr):
+  api = app.api
   T = api.T
-  sep1 = extraApi.sectionSep1
-  sep2 = extraApi.sectionSep2
+  sep1 = app.sectionSep1
+  sep2 = app.sectionSep2
   msg = f'Not a valid passage: "{sectionStr}"'
   msgi = '{} "{}" is not a number'
   section = sectionStr.split(sep1)

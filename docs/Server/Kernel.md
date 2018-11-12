@@ -88,23 +88,23 @@
         and fly swiftly through the connecting pipe. 
 
 ??? abstract "header()"
-    Calls the `header()` method of the extraApi,
+    Calls the `header()` method of the app,
     which fetches all the stuff to create a header
     on the page with links to data and documentation of the
     data source.
 
 ??? abstract "provenance()"
-    Calls the `provenance()` method of the extraApi,
+    Calls the `provenance()` method of the app,
     which fetches provenance metadata to be shown
     on exported pages.
 
 ??? abstract "css()"
-    Calls the `loadCSS()` method of the extraApi,
+    Calls the `loadCSS()` method of the app,
     which delivers the CSS code to be inserted
     on the browser page.
 
 ??? abstract "condenseTypes()"
-    Fetches several things from the extraApi and the 
+    Fetches several things from the app and the 
     generic TF api:
 
     * `condenseType`: the default node type that acts

@@ -46,6 +46,13 @@ def getLocalClones(cargs=sys.argv):
   return False
 
 
+def getModules(cargs=sys.argv):
+  for arg in cargs[1:]:
+    if arg.startswith('--mod='):
+      return arg
+  return ''
+
+
 def getParam(cargs=sys.argv, interactive=False):
   myDir = os.path.dirname(os.path.abspath(__file__))
   dataSourcesParent = getAppDir(myDir, '')

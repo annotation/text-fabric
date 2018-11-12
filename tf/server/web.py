@@ -15,12 +15,12 @@ from bottle import (post, get, route, template, request, static_file, run)
 from tf.fabric import NAME, VERSION, DOI, DOI_URL, COMPOSE_URL
 from tf.server.kernel import makeTfConnection
 from tf.server.common import (
-    getParam, getDebug, getConfig, getDocker, getLocalClones,
+    getParam, getModules, getDebug, getConfig, getDocker, getLocalClones,
     getAppDir, getValues, setValues,
     pageLinks, passageLinks,
     shapeMessages, shapeOptions, shapeCondense, shapeFormats,
 )
-from tf.apphelpers import RESULT, URL_GH
+from tf.apphelpers import RESULT
 
 
 COMPOSE = 'Compose results example'
@@ -28,14 +28,6 @@ COMPOSE = 'Compose results example'
 BATCH = 20
 DEFAULT_NAME = 'DefaulT'
 EXTENSION = '.tfjob'
-
-
-def liveText(org, repo, version, release):
-  return f'{org}/{repo} v:{version} (r{release})'
-
-
-def liveUrl(org, repo, version, release):
-  return f'{URL_GH}/{org}/{repo}/releases/download/{release}/{version}.zip'
 
 
 myDir = os.path.dirname(os.path.abspath(__file__))
@@ -63,7 +55,7 @@ def getStuff(lgc):
   return config
 
 
-def getProvenance(form, releaseInfo):
+def getProvenance(form, provenance):
   utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
   utc_offset = datetime.timedelta(seconds=-utc_offset_sec)
   now = datetime.datetime.now().replace(
@@ -72,40 +64,27 @@ def getProvenance(form, releaseInfo):
   job = form['jobName']
   author = form['author']
 
-  prov = ()
-  config = getConfig(dataSource)
-  if config is not None:
-    version = config.VERSION
-    cfg = config.configure(lgc, version=version)
-    prov = cfg['provenance']
-    org = cfg['org']
-    repo = cfg['repo']
-    relative = cfg['relative']
-    release = releaseInfo[f'{org}/{repo}/{relative}']
-
   dataHtml = ''
   dataMd = ''
 
-  for dataset in prov:
-    corpusName = dataset['corpus']
-    corpusVersion = dataset['version']
-    (corpusLive, corpusLiveUrl) = (
-        liveText(org, repo, version, release),
-        liveUrl(org, repo, version, release),
-    )
-    corpusLiveHtml = f'<a href="{corpusLiveUrl}">{corpusLive}</a>'
-    corpusLiveMd = f'[{corpusLive}]({corpusLiveUrl})'
-    (corpusDoi, corpusDoiUrl) = dataset['doi']
-    corpusDoiHtml = f'<a href="{corpusDoiUrl}">{corpusDoi}</a>'
-    corpusDoiMd = f'[{corpusDoi}]({corpusDoiUrl})'
+  for d in provenance:
+    corpus = d['corpus']
+    version = d['version']
+    release = d['release']
+    (live, liveUrl) = d['live']
+    liveHtml = f'<a href="{liveUrl}">{live}</a>'
+    liveMd = f'[{live}]({liveUrl})'
+    (doi, doiUrl) = d['doi']
+    doiHtml = f'<a href="{doiUrl}">{doi}</a>'
+    doiMd = f'[{doi}]({doiUrl})'
     dataHtml += f'''
     <div class="pline">
       <div class="pname">Data:</div>
-      <div class="pval">{corpusName}</div>
+      <div class="pval">{corpus}</div>
     </div>
     <div class="p2line">
       <div class="pname">version</div>
-      <div class="pval">{corpusVersion}</div>
+      <div class="pval">{version}</div>
     </div>
     <div class="p2line">
       <div class="pname">release</div>
@@ -113,18 +92,18 @@ def getProvenance(form, releaseInfo):
     </div>
     <div class="p2line">
       <div class="pname">download</div>
-      <div class="pval">{corpusLiveHtml}</div>
+      <div class="pval">{liveHtml}</div>
     </div>
     <div class="p2line">
       <div class="pname">DOI</div>
-      <div class="pval">{corpusDoiHtml}</div>
+      <div class="pval">{doiHtml}</div>
     </div>
 '''
-    dataMd += f'''Data source | {corpusName}
-version | {corpusVersion}
+    dataMd += f'''Data source | {corpus}
+version | {version}
 release | {release}
-download   | {corpusLiveMd}
-DOI | {corpusDoiMd}'''
+download   | {liveMd}
+DOI | {doiMd}'''
 
   tool = f'{NAME} {VERSION}'
   toolDoiHtml = f'<a href="{DOI_URL}">{DOI}</a>'
@@ -382,8 +361,8 @@ def serveSearch(anything):
   kernelApi = TF.connect()
   (header, appLogo, tfLogo) = kernelApi.header()
   css = kernelApi.css()
-  releaseInfo = dict(x.split('\t') for x in kernelApi.release())
-  (provenanceHtml, provenanceMd) = getProvenance(form, releaseInfo)
+  provenance = kernelApi.provenance()
+  (provenanceHtml, provenanceMd) = getProvenance(form, provenance)
 
   (
       defaultCondenseType,
@@ -528,7 +507,10 @@ def serveSearch(anything):
 
 if __name__ == "__main__":
   dataSource = getParam(interactive=True)
+  modules = getModules()
+
   if dataSource is not None:
+    modules = tuple(modules[6:].split(',')) if modules else ()
     lgc = getLocalClones()
     debug = getDebug()
     config = getStuff(lgc)

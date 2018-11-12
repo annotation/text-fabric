@@ -9,7 +9,7 @@ from tf.apphelpers import (
     search,
     table, plainTuple,
     show, prettyPre, pretty, prettyTuple, prettySetup,
-    getData, getDataCustom, getFeatures,
+    getData, getDataFile, getFeatures,
     compileFormatClass,
     nodeFromDefaultSection,
     htmlEsc, mdEsc,
@@ -19,10 +19,6 @@ from tf.apphelpers import (
 
 from tf.server.common import getConfig
 from tf.notebook import location
-
-
-def IMAGE_DIR(sourceDir, version):
-  return f'{sourceDir}/images'
 
 
 PHOTO_TO = '{}/tablets/photos'
@@ -125,6 +121,40 @@ ATF_TYPES = set('''
 
 CSS = '''
 <style type="text/css">
+.features {
+    font-family: monospace;
+    font-size: medium;
+    font-weight: bold;
+    color: #0a6611;
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 0.1em;
+    margin: 0.1em;
+    direction: ltr;
+}
+.features div,.features span {
+    padding: 0;
+    margin: -0.1rem 0;
+}
+.features .f {
+    font-family: sans-serif;
+    font-size: x-small;
+    font-weight: normal;
+    color: #5555bb;
+}
+.features .xft {
+  color: #000000;
+  background-color: #eeeeee;
+  font-size: medium;
+  margin: 0.1em 0em;
+}
+.features .xft .f {
+  color: #000000;
+  background-color: #eeeeee;
+  font-style: italic;
+  font-size: small;
+  font-weight: normal;
+}
 .pnum {
     font-family: sans-serif;
     font-size: small;
@@ -339,6 +369,8 @@ FORMAT_CSS = dict(
 
 NO_DESCEND = {'lex'}
 
+NONE_VALUES = {None}
+
 SECTION_SEP1 = ' '
 SECTION_SEP2 = ':'
 
@@ -537,6 +569,7 @@ class Cunei(Atf):
   def __init__(
       self,
       name=None,
+      moduleSpecs=(),
       asApp=False,
       version='1.0',
       lgc=False,
@@ -548,8 +581,7 @@ class Cunei(Atf):
     cfg = config.configure(lgc, version=version)
     self.asApp = asApp
     self.silent = silent
-
-    self.release = {}
+    self.api = None
 
     (release, base) = getData(
         cfg['org'],
@@ -566,24 +598,46 @@ class Cunei(Atf):
     if release:
       self.release[f'{cfg["org"]}/{cfg["repo"]}/{cfg["relative"]}'] = release
 
+    good = True
+    for m in moduleSpecs:
+      (release, base) = getData(
+          m['org'],
+          m['repo'],
+          m['relative'],
+          version,
+          lgc,
+          check,
+          silent=silent,
+      )
+      if not base:
+        good = False
+        continue
+
+      if release:
+        self.release[f'{m["org"]}/{m["repo"]}/{m["relative"]}'] = release
+
+    if not good:
+      return
+
     repoRel = f'{cfg["org"]}/{cfg["repo"]}'
     repo = f'{base}/{repoRel}'
     self.repo = repo
     self.version = version
     self.charUrl = cfg['charUrl']
-    self.sourceDir = f'{repo}/{cfg["sourceDir"]}'
-    self.imageDir = f'{repo}/{IMAGE_DIR(cfg["sourceDir"], version)}'
+    self.imageDir = f'{repo}/{cfg["relativeImages"]}'
+    return
     self.localImageDir = cfg['localImageDir']
     if not os.path.exists(self.imageDir):
-      getDataCustom(
+      getDataFile(
           cfg['org'],
           cfg['repo'],
           cfg['relativeImages'],
           release,
           '',
-          self.sourceDir,
+          repo,
           withPaths=True,
           silent=silent,
+          keep=True,
       )
     self.repoTempDir = f'{repo}/{cfg["tempDir"]}'
     self._imagery = {}
@@ -622,13 +676,13 @@ class Cunei(Atf):
     docUrl = f'{URL_GH}/{repoRel}/blob/master/docs'
     tutUrl = f'{URL_NB}/{cfg["org"]}/tutorials/blob/master/search.ipynb'
     extraUrl = TFDOC_URL(f'/Api/{cfg["repo"].capitalize()}/')
-    dataLink = outLink(self.corpusFull, f'{docUrl}/about.md', 'provenance of this corpus')
+    dataLink = outLink(self.corpusFull, f'{docUrl}/about/', 'provenance of this corpus')
     charLink = (
         outLink('Character table', self.charUrl, 'Cuneiform characters and transcriptions')
         if self.charUrl else
         ''
     )
-    featureLink = outLink('Feature docs', f'{docUrl}/transcription.md', 'feature documentation')
+    featureLink = outLink('Feature docs', f'{docUrl}/transcription/', 'feature documentation')
     cuneiLink = outLink('Cunei API', extraUrl, 'cunei api documentation')
     tfLink = outLink(
         f'Text-Fabric API {api.TF.version}', API_URL(''),
@@ -674,7 +728,7 @@ This notebook online:
           os.makedirs(cdir, exist_ok=True)
 
     self.classNames = {nType[0]: nType[0] for nType in api.C.levels.data}
-    self.noneValues = set()
+    self.noneValues = NONE_VALUES
 
     if not asApp:
       if inNb:
@@ -813,7 +867,7 @@ This notebook online:
       return result
     dh(result)
 
-  def webLink(self, n, text=None):
+  def sectionLink(self, n, text=None):
     return self.tabletLink(n, className='rwh', text=text, asString=True, noUrl=True)
 
   def plain(
@@ -1017,7 +1071,7 @@ This notebook online:
       seen.add(n)
       children = E.sub.f(n)
     elif nType == slotType:
-      featurePart = self._getAtf(n)
+      featurePart = self._getAtf(n) + getFeatures(self, n, suppress, ())
       seen.add(n)
       if not outer and F.type.v(n) == 'empty':
         return

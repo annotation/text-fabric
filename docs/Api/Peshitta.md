@@ -97,9 +97,9 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
 ## Linking
 
-??? abstract "A.pshLink()"
+??? abstract "A.webLink()"
     ```python
-    A.pshLink(node, text=None)
+    A.webLink(node, text=None)
     ```
 
     ???+ "Description"
@@ -121,7 +121,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
     ??? example "Word 100000 in ETCBC/WIT"
         ```python
-        A.pshLink(100000)
+        A.webLink(100000)
         ```
 
 ## Plain display
