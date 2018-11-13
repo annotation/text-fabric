@@ -6,7 +6,7 @@
     [Peshitta](http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb),
     [Syriac New Testament](http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb),
     and the
-    [Uruk Cuneiform Tablets](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
+    [Uruk Cuneiform Tablets](http://nbviewer.jupyter.org/github/nino-cunei/uruk/blob/master/tutorial/start.ipynb)
     put the Text-Fabric API on show for vastly different corpora.
 
 ???+ note "Generic API"
@@ -19,7 +19,7 @@
     *   Hebrew Bible: [BHSA](Bhsa.md)
     *   Peshitta: [Peshitta](Peshitta.md)
     *   Syriac New Testament: [SyrNT](Syrnt.md)
-    *   Proto-cuneiform tablets from Uruk: [Cunei](Cunei.md)
+    *   Proto-cuneiform tablets from Uruk: [Uruk](Uruk.md)
 
 ## Loading
 
@@ -916,7 +916,7 @@
     [Peshitta](https://github.com/ETCBC/peshitta/blob/master/tutorial/search.ipynb),
     [SyrNT](https://github.com/ETCBC/syrnt/blob/master/tutorial/search.ipynb),
     and
-    [Cuneiform](https://github.com/Nino-cunei/tutorials/blob/master/search.ipynb).
+    [Cuneiform](https://github.com/Nino-cunei/uruk/blob/master/tutorial/search.ipynb).
 
     Finally an example with quantifiers. We want all clauses where Pred-phrases
     consist of verbs only:
@@ -1685,7 +1685,7 @@
         If you work in one of the corpora for which the TF-API has been extended,
         you will be provided with more powerful methods `show()` and `table()`
         to display your results.
-        See [Cunei](Cunei.md), [Bhsa](Bhsa.md), [Peshitta](Peshitta.md) and [Syrnt](Syrnt.md).
+        See [Uruk](Uruk.md), [Bhsa](Bhsa.md), [Peshitta](Peshitta.md) and [Syrnt](Syrnt.md).
 
 
 ## Features

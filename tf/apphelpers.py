@@ -10,6 +10,10 @@ RESULT = 'result'
 
 FONT_BASE = 'https://github.com/Dans-labs/text-fabric/blob/master/tf/server/static/fonts'
 
+CSS_FONT = '''
+    <link rel="stylesheet" href="/server/static/fonts.css"/>
+'''
+
 CSS_FONT_API = f'''
 <style>
 @font-face {{{{

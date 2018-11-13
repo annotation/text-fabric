@@ -33,7 +33,7 @@ the command line. Here are the precise
 
 ## On Windows?
 
-You can click the Start Menu, and type `text-fabric bhsa` or `text-fabric cunei`
+You can click the Start Menu, and type `text-fabric bhsa` or `text-fabric uruk`
 in the search box, and then Enter.
 
 ## On Linux or Macos?
@@ -46,7 +46,7 @@ text-fabric bhsa
 or 
 
 ```sh
-text-fabric cunei
+text-fabric uruk
 ```
 
 The corpus data will be downloaded automatically,
@@ -59,7 +59,7 @@ There you'll find links to further help.
 </p>
 
 <p>
-<img src="/docs/images/cunei-app.png"/>
+<img src="/docs/images/uruk-app.png"/>
 </p>
 
 # Documentation
@@ -86,7 +86,7 @@ app | dataset
 `bhsa` | [Biblia Hebraica Stuttgartensia Amstelodamensis](https://github.com/etcbc/bhsa)
 `peshitta` | [Peshitta (Syriac Old Testament](https://github.com/etcbc/peshitta)
 `syrnt` | [Syriac New Testament](https://github.com/etcbc/syrnt)
-`cunei` | [Proto-Cuneiform tablets from Uruk IV/III](https://github.com/nino-cunei/uruk)
+`uruk` | [Proto-Cuneiform tablets from Uruk IV/III](https://github.com/nino-cunei/uruk)
 
 An app takes care of automatic downloading of the dataset and it supports the Text-Fabric browser.
 

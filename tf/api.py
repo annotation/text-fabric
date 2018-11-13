@@ -1,5 +1,5 @@
 import collections
-from .helpers import makeInverse, makeInverseVal
+from .helpers import makeInverse, makeInverseVal, console
 from .locality import Locality
 from .text import Text
 from .search.search import Search
@@ -286,7 +286,7 @@ class Api(object):
       if '_' not in member and member != 'makeAvailableIn':
         scope[member] = getattr(self, member)
         if member not in API_REFS:
-          print(f'WARNING: API member "{member}" not documented')
+          console(f'WARNING: API member "{member}" not documented')
 
     grouped = {}
     for (member, (head, sub, ref)) in API_REFS.items():

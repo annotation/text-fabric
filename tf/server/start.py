@@ -7,9 +7,12 @@ import webbrowser
 from time import sleep
 from subprocess import PIPE, Popen
 
+from tf.helpers import console
 from tf.fabric import NAME, VERSION
 from tf.server.common import (
-    getParam, getModules, getDebug, getCheck, getNoweb, getDocker, getConfig, getLocalClones
+    getParam, getModules, getDebug, getCheck, getNoweb, getDocker,
+    getAppConfig,
+    getLocalClones
 )
 from tf.server.kernel import TF_DONE, TF_ERROR
 
@@ -172,9 +175,9 @@ def killProcesses(dataSource, modules, kill=False):
               proc.kill()
             else:
               proc.terminate()
-            print(f'Process {kind} server for {ds}: {item}')
+            console(f'Process {kind} server for {ds}: {item}')
           except psutil.NoSuchProcess:
-            print(f'Process {kind} server for {ds}: already {item}')
+            console(f'Process {kind} server for {ds}: already {item}', error=True)
 
 
 def getKill(cargs=sys.argv):
@@ -185,9 +188,9 @@ def getKill(cargs=sys.argv):
 
 
 def main(cargs=sys.argv):
-  print(BANNER)
+  console(BANNER)
   if len(cargs) >= 2 and any(arg in {'--help', '-help', '-h', '?', '-?'} for arg in cargs[1:]):
-    print(HELP)
+    console(HELP)
     return
   if len(cargs) >= 2 and any(arg in {'--version', '-version', '-v'} for arg in cargs[1:]):
     return
@@ -224,11 +227,11 @@ def main(cargs=sys.argv):
   kdataSource = (modules, *kdataSource) if modules else kdataSource
 
   if dataSource is not None:
-    config = getConfig(dataSource)
+    config = getAppConfig(dataSource)
     pKernel = None
     pWeb = None
     if config is not None:
-      print(f'Cleaning up remnant processes, if any ...')
+      console(f'Cleaning up remnant processes, if any ...')
       killProcesses(dataSource, modules, kill=True)
       pythonExe = 'python' if isWin else 'python3'
 
@@ -237,7 +240,7 @@ def main(cargs=sys.argv):
           stdout=PIPE, bufsize=1, encoding='utf-8',
       )
 
-      print(f'Loading data for {dataSource}. Please wait ...')
+      console(f'Loading data for {dataSource}. Please wait ...')
       for line in pKernel.stdout:
         sys.stdout.write(line)
         if line.rstrip() == TF_ERROR:
@@ -253,7 +256,7 @@ def main(cargs=sys.argv):
 
       if not noweb:
         sleep(1)
-        print(f'Opening {dataSource} in browser')
+        console(f'Opening {dataSource} in browser')
         webbrowser.open(
             f'{config.protocol}{config.host}:{config.webport}',
             new=2,
@@ -265,15 +268,15 @@ def main(cargs=sys.argv):
           for line in pKernel.stdout:
             sys.stdout.write(line)
         except KeyboardInterrupt:
-          print('')
+          console('')
           if pWeb:
             pWeb.terminate()
-            print('TF webserver has stopped')
+            console('TF webserver has stopped')
           if pKernel:
             pKernel.terminate()
             for line in pKernel.stdout:
               sys.stdout.write(line)
-            print('TF kernel has stopped')
+            console('TF kernel has stopped')
 
 
 if __name__ == "__main__":

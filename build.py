@@ -8,7 +8,7 @@ from subprocess import run, Popen
 
 import psutil
 
-from tf.server.common import getConfig
+from tf.server.common import getAppConfig
 from tf.zipdata import zipData
 
 HELP = '''
@@ -28,12 +28,12 @@ r     : build for shipping, leave version as is
 r1    : build for shipping, version becomes r1+1.0.0
 r2    : build for shipping, version becomes r1.r2+1.0
 r3    : build for shipping, version becomes r1.r2.r3+1
-a     : open text-fabric browser on specific dataset (bhsa, peshitta, syrnt, cunei)
+a     : open text-fabric browser on specific dataset (bhsa, peshitta, syrnt, uruk)
 t     : run test suite (relations)
 data  : build data files for github release
 
 For g and the r-commands you need to pass a commit message as well.
-For data you need to pass an app argument: bhsa, peshitta, syrnt or cunei
+For data you need to pass an app argument: bhsa, peshitta, syrnt or uruk
 '''
 
 DIST = 'dist'
@@ -81,7 +81,7 @@ def readArgs():
   if arg in {'a', 't', 'data'}:
     if len(args) < 2:
       if arg in {'t', 'data'}:
-        print('Provide a data source [bhsa|peshitta|syrnt|cunei]')
+        print('Provide a data source [bhsa|peshitta|syrnt|uruk]')
       elif arg in {'a'}:
         print('Provide a test suite [relations]')
       return (False, None, [])
@@ -159,7 +159,7 @@ def shipDocs():
 
 
 def shipData(app, remaining):
-  config = getConfig(app)
+  config = getAppConfig(app)
   if not config:
     print('Data not shipped')
     return
@@ -222,7 +222,7 @@ def codestats():
       '__pycache__,node_modules,.tmp,.git,_temp,'
       '.ipynb_checkpoints,images,fonts,favicons,compiled'
   )
-  xdtf = xd + ',search,server,extra'
+  xdtf = xd + ',search,server,apps'
   xdtest = xd + ',tf'
   rfFmt = 'docs/Code/Stats{}.md'
   cmdLine = (
@@ -240,7 +240,7 @@ def codestats():
   run(cmdLine.format(xdtf, nex, 'Base', 'tf'), shell=True)
   run(cmdLine.format(xd, nex, 'Search', 'tf/search'), shell=True)
   run(cmdLine.format(xd, nex, 'Server', 'tf/server'), shell=True)
-  run(cmdLine.format(xd, nex, 'Apps', 'tf/extra'), shell=True)
+  run(cmdLine.format(xd, nex, 'Apps', 'tf/apps'), shell=True)
   run(cmdLine.format(xdtest, tex, 'Test', 'test/generic'), shell=True)
 
 

@@ -2,7 +2,7 @@ import os
 import collections
 from glob import glob
 from .data import Data, WARP, WARP2_DEFAULT, MEM_MSG
-from .helpers import itemize, expandDir, collectFormats, cleanName, check32
+from .helpers import itemize, expandDir, collectFormats, cleanName, check32, console
 from .timestamp import Timestamp
 from .prepare import (levels, order, rank, levUp, levDown, boundary, sections)
 from .api import (
@@ -171,13 +171,13 @@ Example data  : {}
       try:
         self._updateApi(silent)
       except MemoryError:
-        print(MEM_MSG)
+        console(MEM_MSG)
         return False
     else:
       try:
         result = self._makeApi(silent)
       except MemoryError:
-        print(MEM_MSG)
+        console(MEM_MSG)
         return False
       return result
 

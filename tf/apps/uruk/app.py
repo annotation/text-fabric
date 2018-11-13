@@ -1,24 +1,16 @@
 import os
 import re
-import types
 from glob import glob
 from shutil import copyfile
 
-from tf.fabric import Fabric
+from tf.helpers import console
 from tf.apphelpers import (
-    search,
-    table, plainTuple,
-    show, prettyPre, pretty, prettyTuple, prettySetup,
-    getData, getDataFile, getFeatures,
-    compileFormatClass,
-    nodeFromDefaultSection,
+    prettyPre,
+    getFeatures,
     htmlEsc, mdEsc,
-    dm, dh, header, outLink,
-    URL_GH, URL_NB, API_URL, TFDOC_URL
+    dm, dh,
 )
-
-from tf.server.common import getConfig
-from tf.notebook import location
+from tf.app import setupApi, outLink, getData
 
 
 PHOTO_TO = '{}/tablets/photos'
@@ -27,6 +19,11 @@ PHOTO_EXT = 'jpg'
 TABLET_TO = '{}/tablets/lineart'
 IDEO_TO = '{}/ideographs/lineart'
 LINEART_EXT = 'jpg'
+
+LOCAL_IMAGE_DIR = 'cdli-imagery'
+
+TEMP_DIR = '_temp'
+REPORT_DIR = 'reports'
 
 URL_FORMAT = dict(
     tablet=dict(
@@ -118,261 +115,6 @@ ATF_TYPES = set('''
     quad
     cluster
 '''.strip().split())
-
-CSS = '''
-<style type="text/css">
-.features {
-    font-family: monospace;
-    font-size: medium;
-    font-weight: bold;
-    color: #0a6611;
-    display: flex;
-    flex-flow: column nowrap;
-    padding: 0.1em;
-    margin: 0.1em;
-    direction: ltr;
-}
-.features div,.features span {
-    padding: 0;
-    margin: -0.1rem 0;
-}
-.features .f {
-    font-family: sans-serif;
-    font-size: x-small;
-    font-weight: normal;
-    color: #5555bb;
-}
-.features .xft {
-  color: #000000;
-  background-color: #eeeeee;
-  font-size: medium;
-  margin: 0.1em 0em;
-}
-.features .xft .f {
-  color: #000000;
-  background-color: #eeeeee;
-  font-style: italic;
-  font-size: small;
-  font-weight: normal;
-}
-.pnum {
-    font-family: sans-serif;
-    font-size: small;
-    font-weight: bold;
-    color: #444444;
-}
-.nd {
-    font-family: monospace;
-    font-size: x-small;
-    color: #999999;
-}
-.meta {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    align-content: flex-start;
-    flex-flow: row nowrap;
-}
-.features,.comments {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    align-content: flex-start;
-    flex-flow: column nowrap;
-}
-.children {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    align-content: flex-start;
-    border: 0;
-    background-color: #ffffff;
-}
-.children.tablet,.children.face {
-    flex-flow: row nowrap;
-}
-.children.column {
-    align-items: stretch;
-    flex-flow: column nowrap;
-}
-.children.line,.children.case {
-    align-items: stretch;
-    flex-flow: row nowrap;
-}
-.children.caseh,.children.trminalh {
-    flex-flow: row nowrap;
-}
-.children.casev,.children.trminalv {
-    flex-flow: column nowrap;
-}
-.children.trminal {
-    flex-flow: row nowrap;
-}
-.children.cluster {
-    flex-flow: row wrap;
-}
-.children.quad {
-    flex-flow: row wrap;
-}
-.children.sign {
-    flex-flow: column nowrap;
-}
-.contnr {
-    width: fit-content;
-}
-.contnr.tablet,.contnr.face,.contnr.column,
-.contnr.line,.contnr.case,.contnr.trminal,
-.contnr.comment,
-.contnr.cluster,
-.contnr.quad,.contnr.sign {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    align-content: flex-start;
-    flex-flow: column nowrap;
-    background: #ffffff none repeat scroll 0 0;
-    padding:  0.5em 0.1em 0.1em 0.1em;
-    margin: 0.8em 0.1em 0.1em 0.1em;
-    border-radius: 0.2em;
-    border-style: solid;
-    border-width: 0.2em;
-    font-size: small;
-}
-.contnr.tablet,.contnr.face,.contnr.column {
-    border-color: #bb8800;
-}
-.contnr.line,.contnr.case,.contnr.trminal {
-    border-color: #0088bb;
-}
-.contnr.cluster {
-    flex-flow: row wrap;
-    border: 0;
-}
-.contnr.sign,.contnr.quad {
-    border-color: #bbbbbb;
-}
-.contnr.comment {
-    background-color: #ffddaa;
-    border: 0.2em solid #eecc99;
-    border-radius: 0.3em;
-}
-.contnr.hl {
-    background-color: #ffee66;
-}
-.lbl.tablet,.lbl.face,.lbl.column,
-.lbl.line,.lbl.case,.lbl.trminal,
-.lbl.comment,
-.lbl.cluster,
-.lbl.quad,.lbl.sign {
-    margin-top: -1.2em;
-    margin-left: 1em;
-    background: #ffffff none repeat scroll 0 0;
-    padding: 0 0.3em;
-    border-style: solid;
-    font-size: small;
-    color: #0000cc;
-    display: block;
-}
-.lbl.tablet,.lbl.face,.lbl.column {
-    border-color: #bb8800;
-    border-width: 0.2em;
-    border-radius: 0.2em;
-    color: #bb8800;
-}
-.lbl.line,.lbl.case,.lbl.trminal {
-    border-color: #0088bb;
-    border-width: 0.2em;
-    border-radius: 0.2em;
-    color: #0088bb;
-}
-.lbl.comment {
-    border-color: #eecc99;
-    border-width: 0.2em;
-    border-radius: 0.2em;
-    color: #eecc99;
-    background-color: #ffddaa none repeat scroll 0 0;
-}
-.lbl.clusterB,.lbl.clusterE {
-    padding:  0.5em 0.1em 0.1em 0.1em;
-    margin: 0.8em 0.1em 0.1em 0.1em;
-    color: #888844;
-    font-size: x-small;
-}
-.lbl.clusterB {
-    border-left: 0.3em solid #cccc99;
-    border-right: 0;
-    border-top: 0;
-    border-bottom: 0;
-    border-radius: 1em;
-}
-.lbl.clusterE {
-    border-left: 0;
-    border-right: 0.3em solid #cccc99;
-    border-top: 0;
-    border-bottom: 0;
-    border-radius: 1em;
-}
-.lbl.quad,.lbl.sign {
-    border-color: #bbbbbb;
-    border-width: 0.1em;
-    border-radius: 0.1em;
-    color: #bbbbbb;
-}
-.op {
-    padding:  0.5em 0.1em 0.1em 0.1em;
-    margin: 0.8em 0.1em 0.1em 0.1em;
-    font-family: monospace;
-    font-size: x-large;
-    font-weight: bold;
-}
-.name {
-    font-family: monospace;
-    font-size: medium;
-    color: #0000bb;
-}
-.period {
-    font-family: monospace;
-    font-size: medium;
-    font-weight: bold;
-    color: #0000bb;
-}
-.excavation {
-    font-family: monospace;
-    font-size: medium;
-    font-style: italic;
-    color: #779900;
-}
-.text {
-    font-family: sans-serif;
-    font-size: x-small;
-    color: #000000;
-}
-.srcLn {
-    font-family: monospace;
-    font-size: medium;
-    color: #000000;
-}
-.srcLnNum {
-    font-family: monospace;
-    font-size: x-small;
-    color: #0000bb;
-}
-</style>
-'''
-
-DEFAULT_CLS = ''
-DEFAULT_CLS_ORIG = ''
-FORMAT_CSS = dict(
-    orig=DEFAULT_CLS_ORIG,
-    trans=DEFAULT_CLS,
-)
-
-NO_DESCEND = {'lex'}
-
-NONE_VALUES = {None}
-
-SECTION_SEP1 = ' '
-SECTION_SEP2 = ':'
 
 
 class Atf(object):
@@ -565,294 +307,70 @@ class Atf(object):
     ]
 
 
-class Cunei(Atf):
+class TfApp(Atf):
   def __init__(
-      self,
+      app,
       name=None,
-      moduleSpecs=(),
+      api=None,
       asApp=False,
-      version='1.0',
+      moduleRefs=None,
+      locations=None,
+      modules=None,
+      version=None,
       lgc=False,
       check=False,
       hoist=False,
       silent=False,
   ):
-    config = getConfig('cunei')
-    cfg = config.configure(lgc, version=version)
-    self.asApp = asApp
-    self.silent = silent
-    self.api = None
-
-    (release, base) = getData(
-        cfg['org'],
-        cfg['repo'],
-        cfg['relative'],
+    setupApi(
+        app,
+        name,
+        'uruk',
+        moduleRefs,
+        locations,
+        modules,
+        asApp,
+        api,
         version,
         lgc,
         check,
+        silent,
+        hoist,
+    )
+
+    (imageRelease, imageBase) = getData(
+        app.org,
+        app.repo,
+        app.relativeImages,
+        '',
+        lgc,
+        check,
+        withPaths=True,
+        keep=True,
         silent=silent,
     )
-    if not base:
+    if not imageBase:
+      app.api = None
       return
+    app.imageDir = f'{imageBase}/{app.org}/{app.repo}/{app.relativeImages}'
+    app._getImagery()
 
-    if release:
-      self.release[f'{cfg["org"]}/{cfg["repo"]}/{cfg["relative"]}'] = release
-
-    good = True
-    for m in moduleSpecs:
-      (release, base) = getData(
-          m['org'],
-          m['repo'],
-          m['relative'],
-          version,
-          lgc,
-          check,
-          silent=silent,
-      )
-      if not base:
-        good = False
-        continue
-
-      if release:
-        self.release[f'{m["org"]}/{m["repo"]}/{m["relative"]}'] = release
-
-    if not good:
-      return
-
-    repoRel = f'{cfg["org"]}/{cfg["repo"]}'
-    repo = f'{base}/{repoRel}'
-    self.repo = repo
-    self.version = version
-    self.charUrl = cfg['charUrl']
-    self.imageDir = f'{repo}/{cfg["relativeImages"]}'
-    return
-    self.localImageDir = cfg['localImageDir']
-    if not os.path.exists(self.imageDir):
-      getDataFile(
-          cfg['org'],
-          cfg['repo'],
-          cfg['relativeImages'],
-          release,
-          '',
-          repo,
-          withPaths=True,
-          silent=silent,
-          keep=True,
-      )
-    self.repoTempDir = f'{repo}/{cfg["tempDir"]}'
-    self._imagery = {}
-    self.corpus = f'{repo}/{cfg["relative"]}/{version}'
-    self.corpusFull = f'{cfg["corpusShort"]} (v:{version})'
-    self.condenseType = cfg['condenseType']
-    self.noDescendTypes = NO_DESCEND
-    self.exampleSection = '<code>P005381</code>'
-    self.exampleSectionText = 'P005381'
-    self.sectionSep1 = SECTION_SEP1
-    self.sectionSep2 = SECTION_SEP2
-
-    TF = Fabric(locations=[self.corpus], modules=[''], silent=True)
-    api = TF.load('', silent=True)
-    self.api = api
-    if api is False:
-      return
-    allFeatures = TF.explore(silent=True, show=True)
-    loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
-    result = TF.load(loadableFeatures, add=True, silent=True)
-    if result is False:
-      self.api = False
-      return
-    self.standardFeatures = set(loadableFeatures)
-    self.prettyFeaturesLoaded = {f for f in self.standardFeatures}
-    self.prettyFeatures = ()
-    self.formatClass = compileFormatClass(FORMAT_CSS, api.T.formats, DEFAULT_CLS, DEFAULT_CLS_ORIG)
-    self.api = api
-    self._getImagery()
-    self.cwd = os.getcwd()
-    (inNb, repoLoc) = location(self.cwd, name)
-    if inNb:
-      (nbDir, nbName, nbExt) = inNb
-    if repoLoc:
-      (thisOrg, thisRepo, thisPath, nbUrl, ghUrl) = repoLoc
-    docUrl = f'{URL_GH}/{repoRel}/blob/master/docs'
-    tutUrl = f'{URL_NB}/{cfg["org"]}/tutorials/blob/master/search.ipynb'
-    extraUrl = TFDOC_URL(f'/Api/{cfg["repo"].capitalize()}/')
-    dataLink = outLink(self.corpusFull, f'{docUrl}/about/', 'provenance of this corpus')
-    charLink = (
-        outLink('Character table', self.charUrl, 'Cuneiform characters and transcriptions')
-        if self.charUrl else
-        ''
-    )
-    featureLink = outLink('Feature docs', f'{docUrl}/transcription/', 'feature documentation')
-    cuneiLink = outLink('Cunei API', extraUrl, 'cunei api documentation')
-    tfLink = outLink(
-        f'Text-Fabric API {api.TF.version}', API_URL(''),
-        'text-fabric-api'
-    )
-    tfsLink = outLink(
-        'Search help', API_URL('search-templates'),
-        'Search Templates Introduction and Reference'
-    )
-    tutLink = outLink(
-        'Search tutorial', tutUrl,
-        'Search tutorial in Jupyter Notebook'
-    )
-    if asApp:
-      self.dataLink = dataLink
-      self.charLink = charLink
-      self.featureLink = featureLink
-      self.tfsLink = tfsLink
-      self.tutLink = tutLink
-    else:
-      if inNb:
-        if not silent:
-          dm(
-              '**Documentation:**'
-              f' {dataLink} {charLink} {featureLink} {cuneiLink} {tfLink} {tfsLink}'
-          )
-          if repoLoc:
-            dm(f'''
-This notebook online:
-{outLink('NBViewer', f'{nbUrl}/{nbName}{nbExt}')}
-{outLink('GitHub', f'{ghUrl}/{nbName}{nbExt}')}
-''')
-    thisRepoDir = None
-    self.tempDir = None
-    self.reportDir = None
-    if repoLoc:
-      thisRepoDir = f'{base}/{thisOrg}/{thisRepo}'
-      self.tempDir = f'{thisRepoDir}/{cfg["tempDir"]}'
-      self.reportDir = f'{thisRepoDir}/{cfg["reportDir"]}'
-    if not asApp:
-      for cdir in (self.tempDir, self.reportDir):
-        if cdir:
-          os.makedirs(cdir, exist_ok=True)
-
-    self.classNames = {nType[0]: nType[0] for nType in api.C.levels.data}
-    self.noneValues = NONE_VALUES
+    app.tempDir = f'{app.repoLocation}/{TEMP_DIR}'
+    app.reportDir = f'{app.repoLocation}/{REPORT_DIR}'
 
     if not asApp:
-      if inNb:
-        self.loadCSS()
-      if hoist:
-        docs = api.makeAvailableIn(hoist)
-        if inNb:
-          if not silent:
-            dh(
-                '<details open><summary><b>API members</b>:</summary>\n'
-                + '<br/>\n'.join(
-                    ', '.join(
-                        outLink(entry, API_URL(ref), title='doc')
-                        for entry in entries
-                    )
-                    for (ref, entries) in docs
-                )
-                + '</details>'
-            )
-    self.table = types.MethodType(table, self)
-    self.plainTuple = types.MethodType(plainTuple, self)
-    self.show = types.MethodType(show, self)
-    self.prettyTuple = types.MethodType(prettyTuple, self)
-    self.pretty = types.MethodType(pretty, self)
-    self.prettySetup = types.MethodType(prettySetup, self)
-    self.search = types.MethodType(search, self)
-    self.header = types.MethodType(header, self)
-    self.nodeFromDefaultSection = types.MethodType(nodeFromDefaultSection, self)
+      for cdir in (app.tempDir, app.reportDir):
+        os.makedirs(cdir, exist_ok=True)
 
-  def loadCSS(self):
-    asApp = self.asApp
-    if asApp:
-      return CSS
-    dh(CSS)
-
-  def lineFromNode(self, n):
-    api = self.api
-    F = api.F
+  def webLink(app, n, text=None, className=None, asString=False, noUrl=False):
+    api = app.api
     L = api.L
-    caseOrLineUp = [m for m in L.u(n) if F.terminal.v(m)]
-    return caseOrLineUp[0] if caseOrLineUp else None
-
-  def nodeFromCase(self, passage):
-    api = self.api
     F = api.F
-    L = api.L
-    T = api.T
-    section = passage[0:2]
-    caseNum = passage[2].replace('.', '')
-    column = T.nodeFromSection(section)
-    if column is None:
-      return None
-    casesOrLines = [c for c in L.d(column) if F.terminal.v(c) and F.number.v(c) == caseNum]
-    if not casesOrLines:
-      return None
-    return casesOrLines[0]
-
-  def caseFromNode(self, n):
-    api = self.api
-    F = api.F
-    T = api.T
-    L = api.L
-    section = T.sectionFromNode(n)
-    if section is None:
-      return None
-    nodeType = F.otype.v(n)
-    if nodeType in {'sign', 'quad', 'cluster', 'case'}:
-      if nodeType == 'case':
-        caseNumber = F.number.v(n)
-      else:
-        caseOrLine = [m for m in L.u(n) if F.terminal.v(m)][0]
-        caseNumber = F.number.v(caseOrLine)
-      return (section[0], section[1], caseNumber)
+    if type(n) is str:
+      pNum = n
     else:
-      return section
-
-  def casesByLevel(self, lev, terminal=True):
-    api = self.api
-    F = api.F
-    lkey = 'line' if lev == 0 else 'case'
-    if lev == 0:
-      return (
-          tuple(c for c in F.otype.s(lkey) if F.terminal.v(c))
-          if terminal else
-          F.otype.s(lkey)
-      )
-    return (
-        tuple(c for c in F.otype.s(lkey) if F.depth.v(c) == lev and F.terminal.v(c))
-        if terminal else
-        tuple(c for c in F.otype.s(lkey) if F.depth.v(c) == lev)
-    )
-
-  def lineart(self, ns, key=None, asLink=False, withCaption=None, **options):
-    return self._getImages(
-        ns, kind='lineart', key=key, asLink=asLink, withCaption=withCaption, **options
-    )
-
-  def photo(self, ns, key=None, asLink=False, withCaption=None, **options):
-    return self._getImages(
-        ns, kind='photo', key=key, asLink=asLink, withCaption=withCaption, **options
-    )
-
-  def imagery(self, objectType, kind):
-    return set(self._imagery.get(objectType, {}).get(kind, {}))
-
-  def cdli(self, n, linkText=None, asString=False):
-    (nType, objectType, identifier) = self._imageClass(n)
-    if linkText is None:
-      linkText = identifier
-    result = _wrapLink(linkText, objectType, 'main', identifier)
-    if asString:
-      return result
-    else:
-      dh(result)
-
-  def tabletLink(self, t, text=None, className=None, asString=False, noUrl=False):
-    api = self.api
-    L = api.L
-    F = api.F
-    if type(t) is str:
-      pNum = t
-    else:
-      n = t if F.otype.v(t) == 'tablet' else L.u(t, otype='tablet')[0]
-      pNum = F.catalogId.v(n)
+      refNode = n if F.otype.v(n) == 'tablet' else L.u(n, otype='tablet')[0]
+      pNum = F.catalogId.v(refNode)
 
     title = None if noUrl else ('to CDLI main page for this tablet')
     linkText = pNum if text is None else text
@@ -867,11 +385,21 @@ This notebook online:
       return result
     dh(result)
 
-  def sectionLink(self, n, text=None):
-    return self.tabletLink(n, className='rwh', text=text, asString=True, noUrl=True)
+  def sectionLink(app, n, text=None):
+    return app.webLink(n, className='rwh', text=text, asString=True, noUrl=True)
+
+  def cdli(app, n, linkText=None, asString=False):
+    (nType, objectType, identifier) = app._imageClass(n)
+    if linkText is None:
+      linkText = identifier
+    result = _wrapLink(linkText, objectType, 'main', identifier)
+    if asString:
+      return result
+    else:
+      dh(result)
 
   def plain(
-      self,
+      app,
       n,
       linked=True,
       fmt=None,
@@ -880,8 +408,8 @@ This notebook online:
       lineart=True,
       lineNumbers=False,
   ):
-    asApp = self.asApp
-    api = self.api
+    asApp = app.asApp
+    api = app.api
     F = api.F
 
     nType = F.otype.v(n)
@@ -895,17 +423,17 @@ This notebook online:
       isSign = nType == 'sign'
       isQuad = nType == 'quad'
       rep = (
-          self.atfFromSign(n) if isSign else self.atfFromQuad(n)
-          if isQuad else self.atfFromCluster(n)
+          app.atfFromSign(n) if isSign else app.atfFromQuad(n)
+          if isQuad else app.atfFromCluster(n)
       )
       if linked:
-        rep = self.tabletLink(n, text=rep, asString=True)
+        rep = app.webLink(n, text=rep, asString=True)
       theLineart = ''
       if lineart:
         if isSign or isQuad:
           width = '2em' if isSign else '4em'
           height = '4em' if isSign else '6em'
-          theLineart = self._getImages(
+          theLineart = app._getImages(
               n,
               kind='lineart',
               width=width,
@@ -919,7 +447,7 @@ This notebook online:
     elif nType == 'comment':
       rep = mdEsc(F.type.v(n))
       if linked:
-        rep = self.tabletLink(n, text=rep, asString=True)
+        rep = app.webLink(n, text=rep, asString=True)
       result = f'{rep}{nodeRep}: {mdEsc(F.text.v(n))}'
     else:
       lineNumbersCondition = lineNumbers
@@ -932,7 +460,7 @@ This notebook online:
         rep = mdEsc(f'{nType} {F.type.v(n)}')
       elif nType == 'tablet':
         rep = mdEsc(f'{nType} {F.catalogId.v(n)}')
-      result = self._addLink(
+      result = app._addLink(
           n, rep, nodeRep,
           linked=linked, lineNumbers=lineNumbersCondition,
       )
@@ -941,17 +469,17 @@ This notebook online:
       return result
     dm(result)
 
-  def _addLink(self, n, rep, nodeRep, linked=True, lineNumbers=True):
-    F = self.api.F
+  def _addLink(app, n, rep, nodeRep, linked=True, lineNumbers=True):
+    F = app.api.F
     if linked:
-      rep = self.tabletLink(n, text=rep, asString=True)
+      rep = app.webLink(n, text=rep, asString=True)
     theLine = ''
     if lineNumbers:
       theLine = mdEsc(f' @{F.srcLnNum.v(n)} ')
     return f'{rep}{nodeRep}{theLine}'
 
   def _pretty(
-      self,
+      app,
       n,
       outer,
       html,
@@ -967,7 +495,7 @@ This notebook online:
       lineart=True,
   ):
     goOn = prettyPre(
-        self,
+        app,
         n,
         firstSlot,
         lastSlot,
@@ -983,7 +511,7 @@ This notebook online:
         myStart, myEnd,
     ) = goOn
 
-    api = self.api
+    api = app.api
     F = api.F
     L = api.L
     E = api.E
@@ -994,7 +522,7 @@ This notebook online:
 
     heading = ''
     featurePart = ''
-    commentsPart = self._getComments(
+    commentsPart = app._getComments(
         n,
         firstSlot,
         lastSlot,
@@ -1010,7 +538,7 @@ This notebook online:
       heading = htmlEsc(F.catalogId.v(n))
       heading += ' '
       heading += getFeatures(
-          self,
+          app,
           n,
           suppress,
           ('name', 'period', 'excavation'),
@@ -1020,7 +548,7 @@ This notebook online:
     elif nType == 'face':
       heading = htmlEsc(F.type.v(n))
       featurePart = getFeatures(
-          self,
+          app,
           n,
           suppress,
           ('identifier', 'fragment'),
@@ -1039,7 +567,7 @@ This notebook online:
         className = 'trminal'
         theseFeats = ('srcLnNum', ) if lineNumbers else ()
         featurePart = getFeatures(
-            self,
+            app,
             n,
             suppress,
             theseFeats,
@@ -1054,7 +582,7 @@ This notebook online:
     elif nType == 'comment':
       heading = htmlEsc(F.type.v(n))
       featurePart = getFeatures(
-          self,
+          app,
           n,
           suppress,
           ('text', ),
@@ -1071,13 +599,13 @@ This notebook online:
       seen.add(n)
       children = E.sub.f(n)
     elif nType == slotType:
-      featurePart = self._getAtf(n) + getFeatures(self, n, suppress, ())
+      featurePart = app._getAtf(n) + getFeatures(app, n, suppress, ())
       seen.add(n)
       if not outer and F.type.v(n) == 'empty':
         return
 
     if outer:
-      typePart = self.tabletLink(n, text=f'{nType} {heading}', asString=True)
+      typePart = app.webLink(n, text=f'{nType} {heading}', asString=True)
     else:
       typePart = heading
 
@@ -1115,7 +643,7 @@ This notebook online:
         if isOuter:
           width = '2em' if isSign else '4em'
           height = '4em' if isSign else '6em'
-          theLineart = self._getImages(
+          theLineart = app._getImages(
               n,
               kind='lineart',
               width=width,
@@ -1138,7 +666,7 @@ This notebook online:
 
     for ch in children:
       if ch not in seen:
-        self._pretty(
+        app._pretty(
             ch,
             False,
             html,
@@ -1178,8 +706,78 @@ This notebook online:
 </div>
 ''')
 
+  def lineFromNode(app, n):
+    api = app.api
+    F = api.F
+    L = api.L
+    caseOrLineUp = [m for m in L.u(n) if F.terminal.v(m)]
+    return caseOrLineUp[0] if caseOrLineUp else None
+
+  def nodeFromCase(app, passage):
+    api = app.api
+    F = api.F
+    L = api.L
+    T = api.T
+    section = passage[0:2]
+    caseNum = passage[2].replace('.', '')
+    column = T.nodeFromSection(section)
+    if column is None:
+      return None
+    casesOrLines = [c for c in L.d(column) if F.terminal.v(c) and F.number.v(c) == caseNum]
+    if not casesOrLines:
+      return None
+    return casesOrLines[0]
+
+  def caseFromNode(app, n):
+    api = app.api
+    F = api.F
+    T = api.T
+    L = api.L
+    section = T.sectionFromNode(n)
+    if section is None:
+      return None
+    nodeType = F.otype.v(n)
+    if nodeType in {'sign', 'quad', 'cluster', 'case'}:
+      if nodeType == 'case':
+        caseNumber = F.number.v(n)
+      else:
+        caseOrLine = [m for m in L.u(n) if F.terminal.v(m)][0]
+        caseNumber = F.number.v(caseOrLine)
+      return (section[0], section[1], caseNumber)
+    else:
+      return section
+
+  def casesByLevel(app, lev, terminal=True):
+    api = app.api
+    F = api.F
+    lkey = 'line' if lev == 0 else 'case'
+    if lev == 0:
+      return (
+          tuple(c for c in F.otype.s(lkey) if F.terminal.v(c))
+          if terminal else
+          F.otype.s(lkey)
+      )
+    return (
+        tuple(c for c in F.otype.s(lkey) if F.depth.v(c) == lev and F.terminal.v(c))
+        if terminal else
+        tuple(c for c in F.otype.s(lkey) if F.depth.v(c) == lev)
+    )
+
+  def lineart(app, ns, key=None, asLink=False, withCaption=None, **options):
+    return app._getImages(
+        ns, kind='lineart', key=key, asLink=asLink, withCaption=withCaption, **options
+    )
+
+  def photo(app, ns, key=None, asLink=False, withCaption=None, **options):
+    return app._getImages(
+        ns, kind='photo', key=key, asLink=asLink, withCaption=withCaption, **options
+    )
+
+  def imagery(app, objectType, kind):
+    return set(app._imagery.get(objectType, {}).get(kind, {}))
+
   def _getComments(
-      self,
+      app,
       n,
       firstSlot,
       lastSlot,
@@ -1189,13 +787,13 @@ This notebook online:
       lineNumbers,
       seen,
   ):
-    api = self.api
+    api = app.api
     E = api.E
     cns = E.comments.f(n)
     if len(cns):
       html = ['<div class="comments">']
       for c in cns:
-        self._pretty(
+        app._pretty(
             c,
             False,
             html,
@@ -1216,13 +814,13 @@ This notebook online:
       commentsPart = ''
     return commentsPart
 
-  def _getAtf(self, n):
-    atf = self.atfFromSign(n, flags=True)
+  def _getAtf(app, n):
+    atf = app.atfFromSign(n, flags=True)
     featurePart = f' <span class="srcLn">{atf}</span>'
     return featurePart
 
-  def _imageClass(self, n):
-    api = self.api
+  def _imageClass(app, n):
+    api = app.api
     F = api.F
     if type(n) is str:
       identifier = n
@@ -1243,7 +841,7 @@ This notebook online:
     else:
       nType = F.otype.v(n)
       if nType in OUTER_QUAD_TYPES:
-        identifier = self.atfFromOuterQuad(n)
+        identifier = app.atfFromOuterQuad(n)
         objectType = 'ideograph'
       elif nType == 'tablet':
         identifier = F.catalogId.v(n)
@@ -1254,7 +852,7 @@ This notebook online:
     return (nType, objectType, identifier)
 
   def _getImages(
-      self,
+      app,
       ns,
       kind=None,
       key=None,
@@ -1291,9 +889,9 @@ This notebook online:
       withCaption = None if asLink else 'bottom'
     for n in ns:
       caption = None
-      (nType, objectType, identifier) = self._imageClass(n)
+      (nType, objectType, identifier) = app._imageClass(n)
       if objectType:
-        imageBase = self._imagery.get(objectType, {}).get(kind, {})
+        imageBase = app._imagery.get(objectType, {}).get(kind, {})
         images = imageBase.get(identifier, None)
         if withCaption:
           caption = _wrapLink(identifier, objectType, 'main', identifier)
@@ -1310,7 +908,7 @@ This notebook online:
             if asLink:
               thisImage = identifier
             else:
-              theImage = self._useImage(image, kind, key or '', n)
+              theImage = app._useImage(image, kind, key or '', n)
               thisImage = (f'<img src="{theImage}" style="display: inline;{cssStr}" {attStr} />')
         thisResult = _wrapLink(
             thisImage, objectType, kind, identifier, pos=withCaption, caption=caption
@@ -1332,14 +930,14 @@ This notebook online:
     if not warning:
       return True
 
-  def _useImage(self, image, kind, key, node):
-    asApp = self.asApp
-    api = self.api
+  def _useImage(app, image, kind, key, node):
+    asApp = app.asApp
+    api = app.api
     F = api.F
     (imageDir, imageName) = os.path.split(image)
     (base, ext) = os.path.splitext(imageName)
-    localBase = self.repoTempDir if asApp else self.cwd
-    localDir = f'{localBase}/{self.localImageDir}'
+    localBase = app.repoTempDir if asApp else app.cwd
+    localDir = f'{localBase}/{LOCAL_IMAGE_DIR}'
     if not os.path.exists(localDir):
       os.makedirs(localDir, exist_ok=True)
     if type(node) is int:
@@ -1347,7 +945,7 @@ This notebook online:
       if nType == 'tablet':
         nodeRep = F.catalogId.v(node)
       elif nType in OUTER_QUAD_TYPES:
-        nodeRep = self.atfFromOuterQuad(node)
+        nodeRep = app.atfFromOuterQuad(node)
       else:
         nodeRep = str(node)
     else:
@@ -1370,15 +968,16 @@ This notebook online:
     ):
       copyfile(image, localImagePath)
     base = '/local/' if asApp else ''
-    return f'{base}{self.localImageDir}/{localImageName}'
+    return f'{base}{LOCAL_IMAGE_DIR}/{localImageName}'
 
-  def _getImagery(self):
+  def _getImagery(app):
+    app._imagery = {}
     for (dirFmt, ext, kind, objectType) in (
         (IDEO_TO, LINEART_EXT, 'lineart', 'ideograph'),
         (TABLET_TO, LINEART_EXT, 'lineart', 'tablet'),
         (PHOTO_TO, PHOTO_EXT, 'photo', 'tablet'),
     ):
-      srcDir = dirFmt.format(self.imageDir)
+      srcDir = dirFmt.format(app.imageDir)
       filePaths = glob(f'{srcDir}/*.{ext}')
       images = {}
       idPat = re.compile('P[0-9]+')
@@ -1388,7 +987,7 @@ This notebook online:
         if kind == 'lineart' and objectType == 'tablet':
           ids = idPat.findall(base)
           if not ids:
-            print(f'skipped non-{objectType} "{fileName}"')
+            console(f'skipped non-{objectType} "{fileName}"')
             continue
           identifier = ids[0]
           key = base.replace('_l', '').replace(identifier, '')
@@ -1400,9 +999,9 @@ This notebook online:
             identifier = identifier[0:-1] + '|'
           key = ''
         images.setdefault(identifier, {})[key] = filePath
-      self._imagery.setdefault(objectType, {})[kind] = images
-      if not self.silent:
-        print(f'Found {len(images)} {objectType} {kind}s')
+      app._imagery.setdefault(objectType, {})[kind] = images
+      if not app.silent:
+        console(f'Found {len(images)} {objectType} {kind}s')
 
 
 def _wrapLink(piece, objectType, kind, identifier, pos='bottom', caption=None):

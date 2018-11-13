@@ -8,7 +8,7 @@
     [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     [peshitta](http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb)
     [syrnt](http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb)
-    [cunei](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
+    [uruk](http://nbviewer.jupyter.org/github/nino-cunei/uruk/blob/master/tutorial/start.ipynb)
 
 ## Queued for next release
 
@@ -59,9 +59,9 @@ you can say now
 
 ```python
 A = Bhsa(silent=True)
-A = Cunei(silent=True)
 A = Peshitta(silent=True)
 A = Syrnt(silent=True)
+A = Uruk(silent=True)
 ```
 
 and then all non-error messages will be suppressed.
@@ -113,7 +113,7 @@ I leave this behaviour as it is.
 2018-10-12
 
 * More precise provenance data when you export results from the Text-Fabric data;
-* Under the hood reorganization of configuration data of apps like Bhsa and Cunei;
+* Under the hood reorganization of configuration data of apps like Bhsa and Uruk;
 * App-specific parts of the code have moved to more generic parts: a big cleanup has performed;
 * This will make it easier to add new apps.
 
@@ -121,11 +121,11 @@ I leave this behaviour as it is.
 
 2018-10-11
 
-* Avoid computing the notebook name when the user passes a name for the notebook to `Cunei()` or `Bhsa()`.
+* Avoid computing the notebook name when the user passes a name for the notebook to `Uruk()` or `Bhsa()`.
   And when the computing needs to be done, all exceptions will be caught, because the code for determining
   the notebook name is brittle, and may crash if the Jupyter version does not match.
-* Fixed the bug that the Bhsa and Cunei did not run properly outside a notebook or outside a github repo.
-* In Bhsa and Cunei, the generated info after the incantation can be collapsed (features, API members).
+* Fixed the bug that the Bhsa and Uruk did not run properly outside a notebook or outside a github repo.
+* In Bhsa and Uruk, the generated info after the incantation can be collapsed (features, API members).
 
 ## 6.0.6
 
@@ -140,7 +140,7 @@ linked to the API documentation.
 
 2018-10-09
 
-When using BHSA and Cunei in a notebook, there is an even simpler incantation which auto downloads features.
+When using BHSA and Uruk in a notebook, there is an even simpler incantation which auto downloads features.
 
 In the BHSA it is shown which features are loaded, with direct links to the feature docs.
 
@@ -148,19 +148,19 @@ In the BHSA it is shown which features are loaded, with direct links to the feat
 
 2018-10-09
 
-When using BHSA and Cunei in a notebook, there is a simpler incantation which auto downloads features.
+When using BHSA and Uruk in a notebook, there is a simpler incantation which auto downloads features.
 
 Some issues concerning paths in zipfiles of downloaded data have been solved.
 
 ## 6.0.3
 
-Easier incantations for `Bhsa()` and `Cunei()`.
+Easier incantations for `Bhsa()` and `Uruk()`.
 
 * It is no longer needed to pass the name of the notebook, but you can still do so: `name='mynotebook'`
 * You can leave out the `api` argument in `Bhsa()`. Then you do not have to load features by means of `TF.load()`,
   `Bhsa()` will load a standard set of features, and if the BHSA data is missing, it will download them first.
 
-The former ways of calling `Bhsa()` and `Cunei()` are still valid. Note that all arguments have become optional.
+The former ways of calling `Bhsa()` and `Uruk()` are still valid. Note that all arguments have become optional.
 
 2018-10-08
 
@@ -445,7 +445,7 @@ Otherwise in Windows you might run out of memory, even if you have 8GB RAM.
 
 2018-07-4
 
-Text-Fabric can download data for BHSA and Cunei. You do not have to clone github repositories for that.
+Text-Fabric can download data for BHSA and Uruk. You do not have to clone github repositories for that.
 The data downloaded by Text-Fabric ends up in `text-fabric-data` under your home directory.
 
 ## 5.4.5-7
@@ -487,7 +487,7 @@ Improved interface and functionality of the text-fabric browser:
 * there is a side bar
 
 ???+ cautions "Docs not up to date"
-    The API docs are not up-to-date: there are new functions in the Bhsa and Cunei APIs.
+    The API docs are not up-to-date: there are new functions in the Bhsa and Uruk APIs.
     The server/kernel/client apis are not completely spelled out.
     However, the help for the text-fabric browser is included in the interface itself.
 
@@ -555,7 +555,7 @@ Small fix: command line args for text-fabric.
 
 When displaying results in condensed mode, you
 can now choose the level of the container in which results are highlighted.
-So far it was fixed to `verse` for the bhsa and `tablet` for cunei.
+So far it was fixed to `verse` for the bhsa and `tablet` for Uruk.
 
 The docs are lagging behind!
 But it is shown in the tutorials and you can observer it in the text-fabric browser.
@@ -571,7 +571,7 @@ Addressed start-up problems.
 2018-06-18
 
 Built in webserver and client for local query running.
-It is implemented for Bhsa and Cunei.
+It is implemented for Bhsa and Uruk.
 
 ## 4.4.2,3
 
@@ -687,7 +687,7 @@ Docs and metadata update
 
 2018-05-25
 
-*   Several improvements in the pretty display in Bhsa and Cunei APIs
+*   Several improvements in the pretty display in Bhsa and Uruk APIs
 *   Under the hood changes in `S.search()` to prepare for *quantifiers* in search templates.
 
     *   Tokenisation of quantifiers already works
@@ -718,7 +718,7 @@ but is also a powerful addition to search in its own right.
 
 2018-05-17
 
-Bhsa and Cunei APIs:
+Bhsa and Uruk APIs:
 
 *   custom highlight colours also work for condensed results.
 *   you can pass the `highlights` parameter also to `show` and `prettyTuple`
@@ -734,7 +734,7 @@ Bhsa API: you can customize the features that are shown in pretty displays.
 
 2018-05-16
 
-Bhsa and Cunei APIs: you can customize the highlighting of search results:
+Bhsa and Uruk APIs: you can customize the highlighting of search results:
 
 *   different colours for different parts of the results
 *   you can choose your colours freely from all that CSS has to offer.
@@ -773,13 +773,13 @@ Documentation updates.
 
 2018-05-02
 
-The Cunei and Bhsa APIs show the version of Text-Fabric that is being called.
+The Uruk and Bhsa APIs show the version of Text-Fabric that is being called.
 
 ## 3.4.11
 
 2018-05-01
 
-Cunei
+Uruk
 
 *   cases are divided horizontally and vertically, alternating with their
     nesting level;
@@ -794,11 +794,11 @@ Various small fixes, such as:
 
 *   Bhsa: Lexeme links in pretty displays.
 
-*   Cunei: Prevented spurious `</div>` in NbViewer.
+*   Uruk: Prevented spurious `</div>` in NbViewer.
 
 ## 3.4.7
 
-Cunei: Modified local image names
+Uruk: Modified local image names
 
 ## 3.4.6
 
@@ -818,7 +818,7 @@ Bhsa API:
 
 2018-04-27
 
-Cunei API:
+Uruk API:
 
 *   new functions `plain()` and `table()` for plainly representing nodes, tuples
     and result lists, as opposed to the abundant representations by `pretty()` and
@@ -830,7 +830,7 @@ Cunei API:
 
 Better search documentation.
 
-Cunei API: small fixes.
+Uruk API: small fixes.
 
 ## 3.4.1
 
@@ -844,10 +844,10 @@ Bhsa API:
     get one verse display with two highlights, with `condensed=False` you get two
     verse displays with one highlight each.
 
-Cunei API:
+Uruk API:
 
 *   Search/show: the `pretty`, `prettyTuple`, `show` functions of the Bhsa API
-    have bee translated to the Cunei API. You can now get **very** pretty displays
+    have bee translated to the Uruk API. You can now get **very** pretty displays
     of search results.
 
 ## 3.4
@@ -869,25 +869,25 @@ The display of query results also works with lexeme nodes.
 
 2018-04-20
 
-Cunei API: Better height and width control for images. Leaner captions.
+Uruk API: Better height and width control for images. Leaner captions.
 
 ## 3.3.3
 
 2018-04-19
 
-Cunei API: `casesByLevel()` returns case nodes in corpus order.
+Uruk API: `casesByLevel()` returns case nodes in corpus order.
 
 ## 3.3.2
 
 2018-04-18
 
-Change in the Cunei api reflecting that undivided lines have no cases now (was:
+Change in the Uruk api reflecting that undivided lines have no cases now (was:
 they had a single case with the same material as the line). Also: the feature
 `fullNumber` on cases is now called `number`, and contains the full hierarchical
 part leading to a case. There is an extra feature `terminal` on lines and cases
 if they are not subdivided.
 
-Changes in Cunei and Bhsa api:
+Changes in Uruk and Bhsa api:
 
 *   fixed a bug that occurred when working outside a GitHub repository.
 
@@ -895,7 +895,7 @@ Changes in Cunei and Bhsa api:
 
 2018-04-18
 
-Change in the Cunei api. `casesByLevel()` now takes an optional argument
+Change in the Uruk api. `casesByLevel()` now takes an optional argument
 `terminal` instead of `withChildren`, with opposite values.
 
 `withChildren=False` is ambiguous: will it deliver only cases that have no
@@ -920,7 +920,7 @@ Bumped the version number because of the inclusion of corpus specific APIs.
 
 *   Text-Fabric now contains corpus specific extras:
     *   `bhsa.py` for the Hebrew Bible (BHSA)
-    *   `cunei.py` for the Proto-Cuneiform corpus Uruk
+    *   `uruk.py` for the Proto-Cuneiform corpus Uruk
 *   The `Fabric(locations=locations, modules=modules)` constructor now uses `['']`
     as default value for modules. Now you can use the `locations` parameter on its
     own to specify the search paths for TF features, leaving the `modules`
@@ -953,14 +953,14 @@ The short API names `F`, `T`, `L` etc. have been aliased to longer names:
 
 2018-02-27
 
-Removed the sub module `cunei.py`. It is better to keep corpus dependent modules
+Removed the sub module `uruk.py`. It is better to keep corpus dependent modules
 in outside the TF package.
 
 ## 3.2.1
 
 2018-02-26
 
-Added a sub module `cunei.py`, which contains methods to produce ATF
+Added a sub module `uruk.py`, which contains methods to produce ATF
 transcriptions for nodes of certain types.
 
 ## 3.2

@@ -4,7 +4,7 @@ from tf.apphelpers import (
     htmlEsc, mdEsc,
     dm, dh,
 )
-from tf.appmake import setupApi, outLink
+from tf.app import setupApi, outLink
 
 SHEBANQ_URL = 'https://shebanq.ancient-data.org/hebrew'
 
@@ -28,7 +28,7 @@ SECTION = {'book', 'chapter', 'verse', 'half_verse'}
 VERSE = {'verse', 'half_verse'}
 
 
-class Bhsa(object):
+class TfApp(object):
   def __init__(
       app,
       name=None,
@@ -37,7 +37,7 @@ class Bhsa(object):
       moduleRefs=None,
       locations=None,
       modules=None,
-      version='c',
+      version=None,
       lgc=False,
       check=False,
       hoist=False,

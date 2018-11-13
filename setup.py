@@ -6,11 +6,11 @@ setup(
         'tf',
         'tf.search',
         'tf.server',
-        'tf.extra',
-        'tf.extra.bhsa-app',
-        'tf.extra.peshitta-app',
-        'tf.extra.syrnt-app',
-        'tf.extra.cunei-app',
+        'tf.apps',
+        'tf.apps.bhsa',
+        'tf.apps.peshitta',
+        'tf.apps.syrnt',
+        'tf.apps.uruk',
     ],
     install_requires=[
       'rpyc',
@@ -40,8 +40,8 @@ setup(
     keywords=[
         'text', 'linguistics',
         'database', 'graph',
-        'hebrew', 'cuneiform',
-        'greek', 'syriac'
+        'hebrew', 'bible', 'cuneiform', 'uruk',
+        'greek', 'syriac',
     ],
     classifiers=[
         "Development Status :: 4 - Beta",

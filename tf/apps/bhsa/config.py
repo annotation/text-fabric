@@ -1,7 +1,4 @@
-from tf.extra.bhsa import Bhsa
-from tf.appmake import configureNames
-
-appClass = Bhsa
+from tf.app import configureNames
 
 protocol = 'http://'
 host = 'localhost'
@@ -21,7 +18,7 @@ DOI_URL = 'https://doi.org/10.5281/zenodo.1007624'
 
 DOC_URL = f'https://{ORG}.github.io/{REPO}'
 DOC_INTRO = '0_home'
-CHAR_URL = 'Writing/Hebrew'
+CHAR_URL = '{tfDoc}/Writing/Hebrew'
 CHAR_TEXT = 'Hebrew characters and transcriptions',
 
 FEATURE_URL = f'{DOC_URL}/features/hebrew/{{version}}/{{feature}}.html'
@@ -125,10 +122,6 @@ CLASS_NAMES = dict(
 FONT_NAME = 'Ezra SIL'
 FONT = 'SILEOT.ttf'
 FONTW = 'SILEOT.woff'
-
-CSS_FONT = '''
-    <link rel="stylesheet" href="/server/static/fonts.css"/>
-'''
 
 CSS = '''
 <style type="text/css">

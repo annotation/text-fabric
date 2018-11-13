@@ -2,20 +2,20 @@
 
 ## About
 
-The module [peshitta.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/peshitta.py)
+The module
+[peshitta/app.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/apps/peshitta/app.py)
 contains a number of handy functions on top of Text-Fabric and especially its 
 [Search](General.md#search) part.
 
 ## Minimal incantation
 
 ```python
-from tf.extra.peshitta import Peshitta
-A = Peshitta(hoist=globals())
+from tf.app import use
+A = use('peshitta', hoist=globals())
 ```
 
 ??? abstract "Explanation"
-    The first line makes the Peshitta API code, which is an app on top of Text-Fabric,
-    accessible to your notebook.
+    The first line makes imports the function by which you can load a text-fabric app.
 
     The second line starts up the Peshitta API and gives it the name `A`. 
     During start-up the following happens:
@@ -30,23 +30,13 @@ A = Peshitta(hoist=globals())
     you can refer to `F`, `L`, `T`, etc. directly,
     instead of the more verbose `A.api.F`, `A.api.L`, `A.api.T` etc.
 
-If you are content with the minimal incantation, you can skip **Set up** and **Initialisation**.
-
-## Set up
-
-??? abstract "import Peshitta"
-    The `Peshitta` API is distributed with Text-Fabric.
-    You have to import it into your program:
-
-    ```python
-    from tf.extra.peshitta import Peshitta
-    ```
+If you are content with the minimal incantation, you can skip **Initialisation**.
 
 ## Initialisation
 
-??? abstract "Peshitta()"
+??? abstract "use()"
     ```python
-    A = Peshitta(api=api, name=None, version=VERSION, silent=False)
+    A = use('peshitta', api=api, name=None, version=VERSION, silent=False)
     ```
 
     ???+ info "Description"
@@ -57,7 +47,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         The easiest way to load a specific version of the Peshitta is like so:
 
         ```python
-        A = Peshitta(version='0.1')
+        A = use('peshitta', version='0.1')
         ```
 
     ??? info "api"
@@ -66,7 +56,8 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         with the same data version and the same set of data features.
 
         ??? explanation "Set up"
-            This module comes in action after you have set up TF and loaded some features, e.g.
+            But you can also switch the app on
+            action after you have set up TF and loaded some features, e.g.
 
             ```python
             VERSION = '0.1'
@@ -77,7 +68,11 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
             api.makeAvailableIn(globals())
             ```
 
-            Then we add the functionality of the `peshitta` module by a call to `Peshitta()`.
+            Then we add the functionality of the `peshitta` module by the call
+            
+            ```python
+            A = use('peshitta', api=api)
+            ```
 
     ??? info "name"
         If you leave this argument out, Text-Fabric will determine the name of your notebook for you.

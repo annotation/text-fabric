@@ -9,6 +9,7 @@ from .helpers import (
     rangesFromList,
     setFromSpec,
     nbytes,
+    console,
 )
 
 # If a feature, with type string, has less than ENUM_LIMIT values,
@@ -133,7 +134,7 @@ GO
       eligible = all(isClean(fVal) for fVal in fValues)
       if not eligible:
         unclean = [fVal for fVal in fValues if not isClean(fVal)]
-        print(
+        console(
             '\t{:<15}: {:>4} values, {} not a name, e.g. «{}»'.format(
                 ft,
                 len(fValues),

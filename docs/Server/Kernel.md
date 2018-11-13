@@ -109,7 +109,7 @@
 
     * `condenseType`: the default node type that acts
       as a container for representing query results;
-      for Bhsa it is `verse`, for Cunei it is `tablet`;
+      for Bhsa it is `verse`, for Uruk it is `tablet`;
     * `exampleSection`: an example for the help text
       for this data source;
     * `levels`: information about the node types in this
@@ -140,7 +140,7 @@
         from the *section pad* in the browser.
 
         For the Bhsa these are *verse* references,
-        for Cunei these are tablets by *P-number*.
+        for Uruk these are tablets by *P-number*.
 
     ??? note "condensed"
         Whether or not the results should be *condensed*.
@@ -202,7 +202,7 @@
         Additional keyword arguments are passed
         as options to the underlying API.
 
-        For example, the Cunei API accepts `linenumbers`
+        For example, the Uruk API accepts `linenumbers`
         and `lineart`, which will ask to include line numbers
         and lineart in the formatted results.
         

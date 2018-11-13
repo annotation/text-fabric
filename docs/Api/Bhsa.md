@@ -2,25 +2,25 @@
 
 ## About
 
-The module [bhsa.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/bhsa.py)
+The module
+[bhsa/app.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/apps/bhsa/app..py)
 contains a number of handy functions on top of Text-Fabric and especially its 
 [Search](General.md#search) part.
 
 ## Minimal incantation
 
 ```python
-from tf.extra.bhsa import Bhsa
-A = Bhsa(hoist=globals())
+from tf.app import use
+A = use('bhsa', hoist=globals())
 ```
 
 ??? abstract "Explanation"
-    The first line makes the Bhsa API code, which is an app on top of Text-Fabric,
-    accessible to your notebook.
+    The first line makes imports the function by which you can load a text-fabric app.
 
-    The second line starts up the Bhsa API and gives it the name `A`. 
+    The second line starts up the BHSA API and gives it the name `A`. 
     During start-up the following happens:
 
-    (1) the Bhsa data is downloaded to your `~/text-fabric-data` directory, if not already present there;
+    (1) the BHSA data is downloaded to your `~/text-fabric-data` directory, if not already present there;
 
     (2) if your data has been freshly downloaded, a series of optimizations are executed;
 
@@ -30,23 +30,13 @@ A = Bhsa(hoist=globals())
     you can refer to `F`, `L`, `T`, etc. directly,
     instead of the more verbose `A.api.F`, `A.api.L`, `A.api.T` etc.
 
-If you are content with the minimal incantation, you can skip **Set up** and **Initialisation**.
-
-## Set up
-
-??? abstract "import Bhsa"
-    The `Bhsa` API is distributed with Text-Fabric.
-    You have to import it into your program:
-
-    ```python
-    from tf.extra.bhsa import Bhsa
-    ```
+If you are content with the minimal incantation, you can skip **Initialisation**.
 
 ## Initialisation
 
-??? abstract "Bhsa()"
+??? abstract "use()"
     ```python
-    A = Bhsa(api=api, name=None, version=VERSION, silent=False)
+    A = use('bhsa', api=api, name=None, version=VERSION, silent=False)
     ```
 
     ???+ info "Description"
@@ -57,7 +47,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         The easiest way to load a specific version of the BHSA is like so:
 
         ```python
-        A = Bhsa(version='2017')
+        A = use('bhsa', version='2017')
         ```
 
     ??? info "api"
@@ -66,7 +56,8 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         with the same data version and the same set of data features.
 
         ??? explanation "Set up"
-            This module comes in action after you have set up TF and loaded some features, e.g.
+            But you can also switch the app on
+            action after you have set up TF and loaded some features, e.g.
 
             ```python
             VERSION = '2017'
@@ -77,7 +68,11 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
             api.makeAvailableIn(globals())
             ```
 
-            Then we add the functionality of the `bhsa` module by a call to `Bhsa()`.
+            Then we add the functionality of the `peshitta` module by the call
+            
+            ```python
+            A = use('peshitta', api=api)
+            ```
 
     ??? info "name"
         If you leave this argument out, Text-Fabric will determine the name of your notebook for you.

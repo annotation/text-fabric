@@ -2,22 +2,22 @@
 
 ## About
 
-The module [syrnt.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/syrnt.py)
+The module
+[syrnt/app.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/apps/syrnt/app.py)
 contains a number of handy functions on top of Text-Fabric and especially its 
 [Search](General.md#search) part.
 
 ## Minimal incantation
 
 ```python
-from tf.extra.syrnt import Syrnt
-A = Syrnt(hoist=globals())
+from tf.app import use
+A = use('syrnt', hoist=globals())
 ```
 
 ??? abstract "Explanation"
-    The first line makes the Syrnt API code, which is an app on top of Text-Fabric,
-    accessible to your notebook.
+    The first line makes imports the function by which you can load a text-fabric app.
 
-    The second line starts up the Syrnt API and gives it the name `A`. 
+    The second line starts up the SyrNT API and gives it the name `A`. 
     During start-up the following happens:
 
     (1) the SyrNT data is downloaded to your `~/text-fabric-data` directory, if not already present there;
@@ -30,23 +30,13 @@ A = Syrnt(hoist=globals())
     you can refer to `F`, `L`, `T`, etc. directly,
     instead of the more verbose `A.api.F`, `A.api.L`, `A.api.T` etc.
 
-If you are content with the minimal incantation, you can skip **Set up** and **Initialisation**.
-
-## Set up
-
-??? abstract "import Syrnt"
-    The `Syrnt` API is distributed with Text-Fabric.
-    You have to import it into your program:
-
-    ```python
-    from tf.extra.syrnt import Syrnt
-    ```
+If you are content with the minimal incantation, you can skip **Initialisation**.
 
 ## Initialisation
 
-??? abstract "Syrnt()"
+??? abstract "use()"
     ```python
-    A = Syrnt(api=api, name=None, version=VERSION, silent=False)
+    A = use('syrnt', api=api, name=None, version=VERSION, silent=False)
     ```
 
     ???+ info "Description"
@@ -57,7 +47,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         The easiest way to load a specific version of the SyrNT is like so:
 
         ```python
-        A = Syrnt(version='0.1')
+        A = use('syrnt', version='0.1')
         ```
 
     ??? info "api"
@@ -66,7 +56,8 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
         with the same data version and the same set of data features.
 
         ??? explanation "Set up"
-            This module comes in action after you have set up TF and loaded some features, e.g.
+            But you can also switch the app on
+            action after you have set up TF and loaded some features, e.g.
 
             ```python
             VERSION = '0.1'
@@ -77,7 +68,11 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
             api.makeAvailableIn(globals())
             ```
 
-            Then we add the functionality of the `syrnt` module by a call to `Syrnt()`.
+            Then we add the functionality of the `syrnt` module by the call
+            
+            ```python
+            A = use('syrnt', api=api)
+            ```
 
     ??? info "name"
         If you leave this argument out, Text-Fabric will determine the name of your notebook for you.

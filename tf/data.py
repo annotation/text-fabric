@@ -6,7 +6,8 @@ import time
 from datetime import datetime
 from .helpers import (
     setFromSpec, valueFromTf, tfFromValue, specFromRanges, rangesFromSet,
-    check32
+    check32,
+    console
 )
 
 ERROR_CUTOFF = 20
@@ -116,7 +117,7 @@ class Data(object):
             else:
               good = self._readDataBin()
       except MemoryError:
-        print(MEM_MSG)
+        console(MEM_MSG)
         good = False
     if self.isConfig:
       self.cleanDataBin()
