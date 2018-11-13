@@ -30,6 +30,14 @@ def check32():
   return (on32, warn, msg)
 
 
+def console(msg, error=False):
+  msg = msg[1:] if msg.startswith('\n') else msg
+  msg = msg[0:-1] if msg.endswith('\n') else msg
+  target = sys.stderr if error else sys.stdout
+  target.write(f'{msg}\n')
+  target.flush()
+
+
 def cleanName(name):
   clean = ''.join(c if c in VALID else '_' for c in name)
   if clean == '' or not clean[0] in LETTER:

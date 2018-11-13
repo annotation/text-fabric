@@ -41,8 +41,8 @@
 ??? abstract "getConfig(dataSource)"
     Retrieves the `config.py` from the specified *dataSource* by
     dynamically importing it as a module from one of the
-    `*-app` packages in
-    [tf.extra](https://github.com/Dans-labs/text-fabric/tree/master/tf/extra)
+    packages in
+    [tf.apps](https://github.com/Dans-labs/text-fabric/tree/master/tf/apps)
 
     See also [App structure](../../Api/Apps/#the-structure-of-apps)
 
@@ -52,8 +52,8 @@
     will pass its file location as `myDir`.
     Form there this function computes the locstion of the file in which
     the webapp of the *dataSource* resides: the location of the
-    *dataSource* `-app` package in
-    [tf.extra](https://github.com/Dans-labs/text-fabric/tree/master/tf/extra).
+    *dataSource* package in
+    [tf.apps](https://github.com/Dans-labs/text-fabric/tree/master/tf/apps).
 
     See also [App structure](../../Api/Apps/#the-structure-of-apps)
 
@@ -86,7 +86,7 @@
     * value of html id attribute of the input element
     * label for the input element
 
-    ??? example "Cunei options"
+    ??? example "Uruk options"
         The options for the C, such as the `phono` transcriptions, you can sayunei app are:
 
         ```python

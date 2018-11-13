@@ -1,3 +1,4 @@
+from tf.helpers import console
 from .searchexe import SearchExe
 
 # Search and SearchExe
@@ -143,7 +144,7 @@ class Search(object):
     exe = self.exe
     if exe is None:
       exe = SearchExe(self.api, '')
-    print(exe.relationLegend)
+    console(exe.relationLegend)
 
   def glean(self, r):
     T = self.api.T

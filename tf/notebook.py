@@ -8,6 +8,7 @@ from requests.compat import urljoin
 
 from notebook.notebookapp import list_running_servers
 
+from tf.helpers import console
 from tf.parameters import (
     URL_GH,
     URL_NB,
@@ -57,7 +58,7 @@ def location(cwd, name):
               found = (dirName, fileName, extension)
               break
   except Exception:
-    print('Cannot determine the name of this notebook')
-    print("Work around: call me with a self-chosen name: name='xxx'")
+    console('Cannot determine the name of this notebook')
+    console("Work around: call me with a self-chosen name: name='xxx'")
 
   return (found, repoLoc)

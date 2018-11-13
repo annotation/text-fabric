@@ -3,6 +3,8 @@ import sys
 from shutil import rmtree
 from zipfile import ZipFile, ZIP_DEFLATED
 
+from .helpers import console
+
 GH_BASE = os.path.expanduser(f'~/github')
 DW_BASE = os.path.expanduser(f'~/Downloads')
 TEMP = '_temp'
@@ -43,9 +45,11 @@ phrases-head-tf-{version}.zip
 
 '''
 
+EXCLUDE = {'.DS_Store'}
+
 
 def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
-  print(f'Create release data for {org}/{repo}/{relative}')
+  console(f'Create release data for {org}/{repo}/{relative}')
   sourceBase = f'{GH_BASE}/{org}'
   destBase = f'{DW_BASE}/{org}-release'
   sourceDir = f'{sourceBase}/{repo}/{relative}'
@@ -71,14 +75,16 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
             if not tfEntry.is_file():
               continue
             featureFile = tfEntry.name
+            if featureFile in EXCLUDE:
+              continue
             if not featureFile.endswith('.tf'):
-              print(f'WARNING: non feature file "{version}/{featureFile}"')
+              console(f'WARNING: non feature file "{version}/{featureFile}"', error=True)
               continue
             dataFiles.setdefault(version, set()).add(featureFile)
 
     for (version, features) in sorted(dataFiles.items()):
       item = f'{org}/{repo}'
-      print(f'zipping {item:<25} {version:>4} with {len(features):>3} features')
+      console(f'zipping {item:<25} {version:>4} with {len(features):>3} features')
       with ZipFile(
           f'{destDir}/{relativeDest}-{version}.zip',
           'w',
@@ -98,7 +104,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
       with os.scandir(thisPath) as dr:
         for entry in dr:
           name = entry.name
-          if name == '.DS_Store':
+          if name in EXCLUDE:
             continue
           if entry.is_file():
             results.append((f'{internalBase}/{name}', f'{base}/{path}/{name}'))
@@ -107,7 +113,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
 
     results = []
     collectFiles(sourceDir, '', results)
-    print(f'zipping {org}/{repo}/{relative} with {len(results)} files')
+    console(f'zipping {org}/{repo}/{relative} with {len(results)} files')
     with ZipFile(
         f'{destDir}/{relativeDest}.zip',
         'w',
@@ -123,7 +129,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
 
 def main(cargs=sys.argv):
   if len(cargs) >= 2 and any(arg in {'--help', '-help', '-h', '?', '-?'} for arg in cargs[1:]):
-    print(HELP)
+    console(HELP)
     return
 
   toBeAsked = ()
@@ -141,7 +147,7 @@ def main(cargs=sys.argv):
     repo = cargs[2]
     relative = cargs[3]
   else:
-    print(HELP)
+    console(HELP)
     return
 
   for i in toBeAsked:
@@ -158,7 +164,7 @@ def main(cargs=sys.argv):
       if not relative:
         relative = RELATIVE
 
-  zipData(org, repo, relative=relative)
+  zipData(org, repo, relative=relative, tf=relative.endswith('tf'))
 
 
 if __name__ == "__main__":

@@ -4,6 +4,8 @@ import re
 from glob import glob
 from importlib import import_module
 
+from tf.helpers import console
+
 appPat = '^(.*)-app$'
 appRe = re.compile(appPat)
 
@@ -78,34 +80,47 @@ def getParam(cargs=sys.argv, interactive=False):
     if dataSource is None:
       dataSource = input(f'specify data source [{dPrompt}] > ')
     if dataSource not in dataSources:
-      print('Unknown data source')
+      console('Unknown data source', error=True)
       dataSource = None
     if dataSource is None:
-      print(f'Pass a data source [{dPrompt}] as first argument')
+      console(f'Pass a data source [{dPrompt}] as first argument', error=True)
     return dataSource
 
   if dataSource is None:
     return None
   if dataSource not in dataSources:
-    print('Unknown data source')
+    console('Unknown data source', error=True)
     return False
   return dataSource
 
 
-def getConfig(dataSource):
+def getAppConfig(dataSource):
+  config = None
+
   try:
-    config = import_module('.config', package=f'tf.extra.{dataSource}-app')
+    config = import_module('.config', package=f'tf.apps.{dataSource}')
   except Exception as e:
-    print('getConfig:', e)
-    print(f'getConfig: Data source "{dataSource}" not found')
-    return None
+    console(f'getAppConfig: {str(e)}', error=True)
+    console(f'getAppConfig: Configuration for "{dataSource}" not found', error=True)
   return config
+
+
+def getAppClass(dataSource):
+  appClass = None
+
+  try:
+    code = import_module(f'.app', package=f'tf.apps.{dataSource}')
+    appClass = code.TfApp
+  except Exception as e:
+    console(f'getAppClass: {str(e)}', error=True)
+    console(f'getAppClass: Api for "{dataSource}" not found')
+  return appClass
 
 
 def getAppDir(myDir, dataSource):
   parentDir = os.path.dirname(myDir)
-  tail = '' if dataSource == '' else f'{dataSource}-app'
-  return f'{parentDir}/extra/{tail}'
+  tail = '' if dataSource == '' else {dataSource}
+  return f'{parentDir}/apps/{tail}'
 
 
 def getValues(options, form):

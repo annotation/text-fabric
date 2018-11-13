@@ -1,9 +1,9 @@
-# Cunei
+# Uruk
 
 ## About
 
 The module
-[cunei.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/extra/cunei.py)
+[uruk/app.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/apps/uruk/app.py)
 contains a number of handy functions to deal with TF nodes for cuneiform tablets
 and
 [ATF](http://oracc.museum.upenn.edu/doc/help/editinginatf/primer/inlinetutorial/index.html)
@@ -17,48 +17,65 @@ See also
 ## Minimal incantation
 
 ```python
-from tf.extra.bhsa import Cunei
-A = Cunei(hoist=globals())
+from tf.app import use
+A = use('uruk', hoist=globals())
 ```
 
 ??? abstract "Explanation"
-    The first line makes the Cunei API code, which is an app on top of Text-Fabric,
-    accessible to your notebook.
+    The first line makes imports the function by which you can load a text-fabric app.
 
-    The second line starts up the Cunei API and gives it the name `A`. 
+    The second line starts up the Uruk API and gives it the name `A`. 
     During start-up the following happens:
 
-    (1) the Cunei data is downloaded to your `~/text-fabric-data` directory, if not already present there;
+    (1) the Uruk data is downloaded to your `~/text-fabric-data` directory, if not already present there;
 
     (2) if your data has been freshly downloaded, a series of optimizations are executed;
 
-    (3) most optimized features of the Cunei dataset are loaded;
+    (3) most optimized features of the Uruk dataset are loaded;
 
     (4) `hoist=globals()` makes the API elements directly available:
     you can refer to `F`, `L`, `T`, etc. directly,
     instead of the more verbose `A.api.F`, `A.api.L`, `A.api.T` etc.
 
-If you are content with the minimal incantation, you can skip **Set up** and **Initialisation**.
-
-## Set up
-
-??? abstract "from tf.extra.cunei import Cunei"
-    ??? explanation "import Cunei"
-        The `Cunei` API is distributed with Text-Fabric.
-        You have to import it into your program.
+If you are content with the minimal incantation, you can skip **Initialisation**.
 
 ## Initialisation
 
-??? abstract "Cunei()"
+??? abstract "use()"
     ```python
-        A = Cunei(name=None, hoist=globals(), silent=False)
+    A = use('uruk', api=api, name=None, version=VERSION, silent=False)
     ```
 
     ???+ info "Description"
-        Text-Fabric will be started for you and load all features as explained above in the minimal incantation..
-        When `Cunei` is
-        initializing, it scans the image directory of the data and reports how many
+        Silently loads some additional features, and `A`
+        will give access to some extra functions.
+        During the initialization
+        it scans the image directory of the data and reports how many
         photos and lineart images it sees.
+
+    ??? info "api"
+        The API resulting from an earlier call `TF.load()`
+        If you leave it out, an API will be created exactly like the TF-browser does it,
+        with the same data version and the same set of data features.
+
+        ??? explanation "Set up"
+            But you can also switch the app on
+            action after you have set up TF and loaded some features, e.g.
+
+            ```python
+            VERSION = '0.1'
+            TF = Fabric(locations=f'~/github/Nino-cunei/uruk/tf/uruk/{VERSION}')
+            api = TF.load('''
+              word_etcbc
+            ''')
+            api.makeAvailableIn(globals())
+            ```
+
+            Then we add the functionality of the `uruk` module by the call
+            
+            ```python
+            A = use('uruk', api=api)
+            ```
 
     ??? info "name"
         If you leave this argument out, Text-Fabric will determine the name of your notebook for you.
@@ -67,7 +84,7 @@ If you are content with the minimal incantation, you can skip **Set up** and **I
 
         This should be the name
         of your current notebook (without the `.ipynb` extension).
-        The Cunei API will use this to generate a link to your notebook
+        The Uruk API will use this to generate a link to your notebook
         on GitHub and NBViewer.
 
     ??? info "silent"

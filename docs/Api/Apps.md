@@ -21,7 +21,7 @@
     name | description
     --- | ---
     [bhsa](Bhsa.md) | Biblia Hebraica Stuttgartensia (Amstelodamensis)
-    [cunei](Cunei.md) | Proto-cuneiform Uruk Corpus
+    [uruk](Uruk.md) | Proto-cuneiform Uruk Corpus
     [peshitta](Peshitta.md) | Syriac Old Testament
     [syrnt](Syrnt.md) | Syriac New Testament
 
@@ -29,14 +29,38 @@
 
 ??? abstract "App components"
     The apps themselves are modules inside 
-    [tf.extra](https://github.com/Dans-labs/text-fabric/tree/master/tf/extra)
+    [tf.apps](https://github.com/Dans-labs/text-fabric/tree/master/tf/apps)
 
-    For each *app*, you find there:
+    For each *app*, you find there a subfolder *app* with:
 
-    ??? abstract "module"
-        *app*`.py`
-        contains all the functionality specific to the corpus in question, organized as an extended
-        TF api. In the code this is referred to in variables with name `app`.
+    ??? abstract "static"
+        A folder with fonts and logos, used by the text-fabric browser.
+
+    ??? abstract "config.py"
+        Settings to set up a browsing experience and to feed the specific API for this app.
+
+        ??? abstract "web browsing settings"
+            The TF kernel, webserver and browser need settings:
+
+            setting | example | description
+            --- | --- | ---
+            protocol | `http://` | protocol of local website
+            host | `localhost` | server address of local website
+            webport | `8001` | port for the local website
+            port | `18981` | port through wich the TF kernel and the webserver communicate
+
+        ??? abstract "data settings"
+            The TF kernel needs context information:
+
+            setting | type | description
+            --- | --- | ---
+            localDir | directory name | temporary directory for writing and reading
+            options | tuple | names of extra options for seaerching and displaying query results
+            PROVENANCE | dict | corpus specific provenance metadata: name and DOI
+
+    ??? abstract "app.py"
+        The functionality specific to the corpus in question, organized as an extended
+        TF api. In the code you see this stored in variables with name `app`.
 
         In order to be an app that TF can use, `app` should provide the following attributes:
 
@@ -78,38 +102,6 @@
             code for displaying nodes.
 
 
-    ??? abstract "webapp"
-        the package *app*`-app`
-        is used by the text-fabric browser, and contains settings and assets
-        to set up a browsing experience.
-
-        * `config.py`: settings
-        * a `static` folder with fonts and logos.
-
-
-        ??? abstract "config.py"
-            Contains values for parameters.
-
-            ??? abstract "web browsing settings"
-                The TF kernel, webserver and browser need settings:
-
-                setting | example | description
-                --- | --- | ---
-                protocol | `http://` | protocol of local website
-                host | `localhost` | server address of local website
-                webport | `8001` | port for the local website
-                port | `18981` | port through wich the TF kernel and the webserver communicate
-
-            ??? abstract "data settings"
-                The TF kernel needs context information:
-
-                setting | type | description
-                --- | --- | ---
-                locations | list | where to look for tf features
-                modules | list | combines with locations to search paths for tf features
-                localDir | directory name | temporary directory for writing and reading
-                options | tuple | names of extra options for seaerching and displaying query results
-                PROVENANCE | dict | corpus specific provenance metadata: name and DOI
 
 ## The generic part of apps
 
@@ -272,7 +264,7 @@
 
     For the Bhsa it means showing nested and intruding sentences, clauses and phrases.
 
-    For the Cunei tablets it means showing alternating vertical and horizontal
+    For the Uruk tablets it means showing alternating vertical and horizontal
     subdivisions of faces into columns, lines and cases.
 
     For the Peshitta it currently means showing the words of verses in unicode and ETCBC/WIT
@@ -296,7 +288,7 @@
     In pretty displays you can opt for showing/hiding the node numbers,
     for suppressing certain standard features, and there are app dependent options.
 
-    In the case of Cunei tablets, you can opt to show the lineart of signs and quads,
+    In the case of Uruk tablets, you can opt to show the lineart of signs and quads,
     and to show the line numbers of the source transcriptions.
 
 ??? abstract "show(app, tuples, ...)"

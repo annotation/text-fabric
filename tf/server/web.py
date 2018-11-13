@@ -1,5 +1,4 @@
 import os
-import sys
 from shutil import rmtree
 import datetime
 import time
@@ -15,11 +14,12 @@ from bottle import (post, get, route, template, request, static_file, run)
 from tf.fabric import NAME, VERSION, DOI, DOI_URL, COMPOSE_URL
 from tf.server.kernel import makeTfConnection
 from tf.server.common import (
-    getParam, getModules, getDebug, getConfig, getDocker, getLocalClones,
+    getParam, getModules, getDebug, getAppConfig, getDocker, getLocalClones,
     getAppDir, getValues, setValues,
     pageLinks, passageLinks,
     shapeMessages, shapeOptions, shapeCondense, shapeFormats,
 )
+from tf.helpers import console
 from tf.apphelpers import RESULT
 
 
@@ -44,7 +44,7 @@ def getStuff(lgc):
   global appDir
   global localDir
 
-  config = getConfig(dataSource)
+  config = getAppConfig(dataSource)
   if config is None:
     return None
 
@@ -515,8 +515,7 @@ if __name__ == "__main__":
     debug = getDebug()
     config = getStuff(lgc)
     onDocker = getDocker()
-    print(f'onDocker={onDocker}')
-    sys.stdout.flush()
+    console(f'onDocker={onDocker}')
     if config is not None:
       run(
           debug=debug,

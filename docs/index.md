@@ -166,7 +166,7 @@ There is extensive documentation here.
 If you start using the Text-Fabric API in your programs, you'll definitely need it.
 
 If you are just starting with the Text-Fabric browser, it might help to
-look at the online tutorials for the BHSA, Peshitta, SyrNT, and Cunei corpora to see what
+look at the online tutorials for the BHSA, Peshitta, SyrNT, and Uruk corpora to see what
 Text-Fabric can reveal about the data.
 
 ??? abstract "Tutorials"
@@ -176,7 +176,7 @@ Text-Fabric can reveal about the data.
     * [Biblia Hebraica Stuttgartensia Amstelodamensis](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
     * [Peshitta: Syriac Old Testament](https://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb)
     * [Syriac New Testament](https://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb)
-    * [Proto-Cuneiform tablets from Uruk IV/III](https://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb)
+    * [Proto-Cuneiform tablets from Uruk IV/III](https://nbviewer.jupyter.org/github/nino-cunei/uruk/blob/master/tutorial/start.ipynb)
 
     These links point to the *static* online versions.
     If you want to get these Jupyter notebooks on your system in order to execute them yourself, 
@@ -185,7 +185,7 @@ Text-Fabric can reveal about the data.
     * [BHSA tutorial download](https://github.com/ETCBC/bhsa/releases/download/1.3/tutorial.zip)
     * [Peshitta tutorial download](https://github.com/ETCBC/peshitta/releases/download/0.1/tutorial.zip)
     * [SyrNT tutorial download](https://github.com/ETCBC/syrnt/releases/download/0.1/tutorial.zip)
-    * [Cunei tutorial download](https://github.com/Nino-cunei/tutorials/releases/download/v1.0.0/tutorial.zip)
+    * [Uruk tutorial download](https://github.com/Nino-cunei/uruk/releases/download/1.0.0/tutorial.zip)
 
     These are zip files, you can unpack them where you want.
     You have to have Jupyter installed.
@@ -208,7 +208,7 @@ Text-Fabric can reveal about the data.
     * [Bhsa app for the Hebrew Bible](Api/Bhsa.md)
     * [Peshitta app for the Syriac Old Testament](Api/Peshitta.md)
     * [Syrnt app for the Syriac New Testament](Api/Syrnt.md)
-    * [Cunei app for the Proto-cuneiform tablets from Uruk](Api/Cunei.md)
+    * [Uruk app for the Proto-cuneiform tablets from Uruk](Api/Uruk.md)
    
 ??? note "Papers"
     Papers (preprints on [arxiv](https://arxiv.org)), most of them published:

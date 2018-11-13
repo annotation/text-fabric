@@ -51,7 +51,7 @@ nav:
     - 'Hebrew Bible': 'Api/Bhsa.md'
     - 'Peshitta': 'Api/Peshitta.md'
     - 'Syriac New Testament': 'Api/Syrnt.md'
-    - 'Cuneiform Tablets': 'Api/Cunei.md'
+    - 'Cuneiform Tablets': 'Api/Uruk.md'
     - 'Transcription': 'Api/Transcription.md'
   - Server:
     - 'Kernel': 'Server/Kernel.md'

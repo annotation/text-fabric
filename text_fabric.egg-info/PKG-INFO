@@ -11,7 +11,7 @@ Description: Tools to read text corpora with (linguistic) annotations
         With a built in web-interface for querying a corpus.
         More info on https://dans-labs.github.io/text-fabric/
         
-Keywords: text,linguistics,database,graph,hebrew,cuneiform,greek,syriac
+Keywords: text,linguistics,database,graph,hebrew,bible,cuneiform,uruk,greek,syriac
 Platform: UNKNOWN
 Classifier: Development Status :: 4 - Beta
 Classifier: Environment :: Other Environment

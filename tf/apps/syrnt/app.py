@@ -4,7 +4,7 @@ from tf.apphelpers import (
     htmlEsc, mdEsc,
     dm, dh,
 )
-from tf.appmake import setupApi, outLink
+from tf.app import setupApi, outLink
 
 PLAIN_LINK = (
     'https://github.com/{org}/{repo}/blob/master'
@@ -15,7 +15,7 @@ SECTION = {'book', 'chapter', 'verse'}
 VERSE = {'verse'}
 
 
-class Peshitta(object):
+class TfApp(object):
   def __init__(
       app,
       name=None,
@@ -24,7 +24,7 @@ class Peshitta(object):
       moduleRefs=None,
       locations=None,
       modules=None,
-      version='0.1',
+      version=None,
       lgc=False,
       check=False,
       hoist=False,
@@ -33,7 +33,7 @@ class Peshitta(object):
     setupApi(
         app,
         name,
-        'peshitta',
+        'syrnt',
         moduleRefs,
         locations,
         modules,
@@ -69,7 +69,7 @@ class Peshitta(object):
     )
     if text is None:
       text = passageText
-      title = 'show this passage in the Peshitta source'
+      title = 'show this passage in the SyrNT source'
     else:
       title = passageText
     if noUrl:
@@ -116,14 +116,17 @@ class Peshitta(object):
           rep = app.webLink(n, text=rep, className='vn', asString=True)
         else:
           rep = f'<span class="vn">{rep}</span>'
-        rep += mdEsc(htmlEsc(T.text(L.d(n, otype="word"), fmt=fmt)))
+        rep += mdEsc(htmlEsc(T.text(L.d(n, otype='word'), fmt=fmt)))
         isText = True
+    elif nType == 'lex':
+      rep = mdEsc(htmlEsc(F.lexeme.v(n)))
     else:
       rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'), fmt=fmt)))
 
     if linked and nType not in VERSE:
       rep = app.webLink(n, text=rep, asString=True)
 
+    tClass = 'syb' if isText else 'trb'
     tClass = app.formatClass[fmt] if isText else 'trb'
     rep = f'<span class="{tClass}">{rep}</span>'
     result = f'{rep}{nodeRep}'
@@ -139,8 +142,8 @@ class Peshitta(object):
       html,
       firstSlot,
       lastSlot,
-      fmt=None,
       condenseType=None,
+      fmt=None,
       withNodes=True,
       suppress=set(),
       highlights={},
@@ -163,6 +166,7 @@ class Peshitta(object):
     ) = goOn
 
     api = app.api
+    F = api.F
     L = api.L
     T = api.T
     otypeRank = api.otypeRank
@@ -183,10 +187,12 @@ class Peshitta(object):
     elif nType == 'verse':
       (thisFirstSlot, thisLastSlot) = getBoundary(api, n)
       children = L.d(n, otype='word')
+    elif nType == 'lex':
+      children = ()
     elif nType == slotType:
       children = ()
 
-    doOuter = outer and nType == slotType
+    doOuter = outer and nType in {slotType, 'lex'}
     if doOuter:
       html.append('<div class="outeritem">')
 
@@ -217,7 +223,19 @@ class Peshitta(object):
             app,
             n,
             suppress,
-            ('word_etcbc',),
+            ('word_etcbc', 'lexeme_etcbc', 'sp', 'vs', 'vt'),
+        )
+      elif nType == 'lex':
+        occs = L.d(n, otype='word')
+        extremeOccs = sorted({occs[0], occs[-1]})
+        linkOccs = ' - '.join(app.webLink(lo, asString=True) for lo in extremeOccs)
+        heading = f'<div class="h">{htmlEsc(F.lexeme.v(n))}</div>'
+        occs = f'<div class="occs">{linkOccs}</div>'
+        featurePart = getFeatures(
+            app,
+            n,
+            suppress,
+            ('lexeme_etcbc',),
         )
       html.append(heading)
       html.append(featurePart)

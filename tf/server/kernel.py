@@ -3,11 +3,16 @@ import pickle
 import rpyc
 from rpyc.utils.server import ThreadedServer
 
+from tf.helpers import console
 from tf.apphelpers import (
     runSearch, runSearchCondensed,
     compose, composeP, getContext, getResultsX
 )
-from .common import getParam, getModules, getConfig, getCheck, getLocalClones
+from .common import (
+    getParam, getModules,
+    getAppConfig, getAppClass,
+    getCheck, getLocalClones
+)
 
 TIMEOUT = 120
 
@@ -35,12 +40,15 @@ def allNodes(table):
 
 
 def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
-  config = getConfig(dataSource)
+  config = getAppConfig(dataSource)
   if config is None:
     return None
+  appClass = getAppClass(dataSource)
+  if appClass is None:
+    return None
 
-  print(f'Setting up TF kernel for {dataSource} {moduleRefs}')
-  app = config.appClass(
+  console(f'Setting up TF kernel for {dataSource} {moduleRefs}')
+  app = appClass(
       asApp=True,
       moduleRefs=moduleRefs,
       version=config.VERSION,
@@ -49,13 +57,11 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
   )
 
   if not app.api:
-    print(f'{TF_ERROR}')
-    sys.stdout.flush()
+    console(f'{TF_ERROR}')
     return False
   app.api.reset()
   cache = {}
-  print(f'{TF_DONE}\nListening at port {port}')
-  sys.stdout.flush()
+  console(f'{TF_DONE}\nListening at port {port}')
 
   class TfKernel(rpyc.Service):
     def on_connect(self, conn):
@@ -315,10 +321,10 @@ def main(cargs=sys.argv):
   check = getCheck(cargs=cargs)
 
   if dataSource is not None:
-    modules = tuple(modules[6:].split(',')) if modules else ()
-    config = getConfig(dataSource)
+    moduleRefs = modules[6:] if modules else ''
+    config = getAppConfig(dataSource)
     if config is not None:
-      kernel = makeTfKernel(dataSource, modules, lgc, check, config.port)
+      kernel = makeTfKernel(dataSource, moduleRefs, lgc, check, config.port)
       if kernel:
         kernel.start()
 

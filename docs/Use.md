@@ -10,7 +10,7 @@ Here is how to start up text-fabric.
     `text-fabric bhsa` or
     `text-fabric peshitta` or
     `text-fabric syrnt` or
-    `text-fabric cunei`
+    `text-fabric uruk`
     in the search box, and then Enter.
 
 ??? hint "On Linux or Macos?"
@@ -35,7 +35,7 @@ Here is how to start up text-fabric.
     or 
 
     ```sh
-    text-fabric cunei
+    text-fabric uruk
     ```
 
 ??? abstract "All platforms"
@@ -56,9 +56,9 @@ Here is how to start up text-fabric.
 
 *Above: Querying the BHSA data*
 
-*Below: Querying the Cunei data*
+*Below: Querying the Uruk data*
 
-![cunei](images/cunei-app.png)
+![uruk](images/uruk-app.png)
 
 
 ??? hint "Fetching corpora"
@@ -67,10 +67,10 @@ Here is how to start up text-fabric.
     (25 MB for the Hebrew Bible,
     2,1 MB for the Peshitta,
     2,1 MB for the Syriac New Testament,
-    1.6 MB for the Cunei corpus).
+    1.6 MB for the Uruk corpus).
 
     ??? caution "Size of data"
-        There might be sizable additional data (550 MB images for the Cunei corpus).
+        There might be sizable additional data (550 MB images for the Uruk corpus).
         In that case, take care to have a good internet connection when you use the
         Text-Fabric browser for the first time.
 
@@ -119,21 +119,21 @@ including your own.
     Now, if you want to share your results for checking and replication, put all this in a GitHub repository:
 
     ???+ note "Example"
-        **Cunei**:
+        **Uruk**:
 
-        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/about.md)
-        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/cunei/cunei-DefaulT/RESULTSX.tsv)
+        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/apps/uruk/uruk-DefaulT/about.md)
+        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/apps/uruk/uruk-DefaulT/RESULTSX.tsv)
 
         **BHSA**:
 
-        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/about.md)
-        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-DefaulT/RESULTSX.tsv)
+        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/apps/bhsa/bhsa-DefaulT/about.md)
+        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/apps/bhsa/bhsa-DefaulT/RESULTSX.tsv)
 
     ???+ note "Example with lexemes"
         **BHSA**:
 
-        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/about.md)
-        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
+        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/apps/bhsa/bhsa-Dictionary/about.md)
+        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/apps/bhsa/bhsa-Dictionary/RESULTSX.tsv)
 
         This example shows how you can get a complete dictionary in your pocket by issuing a simple TF query.
 
@@ -199,32 +199,32 @@ Explore your corpus by means of programming.
 
     Enter the following text in a code cell
 
+    ```python
+    from tf.app import use
+    ```
+
     **BHSA**:
 
     ```python
-    from tf.extra.bhsa import Bhsa
-    B = Bhsa(hoist=globals())
+    A = use('bhsa', hoist=globals())
     ```
 
     **Peshitta**:
 
     ```python
-    from tf.extra.peshitta import Peshitta
-    P = Peshitta(hoist=globals())
+    A = use('peshitta', hoist=globals())
     ```
 
     **SyrNT**:
 
     ```python
-    from tf.extra.syrnt import Syrnt
-    SY = Syrnt(hoist=globals())
+    A = use('syrnt', hoist=globals())
     ```
 
-    **Cunei**:
+    **Uruk**:
 
     ```python
-    from tf.extra.cunei import Cunei
-    CN = Cunei(hoist=globals())
+    A = use('uruk', hoist=globals())
     ```
 
     ??? note "data"
@@ -233,7 +233,7 @@ Explore your corpus by means of programming.
         directory.
 
         If you have data in other places, you can also use that by means of
-        extra arguments supplied to `Bhsa()`, `Peshitta()`, `Syrnt()` and `Cunei()`.
+        extra arguments supplied to `use()`.
 
 ??? abstract "Using Hebrew data"
     To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
@@ -255,10 +255,10 @@ Explore your corpus by means of programming.
     Or go straight to the
     [syrnt-api-docs](Api/Syrnt.md).
 
-??? abstract "Using Cuneiform data"
-    To get started with the Uruk corpus, use its tutorial in the Nino-cunei repo:
-    [start](http://nbviewer.jupyter.org/github/nino-cunei/tutorials/blob/master/start.ipynb).
+??? abstract "Using Uruk data"
+    To get started with the Uruk corpus, use its tutorial in the Uruk repo:
+    [start](http://nbviewer.jupyter.org/github/nino-cunei/uruk/blob/master/tutorial/start.ipynb).
 
     Or go straight to the
-    [cunei-api-docs](Api/Cunei.md).
+    [uruk-api-docs](Api/Uruk.md).
 

@@ -1,22 +1,21 @@
-import sys
 import os
 import io
+import re
 import types
-from glob import glob
 from shutil import rmtree
 import requests
 from zipfile import ZipFile
 
-from tf.helpers import itemize, camel
+from tf.helpers import itemize, camel, console
 from tf.apphelpers import (
     search,
     table, plainTuple,
     show, pretty, prettyTuple, prettySetup,
     nodeFromDefaultSection,
     dm, dh, header,
-    CSS_FONT_API,
+    CSS_FONT, CSS_FONT_API,
 )
-from tf.server.common import getConfig
+from tf.server.common import getAppConfig, getAppClass
 from tf.fabric import Fabric
 from tf.notebook import location
 from tf.parameters import (
@@ -28,6 +27,15 @@ from tf.parameters import (
     EXPRESS_BASE,
     EXPRESS_INFO,
 )
+
+
+# START AN APP
+
+def use(appName, *args, **kwargs):
+  appClass = getAppClass(appName)
+  if not appClass:
+    return None
+  return appClass(*args, **kwargs)
 
 
 # SET UP A TF API FOR AN APP
@@ -52,17 +60,26 @@ def setupApi(
       asApp=asApp,
       api=api,
       version=version,
+      silent=silent,
   ).items():
     setattr(app, key, value)
 
-  config = getConfig(appName)
+  config = getAppConfig(appName)
+  if version is None:
+    version = config.VERSION
   cfg = config.configure(lgc=lgc, version=version)
   for (key, value) in cfg.items():
     setattr(app, key, value)
 
   app.cwd = os.getcwd()
 
-  if not app.api:
+  if app.api:
+    if app.standardFeatures is None:
+      allFeatures = app.api.TF.explore(silent=True, show=True)
+      loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
+      app.standardFeatures = loadableFeatures
+    app.api.TF.load(app.standardFeatures, add=True, silent=True)
+  else:
     specs = _getModulesData(
         app,
         moduleRefs,
@@ -78,17 +95,29 @@ def setupApi(
         app.api = api
         allFeatures = TF.explore(silent=True, show=True)
         loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
+        if app.standardFeatures is None:
+          app.standardFeatures = loadableFeatures
         useFeatures = [f for f in loadableFeatures if f not in app.excludedFeatures]
         result = TF.load(useFeatures, add=True, silent=True)
         if result is False:
           app.api = None
-  else:
-    app.api.TF.load(app.standardFeatures, add=True, silent=True)
+    else:
+      app.api = None
 
   if app.api:
     _addLinksApi(app, name, appName, silent)
     _addFormatApi(app, silent, hoist)
     _addMethods(app)
+  else:
+    if not asApp:
+      console(
+          f'''
+There were problems with loading data.
+The Text-Fabric API has not been loaded!
+The app "{appName}" will not work!
+''',
+          error=True,
+      )
 
 
 # COLLECT CONFIG SETTINGS IN A DICT
@@ -139,84 +168,162 @@ def liveUrl(org, repo, version, release, relative):
   return f'{URL_GH}/{org}/{repo}/releases/download/{release}/{relativeFlat}-{version}.zip'
 
 
-# DOWNLOAD A SINGLE ZIP FILE
+# CHECK AND DOWNLOAD DATA FOR A GIVEN LOCATION
 
-def getDataFile(
+def getData(
     org,
     repo,
     relative,
-    release,
     version,
-    dest,
-    fileName=None,
+    lgc,
+    check,
     withPaths=False,
-    silent=False,
     keep=False,
+    silent=False
 ):
-  versionDest = f'{dest}/{version}' if version else dest
-  if fileName is None:
-    relativeFlat = relative.replace('/', '-')
-    fileName = (
-        f'{relativeFlat}-{version}.zip'
-        if version else
-        f'{relativeFlat}.zip'
-    )
-  dataUrl = f'{URL_GH}/{org}/{repo}/releases/download/{release}/{fileName}'
+  versionRep = f'/{version}' if version else ''
+  versionRep2 = f' - {version}' if version else ''
+  versionRep3 = f'-{version}' if version else ''
+  relativeRep = f'/{relative}' if relative else ''
+  dataRel = f'{org}/{repo}{relativeRep}'
+  expressBase = os.path.expanduser(EXPRESS_BASE)
+  expressTargetAll = f'{expressBase}/{dataRel}'
+  expressTarget = f'{expressTargetAll}{versionRep}'
+  expressInfoFile = f'{expressTarget}/{EXPRESS_INFO}'
+  exTarget = f'{EXPRESS_BASE}/{dataRel}{versionRep}'
+  ghBase = os.path.expanduser(GH_BASE)
+  ghTarget = f'{GH_BASE}/{dataRel}{versionRep}'
 
-  if not silent:
-    print(f'\tdownloading {org}/{repo} - {version} r{release}')
-    print(f'\tfrom {dataUrl} ... ')
-    sys.stdout.flush()
-  try:
-    r = requests.get(dataUrl, allow_redirects=True)
+  dataBase = _hasData(lgc, org, repo, version, relative)
+  if dataBase == ghBase:
     if not silent:
-      print(f'\tunzipping ... ')
-    zf = io.BytesIO(r.content)
-  except Exception as e:
-    print(str(e))
-    print(f'\tcould not download {repo}-{version} r{release} from {dataUrl} to {versionDest}')
-    sys.stdout.flush()
-    return False
+      console(
+          f'''
+Using {repo}{versionRep2} local in {ghTarget}
+'''
+      )
+    return (None, dataBase)
 
-  if not silent:
-    print(f'\tsaving {org}/{repo} - {version} r{release}')
-    sys.stdout.flush()
+  currentRelease = None
 
-  cwd = os.getcwd()
+  if dataBase == expressBase:
+    if os.path.exists(expressInfoFile):
+      with open(expressInfoFile) as eh:
+        for line in eh:
+          currentRelease = line.strip()
+    if currentRelease and not check:
+      if not silent:
+        console(
+            f'''
+Using {org}/{repo}{versionRep2} r{currentRelease} in {exTarget}
+'''
+        )
+      return (currentRelease, dataBase)
+
+  urlLatest = f'{URL_GH_API}/{org}/{repo}/releases/latest'
+
+  latestRelease = None
+  assets = ()
+  relativeFlat = relative.replace('/', '-')
+  dataFile = f'{relativeFlat}{versionRep3}.zip'
+
+  online = False
   try:
-    z = ZipFile(zf)
-    if not keep:
-      if os.path.exists(versionDest):
-        rmtree(versionDest)
-    os.makedirs(versionDest, exist_ok=True)
-    os.chdir(versionDest)
-    if withPaths:
-      z.extractall()
-      if os.path.exists('__MACOSX'):
-        rmtree('__MACOSX')
+    r = requests.get(urlLatest, allow_redirects=True).json()
+    online = True
+  except Exception:
+    console(
+        f'''
+Cannot check online for data releases. No results from:
+    {urlLatest}
+''',
+        error=True,
+    )
+  if online:
+    message = r.get('message', '').strip().replace(' ', '').lower()
+    if message == 'notfound':
+      console(
+          f'''
+Cannot find {org}/{repo} releases on GitHub by the url:
+    {urlLatest}
+''',
+          error=True,
+      )
+      online = False
+  if online:
+    latestRelease = r.get('tag_name', None)
+    assets = {a['name'] for a in r.get('assets', {})}
+  if not latestRelease or not assets:
+    online = False
+  if online and dataFile not in assets:
+    dataFiles = ', '.join(x[0:-4] if x.endswith('.zip') else x for x in sorted(assets))
+    console(
+        f'''
+In {org}/{repo}: newest release is {latestRelease}
+This release has no data file {dataFile}.
+Available data files: {dataFiles}
+''',
+        error=True,
+    )
+    online = False
+  if not online:
+    if currentRelease:
+      if not silent:
+        console(
+            f'''
+Still Using {org}/{repo}{versionRep2} r{currentRelease} in {exTarget}
+'''
+        )
+      return (currentRelease, expressBase)
     else:
-      for zInfo in z.infolist():
-        if zInfo.filename[-1] == '/':
-          continue
-        if zInfo.filename.startswith('__MACOS'):
-          continue
-        zInfo.filename = os.path.basename(zInfo.filename)
-        z.extract(zInfo)
-  except Exception as e:
-    print(str(e))
-    print(f'\tcould not save {org}/{repo} - {version} r{release}')
-    sys.stdout.flush()
-    os.chdir(cwd)
-    return False
+        console(
+            f'''
+Could not find data in {org}/{repo}{versionRep2} in {exTarget}
+''',
+            error=True,
+        )
+    return (None, False)
 
-  expressInfoFile = f'{versionDest}/{EXPRESS_INFO}'
-  with open(expressInfoFile, 'w') as rh:
-    rh.write(f'{release}')
-  if not silent:
-    print(f'\tsaved {org}/{repo} - {version} r{release}')
-    sys.stdout.flush()
-  os.chdir(cwd)
-  return True
+  if latestRelease == currentRelease:
+    if not silent:
+      console(
+          f'''
+No new data release available online.
+Using {repo}{versionRep2} r{currentRelease} (=latest) in {exTarget}.
+'''
+      )
+    return (currentRelease, expressBase)
+
+  if _getDataFile(
+      org, repo, relative, latestRelease, version,
+      keep=keep,
+      withPaths=withPaths,
+      silent=silent,
+  ):
+    if not silent:
+      console(
+          f'''
+Using {org}/{repo}{versionRep2} r{latestRelease} (=latest) in {exTarget}
+'''
+      )
+      return (latestRelease, expressBase)
+
+  if currentRelease:
+    if not silent:
+      console(
+          f'''
+Still Using {org}/{repo}{versionRep2} r{currentRelease} in {exTarget}
+'''
+      )
+    return (currentRelease, expressBase)
+
+  console(
+      f'''
+No data for {org}/{repo}{versionRep2}
+''',
+      error=True,
+  )
+  return (None, False)
 
 
 # GET DATA FOR MAIN SOURCE AND ALL MODULES
@@ -262,15 +369,22 @@ def _getModulesData(
 
   # GET DATA for modules on-the-fly modules
 
-  for moduleRef in (moduleRefs or []):
+  for moduleRef in (moduleRefs.split(',') if moduleRefs else []):
     if moduleRef in seen:
       continue
 
     parts = moduleRef.split('/', 2)
-    if len(parts) != 2:
-      print('Module ref "{moduleRef}" is not "org/repo/path"')
+    if len(parts) < 2:
+      console(
+          f'''
+Module ref "{moduleRef}" is not "org/repo/path"
+''',
+          error=True,
+      )
       good = False
       continue
+    if len(parts) == 2:
+      parts.append('')
 
     (org, repo, relative) = parts
     if not _getModuleData(
@@ -315,7 +429,7 @@ def _getModuleData(
   if moduleRef in seen:
     return True
 
-  (release, base) = _getData(
+  (release, base) = getData(
       org,
       repo,
       relative,
@@ -328,7 +442,10 @@ def _getModuleData(
     return False
 
   seen.add(moduleRef)
-  mLocations.append(f'{base}/{org}/{repo}/{relative}')
+  repoLocation = f'{base}/{org}/{repo}'
+  mLocations.append(f'{repoLocation}/{relative}')
+  if isBase:
+    app.repoLocation = repoLocation
 
   info = {}
   for item in (
@@ -360,109 +477,115 @@ def _getModuleData(
   return True
 
 
-# CHECK AND DOWNLOAD DATA FOR A SINGLE MODULE
+# DOWNLOAD A SINGLE ZIP FILE
 
-def _getData(
+def _getDataFile(
     org,
     repo,
     relative,
+    release,
     version,
-    lgc,
-    check,
-    silent=False
+    fileName=None,
+    withPaths=False,
+    keep=False,
+    silent=False,
 ):
-  dataRel = f'{org}/{repo}/{relative}'
   expressBase = os.path.expanduser(EXPRESS_BASE)
-  expressTfAll = f'{expressBase}/{dataRel}'
-  expressTf = f'{expressTfAll}/{version}'
-  expressInfoFile = f'{expressTf}/{EXPRESS_INFO}'
-  exTf = f'{EXPRESS_BASE}/{dataRel}/{version}'
-  ghBase = os.path.expanduser(GH_BASE)
-  ghTf = f'{GH_BASE}/{dataRel}/{version}'
-
-  dataBase = _hasData(lgc, org, repo, version, relative)
-  if dataBase == ghBase:
-    if not silent:
-      print(f'Using {repo}-{version} local in {ghTf}')
-      sys.stdout.flush()
-    return (None, dataBase)
-
-  currentRelease = None
-
-  if dataBase == expressBase:
-    if os.path.exists(expressInfoFile):
-      with open(expressInfoFile) as eh:
-        for line in eh:
-          currentRelease = line.strip()
-    if currentRelease and not check:
-      if not silent:
-        print(f'Using {org}/{repo} - {version} r{currentRelease} in {exTf}')
-        sys.stdout.flush()
-      return (currentRelease, dataBase)
-
-  urlLatest = f'{URL_GH_API}/{org}/{repo}/releases/latest'
-
-  latestRelease = None
-  assets = ()
-  relativeFlat = relative.replace('/', '-')
-  dataFile = f'{relativeFlat}-{version}.zip'
-
-  online = False
-  try:
-    r = requests.get(urlLatest, allow_redirects=True).json()
-    online = True
-  except Exception:
-    print('Cannot check online for data releases. No results from:')
-    print(f'   {urlLatest}')
-  if online:
-    latestRelease = r.get('tag_name', None)
-    assets = {a['name'] for a in r.get('assets', {})}
-  if not latestRelease or not assets:
-    online = False
-  if online and dataFile not in assets:
-    versions = ', '.join(x[0:-4] if x.endswith('.zip') else x for x in sorted(assets))
-    print(
-        f'In {org}/{repo}: newest release is {latestRelease}\n'
-        f'This release has no data for version {version}.\n'
-        f'Available versions: {versions}'
+  versionRep = '' if not version else f'/{version}'
+  versionRep2 = '' if not version else f' - {version}'
+  versionRep3 = '' if not version else f'-{version}'
+  relativeRep = f'/{relative}' if relative else ''
+  destBase = f'{expressBase}/{org}/{repo}'
+  destInfoFile = f'{destBase}{relativeRep}{versionRep}'
+  dest = (
+      f'{destBase}{versionRep}'
+      if withPaths else
+      destInfoFile
+  )
+  if fileName is None:
+    relativeFlat = relative.replace('/', '-')
+    fileName = (
+        f'{relativeFlat}{versionRep3}.zip'
+        if version else
+        f'{relativeFlat}.zip'
     )
-    online = False
-  if not online:
-    if currentRelease:
-      if not silent:
-        print(f'Still Using {org}/{repo} - {version} r{currentRelease} in {exTf}')
-        sys.stdout.flush()
-      return (currentRelease, expressBase)
-    else:
-        print(f'Could not find data in {repo}-{version} r{latestRelease} in {exTf}')
-        sys.stdout.flush()
-    return (None, False)
+  dataUrl = f'{URL_GH}/{org}/{repo}/releases/download/{release}/{fileName}'
 
-  if latestRelease == currentRelease:
+  if not silent:
+    console(
+        f'''
+\tdownloading {org}/{repo}{versionRep2} r{release}
+\tfrom {dataUrl} ...
+'''
+    )
+  try:
+    r = requests.get(dataUrl, allow_redirects=True)
     if not silent:
-      print(
-          f'No new data release available online\n'
-          f'Using {repo} - {version} r{currentRelease} (=latest) in {exTf}'
+      console(
+          f'''
+\tunzipping ...
+'''
       )
-      sys.stdout.flush()
-    return (currentRelease, expressBase)
+    zf = io.BytesIO(r.content)
+  except Exception as e:
+    console(
+        f'''
+{str(e)}
+\tcould not download {repo}{versionRep2} r{release} from {dataUrl} to {dest}
+''',
+        error=True,
+    )
+    return False
 
-  if getDataFile(
-      org, repo, relative, latestRelease, version, expressTfAll, silent=silent
-  ):
-    if not silent:
-      print(f'Using {org}/{repo} - {version} r{latestRelease} (=latest) in {exTf}')
-      return (latestRelease, expressBase)
+  if not silent:
+    console(
+        f'''
+\tsaving {org}/{repo}{versionRep2} r{release}
+'''
+    )
 
-  if currentRelease:
-    if not silent:
-      print(f'Still Using {org}/{repo} - {version} r{currentRelease} in {exTf}')
-      sys.stdout.flush()
-    return (currentRelease, expressBase)
+  cwd = os.getcwd()
+  try:
+    z = ZipFile(zf)
+    if not keep:
+      if os.path.exists(dest):
+        rmtree(dest)
+    os.makedirs(dest, exist_ok=True)
+    os.chdir(dest)
+    if withPaths:
+      z.extractall()
+      if os.path.exists('__MACOSX'):
+        rmtree('__MACOSX')
+    else:
+      for zInfo in z.infolist():
+        if zInfo.filename[-1] == '/':
+          continue
+        if zInfo.filename.startswith('__MACOS'):
+          continue
+        zInfo.filename = os.path.basename(zInfo.filename)
+        z.extract(zInfo)
+  except Exception as e:
+    console(
+        f'''
+{str(e)}
+\tcould not save {org}/{repo}{versionRep2} r{release}
+''',
+        error=True,
+    )
+    os.chdir(cwd)
+    return False
 
-  print(f'No data for {org}/{repo} - {version}')
-  sys.stdout.flush()
-  return (None, False)
+  expressInfoFile = f'{destInfoFile}/{EXPRESS_INFO}'
+  with open(expressInfoFile, 'w') as rh:
+    rh.write(f'{release}')
+  if not silent:
+    console(
+        f'''
+\tsaved {org}/{repo}{versionRep2} r{release}
+'''
+    )
+  os.chdir(cwd)
+  return True
 
 
 # LOWER LEVEL API FUNCTIONS
@@ -487,12 +610,12 @@ def _addLinksApi(
     dataLink = outLink(
         app.repo.upper(),
         app.docUrl,
-        'provenance of this corpus',
+        f'provenance of {app.corpus}',
     )
     charLink = (
         outLink(
             'Character table',
-            f'{URL_TFDOC}/{app.charUrl}',
+            app.charUrl.format(tfDoc=URL_TFDOC),
             app.charText,
         )
         if app.charUrl else
@@ -527,11 +650,6 @@ def _addLinksApi(
       app.tutLink = tutLink
     else:
       if inNb is not None:
-        languages = api.T.languages
-        deLangFeatures = (
-            _deLang(languages, api.Fall())
-            + _deLang(languages, api.Eall())
-        )
         if not silent:
           dm(
               '**Documentation:**'
@@ -539,17 +657,7 @@ def _addLinksApi(
           )
           dh(
               '<details open><summary><b>Loaded features</b>:</summary>\n'
-              + ' '.join(
-                  outLink(
-                      feature,
-                      app.featureUrl.format(
-                          version=app.version,
-                          feature=feature,
-                      ),
-                      title='info',
-                  )
-                  for feature in deLangFeatures
-              )
+              + _featuresPerModule(app)
               + '</details>'
           )
           if repoLoc:
@@ -569,6 +677,8 @@ def _addFormatApi(
 ):
   api = app.api
   inNb = app.inNb
+  if app.classNames is None:
+    app.classNames = {nType[0]: nType[0] for nType in api.C.levels.data}
   app.prettyFeaturesLoaded = {f for f in app.standardFeatures}
   app.prettyFeatures = ()
   _compileFormatClass(app)
@@ -625,12 +735,16 @@ def _loadCss(app):
   '''
   asApp = app.asApp
   if asApp:
-    return app.cssFont + app.css
-  dh(CSS_FONT_API.format(
-      fontName=app.fontName,
-      font=app.font,
-      fontw=app.fontw,
-  ) + app.css)
+    return CSS_FONT + app.css
+  cssFont = (
+      '' if app.fontName is None else
+      CSS_FONT_API.format(
+          fontName=app.fontName,
+          font=app.font,
+          fontw=app.fontw,
+      )
+  )
+  dh(cssFont + app.css)
 
 
 def _deLang(languages, features):
@@ -664,6 +778,76 @@ def _deLang(languages, features):
   return sorted(results)
 
 
+pathPat = re.compile(
+    r'^(.*/(?:github|text-fabric-data))/([^/]+)/([^/]+)/(.*)$',
+    flags=re.I
+)
+
+
+def _featuresPerModule(app):
+  api = app.api
+  features = api.Fall() + api.Eall()
+  languages = api.T.languages
+
+  fixedModuleIndex = {}
+  for m in app.moduleSpecs:
+    fixedModuleIndex[(m['org'], m['repo'], m['relative'])] = m['corpus']
+
+  moduleIndex = {}
+  mLocations = app.mLocations
+  baseLoc = mLocations[0]
+
+  for mLoc in mLocations:
+    match = pathPat.fullmatch(mLoc)
+    if not match:
+      console(f'Strange module location "{mLoc}"', error=True)
+      continue
+    (base, org, repo, relative) = match.groups()
+    mId = (org, repo, relative)
+    corpus = (
+        app.corpus
+        if mLoc == baseLoc else
+        fixedModuleIndex[mId] if mId in fixedModuleIndex else
+        f'{org}/{repo}/{relative}'
+    )
+    moduleIndex[mLoc] = (org, repo, relative, corpus)
+
+  featureCat = {}
+
+  for feature in features:
+    featurePath = app.api.TF.features[feature].path
+    for mLoc in mLocations:
+      if featurePath.startswith(mLoc):
+        featureCat.setdefault(mLoc, []).append(feature)
+
+  featureLangCat = {
+      mLoc: _deLang(languages, catFeats) for (mLoc, catFeats) in featureCat.items()
+  }
+
+  html = ''
+  for mLoc in mLocations:
+    catFeats = featureLangCat.get(mLoc, None)
+    if not catFeats:
+      continue
+    modInfo = moduleIndex.get(mLoc, None)
+    if modInfo:
+      (org, repo, relative, corpus) = modInfo
+      url = (
+          app.featureUrl.format(version=app.version, feature=feature)
+          if mLoc == baseLoc else
+          f'{URL_GH}/{org}/{repo}/tree/master/{relative}'
+      )
+      html += (
+          f'<p><b>{corpus}</b>: '
+          + ' '.join(
+              outLink(feature, url, title='info')
+              for feature in catFeats
+          )
+          + '</p>'
+      )
+  return html
+
+
 def _compileFormatClass(app):
   result = {None: app.defaultClsOrig}
   formats = app.api.T.formats
@@ -678,16 +862,15 @@ def _compileFormatClass(app):
 
 
 def _hasData(lgc, org, repo, version, relative):
+  versionRep = f'/{version}' if version else ''
   if lgc:
     ghBase = os.path.expanduser(GH_BASE)
-    ghTf = f'{ghBase}/{org}/{repo}/{relative}/{version}'
-    features = glob(f'{ghTf}/*.tf')
-    if len(features):
+    ghTarget = f'{ghBase}/{org}/{repo}/{relative}{versionRep}'
+    if os.path.exists(ghTarget):
       return ghBase
 
   expressBase = os.path.expanduser(EXPRESS_BASE)
-  expressTf = f'{expressBase}/{org}/{repo}/{relative}/{version}'
-  features = glob(f'{expressTf}/*.tf')
-  if len(features):
+  expressTarget = f'{expressBase}/{org}/{repo}/{relative}{versionRep}'
+  if os.path.exists(expressTarget):
     return expressBase
   return False

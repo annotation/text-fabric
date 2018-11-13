@@ -10,7 +10,7 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
     with extra modules.
     Text-Fabric will fetch them for you if you use the Text-Fabric browser.
     And if you work with them from within a Python program (e.g. in a Jupyter Notebook),
-    you get the data when you just say `B = Bhsa()`.
+    you get the data when you just say `A = use(*appname*)`.
 
 ??? abstract "Manually"
     You can also download the data you need up-front.
@@ -47,8 +47,8 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
     this will fetch the data (25MB)
 
     ```python
-    from tf.extra.bhsa import Bhsa
-    B = Bhsa()
+    from tf.app import use
+    A = use('bhsa')
     ```
 
     ??? hint "ETCBC versions"
@@ -74,8 +74,8 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
     this will fetch the data (2MB)
 
     ```python
-    from tf.extra.peshitta import Peshitta
-    P = Peshitta()
+    from tf.app import use
+    A = use('peshitta')
     ```
 
 ??? abstract "From GitHub"
@@ -94,8 +94,8 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
     this will fetch the data (2MB)
 
     ```python
-    from tf.extra.syrnt import Syrnt
-    SY = Syrnt()
+    from tf.app import use
+    A = use('syrnt')
     ```
 
 ??? abstract "From GitHub"
@@ -111,10 +111,15 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
 
 ??? abstract "From within a program"
     If you are in a Jupyter notebook or Python script,
-    the Cunei API will fetch the data for you automatically:
+    Uruk API will fetch the data for you automatically.
 
     * The TF-part is 1.6 MB
     * the photos and lineart are 550MB!
+
+    ```python
+    from tf.app import use
+    A = use('uruk')
+    ```
     
     ???+ caution
         So do this only when you have a good internet connection.
@@ -131,9 +136,8 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
 ## More corpora
 
 The
-[Greek](https://github.com/Dans-labs/text-fabric-data/tree/master/greek/sblgnt) and
-[Syriac](https://github.com/ETCBC/linksyr/tree/master/data/tf/syrnt)
-New Testament have been converted to TF.
+[Greek](https://github.com/Dans-labs/text-fabric-data/tree/master/greek/sblgnt)
+New Testament has been converted to TF.
 
 We have example corpora in Sanskrit, and Babylonian.
 
