@@ -604,7 +604,7 @@ def _addLinksApi(
       if inNb:
         (nbDir, nbName, nbExt) = inNb
       if repoLoc:
-        (app.org, app.repo, app.relative, nbUrl, ghUrl) = repoLoc
+        (nbOrg, nbRepo, nbRrelative, nbUrl, ghUrl) = repoLoc
     tutUrl = f'{URL_NB}/{app.org}/{app.repo}/blob/master/tutorial/search.ipynb'
     extraUrl = f'{URL_TFDOC}/Api/{app.repo.capitalize()}/'
     dataLink = outLink(
