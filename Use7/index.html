@@ -13,7 +13,7 @@
         <meta name="description" content="Text-Fabric is a Python3 package for Text plus Annotations. It provides a data model, a text file format, and a binary format for (ancient) text plus (linguistic) annotations.">
       
       
-        <link rel="canonical" href="https://dans-labs.github.io/text-fabric/Model/File-formats/">
+        <link rel="canonical" href="https://dans-labs.github.io/text-fabric/Use7/">
       
       
         <meta name="author" content="Dirk Roorda">
@@ -37,21 +37,21 @@
       
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
-      <link rel="shortcut icon" href="../../images/icon/favicon.ico">
+      <link rel="shortcut icon" href="../images/icon/favicon.ico">
       <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
     
     
       
-        <title>Format - Text-Fabric</title>
+        <title>v7-Guide - Text-Fabric</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.451f80e5.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.451f80e5.css">
       
       
     
     
-      <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
+      <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
       
@@ -60,7 +60,7 @@
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
-    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
     
     
   </head>
@@ -96,7 +96,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#text-fabric-file-format" tabindex="1" class="md-skip">
+      <a href="#v7-guide" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -107,7 +107,7 @@
       <div class="md-flex__cell md-flex__cell--shrink">
         <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-header-nav__button md-logo">
           
-            <img src="../../images/tficon-small.png" width="24" height="24">
+            <img src="../images/tficon-small.png" width="24" height="24">
           
         </a>
       </div>
@@ -122,7 +122,7 @@
                 Text-Fabric
               </span>
               <span class="md-header-nav__topic">
-                Format
+                v7-Guide
               </span>
             
           
@@ -203,7 +203,7 @@
   <label class="md-nav__title md-nav__title--site" for="__drawer">
     <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-nav__button md-logo">
       
-        <img src="../../images/tficon-small.png" width="48" height="48">
+        <img src="../images/tficon-small.png" width="48" height="48">
       
     </a>
     Text-Fabric
@@ -239,7 +239,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../.." title="Home" class="md-nav__link">
+    <a href=".." title="Home" class="md-nav__link">
       Home
     </a>
   </li>
@@ -249,11 +249,90 @@
       
       
 
+  
 
-  <li class="md-nav__item">
-    <a href="../../Use7/" title="v7-Guide" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        v7-Guide
+      </label>
+    
+    <a href="./" title="v7-Guide" class="md-nav__link md-nav__link--active">
       v7-Guide
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#add-and-distribute-and-use-new-data" title="Add and distribute and use new data" class="md-nav__link">
+    Add and distribute and use new data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#start-tf-browser" title="Start TF browser" class="md-nav__link">
+    Start TF browser
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#incantation" title="Incantation" class="md-nav__link">
+    Incantation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-the-new-data" title="See the new data" class="md-nav__link">
+    See the new data
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-the-tf-browser" title="In the TF browser" class="md-nav__link">
+    In the TF browser
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-a-jupyter-notebook" title="In a Jupyter notebook" class="md-nav__link">
+    In a Jupyter notebook
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
     
@@ -263,7 +342,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../News/" title="News" class="md-nav__link">
+    <a href="../News/" title="News" class="md-nav__link">
       News
     </a>
   </li>
@@ -275,7 +354,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Install/" title="Install" class="md-nav__link">
+    <a href="../Install/" title="Install" class="md-nav__link">
       Install
     </a>
   </li>
@@ -287,7 +366,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Use/" title="Use" class="md-nav__link">
+    <a href="../Use/" title="Use" class="md-nav__link">
       Use
     </a>
   </li>
@@ -299,7 +378,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Add/" title="Add" class="md-nav__link">
+    <a href="../Add/" title="Add" class="md-nav__link">
       Add
     </a>
   </li>
@@ -311,7 +390,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Corpora/" title="Corpora" class="md-nav__link">
+    <a href="../Corpora/" title="Corpora" class="md-nav__link">
       Corpora
     </a>
   </li>
@@ -323,7 +402,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Faq/" title="Faq" class="md-nav__link">
+    <a href="../Faq/" title="Faq" class="md-nav__link">
       Faq
     </a>
   </li>
@@ -354,7 +433,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Code/Overview/" title="Overview" class="md-nav__link">
+    <a href="../Code/Overview/" title="Overview" class="md-nav__link">
       Overview
     </a>
   </li>
@@ -366,7 +445,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Code/Tests/" title="Tests" class="md-nav__link">
+    <a href="../Code/Tests/" title="Tests" class="md-nav__link">
       Tests
     </a>
   </li>
@@ -378,7 +457,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Code/Stats/" title="Stats (overall)" class="md-nav__link">
+    <a href="../Code/Stats/" title="Stats (overall)" class="md-nav__link">
       Stats (overall)
     </a>
   </li>
@@ -390,7 +469,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Code/StatsBase/" title="Stats (TF-base)" class="md-nav__link">
+    <a href="../Code/StatsBase/" title="Stats (TF-base)" class="md-nav__link">
       Stats (TF-base)
     </a>
   </li>
@@ -402,7 +481,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Code/StatsSearch/" title="Stats (TF-search)" class="md-nav__link">
+    <a href="../Code/StatsSearch/" title="Stats (TF-search)" class="md-nav__link">
       Stats (TF-search)
     </a>
   </li>
@@ -414,7 +493,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Code/StatsApps/" title="Stats (TF-apps)" class="md-nav__link">
+    <a href="../Code/StatsApps/" title="Stats (TF-apps)" class="md-nav__link">
       Stats (TF-apps)
     </a>
   </li>
@@ -426,7 +505,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Code/StatsServer/" title="Stats (TF-server)" class="md-nav__link">
+    <a href="../Code/StatsServer/" title="Stats (TF-server)" class="md-nav__link">
       Stats (TF-server)
     </a>
   </li>
@@ -438,7 +517,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Code/StatsTest/" title="Stats (Tests)" class="md-nav__link">
+    <a href="../Code/StatsTest/" title="Stats (Tests)" class="md-nav__link">
       Stats (Tests)
     </a>
   </li>
@@ -453,12 +532,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10" type="checkbox" id="nav-10" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10" type="checkbox" id="nav-10">
     
     <label class="md-nav__link" for="nav-10">
       Model
@@ -476,7 +553,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Data-Model/" title="Data" class="md-nav__link">
+    <a href="../Model/Data-Model/" title="Data" class="md-nav__link">
       Data
     </a>
   </li>
@@ -486,123 +563,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Format
-      </label>
-    
-    <a href="./" title="Format" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../Model/File-formats/" title="Format" class="md-nav__link">
       Format
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" title="Overview" class="md-nav__link">
-    Overview
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#header" title="Header" class="md-nav__link">
-    Header
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data" title="Data" class="md-nav__link">
-    Data
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#data-lines" title="Data lines" class="md-nav__link">
-    Data lines
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#node-specification" title="Node Specification" class="md-nav__link">
-    Node Specification
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#edges" title="Edges" class="md-nav__link">
-    Edges
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#value" title="Value" class="md-nav__link">
-    Value
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#consistency-requirements" title="Consistency requirements" class="md-nav__link">
-    Consistency requirements
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#single-values" title="Single values" class="md-nav__link">
-    Single values
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -612,7 +577,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Optimizations/" title="Tweaks" class="md-nav__link">
+    <a href="../Model/Optimizations/" title="Tweaks" class="md-nav__link">
       Tweaks
     </a>
   </li>
@@ -624,7 +589,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Search/" title="Search" class="md-nav__link">
+    <a href="../Model/Search/" title="Search" class="md-nav__link">
       Search
     </a>
   </li>
@@ -660,7 +625,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
+    <a href="../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
       Hebrew
     </a>
   </li>
@@ -672,7 +637,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Writing/Syriac.html" title="Syriac" class="md-nav__link">
+    <a href="../Writing/Syriac.html" title="Syriac" class="md-nav__link">
       Syriac
     </a>
   </li>
@@ -708,7 +673,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Api/General/" title="General" class="md-nav__link">
+    <a href="../Api/General/" title="General" class="md-nav__link">
       General
     </a>
   </li>
@@ -720,7 +685,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Api/Apps/" title="Apps" class="md-nav__link">
+    <a href="../Api/Apps/" title="Apps" class="md-nav__link">
       Apps
     </a>
   </li>
@@ -732,7 +697,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Api/Bhsa/" title="Hebrew Bible" class="md-nav__link">
+    <a href="../Api/Bhsa/" title="Hebrew Bible" class="md-nav__link">
       Hebrew Bible
     </a>
   </li>
@@ -744,7 +709,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Api/Peshitta/" title="Peshitta" class="md-nav__link">
+    <a href="../Api/Peshitta/" title="Peshitta" class="md-nav__link">
       Peshitta
     </a>
   </li>
@@ -756,7 +721,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Api/Syrnt/" title="Syriac New Testament" class="md-nav__link">
+    <a href="../Api/Syrnt/" title="Syriac New Testament" class="md-nav__link">
       Syriac New Testament
     </a>
   </li>
@@ -768,7 +733,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Api/Uruk/" title="Cuneiform Tablets" class="md-nav__link">
+    <a href="../Api/Uruk/" title="Cuneiform Tablets" class="md-nav__link">
       Cuneiform Tablets
     </a>
   </li>
@@ -780,7 +745,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Api/Transcription/" title="Transcription" class="md-nav__link">
+    <a href="../Api/Transcription/" title="Transcription" class="md-nav__link">
       Transcription
     </a>
   </li>
@@ -816,7 +781,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Server/Kernel/" title="Kernel" class="md-nav__link">
+    <a href="../Server/Kernel/" title="Kernel" class="md-nav__link">
       Kernel
     </a>
   </li>
@@ -828,7 +793,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Server/Web/" title="Web" class="md-nav__link">
+    <a href="../Server/Web/" title="Web" class="md-nav__link">
       Web
     </a>
   </li>
@@ -840,7 +805,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Server/Common/" title="Common" class="md-nav__link">
+    <a href="../Server/Common/" title="Common" class="md-nav__link">
       Common
     </a>
   </li>
@@ -876,7 +841,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Create/CreateTF/" title="Make TF" class="md-nav__link">
+    <a href="../Create/CreateTF/" title="Make TF" class="md-nav__link">
       Make TF
     </a>
   </li>
@@ -888,7 +853,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Create/ExampleText/" title="Example data" class="md-nav__link">
+    <a href="../Create/ExampleText/" title="Example data" class="md-nav__link">
       Example data
     </a>
   </li>
@@ -920,77 +885,44 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" title="Overview" class="md-nav__link">
-    Overview
+  <a href="#add-and-distribute-and-use-new-data" title="Add and distribute and use new data" class="md-nav__link">
+    Add and distribute and use new data
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#header" title="Header" class="md-nav__link">
-    Header
+  <a href="#start-tf-browser" title="Start TF browser" class="md-nav__link">
+    Start TF browser
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#data" title="Data" class="md-nav__link">
-    Data
+  <a href="#incantation" title="Incantation" class="md-nav__link">
+    Incantation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-the-new-data" title="See the new data" class="md-nav__link">
+    See the new data
   </a>
   
     <nav class="md-nav">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#data-lines" title="Data lines" class="md-nav__link">
-    Data lines
+  <a href="#in-the-tf-browser" title="In the TF browser" class="md-nav__link">
+    In the TF browser
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#node-specification" title="Node Specification" class="md-nav__link">
-    Node Specification
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#edges" title="Edges" class="md-nav__link">
-    Edges
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#value" title="Value" class="md-nav__link">
-    Value
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#consistency-requirements" title="Consistency requirements" class="md-nav__link">
-    Consistency requirements
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#single-values" title="Single values" class="md-nav__link">
-    Single values
+  <a href="#in-a-jupyter-notebook" title="In a Jupyter notebook" class="md-nav__link">
+    In a Jupyter notebook
   </a>
   
 </li>
@@ -1016,174 +948,127 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/Model/File-formats.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/Use7.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="text-fabric-file-format">Text-Fabric File Format<a class="headerlink" href="#text-fabric-file-format" title="Permanent link">&para;</a></h1>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>A <code>.tf</code> feature file starts with a <em>header</em>, and is followed by the actual data.
-The whole file is a plain text in UNICODE-utf8.</p>
-<h2 id="header">Header<a class="headerlink" href="#header" title="Permanent link">&para;</a></h2>
-<p>A <code>.tf</code> feature file always starts with one or more metadata lines of the form</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>@key
+                <h1 id="v7-guide">v7 Guide<a class="headerlink" href="#v7-guide" title="Permanent link">&para;</a></h1>
+<p>Here are hints to help you to get the most out version 7 of Text-Fabric.</p>
+<h2 id="add-and-distribute-and-use-new-data">Add and distribute and use new data<a class="headerlink" href="#add-and-distribute-and-use-new-data" title="Permanent link">&para;</a></h2>
+<p>See the
+<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb">share</a>
+tutorial.</p>
+<p>For a guide through all the steps of data sharing, see <a href="../Add/">Add</a>.
+There it is also explained how you can invoke the new command</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric-zip
 </pre></div>
 </td></tr></table>
 
-<p>or</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>@key=value
+<p>to make a distribution of your own features.</p>
+<h2 id="start-tf-browser">Start TF browser<a class="headerlink" href="#start-tf-browser" title="Permanent link">&para;</a></h2>
+<p>The <code>text-fabric</code> command as two new optional command line arguments: </p>
+<p><code>--mod=...</code> and <code>-c</code>.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric appname --mod<span class="o">=</span>module1,module2
 </pre></div>
 </td></tr></table>
 
-<p>The first line must be either</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>@node
+<p>Start a TF browser for appname (such as <code>bhsa</code>).</p>
+<p>Loads extra data from module1 and module2, to be found in a github repo specfied by the 
+module strings.</p>
+<p>You can specify as many modules as you want.</p>
+<p>The module sgtring must have the form</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>{org}/{repo}/{path}
 </pre></div>
 </td></tr></table>
 
-<p>or</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>@edge
-</pre></div>
-</td></tr></table>
-
-<p>or</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>@config
-</pre></div>
-</td></tr></table>
-
-<p>This tells Text-Fabric whether the data in the feature file is a <em>node</em> feature
-or an <em>edge</em> feature. The value <code>@config</code> means that the file will be used as
-configuration info. It will only have metadata.</p>
-<p>There <strong>must</strong> also be a type declaration:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>@valueType=type
-</pre></div>
-</td></tr></table>
-
-<p>where type is <code>str</code> or <code>int</code>. <code>@valueType</code> declares the type of the values in
-this feature file. If it is anything other than <code>str</code> (=<em>string</em>), Text-Fabric
-will convert it to that type when it reads the data from the file. Currently,
-the only other supported type is <code>int</code> for integers.</p>
-<p>In edge features, there <strong>may</strong> also be a declaration</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>@edgeValues
-</pre></div>
-</td></tr></table>
-
-<p>indicating that the edge feature carries values. The default is that an edge
-does not carry values.</p>
-<p>The rest of the metadata is optional for now, but it is recommended to put a
-date stamp in it like this</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>@dateCreated=2016-11-20T13:26:59Z
-</pre></div>
-</td></tr></table>
-
-<p>The time format should be <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a>.</p>
-<h2 id="data">Data<a class="headerlink" href="#data" title="Permanent link">&para;</a></h2>
-<p>After the metadata, there must be exactly one blank line, and every line after
-that is data.</p>
-<h3 id="data-lines">Data lines<a class="headerlink" href="#data-lines" title="Permanent link">&para;</a></h3>
-<p>The form of a data line is</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>node_spec value
-</pre></div>
-</td></tr></table>
-
-<p>for node features, and</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>node_spec node_spec value
-</pre></div>
-</td></tr></table>
-
-<p>for edge features.</p>
-<p>These fields are separated by single tabs.</p>
-<p><strong>NB</strong>: This is the default format. Under <em>Optimizations</em> below we shall
-describe the bits that can be left out, which will lead to significant
-improvement in space demands and processing speed.</p>
-<h3 id="node-specification">Node Specification<a class="headerlink" href="#node-specification" title="Permanent link">&para;</a></h3>
-<p>Every line contains a feature value that pertains to all nodes defined by its
-<em>node_spec</em>, or to all edges defined by its pair of <em>node_spec</em>s.</p>
-<p>A node spec denotes a <em>set</em> of nodes.</p>
-<p>The simplest form of a node spec is just a single integer. Examples:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>3
-45
-425000
-</pre></div>
-</td></tr></table>
-
-<p>Ranges are also allowed. Examples</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>1-10
-5-13
-28-57045
-</pre></div>
-</td></tr></table>
-
-<p>The nodes denoted by a range are all numbers between the endpoints of the range
-(including at both sides). So</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>2-4
-</pre></div>
-</td></tr></table>
-
-<p>denotes the nodes <code>2</code>, <code>3</code>, and <code>4</code>.</p>
-<p>You can also combine numbers and ranges arbitrarily by separating them with
-commas. Examples</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>1-3,5-10,15,23-37
-</pre></div>
-</td></tr></table>
-
-<p>Such a specification denotes the union of what is denoted by each
-comma-separated part.</p>
-<p><strong>NB</strong> As node specs denote <em>sets</em> of nodes, the following node specs are in
-fact equivalent</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>1,1 and 1
-2-3 and 3,2
-1-5,2-7 and 1-7
-</pre></div>
-</td></tr></table>
-
-<p>We will be tolerant in that you may specify the end points of ranges in
-arbitrary order:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>1-3 is the same as 3-1
-</pre></div>
-</td></tr></table>
-
-<h3 id="edges">Edges<a class="headerlink" href="#edges" title="Permanent link">&para;</a></h3>
-<p>An edge is specified by an <em>ordered</em> pair of nodes. The edge is <em>from</em> the first
-node in the pair <em>to</em> the second one. An edge spec consists of two node specs.
-It denotes all edges that are <em>from</em> a node denoted by the first node spec <em>to</em>
-a node denoted by the second node spec. An edge might be labelled, in that case
-the label of the edge is specified by the <em>value</em> after the two node specs.</p>
-<h4 id="value">Value<a class="headerlink" href="#value" title="Permanent link">&para;</a></h4>
-<p>The value is arbitrary text. The type of the value must conform to the
-<code>@valueType</code> declaration in the feature file. If it is missing, it is assumed to
-be <code>str</code>, which is the type of Unicode-utf8 strings. If it is <code>int</code>, it should
-be a valid representation of an integer number,</p>
-<p>There are a few escapes:</p>
+<p>where:</p>
 <ul>
-<li><code>\\</code> backslash</li>
-<li><code>\t</code> tab</li>
-<li><code>\n</code> newline These characters MUST always be escaped in a value string,
-    otherwise the line as a whole might be ambiguous.</li>
+<li><code>{org}</code> is the organization or person on GitHub,</li>
+<li><code>{repo}</code> is the repository on GitHub,</li>
+<li><code>{path}</code> is the path within the repository to the tf directory.</li>
 </ul>
-<p><strong>NB:</strong> There is no representation for the absence of a value. The empty string
-as value means that there is a value and it is the empty string. If you want to
-describe the fact that node <code>n</code> does not have a value for the feature in
-question, the node must be left out of the feature. In order words, there should
-be no data line in the feature that targets this node.</p>
-<p>If the declared value type (<code>@valueType</code>) of a feature is <code>int</code>, then its empty
-values will be taken as absence of values, though.</p>
-<h2 id="consistency-requirements">Consistency requirements<a class="headerlink" href="#consistency-requirements" title="Permanent link">&para;</a></h2>
-<p>There are a few additional requirements on feature data, having to do with the
-fact that features annotate nodes or edges of a graph.</p>
-<h3 id="single-values">Single values<a class="headerlink" href="#single-values" title="Permanent link">&para;</a></h3>
-<p>It is assumed that a node feature assigns only one value to the same node. If
-the data contains multiple assignments to a node, only the last assignment will
-be honoured, the previous ones will be discarded.</p>
-<p>Likewise, it is assumed that an edge feature assigns only one value to the same
-edge. If the data contains multiple assignments to an edge, only the last
-assignment will be honoured.</p>
-<p>Violations maybe or may not be reported, and processing may continue without
-warnings.</p>
+<p>See also the <a href="../Add/">Add</a> manual.</p>
+<p>You can optionally pass the flag <code>-c</code>.
+In that case Text-Fabric will check whether a new release of the data is available.
+If so, it will download and install it.
+This will happen for the main data and all modules specified on the command line.</p>
+<p>TF will always download the data to your <code>~/text-fabric-data</code> directory.</p>
+<h2 id="incantation">Incantation<a class="headerlink" href="#incantation" title="Permanent link">&para;</a></h2>
+<p>The old incantation <code>B = Bhsa()</code> and <code>CN = Cunei()</code> do no longer work.</p>
+<p>The new way is as follows:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.app</span> <span class="kn">import</span> <span class="n">use</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">use</span><span class="p">(</span><span class="s1">&#39;bhsa&#39;</span><span class="p">,</span> <span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+</pre></div>
+</td></tr></table>
+
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.app</span> <span class="kn">import</span> <span class="n">use</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">use</span><span class="p">(</span><span class="s1">&#39;uruk&#39;</span><span class="p">,</span> <span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+</pre></div>
+</td></tr></table>
+
+<p>Note that we no longer use <code>cunei</code> as name of the corpus, but the more precise <code>uruk</code>.</p>
+<p>You see that the app name (<code>bhsa</code>, <code>uruk</code>) is only used once, as first argument for the
+<code>use()</code> function.</p>
+<p>Think of the <code>use database</code> in MySQL and MongoDb.</p>
+<p>The remaining arguments of <code>use()</code> are the same as you passed before to <code>Bhsa()</code> and <code>Cunei()</code>.
+But there are a few more: <code>mod</code> and <code>check</code>.</p>
+<p>They have the same effect as <code>--mod=</code> and <code>-c</code> when calling the browser:</p>
+<ul>
+<li><code>mod</code> is a comma-separated list of modules in the form <code>{org}/{repo}/{path}</code>;</li>
+<li><code>check=False</code> is an optional boolean argument.</li>
+</ul>
+<p>Without further arguments, this will set up an TF api with most features loaded.</p>
+<p>If you want to add other search locations for tf features manually, you can pass
+optional <code>locations</code> and <code>modules</code> parameters, which will be passed to the underlying
+<a href="../Api/General/#loading">Fabric()</a> call.</p>
+<p>If you want even more control, you can first set up your own TF api in the classical way,
+by first calling</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=...</span><span class="p">,</span> <span class="n">modules</span><span class="o">=...</span><span class="p">)</span>
+<span class="n">api</span> <span class="o">=</span> <span class="n">TF</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>and then</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">use</span><span class="p">(</span><span class="s1">&#39;bhsa&#39;</span><span class="p">,</span> <span class="n">api</span><span class="o">=</span><span class="n">api</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<h2 id="see-the-new-data">See the new data<a class="headerlink" href="#see-the-new-data" title="Permanent link">&para;</a></h2>
+<p>The features of the data modules you have imported are available in the same way as all other features.</p>
+<p>You can use them in queries.</p>
+<h3 id="in-the-tf-browser">In the TF browser<a class="headerlink" href="#in-the-tf-browser" title="Permanent link">&para;</a></h3>
+<p>In the browser, pretty displays will show them automatically, because starting in this version,
+all features that used in query are displayed in the expanded view.</p>
+<p>If you want to see a feature that is not used in the query, you can add it as a trivial search criterion.</p>
+<p>For example, if you want to see the <code>sense</code> feature when looking for phrases, add it like this</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>clause
+  phrase sense*
+</pre></div>
+</td></tr></table>
+
+<p>The <code>*</code> means: always true, so it will not influence the query result set, only its display.</p>
+<p>The extra data modules are also shown in the provenance listings when you export data from the browser.</p>
+<h3 id="in-a-jupyter-notebook">In a Jupyter notebook<a class="headerlink" href="#in-a-jupyter-notebook" title="Permanent link">&para;</a></h3>
+<p>After the incantation, you see an overview of all features per module where they come from, and
+linked to their documentation or repository.</p>
+<p>You can use the new features exactly as you are used to, with <code>F</code> and <code>E</code> (for edge features).</p>
+<p>They will not automatically show up in <code>pretty</code> displays, because <code>pretty</code> does not know that it is
+displaying query results, it can display arbitrary nodes.</p>
+<p>So you have to tell which features you want to add to the display.
+That can be done by <a href="../Api/Apps/#pretty-display">prettySetup</a>:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">prettySetup</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="s1">&#39;sense&#39;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>and from then on the value of <code>sense</code> will be shown
+on every item that has a real value for the feature <code>sense</code>.</p>
+<p>You can cancel it by calling</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">prettySetup</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
                 
                   
                 
@@ -1204,7 +1089,7 @@ warnings.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../Data-Model/" title="Data" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href=".." title="Home" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1213,19 +1098,19 @@ warnings.</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Data
+                Home
               </span>
             </div>
           </a>
         
         
-          <a href="../Optimizations/" title="Tweaks" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../News/" title="News" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Tweaks
+                News
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
@@ -1255,9 +1140,9 @@ warnings.</p>
       
     </div>
     
-      <script src="../../assets/javascripts/application.5e60981f.js"></script>
+      <script src="../assets/javascripts/application.5e60981f.js"></script>
       
-      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
     
     

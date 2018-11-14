@@ -2,162 +2,172 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://dans-labs.github.io/text-fabric/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://dans-labs.github.io/text-fabric/Use7/</loc>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/News/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Install/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Use/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://dans-labs.github.io/text-fabric/Add/</loc>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Corpora/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Faq/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Code/Overview/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Code/Tests/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Code/Stats/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Code/StatsBase/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Code/StatsSearch/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Code/StatsApps/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Code/StatsServer/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Code/StatsTest/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Model/Data-Model/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Model/File-formats/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Model/Optimizations/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Model/Search/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Writing/Hebrew.html</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Writing/Syriac.html</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Api/General/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Api/Apps/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Api/Bhsa/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Api/Peshitta/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Api/Syrnt/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://dans-labs.github.io/text-fabric/Api/Cunei/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <loc>https://dans-labs.github.io/text-fabric/Api/Uruk/</loc>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Api/Transcription/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Server/Kernel/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Server/Web/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Server/Common/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Create/CreateTF/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Create/ExampleText/</loc>
-     <lastmod>2018-11-08</lastmod>
+     <lastmod>2018-11-14</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
