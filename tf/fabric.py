@@ -2,7 +2,11 @@ import os
 import collections
 from glob import glob
 from .data import Data, WARP, WARP2_DEFAULT, MEM_MSG
-from .helpers import itemize, expandDir, collectFormats, cleanName, check32, console
+from .helpers import (
+    itemize,
+    setDir, expandDir,
+    collectFormats, cleanName, check32, console
+)
 from .timestamp import Timestamp
 from .prepare import (levels, order, rank, levUp, levDown, boundary, sections)
 from .api import (
@@ -22,7 +26,7 @@ from .api import (
 from .mql import MQL, tfFromMql
 
 NAME = 'Text-Fabric'
-VERSION = '6.4.6'
+VERSION = '7.0.0'
 DOI = '10.5281/zenodo.592193'
 DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'
@@ -95,18 +99,10 @@ Example data  : {}
       locations = LOCATIONS
     if type(locations) is str:
       locations = [x.strip() for x in itemize(locations, '\n')]
-    self.homeDir = os.path.expanduser('~').replace('\\', '/')
-    self.curDir = os.getcwd().replace('\\', '/')
-    (self.parentDir, x) = os.path.split(self.curDir)
+    setDir(self)
     self.locations = []
     for loc in locations:
-      self.locations.append(
-          expandDir(loc, dict(
-              cur=self.curDir,
-              up=self.parentDir,
-              home=self.homeDir,
-          ))
-      )
+      self.locations.append(expandDir(self, loc))
 
     self.locationRep = '\n\t'.join(
         '\n\t'.join('{}/{}'.format(l, f) for f in self.modules) for l in self.locations
@@ -280,11 +276,7 @@ Example data  : {}
 
   def exportMQL(self, mqlName, mqlDir):
     self.tm.indent(level=0, reset=True)
-    mqlDir = expandDir(mqlDir, dict(
-        cur=self.curDir,
-        up=self.parentDir,
-        home=self.homeDir,
-    ))
+    mqlDir = expandDir(self, mqlDir)
 
     mqlNameClean = cleanName(mqlName)
     mql = MQL(mqlDir, mqlNameClean, self.features, self.tm)

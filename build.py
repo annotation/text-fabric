@@ -8,6 +8,7 @@ from subprocess import run, Popen
 
 import psutil
 
+from tf.helpers import console
 from tf.server.common import getAppConfig
 from tf.zipdata import zipData
 
@@ -67,25 +68,25 @@ newVersion = None
 def readArgs():
   args = sys.argv[1:]
   if not len(args) or args[0] in {'-h', '--help', 'help'}:
-    print(HELP)
+    console(HELP)
     return (False, None, [])
   arg = args[0]
   if arg not in {'a', 't', 'docs', 'clean', 'l', 'g', 'data', 'r', 'r1', 'r2', 'r3'}:
-    print(HELP)
+    console(HELP)
     return (False, None, [])
   if arg in {'g', 'r', 'r1', 'r2', 'r3'}:
     if len(args) < 2:
-      print('Provide a commit message')
+      console('Provide a commit message')
       return (False, None, [])
-    return (arg, args[1], args[1:])
+    return (arg, args[1], args[2:])
   if arg in {'a', 't', 'data'}:
     if len(args) < 2:
-      if arg in {'t', 'data'}:
-        print('Provide a data source [bhsa|peshitta|syrnt|uruk]')
-      elif arg in {'a'}:
-        print('Provide a test suite [relations]')
+      if arg in {'a', 'data'}:
+        console('Provide a data source [bhsa|peshitta|syrnt|uruk]')
+      elif arg in {'t'}:
+        console('Provide a test suite [relations]')
       return (False, None, [])
-    return (arg, args[1], args[1:])
+    return (arg, args[1], args[2:])
   return (arg, None, [])
 
 
@@ -116,7 +117,7 @@ def replaceVersion(task, mask):
 
 def adjustVersion(task):
     for (key, c) in VERSION_CONFIG.items():
-      print(f'Adjusting version in {c["file"]}')
+      console(f'Adjusting version in {c["file"]}')
       with open(c['file']) as fh:
         text = fh.read()
       text = c['re'].sub(
@@ -126,9 +127,9 @@ def adjustVersion(task):
       with open(c['file'], 'w') as fh:
         fh.write(text)
     if currentVersion == newVersion:
-      print(f'Rebuilding version {newVersion}')
+      console(f'Rebuilding version {newVersion}')
     else:
-      print(f'Replacing version {currentVersion} by {newVersion}')
+      console(f'Replacing version {currentVersion} by {newVersion}')
 
 
 def makeDist(task):
@@ -161,7 +162,7 @@ def shipDocs():
 def shipData(app, remaining):
   config = getAppConfig(app)
   if not config:
-    print('Data not shipped')
+    console('Data not shipped')
     return
   seen = set()
   for repo in config.ZIP:
@@ -198,9 +199,9 @@ def killProcesses():
     if filterProcess(proc):
       try:
         proc.terminate()
-        print(f'mkdocs [{pid}] terminated')
+        console(f'mkdocs [{pid}] terminated')
       except psutil.NoSuchProcess:
-        print(f'mkdocs [{pid}] already terminated')
+        console(f'mkdocs [{pid}] already terminated')
 
 
 def filterProcess(proc):
@@ -251,7 +252,7 @@ def tfbrowse(dataset, remaining):
     os.chdir(datadir)
   except Exception:
     good = False
-    print(f'Cannot find TF test directory "{datadir}"')
+    console(f'Cannot find TF app directory "{datadir}"')
   if not good:
     return
   rargs = ' '.join(remaining)
@@ -270,11 +271,11 @@ def tftest(suite, remaining):
     os.chdir(suiteDir)
   except Exception:
     good = False
-    print(f'Cannot find TF test directory "{suiteDir}"')
+    console(f'Cannot find TF test directory "{suiteDir}"')
   if not good:
     return
   if not os.path.exists(suiteFile):
-    print(f'Cannot find TF test suite "{suite}"')
+    console(f'Cannot find TF test suite "{suite}"')
     return
   rargs = ' '.join(remaining)
   cmdLine = f'python3 {suiteFile} -v {rargs}'

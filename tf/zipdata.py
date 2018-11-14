@@ -3,7 +3,7 @@ import sys
 from shutil import rmtree
 from zipfile import ZipFile, ZIP_DEFLATED
 
-from .helpers import console
+from .helpers import console, splitModRef
 
 GH_BASE = os.path.expanduser(f'~/github')
 DW_BASE = os.path.expanduser(f'~/Downloads')
@@ -16,7 +16,7 @@ USAGE
 
 text-fabric-zip --help
 
-text-fabric-zip org repo [relative]
+text-fabric-zip {org}/{repo}/{relative}
 
 EFFECT
 
@@ -35,14 +35,8 @@ The actual .tf files are in those version directories.
 Each of these version directories will be zipped into a separate file.
 
 The resulting zip files end up in ~/Downloads/{org}-release/{repo}
-and the are named tf-{version}.zip
-
-If you have passed a relative argument, it will replace the tf,
-and / in relative will be replaced by -.
-
-In the example where relative is phrases/head/tf, the zip files are called
-phrases-head-tf-{version}.zip
-
+and the are named {relative}-{version}.zip
+(where the / in relative have been replaced by -)
 '''
 
 EXCLUDE = {'.DS_Store'}
@@ -128,41 +122,18 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
 
 
 def main(cargs=sys.argv):
-  if len(cargs) >= 2 and any(arg in {'--help', '-help', '-h', '?', '-?'} for arg in cargs[1:]):
+  if len(cargs) != 2 and any(arg in {'--help', '-help', '-h', '?', '-?'} for arg in cargs):
     console(HELP)
     return
 
-  toBeAsked = ()
-  if len(cargs) < 2:
-    toBeAsked = (1, 2, 3)
-  elif len(cargs) < 3:
-    org = cargs[1]
-    toBeAsked = (2, 3)
-  elif len(cargs) < 4:
-    org = cargs[1]
-    repo = cargs[2]
-    relative = RELATIVE
-  elif len(cargs) < 5:
-    org = cargs[1]
-    repo = cargs[2]
-    relative = cargs[3]
-  else:
+  moduleRef = cargs[1]
+
+  parts = splitModRef(moduleRef)
+  if not parts:
     console(HELP)
     return
 
-  for i in toBeAsked:
-    if i == 1:
-      org = input('github organization = ')
-      if not org:
-        return
-    elif i == 2:
-      repo = input('github repo = ')
-      if not repo:
-        return
-    elif i == 3:
-      relative = input(f'relative path [default: {RELATIVE}] = ')
-      if not relative:
-        relative = RELATIVE
+  (org, repo, relative) = parts
 
   zipData(org, repo, relative=relative, tf=relative.endswith('tf'))
 

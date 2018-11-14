@@ -23,9 +23,11 @@ strict: false
 
 nav:
   - Home: 'index.md'
+  - v7-Guide: 'Use7.md'
   - News: 'News.md'
   - Install: 'Install.md'
   - Use: 'Use.md'
+  - Add: 'Add.md'
   - Corpora: 'Corpora.md'
   - Faq: 'Faq.md'
   - Code:

@@ -6,7 +6,7 @@ from shutil import rmtree
 import requests
 from zipfile import ZipFile
 
-from tf.helpers import itemize, camel, console
+from tf.helpers import itemize, camel, console, splitModRef, setDir, expandDir
 from tf.apphelpers import (
     search,
     table, plainTuple,
@@ -71,14 +71,13 @@ def setupApi(
   for (key, value) in cfg.items():
     setattr(app, key, value)
 
-  app.cwd = os.getcwd()
+  setDir(app)
 
   if app.api:
     if app.standardFeatures is None:
       allFeatures = app.api.TF.explore(silent=True, show=True)
       loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
       app.standardFeatures = loadableFeatures
-    app.api.TF.load(app.standardFeatures, add=True, silent=True)
   else:
     specs = _getModulesData(
         app,
@@ -373,20 +372,13 @@ def _getModulesData(
     if moduleRef in seen:
       continue
 
-    parts = moduleRef.split('/', 2)
-    if len(parts) < 2:
-      console(
-          f'''
-Module ref "{moduleRef}" is not "org/repo/path"
-''',
-          error=True,
-      )
+    parts = splitModRef(moduleRef)
+    if not parts:
       good = False
       continue
-    if len(parts) == 2:
-      parts.append('')
 
     (org, repo, relative) = parts
+
     if not _getModuleData(
         app,
         org, repo, relative,
@@ -406,8 +398,21 @@ Module ref "{moduleRef}" is not "org/repo/path"
   if mLocations:
     mModules.append(version)
 
-  givenLocations = itemize(locations, sep='\n')
-  givenModules = itemize(modules, sep='\n')
+  givenLocations = (
+      []
+      if locations is None else
+      [expandDir(app, x.strip()) for x in itemize(locations, '\n')]
+      if type(locations) is str else
+      locations
+  )
+  givenModules = (
+      []
+      if modules is None else
+      [x.strip() for x in itemize(modules, '\n')]
+      if type(modules) is str else
+      modules
+  )
+
   locations = mLocations + givenLocations
   modules = mModules + givenModules
 
@@ -599,7 +604,7 @@ def _addLinksApi(
     api = app.api
     app.inNb = False
     if not app.asApp:
-      (inNb, repoLoc) = location(app.cwd, name)
+      (inNb, repoLoc) = location(app.homeDir, name)
       app.inNb = inNb
       if inNb:
         (nbDir, nbName, nbExt) = inNb
@@ -747,38 +752,7 @@ def _loadCss(app):
   dh(cssFont + app.css)
 
 
-def _deLang(languages, features):
-  '''
-  features is a set of feature names that may contain names of shape
-
-    {name}@{ll}
-
-  where {ll} is a language.
-
-  We want to replace the set of {name}@{ll} for {ll} in T.languages
-  by a single name
-
-    {name}@ll
-
-  so, the literal string 'll'
-
-  This is used when generating links to feature docs,
-  where we want to generate one link to a language dependent feature.
-  '''
-  results = set()
-  for f in features:
-    parts = f.rsplit('@', 1)
-    if len(parts) == 1:
-      results.add(f)
-    else:
-      (fx, ll) = parts
-      if ll in languages:
-        results.add(fx)
-        results.add(f'{fx}@ll')
-  return sorted(results)
-
-
-pathPat = re.compile(
+pathRe = re.compile(
     r'^(.*/(?:github|text-fabric-data))/([^/]+)/([^/]+)/(.*)$',
     flags=re.I
 )
@@ -787,49 +761,69 @@ pathPat = re.compile(
 def _featuresPerModule(app):
   api = app.api
   features = api.Fall() + api.Eall()
-  languages = api.T.languages
 
   fixedModuleIndex = {}
   for m in app.moduleSpecs:
     fixedModuleIndex[(m['org'], m['repo'], m['relative'])] = m['corpus']
 
   moduleIndex = {}
-  mLocations = app.mLocations
-  baseLoc = mLocations[0]
+  mLocations = app.mLocations if hasattr(app, 'mLocations') else []
+  baseLoc = mLocations[0] if hasattr(app, 'mLocations') else ()
 
   for mLoc in mLocations:
-    match = pathPat.fullmatch(mLoc)
+    match = pathRe.fullmatch(mLoc)
     if not match:
-      console(f'Strange module location "{mLoc}"', error=True)
-      continue
-    (base, org, repo, relative) = match.groups()
-    mId = (org, repo, relative)
-    corpus = (
-        app.corpus
-        if mLoc == baseLoc else
-        fixedModuleIndex[mId] if mId in fixedModuleIndex else
-        f'{org}/{repo}/{relative}'
-    )
-    moduleIndex[mLoc] = (org, repo, relative, corpus)
+      moduleIndex[mLoc] = ('??', '??', '??', mLoc)
+    else:
+      (base, org, repo, relative) = match.groups()
+      mId = (org, repo, relative)
+      corpus = (
+          app.corpus
+          if mLoc == baseLoc else
+          fixedModuleIndex[mId] if mId in fixedModuleIndex else
+          f'{org}/{repo}/{relative}'
+      )
+      moduleIndex[mId] = (org, repo, relative, corpus)
+
+  # print('MODULEINDEX', moduleIndex)
 
   featureCat = {}
 
   for feature in features:
-    featurePath = app.api.TF.features[feature].path
-    for mLoc in mLocations:
-      if featurePath.startswith(mLoc):
-        featureCat.setdefault(mLoc, []).append(feature)
+    added = False
+    featureInfo = app.api.TF.features[feature]
+    featurePath = featureInfo.path
+    match = pathRe.fullmatch(featurePath)
+    if match:
+      (base, fOrg, fRepo, relative) = match.groups()
+      fRelative = relative.rsplit('/', 1)[0]
+      mId = (fOrg, fRepo, fRelative)
+    else:
+      mId = featurePath.rsplit('/', 1)[0]
+    if type(mId) is str:
+      for (mIId, mInfo) in moduleIndex.items():
+        if type(mIId) is str:
+          if featurePath.startswith(mIId):
+            featureCat.setdefault(mIId, []).append(feature)
+            added = True
+    else:
+      for (mIId, mInfo) in moduleIndex.items():
+        if type(mIId) is not str:
+          (mOrg, mRepo, mRelative) = mIId
+          if fOrg == mOrg and fRepo == mRepo and fRelative.startswith(mRelative):
+            featureCat.setdefault(mIId, []).append(feature)
+            added = True
+    if not added:
+      featureCat.setdefault('??', []).append(feature)
 
-  featureLangCat = {
-      mLoc: _deLang(languages, catFeats) for (mLoc, catFeats) in featureCat.items()
-  }
+  # print('featureCat', featureCat)
 
   html = ''
-  for mLoc in mLocations:
-    catFeats = featureLangCat.get(mLoc, None)
+  url = ''
+  for (mId, catFeats) in featureCat.items():
     if not catFeats:
       continue
-    modInfo = moduleIndex.get(mLoc, None)
+    modInfo = moduleIndex.get(mId, None)
     if modInfo:
       (org, repo, relative, corpus) = modInfo
       url = (
@@ -837,14 +831,34 @@ def _featuresPerModule(app):
           if mLoc == baseLoc else
           f'{URL_GH}/{org}/{repo}/tree/master/{relative}'
       )
+    else:
+      corpus = mId
+    html += f'<p><b>{corpus}</b>:'
+
+    seen = set()
+
+    for feature in catFeats:
+      if '@' in feature:
+        dlFeature = f'{feature.rsplit("@", 1)[0]}@ll'
+        if dlFeature in seen:
+          continue
+        seen.add(dlFeature)
+        featureRep = dlFeature
+      else:
+        featureRep = feature
+      featureInfo = app.api.TF.features[feature]
+      featurePath = featureInfo.path
+      isEdge = featureInfo.isEdge
+      pre = '<b><i>' if isEdge else ''
+      post = '</i></b>' if isEdge else ''
+      html += f' {pre}'
       html += (
-          f'<p><b>{corpus}</b>: '
-          + ' '.join(
-              outLink(feature, url, title='info')
-              for feature in catFeats
-          )
-          + '</p>'
+          outLink(featureRep, url, title=featurePath)
+          if url else
+          f'<span title="{featurePath}">{featureRep}</span>'
       )
+      html += f'{post} '
+    html += '</p>'
   return html
 
 

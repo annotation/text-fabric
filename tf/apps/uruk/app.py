@@ -313,7 +313,7 @@ class TfApp(Atf):
       name=None,
       api=None,
       asApp=False,
-      moduleRefs=None,
+      mod=None,
       locations=None,
       modules=None,
       version=None,
@@ -326,7 +326,7 @@ class TfApp(Atf):
         app,
         name,
         'uruk',
-        moduleRefs,
+        mod,
         locations,
         modules,
         asApp,
@@ -936,7 +936,7 @@ class TfApp(Atf):
     F = api.F
     (imageDir, imageName) = os.path.split(image)
     (base, ext) = os.path.splitext(imageName)
-    localBase = app.repoTempDir if asApp else app.cwd
+    localBase = app.repoTempDir if asApp else app.homeDir
     localDir = f'{localBase}/{LOCAL_IMAGE_DIR}'
     if not os.path.exists(localDir):
       os.makedirs(localDir, exist_ok=True)

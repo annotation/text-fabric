@@ -1,3 +1,4 @@
+import os
 import sys
 import re
 
@@ -10,6 +11,24 @@ Consider installing a 64-bit Python.
 '''
 
 MSG64 = '''Running on 64-bit Python'''
+
+
+def splitModRef(moduleRef):
+    parts = moduleRef.split('/', 2)
+
+    if len(parts) < 2:
+      console(
+          f'''
+Module ref "{moduleRef}" is not "{{org}}/{{repo}}/{{path}}"
+''',
+          error=True,
+      )
+      return None
+
+    if len(parts) == 2:
+      parts.append('')
+
+    return parts
 
 
 def camel(name):
@@ -51,13 +70,19 @@ def isClean(name):
   return all(c in VALID for c in name[1:])
 
 
-def expandDir(dirName, paths):
+def setDir(obj):
+    obj.homeDir = os.path.expanduser('~').replace('\\', '/')
+    obj.curDir = os.getcwd().replace('\\', '/')
+    (obj.parentDir, x) = os.path.split(obj.curDir)
+
+
+def expandDir(obj, dirName):
   if dirName.startswith('~'):
-    dirName = dirName.replace('~', paths['home'], 1)
+    dirName = dirName.replace('~', obj.homeDir, 1)
   elif dirName.startswith('..'):
-    dirName = dirName.replace('..', paths['up'], 1)
+    dirName = dirName.replace('..', obj.parentDir, 1)
   elif dirName.startswith('.'):
-    dirName = dirName.replace('.', paths['cur'], 1)
+    dirName = dirName.replace('.', obj.curDir, 1)
   return dirName
 
 
