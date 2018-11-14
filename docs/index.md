@@ -13,6 +13,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
 
     * a *browser* for ancient text corpora
     * a Python3 package for processing ancient corpora
+    * a tool to contribute additional research data to corpora
 
     A corpus of ancient texts and linguistic annotations represents a large body of knowledge.
     Text-Fabric makes that knowledge accessible to non-programmers by means of 
@@ -27,13 +28,6 @@ what it is and where it came from. And after it, if you want to cite it, use thi
     And if that is not enough,
     you can call the Text-Fabric API from your Python programs.
     This works really well in Jupyter notebooks.
-
-??? abstract "Factory"
-    Text-Fabric can be and has been used to construct websites,
-    for example [SHEBANQ](https://shebanq.ancient-data.org).
-    In the case of SHEBANQ, data has been converted to mysql databases.
-    However, with the built-in [TF kernel](Server/Kernel.md), it is also possible to
-    have one process serve multiple connections and requests.
 
 ??? note "Code statistics"
     For a feel of the size of this project, in terms of lines of code,
@@ -86,6 +80,18 @@ what it is and where it came from. And after it, if you want to cite it, use thi
         [produce new data modules](Api/General.md#saving-features)
         of text-fabric data out of their findings.
 
+    ??? abstract "Sharing data"
+        Researchers can [package their new data and distribute](Add.md) it to GitHub.
+        Other people can use that data just by mentioning it.
+        Text-Fabric will auto-load it for them.
+
+??? abstract "Factory"
+    Text-Fabric can be and has been used to construct websites,
+    for example [SHEBANQ](https://shebanq.ancient-data.org).
+    In the case of SHEBANQ, data has been converted to mysql databases.
+    However, with the built-in [TF kernel](Server/Kernel.md), it is also possible to
+    have one process serve multiple connections and requests.
+
 ??? abstract "Author and co-creation"
     Text-Fabric is not so much an original idea as well putting a few good ideas by others
     into practice.
@@ -112,6 +118,10 @@ what it is and where it came from. And after it, if you want to cite it, use thi
 
     Hence, my implementation of Text-Fabric search has been done from the ground up,
     and uses a strategy that is very different from Ulrik's MQL search engine.
+
+    In version 7, the idea of co-creation becomes fully tangible: Text-Fabric does not only work
+    with a few curated corpora, but it allows you to add your own data in seamless way.
+    So you when you do research, you have the fruits of many people's work at your finger tips.
 
     [Dirk Roorda](https://dans.knaw.nl/en/about/organisation-and-policy/staff/roorda?set_language=en)
 
@@ -153,11 +163,17 @@ what it is and where it came from. And after it, if you want to cite it, use thi
     I have taken out everything that makes LAF-Fabric complicated and
     all things that are not essential for the sake of raw data processing.
 
+    That has freed the way to work towards higher-level goals:
+    supporting research data workflows.
+    Version 7 capitalizes on that.
+
 ## Getting started
 
 [Installation](Install.md)
 
 [Use](Use.md)
+
+[Add](Add.md)
 
 ## Documentation
 

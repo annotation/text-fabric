@@ -12,6 +12,35 @@
 
 ## Queued for next release
 
+Nothing yet.
+
+## 7.0.0
+
+2018-11-14
+
+Just before SBL Denver, two years after SBL San Antonio, where I started writing Text-Fabric,
+here is major version 7.
+
+Here is what is new:
+
+* you can call in "foreign data": tf feature files made by yourself and other researchers;
+* the foreign data shows up in the text-fabric browser;
+* all features that are used in a query, show up in the pretty displays in the TF browser,
+  also the foreign features;
+* there is a command to prepare your own data for distribution via GitHub;
+* the incantantion is simpler, but ut has changed in a backwards-incompatible way;
+* after the incantation, for each feature it is shown where it comes from.
+
+Under the hood:
+
+* apps (bhsa, peshitta, syrnt, uruk) have been refactored thoroughly;
+* a lot of repeated code inside apps has been factored out
+* it is easier to turn corpora into new text-fabric apps.
+
+Quick start: the new [share](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb)
+
+See the [v7 guide](Use7.md) for concrete and detailed hints how to make most of this version.
+
 ## 6.4.5-6
 
 2018-11-08

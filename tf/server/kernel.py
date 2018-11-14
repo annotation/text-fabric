@@ -50,7 +50,7 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
   console(f'Setting up TF kernel for {dataSource} {moduleRefs}')
   app = appClass(
       asApp=True,
-      moduleRefs=moduleRefs,
+      mod=moduleRefs,
       version=config.VERSION,
       lgc=lgc,
       check=check,

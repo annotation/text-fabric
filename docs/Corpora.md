@@ -32,15 +32,7 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
             for this step.
 
 
-## ETCBC
-
-??? hint "ETCBC data"
-    Inspect the repositories of the [etcbc organization on GitHub](https://github.com/etcbc)
-    to see what is available. Per repository, click the *Releases* button so see
-    the release version that holds the relevant binaries with TF-data.
-    For example, try [crossrefs](https://github.com/etcbc/parallels/releases).
-
-### Hebrew Bible
+## Hebrew Bible
 
 ??? abstract "From within a program"
     If you are in a Jupyter notebook or Python script,
@@ -135,11 +127,12 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
 
 ## More corpora
 
-The
-[Greek](https://github.com/Dans-labs/text-fabric-data/tree/master/greek/sblgnt)
-New Testament has been converted to TF.
+??? abstract "Greek New Testament"
+    The
+    [Greek](https://github.com/Dans-labs/text-fabric-data/tree/master/greek/sblgnt)
+    New Testament has been converted to TF.
 
-We have example corpora in Sanskrit, and Babylonian.
+    We have example corpora in Sanskrit, and Babylonian.
 
 ??? abstract "From GitHub"
 
@@ -154,4 +147,15 @@ We have example corpora in Sanskrit, and Babylonian.
     ```
 
 All these are not supported by extra interfaces.
+
+## Additions to main corpora
+
+    ??? abstract "ETCBC repos"
+    Inspect the repositories of the [etcbc organization on GitHub](https://github.com/etcbc)
+    to see what is available. Per repository, click the *Releases* button so see
+    the release version that holds the relevant binaries with TF-data.
+    For example, try
+    [valence](https://github.com/etcbc/valence/releases).
+    and
+    [heads](https://github.com/etcbc/lingo/releases).
 

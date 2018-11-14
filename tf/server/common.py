@@ -6,7 +6,7 @@ from importlib import import_module
 
 from tf.helpers import console
 
-appPat = '^(.*)-app$'
+appPat = '^([a-zA-Z0-9_-]+)$'
 appRe = re.compile(appPat)
 
 msgLinePat = '^( *[0-9]+) (.*)$'
