@@ -304,7 +304,8 @@ def _validation(searchExe):
       (pre, k, post) = match[0]
       opNameK = f'{pre}k{post}'
       addRels.setdefault(opNameK, set()).add(int(k))
-  add_K_Relations(searchExe, addRels)
+  if not missingFeatures and not wrongValues:
+    add_K_Relations(searchExe, addRels)
 
   # edge relations may have a value spec in them
   # make an entry in the relation map for each value spec
@@ -319,7 +320,8 @@ def _validation(searchExe):
           e, eName, opFeatures, missingFeatures, wrongValues, hasValues, asEdge=True
       )
       addRels.setdefault(opName, set()).add((eName, opFeatures[eName]))
-  add_V_Relations(searchExe, addRels)
+  if not missingFeatures and not wrongValues:
+    add_V_Relations(searchExe, addRels)
 
   # now look up each particalur relation in the relation map
   for (e, (f, op, t)) in enumerate(searchExe.qedgesRaw):

@@ -8,8 +8,8 @@ from requests.compat import urljoin
 
 from notebook.notebookapp import list_running_servers
 
-from tf.helpers import console
-from tf.parameters import (
+from ..helpers import console
+from ..parameters import (
     URL_GH,
     URL_NB,
 )

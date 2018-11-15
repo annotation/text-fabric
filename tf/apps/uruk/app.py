@@ -4,13 +4,13 @@ from glob import glob
 from shutil import copyfile
 
 from tf.helpers import console
-from tf.apphelpers import (
+from tf.applib.apphelpers import (
     prettyPre,
     getFeatures,
     htmlEsc, mdEsc,
     dm, dh,
 )
-from tf.app import setupApi, outLink, getData
+from tf.applib.appmake import setupApi, outLink, getData
 
 
 PHOTO_TO = '{}/tablets/photos'

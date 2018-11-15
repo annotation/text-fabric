@@ -9,8 +9,8 @@ from subprocess import run, Popen
 import psutil
 
 from tf.helpers import console
-from tf.server.common import getAppConfig
-from tf.zipdata import zipData
+from tf.applib.appmake import findAppConfig
+from tf.applib.zipdata import zipData
 
 HELP = '''
 python3 build.py command
@@ -160,7 +160,7 @@ def shipDocs():
 
 
 def shipData(app, remaining):
-  config = getAppConfig(app)
+  config = findAppConfig(app)
   if not config:
     console('Data not shipped')
     return
@@ -241,6 +241,7 @@ def codestats():
   run(cmdLine.format(xdtf, nex, 'Base', 'tf'), shell=True)
   run(cmdLine.format(xd, nex, 'Search', 'tf/search'), shell=True)
   run(cmdLine.format(xd, nex, 'Server', 'tf/server'), shell=True)
+  run(cmdLine.format(xd, nex, 'Applib', 'tf/applib'), shell=True)
   run(cmdLine.format(xd, nex, 'Apps', 'tf/apps'), shell=True)
   run(cmdLine.format(xdtest, tex, 'Test', 'test/generic'), shell=True)
 

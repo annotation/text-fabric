@@ -3,7 +3,7 @@ import sys
 from shutil import rmtree
 from zipfile import ZipFile, ZIP_DEFLATED
 
-from .helpers import console, splitModRef
+from ..helpers import console, splitModRef
 
 GH_BASE = os.path.expanduser(f'~/github')
 DW_BASE = os.path.expanduser(f'~/Downloads')

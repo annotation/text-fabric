@@ -3,7 +3,9 @@ site_description: >-
   Text-Fabric is a Python3 package for Text plus Annotations.
   It provides a data model,
   a text file format,
-  and a binary format
+  a binary format,
+  an API,
+  and apps
   for (ancient) text plus
   (linguistic) annotations.
 
@@ -36,6 +38,7 @@ nav:
     - 'Stats (overall)' : 'Code/Stats.md'
     - 'Stats (TF-base)' : 'Code/StatsBase.md'
     - 'Stats (TF-search)' : 'Code/StatsSearch.md'
+    - 'Stats (TF-app support)' : 'Code/StatsApplib.md'
     - 'Stats (TF-apps)' : 'Code/StatsApps.md'
     - 'Stats (TF-server)' : 'Code/StatsServer.md'
     - 'Stats (Tests)' : 'Code/StatsTest.md'

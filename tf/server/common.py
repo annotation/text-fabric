@@ -2,9 +2,8 @@ import sys
 import os
 import re
 from glob import glob
-from importlib import import_module
 
-from tf.helpers import console
+from ..helpers import console
 
 appPat = '^([a-zA-Z0-9_-]+)$'
 appRe = re.compile(appPat)
@@ -92,29 +91,6 @@ def getParam(cargs=sys.argv, interactive=False):
     console('Unknown data source', error=True)
     return False
   return dataSource
-
-
-def getAppConfig(dataSource):
-  config = None
-
-  try:
-    config = import_module('.config', package=f'tf.apps.{dataSource}')
-  except Exception as e:
-    console(f'getAppConfig: {str(e)}', error=True)
-    console(f'getAppConfig: Configuration for "{dataSource}" not found', error=True)
-  return config
-
-
-def getAppClass(dataSource):
-  appClass = None
-
-  try:
-    code = import_module(f'.app', package=f'tf.apps.{dataSource}')
-    appClass = code.TfApp
-  except Exception as e:
-    console(f'getAppClass: {str(e)}', error=True)
-    console(f'getAppClass: Api for "{dataSource}" not found')
-  return appClass
 
 
 def getAppDir(myDir, dataSource):

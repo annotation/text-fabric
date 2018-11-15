@@ -1,4 +1,4 @@
-from tf.app import configureNames
+from tf.applib.appmake import configureNames
 
 protocol = 'http://'
 host = 'localhost'

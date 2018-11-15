@@ -1,10 +1,10 @@
-from tf.apphelpers import (
+from tf.applib.apphelpers import (
     prettyPre,
     getBoundary, getFeatures,
     htmlEsc, mdEsc,
     dm, dh,
 )
-from tf.app import setupApi, outLink
+from tf.applib.appmake import setupApi, outLink
 
 PLAIN_LINK = (
     'https://github.com/{org}/{repo}/blob/master'

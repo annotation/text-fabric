@@ -1,4 +1,4 @@
-from tf.helpers import console
+from ..helpers import console
 from .searchexe import SearchExe
 
 # Search and SearchExe

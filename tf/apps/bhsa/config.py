@@ -1,4 +1,4 @@
-from tf.app import configureNames
+from tf.applib.appmake import configureNames
 
 protocol = 'http://'
 host = 'localhost'
@@ -29,6 +29,10 @@ MODULE_SPECS = (
         repo='phono',
         relative=RELATIVE,
         corpus='Phonetic Transcriptions',
+        docUrl=(
+            'https://nbviewer.jupyter.org/github/etcbc/phono'
+            '/blob/master/programs/phono.ipynb'
+        ),
         doi=('10.5281/zenodo.1007636', 'https://doi.org/10.5281/zenodo.1007636'),
     ),
     dict(
@@ -36,6 +40,10 @@ MODULE_SPECS = (
         repo='parallels',
         relative=RELATIVE,
         corpus='Parallel Passages',
+        docUrl=(
+            'https://nbviewer.jupyter.org/github/etcbc/parallels'
+            '/blob/master/programs/parallels.ipynb'
+        ),
         doi=('10.5281/zenodo.1007642', 'https://doi.org/10.5281/zenodo.1007642'),
     ),
 )
