@@ -10,7 +10,7 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
-        <meta name="description" content="Text-Fabric is a Python3 package for Text plus Annotations. It provides a data model, a text file format, and a binary format for (ancient) text plus (linguistic) annotations.">
+        <meta name="description" content="Text-Fabric is a Python3 package for Text plus Annotations. It provides a data model, a text file format, a binary format, an API, and apps for (ancient) text plus (linguistic) annotations.">
       
       
         <link rel="canonical" href="https://dans-labs.github.io/text-fabric/Use7/">
@@ -278,15 +278,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#add-and-distribute-and-use-new-data" title="Add and distribute and use new data" class="md-nav__link">
-    Add and distribute and use new data
+  <a href="#working-with-new-data" title="Working with new data" class="md-nav__link">
+    Working with new data
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#start-tf-browser" title="Start TF browser" class="md-nav__link">
-    Start TF browser
+  <a href="#tf-browser-command" title="TF browser command" class="md-nav__link">
+    TF browser command
   </a>
   
 </li>
@@ -483,6 +483,18 @@
   <li class="md-nav__item">
     <a href="../Code/StatsSearch/" title="Stats (TF-search)" class="md-nav__link">
       Stats (TF-search)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Code/StatsApplib/" title="Stats (TF-app support)" class="md-nav__link">
+      Stats (TF-app support)
     </a>
   </li>
 
@@ -885,15 +897,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#add-and-distribute-and-use-new-data" title="Add and distribute and use new data" class="md-nav__link">
-    Add and distribute and use new data
+  <a href="#working-with-new-data" title="Working with new data" class="md-nav__link">
+    Working with new data
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#start-tf-browser" title="Start TF browser" class="md-nav__link">
-    Start TF browser
+  <a href="#tf-browser-command" title="TF browser command" class="md-nav__link">
+    TF browser command
   </a>
   
 </li>
@@ -953,7 +965,7 @@
                 
                 <h1 id="v7-guide">v7 Guide<a class="headerlink" href="#v7-guide" title="Permanent link">&para;</a></h1>
 <p>Here are hints to help you to get the most out version 7 of Text-Fabric.</p>
-<h2 id="add-and-distribute-and-use-new-data">Add and distribute and use new data<a class="headerlink" href="#add-and-distribute-and-use-new-data" title="Permanent link">&para;</a></h2>
+<h2 id="working-with-new-data">Working with new data<a class="headerlink" href="#working-with-new-data" title="Permanent link">&para;</a></h2>
 <p>See the
 <a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb">share</a>
 tutorial.</p>
@@ -964,18 +976,21 @@ There it is also explained how you can invoke the new command</p>
 </td></tr></table>
 
 <p>to make a distribution of your own features.</p>
-<h2 id="start-tf-browser">Start TF browser<a class="headerlink" href="#start-tf-browser" title="Permanent link">&para;</a></h2>
+<h2 id="tf-browser-command">TF browser command<a class="headerlink" href="#tf-browser-command" title="Permanent link">&para;</a></h2>
 <p>The <code>text-fabric</code> command as two new optional command line arguments: </p>
 <p><code>--mod=...</code> and <code>-c</code>.</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric appname --mod<span class="o">=</span>module1,module2
 </pre></div>
 </td></tr></table>
 
-<p>Start a TF browser for appname (such as <code>bhsa</code>).</p>
-<p>Loads extra data from module1 and module2, to be found in a github repo specfied by the 
-module strings.</p>
-<p>You can specify as many modules as you want.</p>
-<p>The module sgtring must have the form</p>
+<ul>
+<li>Start a TF browser for appname (such as <code>bhsa</code>).</li>
+<li>Loads extra data from <code>module1</code> and <code>module2</code>,
+  to be found in a github repo specfied by the 
+  module strings.</li>
+<li>You can specify as many modules as you want.</li>
+</ul>
+<p>The module strings must have the form</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>{org}/{repo}/{path}
 </pre></div>
 </td></tr></table>
@@ -992,6 +1007,11 @@ In that case Text-Fabric will check whether a new release of the data is availab
 If so, it will download and install it.
 This will happen for the main data and all modules specified on the command line.</p>
 <p>TF will always download the data to your <code>~/text-fabric-data</code> directory.</p>
+<details class="hint"><summary>do not modify yourself</summary><p>You can better leave your <code>~/text-fabric-data</code> under control
+of Text-Fabric, and not manually add data there.
+It does not much harm to delete data from here, because TF will download
+missing data automatically when needed.</p>
+</details>
 <h2 id="incantation">Incantation<a class="headerlink" href="#incantation" title="Permanent link">&para;</a></h2>
 <p>The old incantation <code>B = Bhsa()</code> and <code>CN = Cunei()</code> do no longer work.</p>
 <p>The new way is as follows:</p>
@@ -1010,7 +1030,7 @@ This will happen for the main data and all modules specified on the command line
 <p>Note that we no longer use <code>cunei</code> as name of the corpus, but the more precise <code>uruk</code>.</p>
 <p>You see that the app name (<code>bhsa</code>, <code>uruk</code>) is only used once, as first argument for the
 <code>use()</code> function.</p>
-<p>Think of the <code>use database</code> in MySQL and MongoDb.</p>
+<p>Think of the <code>use database</code> statements in MySQL and MongoDb.</p>
 <p>The remaining arguments of <code>use()</code> are the same as you passed before to <code>Bhsa()</code> and <code>Cunei()</code>.
 But there are a few more: <code>mod</code> and <code>check</code>.</p>
 <p>They have the same effect as <code>--mod=</code> and <code>-c</code> when calling the browser:</p>
@@ -1018,11 +1038,11 @@ But there are a few more: <code>mod</code> and <code>check</code>.</p>
 <li><code>mod</code> is a comma-separated list of modules in the form <code>{org}/{repo}/{path}</code>;</li>
 <li><code>check=False</code> is an optional boolean argument.</li>
 </ul>
-<p>Without further arguments, this will set up an TF api with most features loaded.</p>
+<p>Without further arguments, this will set up an TF API with most features loaded.</p>
 <p>If you want to add other search locations for tf features manually, you can pass
 optional <code>locations</code> and <code>modules</code> parameters, which will be passed to the underlying
 <a href="../Api/General/#loading">Fabric()</a> call.</p>
-<p>If you want even more control, you can first set up your own TF api in the classical way,
+<p>If you want even more control, you can first set up your own TF API in the classical way,
 by first calling</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=...</span><span class="p">,</span> <span class="n">modules</span><span class="o">=...</span><span class="p">)</span>
@@ -1039,8 +1059,8 @@ by first calling</p>
 <p>The features of the data modules you have imported are available in the same way as all other features.</p>
 <p>You can use them in queries.</p>
 <h3 id="in-the-tf-browser">In the TF browser<a class="headerlink" href="#in-the-tf-browser" title="Permanent link">&para;</a></h3>
-<p>In the browser, pretty displays will show them automatically, because starting in this version,
-all features that used in query are displayed in the expanded view.</p>
+<p>In the browser, pretty displays will show them automatically, because
+all features used in a query are displayed in the expanded view.</p>
 <p>If you want to see a feature that is not used in the query, you can add it as a trivial search criterion.</p>
 <p>For example, if you want to see the <code>sense</code> feature when looking for phrases, add it like this</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
@@ -1056,7 +1076,7 @@ all features that used in query are displayed in the expanded view.</p>
 linked to their documentation or repository.</p>
 <p>You can use the new features exactly as you are used to, with <code>F</code> and <code>E</code> (for edge features).</p>
 <p>They will not automatically show up in <code>pretty</code> displays, because <code>pretty</code> does not know that it is
-displaying query results, it can display arbitrary nodes.</p>
+displaying query results, and hence does not know which features were used in the latest query.</p>
 <p>So you have to tell which features you want to add to the display.
 That can be done by <a href="../Api/Apps/#pretty-display">prettySetup</a>:</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">prettySetup</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="s1">&#39;sense&#39;</span><span class="p">)</span>
@@ -1065,7 +1085,7 @@ That can be done by <a href="../Api/Apps/#pretty-display">prettySetup</a>:</p>
 
 <p>and from then on the value of <code>sense</code> will be shown
 on every item that has a real value for the feature <code>sense</code>.</p>
-<p>You can cancel it by calling</p>
+<p>You can cancel the extra features by</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">prettySetup</span><span class="p">()</span>
 </pre></div>
 </td></tr></table>

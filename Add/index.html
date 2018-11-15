@@ -10,7 +10,7 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
-        <meta name="description" content="Text-Fabric is a Python3 package for Text plus Annotations. It provides a data model, a text file format, and a binary format for (ancient) text plus (linguistic) annotations.">
+        <meta name="description" content="Text-Fabric is a Python3 package for Text plus Annotations. It provides a data model, a text file format, a binary format, an API, and apps for (ancient) text plus (linguistic) annotations.">
       
       
         <link rel="canonical" href="https://dans-labs.github.io/text-fabric/Add/">
@@ -526,6 +526,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../Code/StatsApplib/" title="Stats (TF-app support)" class="md-nav__link">
+      Stats (TF-app support)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../Code/StatsApps/" title="Stats (TF-apps)" class="md-nav__link">
       Stats (TF-apps)
     </a>
@@ -1018,7 +1030,7 @@
                 
                 
                 <h1 id="adding-data-modules">Adding data modules<a class="headerlink" href="#adding-data-modules" title="Permanent link">&para;</a></h1>
-<p>Text-Fabric support the flow of creating data as fruit of your research,
+<p>Text-Fabric support the flow of creating research data,
 packaging it, distributing it, and importing it easily.</p>
 <h2 id="assumptions">Assumptions<a class="headerlink" href="#assumptions" title="Permanent link">&para;</a></h2>
 <p>The data sharing workflow is built around the following assumptions:</p>
@@ -1052,7 +1064,7 @@ Text-Fabric has a command to produce a zip file with exactly the
 right structure and name.</p>
 </details>
 <details class="note"><summary>get data</summary><p>In order to get data, the only thing Text-Fabric needs to know,
-is these three things: the organisation or person, the repository,
+is a string with the organisation or person, the repository,
 and the path within the repository.</p>
 <p>Based on the string <code>{org}/{repo}/{path}</code> it will find the online
 repository, check the latest release, find the zip file,
@@ -1239,7 +1251,7 @@ TF setup done.
 </td></tr></table>
 
 </details>
-<p>And if there were a new release for the valence data, it will be downloaded.</p>
+<p>And if there is a new release for the valence data, it will be downloaded.</p>
 <details class="note"><summary>output when updating a data module</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span> 1
  2
  3
@@ -1316,7 +1328,7 @@ We'll include it next to the valence data, by calling the TF browser like this:<
 </pre></div>
 </td></tr></table>
 
-<p>By now unsurprising things happen: the <code>heads</code> feature and friends are downloaded and made ready for import.</p>
+<p>Unsurprisingly: the <code>heads</code> feature and friends are downloaded and made ready for import.</p>
 <p>You can test it by means of this query</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
