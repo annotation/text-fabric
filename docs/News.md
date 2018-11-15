@@ -14,6 +14,15 @@
 
 Nothing yet.
 
+## 7.0.1
+
+2018-11-15
+
+* Fixed messages and logic in finding data and checking for updates (thanks to feedback of Christian Høygaard-Jensen)
+* Fixed issue #30
+* Improved the doc links under features after the incantation.
+* Typos in the documentation
+
 ## 7.0.0
 
 2018-11-14

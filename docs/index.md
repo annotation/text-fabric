@@ -175,6 +175,10 @@ what it is and where it came from. And after it, if you want to cite it, use thi
 
 [Add](Add.md)
 
+## Existing users
+
+Read the [version 7 guide](Use7.md)
+
 ## Documentation
 
 There is extensive documentation here.

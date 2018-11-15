@@ -7,14 +7,16 @@ import webbrowser
 from time import sleep
 from subprocess import PIPE, Popen
 
-from tf.helpers import console
-from tf.fabric import NAME, VERSION
-from tf.server.common import (
+from ..helpers import console
+from ..fabric import NAME, VERSION
+from ..applib.appmake import (
+    findAppConfig,
+)
+from .common import (
     getParam, getModules, getDebug, getCheck, getNoweb, getDocker,
-    getAppConfig,
     getLocalClones
 )
-from tf.server.kernel import TF_DONE, TF_ERROR
+from .kernel import TF_DONE, TF_ERROR
 
 HELP = '''
 USAGE
@@ -227,7 +229,7 @@ def main(cargs=sys.argv):
   kdataSource = (modules, *kdataSource) if modules else kdataSource
 
   if dataSource is not None:
-    config = getAppConfig(dataSource)
+    config = findAppConfig(dataSource)
     pKernel = None
     pWeb = None
     if config is not None:

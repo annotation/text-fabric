@@ -1,6 +1,6 @@
 # Adding data modules
 
-Text-Fabric support the flow of creating data as fruit of your research,
+Text-Fabric support the flow of creating research data,
 packaging it, distributing it, and importing it easily.
 
 ## Assumptions
@@ -48,7 +48,7 @@ The data sharing workflow is built around the following assumptions:
 
 ??? note "get data"
     In order to get data, the only thing Text-Fabric needs to know,
-    is these three things: the organisation or person, the repository,
+    is a string with the organisation or person, the repository,
     and the path within the repository.
 
     Based on the string `{org}/{repo}/{path}` it will find the online
@@ -219,7 +219,7 @@ text-fabric bhsa --mod=etcbc/valence/tf -c
     TF setup done.
     ```
 
-And if there were a new release for the valence data, it will be downloaded.
+And if there is a new release for the valence data, it will be downloaded.
 
 ??? note "output when updating a data module"
     ```
@@ -280,7 +280,7 @@ We'll include it next to the valence data, by calling the TF browser like this:
 text-fabric bhsa --mod=etcbc/valence/tf,etcbc/lingo/heads/tf
 ```
 
-By now unsurprising things happen: the `heads` feature and friends are downloaded and made ready for import.
+Unsurprisingly: the `heads` feature and friends are downloaded and made ready for import.
 
 You can test it by means of this query
 

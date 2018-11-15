@@ -11,16 +11,20 @@ import markdown
 import bottle
 from bottle import (post, get, route, template, request, static_file, run)
 
-from tf.fabric import NAME, VERSION, DOI, DOI_URL, COMPOSE_URL
-from tf.server.kernel import makeTfConnection
-from tf.server.common import (
-    getParam, getModules, getDebug, getAppConfig, getDocker, getLocalClones,
+from ..helpers import console
+from ..fabric import NAME, VERSION, DOI, DOI_URL, COMPOSE_URL
+from ..applib.apphelpers import RESULT
+from ..applib.appmake import (
+    findAppConfig,
+)
+from .kernel import makeTfConnection
+from .common import (
+    getParam, getModules, getDebug,
+    getDocker, getLocalClones,
     getAppDir, getValues, setValues,
     pageLinks, passageLinks,
     shapeMessages, shapeOptions, shapeCondense, shapeFormats,
 )
-from tf.helpers import console
-from tf.apphelpers import RESULT
 
 
 COMPOSE = 'Compose results example'
@@ -44,7 +48,7 @@ def getStuff(lgc):
   global appDir
   global localDir
 
-  config = getAppConfig(dataSource)
+  config = findAppConfig(dataSource)
   if config is None:
     return None
 

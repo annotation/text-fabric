@@ -3,14 +3,16 @@ import pickle
 import rpyc
 from rpyc.utils.server import ThreadedServer
 
-from tf.helpers import console
-from tf.apphelpers import (
+from ..helpers import console
+from ..applib.appmake import (
+    findAppConfig, findAppClass,
+)
+from ..applib.apphelpers import (
     runSearch, runSearchCondensed,
     compose, composeP, getContext, getResultsX
 )
 from .common import (
     getParam, getModules,
-    getAppConfig, getAppClass,
     getCheck, getLocalClones
 )
 
@@ -40,10 +42,10 @@ def allNodes(table):
 
 
 def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
-  config = getAppConfig(dataSource)
+  config = findAppConfig(dataSource)
   if config is None:
     return None
-  appClass = getAppClass(dataSource)
+  appClass = findAppClass(dataSource)
   if appClass is None:
     return None
 
@@ -322,7 +324,7 @@ def main(cargs=sys.argv):
 
   if dataSource is not None:
     moduleRefs = modules[6:] if modules else ''
-    config = getAppConfig(dataSource)
+    config = findAppConfig(dataSource)
     if config is not None:
       kernel = makeTfKernel(dataSource, moduleRefs, lgc, check, config.port)
       if kernel:
