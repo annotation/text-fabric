@@ -131,31 +131,6 @@
       <div class="md-flex__cell md-flex__cell--shrink">
         
           
-            <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
-            
-<div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
-      <label class="md-icon md-search__icon" for="__search"></label>
-      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
-        &#xE5CD;
-      </button>
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="result">
-          <div class="md-search-result__meta">
-            Type to start searching
-          </div>
-          <ol class="md-search-result__list"></ol>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-          
         
       </div>
       
@@ -612,6 +587,18 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Writing/Transcription/" title="Transcription" class="md-nav__link">
+      Transcription
+    </a>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -704,18 +691,6 @@
   <li class="md-nav__item">
     <a href="../../Api/Uruk/" title="Cuneiform Tablets" class="md-nav__link">
       Cuneiform Tablets
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../Api/Transcription/" title="Transcription" class="md-nav__link">
-      Transcription
     </a>
   </li>
 
@@ -983,7 +958,7 @@ all looking at the same (read-only) data. We call this a <strong>TF kernel</stro
 <p>The API that the TF kernel offers is limited, it is primarily template search that is offered.
 see <em>Kernel API</em> below.</p>
 <p>The code in
-<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/kernel.py">tf.server.kernel</a>
+<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/kernel.py">kernel</a>
 explains how it works.</p>
 </details>
 <h3 id="start">Start<a class="headerlink" href="#start" title="Permanent link">&para;</a></h3>
@@ -994,7 +969,7 @@ explains how it works.</p>
 
 <p>where <code>ddd</code> is one of the <a href="../../Api/Apps#current-apps">supported apps</a></p>
 <details class="example"><summary>Example</summary><p>See the
-<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/start.py">start-up script</a>
+<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/start.py">start-up script</a>
 of the text-fabric browser.</p>
 </details>
 </details>
@@ -1010,14 +985,14 @@ of the text-fabric browser.</p>
 
 <p>After this, <code>api</code> can be used to obtain information from the TF kernel.</p>
 <details class="example"><summary>Example</summary><p>See the
-<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py">webserver</a>
+<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/local.py">local webserver</a>
 of the text-fabric browser.</p>
 </details>
 </details>
 <h2 id="kernel-api">Kernel API<a class="headerlink" href="#kernel-api" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>About</summary><p>The API of the TF kernel is created
 by the function <code>makeTfKernel</code> in the 
-<a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/kernel.py">data</a>
+<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/kernel.py">data</a>
 module of the server subpackage.</p>
 <p>It returns a class <code>TfKernel</code> with a number
 of exposed methods that can be called by other programs.</p>
@@ -1174,7 +1149,7 @@ in <code>search()</code> above.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../../Api/Transcription/" title="Transcription" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../../Api/Uruk/" title="Cuneiform Tablets" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1183,7 +1158,7 @@ in <code>search()</code> above.</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Transcription
+                Cuneiform Tablets
               </span>
             </div>
           </a>

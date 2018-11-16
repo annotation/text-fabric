@@ -131,6 +131,11 @@
      <changefreq>daily</changefreq>
     </url>
     <url>
+     <loc>https://dans-labs.github.io/text-fabric/Writing/Transcription/</loc>
+     <lastmod>2018-11-16</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
      <loc>https://dans-labs.github.io/text-fabric/Api/General/</loc>
      <lastmod>2018-11-16</lastmod>
      <changefreq>daily</changefreq>
@@ -157,11 +162,6 @@
     </url>
     <url>
      <loc>https://dans-labs.github.io/text-fabric/Api/Uruk/</loc>
-     <lastmod>2018-11-16</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
-     <loc>https://dans-labs.github.io/text-fabric/Api/Transcription/</loc>
      <lastmod>2018-11-16</lastmod>
      <changefreq>daily</changefreq>
     </url>
