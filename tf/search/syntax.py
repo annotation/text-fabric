@@ -28,25 +28,25 @@ VAL_ESCAPES = {
     '\\=',
 }
 
-opPat = '(?:[#&|\[\]<>:=-]+\S*)'
+opPat = r'(?:[#&|\[\]<>:=-]+\S*)'
 
-atomOpPat = ('(\s*)({op})\s+([^ \t=#<>~*]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(op=opPat))
-atomPat = '(\s*)([^ \t=#<>~*]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
-compPat = '^([a-zA-Z0-9-@_]+)([<>])(.*)$'
-identPat = '^([a-zA-Z0-9-@_]+)([=#])(.+)$'
-indentLinePat = '^(\s*)(.*)'
-kPat = '^([^0-9]*)([0-9]+)([^0-9]*)$'
-namePat = '[A-Za-z0-9_.-]+'
-namesPat = '^\s*(?:{op}\s+)?([^ \t:=#<>~*]+):'
-nonePat = '^([a-zA-Z0-9-@_]+)(#?)\s*$'
-truePat = '^([a-zA-Z0-9-@_]+)[*]\s*$'
-numPat = '^-?[0-9]+$'
-opLinePat = '^(\s*)({op})\s*$'.format(op=opPat)
-opStripPat = '^\s*{op}\s+(.*)$'.format(op=opPat)
+atomOpPat = r'(\s*)({op})\s+([^ \t=#<>~*]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'.format(op=opPat)
+atomPat = r'(\s*)([^ \t=#<>~*]+)(?:(?:\s*\Z)|(?:\s+(.*)))$'
+compPat = r'^([a-zA-Z0-9-@_]+)([<>])(.*)$'
+identPat = r'^([a-zA-Z0-9-@_]+)([=#])(.+)$'
+indentLinePat = r'^(\s*)(.*)'
+kPat = r'^([^0-9]*)([0-9]+)([^0-9]*)$'
+namePat = r'[A-Za-z0-9_.-]+'
+namesPat = r'^\s*(?:{op}\s+)?([^ \t:=#<>~*]+):'
+nonePat = r'^([a-zA-Z0-9-@_]+)(#?)\s*$'
+truePat = r'^([a-zA-Z0-9-@_]+)[*]\s*$'
+numPat = r'^-?[0-9]+$'
+opLinePat = r'^(\s*)({op})\s*$'.format(op=opPat)
+opStripPat = r'^\s*{op}\s+(.*)$'.format(op=opPat)
 quPat = f'(?:{QWHERE}|{QHAVE}|{QWITHOUT}|{QWITH}|{QOR}|{QEND})'
-quLinePat = '^(\s*)({qu})\s*$'.format(qu=quPat)
-relPat = '^(\s*)({nm})\s+({op})\s+({nm})\s*$'.format(nm=namePat, op=opPat)
-rePat = '^([a-zA-Z0-9-@_]+)~(.*)$'
+quLinePat = r'^(\s*)({qu})\s*$'.format(qu=quPat)
+relPat = r'^(\s*)({nm})\s+({op})\s+({nm})\s*$'.format(nm=namePat, op=opPat)
+rePat = r'^([a-zA-Z0-9-@_]+)~(.*)$'
 
 atomOpRe = re.compile(atomOpPat)
 atomRe = re.compile(atomPat)
@@ -54,7 +54,7 @@ compRe = re.compile(compPat)
 identRe = re.compile(identPat)
 indentLineRe = re.compile(indentLinePat)
 kRe = re.compile(kPat)
-nameRe = re.compile('^{}$'.format(namePat))
+nameRe = re.compile(f'^{namePat}$')
 namesRe = re.compile(namesPat)
 numRe = re.compile(numPat)
 noneRe = re.compile(nonePat)
@@ -64,7 +64,7 @@ opStripRe = re.compile(opStripPat)
 quLineRe = re.compile(quLinePat)
 relRe = re.compile(relPat)
 reRe = re.compile(rePat)
-whiteRe = re.compile('^\s*$')
+whiteRe = re.compile(r'^\s*$')
 
 reTp = type(reRe)
 
@@ -89,6 +89,7 @@ def syntax(searchExe):
 
 
 def _tokenize(searchExe):
+
   def getFeatures(x, i):
     features = {}
     featureString = x.replace('\\ ', chr(1)) if x is not None else ''
@@ -240,9 +241,9 @@ def _tokenize(searchExe):
           searchExe.badSyntax.append((i, f'Quantifier: No preceding tokens'))
           good = False
         if EA or EI:
-          searchExe.badSyntax.append((
-              i, f'Quantifier: Does not immediately follow an atom at the same level'
-          ))
+          searchExe.badSyntax.append(
+              (i, f'Quantifier: Does not immediately follow an atom at the same level')
+          )
           good = False
         prevAtom = tokens[-1]
         curQu.append((i, lineQuKind, lineIndent))
@@ -273,15 +274,13 @@ def _tokenize(searchExe):
         curQuTemplates[-1].append(strippedLine)
       if PCO or PCI:
         if EP:
-          searchExe.badSyntax.append((
-              i,
-              f'Quantifier: "{lineQuKind}" can not follow "{curQuKind}" on line {curQuLine}'
-          ))
+          searchExe.badSyntax.append(
+              (i, f'Quantifier: "{lineQuKind}" can not follow "{curQuKind}" on line {curQuLine}')
+          )
           good = False
         if EK:
           searchExe.badSyntax.append((
-              i,
-              (
+              i, (
                   f'Quantifier "{lineQuKind}"'
                   f' has not same indentation as "{curQuKind}" on line {curQuLine}'
               )
@@ -298,8 +297,7 @@ def _tokenize(searchExe):
       if PEO or PEI:
         if EP:
           searchExe.badSyntax.append((
-              i,
-              (
+              i, (
                   f'Quantifier: "{lineQuKind}"'
                   f' : premature end of "{curQuKind}" on line {curQuLine}'
               )
@@ -307,8 +305,7 @@ def _tokenize(searchExe):
           good = False
         if EK:
           searchExe.badSyntax.append((
-              i,
-              (
+              i, (
                   f'Quantifier "{lineQuKind}"'
                   f' has not same indentation as "{curQuKind}" on line {curQuLine}'
               )
@@ -427,10 +424,7 @@ def _tokenize(searchExe):
 
   if curQu:
     for (curQuLine, curQuKind, curQuIndent) in curQu:
-      searchExe.badSyntax.append((
-          curQuLine,
-          f'Quantifier: Unterminated "{curQuKind}"'
-      ))
+      searchExe.badSyntax.append((curQuLine, f'Quantifier: Unterminated "{curQuKind}"'))
     good = False
     allGood = False
   if allGood:
@@ -497,7 +491,7 @@ def parseFeatureVals(searchExe, featStr, features, i, asEdge=False):
   for x in [True]:
     match = trueRe.match(feat)
     if match:
-      (featN,) = match.groups()
+      (featN, ) = match.groups()
       featName = _unesc(featN)
       featVals = (None, True)
       break

@@ -8,7 +8,7 @@ from subprocess import run, Popen
 
 import psutil
 
-from tf.helpers import console
+from tf.core.helpers import console
 from tf.applib.appmake import findAppConfig
 from tf.applib.zipdata import zipData
 
@@ -24,6 +24,7 @@ help  : print help and exit
 docs  : serve docs locally
 clean : clean local develop build
 l     : local develop build
+i     : local non-develop build
 g     : push to github, code and docs
 r     : build for shipping, leave version as is
 r1    : build for shipping, version becomes r1+1.0.0
@@ -47,8 +48,8 @@ VERSION_CONFIG = dict(
         ),
         mask="version='{}'",
     ),
-    fabric=dict(
-        file='tf/fabric.py',
+    parameters=dict(
+        file='tf/parameters.py',
         re=re.compile(
             r'''VERSION\s*=\s*['"]([^'"]*)['"]'''
         ),
@@ -71,7 +72,7 @@ def readArgs():
     console(HELP)
     return (False, None, [])
   arg = args[0]
-  if arg not in {'a', 't', 'docs', 'clean', 'l', 'g', 'data', 'r', 'r1', 'r2', 'r3'}:
+  if arg not in {'a', 't', 'docs', 'clean', 'l', 'i', 'g', 'data', 'r', 'r1', 'r2', 'r3'}:
     console(HELP)
     return (False, None, [])
   if arg in {'g', 'r', 'r1', 'r2', 'r3'}:
@@ -132,15 +133,16 @@ def adjustVersion(task):
       console(f'Replacing version {currentVersion} by {newVersion}')
 
 
-def makeDist(task):
+def makeDist(pypi=True):
     distFile = "{}-{}".format(PACKAGE, newVersion)
     distFileCompressed = f'{distFile}.tar.gz'
     distPath = f'{DIST}/{distFileCompressed}'
     rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)
     run(['python3', 'setup.py', 'sdist'])
-    run(['twine', 'upload', '-u', 'dirkroorda', distPath])
-    run('./purge.sh', shell=True)
+    if pypi:
+      run(['twine', 'upload', '-u', 'dirkroorda', distPath])
+      run('./purge.sh', shell=True)
 
 
 def commit(task, msg):
@@ -165,16 +167,11 @@ def shipData(app, remaining):
     console('Data not shipped')
     return
   seen = set()
-  for repo in config.ZIP:
-    if type(repo) is tuple:
-      (repo, relative) = repo
-      keep = repo in seen
-      zipData(config.ORG, repo, relative=relative, tf=False, keep=keep)
-      seen.add(repo)
-    else:
-      keep = repo in seen
-      zipData(config.ORG, repo, relative=config.RELATIVE, keep=keep)
-      seen.add(repo)
+  for r in config.ZIP:
+    (org, repo, relative) = r if type(r) is tuple else (config.ORG, r, config.RELATIVE)
+    keep = (org, repo) in seen
+    zipData(org, repo, relative=relative, tf=relative.endswith('tf'), keep=keep)
+    seen.add((org, repo))
 
 
 def serveDocs():
@@ -238,8 +235,11 @@ def codestats():
   nex = 'cloc_exclude.lst'
   tex = 'cloc_exclude_t.lst'
   run(cmdLine.format(xd, nex, '', '.'), shell=True)
-  run(cmdLine.format(xdtf, nex, 'Base', 'tf'), shell=True)
+  run(cmdLine.format(xdtf, nex, 'Toplevel', 'tf'), shell=True)
+  run(cmdLine.format(xd, nex, 'Core', 'tf/core'), shell=True)
   run(cmdLine.format(xd, nex, 'Search', 'tf/search'), shell=True)
+  run(cmdLine.format(xd, nex, 'Convert', 'tf/convert'), shell=True)
+  run(cmdLine.format(xd, nex, 'Writing', 'tf/writing'), shell=True)
   run(cmdLine.format(xd, nex, 'Server', 'tf/server'), shell=True)
   run(cmdLine.format(xd, nex, 'Applib', 'tf/applib'), shell=True)
   run(cmdLine.format(xd, nex, 'Apps', 'tf/apps'), shell=True)
@@ -286,6 +286,17 @@ def tftest(suite, remaining):
     pass
 
 
+def clean():
+  run(['python3', 'setup.py', 'develop', '-u'])
+  os.unlink(SCRIPT)
+  run([
+      'pip3',
+      'uninstall',
+      '-y',
+      'text-fabric'
+  ])
+
+
 def main():
   (task, msg, remaining) = readArgs()
   if not task:
@@ -297,10 +308,22 @@ def main():
   elif task == 'docs':
     serveDocs()
   elif task == 'clean':
-    run(['python3', 'setup.py', 'develop', '-u'])
-    os.unlink(SCRIPT)
+    clean()
   elif task == 'l':
+    clean()
     run(['python3', 'setup.py', 'develop'])
+  elif task == 'i':
+    clean
+    makeDist(pypi=False)
+    run([
+        'pip3',
+        'install',
+        '--upgrade',
+        '--no-index',
+        '--find-links',
+        f'file://{os.path.expanduser("~/github/Dans-labs/text-fabric/dist")}',
+        'text-fabric'
+    ])
   elif task == 'g':
     shipDocs()
     commit(task, msg)
@@ -309,7 +332,7 @@ def main():
   elif task in {'r', 'r1', 'r2', 'r3'}:
     adjustVersion(task)
     shipDocs()
-    makeDist(task)
+    makeDist()
     commit(task, msg)
 
 

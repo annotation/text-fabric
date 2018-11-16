@@ -6,6 +6,7 @@ DEFAULT_FORMAT_TYPE = '{}-default'
 
 
 class Text(object):
+
   def __init__(self, api):
     self.api = api
     self.languages = {}
@@ -21,10 +22,9 @@ class Text(object):
 
     good = True
     if len(sectionFeats) != 0 and len(self.sectionTypes) != 0:
-      for (fName, fObj) in sorted(
-          f for f in api.TF.features.items()
-          if f[0] == sectionFeats[0] or f[0].startswith('{}@'.format(sectionFeats[0]))
-      ):
+      for (fName,
+           fObj) in sorted(f for f in api.TF.features.items()
+                           if f[0] == sectionFeats[0] or f[0].startswith(f'{sectionFeats[0]}@')):
         if not fObj.load(silent=True):
           good = False
           continue
@@ -43,8 +43,8 @@ class Text(object):
         self.sectionFeatureTypes.append(sectionFeature.dataType)
 
       sec0 = self.sectionTypes[0]
-      setattr(self, '{}Name'.format(sec0), self._sec0Name)
-      setattr(self, '{}Node'.format(sec0), self._sec0Node)
+      setattr(self, f'{sec0}Name', self._sec0Name)
+      setattr(self, f'{sec0}Node', self._sec0Node)
 
     self._xformats = compileFormats(api.TF._cformats, api.TF.features)
     self.formats = set(self._xformats.keys())
@@ -54,7 +54,7 @@ class Text(object):
     sec0T = self.sectionTypes[0]
     return self.nameFromNode['' if lang not in self.languages else lang].get(
         n if self.api.F.otype.v(n) == sec0T else self.api.L.u(n, sec0T)[0],
-        'not a {} node'.format(sec0T),
+        f'not a {sec0T} node',
     )
 
   def _sec0Node(self, name, lang='en'):
@@ -69,9 +69,9 @@ class Text(object):
     L = self.api.L
     slotType = F.otype.slotType
     nType = F.otype.v(n)
-    r = L.d(n, slotType)[-1] if lastSlot and nType != slotType else L.d(
+    r = L.d(
         n, slotType
-    )[0] if nType != slotType else n
+    )[-1] if lastSlot and nType != slotType else L.d(n, slotType)[0] if nType != slotType else n
     n0s = L.u(r, sTypes[0])
     n0 = n0s[0] if n0s else None
     n1s = L.u(r, sTypes[1])

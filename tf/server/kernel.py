@@ -3,18 +3,15 @@ import pickle
 import rpyc
 from rpyc.utils.server import ThreadedServer
 
-from ..helpers import console
+from ..core.helpers import console
 from ..applib.appmake import (
-    findAppConfig, findAppClass,
+    findAppConfig,
+    findAppClass,
 )
 from ..applib.apphelpers import (
-    runSearch, runSearchCondensed,
-    compose, composeP, getContext, getResultsX
+    runSearch, runSearchCondensed, compose, composeP, getContext, getResultsX
 )
-from .common import (
-    getParam, getModules,
-    getCheck, getLocalClones
-)
+from .common import (getParam, getModules, getCheck, getLocalClones)
 
 TIMEOUT = 120
 
@@ -51,6 +48,7 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
 
   console(f'Setting up TF kernel for {dataSource} {moduleRefs}')
   app = appClass(
+      dataSource,
       asApp=True,
       mod=moduleRefs,
       version=config.VERSION,
@@ -66,6 +64,7 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
   console(f'{TF_DONE}\nListening at port {port}')
 
   class TfKernel(rpyc.Service):
+
     def on_connect(self, conn):
       self.app = app
       pass
@@ -99,8 +98,12 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
       )
 
     def exposed_passage(
-        self, sec0, sec1, textFormat,
-        sec2=None, opened=set(),
+        self,
+        sec0,
+        sec1,
+        textFormat,
+        sec2=None,
+        opened=set(),
         withNodes=False,
         **options,
     ):
@@ -123,7 +126,8 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
         items = L.d(node, otype=sec2Type) if node else []
         passage = composeP(
             app,
-            items, textFormat,
+            items,
+            textFormat,
             opened,
             sec2,
             withNodes=withNodes,
@@ -132,14 +136,22 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
       sec0s = tuple(T.sectionFromNode(s)[0] for s in F.otype.s(sec0Type))
       sec1s = ()
       if sec0:
-        sec0Node = T.nodeFromSection((sec0,))
+        sec0Node = T.nodeFromSection((sec0, ))
         sec1s = tuple(T.sectionFromNode(s)[1] for s in L.d(sec0Node, otype=sec1Type))
       passages = (sec0s, sec1s)
       return (passage, passages)
 
     def exposed_search(
-        self, query, tuples, sections, condensed, condenseType, textFormat, batch,
-        position=1, opened=set(),
+        self,
+        query,
+        tuples,
+        sections,
+        condensed,
+        condenseType,
+        textFormat,
+        batch,
+        position=1,
+        opened=set(),
         withNodes=False,
         linked=1,
         **options,
@@ -159,7 +171,7 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
           if message:
             sectionMessages.append(message)
           else:
-            sectionResults.append((-i - 1, (node,)))
+            sectionResults.append((-i - 1, (node, )))
         total += len(sectionResults)
       sectionResults = tuple(sectionResults)
       sectionMessages = '\n'.join(sectionMessages)
@@ -169,16 +181,10 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
       if tuples:
         tupleLines = tuples.split('\n')
         try:
-          tupleResults = tuple(
-              (
-                  -i - 1 - total,
-                  tuple(
-                      int(n) for n in t.strip().split(',')
-                  )
-              )
-              for (i, t) in enumerate(tupleLines)
-              if t.strip()
-          )
+          tupleResults = tuple((-i - 1 - total, tuple(int(n)
+                                                      for n in t.strip().split(',')))
+                               for (i, t) in enumerate(tupleLines)
+                               if t.strip())
         except Exception as e:
           tupleMessages = f'{e}'
         total += len(tupleResults)
@@ -188,8 +194,7 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
       if query:
         (queryResults, queryMessages, features) = (
             runSearchCondensed(api, query, cache, condenseType)
-            if condensed and condenseType else
-            runSearch(api, query, cache)
+            if condensed and condenseType else runSearch(api, query, cache)
         )
 
         if queryMessages:
@@ -206,6 +211,7 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
       beforeResults = tuple((n, queryResults[n - 1]) for n in sorted(before))
       afterResults = tuple((n, queryResults[n - 1]) for n in sorted(after))
 
+      # yapf: disable
       allResults = (
           ((None, 'sections'),)
           + sectionResults

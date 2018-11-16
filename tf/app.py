@@ -7,4 +7,4 @@ def use(appName, *args, **kwargs):
   appClass = findAppClass(appName)
   if not appClass:
     return None
-  return appClass(*args, **kwargs)
+  return appClass(appName, *args, **kwargs)

@@ -1,15 +1,12 @@
 import os
 import collections
 from glob import glob
-from .data import Data, WARP, WARP2_DEFAULT, MEM_MSG
-from .helpers import (
-    itemize,
-    setDir, expandDir,
-    collectFormats, cleanName, check32, console
-)
-from .timestamp import Timestamp
-from .prepare import (levels, order, rank, levUp, levDown, boundary, sections)
-from .api import (
+from .parameters import VERSION, NAME, APIREF, TUTORIAL, DATA, LOCATIONS
+from .core.data import Data, WARP, WARP2_DEFAULT, MEM_MSG
+from .core.helpers import (itemize, setDir, expandDir, collectFormats, cleanName, check32, console)
+from .core.timestamp import Timestamp
+from .core.prepare import (levels, order, rank, levUp, levDown, boundary, sections)
+from .core.api import (
     Api,
     NodeFeature,
     EdgeFeature,
@@ -23,32 +20,8 @@ from .api import (
     addText,
     addSearch,
 )
-from .mql import MQL, tfFromMql
+from .convert.mql import MQL, tfFromMql
 
-NAME = 'Text-Fabric'
-VERSION = '7.0.1'
-DOI = '10.5281/zenodo.592193'
-DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
-APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'
-TUTORIAL = 'https://github.com/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb'
-COMPOSE_URL = (
-    'https://nbviewer.jupyter.org/github/dans-labs/'
-    'text-fabric/blob/master/examples/compose.ipynb'
-)
-DATA = 'https://github.com/Dans-labs/text-fabric-data'
-
-LOCATIONS = [
-    '~/Downloads/text-fabric-data',
-    '~/text-fabric-data',
-    '~/github/text-fabric-data',
-    '~/Dropbox/text-fabric-data',
-    '/mnt/shared/text-fabric-data',
-]
-
-MODULES = [
-    'core',
-    'phono',
-]
 
 PRECOMPUTE = (
     (False, '__levels__', levels, WARP),
@@ -62,6 +35,7 @@ PRECOMPUTE = (
 
 
 class Fabric(object):
+
   def __init__(self, locations=None, modules=None, silent=False):
     self.silent = silent
     self.tm = Timestamp()
@@ -75,17 +49,11 @@ class Fabric(object):
         self.tm.info(msg, tm=False)
     if not silent:
       self.tm.info(
-          '''{}
-Api reference : {}
-Tutorial      : {}
-Example data  : {}
-'''.format(
-              self.banner,
-              APIREF,
-              TUTORIAL,
-              DATA,
-          ),
-          tm=False
+          f'''{self.banner}
+Api reference : {APIREF}
+Tutorial      : {TUTORIAL}
+Example data  : {DATA}
+''', tm=False
       )
     self.good = True
 
@@ -105,7 +73,7 @@ Example data  : {}
       self.locations.append(expandDir(self, loc))
 
     self.locationRep = '\n\t'.join(
-        '\n\t'.join('{}/{}'.format(l, f) for f in self.modules) for l in self.locations
+        '\n\t'.join(f'{l}/{f}' for f in self.modules) for l in self.locations
     )
     self.featuresRequested = []
     self._makeIndex()
@@ -247,7 +215,7 @@ Example data  : {}
       if 'edgeValues' in fMeta:
         del fMeta['edgeValues']
       fObj = Data(
-          '{}/{}.tf'.format(self.writeDir, fName),
+          f'{self.writeDir}/{fName}.tf',
           self.tm,
           data=data,
           metaData=fMeta,
@@ -272,7 +240,7 @@ Example data  : {}
       )
     if len(failed):
       for (tag, nf) in sorted(failed.items()):
-        self.tm.error('Failed to export {} {} features'.format(nf, tag))
+        self.tm.error(f'Failed to export {nf} {tag} features')
 
   def exportMQL(self, mqlName, mqlDir):
     self.tm.indent(level=0, reset=True)
@@ -284,9 +252,8 @@ Example data  : {}
 
   def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
     self.tm.indent(level=0, reset=True)
-    (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(
-        mqlFile, self.tm, slotType=slotType, otext=otext, meta=meta
-    )
+    (good, nodeFeatures, edgeFeatures,
+     metaData) = tfFromMql(mqlFile, self.tm, slotType=slotType, otext=otext, meta=meta)
     if good:
       self.save(nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures, metaData=metaData)
 
@@ -295,12 +262,10 @@ Example data  : {}
       return False
     if fName not in self.features:
       if not optional:
-        self.tm.error('Feature "{}" not available in\n{}'.format(fName, self.locationRep))
+        self.tm.error(f'Feature "{fName}" not available in\n{self.locationRep}')
         self.good = False
     else:
-      if not self.features[fName].load(
-          silent=silent or (fName not in self.featuresRequested)
-      ):
+      if not self.features[fName].load(silent=silent or (fName not in self.featuresRequested)):
         self.good = False
 
   def _makeIndex(self):
@@ -309,7 +274,7 @@ Example data  : {}
     tfFiles = {}
     for loc in self.locations:
       for mod in self.modules:
-        files = glob('{}/{}/*.tf'.format(loc, mod))
+        files = glob(f'{loc}/{mod}/*.tf')
         for f in files:
           if not os.path.isfile(f):
             continue
@@ -328,8 +293,7 @@ Example data  : {}
           '{} features found and {} ignored'.format(
               len(tfFiles),
               sum(len(x) for x in self.featuresIgnored.values()),
-          ),
-          tm=False
+          ), tm=False
       )
 
     good = True
@@ -339,12 +303,15 @@ Example data  : {}
           if not self.silent:
             self.tm.info((f'Warp feature "{WARP[2]}" not found. Working without Text-API\n'))
             self.features[WARP[2]] = Data(
-                f'{WARP[2]}.tf', self.tm, isConfig=True, metaData=WARP2_DEFAULT,
+                f'{WARP[2]}.tf',
+                self.tm,
+                isConfig=True,
+                metaData=WARP2_DEFAULT,
             )
             self.features[WARP[2]].dataLoaded = True
         else:
           if not self.silent:
-            self.tm.error('Warp feature "{}" not found in\n{}'.format(fName, self.locationRep))
+            self.tm.error(f'Warp feature "{fName}" not found in\n{self.locationRep}')
           good = False
       elif fName == WARP[2]:
         self._loadFeature(fName, optional=True, silent=True)
@@ -367,7 +334,7 @@ Example data  : {}
       if not thisGood:
         good = False
       self.features[fName] = Data(
-          '{}/{}.x'.format(self.warpDir, fName),
+          f'{self.warpDir}/{fName}.x',
           self.tm,
           method=method,
           dependencies=[self.features.get(dep, None) for dep in dependencies],

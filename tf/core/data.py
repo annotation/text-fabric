@@ -5,9 +5,7 @@ import collections
 import time
 from datetime import datetime
 from .helpers import (
-    setFromSpec, valueFromTf, tfFromValue, specFromRanges, rangesFromSet,
-    check32,
-    console
+    setFromSpec, valueFromTf, tfFromValue, specFromRanges, rangesFromSet, check32, console
 )
 
 ERROR_CUTOFF = 20
@@ -28,25 +26,17 @@ WARP2_DEFAULT = dict(
 DATA_TYPES = ('str', 'int')
 
 MEM_MSG = (
-    'TF is out of memory!\n'
-    + 'If this happens and your computer has more than 3GB RAM on board:\n'
-    + ('* make sure that you run 64-bit Python and/or\n' if check32()[0] else '')
-    + '* close all other programs and try again.\n'
+    'TF is out of memory!\n' + 'If this happens and your computer has more than 3GB RAM on board:\n'
+    + ('* make sure that you run 64-bit Python and/or\n' if check32()[0] else '') +
+    '* close all other programs and try again.\n'
 )
 
 
 class Data(object):
+
   def __init__(
-      self,
-      path,
-      tm,
-      edgeValues=False,
-      data=None,
-      isEdge=None,
-      isConfig=None,
-      metaData={},
-      method=None,
-      dependencies=None
+      self, path, tm, edgeValues=False, data=None, isEdge=None, isConfig=None, metaData={},
+      method=None, dependencies=None
   ):
     (dirName, baseName) = os.path.split(path)
     (fileName, extension) = os.path.splitext(baseName)
@@ -84,13 +74,8 @@ class Data(object):
       # computation/compiling/loading of this feature
       actionRep = 'E'
       good = False
-    elif self.dataLoaded and (
-        self.isConfig
-        or (
-            (not origTime or self.dataLoaded >= origTime)
-            and (not binTime or self.dataLoaded >= binTime)
-        )
-    ):
+    elif self.dataLoaded and (self.isConfig or ((not origTime or self.dataLoaded >= origTime) and
+                                                (not binTime or self.dataLoaded >= binTime))):
       actionRep = '='  # loaded and up to date
     elif not origTime and not binTime:
       actionRep = 'X'  # no source and no binary present
@@ -122,7 +107,7 @@ class Data(object):
     if self.isConfig:
       self.cleanDataBin()
     if good:
-      if actionRep != '=' and not(silent and actionRep == 'M'):
+      if actionRep != '=' and not (silent and actionRep == 'M'):
         self.tm.info(
             msgFormat.format(actionRep, self.fileName, sourceRep),
             cache=1 if (not silent) or (actionRep in 'CT') else -1,
@@ -146,9 +131,7 @@ class Data(object):
     if 'valueType' in self.metaData:
       dataType = self.metaData['valueType']
       if dataType not in DATA_TYPES:
-        self.tm.error(
-            f'Unknown @valueType: "{dataType}". Should be one of {dataTypesStr}'
-        )
+        self.tm.error(f'Unknown @valueType: "{dataType}". Should be one of {dataTypesStr}')
         self.dataType = DATA_TYPES[0]
       else:
         self.dataType = dataType
@@ -266,8 +249,8 @@ class Data(object):
       implicit_node = max(nodes) + 1
       if not isEdge or edgeValues:
         value = (
-            int(valTf) if isNum and valTf != '' else None if isNum else ''
-            if valTf == '' else valueFromTf(valTf)
+            int(valTf) if isNum and valTf != '' else
+            None if isNum else '' if valTf == '' else valueFromTf(valTf)
         )
       if isEdge:
         for n in nodes:
@@ -322,7 +305,7 @@ class Data(object):
     def info(msg, tm=True):
       self.tm.info(cmpFormat.format(msg), tm=tm, cache=-1)
 
-    cmpFormat = 'c {:<20} {{}}'.format(self.fileName)
+    cmpFormat = f'c {self.fileName:<20} {{}}'
     self.tm.indent(level=2, reset=True)
 
     def error(msg, tm=True):
@@ -338,12 +321,7 @@ class Data(object):
     return good
 
   def _writeTf(
-      self,
-      dirName=None,
-      fileName=None,
-      overwrite=True,
-      extension=None,
-      metaOnly=False,
+      self, dirName=None, fileName=None, overwrite=True, extension=None, metaOnly=False,
       nodeRanges=False
   ):
     self.tm.indent(level=1, reset=True)
@@ -362,9 +340,7 @@ class Data(object):
     if fpath == self.path:
       if os.path.exists(fpath):
         if not overwrite:
-          self.tm.error(
-              f'Feature file "{fpath}" already exists, feature will not be written'
-          )
+          self.tm.error(f'Feature file "{fpath}" already exists, feature will not be written')
           return False
     try:
       fh = open(fpath, 'w', encoding='utf8')

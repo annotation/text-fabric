@@ -2,8 +2,7 @@ import collections
 from .helpers import makeInverse, makeInverseVal, console
 from .locality import Locality
 from .text import Text
-from .search.search import Search
-
+from ..search.search import Search
 
 API_REFS = dict(
     AllComputeds=('features', 'computedall', 'computed-data'),
@@ -48,6 +47,7 @@ API_REFS = dict(
 
 
 class OtypeFeature(object):
+
   def __init__(self, api, data=None):
     self.api = api
     self.data = data
@@ -82,6 +82,7 @@ class OtypeFeature(object):
 
 
 class OslotsFeature(object):
+
   def __init__(self, api, data=None):
     self.api = api
     self.data = data
@@ -99,6 +100,7 @@ class OslotsFeature(object):
 
 
 class NodeFeature(object):
+
   def __init__(self, api, data):
     self.api = api
     self.data = data
@@ -131,6 +133,7 @@ class NodeFeature(object):
 
 
 class EdgeFeature(object):
+
   def __init__(self, api, data, doValues):
     self.api = api
     self.doValues = doValues
@@ -205,6 +208,7 @@ class EdgeFeature(object):
 
 
 class Computed(object):
+
   def __init__(self, api, data):
     self.api = api
     self.data = data
@@ -223,6 +227,7 @@ class Computeds(object):
 
 
 class Api(object):
+
   def __init__(self, TF):
     self.TF = TF
     self.ignored = tuple(sorted(TF.featuresIgnored))
@@ -248,19 +253,19 @@ class Api(object):
 
   def Fs(self, fName):
     if not hasattr(self.F, fName):
-      self.error('Node feature "{}" not loaded'.format(fName))
+      self.error(f'Node feature "{fName}" not loaded')
       return None
     return getattr(self.F, fName)
 
   def Es(self, fName):
     if not hasattr(self.E, fName):
-      self.error('Edge feature "{}" not loaded'.format(fName))
+      self.error(f'Edge feature "{fName}" not loaded')
       return None
     return getattr(self.E, fName)
 
   def Cs(self, fName):
     if not hasattr(self.C, fName):
-      self.error('Computed feature "{}" not loaded'.format(fName))
+      self.error(f'Computed feature "{fName}" not loaded')
       return None
     return getattr(self.C, fName)
 

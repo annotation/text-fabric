@@ -3,10 +3,16 @@ from random import randrange
 from inspect import signature
 
 from .syntax import (
-    reTp, cleanParent,
-    QWHERE, QWITHOUT, QWITH, QHAVE, QOR, QEND,
+    reTp,
+    cleanParent,
+    QWHERE,
+    QWITHOUT,
+    QWITH,
+    QHAVE,
+    QOR,
+    QEND,
 )
-from ..helpers import project
+from ..core.helpers import project
 
 # SPINNING ###
 

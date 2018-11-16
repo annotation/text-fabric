@@ -1,15 +1,15 @@
 import os
 import sys
+from glob import glob
 from shutil import rmtree
 from zipfile import ZipFile, ZIP_DEFLATED
 
-from ..helpers import console, splitModRef
+from ..core.helpers import console, splitModRef
 
 GH_BASE = os.path.expanduser(f'~/github')
 DW_BASE = os.path.expanduser(f'~/Downloads')
 TEMP = '_temp'
 RELATIVE = 'tf'
-
 
 HELP = '''
 USAGE
@@ -41,6 +41,12 @@ and the are named {relative}-{version}.zip
 
 EXCLUDE = {'.DS_Store'}
 
+ZIP_OPTIONS = dict(
+    compression=ZIP_DEFLATED,
+)
+if sys.version_info[1] >= 7:
+  ZIP_OPTIONS['compresslevel'] = 6
+
 
 def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
   console(f'Create release data for {org}/{repo}/{relative}')
@@ -57,33 +63,32 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
   relativeDest = relative.replace('/', '-')
 
   if tf:
-    with os.scandir(sourceDir) as versionIt:
-      for versionEntry in versionIt:
-        if not versionEntry.is_dir():
+    for versionEntry in glob(f'{sourceDir}/*'):
+      if not os.path.isdir(versionEntry):
+        continue
+      (versionDir, version) = os.path.split(versionEntry)
+      if version == TEMP:
+        continue
+      for tfEntry in glob(f'{versionEntry}/*'):
+        if not os.path.isfile(tfEntry):
           continue
-        version = versionEntry.name
-        if version == TEMP:
+        (tfDir, featureFile) = os.path.split(tfEntry)
+        if featureFile in EXCLUDE:
           continue
-        with os.scandir(f'{sourceDir}/{version}') as tfIt:
-          for tfEntry in tfIt:
-            if not tfEntry.is_file():
-              continue
-            featureFile = tfEntry.name
-            if featureFile in EXCLUDE:
-              continue
-            if not featureFile.endswith('.tf'):
-              console(f'WARNING: non feature file "{version}/{featureFile}"', error=True)
-              continue
-            dataFiles.setdefault(version, set()).add(featureFile)
+        if not featureFile.endswith('.tf'):
+          console(f'WARNING: non feature file "{version}/{featureFile}"', error=True)
+          continue
+        dataFiles.setdefault(version, set()).add(featureFile)
 
+    console(f'zip files end up in {destDir}')
     for (version, features) in sorted(dataFiles.items()):
       item = f'{org}/{repo}'
-      console(f'zipping {item:<25} {version:>4} with {len(features):>3} features')
+      target = f'{relativeDest}-{version}.zip'
+      console(f'zipping {item:<25} {version:>4} with {len(features):>3} features ==> {target}')
       with ZipFile(
-          f'{destDir}/{relativeDest}-{version}.zip',
+          f'{destDir}/{target}',
           'w',
-          compression=ZIP_DEFLATED,
-          compresslevel=6,
+          **ZIP_OPTIONS,
       ) as zipFile:
         for featureFile in sorted(features):
           zipFile.write(
@@ -95,24 +100,25 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
     def collectFiles(base, path, results):
       thisPath = f'{base}/{path}' if path else base
       internalBase = f'{relative}/{path}' if path else relative
-      with os.scandir(thisPath) as dr:
-        for entry in dr:
-          name = entry.name
-          if name in EXCLUDE:
-            continue
-          if entry.is_file():
-            results.append((f'{internalBase}/{name}', f'{base}/{path}/{name}'))
-          elif entry.is_dir():
-            collectFiles(base, f'{path}/{name}', results)
+      for entry in glob(f'{thisPath}/*'):
+        (entryDir, name) = os.path.split(entry)
+        if name in EXCLUDE:
+          continue
+        if os.path.isfile(entry):
+          results.append((f'{internalBase}/{name}', f'{base}/{path}/{name}'))
+        elif os.path.isdir(entry):
+          collectFiles(base, f'{path}/{name}', results)
 
     results = []
     collectFiles(sourceDir, '', results)
+    if not relativeDest:
+      relativeDest = '-'
     console(f'zipping {org}/{repo}/{relative} with {len(results)} files')
+    console(f'zip file is {destDir}/{relativeDest}.zip')
     with ZipFile(
         f'{destDir}/{relativeDest}.zip',
         'w',
-        compression=ZIP_DEFLATED,
-        compresslevel=6,
+        **ZIP_OPTIONS,
     ) as zipFile:
       for (internalPath, path) in sorted(results):
         zipFile.write(

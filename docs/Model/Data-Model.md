@@ -5,11 +5,11 @@
 > that’s the bottom line, the final truth.
 > So where we find we have any control over those patterns,
 > why not make the most elegant ones, the most enjoyable and good ones,
-> in our own terms?"
+> in our own terms?
 >
 > -- **Iain M. Banks**.
-"[Consider Phlebas](https://read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system):
-A Culture Novel (Culture series)"
+[Consider Phlebas](https://read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system):
+A Culture Novel (Culture series)
 
 ## At a glance
 

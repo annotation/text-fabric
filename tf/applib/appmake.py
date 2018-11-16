@@ -17,28 +17,36 @@ from ..parameters import (
     EXPRESS_INFO,
 )
 from ..fabric import Fabric
-from ..helpers import itemize, camel, console, splitModRef, setDir, expandDir
+from ..core.helpers import itemize, camel, console, splitModRef, setDir, expandDir
 from .apphelpers import (
     search,
-    table, plainTuple,
-    show, pretty, prettyTuple, prettySetup,
+    table,
+    plainTuple,
+    show,
+    pretty,
+    prettyTuple,
+    prettySetup,
     nodeFromDefaultSection,
-    dm, dh, header,
-    CSS_FONT, CSS_FONT_API,
+    dm,
+    dh,
+    header,
+    CSS_FONT,
+    CSS_FONT_API,
 )
 from .notebook import location
 
-
 # START AN APP
+
 
 def use(appName, *args, **kwargs):
   appClass = findAppClass(appName)
   if not appClass:
     return None
-  return appClass(*args, **kwargs)
+  return appClass(appName, *args, **kwargs)
 
 
 # FIND AN APP
+
 
 def findAppConfig(dataSource):
   config = None
@@ -65,20 +73,21 @@ def findAppClass(dataSource):
 
 # SET UP A TF API FOR AN APP
 
+
 def setupApi(
     app,
-    name,
     appName,
-    moduleRefs,
-    locations,
-    modules,
-    asApp,
-    api,
-    version,
-    lgc,
-    check,
-    silent,
-    hoist,
+    name=None,
+    mod=None,
+    locations=None,
+    modules=None,
+    asApp=False,
+    api=None,
+    version=None,
+    lgc=False,
+    check=False,
+    silent=False,
+    hoist=False,
 ):
   for (key, value) in dict(
       appName=appName,
@@ -106,10 +115,13 @@ def setupApi(
   else:
     specs = _getModulesData(
         app,
-        moduleRefs,
-        locations, modules,
+        mod,
+        locations,
+        modules,
         version,
-        lgc, check, silent,
+        lgc,
+        check,
+        silent,
     )
     if specs:
       (locations, modules) = specs
@@ -146,6 +158,7 @@ The app "{appName}" will not work!
 
 # COLLECT CONFIG SETTINGS IN A DICT
 
+
 def configureNames(names, lgc, version):
   '''
   Collect the all-uppercase globals from a config file
@@ -173,6 +186,7 @@ def configureNames(names, lgc, version):
 
 # GENERATE LINK TO A PASSAGE IN THE CORPUS IN AN EXTERNAL WEBSITE
 
+
 def outLink(text, href, title=None, passage=None, className=None, target='_blank'):
   titleAtt = '' if title is None else f' title="{title}"'
   classAtt = f' class="{className}"' if className else ''
@@ -182,6 +196,7 @@ def outLink(text, href, title=None, passage=None, className=None, target='_blank
 
 
 # DOWNLOAD URL TO LIVE DATA ON GITHUB
+
 
 def liveText(org, repo, version, release):
   return f'{org}/{repo} v:{version} (r{release})'
@@ -194,17 +209,8 @@ def liveUrl(org, repo, version, release, relative):
 
 # CHECK AND DOWNLOAD DATA FOR A GIVEN LOCATION
 
-def getData(
-    org,
-    repo,
-    relative,
-    version,
-    lgc,
-    check,
-    withPaths=False,
-    keep=False,
-    silent=False
-):
+
+def getData(org, repo, relative, version, lgc, check, withPaths=False, keep=False, silent=False):
   versionRep = f'/{version}' if version else ''
   versionRep2 = f' - {version}' if version else ''
   versionRep3 = f'-{version}' if version else ''
@@ -219,11 +225,9 @@ def getData(
   dataBase = _hasData(lgc, org, repo, version, relative)
   if dataBase == ghBase:
     if not silent:
-      console(
-          f'''
+      console(f'''
 Using {org}/{repo}{relativeRep}{versionRep2} in {ghBase}
-'''
-      )
+''')
     return (None, dataBase)
 
   currentRelease = None
@@ -321,12 +325,12 @@ Still Using {org}/{repo}{relativeRep}{versionRep2} r{currentReleaseRep} in {expr
         )
       return (currentRelease, expressBase)
     else:
-        console(
-            f'''
+      console(
+          f'''
 Could not find data in {org}/{repo}{relativeRep}{versionRep2} in {expressBase}
 ''',
-            error=not check,
-        )
+          error=not check,
+      )
     return (None, False)
 
   if latestRelease == currentRelease:
@@ -340,7 +344,11 @@ Using {org}/{repo}{relativeRep}{versionRep2} r{currentRelease} (=latest) in {exp
     return (currentRelease, expressBase)
 
   if _getDataFile(
-      org, repo, relative, latestRelease, version,
+      org,
+      repo,
+      relative,
+      latestRelease,
+      version,
       keep=keep,
       withPaths=withPaths,
       silent=silent,
@@ -373,12 +381,16 @@ No data for {org}/{repo}{relativeRep}{versionRep2}
 
 # GET DATA FOR MAIN SOURCE AND ALL MODULES
 
+
 def _getModulesData(
     app,
     moduleRefs,
-    locations, modules,
+    locations,
+    modules,
     version,
-    lgc, check, silent,
+    lgc,
+    check,
+    silent,
 ):
   provenance = []
   mLocations = []
@@ -390,10 +402,16 @@ def _getModulesData(
 
   if not _getModuleData(
       app,
-      app.org, app.repo, app.relative,
+      app.org,
+      app.repo,
+      app.relative,
       version,
-      lgc, check, silent,
-      seen, mLocations, provenance,
+      lgc,
+      check,
+      silent,
+      seen,
+      mLocations,
+      provenance,
       isBase=True,
   ):
     good = False
@@ -404,10 +422,16 @@ def _getModulesData(
     (org, repo, relative) = (m['org'], m['repo'], m['relative'])
     if not _getModuleData(
         app,
-        org, repo, relative,
+        org,
+        repo,
+        relative,
         version,
-        lgc, check, silent,
-        seen, mLocations, provenance,
+        lgc,
+        check,
+        silent,
+        seen,
+        mLocations,
+        provenance,
         specs=m,
     ):
       good = False
@@ -427,10 +451,16 @@ def _getModulesData(
 
     if not _getModuleData(
         app,
-        org, repo, relative,
+        org,
+        repo,
+        relative,
         version,
-        lgc, check, silent,
-        seen, mLocations, provenance,
+        lgc,
+        check,
+        silent,
+        seen,
+        mLocations,
+        provenance,
     ):
       good = False
 
@@ -444,20 +474,11 @@ def _getModulesData(
   if mLocations:
     mModules.append(version)
 
-  givenLocations = (
-      []
-      if locations is None else
-      [expandDir(app, x.strip()) for x in itemize(locations, '\n')]
-      if type(locations) is str else
-      locations
-  )
-  givenModules = (
-      []
-      if modules is None else
-      [x.strip() for x in itemize(modules, '\n')]
-      if type(modules) is str else
-      modules
-  )
+  givenLocations = ([] if locations is None else
+                    [expandDir(app, x.strip())
+                     for x in itemize(locations, '\n')] if type(locations) is str else locations)
+  givenModules = ([] if modules is None else
+                  [x.strip() for x in itemize(modules, '\n')] if type(modules) is str else modules)
 
   locations = mLocations + givenLocations
   modules = mModules + givenModules
@@ -467,12 +488,19 @@ def _getModulesData(
 
 # GET DATA FOR A SINGLE MODULE
 
+
 def _getModuleData(
     app,
-    org, repo, relative,
+    org,
+    repo,
+    relative,
     version,
-    lgc, check, silent,
-    seen, mLocations, provenance,
+    lgc,
+    check,
+    silent,
+    seen,
+    mLocations,
+    provenance,
     isBase=False,
     specs=None,
 ):
@@ -505,30 +533,23 @@ def _getModuleData(
       ('corpus', f'{org}/{repo}/{relative}'),
   ):
     (key, default) = item
-    info[key] = (
-        getattr(app, key)
-        if isBase else
-        specs[key]
-        if specs and key in specs else
-        default
-    )
-  provenance.append(dict(
-      corpus=info['corpus'],
-      version=version,
-      release=release,
-      live=(
-          liveText(org, repo, version, release),
-          liveUrl(org, repo, version, release, relative)
-      ),
-      doi=(
-          info['doi'],
-          info['doiUrl']
-      ),
-  ))
+    info[key] = (getattr(app, key) if isBase else specs[key] if specs and key in specs else default)
+  provenance.append(
+      dict(
+          corpus=info['corpus'],
+          version=version,
+          release=release,
+          live=(
+              liveText(org, repo, version, release), liveUrl(org, repo, version, release, relative)
+          ),
+          doi=(info['doi'], info['doiUrl']),
+      )
+  )
   return True
 
 
 # DOWNLOAD A SINGLE ZIP FILE
+
 
 def _getDataFile(
     org,
@@ -548,35 +569,23 @@ def _getDataFile(
   relativeRep = f'/{relative}' if relative else ''
   destBase = f'{expressBase}/{org}/{repo}'
   destInfoFile = f'{destBase}{relativeRep}{versionRep}'
-  dest = (
-      f'{destBase}{versionRep}'
-      if withPaths else
-      destInfoFile
-  )
+  dest = (f'{destBase}{versionRep}' if withPaths else destInfoFile)
   if fileName is None:
     relativeFlat = relative.replace('/', '-')
-    fileName = (
-        f'{relativeFlat}{versionRep3}.zip'
-        if version else
-        f'{relativeFlat}.zip'
-    )
+    fileName = (f'{relativeFlat}{versionRep3}.zip' if version else f'{relativeFlat}.zip')
   dataUrl = f'{URL_GH}/{org}/{repo}/releases/download/{release}/{fileName}'
 
   if not silent:
-    console(
-        f'''
+    console(f'''
 \tdownloading {org}/{repo}{versionRep2} r{release}
 \tfrom {dataUrl} ...
-'''
-    )
+''')
   try:
     r = requests.get(dataUrl, allow_redirects=True)
     if not silent:
-      console(
-          f'''
+      console(f'''
 \tunzipping ...
-'''
-      )
+''')
     zf = io.BytesIO(r.content)
   except Exception as e:
     console(
@@ -589,11 +598,9 @@ def _getDataFile(
     return False
 
   if not silent:
-    console(
-        f'''
+    console(f'''
 \tsaving {org}/{repo}{versionRep2} r{release}
-'''
-    )
+''')
 
   cwd = os.getcwd()
   try:
@@ -630,16 +637,15 @@ def _getDataFile(
   with open(expressInfoFile, 'w') as rh:
     rh.write(f'{release}')
   if not silent:
-    console(
-        f'''
+    console(f'''
 \tsaved {org}/{repo}{versionRep2} r{release}
-'''
-    )
+''')
   os.chdir(cwd)
   return True
 
 
 # LOWER LEVEL API FUNCTIONS
+
 
 def _addLinksApi(
     app,
@@ -647,78 +653,69 @@ def _addLinksApi(
     appName,
     silent,
 ):
-    api = app.api
-    app.inNb = False
-    if not app.asApp:
-      (inNb, repoLoc) = location(app.homeDir, name)
-      app.inNb = inNb
-      if inNb:
-        (nbDir, nbName, nbExt) = inNb
-      if repoLoc:
-        (nbOrg, nbRepo, nbRrelative, nbUrl, ghUrl) = repoLoc
-    tutUrl = f'{URL_NB}/{app.org}/{app.repo}/blob/master/tutorial/search.ipynb'
-    extraUrl = f'{URL_TFDOC}/Api/{app.repo.capitalize()}/'
-    dataLink = outLink(
-        app.repo.upper(),
-        app.docUrl,
-        f'provenance of {app.corpus}',
-    )
-    charLink = (
-        outLink(
-            'Character table',
-            app.charUrl.format(tfDoc=URL_TFDOC),
-            app.charText,
+  api = app.api
+  app.inNb = False
+  if not app.asApp:
+    (inNb, repoLoc) = location(app.homeDir, name)
+    app.inNb = inNb
+    if inNb:
+      (nbDir, nbName, nbExt) = inNb
+    if repoLoc:
+      (nbOrg, nbRepo, nbRrelative, nbUrl, ghUrl) = repoLoc
+  tutUrl = f'{URL_NB}/{app.org}/{app.repo}/blob/master/tutorial/search.ipynb'
+  extraUrl = f'{URL_TFDOC}/Api/{app.repo.capitalize()}/'
+  dataLink = outLink(
+      app.repo.upper(),
+      app.docUrl,
+      f'provenance of {app.corpus}',
+  )
+  charLink = (
+      outLink(
+          'Character table',
+          app.charUrl.format(tfDoc=URL_TFDOC),
+          app.charText,
+      ) if app.charUrl else ''
+  )
+  featureLink = outLink(
+      'Feature docs', app.featureUrl.format(
+          version=app.version,
+          feature=app.docIntro,
+      ), f'{app.repo.upper()} feature documentation'
+  )
+  appLink = outLink(f'{appName} API', extraUrl, f'{appName} API documentation')
+  tfLink = outLink(
+      f'Text-Fabric API {api.TF.version}', f'{URL_TFDOC}/Api/General/', 'text-fabric-api'
+  )
+  tfsLink = outLink(
+      'Search Reference', f'{URL_TFDOC}/Api/General/#search-templates',
+      'Search Templates Introduction and Reference'
+  )
+  tutLink = outLink('Search tutorial', tutUrl, 'Search tutorial in Jupyter Notebook')
+  if app.asApp:
+    app.dataLink = dataLink
+    app.charLink = charLink
+    app.featureLink = featureLink
+    app.tfsLink = tfsLink
+    app.tutLink = tutLink
+  else:
+    if inNb is not None:
+      if not silent:
+        dm(
+            '**Documentation:**'
+            f' {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}'
         )
-        if app.charUrl else
-        ''
-    )
-    featureLink = outLink(
-        'Feature docs', app.featureUrl.format(
-            version=app.version,
-            feature=app.docIntro,
-        ),
-        f'{app.repo.upper()} feature documentation'
-    )
-    appLink = outLink(f'{appName} API', extraUrl, f'{appName} API documentation')
-    tfLink = outLink(
-        f'Text-Fabric API {api.TF.version}', f'{URL_TFDOC}/Api/General/',
-        'text-fabric-api'
-    )
-    tfsLink = outLink(
-        'Search Reference',
-        f'{URL_TFDOC}/Api/General/#search-templates',
-        'Search Templates Introduction and Reference'
-    )
-    tutLink = outLink(
-        'Search tutorial', tutUrl,
-        'Search tutorial in Jupyter Notebook'
-    )
-    if app.asApp:
-      app.dataLink = dataLink
-      app.charLink = charLink
-      app.featureLink = featureLink
-      app.tfsLink = tfsLink
-      app.tutLink = tutLink
-    else:
-      if inNb is not None:
-        if not silent:
+        dh(
+            '<details open><summary><b>Loaded features</b>:</summary>\n' + _featuresPerModule(app) +
+            '</details>'
+        )
+        if repoLoc:
           dm(
-              '**Documentation:**'
-              f' {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}'
-          )
-          dh(
-              '<details open><summary><b>Loaded features</b>:</summary>\n'
-              + _featuresPerModule(app)
-              + '</details>'
-          )
-          if repoLoc:
-            dm(
-                f'''
+              f'''
 This notebook online:
 {outLink('NBViewer', f'{nbUrl}/{nbName}{nbExt}')}
 {outLink('GitHub', f'{ghUrl}/{nbName}{nbExt}')}
 '''
-            )
+          )
 
 
 def _addFormatApi(
@@ -742,19 +739,15 @@ def _addFormatApi(
       if inNb is not None:
         if not silent:
           dh(
-              '<details open><summary><b>API members</b>:</summary>\n'
-              + '<br/>\n'.join(
+              '<details open><summary><b>API members</b>:</summary>\n' + '<br/>\n'.join(
                   ', '.join(
                       outLink(
                           entry,
                           f'{URL_TFDOC}/Api/General/#{ref}',
                           title='doc',
-                      )
-                      for entry in entries
-                  )
-                  for (ref, entries) in docs
-              )
-              + '</details>'
+                      ) for entry in entries
+                  ) for (ref, entries) in docs
+              ) + '</details>'
           )
 
 
@@ -774,6 +767,7 @@ def _addMethods(app):
 
 # LOWER LEVEL UTILITY FUNCTIONS
 
+
 def _sectionLink(app, n, text=None):
   return app.webLink(n, className='rwh', text=text, asString=True, noUrl=True)
 
@@ -788,8 +782,7 @@ def _loadCss(app):
   if asApp:
     return CSS_FONT + app.css
   cssFont = (
-      '' if app.fontName is None else
-      CSS_FONT_API.format(
+      '' if app.fontName is None else CSS_FONT_API.format(
           fontName=app.fontName,
           font=app.font,
           fontw=app.fontw,
@@ -798,10 +791,7 @@ def _loadCss(app):
   dh(cssFont + app.css)
 
 
-pathRe = re.compile(
-    r'^(.*/(?:github|text-fabric-data))/([^/]+)/([^/]+)/(.*)$',
-    flags=re.I
-)
+pathRe = re.compile(r'^(.*/(?:github|text-fabric-data))/([^/]+)/([^/]+)/(.*)$', flags=re.I)
 
 
 def _featuresPerModule(app):
@@ -823,12 +813,10 @@ def _featuresPerModule(app):
     else:
       (base, org, repo, relative) = match.groups()
       mId = (org, repo, relative)
-      (corpus, docUrl) = (
-          (app.corpus, app.featureUrl.format(version=app.version, feature='{feature}'))
-          if mLoc == baseLoc else
-          fixedModuleIndex[mId] if mId in fixedModuleIndex else
-          (f'{org}/{repo}/{relative}', f'{URL_GH}/{org}/{repo}/tree/master/{relative}')
-      )
+      (corpus,
+       docUrl) = ((app.corpus, app.featureUrl.format(version=app.version, feature='{feature}'))
+                  if mLoc == baseLoc else fixedModuleIndex[mId] if mId in fixedModuleIndex else
+                  (f'{org}/{repo}/{relative}', f'{URL_GH}/{org}/{repo}/tree/master/{relative}'))
       moduleIndex[mId] = (org, repo, relative, corpus, docUrl)
 
   # print('MODULEINDEX', moduleIndex)
@@ -895,8 +883,7 @@ def _featuresPerModule(app):
       html += f' {pre}'
       html += (
           outLink(featureRep, docUrl.format(feature=feature), title=featurePath)
-          if docUrl else
-          f'<span title="{featurePath}">{featureRep}</span>'
+          if docUrl else f'<span title="{featurePath}">{featureRep}</span>'
       )
       html += f'{post} '
     html += '</p>'

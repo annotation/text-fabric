@@ -40,6 +40,9 @@ The data sharing workflow is built around the following assumptions:
 
     `etcbc/lingo/heads/tf`
 
+??? note "synchronized with GitHub"
+    You must have your local repo contents synchronized with that on GitHub
+
 ??? note "online GitHub"
     Before you share your data, you must make a *release* on GitHub.
     Then you must attach your features as a zip file to that release.

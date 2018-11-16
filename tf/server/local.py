@@ -11,28 +11,35 @@ import markdown
 import bottle
 from bottle import (post, get, route, template, request, static_file, run)
 
-from ..helpers import console
-from ..fabric import NAME, VERSION, DOI, DOI_URL, COMPOSE_URL
+from ..core.helpers import console
+from ..parameters import NAME, VERSION, DOI, DOI_URL, COMPOSE_URL
 from ..applib.apphelpers import RESULT
 from ..applib.appmake import (
     findAppConfig,
 )
 from .kernel import makeTfConnection
 from .common import (
-    getParam, getModules, getDebug,
-    getDocker, getLocalClones,
-    getAppDir, getValues, setValues,
-    pageLinks, passageLinks,
-    shapeMessages, shapeOptions, shapeCondense, shapeFormats,
+    getParam,
+    getModules,
+    getDebug,
+    getDocker,
+    getLocalClones,
+    getAppDir,
+    getValues,
+    setValues,
+    pageLinks,
+    passageLinks,
+    shapeMessages,
+    shapeOptions,
+    shapeCondense,
+    shapeFormats,
 )
-
 
 COMPOSE = 'Compose results example'
 
 BATCH = 20
 DEFAULT_NAME = 'DefaulT'
 EXTENSION = '.tfjob'
-
 
 myDir = os.path.dirname(os.path.abspath(__file__))
 appDir = None
@@ -62,9 +69,8 @@ def getStuff(lgc):
 def getProvenance(form, provenance):
   utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
   utc_offset = datetime.timedelta(seconds=-utc_offset_sec)
-  now = datetime.datetime.now().replace(
-      microsecond=0, tzinfo=datetime.timezone(offset=utc_offset)
-  ).isoformat()
+  now = datetime.datetime.now().replace(microsecond=0,
+                                        tzinfo=datetime.timezone(offset=utc_offset)).isoformat()
   job = form['jobName']
   author = form['author']
 
@@ -158,7 +164,8 @@ def writeAbout(header, provenance, form):
     rmtree(dirName)
   os.makedirs(dirName, exist_ok=True)
   with open(f'{dirName}/about.md', 'w', encoding='utf8') as ph:
-    ph.write(f'''
+    ph.write(
+        f'''
 {header}
 
 {provenance}
@@ -188,7 +195,8 @@ def writeAbout(header, provenance, form):
 ```
 {form["searchTemplate"]}
 ```
-''')
+'''
+    )
 
 
 def writeCsvs(csvs, context, resultsX, form):
@@ -256,8 +264,15 @@ def getFormData():
 
 def writeFormData(form):
   excludedFields = {
-      'export', 'chdir', 'rename', 'duplicate',
-      'jobName', 'jobNameHidden', 'jobDir', 'otherJobDo', 'otherJob',
+      'export',
+      'chdir',
+      'rename',
+      'duplicate',
+      'jobName',
+      'jobNameHidden',
+      'jobDir',
+      'otherJobDo',
+      'otherJob',
   }
   thisJobName = form['jobName'] or ''
   with open(f'{dataSource}-{thisJobName}{EXTENSION}', 'w', encoding='utf8') as tfj:
@@ -393,8 +408,11 @@ def serveSearch(anything):
     if form['searchTemplate'] or form['tuples'] or form['sections']:
       (
           table,
-          sectionMessages, tupleMessages, queryMessages,
-          start, total,
+          sectionMessages,
+          tupleMessages,
+          queryMessages,
+          start,
+          total,
       ) = kernelApi.search(
           form['searchTemplate'],
           form['tuples'],
@@ -431,7 +449,8 @@ def serveSearch(anything):
         table,
         passages,
     ) = kernelApi.passage(
-        sec0, sec1,
+        sec0,
+        sec1,
         textFormat,
         sec2=sec2,
         opened=openedSet,
@@ -445,8 +464,7 @@ def serveSearch(anything):
   otherJobs = getOtherOptions(form['jobName'])
 
   descriptionMd = markdown.markdown(
-      form['description'],
-      extensions=[
+      form['description'], extensions=[
           'markdown.extensions.tables',
           'markdown.extensions.fenced_code',
       ]

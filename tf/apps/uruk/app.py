@@ -3,15 +3,16 @@ import re
 from glob import glob
 from shutil import copyfile
 
-from tf.helpers import console
+from tf.core.helpers import console
 from tf.applib.apphelpers import (
     prettyPre,
     getFeatures,
-    htmlEsc, mdEsc,
-    dm, dh,
+    htmlEsc,
+    mdEsc,
+    dm,
+    dh,
 )
 from tf.applib.appmake import setupApi, outLink, getData
-
 
 PHOTO_TO = '{}/tablets/photos'
 PHOTO_EXT = 'jpg'
@@ -118,6 +119,7 @@ ATF_TYPES = set('''
 
 
 class Atf(object):
+
   def __init__(self, api=None):
     if api:
       self.api = api
@@ -284,9 +286,8 @@ class Atf(object):
 
       thisResult = (
           self.atfFromCluster(child, seen=seen)
-          if childType == 'cluster' else self.atfFromQuad(child, flags=True)
-          if childType == 'quad' else self.atfFromSign(child, flags=True)
-          if childType == 'sign' else None
+          if childType == 'cluster' else self.atfFromQuad(child, flags=True) if childType == 'quad'
+          else self.atfFromSign(child, flags=True) if childType == 'sign' else None
       )
       seen.add(child)
       if thisResult is None:
@@ -308,35 +309,9 @@ class Atf(object):
 
 
 class TfApp(Atf):
-  def __init__(
-      app,
-      name=None,
-      api=None,
-      asApp=False,
-      mod=None,
-      locations=None,
-      modules=None,
-      version=None,
-      lgc=False,
-      check=False,
-      hoist=False,
-      silent=False,
-  ):
-    setupApi(
-        app,
-        name,
-        'uruk',
-        mod,
-        locations,
-        modules,
-        asApp,
-        api,
-        version,
-        lgc,
-        check,
-        silent,
-        hoist,
-    )
+
+  def __init__(app, *args, asApp=False, lgc=False, check=False, silent=False, **kwargs):
+    setupApi(app, *args, asApp=asApp, lgc=lgc, check=check, silent=silent, **kwargs)
 
     (imageRelease, imageBase) = getData(
         app.org,
@@ -378,8 +353,12 @@ class TfApp(Atf):
     target = '' if noUrl else None
 
     result = outLink(
-        linkText, url,
-        title=title, className=className, target=target, passage=pNum,
+        linkText,
+        url,
+        title=title,
+        className=className,
+        target=target,
+        passage=pNum,
     )
     if asString:
       return result
@@ -423,8 +402,7 @@ class TfApp(Atf):
       isSign = nType == 'sign'
       isQuad = nType == 'quad'
       rep = (
-          app.atfFromSign(n) if isSign else app.atfFromQuad(n)
-          if isQuad else app.atfFromCluster(n)
+          app.atfFromSign(n) if isSign else app.atfFromQuad(n) if isQuad else app.atfFromCluster(n)
       )
       if linked:
         rep = app.webLink(n, text=rep, asString=True)
@@ -434,12 +412,7 @@ class TfApp(Atf):
           width = '2em' if isSign else '4em'
           height = '4em' if isSign else '6em'
           theLineart = app._getImages(
-              n,
-              kind='lineart',
-              width=width,
-              height=height,
-              asString=True,
-              withCaption=False,
+              n, kind='lineart', width=width, height=height, asString=True, withCaption=False,
               warning=False
           )
           theLineart = f' {theLineart}'
@@ -461,8 +434,11 @@ class TfApp(Atf):
       elif nType == 'tablet':
         rep = mdEsc(f'{nType} {F.catalogId.v(n)}')
       result = app._addLink(
-          n, rep, nodeRep,
-          linked=linked, lineNumbers=lineNumbersCondition,
+          n,
+          rep,
+          nodeRep,
+          linked=linked,
+          lineNumbers=lineNumbersCondition,
       )
 
     if asString or asApp:
@@ -505,10 +481,15 @@ class TfApp(Atf):
     if not goOn:
       return
     (
-        slotType, nType,
-        className, boundaryClass, hlClass, hlStyle,
+        slotType,
+        nType,
+        className,
+        boundaryClass,
+        hlClass,
+        hlStyle,
         nodePart,
-        myStart, myEnd,
+        myStart,
+        myEnd,
     ) = goOn
 
     api = app.api
@@ -644,12 +625,7 @@ class TfApp(Atf):
           width = '2em' if isSign else '4em'
           height = '4em' if isSign else '6em'
           theLineart = app._getImages(
-              n,
-              kind='lineart',
-              width=width,
-              height=height,
-              asString=True,
-              withCaption=False,
+              n, kind='lineart', width=width, height=height, asString=True, withCaption=False,
               warning=False
           )
           if theLineart:
@@ -752,15 +728,10 @@ class TfApp(Atf):
     F = api.F
     lkey = 'line' if lev == 0 else 'case'
     if lev == 0:
-      return (
-          tuple(c for c in F.otype.s(lkey) if F.terminal.v(c))
-          if terminal else
-          F.otype.s(lkey)
-      )
+      return (tuple(c for c in F.otype.s(lkey) if F.terminal.v(c)) if terminal else F.otype.s(lkey))
     return (
         tuple(c for c in F.otype.s(lkey) if F.depth.v(c) == lev and F.terminal.v(c))
-        if terminal else
-        tuple(c for c in F.otype.s(lkey) if F.depth.v(c) == lev)
+        if terminal else tuple(c for c in F.otype.s(lkey) if F.depth.v(c) == lev)
     )
 
   def lineart(app, ns, key=None, asLink=False, withCaption=None, **options):
@@ -852,14 +823,7 @@ class TfApp(Atf):
     return (nType, objectType, identifier)
 
   def _getImages(
-      app,
-      ns,
-      kind=None,
-      key=None,
-      asLink=False,
-      withCaption=None,
-      warning=True,
-      asString=False,
+      app, ns, kind=None, key=None, asLink=False, withCaption=None, warning=True, asString=False,
       **options
   ):
     if type(ns) is int or type(ns) is str:
@@ -936,7 +900,7 @@ class TfApp(Atf):
     F = api.F
     (imageDir, imageName) = os.path.split(image)
     (base, ext) = os.path.splitext(imageName)
-    localBase = app.repoTempDir if asApp else app.homeDir
+    localBase = app.localDir if asApp else app.curDir
     localDir = f'{localBase}/{LOCAL_IMAGE_DIR}'
     if not os.path.exists(localDir):
       os.makedirs(localDir, exist_ok=True)
@@ -951,17 +915,13 @@ class TfApp(Atf):
     else:
       nodeRep = node
     nodeRep = (
-        nodeRep.lower()
-        .replace('|', 'q')
-        .replace('~', '-')
-        .replace('@', '(a)')
-        .replace('&', '(e)')
-        .replace('+', '(p)')
-        .replace('.', '(d)')
+        nodeRep.lower().replace('|', 'q').replace('~', '-').replace('@', '(a)').replace('&', '(e)')
+        .replace('+', '(p)').replace('.', '(d)')
     )
     keyRep = '' if key == '' else f'-{key}'
     localImageName = f'{kind}-{nodeRep}{keyRep}{ext}'
     localImagePath = f'{localDir}/{localImageName}'
+    # yapf: disable
     if (
         not os.path.exists(localImagePath)
         or os.path.getmtime(image) > os.path.getmtime(localImagePath)

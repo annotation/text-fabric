@@ -8,7 +8,7 @@ from requests.compat import urljoin
 
 from notebook.notebookapp import list_running_servers
 
-from ..helpers import console
+from ..core.helpers import console
 from ..parameters import (
     URL_GH,
     URL_NB,
@@ -31,7 +31,7 @@ def repoLocation(cwd):
 def location(cwd, name):
   repoLoc = repoLocation(cwd)
   if name is not None:
-     return (('', name, '.ipynb'), repoLoc)
+    return (('', name, '.ipynb'), repoLoc)
 
   hasKernel = False
   try:
@@ -46,17 +46,17 @@ def location(cwd, name):
     servers = list_running_servers()
     if hasKernel:
       for ss in servers:
-          response = requests.get(
-              urljoin(ss['url'], 'api/sessions'), params={'token': ss.get('token', '')}
-          )
-          for nn in json.loads(response.text):
-            if nn['kernel']['id'] == kernelId:
-              relPath = nn['notebook']['path']
-              absPath = os.path.join(ss['notebook_dir'], relPath)
-              (dirName, filePart) = os.path.split(absPath)
-              (fileName, extension) = os.path.splitext(filePart)
-              found = (dirName, fileName, extension)
-              break
+        response = requests.get(
+            urljoin(ss['url'], 'api/sessions'), params={'token': ss.get('token', '')}
+        )
+        for nn in json.loads(response.text):
+          if nn['kernel']['id'] == kernelId:
+            relPath = nn['notebook']['path']
+            absPath = os.path.join(ss['notebook_dir'], relPath)
+            (dirName, filePart) = os.path.split(absPath)
+            (fileName, extension) = os.path.splitext(filePart)
+            found = (dirName, fileName, extension)
+            break
   except Exception:
     console('Cannot determine the name of this notebook')
     console("Work around: call me with a self-chosen name: name='xxx'")

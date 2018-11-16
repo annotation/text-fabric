@@ -22,13 +22,14 @@ def setStrategy(searchExe, strategy, keep=False):
     error(f'Strategy not defined: "{strategy}"', cache=msgCache)
     error(
         'Allowed strategies:\n{}'.format('\n'.join(f'    {s}' for s in STRATEGY)),
-        tm=False, cache=msgCache,
+        tm=False,
+        cache=msgCache,
     )
     searchExe.good = False
 
   func = globals().get(f'_{strategy}', None)
   if not func:
-    error('Strategy is defined, but not implemented: "{}"'.format(strategy), cache=msgCache)
+    error(f'Strategy is defined, but not implemented: "{strategy}"', cache=msgCache)
     searchExe.good = False
   searchExe.strategy = types.MethodType(func, searchExe)
 
@@ -72,6 +73,7 @@ def _spread_1_first(searchExe):
       if not added:
         break
     candidates.append((cnodes, cedgesOrder))
+
 
 # pick the biggest graph (nodes and edges count for 1)
   startS1 = sorted(candidates, key=lambda x: len(x[0]) + len(x[1]))[-1]
@@ -265,6 +267,7 @@ def _big_choice_first(searchExe):
   results['newEdges'] = newEdges
   return results
 
+
 # STITCHING ###
 
 
@@ -273,6 +276,7 @@ def stitch(searchExe):
   _stitchPlan(searchExe)
   if searchExe.good:
     _stitchResults(searchExe)
+
 
 # STITCHING: PLANNING ###
 
@@ -327,8 +331,7 @@ In plan    : {newNodesO}''', tm=False, cache=msgCache
     error(
         f'''Relation mismatch in plan:
 In template: {qedgesO}
-In plan    : {newCedgesO}''',
-        tm=False, cache=msgCache
+In plan    : {newCedgesO}''', tm=False, cache=msgCache
     )
     good = False
 
@@ -336,6 +339,7 @@ In plan    : {newCedgesO}''',
     searchExe.good = False
   else:
     searchExe.stitchPlan = (newNodes, newCedgesOrder)
+
 
 # STITCHING: DELIVERING ###
 
@@ -425,6 +429,7 @@ def _stitchResults(searchExe):
       qPermutedInv[t] = len(qPermuted) - 1
 
     edgesCompiled.append((qPermutedInv[f], qPermutedInv[t], r, nparams))
+
 
 # now permute the yarns
 

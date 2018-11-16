@@ -7,7 +7,6 @@ LIMIT_TABLE = 2000
 
 RESULT = 'result'
 
-
 FONT_BASE = 'https://github.com/Dans-labs/text-fabric/blob/master/tf/server/static/fonts'
 
 CSS_FONT = '''
@@ -129,20 +128,24 @@ def compose(
       if tup == 'results':
         doHeader = True
       else:
-        tuplesHtml.append(f'''
+        tuplesHtml.append(
+            f'''
 <div class="dtheadrow">
   <span>n</span><span>{tup}</span>
 </div>
-''')
+'''
+        )
       continue
 
     if doHeader:
       doHeader = False
-      tuplesHtml.append(f'''
+      tuplesHtml.append(
+          f'''
 <div class="dtheadrow">
   <span>n</span><span>{"</span><span>".join(F.otype.v(n) for n in tup)}</span>
 </div>
-''')
+'''
+      )
     tuplesHtml.append(
         plainTuple(
             app,
@@ -196,21 +199,23 @@ def table(
       markdown.append('n | ' + (' | '.join(F.otype.v(n) for n in tup)))
       markdown.append(' | '.join('---' for n in range(nColumns + 1)))
       one = False
-    markdown.append(plainTuple(
-        app,
-        tup,
-        i,
-        isCondensed=condensed,
-        condenseType=condenseType,
-        item=item,
-        linked=linked,
-        fmt=fmt,
-        withNodes=withNodes,
-        position=None,
-        opened=False,
-        asString=True,
-        **options,
-    ))
+    markdown.append(
+        plainTuple(
+            app,
+            tup,
+            i,
+            isCondensed=condensed,
+            condenseType=condenseType,
+            item=item,
+            linked=linked,
+            fmt=fmt,
+            withNodes=withNodes,
+            position=None,
+            opened=False,
+            asString=True,
+            **options,
+        )
+    )
   markdown = '\n'.join(markdown)
   if asString:
     return markdown
@@ -254,10 +259,7 @@ def plainTuple(
     refRef = '' if refNode is None else app.sectionLink(refNode)
     tupSeq = ','.join(str(n) for n in tup)
     sParts = T.sectionFromNode(refNode)
-    passageAtt = ' '.join(
-        f'sec{i}="{sParts[i] if i < len(sParts) else ""}"'
-        for i in range(3)
-    )
+    passageAtt = ' '.join(f'sec{i}="{sParts[i] if i < len(sParts) else ""}"' for i in range(3))
 
     plainRep = ''.join(
         f'''<span>{mdEsc(app.plain(
@@ -269,8 +271,7 @@ def plainTuple(
                   ))
                 }
             </span>
-        '''
-        for (i, n) in enumerate(tup)
+        ''' for (i, n) in enumerate(tup)
     )
     html = (
         f'''
@@ -295,14 +296,16 @@ def plainTuple(
   markdown = [str(seqNumber)]
   for (i, n) in enumerate(tup):
     markdown.append(
-        mdEsc(app.plain(
-            n,
-            linked=i == linked - 1,
-            fmt=fmt,
-            withNodes=withNodes,
-            asString=True,
-            **options,
-        ))
+        mdEsc(
+            app.plain(
+                n,
+                linked=i == linked - 1,
+                fmt=fmt,
+                withNodes=withNodes,
+                asString=True,
+                **options,
+            )
+        )
     )
   markdown = '|'.join(markdown)
   if asString:
@@ -331,7 +334,7 @@ def _plainTextS2(
   tClass = '' if fmt is None else app.formatClass[fmt]
   prettyRep = prettyTuple(
       app,
-      (sNode,),
+      (sNode, ),
       seqNumber,
       isCondensed=False,
       condenseType=itemType,
@@ -385,9 +388,7 @@ def show(
   item = condenseType if condensed else RESULT
 
   if condensed:
-    rawHighlights = _getHighlights(
-        api, tuples, highlights, colorMap, condenseType, multiple=True
-    )
+    rawHighlights = _getHighlights(api, tuples, highlights, colorMap, condenseType, multiple=True)
     highlights = {}
     colorMap = None
     tuples = _condense(api, tuples, condenseType, multiple=True)
@@ -444,8 +445,7 @@ def prettyTuple(
   containers = {tup[0]} if isCondensed else _condenseSet(api, tup, condenseType)
   newHighlights = (
       _getHighlights(api, tup, highlights, colorMap, condenseType)
-      if rawHighlights is None else
-      rawHighlights
+      if rawHighlights is None else rawHighlights
   )
 
   if not asApp:
@@ -500,11 +500,8 @@ def pretty(
         containerN = ups[0]
 
   (firstSlot, lastSlot) = (
-      getBoundary(api, n)
-      if condenseType is None else
-      (None, None)
-      if containerN is None else
-      getBoundary(api, containerN)
+      getBoundary(api, n) if condenseType is None else
+      (None, None) if containerN is None else getBoundary(api, containerN)
   )
 
   html = []
@@ -571,10 +568,15 @@ def prettyPre(
   className = app.classNames.get(nType, None)
 
   return (
-      slotType, nType,
-      className, boundaryClass, hlClass, hlStyle,
+      slotType,
+      nType,
+      className,
+      boundaryClass,
+      hlClass,
+      hlStyle,
       nodePart,
-      myStart, myEnd,
+      myStart,
+      myEnd,
   )
 
 
@@ -582,9 +584,8 @@ def prettySetup(app, features=None, noneValues=None):
   if features is None:
     app.prettyFeatures = ()
   else:
-    featuresRequested = tuple(
-        features.strip().split()
-    ) if type(features) is str else tuple(sorted(features))
+    featuresRequested = tuple(features.strip().split()
+                              ) if type(features) is str else tuple(sorted(features))
     tobeLoaded = set(featuresRequested) - app.prettyFeaturesLoaded
     if tobeLoaded:
       app.api.TF.load(tobeLoaded, add=True, silent=True)
@@ -607,7 +608,10 @@ def getBoundary(api, n):
 
 
 def getFeatures(
-    app, n, suppress, features,
+    app,
+    n,
+    suppress,
+    features,
     withName=set(),
     givenValue={},
     plain=False,
@@ -619,9 +623,7 @@ def getFeatures(
   featurePartE = '</div>'
 
   givenFeatureSet = set(features)
-  extraFeatures = (
-      tuple(f for f in app.prettyFeatures if f not in givenFeatureSet)
-  )
+  extraFeatures = (tuple(f for f in app.prettyFeatures if f not in givenFeatureSet))
   extraSet = set(extraFeatures)
   featureList = tuple(features) + extraFeatures
   nFeatures = len(features)
@@ -636,11 +638,7 @@ def getFeatures(
     hasB = False
   for (i, name) in enumerate(featureList):
     if name not in suppress:
-      value = (
-          givenValue[name]
-          if name in givenValue else
-          Fs(name).v(n)
-      )
+      value = (givenValue[name] if name in givenValue else Fs(name).v(n))
       if value not in app.noneValues:
         if name not in givenValue:
           value = htmlEsc(value)
@@ -669,19 +667,19 @@ def getContext(api, nodes):
 
   rows = []
   feats = tuple(sorted(Fall()))
-  rows.append(('node',) + tuple(T.sectionTypes) + feats + ('text',))
+  rows.append(('node', ) + tuple(T.sectionTypes) + feats + ('text', ))
   for n in sorted(nodes):
     nType = F.otype.v(n)
     sParts = T.sectionFromNode(n)
     nParts = len(sParts)
-    section = sParts + ((None,) * (3 - nParts))
+    section = sParts + ((None, ) * (3 - nParts))
     if nType in sectionTypes:
       text = ''
     else:
       # sns = [n] if nType == slotType else L.d(n, otype=slotType)
       # text = T.text(sns)
       text = T.text(n)
-    rows.append((n,) + section + tuple(Fs(f).v(n) for f in feats) + (text,))
+    rows.append((n, ) + section + tuple(Fs(f).v(n) for f in feats) + (text, ))
   return tuple(rows)
 
 
@@ -696,9 +694,7 @@ def getResultsX(api, results, features, noDescendTypes, fmt=None):
     return ()
   firstResult = results[0]
   nTuple = len(firstResult)
-  refColumns = [
-      i for (i, n) in enumerate(firstResult) if F.otype.v(n) not in sectionTypes
-  ]
+  refColumns = [i for (i, n) in enumerate(firstResult) if F.otype.v(n) not in sectionTypes]
   refColumn = refColumns[0] if refColumns else nTuple - 1
   header = ['R', 'S1', 'S2', 'S3']
   emptyA = []
@@ -720,7 +716,7 @@ def getResultsX(api, results, features, noDescendTypes, fmt=None):
     refN = r[refColumn]
     sParts = T.sectionFromNode(refN)
     nParts = len(sParts)
-    section = sParts + ((None,) * (3 - nParts))
+    section = sParts + ((None, ) * (3 - nParts))
     row.extend(section)
     for j in range(nTuple):
       n = r[j]
@@ -844,7 +840,7 @@ def _condense(api, tuples, condenseType, multiple=False):
   containers = {}
 
   if not multiple:
-    tuples = (tuples,)
+    tuples = (tuples, )
   for tup in tuples:
     for n in tup:
       nType = F.otype.v(n)
@@ -884,7 +880,7 @@ def _condenseSet(api, tuples, condenseType, multiple=False):
   containers = set()
 
   if not multiple:
-    tuples = (tuples,)
+    tuples = (tuples, )
   for tup in tuples:
     for n in tup:
       nType = F.otype.v(n)
@@ -922,7 +918,7 @@ def _getHighlights(api, tuples, highlights, colorMap, condenseType, multiple=Fal
     newHighlights.update(highlights)
 
   if not multiple:
-    tuples = (tuples,)
+    tuples = (tuples, )
   for tup in tuples:
     for (i, n) in enumerate(tup):
       nType = F.otype.v(n)
