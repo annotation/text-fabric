@@ -14,7 +14,7 @@
     see *Kernel API* below.
 
     The code in
-    [tf.server.kernel](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/kernel.py)
+    [kernel]({{ghtfb}}/{{c_kernel}})
     explains how it works.
 
 ### Start
@@ -30,7 +30,7 @@
 
     ??? example
         See the
-        [start-up script](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/start.py)
+        [start-up script]({{ghtfb}}/{{c_start}})
         of the text-fabric browser.
 
 ### Connect
@@ -48,7 +48,7 @@
 
     ??? example
         See the
-        [webserver](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py)
+        [local webserver]({{ghtfb}}/{{c_local}})
         of the text-fabric browser.
 
 ## Kernel API
@@ -56,7 +56,7 @@
 ??? abstract "About"
     The API of the TF kernel is created
     by the function `makeTfKernel` in the 
-    [data](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/kernel.py)
+    [data]({{ghtfb}}/{{c_kernel}})
     module of the server subpackage.
 
     It returns a class `TfKernel` with a number

@@ -330,7 +330,7 @@ A few key questions need to be addressed:
 Yes, spinning qedges until nothing changes any more, terminates, provided you do
 not try to spin qedges that are up-to-date. If the yarns around an edge have not
 changed, it does not make sense to spin that qedge. See
-[here](https://github.com/Dans-labs/text-fabric/blob/master/docs/Model/searchProofs.ipynb)
+[here]({{ghtfb}}/docs/Model/searchProofs.ipynb)
 for proof.
 
 ### What have we got? ###
@@ -343,7 +343,7 @@ part of a result? Yes, that is possible.
 
 Only when the graph of qnodes and qedges does not have a cycle, we know that all
 members of all yarns occur at least once in a result. See
-[here](https://github.com/Dans-labs/text-fabric/blob/master/docs/Model/searchProofs.ipynb)
+[here]({{ghtfb}}/docs/Model/searchProofs.ipynb)
 for proof.
 
 Quite a few interesting queries, however, have cycles in in their graphs. So, in
@@ -523,4 +523,4 @@ back-tracking occurs, by which the current stitch will get partly undefined,
 only to be filled up again by further searching.
 
 Read it all in the source code:
-[`def stitchOn(e)`](https://github.com/Dans-labs/text-fabric/blob/master/tf/search/stitch.py#L442).
+[`def stitchOn(e)`]({{ghtfb}}/{{c_stitch}}#L442).

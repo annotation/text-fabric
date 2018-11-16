@@ -3,7 +3,7 @@
 ## About
 
 The module
-[uruk/app.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/apps/uruk/app.py)
+[app.py]({{ghtfb}}/{{c_uruk_app}})
 contains a number of handy functions to deal with TF nodes for cuneiform tablets
 and
 [ATF](http://oracc.museum.upenn.edu/doc/help/editinginatf/primer/inlinetutorial/index.html)

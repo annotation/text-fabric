@@ -121,19 +121,19 @@ including your own.
     ???+ note "Example"
         **Uruk**:
 
-        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/apps/uruk/uruk-DefaulT/about.md)
-        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/apps/uruk/uruk-DefaulT/RESULTSX.tsv)
+        * [about.md]({{ghtfb}}/test/apps/uruk/uruk-DefaulT/about.md)
+        * [RESULTSX.tsv]({{ghtfb}}/test/apps/uruk/uruk-DefaulT/RESULTSX.tsv)
 
         **BHSA**:
 
-        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/apps/bhsa/bhsa-DefaulT/about.md)
-        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/apps/bhsa/bhsa-DefaulT/RESULTSX.tsv)
+        * [about.md]({{ghtfb}}/test/apps/bhsa/bhsa-DefaulT/about.md)
+        * [RESULTSX.tsv]({{ghtfb}}/test/apps/bhsa/bhsa-DefaulT/RESULTSX.tsv)
 
     ???+ note "Example with lexemes"
         **BHSA**:
 
-        * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/apps/bhsa/bhsa-Dictionary/about.md)
-        * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/apps/bhsa/bhsa-Dictionary/RESULTSX.tsv)
+        * [about.md]({{ghtfb}}/test/apps/bhsa/bhsa-Dictionary/about.md)
+        * [RESULTSX.tsv]({{ghtfb}}/test/apps/bhsa/bhsa-Dictionary/RESULTSX.tsv)
 
         This example shows how you can get a complete dictionary in your pocket by issuing a simple TF query.
 

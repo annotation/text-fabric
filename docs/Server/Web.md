@@ -11,10 +11,10 @@
 
     This web app connects to the [TF kernel](../Kernel)
     and merges the retrieved data into a set of 
-    [templates](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/views).
+    [templates]({{ghtft}}/{{c_views}}).
 
     See the code in
-    [tf.server.web](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py).
+    [local]({{ghtfb}}/{{c_local}}).
 
 ## Start up
 
@@ -94,7 +94,7 @@
 
     url pattern | effect
     --- | ---
-    `/server/static/...` | serves a static file from the server-wide [static folder](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/static)
+    `/server/static/...` | serves a static file from the server-wide [static folder]({{ghtft}}/{{c_static}})
     `/data/static/...` | serves a static file from the app specific static folder
     `/local/static/...` | serves a static file from a local directory specified by the app
     anything else | submits the form with user data and return the processed request
@@ -103,7 +103,7 @@
 
 ??? abstract "Templates"
     There are two templates in
-    [views](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/views)
+    [views]({{ghtft}}/{{c_views}})
     :
 
     * *index*: the normal template for returning responses
@@ -126,17 +126,17 @@
 
     * the CSS loaded from the app dependent extraApi, used
       for pretty displays;
-    * [main.css](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/static/main.css): the formatting of the 
+    * [main.css]({{ghtfb}}/{{c_static}}/main.css): the formatting of the 
       *index* web page with which the user interacts;
     * inside the
-      [export](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/views/export.tpl)
+      [export]({{ghtfb}}/{{c_views}}/export.tpl)
       template, for formatting the exported page.
 
 ## Javascript
 
 ??? abstract "Javascript"
     We use a
-    [modest amount of Javascript](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/static/tf.js)
+    [modest amount of Javascript]({{ghtfb}}/{{c_static}}/tf.js)
     on top of 
     [JQuery](https://api.jquery.com).
 

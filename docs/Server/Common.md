@@ -6,9 +6,9 @@
     Here are functions that are being used by various parts of the
     TF browser infrastructure, such as 
 
-    * [kernel.py](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/kernel.py)
-    * [web.py](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py)
-    * [start.py](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/start.py)
+    * [kernel.py]({{ghtfb}}/{{c_kernel}})
+    * [local.py]({{ghtfb}}/{{c_local}})
+    * [start.py]({{ghtfb}}/{{c_start}})
 
 ## Argument parsing
 
@@ -42,18 +42,18 @@
     Retrieves the `config.py` from the specified *dataSource* by
     dynamically importing it as a module from one of the
     packages in
-    [tf.apps](https://github.com/Dans-labs/text-fabric/tree/master/tf/apps)
+    [apps]({{ghtft}}/{{c_apps}})
 
     See also [App structure](../../Api/Apps/#the-structure-of-apps)
 
 ??? abstract "getAppdir(myDir, dataSource)"
     The code in
-    [web.py](https://github.com/Dans-labs/text-fabric/tree/master/tf/server/web.py)
+    [local.py]({{ghtfb}}/{{c_local}})
     will pass its file location as `myDir`.
     Form there this function computes the locstion of the file in which
     the webapp of the *dataSource* resides: the location of the
     *dataSource* package in
-    [tf.apps](https://github.com/Dans-labs/text-fabric/tree/master/tf/apps).
+    [apps]({{ghtft}}/{{c_apps}}).
 
     See also [App structure](../../Api/Apps/#the-structure-of-apps)
 

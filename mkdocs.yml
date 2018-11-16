@@ -13,6 +13,56 @@ site_url: 'https://dans-labs.github.io/text-fabric/'
 
 site_author: Dirk Roorda
 
+extra:
+  ghtft: https://github.com/Dans-labs/text-fabric/tree/master 
+  ghtfb: https://github.com/Dans-labs/text-fabric/blob/master
+  c_applib: tf/applib
+  c_apphelpers: tf/applib/apphelpers.py
+  c_appmake: tf/applib/appmake.py
+  c_notebook: tf/applib/notebook.py
+  c_zipdata: tf/applib/zipdata.py
+  c_apps: tf/apps
+  c_bhsa_app: tf/apps/bhsa/app.py
+  c_bhsa_config: tf/apps/bhsa/config.py
+  c_peshitta_app: tf/apps/peshitta/app.py
+  c_peshitta_config: tf/apps/peshitta/config.py
+  c_syrnt_app: tf/apps/syrnt/app.py
+  c_syrnt_config: tf/apps/syrnt/config.py
+  c_uruk_app: tf/apps/uruk/app.py
+  c_uruk_config: tf/apps/uruk/config.py
+  c_convert: tf/convert
+  c_mql: tf/convert/mql.py
+  c_core: tf/core
+  c_api: tf/core/api.py
+  c_data: tf/core/data.py
+  c_helpers: tf/core/helpers.py
+  c_locality: tf/core/locality.py
+  c_prepare: tf/core/prepare.py
+  c_text: tf/core/text.py
+  c_timestamp: tf/core/timestamp.py
+  c_search: tf/search
+  c_graph: tf/search/graph.py
+  c_relations: tf/search/relations.py
+  c_search: tf/search/search.py
+  c_searchexe: tf/search/searchexe.py
+  c_semantics: tf/search/semantics.py
+  c_spin: tf/search/spin.py
+  c_stitch: tf/search/stitch.py
+  c_syntax: tf/search/syntax.py
+  c_server: tf/server
+  c_views: tf/server/views
+  c_static: tf/server/static
+  c_common: tf/server/common.py
+  c_kernel: tf/server/kernel.py
+  c_local: tf/server/local.py
+  c_start: tf/server/start.py
+  c_writing: tf/writing
+  c_transcription: tf/writing/transcription.py
+  c_app: tf/app.py
+  c_fabric: tf/fabric.py
+  c_parfameters: tf/parameters.py
+
+
 theme:
   name: material
   logo: 'images/tficon-small.png'
@@ -53,6 +103,7 @@ nav:
   - Writing:
     - 'Hebrew': 'Writing/Hebrew.html'
     - 'Syriac': 'Writing/Syriac.html'
+    - 'Transcription': 'Writing/Transcription.md'
   - Api:
     - 'General': 'Api/General.md'
     - 'Apps': 'Api/Apps.md'
@@ -60,7 +111,6 @@ nav:
     - 'Peshitta': 'Api/Peshitta.md'
     - 'Syriac New Testament': 'Api/Syrnt.md'
     - 'Cuneiform Tablets': 'Api/Uruk.md'
-    - 'Transcription': 'Api/Transcription.md'
   - Server:
     - 'Kernel': 'Server/Kernel.md'
     - 'Web': 'Server/Web.md'
@@ -79,3 +129,6 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.superfences
   - pymdownx.mark
+
+plugins:
+  - markdownextradata

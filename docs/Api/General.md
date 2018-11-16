@@ -1558,7 +1558,7 @@
         choose from.
 
         Feel free to experiment. To see what the strategies do,
-        see the [code](https://github.com/Dans-labs/text-fabric/blob/master/tf/search.py).
+        see the [code]({{ghtfb}}/{{c_search}}).
 
     ??? info "silent"
         If you want to suppress most of the output, say `silent=True`.

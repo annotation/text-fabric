@@ -14,11 +14,11 @@ But first a few words about the machinery of unit testing.
 
 ## Corpus
 
-We build a [test corpus](https://github.com/Dans-labs/text-fabric/tree/master/test/generic/tf),
+We build a [test corpus]({{ghtft}}/test/generic/tf),
 wich contains only 10 slots, with node type `sign` and one other node type `part`.
 
 The code to build it is in
-[makeTestTf.py](https://github.com/Dans-labs/text-fabric/blob/master/test/generic/makeTestTf.py).
+[makeTestTf.py]({{ghtfb}}/test/generic/makeTestTf.py).
 
 Probably the corpus will be enlarged when new tests are being implemented.
 
@@ -51,6 +51,6 @@ no guarantee can be given.
 For each particular test, all these cases will be triggered.
 
 All in all we defined
-[1000 pairs of nodes](https://github.com/Dans-labs/text-fabric/blob/master/test/generic/relations.py)
+[1000 pairs of nodes]({{ghtfb}}/test/generic/relations.py)
 leading to 2500 queries, which will
 all be tested against expected answers. 
