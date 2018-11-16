@@ -3,7 +3,7 @@ import os
 import re
 from glob import glob
 
-from ..helpers import console
+from ..core.helpers import console
 
 appPat = '^([a-zA-Z0-9_-]+)$'
 appRe = re.compile(appPat)
@@ -121,7 +121,7 @@ def pageLinks(nResults, position, spread=10):
   elif nResults == 0:
     lines = []
   elif nResults == 1:
-    lines = [(1,)]
+    lines = [(1, )]
   elif nResults == 2:
     lines = [(1, 2)]
   else:
@@ -140,7 +140,7 @@ def pageLinks(nResults, position, spread=10):
       left = tuple(n for n in range(first, last, factor) if n > 0 and n < position)
       right = tuple(n for n in range(first, last, factor) if n > position and n <= nResults)
 
-      both = tuple(n for n in left + (position,) + right if n > 0 and n <= nResults)
+      both = tuple(n for n in left + (position, ) + right if n > 0 and n <= nResults)
 
       if len(both) > 1:
         lines.append(both)
@@ -150,12 +150,9 @@ def pageLinks(nResults, position, spread=10):
     lines.append(commonLine)
 
   html = '\n'.join(
-      '<div class="pline">'
-      + ' '.join(
-          f'<a href="#" class="pnav {" focus" if position == p else ""}">{p}</a>'
-          for p in line
-      )
-      + '</div>'
+      '<div class="pline">' + ' '
+      .join(f'<a href="#" class="pnav {" focus" if position == p else ""}">{p}</a>'
+            for p in line) + '</div>'
       for line in reversed(lines)
   )
   return html
@@ -166,15 +163,11 @@ def passageLinks(passages, sec0, sec1):
   sec1s = []
   for s0 in passages[0]:
     selected = str(s0) == str(sec0)
-    sec0s.append(
-        f'<a href="#" class="s0nav {" focus" if selected else ""}">{s0}</a>'
-    )
+    sec0s.append(f'<a href="#" class="s0nav {" focus" if selected else ""}">{s0}</a>')
   if sec0:
     for s1 in passages[1]:
       selected = str(s1) == str(sec1)
-      sec1s.append(
-          f'<a href="#" class="s1nav {" focus" if selected else ""}">{s1}</a>'
-      )
+      sec1s.append(f'<a href="#" class="s1nav {" focus" if selected else ""}">{s1}</a>')
   return f'''
   <div class="sline">
     {''.join(sec0s)}
@@ -223,18 +216,19 @@ def shapeCondense(condenseTypes, value):
     checked = ' checked ' if value == otype else ''
     radio = (
         '<span class="cradio">&nbsp;</span>'
-        if i == lastType else
-        f'''<input class="r cradio" type="radio" id="ctp{i}"
+        if i == lastType else f'''<input class="r cradio" type="radio" id="ctp{i}"
               name="condensetp" value="{otype}" {checked}
             "/>'''
     )
-    html.append(f'''
+    html.append(
+        f'''
     <div class="cline">
       {radio}
       <span class="ctype">{otype}</span>
       <span class="cinfo">{e - b + 1: 8.6g} x av length {av: 4.2g}</span>
     </div>
-  ''')
+  '''
+    )
   return '\n'.join(html)
 
 
@@ -247,12 +241,14 @@ def shapeFormats(textFormats, value):
               name="textformat" value="{fmt}" {checked}
             "/>'''
     )
-    html.append(f'''
+    html.append(
+        f'''
     <div class="cline">
       {radio}
       <span class="ctype">{fmt}</span>
     </div>
-  ''')
+  '''
+    )
   return '\n'.join(html)
 
 

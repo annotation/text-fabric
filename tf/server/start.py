@@ -7,15 +7,12 @@ import webbrowser
 from time import sleep
 from subprocess import PIPE, Popen
 
-from ..helpers import console
-from ..fabric import NAME, VERSION
+from ..core.helpers import console
+from ..parameters import NAME, VERSION
 from ..applib.appmake import (
     findAppConfig,
 )
-from .common import (
-    getParam, getModules, getDebug, getCheck, getNoweb, getDocker,
-    getLocalClones
-)
+from .common import (getParam, getModules, getDebug, getCheck, getNoweb, getDocker, getLocalClones)
 from .kernel import TF_DONE, TF_ERROR
 
 HELP = '''
@@ -75,9 +72,9 @@ MISCELLANEOUS
     The webserver reloads when its code changes.
     The webserver is a bottle instance, started with reload=True.
 
--noweb Do not start the web browser
+-noweb Do not start the default browser
 
--docker Assume you are on docker. The web server is passed 0.0.0.0 as host.
+-docker Assume you are on docker. The local webserver is passed 0.0.0.0 as host.
 
 
 CLEAN UP
@@ -90,9 +87,8 @@ stray processes.
 
 -k  Kill mode. If a data source is given, the TF kernel and webserver for that
     data source are killed.
-    Without a data source, all web-interface related processes are killed.
+    Without a data source, all local webinterface related processes are killed.
 '''
-
 
 FLAGS = set('''
     -c
@@ -131,15 +127,15 @@ def filterProcess(proc):
         kind = 'data'
         good = True
         continue
-      if part == 'tf.server.web':
-        kind = 'web'
+      if part == 'tf.server.local':
+        kind = 'local'
         good = True
         continue
-      if part.endswith('web.py'):
-        kind = 'web'
+      if part.endswith('local.py'):
+        kind = 'local'
         good = True
         continue
-      if kind in {'data', 'web', 'tf'}:
+      if kind in {'data', 'local', 'tf'}:
         if kind == 'tf' and part == '-k':
           break
         if part.startswith('--mod='):
@@ -166,7 +162,7 @@ def killProcesses(dataSource, modules, kill=False):
   myself = os.getpid()
   for ((ds, mods), kinds) in tfProcs.items():
     if dataSource is None or (ds == dataSource and mods == modules):
-      for kind in ('web', 'data', 'tf'):
+      for kind in ('local', 'data', 'tf'):
         pids = kinds.get(kind, [])
         for pid in pids:
           if pid == myself:
@@ -219,12 +215,12 @@ def main(cargs=sys.argv):
   lgc = getLocalClones(cargs=cargs)
   modules = getModules(cargs=cargs)
 
-  ddataSource = ('-d', dataSource) if debug else (dataSource,)
+  ddataSource = ('-d', dataSource) if debug else (dataSource, )
   ddataSource = ('-docker', *ddataSource) if docker else ddataSource
   ddataSource = ('-lgc', *ddataSource) if lgc else ddataSource
   ddataSource = (modules, *ddataSource) if modules else ddataSource
 
-  kdataSource = ('-lgc', dataSource) if lgc else (dataSource,)
+  kdataSource = ('-lgc', dataSource) if lgc else (dataSource, )
   kdataSource = ('-c', *kdataSource) if check else kdataSource
   kdataSource = (modules, *kdataSource) if modules else kdataSource
 
@@ -239,7 +235,9 @@ def main(cargs=sys.argv):
 
       pKernel = Popen(
           [pythonExe, '-m', 'tf.server.kernel', *kdataSource],
-          stdout=PIPE, bufsize=1, encoding='utf-8',
+          stdout=PIPE,
+          bufsize=1,
+          encoding='utf-8',
       )
 
       console(f'Loading data for {dataSource}. Please wait ...')
@@ -252,7 +250,7 @@ def main(cargs=sys.argv):
       sleep(1)
 
       pWeb = Popen(
-          [pythonExe, '-m', 'tf.server.web', *ddataSource],
+          [pythonExe, '-m', 'tf.server.local', *ddataSource],
           bufsize=0,
       )
 

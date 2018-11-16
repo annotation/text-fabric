@@ -14,21 +14,21 @@ MSG64 = '''Running on 64-bit Python'''
 
 
 def splitModRef(moduleRef):
-    parts = moduleRef.split('/', 2)
+  parts = moduleRef.split('/', 2)
 
-    if len(parts) < 2:
-      console(
-          f'''
+  if len(parts) < 2:
+    console(
+        f'''
 Module ref "{moduleRef}" is not "{{org}}/{{repo}}/{{path}}"
 ''',
-          error=True,
-      )
-      return None
+        error=True,
+    )
+    return None
 
-    if len(parts) == 2:
-      parts.append('')
+  if len(parts) == 2:
+    parts.append('')
 
-    return parts
+  return parts
 
 
 def camel(name):
@@ -71,9 +71,9 @@ def isClean(name):
 
 
 def setDir(obj):
-    obj.homeDir = os.path.expanduser('~').replace('\\', '/')
-    obj.curDir = os.getcwd().replace('\\', '/')
-    (obj.parentDir, x) = os.path.split(obj.curDir)
+  obj.homeDir = os.path.expanduser('~').replace('\\', '/')
+  obj.curDir = os.getcwd().replace('\\', '/')
+  (obj.parentDir, x) = os.path.split(obj.curDir)
 
 
 def expandDir(obj, dirName):

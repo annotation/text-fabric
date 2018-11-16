@@ -39,7 +39,7 @@ def levels(info, error, otype, oslots, otext):
   )
   info('results:')
   for (otp, av, omin, omax) in result:
-    info('{:<15}: {:>8} {{{}-{}}}'.format(otp, round(av, 2), omin, omax), tm=False)
+    info(f'{otp:<15}: {round(av, 2):>8} {{{omin}-{omax}}}', tm=False)
   return result
 
 
@@ -192,5 +192,5 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
       c1 += 1
     sec2.setdefault(n0, {}).setdefault(n1s, {})[n2s] = n2
     c2 += 1
-  info('{} {}s and {} {}s indexed'.format(c1, sTypes[1], c2, sTypes[2]))
+  info(f'{c1} {sTypes[1]}s and {c2} {sTypes[2]}s indexed')
   return (sec1, sec2)

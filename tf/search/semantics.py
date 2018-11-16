@@ -79,14 +79,10 @@ def _grammar(searchExe):
         qnames[name] = q
       if len(atomStack) == 0:
         if indent > 0:
-          searchExe.badSemantics.append(
-              (i, f'Unexpected indent: {indent}, expected 0')
-          )
+          searchExe.badSemantics.append((i, f'Unexpected indent: {indent}, expected 0'))
           good = False
         if op is not None:
-          searchExe.badSemantics.append(
-              (i, f'Lonely relation: not allowed at outermost level')
-          )
+          searchExe.badSemantics.append((i, f'Lonely relation: not allowed at outermost level'))
           good = False
         if 'name' in token:
           atomStack[0] = q
@@ -115,8 +111,7 @@ def _grammar(searchExe):
               edgeLine[len(qedges) - 1] = i
         elif indent > top[0]:
           if 'name' not in token:
-            searchExe.badSemantics.append(
-                (i, f'Lonely relation: not allowed as first child'))
+            searchExe.badSemantics.append((i, f'Lonely relation: not allowed as first child'))
             good = False
           else:
             # child of previous atom
@@ -130,15 +125,12 @@ def _grammar(searchExe):
           # look up the proper parent in the stack
           if indent not in atomStack:
             # parent cannot be found: indentation error
-            searchExe.badSemantics.append(
-                (
-                    i,
-                    'Unexpected indent: {}, expected one of {}'.format(
-                        indent,
-                        ', '.join(str(at[0]) for at in atomNest if at[0] < indent),
-                    )
+            searchExe.badSemantics.append((
+                i, 'Unexpected indent: {}, expected one of {}'.format(
+                    indent,
+                    ', '.join(str(at[0]) for at in atomNest if at[0] < indent),
                 )
-            )
+            ))
             good = False
           else:
             parents = [at[1] for at in atomNest if at[0] < indent]
@@ -192,11 +184,11 @@ def _grammar(searchExe):
       qedges.append((q, '=', referQ))
 
   if good:
-      searchExe.qnames = qnames
-      searchExe.qnodes = qnodes
-      searchExe.qedgesRaw = qedges
-      searchExe.nodeLine = nodeLine
-      searchExe.edgeLine = edgeLine
+    searchExe.qnames = qnames
+    searchExe.qnodes = qnodes
+    searchExe.qedgesRaw = qedges
+    searchExe.nodeLine = nodeLine
+    searchExe.edgeLine = edgeLine
   else:
     searchExe.good = False
 
@@ -295,9 +287,7 @@ def _validation(searchExe):
   # make an entry in the relation map for each value of k
   addRels = {}
   for (e, (f, op, t)) in enumerate(searchExe.qedgesRaw):
-    if (
-        type(op) is tuple or (op[0] == '-' and op[-1] == '>') or (op[0] == '<' and op[-1] == '-')
-    ):
+    if (type(op) is tuple or (op[0] == '-' and op[-1] == '>') or (op[0] == '<' and op[-1] == '-')):
       continue
     match = kRe.findall(op)
     if len(match):
@@ -316,8 +306,7 @@ def _validation(searchExe):
     (opName, opFeatures) = op
     for eName in sorted(opFeatures):
       _validateFeature(
-          searchExe,
-          e, eName, opFeatures, missingFeatures, wrongValues, hasValues, asEdge=True
+          searchExe, e, eName, opFeatures, missingFeatures, wrongValues, hasValues, asEdge=True
       )
       addRels.setdefault(opName, set()).add((eName, opFeatures[eName]))
   if not missingFeatures and not wrongValues:
@@ -339,8 +328,7 @@ def _validation(searchExe):
   if len(missingFeatures):
     for (fName, qs) in sorted(missingFeatures.items()):
       searchExe.badSemantics.append((
-          None,
-          'Missing feature "{}" in line(s) {}'.format(
+          None, 'Missing feature "{}" in line(s) {}'.format(
               fName,
               ', '.join(str(nodeLine[q] + offset) for q in qs),
           )
@@ -352,8 +340,7 @@ def _validation(searchExe):
       searchExe.badSemantics.append((None, f'Feature "{fName}" has cannot have values:'))
       for (val, qs) in sorted(wrongs.items()):
         searchExe.badSemantics.append((
-            None,
-            '    "{}" superfluous: line(s) {}'.format(
+            None, '    "{}" superfluous: line(s) {}'.format(
                 val,
                 ', '.join(str(nodeLine[q] + offset) for q in qs),
             )
@@ -365,8 +352,7 @@ def _validation(searchExe):
       searchExe.badSemantics.append((None, f'Feature "{fName}" has wrong values:'))
       for (val, qs) in sorted(wrongs.items()):
         searchExe.badSemantics.append((
-            None,
-            '    "{}" is not a number: line(s) {}'.format(
+            None, '    "{}" is not a number: line(s) {}'.format(
                 val,
                 ', '.join(str(nodeLine[q] + offset) for q in qs),
             )

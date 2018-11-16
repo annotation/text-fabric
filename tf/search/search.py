@@ -1,4 +1,4 @@
-from ..helpers import console
+from ..core.helpers import console
 from .searchexe import SearchExe
 
 # Search and SearchExe
@@ -53,6 +53,7 @@ from .searchexe import SearchExe
 
 
 class Search(object):
+
   def __init__(self, api, silent):
     self.api = api
     self.silent = silent

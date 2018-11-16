@@ -60,10 +60,11 @@ STANDARD_FEATURES = '''
     number label book
 '''
 if VERSION in {'4', '4b'}:
-    STANDARD_FEATURES.replace('voc_', 'g_')
+  STANDARD_FEATURES.replace('voc_', 'g_')
 STANDARD_FEATURES = STANDARD_FEATURES.strip().split()
 
-EXCLUDED_FEATURES = set('''
+EXCLUDED_FEATURES = set(
+    '''
     crossrefLCS
     crossrefSET
     g_cons
@@ -91,7 +92,8 @@ EXCLUDED_FEATURES = set('''
     suffix_gender
     suffix_number
     suffix_person
-'''.strip().split())
+'''.strip().split()
+)
 
 NO_DESCEND_TYPES = {'lex'}
 

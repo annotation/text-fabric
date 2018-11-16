@@ -67,7 +67,6 @@ CLASS_NAMES = dict(
     lex='lextp',
 )
 
-
 FONT_NAME = 'Estrangelo Edessa'
 FONT = 'SyrCOMEdessa.otf'
 FONTW = 'SyrCOMEdessa.woff'

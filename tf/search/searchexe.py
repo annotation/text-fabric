@@ -7,6 +7,7 @@ from .stitch import setStrategy, stitch
 
 
 class SearchExe(object):
+
   def __init__(
       self,
       api,
@@ -119,8 +120,7 @@ class SearchExe(object):
         'Counting results per {} up to {} ...'.format(
             progress,
             limit if limit > 0 else ' the end of the results',
-        ),
-        cache=msgCache
+        ), cache=msgCache
     )
     indent(level=1, reset=True)
 
@@ -222,13 +222,13 @@ class SearchExe(object):
             t,
             qnodes[t][0],
             spreads.get(e, -1) if dir == 1 else spreadsC.get(e, -1),
-        ),
-        tm=False, cache=msgCache
+        ), tm=False, cache=msgCache
     )
 
   def _showYarns(self):
     for q in range(len(self.qnodes)):
       self._showNode(q)
+
 
 # TOP-LEVEL IMPLEMENTATION METHODS
 

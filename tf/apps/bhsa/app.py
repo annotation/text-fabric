@@ -1,8 +1,11 @@
 from tf.applib.apphelpers import (
     prettyPre,
-    getBoundary, getFeatures,
-    htmlEsc, mdEsc,
-    dm, dh,
+    getBoundary,
+    getFeatures,
+    htmlEsc,
+    mdEsc,
+    dm,
+    dh,
 )
 from tf.applib.appmake import setupApi, outLink
 
@@ -14,10 +17,7 @@ SHEBANQ = (
     '&mr=m&qw=q&tp=txt_p&tr=hb&wget=v&qget=v&nget=vt'
 )
 
-SHEBANQ_LEX = (
-    f'{SHEBANQ_URL}/word'
-    '?version={version}&id={lid}'
-)
+SHEBANQ_LEX = (f'{SHEBANQ_URL}/word' '?version={version}&id={lid}')
 
 ATOMS = dict(
     sentence_atom='sentence',
@@ -29,35 +29,9 @@ VERSE = {'verse', 'half_verse'}
 
 
 class TfApp(object):
-  def __init__(
-      app,
-      name=None,
-      api=None,
-      asApp=False,
-      mod=None,
-      locations=None,
-      modules=None,
-      version=None,
-      lgc=False,
-      check=False,
-      hoist=False,
-      silent=False,
-  ):
-    setupApi(
-        app,
-        name,
-        'bhsa',
-        mod,
-        locations,
-        modules,
-        asApp,
-        api,
-        version,
-        lgc,
-        check,
-        silent,
-        hoist,
-    )
+
+  def __init__(*args, **kwargs):
+    setupApi(*args, **kwargs)
 
   def webLink(app, n, text=None, className=None, asString=False, noUrl=False):
     api = app.api
@@ -91,9 +65,9 @@ class TfApp(object):
     bookNode = n if nType == 'book' else L.u(n, otype='book')[0]
     book = F.book.v(bookNode)
     passageText = (
-        bookE if nType == 'book' else '{} {}'.format(bookE, chapter)
-        if nType == 'chapter' else '{} {}:{}{}'.format(bookE, chapter, verse, F.label.v(n))
-        if nType == 'half_verse' else '{} {}:{}'.format(bookE, chapter, verse)
+        bookE if nType == 'book' else
+        f'{bookE} {chapter}' if nType == 'chapter' else f'{bookE} {chapter}:{verse}{F.label.v(n)}'
+        if nType == 'half_verse' else f'{bookE} {chapter}:{verse}'
     )
     href = '#' if noUrl else SHEBANQ.format(
         version=version,
@@ -110,7 +84,12 @@ class TfApp(object):
       title = None
     target = '' if noUrl else None
     result = outLink(
-        text, href, title=title, className=className, target=target, passage=passageText,
+        text,
+        href,
+        title=title,
+        className=className,
+        target=target,
+        passage=passageText,
     )
     if asString:
       return result
@@ -194,10 +173,15 @@ class TfApp(object):
     if not goOn:
       return
     (
-        slotType, nType,
-        className, boundaryClass, hlClass, hlStyle,
+        slotType,
+        nType,
+        className,
+        boundaryClass,
+        hlClass,
+        hlStyle,
         nodePart,
-        myStart, myEnd,
+        myStart,
+        myEnd,
     ) = goOn
 
     api = app.api
@@ -286,7 +270,7 @@ class TfApp(object):
             app,
             superNode,
             suppress,
-            ('number',),
+            ('number', ),
             plain=True,
         )
       elif superType == 'clause':
@@ -346,9 +330,7 @@ class TfApp(object):
             n,
             suppress,
             ('voc_lex', 'gloss'),
-            givenValue=dict(
-                voc_lex=app.webLink(n, text=htmlEsc(F.voc_lex.v(n)), asString=True)
-            ),
+            givenValue=dict(voc_lex=app.webLink(n, text=htmlEsc(F.voc_lex.v(n)), asString=True)),
         )
       html.append(heading)
       html.append(featurePart)

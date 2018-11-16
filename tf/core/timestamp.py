@@ -3,6 +3,7 @@ import time
 
 
 class Timestamp(object):
+
   def __init__(self, level=None):
     self.oneLevelRep = '   |   '
     self.timestamp = {}
@@ -17,10 +18,9 @@ class Timestamp(object):
     if self.verbose != -2 and self.level >= self.verbose:
       return
     if tm:
-      msgRep = '{}{:>7} {}'.format(self.levelRep, self._elapsed(),
-                                   msg).replace('\n', '\n' + self.levelRep)
+      msgRep = f'{self.levelRep}{self._elapsed():>7} {msg}'.replace('\n', '\n' + self.levelRep)
     else:
-      msgRep = '{}{}'.format(self.levelRep, msg).replace('\n', '\n' + self.levelRep)
+      msgRep = f'{self.levelRep}{msg}'.replace('\n', '\n' + self.levelRep)
     if cache:
       self.log.append((error, nl, msgRep))
     if cache >= 0:
@@ -64,12 +64,10 @@ class Timestamp(object):
   def _elapsed(self):
     interval = time.time() - self.timestamp.setdefault(self.level, time.time())
     if interval < 10:
-      return "{: 2.2f}s".format(interval)
+      return f'{interval: 2.2f}s'
     interval = int(round(interval))
     if interval < 60:
-      return "{:>2d}s".format(interval)
+      return f'{interval:>2d}s'
     if interval < 3600:
-      return "{:>2d}m {:>02d}s".format(interval // 60, interval % 60)
-    return "{:>2d}h {:>02d}m {:>02d}s".format(
-        interval // 3600, (interval % 3600) // 60, interval % 60
-    )
+      return f'{interval // 60:>2d}m {interval % 60:>02d}s'
+    return f'{interval // 3600:>2d}h {(interval % 3600) // 60:>02d}m {interval % 60:>02d}s'

@@ -32,7 +32,7 @@ def connectedness(searchExe):
   elif lComps > 1:
     error(f'More than one connected components ({len(searchExe.components)}):', cache=msgCache)
     error(
-        'Either run the subqueries one by one, or connect the components by a relation',
-        tm=False, cache=msgCache
+        'Either run the subqueries one by one, or connect the components by a relation', tm=False,
+        cache=msgCache
     )
     searchExe.good = False

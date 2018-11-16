@@ -29,7 +29,7 @@ FEATURE_URL = f'{DOC_URL}/transcription.md'
 
 MODULE_SPECS = ()
 
-ZIP = [REPO, (REPO, RELATIVE_IMAGES)]
+ZIP = [REPO, (ORG, REPO, RELATIVE_IMAGES)]
 
 CONDENSE_TYPE = 'tablet'
 

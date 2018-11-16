@@ -12,7 +12,16 @@
 
 ## Queued for next release
 
-Nothing yet.
+I am thinking about using the TF kernel for a web-facing server, not just the internal
+TF browser. And use that to expose the Peshitta and SyrNT to the web.
+
+## 7.0.2
+
+2018-11-16
+
+* Small fixes in `text-fabric-zip`
+* Internal reorgnization of the code
+* Documentation updates (but internal docs are still lagging behind)
 
 ## 7.0.1
 

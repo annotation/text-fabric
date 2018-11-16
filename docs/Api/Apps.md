@@ -5,7 +5,7 @@
 
     When working with specific corpora, we want to have more power at our fingertips.
 
-    We need extra power on top of the TF engine.
+    We need extra power on top of the core TF engine.
 
     The way we have chosen to do it is via *apps*.
     An app is a bunch of extra functions that *know* the structure of a specific corpus.
@@ -21,9 +21,9 @@
     name | description
     --- | ---
     [bhsa](Bhsa.md) | Biblia Hebraica Stuttgartensia (Amstelodamensis)
-    [uruk](Uruk.md) | Proto-cuneiform Uruk Corpus
     [peshitta](Peshitta.md) | Syriac Old Testament
     [syrnt](Syrnt.md) | Syriac New Testament
+    [uruk](Uruk.md) | Proto-cuneiform Uruk Corpus
 
 ## The structure of apps
 
@@ -34,29 +34,58 @@
     For each *app*, you find there a subfolder *app* with:
 
     ??? abstract "static"
-        A folder with fonts and logos, used by the text-fabric browser.
+        A folder with fonts and logos, to be used by webservers such as the the
+        [text-fabric browser](../Server/Web.md).
 
     ??? abstract "config.py"
         Settings to set up a browsing experience and to feed the specific API for this app.
 
-        ??? abstract "web browsing settings"
-            The TF kernel, webserver and browser need settings:
+        The TF kernel, local webserver and browser need settings:
 
-            setting | example | description
-            --- | --- | ---
-            protocol | `http://` | protocol of local website
-            host | `localhost` | server address of local website
-            webport | `8001` | port for the local website
-            port | `18981` | port through wich the TF kernel and the webserver communicate
+        setting | example | description
+        --- | --- | ---
+        protocol | `http://` | protocol of local website
+        host | `localhost` | server address of local website
+        webport | `8001` | port for the local website
+        port | `18981` | port through wich the TF kernel and the webserver communicate
+        localDir | directory name | temporary directory for writing and reading
+        options | tuple | names of extra options for searching and displaying query results
 
-        ??? abstract "data settings"
-            The TF kernel needs context information:
+        The app itself is driven by the following settings
 
-            setting | type | description
-            --- | --- | ---
-            localDir | directory name | temporary directory for writing and reading
-            options | tuple | names of extra options for seaerching and displaying query results
-            PROVENANCE | dict | corpus specific provenance metadata: name and DOI
+        setting | type | description
+        --- | --- | ---
+        ORG | string | GitHub organization name of the main data source of the corpus
+        REPO | string | GitHub repository name of the main data source of the corpus
+        RELATIVE | string | Path to the *tf* directory within the GitHub repository of the main data
+        CORPUS | string | Descriptive name of the main corpus
+        VERSION | string | Version of the main corpus that is used in the TF browser
+        DOI | string | Text of the Digital Object Identifier pointing to the main corpus
+        DOI_URL | url | Digital Object Identifier that points to the main corpus
+        DOC_URL | url | Base url for the online documentation of the main corpus
+        DOC_INTRO | string | Relative url to the introduction page of the documentation of the main corpus 
+        CHAR_TEXT | string | Text of the link pointing to the character table of the relevant Unicode blocks
+        CHAR_URL | string | Link to the character table of the relevant Unicode blocks
+        FEATURE_URL | url | Url to feature documentation. Contains `{feature}` and `{version}` which can be filled in later with the actual feature name and version tag
+        MODULE_SPECS | tuple of dicts | Provides information for standard data modules that will be loaded together with the main corpus: *org*, *repo*, *relative*, *corpus*, *docUrl*, *doi* (text and link)
+        ZIP | list | data directories to be zipped for a release, given as either `(org, repo, relative)` or `repo` (with org and relative taken from main corpus); only used by `text-fabric-zip` when collecting data into zip files to be attached to a GitHub release
+        CONDENSE_TYPE | string | the default node type to condense search results in, e.g. `verse` or `tablet`
+        NONE_VALUES | set | feature values that are deemed uninformative, e.g. `None`, `'NA'`
+        STANDARD_FEATURES | set | features that are shown by default in all pretty displays
+        EXCLUDED_FEATURES | set | features that are present in the data source but will not be loaded for the TF browser
+        NO_DESCEND_TYPES | set | when representing nodes as text in exports from the TF browser, node of type in this set will not be expanded to their slot occurrences; e.g. `lex`: we do not want represent lexeme nodes by their list of occurrences
+        EXAMPLE_SECTION | html | what a passage reference looks like in this corpus; may have additional information in the form of a link; used in the Help of the TF browser
+        EXAMPLE_SECTION_TEXT | string | what a passage reference looks like in this corpus; just the plain text; used in the Help of the TF browser
+        SECTION_SEP1 | string | separator between main and secondary sections in a passage reference; e.g. the space in `Genesis 1:1`
+        SECTION_SEP2 |string |  separator between secondary and tertiary sections in a passage reference; e.g. the `:` in `Genesis 1:1`
+        FORMAT_CSS | dict | mapping between TF text formats and CSS classes; not all text formats need to be mapped
+        DEFAULT_CLS | string | default CSS class for text in a specific TF text format, when no format-specific class is given in FORMAT_CSS
+        DEFAULT_CLS_ORIG | string | default CSS class for text in a specific TF text format, when no format-specific class is given in FORMAT_CSS; and when the TF text format contains the `-orig-` string; used to specify classes for text in non-latin scripts
+        CLASS_NAMES | dict | mapping between node types and CSS classes; used in pretty displays to format the representations of nodes of that type 
+        FONT_NAME | string | font family name to be used in CSS for representing text in original script
+        FONT | string | file name of the offline font specified in FONT_NAME
+        FONTW | string | file name of the webfont specified in FONT_NAME
+        CSS | css | CSS styles to be included in Jupyter Notebooks and in the TF browser
 
     ??? abstract "app.py"
         The functionality specific to the corpus in question, organized as an extended
@@ -66,41 +95,27 @@
 
         attribute | kind | description
         --- | --- | ---
-        api | object | the generic TF api obtained by loading the features: ``api = TF.load(...)`
-        asApp | boolean | `True` if working for the web-interface, `False` otherwise
-        classNames | dict | mapping from node types to CSS class names to be used in plain and pretty displays of nodes of that type
-        condenseType | string | the default node type to which results will be condensed, e.g. `verse`, `tablet`
-        dataLink | html link | points to the repository where the TF data of the corpus is stored 
-        exampleSection | text | a concrete section indicator that points to an object of the `condenseType` (e.g. `Genesis 1:1`, `P005381`)
-        featureLink | html link | points to the documentation of the TF features of the corpus
-        loadCSS | method | deliver CSS styling to notebook or web interface (depending on `asApp`)
-        nodeFromDefaultSection | method | given a section string pointing to an object of `condenseType`, return the corresponding node (or an error message)
-        noneValues | set | feature values that are deemed uninteresting; features with those values will be suppressed in pretty displays
-        plain | method | given a node, produce a plain representation of the corresponding object: not the full structure, but something that identifies it
-        pretty | method | given a node, produce a pretty display of the corresponding object: the full structure
-        prettyFeaturesLoaded | set | initial set of features that should be loaded for pretty displays
-        tfsLink | html link | points to the documentation of the TF search engine
-        tutLink | html link | points to the tutorial for TF search
         webLink | method | given a node, produces a link to an online description of the corresponding object (to [shebanq](https://shebanq.ancient-data.org) or [cdli](https://cdli.ucla.edu) 
-        sectionLink | method | given a section node, produces a link that copies the section to the section pad (only in the TF browser)
-
-        ??? note "asApp"
-            The `app` contains several display functions. By default
-            they suppose that there is a Jupyter notebook context in which
-            results can be rendered with `IPython.display` methods.
-            But if we operate in the context of a web-interface, we need to generate
-            straight HTML. We flag the web-interface case as `asApp == True`.
+        plain | method | given a node, produce a plain representation of the corresponding object: not the full structure, but something that identifies it
+        \_pretty | method | given a node, produce elements of a pretty display of the corresponding object: the full structure
 
         ??? note "pretty"
             Not all of the `pretty` method needs to be defined by the app.
             In fact, the function itself is defined generically in
             [apphelpers](https://github.com/Dans-labs/text-fabric/blob/master/tf/apphelpers.py).
-            But it calls the method `_pretty`, which must be defined in the app.
+
+            This generic `pretty()` start with determining the slot boundaries and condense container
+            of the node.
+
+            Then it calls the method `_pretty`, which must be defined in here in the app.
+            This will recursively descend to child nodes in order to pretty display them, and
+            combine the sub displays into a big display of all parts.
+            This is the pure, app-dependent code for displaying nodes.
+
             In turn, parth of `_pretty` is taking care of by the
             generic `prettyPre` in *apphelpers.py*.
-            What remains in `_pretty` is the pure, app-dependent
-            code for displaying nodes.
-
+            `prettyPre` is responsible for determining the slot boundaries of the node.
+            It also determines the highlight color from the arguments passed to `pretty()`.
 
 
 ## The generic part of apps
@@ -156,6 +171,12 @@
     The main difference is how to output the result: by a call to an IPython display method, or by
     returning raw HTML.
 
+    ??? note "asApp"
+        The `app` contains several display functions. By default
+        they suppose that there is a Jupyter notebook context in which
+        results can be rendered with `IPython.display` methods.
+        But if we operate in the context of a web-interface, we need to generate
+        straight HTML. We flag the web-interface case as `asApp == True`.
 
 ## TF Data getters
 
@@ -367,7 +388,25 @@
 
     name | description
     --- | ---
-    `RESULT` | the label of a query result: `result`
-    `GH_BASE` | the location of the local github directory
-    `URL_GH` | the url to the GitHub site
-    `URL_NB` | the url to the NBViewer site
+    `RESULT` | string | the label of a query result: `result`
+    `GH_BASE` | string | the location of the local github directory
+    `URL_GH` | string | the url to the GitHub site
+    `URL_NB` | string | the url to the NBViewer site
+
+## Links
+
+??? abstract "attributes of the app"
+
+    name | type | description
+    --- | --- | ---
+    `tfsLink` | html link | points to the documentation of the TF search engine
+    `tutLink` | html link | points to the tutorial for TF search
+
+??? abstract "sectionLink(node)"
+    Given a section node, produces a link that copies the section to the section pad (only in the TF browser)
+
+## Various
+
+??? abstract "nodeFromDefaultSection(sectionStr)"
+    Given a section string pointing to an object of `condenseType`, return the corresponding node (or an error message).
+

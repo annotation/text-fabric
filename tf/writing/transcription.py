@@ -115,7 +115,7 @@ class Transcription(object):
   shin_pat = re.compile(r'[CF]')
   ph_simple_pat = re.compile(r'([ˈˌᵊᵃᵒᵉāo*])')
   noorigspace = re.compile(
-      '''
+      r'''
           (?: [&-]\Z)           # space, maqef or nospace
         | (?:
                0[05]            # sof pasuq or paseq
@@ -156,7 +156,6 @@ class Transcription(object):
   syriac_mapping_pil = {
 
       # LETTERS
-
       "'": "\u0710",  # alaph
       'b': "\u0712",  # beth
       'g': "\u0713",  # gamal
@@ -181,14 +180,12 @@ class Transcription(object):
       't': "\u072C",  # taw
 
       # WORD-BOUND DIACRITICS
-
       '"': "\u0308",  # seyame
       '#': "\u0323",  # diacritical dot below
       '^': "\u0307",  # diacritical dot above
       '~': "\u0307",  # abbreviation mark
 
       # NON-VOCALIC LETTER-BOUND DIACRITICS
-
       '#,': "\u0742",  # rukkakha
       '#"': "\u0342",  # unclear (COMBINING DIAERESIS BELOW)
       '#!': "\u0744",  # unclear (SYRIAC TWO VERTICAL DOTS BELOW)
@@ -198,43 +195,40 @@ class Transcription(object):
       '^_': "\u0304",  # linea occultans supera
 
       # VOCALIC LETTER-BOUND DIACRITICS
-
-      ':': "",         # shewa
-      'A': "\u0733",   # qamets
+      ':': "",  # shewa
+      'A': "\u0733",  # qamets
       'A1': "\u0734",  # zeqapa
       'A2': "\u0735",  # zeqofo
-      'E': "\u0739",   # tsere, revasa karya
-      'O': "\u073F",   # holem, rewaha
-      'a': "\u0730",   # patah
+      'E': "\u0739",  # tsere, revasa karya
+      'O': "\u073F",  # holem, rewaha
+      'a': "\u0730",  # patah
       'a1': "\u0731",  # petaha
       'a2': "\u0732",  # petoho
-      'e': "\u0736",   # segol
+      'e': "\u0736",  # segol
       'e1': "\u0737",  # revasa arrika
       'e2': "\u0738",  # revoso
-      'i': "\u073A",   # hireq
+      'i': "\u073A",  # hireq
       'i1': "\u073B",  # hevoso
       'y#': "\u071D\u073C",  # hevasa
-      'u': "\u073D",   # qubbuts
+      'u': "\u073D",  # qubbuts
       'u1': "\u073E",  # esoso
       'w#': "\u0718\u073C",  # esasa allisa
       'w^': "\u0718\u073F",  # esasa rewiha
 
       # INTERPUNCTION
-
-      '#.': "\u0702",   # menachta, meshalyana (ES), metdamrana, samka
-      '#:': "\u0704",   # metkashpana (ES)
+      '#.': "\u0702",  # menachta, meshalyana (ES), metdamrana, samka
+      '#:': "\u0704",  # metkashpana (ES)
       '#\\': "\u0709",  # tahtaya, metkashpana (WS), meshalyana (WS)
-      '=.': "\u002E",   # pasuqa
-      '=/': "\u0707",   # elaya
-      '=:': "\u003A",   # shewaya (WS), zauga (ES)
+      '=.': "\u002E",  # pasuqa
+      '=/': "\u0707",  # elaya
+      '=:': "\u003A",  # shewaya (WS), zauga (ES)
       '=\\': "\u0706",  # unclear (SYRIAC COLON SKEWED LEFT)
-      '^.': "\u0701",   # paquda, metkashpana (ES), meshalyana (ES), etsyana, meshalana?
-      '^"': "\u0705",   # rahta
-      '^:': "\u0703",   # taksa (WS), zauga elaya (ES)
+      '^.': "\u0701",  # paquda, metkashpana (ES), meshalyana (ES), etsyana, meshalana?
+      '^"': "\u0705",  # rahta
+      '^:': "\u0703",  # taksa (WS), zauga elaya (ES)
       '^\\': "\u0708",  # unclear (SYRIAC SUPRALINEAR COLON SKEWED LEFT)
 
       # PERICOPE MARKERS
-
       '*': "\u0700",  # rosette
       '.': "\u00B7",  # common dot in caesuras
       '@': "\u2722",  # vignette
@@ -344,8 +338,7 @@ class Transcription(object):
         '^\\',
     )
     self.syriac_punctuation_syc = tuple(
-        Transcription.syriac_mapping[c]
-        for c in self.syriac_punctuation_trans
+        Transcription.syriac_mapping[c] for c in self.syriac_punctuation_trans
     )
 
   def sycSplitPunc(self):
@@ -480,8 +473,4 @@ class Transcription(object):
     )
 
   def can_from_syriac(self, word):
-    return all(
-        c in self.syriac_mappingi
-        for c in word
-        if c != ' '
-    )
+    return all(c in self.syriac_mappingi for c in word if c != ' ')

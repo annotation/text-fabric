@@ -65,7 +65,6 @@ CLASS_NAMES = dict(
     word='word',
 )
 
-
 FONT_NAME = 'Estrangelo Edessa'
 FONT = 'SyrCOMEdessa.otf'
 FONTW = 'SyrCOMEdessa.woff'
