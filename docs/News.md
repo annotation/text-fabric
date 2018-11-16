@@ -260,8 +260,8 @@ This change was needed for the Text-Fabric browser, in order to represent *lexem
 !!! hint "Showcase: BHSA dictionary"
     Here is how you can collect the BHSA lexemes in an Excel sheet.
 
-    * [about.md](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/about.md)
-    * [RESULTSX.tsv](https://github.com/Dans-labs/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
+    * [about.md]({{ghtfb}}/test/bhsa/bhsa-Dictionary/about.md)
+    * [RESULTSX.tsv]({{ghtfb}}/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
 
 It might also be handy for the programmers amongst you.
 See the updated [API doc on T](Api/General.md#text-representation), expand the T.text() item.
@@ -901,7 +901,7 @@ Uruk API:
 
 2018-04-23
 
-[Search](Api/General.md#search):
+[Search](Api/General.md#searching):
 
 *   You can use regular expressions to specify feature values in queries.
 *   You could already search for nodes which have a non-None value for a certain
@@ -1212,7 +1212,7 @@ Loading TF was not completely silent if `silent=True` was passed. Better now.
 *   Small fix in Search: the implementation of the relation operator `||`
     (disjoint slot sets) was faulty. Repaired.
 *   The
-    [search tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb)
+    [search tutorial]({{ghtfb}}/docs/searchTutorial.ipynb)
     got an extra example: how to look for gaps. Gaps are not a primitive in the TF
     search language. Yet the language turns out to be powerful enough to look for
     gaps. This answers a question by Cody Kingham.
@@ -1311,7 +1311,7 @@ The API has a new member: [`sortKey`](Api/General.md#sorting-nodes)
 
 New relationships in templates: [`nearness`](Api/General.md#nearness-comparison). See for
 examples the end of the
-[searchTutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb).
+[searchTutorial]({{ghtfb}}/docs/searchTutorial.ipynb).
 Thanks to James Cuénod for requesting nearness operators.
 
 ### Fixes
@@ -1348,7 +1348,7 @@ You can now easily make extra constraints in search templates without naming
 atoms.
 
 See the
-[searchTutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb)
+[searchTutorial]({{ghtfb}}/docs/searchTutorial.ipynb)
 for an updated exposition on searching.
 
 ## 2.0.0
@@ -1369,7 +1369,7 @@ It is still very fresh, and more experimentation will be needed. Feedback is
 welcome.
 
 Start with the
-[tutorial](https://github.com/Dans-labs/text-fabric/blob/master/docs/searchTutorial.ipynb).
+[tutorial]({{ghtfb}}/docs/searchTutorial.ipynb).
 
 The implementation of this search engine can be nicely explained with a textile
 metaphor: spinning wool into yarn and then stitching the yarns together.

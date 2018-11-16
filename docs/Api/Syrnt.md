@@ -3,9 +3,9 @@
 ## About
 
 The module
-[syrnt/app.py](https://github.com/Dans-labs/text-fabric/blob/master/tf/apps/syrnt/app.py)
+[app.py]({{ghtfb}}/{{c_syrnt_app}})
 contains a number of handy functions on top of Text-Fabric and especially its 
-[Search](General.md#search) part.
+[Search](General.md#searching) part.
 
 ## Minimal incantation
 

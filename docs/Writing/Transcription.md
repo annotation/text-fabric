@@ -6,7 +6,7 @@ in a model of nodes, edges, and features, there is need for some additions.
 ## Transcription
 
 ??? abstract "About"
-    `transcription.py` contains transliteration tables for Hebrew and Syriac that
+    [transcription.py]({{ghtfb}}/{{c_transcription}}) contains transliteration tables for Hebrew and Syriac that
     are being used in the
     [BHSA](https://github.com/ETCBC/bhsa),
     [Peshitta](https://github.com/ETCBC/peshitta),
@@ -27,7 +27,7 @@ in a model of nodes, edges, and features, there is need for some additions.
     Invoke the transcription functionality as follows:
 
     ```python
-    from tf.transcription import Transcription
+    from tf.writing.transcription import Transcription
     ```
 
     Some of the attributes and methods below are *class* attributes, others are instance attributes.

@@ -29,7 +29,7 @@
 
 ??? abstract "App components"
     The apps themselves are modules inside 
-    [tf.apps](https://github.com/Dans-labs/text-fabric/tree/master/tf/apps)
+    [apps]({{ghtft}}/{{c_apps}})
 
     For each *app*, you find there a subfolder *app* with:
 
@@ -102,7 +102,7 @@
         ??? note "pretty"
             Not all of the `pretty` method needs to be defined by the app.
             In fact, the function itself is defined generically in
-            [apphelpers](https://github.com/Dans-labs/text-fabric/blob/master/tf/apphelpers.py).
+            [apphelpers]({{ghtfb}}/{{c_apphelpers}}).
 
             This generic `pretty()` start with determining the slot boundaries and condense container
             of the node.
@@ -120,11 +120,13 @@
 
 ## The generic part of apps
 
-??? abstract "App helpers"
+??? abstract "App support"
     Apps turn out to have several things in common that we want to deal with generically.
     These functions are collected in the
-    [apphelpers](https://github.com/Dans-labs/text-fabric/blob/master/tf/apphelpers.py)
-    module of TF.
+    [appmake]({{ghtfb}}/{{c_appmake}})
+    and
+    [apphelpers]({{ghtfb}}/{{c_apphelpers}})
+    modules of TF.
 
 ??? abstract "Generic/specific"
     Sometimes there is an intricate mix of functionality that is shared by all apps and that
@@ -136,7 +138,7 @@
     For example, apps are setup to import `pretty` first:
 
     ```python
-    from tf.apphelpers import pretty
+    from tf.applib.apphelpers import pretty
     ```
 
     and in the app's setup function this happens:
@@ -178,46 +180,63 @@
         But if we operate in the context of a web-interface, we need to generate
         straight HTML. We flag the web-interface case as `asApp == True`.
 
-## TF Data getters
+## App set up
+
+??? abstract "setupApi"
+    This method is called by each specific app when it instantiates its associated class with
+    a single object.
+
+    A lot of things happen here:
+
+    * all data is looked up, downloaded, prepared, loaded, etc
+    * the underlying TF Fabric API is called
+    * custom links to documentation etc are set
+    * styling is set up
+    * several methods that are generically defined are added as instance methods
+
+###TF Data getters
 
 ??? abstract "Auto loading of TF data"
     The specific apps have functions to load and download data from github.
-    They check first whether there is local data in a github repository,
-    and if not, they check a local text-fabric-data directory,
-    and if not, they download data from a know online GitHub repo into the local
+    If passed the `lgc=True` flag (*local github clones*),
+    they check first whether there is data in a local github repository.
+
+    Then they check the local text-fabric-data directory,
+    and if nothing is found there,
+    they download data from the corresponding online GitHub repo into the local
     text-fabric-data directory.
 
-    The data functions provided take parameters with these meanings:
+    Data will be picked from the latest release of the online repo, and if `check=True`
+    there will be a check whether a newer release is available.
 
-    ??? note "dataUrl"
-        The complete url from which to download data.
+    When TF stores data in the text-fabric-data directory, it remembers from which release
+    it came (in a file `_release.txt`).
 
-    ??? note "ghBase"
-        The location of the local github directory, usually `~/github`.
-        This directory is expected to be subdivided by org and then by repo, just as the online
-        GitHub.
+    All the data getters need to know is the organization, the repo, the path within the repo
+    to the data, and the version of the (main) data source.
+    The data should reside in directories that correspond to versions of the main data source.
+    The path should point to the parent of these version directries.
 
-    ??? note "dataRel"
-        The relative path within the local github/text-fabric-data directory to the directory
-        that holds versions of TF data.
+### Links
 
-    ??? note "version"
-        The version of the TF data of interest.
+??? abstract "attributes of the app"
 
-??? abstract "hasData(dataRel, ghBase, version)"
-    Checks whether there is TF data in standard locations.
-    Returns the full path of the local github directory if the data is found in the expected place below it.
-    Returns the full path of the local text-fabric-data directory if the data is found in the expected place below it.
-    Returns `False` if there no offline copy of the data has been found in these locations.
+    name | type | description
+    --- | --- | ---
+    `tfsLink` | html link | points to the documentation of the TF search engine
+    `tutLink` | html link | points to the tutorial for TF search
 
-??? abstract "getData(dataUrl, dataRel, ghBase, version)"
-    Checks whether there is TF data in standard locations.
-    If not, downloads data from `dataUrl` and places it in `~/text-fabric-data/dataRel/version`
+??? abstract "sectionLink(node)"
+    Given a section node, produces a link that copies the section to the section pad (only in the TF browser)
 
-??? abstract "getDataCustom(dataUrl, dest)"
-    Retrieves a zip file from `dataUrl`, and unpacks it at directory `dest` locally.
+### Various
 
-## TF search performers
+??? abstract "nodeFromDefaultSection(sectionStr)"
+    Given a section string pointing to an object of `condenseType`, return the corresponding node (or an error message).
+
+## App helpers
+
+### TF search performers
 
 ??? abstract "search(app, query, silent=False, sets=None, shallow=False)"
     This is a thin wrapper around the generic search interface of TF:
@@ -251,7 +270,7 @@
     ??? note "Context web app"
         The intended context of this function is: web app.
 
-## Tabular display
+### Tabular display
 
 ??? abstract "table(app, tuples, ...)"
     Takes a list of *tuples* and
@@ -276,7 +295,7 @@
     * a markdown row in the context Jupyter;
     * an HTML row in the context web app.
 
-## Pretty display
+### Pretty display
 
 ??? abstract "What is pretty?"
     Nodes are just numbers, but they stand for all the information that the corpus
@@ -354,7 +373,7 @@
     But you can customise what counts as no information, by passing a set
     of such values as `noneValues`. 
 
-## HTML and Markdown
+### HTML and Markdown
 
 ??? abstract "getBoundary(api, node)"
     Utility function to ask from the TF API the first slot and the last slot contained in a node.
@@ -381,7 +400,7 @@
 ??? abstract "dm(markdown)"
     Display a *markdown* string in a Jupyter notebook.
 
-## Constants
+### Constants
 
 ??? abstract "Fixed values"
     The following values are used by other parts of the program:
@@ -389,24 +408,4 @@
     name | description
     --- | ---
     `RESULT` | string | the label of a query result: `result`
-    `GH_BASE` | string | the location of the local github directory
-    `URL_GH` | string | the url to the GitHub site
-    `URL_NB` | string | the url to the NBViewer site
-
-## Links
-
-??? abstract "attributes of the app"
-
-    name | type | description
-    --- | --- | ---
-    `tfsLink` | html link | points to the documentation of the TF search engine
-    `tutLink` | html link | points to the tutorial for TF search
-
-??? abstract "sectionLink(node)"
-    Given a section node, produces a link that copies the section to the section pad (only in the TF browser)
-
-## Various
-
-??? abstract "nodeFromDefaultSection(sectionStr)"
-    Given a section string pointing to an object of `condenseType`, return the corresponding node (or an error message).
 

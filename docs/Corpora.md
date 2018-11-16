@@ -129,7 +129,7 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
 
 ??? abstract "Greek New Testament"
     The
-    [Greek](https://github.com/Dans-labs/text-fabric-data/tree/master/greek/sblgnt)
+    [Greek](https://github.com/Dans-labs/text-fabric-data/greek/sblgnt)
     New Testament has been converted to TF.
 
     We have example corpora in Sanskrit, and Babylonian.
