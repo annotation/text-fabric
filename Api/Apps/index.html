@@ -390,8 +390,20 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Code/StatsBase/" title="Stats (TF-base)" class="md-nav__link">
-      Stats (TF-base)
+    <a href="../../Code/StatsToplevel/" title="Stats (TF-toplevel)" class="md-nav__link">
+      Stats (TF-toplevel)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsCore/" title="Stats (TF-core)" class="md-nav__link">
+      Stats (TF-core)
     </a>
   </li>
 
@@ -404,6 +416,42 @@
   <li class="md-nav__item">
     <a href="../../Code/StatsSearch/" title="Stats (TF-search)" class="md-nav__link">
       Stats (TF-search)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsConvert/" title="Stats (TF-convert)" class="md-nav__link">
+      Stats (TF-convert)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsWriting/" title="Stats (TF-writing)" class="md-nav__link">
+      Stats (TF-writing)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsServer/" title="Stats (TF-server)" class="md-nav__link">
+      Stats (TF-server)
     </a>
   </li>
 
@@ -428,18 +476,6 @@
   <li class="md-nav__item">
     <a href="../../Code/StatsApps/" title="Stats (TF-apps)" class="md-nav__link">
       Stats (TF-apps)
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../Code/StatsServer/" title="Stats (TF-server)" class="md-nav__link">
-      Stats (TF-server)
     </a>
   </li>
 
@@ -705,6 +741,20 @@
         <li class="md-nav__item">
   <a href="#constants" title="Constants" class="md-nav__link">
     Constants
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#links" title="Links" class="md-nav__link">
+    Links
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#various" title="Various" class="md-nav__link">
+    Various
   </a>
   
 </li>
@@ -976,6 +1026,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#links" title="Links" class="md-nav__link">
+    Links
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#various" title="Various" class="md-nav__link">
+    Various
+  </a>
+  
+</li>
+      
       
       
       
@@ -998,7 +1062,7 @@
                 <h1 id="apps">Apps<a class="headerlink" href="#apps" title="Permanent link">&para;</a></h1>
 <details class="abstract"><summary>About</summary><p>Text-Fabric is a generic engine to process text and annotations.</p>
 <p>When working with specific corpora, we want to have more power at our fingertips.</p>
-<p>We need extra power on top of the TF engine.</p>
+<p>We need extra power on top of the core TF engine.</p>
 <p>The way we have chosen to do it is via <em>apps</em>.
 An app is a bunch of extra functions that <em>know</em> the structure of a specific corpus.</p>
 <p>In particular, an app knows how to produce plain representations
@@ -1019,16 +1083,16 @@ and pretty displays of nodes of each type in the corpus.</p>
 <td>Biblia Hebraica Stuttgartensia (Amstelodamensis)</td>
 </tr>
 <tr>
-<td><a href="../Uruk/">uruk</a></td>
-<td>Proto-cuneiform Uruk Corpus</td>
-</tr>
-<tr>
 <td><a href="../Peshitta/">peshitta</a></td>
 <td>Syriac Old Testament</td>
 </tr>
 <tr>
 <td><a href="../Syrnt/">syrnt</a></td>
 <td>Syriac New Testament</td>
+</tr>
+<tr>
+<td><a href="../Uruk/">uruk</a></td>
+<td>Proto-cuneiform Uruk Corpus</td>
 </tr>
 </tbody>
 </table>
@@ -1037,10 +1101,11 @@ and pretty displays of nodes of each type in the corpus.</p>
 <details class="abstract"><summary>App components</summary><p>The apps themselves are modules inside 
 <a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/apps">tf.apps</a></p>
 <p>For each <em>app</em>, you find there a subfolder <em>app</em> with:</p>
-<details class="abstract"><summary>static</summary><p>A folder with fonts and logos, used by the text-fabric browser.</p>
+<details class="abstract"><summary>static</summary><p>A folder with fonts and logos, to be used by webservers such as the the
+<a href="../../Server/Web/">text-fabric browser</a>.</p>
 </details>
 <details class="abstract"><summary>config.py</summary><p>Settings to set up a browsing experience and to feed the specific API for this app.</p>
-<details class="abstract"><summary>web browsing settings</summary><p>The TF kernel, webserver and browser need settings:</p>
+<p>The TF kernel, local webserver and browser need settings:</p>
 <table>
 <thead>
 <tr>
@@ -1070,10 +1135,19 @@ and pretty displays of nodes of each type in the corpus.</p>
 <td><code>18981</code></td>
 <td>port through wich the TF kernel and the webserver communicate</td>
 </tr>
+<tr>
+<td>localDir</td>
+<td>directory name</td>
+<td>temporary directory for writing and reading</td>
+</tr>
+<tr>
+<td>options</td>
+<td>tuple</td>
+<td>names of extra options for searching and displaying query results</td>
+</tr>
 </tbody>
 </table>
-</details>
-<details class="abstract"><summary>data settings</summary><p>The TF kernel needs context information:</p>
+<p>The app itself is driven by the following settings</p>
 <table>
 <thead>
 <tr>
@@ -1084,23 +1158,162 @@ and pretty displays of nodes of each type in the corpus.</p>
 </thead>
 <tbody>
 <tr>
-<td>localDir</td>
-<td>directory name</td>
-<td>temporary directory for writing and reading</td>
+<td>ORG</td>
+<td>string</td>
+<td>GitHub organization name of the main data source of the corpus</td>
 </tr>
 <tr>
-<td>options</td>
-<td>tuple</td>
-<td>names of extra options for seaerching and displaying query results</td>
+<td>REPO</td>
+<td>string</td>
+<td>GitHub repository name of the main data source of the corpus</td>
 </tr>
 <tr>
-<td>PROVENANCE</td>
+<td>RELATIVE</td>
+<td>string</td>
+<td>Path to the <em>tf</em> directory within the GitHub repository of the main data</td>
+</tr>
+<tr>
+<td>CORPUS</td>
+<td>string</td>
+<td>Descriptive name of the main corpus</td>
+</tr>
+<tr>
+<td>VERSION</td>
+<td>string</td>
+<td>Version of the main corpus that is used in the TF browser</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>string</td>
+<td>Text of the Digital Object Identifier pointing to the main corpus</td>
+</tr>
+<tr>
+<td>DOI_URL</td>
+<td>url</td>
+<td>Digital Object Identifier that points to the main corpus</td>
+</tr>
+<tr>
+<td>DOC_URL</td>
+<td>url</td>
+<td>Base url for the online documentation of the main corpus</td>
+</tr>
+<tr>
+<td>DOC_INTRO</td>
+<td>string</td>
+<td>Relative url to the introduction page of the documentation of the main corpus</td>
+</tr>
+<tr>
+<td>CHAR_TEXT</td>
+<td>string</td>
+<td>Text of the link pointing to the character table of the relevant Unicode blocks</td>
+</tr>
+<tr>
+<td>CHAR_URL</td>
+<td>string</td>
+<td>Link to the character table of the relevant Unicode blocks</td>
+</tr>
+<tr>
+<td>FEATURE_URL</td>
+<td>url</td>
+<td>Url to feature documentation. Contains <code>{feature}</code> and <code>{version}</code> which can be filled in later with the actual feature name and version tag</td>
+</tr>
+<tr>
+<td>MODULE_SPECS</td>
+<td>tuple of dicts</td>
+<td>Provides information for standard data modules that will be loaded together with the main corpus: <em>org</em>, <em>repo</em>, <em>relative</em>, <em>corpus</em>, <em>docUrl</em>, <em>doi</em> (text and link)</td>
+</tr>
+<tr>
+<td>ZIP</td>
+<td>list</td>
+<td>data directories to be zipped for a release, given as either <code>(org, repo, relative)</code> or <code>repo</code> (with org and relative taken from main corpus); only used by <code>text-fabric-zip</code> when collecting data into zip files to be attached to a GitHub release</td>
+</tr>
+<tr>
+<td>CONDENSE_TYPE</td>
+<td>string</td>
+<td>the default node type to condense search results in, e.g. <code>verse</code> or <code>tablet</code></td>
+</tr>
+<tr>
+<td>NONE_VALUES</td>
+<td>set</td>
+<td>feature values that are deemed uninformative, e.g. <code>None</code>, <code>'NA'</code></td>
+</tr>
+<tr>
+<td>STANDARD_FEATURES</td>
+<td>set</td>
+<td>features that are shown by default in all pretty displays</td>
+</tr>
+<tr>
+<td>EXCLUDED_FEATURES</td>
+<td>set</td>
+<td>features that are present in the data source but will not be loaded for the TF browser</td>
+</tr>
+<tr>
+<td>NO_DESCEND_TYPES</td>
+<td>set</td>
+<td>when representing nodes as text in exports from the TF browser, node of type in this set will not be expanded to their slot occurrences; e.g. <code>lex</code>: we do not want represent lexeme nodes by their list of occurrences</td>
+</tr>
+<tr>
+<td>EXAMPLE_SECTION</td>
+<td>html</td>
+<td>what a passage reference looks like in this corpus; may have additional information in the form of a link; used in the Help of the TF browser</td>
+</tr>
+<tr>
+<td>EXAMPLE_SECTION_TEXT</td>
+<td>string</td>
+<td>what a passage reference looks like in this corpus; just the plain text; used in the Help of the TF browser</td>
+</tr>
+<tr>
+<td>SECTION_SEP1</td>
+<td>string</td>
+<td>separator between main and secondary sections in a passage reference; e.g. the space in <code>Genesis 1:1</code></td>
+</tr>
+<tr>
+<td>SECTION_SEP2</td>
+<td>string</td>
+<td>separator between secondary and tertiary sections in a passage reference; e.g. the <code>:</code> in <code>Genesis 1:1</code></td>
+</tr>
+<tr>
+<td>FORMAT_CSS</td>
 <td>dict</td>
-<td>corpus specific provenance metadata: name and DOI</td>
+<td>mapping between TF text formats and CSS classes; not all text formats need to be mapped</td>
+</tr>
+<tr>
+<td>DEFAULT_CLS</td>
+<td>string</td>
+<td>default CSS class for text in a specific TF text format, when no format-specific class is given in FORMAT_CSS</td>
+</tr>
+<tr>
+<td>DEFAULT_CLS_ORIG</td>
+<td>string</td>
+<td>default CSS class for text in a specific TF text format, when no format-specific class is given in FORMAT_CSS; and when the TF text format contains the <code>-orig-</code> string; used to specify classes for text in non-latin scripts</td>
+</tr>
+<tr>
+<td>CLASS_NAMES</td>
+<td>dict</td>
+<td>mapping between node types and CSS classes; used in pretty displays to format the representations of nodes of that type</td>
+</tr>
+<tr>
+<td>FONT_NAME</td>
+<td>string</td>
+<td>font family name to be used in CSS for representing text in original script</td>
+</tr>
+<tr>
+<td>FONT</td>
+<td>string</td>
+<td>file name of the offline font specified in FONT_NAME</td>
+</tr>
+<tr>
+<td>FONTW</td>
+<td>string</td>
+<td>file name of the webfont specified in FONT_NAME</td>
+</tr>
+<tr>
+<td>CSS</td>
+<td>css</td>
+<td>CSS styles to be included in Jupyter Notebooks and in the TF browser</td>
 </tr>
 </tbody>
 </table>
-</details>
 </details>
 <details class="abstract"><summary>app.py</summary><p>The functionality specific to the corpus in question, organized as an extended
 TF api. In the code you see this stored in variables with name <code>app</code>.</p>
@@ -1115,54 +1328,9 @@ TF api. In the code you see this stored in variables with name <code>app</code>.
 </thead>
 <tbody>
 <tr>
-<td>api</td>
-<td>object</td>
-<td>the generic TF api obtained by loading the features: <code>`api = TF.load(...)</code></td>
-</tr>
-<tr>
-<td>asApp</td>
-<td>boolean</td>
-<td><code>True</code> if working for the web-interface, <code>False</code> otherwise</td>
-</tr>
-<tr>
-<td>classNames</td>
-<td>dict</td>
-<td>mapping from node types to CSS class names to be used in plain and pretty displays of nodes of that type</td>
-</tr>
-<tr>
-<td>condenseType</td>
-<td>string</td>
-<td>the default node type to which results will be condensed, e.g. <code>verse</code>, <code>tablet</code></td>
-</tr>
-<tr>
-<td>dataLink</td>
-<td>html link</td>
-<td>points to the repository where the TF data of the corpus is stored</td>
-</tr>
-<tr>
-<td>exampleSection</td>
-<td>text</td>
-<td>a concrete section indicator that points to an object of the <code>condenseType</code> (e.g. <code>Genesis 1:1</code>, <code>P005381</code>)</td>
-</tr>
-<tr>
-<td>featureLink</td>
-<td>html link</td>
-<td>points to the documentation of the TF features of the corpus</td>
-</tr>
-<tr>
-<td>loadCSS</td>
+<td>webLink</td>
 <td>method</td>
-<td>deliver CSS styling to notebook or web interface (depending on <code>asApp</code>)</td>
-</tr>
-<tr>
-<td>nodeFromDefaultSection</td>
-<td>method</td>
-<td>given a section string pointing to an object of <code>condenseType</code>, return the corresponding node (or an error message)</td>
-</tr>
-<tr>
-<td>noneValues</td>
-<td>set</td>
-<td>feature values that are deemed uninteresting; features with those values will be suppressed in pretty displays</td>
+<td>given a node, produces a link to an online description of the corresponding object (to <a href="https://shebanq.ancient-data.org">shebanq</a> or <a href="https://cdli.ucla.edu">cdli</a></td>
 </tr>
 <tr>
 <td>plain</td>
@@ -1170,51 +1338,25 @@ TF api. In the code you see this stored in variables with name <code>app</code>.
 <td>given a node, produce a plain representation of the corresponding object: not the full structure, but something that identifies it</td>
 </tr>
 <tr>
-<td>pretty</td>
+<td>_pretty</td>
 <td>method</td>
-<td>given a node, produce a pretty display of the corresponding object: the full structure</td>
-</tr>
-<tr>
-<td>prettyFeaturesLoaded</td>
-<td>set</td>
-<td>initial set of features that should be loaded for pretty displays</td>
-</tr>
-<tr>
-<td>tfsLink</td>
-<td>html link</td>
-<td>points to the documentation of the TF search engine</td>
-</tr>
-<tr>
-<td>tutLink</td>
-<td>html link</td>
-<td>points to the tutorial for TF search</td>
-</tr>
-<tr>
-<td>webLink</td>
-<td>method</td>
-<td>given a node, produces a link to an online description of the corresponding object (to <a href="https://shebanq.ancient-data.org">shebanq</a> or <a href="https://cdli.ucla.edu">cdli</a></td>
-</tr>
-<tr>
-<td>sectionLink</td>
-<td>method</td>
-<td>given a section node, produces a link that copies the section to the section pad (only in the TF browser)</td>
+<td>given a node, produce elements of a pretty display of the corresponding object: the full structure</td>
 </tr>
 </tbody>
 </table>
-<details class="note"><summary>asApp</summary><p>The <code>app</code> contains several display functions. By default
-they suppose that there is a Jupyter notebook context in which
-results can be rendered with <code>IPython.display</code> methods.
-But if we operate in the context of a web-interface, we need to generate
-straight HTML. We flag the web-interface case as <code>asApp == True</code>.</p>
-</details>
 <details class="note"><summary>pretty</summary><p>Not all of the <code>pretty</code> method needs to be defined by the app.
 In fact, the function itself is defined generically in
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/apphelpers.py">apphelpers</a>.
-But it calls the method <code>_pretty</code>, which must be defined in the app.
-In turn, parth of <code>_pretty</code> is taking care of by the
+<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/apphelpers.py">apphelpers</a>.</p>
+<p>This generic <code>pretty()</code> start with determining the slot boundaries and condense container
+of the node.</p>
+<p>Then it calls the method <code>_pretty</code>, which must be defined in here in the app.
+This will recursively descend to child nodes in order to pretty display them, and
+combine the sub displays into a big display of all parts.
+This is the pure, app-dependent code for displaying nodes.</p>
+<p>In turn, parth of <code>_pretty</code> is taking care of by the
 generic <code>prettyPre</code> in <em>apphelpers.py</em>.
-What remains in <code>_pretty</code> is the pure, app-dependent
-code for displaying nodes.</p>
+<code>prettyPre</code> is responsible for determining the slot boundaries of the node.
+It also determines the highlight color from the arguments passed to <code>pretty()</code>.</p>
 </details>
 </details>
 </details>
@@ -1259,6 +1401,12 @@ If it is set, we use the <code>app</code> in the web app context.</p>
 <p>Most of the code in such functions is independent of <code>asApp</code>.
 The main difference is how to output the result: by a call to an IPython display method, or by
 returning raw HTML.</p>
+<details class="note"><summary>asApp</summary><p>The <code>app</code> contains several display functions. By default
+they suppose that there is a Jupyter notebook context in which
+results can be rendered with <code>IPython.display</code> methods.
+But if we operate in the context of a web-interface, we need to generate
+straight HTML. We flag the web-interface case as <code>asApp == True</code>.</p>
+</details>
 </details>
 <h2 id="tf-data-getters">TF Data getters<a class="headerlink" href="#tf-data-getters" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>Auto loading of TF data</summary><p>The specific apps have functions to load and download data from github.
@@ -1424,22 +1572,50 @@ All loaded features will be retrieved.</p>
 <tbody>
 <tr>
 <td><code>RESULT</code></td>
-<td>the label of a query result: <code>result</code></td>
+<td>string</td>
 </tr>
 <tr>
 <td><code>GH_BASE</code></td>
-<td>the location of the local github directory</td>
+<td>string</td>
 </tr>
 <tr>
 <td><code>URL_GH</code></td>
-<td>the url to the GitHub site</td>
+<td>string</td>
 </tr>
 <tr>
 <td><code>URL_NB</code></td>
-<td>the url to the NBViewer site</td>
+<td>string</td>
 </tr>
 </tbody>
 </table>
+</details>
+<h2 id="links">Links<a class="headerlink" href="#links" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>attributes of the app</summary><table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tfsLink</code></td>
+<td>html link</td>
+<td>points to the documentation of the TF search engine</td>
+</tr>
+<tr>
+<td><code>tutLink</code></td>
+<td>html link</td>
+<td>points to the tutorial for TF search</td>
+</tr>
+</tbody>
+</table>
+</details>
+<details class="abstract"><summary>sectionLink(node)</summary><p>Given a section node, produces a link that copies the section to the section pad (only in the TF browser)</p>
+</details>
+<h2 id="various">Various<a class="headerlink" href="#various" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>nodeFromDefaultSection(sectionStr)</summary><p>Given a section string pointing to an object of <code>condenseType</code>, return the corresponding node (or an error message).</p>
 </details>
                 
                   
