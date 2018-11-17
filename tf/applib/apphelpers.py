@@ -612,6 +612,7 @@ def getFeatures(
     n,
     suppress,
     features,
+    o=None,
     withName=set(),
     givenValue={},
     plain=False,
@@ -638,10 +639,21 @@ def getFeatures(
     hasB = False
   for (i, name) in enumerate(featureList):
     if name not in suppress:
-      value = (givenValue[name] if name in givenValue else Fs(name).v(n))
-      if value not in app.noneValues:
-        if name not in givenValue:
-          value = htmlEsc(value)
+      if name in givenValue:
+        value = givenValue[name]
+      else:
+        value = Fs(name).v(n)
+        oValue = None if o is None else Fs(name).v(o)
+        valueRep = None if value in app.noneValues else htmlEsc(value)
+        oValueRep = None if o is None or oValue in app.noneValues else htmlEsc(oValue)
+        if valueRep is None and oValueRep is None:
+          value = None
+        else:
+          sep = '' if valueRep is None or oValueRep is None else '|'
+          valueRep = '' if valueRep is None else valueRep
+          oValueRep = '' if oValueRep is None else oValueRep
+          value = valueRep if valueRep == oValueRep else f'{valueRep}{sep}{oValueRep}'
+      if value is not None:
         nameRep = f'<span class="f">{name}=</span>' if name in withName else ''
         xClass = ' xft' if name in extraSet else ''
         featureRep = f' <span class="{name}{xClass}">{nameRep}{value}</span>'
