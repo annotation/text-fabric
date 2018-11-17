@@ -850,10 +850,18 @@ def _featuresPerModule(app):
     if not added:
       featureCat.setdefault(mId, []).append(feature)
 
-  # print('featureCat', featureCat)
+  # print('featureCat', sorted(featureCat.keys()))
+
+  baseId = (app.org, app.repo, app.relative)
+  baseMods = {mId for mId in featureCat.keys() if type(mId) is tuple and mId == baseId}
+  moduleOrder = list(baseMods) + sorted(
+      (mId for mId in featureCat.keys() if mId not in baseMods),
+      key=lambda mId: (1, mId) if type(mId) is str else (0, mId)
+  )
 
   html = ''
-  for (mId, catFeats) in featureCat.items():
+  for mId in moduleOrder:
+    catFeats = featureCat[mId]
     if not catFeats:
       continue
     modInfo = moduleIndex.get(mId, None)

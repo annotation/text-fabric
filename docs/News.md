@@ -15,6 +15,14 @@
 I am thinking about using the TF kernel for a web-facing server, not just the internal
 TF browser. And use that to expose the Peshitta and SyrNT to the web.
 
+## 7.0.3
+
+2018-11-17
+
+* In the BHSA, feature values on the atom-types and subphrases are now shown too, and that includes extra features
+  from foreign data sets
+* The feature listing after the incantation in a notebook now lists the loaded modules in a meaningful order.
+
 ## 7.0.2
 
 2018-11-16

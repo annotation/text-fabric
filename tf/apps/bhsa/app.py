@@ -271,6 +271,7 @@ class TfApp(object):
             superNode,
             suppress,
             ('number', ),
+            o=n,
             plain=True,
         )
       elif superType == 'clause':
@@ -279,6 +280,7 @@ class TfApp(object):
             superNode,
             suppress,
             ('rela', 'typ'),
+            o=n,
             plain=True,
         )
       elif superType == 'phrase':
@@ -287,6 +289,7 @@ class TfApp(object):
             superNode,
             suppress,
             ('function', 'typ'),
+            o=n,
             plain=True,
         )
       html.append(
