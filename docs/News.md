@@ -5,10 +5,10 @@
 ???+ hint "Consult the tutorials after changes"
     When we change the API, we make sure that the tutorials shows off
     all possibilities:
-    [bhsa](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
-    [peshitta](http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb)
-    [syrnt](http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb)
-    [uruk](http://nbviewer.jupyter.org/github/nino-cunei/uruk/blob/master/tutorial/start.ipynb)
+    [bhsa]({{etcbcnb}}/bhsa/blob/master/tutorial/start.ipynb)
+    [peshitta]({{etcbcnb}}/peshitta/blob/master/tutorial/start.ipynb)
+    [syrnt]({{etcbcnb}}/syrnt/blob/master/tutorial/start.ipynb)
+    [uruk]({{ninonb}}/uruk/blob/master/tutorial/start.ipynb)
 
 ## Queued for next release
 
@@ -63,7 +63,7 @@ Under the hood:
 * a lot of repeated code inside apps has been factored out
 * it is easier to turn corpora into new text-fabric apps.
 
-Quick start: the new [share](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb)
+Quick start: the new [share]({{etcbcnb}}/bhsa/blob/master/tutorial/share.ipynb)
 
 See the [v7 guide](Use7.md) for concrete and detailed hints how to make most of this version.
 
@@ -268,8 +268,8 @@ This change was needed for the Text-Fabric browser, in order to represent *lexem
 !!! hint "Showcase: BHSA dictionary"
     Here is how you can collect the BHSA lexemes in an Excel sheet.
 
-    * [about.md]({{ghtfb}}/test/bhsa/bhsa-Dictionary/about.md)
-    * [RESULTSX.tsv]({{ghtfb}}/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
+    * [about.md]({{tfghb}}/test/bhsa/bhsa-Dictionary/about.md)
+    * [RESULTSX.tsv]({{tfghb}}/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
 
 It might also be handy for the programmers amongst you.
 See the updated [API doc on T](Api/General.md#text-representation), expand the T.text() item.
@@ -280,7 +280,7 @@ The Text-Fabric browser checks if you are using the most recent release of the d
 ### Font rendering
 A font rendering issue in Safari 12 in macos Mojave prevented the use of Ezra SIL for Hebrew in notebooks.
 We now work around this by relying on the distribution of Ezra SIL as webfont
-in the [font library](https://fontlibrary.org).
+in the [font library]({{fontlib}}).
 
 ### Additional small fixes.
 Not worth telling.
@@ -312,11 +312,11 @@ the github version. Probably you have run the tutorials in place. Best thing to 
 
 If not: you're done, and TF will download automatically the data it needs.
 
-If you still need it: move one directory up (into the `etcbc` directory) and do `git clone https://github.com/ETCBC/bhsa`.
+If you still need it: move one directory up (into the `etcbc` directory) and do `git clone {{etcbcgh}}/bhsa`.
 
 If you want to consult the tutorials, either:
 
-* view them on [nbviewer](https://nbviewer.jupyter.org/github/etcbc/bhsa/tree/master/tutorial/); or
+* view them on [nbviewer]({{etcbcnb}}/bhsa/tree/master/tutorial/); or
 * run them in a directory outside the BHSA repo (where you have copied it a minute ago).
 
 ## 5.6.4
@@ -324,7 +324,7 @@ If you want to consult the tutorials, either:
 2018-10-04
 
 Solved a font-rendering issue on Safari 12 (Macos Mojave): locally installed fonts, such as Ezra SIL are not being
-honored. So I linked to a stylesheet of the [fontlibrary](https://fontlibrary.org) which has a webfont version of
+honored. So I linked to a stylesheet of the [fontlibrary]({{fontlib}}) which has a webfont version of
 Ezra SIL. That worked.
 
 ## 5.6.3
@@ -734,7 +734,7 @@ Docs and metadata update
 *   Quantifiers.
 
     You can now use quantifiers in search. One of them is like `NOTEXIST` in MQL.
-    See the [docs](Api/General.md#quantifiers)
+    See the [docs](Search.md#quantifiers)
 
 *   A number of minor fixes.
 
@@ -766,7 +766,7 @@ The Search API has been extended:
     of the top-level thing you mention in your template.
     
 This functionality is a precursor for
-[quantifiers in search templates](https://github.com/Dans-labs/text-fabric/issues/4)
+[quantifiers in search templates]({{tfgh}}/issues/4)
 but is also a powerful addition to search in its own right.
 
 ## 4.1.2
@@ -822,7 +822,7 @@ Documentation updates.
     Like `F.freqList`, you can pass parameters to constrain the frequency list to certain node types.
     You can constrain the node types from which the edges start (`nodeTypesFrom`) and where they arrive
     (`nodeTypesTo`).
-*   New documentation system based on [MkDocs](https://mkdocs.readthedocs.io/en/stable/).
+*   New documentation system based on [MkDocs]({{mkdocs}}).
 
 ## 3.4.12
 
@@ -909,7 +909,7 @@ Uruk API:
 
 2018-04-23
 
-[Search](Api/General.md#searching):
+[Search](Api/General.md#search):
 
 *   You can use regular expressions to specify feature values in queries.
 *   You could already search for nodes which have a non-None value for a certain
@@ -1111,7 +1111,7 @@ Edges with edge values did not allow for the absence of values. Now they do.
 
 A major tweak in the [importMQL()](Api/General.md#mql-import) function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
-version 3 of the [BHSA](https://github.com/ETCBC/bhsa). In that version there
+version 3 of the [BHSA]({{etcbcgh}}/bhsa). In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
 Hebrew Bible. I transform a gapped sequence of monads into a continuous sequence
 of slots.
@@ -1122,7 +1122,7 @@ of slots.
 
 Another little tweak in the [importMQL()](Api/General.md#mql-import) function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
-MQL for version 3 of the [BHSA](https://github.com/ETCBC/bhsa).
+MQL for version 3 of the [BHSA]({{etcbcgh}}/bhsa).
 
 ## 3.0.4
 
@@ -1130,15 +1130,15 @@ MQL for version 3 of the [BHSA](https://github.com/ETCBC/bhsa).
 
 Little tweak in the [importMQL()](Api/General.md#mql-import) function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
-[extrabiblical](https://github.com/ETCBC/extrabiblical) material.
+[extrabiblical]({{etcbcgh}}/extrabiblical) material.
 
 ## 3.0.2, 3.0.3
 
 2017-10-03
 
 No changes, only an update of the package metadata, to reflect that Text-Fabric
-has moved from [ETCBC](https://github.com/ETCBC) to
-[Dans-labs](https://github.com/Dans-labs).
+has moved from [ETCBC]({{etcbcgh}}) to
+[Dans-labs]({{dlgh}}).
 
 ## 3.0.1
 
@@ -1220,7 +1220,7 @@ Loading TF was not completely silent if `silent=True` was passed. Better now.
 *   Small fix in Search: the implementation of the relation operator `||`
     (disjoint slot sets) was faulty. Repaired.
 *   The
-    [search tutorial]({{ghtfb}}/docs/searchTutorial.ipynb)
+    [search tutorial]({{tfghb}}/docs/searchTutorial.ipynb)
     got an extra example: how to look for gaps. Gaps are not a primitive in the TF
     search language. Yet the language turns out to be powerful enough to look for
     gaps. This answers a question by Cody Kingham.
@@ -1301,7 +1301,7 @@ nodes were delivered as integers, instead of 1-tuples of integers.
 
 2017-01-13
 
-We start archiving releases of Text-Fabric at [Zenodo](https://zenodo.org).
+We start archiving releases of Text-Fabric at [Zenodo]({{zenodo}}).
 
 ## 2.2.1
 
@@ -1319,7 +1319,7 @@ The API has a new member: [`sortKey`](Api/General.md#sorting-nodes)
 
 New relationships in templates: [`nearness`](Api/General.md#nearness-comparison). See for
 examples the end of the
-[searchTutorial]({{ghtfb}}/docs/searchTutorial.ipynb).
+[searchTutorial]({{tfghb}}/docs/searchTutorial.ipynb).
 Thanks to James Cuénod for requesting nearness operators.
 
 ### Fixes
@@ -1356,7 +1356,7 @@ You can now easily make extra constraints in search templates without naming
 atoms.
 
 See the
-[searchTutorial]({{ghtfb}}/docs/searchTutorial.ipynb)
+[searchTutorial]({{tfghb}}/docs/searchTutorial.ipynb)
 for an updated exposition on searching.
 
 ## 2.0.0
@@ -1377,7 +1377,7 @@ It is still very fresh, and more experimentation will be needed. Feedback is
 welcome.
 
 Start with the
-[tutorial]({{ghtfb}}/docs/searchTutorial.ipynb).
+[tutorial]({{tfghb}}/docs/searchTutorial.ipynb).
 
 The implementation of this search engine can be nicely explained with a textile
 metaphor: spinning wool into yarn and then stitching the yarns together.

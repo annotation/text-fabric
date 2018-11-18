@@ -6,17 +6,17 @@ in a model of nodes, edges, and features, there is need for some additions.
 ## Transcription
 
 ??? abstract "About"
-    [transcription.py]({{ghtfb}}/{{c_transcription}}) contains transliteration tables for Hebrew and Syriac that
+    [transcription.py]({{tfghb}}/{{c_transcription}}) contains transliteration tables for Hebrew and Syriac that
     are being used in the
-    [BHSA](https://github.com/ETCBC/bhsa),
-    [Peshitta](https://github.com/ETCBC/peshitta),
-    [SyrNT](https://github.com/ETCBC/syrnt).
+    [BHSA]({{etcbcgh}}/bhsa),
+    [Peshitta]({{etcbcgh}}/peshitta),
+    [SyrNT]({{etcbcgh}}/syrnt).
 
     It also calls functions to use these tables for converting Hebrew and Syriac ttext material to transliterated
     representations and back.
 
     There is also a phonetic transcription for Hebrew, designed in 
-    [phono.ipynb](https://nbviewer.jupyter.org/github/etcbc/phono/blob/master/programs/phono.ipynb)
+    [phono.ipynb]({{etcbcnb}}/phono/blob/master/programs/phono.ipynb)
 
 ???+ abstract "Character tables"
     [Hebrew](../Writing/Hebrew.html): full list of characters covered by the ETCBC and phonetic transcriptions

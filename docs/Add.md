@@ -64,14 +64,14 @@ The data sharing workflow is built around the following assumptions:
     or in the Text-Fabric browser.
     The extra features are clearly listed after the incantation in a notebook,
     and they show up in the pretty displays in the TF browser.
-    And when you export data from the TF browser, all data modules afe reported
+    And when you export data from the TF browser, all data modules are reported
     in the provenance section.
 
 ## Step by step
 
 ### 1. Data in place
 
-We use the existing [etcbc/valence/tf](https://github.com/etcbc/valence) data as an example.
+We use the existing [etcbc/valence/tf]({{etcbcgh}}/valence) data as an example.
 
 We assume you have this data locally, in 
 
@@ -276,23 +276,24 @@ And if you export the data, the extra module is listed in the provenance.
 ##### More modules
 
 Now that we get the hang of it, we would like to use the `heads` feature
-that Cody Kingham prepared in [etcbc/lingo/heads](https://github.com/ETCBC/lingo/tree/master/heads).
+that Cody Kingham prepared in [etcbc/lingo/heads]({{etcbcgh}}/lingo/tree/master/heads)
+as well as the `actor` feature that Christian Høygaard-Jensen prepared in
+[ch-jensen/Semantic-mapping-of-participants]({{jensengh}})
 We'll include it next to the valence data, by calling the TF browser like this:
 
 ```sh
-text-fabric bhsa --mod=etcbc/valence/tf,etcbc/lingo/heads/tf
+text-fabric bhsa --mod=etcbc/valence/tf,etcbc/lingo/heads/tf,ch-jensen/Semantic-mapping-of-participants/actor/tf
 ```
 
-Unsurprisingly: the `heads` feature and friends are downloaded and made ready for import.
+Unsurprisingly: the `heads` and `actor` features and friends are downloaded and made ready for import.
 
 You can test it by means of this query
 
 ```
-book book=Genesis
-  chapter chapter=1
-    clause
-      phrase sense*
-      -heads> word
+book book=Leviticus
+  phrase sense*
+    phrase_atom actor=KHN
+  -heads> word
 ```
 
 Note that `heads` is an edge feature.
@@ -305,32 +306,38 @@ Note that `heads` is an edge feature.
 
 ```python
 from tf.app import use
-A = use('bhsa', mod='etcbc/valence/tf,etcbc/lingo/heads/tf', hoist=globals())
+A = use(
+    'bhsa',
+    mod=(
+        'etcbc/valence/tf,'
+        'etcbc/lingo/heads/tf,'
+        'ch-jensen/Semantic-mapping-of-participants/actor/tf'
+    ),
+    hoist=globals(),
+)
 ```
 
 ![sense](images/add-incantation.png)
 
-Now run the same query as before:
+Now you can run the same query as before:
 
 ```
 results = A.search('''
-book book=Genesis
-  chapter chapter=1
-    clause
-      phrase sense*
-      -heads> word
-'''
-)
+book book=Leviticus
+  phrase sense*
+    phrase_atom actor=KHN
+  -heads> word
+''')
 ```
 
 And let's see results in pretty display.
-We have to manually declare that we want to see the `sense` feature.
+We have to manually declare that we want to see the `sense` and `actor` feature.
 
 ```
-A.prettySetup(features='sense')
-A.show(results, start=1, end=1)
+A.prettySetup(features='sense actor')
+A.show(results, start=8, end=8, condensed=True, condenseType='verse')
 ```
 
 See the
-[share](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb)
+[share]({{etcbcnb}}/bhsa/blob/master/tutorial/share.ipynb)
 tutorial.

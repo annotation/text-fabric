@@ -52,7 +52,7 @@ date stamp in it like this
 
     @dateCreated=2016-11-20T13:26:59Z
 
-The time format should be [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601).
+The time format should be [ISO 8601]({{wikip}}/ISO_8601).
 
 ## Data
 

@@ -121,24 +121,24 @@ including your own.
     ???+ note "Example"
         **Uruk**:
 
-        * [about.md]({{ghtfb}}/test/apps/uruk/uruk-DefaulT/about.md)
-        * [RESULTSX.tsv]({{ghtfb}}/test/apps/uruk/uruk-DefaulT/RESULTSX.tsv)
+        * [about.md]({{tfghb}}/test/apps/uruk/uruk-DefaulT/about.md)
+        * [RESULTSX.tsv]({{tfghb}}/test/apps/uruk/uruk-DefaulT/RESULTSX.tsv)
 
         **BHSA**:
 
-        * [about.md]({{ghtfb}}/test/apps/bhsa/bhsa-DefaulT/about.md)
-        * [RESULTSX.tsv]({{ghtfb}}/test/apps/bhsa/bhsa-DefaulT/RESULTSX.tsv)
+        * [about.md]({{tfghb}}/test/apps/bhsa/bhsa-DefaulT/about.md)
+        * [RESULTSX.tsv]({{tfghb}}/test/apps/bhsa/bhsa-DefaulT/RESULTSX.tsv)
 
     ???+ note "Example with lexemes"
         **BHSA**:
 
-        * [about.md]({{ghtfb}}/test/apps/bhsa/bhsa-Dictionary/about.md)
-        * [RESULTSX.tsv]({{ghtfb}}/test/apps/bhsa/bhsa-Dictionary/RESULTSX.tsv)
+        * [about.md]({{tfghb}}/test/apps/bhsa/bhsa-Dictionary/about.md)
+        * [RESULTSX.tsv]({{tfghb}}/test/apps/bhsa/bhsa-Dictionary/RESULTSX.tsv)
 
         This example shows how you can get a complete dictionary in your pocket by issuing a simple TF query.
 
     If you want to be able to cite those results in a journal article, archive the GitHub repo
-    in question to [ZENODO](https://zenodo.org) and obtain a DOI.
+    in question to [ZENODO]({{zenodo}}) and obtain a DOI.
 
     ???+ hint "Encoding"
         The file `RESULTS.tsv` is not in the usual `utf8` encoding, but in `utf_16` encoding.
@@ -174,7 +174,7 @@ including your own.
             all machines can see whether this is in a *least-endian (le)* encoding or in a  *big-endian (be)*.
             Hence this character is called the Byte Order Mark (BOM).
             
-            See more on [wikipedia](https://en.wikipedia.org/wiki/Byte_order_mark).
+            See more on [wikipedia]({{wikip}}/Byte_order_mark).
 
             When reading a file with encoding `utf_16`, Python reads the BOM, draws its conclusions, and strips the
             BOM. So when you iterate over its lines, you will not see the BOM, which is good.
@@ -237,27 +237,27 @@ Explore your corpus by means of programming.
 
 ??? abstract "Using Hebrew data"
     To get started with the Hebrew corpus, use its tutorial in the BHSA repo:
-    [start](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb).
+    [start]({{etcbcnb}}/bhsa/blob/master/tutorial/start.ipynb).
 
     Or go straight to the
     [bhsa-api-docs](Api/Bhsa.md).
 
 ??? abstract "Using Syriac data"
     To get started with the Peshitta corpus, use its tutorial in the Peshitta repo:
-    [start](http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb).
+    [start]({{etcbcnb}}/peshitta/blob/master/tutorial/start.ipynb).
 
     Or go straight to the
     [peshitta-api-docs](Api/Peshitta.md).
 
     To get started with the Syriac New Testament corpus, use its tutorial in the Syrnt repo:
-    [start](http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb).
+    [start]({{etcbcnb}}/syrnt/blob/master/tutorial/start.ipynb).
 
     Or go straight to the
     [syrnt-api-docs](Api/Syrnt.md).
 
 ??? abstract "Using Uruk data"
     To get started with the Uruk corpus, use its tutorial in the Uruk repo:
-    [start](http://nbviewer.jupyter.org/github/nino-cunei/uruk/blob/master/tutorial/start.ipynb).
+    [start]({{ninonb}}/uruk/blob/master/tutorial/start.ipynb).
 
     Or go straight to the
     [uruk-api-docs](Api/Uruk.md).

@@ -14,7 +14,7 @@
     see *Kernel API* below.
 
     The code in
-    [kernel]({{ghtfb}}/{{c_kernel}})
+    [kernel]({{tfghb}}/{{c_kernel}})
     explains how it works.
 
 ### Start
@@ -30,7 +30,7 @@
 
     ??? example
         See the
-        [start-up script]({{ghtfb}}/{{c_start}})
+        [start-up script]({{tfghb}}/{{c_start}})
         of the text-fabric browser.
 
 ### Connect
@@ -48,7 +48,7 @@
 
     ??? example
         See the
-        [local webserver]({{ghtfb}}/{{c_local}})
+        [local webserver]({{tfghb}}/{{c_local}})
         of the text-fabric browser.
 
 ## Kernel API
@@ -56,23 +56,23 @@
 ??? abstract "About"
     The API of the TF kernel is created
     by the function `makeTfKernel` in the 
-    [data]({{ghtfb}}/{{c_kernel}})
+    [data]({{tfghb}}/{{c_kernel}})
     module of the server subpackage.
 
     It returns a class `TfKernel` with a number
     of exposed methods that can be called by other programs.
 
     For the machinery of interprocess communication we rely on the
-    [rpyc](https://github.com/tomerfiliba/rpyc) module.
+    [rpyc]({{rpyc}}) module.
     See especially the docs on
-    [services](https://rpyc.readthedocs.io/en/latest/docs/services.html#services).
+    [services]({{rpycdocservices}}).
 
     ??? caution "Shadow objects"
         The way rpyc works in the case of data transmission has a pitfall.
         When a service returns a Python object to the client, it
         does not return the object itself, but only a shadow object
         so called *netref* objects. This strategy is called
-        [boxing](https://rpyc.readthedocs.io/en/latest/docs/theory.html#boxing).
+        [boxing]({{rpycdocboxing}}).
         To the client the shadow object looks like the real thing,
         but when the client needs to access members, they will be fetched
         on the fly.

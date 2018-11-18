@@ -3,9 +3,9 @@
 ## About
 
 The module
-[app.py]({{ghtfb}}/{{c_peshitta_app}})
+[app.py]({{tfghb}}/{{c_peshitta_app}})
 contains a number of handy functions on top of Text-Fabric and especially its 
-[Search](General.md#searching) part.
+[Search](General.md#search) part.
 
 ## Minimal incantation
 
@@ -289,7 +289,7 @@ If you are content with the minimal incantation, you can skip **Initialisation**
 
         If it is a dictionary, it should map nodes to colors.
         Any color that is a valid 
-        [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
+        [CSS color]({{moz_color}})
         qualifies.
 
         If you map a node to the empty string, it will get the default highlight color.
@@ -337,7 +337,7 @@ If you are content with the minimal incantation, you can skip **Initialisation**
         *   If a position is not mapped, it will not be highlighted.
         *   If it is mapped to the empty string, it gets the default highlight color.
         *   Otherwise, it should be mapped to a string that is a valid
-            [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
+            [CSS color]({{moz_color}}).
 
         ??? hint "color names"
             The link above points to a series of handy color names and their previews.

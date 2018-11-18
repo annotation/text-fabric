@@ -8,7 +8,7 @@
 > in our own terms?
 >
 > -- **Iain M. Banks**.
-[Consider Phlebas](https://read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system):
+[Consider Phlebas]({{banksphlebas}}):
 A Culture Novel (Culture series)
 
 ## At a glance
@@ -56,10 +56,10 @@ to the set of slots that have an occurrence of that lexeme.
 ## Fabric metaphor
 
 ![Loom](../images/loom.png)
-[AD 1425 Hausbücher der Nürnberger Zwölfbrüderstiftungen](http://www.nuernberger-hausbuecher.de/75-Amb-2-317-4-v/data)
+[AD 1425 Hausbücher der Nürnberger Zwölfbrüderstiftungen]({{bruder12}})
 
 Before we go on, we invite you to look at a few basic terms in the craft of
-[weaving](https://en.wikipedia.org/wiki/Weaving).
+[weaving]({{wikip}}/Weaving).
 
 A weaver sets up a set of fixed, parallel threads, the *warp*. He then picks a
 thread, usually a colourful one, and sends it in a perpendicular way through the
@@ -72,7 +72,7 @@ weaver continues operating the loom, back and forth, occasionally selecting new
 wefts, until he has completed a rectangular piece of fabric, the *weave*.
 
 ![Weave](../images/weave.png)
-[source](https://sew4home.com/tips-resources/buying-guide/all-about-fabric-weaves-tutorial)
+[source]({{weave}})
 
 Now Text-Fabric, the tool, can be seen as the loom that sends features (the
 wefts) through a warp (the system of nodes and edges).

@@ -1,7 +1,7 @@
 # Corpora
 
 Corpora are usually stored in an online repository, such as GitHub or a research data archive
-such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
+such as [DANS]({{dans}}/front-page?set_language=en).
 
 ## Get corpora
 
@@ -28,7 +28,7 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
 
         ??? caution "On Windows?"
             You have to install `git` in
-            [some way](https://git-scm.com/downloads)
+            [some way]({{git}})
             for this step.
 
 
@@ -54,7 +54,7 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
 
     ```sh
     cd ~/github/etcbc
-    git clone https://github.com/etcbc/bhsa
+    git clone {{etcbcgh}}/bhsa
     ```
 
     and likewise you can get other ETCBC data modules such as `phono`.
@@ -76,7 +76,7 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
 
     ```sh
     cd ~/github/etcbc
-    git clone https://github.com/etcbc/peshitta
+    git clone {{etcbcgh}}/peshitta
     ```
 
 ### Syriac New Testament
@@ -96,7 +96,7 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
 
     ```sh
     cd ~/github/etcbc
-    git clone https://github.com/etcbc/syrnt
+    git clone {{etcbcgh}}/syrnt
     ```
 
 ## Cuneiform tablets from Uruk
@@ -122,14 +122,14 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
 
     ```sh
     cd ~/github/Nino-cunei
-    git clone https://github.com/Nino-cunei/uruk
+    git clone {{ninogh}}/uruk
     ```
 
 ## More corpora
 
 ??? abstract "Greek New Testament"
     The
-    [Greek](https://github.com/Dans-labs/text-fabric-data/greek/sblgnt)
+    [Greek]({{tfdght}}/greek/sblgnt)
     New Testament has been converted to TF.
 
     We have example corpora in Sanskrit, and Babylonian.
@@ -138,12 +138,12 @@ such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
 
     ```sh
     cd ~/github
-    git clone https://github.com/etcbc/linksyr
+    git clone {{etcbcgh}}/linksyr
     ```
 
     ```sh
     cd ~/github
-    git clone https://github.com/Dans-labs/text-fabric-data
+    git clone {{tfdgh}}
     ```
 
 All these are not supported by extra interfaces.
@@ -151,11 +151,11 @@ All these are not supported by extra interfaces.
 ## Additions to main corpora
 
     ??? abstract "ETCBC repos"
-    Inspect the repositories of the [etcbc organization on GitHub](https://github.com/etcbc)
+    Inspect the repositories of the [etcbc organization on GitHub]({{etcbcgh}})
     to see what is available. Per repository, click the *Releases* button so see
     the release version that holds the relevant binaries with TF-data.
     For example, try
-    [valence](https://github.com/etcbc/valence/releases).
+    [valence]({{etcbcgh}}/valence/releases).
     and
-    [heads](https://github.com/etcbc/lingo/releases).
+    [heads]({{etcbcgh}}/lingo/releases).
 

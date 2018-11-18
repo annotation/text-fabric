@@ -2,11 +2,11 @@
 
 ??? note "Tutorial"
     The tutorials for the
-    [Hebrew Bible](http://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb),
-    [Peshitta](http://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb),
-    [Syriac New Testament](http://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb),
+    [Hebrew Bible]({{etcbcnb}}/bhsa/blob/master/tutorial/start.ipynb),
+    [Peshitta]({{etcbcnb}}/peshitta/blob/master/tutorial/start.ipynb),
+    [Syriac New Testament]({{etcbcnb}}/syrnt/blob/master/tutorial/start.ipynb),
     and the
-    [Uruk Cuneiform Tablets](http://nbviewer.jupyter.org/github/nino-cunei/uruk/blob/master/tutorial/start.ipynb)
+    [Uruk Cuneiform Tablets]({{ninonb}}/uruk/blob/master/tutorial/start.ipynb)
     put the Text-Fabric API on show for vastly different corpora.
 
 ???+ note "Generic API"
@@ -21,7 +21,9 @@
     *   Syriac New Testament: [SyrNT](Syrnt.md)
     *   Proto-cuneiform tablets from Uruk: [Uruk](Uruk.md)
 
-## Loading
+## Core
+
+### Loading
 
 ??? abstract "TF=Fabric()"
     ```python
@@ -183,7 +185,7 @@
         After loading you can view all messages using this method.
         It also shows the messages that have been suppressed due to `silent=True`.
 
-## Navigating nodes
+### Navigating nodes
 
 ??? abstract "N()"
     ```python
@@ -243,7 +245,7 @@
     > Doedens, Crist-Jan (1994), *Text Databases. One Database Model and Several
     > Retrieval Languages*, number 14 in Language and Computers, Editions Rodopi,
     > Amsterdam, Netherlands and Atlanta, USA. ISBN: 90-5183-729-1,
-    > <http://books.google.nl/books?id=9ggOBRz1dO4C>. The order as defined by
+    > <{{doedens}}>. The order as defined by
     > Doedens corresponds to walking trees in post-order.
 
     For a lot of processing, it is handy to have a the stack of embedding elements
@@ -292,7 +294,7 @@
 
     The *slotType* has otypeRank 0, and the more comprehensive a type is, the higher its rank.
     
-## Locality
+### Locality
 
 ??? explanation "Local navigation"
     Here are the methods by which you can navigate easily from a node to its
@@ -399,7 +401,7 @@
     *   `L.d(verseNode)` will contain one sentence node,
     *   `L.d(sentenceNode)` will contain **one** verse node.
 
-## Text
+### Text
 
 ??? info "Overview"
     Here are the functions that enable you to get the actual text in the dataset.
@@ -417,7 +419,7 @@
 ???+ info "T"
     The Text API is exposed as `T` or `Text`.
 
-### Sections
+#### Sections
 
 ??? explanation "Section levels"
     In `otext` the main section levels (usually `book`, `chapter`, `verse`) can be
@@ -510,12 +512,12 @@
     ??? info "lang"
         The language assumed for the section parts, as far as they are language dependent.
 
-### Book names and languages
+#### Book names and languages
 
 ??? explanation "Book names and nodes"
     The names of the books may be available in multiple languages. The book names
     are stored in node features with names of the form `book@`*la*, where *la* is
-    the [ISO 639](https://nl.wikipedia.org/wiki/ISO_639) two-letter code for that
+    the [ISO 639]({{wikip}}/ISO_639) two-letter code for that
     language. Text-Fabric will always load these features.
 
 ??? abstract "T.languages"
@@ -572,7 +574,7 @@
         say `tablet`, then these two methods follow that name. Instead of `T.bookName()`
         and `T.bookNode()` we have then `T.tabletName()` and `T.tabletNode()`.
 
-### Text representation
+#### Text representation
 
 ??? explanation "Text formats"
     Text can be represented in multiple ways. We provide a number of formats with
@@ -721,974 +723,8 @@
         When defining formats in `otext.tf`, if you need a newline or tab in the format,
         specify it as `\n` and `\t`.
 
-## Searching
- 
-??? info "What is Text-Fabric Search?"
-    You can query for graph like structures in your data set. The structure you are
-    interested in has to be written as a *search template*, offered to `S.search()`
-    which returns the matching results as tuples of nodes.
 
-    A search template expresses a pattern of nodes and edges with additional conditions
-    also known as *quantifiers*.
-
-    A result of a search template is a tuple of nodes that instantiate the nodes in
-    the pattern, in such a way that the edges of the pattern are also instantiated
-    between the nodes of the result tuple.
-
-    Moreover, the quantifiers will hold for each result tuple.
-
-???+ info "S"
-    The Search API is exposed as `S` or `Search`.
-
-### Search templates
-
-??? info "Search primer"
-    A search template consists of a bunch of lines, possibly indented, that specify
-    objects to look for. Here is a simple example:
-
-        book name=Genesis|Exodus
-           chapter number=2
-              sentence
-                word pos=verb gender=feminine number=plural
-                word pos=noun gender=feminine number=singular
-
-    This template looks for word combinations within a sentence within chapter 2 of
-    either Genesis or Exodus, where one of the words is a verb and the other is a
-    noun. Both have a feminine inflection, but the verb is plural and the noun is
-    singular.
-
-    The indentation signifies embedding, i.e. containment. The two words are
-    contained in the same sentence, the sentence is contained in the chapter, the
-    chapter in the book.
-
-    The conditions you specify on book, chapter, word are all conditions in terms of
-    [node features](#node-features). You can use all features in the corpus for
-    this.
-
-    The order of the two words is immaterial. If there are cases where the verb
-    follows the noun, they will be included in the results.
-
-    Also, the words do not have to be adjacent. If there are cases with words
-    intervening between the noun and the verb, they will be included in the results.
-
-    Speaking of results: the `S.search()` function returns its results as tuples of
-    nodes:
-
-    ```python
-    (book, chapter, sentence, word1, word2)
-    ```
-
-    With these nodes in hand, you can programmatically gather all information about
-    the results that the corpus provides.
-
-    If the order between the verb and the noun is important, you can specify that as
-    an additional constraint. You can give the words a name, and state a relational
-    condition. Here we state that the noun precedes the verb.
-
-        book name=Genesis|Exodus
-           chapter number=2
-              sentence
-                vb:word pos=verb gender=feminine number=plural
-                nn:word pos=noun gender=feminine number=singular
-        nn < vb
-
-    This can be written a bit more economically as:
-
-        book name=Genesis|Exodus
-           chapter number=2
-              sentence
-                word pos=verb gender=feminine number=plural
-                > word pos=noun gender=feminine number=singular
-
-    If you insist that the noun immediately precedes the verb, you can use a
-    different relational operator:
-
-        book name=Genesis|Exodus
-           chapter number=2
-              sentence
-                word pos=verb gender=feminine number=plural
-                :> word pos=noun gender=feminine number=singular
-
-    There are more kinds of relational operators.
-
-    If the noun must be the first word in the sentence, you can specify it as
-
-        book name=Genesis|Exodus
-           chapter number=2
-              s:sentence
-                w:word pos=noun gender=feminine number=singular
-                <: word pos=verb gender=feminine number=plural
-        s =: w
-
-    or a bit more economically:
-
-        book name=Genesis|Exodus
-           chapter number=2
-              sentence
-                =: word pos=noun gender=feminine number=singular
-                <: word pos=verb gender=feminine number=plural
-
-    If the verb must be the last word in the sentence, you can specify it as
-
-        book name=Genesis|Exodus
-           chapter number=2
-              s:sentence
-                word pos=noun gender=feminine number=singular
-                <: w:word pos=verb gender=feminine number=plural
-        s := w
-
-    or a bit more economically:
-
-        book name=Genesis|Exodus
-           chapter number=2
-              s:sentence
-                word pos=noun gender=feminine number=singular
-                <: word pos=verb gender=feminine number=plural
-                :=
-
-    You can also use the [edge features](#edge-features) in the corpus as
-    relational operators as well.
-
-    Suppose we have an edge feature `sub` between clauses, such that if main clause
-    *m* has subordinate clauses *s1*, *s2* and *s3*, then
-
-        E.sub.f(m) = (s1, s2, s3)
-
-    You can use this relation in search. Suppose we want to find the noun verb pair
-    in subordinate clauses only. We can use this template:
-
-        book name=Genesis|Exodus
-           chapter number=2
-              m:clause
-                s:clause
-                  word pos=verb gender=feminine number=plural
-                  :> word pos=noun gender=feminine number=singular
-        m -sub> s
-
-    or a bit more economically:
-
-        book name=Genesis|Exodus
-          chapter number=2
-            clause
-              -sub> clause
-                word    pos=verb gender=feminine number=plural
-                :> word pos=noun gender=feminine number=singular
-
-    Read `m -sub> s` as: there is a `sub`-arrow from `m` to `s`.
-
-    Edge features may have values.
-    For example, the
-    [crossref feature](https://github.com/ETCBC/parallels)
-    is a set of edges between parallel verses, with the levels of confidence
-    as values. This number is an integer between 0 and 100.
-    We can ask for parallel verses in an unqualified way:
-
-        verse
-        -crossref> verse
-
-    But we can also ask for the cases with a specific confidence:
-
-        verse
-        -crossref=90> verse
-
-    or cases with a high confidence:
-
-        verse
-        -crossref>95> verse
-
-    or cases with a low confidence:
-
-        verse
-        -crossref<80> verse
-
-
-    All feature conditions that you can assert on node features, you can also
-    assert for edge features. If an edge feature is integer valued, such as `crossref`
-    you can use comparisons; if it is string valued, you can use regular expressions.
-    In both cases you can also use the other constructs, such as
-
-
-        verse
-        -crossref=66|77> verse
-
-    To get a more specific introduction to search, consult the search tutorials for
-    [Hebrew](https://github.com/ETCBC/bhsa/blob/master/tutorial/search.ipynb),
-    [Peshitta](https://github.com/ETCBC/peshitta/blob/master/tutorial/search.ipynb),
-    [SyrNT](https://github.com/ETCBC/syrnt/blob/master/tutorial/search.ipynb),
-    and
-    [Cuneiform](https://github.com/Nino-cunei/uruk/blob/master/tutorial/search.ipynb).
-
-    Finally an example with quantifiers. We want all clauses where Pred-phrases
-    consist of verbs only:
-
-    ```
-      clause
-      /where/
-        phrase function=Pred
-      /have/
-        /without/
-          word sp#verb
-        /-/
-      /-/
-    ```
-
-??? info "Search template reference"
-    We have these kinds of lines in a template:
-
-    *   *comment* lines
-
-        *   if a line starts with `%` it is a comment line`;
-        *   you cannot comment out parts of lines, only whole lines;
-        *   if a line is empty or has whitespace only, it is a comment line;
-        *   comment lines are allowed everywhere;
-        *   comment lines are ignored.
-
-    *   *atom* lines
-
-        *   (simple): **indent name:otype-or-set features**
-
-            *   Examples
-
-                1.  `word pos=verb gender=feminine`
-                2.  `vb:word pos=verb gender=feminine`
-                3.  `vb pos=verb gender=feminine`
-
-            *   The indent is significant. Indent is counted as the number of white space
-                characters, where tabs count for just 1. **Avoid tabs!**.
-            *   The **name:** part is optional.
-                If present, it defines a name for this atom that can be used
-                in relational comparisons and other atoms.
-            *   The **otype-or-set** part is optional.
-                If it is absent, the **name** part must be present.
-                The meaning of
-
-                ```
-                p:phrase sp=verb
-                p vs=qal
-                ```
-
-                is identical to the meaning of
-
-                ```
-                p:phrase sp=verb
-                pnew:phrase vs=qal
-                p = pnew
-                ```
-
-        *   (with relop): **indent op name:otype-or-set features**
-
-            *   `<: word pos=verb gender=feminine`
-            *   The relation operator specifies an extra constraint between a preceding atom
-                and this atom.
-            *   The preceding atom may be the parent, provided we are at its first child, or
-                it may the preceding sibling.
-            *   You can leave out the **name:otype-or-set features** bit. In that case, the
-                relation holds between the preceding atom and its parent.
-            *   The **name:** part is optional. Exactly as in the case without relop.
-            *   The **otype-or-set** part is optional. Exactly as in the case without relop.
-
-        The otype-or-set is either a node type that exists in your TF data set,
-        or it is the name of a set that you have passed in the `sets` parameter alongside
-        the query itself when you call `S.search()` or `S.study()`.
-
-        See [*feature specifications*](#feature-specifications) below for all
-        full variety of feature constraints on nodes and edges.
-
-    *   *feature* lines: **features**
-
-        *   Indent is not significant. Continuation of feature constraints after a
-            preceding atom line or other feature line. This way you can divide lengthy
-            feature constraints over multiple lines.
-
-        See [*feature specifications*](#feature-specifications) below for the
-        full variety of feature constraints on nodes and edges.
-
-    *   *relation* lines: **name operator name**
-
-        *   `s := w`
-        *   `m -sub> s`
-        *   `m <sub- s`
-        *   Indents and spacing are ignored.
-        *   There must be white-space around the operator.
-        *   Operators that come from edge features may be enriched with values.
-
-        See [*relational operators*](#relational-operators) below for the
-        whole spectrum of relational constraints on nodes.
-
-
-    *   *quantifier* sub-templates:
-        Atom lines that contain an otype or set may be followed by
-        Quantifiers consist of search templates themselves, demarcated by some
-        special keywords:
-        
-        *   `/without/`
-        *   `/where/` and `/have/`
-        *   `/with/` and `/or/`
-        *   `/-/`
-
-        See [*quantifiers*](#quantifiers) below for all the syntax and semantics.
-
-#### Feature specifications
-
-??? info "Features specs"
-    The **features** above is a specification of what features with which values to
-    search for. This specification must be written as a white-space separated list
-    of **feature specs**.
-
-    A **feature spec** has the form *name* *valueSpec*, with no space between the *name*
-    and the *valueSpec*.
-    The *valueSpec* may have the following forms and meanings:
-
-    form | evaluates to `True` the feature *name* ...
-    ---- | -------
-    | has any value except `None`
-    `#` | has value `None`
-    `*` | has arbitrary value
-    `=`*values* | has one of the values specified
-    `#`*values* | has none of the values specified
-    `>`*value* | is greater than *value*
-    `<`*value* | is less than *value*
-    `~`*regular expression* | has a value and it matches *regular expression*
-
-    ??? hint "Why `*` ?"
-        The operator `*` after a feature name does not pose any restriction at all.
-        It will not influence the search results.
-        
-        *Why would you want to include such a "criterion"?*
-        
-        Some applications, such as the Text-Fabric browser collect the features used in a query
-        to retrieve result information to be presented to the user. So if you want to include
-        the values of a particular feature, mention that feature with a `*`.
-
-    All these forms are also valid as `-`*name* *form*`>` and `<`*name* *form*`-`, in which case
-    they specify value constraints on edge features.
-    This is only meaningful if the edge feature is declared to have values (most edge features
-    do not have values).
-
-    **Additional constraints**
-
-    *   There may be no space around the `=#<>~`.
-    *   *name* must be a feature name that exists in the dataset. If it references a
-        feature that is not yet loaded, the feature will be loaded automatically.
-    *   *values* must be a `|` separated list of feature values, no quotes. No spaces
-        around the `|`. If you need a space or `|` or `\` in a value, escape it by a
-        `\`. Escape tabs and newlines as `\t` and `\n`.
-    *   When comparing values with `<` and `>`:
-        *    *value* must be an integer (negative values allowed);
-        *   You can do numeric comparisons only on number-valued features, not on
-            string-valued features.
-    *   *regular expression* must be a string that conforms to the Python
-        [regular axpression syntax](https://docs.python.org/3/library/re.html#regular-expression-syntax)
-        *   If you need a space in your regular expression, you have to escape it with a
-            `\`.
-        *   You can do regular expressions only on string-valued features, not on
-            number-valued features.
-
-#### Relational operators
-
-??? info "Operator lines"
-    ??? info "Node comparison"
-
-        *   `=`: is equal (meaning the same node, a clause and a verse that occupy the
-            same slots are still unequal)
-            ![op](../images/Spatial/Spatial.001.png)
-        *   `#`: is unequal (meaning a different node, a clause and a verse that occupy
-            the same slots are still unequal)
-            ![op](../images/Spatial/Spatial.002.png)
-        *   `<` `>`: before and after (in the *canonical ordering*)
-            ![op](../images/Spatial/Spatial.003.png)
-
-    ??? info "Slot comparison"
-
-        *   `==`: occupy the same slots (identical slot sets)
-            ![op](../images/Spatial/Spatial.004.png)
-        *   `&&`: overlap (the intersection of both slot sets is not empty)
-            ![op](../images/Spatial/Spatial.006.png)
-        *   `##`: occupy different slots (but they may overlap, the set of slots of the
-            two are different as sets)
-            ![op](../images/Spatial/Spatial.005.png)
-        *   `||`: occupy disjoint slots (no slot occupied by the one is also occupied by
-            the other)
-            ![op](../images/Spatial/Spatial.007.png)
-        *   `[[ ]]`: embeds and contains (slot set inclusion, in both directions)
-            ![op](../images/Spatial/Spatial.008.png)
-            Never holds between the same nodes. But it holds between different nodes
-            with the same slots. But a slot can never embed an other node.
-        *   `<<` `>>`: before and after (with respect to the slots occupied: left ends
-            before right starts and vice versa)
-            ![op](../images/Spatial/Spatial.009.png)
-        *   `<:` `:>`: *adjacent* before and after (with respect to the slots occupied:
-            left ends immediately before right starts and vice versa)
-            ![op](../images/Spatial/Spatial.013.png)
-        *   `=:` left and right start at the same slot
-            ![op](../images/Spatial/Spatial.010.png)
-        *   `:=` left and right end at the same slot
-            ![op](../images/Spatial/Spatial.011.png)
-        *   `::` left and right start and end at the same slot
-            ![op](../images/Spatial/Spatial.012.png)
-
-    ??? info "Nearness comparison"
-
-        Some of the adjacency relations can actually be weakened. Instead of requiring
-        that one slot is equal to an other slot, you can require that they are *k-near*,
-        i.e. they are at most *k* apart. Here are the relationships where you can do
-        that. Instead of typing the letter `k`, provide the actual number you want.
-
-        *   `<k:` `:k>`: `k`-*adjacent* before and after (with respect to the slots
-            occupied: left ends `k`-near where right starts and vice versa)
-            ![op](../images/Spatial/Spatial.017.png)
-        *   `=k:` left and right start at `k`-near slots
-            ![op](../images/Spatial/Spatial.014.png)
-        *   `:k=` left and right end at `k`-near slots
-            ![op](../images/Spatial/Spatial.015.png)
-        *   `:k:` left and right start and end at `k`-near slots
-            ![op](../images/Spatial/Spatial.016.png)
-
-    ??? info "Based on edge features"
-
-        *   `-`*name*`>` `<`*name*`-`: connected by the edge feature *name*
-
-            *   in both directions;
-            *   these forms work for edges that do and do not have values;
-
-            ![op](../images/Spatial/Spatial.018.png)
-
-        *   `-`*name* *valueSpec*`>` `<`*name* *valueSpec*`-`: connected by the edge feature *name*
-
-            *   in both directions;
-            *   these forms work only for edges that do have values.
-
-            ![op](../images/Spatial/Spatial.019.png)
-
-#### Quantifiers
-
-??? info "Quantifiers"
-    ???+ caution "Experimental"
-        This part of search templates is still experimental.
-
-        *   bugs may be discovered
-        *   the syntax of quantifiers may change
-
-    ??? info "What is a quantifier?"
-        Quantifiers are powerful expressions in templates.
-
-        They state conditions on a given atom in your template.
-        The atom in question is called the *parent* atom.
-        The conditions may involve *many* nodes that are related to the parent,
-        as in:
-
-        *all embedded words are a verb*;
-
-        *without a following predicate phrase*;
-
-        *with a mother clause or a mother phrase*.
-
-        That is where the term *quantifier* comes from.
-
-        A quantifier *quantifies* its parent atom.
-
-    ??? abstract "/without/"
-
-        Syntax:
-
-        ```
-        atom
-        /without/
-        templateN
-        /-/
-        ```
-
-        Meaning:
-        
-        node *r* is a result of this template if and only if *r* is a result of `atom` and
-        there is no tuple *RN* such that (*r*, *RN*) is a result of
-
-        ```
-        atom
-        templateN
-        ```
-
-    ??? abstract "/where/"
-
-        Syntax:
-
-        ```
-        atom
-        /where/
-        templateA
-        /have/
-        templateH
-        /-/
-        ```
-
-        Meaning:
-        
-        node *r* is a result of this template if and only if *r* is a result of `atom` and
-        for all tuples (*RA*) such that (*r*, *RA*) is a result of
-        
-        ```
-        atom
-        templateA
-        ```
-          
-        there is a tuple *RH* such that (*r*, *RA*, *RH*)  is a result of
-
-        ```
-        atom
-        templateA
-        templateH
-        ```
-          
-
-    ??? abstract "/with/"
-
-        Syntax:
-
-        ```
-        atom
-        /with/
-        templateO1
-        /or/
-        templateO2
-        /or/
-        templateO3
-        /-/
-        ```
-
-        Meaning:
-        
-        node *r* is a result of this template if and only if:
-        there is a tuple *R1* such that (*r*, *R1*) is a result of
-
-        ```
-        atom
-        templateO1
-        ```
-
-        or there is a tuple *R2* such that (*r*, *R2*) is a result of
-
-        ```
-        atom
-        templateO2
-        ```
-
-        or there is a tuple *R3* such that (*r*, *R3*) is a result of
-
-        ```
-        atom
-        templateO3
-        ```
-
-        ???+ note "1 or more alternatives"
-            This quantifier can be used with any number of `/or/` keywords, including
-            none at all. If there is no `/or/`, there is just one alternative.
-            The only difference between
-
-            ```
-            atom
-            /with/
-            template
-            /-/
-            ```
-
-            and
-
-            ```
-            atom
-            template
-            ```
-
-            is that the results of the first query contain tuples with only one
-            element, corresponding to the `atom`.
-            The second query contains tuples of which the first element
-            corresponds to the `atom`, and the remaining members correspond to
-            the `template`.
-
-    ???+ note "Parent"
-        The `atom` bit is an atom line, it acts as the *parent* of the quantifier.
-        Inside a quantifier, you may refer to the parent by the special name `..`.
-        So you do not have to give a name to the parent.
-
-    ???+ note "Multiple quantifiers"
-        You may have multiple quantifiers for one parent.
-
-    ???+ note "Not in result tuples"
-        Whereas a the search for a normal template
-        proceeds by finding a tuples that instantiates all it nodes
-        in such a way that all relationships expressed in the template hold, a quantifier template
-        is not instantiated.
-        It asserts a condition that has to be tested for all nodes relative
-        its parent. None of the atoms in a template of a quantifier corresponds to
-        a node in a final result tuple.
-
-    ???+ note "May be nested"
-        Templates within a quantifier may contain other quantifiers.
-        The idea is, that whenever a search template is evaluated, quantifiers at the outer level of 
-        get interpreted.
-        This interpretation gives rise to one or more templates to be constructed and run.
-        Those new templates have been stripped of the outer layer of quantifiers,
-        and when these templates are executed, the quantifiers at the next level have become outer.
-        And so on.
-
-    ??? caution "Restrictions"
-        Due to the implementation of quantifiers there are certain restrictions.
-
-        *   Quantifiers must be put immediately below their parents or below
-            preceding quantifiers of the same parent.
-        *   The keywords of a quantifier must appear on lines with exactly the same indentation
-            as the atom they quantify.
-        *   The templates of a quantifier must have equal or greater indent than its keywords;
-        *   The names accessible to the templates inside a quantifier are:
-
-            *   the name `..`, which is the name of the atom that is quantified;
-                this name is automagically valid in quantifier templates;
-            *   the name of the atom that is quantified (if that atom has a given name);
-            *   names defined in the template itself;
-            *   in `/where/`, `templateH` may use names defined in `templateA`;
-                but only if these names are defined outside any quantifier of
-                `templateA`.
-
-        *   The following situations block the visibility of names:
-
-            *   in `/with/`, `templateO`*i* may not use names defined in `templateO`*j* for *j* other than *i*;
-            *   names defined outer quantifiers are not accessible in inner quantifiers;
-            *   names defined inner quantifiers are not accessible in outer quantifiers.
-
-        When you nest quantifiers, think of the way they will be recomposed into
-        ordinary templates. This dictates whether your quantifier is syntactically valid or not.
-
-    ??? note "Indentation"
-        The indentation in quantifiers relative to their parent atom will be preserved.
-        
-        ??? example "Nested quantifiers"
-            Consider
-
-            ```
-            clause
-            /where/
-              phrase function=Pred
-            /have/
-              /without/
-                word sp#verb
-              /-/
-            /-/
-              phrase function=Subj
-            ```
-
-            The auxiliary templates that will be run are:
-
-            For the outer quantifier:
-
-            ```
-            clause
-              phrase function=Pred
-            ```
-
-            and
-
-            ```
-            clause
-              phrase function=Pred
-              /without/
-                word sp#verb
-              /-/
-            ```
-
-            For the inner quantifier:
-
-            ```
-            phrase function=Pred
-              word sp#verb
-            ```
-
-            Note that the auxiliary template for the inner quantifier
-            is shifted in its entirety to the left, but that the 
-            relative indentation is exactly as it shows in the original template.
-
-    ??? info "Implementation"
-        Here is a description of the implementation of the quantifiers.
-        It is not the real implementation, but it makes clear what is going on, and why
-        the quantifiers have certain limitations, and how indentation works.
-
-        The basic idea is:
-
-        *   a quantifier leads to the execution of one or more separate searche templates;
-        *   the results of these searches are combined by means of set operations:
-            *difference*, *intersection*, *union*, dependent on the nature of the quantifier;
-        *   the end result of this combination will fed as a custom set to the original template after
-            stripping the whole quantifier from that template.
-            So we replace a quantifier by a custom set.
-
-        Suppose we have
-
-        ```
-        clause typ=Wx0
-        QUANTIFIER1
-        QUANTIFIER2
-        ...
-        QUANTIFIERn
-          rest-of-template
-        ```
-
-        We compute a set of clauses `filteredClauses1` based on 
-
-        ```
-        clause typ=Wx0
-        QUANTIFIER1
-        ```
-
-        and then compute a new set `filteredClauses2` based on
-
-        ```
-        S.search('''
-        fclause typ=Wx0
-        QUANTIFIER2
-        ''',
-            customSets=dict(fclause=filteredClauses1)
-        ```
-
-        and so on until we have had QUANTIFIERn,
-        leading to a set `filteredClausesN` of clauses
-        that pass all filters set by the quantifiers.
-
-        Finally, we deliver the results of
-
-        ```
-        S.search('''
-        fclause
-          rest-of-template
-        ''',
-            customSets=dict(fclause=filteredClausesN)
-        ```
-
-
-
-### Search API
-
-??? abstract "S.relationsLegend()"
-    ```python
-    S.relationsLegend()
-    ```
-
-    ???+ info "Description"
-        Gives dynamic help about the basic relations that you can use in your search
-        template. It includes the edge features that are available in your dataset.
-
-
-??? abstract "S.search()"
-    ```python
-    S.search(query, limit=None, shallow=False, sets=None, withContext=None)
-    ```
-
-    ???+ info "Description"
-        Searches for combinations of nodes that together match a search template.
-        This method returns a *generator* which yields the results one by one. One result
-        is a tuple of nodes, where each node corresponds to an *atom*-line in your
-        [search template](#search-template-introduction).
-        
-    ??? info "query"
-        The query is a search template, i.e. a string that conforms to the rules described above.
-        
-    ??? info "shallow"
-        If `True` or `1`, the result is a set of things that match the top-level element
-        of the `query`.
-
-        If `2` or a bigger number *n*, return the set of truncated result tuples: only
-        the first *n* members of each tuple is retained.
-
-        If `False` or `0`, a sorted list of all result tuples will be returned.
-
-    ??? info "sets"
-        If not `None`, it should be a dictionary of sets, keyed by a names.
-        In `query` you can refer to those names to invoke those sets.
-
-    ??? info "limit"
-        If `limit` is a number, it will fetch only that many results.
-
-    ??? hint "TF as Database"
-        By means of `S.search(query)` you can use one `TF` instance as a
-        database that multiple clients can use without the need for each client to call the 
-        costly `load` methods.
-        You have to come up with a process that runs TF, has all features loaded, and
-        that can respond to queries from other processes.
-        We call such a process a **TF kernel**.
-
-        Webservers can use such a daemonized TF to build efficient controllers.
-
-        A TF kernel and webserver are included in the Text-Fabric code base.
-        See [kernel](../../Server/Kernel) and [web](../../Server/Web).
-
-    ??? note "Generator versus tuple"
-        If `limit` is specified, the result is not a generator but a tuple of results.
-
-    ??? explanation "More info on the search plan"
-        Searching is complex. The search template must be parsed, interpreted, and
-        translated into a search plan. The following methods expose parts of the search
-        process, and may provide you with useful information in case the search does not
-        deliver what you expect.
-
-    ??? hint "see the plan"
-        the method `S.showPlan()` below shows you at a glance the correspondence
-        between the nodes in each result tuple and your search template.
-
-??? abstract "S.study()"
-    ```python
-    S.study(searchTemplate, strategy=None, silent=False, shallow=False, sets=None)
-    ```
-
-    ???+ info "Description"
-        Your search template will be checked, studied, the search
-        space will be narrowed down, and a plan for retrieving the results will be set
-        up.
-
-        If your query has quantifiers, the asscociated search templates will be constructed
-        and executed. These searches will be reported clearly.
-
-    ??? info "searchTemplate"
-        The search template is a string that conforms to the rules described above.
-
-    ??? danger "strategy"
-        In order to tame the performance of search, the strategy by which results are fetched
-        matters a lot.
-        The search strategy is an implementation detail, but we bring
-        it to the surface nevertheless.
-
-        To see the names of the available strategies, just call
-        `S.study('', strategy='x')` and you will get a list of options reported to
-        choose from.
-
-        Feel free to experiment. To see what the strategies do,
-        see the [code]({{ghtfb}}/{{c_search}}).
-
-    ??? info "silent"
-        If you want to suppress most of the output, say `silent=True`.
-
-    ??? info "shallow, sets"
-        As in `S.search()`.
-
-??? abstract "S.showPlan()"
-    ```python
-    S.showPlan(details=False)
-    ```
-
-    ???+ info "Description"
-        Search results are tuples of nodes and the plan shows which part of the tuple
-        corresponds to which part of the search template.
-
-    ??? info "details"
-        If you say `details=True`, you also get an overview of the search space and a
-        description of how the results will be retrieved.
-
-    ??? note "after S.study()"
-        This function is only meaningful after a call to `S.study()`.
-
-### Search results
-
-??? info "Preparation versus result fetching"
-    The method `S.search()` above combines the interpretation of a given
-    template, the setting up of a plan, the constraining of the search space
-    and the fetching of results.
-
-    Here are a few methods that do actual result fetching.
-    They must be called after a previous `S.search()` or `S.study()`.
-
-??? abstract "S.count()"
-    ```python
-    S.count(progress=None, limit=None)
-    ```
-
-    ??? info "Description"
-        Counts the results, with progress messages, optionally up to a limit.
-        
-    ??? info "progress"
-        Every so often it shows a progress message.
-        The frequency is `progress` results, default every 100.
-
-    ??? info "limit"
-        Fetch results up to a given `limit`, default 1000.
-        Setting `limit` to 0 or a negative value means no limit: all results will be
-        counted.
-
-    ??? note "why needed"
-        You typically need this in cases where result fetching turns out to
-        be (very) slow.
-
-    ??? caution "generator versus list"
-        `len(S.results())` does not work, because `S.results()` is a generator
-        that delivers its results as they come.
-
-??? abstract "S.fetch()"
-    ```python
-    S.fetch(limit=None)
-    ```
-
-    ???+ info "Description"
-        Finally, you can retrieve the results. The result of `fetch()` is not a list of
-        all results, but a *generator*. It will retrieve results as long as they are
-        requested and their are still results.
-
-    ??? info "limit"
-        Tries to get that many results and collects them in a tuple.
-        So if limit is not `None`, the result is a tuple with a known length.
-
-    ??? example "Iterating over the `fetch()` generator"
-        You typically fetch results by saying:
-
-        ```python
-        i = 0
-        for r in S.results():
-            do_something(r[0])
-            do_something_else(r[1])
-        ```
-
-        Alternatively, you can set the `limit` parameter, to ask for just so many
-        results. They will be fetched, and when they are all collected, returned as a
-        tuple.
-
-    ??? example "Fetching a limited amount of results"
-        ```python
-        S.fetch(limit=10)
-        ```
-
-        gives you the first bunch of results quickly.
-
-??? abstract "S.glean()"
-    ```python
-    S.glean(r)
-    ```
-
-    ???+ info "Description"
-        A search result is just a tuple of nodes that correspond to your template, as
-        indicated by `showPlan()`. Nodes give you access to all information that the
-        corpus has about it.
-
-        The `glean()` function is here to just give you a first impression quickly.  
-
-    ??? info "r"
-        Pass a raw result tuple `r`, and you get a string indicating where it occurs,
-        in terms of sections, 
-        and what text is associated with the results.
-
-    ??? example "Inspecting results"
-        ```python
-        for result in S.fetch(limit=10):
-            print(S.glean(result))
-        ```
-
-        is a handy way to get an impression of the first bunch of results.
-
-    ??? hint "Universal"
-        This function works on all tuples of nodes, whether they have been
-        obtained by search or not.
-
-    ??? hint "More ways of showing results"
-        If you work in one of the corpora for which the TF-API has been extended,
-        you will be provided with more powerful methods `show()` and `table()`
-        to display your results.
-        See [Uruk](Uruk.md), [Bhsa](Bhsa.md), [Peshitta](Peshitta.md) and [Syrnt](Syrnt.md).
-
-
-## Features
+### Features
 
 ???+ info "Features"
     TF can give you information of all features it has encountered.
@@ -1717,7 +753,7 @@
         There are other functions that give you the loaded node features (`Fall()`)
         and the loaded edge features (`Eall()`).
 
-### Node features
+#### Node features
 
 ???+ info "F"
     The node features API is exposed as `F` (`Fs`) or `Feature` (`FeatureString`).
@@ -1839,7 +875,7 @@
             ending nodes of `otype`. This makes use of the fact that the data is so
             organized that all node types have single ranges of nodes as members.
 
-### Edge features
+#### Edge features
 
 ???+ info "E"
     The edge features API is exposed as `E` (`Es`) or `Edge` (`EdgeString`).
@@ -1977,48 +1013,135 @@
     ??? info "node"
         The node whose slots are being delivered.
 
-## Messaging
+#### Computed data
 
-??? info "Timed messages"
-    Error and informational messages can be issued, with a time indication.
+??? explanation "Pre-computing"
+    In order to make the API work, Text-Fabric prepares some data and saves it in
+    quick-load format. Most of this data are the features, but there is some extra
+    data needed for the special functions of the WARP features and the L-API.
 
-??? abstract "info(), error()"
+    Normally, you do not use this data, but since it is there, it might be valuable,
+    so we have made it accessible in the `C`-api, which we document here.
+
+??? abstract "Call() aka AllComputeds()"
     ```python
-    info(msg, tm=True, nl=True)
-    ```
-    
-    ???+ info "Description"
-        Sends a message to standard output, possibly with time and newline.
-
-        *   if `info()` is being used, the message is sent to `stdout`;
-        *   if `error()` is being used, the message is sent to `stderr`;
-
-        In a Jupyter notebook, the standard error is displayed with
-        a reddish background colour.
-
-    ??? info "tm"
-        If `True`, an indicator of the elapsed time will be prepended to the message.
-
-    ??? info "nl"
-        If `True` a newline will be appended.
-
-??? abstract "indent()"
-    ```python
-    indent(level=None, reset=False)
+    Call()
+    AllComputeds()
     ```
 
     ???+ info "Description"
-        Changes the level of indentation of messages and possibly resets the time.
+        Returns a sorted list of all usable, loaded computed data names.
 
-    ??? info "level"
-        The level of indentation, an integer.  Subsequent
-        `info()` and `error()` will display their messages with this indent.
+??? abstract "C.levels.data"
+    ???+ info "Description"
+        A sorted list of object types plus basic information about them.
 
-    ??? info "reset"
-        If `True`, the elapsed time to will be reset to 0 at the given level.
-        Timers at different levels are independent of each other.
+        Each entry in the list has the shape
 
-## Saving features
+        ```python
+            (otype, averageSlots, minNode, maxNode)
+        ```
+
+        where `otype` is the name of the node type, `averageSlots` the average size of
+        objects in this type, measured in slots (usually words). `minNode` is the first
+        node of this type, `maxNode` the last, and the nodes of this node type are
+        exactly the nodes between these two values (including).
+
+    ??? explanation "Level computation and customization"
+        All node types have a level, defined by the average amount of slots object of
+        that type usually occupy. The bigger the average object, the lower the levels.
+        Books have the lowest level, words the highest level.
+
+        However, this can be overruled. Suppose you have a node type *phrase* and above
+        it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
+        versa. If all phrases are contained in clusters, and some clusters have more
+        than one phrase, the automatic level ranking of node types works out well in
+        this case. But if clusters only have very small phrases, and the big phrases do
+        not occur in clusters, then the algorithm may assign a lower rank to clusters
+        than to phrases.
+
+        In general, it is too expensive to try to compute the levels in a sophisticated
+        way. In order to remedy cases where the algorithm assigns wrong levels, you can
+        add a `@levels` key to the `otext` config feature. See
+        [text](#levels-of-node-types).
+
+??? abstract "C.order.data"
+    ???+ info "Description"
+        An **array** of all nodes in the correct order. This is the
+        order in which `N()` alias `Node()` traverses all nodes.
+
+    ??? explanation "Rationale"
+        To order all nodes in the [canonical ordering](#sorting-nodes) is quite a bit of
+        work, and we need this ordering all the time.
+
+??? abstract "C.rank.data"
+    ???+ info "Description"
+        An **array** of all indices of all nodes in the canonical order
+        array. It can be viewed as its inverse.
+
+    ??? explanation "Order arbitrary node sets"
+        I we want to order a set of nodes in the canonical ordering, we need to know
+        which position each node takes in the canonical order, in other words, at what
+        index we find it in the [`C.order.data`](#order) array.
+
+??? abstract "C.levUp.data and C.levDown.data"
+    ???+ info "Description"
+        These tables feed the `L.d()` and `L.u()` functions.
+
+    ??? caution "Use with care"
+        They consist of a fair amount of megabytes, so they are heavily optimized.
+        It is not advisable to use them directly, it is far better to use the `L` functions.
+
+        Only when every bit of performance waste has to be squeezed out, this raw data
+        might be a deal.
+
+??? abstract "C.boundary.data"
+    ???+ info "Description"
+        These tables feed the `L.n()` and `L.p()` functions.
+        It is a tuple consisting of `firstSlots` and `lastSlots`.
+        They are indexes for the first slot
+        and last slot of nodes.
+        
+    ??? explanation "Slot index"
+        For each slot, `firstSlot` gives all nodes (except
+        slots) that start at that slot, and `lastSlot` gives all nodes (except slots)
+        that end at that slot.
+        Both `firstSlot` and `lastSlot` are tuples, and the
+        information for node `n` can be found at position `n-MaxSlot-1`.
+
+??? abstract "C.sections.data"
+    ???+ info "Description"
+        Let us assume for the sake of clarity, that the node type of section level 1 is
+        `book`, that of level 2 is `chapter`, and that of level 3 is `verse`. And
+        suppose that we have features, named `bookHeading`, `chapterHeading`, and
+        `verseHeading` that give the names or numbers of these.
+
+        ??? caution "Custom names"
+            Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
+            It is the corpus data, especially the `otext` config feature that
+            spells out the names of the sections.
+
+        Then `C.section.data` is a tuple of two mappings , let us call them `chapters`
+        and `verses`.
+
+        `chapters` is a mapping, keyed by `book` **nodes**, and then by
+        by chapter **headings**, giving the corresponding
+        chapter **node**s as values.
+
+        `verses` is a mapping, keyed by `book` **nodes**, and then
+        by chapter **headings**, and then by verse **headings**,
+        giving the corresponding verse **node**s as values.
+
+    ??? explanation "Supporting the `T`-Api"
+        The `T`-api is good in mapping nodes unto sections, such as books, chapters,
+        verses and back. It knows how many chapters each book has, and how many verses
+        each chapter.
+
+        The `T` api is meant to make your life easier when you have to find passage
+        labels by nodes or vice versa. That is why you probably never need to consult
+        the underlying data. But you can! That data is stored in
+
+### Saving features
 
 ??? abstract "TF.save()"
     ```python
@@ -2077,6 +1200,47 @@
         `location`. If both `locations` and `modules` are empty, writing will take place
         in the current directory.
 
+### Messaging
+
+??? info "Timed messages"
+    Error and informational messages can be issued, with a time indication.
+
+??? abstract "info(), error()"
+    ```python
+    info(msg, tm=True, nl=True)
+    ```
+    
+    ???+ info "Description"
+        Sends a message to standard output, possibly with time and newline.
+
+        *   if `info()` is being used, the message is sent to `stdout`;
+        *   if `error()` is being used, the message is sent to `stderr`;
+
+        In a Jupyter notebook, the standard error is displayed with
+        a reddish background colour.
+
+    ??? info "tm"
+        If `True`, an indicator of the elapsed time will be prepended to the message.
+
+    ??? info "nl"
+        If `True` a newline will be appended.
+
+??? abstract "indent()"
+    ```python
+    indent(level=None, reset=False)
+    ```
+
+    ???+ info "Description"
+        Changes the level of indentation of messages and possibly resets the time.
+
+    ??? info "level"
+        The level of indentation, an integer.  Subsequent
+        `info()` and `error()` will display their messages with this indent.
+
+    ??? info "reset"
+        If `True`, the elapsed time to will be reset to 0 at the given level.
+        Timers at different levels are independent of each other.
+
 ### Clearing the cache
 
 ??? abstract "TF.clearCache()"
@@ -2098,7 +1262,267 @@
     ??? hint "No need to load"
         It is not needed to execute a `TF.load()` first.
 
-## MQL
+
+### Miscellaneous
+
+??? abstract "TF.version"
+    ???+ info "Description"
+        Contains the version number of the Text-Fabric
+        library.
+
+??? abstract "TF.banner"
+    ???+ info "Description"
+        Contains the name and the version of the Text-Fabric
+        library.
+
+## Search
+ 
+For a description of Text-Fabric search, go to [Search](../Search.md)
+
+???+ info "S"
+    The Search API is exposed as `S` or `Search`.
+
+    It's main method, `search`, takes a [search template](../Search#search-templates)
+    as argument.
+    A template consists of elements that specify nodes with conditions and
+    relations between them.
+    The results of a search are instantiations of the search template.
+    More precisely, each instantiation is a tuple of nodes
+    that instantiate the elements in the template,
+    in such a way that the relational pattern expressed in the template
+    holds between the nodes of the result tuple.
+
+### Search API
+
+The API for searching is a bit richer than the `search()` functions.
+Here is the whole interface.
+
+??? abstract "S.relationsLegend()"
+    ```python
+    S.relationsLegend()
+    ```
+
+    ???+ info "Description"
+        Gives dynamic help about the basic relations that you can use in your search
+        template. It includes the edge features that are available in your dataset.
+
+
+??? abstract "S.search()"
+    ```python
+    S.search(query, limit=None, shallow=False, sets=None, withContext=None)
+    ```
+
+    ???+ info "Description"
+        Searches for combinations of nodes that together match a search template.
+        This method returns a *generator* which yields the results one by one. One result
+        is a tuple of nodes, where each node corresponds to an *atom*-line in your
+        [search template](#search-template-introduction).
+        
+    ??? info "query"
+        The query is a search template, i.e. a string that conforms to the rules described above.
+        
+    ??? info "shallow"
+        If `True` or `1`, the result is a set of things that match the top-level element
+        of the `query`.
+
+        If `2` or a bigger number *n*, return the set of truncated result tuples: only
+        the first *n* members of each tuple is retained.
+
+        If `False` or `0`, a sorted list of all result tuples will be returned.
+
+    ??? info "sets"
+        If not `None`, it should be a dictionary of sets, keyed by a names.
+        In `query` you can refer to those names to invoke those sets.
+
+    ??? info "limit"
+        If `limit` is a number, it will fetch only that many results.
+
+    ??? hint "TF as Database"
+        By means of `S.search(query)` you can use one `TF` instance as a
+        database that multiple clients can use without the need for each client to call the 
+        costly `load` methods.
+        You have to come up with a process that runs TF, has all features loaded, and
+        that can respond to queries from other processes.
+        We call such a process a **TF kernel**.
+
+        Webservers can use such a daemonized TF to build efficient controllers.
+
+        A TF kernel and webserver are included in the Text-Fabric code base.
+        See [kernel](../../Server/Kernel) and [web](../../Server/Web).
+
+    ??? note "Generator versus tuple"
+        If `limit` is specified, the result is not a generator but a tuple of results.
+
+    ??? explanation "More info on the search plan"
+        Searching is complex. The search template must be parsed, interpreted, and
+        translated into a search plan. The following methods expose parts of the search
+        process, and may provide you with useful information in case the search does not
+        deliver what you expect.
+
+    ??? hint "see the plan"
+        the method `S.showPlan()` below shows you at a glance the correspondence
+        between the nodes in each result tuple and your search template.
+
+??? abstract "S.study()"
+    ```python
+    S.study(searchTemplate, strategy=None, silent=False, shallow=False, sets=None)
+    ```
+
+    ???+ info "Description"
+        Your search template will be checked, studied, the search
+        space will be narrowed down, and a plan for retrieving the results will be set
+        up.
+
+        If your query has quantifiers, the asscociated search templates will be constructed
+        and executed. These searches will be reported clearly.
+
+    ??? info "searchTemplate"
+        The search template is a string that conforms to the rules described above.
+
+    ??? danger "strategy"
+        In order to tame the performance of search, the strategy by which results are fetched
+        matters a lot.
+        The search strategy is an implementation detail, but we bring
+        it to the surface nevertheless.
+
+        To see the names of the available strategies, just call
+        `S.study('', strategy='x')` and you will get a list of options reported to
+        choose from.
+
+        Feel free to experiment. To see what the strategies do,
+        see the [code]({{tfghb}}/{{c_search}}).
+
+    ??? info "silent"
+        If you want to suppress most of the output, say `silent=True`.
+
+    ??? info "shallow, sets"
+        As in `S.search()`.
+
+??? abstract "S.showPlan()"
+    ```python
+    S.showPlan(details=False)
+    ```
+
+    ???+ info "Description"
+        Search results are tuples of nodes and the plan shows which part of the tuple
+        corresponds to which part of the search template.
+
+    ??? info "details"
+        If you say `details=True`, you also get an overview of the search space and a
+        description of how the results will be retrieved.
+
+    ??? note "after S.study()"
+        This function is only meaningful after a call to `S.study()`.
+
+### Search results
+
+??? info "Preparation versus result fetching"
+    The method `S.search()` above combines the interpretation of a given
+    template, the setting up of a plan, the constraining of the search space
+    and the fetching of results.
+
+    Here are a few methods that do actual result fetching.
+    They must be called after a previous `S.search()` or `S.study()`.
+
+??? abstract "S.count()"
+    ```python
+    S.count(progress=None, limit=None)
+    ```
+
+    ??? info "Description"
+        Counts the results, with progress messages, optionally up to a limit.
+        
+    ??? info "progress"
+        Every so often it shows a progress message.
+        The frequency is `progress` results, default every 100.
+
+    ??? info "limit"
+        Fetch results up to a given `limit`, default 1000.
+        Setting `limit` to 0 or a negative value means no limit: all results will be
+        counted.
+
+    ??? note "why needed"
+        You typically need this in cases where result fetching turns out to
+        be (very) slow.
+
+    ??? caution "generator versus list"
+        `len(S.results())` does not work, because `S.results()` is a generator
+        that delivers its results as they come.
+
+??? abstract "S.fetch()"
+    ```python
+    S.fetch(limit=None)
+    ```
+
+    ???+ info "Description"
+        Finally, you can retrieve the results. The result of `fetch()` is not a list of
+        all results, but a *generator*. It will retrieve results as long as they are
+        requested and their are still results.
+
+    ??? info "limit"
+        Tries to get that many results and collects them in a tuple.
+        So if limit is not `None`, the result is a tuple with a known length.
+
+    ??? example "Iterating over the `fetch()` generator"
+        You typically fetch results by saying:
+
+        ```python
+        i = 0
+        for r in S.results():
+            do_something(r[0])
+            do_something_else(r[1])
+        ```
+
+        Alternatively, you can set the `limit` parameter, to ask for just so many
+        results. They will be fetched, and when they are all collected, returned as a
+        tuple.
+
+    ??? example "Fetching a limited amount of results"
+        ```python
+        S.fetch(limit=10)
+        ```
+
+        gives you the first bunch of results quickly.
+
+??? abstract "S.glean()"
+    ```python
+    S.glean(r)
+    ```
+
+    ???+ info "Description"
+        A search result is just a tuple of nodes that correspond to your template, as
+        indicated by `showPlan()`. Nodes give you access to all information that the
+        corpus has about it.
+
+        The `glean()` function is here to just give you a first impression quickly.  
+
+    ??? info "r"
+        Pass a raw result tuple `r`, and you get a string indicating where it occurs,
+        in terms of sections, 
+        and what text is associated with the results.
+
+    ??? example "Inspecting results"
+        ```python
+        for result in S.fetch(limit=10):
+            print(S.glean(result))
+        ```
+
+        is a handy way to get an impression of the first bunch of results.
+
+    ??? hint "Universal"
+        This function works on all tuples of nodes, whether they have been
+        obtained by search or not.
+
+    ??? hint "More ways of showing results"
+        If you work in one of the corpora for which the TF-API has been extended,
+        you will be provided with more powerful methods `show()` and `table()`
+        to display your results.
+        See [Uruk](Uruk.md), [Bhsa](Bhsa.md), [Peshitta](Peshitta.md) and [Syrnt](Syrnt.md).
+
+
+## Convert
+
+### MQL
 
 ??? info "Data interchange with MQL"
     You can interchange with MQL data. Text-Fabric can read and write MQL dumps. An
@@ -2271,142 +1695,3 @@
         )
         ```
 
-## Computed data
-
-??? explanation "Pre-computing"
-    In order to make the API work, Text-Fabric prepares some data and saves it in
-    quick-load format. Most of this data are the features, but there is some extra
-    data needed for the special functions of the WARP features and the L-API.
-
-    Normally, you do not use this data, but since it is there, it might be valuable,
-    so we have made it accessible in the `C`-api, which we document here.
-
-??? abstract "Call() aka AllComputeds()"
-    ```python
-    Call()
-    AllComputeds()
-    ```
-
-    ???+ info "Description"
-        Returns a sorted list of all usable, loaded computed data names.
-
-??? abstract "C.levels.data"
-    ???+ info "Description"
-        A sorted list of object types plus basic information about them.
-
-        Each entry in the list has the shape
-
-        ```python
-            (otype, averageSlots, minNode, maxNode)
-        ```
-
-        where `otype` is the name of the node type, `averageSlots` the average size of
-        objects in this type, measured in slots (usually words). `minNode` is the first
-        node of this type, `maxNode` the last, and the nodes of this node type are
-        exactly the nodes between these two values (including).
-
-    ??? explanation "Level computation and customization"
-        All node types have a level, defined by the average amount of slots object of
-        that type usually occupy. The bigger the average object, the lower the levels.
-        Books have the lowest level, words the highest level.
-
-        However, this can be overruled. Suppose you have a node type *phrase* and above
-        it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
-        versa. If all phrases are contained in clusters, and some clusters have more
-        than one phrase, the automatic level ranking of node types works out well in
-        this case. But if clusters only have very small phrases, and the big phrases do
-        not occur in clusters, then the algorithm may assign a lower rank to clusters
-        than to phrases.
-
-        In general, it is too expensive to try to compute the levels in a sophisticated
-        way. In order to remedy cases where the algorithm assigns wrong levels, you can
-        add a `@levels` key to the `otext` config feature. See
-        [text](#levels-of-node-types).
-
-??? abstract "C.order.data"
-    ???+ info "Description"
-        An **array** of all nodes in the correct order. This is the
-        order in which `N()` alias `Node()` traverses all nodes.
-
-    ??? explanation "Rationale"
-        To order all nodes in the [canonical ordering](#sorting-nodes) is quite a bit of
-        work, and we need this ordering all the time.
-
-??? abstract "C.rank.data"
-    ???+ info "Description"
-        An **array** of all indices of all nodes in the canonical order
-        array. It can be viewed as its inverse.
-
-    ??? explanation "Order arbitrary node sets"
-        I we want to order a set of nodes in the canonical ordering, we need to know
-        which position each node takes in the canonical order, in other words, at what
-        index we find it in the [`C.order.data`](#order) array.
-
-??? abstract "C.levUp.data and C.levDown.data"
-    ???+ info "Description"
-        These tables feed the `L.d()` and `L.u()` functions.
-
-    ??? caution "Use with care"
-        They consist of a fair amount of megabytes, so they are heavily optimized.
-        It is not advisable to use them directly, it is far better to use the `L` functions.
-
-        Only when every bit of performance waste has to be squeezed out, this raw data
-        might be a deal.
-
-??? abstract "C.boundary.data"
-    ???+ info "Description"
-        These tables feed the `L.n()` and `L.p()` functions.
-        It is a tuple consisting of `firstSlots` and `lastSlots`.
-        They are indexes for the first slot
-        and last slot of nodes.
-        
-    ??? explanation "Slot index"
-        For each slot, `firstSlot` gives all nodes (except
-        slots) that start at that slot, and `lastSlot` gives all nodes (except slots)
-        that end at that slot.
-        Both `firstSlot` and `lastSlot` are tuples, and the
-        information for node `n` can be found at position `n-MaxSlot-1`.
-
-??? abstract "C.sections.data"
-    ???+ info "Description"
-        Let us assume for the sake of clarity, that the node type of section level 1 is
-        `book`, that of level 2 is `chapter`, and that of level 3 is `verse`. And
-        suppose that we have features, named `bookHeading`, `chapterHeading`, and
-        `verseHeading` that give the names or numbers of these.
-
-        ??? caution "Custom names"
-            Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
-            It is the corpus data, especially the `otext` config feature that
-            spells out the names of the sections.
-
-        Then `C.section.data` is a tuple of two mappings , let us call them `chapters`
-        and `verses`.
-
-        `chapters` is a mapping, keyed by `book` **nodes**, and then by
-        by chapter **headings**, giving the corresponding
-        chapter **node**s as values.
-
-        `verses` is a mapping, keyed by `book` **nodes**, and then
-        by chapter **headings**, and then by verse **headings**,
-        giving the corresponding verse **node**s as values.
-
-    ??? explanation "Supporting the `T`-Api"
-        The `T`-api is good in mapping nodes unto sections, such as books, chapters,
-        verses and back. It knows how many chapters each book has, and how many verses
-        each chapter.
-
-        The `T` api is meant to make your life easier when you have to find passage
-        labels by nodes or vice versa. That is why you probably never need to consult
-        the underlying data. But you can! That data is stored in
-
-# Miscellaneous
-
-??? abstract "TF.version"
-    ???+ info "Description"
-        Contains the version number of the Text-Fabric
-        library.
-
-??? abstract "TF.banner"
-    ???+ info "Description"
-        Contains the name and the version of the Text-Fabric
-        library.
