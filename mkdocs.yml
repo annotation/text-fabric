@@ -160,7 +160,7 @@ nav:
     - 'Cuneiform Tablets': 'Api/Uruk.md'
   - Server:
     - 'Kernel': 'Server/Kernel.md'
-    - 'Web': 'Server/Web.md'
+    - 'Local': 'Server/Local.md'
     - 'Common': 'Server/Common.md'
   - Writing:
     - 'Hebrew': 'Writing/Hebrew.html'
