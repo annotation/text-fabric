@@ -687,7 +687,7 @@ def _addLinksApi(
       f'Text-Fabric API {api.TF.version}', f'{URL_TFDOC}/Api/General/', 'text-fabric-api'
   )
   tfsLink = outLink(
-      'Search Reference', f'{URL_TFDOC}/Api/General/#search-templates',
+      'Search Reference', f'{URL_TFDOC}/Search/#search-templates',
       'Search Templates Introduction and Reference'
   )
   tutLink = outLink('Search tutorial', tutUrl, 'Search tutorial in Jupyter Notebook')

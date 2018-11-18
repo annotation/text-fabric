@@ -3,16 +3,16 @@
 ## About
 
 The module
-[app.py]({{ghtfb}}/{{c_uruk_app}})
+[app.py]({{tfghb}}/{{c_uruk_app}})
 contains a number of handy functions to deal with TF nodes for cuneiform tablets
 and
-[ATF](http://oracc.museum.upenn.edu/doc/help/editinginatf/primer/inlinetutorial/index.html)
-transcriptions of them and [CDLI](https://cdli.ucla.edu) photos and lineart.
+[ATF]({{oracc}}/editinginatf/primer/inlinetutorial/index.html)
+transcriptions of them and [CDLI]({{cdli}}) photos and lineart.
 
 See also
-[about](https://github.com/Nino-cunei/uruk/blob/master/docs/about.md),
-[images](https://github.com/Nino-cunei/uruk/blob/master/docs/images.md),
-[transcription](https://github.com/Nino-cunei/uruk/blob/master/docs/transcription.md).
+[about]({{ninogh}}/uruk/blob/master/docs/about.md),
+[images]({{ninogh}}/uruk/blob/master/docs/images.md),
+[transcription]({{ninogh}}/uruk/blob/master/docs/transcription.md).
 
 ## Minimal incantation
 
@@ -289,7 +289,7 @@ If you are content with the minimal incantation, you can skip **Initialisation**
 
         If it is a dictionary, it should map nodes to colors.
         Any color that is a valid 
-        [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
+        [CSS color]({{moz_color}})
         qualifies.
 
         If you map a node to the empty string, it will get the default highlight color.
@@ -338,7 +338,7 @@ If you are content with the minimal incantation, you can skip **Initialisation**
         *   If a position is not mapped, it will not be highlighted.
         *   If it is mapped to the empty string, it gets the default highlight color.
         *   Otherwise, it should be mapped to a string that is a valid
-            [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
+            [CSS color]({{moz_color}}).
 
         ??? hint "color names"
             The link above points to a series of handy color names and their previews.
@@ -445,14 +445,14 @@ If you are content with the minimal incantation, you can skip **Initialisation**
         etc.
 
     ??? hint "search template reference"
-        See the [search template reference](General.md#search-templates)
+        See the [search template reference](../Search.md#search-templates)
 
 ## ATF representation
 
 ??? explanation "Generate ATF"
     Signs and quads and clusters can be represented by an ascii string,
     in the so-called Ascii Text Format,
-    [ATF](http://oracc.museum.upenn.edu/doc/help/editinginatf/primer/inlinetutorial/index.html).
+    [ATF]({{oracc}}/editinginatf/primer/inlinetutorial/index.html).
 
     We provide a bunch of function that, given a node, generate the appropriate ATF
     representation.
@@ -737,7 +737,7 @@ If you are content with the minimal incantation, you can skip **Initialisation**
         ??? explanation "CSS"
             The optional parameters `height` and `width` control the height and width of the
             images. The value should be a valid
-            [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS/length) length, such as
+            [CSS]({{moz_length}}) length, such as
             `100px`, `10em`, `32vw`. If you pass an integer, or a decimal string without
             unit, your value will be converted to that many `px`.
 

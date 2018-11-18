@@ -7,14 +7,14 @@
     in which you can enter a search template and view the results.
 
     This is realized by a web app based on 
-    [bottle](http://bottlepy.org).
+    [bottle]({{bottle}}).
 
     This web app connects to the [TF kernel](../Kernel)
     and merges the retrieved data into a set of 
-    [templates]({{ghtft}}/{{c_views}}).
+    [templates]({{tfght}}/{{c_views}}).
 
     See the code in
-    [local]({{ghtfb}}/{{c_local}}).
+    [local]({{tfghb}}/{{c_local}}).
 
 ## Start up
 
@@ -94,7 +94,7 @@
 
     url pattern | effect
     --- | ---
-    `/server/static/...` | serves a static file from the server-wide [static folder]({{ghtft}}/{{c_static}})
+    `/server/static/...` | serves a static file from the server-wide [static folder]({{tfght}}/{{c_static}})
     `/data/static/...` | serves a static file from the app specific static folder
     `/local/static/...` | serves a static file from a local directory specified by the app
     anything else | submits the form with user data and return the processed request
@@ -103,7 +103,7 @@
 
 ??? abstract "Templates"
     There are two templates in
-    [views]({{ghtft}}/{{c_views}})
+    [views]({{tfght}}/{{c_views}})
     :
 
     * *index*: the normal template for returning responses
@@ -120,28 +120,28 @@
 ??? abstract "CSS"
     We format the web pages with CSS, with extensive use
     of
-    [flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox).
+    [flexbox]({{cssflex}}).
 
     There are three sources of CSS formatting:
 
     * the CSS loaded from the app dependent extraApi, used
       for pretty displays;
-    * [main.css]({{ghtfb}}/{{c_static}}/main.css): the formatting of the 
+    * [main.css]({{tfghb}}/{{c_static}}/main.css): the formatting of the 
       *index* web page with which the user interacts;
     * inside the
-      [export]({{ghtfb}}/{{c_views}}/export.tpl)
+      [export]({{tfghb}}/{{c_views}}/export.tpl)
       template, for formatting the exported page.
 
 ## Javascript
 
 ??? abstract "Javascript"
     We use a
-    [modest amount of Javascript]({{ghtfb}}/{{c_static}}/tf.js)
+    [modest amount of Javascript]({{tfghb}}/{{c_static}}/tf.js)
     on top of 
     [JQuery](https://api.jquery.com).
 
     For collapsing and expanding elements we use the
-    [details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+    [details]({{moz_details}})
     element. This is a convenient, Javascript-free way to manage
     collapsing. Unfortunately it is not supported by the Microsoft
     browsers, not even Edge.

@@ -22,9 +22,9 @@ the command line.
     Go for the 64-bit version. Otherwise Python may not be able to address all the memory it needs.
 
 ??? note "Distro"
-    The leanest install is provided by [python.org](https://www.python.org/downloads/).
+    The leanest install is provided by [python.org]({{pythond}}).
 
-    You can also install it from [anaconda.com](https://www.anaconda.com/download).
+    You can also install it from [anaconda.com]({{anaconda}}).
 
 ??? caution "on Windows?"
     * Choose Anaconda over standard Python. The reason is that when you want to add Jupyter to the mix,
@@ -35,7 +35,7 @@ the command line.
     * **Install Chrome of Firefox and set it as your default browser.**
       The Text-Fabric browser does not display well in Microsoft Edge,
       for Edge does not support the
-      [details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+      [details]({{moz_details}})
       element.
 
 ??? caution "on Linux?"
@@ -93,7 +93,7 @@ pip3 install --upgrade text-fabric
 ```
 
 ## Jupyter notebook
-    Optionally install [Jupyter](http://jupyter.org) as well:
+    Optionally install [Jupyter]({{jup}}) as well:
 
     ```sh
     pip3 install jupyter
@@ -123,6 +123,6 @@ pip3 install --upgrade text-fabric
         It is still in beta, and there are rough edges.
 
         In order to install lab extensions you need to have 
-        [Node](https://nodejs.org/en/) installed, but not the newest version.
+        [Node]({{node}}) installed, but not the newest version.
         There is still a bug in the Jupyter lab that causes the installation to hang.
         With Node 8 you are fine.

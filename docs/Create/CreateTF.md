@@ -12,15 +12,15 @@ source text is encoded and organized.
 Have a look at the following examples:
 
 * the book of John in the Greek New Testament from XML-TEI to TF:
-  [pilot](https://github.com/pthu/pilot);
+  [pilot]({{pthugh}}/pilot);
 * the Syriac New Testament:
-  [linksyr](https://github.com/ETCBC/linksyr/tree/master/programs/tfgen);
+  [linksyr]({{etcbcgh}}/linksyr/tree/master/programs/tfgen);
 * the Greek New Testament:
-  [tfFromSblgnt](https://github.com/Dans-labs/text-fabric-data/blob/master/programs/tfFromSblgnt.ipynb);
+  [tfFromSblgnt]({{tfdghb}}/programs/tfFromSblgnt.ipynb);
 * Sanskrit writings:
-  [tfFromSanskrit](https://github.com/Dans-labs/text-fabric-data/blob/master/programs/tfFromSanskrit.ipynb);
+  [tfFromSanskrit]({{tfdghb}}/programs/tfFromSanskrit.ipynb);
 * Sanskrit writings:
-  [tfFromSumerianTEI](https://github.com/Dans-labs/text-fabric-data/blob/master/programs/tfFromSumerianTEI.ipynb).
+  [tfFromSumerianTEI]({{tfdghb}}/programs/tfFromSumerianTEI.ipynb).
 
 ## Analysis
 
@@ -278,7 +278,7 @@ Using TF itself it is not that hard to create a new feature `pos`, that maps
 each word node to the part of speech of that word.
 
 See for example how Cody Kingham
-[adds](https://github.com/ETCBC/lingo/blob/master/heads/Heads2TF.ipynb)
+[adds]({{etcbcgh}}/lingo/blob/master/heads/Heads2TF.ipynb)
 the notion of linguistic head to the BHSA
 datasource of the Hebrew Bible.
 

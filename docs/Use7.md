@@ -4,18 +4,19 @@ Here are hints to help you to get the most out version 7 of Text-Fabric.
 
 ## Working with new data
 
-See the
-[share](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb)
-tutorial.
-
-For a guide through all the steps of data sharing, see [Add](Add.md).
-There it is also explained how you can invoke the new command
+There is a new command
 
 ```sh
 text-fabric-zip
 ```
 
 to make a distribution of your own features.
+
+For a guide through all the steps of data sharing, see [Add](Add.md)
+and for examples see the
+[share]({{etcbcnb}}/bhsa/blob/master/tutorial/share.ipynb)
+tutorial.
+
 
 ## TF browser command
 
@@ -62,7 +63,7 @@ TF will always download the data to your `~/text-fabric-data` directory.
 
 ## Incantation 
 
-The old incantation `B = Bhsa()` and `CN = Cunei()` do no longer work.
+The old incantations `B = Bhsa()` and `CN = Cunei()` do no longer work.
 
 The new way is as follows:
 
@@ -78,34 +79,34 @@ A = use('uruk', hoist=globals())
 
 Note that we no longer use `cunei` as name of the corpus, but the more precise `uruk`.
 
-You see that the app name (`bhsa`, `uruk`) is only used once, as first argument for the
+You see that app names (`bhsa`, `uruk`) are used once in the incantation, as first argument for the
 `use()` function.
 
-Think of the `use database` statements in MySQL and MongoDb.
+Think of the `use {database}` statements in MySQL and MongoDb.
+
+Without further arguments, this will set up an TF API with most features loaded.
 
 The remaining arguments of `use()` are the same as you passed before to `Bhsa()` and `Cunei()`.
-But there are a few more: `mod` and `check`.
+But there are a few more optional ones: `mod` and `check`.
 
 They have the same effect as `--mod=` and `-c` when calling the browser:
 
 * `mod` is a comma-separated list of modules in the form `{org}/{repo}/{path}`;
-* `check=False` is an optional boolean argument.
-
-Without further arguments, this will set up an TF API with most features loaded.
+* `check=False` is a boolean argument.
 
 If you want to add other search locations for tf features manually, you can pass
 optional `locations` and `modules` parameters, which will be passed to the underlying
 [Fabric()](Api/General.md#loading) call.
 
 If you want even more control, you can first set up your own TF API in the classical way,
-by first calling
+by calling
 
 ```python
 TF = Fabric(locations=..., modules=...)
 api = TF.load(features)
 ```
 
-and then
+and then wrapping the app API around it:
 
 ```python
 A = use('bhsa', api=api)
@@ -131,9 +132,10 @@ clause
   phrase sense*
 ```
 
-The `*` means: always true, so it will not influence the query result set, only its display.
-
-The extra data modules are also shown in the provenance listings when you export data from the browser.
+* The `*` means: always true, so it will not influence the query result set, only its display;
+* In fact, the feature sense is only present on nodes of type `word`. But mentioning a feature anywhere in the query
+  will trigger the display wherever it occurs with a non-trivial values.
+* The extra data modules are also shown in the provenance listings when you export data from the browser.
 
 ### In a Jupyter notebook
 

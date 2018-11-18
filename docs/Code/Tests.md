@@ -5,7 +5,7 @@ There are many environments in which the core engine operates, there
 are several apps that make use of it, and there is a built in query language.
 
 One way of mastering the complexity and safeguarding the correctness of it all,
-is by employing [unit tests](https://en.wikipedia.org/wiki/Unit_testing).
+is by employing [unit tests]({{wikip}}/Unit_testing).
 
 To my embarrassment, most parts of Text-Fabric are not covered by unit tests.
 
@@ -14,17 +14,17 @@ But first a few words about the machinery of unit testing.
 
 ## Corpus
 
-We build a [test corpus]({{ghtft}}/test/generic/tf),
+We build a [test corpus]({{tfght}}/test/generic/tf),
 wich contains only 10 slots, with node type `sign` and one other node type `part`.
 
 The code to build it is in
-[makeTestTf.py]({{ghtfb}}/test/generic/makeTestTf.py).
+[makeTestTf.py]({{tfghb}}/test/generic/makeTestTf.py).
 
 Probably the corpus will be enlarged when new tests are being implemented.
 
 ## Framework
 
-We use the [unittest](https://docs.python.org/3/library/unittest.html#module-unittest)
+We use the [unittest]({{python}}/library/unittest.html#module-unittest)
 framework that comes with Python.
 
 It is just a few lines to setup a test class, hence we have not yet separated the code
@@ -35,7 +35,7 @@ factor the framework out right now.
 ## Relations
 
 The
-[basic spatial relations](../Api/General.md#relational-operators)
+[basic spatial relations](../Search.md#relational-operators)
 that are being used in search deserve thorough unit testing.
 
 There are quite a few of them, they describe refined but abstract relations
@@ -51,6 +51,6 @@ no guarantee can be given.
 For each particular test, all these cases will be triggered.
 
 All in all we defined
-[1000 pairs of nodes]({{ghtfb}}/test/generic/relations.py)
+[1000 pairs of nodes]({{tfghb}}/test/generic/relations.py)
 leading to 2500 queries, which will
 all be tested against expected answers. 

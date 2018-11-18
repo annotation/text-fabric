@@ -26,7 +26,7 @@ Always use the latest version of Text-Fabric, because there is still a lot of de
     ```
 
     You can check what the newest distributed version of Text-Fabric is on
-    [PyPi](https://pypi.org/project/text-fabric/).
+    [PyPi]({{tfpp}}).
 
 ??? note "Why do I **still** not get the latest version of Text-Fabric!?!?"
     Old versions on your system might get in the way.
@@ -70,7 +70,7 @@ Here are some hints to recover from that.
     * For the Macos: look at `.bashrc`, `.bash_profile` in your home directory.
     * For Windows: on the command prompt, say `echo %path%` to see what the content of your PATH
       variable is. If you see references to older versions of python than you actually work with,
-      they need to be removed. [Here is how](https://www.computerhope.com/issues/ch000549.htm)
+      they need to be removed. [Here is how]({{faqhint1}})
     
     ???+ caution "Only for Python3"
         Do not remove references to Python `2.*`, but only outdated Python `3.*` versions. 
@@ -89,7 +89,7 @@ Here are some hints to recover from that.
 
         Copy and paste that error and send it to [me](mailto:dirk.roorda@dans.knaw.nl),
         and I'll fix it as soon as I can, and I let you know on the
-        [issue list](https://github.com/Dans-labs/text-fabric/issues).
+        [issue list]({{tfgh}}/issues).
 
     ??? caution "Out of memory"
         If TF has run out of memory, you might be able to do something about it.

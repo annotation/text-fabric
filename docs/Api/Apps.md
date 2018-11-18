@@ -29,7 +29,7 @@
 
 ??? abstract "App components"
     The apps themselves are modules inside 
-    [apps]({{ghtft}}/{{c_apps}})
+    [apps]({{tfght}}/{{c_apps}})
 
     For each *app*, you find there a subfolder *app* with:
 
@@ -95,14 +95,14 @@
 
         attribute | kind | description
         --- | --- | ---
-        webLink | method | given a node, produces a link to an online description of the corresponding object (to [shebanq](https://shebanq.ancient-data.org) or [cdli](https://cdli.ucla.edu) 
+        webLink | method | given a node, produces a link to an online description of the corresponding object (to [shebanq]({{shebanq}}) or [cdli]({{cdli}}) 
         plain | method | given a node, produce a plain representation of the corresponding object: not the full structure, but something that identifies it
         \_pretty | method | given a node, produce elements of a pretty display of the corresponding object: the full structure
 
         ??? note "pretty"
             Not all of the `pretty` method needs to be defined by the app.
             In fact, the function itself is defined generically in
-            [apphelpers]({{ghtfb}}/{{c_apphelpers}}).
+            [apphelpers]({{tfghb}}/{{c_apphelpers}}).
 
             This generic `pretty()` start with determining the slot boundaries and condense container
             of the node.
@@ -123,9 +123,9 @@
 ??? abstract "App support"
     Apps turn out to have several things in common that we want to deal with generically.
     These functions are collected in the
-    [appmake]({{ghtfb}}/{{c_appmake}})
+    [appmake]({{tfghb}}/{{c_appmake}})
     and
-    [apphelpers]({{ghtfb}}/{{c_apphelpers}})
+    [apphelpers]({{tfghb}}/{{c_apphelpers}})
     modules of TF.
 
 ??? abstract "Generic/specific"
@@ -240,7 +240,7 @@
 
 ??? abstract "search(app, query, silent=False, sets=None, shallow=False)"
     This is a thin wrapper around the generic search interface of TF:
-    [S.search](General.md#searching)
+    [S.search](General.md#search)
 
     The extra thing it does it collecting the results.
     `S.search()` may yield a generator, and this `search()` makes sure to iterate

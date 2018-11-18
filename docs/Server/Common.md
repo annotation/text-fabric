@@ -6,16 +6,16 @@
     Here are functions that are being used by various parts of the
     TF browser infrastructure, such as 
 
-    * [kernel.py]({{ghtfb}}/{{c_kernel}})
-    * [local.py]({{ghtfb}}/{{c_local}})
-    * [start.py]({{ghtfb}}/{{c_start}})
+    * [kernel.py]({{tfghb}}/{{c_kernel}})
+    * [local.py]({{tfghb}}/{{c_local}})
+    * [start.py]({{tfghb}}/{{c_start}})
 
 ## Argument parsing
 
 ??? abstract "Apologies"
     Really, we should replace the whole adhoc argument parsing by a decent use
     of the Python module
-    [argparse](https://docs.python.org/3/library/argparse.html#module-argparse). 
+    [argparse]({{python}}/library/argparse.html#module-argparse). 
 
 ??? abstract "getDebug()"
     Checks whether one of the arguments with which the script is called is a `-d`.
@@ -42,18 +42,18 @@
     Retrieves the `config.py` from the specified *dataSource* by
     dynamically importing it as a module from one of the
     packages in
-    [apps]({{ghtft}}/{{c_apps}})
+    [apps]({{tfght}}/{{c_apps}})
 
     See also [App structure](../../Api/Apps/#the-structure-of-apps)
 
 ??? abstract "getAppdir(myDir, dataSource)"
     The code in
-    [local.py]({{ghtfb}}/{{c_local}})
+    [local.py]({{tfghb}}/{{c_local}})
     will pass its file location as `myDir`.
     Form there this function computes the locstion of the file in which
     the webapp of the *dataSource* resides: the location of the
     *dataSource* package in
-    [apps]({{ghtft}}/{{c_apps}}).
+    [apps]({{tfght}}/{{c_apps}}).
 
     See also [App structure](../../Api/Apps/#the-structure-of-apps)
 

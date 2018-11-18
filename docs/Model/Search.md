@@ -148,7 +148,7 @@ which is connected to the rest by the constraint that
 
 Note that all atoms are linked by constraints into one network. In graph
 theoretical terms: this template consists of exactly one
-[connected component](http://www.analytictech.com/networks/graphtheory.htm).
+[connected component]({{conncomp}}).
 
 If this were not so, we would have in fact two independent search tasks, where
 the result set would be the (cartesian) product of the result sets of the
@@ -330,7 +330,7 @@ A few key questions need to be addressed:
 Yes, spinning qedges until nothing changes any more, terminates, provided you do
 not try to spin qedges that are up-to-date. If the yarns around an edge have not
 changed, it does not make sense to spin that qedge. See
-[here]({{ghtfb}}/docs/Model/searchProofs.ipynb)
+[here]({{tfghb}}/docs/Model/searchProofs.ipynb)
 for proof.
 
 ### What have we got? ###
@@ -343,7 +343,7 @@ part of a result? Yes, that is possible.
 
 Only when the graph of qnodes and qedges does not have a cycle, we know that all
 members of all yarns occur at least once in a result. See
-[here]({{ghtfb}}/docs/Model/searchProofs.ipynb)
+[here]({{tfghb}}/docs/Model/searchProofs.ipynb)
 for proof.
 
 Quite a few interesting queries, however, have cycles in in their graphs. So, in
@@ -467,7 +467,7 @@ a lot will fail.
 
 I have also tried a different, more complicated strategy, which is still
 implemented, and which can be used by means of an optional argument to
-[`S.study()`](../Api/General.md#search-templates),
+[`S.study()`](../Search.md#search-templates),
 but results of this strategy were not particularly good.
 
 ### Small-first strategy
@@ -523,4 +523,4 @@ back-tracking occurs, by which the current stitch will get partly undefined,
 only to be filled up again by further searching.
 
 Read it all in the source code:
-[`def stitchOn(e)`]({{ghtfb}}/{{c_stitch}}#L442).
+[`def stitchOn(e)`]({{tfghb}}/{{c_stitch}}#L442).

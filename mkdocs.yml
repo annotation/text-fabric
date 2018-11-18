@@ -14,8 +14,6 @@ site_url: 'https://dans-labs.github.io/text-fabric/'
 site_author: Dirk Roorda
 
 extra:
-  ghtft: https://github.com/Dans-labs/text-fabric/tree/master 
-  ghtfb: https://github.com/Dans-labs/text-fabric/blob/master
   c_applib: tf/applib
   c_apphelpers: tf/applib/apphelpers.py
   c_appmake: tf/applib/appmake.py
@@ -61,6 +59,63 @@ extra:
   c_app: tf/app.py
   c_fabric: tf/fabric.py
   c_parfameters: tf/parameters.py
+  anaconda: https://www.anaconda.com/download
+  arxiv: https://arxiv.org
+  arxiv1: https://arxiv.org/abs/1501.01866
+  arxiv2: https://arxiv.org/abs/1410.0286 
+  arxiv3: https://arxiv.org/abs/1412.6069
+  arxiv4: https://arxiv.org/abs/1603.01541
+  banksphlebas: https://read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system
+  bottle: https://bottlepy.org 
+  bruder12: http://www.nuernberger-hausbuecher.de/75-Amb-2-317-4-v/data
+  cdli: https://cdli.ucla.edu
+  codingdoi: https://doi.org/10.1163/24523666-01000011
+  conncomp: http://www.analytictech.com/networks/graphtheory.htm
+  cssflex: https://css-tricks.com/snippets/css/a-guide-to-flexbox
+  dans: https://dans.knaw.nl/en
+  dlgh: https://github.com/Dans-labs
+  doedens: https://books.google.nl/books?id=9ggOBRz1dO4C
+  emdros: https://emdros.org
+  etcbc: http://etcbc.nl
+  etcbcgh: https://github.com/etcbc
+  etcbcnb: https://nbviewer.jupyter.org/github/etcbc
+  faqhint1: https://www.computerhope.com/issues/ch000549.htm
+  fontlib: https://fontlibrary.org
+  git: https://git-scm.com/downloads 
+  jensengh: https://github.com/ch-jensen/Semantic-mapping-of-participants
+  jquery: https://api.jquery.com
+  jup: https://jupyter.org
+  lfgh: https://github.com/Dans-labs/laf-fabric
+  mkdocs: https://mkdocs.readthedocs.io/en/stable/
+  moz_color: https://developer.mozilla.org/en-US/docs/Web/CSS/color_value 
+  moz_details: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
+  moz_length: https://developer.mozilla.org/en-US/docs/Web/CSS/length 
+  ninogh: https://github.com/Nino-cunei
+  ninonb: https://nbviewer.jupyter.org/github/Nino-cunei
+  node: https://nodejs.org/en/
+  oracc: http://oracc.museum.upenn.edu/doc/help
+  python: https://docs.python.org/3
+  pythond: https://www.python.org/downloads/
+  rpyc: https://github.com/tomerfiliba/rpyc
+  rpycdocboxing: https://rpyc.readthedocs.io/en/latest/docs/theory.html#boxing
+  rpycdocservices: https://rpyc.readthedocs.io/en/latest/docs/services.html#services 
+  pres1: http://www.slideshare.net/dirkroorda/text-fabric
+  pthugh: https://github.com/pthu
+  sbl1: https://global-learning.org/mod/forum/discuss.php?d=22
+  shebanq: https://shebanq.ancient-data.org
+  tfdgh: https://github.com/Dans-labs/text-fabric-data
+  tfdghb: https://github.com/Dans-labs/text-fabric-data/blob/master 
+  tfdght: https://github.com/Dans-labs/text-fabric-data/tree/master 
+  tfdoi: https://doi.org/10.5281/zenodo.592193
+  tfgh: https://github.com/Dans-labs/text-fabric
+  tfghb: https://github.com/Dans-labs/text-fabric/blob/master
+  tfght: https://github.com/Dans-labs/text-fabric/tree/master 
+  tfnb: https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master
+  tfpp: https://pypi.org/project/text-fabric/ 
+  ubiq1: https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/
+  weave: https://sew4home.com/tips-resources/buying-guide/all-about-fabric-weaves-tutorial
+  wikip: https://nl.wikipedia.org/wiki
+  zenodo: https://zenodo.org
 
 
 theme:
@@ -95,15 +150,7 @@ nav:
     - 'Stats (TF-app support)' : 'Code/StatsApplib.md'
     - 'Stats (TF-apps)' : 'Code/StatsApps.md'
     - 'Stats (Tests)' : 'Code/StatsTest.md'
-  - Model:
-    - 'Data': 'Model/Data-Model.md'
-    - 'Format': 'Model/File-formats.md'
-    - 'Tweaks': 'Model/Optimizations.md'
-    - 'Search': 'Model/Search.md'
-  - Writing:
-    - 'Hebrew': 'Writing/Hebrew.html'
-    - 'Syriac': 'Writing/Syriac.html'
-    - 'Transcription': 'Writing/Transcription.md'
+  - Search: 'Search.md'
   - Api:
     - 'General': 'Api/General.md'
     - 'Apps': 'Api/Apps.md'
@@ -115,6 +162,15 @@ nav:
     - 'Kernel': 'Server/Kernel.md'
     - 'Web': 'Server/Web.md'
     - 'Common': 'Server/Common.md'
+  - Writing:
+    - 'Hebrew': 'Writing/Hebrew.html'
+    - 'Syriac': 'Writing/Syriac.html'
+    - 'Transcription': 'Writing/Transcription.md'
+  - Model:
+    - 'Data': 'Model/Data-Model.md'
+    - 'Format': 'Model/File-formats.md'
+    - 'Tweaks': 'Model/Optimizations.md'
+    - 'Search': 'Model/Search.md'
   - Create:
     - 'Make TF': 'Create/CreateTF.md'
     - 'Example data': 'Create/ExampleText.md'
