@@ -676,7 +676,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Server/Web/" title="Web" class="md-nav__link">
+    <a href="../Server/Web.md" title="Web" class="md-nav__link">
       Web
     </a>
   </li>
@@ -947,8 +947,9 @@
                 
                 
                 <h1 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h1>
-<details class="info"><summary>What is Text-Fabric Search?</summary><p>You can query for graph like structures in your data set. The structure you are
-interested in has to be written as a <em>search template</em>.</p>
+<details class="info"><summary>What is Text-Fabric Search?</summary><p>You can query for graph like structures
+in your data set. The structure you are interested in has to be written as a
+<em>search template</em>.</p>
 <p>A search template expresses a pattern of nodes and edges with additional conditions
 also known as <em>quantifiers</em>.</p>
 <p>You can query a TF datasource in the TF browser, if your main corpus
@@ -957,9 +958,9 @@ has been wrapped in a Text-Fabric <a href="../Api/Apps/">app</a>.</p>
 notebook, by using the <a href="../Api/General/#search"><code>S</code> API</a>.</p>
 </details>
 <h2 id="search-templates">Search templates<a class="headerlink" href="#search-templates" title="Permanent link">&para;</a></h2>
-<details class="info"><summary>Search primer</summary><p>A search template consists of a bunch of lines, possibly indented, that specify
-objects to look for. Here is a simple example:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<details class="info"><summary>Search primer</summary><p>A search template consists of a bunch of lines,
+possibly indented, that specify objects to look for. Here is a simple example:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -996,7 +997,7 @@ the results that the corpus provides.</p>
 <p>If the order between the verb and the noun is important, you can specify that as
 an additional constraint. You can give the words a name, and state a relational
 condition. Here we state that the noun precedes the verb.</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1006,12 +1007,12 @@ condition. Here we state that the noun precedes the verb.</p>
       sentence
         vb:word pos=verb gender=feminine number=plural
         nn:word pos=noun gender=feminine number=singular
-nn &amp;lt; vb
+nn &lt; vb
 </pre></div>
 </td></tr></table>
 
 <p>This can be written a bit more economically as:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1019,13 +1020,13 @@ nn &amp;lt; vb
    chapter number=2
       sentence
         word pos=verb gender=feminine number=plural
-        &amp;gt; word pos=noun gender=feminine number=singular
+        &gt; word pos=noun gender=feminine number=singular
 </pre></div>
 </td></tr></table>
 
 <p>If you insist that the noun immediately precedes the verb, you can use a
 different relational operator:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1033,13 +1034,13 @@ different relational operator:</p>
    chapter number=2
       sentence
         word pos=verb gender=feminine number=plural
-        :&amp;gt; word pos=noun gender=feminine number=singular
+        :&gt; word pos=noun gender=feminine number=singular
 </pre></div>
 </td></tr></table>
 
 <p>There are more kinds of relational operators.</p>
 <p>If the noun must be the first word in the sentence, you can specify it as</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1048,13 +1049,13 @@ different relational operator:</p>
    chapter number=2
       s:sentence
         w:word pos=noun gender=feminine number=singular
-        &amp;lt;: word pos=verb gender=feminine number=plural
+        &lt;: word pos=verb gender=feminine number=plural
 s =: w
 </pre></div>
 </td></tr></table>
 
 <p>or a bit more economically:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1062,12 +1063,12 @@ s =: w
    chapter number=2
       sentence
         =: word pos=noun gender=feminine number=singular
-        &amp;lt;: word pos=verb gender=feminine number=plural
+        &lt;: word pos=verb gender=feminine number=plural
 </pre></div>
 </td></tr></table>
 
 <p>If the verb must be the last word in the sentence, you can specify it as</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1076,13 +1077,13 @@ s =: w
    chapter number=2
       s:sentence
         word pos=noun gender=feminine number=singular
-        &amp;lt;: w:word pos=verb gender=feminine number=plural
+        &lt;: w:word pos=verb gender=feminine number=plural
 s := w
 </pre></div>
 </td></tr></table>
 
 <p>or a bit more economically:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1091,7 +1092,7 @@ s := w
    chapter number=2
       s:sentence
         word pos=noun gender=feminine number=singular
-        &amp;lt;: word pos=verb gender=feminine number=plural
+        &lt;: word pos=verb gender=feminine number=plural
         :=
 </pre></div>
 </td></tr></table>
@@ -1100,13 +1101,13 @@ s := w
 relational operators as well.</p>
 <p>Suppose we have an edge feature <code>sub</code> between clauses, such that if main clause
 <em>m</em> has subordinate clauses <em>s1</em>, <em>s2</em> and <em>s3</em>, then</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>E.sub.f(m) = (s1, s2, s3)
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>E.sub.f(m) = (s1, s2, s3)
 </pre></div>
 </td></tr></table>
 
 <p>You can use this relation in search. Suppose we want to find the noun verb pair
 in subordinate clauses only. We can use this template:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1117,13 +1118,13 @@ in subordinate clauses only. We can use this template:</p>
       m:clause
         s:clause
           word pos=verb gender=feminine number=plural
-          :&amp;gt; word pos=noun gender=feminine number=singular
-m -sub&amp;gt; s
+          :&gt; word pos=noun gender=feminine number=singular
+m -sub&gt; s
 </pre></div>
 </td></tr></table>
 
 <p>or a bit more economically:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1131,9 +1132,9 @@ m -sub&amp;gt; s
 6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>book name=Genesis|Exodus
   chapter number=2
     clause
-      -sub&amp;gt; clause
+      -sub&gt; clause
         word    pos=verb gender=feminine number=plural
-        :&amp;gt; word pos=noun gender=feminine number=singular
+        :&gt; word pos=noun gender=feminine number=singular
 </pre></div>
 </td></tr></table>
 
@@ -1144,30 +1145,30 @@ For example, the
 is a set of edges between parallel verses, with the levels of confidence
 as values. This number is an integer between 0 and 100.
 We can ask for parallel verses in an unqualified way:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>verse
--crossref&amp;gt; verse
+-crossref&gt; verse
 </pre></div>
 </td></tr></table>
 
 <p>But we can also ask for the cases with a specific confidence:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>verse
--crossref=90&amp;gt; verse
+-crossref=90&gt; verse
 </pre></div>
 </td></tr></table>
 
 <p>or cases with a high confidence:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>verse
--crossref&amp;gt;95&amp;gt; verse
+-crossref&gt;95&gt; verse
 </pre></div>
 </td></tr></table>
 
 <p>or cases with a low confidence:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>verse
--crossref&amp;lt;80&amp;gt; verse
+-crossref&lt;80&gt; verse
 </pre></div>
 </td></tr></table>
 
@@ -1175,9 +1176,9 @@ We can ask for parallel verses in an unqualified way:</p>
 assert for edge features. If an edge feature is integer valued, such as <code>crossref</code>
 you can use comparisons; if it is string valued, you can use regular expressions.
 In both cases you can also use the other constructs, such as</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>verse
--crossref=66|77&amp;gt; verse
+-crossref=66|77&gt; verse
 </pre></div>
 </td></tr></table>
 
@@ -1323,13 +1324,14 @@ whole spectrum of relational constraints on nodes.</p>
 </ul>
 </details>
 <h2 id="feature-specifications">Feature specifications<a class="headerlink" href="#feature-specifications" title="Permanent link">&para;</a></h2>
-<details class="info"><summary>About</summary><p>The <strong>features</strong> above is a specification of what features with which values to
-search for. This specification must be written as a white-space separated list
-of <strong>feature specs</strong>.</p>
+<details class="info"><summary>About</summary><p>The <strong>features</strong> above is a specification of what features with
+which values to search for. This specification must be written as a white-space
+separated list of <strong>feature specs</strong>.</p>
 <p>A <strong>feature spec</strong> has the form <em>name</em> <em>valueSpec</em>, with no space between the <em>name</em>
 and the <em>valueSpec</em>.</p>
 </details>
-<details class="info"><summary>Value specifications</summary><p>The <em>valueSpec</em> may have the following forms and meanings:</p>
+<details class="info"><summary>Value specifications</summary><p>The <em>valueSpec</em> may have the following forms and
+meanings:</p>
 <table>
 <thead>
 <tr>
@@ -1385,7 +1387,7 @@ This is only meaningful if the edge feature is declared to have values (most edg
 do not have values).</p>
 </details>
 <details class="info"><summary>Additional constraints</summary><ul>
-<li>There may be no space around the <code>=#&lt;&gt;~</code>.</li>
+<li>There may be no space around the <code>=#&lt;&gt;~</code>. </li>
 <li><em>name</em> must be a feature name that exists in the dataset. If it references a
     feature that is not yet loaded, the feature will be loaded automatically.</li>
 <li><em>values</em> must be a <code>|</code> separated list of feature values, no quotes. No spaces
@@ -1393,8 +1395,8 @@ do not have values).</p>
     <code>\</code>. Escape tabs and newlines as <code>\t</code> and <code>\n</code>.</li>
 <li>When comparing values with <code>&lt;</code> and <code>&gt;</code>:<ul>
 <li><em>value</em> must be an integer (negative values allowed);</li>
-<li>You can do numeric comparisons only on number-valued features, not on
-    string-valued features.</li>
+<li>You can do numeric comparisons only on number-valued features,
+    not on string-valued features.</li>
 </ul>
 </li>
 <li><em>regular expression</em> must be a string that conforms to the Python
@@ -1619,27 +1621,25 @@ corresponds to the <code>atom</code>, and the remaining members correspond to
 the <code>template</code>.</p>
 </details>
 </details>
-<details class="note"><summary>Parent</summary><p>The <code>atom</code> bit is an atom line, it acts as the <em>parent</em> of the quantifier.
-Inside a quantifier, you may refer to the parent by the special name <code>..</code>.
-So you do not have to give a name to the parent.</p>
+<details class="note"><summary>Parent</summary><p>The <code>atom</code> bit is an atom line, it acts as the <em>parent</em> of the
+quantifier. Inside a quantifier, you may refer to the parent by the special name
+<code>..</code>. So you do not have to give a name to the parent.</p>
 </details>
 <details class="note"><summary>Multiple quantifiers</summary><p>You may have multiple quantifiers for one parent.</p>
 </details>
-<details class="note"><summary>Not in result tuples</summary><p>Whereas a the search for a normal template
-proceeds by finding a tuples that instantiates all it nodes
-in such a way that all relationships expressed in the template hold, a quantifier template
-is not instantiated.
-It asserts a condition that has to be tested for all nodes relative
-its parent. None of the atoms in a template of a quantifier corresponds to
-a node in a final result tuple.</p>
+<details class="note"><summary>Not in result tuples</summary><p>Whereas a the search for a normal template proceeds by finding a tuple
+that instantiates all its nodes in such a way that
+all relationships expressed in the template hold, a quantifier template is not
+instantiated. It asserts a condition that has to be tested for all nodes
+relative its parent. None of the atoms in a template of a quantifier corresponds
+to a node in a final result tuple.</p>
 </details>
-<details class="note"><summary>May be nested</summary><p>Templates within a quantifier may contain other quantifiers.
-The idea is, that whenever a search template is evaluated, quantifiers at the outer level of 
-get interpreted.
-This interpretation gives rise to one or more templates to be constructed and run.
-Those new templates have been stripped of the outer layer of quantifiers,
-and when these templates are executed, the quantifiers at the next level have become outer.
-And so on.</p>
+<details class="note"><summary>May be nested</summary><p>Templates within a quantifier may contain other
+quantifiers. The idea is, that whenever a search template is evaluated,
+quantifiers at the outer level of get interpreted. This interpretation gives
+rise to one or more templates to be constructed and run. Those new templates
+have been stripped of the outer layer of quantifiers, and when these templates
+are executed, the quantifiers at the next level have become outer. And so on.</p>
 </details>
 <details class="caution"><summary>Restrictions</summary><p>Due to the implementation of quantifiers there are certain restrictions.</p>
 <ul>
@@ -1672,7 +1672,7 @@ And so on.</p>
 <p>When you nest quantifiers, think of the way they will be recomposed into
 ordinary templates. This dictates whether your quantifier is syntactically valid or not.</p>
 </details>
-<details class="note"><summary>Indentation</summary><p>The indentation in quantifiers relative to their parent atom will be preserved.</p>
+<details class="note"><summary>Indentation</summary><p>The indentation in quantifiers relative to their parent atom will be preserved.  </p>
 <details class="example"><summary>Nested quantifiers</summary><p>Consider</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
@@ -1723,13 +1723,13 @@ ordinary templates. This dictates whether your quantifier is syntactically valid
 </td></tr></table>
 
 <p>Note that the auxiliary template for the inner quantifier
-is shifted in its entirety to the left, but that the 
+is shifted in its entirety to the left, but that the
 relative indentation is exactly as it shows in the original template.</p>
 </details>
 </details>
-<details class="info"><summary>Implementation</summary><p>Here is a description of the implementation of the quantifiers.
-It is not the real implementation, but it makes clear what is going on, and why
-the quantifiers have certain limitations, and how indentation works.</p>
+<details class="info"><summary>Implementation</summary><p>Here is a description of the implementation of the
+quantifiers. It is not the real implementation, but it makes clear what is going
+on, and why the quantifiers have certain limitations, and how indentation works.</p>
 <p>The basic idea is:</p>
 <ul>
 <li>a quantifier leads to the execution of one or more separate searche templates;</li>
@@ -1755,7 +1755,7 @@ QUANTIFIERn
 </pre></div>
 </td></tr></table>
 
-<p>We compute a set of clauses <code>filteredClauses1</code> based on </p>
+<p>We compute a set of clauses <code>filteredClauses1</code> based on</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>clause typ=Wx0
 QUANTIFIER1

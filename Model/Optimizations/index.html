@@ -617,7 +617,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Server/Web/" title="Web" class="md-nav__link">
+    <a href="../../Server/Web.md" title="Web" class="md-nav__link">
       Web
     </a>
   </li>
@@ -1042,7 +1042,7 @@ node spec must always be explicit.</p>
 <p>This optimizes some feature files greatly, e.g. the feature that contains the
 actual text of each word.</p>
 <p>Instead of</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span> 1
  2
  3
  4
@@ -1067,7 +1067,7 @@ actual text of each word.</p>
 </td></tr></table>
 
 <p>you can just say</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span> 1
  2
  3
  4
@@ -1108,33 +1108,33 @@ features.</p>
 features, we assume that the first node spec has been left out. But if the edge
 has no values, then we assume that both fields are node specs.</p>
 <p>So, in a node feature a line like this</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>42
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>42
 </pre></div>
 </td></tr></table>
 
 <p>means that the implicit node gets value <code>42</code>, and not that node <code>42</code> gets the
 empty value.</p>
 <p>Likewise, a line in an edge feature (without values) like this</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>42 43
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>42 43
 </pre></div>
 </td></tr></table>
 
 <p>means that there is an edge from <code>42</code> to <code>43</code> with empty value, and not that
 there is an edge from the implicit node to <code>42</code> with value 43.</p>
 <p>And, in the same edge, a line like this</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>42
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>42
 </pre></div>
 </td></tr></table>
 
 <p>means that there is an edge from the implicit node to <code>42</code> with the empty value.</p>
 <p>But, in an edge with values, the same lines are interpreted thus:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>42 43
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>42 43
 </pre></div>
 </td></tr></table>
 
 <p>means that there is an edge from the implicit node to node <code>42</code> with value <code>43</code>.</p>
 <p>And</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>42
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>42
 </pre></div>
 </td></tr></table>
 
@@ -1156,7 +1156,7 @@ like 2000 lines, each with a node spec, rather than a sequence of 400,000 lines,
 most empty.</p>
 <p>If you want to leave out just a few isolated cases in a feature where most nodes
 get a value, you can do it like this:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4

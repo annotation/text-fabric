@@ -617,7 +617,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Server/Web/" title="Web" class="md-nav__link">
+    <a href="../../Server/Web.md" title="Web" class="md-nav__link">
       Web
     </a>
   </li>
@@ -1178,17 +1178,17 @@ terminate and are correct. Yet it remains a metaphor, and the fit is not exact.<
 <p><img alt="fleece" src="../../images/SearchDesign/SearchDesign.002.png" /></p>
 <p>A fleece corresponds with a very simple search template that asks for all
 objects of a given type:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>word
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>word
 </pre></div>
 </td></tr></table>
 
 <p>or</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>clause
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>clause
 </pre></div>
 </td></tr></table>
 
 <p>or, asking for multiple types:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1210,7 +1210,7 @@ a node type.</p>
 <p><img alt="spin thick" src="../../images/SearchDesign/SearchDesign.003.png" /></p>
 <p>Consider search templates where we ask for specific members of a node type, by
 giving feature constraints:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1260,7 +1260,7 @@ the individual atoms, which is pretty enormous. It is hard to imagine a
 situation where these results could be consumed.</p>
 <p>Usually, there are <em>constraints</em> active between the atoms. For example in a
 template like this:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1332,7 +1332,7 @@ edges.</p>
 individually, but we have not done anything with the <em>qedges</em>. That is going to
 change now.</p>
 <p>Consider this piece of search template:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4
@@ -1365,7 +1365,7 @@ hopefully.</p>
 <p><img alt="spin edge2" src="../../images/SearchDesign/SearchDesign.005.png" /></p>
 <p>With the yarn of words severely spun out, we are going to the next qedge, the
 one between words and phrases.</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>3        phrase determined=yes
 4            w:word number=pl vt
 </pre></div>
@@ -1374,7 +1374,7 @@ one between words and phrases.</p>
 <p>The indent is an implicit way of saying that the "embeds" relation <code>[[</code> holds
 between the <code>phrase</code> and the <code>word</code>. An equivalent formulation of the template
 is</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
 4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>p:phrase determined=yes
@@ -1392,7 +1392,7 @@ the yarn of <code>w</code>. In other words: the phrases without plural words and
 tense are also out.</p>
 <p><img alt="spin edge3" src="../../images/SearchDesign/SearchDesign.006.png" /></p>
 <p>We continue spinning, now between phrases and clauses.</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>2    clause type=rela
 3        phrase determined=yes
 </pre></div>
@@ -1402,7 +1402,7 @@ tense are also out.</p>
 we loose all clauses that do not embed one of the few phrases left.</p>
 <p><img alt="spin edge4" src="../../images/SearchDesign/SearchDesign.007.png" /></p>
 <p>The last spin action corresponds with</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>1 verse book=Genesis
 2    clause type=rela
 </pre></div>
