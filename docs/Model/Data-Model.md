@@ -199,13 +199,15 @@ textual content. Let us discuss the warp features a bit more.
 Maps each node to a label. The label typically is the kind of object that the
 node represents, with values such as
 
-    book
-    chapter
-    verse
-    sentence
-    clause
-    phrase
-    word
+```
+book
+chapter
+verse
+sentence
+clause
+phrase
+word
+```
 
 There is a special kind of object type, the *slot type*, which is the atomic
 building block of the text objects. It is assumed that the complete text is

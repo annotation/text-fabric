@@ -59,9 +59,11 @@
     ??? hint "Defaults"
         The `locations` list has a few defaults:
 
-            ~/Downloads/text-fabric-data
-            ~/text-fabric-data
-            ~/github/text-fabric-data
+        ```
+        ~/Downloads/text-fabric-data
+        ~/text-fabric-data
+        ~/github/text-fabric-data
+        ```
 
         So if you have stored your main Text-Fabric dataset in
         `text-fabric-data` in one of these directories

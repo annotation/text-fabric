@@ -9,23 +9,33 @@ The whole file is a plain text in UNICODE-utf8.
 
 A `.tf` feature file always starts with one or more metadata lines of the form
 
-    @key
+```
+@key
+```
 
 or
 
-    @key=value
+```
+@key=value
+```
 
 The first line must be either
 
-    @node
+```
+@node
+```
 
 or
 
-    @edge
+```
+@edge
+```
 
 or
 
-    @config
+```
+@config
+```
 
 This tells Text-Fabric whether the data in the feature file is a *node* feature
 or an *edge* feature. The value `@config` means that the file will be used as
@@ -33,7 +43,9 @@ configuration info. It will only have metadata.
 
 There **must** also be a type declaration:
 
-    @valueType=type
+```
+@valueType=type
+```
 
 where type is `str` or `int`. `@valueType` declares the type of the values in
 this feature file. If it is anything other than `str` (=*string*), Text-Fabric
@@ -42,7 +54,9 @@ the only other supported type is `int` for integers.
 
 In edge features, there **may** also be a declaration
 
-    @edgeValues
+```
+@edgeValues
+```
 
 indicating that the edge feature carries values. The default is that an edge
 does not carry values.
@@ -50,7 +64,9 @@ does not carry values.
 The rest of the metadata is optional for now, but it is recommended to put a
 date stamp in it like this
 
-    @dateCreated=2016-11-20T13:26:59Z
+```
+@dateCreated=2016-11-20T13:26:59Z
+```
 
 The time format should be [ISO 8601]({{wikip}}/ISO_8601).
 
@@ -63,11 +79,15 @@ that is data.
 
 The form of a data line is
 
-    node_spec value
+```
+node_spec value
+```
 
 for node features, and
 
-    node_spec node_spec value
+```
+node_spec node_spec value
+```
 
 for edge features.
 
@@ -86,27 +106,35 @@ A node spec denotes a *set* of nodes.
 
 The simplest form of a node spec is just a single integer. Examples:
 
-    3
-    45
-    425000
+```
+3
+45
+425000
+```
 
 Ranges are also allowed. Examples
 
-    1-10
-    5-13
-    28-57045
+```
+1-10
+5-13
+28-57045
+```
 
 The nodes denoted by a range are all numbers between the endpoints of the range
 (including at both sides). So
 
-    2-4
+```
+2-4
+```
 
 denotes the nodes `2`, `3`, and `4`.
 
 You can also combine numbers and ranges arbitrarily by separating them with
 commas. Examples
 
-    1-3,5-10,15,23-37
+```
+1-3,5-10,15,23-37
+```
 
 Such a specification denotes the union of what is denoted by each
 comma-separated part.
@@ -114,14 +142,18 @@ comma-separated part.
 **NB** As node specs denote *sets* of nodes, the following node specs are in
 fact equivalent
 
-    1,1 and 1
-    2-3 and 3,2
-    1-5,2-7 and 1-7
+```
+1,1 and 1
+2-3 and 3,2
+1-5,2-7 and 1-7
+```
 
 We will be tolerant in that you may specify the end points of ranges in
 arbitrary order:
 
-    1-3 is the same as 3-1
+```
+1-3 is the same as 3-1
+```
 
 ### Edges
 

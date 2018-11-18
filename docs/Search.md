@@ -1,8 +1,9 @@
-# Search
- 
+# Search #
+
 ??? info "What is Text-Fabric Search?"
-    You can query for graph like structures in your data set. The structure you are
-    interested in has to be written as a *search template*.
+    You can query for graph like structures
+    in your data set. The structure you are interested in has to be written as a
+    *search template*.
 
     A search template expresses a pattern of nodes and edges with additional conditions
     also known as *quantifiers*.
@@ -13,17 +14,19 @@
     You can also run queries on arbitrary TF datasources programmatically, e.g. in a Jupyter
     notebook, by using the [`S` API](Api/General.md#search).
 
-## Search templates
+## Search templates ##
 
 ??? info "Search primer"
-    A search template consists of a bunch of lines, possibly indented, that specify
-    objects to look for. Here is a simple example:
+    A search template consists of a bunch of lines,
+    possibly indented, that specify objects to look for. Here is a simple example:
 
-        book name=Genesis|Exodus
-           chapter number=2
-              sentence
-                word pos=verb gender=feminine number=plural
-                word pos=noun gender=feminine number=singular
+    ```
+    book name=Genesis|Exodus
+       chapter number=2
+          sentence
+            word pos=verb gender=feminine number=plural
+            word pos=noun gender=feminine number=singular
+    ```
 
     This template looks for word combinations within a sentence within chapter 2 of
     either Genesis or Exodus, where one of the words is a verb and the other is a
@@ -58,66 +61,80 @@
     an additional constraint. You can give the words a name, and state a relational
     condition. Here we state that the noun precedes the verb.
 
-        book name=Genesis|Exodus
-           chapter number=2
-              sentence
-                vb:word pos=verb gender=feminine number=plural
-                nn:word pos=noun gender=feminine number=singular
-        nn < vb
+    ```
+    book name=Genesis|Exodus
+       chapter number=2
+          sentence
+            vb:word pos=verb gender=feminine number=plural
+            nn:word pos=noun gender=feminine number=singular
+    nn < vb
+    ```
 
     This can be written a bit more economically as:
 
-        book name=Genesis|Exodus
-           chapter number=2
-              sentence
-                word pos=verb gender=feminine number=plural
-                > word pos=noun gender=feminine number=singular
+    ```
+    book name=Genesis|Exodus
+       chapter number=2
+          sentence
+            word pos=verb gender=feminine number=plural
+            > word pos=noun gender=feminine number=singular
+    ```
 
     If you insist that the noun immediately precedes the verb, you can use a
     different relational operator:
 
-        book name=Genesis|Exodus
-           chapter number=2
-              sentence
-                word pos=verb gender=feminine number=plural
-                :> word pos=noun gender=feminine number=singular
+    ```
+    book name=Genesis|Exodus
+       chapter number=2
+          sentence
+            word pos=verb gender=feminine number=plural
+            :> word pos=noun gender=feminine number=singular
+    ```
 
     There are more kinds of relational operators.
 
     If the noun must be the first word in the sentence, you can specify it as
 
-        book name=Genesis|Exodus
-           chapter number=2
-              s:sentence
-                w:word pos=noun gender=feminine number=singular
-                <: word pos=verb gender=feminine number=plural
-        s =: w
+    ```
+    book name=Genesis|Exodus
+       chapter number=2
+          s:sentence
+            w:word pos=noun gender=feminine number=singular
+            <: word pos=verb gender=feminine number=plural
+    s =: w
+    ```
 
     or a bit more economically:
 
-        book name=Genesis|Exodus
-           chapter number=2
-              sentence
-                =: word pos=noun gender=feminine number=singular
-                <: word pos=verb gender=feminine number=plural
+    ```
+    book name=Genesis|Exodus
+       chapter number=2
+          sentence
+            =: word pos=noun gender=feminine number=singular
+            <: word pos=verb gender=feminine number=plural
+    ```
 
     If the verb must be the last word in the sentence, you can specify it as
 
-        book name=Genesis|Exodus
-           chapter number=2
-              s:sentence
-                word pos=noun gender=feminine number=singular
-                <: w:word pos=verb gender=feminine number=plural
-        s := w
+    ```
+    book name=Genesis|Exodus
+       chapter number=2
+          s:sentence
+            word pos=noun gender=feminine number=singular
+            <: w:word pos=verb gender=feminine number=plural
+    s := w
+    ```
 
     or a bit more economically:
 
-        book name=Genesis|Exodus
-           chapter number=2
-              s:sentence
-                word pos=noun gender=feminine number=singular
-                <: word pos=verb gender=feminine number=plural
-                :=
+    ```
+    book name=Genesis|Exodus
+       chapter number=2
+          s:sentence
+            word pos=noun gender=feminine number=singular
+            <: word pos=verb gender=feminine number=plural
+            :=
+    ```
 
     You can also use the [edge features](#edge-features) in the corpus as
     relational operators as well.
@@ -125,27 +142,33 @@
     Suppose we have an edge feature `sub` between clauses, such that if main clause
     *m* has subordinate clauses *s1*, *s2* and *s3*, then
 
-        E.sub.f(m) = (s1, s2, s3)
+    ```
+    E.sub.f(m) = (s1, s2, s3)
+    ```
 
     You can use this relation in search. Suppose we want to find the noun verb pair
     in subordinate clauses only. We can use this template:
 
-        book name=Genesis|Exodus
-           chapter number=2
-              m:clause
-                s:clause
-                  word pos=verb gender=feminine number=plural
-                  :> word pos=noun gender=feminine number=singular
-        m -sub> s
+    ```
+    book name=Genesis|Exodus
+       chapter number=2
+          m:clause
+            s:clause
+              word pos=verb gender=feminine number=plural
+              :> word pos=noun gender=feminine number=singular
+    m -sub> s
+    ```
 
     or a bit more economically:
 
-        book name=Genesis|Exodus
-          chapter number=2
-            clause
-              -sub> clause
-                word    pos=verb gender=feminine number=plural
-                :> word pos=noun gender=feminine number=singular
+    ```
+    book name=Genesis|Exodus
+      chapter number=2
+        clause
+          -sub> clause
+            word    pos=verb gender=feminine number=plural
+            :> word pos=noun gender=feminine number=singular
+    ```
 
     Read `m -sub> s` as: there is a `sub`-arrow from `m` to `s`.
 
@@ -156,23 +179,31 @@
     as values. This number is an integer between 0 and 100.
     We can ask for parallel verses in an unqualified way:
 
-        verse
-        -crossref> verse
+    ```
+    verse
+    -crossref> verse
+    ```
 
     But we can also ask for the cases with a specific confidence:
 
-        verse
-        -crossref=90> verse
+    ```
+    verse
+    -crossref=90> verse
+    ```
 
     or cases with a high confidence:
 
-        verse
-        -crossref>95> verse
+    ```
+    verse
+    -crossref>95> verse
+    ```
 
     or cases with a low confidence:
 
-        verse
-        -crossref<80> verse
+    ```
+    verse
+    -crossref<80> verse
+    ```
 
 
     All feature conditions that you can assert on node features, you can also
@@ -181,8 +212,10 @@
     In both cases you can also use the other constructs, such as
 
 
-        verse
-        -crossref=66|77> verse
+    ```
+    verse
+    -crossref=66|77> verse
+    ```
 
     To get a more specific introduction to search, consult the search tutorials for
     [Hebrew]({{etcbcgh}}/bhsa/blob/master/tutorial/search.ipynb),
@@ -293,7 +326,7 @@
         Atom lines that contain an otype or set may be followed by
         Quantifiers consist of search templates themselves, demarcated by some
         special keywords:
-        
+
         *   `/without/`
         *   `/where/` and `/have/`
         *   `/with/` and `/or/`
@@ -301,18 +334,19 @@
 
         See [*quantifiers*](#quantifiers) below for all the syntax and semantics.
 
-## Feature specifications
+## Feature specifications ##
 
 ??? info "About"
-    The **features** above is a specification of what features with which values to
-    search for. This specification must be written as a white-space separated list
-    of **feature specs**.
+    The **features** above is a specification of what features with
+    which values to search for. This specification must be written as a white-space
+    separated list of **feature specs**.
 
     A **feature spec** has the form *name* *valueSpec*, with no space between the *name*
     and the *valueSpec*.
 
 ??? info "Value specifications"
-    The *valueSpec* may have the following forms and meanings:
+    The *valueSpec* may have the following forms and
+    meanings:
 
     form | evaluates to `True` the feature *name* ...
     ---- | -------
@@ -328,9 +362,9 @@
     ??? hint "Why `*` ?"
         The operator `*` after a feature name does not pose any restriction at all.
         It will not influence the search results.
-        
+
         *Why would you want to include such a "criterion"?*
-        
+
         Some applications, such as the Text-Fabric browser collect the features used in a query
         to retrieve result information to be presented to the user. So if you want to include
         the values of a particular feature, mention that feature with a `*`.
@@ -341,16 +375,16 @@
     do not have values).
 
 ??? info "Additional constraints"
-    *   There may be no space around the `=#<>~`.
+    *   There may be no space around the `=#<>~`. 
     *   *name* must be a feature name that exists in the dataset. If it references a
         feature that is not yet loaded, the feature will be loaded automatically.
     *   *values* must be a `|` separated list of feature values, no quotes. No spaces
         around the `|`. If you need a space or `|` or `\` in a value, escape it by a
         `\`. Escape tabs and newlines as `\t` and `\n`.
     *   When comparing values with `<` and `>`:
-        *    *value* must be an integer (negative values allowed);
-        *   You can do numeric comparisons only on number-valued features, not on
-            string-valued features.
+        *   *value* must be an integer (negative values allowed);
+        *   You can do numeric comparisons only on number-valued features,
+            not on string-valued features.
     *   *regular expression* must be a string that conforms to the Python
         [regular axpression syntax]({{python}}/library/re.html#regular-expression-syntax)
         *   If you need a space in your regular expression, you have to escape it with a
@@ -358,7 +392,7 @@
         *   You can do regular expressions only on string-valued features, not on
             number-valued features.
 
-## Relational operators
+## Relational operators ##
 
 ??? info "Node comparison"
 
@@ -433,7 +467,7 @@
 
         ![op](images/Spatial/Spatial.019.png)
 
-## Quantifiers
+## Quantifiers ##
 
 ??? info "What is a quantifier?"
     Quantifiers are powerful expressions in templates.
@@ -465,7 +499,7 @@
     ```
 
     Meaning:
-    
+
     node *r* is a result of this template if and only if *r* is a result of `atom` and
     there is no tuple *RN* such that (*r*, *RN*) is a result of
 
@@ -488,15 +522,15 @@
     ```
 
     Meaning:
-    
+
     node *r* is a result of this template if and only if *r* is a result of `atom` and
     for all tuples (*RA*) such that (*r*, *RA*) is a result of
-    
+
     ```
     atom
     templateA
     ```
-      
+
     there is a tuple *RH* such that (*r*, *RA*, *RH*)  is a result of
 
     ```
@@ -504,7 +538,6 @@
     templateA
     templateH
     ```
-      
 
 ??? abstract "/with/"
 
@@ -522,7 +555,7 @@
     ```
 
     Meaning:
-    
+
     node *r* is a result of this template if and only if:
     there is a tuple *R1* such that (*r*, *R1*) is a result of
 
@@ -571,30 +604,28 @@
         the `template`.
 
 ??? note "Parent"
-    The `atom` bit is an atom line, it acts as the *parent* of the quantifier.
-    Inside a quantifier, you may refer to the parent by the special name `..`.
-    So you do not have to give a name to the parent.
+    The `atom` bit is an atom line, it acts as the *parent* of the
+    quantifier. Inside a quantifier, you may refer to the parent by the special name
+    `..`. So you do not have to give a name to the parent.
 
 ??? note "Multiple quantifiers"
     You may have multiple quantifiers for one parent.
 
 ??? note "Not in result tuples"
-    Whereas a the search for a normal template
-    proceeds by finding a tuples that instantiates all it nodes
-    in such a way that all relationships expressed in the template hold, a quantifier template
-    is not instantiated.
-    It asserts a condition that has to be tested for all nodes relative
-    its parent. None of the atoms in a template of a quantifier corresponds to
-    a node in a final result tuple.
+    Whereas a the search for a normal template proceeds by finding a tuple
+    that instantiates all its nodes in such a way that
+    all relationships expressed in the template hold, a quantifier template is not
+    instantiated. It asserts a condition that has to be tested for all nodes
+    relative its parent. None of the atoms in a template of a quantifier corresponds
+    to a node in a final result tuple.
 
 ??? note "May be nested"
-    Templates within a quantifier may contain other quantifiers.
-    The idea is, that whenever a search template is evaluated, quantifiers at the outer level of 
-    get interpreted.
-    This interpretation gives rise to one or more templates to be constructed and run.
-    Those new templates have been stripped of the outer layer of quantifiers,
-    and when these templates are executed, the quantifiers at the next level have become outer.
-    And so on.
+    Templates within a quantifier may contain other
+    quantifiers. The idea is, that whenever a search template is evaluated,
+    quantifiers at the outer level of get interpreted. This interpretation gives
+    rise to one or more templates to be constructed and run. Those new templates
+    have been stripped of the outer layer of quantifiers, and when these templates
+    are executed, the quantifiers at the next level have become outer. And so on.
 
 ??? caution "Restrictions"
     Due to the implementation of quantifiers there are certain restrictions.
@@ -624,8 +655,8 @@
     ordinary templates. This dictates whether your quantifier is syntactically valid or not.
 
 ??? note "Indentation"
-    The indentation in quantifiers relative to their parent atom will be preserved.
-    
+    The indentation in quantifiers relative to their parent atom will be preserved.  
+
     ??? example "Nested quantifiers"
         Consider
 
@@ -668,13 +699,13 @@
         ```
 
         Note that the auxiliary template for the inner quantifier
-        is shifted in its entirety to the left, but that the 
+        is shifted in its entirety to the left, but that the
         relative indentation is exactly as it shows in the original template.
 
 ??? info "Implementation"
-    Here is a description of the implementation of the quantifiers.
-    It is not the real implementation, but it makes clear what is going on, and why
-    the quantifiers have certain limitations, and how indentation works.
+    Here is a description of the implementation of the
+    quantifiers. It is not the real implementation, but it makes clear what is going
+    on, and why the quantifiers have certain limitations, and how indentation works.
 
     The basic idea is:
 
@@ -697,7 +728,7 @@
       rest-of-template
     ```
 
-    We compute a set of clauses `filteredClauses1` based on 
+    We compute a set of clauses `filteredClauses1` based on
 
     ```
     clause typ=Wx0
