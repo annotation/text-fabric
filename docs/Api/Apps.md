@@ -35,7 +35,7 @@
 
     ??? abstract "static"
         A folder with fonts and logos, to be used by webservers such as the the
-        [text-fabric browser](../Server/Web.md).
+        [text-fabric browser](../Server/Local.md).
 
     ??? abstract "config.py"
         Settings to set up a browsing experience and to feed the specific API for this app.

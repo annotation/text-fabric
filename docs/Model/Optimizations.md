@@ -30,31 +30,35 @@ actual text of each word.
 
 Instead of
 
-    1 be
-    2 reshit
-    3 bara
-    4 elohim
-    5 et
-    6 ha
-    7 shamajim
-    8 we
-    9 et
-    10 ha
-    11 arets
+```
+1 be
+2 reshit
+3 bara
+4 elohim
+5 et
+6 ha
+7 shamajim
+8 we
+9 et
+10 ha
+11 arets
+```
 
 you can just say
 
-    be
-    reshit
-    bara
-    elohim
-    et
-    ha
-    shamajim
-    we
-    et
-    ha
-    arets
+```
+be
+reshit
+bara
+elohim
+et
+ha
+shamajim
+we
+et
+ha
+arets
+```
 
 This optimization is not obligatory. It is a device that may be used if you want
 to optimize the size of data files that you want to distribute.
@@ -80,33 +84,43 @@ has no values, then we assume that both fields are node specs.
 
 So, in a node feature a line like this
 
-    42
+```
+42
+```
 
 means that the implicit node gets value `42`, and not that node `42` gets the
 empty value.
 
 Likewise, a line in an edge feature (without values) like this
 
-    42 43
+```
+42 43
+```
 
 means that there is an edge from `42` to `43` with empty value, and not that
 there is an edge from the implicit node to `42` with value 43.
 
 And, in the same edge, a line like this
 
-    42
+```
+42
+```
 
 means that there is an edge from the implicit node to `42` with the empty value.
 
 But, in an edge with values, the same lines are interpreted thus:
 
-    42 43
+```
+42 43
+```
 
 means that there is an edge from the implicit node to node `42` with value `43`.
 
 And
 
-    42
+```
+42
+```
 
 means that there is an edge from the implicit node to node `42` with empty
 value.
@@ -132,15 +146,17 @@ most empty.
 If you want to leave out just a few isolated cases in a feature where most nodes
 get a value, you can do it like this:
 
-    @node
+```
+@node
 
-    x0000
-    ...
-    x1000
-    1002 x1002
-    x1003
-    ...
-    x9999
+x0000
+...
+x1000
+1002 x1002
+x1003
+...
+x9999
+```
 
 Here all 10,000 nodes get a value, except node `1001`.
 

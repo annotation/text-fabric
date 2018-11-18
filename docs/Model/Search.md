@@ -39,19 +39,25 @@ We will explain the stages of the fabrication process in detail.
 A fleece corresponds with a very simple search template that asks for all
 objects of a given type:
 
-    word
+```
+word
+```
 
 or
 
-    clause
+```
+clause
+```
 
 or, asking for multiple types:
 
-    verse
-    clause
-    phrase
-    lex
-    word
+```
+verse
+clause
+phrase
+lex
+word
+```
 
 Fleeces are the raw material from which we fabricate our search results.
 
@@ -69,12 +75,14 @@ a node type.
 Consider search templates where we ask for specific members of a node type, by
 giving feature constraints:
 
-    verse book=Genesis
-    clause type=rela
-    phrase determined=yes
-    lex id=jc/
-    word number=pl vt
-    vt
+```
+verse book=Genesis
+clause type=rela
+phrase determined=yes
+lex id=jc/
+word number=pl vt
+vt
+```
 
 Every line in this search templates we call an *atom*: a node type plus a
 feature specification. The result of an atom is the set of all nodes in that
@@ -122,14 +130,16 @@ situation where these results could be consumed.
 Usually, there are *constraints* active between the atoms. For example in a
 template like this:
 
-    1 verse book=Genesis
-    2    clause type=rela
-    3        phrase determined=yes
-    4            w:word number=pl vt
-    5
-    6 l:lex id=jc/
-    7
-    8 w ]] l
+```
+1 verse book=Genesis
+2    clause type=rela
+3        phrase determined=yes
+4            w:word number=pl vt
+5
+6 l:lex id=jc/
+7
+8 w ]] l
+```
 
 The meaning of this template is that we look for a `verse` that
 
@@ -200,11 +210,13 @@ change now.
 
 Consider this piece of search template:
 
-    4            w:word number=pl vt
-    5
-    6 l:lex id=jc/
-    7
-    8 w ]] l
+```
+4            w:word number=pl vt
+5
+6 l:lex id=jc/
+7
+8 w ]] l
+```
 
 So our *qnodes* are `w` and `l`, and our *qedge* is `w ]] l`. Note that a `lex`
 object is the set of all occurrences of a lexeme. So `w ]] l` says that `w` is
@@ -235,17 +247,21 @@ hopefully.
 With the yarn of words severely spun out, we are going to the next qedge, the
 one between words and phrases.
 
-    3        phrase determined=yes
-    4            w:word number=pl vt
+```
+3        phrase determined=yes
+4            w:word number=pl vt
+```
 
 The indent is an implicit way of saying that the "embeds" relation `[[` holds
 between the `phrase` and the `word`. An equivalent formulation of the template
 is
 
-    p:phrase determined=yes
-    w:word number=pl vt
+```
+p:phrase determined=yes
+w:word number=pl vt
 
-    p [[ w
+p [[ w
+```
 
 We race along the yarn `w` of remaining words and check for each word if it is
 contained in a phrase in the yarn of `p`, the determined phrases. If it is not,
@@ -258,8 +274,10 @@ tense are also out.
 
 We continue spinning, now between phrases and clauses.
 
-    2    clause type=rela
-    3        phrase determined=yes
+```
+2    clause type=rela
+3        phrase determined=yes
+```
 
 Here we loose the phrases that are not contained in a clause of `type=rela`, and
 we loose all clauses that do not embed one of the few phrases left.
@@ -268,8 +286,10 @@ we loose all clauses that do not embed one of the few phrases left.
 
 The last spin action corresponds with
 
-    1 verse book=Genesis
-    2    clause type=rela
+```
+1 verse book=Genesis
+2    clause type=rela
+```
 
 So we throw away all our results if they are outside Genesis.
 
