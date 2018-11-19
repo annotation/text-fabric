@@ -149,9 +149,10 @@ def valueFromTf(tf):
 
 
 def tfFromValue(val):
-  return str(val) if type(val) is int else val.replace('\\',
-                                                       '\\\\').replace('\t',
-                                                                       '\\t').replace('\n', '\\n')
+  return (
+      str(val)
+      if type(val) is int else val.replace('\\', '\\\\').replace('\t', '\\t').replace('\n', '\\n')
+  )
 
 
 def makeInverse(data):

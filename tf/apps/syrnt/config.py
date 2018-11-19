@@ -13,7 +13,7 @@ CORPUS = 'SyrNT'
 VERSION = '0.1'
 RELATIVE = 'tf'
 
-DOI = '10.5281/zenodo.1464787'
+DOI_TEXT = '10.5281/zenodo.1464787'
 DOI_URL = 'https://doi.org/10.5281/zenodo.1464787'
 
 DOC_URL = f'https://github.com/{ORG}/{REPO}/blob/master/docs'

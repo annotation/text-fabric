@@ -54,6 +54,13 @@ def getModules(cargs=sys.argv):
   return ''
 
 
+def getSets(cargs=sys.argv):
+  for arg in cargs[1:]:
+    if arg.startswith('--sets='):
+      return arg
+  return ''
+
+
 def getParam(cargs=sys.argv, interactive=False):
   myDir = os.path.dirname(os.path.abspath(__file__))
   dataSourcesParent = getAppDir(myDir, '')
@@ -95,7 +102,7 @@ def getParam(cargs=sys.argv, interactive=False):
 
 def getAppDir(myDir, dataSource):
   parentDir = os.path.dirname(myDir)
-  tail = '' if dataSource == '' else {dataSource}
+  tail = '' if dataSource == '' else dataSource
   return f'{parentDir}/apps/{tail}'
 
 

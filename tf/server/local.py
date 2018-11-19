@@ -12,7 +12,7 @@ import bottle
 from bottle import (post, get, route, template, request, static_file, run)
 
 from ..core.helpers import console
-from ..parameters import NAME, VERSION, DOI, DOI_URL, COMPOSE_URL
+from ..parameters import NAME, VERSION, DOI_TEXT, DOI_URL, COMPOSE_URL
 from ..applib.apphelpers import RESULT
 from ..applib.appmake import (
     findAppConfig,
@@ -66,7 +66,7 @@ def getStuff(lgc):
   return config
 
 
-def getProvenance(form, provenance):
+def getProvenance(form, provenance, setNames):
   utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
   utc_offset = datetime.timedelta(seconds=-utc_offset_sec)
   now = datetime.datetime.now().replace(microsecond=0,
@@ -76,6 +76,7 @@ def getProvenance(form, provenance):
 
   dataHtml = ''
   dataMd = ''
+  sep = ''
 
   for d in provenance:
     corpus = d['corpus']
@@ -84,9 +85,9 @@ def getProvenance(form, provenance):
     (live, liveUrl) = d['live']
     liveHtml = f'<a href="{liveUrl}">{live}</a>'
     liveMd = f'[{live}]({liveUrl})'
-    (doi, doiUrl) = d['doi']
-    doiHtml = f'<a href="{doiUrl}">{doi}</a>'
-    doiMd = f'[{doi}]({doiUrl})'
+    (doiText, doiUrl) = d['doi']
+    doiHtml = f'<a href="{doiUrl}">{doiText}</a>'
+    doiMd = f'[{doiText}]({doiUrl})'
     dataHtml += f'''
     <div class="pline">
       <div class="pname">Data:</div>
@@ -109,15 +110,29 @@ def getProvenance(form, provenance):
       <div class="pval">{doiHtml}</div>
     </div>
 '''
-    dataMd += f'''Data source | {corpus}
+    dataMd += f'''{sep}Data source | {corpus}
 version | {version}
 release | {release}
 download   | {liveMd}
 DOI | {doiMd}'''
+    sep = '\n'
+
+  setHtml = ''
+  setMd = ''
+
+  if setNames:
+    setNamesRep = ', '.join(setNames)
+    setHtml += f'''
+    <div class="psline">
+      <div class="pname">Sets:</div>
+      <div class="pval">{setNamesRep} (<b>not exported</b>)</div>
+    </div>
+'''
+    setMd += f'''Sets | {setNamesRep} (**not exported**)'''
 
   tool = f'{NAME} {VERSION}'
-  toolDoiHtml = f'<a href="{DOI_URL}">{DOI}</a>'
-  toolDoiMd = f'[{DOI}]({DOI_URL})'
+  toolDoiHtml = f'<a href="{DOI_URL}">{DOI_TEXT}</a>'
+  toolDoiMd = f'[{DOI_TEXT}]({DOI_URL})'
 
   composeHtml = f'<a href="{COMPOSE_URL}">{COMPOSE}</a>'
   composeMd = f'[{COMPOSE}]({COMPOSE_URL})'
@@ -133,6 +148,7 @@ DOI | {doiMd}'''
       <div class="pname">Created:</div><div class="pval">{now}</div>
     </div>
     {dataHtml}
+    {setHtml}
     <div class="pline">
       <div class="pname">Tool:</div>
       <div class="pval">{tool} {toolDoiHtml}</div>
@@ -150,6 +166,7 @@ Job | {job}
 Author | {author}
 Created | {now}
 {dataMd}
+{setMd}
 Tool | {tool} {toolDoiMd}
 See also | {composeMd}
 '''
@@ -381,7 +398,13 @@ def serveSearch(anything):
   (header, appLogo, tfLogo) = kernelApi.header()
   css = kernelApi.css()
   provenance = kernelApi.provenance()
-  (provenanceHtml, provenanceMd) = getProvenance(form, provenance)
+  setNames = kernelApi.setNames()
+  setNamesRep = ', '.join(setNames)
+  setNameHtml = f'''
+<p class="setnames">Sets:
+<span class="setnames">{setNamesRep}</span>
+</p>''' if setNames else ''
+  (provenanceHtml, provenanceMd) = getProvenance(form, provenance, setNames)
 
   (
       defaultCondenseType,
@@ -498,6 +521,7 @@ def serveSearch(anything):
         table=table,
         colofon=f'{appLogo}{header}{tfLogo}',
         provenance=provenanceHtml,
+        setNames=setNameHtml,
         **form,
     )
   return template(
@@ -505,6 +529,7 @@ def serveSearch(anything):
       dataSource=dataSource,
       css=css,
       header=f'{appLogo}{header}{tfLogo}',
+      setNames=setNameHtml,
       options=shapeOptions(options, values),
       sectionMessages=sectionMessages,
       tupleMessages=tupleMessages,

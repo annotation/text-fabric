@@ -11,6 +11,7 @@ text_fabric.egg-info/top_level.txt
 tf/__init__.py
 tf/app.py
 tf/fabric.py
+tf/lib.py
 tf/parameters.py
 tf/applib/__init__.py
 tf/applib/apphelpers.py

@@ -15,6 +15,14 @@
 I am thinking about using the TF kernel for a web-facing server, not just the internal
 TF browser. And use that to expose the Peshitta and SyrNT to the web.
 
+## 7.1
+
+2018-11-19
+
+* You can use custom sets in queries in the TF browser
+* Reorganized the docs of the individual apps, took the common parts together
+* New functions `writeSets` and `readSets` in `tf.lib`
+
 ## 7.0.3
 
 2018-11-17

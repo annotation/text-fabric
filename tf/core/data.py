@@ -4,13 +4,12 @@ import gzip
 import collections
 import time
 from datetime import datetime
+from ..parameters import PICKLE_PROTOCOL, GZIP_LEVEL
 from .helpers import (
     setFromSpec, valueFromTf, tfFromValue, specFromRanges, rangesFromSet, check32, console
 )
 
 ERROR_CUTOFF = 20
-GZIP_LEVEL = 2
-PICKLE_PROTOCOL = 4
 
 WARP = (
     'otype',

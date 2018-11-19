@@ -170,6 +170,13 @@ div.p2line {
     justify-content: stretch;
     align-items: baseline;
 }
+div.psline {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: stretch;
+    align-items: baseline;
+    background-color: #ffdd66;
+}
 div.pname {
     flex: 0 0 5rem;
     font-weight: bold;
@@ -200,6 +207,7 @@ div.pval {
         </div>
         <div>
             <pre class="template">{{searchTemplate}}</pre>
+            {{!setNames}}
         </div>
         <div class="table">
             {{!table}}

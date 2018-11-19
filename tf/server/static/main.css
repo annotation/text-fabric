@@ -207,8 +207,12 @@ textarea.tuples {
 	height: 5rem;
 	margin: 0.3rem 0.3rem;
 }
-.template {
+.template,p.setnames {
     background-color: #ffeedd;
+}
+span.setnames {
+	font-size: medium;
+	font-family: monospace;
 }
 textarea.template {
 	font-size: large;
