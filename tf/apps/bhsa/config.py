@@ -13,7 +13,7 @@ CORPUS = 'BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis'
 VERSION = 'c'
 RELATIVE = 'tf'
 
-DOI = '10.5281/zenodo.1007624'
+DOI_TEXT = '10.5281/zenodo.1007624'
 DOI_URL = 'https://doi.org/10.5281/zenodo.1007624'
 
 DOC_URL = f'https://{ORG}.github.io/{REPO}'
@@ -33,7 +33,8 @@ MODULE_SPECS = (
             'https://nbviewer.jupyter.org/github/etcbc/phono'
             '/blob/master/programs/phono.ipynb'
         ),
-        doi=('10.5281/zenodo.1007636', 'https://doi.org/10.5281/zenodo.1007636'),
+        doiText='10.5281/zenodo.1007636',
+        doiUrl='https://doi.org/10.5281/zenodo.1007636',
     ),
     dict(
         org=ORG,
@@ -44,7 +45,8 @@ MODULE_SPECS = (
             'https://nbviewer.jupyter.org/github/etcbc/parallels'
             '/blob/master/programs/parallels.ipynb'
         ),
-        doi=('10.5281/zenodo.1007642', 'https://doi.org/10.5281/zenodo.1007642'),
+        doiText='10.5281/zenodo.1007642',
+        doiUrl='https://doi.org/10.5281/zenodo.1007642',
     ),
 )
 ZIP = [REPO] + [m['repo'] for m in MODULE_SPECS]

@@ -17,7 +17,7 @@ VERSION = '1.0'
 RELATIVE = f'tf/{REPO}'
 RELATIVE_IMAGES = 'sources/cdli/images'
 
-DOI = '10.5281/zenodo.1193841'
+DOI_TEXT = '10.5281/zenodo.1193841'
 DOI_URL = 'https://doi.org/10.5281/zenodo.1193841'
 
 DOC_URL = f'https://github.com/{ORG}/{REPO}/blob/master/docs/'

@@ -17,6 +17,7 @@ from ..parameters import (
     EXPRESS_INFO,
 )
 from ..fabric import Fabric
+from ..lib import readSets
 from ..core.helpers import itemize, camel, console, splitModRef, setDir, expandDir
 from .apphelpers import (
     search,
@@ -79,6 +80,7 @@ def setupApi(
     appName,
     name=None,
     mod=None,
+    setFile='',
     locations=None,
     modules=None,
     asApp=False,
@@ -113,6 +115,12 @@ def setupApi(
       loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
       app.standardFeatures = loadableFeatures
   else:
+    app.sets = None
+    if setFile:
+      sets = readSets(setFile)
+      if sets:
+        app.sets = sets
+        console(f'Sets from {setFile}: {", ".join(sets)}')
     specs = _getModulesData(
         app,
         mod,
@@ -528,7 +536,7 @@ def _getModuleData(
 
   info = {}
   for item in (
-      ('doi', 'unknown DOI'),
+      ('doiText', 'unknown DOI'),
       ('doiUrl', ''),
       ('corpus', f'{org}/{repo}/{relative}'),
   ):
@@ -542,7 +550,7 @@ def _getModuleData(
           live=(
               liveText(org, repo, version, release), liveUrl(org, repo, version, release, relative)
           ),
-          doi=(info['doi'], info['doiUrl']),
+          doi=(info['doiText'], info['doiUrl']),
       )
   )
   return True

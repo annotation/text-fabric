@@ -59,7 +59,7 @@ such as [DANS]({{dans}}/front-page?set_language=en).
 
     and likewise you can get other ETCBC data modules such as `phono`.
 
-### Peshitta
+## Peshitta
 
 ??? abstract "From within a program"
     If you are in a Jupyter notebook or Python script,
@@ -79,7 +79,7 @@ such as [DANS]({{dans}}/front-page?set_language=en).
     git clone {{etcbcgh}}/peshitta
     ```
 
-### Syriac New Testament
+## Syriac New Testament
 
 ??? abstract "From within a program"
     If you are in a Jupyter notebook or Python script,

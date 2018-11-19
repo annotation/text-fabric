@@ -11,7 +11,7 @@ from ..applib.appmake import (
 from ..applib.apphelpers import (
     runSearch, runSearchCondensed, compose, composeP, getContext, getResultsX
 )
-from .common import (getParam, getModules, getCheck, getLocalClones)
+from .common import (getParam, getModules, getSets, getCheck, getLocalClones)
 
 TIMEOUT = 120
 
@@ -38,7 +38,7 @@ def allNodes(table):
   return allN
 
 
-def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
+def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
   config = findAppConfig(dataSource)
   if config is None:
     return None
@@ -46,11 +46,12 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
   if appClass is None:
     return None
 
-  console(f'Setting up TF kernel for {dataSource} {moduleRefs}')
+  console(f'Setting up TF kernel for {dataSource} {moduleRefs} {setFile}')
   app = appClass(
       dataSource,
       asApp=True,
       mod=moduleRefs,
+      setFile=setFile,
       version=config.VERSION,
       lgc=lgc,
       check=check,
@@ -76,6 +77,10 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
     def exposed_provenance(self):
       app = self.app
       return app.provenance
+
+    def exposed_setNames(self):
+      app = self.app
+      return tuple(sorted(app.sets.keys()))
 
     def exposed_header(self):
       app = self.app
@@ -193,8 +198,8 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
       queryMessages = ''
       if query:
         (queryResults, queryMessages, features) = (
-            runSearchCondensed(api, query, cache, condenseType)
-            if condensed and condenseType else runSearch(api, query, cache)
+            runSearchCondensed(app, query, cache, condenseType)
+            if condensed and condenseType else runSearch(app, query, cache)
         )
 
         if queryMessages:
@@ -266,10 +271,10 @@ def makeTfKernel(dataSource, moduleRefs, lgc, check, port):
       features = ()
       if query:
         (queryResults, queryMessages, features) = (
-            runSearch(api, query, cache)
+            runSearch(app, query, cache)
         )
         (queryResultsC, queryMessagesC, featuresC) = (
-            runSearchCondensed(api, query, cache, condenseType)
+            runSearchCondensed(app, query, cache, condenseType)
             if condensed and condenseType else
             (None, None, None)
         )
@@ -325,14 +330,16 @@ def makeTfConnection(host, port):
 def main(cargs=sys.argv):
   dataSource = getParam(cargs=cargs, interactive=True)
   modules = getModules(cargs=cargs)
+  sets = getSets(cargs=cargs)
   lgc = getLocalClones(cargs=cargs)
   check = getCheck(cargs=cargs)
 
   if dataSource is not None:
     moduleRefs = modules[6:] if modules else ''
+    setFile = sets[7:] if sets else ''
     config = findAppConfig(dataSource)
     if config is not None:
-      kernel = makeTfKernel(dataSource, moduleRefs, lgc, check, config.port)
+      kernel = makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, config.port)
       if kernel:
         kernel.start()
 

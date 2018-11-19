@@ -1,4 +1,4 @@
-VERSION = '7.0.3'
+VERSION = '7.1.0'
 NAME = 'Text-Fabric'
 
 URL_GH_API = 'https://api.github.com/repos'
@@ -9,7 +9,7 @@ EXPRESS_BASE = '~/text-fabric-data'
 EXPRESS_INFO = '__release.txt'
 URL_TFDOC = 'https://dans-labs.github.io/text-fabric'
 
-DOI = '10.5281/zenodo.592193'
+DOI_TEXT = '10.5281/zenodo.592193'
 DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 
 APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'
@@ -29,3 +29,6 @@ LOCATIONS = [
     '~/Dropbox/text-fabric-data',
     '/mnt/shared/text-fabric-data',
 ]
+
+GZIP_LEVEL = 2
+PICKLE_PROTOCOL = 4

@@ -38,14 +38,18 @@ def search(app, query, silent=False, sets=None, shallow=False):
   return results
 
 
-def runSearch(api, query, cache):
+def runSearch(app, query, cache):
+  api = app.api
   S = api.S
   plainSearch = S.search
 
   cacheKey = (query, False)
   if cacheKey in cache:
     return cache[cacheKey]
-  (queryResults, messages) = plainSearch(query, msgCache=True)
+  options = dict(msgCache=True)
+  if app.sets is not None:
+    options['sets'] = app.sets
+  (queryResults, messages) = plainSearch(query, **options)
   features = {}
   exe = getattr(S, 'exe', None)
   if exe:
@@ -56,11 +60,12 @@ def runSearch(api, query, cache):
   return (queryResults, messages, features)
 
 
-def runSearchCondensed(api, query, cache, condenseType):
+def runSearchCondensed(app, query, cache, condenseType):
+  api = app.api
   cacheKey = (query, True, condenseType)
   if cacheKey in cache:
     return cache[cacheKey]
-  (queryResults, messages, features) = runSearch(api, query, cache)
+  (queryResults, messages, features) = runSearch(app, query, cache)
   queryResults = _condense(api, queryResults, condenseType, multiple=True)
   cache[cacheKey] = (queryResults, messages, features)
   return (queryResults, messages, features)

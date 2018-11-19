@@ -304,6 +304,7 @@
                     class="template" name="searchTemplate"
                     placeholder="{{defaultCondenseType}}"
                 >{{searchTemplate}}</textarea>
+                {{!setNames}}
                 <div class="messages">
                     {{!queryMessages}}
                 </div>

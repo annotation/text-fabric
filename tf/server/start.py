@@ -12,7 +12,11 @@ from ..parameters import NAME, VERSION
 from ..applib.appmake import (
     findAppConfig,
 )
-from .common import (getParam, getModules, getDebug, getCheck, getNoweb, getDocker, getLocalClones)
+from .common import (
+    getParam, getModules, getSets,
+    getDebug, getCheck, getNoweb, getDocker,
+    getLocalClones
+)
 from .kernel import TF_DONE, TF_ERROR
 
 HELP = '''
@@ -22,7 +26,7 @@ text-fabric --help
 text-fabric --version
 
 text-fabric datasource
-text-fabric [-lgc] [-d] [-c] [-noweb] [-docker] datasource [--mod=modules]
+text-fabric [-lgc] [-d] [-c] [-noweb] [-docker] datasource [--mod=modules] [--set=file]
 
 text-fabric -k
 text-fabric -k datasource
@@ -52,6 +56,14 @@ where
 
 It is assumed that the data is stored in directories under {path},
 where the directories are named as the versions that exists in the main data source.
+
+--set=file
+
+Optionally, you can pass a file name with the definition of custom sets in it.
+This must be a dictionary were the keys are names of sets, and the values
+are node sets.
+This dictionary will be passed to the TF kernel, which will use it when it runs
+queries.
 
 DATA LOADING
 
@@ -109,6 +121,7 @@ def filterProcess(proc):
   found = False
   kind = None
   modules = ''
+  sets = ''
   dataSource = None
 
   trigger = 'python'
@@ -140,28 +153,30 @@ def filterProcess(proc):
           break
         if part.startswith('--mod='):
           modules = part
+        elif part.startswith('--sets='):
+          sets = part
         else:
           dataSource = part
         good = True
     if good:
       found = True
   if found:
-    return (kind, dataSource, modules)
+    return (kind, dataSource, modules, sets)
   return False
 
 
-def killProcesses(dataSource, modules, kill=False):
+def killProcesses(dataSource, modules, sets, kill=False):
   tfProcs = {}
   for proc in psutil.process_iter(attrs=['pid', 'name']):
     test = filterProcess(proc)
     if test:
-      (kind, ds, mods) = test
-      tfProcs.setdefault((ds, mods), {}).setdefault(kind, []).append(proc.info['pid'])
+      (kind, ds, mods, sts) = test
+      tfProcs.setdefault((ds, (mods, sts)), {}).setdefault(kind, []).append(proc.info['pid'])
 
   item = 'killed' if kill else 'terminated'
   myself = os.getpid()
-  for ((ds, mods), kinds) in tfProcs.items():
-    if dataSource is None or (ds == dataSource and mods == modules):
+  for ((ds, (mods, sets)), kinds) in tfProcs.items():
+    if dataSource is None or (ds == dataSource and mods == modules and sts == sets):
       for kind in ('local', 'data', 'tf'):
         pids = kinds.get(kind, [])
         for pid in pids:
@@ -202,7 +217,8 @@ def main(cargs=sys.argv):
     if dataSource is False:
       return
     modules = getModules(cargs=cargs)
-    killProcesses(dataSource, modules)
+    sets = getSets(cargs=cargs)
+    killProcesses(dataSource, modules, sets)
     return
 
   dataSource = getParam(cargs=cargs, interactive=True)
@@ -214,15 +230,17 @@ def main(cargs=sys.argv):
   check = getCheck(cargs=cargs)
   lgc = getLocalClones(cargs=cargs)
   modules = getModules(cargs=cargs)
+  sets = getSets(cargs=cargs)
+
+  kdataSource = ('-lgc', dataSource) if lgc else (dataSource, )
+  kdataSource = ('-c', *kdataSource) if check else kdataSource
+  kdataSource = (modules, *kdataSource) if modules else kdataSource
+  kdataSource = (sets, *kdataSource) if sets else kdataSource
 
   ddataSource = ('-d', dataSource) if debug else (dataSource, )
   ddataSource = ('-docker', *ddataSource) if docker else ddataSource
   ddataSource = ('-lgc', *ddataSource) if lgc else ddataSource
   ddataSource = (modules, *ddataSource) if modules else ddataSource
-
-  kdataSource = ('-lgc', dataSource) if lgc else (dataSource, )
-  kdataSource = ('-c', *kdataSource) if check else kdataSource
-  kdataSource = (modules, *kdataSource) if modules else kdataSource
 
   if dataSource is not None:
     config = findAppConfig(dataSource)
@@ -230,7 +248,7 @@ def main(cargs=sys.argv):
     pWeb = None
     if config is not None:
       console(f'Cleaning up remnant processes, if any ...')
-      killProcesses(dataSource, modules, kill=True)
+      killProcesses(dataSource, modules, sets, kill=True)
       pythonExe = 'python' if isWin else 'python3'
 
       pKernel = Popen(
