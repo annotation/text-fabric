@@ -714,6 +714,26 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#lib" title="Lib" class="md-nav__link">
+    Lib
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sets" title="Sets" class="md-nav__link">
+    Sets
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -1218,6 +1238,26 @@
           <li class="md-nav__item">
   <a href="#mql" title="MQL" class="md-nav__link">
     MQL
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lib" title="Lib" class="md-nav__link">
+    Lib
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sets" title="Sets" class="md-nav__link">
+    Sets
   </a>
   
 </li>
@@ -2748,6 +2788,44 @@ metadata of all features. Handy to add provenance data here:</p>
 </pre></div>
 </td></tr></table>
 
+</details>
+</details>
+<h2 id="lib">Lib<a class="headerlink" href="#lib" title="Permanent link">&para;</a></h2>
+<p>Various functions that have a function that is not directly tied to a class.
+These functions are available in <code>tf.lib</code>, so in order to use function <code>fff</code>, say</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.lib</span> <span class="kn">import</span> <span class="n">fff</span>
+</pre></div>
+</td></tr></table>
+
+<h3 id="sets">Sets<a class="headerlink" href="#sets" title="Permanent link">&para;</a></h3>
+<details class="abstract"><summary>writeSets()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">writeSets</span><span class="p">(</span><span class="n">sets</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Writes a dictionary of named sets to file.
+The dictionary will be written as a gzipped, pickled data structure.</p>
+<p>Intended use: if you have constructed custom node sets that you want to use
+in search templates that run in the TF browser.</p>
+<details class="info"><summary>sets</summary><p>A dictionary in which the keys are names for the values, which are sets
+of nodes.</p>
+</details>
+<details class="info"><summary>dest</summary><p>A file path. You may use <code>~</code> to refer to your home directory.
+The result will be written from this file.</p>
+</details>
+<details class="info"><summary>Returns</summary><p><code>True</code> if all went well, <code>False</code> otherwise.</p>
+</details>
+</details>
+<details class="abstract"><summary>readSets(source)</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">sets</span> <span class="o">=</span> <span class="n">readSets</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Reads a dictionary of named sets from a file specified by <code>source</code>.</p>
+<p>This is used by the TF browser, when the user has passed a <code>--sets=fileName</code>
+argument to it.</p>
+<details class="info"><summary>source</summary><p>A file path. You may use <code>~</code> to refer to your home directory.
+This file must contain a gzipped, pickled data structure.</p>
+</details>
+<details class="info"><summary>Returns</summary><p>The data structure contained in the file if all went well, <code>False</code> otherwise.</p>
 </details>
 </details>
                 
