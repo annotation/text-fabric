@@ -27,6 +27,11 @@ div.tline {
     font-style: italic;
     padding: 2rem;
 }
+.eline {
+    font-size: large;
+    color: #552222;
+    background-color: #ffbbbb;
+}
 div.aline {
     font-size: large;
     font-weight: bold;

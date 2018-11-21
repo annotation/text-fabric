@@ -15,6 +15,14 @@
 I am thinking about using the TF kernel for a web-facing server, not just the internal
 TF browser. And use that to expose the Peshitta and SyrNT to the web.
 
+## 7.1.1
+
+2018-11-21
+
+* Queries in the TF browser are limited to three minutes, after that
+  a graceful error message is shown.
+* Other small fixes.
+
 ## 7.1
 
 2018-11-19

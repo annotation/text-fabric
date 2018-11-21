@@ -13,8 +13,6 @@ from ..applib.apphelpers import (
 )
 from .common import (getParam, getModules, getSets, getCheck, getLocalClones)
 
-TIMEOUT = 120
-
 TF_DONE = 'TF setup done.'
 TF_ERROR = 'Could not set up TF'
 
@@ -80,7 +78,11 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
 
     def exposed_setNames(self):
       app = self.app
-      return tuple(sorted(app.sets.keys()))
+      return (
+          tuple(sorted(app.sets.keys()))
+          if hasattr(app, 'sets') and type(app.sets) is dict
+          else ()
+      )
 
     def exposed_header(self):
       app = self.app
@@ -146,6 +148,18 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
       passages = (sec0s, sec1s)
       return (passage, passages)
 
+    def exposed_rawSearch(self, query):
+      rawSearch = self.app.api.S.search
+
+      (results, messages) = rawSearch(query, msgCache=True)
+      if messages:
+        # console(messages, error=True)
+        results = ()
+      else:
+        results = tuple(sorted(results))
+        # console(f'{len(results)} results')
+      return (results, messages)
+
     def exposed_search(
         self,
         query,
@@ -162,7 +176,6 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
         **options,
     ):
       app = self.app
-      api = app.api
 
       total = 0
 
@@ -313,14 +326,13 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
   return ThreadedServer(TfKernel, port=port, protocol_config={
       # 'allow_pickle': True,
       # 'allow_public_attrs': True,
-      'sync_request_timeout': TIMEOUT,
   })
 
 
-def makeTfConnection(host, port):
+def makeTfConnection(host, port, timeout):
   class TfConnection(object):
     def connect(self):
-      connection = rpyc.connect(host, port)
+      connection = rpyc.connect(host, port, config=dict(sync_request_timeout=timeout))
       self.connection = connection
       return connection.root
 
