@@ -35,6 +35,8 @@ from .common import (
     shapeFormats,
 )
 
+TIMEOUT = 180
+
 COMPOSE = 'Compose results example'
 
 BATCH = 20
@@ -49,6 +51,8 @@ bottle.TEMPLATE_PATH = [f'{myDir}/views']
 dataSource = None
 config = None
 
+wildQueries = set()
+
 
 def getStuff(lgc):
   global TF
@@ -59,7 +63,7 @@ def getStuff(lgc):
   if config is None:
     return None
 
-  TF = makeTfConnection(config.host, config.port)
+  TF = makeTfConnection(config.host, config.port, TIMEOUT)
   appDir = getAppDir(myDir, dataSource)
   cfg = config.configure(lgc, version=config.VERSION)
   localDir = cfg['localDir']
@@ -177,9 +181,8 @@ See also | {composeMd}
 def writeAbout(header, provenance, form):
   jobName = form['jobName']
   dirName = f'{dataSource}-{jobName}'
-  if os.path.exists(dirName):
-    rmtree(dirName)
-  os.makedirs(dirName, exist_ok=True)
+  if not os.path.exists(dirName):
+    os.makedirs(dirName, exist_ok=True)
   with open(f'{dirName}/about.md', 'w', encoding='utf8') as ph:
     ph.write(
         f'''
@@ -219,20 +222,23 @@ def writeAbout(header, provenance, form):
 def writeCsvs(csvs, context, resultsX, form):
   jobName = form['jobName']
   dirName = f'{dataSource}-{jobName}'
-  if not os.path.exists(dirName):
-    os.makedirs(dirName, exist_ok=True)
-  for (csv, data) in csvs:
-    with open(f'{dirName}/{csv}.tsv', 'w', encoding='utf8') as th:
-      for tup in data:
-        th.write('\t'.join(str(t) for t in tup) + '\n')
+  if os.path.exists(dirName):
+    rmtree(dirName)
+  os.makedirs(dirName, exist_ok=True)
+  if csvs is not None:
+    for (csv, data) in csvs:
+      with open(f'{dirName}/{csv}.tsv', 'w', encoding='utf8') as th:
+        for tup in data:
+          th.write('\t'.join(str(t) for t in tup) + '\n')
   for (name, data) in (
       ('CONTEXT', context),
       ('RESULTSX', resultsX),
   ):
-    with open(f'{dirName}/{name}.tsv', 'w', encoding='utf_16_le') as th:
-      th.write('﻿')  # utf8 bom mark, useful for opening file in Excel
-      for tup in data:
-        th.write('\t'.join('' if t is None else str(t) for t in tup) + '\n')
+    if data is not None:
+      with open(f'{dirName}/{name}.tsv', 'w', encoding='utf_16_le') as th:
+        th.write('﻿')  # utf8 bom mark, useful for opening file in Excel
+        for tup in data:
+          th.write('\t'.join('' if t is None else str(t) for t in tup) + '\n')
 
 
 def getInt(x, default=1):
@@ -428,28 +434,48 @@ def serveSearch(anything):
 
   if mode == 'results':
     openedSet = {int(n) for n in form['opened'].split(',')} if form['opened'] else set()
-    if form['searchTemplate'] or form['tuples'] or form['sections']:
-      (
-          table,
-          sectionMessages,
-          tupleMessages,
-          queryMessages,
-          start,
-          total,
-      ) = kernelApi.search(
-          form['searchTemplate'],
-          form['tuples'],
-          form['sections'],
-          form['condensed'],
-          condenseType,
-          textFormat,
-          form['batch'],
-          position=form['position'],
-          opened=openedSet,
-          withNodes=form['withNodes'],
-          linked=form['linked'],
-          **values,
-      )
+    query = form['searchTemplate']
+    if query or form['tuples'] or form['sections']:
+      sectionMessages = ''
+      tupleMessages = ''
+      queryMessages = ''
+      table = None
+      if query in wildQueries:
+        queryMessages = (
+            f'Aborted because query is known to take longer than {TIMEOUT} second'
+            + ('' if TIMEOUT == 1 else 's')
+        )
+      elif query or form['tuples'] or form['sections']:
+        try:
+          (
+              table,
+              sectionMessages,
+              tupleMessages,
+              queryMessages,
+              start,
+              total,
+          ) = kernelApi.search(
+              query,
+              form['tuples'],
+              form['sections'],
+              form['condensed'],
+              condenseType,
+              textFormat,
+              form['batch'],
+              position=form['position'],
+              opened=openedSet,
+              withNodes=form['withNodes'],
+              linked=form['linked'],
+              **values,
+          )
+        except TimeoutError:
+          queryMessages = (
+              f'Aborted because query takes longer than {TIMEOUT} second'
+              + ('' if TIMEOUT == 1 else 's')
+          )
+          console(f'{query}\n{queryMessages}', error=True)
+          wildQueries.add(query)
+
       if table is not None:
         pages = pageLinks(total, form['position'])
       if sectionMessages:
@@ -495,30 +521,40 @@ def serveSearch(anything):
 
   if form['export']:
     form['export'] = ''
+    query = form['searchTemplate']
+
+    csvs = None
+    context = None
+    resultsX = None
+    if not queryMessages and query not in wildQueries:
+      try:
+        (csvs, context, resultsX) = kernelApi.csvs(
+            query,
+            form['tuples'],
+            form['sections'],
+            form['condensed'],
+            condenseType,
+            textFormat,
+        )
+        csvs = pickle.loads(csvs)
+        context = pickle.loads(context)
+        resultsX = pickle.loads(resultsX)
+      except TimeoutError:
+        console(f'{query}\n{queryMessages} (in: export)', error=True)
+        wildQueries.add(query)
+    writeCsvs(csvs, context, resultsX, form)
     writeAbout(
         header,
         provenanceMd,
         form,
     )
-    (csvs, context, resultsX) = kernelApi.csvs(
-        form['searchTemplate'],
-        form['tuples'],
-        form['sections'],
-        form['condensed'],
-        condenseType,
-        textFormat,
-    )
-    csvs = pickle.loads(csvs)
-    context = pickle.loads(context)
-    resultsX = pickle.loads(resultsX)
-    writeCsvs(csvs, context, resultsX, form)
 
     return template(
         'export',
         dataSource=dataSource,
         css=css,
         descriptionMd=descriptionMd,
-        table=table,
+        table=queryMessages if queryMessages or table is None else table,
         colofon=f'{appLogo}{header}{tfLogo}',
         provenance=provenanceHtml,
         setNames=setNameHtml,
@@ -534,7 +570,7 @@ def serveSearch(anything):
       sectionMessages=sectionMessages,
       tupleMessages=tupleMessages,
       queryMessages=queryMessages,
-      table=table,
+      table=table or '',
       condensedAtt=condensedAtt,
       condenseOpts=condenseOpts,
       defaultCondenseType=defaultCondenseType,

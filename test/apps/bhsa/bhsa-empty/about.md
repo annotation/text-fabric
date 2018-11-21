@@ -12,9 +12,9 @@
 
 meta | data
 --- | ---
-Job | DefaulT
+Job | empty
 Author | Dirk Roorda
-Created | 2018-11-21T13:57:32+01:00
+Created | 2018-11-21T13:30:04+01:00
 Data source | BHSA = Biblia Hebraica Stuttgartensia Amstelodamensis
 version | c
 release | 1.5
@@ -56,27 +56,17 @@ For the sake of export, we mention the features `typ` and `vs` (verbal stem) in 
 ### Sections
 
 ```
-Psalms 119:100
-Exodus 9:18
-1_Samuel 27:3
-Isaiah 42:19
+
 ```
 
 ### Nodes
 
 ```
-1420119,448401,111521
+
 ```
 
 ### Search
 
 ```
-clause rela=Attr typ*
-/without/
-  phrase function=Rela
-/-/
-/without/
-  word vt=ptca|ptcp
-/-/
-  word pdp=verb vs* gn*
+words
 ```

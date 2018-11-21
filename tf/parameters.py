@@ -1,4 +1,4 @@
-VERSION = '7.1.0'
+VERSION = '7.1.1'
 NAME = 'Text-Fabric'
 
 URL_GH_API = 'https://api.github.com/repos'
