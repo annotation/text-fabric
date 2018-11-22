@@ -57,8 +57,9 @@ VERSION_CONFIG = dict(
     ),
 )
 
-TEST_BASE = os.path.expanduser('~/github/Dans-labs/text-fabric/test')
-APP_BASE = f'{TEST_BASE}/apps'
+TF_BASE = os.path.expanduser('~/github/Dans-labs/text-fabric')
+TEST_BASE = f'{TF_BASE}/test'
+APP_BASE = f'{TF_BASE}/apps'
 PACKAGE = 'text-fabric'
 SCRIPT = '/Library/Frameworks/Python.framework/Versions/3.7/bin/text-fabric'
 
@@ -288,7 +289,8 @@ def tftest(suite, remaining):
 
 def clean():
   run(['python3', 'setup.py', 'develop', '-u'])
-  os.unlink(SCRIPT)
+  if os.path.exists(SCRIPT):
+    os.unlink(SCRIPT)
   run([
       'pip3',
       'uninstall',
@@ -321,7 +323,7 @@ def main():
         '--upgrade',
         '--no-index',
         '--find-links',
-        f'file://{os.path.expanduser("~/github/Dans-labs/text-fabric/dist")}',
+        f'file://{TF_BASE}/dist"',
         'text-fabric'
     ])
   elif task == 'g':

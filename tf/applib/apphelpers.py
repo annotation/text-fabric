@@ -97,6 +97,60 @@ def composeP(
   return '\n'.join(passageHtml)
 
 
+def composeT(
+    app,
+    tuples,
+    opened,
+    textFormat,
+    withNodes=False,
+    linked=1,
+    **options,
+):
+  api = app.api
+  F = api.F
+
+  tuplesHtml = []
+  doHeader = False
+  for (i, tup) in tuples:
+    if i is None:
+      if tup == 'results':
+        doHeader = True
+      else:
+        tuplesHtml.append(
+            f'''
+<div class="dtheadrow">
+  <span>n</span><span>{tup}</span>
+</div>
+'''
+        )
+      continue
+
+    if doHeader:
+      doHeader = False
+      tuplesHtml.append(
+          f'''
+<div class="dtheadrow">
+  <span>n</span><span>{"</span><span>".join(F.otype.v(n) for n in tup)}</span>
+</div>
+'''
+      )
+    tuplesHtml.append(
+        plainTuple(
+            app,
+            tup,
+            i,
+            isCondensed=False,
+            linked=linked,
+            fmt=textFormat,
+            withNodes=withNodes,
+            opened=i in opened,
+            asString=True,
+            **options,
+        )
+    )
+  return '\n'.join(tuplesHtml)
+
+
 def compose(
     app,
     tuples,

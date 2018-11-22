@@ -142,6 +142,22 @@ div.rightcol {
     overflow: auto;
 	-webkit-overflow-scrolling: touch;
 }
+div.rightcolx {
+    flex: 10 2 auto;
+    border-left: 1pt solid #aaaaaa;
+    padding-left: 0.4rem;
+    padding-right: 0.2rem;
+    height: 99vh;
+    overflow: auto;
+	-webkit-overflow-scrolling: touch;
+}
+div.table {
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+}
 
 /* LEFT-COL */
 
