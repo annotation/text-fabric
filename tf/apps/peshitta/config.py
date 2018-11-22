@@ -2,8 +2,11 @@ from tf.applib.appmake import configureNames
 
 protocol = 'http://'
 host = 'localhost'
-port = 18983
-webport = 8003
+port = dict(
+    kernel=18982,
+    local=8002,
+    internet=8102,
+)
 
 options = ()
 

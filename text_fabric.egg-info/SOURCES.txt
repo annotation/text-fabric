@@ -86,6 +86,7 @@ tf/search/stitch.py
 tf/search/syntax.py
 tf/server/__init__.py
 tf/server/common.py
+tf/server/internet.py
 tf/server/kernel.py
 tf/server/local.py
 tf/server/start.py
@@ -99,6 +100,7 @@ tf/server/static/jquery.js
 tf/server/static/logo.png
 tf/server/static/main.css
 tf/server/static/tf.js
+tf/server/static/tfx.js
 tf/server/static/fonts/SBL_Hbrw.eot
 tf/server/static/fonts/SBL_Hbrw.ttf
 tf/server/static/fonts/SBL_Hbrw.woff
@@ -123,7 +125,8 @@ tf/server/static/fonts/fa-solid-900.ttf
 tf/server/static/fonts/fa-solid-900.woff
 tf/server/static/fonts/fa-solid-900.woff2
 tf/server/views/.DS_Store
-tf/server/views/export.tpl
+tf/server/views/exportx.tpl
 tf/server/views/index.tpl
+tf/server/views/indexx.tpl
 tf/writing/__init__.py
 tf/writing/transcription.py

@@ -63,7 +63,7 @@ def getStuff(lgc):
   if config is None:
     return None
 
-  TF = makeTfConnection(config.host, config.port, TIMEOUT)
+  TF = makeTfConnection(config.host, config.port['kernel'], TIMEOUT)
   appDir = getAppDir(myDir, dataSource)
   cfg = config.configure(lgc, version=config.VERSION)
   localDir = cfg['localDir']
@@ -353,7 +353,7 @@ def serveLocal(filepath):
 
 @post('/<anything:re:.*>')
 @get('/<anything:re:.*>')
-def serveSearch(anything):
+def serveAll(anything):
   form = getFormData()
   curJobDir = os.getcwd()
   newDir = form['jobDir']
@@ -454,7 +454,7 @@ def serveSearch(anything):
               queryMessages,
               start,
               total,
-          ) = kernelApi.search(
+          ) = kernelApi.allTables(
               query,
               form['tuples'],
               form['sections'],
@@ -604,5 +604,5 @@ if __name__ == "__main__":
           debug=debug,
           reloader=debug,
           host='0.0.0.0' if onDocker else config.host,
-          port=config.webport,
+          port=config.port['local'],
       )

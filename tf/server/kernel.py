@@ -9,7 +9,7 @@ from ..applib.appmake import (
     findAppClass,
 )
 from ..applib.apphelpers import (
-    runSearch, runSearchCondensed, compose, composeP, getContext, getResultsX
+    runSearch, runSearchCondensed, compose, composeP, composeT, getContext, getResultsX
 )
 from .common import (getParam, getModules, getSets, getCheck, getLocalClones)
 
@@ -79,9 +79,7 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
     def exposed_setNames(self):
       app = self.app
       return (
-          tuple(sorted(app.sets.keys()))
-          if hasattr(app, 'sets') and type(app.sets) is dict
-          else ()
+          tuple(sorted(app.sets.keys())) if hasattr(app, 'sets') and type(app.sets) is dict else ()
       )
 
     def exposed_header(self):
@@ -160,7 +158,118 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
         # console(f'{len(results)} results')
       return (results, messages)
 
+    def exposed_table(
+        self,
+        kind,
+        task,
+        textFormat,
+        opened=set(),
+        withNodes=False,
+        **options,
+    ):
+      app = self.app
+
+      if kind == 'sections':
+        results = []
+        messages = []
+        if task:
+          lines = task.split('\n')
+          for (i, line) in enumerate(lines):
+            line = line.strip()
+            (message, node) = app.nodeFromDefaultSection(line)
+            if message:
+              messages.append(message)
+            else:
+              results.append((i + 1, (node, )))
+        results = tuple(results)
+        messages = '\n'.join(messages)
+      elif kind == 'tuples':
+        results = ()
+        messages = ''
+        if task:
+          lines = task.split('\n')
+          try:
+            results = tuple((i + 1, tuple(int(n)
+                                          for n in t.strip().split(',')))
+                            for (i, t) in enumerate(lines)
+                            if t.strip())
+          except Exception as e:
+            messages = f'{e}'
+
+      # yapf: disable
+      allResults = (
+          ((None, kind),)
+          + results
+      )
+      table = composeT(
+          app,
+          allResults, opened,
+          textFormat,
+          withNodes=withNodes,
+          linked=1,
+          **options,
+      )
+      return (table, messages)
+
     def exposed_search(
+        self,
+        query,
+        condensed,
+        condenseType,
+        textFormat,
+        batch,
+        position=1,
+        opened=set(),
+        withNodes=False,
+        linked=1,
+        **options,
+    ):
+      app = self.app
+
+      total = 0
+
+      results = ()
+      messages = ''
+      if query:
+        (results, messages, features) = (
+            runSearchCondensed(app, query, cache, condenseType)
+            if condensed and condenseType else runSearch(app, query, cache)
+        )
+
+        if messages:
+          results = ()
+        total += len(results)
+
+      (start, end) = batchAround(total, position, batch)
+
+      selectedResults = results[start - 1:end]
+      opened = set(opened)
+
+      before = {n for n in opened if n > 0 and n < start}
+      after = {n for n in opened if n > end and n <= len(results)}
+      beforeResults = tuple((n, results[n - 1]) for n in sorted(before))
+      afterResults = tuple((n, results[n - 1]) for n in sorted(after))
+
+      # yapf: disable
+      allResults = (
+          + ((None, 'results'),)
+          + beforeResults
+          + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
+          + afterResults
+      )
+      table = compose(
+          app,
+          allResults, features, start, position, opened,
+          condensed,
+          condenseType,
+          textFormat,
+          withNodes=withNodes,
+          linked=linked,
+          **options,
+      )
+      return (table, messages, start, total)
+
+    def exposed_allTables(
         self,
         query,
         tuples,
@@ -351,7 +460,7 @@ def main(cargs=sys.argv):
     setFile = sets[7:] if sets else ''
     config = findAppConfig(dataSource)
     if config is not None:
-      kernel = makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, config.port)
+      kernel = makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, config.port['kernel'])
       if kernel:
         kernel.start()
 
