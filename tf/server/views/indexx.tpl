@@ -5,12 +5,13 @@
         <title>TF {{jobName}}</title>
         <meta name="application-name" content="Text-Fabric Search Box"/>
         <link rel="shortcut icon" href="/server/static/favicon.ico">
-        <link rel="stylesheet" href="/server/static/main.css"/>
+        <link rel="stylesheet" href="/server/static/mainx.css"/>
         <link rel="stylesheet" href="/server/static/fontawesome.css">
         {{!css}}
     </head>
     <body>
         <form id="go" method="post">
+        <input type="hidden" name="appName" value="{{dataSource}}"/>
         <div class="page">
             <div id="sidebar">
                 <div status="about">
@@ -84,7 +85,7 @@
                         <details id="condd" {{'open' if condensedAtt else ''}}>
                             <summary>
                                 <input
-                                    class="r" type="checkbox" id="cond" name="condensed" {{condensedAtt}}
+                                    class="queryR" type="checkbox" id="cond" name="condensed" {{condensedAtt}}
                                 /> <span class="ilab">condense results</span>
                             </summary>
                             {{!condenseOpts}}
@@ -92,7 +93,7 @@
                     </div>
                     <div>
                         <input
-                            class="r" type="checkbox" id="withn" name="withNodes" {{withNodesAtt}}
+                            class="sectionsR tuplesR queryR" type="checkbox" id="withn" name="withNodes" {{withNodesAtt}}
                         /> <span class="ilab">show nodes</span>
                     </div>
                     {{!options}}
@@ -176,7 +177,7 @@
                         <p>The results of the nodes appear in the result list,
                            with a negative sequence number.</p>
                     </details>
-                    <details id="helpTemplate" class="help template">
+                    <details id="helpTemplate" class="help query">
                         <summary>Search Pad</summary>
                         <p>Enter a search template here.
                            See the buttons on top for the docs.</p>
@@ -274,60 +275,71 @@
                 <hr>
                 <p class="ilab">search pad</p>
                 <textarea
-                    class="template" name="searchTemplate"
+                    id="query" class="query" name="query"
                     placeholder="{{defaultCondenseType}}"
-                >{{searchTemplate}}</textarea>
+                >{{query}}</textarea>
                 <div id="setNames" class="setnames">
                 </div>
                 <div id="queryMessages" class="messages">
                 </div>
-                <p class="buttons"><button id="sectionsGo" class="xl" type="button">Get results</button></p>
+                <p class="buttons"><button id="queryGo" class="xl" type="button">Get results</button></p>
                 <hr>
             </div>
             <div class="midcol">
                 <div class="materialnav">
                     <input type="hidden" name="mode" id="mode" value="{{mode}}"/>
                     <div>
-                        <div class="navigation">
-                            <div>
-                                <input
-                                    type="checkbox" id="expac"
-                                /> <span class="ilab">expand all</span>
-                                <input type="hidden" name="expandAll" id="expa" value="{{expandAll}}"/>
+                        <div id="navigation">
+                            <div class="expand sections">
+                                <span class="ilab sections">expand all {{defaultCondenseType}}s</span>
+                                <input type="checkbox" id="sectionsExpac"/>
+                                <input type="hidden" name="sectionsExpandAll" id="sectionsExpa" value="{{sectionsExpandAll}}"/>
+                            </div>
+                            <div class="expand tuples">
+                                <span class="ilab tuples">expand all nodes</span>
+                                <input type="checkbox" id="tuplesExpac"/>
+                                <input type="hidden" name="tuplesExpandAll" id="tuplesExpa" value="{{tuplesExpandAll}}"/>
+                            </div>
+                            <div class="expand query">
+                                <span class="ilab query">expand all results</span>
+                                <input type="checkbox" id="queryExpac" />
+                                <input type="hidden" name="queryExpandAll" id="queryExpa" value="{{queryExpandAll}}"/>
                             </div>
                             <div>
                                 <input
-                                    class="r int" type="text" id="pos" name="position" value="{{position}}"
+                                    class="queryR int" type="text" id="pos" name="position" value="{{position}}"
                                 /> <span class="ilab">current position</span>
                             </div>
                             <div>
                                 <input
-                                    class="r int" type="text" name="batch" value="{{batch}}"
+                                    class="queryR int" type="text" name="batch" value="{{batch}}"
                                 /> <span class="ilab">results per page</span>
                             </div>
                         </div>
                         <p class="ilab"><a href="#" id="moderesults">Results</a></p>
-                        <div class="pages">
+                        <div class="pages" id="pages">
                             {{!pages}}
                         </div>
                     </div>
                     <div>
                         <p class="ilab"><a href="#" id="modepassage">Passage</a></p>
-                        <div class="passages">
-                            <input type="hidden" name="sec0" id="sec0" value="{{sec0}}"/>
-                            <input type="hidden" name="sec1" id="sec1" value="{{sec1}}"/>
-                            <input type="hidden" name="sec2" id="sec2" value="{{sec2}}"/>
-                            {{!passages}}
-                        </div>
+                        <input type="hidden" name="sec0" id="sec0" value="{{sec0}}"/>
+                        <input type="hidden" name="sec1" id="sec1" value="{{sec1}}"/>
+                        <input type="hidden" name="sec2" id="sec2" value="{{sec2}}"/>
+                        <div class="passages" id="passages">{{!passages}}</div>
                     </div>
                 </div>
             </div>
             <div class="rightcolx">
-                <input type="hidden" id="op" name="opened" value="{{opened}}"/>
+                <input type="hidden" id="passageOp" name="passageOpened" value=""/>
+                <input type="hidden" id="sectionsOp" name="sectionsOpened" value=""/>
+                <input type="hidden" id="tuplesOp" name="tuplesOpened" value=""/>
+                <input type="hidden" id="queryOp" name="queryOpened" value=""/>
+                <input type="hidden" id="features" name="features" value="{{features}}"/>
                 <div id="sectionsTable" class="table"></div>
                 <div id="tuplesTable" class="table"></div>
-                <div id="queriesTable" class="table"></div>
-                <div id="passagesTable" class="table"></div>
+                <div id="queryTable" class="table"></div>
+                <div id="passageTable" class="table"></div>
             </div>
         </div>
         </form>

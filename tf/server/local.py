@@ -11,7 +11,7 @@ import markdown
 import bottle
 from bottle import (post, get, route, template, request, static_file, run)
 
-from ..core.helpers import console
+from ..core.helpers import console, shapeMessages
 from ..parameters import NAME, VERSION, DOI_TEXT, DOI_URL, COMPOSE_URL
 from ..applib.apphelpers import RESULT
 from ..applib.appmake import (
@@ -29,7 +29,6 @@ from .common import (
     setValues,
     pageLinks,
     passageLinks,
-    shapeMessages,
     shapeOptions,
     shapeCondense,
     shapeFormats,

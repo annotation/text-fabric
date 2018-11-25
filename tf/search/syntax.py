@@ -90,7 +90,7 @@ def syntax(searchExe):
 
 def _tokenize(searchExe):
 
-  def getFeatures(x, i):
+  def readFeatures(x, i):
     features = {}
     featureString = x.replace('\\ ', chr(1)) if x is not None else ''
     featureList = featureString.split()
@@ -378,7 +378,7 @@ def _tokenize(searchExe):
           if not mt:
             searchExe.badSyntax.append((i, f'Illegal name: "{name}"'))
             good = False
-        features = getFeatures(features, i)
+        features = readFeatures(features, i)
         if features is None:
           good = False
         else:
@@ -404,7 +404,7 @@ def _tokenize(searchExe):
 
       if kind == 'feat':
         features = data[0]
-        features = getFeatures(features, i)
+        features = readFeatures(features, i)
         if features is None:
           good = False
         else:

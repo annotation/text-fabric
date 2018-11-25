@@ -107,6 +107,8 @@ def setupApi(
   for (key, value) in cfg.items():
     setattr(app, key, value)
 
+  app.useNoneValues = app.noneValues
+
   setDir(app)
 
   if app.api:

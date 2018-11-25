@@ -1,5 +1,3 @@
-from functools import reduce
-
 from IPython.display import display, Markdown, HTML
 
 LIMIT_SHOW = 100
@@ -46,12 +44,11 @@ def runSearch(app, query, cache):
   cacheKey = (query, False)
   if cacheKey in cache:
     return cache[cacheKey]
-  options = dict(msgCache=True)
+  options = dict(msgCache=[])
   if app.sets is not None:
     options['sets'] = app.sets
-  (queryResults, messages) = plainSearch(query, **options)
-  features = {}
-  exe = getattr(S, 'exe', None)
+  (queryResults, messages, exe) = plainSearch(query, here=False, **options)
+  features = ()
   if exe:
     qnodes = getattr(exe, 'qnodes', [])
     features = tuple((i, tuple(sorted(q[1].keys()))) for (i, q) in enumerate(qnodes))
@@ -73,13 +70,42 @@ def runSearchCondensed(app, query, cache, condenseType):
 
 def composeP(
     app,
+    features,
     items,
     textFormat,
     opened,
     sec2,
     withNodes=False,
+    getx=None,
     **options,
 ):
+  api = app.api
+  T = api.T
+
+  if features:
+    featureSet = set(features.split(','))
+    app.prettySetup(featureSet, checkOnly=True)
+  else:
+    featureSet = set()
+
+  if getx is not None:
+    tup = None
+    for s2 in items:
+      i = T.sectionFromNode(s2)[2]
+      if i == getx:
+        tup = (s2, )
+        break
+    return prettyTuple(
+        app,
+        tup,
+        getx,
+        isCondensed=False,
+        fmt=textFormat,
+        withNodes=withNodes,
+        extraFeatures=featureSet,
+        **options,
+    ) if tup is not None else ''
+
   passageHtml = []
 
   for item in items:
@@ -91,23 +117,50 @@ def composeP(
             sec2,
             fmt=textFormat,
             withNodes=withNodes,
+            extraFeatures=featureSet,
             **options,
         )
     )
+
   return '\n'.join(passageHtml)
 
 
 def composeT(
     app,
+    features,
     tuples,
     opened,
     textFormat,
     withNodes=False,
     linked=1,
+    getx=None,
     **options,
 ):
   api = app.api
   F = api.F
+
+  if features:
+    featureSet = set(features.split(','))
+    app.prettySetup(featureSet, checkOnly=True)
+  else:
+    featureSet = set()
+
+  if getx is not None:
+    tup = None
+    for (i, tp) in tuples:
+      if i == getx:
+        tup = tp
+        break
+    return prettyTuple(
+        app,
+        tup,
+        getx,
+        isCondensed=False,
+        fmt=textFormat,
+        withNodes=withNodes,
+        extraFeatures=featureSet,
+        **options,
+    ) if tup is not None else ''
 
   tuplesHtml = []
   doHeader = False
@@ -145,9 +198,11 @@ def composeT(
             withNodes=withNodes,
             opened=i in opened,
             asString=True,
+            extraFeatures=featureSet,
             **options,
         )
     )
+
   return '\n'.join(tuplesHtml)
 
 
@@ -163,6 +218,7 @@ def compose(
     textFormat,
     withNodes=False,
     linked=1,
+    getx=None,
     **options,
 ):
   api = app.api
@@ -172,13 +228,29 @@ def compose(
     condenseType = app.condenseType
   item = condenseType if condensed else RESULT
 
-  features = set(reduce(
-      set.union,
-      (x[1] for x in features),
-      set(),
-  ))
   if features:
-    app.prettySetup(features)
+    featureSet = set(features.split(','))
+    app.prettySetup(featureSet, checkOnly=True)
+  else:
+    featureSet = set()
+
+  if getx is not None:
+    tup = None
+    for (i, tp) in tuples:
+      if i == getx:
+        tup = tp
+        break
+    return prettyTuple(
+        app,
+        tup,
+        getx,
+        isCondensed=condensed,
+        condenseType=condenseType,
+        fmt=textFormat,
+        withNodes=withNodes,
+        extraFeatures=featureSet,
+        **options,
+    ) if tup is not None else ''
 
   tuplesHtml = []
   doHeader = False
@@ -219,11 +291,11 @@ def compose(
             position=position,
             opened=i in opened,
             asString=True,
+            extraFeatures=featureSet,
             **options,
         )
     )
-  if features:
-    app.prettySetup()
+
   return '\n'.join(tuplesHtml)
 
 
@@ -345,9 +417,7 @@ def plainTuple(
       {refRef}
       {plainRep}
     </summary>
-    <div class="pretty">
-      {prettyRep}
-    </div>
+    <div class="pretty">{prettyRep}</div>
   </details>
 '''
     )
@@ -416,9 +486,7 @@ def _plainTextS2(
     {app.sectionLink(sNode, text=seqNumber)}
     {textRep}
   </summary>
-  <div class="pretty">
-    {prettyRep}
-  </div>
+  <div class="pretty">{prettyRep}</div>
 </details>
 '''
   )
@@ -639,21 +707,18 @@ def prettyPre(
   )
 
 
-def prettySetup(app, features=None, noneValues=None):
-  if features is None:
-    app.prettyFeatures = ()
-  else:
-    featuresRequested = tuple(features.strip().split()
-                              ) if type(features) is str else tuple(sorted(features))
+def prettySetup(app, features=None, noneValues=None, checkOnly=False):
+  if features is not None:
+    featuresRequested = (
+        tuple(features.strip().split()) if type(features) is str else tuple(sorted(features))
+    )
     tobeLoaded = set(featuresRequested) - app.prettyFeaturesLoaded
     if tobeLoaded:
       app.api.TF.load(tobeLoaded, add=True, silent=True)
       app.prettyFeaturesLoaded |= tobeLoaded
-    app.prettyFeatures = featuresRequested
-  if noneValues is None:
-    app.noneValues = app.noneValues
-  else:
-    app.noneValues = noneValues
+  if not checkOnly:
+    app.prettyFeatures = () if features is None else featuresRequested
+    app.useNoneValues = app.noneValues if noneValues is None else noneValues
 
 
 def getBoundary(api, n):
@@ -671,6 +736,8 @@ def getFeatures(
     n,
     suppress,
     features,
+    extraFeatures=None,
+    noneValues=None,
     o=None,
     withName=set(),
     givenValue={},
@@ -683,7 +750,13 @@ def getFeatures(
   featurePartE = '</div>'
 
   givenFeatureSet = set(features)
-  extraFeatures = (tuple(f for f in app.prettyFeatures if f not in givenFeatureSet))
+  extraFeatures = (
+      tuple(
+          f
+          for f in (extraFeatures if extraFeatures is not None else app.prettyFeatures)
+          if f not in givenFeatureSet
+      )
+  )
   extraSet = set(extraFeatures)
   featureList = tuple(features) + extraFeatures
   nFeatures = len(features)
@@ -703,8 +776,9 @@ def getFeatures(
       else:
         value = Fs(name).v(n)
         oValue = None if o is None else Fs(name).v(o)
-        valueRep = None if value in app.noneValues else htmlEsc(value)
-        oValueRep = None if o is None or oValue in app.noneValues else htmlEsc(oValue)
+        theNoneValues = noneValues if noneValues is not None else app.useNoneValues
+        valueRep = None if value in theNoneValues else htmlEsc(value)
+        oValueRep = None if o is None or oValue in theNoneValues else htmlEsc(oValue)
         if valueRep is None and oValueRep is None:
           value = None
         else:

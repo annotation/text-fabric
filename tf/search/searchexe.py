@@ -33,7 +33,7 @@ class SearchExe(object):
     self.shallow = 0 if not shallow else 1 if shallow is True else shallow
     self.silent = silent
     self.showQuantifiers = showQuantifiers
-    self.msgCache = -1 if msgCache else 0
+    self.msgCache = msgCache if type(msgCache) is list else -1 if msgCache else 0
     self.good = True
     self.setInfo = setInfo
     basicRelations(self, api, silent)

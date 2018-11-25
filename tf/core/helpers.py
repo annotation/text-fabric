@@ -249,3 +249,26 @@ def project(iterableOfTuples, maxDimension):
   if maxDimension == 1:
     return {r[0] for r in iterableOfTuples}
   return {r[0:maxDimension] for r in iterableOfTuples}
+
+
+msgLinePat = '^( *[0-9]+) (.*)$'
+msgLineRe = re.compile(msgLinePat)
+
+
+def shapeMessages(messages):
+  if type(messages) is str:
+    messages = messages.split('\n')
+  html = []
+  for msg in messages:
+    if type(msg) is tuple:
+      (error, nl, msgRep) = msg
+      msg = msgRep + ('<br/>' if nl else '')
+      className = 'eline' if error else 'mline'
+    else:
+      match = msgLineRe.match(msg)
+      className = 'tline' if match else 'eline'
+      msg = msg.replace('\n', '<br/>')
+    html.append(f'''
+      <span class="{className}">{msg}</span>
+    ''')
+  return ''.join(html)

@@ -1,5 +1,7 @@
 import sys
 import pickle
+from functools import reduce
+
 import rpyc
 from rpyc.utils.server import ThreadedServer
 
@@ -72,6 +74,28 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
       self.app = None
       pass
 
+    def exposed_monitor(self):
+      app = self.app
+      api = app.api
+      S = api.S
+
+      searchExe = getattr(S, 'exe', None)
+      if searchExe:
+        searchExe = searchExe.outerTemplate
+
+      msgCache = api.cache(asString=True)
+
+      prettyFeaturesUsed = ', '.join(sorted(app.prettyFeatures))
+      prettyFeaturesLoaded = ', '.join(sorted(app.prettyFeaturesLoaded))
+      prettyFeatures = f'used   = {prettyFeaturesUsed}\nloaded = {prettyFeaturesLoaded}'
+
+      data = dict(
+          searchExe=searchExe,
+          msgCache=msgCache,
+          prettyFeatures=prettyFeatures,
+      )
+      return data
+
     def exposed_provenance(self):
       app = self.app
       return app.provenance
@@ -107,9 +131,11 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
         sec0,
         sec1,
         textFormat,
+        features,
         sec2=None,
         opened=set(),
         withNodes=False,
+        getx=None,
         **options,
     ):
       app = self.app
@@ -127,15 +153,20 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
           sec0 = int(sec0)
         if sectionFeatureTypes[1] == 'int':
           sec1 = int(sec1)
+        if getx is not None:
+          if sectionFeatureTypes[2] == 'int':
+            getx = int(getx)
         node = T.nodeFromSection((sec0, sec1))
         items = L.d(node, otype=sec2Type) if node else []
         passage = composeP(
             app,
+            features,
             items,
             textFormat,
             opened,
             sec2,
             withNodes=withNodes,
+            getx=getx,
             **options,
         )
       sec0s = tuple(T.sectionFromNode(s)[0] for s in F.otype.s(sec0Type))
@@ -143,8 +174,7 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
       if sec0:
         sec0Node = T.nodeFromSection((sec0, ))
         sec1s = tuple(T.sectionFromNode(s)[1] for s in L.d(sec0Node, otype=sec1Type))
-      passages = (sec0s, sec1s)
-      return (passage, passages)
+      return (passage, (sec0s, sec1s))
 
     def exposed_rawSearch(self, query):
       rawSearch = self.app.api.S.search
@@ -162,9 +192,11 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
         self,
         kind,
         task,
+        features,
         textFormat,
         opened=set(),
         withNodes=False,
+        getx=None,
         **options,
     ):
       app = self.app
@@ -203,10 +235,12 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
       )
       table = composeT(
           app,
+          features,
           allResults, opened,
           textFormat,
           withNodes=withNodes,
           linked=1,
+          getx=getx,
           **options,
       )
       return (table, messages)
@@ -222,6 +256,7 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
         opened=set(),
         withNodes=False,
         linked=1,
+        getx=None,
         **options,
     ):
       app = self.app
@@ -252,22 +287,29 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
 
       # yapf: disable
       allResults = (
-          + ((None, 'results'),)
+          ((None, 'results'),)
           + beforeResults
           + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
           + afterResults
       )
+      features = set(reduce(
+          set.union,
+          (x[1] for x in features),
+          set(),
+      ))
+      featureStr = ','.join(sorted(features))
       table = compose(
           app,
-          allResults, features, start, position, opened,
+          allResults, featureStr, start, position, opened,
           condensed,
           condenseType,
           textFormat,
           withNodes=withNodes,
           linked=linked,
+          getx=getx,
           **options,
       )
-      return (table, messages, start, total)
+      return (table, messages, featureStr, start, total)
 
     def exposed_allTables(
         self,
@@ -349,9 +391,15 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
           + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
           + afterResults
       )
+      features = set(reduce(
+          set.union,
+          (x[1] for x in features),
+          set(),
+      ))
+      featureStr = ','.join(sorted(features))
       table = compose(
           app,
-          allResults, features, start, position, opened,
+          allResults, featureStr, start, position, opened,
           condensed,
           condenseType,
           textFormat,

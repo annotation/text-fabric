@@ -1,4 +1,4 @@
-from ..core.helpers import console
+from ..core.helpers import console, shapeMessages
 from .searchexe import SearchExe
 
 # Search and SearchExe
@@ -84,9 +84,9 @@ class Search(object):
     if here:
       self.exe = exe
     queryResults = exe.search(limit=limit)
-    if msgCache:
-      messages = self.api.cache(asString=True)
-      return (queryResults, messages)
+    if type(msgCache) is list:
+      messages = shapeMessages(msgCache)
+      return (queryResults, messages) if here else (queryResults, messages, exe)
     return queryResults
 
   def study(
@@ -120,7 +120,7 @@ class Search(object):
       error('Cannot fetch if there is no previous "study()"')
     else:
       queryResults = exe.fetch(limit=limit)
-      if msgCache:
+      if type(msgCache) is list:
         messages = self.api.cache(asString=True)
         return (queryResults, messages)
       return queryResults
