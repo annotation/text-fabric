@@ -469,6 +469,7 @@ class TfApp(Atf):
       seen=set(),
       lineNumbers=False,
       lineart=True,
+      **featureOptions,
   ):
     goOn = prettyPre(
         app,
@@ -512,6 +513,7 @@ class TfApp(Atf):
         highlights,
         lineNumbers,
         seen,
+        **featureOptions,
     ) if nType in COMMENT_TYPES else ''
     children = ()
 
@@ -524,6 +526,7 @@ class TfApp(Atf):
           suppress,
           ('name', 'period', 'excavation'),
           plain=True,
+          **featureOptions,
       )
       children = L.d(n, otype='face')
     elif nType == 'face':
@@ -533,6 +536,7 @@ class TfApp(Atf):
           n,
           suppress,
           ('identifier', 'fragment'),
+          **featureOptions,
       )
       children = L.d(n, otype='column')
     elif nType == 'column':
@@ -552,6 +556,7 @@ class TfApp(Atf):
             n,
             suppress,
             theseFeats,
+            **featureOptions,
         )
         children = sortNodes(
             set(L.d(n, otype='cluster'))
@@ -567,6 +572,7 @@ class TfApp(Atf):
           n,
           suppress,
           ('text', ),
+          **featureOptions,
       )
     elif nType == 'cluster':
       seen.add(n)
@@ -580,7 +586,7 @@ class TfApp(Atf):
       seen.add(n)
       children = E.sub.f(n)
     elif nType == slotType:
-      featurePart = app._getAtf(n) + getFeatures(app, n, suppress, ())
+      featurePart = app._getAtf(n) + getFeatures(app, n, suppress, (), **featureOptions)
       seen.add(n)
       if not outer and F.type.v(n) == 'empty':
         return
@@ -656,6 +662,7 @@ class TfApp(Atf):
             lineart=lineart,
             lineNumbers=lineNumbers,
             seen=seen,
+            **featureOptions,
         )
         if nType == 'quad':
           nextChildren = E.op.f(ch)
@@ -757,6 +764,7 @@ class TfApp(Atf):
       highlights,
       lineNumbers,
       seen,
+      **featureOptions,
   ):
     api = app.api
     E = api.E
@@ -778,6 +786,7 @@ class TfApp(Atf):
             lineart=False,
             lineNumbers=lineNumbers,
             seen=seen,
+            **featureOptions,
         )
       html.append('</div>')
       commentsPart = ''.join(html)

@@ -72,6 +72,12 @@ EXCLUDED_FEATURES = set(
     '''
     crossrefLCS
     crossrefSET
+    dist
+    dist_unit
+    distributional_parent
+    domain
+    freq_occ
+    functional_parent
     g_cons
     g_cons_utf8
     g_lex
@@ -88,15 +94,28 @@ EXCLUDED_FEATURES = set(
     g_vbe_utf8
     g_vbs
     g_vbs_utf8
+    instruction
+    is_root
+    kind
     kq_hybrid
     kq_hybrid_utf8
     languageISO
     lex0
     lexeme_count
     mother_object_type
+    nme
+    pargr
+    pfm
+    prs
+    rank_occ
+    root
     suffix_gender
     suffix_number
     suffix_person
+    tab
+    uvf
+    vbe
+    vbs
 '''.strip().split()
 )
 

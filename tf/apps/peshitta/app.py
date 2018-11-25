@@ -123,6 +123,7 @@ class TfApp(object):
       withNodes=True,
       suppress=set(),
       highlights={},
+      **featureOptions,
   ):
     goOn = prettyPre(
         app,
@@ -202,6 +203,7 @@ class TfApp(object):
             n,
             suppress,
             ('word_etcbc', ),
+            **featureOptions,
         )
       html.append(heading)
       html.append(featurePart)
@@ -219,6 +221,7 @@ class TfApp(object):
           withNodes=withNodes,
           suppress=suppress,
           highlights=highlights,
+          **featureOptions,
       )
     html.append('''
 </div>

@@ -8,9 +8,6 @@ from ..core.helpers import console
 appPat = '^([a-zA-Z0-9_-]+)$'
 appRe = re.compile(appPat)
 
-msgLinePat = '^( *[0-9]+) (.*)$'
-msgLineRe = re.compile(msgLinePat)
-
 
 def getDebug(cargs=sys.argv):
   for arg in cargs[1:]:
@@ -185,18 +182,6 @@ def passageLinks(passages, sec0, sec1):
 '''
 
 
-def shapeMessages(messages):
-  messages = messages.split('\n')
-  html = []
-  for msg in messages:
-    match = msgLineRe.match(msg)
-    className = 'tline' if match else 'eline'
-    html.append(f'''
-      <div class="{className}">{msg.rstrip()}</div>
-    ''')
-  return ''.join(html)
-
-
 def shapeOptions(options, values):
   html = []
   for (option, typ, acro, desc) in options:
@@ -223,7 +208,7 @@ def shapeCondense(condenseTypes, value):
     checked = ' checked ' if value == otype else ''
     radio = (
         '<span class="cradio">&nbsp;</span>'
-        if i == lastType else f'''<input class="r cradio" type="radio" id="ctp{i}"
+        if i == lastType else f'''<input class="queryR cradio" type="radio" id="ctp{i}"
               name="condensetp" value="{otype}" {checked}
             "/>'''
     )
@@ -244,15 +229,15 @@ def shapeFormats(textFormats, value):
   for (i, fmt) in enumerate(textFormats):
     checked = ' checked ' if value == fmt else ''
     radio = (
-        f'''<input class="r cradio" type="radio" id="ctp{i}"
+        f'''<input class="r tradio" type="radio" id="ttp{i}"
               name="textformat" value="{fmt}" {checked}
             "/>'''
     )
     html.append(
         f'''
-    <div class="cline">
+    <div class="tfline">
       {radio}
-      <span class="ctype">{fmt}</span>
+      <span class="ttext">{fmt}</span>
     </div>
   '''
     )

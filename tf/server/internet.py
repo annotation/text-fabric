@@ -8,7 +8,7 @@ import markdown
 import bottle
 from bottle import (post, get, route, template, request, static_file, run)
 
-from tf.core.helpers import console
+from tf.core.helpers import console, shapeMessages
 from tf.parameters import NAME, VERSION, DOI_TEXT, DOI_URL, COMPOSE_URL
 from tf.applib.apphelpers import RESULT
 from tf.applib.appmake import (
@@ -26,7 +26,6 @@ from tf.server.common import (
     setValues,
     pageLinks,
     passageLinks,
-    shapeMessages,
     shapeOptions,
     shapeCondense,
     shapeFormats,
@@ -209,7 +208,7 @@ def writeAbout(header, provenance, form):
 ### Search
 
 ```
-{form["searchTemplate"]}
+{form["query"]}
 ```
 '''
   '''
@@ -247,13 +246,9 @@ def getInt(x, default=1):
 
 
 def getFormData():
-  console(request.content_type)
-  console(str(request.is_ajax))
-  console(str(request.forms.get('sections')))
-  console(repr(request.forms))
-  console(str(request.body))
   form = {}
-  form['searchTemplate'] = request.forms.searchTemplate.replace('\r', '')
+  form['query'] = request.forms.query.replace('\r', '')
+  form['features'] = request.forms.features or ''
   form['tuples'] = request.forms.tuples.replace('\r', '')
   form['sections'] = request.forms.sections.replace('\r', '')
   form['jobName'] = request.forms.jobName.strip()
@@ -270,10 +265,15 @@ def getFormData():
   form['condensetp'] = request.forms.condensetp
   form['textformat'] = request.forms.textformat
   form['export'] = request.forms.export
-  form['expandAll'] = request.forms.expandAll
+  form['sectionsExpandAll'] = request.forms.sectionsExpandAll
+  form['tuplesExpandAll'] = request.forms.tuplesExpandAll
+  form['queryExpandAll'] = request.forms.queryExpandAll
   form['linked'] = getInt(request.forms.linked, default=1)
-  form['opened'] = request.forms.opened
-  form['mode'] = request.forms.mode
+  form['passageOpened'] = request.forms.passageOpened
+  form['sectionsOpened'] = request.forms.sectionsOpened
+  form['tuplesOpened'] = request.forms.tuplesOpened
+  form['queryOpened'] = request.forms.queryOpened
+  form['mode'] = request.forms.mode or 'passage'
   form['position'] = getInt(request.forms.position, default=1)
   form['batch'] = getInt(request.forms.batch, default=BATCH)
   form['sec0'] = request.forms.sec0
@@ -298,11 +298,12 @@ def serveLocal(filepath):
   return static_file(filepath, root=f'{localDir}')
 
 
-def serveTable(kind):
+def serveTable(kind, getx=None):
   form = getFormData()
   textFormat = form['textformat'] or None
-  task = form[kind]
-  openedSet = {int(n) for n in form['opened'].split(',')} if form['opened'] else set()
+  task = form[kind].strip()
+  openedKey = f'{kind}Opened'
+  openedSet = {int(n) for n in form[openedKey].split(',')} if form[openedKey] else set()
 
   options = config.options
   values = getValues(options, form)
@@ -318,9 +319,11 @@ def serveTable(kind):
     ) = kernelApi.table(
         kind,
         task,
+        form['features'],
         textFormat,
         opened=openedSet,
         withNodes=form['withNodes'],
+        getx=int(getx) if getx else None,
         **values,
     )
 
@@ -334,37 +337,58 @@ def serveTable(kind):
 
 @post('/sections')
 @get('/sections')
-def serveSections():
-  return serveTable('sections')
+def serveSectionsBare():
+  return serveTable('sections', None)
+
+
+@post('/sections/<getx:int>')
+@get('/sections/<getx:int>')
+def serveSections(getx):
+  return serveTable('sections', getx)
 
 
 @post('/tuples')
 @get('/tuples')
-def serveTuples():
-  return serveTable('tuples')
+def serveTuplesBare():
+  return serveTable('tuples', None)
+
+
+@post('/tuples/<getx:int>')
+@get('/tuples/<getx:int>')
+def serveTuples(getx):
+  return serveTable('tuples', getx)
 
 
 @post('/query')
 @get('/query')
-def serveQuery():
+def serveQueryBare():
+  return serveQuery(None)
+
+
+@post('/query/<getx:int>')
+@get('/query/<getx:int>')
+def serveQuery(getx):
+  kind = 'query'
   form = getFormData()
-  query = form['searchTemplate']
+  task = form[kind]
   condenseType = form['condensetp'] or None
   resultKind = condenseType if form['condensed'] else RESULT
   textFormat = form['textformat'] or None
-  openedSet = {int(n) for n in form['opened'].split(',')} if form['opened'] else set()
+  openedKey = f'{kind}Opened'
+  openedSet = {int(n) for n in form[openedKey].split(',')} if form[openedKey] else set()
 
   options = config.options
   values = getValues(options, form)
 
   pages = ''
+  features = ''
 
   kernelApi = TF.connect()
 
-  if query:
+  if task:
     messages = ''
     table = None
-    if query in wildQueries:
+    if task in wildQueries:
       messages = (
           f'Aborted because query is known to take longer than {TIMEOUT} second'
           + ('' if TIMEOUT == 1 else 's')
@@ -374,10 +398,11 @@ def serveQuery():
         (
             table,
             messages,
+            features,
             start,
             total,
         ) = kernelApi.search(
-            query,
+            task,
             form['condensed'],
             condenseType,
             textFormat,
@@ -386,6 +411,7 @@ def serveQuery():
             opened=openedSet,
             withNodes=form['withNodes'],
             linked=form['linked'],
+            getx=int(getx) if getx else None,
             **values,
         )
       except TimeoutError:
@@ -393,8 +419,8 @@ def serveQuery():
             f'Aborted because query takes longer than {TIMEOUT} second'
             + ('' if TIMEOUT == 1 else 's')
         )
-        console(f'{query}\n{messages}', error=True)
-        wildQueries.add(query)
+        console(f'{task}\n{messages}', error=True)
+        wildQueries.add(task)
 
     if table is not None:
       pages = pageLinks(total, form['position'])
@@ -407,12 +433,19 @@ def serveQuery():
       pages=pages,
       table=table,
       messages=messages,
+      features=features,
   )
 
 
 @post('/passage')
 @get('/passage')
-def servePassage():
+def servePassageBare():
+  return servePassage(None)
+
+
+@post('/passage/<getx>')
+@get('/passage/<getx>')
+def servePassage(getx):
   form = getFormData()
   textFormat = form['textformat'] or None
 
@@ -423,7 +456,9 @@ def servePassage():
 
   kernelApi = TF.connect()
 
-  openedSet = set(form['opened'].split(',')) if form['opened'] else set()
+  openedKey = 'passageOpened'
+  openedSet = {int(n) for n in form[openedKey].split(',')} if form[openedKey] else set()
+
   sec0 = form['sec0']
   sec1 = form['sec1']
   sec2 = form['sec2']
@@ -434,13 +469,18 @@ def servePassage():
       sec0,
       sec1,
       textFormat,
+      form['features'],
       sec2=sec2,
       opened=openedSet,
       withNodes=form['withNodes'],
+      getx=getx,
       **values,
   )
   passages = passageLinks(passages, sec0, sec1)
-  return passages
+  return dict(
+      table=table,
+      passages=passages,
+  )
 
 
 @post('/export')
@@ -451,7 +491,7 @@ def serveExport():
   queryData = serveQuery()
 
   form = getFormData()
-  query = form['searchTemplate']
+  query = form['query']
   condenseType = form['condensetp'] or None
   textFormat = form['textformat'] or None
 

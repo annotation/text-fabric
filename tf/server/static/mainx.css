@@ -223,14 +223,14 @@ textarea.tuples {
 	height: 5rem;
 	margin: 0.3rem 0.3rem;
 }
-.template,p.setnames {
+.query,p.setnames {
     background-color: #ffeedd;
 }
 span.setnames {
 	font-size: medium;
 	font-family: monospace;
 }
-textarea.template {
+textarea.query {
 	font-size: large;
 	font-family: monospace;
 	width: calc(100% - 1rem);
@@ -329,20 +329,35 @@ span.ctype {
     font-size: x-small;
     font-style: italic;
 }
-span.ctext {
-    flex: 0 1 auto;
-    font-size: x-small;
-    font-style: italic;
-}
 span.cinfo {
     flex: 0 1 auto;
     font-size: x-small;
 }
+div.tfline {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: baseline;
+    margin-left: 1rem;
+    background-color: #fafafa;
+}
+span.tradio, input.tradio {
+    flex: 0 0 2rem;
+    margin-right: 0rem;
+}
+span.ttext {
+    flex: 0 1 auto;
+    font-size: small;
+    font-style: normal;
+}
 
 /* MID-COL */
 
-div.navigation {
+#navigation {
     font-size: small;
+}
+div.expand {
+    text-align: right;
 }
 
 div.materialnav {
@@ -354,7 +369,7 @@ div.passages {
     justify-content: flex-start;
     align-items: flex-start;
 }
-div.pages, #pages {
+#pages {
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-end;

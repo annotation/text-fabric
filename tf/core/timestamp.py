@@ -12,6 +12,7 @@ class Timestamp(object):
     self.verbose = -2
 
   def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
+    # cache is a list: append to cache, do not output anything
     # cache = -1: only to cache
     # cache =  1: to cache and to console
     # cache =  0: only to console
@@ -21,12 +22,15 @@ class Timestamp(object):
       msgRep = f'{self.levelRep}{self._elapsed():>7} {msg}'.replace('\n', '\n' + self.levelRep)
     else:
       msgRep = f'{self.levelRep}{msg}'.replace('\n', '\n' + self.levelRep)
-    if cache:
-      self.log.append((error, nl, msgRep))
-    if cache >= 0:
-      channel = sys.stderr if error else sys.stdout
-      channel.write('{}{}'.format(msgRep, '\n' if nl else ''))
-      channel.flush()
+    if type(cache) is list:
+      cache.append((error, nl, msgRep))
+    else:
+      if cache:
+        self.log.append((error, nl, msgRep))
+      if cache >= 0:
+        channel = sys.stderr if error else sys.stdout
+        channel.write('{}{}'.format(msgRep, '\n' if nl else ''))
+        channel.flush()
 
   def reset(self):
     self.log = []

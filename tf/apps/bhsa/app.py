@@ -102,6 +102,7 @@ class TfApp(object):
       fmt=None,
       withNodes=False,
       asString=False,
+      **options,
   ):
     asApp = app.asApp
     api = app.api
@@ -161,6 +162,7 @@ class TfApp(object):
       withNodes=True,
       suppress=set(),
       highlights={},
+      **featureOptions,
   ):
     goOn = prettyPre(
         app,
@@ -273,6 +275,7 @@ class TfApp(object):
             ('number', ),
             o=n,
             plain=True,
+            **featureOptions,
         )
       elif superType == 'clause':
         featurePart = getFeatures(
@@ -282,6 +285,7 @@ class TfApp(object):
             ('rela', 'typ'),
             o=n,
             plain=True,
+            **featureOptions,
         )
       elif superType == 'phrase':
         featurePart = getFeatures(
@@ -291,6 +295,7 @@ class TfApp(object):
             ('function', 'typ'),
             o=n,
             plain=True,
+            **featureOptions,
         )
       html.append(
           f'''
@@ -321,6 +326,7 @@ class TfApp(object):
                 pdp=app.webLink(n, text=htmlEsc(F.pdp.v(n)), asString=True),
                 gloss=htmlEsc(F.gloss.v(lx)),
             ),
+            **featureOptions,
         )
       elif nType == 'lex':
         occs = L.d(n, otype='word')
@@ -334,6 +340,7 @@ class TfApp(object):
             suppress,
             ('voc_lex', 'gloss'),
             givenValue=dict(voc_lex=app.webLink(n, text=htmlEsc(F.voc_lex.v(n)), asString=True)),
+            **featureOptions,
         )
       html.append(heading)
       html.append(featurePart)
@@ -351,6 +358,7 @@ class TfApp(object):
           withNodes=withNodes,
           suppress=suppress,
           highlights=highlights,
+          **featureOptions,
       )
     if superType:
       html.append('''
