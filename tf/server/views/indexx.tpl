@@ -2,7 +2,7 @@
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>TF {{jobName}}</title>
+        <title>TF {{dataSource}}-{{jobName}}</title>
         <meta name="application-name" content="Text-Fabric Search Box"/>
         <link rel="shortcut icon" href="/server/static/favicon.ico">
         <link rel="stylesheet" href="/server/static/mainx.css"/>
@@ -10,8 +10,8 @@
         {{!css}}
     </head>
     <body>
-        <form id="go" method="post">
-        <input type="hidden" name="appName" value="{{dataSource}}"/>
+        <form id="go" method="post" enctype="multipart/form-data">
+        <input type="hidden" id="appName" name="appName" value="{{dataSource}}"/>
         <div class="page">
             <div id="sidebar">
                 <div status="about">
@@ -42,34 +42,47 @@
                     <div><img class="mainlogo" src="/server/static/dans.png"/></div>
                 </div>
                 <div status="jobs">
-                    <p class="ilab">
-                        Name of this job:
+                    <input
+                        id="jobh" type="hidden" name="jobName"
+                        value="{{jobName}}"
+                    />
+                    <p class="ilab">This is job
+                        <select class="" id="jchange">
+                        </select>
                     </p>
                     <div>
-                        <input
-                            class="name" type="text"
-                            name="jobName" value="{{jobName}}"
-                            placeholder="job name"
-                        />
-                        <input type="hidden" name="jobNameHidden" value="{{jobNameHidden}}"/>
-                        <span>
-                            <button
-                                class="m" type="submit" name="rename" id="rename" value="1"
-                            > rename
-                            </button>
-                            <button
-                                class="m" type="submit" name="duplicate" id="duplicate" value="1"
-                            > duplicate
-                            </button>
-                        </span>
+                        <button
+                            class="fa fa-plus" type="submit" id="jnew"
+                            title="start a fresh job"
+                        ></button>
+                        <button
+                            class="fa fa-file-import" type="button" id="jopen"
+                            title="upload a job and open it"
+                        ></button>
+                        <button
+                            class="fa fa-window-restore" type="submit"
+                            formtarget="_blank"
+                            title="open this job in a new tab"
+                        ></button>
+                        <button
+                            class="fa fa-edit" type="submit" id="jrename"
+                            title="rename this job"
+                        > </button>
+                        <button
+                            class="fa fa-times" type="submit" id="jclear"
+                            title="clear values of this job"
+                        ></button>
+                        <button
+                            class="fa fa-trash" type="submit" id="jdelete"
+                            title="delete this job"
+                        ></button>
                     </div>
-                    <p class="ilab">Jobs in this browser:</p>
-                    <select
-                        class=""
-                        id="job"
-                        name="otherJob" value=""
-                    >
-                    </select>
+                    <div id="jfilediv">
+                        <input
+                            id="jfile" type="file"
+                            accept="application/json"
+                        />
+                    </div>
                 </div>
                 <div status="options">
                     <div>
@@ -121,12 +134,19 @@
                                 placeholder="Description"
                             >{{description}}</textarea>
                         </div>
-                        <p class="buttons">
+                        <p class="ilab">
                             <button
-                                class="xl" type="submit" formtarget="_new" id="exph" name="export" value="1"
-                            > Export
-                            </button>
+                                type="submit" formaction="/download" formtarget="_new"
+                                title="download the data of this job"
+                            ><span class="fa fa-download"/></button>
+                            <button
+                                type="submit" formaction="/export" formtarget="_new"
+                                title="export this job in a new tab"
+                            ><span class="fa fa-box-open"/></button>
                         </p>
+                        <div id="queryMessages" class="messages">
+                            {{messages}}
+                        </div>
                     </div>
                 </div>
                 <div status="help">
@@ -149,7 +169,7 @@
                         <p>Open <b>multiple windows and tabs</b> with this url,
                            they all communicate with one and the same TF kernel;
                            the lengthy data loading only happens when the TF kernel starts up,
-                           not when multiple local webinterfaces communicate with the TF kernel.
+                           not when multiple webinterfaces communicate with the TF kernel.
                            See <i>Jobs</i> for ways to perform other queries.</p>
                         <p>When you terminate <code>text-fabric</code> on the command line,
                            the TF kernel will also be terminated.</p>
@@ -255,25 +275,46 @@
                 </div>
             </div>
             <div class="leftcol">
-                <p class="ilab">{{defaultCondenseType}} pad</p>
+                <p class="ilab">
+                    <button
+                        id="sectionsGo" class="xl fa fa-sync"
+                        title="get {{defaultCondenseType}}s"
+                        type="button"
+                    ></button>
+                    {{defaultCondenseType}} pad
+                </p>
                 <textarea
                     id="sections" class="sections" name="sections"
                     placeholder="{{exampleSectionText}}"
                 >{{sections}}</textarea>
                 <div id="sectionMessages" class="messages">
                 </div>
-                <p class="buttons"><button id="sectionsGo" class="xl" type="button">Get {{defaultCondenseType}}s</button></p>
+
                 <hr>
-                <p class="ilab">node pad</p>
+
+                <p class="ilab">
+                    <button
+                        id="tuplesGo" class="xl fa fa-sync" type="button"
+                        title="get nodes"
+                    ></button>
+                    node pad
+                </p>
                 <textarea
                     id="tuples" class="tuples" name="tuples"
                     placeholder="100,101,102"
                 >{{tuples}}</textarea>
                 <div id="tupleMessages" class="messages">
                 </div>
-                <p class="buttons"><button id="tuplesGo" class="xl" type="button">Get nodes</button></p>
+
                 <hr>
-                <p class="ilab">search pad</p>
+
+                <p class="ilab">
+                    <button
+                        id="queryGo" class="xl" type="button"
+                        title="run query and get results"
+                    ><span class="fa fa-cog"/></button>
+                    search pad
+                </p>
                 <textarea
                     id="query" class="query" name="query"
                     placeholder="{{defaultCondenseType}}"
@@ -282,7 +323,7 @@
                 </div>
                 <div id="queryMessages" class="messages">
                 </div>
-                <p class="buttons"><button id="queryGo" class="xl" type="button">Get results</button></p>
+
                 <hr>
             </div>
             <div class="midcol">

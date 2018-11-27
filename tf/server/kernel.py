@@ -438,6 +438,7 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
           pass
 
       queryResults = ()
+      queryMessages = ''
       features = ()
       if query:
         (queryResults, queryMessages, features) = (
@@ -445,7 +446,7 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
         )
         (queryResultsC, queryMessagesC, featuresC) = (
             runSearchCondensed(app, query, cache, condenseType)
-            if condensed and condenseType else
+            if not queryMessages and condensed and condenseType else
             (None, None, None)
         )
 
@@ -461,16 +462,8 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
       )
       if condensed and condenseType:
         csvs += (
-            ('resultsCondensed', queryResultsC),
+            (f'resultsBy{condenseType}', queryResultsC),
         )
-      context = getContext(
-          api,
-          (
-              allNodes(sectionResults)
-              | allNodes(tupleResults)
-              | allNodes(queryResultsC if condensed and condenseType else queryResults)
-          )
-      )
       resultsX = getResultsX(
           api,
           queryResults,
@@ -478,7 +471,7 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
           app.noDescendTypes,
           fmt=textFormat,
       )
-      return (pickle.dumps(csvs), pickle.dumps(context), pickle.dumps(resultsX))
+      return (queryMessages, pickle.dumps(csvs), pickle.dumps(resultsX))
 
   return ThreadedServer(TfKernel, port=port, protocol_config={
       # 'allow_pickle': True,

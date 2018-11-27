@@ -266,37 +266,20 @@ div.messages {
     white-space: pre;
 }
 
-p.buttons {
-    text-align: center;
-}
-button {
-    font-weight: bold;
-    background-color: #888888;
-    color: #ffffff; 
-    border-color: #444444;
-    cursor: pointer;
-}
-button.xl {
-    font-size: large;
-    width: 95%;
-    padding: 0.5em;
-    border-radius: 1rem;
-}
-button.l {
-    font-size: medium;
-    width: 80%;
-    padding: 0.3em;
-    border-radius: 0.5rem;
-}
-button.m {
+button, label.button {
     display: inline;
     font-size: medium;
-    width: 40%;
-    padding: 0.3em;
+    font-weight: bold;
+    color: #444444; 
+    background-color: #dddddd;
+    border: 0;
     border-radius: 0.5rem;
+    padding: 0.3em;
+    cursor: pointer;
 }
-button:hover {
-    background-color: #bbbbbb;
+button:hover, label.button.hover {
+    color: #ffffff;
+    background-color: #000000;
 }
 
 input.int {

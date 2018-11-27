@@ -750,18 +750,18 @@ def getFeatures(
   featurePartE = '</div>'
 
   givenFeatureSet = set(features)
-  extraFeatures = (
+  xFeatures = (
       tuple(
           f
           for f in (extraFeatures if extraFeatures is not None else app.prettyFeatures)
           if f not in givenFeatureSet
       )
   )
-  extraSet = set(extraFeatures)
-  featureList = tuple(features) + extraFeatures
+  extraSet = set(xFeatures)
+  featureList = tuple(features) + xFeatures
   nFeatures = len(features)
 
-  withName |= set(app.prettyFeatures)
+  withName |= set(xFeatures)
 
   if not plain:
     featurePart = featurePartB
