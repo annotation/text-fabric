@@ -1,12 +1,18 @@
-function switchMode(m) {
-  var mode = $('#mode')
-  var pageNav = $('#navigation')
-  var pages = $('#pages')
-  var passages = $('#passages')
-  var sectionsTable = $('#sectionsTable')
-  var tuplesTable = $('#tuplesTable')
-  var queryTable = $('#queryTable')
-  var passageTable = $('#passageTable')
+/*eslint-env jquery*/
+
+/* mode: results or passage
+ *
+ */
+
+const switchMode = m => {
+  const mode = $('#mode')
+  const pageNav = $('#navigation')
+  const pages = $('#pages')
+  const passages = $('#passages')
+  const sectionsTable = $('#sectionsTable')
+  const tuplesTable = $('#tuplesTable')
+  const queryTable = $('#queryTable')
+  const passageTable = $('#passageTable')
 
   mode.val(m)
   if (m == 'passage') {
@@ -17,8 +23,7 @@ function switchMode(m) {
     tuplesTable.hide()
     queryTable.hide()
     passageTable.show()
-  }
-  else if (m == 'results') {
+  } else if (m == 'results') {
     pageNav.show()
     pages.show()
     passages.hide()
@@ -29,69 +34,93 @@ function switchMode(m) {
   }
 }
 
-function modes() {
-  var mode = $('#mode')
-  var m = mode.val()
-  var passageTable = $('#passageTable')
+const modes = () => {
+  const mode = $('#mode')
+  const m = mode.val()
 
-  $('#moderesults').click(function(e) {
+  $('#moderesults').click(e => {
     e.preventDefault()
     storeForm()
     switchMode('results')
-
   })
-  $('#modepassage').click(function(e) {
+  $('#modepassage').click(e => {
     e.preventDefault()
     storeForm()
     switchMode('passage')
   })
   if (mode.val() == 'passage') {
     ensureLoaded('passage', 'passages', m)
-  }
-  else if (mode.val() == 'results') {
+  } else if (mode.val() == 'results') {
     ensureLoaded('sections', null, m)
     ensureLoaded('tuples', null, m)
     ensureLoaded('query', 'pages', m)
   }
 }
 
-function ensureLoaded(kind, subkind, m) {
-  var table = $('#'+kind+'Table')
+// switch to passage mode after clicking on a result
+
+const switchPassage = () => {
+  $('.pq').click(e => {
+    e.preventDefault()
+    const { currentTarget } = e
+    const seq = $(currentTarget)
+      .closest('details')
+      .attr('seq')
+    $('#mode').val('passages')
+    $('#sec0').val($(currentTarget).attr('sec0'))
+    $('#sec1').val($(currentTarget).attr('sec1'))
+    $('#sec2').val($(currentTarget).attr('sec2'))
+    $('#pos').val(seq)
+    storeForm()
+    getTable('passage', 'passages', 'passage')
+  })
+}
+
+/* tables: getting tabular data from the server
+ *
+ */
+
+const ensureLoaded = (kind, subkind, m) => {
+  const table = $(`#${kind}Table`)
   if (!table.html()) {
     getTable(kind, subkind, m)
-  }
-  else {
+  } else {
     switchMode(m)
   }
 }
 
-function getTable(kind, subkind, m) {
-  var url = '/'+kind;
-  var dest = $('#'+kind+'Table');
-  var destSub = $('#'+subkind)
-  var go = document.querySelector("form");
-  var formData = new FormData(go);
-  var mode = $('#mode').val()
+const getTable = (kind, subkind, m, button) => {
+  const url = `/${kind}`
+  const dest = $(`#${kind}Table`)
+  const destSub = $(`#${subkind}`)
+  const go = document.querySelector('form')
+  const formData = new FormData(go)
+  if (button) {
+    button.addClass('fa-spin')
+  }
   $.ajax({
     type: 'POST',
-    url: url,
+    url,
     data: formData,
     processData: false,
     contentType: false,
-    success: function(data) {
-      var table = data.table || ''
-      var messages = data.messages || ''
-      dest.html(table + messages)
+    success: data => {
+      const table = data.table || ''
+      const messages = data.messages || ''
+      dest.html(`${table}${messages}`)
       if (subkind != null) {
-        var subs = data[subkind]
+        const subs = data[subkind]
         if (subs) {
           destSub.html(subs)
           subLinks(kind, subkind, m)
         }
       }
-      var features = data.features;
+      const { features } = data
       if (features != null) {
         $('#features').val(features)
+      }
+      if (button) {
+        button.removeClass('fa-spin')
       }
       switchPassage()
       details(kind)
@@ -104,263 +133,260 @@ function getTable(kind, subkind, m) {
   })
 }
 
-function activateTables(kind, subkind, m) {
-  var button = $('#'+kind+'Go');
-  button.click(function(e) {
+const activateTables = (kind, subkind) => {
+  const button = $(`#${kind}Go`)
+  const passButton = button.find('span')
+  button.click(e => {
     e.preventDefault()
     storeForm()
-    var m = $('#mode').val()
+    let m = $('#mode').val()
     if (kind == 'passage' && m != 'passage') {
       m = 'passage'
-    }
-    else if (kind != 'passage' && m != 'results') {
+    } else if (kind != 'passage' && m != 'results') {
       m = 'results'
     }
-    getTable(kind, subkind, m)
+    getTable(kind, subkind, m, passButton)
   })
-  detailc(kind, subkind)
-  xpa = adjustOpened(kind)
+  detailc(kind)
+  const xpa = adjustOpened(kind)
   detailSet(kind, xpa)
 }
 
-function switchPassage() {
-  $('.pq').click(function(e) {
-    e.preventDefault()
-    var seq = $(this).closest('details').attr('seq')
-    $('#mode').val('passages')
-    $('#sec0').val($(this).attr('sec0'))
-    $('#sec1').val($(this).attr('sec1'))
-    $('#sec2').val($(this).attr('sec2'))
-    $('#pos').val(seq)
-    storeForm()
-    getTable('passage', 'passages', 'passage')
-  })
-}
+// navigation links through passages and results
 
-function subLinks(kind, subkind, m) {
+const subLinks = (kind, subkind, m) => {
   if (subkind == 'pages') {
-    $('.pnav').click(function(e) {
+    $('.pnav').click(e => {
       e.preventDefault()
-      $('#pos').val($(this).html())
+      const { currentTarget } = e
+      $('#pos').val($(currentTarget).html())
       storeForm()
       getTable(kind, subkind, m)
     })
-  }
-  else if (subkind == 'passages') {
-    opKey = kind+'Op'
-    $('.s0nav').click(function(e) {
+  } else if (subkind == 'passages') {
+    const opKey = `${kind}Op`
+    $('.s0nav').click(e => {
       e.preventDefault()
-      $('#sec0').val($(this).html())
+      const { currentTarget } = e
+      $('#sec0').val($(currentTarget).html())
       $('#sec1').val('1')
       $('#sec2').val('')
-      $('#'+opKey).val('')
+      $(`#${opKey}`).val('')
       storeForm()
       getTable(kind, subkind, m)
     })
-    $('.s1nav').click(function(e) {
+    $('.s1nav').click(e => {
       e.preventDefault()
-      $('#sec1').val($(this).html())
+      const { currentTarget } = e
+      $('#sec1').val($(currentTarget).html())
       $('#sec2').val('')
-      $('#'+opKey).val('')
+      $(`#${opKey}`).val('')
       storeForm()
       getTable(kind, subkind, m)
     })
   }
 }
 
-function detailc(kind, subkind) {
-  $('#'+kind+'Expac').click(function(e) {
+// controlling the "open all" checkbox
+
+const detailc = kind => {
+  $(`#${kind}Expac`).click(e => {
     e.preventDefault()
-    var expa = $('#'+kind+'Expa')
-    var xpa = expa.val()
-    var newXpa;
-    if (xpa == "1") {newXpa = "-1"}
-    else if (xpa == "-1") {newXpa = "1"}
-    else if (xpa == "0") {newXpa = "-1"}
-    else {newXpa = "-1"}
+    const { currentTarget } = e
+    const expa = $(`#${kind}Expa`)
+    const xpa = expa.val()
+    const newXpa =
+      xpa == '1' ? '-1' : xpa == '-1' ? '1' : xpa == '0' ? '-1' : '-1'
     detailSet(kind, newXpa)
-    var m = $('#mode').val()
-    var dPretty = $('#'+kind+'Table details.pretty')
-    if (newXpa == "-1") {
-      dPretty.each(function() {
-        if ($(this).prop('open')) {
-          $(this).prop('open', false)
+    const dPretty = $(`#${kind}Table details.pretty`)
+    if (newXpa == '-1') {
+      dPretty.each(() => {
+        if ($(currentTarget).prop('open')) {
+          $(currentTarget).prop('open', false)
         }
       })
-    }
-    else if (newXpa == "1") {
-      dPretty.each(function() {
-        if (!$(this).prop('open')) {
-          $(this).prop('open', true)
+    } else if (newXpa == '1') {
+      dPretty.each(() => {
+        if (!$(currentTarget).prop('open')) {
+          $(currentTarget).prop('open', true)
         }
       })
     }
   })
 }
 
-function detailSet(kind, xpa) {
-  var expac = $('#'+kind+'Expac')
-  var expa = $('#'+kind+'Expa')
-  var curVal = (xpa == null) ? expa.val() : xpa;
-  if (curVal == "-1") {
-    expa.val("-1")
+const detailSet = (kind, xpa) => {
+  const expac = $(`#${kind}Expac`)
+  const expa = $(`#${kind}Expa`)
+  const curVal = xpa == null ? expa.val() : xpa
+  if (curVal == '-1') {
+    expa.val('-1')
     expac.prop('checked', false)
     expac.prop('indeterminate', false)
-  }
-  else if (curVal == "1") {
-    expa.val("1")
+  } else if (curVal == '1') {
+    expa.val('1')
     expac.prop('checked', true)
     expac.prop('indeterminate', false)
-  }
-  else if (curVal == "0") {
-    expa.val("0")
+  } else if (curVal == '0') {
+    expa.val('0')
     expac.prop('checked', false)
     expac.prop('indeterminate', true)
-  }
-  else {
-    expa.val("-1")
+  } else {
+    expa.val('-1')
     expac.prop('checked', false)
     expac.prop('indeterminate', false)
   }
-  var op = $('#'+kind+'Op')
-  if (curVal == "-1") {
+  const op = $(`#${kind}Op`)
+  if (curVal == '-1') {
     op.val('')
-  }
-  else if (curVal == "1") {
-    var dPretty = $('#'+kind+'Table details.pretty')
-    var allNumbers = dPretty.map(
-      function() {return $(this).attr('seq')}
-    ).get()
+  } else if (curVal == '1') {
+    const dPretty = $(`#${kind}Table details.pretty`)
+    const allNumbers = dPretty.map((i, elem) => $(elem).attr('seq')).get()
     op.val(allNumbers.join(','))
   }
   storeForm()
 }
 
-function adjustOpened(kind) {
-  var openedElem = $('#'+kind+'Op')
-  var dPretty = $('#'+kind+'Table details.pretty')
-  var openedDetails = dPretty.filter(
-    function(index) {return this.open}
+const adjustOpened = kind => {
+  const openedElem = $(`#${kind}Op`)
+  const dPretty = $(`#${kind}Table details.pretty`)
+  const openedDetails = dPretty.filter((i, elem) => elem.open)
+  const closedDetails = dPretty.filter((i, elem) => !elem.open)
+  const openedNumbers = openedDetails
+    .map((i, elem) => $(elem).attr('seq'))
+    .get()
+  const closedNumbers = closedDetails
+    .map((i, elem) => $(elem).attr('seq'))
+    .get()
+
+  const currentOpenedStr = openedElem.val()
+  const currentOpened =
+    currentOpenedStr == '' ? [] : currentOpenedStr.split(',')
+  const reduceOpened = currentOpened.filter(
+    n => closedNumbers.indexOf(n) < 0 && openedNumbers.indexOf(n) < 0
   )
-  var closedDetails = dPretty.filter(
-    function(index) {return !this.open}
-  )
-  var openedNumbers = openedDetails.map(
-    function() {return $(this).attr('seq')}
-  ).get()
-  var closedNumbers = closedDetails.map(
-    function() {return $(this).attr('seq')}
-  ).get() 
-  
-  currentOpenedStr = openedElem.val()
-  currentOpened = (currentOpenedStr == '')?[]:currentOpenedStr.split(',');
-  reduceOpened = currentOpened.filter(function(n) {
-    return ((closedNumbers.indexOf(n) < 0) && (openedNumbers.indexOf(n) < 0))
-  })
-  newOpened = reduceOpened.concat(openedNumbers)
+  const newOpened = reduceOpened.concat(openedNumbers)
   openedElem.val(newOpened.join(','))
-  var nOpen = openedDetails.length
-  var nClosed = closedDetails.length
-  var xpa = (nOpen == 0) ? "-1" : (nClosed == 0) ? "1" : "0";
+  const nOpen = openedDetails.length
+  const nClosed = closedDetails.length
+  const xpa = nOpen == 0 ? '-1' : nClosed == 0 ? '1' : '0'
   return xpa
 }
 
-function details(kind) {
-  var details = $('#'+kind+'Table details.pretty')
-  details.on('toggle', function() {
-    xpa = adjustOpened(kind)
+// opening and closing details in a table
+
+const details = kind => {
+  const details = $(`#${kind}Table details.pretty`)
+  details.on('toggle', e => {
+    const { currentTarget } = e
+    const xpa = adjustOpened(kind)
     detailSet(kind, xpa)
-    if ($(this).prop('open') && !$(this).find('div.pretty').html()) {
-      getOpen(kind, $(this))
+    if (
+      $(currentTarget).prop('open') &&
+      !$(currentTarget)
+        .find('div.pretty')
+        .html()
+    ) {
+      getOpen(kind, $(currentTarget))
     }
   })
 }
 
-function getOpen(kind, elem) {
-  var seq = elem.attr('seq')
-  var url = '/'+kind+'/'+seq;
-  var dest = elem.find('div.pretty')
-  var go = document.querySelector("form");
-  var formData = new FormData(go);
+const getOpen = (kind, elem) => {
+  const seq = elem.attr('seq')
+  const url = `/${kind}/${seq}`
+  const dest = elem.find('div.pretty')
+  const go = document.querySelector('form')
+  const formData = new FormData(go)
   $.ajax({
     type: 'POST',
-    url: url,
+    url,
     data: formData,
     processData: false,
     contentType: false,
-    success: function(data) {
-      var table = data.table
+    success: data => {
+      const { table } = data
       dest.html(table)
     },
   })
 }
 
-function reactive() {
-  $('.r').change(function(e) {
+/* auto submit data request after interacting with a control
+ *
+ */
+
+const reactive = () => {
+  $('.r').change(() => {
     storeForm()
-    var mode = $('#mode')
-    var m = mode.val()
+    const mode = $('#mode')
+    const m = mode.val()
     getTable('sections', null, m)
     getTable('tuples', null, m)
     getTable('query', 'pages', m)
     getTable('passage', 'passages', m)
   })
-  $('.sectionsR').change(function(e) {
-    var mode = $('#mode')
-    var m = mode.val()
+  $('.sectionsR').change(() => {
+    const mode = $('#mode')
+    const m = mode.val()
     getTable('sections', null, m)
   })
-  $('.tuplesR').change(function(e) {
-    var mode = $('#mode')
-    var m = mode.val()
+  $('.tuplesR').change(() => {
+    const mode = $('#mode')
+    const m = mode.val()
     getTable('tuples', null, m)
   })
-  $('.queryR').change(function(e) {
-    var mode = $('#mode')
-    var m = mode.val()
+  $('.queryR').change(() => {
+    const mode = $('#mode')
+    const m = mode.val()
     getTable('query', 'pages', m)
   })
-  $('.passageR').change(function(e) {
-    var mode = $('#mode')
-    var m = mode.val()
+  $('.passageR').change(() => {
+    const mode = $('#mode')
+    const m = mode.val()
     getTable('passage', 'passages', m)
   })
 }
 
-function cradios() {
-  $('.cradio').change(function(e) {
+const cradios = () => {
+  $('.cradio').change(() => {
     $('#cond').prop('checked', true)
     storeForm()
   })
 }
 
-function sidebar() {
-  var side = $('#side')
-  var part = side.val()
-  var headers = $('#sidebar div').filter(function() {
-    var stat = $(this).attr('status')
-    return (stat != 'help' && stat != 'about')
+/* controlling the side bar
+ *
+ */
+
+const sidebar = () => {
+  const stickyParts = new Set(['help', 'jobs'])
+  const side = $('#side')
+  const part = side.val()
+  const headers = $('#sidebar div').filter((i, elem) => {
+    const stat = $(elem).attr('status')
+    return !stickyParts.has(stat) && stat != 'about'
   })
-  var bodies = $('#sidebarcont div').filter(function() {
-    var stat = $(this).attr('status')
-    return (stat != 'help' && stat != 'about')
+  const bodies = $('#sidebarcont div').filter((i, elem) => {
+    const stat = $(elem).attr('status')
+    return !stickyParts.has(stat) && stat != 'about'
   })
   if (part) {
-    var header = $('#sidebar div[status="'+part+'"]')
-    var body = $('#sidebarcont div[status="'+part+'"]')
+    const header = $(`#sidebar div[status="${part}"]`)
+    const body = $(`#sidebarcont div[status="${part}"]`)
     headers.removeClass('active')
     bodies.removeClass('active')
     header.addClass('active')
     body.addClass('active')
   }
-  $('#sidebar a').click(function(e) {
+  $('#sidebar a').click(e => {
     e.preventDefault()
-    var header = $(this).closest('div')
-    var part = header.attr('status')
-    var side = $('#side')
-    var body = $('#sidebarcont div[status="'+part+'"]')
-    var isActive = header.hasClass('active')
-    if (part != 'help') {
+    const { currentTarget } = e
+    const header = $(currentTarget).closest('div')
+    const part = header.attr('status')
+    const side = $('#side')
+    const body = $(`#sidebarcont div[status="${part}"]`)
+    const isActive = header.hasClass('active')
+    if (!stickyParts.has(part)) {
       headers.removeClass('active')
       bodies.removeClass('active')
     }
@@ -368,8 +394,7 @@ function sidebar() {
       header.removeClass('active')
       body.removeClass('active')
       side.val('')
-    }
-    else {
+    } else {
       header.addClass('active')
       body.addClass('active')
       side.val(part)
@@ -377,24 +402,25 @@ function sidebar() {
   })
 }
 
-function help() {
-  var help = $('#help')
-  var expandedStr = help.val()
-  var helpOpened = (expandedStr == '')?[]:expandedStr.split(',');
-  helpOpened.forEach(function(helpId) {
-    helpDetails = $('#'+helpId)
+const help = () => {
+  const help = $('#help')
+  const expandedStr = help.val()
+  const helpOpened = expandedStr == '' ? [] : expandedStr.split(',')
+  for (const helpId of helpOpened) {
+    const helpDetails = $(`#${helpId}`)
     helpDetails.prop('open', true)
-  })
-  $('details.help').on('toggle', function(e) {
-    var dHelp = $('details.help')
-    var op = $('#help')
-    var go = $('#go')
-    var thisHelp = $(this)
-    var thisId = thisHelp.attr('id')
-    var thisOpen = thisHelp.prop('open')
-    var expandedDetails = dHelp.filter(
-      function() {return ($(this).prop('open') && $(this).attr('id') != thisId)}
-    ).map(function() {return $(this).attr('id')}).get()
+  }
+  $('details.help').on('toggle', e => {
+    const { currentTarget } = e
+    const dHelp = $('details.help')
+    const op = $('#help')
+    const thisHelp = $(currentTarget)
+    const thisId = thisHelp.attr('id')
+    const thisOpen = thisHelp.prop('open')
+    const expandedDetails = dHelp
+      .filter((i, elem) => $(elem).prop('open') && $(elem).attr('id') != thisId)
+      .map((i, elem) => $(elem).attr('id'))
+      .get()
     if (thisOpen) {
       expandedDetails.push(thisId)
     }
@@ -402,74 +428,283 @@ function help() {
   })
 }
 
-function sections() {
-  var secs = $('#sections') 
-  $('.rwh').click(function(e) {
+/* controlling the textarea pads
+ * Clicking on certain elements in the table rows will
+ * populate the pads
+ */
+
+const sections = () => {
+  const secs = $('#sections')
+  $('.rwh').click(e => {
     e.preventDefault()
     e.stopPropagation()
-    var sec = $(this).attr('sec')
-    var orig = secs.val()
-    secs.val(orig + '\n' + sec)
+    const { currentTarget } = e
+    const sec = $(currentTarget).attr('sec')
+    const orig = secs.val()
+    secs.val(`${orig}\n${sec}`)
   })
 }
-function tuples() {
-  var tups = $('#tuples') 
-  $('.sq').click(function(e) {
+const tuples = () => {
+  const tups = $('#tuples')
+  $('.sq').click(e => {
     e.preventDefault()
     e.stopPropagation()
-    var tup = $(this).attr('tup')
-    var orig = tups.val()
-    tups.val(orig + '\n' + tup)
+    const { currentTarget } = e
+    const tup = $(currentTarget).attr('tup')
+    const orig = tups.val()
+    tups.val(`${orig}\n${tup}`)
   })
 }
-function nodes() {
-  var tups = $('#tuples') 
-  $('.nd').click(function(e) {
+const nodes = () => {
+  const tups = $('#tuples')
+  $('.nd').click(e => {
     e.preventDefault()
     e.stopPropagation()
-    var nd = $(this).html()
-    var orig = tups.val()
-    tups.val(orig + '\n' + nd)
+    const { currentTarget } = e
+    const nd = $(currentTarget).html()
+    const orig = tups.val()
+    tups.val(`${orig}\n${nd}`)
   })
 }
 
-function jobs() {
-  var jobh = $('#jobh')
-  $('#job').change(function(e) {
+/* job control
+ *
+ */
+
+const verifyApp = (jobContent, app) => {
+  const { appName } = jobContent
+  if (appName == app) {
+    return true
+  }
+  if (confirm(`Change app "${appName}" to "${app}" ?`)) {
+    jobContent['appName'] = app
+    return true
+  }
+  return false
+}
+
+const suggestName = jobName => {
+  const jobs = getJobs()
+  let newName = jobName
+  const resolved = s => s != '' && s != jobName && !jobs.has(s)
+  let cancelled = false
+  while (!resolved(newName) && !cancelled) {
+    while (!resolved(newName)) {
+      newName += 'N'
+    }
+    const answer = prompt(
+      'New job name:',
+      newName
+    )
+    if (answer == null) {
+      cancelled = true
+    }
+    else {
+      newName = answer
+    }
+  }
+  return cancelled
+    ? null
+    : newName
+}
+
+const jobOptions = () => {
+  const jChange = $('#jchange')
+  const jobh = $('#jobh')
+  const currentJob = jobh.val()
+  let html = ''
+  for (const job of getJobs()) {
+    const selected = job == currentJob ? ' selected' : ''
+    html += `<option value="${job}"${selected}>${job}</option>`
+    jChange.html(html)
+  }
+}
+
+const jobControls = () => {
+  const jChange = $('#jchange')
+  const jClear = $('#jclear')
+  const jDelete = $('#jdelete')
+  const jRename = $('#jrename')
+  const jNew = $('#jnew')
+  const jOpen = $('#jopen')
+  const jFileDiv = $('#jfilediv')
+  const jFile = $('#jfile')
+  const aName = $('#appName')
+
+  const form = $('form')
+  const jobh = $('#jobh')
+  const side = $('#side')
+  const jobPart = 'jobs'
+
+  jFileDiv.hide()
+
+  jChange.change(e => {
+    const oldJob = jobh.val()
+    const newJob = e.target.value
+    if (oldJob == newJob) {
+      return
+    }
+    storeForm()
     jobh.val(e.target.value)
+    readForm()
+    side.val(jobPart)
+    form.submit()
+  })
+
+  jClear.click(() => {
+    clearForm()
+    storeForm()
+  })
+
+  jDelete.click(() => {
+    deleteForm()
+    jobh.val('')
+    clearForm()
+  })
+
+  jRename.click(e => {
+    const jobName = jobh.val()
+    const newName = suggestName(jobName)
+    if (newName == null) {
+      e.preventDefault()
+      return
+    }
+    deleteForm()
+    jobh.val(newName)
+    storeForm()
+  })
+
+  jOpen.click(() => {
+    jFileDiv.show()
+  })
+  jFile.change(() => {
+    const jobFile = jFile.prop('files')[0]
+    const reader = new FileReader()
+    reader.onload = e => {
+      const jobContent = JSON.parse(e.target.result)
+      if (!verifyApp(jobContent, aName.val())) {
+        e.preventDefault()
+        return
+      }
+      const newName = suggestName(jobContent.jobName)
+      if (newName == null) {
+        e.preventDefault()
+        return
+      }
+      storeForm()
+      jobContent['jobName'] = newName
+      readForm(jobContent)
+      side.val(jobPart)
+      form.submit()
+    }
+    reader.readAsText(jobFile)
+  })
+
+  jNew.click(e => {
+    const jobName = jobh.val()
+    const newName = suggestName(jobName)
+    if (newName == null) {
+      e.preventDefault()
+      return
+    }
+    storeForm()
+    clearForm()
+    jobh.val(newName)
+    storeForm()
   })
 }
 
-function storeForm() {
-  var go = document.querySelector("form");
-  var formData = new FormData(go);
-  var formObj = {};
-  formData.forEach(function(value, key){
-      formObj[key] = value
-  })
-  var formStr = JSON.stringify(formObj)
-  var appName = formData.get('appName')
-  var jobName = formData.get('jobName')
-  var formKey = 'tf/'+appName+'/'+jobName
+// managing form data on local storage
+
+const readForm = jobContent => {
+  let formObj
+  if (jobContent == null) {
+    const go = document.querySelector('form')
+    const formData = new FormData(go)
+    const appName = formData.get('appName')
+    const jobName = formData.get('jobName')
+    const formKey = `tf/${appName}/${jobName}`
+    const formStr = localStorage.getItem(formKey)
+    formObj = JSON.parse(formStr)
+  }
+  else {
+    formObj = jobContent
+  }
+  for (const [key, value] of Object.entries(formObj)) {
+    $(`[name="${key}"]`).val(value)
+  }
+}
+
+const clearForm = () => {
+  const aName = $('#appName')
+  const jobh = $('#jobh')
+  const side = $('#side')
+
+  const appName = aName.val()
+  const jobName = jobh.val()
+  const jobPart = 'jobs'
+
+  $(`[name]`).val('')
+
+  aName.val(appName)
+  jobh.val(jobName)
+  side.val(jobPart)
+}
+
+const deleteForm = () => {
+  const go = document.querySelector('form')
+  const formData = new FormData(go)
+  const appName = formData.get('appName')
+  const jobName = formData.get('jobName')
+  const formKey = `tf/${appName}/${jobName}`
+  localStorage.removeItem(formKey)
+}
+
+const storeForm = () => {
+  const go = document.querySelector('form')
+  const formData = new FormData(go)
+  const formObj = {}
+  for (const [key, value] of formData) {
+    formObj[key] = value
+  }
+  const formStr = JSON.stringify(formObj)
+  const appName = formData.get('appName')
+  const jobName = formData.get('jobName')
+  const formKey = `tf/${appName}/${jobName}`
   localStorage.setItem(formKey, formStr)
 }
 
+const getJobs = () => {
+  const go = document.querySelector('form')
+  const formData = new FormData(go)
+  const appName = formData.get('appName')
+  const tfPrefix = `tf/${appName}/`
+  const tfLength = tfPrefix.length
+  return new Set(
+    Object.keys(localStorage)
+    .filter(key => key.startsWith(tfPrefix))
+    .map(key => key.substring(tfLength))
+  )
+}
 
-$(function(){
+/* main
+ *
+ */
+
+$(() => {
   sidebar()
-  jobs()
   modes()
-  var m = $('#mode').val()
-  activateTables('sections', null, m)
-  activateTables('tuples', null, m)
-  activateTables('query', 'pages', m)
+  activateTables('sections', null)
+  activateTables('tuples', null)
+  activateTables('query', 'pages')
   cradios()
   help()
   reactive()
-  var rTarget = $('details.focus')
+  const rTarget = $('details.focus')
   if (rTarget != null && rTarget[0] != null) {
     rTarget[0].scrollIntoView(false)
   }
   storeForm()
+  jobOptions()
+  jobControls()
 })
-

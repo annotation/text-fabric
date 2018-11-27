@@ -153,23 +153,15 @@ def filterProcess(proc):
         kind = 'data'
         good = True
         continue
-      if part == 'tf.server.local':
-        kind = 'local'
-        good = True
-        continue
       if part == 'tf.server.internet':
         kind = 'internet'
         good = True
         continue
-      if part.endswith('local.py'):
-        kind = 'local'
-        good = True
-        continue
       if part.endswith('internet.py'):
-        kind = 'local'
+        kind = 'internet'
         good = True
         continue
-      if kind in {'data', 'local', 'internet', 'tf'}:
+      if kind in {'data', 'internet', 'tf'}:
         if kind == 'tf' and part == '-k':
           break
         if part.startswith('--mod='):
@@ -198,7 +190,7 @@ def killProcesses(dataSource, modules, sets, internet=True, kill=False):
   myself = os.getpid()
   for ((ds, (mods, sets)), kinds) in tfProcs.items():
     if dataSource is None or (ds == dataSource and mods == modules and sts == sets):
-      checkKinds = ('local', 'data', 'tf') + (('internet',) if internet else ())
+      checkKinds = ('data', 'tf') + (('internet',) if internet else ())
       for kind in checkKinds:
         pids = kinds.get(kind, [])
         for pid in pids:
@@ -295,7 +287,7 @@ def main(cargs=sys.argv):
           break
       sleep(1)
 
-      reach = 'internet' if internet else 'local'
+      reach = 'internet'
       pWeb = Popen(
           [pythonExe, '-m', f'tf.server.{reach}', *ddataSource],
           bufsize=0,

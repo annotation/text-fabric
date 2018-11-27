@@ -2,7 +2,7 @@
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>{{jobName}}</title>
+        <title>TF-export {{dataSource}}-{{jobName}}</title>
         <meta name="application-name" content="Text-Fabric Search Box"/>
         <link rel="shortcut icon" href="/server/static/favicon.ico">
 <style type="text/css">
@@ -51,7 +51,7 @@ pre.tuples {
 	margin: 0.3rem 0.3rem;
     background-color: #eeffdd;
 }
-pre.template {
+pre.query {
 	font-size: medium;
 	font-family: monospace;
 	width: calc(100% - 1rem);
@@ -208,10 +208,13 @@ div.pval {
         </div>
         <hr/>
         <div>
+            <pre class="sections">{{sections}}</pre>
+        </div>
+        <div>
             <pre class="tuples">{{tuples}}</pre>
         </div>
         <div>
-            <pre class="template">{{searchTemplate}}</pre>
+            <pre class="query">{{query}}</pre>
             {{!setNames}}
         </div>
         <div class="table">

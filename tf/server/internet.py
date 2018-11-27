@@ -1,4 +1,7 @@
 import os
+from io import BytesIO
+import json
+from zipfile import ZipFile
 import datetime
 import time
 import pickle
@@ -6,8 +9,13 @@ import pickle
 import markdown
 
 import bottle
-from bottle import (post, get, route, template, request, static_file, run)
+from bottle import (
+    post, get, route, template,
+    request, response,
+    static_file, run, redirect,
+)
 
+from tf.parameters import ZIP_OPTIONS
 from tf.core.helpers import console, shapeMessages
 from tf.parameters import NAME, VERSION, DOI_TEXT, DOI_URL, COMPOSE_URL
 from tf.applib.apphelpers import RESULT
@@ -36,7 +44,7 @@ TIMEOUT = 180
 COMPOSE = 'Compose results example'
 
 BATCH = 20
-DEFAULT_NAME = 'DefaulT'
+DEFAULT_NAME = 'default'
 
 myDir = os.path.dirname(os.path.abspath(__file__))
 appDir = None
@@ -216,27 +224,6 @@ def writeAbout(header, provenance, form):
   '''
 
 
-def writeCsvs(csvs, context, resultsX, form):
-  pass
-  '''
-  jobName = form['jobName']
-  if csvs is not None:
-    for (csv, data) in csvs:
-      with open(f'{csv}.tsv', 'w', encoding='utf8') as th:
-        for tup in data:
-          th.write('\t'.join(str(t) for t in tup) + '\n')
-  for (name, data) in (
-      ('CONTEXT', context),
-      ('RESULTSX', resultsX),
-  ):
-    if data is not None:
-      with open(f'{name}.tsv', 'w', encoding='utf_16_le') as th:
-        th.write('﻿')  # utf8 bom mark, useful for opening file in Excel
-        for tup in data:
-          th.write('\t'.join('' if t is None else str(t) for t in tup) + '\n')
-  '''
-
-
 def getInt(x, default=1):
   if len(x) > 15:
     return default
@@ -248,13 +235,12 @@ def getInt(x, default=1):
 def getFormData():
   form = {}
   form['query'] = request.forms.query.replace('\r', '')
+  form['messages'] = request.forms.messages or ''
   form['features'] = request.forms.features or ''
   form['tuples'] = request.forms.tuples.replace('\r', '')
   form['sections'] = request.forms.sections.replace('\r', '')
-  form['jobName'] = request.forms.jobName.strip()
-  form['jobNameHidden'] = request.forms.jobNameHidden.strip()
-  form['rename'] = request.forms.rename
-  form['duplicate'] = request.forms.duplicate
+  form['appName'] = request.forms.appName
+  form['jobName'] = request.forms.jobName.strip() or DEFAULT_NAME
   form['side'] = request.forms.side
   form['help'] = request.forms.help
   form['author'] = request.forms.author.strip()
@@ -264,7 +250,6 @@ def getFormData():
   form['condensed'] = request.forms.condensed
   form['condensetp'] = request.forms.condensetp
   form['textformat'] = request.forms.textformat
-  form['export'] = request.forms.export
   form['sectionsExpandAll'] = request.forms.sectionsExpandAll
   form['tuplesExpandAll'] = request.forms.tuplesExpandAll
   form['queryExpandAll'] = request.forms.queryExpandAll
@@ -486,14 +471,11 @@ def servePassage(getx):
 @post('/export')
 @get('/export')
 def serveExport():
-  sectionsData = serveSections()
-  tuplesData = serveTuples()
-  queryData = serveQuery()
+  sectionsData = serveSectionsBare()
+  tuplesData = serveTuplesBare()
+  queryData = serveQueryBare()
 
   form = getFormData()
-  query = form['query']
-  condenseType = form['condensetp'] or None
-  textFormat = form['textformat'] or None
 
   kernelApi = TF.connect()
   (header, appLogo, tfLogo) = kernelApi.header()
@@ -520,31 +502,6 @@ def serveExport():
   tuplesTable = tuplesData['table']
   queryMessages = queryData['messages']
   queryTable = queryData['table']
-  csvs = None
-  context = None
-  resultsX = None
-  if not queryMessages and query not in wildQueries:
-    try:
-      (csvs, context, resultsX) = kernelApi.csvs(
-          query,
-          form['tuples'],
-          form['sections'],
-          form['condensed'],
-          condenseType,
-          textFormat,
-      )
-      csvs = pickle.loads(csvs)
-      context = pickle.loads(context)
-      resultsX = pickle.loads(resultsX)
-    except TimeoutError:
-      console(f'{query}\n{queryMessages} (in: export)', error=True)
-      wildQueries.add(query)
-  writeCsvs(csvs, context, resultsX, form)
-  writeAbout(
-      header,
-      provenanceMd,
-      form,
-  )
 
   return template(
       'exportx',
@@ -565,6 +522,58 @@ def serveExport():
       setNames=setNameHtml,
       **form,
   )
+
+
+@post('/download')
+@get('/download')
+def serveDownload():
+  form = getFormData()
+  kernelApi = TF.connect()
+
+  task = form['query']
+  condenseType = form['condensetp'] or None
+  textFormat = form['textformat'] or None
+  csvs = None
+  resultsX = None
+  messages = ''
+  if task in wildQueries:
+    messages = (
+        f'Aborted because query is known to take longer than {TIMEOUT} second'
+        + ('' if TIMEOUT == 1 else 's')
+    )
+  else:
+    try:
+      (queryMessages, csvs, resultsX) = kernelApi.csvs(
+          task,
+          form['tuples'],
+          form['sections'],
+          form['condensed'],
+          condenseType,
+          textFormat,
+      )
+    except TimeoutError:
+      messages = (
+          f'Aborted because query takes longer than {TIMEOUT} second'
+          + ('' if TIMEOUT == 1 else 's')
+      )
+      console(f'{task}\n{messages}', error=True)
+      wildQueries.add(task)
+      return dict(messages=messages)
+
+  if queryMessages:
+    redirect('/')
+    return dict(messages=queryMessages)
+
+  csvs = pickle.loads(csvs)
+  resultsX = pickle.loads(resultsX)
+  (fileName, zipBuffer) = zipData(csvs, resultsX, form)
+
+  response.set_header('Expires', '0')
+  response.set_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+  response.set_header('Content-Type', 'application/octet-stream')
+  response.set_header('Content-Disposition', f'attachment; filename="{fileName}"')
+  response.set_header('Content-Encoding', 'identity')
+  return zipBuffer
 
 
 @post('/<anything:re:.*>')
@@ -625,6 +634,37 @@ def serveAll(anything):
       passages=passages,
       **form,
   )
+
+
+def zipData(csvs, resultsX, form):
+  appName = form['appName']
+  jobName = form['jobName']
+
+  zipBuffer = BytesIO()
+  with ZipFile(
+      zipBuffer,
+      "w",
+      **ZIP_OPTIONS,
+  ) as zipFile:
+
+    zipFile.writestr('job.json', json.dumps(form).encode('utf8'))
+    if csvs is not None:
+      for (csv, data) in csvs:
+        contents = ''.join(
+            ('\t'.join(str(t) for t in tup) + '\n')
+            for tup in data
+        )
+        zipFile.writestr(f'{csv}.tsv', contents.encode('utf8'))
+      for (name, data) in (
+          ('RESULTSX', resultsX),
+      ):
+        if data is not None:
+            contents = '\ufeff' + ''.join(
+                ('\t'.join('' if t is None else str(t) for t in tup) + '\n')
+                for tup in data
+            )
+            zipFile.writestr(f'resultsx.tsv', contents.encode('utf_16_le'))
+  return (f'{appName}-{jobName}.zip', zipBuffer.getvalue())
 
 
 if __name__ == "__main__":

@@ -173,7 +173,7 @@
                         <p>Open <b>multiple windows and tabs</b> with this url,
                            they all communicate with one and the same TF kernel;
                            the lengthy data loading only happens when the TF kernel starts up,
-                           not when multiple local webinterfaces communicate with the TF kernel.
+                           not when multiple webinterfaces communicate with the TF kernel.
                            See <i>Jobs</i> for ways to perform other queries.</p>
                         <p>When you terminate <code>text-fabric</code> on the command line,
                            the TF kernel will also be terminated.</p>

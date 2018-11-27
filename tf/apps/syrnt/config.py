@@ -4,7 +4,6 @@ protocol = 'http://'
 host = 'localhost'
 port = dict(
     kernel=18983,
-    local=8003,
     internet=8103,
 )
 

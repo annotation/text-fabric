@@ -2,8 +2,9 @@ import os
 import sys
 from glob import glob
 from shutil import rmtree
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipFile
 
+from ..parameters import ZIP_OPTIONS
 from ..core.helpers import console, splitModRef
 
 GH_BASE = os.path.expanduser(f'~/github')
@@ -40,12 +41,6 @@ and the are named {relative}-{version}.zip
 '''
 
 EXCLUDE = {'.DS_Store'}
-
-ZIP_OPTIONS = dict(
-    compression=ZIP_DEFLATED,
-)
-if sys.version_info[1] >= 7:
-  ZIP_OPTIONS['compresslevel'] = 6
 
 
 def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):

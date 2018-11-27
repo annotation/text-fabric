@@ -1,3 +1,7 @@
+import sys
+from zipfile import ZIP_DEFLATED
+
+
 VERSION = '7.1.1'
 NAME = 'Text-Fabric'
 
@@ -32,3 +36,11 @@ LOCATIONS = [
 
 GZIP_LEVEL = 2
 PICKLE_PROTOCOL = 4
+
+ZIP_OPTIONS = dict(
+    compression=ZIP_DEFLATED,
+)
+if sys.version_info[1] >= 7:
+  ZIP_OPTIONS['compresslevel'] = 6
+
+
