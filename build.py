@@ -9,7 +9,7 @@ from subprocess import run, Popen
 import psutil
 
 from tf.core.helpers import console
-from tf.applib.appmake import findAppConfig
+from tf.applib.helpers import findAppConfig
 from tf.applib.zipdata import zipData
 
 HELP = '''

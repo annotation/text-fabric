@@ -1,0 +1,112 @@
+/* OVERALL */
+
+body {
+    padding: 2rem;
+}
+
+/* PAGE (NO COLUMNS) */
+
+/* HEADER */
+
+div.headerDesc {
+    text-align: center;
+}
+
+div.titleline,.authorline {
+    text-align: center;
+}
+div.titleline {
+    font-size: x-large;
+    font-weight: bold;
+    padding: 2rem;
+}
+div.authorline {
+    font-size: large;
+    font-style: italic;
+    padding: 1rem;
+}
+
+/* PROVENANCE */
+
+div.prov {
+    margin: 2rem;
+    padding: 1rem;
+    border: 0.1rem solid var(--fog-rim);
+}
+div.pline {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: stretch;
+    align-items: baseline;
+}
+div.p2line {
+    margin-left: 2em;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: stretch;
+    align-items: baseline;
+}
+div.psline {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: stretch;
+    align-items: baseline;
+	background-color: var(--gold-mist-back);
+}
+div.pname {
+    flex: 0 0 5rem;
+    font-weight: bold;
+}
+div.pval {
+    flex: 1 1 auto;
+}
+
+/* INPUT PADS */
+
+pre.sections {
+	font-size: medium;
+	font-family: monospace;
+	width: calc(100% - 1rem);
+	margin: 0.3rem 0.3rem;
+	background-color: var(--sections-back);
+}
+pre.tuples {
+	font-size: medium;
+	font-family: monospace;
+	width: calc(100% - 1rem);
+	background-color: var(--tuples-back);
+}
+pre.query {
+	font-size: medium;
+	font-family: monospace;
+	width: calc(100% - 1rem);
+	margin: 0.3rem 0.3rem;
+	background-color: var(--query-back);
+}
+
+/* METADATA PART */
+
+div.description {
+	font-size: medium;
+	font-family: sans-serif;
+}
+div.description a:link, div.description a:visited,
+div.prov a:link, div.prov a:visited {
+	color: var(--blue-haze-fore);
+    text-decoration: underline;
+}
+
+/* TABLES */
+
+details.dtrow[open] {
+    page-break-before: always;
+    break-before: always;
+}
+details.dtrow[open] {
+    page-break-after: always;
+    break-after: always;
+}
+details.dtrow[open]+details.dtrow[open] {
+    page-break-before: auto;
+    break-before: auto;
+}

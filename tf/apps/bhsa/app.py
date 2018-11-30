@@ -1,4 +1,4 @@
-from tf.applib.apphelpers import (
+from tf.applib.api import (
     prettyPre,
     getBoundary,
     getFeatures,
@@ -7,7 +7,7 @@ from tf.applib.apphelpers import (
     dm,
     dh,
 )
-from tf.applib.appmake import setupApi, outLink
+from tf.applib.make import setupApi, outLink
 
 SHEBANQ_URL = 'https://shebanq.ancient-data.org/hebrew'
 
@@ -35,7 +35,6 @@ class TfApp(object):
 
   def webLink(app, n, text=None, className=None, asString=False, noUrl=False):
     api = app.api
-    L = api.L
     T = api.T
     F = api.F
     version = app.version
@@ -61,17 +60,11 @@ class TfApp(object):
       dh(result)
       return
 
-    (bookE, chapter, verse) = T.sectionFromNode(n)
-    bookNode = n if nType == 'book' else L.u(n, otype='book')[0]
-    book = F.book.v(bookNode)
-    passageText = (
-        bookE if nType == 'book' else
-        f'{bookE} {chapter}' if nType == 'chapter' else f'{bookE} {chapter}:{verse}{F.label.v(n)}'
-        if nType == 'half_verse' else f'{bookE} {chapter}:{verse}'
-    )
+    (bookLa, chapter, verse) = T.sectionFromNode(n, lang='la', fillup=True)
+    passageText = app.sectionStrFromNode(n)
     href = '#' if noUrl else SHEBANQ.format(
         version=version,
-        book=book,
+        book=bookLa,
         chapter=chapter,
         verse=verse,
     )
@@ -95,15 +88,17 @@ class TfApp(object):
       return result
     dh(result)
 
-  def plain(
+  def _plain(
       app,
       n,
-      linked=True,
-      fmt=None,
-      withNodes=False,
-      asString=False,
+      passage,
+      isLinked,
+      asString,
       **options,
   ):
+    display = app.display
+    d = display.get(options)
+
     asApp = app.asApp
     api = app.api
     L = api.L
@@ -111,15 +106,15 @@ class TfApp(object):
     F = api.F
 
     nType = F.otype.v(n)
-    result = ''
+    result = f'{passage}&nbsp;' if passage else ''
     if asApp:
-      nodeRep = f' <a href="#" class="nd">{n}</a> ' if withNodes else ''
+      nodeRep = f' <a href="#" class="nd">{n}</a> ' if d.withNodes else ''
     else:
-      nodeRep = f' *{n}* ' if withNodes else ''
+      nodeRep = f' *{n}* ' if d.withNodes else ''
 
-    isText = fmt is None or '-orig-' in fmt
+    isText = d.fmt is None or '-orig-' in d.fmt
     if nType == 'word':
-      rep = mdEsc(htmlEsc(T.text([n], fmt=fmt)))
+      rep = mdEsc(htmlEsc(T.text([n], fmt=d.fmt)))
     elif nType in SECTION:
       label = ('{}' if nType == 'book' else '{} {}' if nType == 'chapter' else '{} {}:{}')
       rep = label.format(*T.sectionFromNode(n))
@@ -128,23 +123,23 @@ class TfApp(object):
         rep += F.label.v(n)
       rep = mdEsc(htmlEsc(rep))
       if nType in VERSE:
-        if linked:
+        if isLinked:
           rep = app.webLink(n, text=rep, className='vn', asString=True)
         else:
           rep = f'<span class="vn">{rep}</span>'
-        rep += mdEsc(htmlEsc(T.text(L.d(n, otype="word"), fmt=fmt)))
+        rep += mdEsc(htmlEsc(T.text(L.d(n, otype="word"), fmt=d.fmt)))
         isText = True
     elif nType == 'lex':
       rep = mdEsc(htmlEsc(F.voc_lex_utf8.v(n)))
     else:
-      rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'), fmt=fmt)))
+      rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'), fmt=d.fmt)))
 
-    if linked and nType not in VERSE:
+    if isLinked and nType not in VERSE:
       rep = app.webLink(n, text=rep, asString=True)
 
-    tClass = app.formatClass[fmt] if isText else 'trb'
+    tClass = display.formatClass[d.fmt] if isText else 'trb'
     rep = f'<span class="{tClass}">{rep}</span>'
-    result = f'{rep}{nodeRep}'
+    result += f'{rep}{nodeRep}'
 
     if asString or asApp:
       return result
@@ -157,20 +152,18 @@ class TfApp(object):
       html,
       firstSlot,
       lastSlot,
-      condenseType=None,
-      fmt=None,
-      withNodes=True,
-      suppress=set(),
-      highlights={},
-      **featureOptions,
+      **options,
   ):
+    display = app.display
+    d = display.get(options)
+
     goOn = prettyPre(
         app,
         n,
         firstSlot,
         lastSlot,
-        withNodes,
-        highlights,
+        d.withNodes,
+        d.highlights,
     )
     if not goOn:
       return
@@ -194,7 +187,7 @@ class TfApp(object):
     otypeRank = api.otypeRank
 
     bigType = False
-    if condenseType is not None and otypeRank[nType] > otypeRank[condenseType]:
+    if d.condenseType is not None and otypeRank[nType] > otypeRank[d.condenseType]:
       bigType = True
 
     if nType == 'book':
@@ -235,8 +228,8 @@ class TfApp(object):
         boundaryClass += ' r'
       if superEnd > myEnd:
         boundaryClass += ' l'
-      nodePart = (f'<a href="#" class="nd">{superNode}</a>' if withNodes else '')
-      shl = highlights.get(superNode, None)
+      nodePart = (f'<a href="#" class="nd">{superNode}</a>' if d.withNodes else '')
+      shl = d.highlights.get(superNode, None)
       shlClass = ''
       shlStyle = ''
       if shl is not None:
@@ -271,31 +264,28 @@ class TfApp(object):
         featurePart = getFeatures(
             app,
             superNode,
-            suppress,
             ('number', ),
             o=n,
             plain=True,
-            **featureOptions,
+            **options,
         )
       elif superType == 'clause':
         featurePart = getFeatures(
             app,
             superNode,
-            suppress,
             ('rela', 'typ'),
             o=n,
             plain=True,
-            **featureOptions,
+            **options,
         )
       elif superType == 'phrase':
         featurePart = getFeatures(
             app,
             superNode,
-            suppress,
             ('function', 'typ'),
             o=n,
             plain=True,
-            **featureOptions,
+            **options,
         )
       html.append(
           f'''
@@ -314,33 +304,30 @@ class TfApp(object):
       occs = ''
       if nType == slotType:
         lx = L.u(n, otype='lex')[0]
-        lexLink = (app.webLink(lx, text=htmlEsc(T.text([n], fmt=fmt)), asString=True))
-        tClass = 'h' if fmt is None or '-orig-' in fmt else 'tr'
+        lexLink = (app.webLink(lx, text=htmlEsc(T.text([n], fmt=d.fmt)), asString=True))
+        tClass = 'h' if d.fmt is None or '-orig-' in d.fmt else 'tr'
         heading = f'<div class="{tClass}">{lexLink}</div>'
         featurePart = getFeatures(
             app,
             n,
-            suppress,
             ('pdp', 'gloss', 'vs', 'vt'),
             givenValue=dict(
                 pdp=app.webLink(n, text=htmlEsc(F.pdp.v(n)), asString=True),
                 gloss=htmlEsc(F.gloss.v(lx)),
             ),
-            **featureOptions,
+            **options,
         )
       elif nType == 'lex':
-        occs = L.d(n, otype='word')
-        extremeOccs = sorted({occs[0], occs[-1]})
+        extremeOccs = getBoundary(api, n)
         linkOccs = ' - '.join(app.webLink(lo, asString=True) for lo in extremeOccs)
         heading = f'<div class="h">{htmlEsc(F.voc_lex_utf8.v(n))}</div>'
         occs = f'<div class="occs">{linkOccs}</div>'
         featurePart = getFeatures(
             app,
             n,
-            suppress,
             ('voc_lex', 'gloss'),
             givenValue=dict(voc_lex=app.webLink(n, text=htmlEsc(F.voc_lex.v(n)), asString=True)),
-            **featureOptions,
+            **options,
         )
       html.append(heading)
       html.append(featurePart)
@@ -353,12 +340,7 @@ class TfApp(object):
           html,
           firstSlot,
           lastSlot,
-          condenseType=condenseType,
-          fmt=fmt,
-          withNodes=withNodes,
-          suppress=suppress,
-          highlights=highlights,
-          **featureOptions,
+          **options,
       )
     if superType:
       html.append('''

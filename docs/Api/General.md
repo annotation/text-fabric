@@ -278,14 +278,22 @@
 
         `sortNodes(nodeSet)` and `sorted(nodeSet, key=sortKey)`.
 
-    ??? example "Sorting tuples of nodes"
-        Handy to sort things that are not nodes themselves, but data structures with
-        nodes in it, e.g. search results: if `results` is a list of tuples of nodes, we
+??? abstract "sortKeyTuple"
+    ```python
+    tupleList = sorted(tuples, key=sortKeyTuple)
+    ```
+
+    ??? info "Description"
+        Same as `sortKey`, but this one works on tuples instead of nodes.
+        It appies `sortKey` to each member of the tuple.
+        Handy to sort e.g. search results. We
         could sort them in canonical order like this:
 
         ```python
-        sorted(nodeSet, key=lambda r: sortKey(r[0]))
+        sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
         ```
+
+        This is exactly what `sortKeyTuple` does, but then a bit more efficient.
 
 ??? abstract "otypeRank"
     ```python

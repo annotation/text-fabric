@@ -9,9 +9,7 @@ from subprocess import PIPE, Popen
 
 from ..core.helpers import console
 from ..parameters import NAME, VERSION
-from ..applib.appmake import (
-    findAppConfig,
-)
+from ..applib.helpers import findAppConfig
 from .common import (
     getParam, getModules, getSets,
     getDebug, getCheck, getNoweb, getDocker,
@@ -25,9 +23,9 @@ USAGE
 text-fabric --help
 text-fabric --version
 
-text-fabric datasource [-lgc] [-d] [-c] [-noweb] [-internet] [-docker] [--mod=modules] [--set=file]
+text-fabric datasource [-lgc] [-d] [-c] [-noweb] [-docker] [--mod=modules] [--set=file]
 
-text-fabric -k [-internet] [datasource]
+text-fabric -k [datasource]
 
 EFFECT
 
@@ -37,17 +35,8 @@ When the TF kernel is ready, a webserver is started
 serving a website that exposes the data through
 a query interface.
 
-The website is meant to be locally served, except when -internet is passed.
+The website can be served or on the internet.
 The default browser will be opened, except when -noweb is passed.
-
--internet
-
-Uses a web application meant to be served on the internet.
-It works without certain capabilities that the local website has.
-
-For example, it does not save job settings on the file system but in local storage.
-It also is more economical with round-trips to the server. Fixed portions of the page
-stay in place, dynamic data is loaded with AJAX calls.
 
 --mod=modules
 
@@ -109,16 +98,12 @@ stray processes.
 -k  Kill mode. If a data source is given, the TF kernel and webserver for that
     data source are killed.
     Without a data source, all local webinterface related processes are killed.
-
-    By default, internet websites are not killed. If you want to kill them to,
-    pass the switch -internet .
 '''
 
 FLAGS = set('''
     -c
     -d
     -lgc
-    -internet
     -noweb
     -docker
 '''.strip().split())
@@ -153,15 +138,15 @@ def filterProcess(proc):
         kind = 'data'
         good = True
         continue
-      if part == 'tf.server.internet':
-        kind = 'internet'
+      if part == 'tf.server.web':
+        kind = 'web'
         good = True
         continue
-      if part.endswith('internet.py'):
-        kind = 'internet'
+      if part.endswith('web.py'):
+        kind = 'web'
         good = True
         continue
-      if kind in {'data', 'internet', 'tf'}:
+      if kind in {'data', 'web', 'tf'}:
         if kind == 'tf' and part == '-k':
           break
         if part.startswith('--mod='):
@@ -178,7 +163,7 @@ def filterProcess(proc):
   return False
 
 
-def killProcesses(dataSource, modules, sets, internet=True, kill=False):
+def killProcesses(dataSource, modules, sets, kill=False):
   tfProcs = {}
   for proc in psutil.process_iter(attrs=['pid', 'name']):
     test = filterProcess(proc)
@@ -190,7 +175,7 @@ def killProcesses(dataSource, modules, sets, internet=True, kill=False):
   myself = os.getpid()
   for ((ds, (mods, sets)), kinds) in tfProcs.items():
     if dataSource is None or (ds == dataSource and mods == modules and sts == sets):
-      checkKinds = ('data', 'tf') + (('internet',) if internet else ())
+      checkKinds = ('data', 'web', 'tf')
       for kind in checkKinds:
         pids = kinds.get(kind, [])
         for pid in pids:
@@ -214,13 +199,6 @@ def getKill(cargs=sys.argv):
   return False
 
 
-def getInternet(cargs=sys.argv):
-  for arg in cargs[1:]:
-    if arg == '-internet':
-      return True
-  return False
-
-
 def main(cargs=sys.argv):
   console(BANNER)
   if len(cargs) >= 2 and any(arg in {'--help', '-help', '-h', '?', '-?'} for arg in cargs[1:]):
@@ -232,7 +210,6 @@ def main(cargs=sys.argv):
   isWin = system().lower().startswith('win')
 
   kill = getKill(cargs=cargs)
-  internet = getInternet(cargs=cargs)
   dataSource = getParam(cargs=cargs, interactive=not kill)
 
   if kill:
@@ -240,7 +217,7 @@ def main(cargs=sys.argv):
       return
     modules = getModules(cargs=cargs)
     sets = getSets(cargs=cargs)
-    killProcesses(dataSource, modules, sets, internet=internet)
+    killProcesses(dataSource, modules, sets)
     return
 
   noweb = getNoweb(cargs=cargs)
@@ -268,7 +245,7 @@ def main(cargs=sys.argv):
     pWeb = None
     if config is not None:
       console(f'Cleaning up remnant processes, if any ...')
-      killProcesses(dataSource, modules, sets, internet=internet, kill=True)
+      killProcesses(dataSource, modules, sets, kill=True)
       pythonExe = 'python' if isWin else 'python3'
 
       pKernel = Popen(
@@ -287,9 +264,8 @@ def main(cargs=sys.argv):
           break
       sleep(1)
 
-      reach = 'internet'
       pWeb = Popen(
-          [pythonExe, '-m', f'tf.server.{reach}', *ddataSource],
+          [pythonExe, '-m', f'tf.server.web', *ddataSource],
           bufsize=0,
       )
 
@@ -297,7 +273,7 @@ def main(cargs=sys.argv):
         sleep(1)
         console(f'Opening {dataSource} in browser')
         webbrowser.open(
-            f'{config.protocol}{config.host}:{config.port[reach]}',
+            f'{config.PROTOCOL}{config.HOST}:{config.PORT["web"]}',
             new=2,
             autoraise=True,
         )

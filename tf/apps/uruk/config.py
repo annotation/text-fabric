@@ -1,15 +1,15 @@
-from tf.applib.appmake import configureNames
+from tf.applib.make import configureNames
 
-protocol = 'http://'
-host = 'localhost'
-port = dict(
+PROTOCOL = 'http://'
+HOST = 'localhost'
+PORT = dict(
     kernel=18984,
-    internet=8104,
+    web=8104,
 )
 
-options = (
-    ('lineart', 'checkbox', 'linea', 'show lineart'),
-    ('lineNumbers', 'checkbox', 'linen', 'show line numbers'),
+OPTIONS = (
+    ('lineart', 'checkbox', 'linea', 'show lineart', False),
+    ('lineNumbers', 'checkbox', 'linen', 'show line numbers', False),
 )
 
 ORG = 'Nino-cunei'

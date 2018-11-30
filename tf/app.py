@@ -1,4 +1,4 @@
-from .applib.appmake import findAppClass
+from .applib.helpers import findAppClass
 
 # START AN APP
 

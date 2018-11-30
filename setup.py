@@ -22,8 +22,6 @@ setup(
         'psutil',
         'markdown',
         'ipython',
-        'ipykernel',
-        'notebook',
         'requests',
     ],
     python_requires='>=3.6.3',

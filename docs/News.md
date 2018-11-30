@@ -12,8 +12,29 @@
 
 ## Queued for next release
 
-I am thinking about using the TF kernel for a web-facing server, not just the internal
-TF browser. And use that to expose the Peshitta and SyrNT to the web.
+* The TF kernel/server/website is also fit to be served over the internet
+* There is query result highlighting in passage view (like in SHEBANQ)
+* Various tweaks in the TF browser
+* `prettySetup()` has been replaced with `displaySetup()` and `displayReset()`, by which
+  you can configure a whole bunch of display parameters selectively
+* `A.search()` accepts a new optional parameter: `sort=...` by which you can ask for
+  canonically sorted results (`True`), custom sorted results (pass your onw key function),
+  or unsorted results (`False`).
+* All display functions (`pretty plain prettyTuple plainTuple show table`)
+  accept a new optional parameter `withPassage`
+  which will add a section label to the display.
+  This parameter can be regulated in `displaySetup`. 
+* New functions `A.nodeFromSectionStr()` and `A.sectionStrFromNode()` which give the passage
+  string of any kind of node, if possible.
+* New function `T.sectionTuple(n)` which gives the tuple of section nodes in which `n` is embedded
+* The function `T.text()` has a new optional parameter: `highlights=set()`. Now you can
+  highlight parts of plain representations in the same way as you can highlight in pretty displays,
+  but still with a few limitations
+* The code to detect the file name and path of the script/notebook you are running in,
+  is inherently brittle. It is unwise to base decisions on that. So TF does not know
+  whether you are in a notebook or not. And it will no longer produce links to the online
+  notebook on GitHub or NBViewer.
+* Various other fixes
 
 ## 7.1.1
 

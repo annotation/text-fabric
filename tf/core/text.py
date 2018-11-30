@@ -60,28 +60,64 @@ class Text(object):
   def _sec0Node(self, name, lang='en'):
     return self.nodeFromName['' if lang not in self.languages else lang].get(name, None)
 
-  def sectionFromNode(self, n, lastSlot=False, lang='en'):
+  def sectionTuple(self, n, lastSlot=False, fillup=False):
     sTypes = self.sectionTypes
     if len(sTypes) == 0:
       return ()
-    sFs = self.sectionFeatures
     F = self.api.F
+    E = self.api.E
     L = self.api.L
     slotType = F.otype.slotType
+    maxSlot = F.otype.maxSlot
+    eoslots = E.oslots.data
     nType = F.otype.v(n)
-    r = L.d(
-        n, slotType
-    )[-1] if lastSlot and nType != slotType else L.d(n, slotType)[0] if nType != slotType else n
-    n0s = L.u(r, sTypes[0])
-    n0 = n0s[0] if n0s else None
-    n1s = L.u(r, sTypes[1])
-    n1 = n1s[0] if n1s else None
-    n2s = L.u(r, sTypes[2])
-    n2 = n2s[0] if n2s else None
-    return (
-        self._sec0Name(n0, lang=lang),
-        sFs[1].get(n1, None),
-        sFs[2].get(n2, None),
+
+    if nType == slotType:
+      r = n
+    else:
+      slots = eoslots[n - maxSlot - 1]
+      r = slots[-1 if lastSlot else 0]
+
+    if nType == sTypes[0]:
+      if fillup:
+        r1 = L.u(r, otype=sTypes[1])[0]
+        r2 = L.u(r, otype=sTypes[2])[0]
+        return (n, r1, r2)
+      return (n,)
+
+    r0s = L.u(r, sTypes[0])
+    r0 = r0s[0] if r0s else None
+
+    if nType == sTypes[1]:
+      if fillup:
+        r2 = L.u(r, otype=sTypes[2])[0]
+        return (r0, n, r2)
+      return (r0, n)
+
+    r1s = L.u(r, sTypes[1])
+    r1 = r1s[0] if r1s else None
+
+    if nType == sTypes[2]:
+      return (r0, r1, n)
+
+    r2s = L.u(r, sTypes[2])
+    r2 = r2s[0] if r2s else None
+
+    return (r0, r1, r2)
+
+  def sectionFromNode(self, n, lastSlot=False, lang='en', fillup=False):
+    sTuple = self.sectionTuple(n, lastSlot=lastSlot, fillup=fillup)
+    if len(sTuple) == 0:
+      return ()
+
+    sFs = self.sectionFeatures
+
+    return tuple(
+        '' if n is None else
+        self._sec0Name(n, lang=lang)
+        if i == 0 else
+        sFs[i].get(n, None)
+        for (i, n) in enumerate(sTuple)
     )
 
   def nodeFromSection(self, section, lang='en'):
@@ -97,10 +133,20 @@ class Text(object):
     else:
       return sec2.get(sec0node, {}).get(section[1], {}).get(section[2], None)
 
-  def text(self, nodes, fmt=None, descend=False):
+  def text(self, nodes, fmt=None, descend=False, highlights=None):
+    E = self.api.E
     F = self.api.F
-    L = self.api.L
     slotType = F.otype.slotType
+    maxSlot = F.otype.maxSlot
+    eoslots = E.oslots.data
+
+    def hl(n, rep):
+      return (
+          f'<span class="hl">{rep}</span>'
+          if highlights and (n in highlights) else
+          rep
+      )
+
     if type(nodes) is int:
       nType = F.otype.v(nodes)
       if fmt is None:
@@ -109,16 +155,16 @@ class Text(object):
       if repf is None or descend:
         if repf is None:
           fmt = DEFAULT_FORMAT
-        nodes = [nodes] if nType == slotType else L.d(nodes, otype=slotType)
+        nodes = [nodes] if nType == slotType else eoslots[nodes - maxSlot - 1]
       else:
-        return repf(nodes)
+        return hl(nodes, repf(nodes))
     else:
       if fmt is None:
         fmt = DEFAULT_FORMAT
     repf = self._xformats.get(fmt, None)
     if repf is None:
-      return ' '.join(f'{F.otype.v(n)}_{n}' for n in nodes)
-    return ''.join(repf(n) for n in nodes)
+      return ' '.join(hl(n, f'{F.otype.v(n)}_{n}') for n in nodes)
+    return ''.join(hl(n, repf(n)) for n in nodes)
 
   '''
     else:

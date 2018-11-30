@@ -6,12 +6,11 @@ import rpyc
 from rpyc.utils.server import ThreadedServer
 
 from ..core.helpers import console
-from ..applib.appmake import (
-    findAppConfig,
-    findAppClass,
-)
-from ..applib.apphelpers import (
-    runSearch, runSearchCondensed, compose, composeP, composeT, getContext, getResultsX
+from ..applib.helpers import findAppConfig, findAppClass
+from ..applib.api import (
+    runSearch, runSearchCondensed,
+    getPassageHighlights,
+    compose, composeP, composeT, getResultsX
 )
 from .common import (getParam, getModules, getSets, getCheck, getLocalClones)
 
@@ -62,6 +61,7 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
     return False
   app.api.reset()
   cache = {}
+  cacheSlots = {}
   console(f'{TF_DONE}\nListening at port {port}')
 
   class TfKernel(rpyc.Service):
@@ -85,14 +85,9 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
 
       msgCache = api.cache(asString=True)
 
-      prettyFeaturesUsed = ', '.join(sorted(app.prettyFeatures))
-      prettyFeaturesLoaded = ', '.join(sorted(app.prettyFeaturesLoaded))
-      prettyFeatures = f'used   = {prettyFeaturesUsed}\nloaded = {prettyFeaturesLoaded}'
-
       data = dict(
           searchExe=searchExe,
           msgCache=msgCache,
-          prettyFeatures=prettyFeatures,
       )
       return data
 
@@ -130,11 +125,10 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
         self,
         sec0,
         sec1,
-        textFormat,
         features,
+        query,
         sec2=None,
         opened=set(),
-        withNodes=False,
         getx=None,
         **options,
     ):
@@ -158,14 +152,14 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
             getx = int(getx)
         node = T.nodeFromSection((sec0, sec1))
         items = L.d(node, otype=sec2Type) if node else []
+        highlights = getPassageHighlights(app, node, query, cache, cacheSlots)
         passage = composeP(
             app,
             features,
             items,
-            textFormat,
             opened,
             sec2,
-            withNodes=withNodes,
+            highlights,
             getx=getx,
             **options,
         )
@@ -193,9 +187,7 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
         kind,
         task,
         features,
-        textFormat,
         opened=set(),
-        withNodes=False,
         getx=None,
         **options,
     ):
@@ -208,9 +200,9 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
           lines = task.split('\n')
           for (i, line) in enumerate(lines):
             line = line.strip()
-            (message, node) = app.nodeFromDefaultSection(line)
-            if message:
-              messages.append(message)
+            (message, node) = app.nodeFromSectionStr(line)
+            if type(node) is not int:
+              messages.append(str(node))
             else:
               results.append((i + 1, (node, )))
         results = tuple(results)
@@ -236,10 +228,8 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
       table = composeT(
           app,
           features,
-          allResults, opened,
-          textFormat,
-          withNodes=withNodes,
-          linked=1,
+          allResults,
+          opened,
           getx=getx,
           **options,
       )
@@ -248,18 +238,15 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
     def exposed_search(
         self,
         query,
-        condensed,
-        condenseType,
-        textFormat,
         batch,
         position=1,
         opened=set(),
-        withNodes=False,
-        linked=1,
         getx=None,
         **options,
     ):
       app = self.app
+      display = app.display
+      d = display.get(options)
 
       total = 0
 
@@ -267,8 +254,8 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
       messages = ''
       if query:
         (results, messages, features) = (
-            runSearchCondensed(app, query, cache, condenseType)
-            if condensed and condenseType else runSearch(app, query, cache)
+            runSearchCondensed(app, query, cache, d.condenseType)
+            if d.condensed and d.condenseType else runSearch(app, query, cache)
         )
 
         if messages:
@@ -297,120 +284,24 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
           (x[1] for x in features),
           set(),
       ))
-      featureStr = ','.join(sorted(features))
+      featureStr = ' '.join(sorted(features))
       table = compose(
           app,
-          allResults, featureStr, start, position, opened,
-          condensed,
-          condenseType,
-          textFormat,
-          withNodes=withNodes,
-          linked=linked,
+          allResults,
+          featureStr,
+          position,
+          opened,
+          start=start,
           getx=getx,
           **options,
       )
       return (table, messages, featureStr, start, total)
 
-    def exposed_allTables(
-        self,
-        query,
-        tuples,
-        sections,
-        condensed,
-        condenseType,
-        textFormat,
-        batch,
-        position=1,
-        opened=set(),
-        withNodes=False,
-        linked=1,
-        **options,
-    ):
+    def exposed_csvs(self, query, tuples, sections, **options):
       app = self.app
+      display = app.display
+      d = display.get(options)
 
-      total = 0
-
-      sectionResults = []
-      sectionMessages = []
-      if sections:
-        sectionLines = sections.split('\n')
-        for (i, sectionLine) in enumerate(sectionLines):
-          sectionLine = sectionLine.strip()
-          (message, node) = app.nodeFromDefaultSection(sectionLine)
-          if message:
-            sectionMessages.append(message)
-          else:
-            sectionResults.append((-i - 1, (node, )))
-        total += len(sectionResults)
-      sectionResults = tuple(sectionResults)
-      sectionMessages = '\n'.join(sectionMessages)
-
-      tupleResults = ()
-      tupleMessages = ''
-      if tuples:
-        tupleLines = tuples.split('\n')
-        try:
-          tupleResults = tuple((-i - 1 - total, tuple(int(n)
-                                                      for n in t.strip().split(',')))
-                               for (i, t) in enumerate(tupleLines)
-                               if t.strip())
-        except Exception as e:
-          tupleMessages = f'{e}'
-        total += len(tupleResults)
-
-      queryResults = ()
-      queryMessages = ''
-      if query:
-        (queryResults, queryMessages, features) = (
-            runSearchCondensed(app, query, cache, condenseType)
-            if condensed and condenseType else runSearch(app, query, cache)
-        )
-
-        if queryMessages:
-          queryResults = ()
-        total += len(queryResults)
-
-      (start, end) = batchAround(total, position, batch)
-
-      selectedResults = queryResults[start - 1:end]
-      opened = set(opened)
-
-      before = {n for n in opened if n > 0 and n < start}
-      after = {n for n in opened if n > end and n <= len(queryResults)}
-      beforeResults = tuple((n, queryResults[n - 1]) for n in sorted(before))
-      afterResults = tuple((n, queryResults[n - 1]) for n in sorted(after))
-
-      # yapf: disable
-      allResults = (
-          ((None, 'sections'),)
-          + sectionResults
-          + ((None, 'nodes'),)
-          + tupleResults
-          + ((None, 'results'),)
-          + beforeResults
-          + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
-          + afterResults
-      )
-      features = set(reduce(
-          set.union,
-          (x[1] for x in features),
-          set(),
-      ))
-      featureStr = ','.join(sorted(features))
-      table = compose(
-          app,
-          allResults, featureStr, start, position, opened,
-          condensed,
-          condenseType,
-          textFormat,
-          withNodes=withNodes,
-          linked=linked,
-          **options,
-      )
-      return (table, sectionMessages, tupleMessages, queryMessages, start, total)
-
-    def exposed_csvs(self, query, tuples, sections, condensed, condenseType, textFormat):
-      app = self.app
       api = self.app.api
 
       sectionResults = []
@@ -418,8 +309,8 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
         sectionLines = sections.split('\n')
         for sectionLine in sectionLines:
           sectionLine = sectionLine.strip()
-          (message, node) = app.nodeFromDefaultSection(sectionLine)
-          if not message:
+          node = app.nodeFromSectionStr(sectionLine)
+          if type(node) is int:
             sectionResults.append((node,))
       sectionResults = tuple(sectionResults)
 
@@ -445,8 +336,8 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
             runSearch(app, query, cache)
         )
         (queryResultsC, queryMessagesC, featuresC) = (
-            runSearchCondensed(app, query, cache, condenseType)
-            if not queryMessages and condensed and condenseType else
+            runSearchCondensed(app, query, cache, d.condenseType)
+            if not queryMessages and d.condensed and d.condenseType else
             (None, None, None)
         )
 
@@ -460,16 +351,16 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
           ('nodes', tupleResults),
           ('results', queryResults),
       )
-      if condensed and condenseType:
+      if d.condensed and d.condenseType:
         csvs += (
-            (f'resultsBy{condenseType}', queryResultsC),
+            (f'resultsBy{d.condenseType}', queryResultsC),
         )
       resultsX = getResultsX(
           api,
           queryResults,
           features,
           app.noDescendTypes,
-          fmt=textFormat,
+          fmt=d.fmt,
       )
       return (queryMessages, pickle.dumps(csvs), pickle.dumps(resultsX))
 
@@ -501,7 +392,7 @@ def main(cargs=sys.argv):
     setFile = sets[7:] if sets else ''
     config = findAppConfig(dataSource)
     if config is not None:
-      kernel = makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, config.port['kernel'])
+      kernel = makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, config.PORT['kernel'])
       if kernel:
         kernel.start()
 

@@ -1,4 +1,4 @@
-from tf.applib.apphelpers import (
+from tf.applib.api import (
     prettyPre,
     getBoundary,
     getFeatures,
@@ -7,7 +7,7 @@ from tf.applib.apphelpers import (
     dm,
     dh,
 )
-from tf.applib.appmake import setupApi, outLink
+from tf.applib.make import setupApi, outLink
 
 PLAIN_LINK = ('https://github.com/{org}/{repo}/blob/master' '/source/{version}/{book}')
 
@@ -22,19 +22,11 @@ class TfApp(object):
 
   def webLink(app, n, text=None, className=None, asString=False, noUrl=False):
     api = app.api
-    L = api.L
     T = api.T
-    F = api.F
     version = app.version
-    nType = F.otype.v(n)
 
-    (bookE, chapter, verse) = T.sectionFromNode(n)
-    bookNode = n if nType == 'book' else L.u(n, otype='book')[0]
-    book = F.book.v(bookNode)
-    passageText = (
-        bookE if nType == 'book' else
-        f'{bookE} {chapter}' if nType == 'chapter' else f'{bookE} {chapter}:{verse}'
-    )
+    (book, chapter, verse) = T.sectionFromNode(n, fillup=True)
+    passageText = app.sectionStrFromNode(n)
     href = '#' if noUrl else PLAIN_LINK.format(
         org=app.org,
         repo=app.repo,
@@ -61,14 +53,16 @@ class TfApp(object):
       return result
     dh(result)
 
-  def plain(
+  def _plain(
       app,
       n,
-      linked=True,
-      fmt=None,
-      withNodes=False,
-      asString=False,
+      isLinked,
+      asString,
+      **options,
   ):
+    display = app.display
+    d = display.get(options)
+
     asApp = app.asApp
     api = app.api
     L = api.L
@@ -78,32 +72,32 @@ class TfApp(object):
     nType = F.otype.v(n)
     result = ''
     if asApp:
-      nodeRep = f' <a href="#" class="nd">{n}</a> ' if withNodes else ''
+      nodeRep = f' <a href="#" class="nd">{n}</a> ' if d.withNodes else ''
     else:
-      nodeRep = f' *{n}* ' if withNodes else ''
+      nodeRep = f' *{n}* ' if d.withNodes else ''
 
-    isText = fmt is None or '-orig-' in fmt
+    isText = d.fmt is None or '-orig-' in d.fmt
     if nType == 'word':
-      rep = mdEsc(htmlEsc(T.text([n], fmt=fmt)))
+      rep = mdEsc(htmlEsc(T.text([n], fmt=d.fmt)))
     elif nType in SECTION:
       label = ('{}' if nType == 'book' else '{} {}' if nType == 'chapter' else '{} {}:{}')
       rep = label.format(*T.sectionFromNode(n))
       isText = False
       rep = mdEsc(htmlEsc(rep))
       if nType in VERSE:
-        if linked:
+        if isLinked:
           rep = app.webLink(n, text=rep, className='vn', asString=True)
         else:
           rep = f'<span class="vn">{rep}</span>'
-        rep += mdEsc(htmlEsc(T.text(L.d(n, otype="word"), fmt=fmt)))
+        rep += mdEsc(htmlEsc(T.text(L.d(n, otype="word"), fmt=d.fmt)))
         isText = True
     else:
-      rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'), fmt=fmt)))
+      rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'), fmt=d.fmt)))
 
-    if linked and nType not in VERSE:
+    if isLinked and nType not in VERSE:
       rep = app.webLink(n, text=rep, asString=True)
 
-    tClass = app.formatClass[fmt] if isText else 'trb'
+    tClass = display.formatClass[d.fmt] if isText else 'trb'
     rep = f'<span class="{tClass}">{rep}</span>'
     result = f'{rep}{nodeRep}'
 
@@ -118,20 +112,18 @@ class TfApp(object):
       html,
       firstSlot,
       lastSlot,
-      fmt=None,
-      condenseType=None,
-      withNodes=True,
-      suppress=set(),
-      highlights={},
-      **featureOptions,
+      **options,
   ):
+    display = app.display
+    d = display.get(options)
+
     goOn = prettyPre(
         app,
         n,
         firstSlot,
         lastSlot,
-        withNodes,
-        highlights,
+        d.withNodes,
+        d.highlights,
     )
     if not goOn:
       return
@@ -153,7 +145,7 @@ class TfApp(object):
     otypeRank = api.otypeRank
 
     bigType = False
-    if condenseType is not None and otypeRank[nType] > otypeRank[condenseType]:
+    if d.condenseType is not None and otypeRank[nType] > otypeRank[d.condenseType]:
       bigType = True
 
     if nType == 'book':
@@ -166,7 +158,6 @@ class TfApp(object):
     if bigType:
       children = ()
     elif nType == 'verse':
-      (thisFirstSlot, thisLastSlot) = getBoundary(api, n)
       children = L.d(n, otype='word')
     elif nType == slotType:
       children = ()
@@ -195,15 +186,14 @@ class TfApp(object):
       featurePart = ''
       occs = ''
       if nType == slotType:
-        text = htmlEsc(T.text([n], fmt=fmt))
-        tClass = 'sy' if fmt is None or '-orig-' in fmt else 'tr'
+        text = htmlEsc(T.text([n], fmt=d.fmt))
+        tClass = 'sy' if d.fmt is None or '-orig-' in d.fmt else 'tr'
         heading = f'<div class="{tClass}">{text}</div>'
         featurePart = getFeatures(
             app,
             n,
-            suppress,
             ('word_etcbc', ),
-            **featureOptions,
+            **options,
         )
       html.append(heading)
       html.append(featurePart)
@@ -216,12 +206,7 @@ class TfApp(object):
           html,
           firstSlot,
           lastSlot,
-          condenseType=condenseType,
-          fmt=fmt,
-          withNodes=withNodes,
-          suppress=suppress,
-          highlights=highlights,
-          **featureOptions,
+          **options,
       )
     html.append('''
 </div>
