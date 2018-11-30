@@ -4,7 +4,7 @@ from glob import glob
 from shutil import copyfile
 
 from tf.core.helpers import console
-from tf.applib.apphelpers import (
+from tf.applib.api import (
     prettyPre,
     getFeatures,
     htmlEsc,
@@ -12,7 +12,7 @@ from tf.applib.apphelpers import (
     dm,
     dh,
 )
-from tf.applib.appmake import setupApi, outLink, getData
+from tf.applib.make import setupApi, outLink, getData
 
 PHOTO_TO = '{}/tablets/photos'
 PHOTO_EXT = 'jpg'
@@ -377,16 +377,16 @@ class TfApp(Atf):
     else:
       dh(result)
 
-  def plain(
+  def _plain(
       app,
       n,
-      linked=True,
-      fmt=None,
-      withNodes=False,
-      asString=False,
-      lineart=True,
-      lineNumbers=False,
+      isLinked,
+      asString,
+      **options,
   ):
+    display = app.display
+    d = display.get(options)
+
     asApp = app.asApp
     api = app.api
     F = api.F
@@ -394,9 +394,9 @@ class TfApp(Atf):
     nType = F.otype.v(n)
     result = ''
     if asApp:
-      nodeRep = f' <a href="#" class="nd">{n}</a> ' if withNodes else ''
+      nodeRep = f' <a href="#" class="nd">{n}</a> ' if d.withNodes else ''
     else:
-      nodeRep = f' *{n}* ' if withNodes else ''
+      nodeRep = f' *{n}* ' if d.withNodes else ''
 
     if nType in ATF_TYPES:
       isSign = nType == 'sign'
@@ -404,10 +404,10 @@ class TfApp(Atf):
       rep = (
           app.atfFromSign(n) if isSign else app.atfFromQuad(n) if isQuad else app.atfFromCluster(n)
       )
-      if linked:
+      if isLinked:
         rep = app.webLink(n, text=rep, asString=True)
       theLineart = ''
-      if lineart:
+      if d.lineart:
         if isSign or isQuad:
           width = '2em' if isSign else '4em'
           height = '4em' if isSign else '6em'
@@ -419,14 +419,14 @@ class TfApp(Atf):
       result = (f'{rep}{nodeRep}{theLineart}') if theLineart else f'{rep}{nodeRep}'
     elif nType == 'comment':
       rep = mdEsc(F.type.v(n))
-      if linked:
+      if isLinked:
         rep = app.webLink(n, text=rep, asString=True)
       result = f'{rep}{nodeRep}: {mdEsc(F.text.v(n))}'
     else:
-      lineNumbersCondition = lineNumbers
+      lineNumbersCondition = d.lineNumbers
       if nType == 'line' or nType == 'case':
         rep = mdEsc(f'{nType} {F.number.v(n)}')
-        lineNumbersCondition = lineNumbers and F.terminal.v(n)
+        lineNumbersCondition = d.lineNumbers and F.terminal.v(n)
       elif nType == 'column':
         rep = mdEsc(f'{nType} {F.number.v(n)}')
       elif nType == 'face':
@@ -437,7 +437,7 @@ class TfApp(Atf):
           n,
           rep,
           nodeRep,
-          linked=linked,
+          isLinked=isLinked,
           lineNumbers=lineNumbersCondition,
       )
 
@@ -445,9 +445,9 @@ class TfApp(Atf):
       return result
     dm(result)
 
-  def _addLink(app, n, rep, nodeRep, linked=True, lineNumbers=True):
+  def _addLink(app, n, rep, nodeRep, isLinked=True, lineNumbers=True):
     F = app.api.F
-    if linked:
+    if isLinked:
       rep = app.webLink(n, text=rep, asString=True)
     theLine = ''
     if lineNumbers:
@@ -461,23 +461,19 @@ class TfApp(Atf):
       html,
       firstSlot,
       lastSlot,
-      condenseType=None,
-      fmt=None,
-      withNodes=False,
-      suppress=set(),
-      highlights={},
       seen=set(),
-      lineNumbers=False,
-      lineart=True,
-      **featureOptions,
+      **options,
   ):
+    display = app.display
+    d = display.get(options)
+
     goOn = prettyPre(
         app,
         n,
         firstSlot,
         lastSlot,
-        withNodes,
-        highlights,
+        d.withNodes,
+        d.highlights,
     )
     if not goOn:
       return
@@ -508,12 +504,8 @@ class TfApp(Atf):
         n,
         firstSlot,
         lastSlot,
-        withNodes,
-        suppress,
-        highlights,
-        lineNumbers,
         seen,
-        **featureOptions,
+        **options,
     ) if nType in COMMENT_TYPES else ''
     children = ()
 
@@ -523,10 +515,9 @@ class TfApp(Atf):
       heading += getFeatures(
           app,
           n,
-          suppress,
           ('name', 'period', 'excavation'),
           plain=True,
-          **featureOptions,
+          **options,
       )
       children = L.d(n, otype='face')
     elif nType == 'face':
@@ -534,9 +525,8 @@ class TfApp(Atf):
       featurePart = getFeatures(
           app,
           n,
-          suppress,
           ('identifier', 'fragment'),
-          **featureOptions,
+          **options,
       )
       children = L.d(n, otype='column')
     elif nType == 'column':
@@ -550,13 +540,12 @@ class TfApp(Atf):
         heading += "'"
       if F.terminal.v(n):
         className = 'trminal'
-        theseFeats = ('srcLnNum', ) if lineNumbers else ()
+        theseFeats = ('srcLnNum', ) if d.lineNumbers else ()
         featurePart = getFeatures(
             app,
             n,
-            suppress,
             theseFeats,
-            **featureOptions,
+            **options,
         )
         children = sortNodes(
             set(L.d(n, otype='cluster'))
@@ -570,9 +559,8 @@ class TfApp(Atf):
       featurePart = getFeatures(
           app,
           n,
-          suppress,
           ('text', ),
-          **featureOptions,
+          **options,
       )
     elif nType == 'cluster':
       seen.add(n)
@@ -586,7 +574,7 @@ class TfApp(Atf):
       seen.add(n)
       children = E.sub.f(n)
     elif nType == slotType:
-      featurePart = app._getAtf(n) + getFeatures(app, n, suppress, (), **featureOptions)
+      featurePart = app._getAtf(n) + getFeatures(app, n, (), **options)
       seen.add(n)
       if not outer and F.type.v(n) == 'empty':
         return
@@ -622,7 +610,7 @@ class TfApp(Atf):
     </div>
 '''
       )
-    if lineart:
+    if d.lineart:
       isQuad = nType == 'quad'
       isSign = nType == 'sign'
       if isQuad or isSign:
@@ -654,15 +642,8 @@ class TfApp(Atf):
             html,
             firstSlot,
             lastSlot,
-            condenseType=condenseType,
-            fmt=fmt,
-            withNodes=withNodes,
-            suppress=suppress,
-            highlights=highlights,
-            lineart=lineart,
-            lineNumbers=lineNumbers,
             seen=seen,
-            **featureOptions,
+            **options,
         )
         if nType == 'quad':
           nextChildren = E.op.f(ch)
@@ -759,13 +740,11 @@ class TfApp(Atf):
       n,
       firstSlot,
       lastSlot,
-      withNodes,
-      suppress,
-      highlights,
-      lineNumbers,
       seen,
-      **featureOptions,
+      **options,
   ):
+    display = app.display
+
     api = app.api
     E = api.E
     cns = E.comments.f(n)
@@ -780,13 +759,9 @@ class TfApp(Atf):
             lastSlot,
             condenseType=None,
             fmt=None,
-            withNodes=withNodes,
-            suppress=suppress,
-            highlights=highlights,
             lineart=False,
-            lineNumbers=lineNumbers,
             seen=seen,
-            **featureOptions,
+            **display.consume(options, 'lineart')
         )
       html.append('</div>')
       commentsPart = ''.join(html)

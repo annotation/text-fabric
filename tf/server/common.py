@@ -105,8 +105,8 @@ def getAppDir(myDir, dataSource):
 
 def getValues(options, form):
   values = {}
-  for (option, typ, acro, desc) in options:
-    value = form.get(option, None)
+  for (option, default, typ, acro, desc) in options:
+    value = form.get(option, default)
     if typ == 'checkbox':
       value = True if value else False
     values[option] = value
@@ -114,8 +114,8 @@ def getValues(options, form):
 
 
 def setValues(options, source, form):
-  for (option, typ, acro, desc) in options:
-    value = source.get(option, None)
+  for (option, default, typ, acro, desc) in options:
+    value = source.get(option, default)
     form[option] = value
 
 
@@ -208,8 +208,8 @@ def shapeCondense(condenseTypes, value):
     checked = ' checked ' if value == otype else ''
     radio = (
         '<span class="cradio">&nbsp;</span>'
-        if i == lastType else f'''<input class="queryR cradio" type="radio" id="ctp{i}"
-              name="condensetp" value="{otype}" {checked}
+        if i == lastType else f'''<input class="r cradio" type="radio" id="ctp{i}"
+              name="condenseTp" value="{otype}" {checked}
             "/>'''
     )
     html.append(

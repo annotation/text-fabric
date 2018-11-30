@@ -262,8 +262,9 @@ def shapeMessages(messages):
   for msg in messages:
     if type(msg) is tuple:
       (error, nl, msgRep) = msg
+      match = msgLineRe.match(msgRep)
       msg = msgRep + ('<br/>' if nl else '')
-      className = 'eline' if error else 'mline'
+      className = 'eline' if error and not match else 'tline'
     else:
       match = msgLineRe.match(msg)
       className = 'tline' if match else 'eline'

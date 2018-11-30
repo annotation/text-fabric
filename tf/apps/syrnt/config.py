@@ -1,13 +1,13 @@
-from tf.applib.appmake import configureNames
+from tf.applib.make import configureNames
 
-protocol = 'http://'
-host = 'localhost'
-port = dict(
+PROTOCOL = 'http://'
+HOST = 'localhost'
+PORT = dict(
     kernel=18983,
-    internet=8103,
+    web=8103,
 )
 
-options = ()
+OPTIONS = ()
 
 ORG = 'etcbc'
 REPO = 'syrnt'

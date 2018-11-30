@@ -150,15 +150,18 @@ class Search(object):
   def glean(self, r):
     T = self.api.T
     F = self.api.F
-    L = self.api.L
+    E = self.api.E
     slotType = F.otype.slotType
+    maxSlot = F.otype.maxSlot
+    eoslots = E.oslots.data
+
     lR = len(r)
     if lR == 0:
       return ''
     fields = []
     for (i, n) in enumerate(r):
       otype = F.otype.v(n)
-      words = [n] if otype == slotType else L.d(n, otype=slotType)
+      words = [n] if otype == slotType else eoslots[n - maxSlot - 1]
       if otype == T.sectionTypes[2]:
         field = '{} {}:{}'.format(*T.sectionFromNode(n))
       elif otype == slotType:

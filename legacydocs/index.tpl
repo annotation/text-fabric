@@ -2,17 +2,15 @@
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>TF {{dataSource}}-{{jobName}}</title>
+        <title>TF {{jobName}}</title>
         <meta name="application-name" content="Text-Fabric Search Box"/>
         <link rel="shortcut icon" href="/server/static/favicon.ico">
-        <link rel="stylesheet" href="/server/static/base.css"/>
-        <link rel="stylesheet" href="/server/static/index.css"/>
+        <link rel="stylesheet" href="/server/static/main.css"/>
         <link rel="stylesheet" href="/server/static/fontawesome.css">
         {{!css}}
     </head>
     <body>
-        <form id="go" method="post" enctype="multipart/form-data">
-        <input type="hidden" id="appName" name="appName" value="{{dataSource}}"/>
+        <form id="go" method="post">
         <div class="page">
             <div id="sidebar">
                 <div status="about">
@@ -43,51 +41,59 @@
                     <div><img class="mainlogo" src="/server/static/dans.png"/></div>
                 </div>
                 <div status="jobs">
-                    <input
-                        id="jobh" type="hidden" name="jobName"
-                        value="{{jobName}}"
-                    />
-                    <input
-                        id="jobl" type="hidden" name="loadJob"
-                        value="{{loadJob}}"
-                    />
-                    <p class="ilab">This is job
-                        <select class="" id="jchange">
-                        </select>
+                    <p class="ilab">
+                        Working directory
                     </p>
                     <div>
-                        <button
-                            class="fa fa-plus" type="submit" id="jnew"
-                            title="start a fresh job"
-                        ></button>
-                        <button
-                            class="fa fa-file-import" type="button" id="jopen"
-                            title="upload a job and open it"
-                        ></button>
-                        <button
-                            class="fa fa-window-restore" type="submit"
-                            formtarget="_blank"
-                            title="open this job in a new tab"
-                        ></button>
-                        <button
-                            class="fa fa-edit" type="submit" id="jrename"
-                            title="rename this job"
-                        > </button>
-                        <button
-                            class="fa fa-times" type="submit" id="jclear"
-                            title="clear values of this job"
-                        ></button>
-                        <button
-                            class="fa fa-trash" type="submit" id="jdelete"
-                            title="delete this job"
-                        ></button>
-                    </div>
-                    <div id="jfilediv">
                         <input
-                            id="jfile" type="file"
-                            accept="application/json"
+                            class="name{{' eline' if dirMsg else ''}}" type="text"
+                            name="jobDir" value="{{jobDir}}"
+                            placeholder="working directory"
                         />
+                        <p class="eline">{{dirMsg}}</p>
+                        <button
+                            class="l" type="submit" name="chdir" id="chdir" value="1"
+                        > change directory
+                        </button>
                     </div>
+                    <p class="ilab">
+                        Name of this job:
+                    </p>
+                    <div>
+                        <input
+                            class="name" type="text"
+                            name="jobName" value="{{jobName}}"
+                            placeholder="job name"
+                        />
+                        <input type="hidden" name="jobNameHidden" value="{{jobNameHidden}}"/>
+                        <span>
+                            <button
+                                class="m" type="submit" name="rename" id="rename" value="1"
+                            > rename
+                            </button>
+                            <button
+                                class="m" type="submit" name="duplicate" id="duplicate" value="1"
+                            > duplicate
+                            </button>
+                        </span>
+                    </div>
+                    <p class="ilab">Jobs in this directory:</p>
+                    <input
+                        type="hidden"
+                        id="jobh"
+                        name="otherJobDo" value=""
+                    />
+                    <select
+                        class=""
+                        id="job"
+                        name="otherJob" value="{{otherJob}}"
+                    >
+                        {{!otherJobs}}
+                    </select>
+                    <button
+                        class="xl" type="submit" formtarget="_new"
+                    > Load in new tab
+                    </button>
                 </div>
                 <div status="options">
                     <div>
@@ -139,19 +145,12 @@
                                 placeholder="Description"
                             >{{description}}</textarea>
                         </div>
-                        <p class="ilab">
+                        <p class="buttons">
                             <button
-                                type="submit" formaction="/download" formtarget="_new"
-                                title="download the data of this job"
-                            ><span class="fa fa-download"/></button>
-                            <button
-                                type="submit" formaction="/export" formtarget="_new"
-                                title="export this job in a new tab"
-                            ><span class="fa fa-box-open"/></button>
+                                class="xl" type="submit" formtarget="_new" id="exph" name="export" value="1"
+                            > Export
+                            </button>
                         </p>
-                        <div id="queryMessagesExport" class="messages">
-                            {{messages}}
-                        </div>
                     </div>
                 </div>
                 <div status="help">
@@ -202,7 +201,7 @@
                         <p>The results of the nodes appear in the result list,
                            with a negative sequence number.</p>
                     </details>
-                    <details id="helpTemplate" class="help query">
+                    <details id="helpTemplate" class="help template">
                         <summary>Search Pad</summary>
                         <p>Enter a search template here.
                            See the buttons on top for the docs.</p>
@@ -229,9 +228,13 @@
                     </details>
                     <details id="helpJobs" class="help">
                         <summary>Jobs</summary>
-                        <p>Your job will be saved in your browser</p>
+                        <p>Your job will be saved in a file with extension <code>{{EXTENSION}}</code>
+                           in the current directory.</p>
+                        <p>By default this is <code>{{dataSource}}-DefaulT{{EXTENSION}}</code>.</p>
+                        <p>Go to another directory by typing (or pasting) the other directory
+                           and hitting <b>change directory</b>. 
                         <p>Rename or duplicate your job, by typing a new name in the name field.</p>
-                        <p>Load an other job by selecting
+                        <p>Load an other job from the same directory by selecting
                            the name under which it has been saved.
                            This job will be loaded in a new tab.
                            So you can work with multiple jobs in multiple tabs with only one running
@@ -261,7 +264,7 @@
                            to the corpora and the tools, with additional metadata, and with the information
                            you specify. It reflects the results as you see them on your screen.</p>
                         <p>Additional data will be exported as files in a subdirectory corresponding to the current job:<br/>
-                           (1) a file <code>results.tsv</code>
+                           (1) a file <code>RESULTSX.tsv</code>
                            with all your query results (uncondensed). <b>This file can directly be opened in Excel.</b>
                            Every row corresponds with a result tuple of nodes.
                            It contains result sequence number, a verse reference to where
@@ -280,92 +283,43 @@
                 </div>
             </div>
             <div class="leftcol">
-                <p class="ilab">
-                    <button
-                        id="sectionsGo" class="xl fa fa-sync"
-                        title="get {{defaultCondenseType}}s"
-                        type="button"
-                    ></button>
-                    {{defaultCondenseType}} pad
-                </p>
+                <p class="ilab">{{defaultCondenseType}} pad</p>
                 <textarea
                     id="sections" class="sections" name="sections"
                     placeholder="{{exampleSectionText}}"
                 >{{sections}}</textarea>
-                <div id="sectionMessages" class="messages">
+                <div class="messages">
+                    {{!sectionMessages}}
                 </div>
-
-                <hr>
-
-                <p class="ilab">
-                    <button
-                        id="tuplesGo" class="xl fa fa-sync" type="button"
-                        title="get nodes"
-                    ></button>
-                    node pad
-                </p>
+                <p class="ilab">node pad</p>
                 <textarea
                     id="tuples" class="tuples" name="tuples"
                     placeholder="100,101,102"
                 >{{tuples}}</textarea>
-                <div id="tupleMessages" class="messages">
+                <div class="messages">
+                    {{!tupleMessages}}
                 </div>
-
-                <hr>
-
-                <p class="ilab">
-                    <button
-                        id="queryGo" class="xl" type="button"
-                        title="run query and get results"
-                    ><span class="fa fa-cog"/></button>
-                    search pad
-                </p>
+                <p class="ilab">search pad</p>
                 <textarea
-                    id="query" class="query" name="query"
+                    class="template" name="searchTemplate"
                     placeholder="{{defaultCondenseType}}"
-                >{{query}}</textarea>
-                <div id="setNames" class="setnames">
+                >{{searchTemplate}}</textarea>
+                {{!setNames}}
+                <div class="messages">
+                    {{!queryMessages}}
                 </div>
-                <div id="queryMessages" class="messages">
-                </div>
-
-                <hr>
+                <p class="buttons"><button class="xl" type="submit">Go</button></p>
             </div>
             <div class="midcol">
                 <div class="materialnav">
                     <input type="hidden" name="mode" id="mode" value="{{mode}}"/>
                     <div>
-                        <p class="ilab"><a
-                            href="#" id="modepassage"
-                            class="fa fa-solar-panel"
-                            title="browse passages"
-                        ></a>
-                        <a
-                            href="#" id="moderesults"
-                            class="fa fa-list"
-                            title="to the results list"
-                        ></a></p>
-                        <input type="hidden" name="sec0" id="sec0" value="{{sec0}}"/>
-                        <input type="hidden" name="sec1" id="sec1" value="{{sec1}}"/>
-                        <input type="hidden" name="sec2" id="sec2" value="{{sec2}}"/>
-                        <div class="passages" id="passages">{{!passages}}</div>
-                    </div>
-                    <div>
-                        <div id="navigation">
-                            <div class="expand sections">
-                                <span class="ilab sections">expand all {{defaultCondenseType}}s</span>
-                                <input type="checkbox" id="sectionsExpac"/>
-                                <input type="hidden" name="sectionsExpandAll" id="sectionsExpa" value="{{sectionsExpandAll}}"/>
-                            </div>
-                            <div class="expand tuples">
-                                <span class="ilab tuples">expand all nodes</span>
-                                <input type="checkbox" id="tuplesExpac"/>
-                                <input type="hidden" name="tuplesExpandAll" id="tuplesExpa" value="{{tuplesExpandAll}}"/>
-                            </div>
-                            <div class="expand query">
-                                <span class="ilab query">expand all results</span>
-                                <input type="checkbox" id="queryExpac" />
-                                <input type="hidden" name="queryExpandAll" id="queryExpa" value="{{queryExpandAll}}"/>
+                        <div class="navigation">
+                            <div>
+                                <input
+                                    type="checkbox" id="expac"
+                                /> <span class="ilab">expand all</span>
+                                <input type="hidden" name="expandAll" id="expa" value="{{expandAll}}"/>
                             </div>
                             <div>
                                 <input
@@ -378,22 +332,25 @@
                                 /> <span class="ilab">results per page</span>
                             </div>
                         </div>
-                        <div class="pages" id="pages">
+                        <p class="ilab"><a href="#" id="moderesults">Results</a></p>
+                        <div class="pages">
                             {{!pages}}
+                        </div>
+                    </div>
+                    <div>
+                        <p class="ilab"><a href="#" id="modepassage">Passage</a></p>
+                        <div class="passages">
+                            <input type="hidden" name="sec0" id="sec0" value="{{sec0}}"/>
+                            <input type="hidden" name="sec1" id="sec1" value="{{sec1}}"/>
+                            <input type="hidden" name="sec2" id="sec2" value="{{sec2}}"/>
+                            {{!passages}}
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="rightcolx">
-                <input type="hidden" id="passageOp" name="passageOpened" value=""/>
-                <input type="hidden" id="sectionsOp" name="sectionsOpened" value=""/>
-                <input type="hidden" id="tuplesOp" name="tuplesOpened" value=""/>
-                <input type="hidden" id="queryOp" name="queryOpened" value=""/>
-                <input type="hidden" id="features" name="features" value="{{features}}"/>
-                <div id="sectionsTable" class="table"></div>
-                <div id="tuplesTable" class="table"></div>
-                <div id="queryTable" class="table"></div>
-                <div id="passageTable" class="table"></div>
+            <div class="rightcol">
+                <input type="hidden" id="op" name="opened" value="{{opened}}"/>
+                {{!table}}
             </div>
         </div>
         </form>

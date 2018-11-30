@@ -1,9 +1,7 @@
 import sys
 
 from tf.core.helpers import console
-from tf.applib.appmake import (
-    findAppConfig,
-)
+from tf.applib.helpers import findAppConfig
 from tf.server.kernel import makeTfConnection
 from tf.server.common import getParam
 
@@ -21,7 +19,7 @@ def getStuff(lgc):
   if config is None:
     return None
 
-  TF = makeTfConnection(config.host, config.port['kernel'], TIMEOUT)
+  TF = makeTfConnection(config.HOST, config.PORT['kernel'], TIMEOUT)
   return config
 
 
@@ -35,7 +33,6 @@ if __name__ == "__main__":
   commands = {
       '1': 'searchExe',
       '2': 'msgCache',
-      '3': 'prettyFeatures',
   }
   commandText = '\n'.join(f'[{k:>2}] {v}' for (k, v) in commands.items())
   try:
@@ -46,5 +43,5 @@ if __name__ == "__main__":
       data = kernelApi.monitor()
       console(f'{command} = {data[command]}\n')
   except KeyboardInterrupt:
-    print('\nquitting')
+    console('\nquitting')
     sys.exit()

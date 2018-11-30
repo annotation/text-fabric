@@ -231,8 +231,9 @@
 
 ### Various
 
-??? abstract "nodeFromDefaultSection(sectionStr)"
-    Given a section string pointing to an object of `condenseType`, return the corresponding node (or an error message).
+??? abstract "nodeFromSectionStr(sectionStr)"
+    Given a section string pointing to a section,
+    return the corresponding node (or an error message).
 
 ## App helpers
 

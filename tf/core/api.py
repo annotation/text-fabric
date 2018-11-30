@@ -313,6 +313,8 @@ class Api(object):
 
     needToLoad = set()
     loadedFeatures = set()
+    if type(features) is str:
+      features = features.split()
     for fName in sorted(features):
       fObj = TF.features.get(fName, None)
       if not fObj:
@@ -335,6 +337,7 @@ class Api(object):
 def addSortKey(api):
   Crank = api.C.rank.data
   api.sortKey = lambda n: Crank[n - 1]
+  api.sortKeyTuple = lambda tup: tuple(Crank[n - 1] for n in tup)
 
 
 def addOtype(api):
