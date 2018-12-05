@@ -18,7 +18,7 @@
         <div class="prov">
             {{!provenance}}
         </div>
-        <div class="headerDesc">
+        <div class="headerdesc">
             <div class="titleline">{{title}}</div>
             <div class="authorline">{{author}}</div>
         </div>

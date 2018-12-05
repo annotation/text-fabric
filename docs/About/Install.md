@@ -1,7 +1,7 @@
 # Install
 
 Text Fabric is a Python(3) package on the Python Package Index,
-so you can install it easily with `pip3` or `pip` from
+so you can install it directly with `pip3` or `pip` from
 the command line.
 
 ## Prerequisites
@@ -93,7 +93,8 @@ pip3 install --upgrade text-fabric
 ```
 
 ## Jupyter notebook
-    Optionally install [Jupyter]({{jup}}) as well:
+
+Optionally install [Jupyter]({{jup}}) as well:
 
     ```sh
     pip3 install jupyter
@@ -123,6 +124,4 @@ pip3 install --upgrade text-fabric
         It is still in beta, and there are rough edges.
 
         In order to install lab extensions you need to have 
-        [Node]({{node}}) installed, but not the newest version.
-        There is still a bug in the Jupyter lab that causes the installation to hang.
-        With Node 8 you are fine.
+        [Node]({{node}}) installed.

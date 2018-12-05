@@ -487,7 +487,7 @@ a lot will fail.
 
 I have also tried a different, more complicated strategy, which is still
 implemented, and which can be used by means of an optional argument to
-[`S.study()`](../Search.md#search-templates),
+[`S.study()`](../Use/Search.md#search-templates),
 but results of this strategy were not particularly good.
 
 ### Small-first strategy

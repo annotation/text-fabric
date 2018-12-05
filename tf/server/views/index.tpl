@@ -335,16 +335,16 @@
                 <div class="materialnav">
                     <input type="hidden" name="mode" id="mode" value="{{mode}}"/>
                     <div>
-                        <p class="ilab"><a
-                            href="#" id="modepassage"
+                        <p class="ilab"><button
+                            type="button" id="modepassage"
                             class="fa fa-solar-panel"
                             title="browse passages"
-                        ></a>
-                        <a
-                            href="#" id="moderesults"
+                        ></button>
+                        <button
+                            type="button" id="moderesults"
                             class="fa fa-list"
                             title="to the results list"
-                        ></a></p>
+                        ></button></p>
                         <input type="hidden" name="sec0" id="sec0" value="{{sec0}}"/>
                         <input type="hidden" name="sec1" id="sec1" value="{{sec1}}"/>
                         <input type="hidden" name="sec2" id="sec2" value="{{sec2}}"/>
@@ -385,11 +385,24 @@
                 </div>
             </div>
             <div class="rightcolx">
-                <input type="hidden" id="passageOp" name="passageOpened" value=""/>
-                <input type="hidden" id="sectionsOp" name="sectionsOpened" value=""/>
-                <input type="hidden" id="tuplesOp" name="tuplesOpened" value=""/>
-                <input type="hidden" id="queryOp" name="queryOpened" value=""/>
-                <input type="hidden" id="features" name="features" value="{{features}}"/>
+                <input
+                    type="hidden" id="passageOp" name="passageOpened"
+                    value="{{passageOpened}}"
+                />
+                <input
+                    type="hidden" id="sectionsOp" name="sectionsOpened"
+                    value="{{sectionsOpened}}"
+                />
+                <input
+                    type="hidden" id="tuplesOp" name="tuplesOpened"
+                    value="{{tuplesOpened}}"
+                />
+                <input
+                    type="hidden" id="queryOp" name="queryOpened"
+                    value="{{queryOpened}}"
+                />
+                <input
+                    type="hidden" id="features" name="features" value="{{features}}"/>
                 <div id="sectionsTable" class="table"></div>
                 <div id="tuplesTable" class="table"></div>
                 <div id="queryTable" class="table"></div>

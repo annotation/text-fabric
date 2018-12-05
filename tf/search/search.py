@@ -121,7 +121,7 @@ class Search(object):
     else:
       queryResults = exe.fetch(limit=limit)
       if type(msgCache) is list:
-        messages = self.api.cache(asString=True)
+        messages = self.api.cache(_asString=True)
         return (queryResults, messages)
       return queryResults
 

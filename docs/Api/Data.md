@@ -1,7 +1,7 @@
 # Adding data modules
 
-Text-Fabric support the flow of creating research data,
-packaging it, distributing it, and importing it easily.
+Text-Fabric supports the flow of creating research data,
+packaging it, distributing it, and importing in apps.
 
 ## Assumptions
 
@@ -9,7 +9,7 @@ The data sharing workflow is built around the following assumptions:
 
 ??? note "main corpus app"
     You work with a main corpus for which a text-fabric app is available.
-    See [Corpora](Corpora.md)
+    See [Corpora](../About/Corpora.md)
 
 ??? note "versioned tf data"
     The data you share consists of a set of TF features, tied to a specific
@@ -69,7 +69,7 @@ The data sharing workflow is built around the following assumptions:
 
 ## Step by step
 
-### 1. Data in place
+### Data in place
 
 We use the existing [etcbc/valence/tf]({{etcbcgh}}/valence) data as an example.
 
@@ -81,7 +81,7 @@ We assume you have this data locally, in
 
 under which there are versions such as `c`, `2017`, which contain the actual `.tf` files.
 
-### 2. Package into zip files
+### Package into zip files
 
 To create zip files for the data, execute the following command in your terminal:
 
@@ -110,7 +110,7 @@ and as a result you have this in your Downloads folder
     tf-c.zip
 ```
         
-### 3. Make a release
+### Make a release
 
 Locally, commit your changes and push them to GitHub
 
@@ -125,11 +125,11 @@ so do not try to perform this on `etcbc/valence` but use a repo of your own.**
 
 Go to the online version on GitHub, and click *releases*
 
-![releases](images/add-releases.png)
+![releases](../images/add-releases.png)
 
 Then click *Draft a new release*
 
-![releases](images/add-draft.png)
+![releases](../images/add-draft.png)
 
 Fill in the details, especially the version (something like `1.6`),
 although nothing in the workflow depends on the exact form of the version number;
@@ -140,11 +140,11 @@ Do not forget to select your freshly made zip files
 
 Last, but not least, click the button *Publish release*.
 
-![releases](images/add-attach.png)
+![releases](../images/add-attach.png)
 
 Now your data is available to others.
 
-### 4. Use data
+### Use data
 
 The valence data has been made available by the ETCBC, so the following steps
 you can perform literally.
@@ -267,11 +267,135 @@ and expand the first result in Genesis 1:1.
 
 The display looks like this:
 
-![sense](images/add-sense.png)
+![sense](../images/add-sense.png)
 
 And if you export the data, the extra module is listed in the provenance.
 
-![sense](images/add-prov.png)
+![sense](../images/add-prov.png)
+
+??? hint "Feature display"
+    Pretty displays will show them automatically, because
+    all features used in a query are displayed in the expanded view.
+
+    If you want to see a feature that is not used in the query
+    you can add it as a trivial search criterion.
+
+    For example, if you want to see the `sense` feature when looking for phrases,
+    add it like this
+
+    ```
+    clause
+      phrase sense*
+    ```
+
+    The `*` means: always true, so it will not influence the query result set,
+    only its display;
+
+    In fact, the feature sense is only present on nodes of type `word`.
+    But mentioning a feature anywhere in the query
+    will trigger the display wherever it occurs with a non-trivial values.
+
+    The extra data modules are also shown in the provenance listings
+    when you export data from the browser.
+
+#### In a Jupyter notebook
+
+After the incantation, you see an overview of all features per module where they come from,
+linked to their documentation or repository.
+
+You can use the new features exactly as you are used to, with `F` and `E` (for edge features).
+
+They will not automatically show up in `pretty` displays,
+because `pretty` does not know that it is displaying query results,
+and hence does not know which features were used in the latest query.
+
+So you have to tell which features you want to add to the display.
+That can be done by [`displaySetup()` and `displayReset()`](App.md#pretty-display).
+
+### Develop your own data
+
+When you develop your own data features, you'll probably make many changes before
+you take the trouble of publishing them in the manner described above.
+Here we describe the easiest workflow to work with your developing data with a view to share
+it much less often than you modify it.
+
+??? abstract "Produce in your local GitHub folder"
+    You probably have a program or notebook that synthesizes a bunch of new features.
+    It is a good idea to have that program in a version control system, and publish
+    it on GitHub, in a repository of your choice.
+
+    Set up that program in such a way, that your features end up in the same repository,
+    in a folder of your choosing, but directly under a folder that corresponds with
+    the version of the main data source against which you are building your data.
+
+    ??? example "BHSA and versions"
+        The BHSA data source has versions `3`, `4`, `4b`, `2016`, `2017`, and `c`.
+        Suppose you are building a the dairy features `butter`, `cheese` and `eggs`,
+        in the `dairy/tf` sub folder of your repo. Suppose you build them for versions
+        `2017` and `c`. Then deliver those features in
+
+        ```
+        dairy/tf/2017/butter.tf
+        dairy/tf/2017/cheese.tf
+        dairy/tf/2017/eggs.tf
+        dairy/tf/c/butter.tf
+        dairy/tf/c/cheese.tf
+        dairy/tf/c/eggs.tf
+        ```
+
+    Currently, your features only live on your computer, in your local github folder.
+    You may or may not commit your local changes to the online GitHub.
+    But you do not want to create a new release and attach your zipped feature data to it yet.
+
+??? abstract "Test your features"
+    When you want to load your local features, you can pass to your `use(appName, ...)` call
+    the `mod` parameter:
+    
+    ```python
+    mod=f'{org}/{repo}/{path}'
+    ```
+
+    But TF then tries to download it from GitHub, or look it up from your `~/text-fabric-data`.
+    Both will fail, especially when you let TF manage your `~/text-fabric-data` directory.
+
+    You have to pass an extra parameter: 
+
+    ```python
+    mod=f'{org}/{repo}/{path}', lgc=True
+    ```
+
+    The `lgc` flag means: try **l**ocal **g**ithub **c**lones first.
+    With this set, TF first looks in the right place inside your `~/github` directory.
+    If it find your features there, it will not go online,
+    and not look into `~/text-fabric-data`.
+
+??? abstract "Publish your features"
+    When the time comes to share your new feature data, everything is already in place
+    to do that.
+
+    Zip your data with the `text-fabric-zip` command as explained above.
+    It will look into your local github directory, pickup the features from there,
+    zip them, and put the zip files in your Downloads folder. Then you can pick
+    that zip file up and attach it manually to a new release of your repository
+    on the online GitHub.
+
+    From then on, other users (and you too) can use that data by passing just the switch
+
+    ```python
+    mod=f'{org}/{repo}/{path}'
+    ```
+
+    without the `lgc` parameter.
+    If you do that, you get a copy of your features in your `~/text-fabric-data`
+    directory.
+
+??? abstract "Continue developing your features"
+    Probably you'll make changes to your features after having published them.
+    Then you have the cutting edge version of your features in your local github
+    directory, and the published version in your text-fabric-data directory.
+
+    By selectively choosing `lgc=True` or `lgc=False` you can decide whether to load
+    the cutting edge versions or the published versions.
 
 ##### More modules
 
@@ -298,11 +422,9 @@ book book=Leviticus
 
 Note that `heads` is an edge feature.
 
-![sense](images/add-heads.png)
+![sense](../images/add-heads.png)
 
 #### In a Jupyter notebook
-
-**N.B. The incantation has been changed. Read more in the [v7 guide](Use7.md)**.
 
 ```python
 from tf.app import use
@@ -317,7 +439,7 @@ A = use(
 )
 ```
 
-![sense](images/add-incantation.png)
+![sense](../images/add-incantation.png)
 
 Now you can run the same query as before:
 
@@ -334,10 +456,15 @@ And let's see results in pretty display.
 We have to manually declare that we want to see the `sense` and `actor` feature.
 
 ```
-A.prettySetup(features='sense actor')
+A.displaySetup(extraFeatures='sense actor')
 A.show(results, start=8, end=8, condensed=True, condenseType='verse')
 ```
 
 See the
 [share]({{etcbcnb}}/bhsa/blob/master/tutorial/share.ipynb)
 tutorial.
+
+##### Exercise
+
+See whether you can find the quote in the Easter egg that is in `etcbc/lingo/easter/tf` !
+

@@ -15,19 +15,24 @@ site_author: Dirk Roorda
 
 extra:
   c_applib: tf/applib
-  c_apphelpers: tf/applib/apphelpers.py
-  c_appmake: tf/applib/appmake.py
-  c_notebook: tf/applib/notebook.py
+  c_appapi: tf/applib/api.py
+  c_appdisplay: tf/applib/display.py
+  c_apphelpers: tf/applib/helpers.py
+  c_appmake: tf/applib/make.py
   c_zipdata: tf/applib/zipdata.py
   c_apps: tf/apps
   c_bhsa_app: tf/apps/bhsa/app.py
   c_bhsa_config: tf/apps/bhsa/config.py
+  c_bhsa_logo: tf/apps/bhsa/static/logo.png
   c_peshitta_app: tf/apps/peshitta/app.py
   c_peshitta_config: tf/apps/peshitta/config.py
+  c_peshitta_logo: tf/apps/peshitta/static/logo.png
   c_syrnt_app: tf/apps/syrnt/app.py
   c_syrnt_config: tf/apps/syrnt/config.py
+  c_syrnt_logo: tf/apps/syrnt/static/logo.png
   c_uruk_app: tf/apps/uruk/app.py
   c_uruk_config: tf/apps/uruk/config.py
+  c_uruk_logo: tf/apps/uruk/static/logo.png
   c_convert: tf/convert
   c_mql: tf/convert/mql.py
   c_core: tf/core
@@ -81,6 +86,7 @@ extra:
   etcbcnb: https://nbviewer.jupyter.org/github/etcbc
   faqhint1: https://www.computerhope.com/issues/ch000549.htm
   fontlib: https://fontlibrary.org
+  ghapi: https://api.github.com/repos
   git: https://git-scm.com/downloads 
   jensengh: https://github.com/ch-jensen/Semantic-mapping-of-participants
   jquery: https://api.jquery.com
@@ -114,7 +120,7 @@ extra:
   tfpp: https://pypi.org/project/text-fabric/ 
   ubiq1: https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/
   weave: https://sew4home.com/tips-resources/buying-guide/all-about-fabric-weaves-tutorial
-  wikip: https://nl.wikipedia.org/wiki
+  wikip: https://en.wikipedia.org/wiki
   zenodo: https://zenodo.org
 
 
@@ -130,13 +136,43 @@ strict: false
 
 nav:
   - Home: 'index.md'
-  - v7-Guide: 'Use7.md'
-  - News: 'News.md'
-  - Install: 'Install.md'
-  - Use: 'Use.md'
-  - Add: 'Add.md'
-  - Corpora: 'Corpora.md'
-  - Faq: 'Faq.md'
+  - About:
+    - Install: 'About/Install.md'
+    - Corpora: 'About/Corpora.md'
+    - Faq: 'About/Faq.md'
+    - News: 'About/News.md'
+    - Older: 'About/Older.md'
+  - Apps:
+    - 'Hebrew Bible': 'Apps/Bhsa.md'
+    - 'Peshitta': 'Apps/Peshitta.md'
+    - 'Syriac New Testament': 'Apps/Syrnt.md'
+    - 'Cuneiform Tablets': 'Apps/Uruk.md'
+  - Use:
+    - Use: 'Use/Use.md'
+    - Browser: 'Use/Browser.md'
+    - Search: 'Use/Search.md'
+    - v7-Guide: 'Use/Use7.md'
+  - Api:
+    - 'Apps': 'Api/App.md'
+    - 'Data': 'Api/Data.md'
+    - 'General': 'Api/General.md'
+  - Writing:
+    - 'Hebrew': 'Writing/Hebrew.html'
+    - 'Syriac': 'Writing/Syriac.html'
+    - 'Transcription': 'Writing/Transcription.md'
+  - Model:
+    - 'Data': 'Model/Data-Model.md'
+    - 'Format': 'Model/File-formats.md'
+    - 'Tweaks': 'Model/Optimizations.md'
+    - 'Search': 'Model/Search.md'
+    - 'Apps': 'Model/Apps.md'
+  - Create:
+    - 'Make TF': 'Create/CreateTF.md'
+    - 'Example data': 'Create/ExampleText.md'
+  - Server:
+    - 'Kernel': 'Server/Kernel.md'
+    - 'Web': 'Server/Web.md'
+    - 'Common': 'Server/Common.md'
   - Code:
     - 'Overview' : 'Code/Overview.md'
     - 'Tests' : 'Code/Tests.md'
@@ -150,30 +186,6 @@ nav:
     - 'Stats (TF-app support)' : 'Code/StatsApplib.md'
     - 'Stats (TF-apps)' : 'Code/StatsApps.md'
     - 'Stats (Tests)' : 'Code/StatsTest.md'
-  - Search: 'Search.md'
-  - Api:
-    - 'General': 'Api/General.md'
-    - 'Apps': 'Api/Apps.md'
-    - 'Hebrew Bible': 'Api/Bhsa.md'
-    - 'Peshitta': 'Api/Peshitta.md'
-    - 'Syriac New Testament': 'Api/Syrnt.md'
-    - 'Cuneiform Tablets': 'Api/Uruk.md'
-  - Server:
-    - 'Kernel': 'Server/Kernel.md'
-    - 'Local': 'Server/Local.md'
-    - 'Common': 'Server/Common.md'
-  - Writing:
-    - 'Hebrew': 'Writing/Hebrew.html'
-    - 'Syriac': 'Writing/Syriac.html'
-    - 'Transcription': 'Writing/Transcription.md'
-  - Model:
-    - 'Data': 'Model/Data-Model.md'
-    - 'Format': 'Model/File-formats.md'
-    - 'Tweaks': 'Model/Optimizations.md'
-    - 'Search': 'Model/Search.md'
-  - Create:
-    - 'Make TF': 'Create/CreateTF.md'
-    - 'Example data': 'Create/ExampleText.md'
 
 markdown_extensions:
   - admonition

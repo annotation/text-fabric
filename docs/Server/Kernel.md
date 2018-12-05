@@ -26,7 +26,7 @@
     python3 -m tf.server.kernel ddd
     ```
 
-    where `ddd` is one of the [supported apps](../../Api/Apps#current-apps)
+    where `ddd` is one of the [supported apps](../About/Corpora.md)
 
     ??? example
         See the
@@ -107,7 +107,8 @@
     Fetches several things from the app and the 
     generic TF api:
 
-    * `condenseType`: the default node type that acts
+    * `condenseType`:
+      the default node type that acts
       as a container for representing query results;
       for Bhsa it is `verse`, for Uruk it is `tablet`;
     * `exampleSection`: an example for the help text

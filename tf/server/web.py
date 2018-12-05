@@ -552,9 +552,9 @@ def serveDownload():
           task,
           form['tuples'],
           form['sections'],
-          form['condensed'],
-          condenseType,
-          textFormat,
+          condensed=form['condensed'],
+          condenseType=condenseType,
+          fmt=textFormat,
       )
     except TimeoutError:
       messages = (

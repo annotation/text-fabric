@@ -295,10 +295,10 @@ CSS = '''
 .satom.r,.catom.r,.patom.r {
     border-right-style: dotted
 }
-.satom.L,.catom.L,.patom.L {
+.satom.lno,.catom.lno,.patom.lno {
     border-left-style: none
 }
-.satom.R,.catom.R,.patom.R {
+.satom.rno,.catom.rno,.patom.rno {
     border-right-style: none
 }
 .tr,.tr a:visited,.tr a:link {

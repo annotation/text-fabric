@@ -1,8 +1,14 @@
+![logo](../images/apps/uruk/logo.png)
+
 # Uruk
 
-## About
+Name: `uruk`
 
-The interface is described in the [v7 guide](../Use7.md)
+[API](../Api/App.md)
+
+[Tutorial]({{ninonb}}/uruk/blob/master/tutorial/start.ipynb).
+
+Configuration [config.py]({{tfghb}}/{{c_uruk_config}})
 
 Source code [app.py]({{tfghb}}/{{c_uruk_app}})
 
@@ -178,7 +184,7 @@ accept additional options:
     so that we can retrieve cases more easily.
 
 ??? caution "Consider search"
-    Text-Fabric Search is a generic and powerful mechanism for information retrieval.
+    Text-Fabric [Search](../Use/Search.md) is a generic and powerful mechanism for information retrieval.
     In most cases it is easier to extract nodes by search than by hand-written
     code using the functions here.
 
@@ -193,7 +199,8 @@ accept additional options:
 
     ??? explanation "Compare `T.nodeFromSection()`"
         This function is analogous to
-        `T.nodeFromSection()` of Text-Fabric.
+        [`T.nodeFromSection()`](../Api/General.md#sections)
+        of Text-Fabric.
 
     ??? info "case specification"
         This function takes a single argument which must be
@@ -218,7 +225,8 @@ accept additional options:
 
     ??? explanation "Compare `T.sectionFromNode()`"
         This function is analogous to
-        `T.sectionFromNode()` of Text-Fabric.
+        [`T.sectionFromNode()`](../Api/General.md#sections)
+        of Text-Fabric.
 
     ??? explanation "case specification"
         A case specification is a tuple

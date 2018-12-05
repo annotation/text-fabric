@@ -8,7 +8,6 @@ DISPLAY_OPTIONS = dict(
     highlights={},
     linked=1,
     noneValues=None,
-    sort=None,
     start=None,
     suppress=set(),
     withNodes=False,
@@ -38,8 +37,16 @@ class Display(object):
     self.displayDefaults.update({o[0]: o[1] for o in app.options})
     self.reset()
 
-  def reset(self):
-    self.displaySettings = {k: v for (k, v) in self.displayDefaults.items()}
+  def reset(self, *options):
+    api = self.app.api
+    error = api.error
+    for option in options:
+      if option not in self.displayDefaults:
+        error(f'WARNING: unknown display option "{option}" will be ignored')
+        continue
+      self.displaySettings[option] = self.displayDefaults[option]
+    if not options:
+      self.displaySettings = {k: v for (k, v) in self.displayDefaults.items()}
 
   def setup(self, **options):
     api = self.app.api

@@ -48,7 +48,7 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
   console(f'Setting up TF kernel for {dataSource} {moduleRefs} {setFile}')
   app = appClass(
       dataSource,
-      asApp=True,
+      _asApp=True,
       mod=moduleRefs,
       setFile=setFile,
       version=config.VERSION,
@@ -83,7 +83,7 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
       if searchExe:
         searchExe = searchExe.outerTemplate
 
-      msgCache = api.cache(asString=True)
+      msgCache = api.cache(_asString=True)
 
       data = dict(
           searchExe=searchExe,
