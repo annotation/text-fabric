@@ -310,8 +310,8 @@ class Atf(object):
 
 class TfApp(Atf):
 
-  def __init__(app, *args, asApp=False, lgc=False, check=False, silent=False, **kwargs):
-    setupApi(app, *args, asApp=asApp, lgc=lgc, check=check, silent=silent, **kwargs)
+  def __init__(app, *args, _asApp=False, lgc=False, check=False, silent=False, **kwargs):
+    setupApi(app, *args, _asApp=_asApp, lgc=lgc, check=check, silent=silent, **kwargs)
 
     (imageRelease, imageBase) = getData(
         app.org,
@@ -333,11 +333,11 @@ class TfApp(Atf):
     app.tempDir = f'{app.repoLocation}/{TEMP_DIR}'
     app.reportDir = f'{app.repoLocation}/{REPORT_DIR}'
 
-    if not asApp:
+    if not _asApp:
       for cdir in (app.tempDir, app.reportDir):
         os.makedirs(cdir, exist_ok=True)
 
-  def webLink(app, n, text=None, className=None, asString=False, noUrl=False):
+  def webLink(app, n, text=None, className=None, _asString=False, _noUrl=False):
     api = app.api
     L = api.L
     F = api.F
@@ -360,19 +360,16 @@ class TfApp(Atf):
         target=target,
         passage=pNum,
     )
-    if asString:
+    if _asString:
       return result
     dh(result)
 
-  def sectionLink(app, n, text=None):
-    return app.webLink(n, className='rwh', text=text, asString=True, noUrl=True)
-
-  def cdli(app, n, linkText=None, asString=False):
+  def cdli(app, n, linkText=None, _asString=False):
     (nType, objectType, identifier) = app._imageClass(n)
     if linkText is None:
       linkText = identifier
     result = _wrapLink(linkText, objectType, 'main', identifier)
-    if asString:
+    if _asString:
       return result
     else:
       dh(result)
@@ -381,19 +378,19 @@ class TfApp(Atf):
       app,
       n,
       isLinked,
-      asString,
+      _asString,
       **options,
   ):
     display = app.display
     d = display.get(options)
 
-    asApp = app.asApp
+    _asApp = app._asApp
     api = app.api
     F = api.F
 
     nType = F.otype.v(n)
     result = ''
-    if asApp:
+    if _asApp:
       nodeRep = f' <a href="#" class="nd">{n}</a> ' if d.withNodes else ''
     else:
       nodeRep = f' *{n}* ' if d.withNodes else ''
@@ -405,14 +402,14 @@ class TfApp(Atf):
           app.atfFromSign(n) if isSign else app.atfFromQuad(n) if isQuad else app.atfFromCluster(n)
       )
       if isLinked:
-        rep = app.webLink(n, text=rep, asString=True)
+        rep = app.webLink(n, text=rep, _asString=True)
       theLineart = ''
       if d.lineart:
         if isSign or isQuad:
           width = '2em' if isSign else '4em'
           height = '4em' if isSign else '6em'
           theLineart = app._getImages(
-              n, kind='lineart', width=width, height=height, asString=True, withCaption=False,
+              n, kind='lineart', width=width, height=height, _asString=True, withCaption=False,
               warning=False
           )
           theLineart = f' {theLineart}'
@@ -420,7 +417,7 @@ class TfApp(Atf):
     elif nType == 'comment':
       rep = mdEsc(F.type.v(n))
       if isLinked:
-        rep = app.webLink(n, text=rep, asString=True)
+        rep = app.webLink(n, text=rep, _asString=True)
       result = f'{rep}{nodeRep}: {mdEsc(F.text.v(n))}'
     else:
       lineNumbersCondition = d.lineNumbers
@@ -441,14 +438,14 @@ class TfApp(Atf):
           lineNumbers=lineNumbersCondition,
       )
 
-    if asString or asApp:
+    if _asString or _asApp:
       return result
     dm(result)
 
   def _addLink(app, n, rep, nodeRep, isLinked=True, lineNumbers=True):
     F = app.api.F
     if isLinked:
-      rep = app.webLink(n, text=rep, asString=True)
+      rep = app.webLink(n, text=rep, _asString=True)
     theLine = ''
     if lineNumbers:
       theLine = mdEsc(f' @{F.srcLnNum.v(n)} ')
@@ -580,12 +577,12 @@ class TfApp(Atf):
         return
 
     if outer:
-      typePart = app.webLink(n, text=f'{nType} {heading}', asString=True)
+      typePart = app.webLink(n, text=f'{nType} {heading}', _asString=True)
     else:
       typePart = heading
 
     isCluster = nType == 'cluster'
-    extra = 'B' if isCluster else ''
+    extra = 'b' if isCluster else ''
     label = f'''
     <div class="lbl {className}{extra}">
         {typePart}
@@ -619,7 +616,7 @@ class TfApp(Atf):
           width = '2em' if isSign else '4em'
           height = '4em' if isSign else '6em'
           theLineart = app._getImages(
-              n, kind='lineart', width=width, height=height, asString=True, withCaption=False,
+              n, kind='lineart', width=width, height=height, _asString=True, withCaption=False,
               warning=False
           )
           if theLineart:
@@ -653,7 +650,7 @@ class TfApp(Atf):
     if isCluster:
       html.append(
           f'''
-    <div class="lbl {className}E{hlClass}"{hlStyle}>
+    <div class="lbl {className}e{hlClass}"{hlStyle}>
         {typePart}
         {nodePart}
     </div>
@@ -771,7 +768,7 @@ class TfApp(Atf):
 
   def _getAtf(app, n):
     atf = app.atfFromSign(n, flags=True)
-    featurePart = f' <span class="srcLn">{atf}</span>'
+    featurePart = f' <span class="srcln">{atf}</span>'
     return featurePart
 
   def _imageClass(app, n):
@@ -807,7 +804,7 @@ class TfApp(Atf):
     return (nType, objectType, identifier)
 
   def _getImages(
-      app, ns, kind=None, key=None, asLink=False, withCaption=None, warning=True, asString=False,
+      app, ns, kind=None, key=None, asLink=False, withCaption=None, warning=True, _asString=False,
       **options
   ):
     if type(ns) is int or type(ns) is str:
@@ -868,7 +865,7 @@ class TfApp(Atf):
       result = [image for image in result if image]
     if not result:
       return ''
-    if asString:
+    if _asString:
       return ''.join(result)
     resultStr = f'</div><div style="{ITEM_STYLE}">'.join(result)
     html = (f'<div style="{FLEX_STYLE}">'
@@ -879,12 +876,12 @@ class TfApp(Atf):
       return True
 
   def _useImage(app, image, kind, key, node):
-    asApp = app.asApp
+    _asApp = app._asApp
     api = app.api
     F = api.F
     (imageDir, imageName) = os.path.split(image)
     (base, ext) = os.path.splitext(imageName)
-    localBase = app.localDir if asApp else app.curDir
+    localBase = app.localDir if _asApp else app.curDir
     localDir = f'{localBase}/{LOCAL_IMAGE_DIR}'
     if not os.path.exists(localDir):
       os.makedirs(localDir, exist_ok=True)
@@ -911,7 +908,7 @@ class TfApp(Atf):
         or os.path.getmtime(image) > os.path.getmtime(localImagePath)
     ):
       copyfile(image, localImagePath)
-    base = '/local/' if asApp else ''
+    base = '/local/' if _asApp else ''
     return f'{base}{LOCAL_IMAGE_DIR}/{localImageName}'
 
   def _getImagery(app):

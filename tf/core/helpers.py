@@ -270,6 +270,6 @@ def shapeMessages(messages):
       className = 'tline' if match else 'eline'
       msg = msg.replace('\n', '<br/>')
     html.append(f'''
-      <span class="{className}">{msg}</span>
+      <span class="{className.lower()}">{msg}</span>
     ''')
   return ''.join(html)

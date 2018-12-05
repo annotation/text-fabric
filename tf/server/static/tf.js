@@ -4,6 +4,8 @@
  *
  */
 
+const lastJobKey = 'tfLastJob'
+
 const switchMode = m => {
   const mode = $('#mode')
   const pageNav = $('#navigation')
@@ -118,7 +120,7 @@ const getTable = (kind, subkind, m, button) => {
         const subs = data[subkind]
         if (subs) {
           destSub.html(subs)
-          subLinks(kind, subkind, m)
+          subLinks(kind, subkind)
         }
       }
       const { features } = data
@@ -135,8 +137,18 @@ const getTable = (kind, subkind, m, button) => {
       nodes()
       switchMode(m)
       storeForm()
+      gotoFocus(kind)
     },
   })
+}
+
+const gotoFocus = kind => {
+  if (kind == 'passage' || kind == 'query') {
+    const rTarget = $('details.focus')
+    if (rTarget != null && rTarget[0] != null) {
+      rTarget[0].scrollIntoView(false)
+    }
+  }
 }
 
 const activateTables = (kind, subkind) => {
@@ -160,7 +172,7 @@ const activateTables = (kind, subkind) => {
 
 // navigation links through passages and results
 
-const subLinks = (kind, subkind, m) => {
+const subLinks = (kind, subkind) => {
   if (subkind == 'pages') {
     $('.pnav').click(e => {
       e.preventDefault()
@@ -538,6 +550,7 @@ const jobControls = () => {
       return
     }
     storeForm()
+    setLastJob($('#appName').val(), newJob)
     jobh.val(e.target.value)
     readForm()
     side.val(jobPart)
@@ -547,9 +560,11 @@ const jobControls = () => {
   jClear.click(() => {
     clearForm()
     storeForm()
+    setLastJob($('#appName').val(), $('#jobh').val())
   })
 
   jDelete.click(() => {
+    setLastJob($('#appName').val(), '')
     deleteForm()
     jobh.val('')
     clearForm()
@@ -565,6 +580,7 @@ const jobControls = () => {
     deleteForm()
     jobh.val(newName)
     storeForm()
+    setLastJob($('#appName').val(), $('#jobh').val())
   })
 
   jOpen.click(() => {
@@ -588,6 +604,7 @@ const jobControls = () => {
       jobContent['jobName'] = newName
       readForm(jobContent)
       side.val(jobPart)
+      setLastJob($('#appName').val(), $('#jobh').val())
       form.submit()
     }
     reader.readAsText(jobFile)
@@ -603,6 +620,7 @@ const jobControls = () => {
     storeForm()
     clearForm()
     jobh.val(newName)
+    setLastJob($('#appName').val(), $('#jobh').val())
     storeForm()
   })
 }
@@ -689,11 +707,37 @@ const getJobs = () => {
   )
 }
 
+const setLastJob = (appName, jobName) => {
+  const lastJob = localStorage.getItem(lastJobKey)
+  const lastJobData = lastJob
+    ? JSON.parse(lastJob)
+    : {}
+  lastJobData[appName] = jobName
+  localStorage.setItem(lastJobKey, JSON.stringify(lastJobData))
+}
+
+const getLastJob = appName => {
+  const lastJob = localStorage.getItem(lastJobKey)
+  const lastJobData = lastJob
+    ? JSON.parse(lastJob)
+    : {}
+  const { [appName]: lastJobName } = lastJobData
+  return (lastJobName == null)
+    ? 'default'
+    : lastJobName
+}
+
 const initForm = () => {
   const loadJob = $('#jobl')
   if (loadJob.val() == '1') {
     loadJob.val('')
-    readForm()
+    const appName = $('#appName').val()
+    const lastJobName = getLastJob(appName)
+    const jobContent = localStorage.getItem(`tf/${appName}/${lastJobName}`)
+    if (jobContent) {
+      readForm(JSON.parse(jobContent))
+      $('form').submit()
+    }
   }
   else {
     storeForm()
@@ -716,8 +760,4 @@ $(() => {
   reactive()
   jobOptions()
   jobControls()
-  const rTarget = $('details.focus')
-  if (rTarget != null && rTarget[0] != null) {
-    rTarget[0].scrollIntoView(false)
-  }
 })

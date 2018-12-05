@@ -9,17 +9,12 @@
     [Uruk Cuneiform Tablets]({{ninonb}}/uruk/blob/master/tutorial/start.ipynb)
     put the Text-Fabric API on show for vastly different corpora.
 
-???+ note "Generic API"
+???+ note "Generic API versus apps"
     This is the API of Text-Fabric in general.
     Text-Fabric has no baked in knowledge of particular corpora.
 
-    However, Text-Fabric comes with several additions that make working
-    with specific corpora easier.
-
-    *   Hebrew Bible: [BHSA](Bhsa.md)
-    *   Peshitta: [Peshitta](Peshitta.md)
-    *   Syriac New Testament: [SyrNT](Syrnt.md)
-    *   Proto-cuneiform tablets from Uruk: [Uruk](Uruk.md)
+    However, Text-Fabric comes with several *apps* that make working
+    with specific [corpora](../About/Corpora.md) easier.
 
 ## Core
 
@@ -473,16 +468,42 @@
         @levels=tablet,face,column,line,case,cluster,quad,comment,sign
         ```
 
+??? abstract "T.sectionTuple()"
+    ```python
+    T.sectionTuple(node, lastSlot=False, fillup=False)
+    ```
+
+    ???+ info "Description"
+        Returns a tuple of nodes that correspond to the sections of level 0, 1 and 2
+        (e.g. book, chapter, verse).
+        that include a node. More precisely, we retrieve the sections that contain a
+        reference node, which is either the first slot or the last slot of the node
+        in question.
+        
+    ??? info "node"
+        The node whose containing section we want to get.
+
+    ??? info "lastSlot"
+        Whether the reference node will be the last slot contained by the `node` argument
+        or the first node.
+
+    ??? info "fillup"
+        If `False`, and node is a level 0 section node, a 1-element tuple of this
+        node is returned. And if node is a level 1 section node, a 2-element tuple is returned:
+        the enclosing level 0 section node and node itself.
+
+        If `True`, always a complete 3-tuple of a level 0, 1, and 2 section node is returned.
+
 ??? abstract "T.sectionFromNode()"
     ```python
-    T.sectionFromNode(node, lastSlot=False, lang='en')
+    T.sectionFromNode(node, lastSlot=False, lang='en', fillup=False)
     ```
 
     ???+ info "Description"
         Returns the book/chapter/verse indications that correspond to the reference
-        node, which is the first or last slot belonging `n`, dependent on `lastSlot`.
+        node, which is the first or last slot belonging `node`, dependent on `lastSlot`.
         The result is a tuple, consisting of the book name (in language `lang`), the
-        chapter number, and the verse number.
+        chapter number, and the verse number. But see the `fillup` parameter.
 
     ??? info "node"
         The node from which we obtain a section specification.
@@ -493,6 +514,9 @@
 
     ??? info "lang"
         The language to be used for the section parts, as far as they are language dependent.
+
+    ??? info "fillup"
+        Same as for `sectionTuple()`
 
     ??? note "crossing verse boundaries"
         Sometimes a sentence or clause in a verse continue into the next verse.
@@ -1287,7 +1311,7 @@
 
 ## Search
  
-For a description of Text-Fabric search, go to [Search](../Search.md)
+For a description of Text-Fabric search, go to [Search](../Use/Search.md)
 
 ???+ info "S"
     The Search API is exposed as `S` or `Search`.
@@ -1358,7 +1382,7 @@ Here is the whole interface.
         Webservers can use such a daemonized TF to build efficient controllers.
 
         A TF kernel and webserver are included in the Text-Fabric code base.
-        See [kernel](../../Server/Kernel) and [web](../../Server/Web).
+        See [kernel](../Server/Kernel.md) and [web](../Server/Web.md).
 
     ??? note "Generator versus tuple"
         If `limit` is specified, the result is not a generator but a tuple of results.
@@ -1524,11 +1548,9 @@ Here is the whole interface.
         obtained by search or not.
 
     ??? hint "More ways of showing results"
-        If you work in one of the corpora for which the TF-API has been extended,
+        If you work in one of the [corpora](../About/Corpora.md) for which there is a TF app,
         you will be provided with more powerful methods `show()` and `table()`
         to display your results.
-        See [Uruk](Uruk.md), [Bhsa](Bhsa.md), [Peshitta](Peshitta.md) and [Syrnt](Syrnt.md).
-
 
 ## Convert
 

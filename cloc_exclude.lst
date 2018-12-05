@@ -1,8 +1,11 @@
+_temp
+.pytest_cache
 build
 dist
 legacydocs
 docs/Stats.md
 site
+apps
 test
 text_fabric.egg-info
 cloc_exclude.lst

@@ -44,7 +44,7 @@
     packages in
     [apps]({{tfght}}/{{c_apps}})
 
-    See also [App structure](../../Api/Apps/#the-structure-of-apps)
+    See also [App structure](../Model/Apps.md#the-structure-of-apps)
 
 ??? abstract "getAppdir(myDir, dataSource)"
     The code in
@@ -55,7 +55,7 @@
     *dataSource* package in
     [apps]({{tfght}}/{{c_apps}}).
 
-    See also [App structure](../../Api/Apps/#the-structure-of-apps)
+    See also [App structure](../Model/Apps.md#the-structure-of-apps)
 
 ## Getting and setting form values
 
@@ -135,7 +135,7 @@
 ??? abstract "shapeOptions"
     Wraps the options, specified by the option specification in `config.py`
     into HTML.
-    See also [App structure](../../Api/Apps/#the-structure-of-apps)
+    See also [App structure](../Model/Apps.md#the-structure-of-apps)
 
 ??? abstract "shapeCondense"
     Provides a radio-buttoned chooser for the

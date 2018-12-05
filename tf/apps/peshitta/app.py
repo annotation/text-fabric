@@ -20,7 +20,7 @@ class TfApp(object):
   def __init__(*args, **kwargs):
     setupApi(*args, **kwargs)
 
-  def webLink(app, n, text=None, className=None, asString=False, noUrl=False):
+  def webLink(app, n, text=None, className=None, _asString=False, _noUrl=False):
     api = app.api
     T = api.T
     version = app.version
@@ -49,7 +49,7 @@ class TfApp(object):
         target=target,
         passage=passageText,
     )
-    if asString:
+    if _asString:
       return result
     dh(result)
 
@@ -57,13 +57,13 @@ class TfApp(object):
       app,
       n,
       isLinked,
-      asString,
+      _asString,
       **options,
   ):
     display = app.display
     d = display.get(options)
 
-    asApp = app.asApp
+    _asApp = app._asApp
     api = app.api
     L = api.L
     T = api.T
@@ -71,7 +71,7 @@ class TfApp(object):
 
     nType = F.otype.v(n)
     result = ''
-    if asApp:
+    if _asApp:
       nodeRep = f' <a href="#" class="nd">{n}</a> ' if d.withNodes else ''
     else:
       nodeRep = f' *{n}* ' if d.withNodes else ''
@@ -86,7 +86,7 @@ class TfApp(object):
       rep = mdEsc(htmlEsc(rep))
       if nType in VERSE:
         if isLinked:
-          rep = app.webLink(n, text=rep, className='vn', asString=True)
+          rep = app.webLink(n, text=rep, className='vn', _asString=True)
         else:
           rep = f'<span class="vn">{rep}</span>'
         rep += mdEsc(htmlEsc(T.text(L.d(n, otype="word"), fmt=d.fmt)))
@@ -95,13 +95,13 @@ class TfApp(object):
       rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'), fmt=d.fmt)))
 
     if isLinked and nType not in VERSE:
-      rep = app.webLink(n, text=rep, asString=True)
+      rep = app.webLink(n, text=rep, _asString=True)
 
-    tClass = display.formatClass[d.fmt] if isText else 'trb'
+    tClass = display.formatClass[d.fmt].lower() if isText else 'trb'
     rep = f'<span class="{tClass}">{rep}</span>'
     result = f'{rep}{nodeRep}'
 
-    if asString or asApp:
+    if _asString or _asApp:
       return result
     dm((result))
 
@@ -149,10 +149,10 @@ class TfApp(object):
       bigType = True
 
     if nType == 'book':
-      html.append(app.webLink(n, asString=True))
+      html.append(app.webLink(n, _asString=True))
       return
     if nType == 'chapter':
-      html.append(app.webLink(n, asString=True))
+      html.append(app.webLink(n, _asString=True))
       return
 
     if bigType:
@@ -169,7 +169,7 @@ class TfApp(object):
     html.append(f'<div class="{className} {boundaryClass}{hlClass}"{hlStyle}>')
 
     if nType == 'verse':
-      passage = app.webLink(n, asString=True)
+      passage = app.webLink(n, _asString=True)
       html.append(
           f'''
     <div class="vl">

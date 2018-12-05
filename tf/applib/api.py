@@ -289,7 +289,7 @@ def composeT(
             condensed=False,
             extraFeatures=features,
             opened=i in opened,
-            asString=True,
+            _asString=True,
             **display.consume(options, 'condensed', 'extraFeatures')
         )
     )
@@ -367,7 +367,7 @@ def compose(
             item=item,
             position=position,
             opened=i in opened,
-            asString=True,
+            _asString=True,
             extraFeatures=features,
             **display.consume(options, 'extraFeatures')
         )
@@ -379,7 +379,7 @@ def compose(
 def table(
     app,
     tuples,
-    asString=False,
+    _asString=False,
     **options,
 ):
   display = app.display
@@ -413,12 +413,12 @@ def table(
             item=item,
             position=None,
             opened=False,
-            asString=True,
+            _asString=True,
             **options,
         )
     )
   markdown = '\n'.join(markdown)
-  if asString:
+  if _asString:
     return markdown
   dm(markdown)
 
@@ -430,7 +430,7 @@ def plainTuple(
     item=RESULT,
     position=None,
     opened=False,
-    asString=False,
+    _asString=False,
     **options,
 ):
   display = app.display
@@ -438,7 +438,7 @@ def plainTuple(
     return ''
   d = display.get(options)
 
-  asApp = app.asApp
+  _asApp = app._asApp
   api = app.api
   F = api.F
   T = api.T
@@ -447,9 +447,9 @@ def plainTuple(
     passageNode = getRefMember(app, tup, d.linked, d.condensed)
     passageRef = (
         '' if passageNode is None else
-        app.sectionLink(passageNode)
-        if asApp else
-        app.webLink(passageNode, asString=True)
+        app._sectionLink(passageNode)
+        if _asApp else
+        app.webLink(passageNode, _asString=True)
     )
     if passageRef:
       passageRef = f' {passageRef}'
@@ -458,7 +458,7 @@ def plainTuple(
 
   newOptions = display.consume(options, 'withPassage')
 
-  if asApp:
+  if _asApp:
     prettyRep = prettyTuple(
         app,
         tup,
@@ -517,14 +517,14 @@ def plainTuple(
             app.plain(
                 n,
                 isLinked=i == d.linked - 1,
-                asString=True,
+                _asString=True,
                 withPassage=False,
                 **newOptions,
             )
         )
     )
   markdown = '|'.join(markdown)
-  if asString:
+  if _asString:
     return markdown
   head = ['n | ' + (' | '.join(F.otype.v(n) for n in tup))]
   head.append(' | '.join('---' for n in range(len(tup) + 1)))
@@ -537,7 +537,7 @@ def plain(
     app,
     n,
     isLinked=True,
-    asString=False,
+    _asString=False,
     **options,
 ):
   display = app.display
@@ -555,13 +555,13 @@ def plain(
 
   if d.withPassage:
     if nType not in sectionTypes:
-      passage = app.webLink(n, asString=True)
+      passage = app.webLink(n, _asString=True)
 
   return app._plain(
       n,
       passage,
       isLinked,
-      asString,
+      _asString,
       **options,
   )
 
@@ -581,15 +581,15 @@ def plainTextS2(
   T = api.T
   seqNumber = T.sectionFromNode(sNode)[2]
   itemType = T.sectionTypes[2]
-  isOpened = str(seqNumber) in opened
-  tClass = '' if d.fmt is None else display.formatClass[d.fmt]
+  isOpened = seqNumber in opened
+  tClass = '' if d.fmt is None else display.formatClass[d.fmt].lower()
 
   (hlSec2s, hlNodes, hlPlainSlots, hlPrettySlots) = (
       highlights if highlights else
       (set(), set(), set(), set())
   )
 
-  sec2Class = ' hl' if sNode in hlSec2s else ''
+  hlDot = '<span class="hldot"></span>' if sNode in hlSec2s else ''
 
   prettyRep = prettyTuple(
       app,
@@ -611,8 +611,9 @@ def plainTextS2(
   seq="{seqNumber}"
   {attOpen}
 >
-  <summary class="{tClass}{sec2Class}">
-    {app.sectionLink(sNode, text=seqNumber)}
+  <summary class="{tClass}">
+    {app._sectionLink(sNode, text=seqNumber)}
+    {hlDot}
     {textRep}
   </summary>
   <div class="pretty">{prettyRep}</div>
@@ -676,10 +677,10 @@ def prettyTuple(
     return ''
   d = display.get(options)
 
-  asApp = app.asApp
+  _asApp = app._asApp
 
   if len(tup) == 0:
-    if asApp:
+    if _asApp:
       return ''
     else:
       return
@@ -693,13 +694,13 @@ def prettyTuple(
       if rawHighlights is None else rawHighlights
   )
 
-  if not asApp:
+  if not _asApp:
     dm(f'''
 
 **{item}** *{seqNumber}*
 
 ''')
-  if asApp:
+  if _asApp:
     html = []
   for t in sorted(containers, key=sortKey):
     h = app.pretty(
@@ -707,9 +708,9 @@ def prettyTuple(
         highlights=highlights,
         **display.consume(options, 'highlights'),
     )
-    if asApp:
+    if _asApp:
       html.append(h)
-  if asApp:
+  if _asApp:
     return '\n'.join(html)
 
 
@@ -723,7 +724,7 @@ def pretty(
     return ''
   d = display.get(options)
 
-  asApp = app.asApp
+  _asApp = app._asApp
   api = app.api
   F = api.F
   L = api.L
@@ -751,7 +752,7 @@ def pretty(
 
   if d.withPassage:
     if nType not in sectionTypes:
-      html.append(app.webLink(n, asString=True))
+      html.append(app.webLink(n, _asString=True))
 
   highlights = (
       {m: '' for m in d.highlights}
@@ -768,7 +769,7 @@ def pretty(
       **display.consume(options, 'highlights'),
   )
   htmlStr = '\n'.join(html)
-  if asApp:
+  if _asApp:
     return htmlStr
   dh(htmlStr)
 
@@ -796,20 +797,21 @@ def prettyPre(
     if myEnd < firstSlot:
       return False
     if myStart < firstSlot:
-      boundaryClass += ' R'
+      boundaryClass += ' rno'
   if lastSlot is not None:
     if myStart > lastSlot:
       return False
     if myEnd > lastSlot:
-      boundaryClass += ' L'
+      boundaryClass += ' lno'
 
   hl = highlights.get(n, None)
   hlClass = ''
   hlStyle = ''
-  if hl == '':
-    hlClass = ' hl'
-  else:
-    hlStyle = f' style="background-color: {hl};"'
+  if hl is not None:
+    if hl == '':
+      hlClass = ' hl'
+    else:
+      hlStyle = f' style="background-color: {hl};"'
 
   nodePart = (f'<a href="#" class="nd">{n}</a>' if withNodes else '')
   className = app.classNames.get(nType, None)
@@ -817,9 +819,9 @@ def prettyPre(
   return (
       slotType,
       nType,
-      className,
-      boundaryClass,
-      hlClass,
+      className.lower(),
+      boundaryClass.lower(),
+      hlClass.lower(),
       hlStyle,
       nodePart,
       myStart,
@@ -889,7 +891,7 @@ def getFeatures(
       if value is not None:
         nameRep = f'<span class="f">{name}=</span>' if name in withName else ''
         xClass = ' xft' if name in extraSet else ''
-        featureRep = f' <span class="{name}{xClass}">{nameRep}{value}</span>'
+        featureRep = f' <span class="{name.lower()}{xClass}">{nameRep}{value}</span>'
 
         if i >= nFeatures:
           if not hasB:

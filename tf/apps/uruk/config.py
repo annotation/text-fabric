@@ -235,20 +235,20 @@ CSS = '''
     color: #eecc99;
     background-color: #ffddaa none repeat scroll 0 0;
 }
-.lbl.clusterB,.lbl.clusterE {
+.lbl.clusterb,.lbl.clustere {
     padding:  0.5em 0.1em 0.1em 0.1em;
     margin: 0.8em 0.1em 0.1em 0.1em;
     color: #888844;
     font-size: x-small;
 }
-.lbl.clusterB {
+.lbl.clusterb {
     border-left: 0.3em solid #cccc99;
     border-right: 0;
     border-top: 0;
     border-bottom: 0;
     border-radius: 1em;
 }
-.lbl.clusterE {
+.lbl.clustere {
     border-left: 0;
     border-right: 0.3em solid #cccc99;
     border-top: 0;
@@ -290,12 +290,12 @@ CSS = '''
     font-size: x-small;
     color: #000000;
 }
-.srcLn {
+.srcln {
     font-family: monospace;
     font-size: medium;
     color: #000000;
 }
-.srcLnNum {
+.srclnnum {
     font-family: monospace;
     font-size: x-small;
     color: #0000bb;

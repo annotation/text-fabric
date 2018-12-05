@@ -35,8 +35,8 @@ class Timestamp(object):
   def reset(self):
     self.log = []
 
-  def cache(self, asString=False):
-    if asString:
+  def cache(self, _asString=False):
+    if _asString:
       lines = []
       for (error, nl, msgRep) in self.log:
         lines.append('{}{}'.format(msgRep, '\n' if nl else ''))
@@ -48,7 +48,7 @@ class Timestamp(object):
       sys.stderr.flush()
       sys.stdout.flush()
     self.log = []
-    if asString:
+    if _asString:
       return result
 
   def info(self, msg, tm=True, nl=True, cache=0):

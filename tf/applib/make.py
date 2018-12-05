@@ -53,22 +53,21 @@ def use(appName, *args, **kwargs):
 def setupApi(
     app,
     appName,
-    name=None,
-    mod=None,
-    setFile='',
-    locations=None,
-    modules=None,
-    asApp=False,
-    api=None,
+    hoist=False,
     version=None,
+    mod=None,
     lgc=False,
     check=False,
+    locations=None,
+    modules=None,
+    api=None,
+    setFile='',
     silent=False,
-    hoist=False,
+    _asApp=False,
 ):
   for (key, value) in dict(
       appName=appName,
-      asApp=asApp,
+      _asApp=_asApp,
       api=api,
       version=version,
       silent=silent,
@@ -124,11 +123,11 @@ def setupApi(
       app.api = None
 
   if app.api:
-    _addLinksApi(app, name, appName, silent)
+    _addLinksApi(app, appName, silent)
     _addFormatApi(app, silent, hoist)
     _addMethods(app)
   else:
-    if not asApp:
+    if not _asApp:
       console(
           f'''
 There were problems with loading data.
@@ -172,7 +171,7 @@ def configureNames(names, lgc, version):
 
 def outLink(text, href, title=None, passage=None, className=None, target='_blank'):
   titleAtt = '' if title is None else f' title="{title}"'
-  classAtt = f' class="{className}"' if className else ''
+  classAtt = f' class="{className.lower()}"' if className else ''
   targetAtt = f' target="{target}"' if target else ''
   passageAtt = f' sec="{passage}"' if passage else ''
   return f'<a{classAtt}{targetAtt} href="{href}"{titleAtt}{passageAtt}>{text}</a>'
@@ -181,11 +180,11 @@ def outLink(text, href, title=None, passage=None, className=None, target='_blank
 # DOWNLOAD URL TO LIVE DATA ON GITHUB
 
 
-def liveText(org, repo, version, release):
+def _liveText(org, repo, version, release):
   return f'{org}/{repo} v:{version} (r{release})'
 
 
-def liveUrl(org, repo, version, release, relative):
+def _liveUrl(org, repo, version, release, relative):
   relativeFlat = relative.replace('/', '-')
   return f'{URL_GH}/{org}/{repo}/releases/download/{release}/{relativeFlat}-{version}.zip'
 
@@ -523,7 +522,8 @@ def _getModuleData(
           version=version,
           release=release,
           live=(
-              liveText(org, repo, version, release), liveUrl(org, repo, version, release, relative)
+              _liveText(org, repo, version, release),
+              _liveUrl(org, repo, version, release, relative)
           ),
           doi=(info['doiText'], info['doiUrl']),
       )
@@ -632,7 +632,6 @@ def _getDataFile(
 
 def _addLinksApi(
     app,
-    name,
     appName,
     silent,
 ):
@@ -666,7 +665,7 @@ def _addLinksApi(
       'Search Templates Introduction and Reference'
   )
   tutLink = outLink('Search tutorial', tutUrl, 'Search tutorial in Jupyter Notebook')
-  if app.asApp:
+  if app._asApp:
     app.dataLink = dataLink
     app.charLink = charLink
     app.featureLink = featureLink
@@ -699,7 +698,7 @@ def _addFormatApi(
       app.classNames
   )
 
-  if not app.asApp:
+  if not app._asApp:
     _loadCss(app)
     if hoist:
       docs = api.makeAvailableIn(hoist)
@@ -730,15 +729,16 @@ def _addMethods(app):
   app.header = types.MethodType(header, app)
   app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
   app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
-  app.sectionLink = types.MethodType(_sectionLink, app)
+  app._sectionLink = types.MethodType(_sectionLink, app)
   app.loadCss = types.MethodType(_loadCss, app)
 
 
 # LOWER LEVEL UTILITY FUNCTIONS
 
 
-def _sectionLink(app, n, text=None):
-  return app.webLink(n, className='rwh', text=text, asString=True, noUrl=True)
+def _sectionLink(app, n, text=None, className=None):
+  newClassName = f'rwh {className or ""}'
+  return app.webLink(n, className=newClassName, text=text, _asString=True, _noUrl=True)
 
 
 def _loadCss(app):
@@ -747,8 +747,8 @@ def _loadCss(app):
   running in the TF browser,
   else the CSS is returned.
   '''
-  asApp = app.asApp
-  if asApp:
+  _asApp = app._asApp
+  if _asApp:
     return CSS_FONT + app.css
   cssFont = (
       '' if app.fontName is None else CSS_FONT_API.format(
@@ -882,5 +882,5 @@ def displaySetup(app, **options):
   app.display.setup(**options)
 
 
-def displayReset(app):
-  app.display.reset()
+def displayReset(app, *options):
+  app.display.reset(*options)
