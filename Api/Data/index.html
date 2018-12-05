@@ -1,0 +1,1771 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Text-Fabric is a Python3 package for Text plus Annotations. It provides a data model, a text file format, a binary format, an API, and apps for (ancient) text plus (linguistic) annotations.">
+      
+      
+        <link rel="canonical" href="https://dans-labs.github.io/text-fabric/Api/Data/">
+      
+      
+        <meta name="author" content="Dirk Roorda">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../images/icon/favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
+    
+    
+      
+        <title>Data - Text-Fabric</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.451f80e5.css">
+      
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="__github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#adding-data-modules" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-header-nav__button md-logo">
+          
+            <img src="../../images/tficon-small.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            
+              <span class="md-header-nav__topic">
+                Text-Fabric
+              </span>
+              <span class="md-header-nav__topic">
+                Data
+              </span>
+            
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/dans-labs/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#__github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      GitHub
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-nav__button md-logo">
+      
+        <img src="../../images/tficon-small.png" width="48" height="48">
+      
+    </a>
+    Text-Fabric
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/dans-labs/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#__github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      GitHub
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      About
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        About
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../About/Install/" title="Install" class="md-nav__link">
+      Install
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../About/Corpora/" title="Corpora" class="md-nav__link">
+      Corpora
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../About/Faq/" title="Faq" class="md-nav__link">
+      Faq
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../About/News/" title="News" class="md-nav__link">
+      News
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../About/Older/" title="Older" class="md-nav__link">
+      Older
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Apps
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Apps
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Apps/Bhsa/" title="Hebrew Bible" class="md-nav__link">
+      Hebrew Bible
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Apps/Peshitta/" title="Peshitta" class="md-nav__link">
+      Peshitta
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Apps/Syrnt/" title="Syriac New Testament" class="md-nav__link">
+      Syriac New Testament
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Apps/Uruk/" title="Cuneiform Tablets" class="md-nav__link">
+      Cuneiform Tablets
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Use
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Use
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Use/Use/" title="Use" class="md-nav__link">
+      Use
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Use/Browser/" title="Browser" class="md-nav__link">
+      Browser
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Use/Search/" title="Search" class="md-nav__link">
+      Search
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Use/Use7/" title="v7-Guide" class="md-nav__link">
+      v7-Guide
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" checked>
+    
+    <label class="md-nav__link" for="nav-5">
+      Api
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        Api
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../App/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Data
+      </label>
+    
+    <a href="./" title="Data" class="md-nav__link md-nav__link--active">
+      Data
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#assumptions" title="Assumptions" class="md-nav__link">
+    Assumptions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step" title="Step by step" class="md-nav__link">
+    Step by step
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-in-place" title="Data in place" class="md-nav__link">
+    Data in place
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#package-into-zip-files" title="Package into zip files" class="md-nav__link">
+    Package into zip files
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#make-a-release" title="Make a release" class="md-nav__link">
+    Make a release
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-data" title="Use data" class="md-nav__link">
+    Use data
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-the-tf-browser" title="In the TF browser" class="md-nav__link">
+    In the TF browser
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-a-jupyter-notebook" title="In a Jupyter notebook" class="md-nav__link">
+    In a Jupyter notebook
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#develop-your-own-data" title="Develop your own data" class="md-nav__link">
+    Develop your own data
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#more-modules" title="More modules" class="md-nav__link">
+    More modules
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-a-jupyter-notebook_1" title="In a Jupyter notebook" class="md-nav__link">
+    In a Jupyter notebook
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exercise" title="Exercise" class="md-nav__link">
+    Exercise
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../General/" title="General" class="md-nav__link">
+      General
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Writing
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        Writing
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
+      Hebrew
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Writing/Syriac.html" title="Syriac" class="md-nav__link">
+      Syriac
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Writing/Transcription/" title="Transcription" class="md-nav__link">
+      Transcription
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      Model
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        Model
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Model/Data-Model/" title="Data" class="md-nav__link">
+      Data
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Model/File-formats/" title="Format" class="md-nav__link">
+      Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Model/Optimizations/" title="Tweaks" class="md-nav__link">
+      Tweaks
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Model/Search/" title="Search" class="md-nav__link">
+      Search
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Model/Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8" type="checkbox" id="nav-8">
+    
+    <label class="md-nav__link" for="nav-8">
+      Create
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-8">
+        Create
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Create/CreateTF/" title="Make TF" class="md-nav__link">
+      Make TF
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Create/ExampleText/" title="Example data" class="md-nav__link">
+      Example data
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-9" type="checkbox" id="nav-9">
+    
+    <label class="md-nav__link" for="nav-9">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-9">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Server/Kernel/" title="Kernel" class="md-nav__link">
+      Kernel
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Server/Web/" title="Web" class="md-nav__link">
+      Web
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Server/Common/" title="Common" class="md-nav__link">
+      Common
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10" type="checkbox" id="nav-10">
+    
+    <label class="md-nav__link" for="nav-10">
+      Code
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-10">
+        Code
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/Overview/" title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/Tests/" title="Tests" class="md-nav__link">
+      Tests
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/Stats/" title="Stats (overall)" class="md-nav__link">
+      Stats (overall)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsToplevel/" title="Stats (TF-toplevel)" class="md-nav__link">
+      Stats (TF-toplevel)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsCore/" title="Stats (TF-core)" class="md-nav__link">
+      Stats (TF-core)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsSearch/" title="Stats (TF-search)" class="md-nav__link">
+      Stats (TF-search)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsConvert/" title="Stats (TF-convert)" class="md-nav__link">
+      Stats (TF-convert)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsWriting/" title="Stats (TF-writing)" class="md-nav__link">
+      Stats (TF-writing)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsServer/" title="Stats (TF-server)" class="md-nav__link">
+      Stats (TF-server)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsApplib/" title="Stats (TF-app support)" class="md-nav__link">
+      Stats (TF-app support)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsApps/" title="Stats (TF-apps)" class="md-nav__link">
+      Stats (TF-apps)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsTest/" title="Stats (Tests)" class="md-nav__link">
+      Stats (Tests)
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#assumptions" title="Assumptions" class="md-nav__link">
+    Assumptions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step" title="Step by step" class="md-nav__link">
+    Step by step
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-in-place" title="Data in place" class="md-nav__link">
+    Data in place
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#package-into-zip-files" title="Package into zip files" class="md-nav__link">
+    Package into zip files
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#make-a-release" title="Make a release" class="md-nav__link">
+    Make a release
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-data" title="Use data" class="md-nav__link">
+    Use data
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-the-tf-browser" title="In the TF browser" class="md-nav__link">
+    In the TF browser
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-a-jupyter-notebook" title="In a Jupyter notebook" class="md-nav__link">
+    In a Jupyter notebook
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#develop-your-own-data" title="Develop your own data" class="md-nav__link">
+    Develop your own data
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#more-modules" title="More modules" class="md-nav__link">
+    More modules
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-a-jupyter-notebook_1" title="In a Jupyter notebook" class="md-nav__link">
+    In a Jupyter notebook
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exercise" title="Exercise" class="md-nav__link">
+    Exercise
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/Api/Data.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="adding-data-modules">Adding data modules<a class="headerlink" href="#adding-data-modules" title="Permanent link">&para;</a></h1>
+<p>Text-Fabric supports the flow of creating research data,
+packaging it, distributing it, and importing in apps.</p>
+<h2 id="assumptions">Assumptions<a class="headerlink" href="#assumptions" title="Permanent link">&para;</a></h2>
+<p>The data sharing workflow is built around the following assumptions:</p>
+<details class="note"><summary>main corpus app</summary><p>You work with a main corpus for which a text-fabric app is available.
+See <a href="../../About/Corpora/">Corpora</a></p>
+</details>
+<details class="note"><summary>versioned tf data</summary><p>The data you share consists of a set of TF features, tied to a specific
+<em>version</em> of the main corpus, preferably the most recent version.
+The new features must sit in a directory named after the version
+of the main corpus they correspond to.</p>
+<details class="example"><summary>BHSA</summary><p>For the <em>BHSA</em>, that would be version <em>c</em>.
+You can also produce data for multiple versions.</p>
+</details>
+</details>
+<details class="note"><summary>local github</summary><p>The data you share must reside in a directory on your hard drive.
+The convention is, that you have a directory <code>github</code> under your
+home directory. And inside <code>github</code>, you have directories for
+organizations or people first, and then repositories, exactly as 
+the online GitHub is organized. </p>
+<details class="example"><summary>BHSA</summary><p>If you have the BHSA repo, its versioned TF feature directories
+should be under <code>~/github/etcbc/bhsa/tf</code></p>
+</details>
+<p>Your own data should be in such a repo as well, e.g.</p>
+<p><code>ch-jensen/Semantic-mapping-of-participants/actor/tf</code></p>
+<p>or</p>
+<p><code>etcbc/lingo/heads/tf</code></p>
+</details>
+<details class="note"><summary>synchronized with GitHub</summary><p>You must have your local repo contents synchronized with that on GitHub</p>
+</details>
+<details class="note"><summary>online GitHub</summary><p>Before you share your data, you must make a <em>release</em> on GitHub.
+Then you must attach your features as a zip file to that release.
+Text-Fabric has a command to produce a zip file with exactly the
+right structure and name.</p>
+</details>
+<details class="note"><summary>get data</summary><p>In order to get data, the only thing Text-Fabric needs to know,
+is a string with the organisation or person, the repository,
+and the path within the repository.</p>
+<p>Based on the string <code>{org}/{repo}/{path}</code> it will find the online
+repository, check the latest release, find the zip file,
+download and expand it to your local
+<code>~/text-fabric/data/{org}/{repo}/{path}</code></p>
+</details>
+<details class="note"><summary>everywhere</summary><p>The extra data is accessible whether you work in a Jupyter notebook,
+or in the Text-Fabric browser.
+The extra features are clearly listed after the incantation in a notebook,
+and they show up in the pretty displays in the TF browser.
+And when you export data from the TF browser, all data modules are reported
+in the provenance section.</p>
+</details>
+<h2 id="step-by-step">Step by step<a class="headerlink" href="#step-by-step" title="Permanent link">&para;</a></h2>
+<h3 id="data-in-place">Data in place<a class="headerlink" href="#data-in-place" title="Permanent link">&para;</a></h3>
+<p>We use the existing <a href="https://github.com/etcbc/valence">etcbc/valence/tf</a> data as an example.</p>
+<p>We assume you have this data locally, in </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>~/github/etcbc/valence/tf
+</pre></div>
+</td></tr></table>
+
+<p>under which there are versions such as <code>c</code>, <code>2017</code>, which contain the actual <code>.tf</code> files.</p>
+<h3 id="package-into-zip-files">Package into zip files<a class="headerlink" href="#package-into-zip-files" title="Permanent link">&para;</a></h3>
+<p>To create zip files for the data, execute the following command in your terminal:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric-zip etcbc/valence/tf
+</pre></div>
+</td></tr></table>
+
+<p>You'll see</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>zipping etcbc/valence             2016 with  10 features
+zipping etcbc/valence             2017 with  10 features
+zipping etcbc/valence                4 with  10 features
+zipping etcbc/valence               4b with  10 features
+zipping etcbc/valence                c with  10 features
+</pre></div>
+</td></tr></table>
+
+<p>and as a result you have this in your Downloads folder</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>~/Downloads/etcbc-release/valence/
+    tf-4.zip
+    tf-4b.zip
+    tf-2016.zip
+    tf-2017.zip
+    tf-c.zip
+</pre></div>
+</td></tr></table>
+
+<h3 id="make-a-release">Make a release<a class="headerlink" href="#make-a-release" title="Permanent link">&para;</a></h3>
+<p>Locally, commit your changes and push them to GitHub</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>git add --all .
+git commit -m <span class="s2">&quot;releasing data&quot;</span>
+git push origin master
+</pre></div>
+</td></tr></table>
+
+<p><strong>You can only do this for repositories for which you have write access,
+so do not try to perform this on <code>etcbc/valence</code> but use a repo of your own.</strong></p>
+<p>Go to the online version on GitHub, and click <em>releases</em></p>
+<p><img alt="releases" src="../../images/add-releases.png" /></p>
+<p>Then click <em>Draft a new release</em></p>
+<p><img alt="releases" src="../../images/add-draft.png" /></p>
+<p>Fill in the details, especially the version (something like <code>1.6</code>),
+although nothing in the workflow depends on the exact form of the version number;
+you will see the release version in the provenance, though.</p>
+<p>Do not forget to select your freshly made zip files
+(you can select and upload them in one go).</p>
+<p>Last, but not least, click the button <em>Publish release</em>.</p>
+<p><img alt="releases" src="../../images/add-attach.png" /></p>
+<p>Now your data is available to others.</p>
+<h3 id="use-data">Use data<a class="headerlink" href="#use-data" title="Permanent link">&para;</a></h3>
+<p>The valence data has been made available by the ETCBC, so the following steps
+you can perform literally.</p>
+<h4 id="in-the-tf-browser">In the TF browser<a class="headerlink" href="#in-the-tf-browser" title="Permanent link">&para;</a></h4>
+<p>Start the TF browser as follows:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric bhsa --mod<span class="o">=</span>etcbc/valence/tf
+</pre></div>
+</td></tr></table>
+
+<p>You will see that the valence data is being used.
+If you do not have <code>~/github/etcbc/valence/tf</code>
+nor <code>~/text-fabric-data/etcbc/valence/tf</code>
+data will be downloaded and expanded to the
+latter location.</p>
+<details class="note"><summary>output when loading new data</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>Setting up TF kernel for bhsa etcbc/valence/tf
+Using etcbc/bhsa - c r1.5 in ~/text-fabric-data/etcbc/bhsa/tf/c
+Using etcbc/phono - c r1.2 in ~/text-fabric-data/etcbc/phono/tf/c
+Using etcbc/parallels - c r1.2 in ~/text-fabric-data/etcbc/parallels/tf/c
+  downloading etcbc/valence - c r1.1
+  from https://github.com/etcbc/valence/releases/download/1.1/tf-c.zip ...
+  unzipping ...
+  saving etcbc/valence - c r1.1
+  saved etcbc/valence - c r1.1
+Using etcbc/valence - c r1.1 (=latest) in ~/text-fabric-data/etcbc/valence/tf/c
+   |     0.29s T cfunction            from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.23s T f_correction         from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.46s T grammatical          from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.31s T lexical              from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.23s T original             from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.46s T predication          from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.23s T s_manual             from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.31s T semantic             from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.14s T sense                from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.47s T valence              from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+TF setup done.
+</pre></div>
+</td></tr></table>
+
+</details>
+<p>If you run it a second time, all data is in place.</p>
+<details class="note"><summary>output when all data is in place</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>Setting up TF kernel for bhsa etcbc/valence/tf
+Using etcbc/bhsa - c r1.5 in ~/text-fabric-data/etcbc/bhsa/tf/c
+Using etcbc/phono - c r1.2 in ~/text-fabric-data/etcbc/phono/tf/c
+Using etcbc/parallels - c r1.2 in ~/text-fabric-data/etcbc/parallels/tf/c
+Using etcbc/valence - c r1.1 in ~/text-fabric-data/etcbc/valence/tf/c
+TF setup done.
+</pre></div>
+</td></tr></table>
+
+</details>
+<p>If you have reasons to think that there is a new release of any of the data
+involved, you can pass the <code>-c</code> switch:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric bhsa --mod<span class="o">=</span>etcbc/valence/tf -c
+</pre></div>
+</td></tr></table>
+
+<details class="note"><summary>output when all checking for data updates</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>Loading data for bhsa. Please wait ...
+Setting up TF kernel for bhsa etcbc/valence/tf
+No new data release available online.
+Using bhsa - c r1.5 (=latest) in ~/text-fabric-data/etcbc/bhsa/tf/c.
+No new data release available online.
+Using phono - c r1.2 (=latest) in ~/text-fabric-data/etcbc/phono/tf/c.
+No new data release available online.
+Using parallels - c r1.2 (=latest) in ~/text-fabric-data/etcbc/parallels/tf/c.
+No new data release available online.
+Using valence - c r1.1 (=latest) in ~/text-fabric-data/etcbc/valence/tf/c.
+TF setup done.
+</pre></div>
+</td></tr></table>
+
+</details>
+<p>And if there is a new release for the valence data, it will be downloaded.</p>
+<details class="note"><summary>output when updating a data module</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>Setting up TF kernel for bhsa etcbc/valence/tf
+No new data release available online.
+Using bhsa - c r1.5 (=latest) in ~/text-fabric-data/etcbc/bhsa/tf/c.
+No new data release available online.
+Using phono - c r1.2 (=latest) in ~/text-fabric-data/etcbc/phono/tf/c.
+No new data release available online.
+Using parallels - c r1.2 (=latest) in ~/text-fabric-data/etcbc/parallels/tf/c.
+  downloading etcbc/valence - c r1.1
+  from https://github.com/etcbc/valence/releases/download/1.1/tf-c.zip ...
+  unzipping ...
+  saving etcbc/valence - c r1.1
+  saved etcbc/valence - c r1.1
+Using etcbc/valence - c r1.1 (=latest) in ~/text-fabric-data/etcbc/valence/tf/c
+   |     0.30s T cfunction            from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.23s T f_correction         from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.47s T grammatical          from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.32s T lexical              from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.23s T original             from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.47s T predication          from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.23s T s_manual             from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.32s T semantic             from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.14s T sense                from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+   |     0.49s T valence              from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
+TF setup done.
+</pre></div>
+</td></tr></table>
+
+</details>
+<p>You can now use the new features in the TF browser.</p>
+<p>Fill out this query:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3
+4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>book book=Genesis
+  chapter chapter=1
+    clause
+      phrase sense*
+</pre></div>
+</td></tr></table>
+
+<p>and expand the first result in Genesis 1:1.</p>
+<p>The display looks like this:</p>
+<p><img alt="sense" src="../../images/add-sense.png" /></p>
+<p>And if you export the data, the extra module is listed in the provenance.</p>
+<p><img alt="sense" src="../../images/add-prov.png" /></p>
+<details class="hint"><summary>Feature display</summary><p>Pretty displays will show them automatically, because
+all features used in a query are displayed in the expanded view.</p>
+<p>If you want to see a feature that is not used in the query
+you can add it as a trivial search criterion.</p>
+<p>For example, if you want to see the <code>sense</code> feature when looking for phrases,
+add it like this</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>clause
+  phrase sense*
+</pre></div>
+</td></tr></table>
+
+<p>The <code>*</code> means: always true, so it will not influence the query result set,
+only its display;</p>
+<p>In fact, the feature sense is only present on nodes of type <code>word</code>.
+But mentioning a feature anywhere in the query
+will trigger the display wherever it occurs with a non-trivial values.</p>
+<p>The extra data modules are also shown in the provenance listings
+when you export data from the browser.</p>
+</details>
+<h4 id="in-a-jupyter-notebook">In a Jupyter notebook<a class="headerlink" href="#in-a-jupyter-notebook" title="Permanent link">&para;</a></h4>
+<p>After the incantation, you see an overview of all features per module where they come from,
+linked to their documentation or repository.</p>
+<p>You can use the new features exactly as you are used to, with <code>F</code> and <code>E</code> (for edge features).</p>
+<p>They will not automatically show up in <code>pretty</code> displays,
+because <code>pretty</code> does not know that it is displaying query results,
+and hence does not know which features were used in the latest query.</p>
+<p>So you have to tell which features you want to add to the display.
+That can be done by <a href="../App/#pretty-display"><code>displaySetup()</code> and <code>displayReset()</code></a>.</p>
+<h3 id="develop-your-own-data">Develop your own data<a class="headerlink" href="#develop-your-own-data" title="Permanent link">&para;</a></h3>
+<p>When you develop your own data features, you'll probably make many changes before
+you take the trouble of publishing them in the manner described above.
+Here we describe the easiest workflow to work with your developing data with a view to share
+it much less often than you modify it.</p>
+<details class="abstract"><summary>Produce in your local GitHub folder</summary><p>You probably have a program or notebook that synthesizes a bunch of new features.
+It is a good idea to have that program in a version control system, and publish
+it on GitHub, in a repository of your choice.</p>
+<p>Set up that program in such a way, that your features end up in the same repository,
+in a folder of your choosing, but directly under a folder that corresponds with
+the version of the main data source against which you are building your data.</p>
+<details class="example"><summary>BHSA and versions</summary><p>The BHSA data source has versions <code>3</code>, <code>4</code>, <code>4b</code>, <code>2016</code>, <code>2017</code>, and <code>c</code>.
+Suppose you are building a the dairy features <code>butter</code>, <code>cheese</code> and <code>eggs</code>,
+in the <code>dairy/tf</code> sub folder of your repo. Suppose you build them for versions
+<code>2017</code> and <code>c</code>. Then deliver those features in</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>dairy/tf/2017/butter.tf
+dairy/tf/2017/cheese.tf
+dairy/tf/2017/eggs.tf
+dairy/tf/c/butter.tf
+dairy/tf/c/cheese.tf
+dairy/tf/c/eggs.tf
+</pre></div>
+</td></tr></table>
+
+</details>
+<p>Currently, your features only live on your computer, in your local github folder.
+You may or may not commit your local changes to the online GitHub.
+But you do not want to create a new release and attach your zipped feature data to it yet.</p>
+</details>
+<details class="abstract"><summary>Test your features</summary><p>When you want to load your local features, you can pass to your <code>use(appName, ...)</code> call
+the <code>mod</code> parameter:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">mod</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;{org}/{repo}/{path}&#39;</span>
+</pre></div>
+</td></tr></table>
+
+<p>But TF then tries to download it from GitHub, or look it up from your <code>~/text-fabric-data</code>.
+Both will fail, especially when you let TF manage your <code>~/text-fabric-data</code> directory.</p>
+<p>You have to pass an extra parameter: </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">mod</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;{org}/{repo}/{path}&#39;</span><span class="p">,</span> <span class="n">lgc</span><span class="o">=</span><span class="bp">True</span>
+</pre></div>
+</td></tr></table>
+
+<p>The <code>lgc</code> flag means: try <strong>l</strong>ocal <strong>g</strong>ithub <strong>c</strong>lones first.
+With this set, TF first looks in the right place inside your <code>~/github</code> directory.
+If it find your features there, it will not go online,
+and not look into <code>~/text-fabric-data</code>.</p>
+</details>
+<details class="abstract"><summary>Publish your features</summary><p>When the time comes to share your new feature data, everything is already in place
+to do that.</p>
+<p>Zip your data with the <code>text-fabric-zip</code> command as explained above.
+It will look into your local github directory, pickup the features from there,
+zip them, and put the zip files in your Downloads folder. Then you can pick
+that zip file up and attach it manually to a new release of your repository
+on the online GitHub.</p>
+<p>From then on, other users (and you too) can use that data by passing just the switch</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">mod</span><span class="o">=</span><span class="n">f</span><span class="s1">&#39;{org}/{repo}/{path}&#39;</span>
+</pre></div>
+</td></tr></table>
+
+<p>without the <code>lgc</code> parameter.
+If you do that, you get a copy of your features in your <code>~/text-fabric-data</code>
+directory.</p>
+</details>
+<details class="abstract"><summary>Continue developing your features</summary><p>Probably you'll make changes to your features after having published them.
+Then you have the cutting edge version of your features in your local github
+directory, and the published version in your text-fabric-data directory.</p>
+<p>By selectively choosing <code>lgc=True</code> or <code>lgc=False</code> you can decide whether to load
+the cutting edge versions or the published versions.</p>
+</details>
+<h5 id="more-modules">More modules<a class="headerlink" href="#more-modules" title="Permanent link">&para;</a></h5>
+<p>Now that we get the hang of it, we would like to use the <code>heads</code> feature
+that Cody Kingham prepared in <a href="https://github.com/etcbc/lingo/tree/master/heads">etcbc/lingo/heads</a>
+as well as the <code>actor</code> feature that Christian Høygaard-Jensen prepared in
+<a href="https://github.com/ch-jensen/Semantic-mapping-of-participants">ch-jensen/Semantic-mapping-of-participants</a>
+We'll include it next to the valence data, by calling the TF browser like this:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric bhsa --mod<span class="o">=</span>etcbc/valence/tf,etcbc/lingo/heads/tf,ch-jensen/Semantic-mapping-of-participants/actor/tf
+</pre></div>
+</td></tr></table>
+
+<p>Unsurprisingly: the <code>heads</code> and <code>actor</code> features and friends are downloaded and made ready for import.</p>
+<p>You can test it by means of this query</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3
+4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>book book=Leviticus
+  phrase sense*
+    phrase_atom actor=KHN
+  -heads&gt; word
+</pre></div>
+</td></tr></table>
+
+<p>Note that <code>heads</code> is an edge feature.</p>
+<p><img alt="sense" src="../../images/add-heads.png" /></p>
+<h4 id="in-a-jupyter-notebook_1">In a Jupyter notebook<a class="headerlink" href="#in-a-jupyter-notebook_1" title="Permanent link">&para;</a></h4>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.app</span> <span class="kn">import</span> <span class="n">use</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">use</span><span class="p">(</span>
+    <span class="s1">&#39;bhsa&#39;</span><span class="p">,</span>
+    <span class="n">mod</span><span class="o">=</span><span class="p">(</span>
+        <span class="s1">&#39;etcbc/valence/tf,&#39;</span>
+        <span class="s1">&#39;etcbc/lingo/heads/tf,&#39;</span>
+        <span class="s1">&#39;ch-jensen/Semantic-mapping-of-participants/actor/tf&#39;</span>
+    <span class="p">),</span>
+    <span class="n">hoist</span><span class="o">=</span><span class="nb">globals</span><span class="p">(),</span>
+<span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p><img alt="sense" src="../../images/add-incantation.png" /></p>
+<p>Now you can run the same query as before:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>results = A.search(&#39;&#39;&#39;
+book book=Leviticus
+  phrase sense*
+    phrase_atom actor=KHN
+  -heads&gt; word
+&#39;&#39;&#39;)
+</pre></div>
+</td></tr></table>
+
+<p>And let's see results in pretty display.
+We have to manually declare that we want to see the <code>sense</code> and <code>actor</code> feature.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>A.displaySetup(extraFeatures=&#39;sense actor&#39;)
+A.show(results, start=8, end=8, condensed=True, condenseType=&#39;verse&#39;)
+</pre></div>
+</td></tr></table>
+
+<p>See the
+<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb">share</a>
+tutorial.</p>
+<h5 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h5>
+<p>See whether you can find the quote in the Easter egg that is in <code>etcbc/lingo/easter/tf</code> !</p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../App/" title="Apps" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Apps
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../General/" title="General" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                General
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+        
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.5e60981f.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>

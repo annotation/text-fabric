@@ -1,0 +1,1309 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Text-Fabric is a Python3 package for Text plus Annotations. It provides a data model, a text file format, a binary format, an API, and apps for (ancient) text plus (linguistic) annotations.">
+      
+      
+        <link rel="canonical" href="https://dans-labs.github.io/text-fabric/About/News/">
+      
+      
+        <meta name="author" content="Dirk Roorda">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../images/icon/favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.6">
+    
+    
+      
+        <title>News - Text-Fabric</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.451f80e5.css">
+      
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="__github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#changes-in-this-major-version" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-header-nav__button md-logo">
+          
+            <img src="../../images/tficon-small.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            
+              <span class="md-header-nav__topic">
+                Text-Fabric
+              </span>
+              <span class="md-header-nav__topic">
+                News
+              </span>
+            
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/dans-labs/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#__github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      GitHub
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-nav__button md-logo">
+      
+        <img src="../../images/tficon-small.png" width="48" height="48">
+      
+    </a>
+    Text-Fabric
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/dans-labs/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#__github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      GitHub
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      About
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        About
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Install/" title="Install" class="md-nav__link">
+      Install
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Corpora/" title="Corpora" class="md-nav__link">
+      Corpora
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Faq/" title="Faq" class="md-nav__link">
+      Faq
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        News
+      </label>
+    
+    <a href="./" title="News" class="md-nav__link md-nav__link--active">
+      News
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#queued-for-next-release" title="Queued for next release" class="md-nav__link">
+    Queued for next release
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#711" title="7.1.1" class="md-nav__link">
+    7.1.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#71" title="7.1" class="md-nav__link">
+    7.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#703" title="7.0.3" class="md-nav__link">
+    7.0.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#702" title="7.0.2" class="md-nav__link">
+    7.0.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#701" title="7.0.1" class="md-nav__link">
+    7.0.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#700" title="7.0.0" class="md-nav__link">
+    7.0.0
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Older/" title="Older" class="md-nav__link">
+      Older
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Apps
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Apps
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Apps/Bhsa/" title="Hebrew Bible" class="md-nav__link">
+      Hebrew Bible
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Apps/Peshitta/" title="Peshitta" class="md-nav__link">
+      Peshitta
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Apps/Syrnt/" title="Syriac New Testament" class="md-nav__link">
+      Syriac New Testament
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Apps/Uruk/" title="Cuneiform Tablets" class="md-nav__link">
+      Cuneiform Tablets
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Use
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Use
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Use/Use/" title="Use" class="md-nav__link">
+      Use
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Use/Browser/" title="Browser" class="md-nav__link">
+      Browser
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Use/Search/" title="Search" class="md-nav__link">
+      Search
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Use/Use7/" title="v7-Guide" class="md-nav__link">
+      v7-Guide
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+    
+    <label class="md-nav__link" for="nav-5">
+      Api
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        Api
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/App/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Data/" title="Data" class="md-nav__link">
+      Data
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/General/" title="General" class="md-nav__link">
+      General
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Writing
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        Writing
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Writing/Hebrew.html" title="Hebrew" class="md-nav__link">
+      Hebrew
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Writing/Syriac.html" title="Syriac" class="md-nav__link">
+      Syriac
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Writing/Transcription/" title="Transcription" class="md-nav__link">
+      Transcription
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      Model
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        Model
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Model/Data-Model/" title="Data" class="md-nav__link">
+      Data
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Model/File-formats/" title="Format" class="md-nav__link">
+      Format
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Model/Optimizations/" title="Tweaks" class="md-nav__link">
+      Tweaks
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Model/Search/" title="Search" class="md-nav__link">
+      Search
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Model/Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8" type="checkbox" id="nav-8">
+    
+    <label class="md-nav__link" for="nav-8">
+      Create
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-8">
+        Create
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Create/CreateTF/" title="Make TF" class="md-nav__link">
+      Make TF
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Create/ExampleText/" title="Example data" class="md-nav__link">
+      Example data
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-9" type="checkbox" id="nav-9">
+    
+    <label class="md-nav__link" for="nav-9">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-9">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Server/Kernel/" title="Kernel" class="md-nav__link">
+      Kernel
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Server/Web/" title="Web" class="md-nav__link">
+      Web
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Server/Common/" title="Common" class="md-nav__link">
+      Common
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10" type="checkbox" id="nav-10">
+    
+    <label class="md-nav__link" for="nav-10">
+      Code
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-10">
+        Code
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/Overview/" title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/Tests/" title="Tests" class="md-nav__link">
+      Tests
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/Stats/" title="Stats (overall)" class="md-nav__link">
+      Stats (overall)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsToplevel/" title="Stats (TF-toplevel)" class="md-nav__link">
+      Stats (TF-toplevel)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsCore/" title="Stats (TF-core)" class="md-nav__link">
+      Stats (TF-core)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsSearch/" title="Stats (TF-search)" class="md-nav__link">
+      Stats (TF-search)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsConvert/" title="Stats (TF-convert)" class="md-nav__link">
+      Stats (TF-convert)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsWriting/" title="Stats (TF-writing)" class="md-nav__link">
+      Stats (TF-writing)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsServer/" title="Stats (TF-server)" class="md-nav__link">
+      Stats (TF-server)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsApplib/" title="Stats (TF-app support)" class="md-nav__link">
+      Stats (TF-app support)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsApps/" title="Stats (TF-apps)" class="md-nav__link">
+      Stats (TF-apps)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Code/StatsTest/" title="Stats (Tests)" class="md-nav__link">
+      Stats (Tests)
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#queued-for-next-release" title="Queued for next release" class="md-nav__link">
+    Queued for next release
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#711" title="7.1.1" class="md-nav__link">
+    7.1.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#71" title="7.1" class="md-nav__link">
+    7.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#703" title="7.0.3" class="md-nav__link">
+    7.0.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#702" title="7.0.2" class="md-nav__link">
+    7.0.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#701" title="7.0.1" class="md-nav__link">
+    7.0.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#700" title="7.0.0" class="md-nav__link">
+    7.0.0
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/About/News.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <p><img alt="tf" src="../../images/tficon-small.png" /></p>
+<h1 id="changes-in-this-major-version">Changes in this major version<a class="headerlink" href="#changes-in-this-major-version" title="Permanent link">&para;</a></h1>
+<details class="hint" open="open"><summary>Consult the tutorials after changes</summary><p>When we change the API, we make sure that the tutorials shows off
+all possibilities:
+<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb">bhsa</a>
+<a href="https://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/start.ipynb">peshitta</a>
+<a href="https://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/start.ipynb">syrnt</a>
+<a href="https://nbviewer.jupyter.org/github/Nino-cunei/uruk/blob/master/tutorial/start.ipynb">uruk</a></p>
+</details>
+<h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
+<details class="abstract"><summary>TF Browser</summary><ul>
+<li>The TF kernel/server/website is also fit to be served over the internet</li>
+<li>There is query result highlighting in passage view (like in SHEBANQ)</li>
+<li>Various tweaks</li>
+</ul>
+</details>
+<details class="abstract"><summary>TF app API</summary><ul>
+<li><code>prettySetup()</code> has been replaced with <code>displaySetup()</code> and <code>displayReset()</code>,
+  by which
+  you can configure a whole bunch of display parameters selectively.
+  <strong><a href="../../Api/App/#display">Display</a></strong></li>
+<li>All display functions (<code>pretty plain prettyTuple plainTuple show table</code>)
+  accept a new optional parameter <code>withPassage</code>
+  which will add a section label to the display.
+  This parameter can be regulated in <code>displaySetup</code>. 
+  <strong><a href="../../Api/App/#display">Display</a></strong></li>
+<li><code>A.search()</code> accepts a new optional parameter: <code>sort=...</code>
+  by which you can ask for
+  canonically sorted results (<code>True</code>),
+  custom sorted results (pass your onw key function),
+  or unsorted results (<code>False</code>).
+  <strong><a href="../../Api/App/#search">A.search</a></strong></li>
+<li>New functions <code>A.nodeFromSectionStr()</code> and <code>A.sectionStrFromNode()</code>
+  which give the passage string of any kind of node, if possible.
+  <strong><a href="../../Api/App/#sections">Section support for apps</a></strong></li>
+<li>New function <code>T.sectionTuple(n)</code> which gives the tuple of section nodes in which <code>n</code>
+  is embedded
+  <strong><a href="../../Api/General/#sections">T.sectionTuple</a></strong></li>
+<li><strong>Modified function <code>T.sectionFromNode(n, fillup=False)</code></strong>
+  It used to give a tuple (section1, section2, section3), also for nodes of type
+  section1 and section2 (like book and chapter). The new behaviour is the same if
+  <code>fillup=True</code>. But if <code>fillup=False</code> (default), it returns a 1-tuple for
+  section1 nodes and a 2-tuple for section2 nodes.
+  <strong><a href="../../Api/General/#sections">T.sectionFromNode</a></strong></li>
+<li>New API member <code>sortKeyTuple</code> to sort tuples of nodes in the
+  canonical ordering.
+  <strong><a href="../../Api/General/#navigating-nodes">sortKeyTuple</a></strong></li>
+<li>The function <code>T.text()</code> has a new optional parameter:
+  <code>highlights=set()</code>.
+  Now you can
+  highlight parts of plain representations in the same way
+  as you can highlight in pretty displays, but still with a few limitations.
+  <strong><a href="../../Api/General/#text-representation">T.text</a></strong></li>
+<li>The code to detect the file name and path of the script/notebook you are running in,
+  is inherently brittle. It is unwise to base decisions on that.
+  This code has been removed from TF.
+  So TF no longer knows whether you are in a notebook or not.
+  And it will no longer produce links to the online
+  notebook on GitHub or NBViewer.</li>
+<li>Various other fixes</li>
+</ul>
+</details>
+<details class="abstract"><summary>Documentation</summary><p>The entry points and paths from superficial to in-depth information have been
+adapted. Writing docs is an uphill battle.</p>
+</details>
+<details class="abstract"><summary>Under the hood</summary><p>As TF keeps growing, the need arises over and over again to reorganize the
+code, weed out duplicate pieces of near identical functionality, and abstract from
+concrete details to generic patterns.
+This release has seen a lot of that.</p>
+</details>
+<h2 id="711">7.1.1<a class="headerlink" href="#711" title="Permanent link">&para;</a></h2>
+<p>2018-11-21</p>
+<ul>
+<li>Queries in the TF browser are limited to three minutes, after that
+  a graceful error message is shown.</li>
+<li>Other small fixes.</li>
+</ul>
+<h2 id="71">7.1<a class="headerlink" href="#71" title="Permanent link">&para;</a></h2>
+<p>2018-11-19</p>
+<ul>
+<li>You can use custom sets in queries in the TF browser</li>
+<li>Reorganized the docs of the individual apps, took the common parts together</li>
+<li>New functions <code>writeSets</code> and <code>readSets</code> in <code>tf.lib</code></li>
+</ul>
+<h2 id="703">7.0.3<a class="headerlink" href="#703" title="Permanent link">&para;</a></h2>
+<p>2018-11-17</p>
+<ul>
+<li>In the BHSA, feature values on the atom-types and subphrases are now shown too, and that includes extra features
+  from foreign data sets</li>
+<li>The feature listing after the incantation in a notebook now lists the loaded modules in a meaningful order.</li>
+</ul>
+<h2 id="702">7.0.2<a class="headerlink" href="#702" title="Permanent link">&para;</a></h2>
+<p>2018-11-16</p>
+<ul>
+<li>Small fixes in <code>text-fabric-zip</code></li>
+<li>Internal reorgnization of the code</li>
+<li>Documentation updates (but internal docs are still lagging behind)</li>
+</ul>
+<h2 id="701">7.0.1<a class="headerlink" href="#701" title="Permanent link">&para;</a></h2>
+<p>2018-11-15</p>
+<ul>
+<li>Fixed messages and logic in finding data and checking for updates (thanks to feedback of Christian Høygaard-Jensen)</li>
+<li>Fixed issue #30</li>
+<li>Improved the doc links under features after the incantation.</li>
+<li>Typos in the documentation</li>
+</ul>
+<h2 id="700">7.0.0<a class="headerlink" href="#700" title="Permanent link">&para;</a></h2>
+<p>2018-11-14</p>
+<p>Just before SBL Denver, two years after SBL San Antonio, where I started writing Text-Fabric,
+here is major version 7.</p>
+<p>Here is what is new:</p>
+<ul>
+<li>you can call in "foreign data": tf feature files made by yourself and other researchers;</li>
+<li>the foreign data shows up in the text-fabric browser;</li>
+<li>all features that are used in a query, show up in the pretty displays in the TF browser,
+  also the foreign features;</li>
+<li>there is a command to prepare your own data for distribution via GitHub;</li>
+<li>the incantantion is simpler, but ut has changed in a backwards-incompatible way;</li>
+<li>after the incantation, for each feature it is shown where it comes from.</li>
+</ul>
+<p>Under the hood:</p>
+<ul>
+<li>apps (bhsa, peshitta, syrnt, uruk) have been refactored thoroughly;</li>
+<li>a lot of repeated code inside apps has been factored out</li>
+<li>it is easier to turn corpora into new text-fabric apps.</li>
+</ul>
+<p>Quick start: the new <a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb">share</a></p>
+<p>See the <a href="../../Use/Use7/">v7 guide</a> for concrete and detailed hints how to make most of this version.</p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../Faq/" title="Faq" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Faq
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../Older/" title="Older" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Older
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+        
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.5e60981f.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>
