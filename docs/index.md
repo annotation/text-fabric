@@ -250,11 +250,11 @@ to see what Text-Fabric can reveal about the data.
     [SBL 2016]({{sbl1}})
     in the Lutheran Church of San Antonio.
 
-![bhsa](../images/bhsa-app.png)
+![bhsa](images/bhsa-app.png)
 
 *Above: Querying the BHSA data*
 
 *Below: Querying the Uruk data*
 
-![uruk](../images/uruk-app.png)
+![uruk](images/uruk-app.png)
 

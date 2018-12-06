@@ -57,16 +57,19 @@ TF contains corpus-dependent [apps](../Model/Apps.md) ([stats](StatsApps.md)).
     An app knows how to download a particular corpus from its online repository.
 
 ??? abstract "Web interface"
-    An app can set up a local web interface for a particular corpus.
+    An app can set up a web interface for a particular corpus.
 
 ## Web interface
 
 TF contains a 
-[local web interface](../Server/Web.md) ([stats](StatsServer.md))
+[web interface](../Server/Web.md) ([stats](StatsServer.md))
 for interacting with your corpus without programming.
 
+This interface can be served by a local web server (part of TF),
+or you can set up an internet set served by a TF kernel and web server.
+
 ??? abstract "Working with your corpus"
-    The local web interface lets you fire queries (search templates) to TF and interact
+    The web interface lets you fire queries (search templates) to TF and interact
     with the results:
 
     * expanding rows to pretty displays;

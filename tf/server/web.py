@@ -17,7 +17,7 @@ from bottle import (
 
 from tf.core.helpers import console, shapeMessages
 from tf.parameters import NAME, VERSION, DOI_TEXT, DOI_URL, COMPOSE_URL, ZIP_OPTIONS
-from tf.applib.helpers import RESULT, findAppConfig
+from tf.applib.helpers import RESULT, findAppConfig, getLocalDir, configure
 from tf.server.kernel import makeTfConnection
 from tf.server.common import (
     getParam,
@@ -64,7 +64,9 @@ def getStuff(lgc):
 
   TF = makeTfConnection(config.HOST, config.PORT['kernel'], TIMEOUT)
   appDir = getAppDir(myDir, dataSource)
-  cfg = config.configure(lgc, version=config.VERSION)
+  cfg = configure(config, lgc, None)
+  version = cfg['version']
+  cfg['localDir'] = getLocalDir(cfg, lgc, version)
   localDir = cfg['localDir']
   return config
 

@@ -7,7 +7,7 @@
     TF browser infrastructure, such as 
 
     * [kernel.py]({{tfghb}}/{{c_kernel}})
-    * [local.py]({{tfghb}}/{{c_local}})
+    * [web.py]({{tfghb}}/{{c_web}})
     * [start.py]({{tfghb}}/{{c_start}})
 
 ## Argument parsing
@@ -17,8 +17,28 @@
     of the Python module
     [argparse]({{python}}/library/argparse.html#module-argparse). 
 
-??? abstract "getDebug()"
-    Checks whether one of the arguments with which the script is called is a `-d`.
+??? abstract "Specific args"
+    The following table shows functions that are responsible for
+    detecting a specific command line argument.
+
+    There signature is
+
+    ```python
+    def getXxx(cargs=sys.argv)
+    ```
+
+    so they will take the script command line args by default,
+    but you can also pass an other set of arguments instead.
+
+    function | argument
+    --- | ---
+    `getDebug` | `-c`
+    `getDocker` | `-docker`
+    `getLocalClones` | `-lgc`
+    `getModules` | `--mod=`...
+    `getNoweb` | `-noweb`
+    `getSets` | `--sets=`...
+
 
 ??? abstract "getParam(interactive=False)"
     Checks whether a *dataSource* parameter has been passed on the command line.
@@ -30,25 +50,17 @@
 
 ??? abstract "The problem"
     The data source specific apps are bundled inside the TF package.
-    The webserver of the TF browser needs the files in those apps,
+    The web server of the TF browser needs the files in those apps,
     not as Python modules, but just as files on disk.
-    So we have to tell the webserver where they are, and we really do not know that
+    So we have to tell the web server where they are, and we really do not know that
     in advance, because it is dependent on how the text-fabric package has been
     installed by `pip3` on your machine.
 
     Yet we have found a way through the labyrinth!
 
-??? abstract "getConfig(dataSource)"
-    Retrieves the `config.py` from the specified *dataSource* by
-    dynamically importing it as a module from one of the
-    packages in
-    [apps]({{tfght}}/{{c_apps}})
-
-    See also [App structure](../Model/Apps.md#the-structure-of-apps)
-
 ??? abstract "getAppdir(myDir, dataSource)"
     The code in
-    [local.py]({{tfghb}}/{{c_local}})
+    [web.py]({{tfghb}}/{{c_web}})
     will pass its file location as `myDir`.
     Form there this function computes the locstion of the file in which
     the webapp of the *dataSource* resides: the location of the
@@ -62,13 +74,13 @@
 ??? abstract "Request and response"
     The TF browser user interacts with the web app by clicking and typing,
     as a result of which a HTML form gets filled in.
-    This form as regularly submitted to the webserver with a request
+    This form as regularly submitted to the web server with a request
     for a new incarnation of the page: a response.
 
     The values that come with a request, must be peeled out of the form,
     and stored as logical values.
 
-    Most of the data has a known function to the webserver,
+    Most of the data has a known function to the web server,
     but there is also a list of webapp dependent options.
 
     The following functions deal with option values.
@@ -105,7 +117,7 @@
     and with a cast of checkbox values to booleans. 
 
     This function is used right after reading the form off a request.
-    Raw form data is turned into logical data for further processing by the webserver.
+    Raw form data is turned into logical data for further processing by the web server.
 
 ## HTML formatting
 

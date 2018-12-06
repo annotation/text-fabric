@@ -27,7 +27,7 @@ class TfApp(object):
 
     (book, chapter, verse) = T.sectionFromNode(n, fillup=True)
     passageText = app.sectionStrFromNode(n)
-    href = '#' if noUrl else PLAIN_LINK.format(
+    href = '#' if _noUrl else PLAIN_LINK.format(
         org=app.org,
         repo=app.repo,
         version=version,
@@ -38,9 +38,9 @@ class TfApp(object):
       title = 'show this passage in the Peshitta source'
     else:
       title = passageText
-    if noUrl:
+    if _noUrl:
       title = None
-    target = '' if noUrl else None
+    target = '' if _noUrl else None
     result = outLink(
         text,
         href,
@@ -97,7 +97,7 @@ class TfApp(object):
     if isLinked and nType not in VERSE:
       rep = app.webLink(n, text=rep, _asString=True)
 
-    tClass = display.formatClass[d.fmt].lower() if isText else 'trb'
+    tClass = display.formatClass[d.fmt] if isText else 'trb'
     rep = f'<span class="{tClass}">{rep}</span>'
     result = f'{rep}{nodeRep}'
 

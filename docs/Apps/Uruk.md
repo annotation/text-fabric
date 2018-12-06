@@ -12,6 +12,8 @@ Configuration [config.py]({{tfghb}}/{{c_uruk_config}})
 
 Source code [app.py]({{tfghb}}/{{c_uruk_app}})
 
+Display styles [display.css]({{tfghb}}/{{c_uruk_css}})
+
 This app also contains interfaces to deal with
 [ATF]({{oracc}}/editinginatf/primer/inlinetutorial/index.html)
 transcriptions and [CDLI]({{cdli}}) photos and lineart.

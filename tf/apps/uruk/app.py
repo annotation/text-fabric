@@ -347,10 +347,10 @@ class TfApp(Atf):
       refNode = n if F.otype.v(n) == 'tablet' else L.u(n, otype='tablet')[0]
       pNum = F.catalogId.v(refNode)
 
-    title = None if noUrl else ('to CDLI main page for this tablet')
+    title = None if _noUrl else ('to CDLI main page for this tablet')
     linkText = pNum if text is None else text
-    url = '#' if noUrl else URL_FORMAT['tablet']['main'].format(pNum)
-    target = '' if noUrl else None
+    url = '#' if _noUrl else URL_FORMAT['tablet']['main'].format(pNum)
+    target = '' if _noUrl else None
 
     result = outLink(
         linkText,

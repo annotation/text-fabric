@@ -14,13 +14,13 @@ Have a look at the following examples:
 * the book of John in the Greek New Testament from XML-TEI to TF:
   [pilot]({{pthugh}}/pilot);
 * the Syriac New Testament:
-  [linksyr]({{etcbcgh}}/linksyr/tree/master/programs/tfgen);
+  [SyrNT]({{etcbcgh}}/syrnt/blob/master/programs/tfFromSyrnt.py);
 * the Greek New Testament:
-  [tfFromSblgnt]({{tfdghb}}/programs/tfFromSblgnt.ipynb);
+  [tfFromSblgnt]({{tfdnb}}/programs/tfFromSblgnt.ipynb);
 * Sanskrit writings:
-  [tfFromSanskrit]({{tfdghb}}/programs/tfFromSanskrit.ipynb);
-* Sanskrit writings:
-  [tfFromSumerianTEI]({{tfdghb}}/programs/tfFromSumerianTEI.ipynb).
+  [tfFromSanskrit]({{tfdnb}}/programs/tfFromSanskrit.ipynb);
+* Sumerian writings:
+  [tfFromSumerianTEI]({{tfdnb}}/programs/tfFromSumerianTEI.ipynb).
 
 ## Analysis
 
@@ -278,9 +278,9 @@ Using TF itself it is not that hard to create a new feature `pos`, that maps
 each word node to the part of speech of that word.
 
 See for example how Cody Kingham
-[adds]({{etcbcgh}}/lingo/blob/master/heads/Heads2TF.ipynb)
+[adds]({{etcbcnb}}/lingo/blob/master/heads/Heads2TF.ipynb)
 the notion of linguistic head to the BHSA
-datasource of the Hebrew Bible.
+corpus of the Hebrew Bible.
 
 ### Step 9: add the new feature
 

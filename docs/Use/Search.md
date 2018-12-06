@@ -8,13 +8,11 @@
     A search template expresses a pattern of nodes and edges with additional conditions
     also known as *quantifiers*.
 
-    You can query a TF datasource in the TF browser, if your main corpus
-    has been wrapped in a Text-Fabric [app](../Api/App.md).
+    You can query a TF corpus in the TF browser, if your main corpus
+    has been wrapped in a Text-Fabric [app](../About/Corpora.md).
 
-    You can also run queries on arbitrary TF datasources programmatically, e.g. in a Jupyter
+    You can also run queries on arbitrary TF corpora programmatically, e.g. in a Jupyter
     notebook, by using the [`S` API](../Api/General.md#search).
-
-## Search templates ##
 
 ??? info "Search primer"
     A search template consists of a bunch of lines,
@@ -38,8 +36,8 @@
     chapter in the book.
 
     The conditions you specify on book, chapter, word are all conditions in terms of
-    [node features](#node-features). You can use all features in the corpus for
-    this.
+    [node features](#feature-specifications).
+    You can use all features in the corpus for this.
 
     The order of the two words is immaterial. If there are cases where the verb
     follows the noun, they will be included in the results.
@@ -91,7 +89,8 @@
             :> word pos=noun gender=feminine number=singular
     ```
 
-    There are more kinds of relational operators.
+    There are more kinds of
+    [relational operators](#relational-operators).
 
     If the noun must be the first word in the sentence, you can specify it as
 
@@ -136,7 +135,7 @@
             :=
     ```
 
-    You can also use the [edge features](#edge-features) in the corpus as
+    You can also use the [edge features](#relational-operators) in the corpus as
     relational operators as well.
 
     Suppose we have an edge feature `sub` between clauses, such that if main clause
@@ -218,11 +217,11 @@
     ```
 
     To get a more specific introduction to search, consult the search tutorials for
-    [Hebrew]({{etcbcgh}}/bhsa/blob/master/tutorial/search.ipynb),
-    [Peshitta]({{etcbcgh}}/peshitta/blob/master/tutorial/search.ipynb),
-    [SyrNT]({{etcbcgh}}/syrnt/blob/master/tutorial/search.ipynb),
+    [BHSA]({{etcbcnb}}/bhsa/blob/master/tutorial/search.ipynb),
+    [Peshitta]({{etcbcnb}}/peshitta/blob/master/tutorial/search.ipynb),
+    [SyrNT]({{etcbcnb}}/syrnt/blob/master/tutorial/search.ipynb),
     and
-    [Cuneiform]({{ninogh}}/uruk/blob/master/tutorial/search.ipynb).
+    [Uruk]({{ninonb}}/uruk/blob/master/tutorial/search.ipynb).
 
     Finally an example with quantifiers. We want all clauses where Pred-phrases
     consist of verbs only:
@@ -238,12 +237,14 @@
       /-/
     ```
 
-??? info "Search template reference"
+## Search template reference
+
+??? info "Template lines"
     We have these kinds of lines in a template:
 
     *   *comment* lines
 
-        *   if a line starts with `%` it is a comment line`;
+        *   if a line starts with `%` it is a comment line;
         *   you cannot comment out parts of lines, only whole lines;
         *   if a line is empty or has whitespace only, it is a comment line;
         *   comment lines are allowed everywhere;
@@ -306,7 +307,9 @@
             preceding atom line or other feature line. This way you can divide lengthy
             feature constraints over multiple lines.
 
-        See [*feature specifications*](#feature-specifications) below for the
+        See
+        [*feature specifications*](#feature-specifications)
+        below for the
         full variety of feature constraints on nodes and edges.
 
     *   *relation* lines: **name operator name**
@@ -318,7 +321,9 @@
         *   There must be white-space around the operator.
         *   Operators that come from edge features may be enriched with values.
 
-        See [*relational operators*](#relational-operators) below for the
+        See
+        [*relational operators*](#relational-operators)
+        below for the
         whole spectrum of relational constraints on nodes.
 
 
@@ -334,7 +339,7 @@
 
         See [*quantifiers*](#quantifiers) below for all the syntax and semantics.
 
-## Feature specifications ##
+### Feature specifications
 
 ??? info "About"
     The **features** above is a specification of what features with
@@ -392,7 +397,7 @@
         *   You can do regular expressions only on string-valued features, not on
             number-valued features.
 
-## Relational operators ##
+### Relational operators
 
 ??? info "Node comparison"
 
@@ -467,7 +472,7 @@
 
         ![op](../images/Spatial/Spatial.019.png)
 
-## Quantifiers ##
+### Quantifiers
 
 ??? info "What is a quantifier?"
     Quantifiers are powerful expressions in templates.

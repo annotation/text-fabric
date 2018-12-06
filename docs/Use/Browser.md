@@ -3,7 +3,7 @@
 ??? abstract "TF in the browser"
     The Text-Fabric package contains a command to
     work with your corpus in your browser.
-    It sets up a local webserver, which interacts with your web browser.
+    It sets up a local web server, which interacts with your web browser.
     Then you can view and search the corpus without programming and without
     internet connection.
 
@@ -80,7 +80,8 @@
 
     `filePath` must specify a file on your local system
     (you may use `~` for your home directory).
-    That file must have been written by calling [`tf.lib.writeSets`](../Api/General.md#sets).
+    That file must have been written by calling
+    [`tf.lib.writeSets`](../Api/General.md#sets).
     If so,it contains a dictionary of named node sets.
     These names can be used in search templates,
     and the TF browser will use this dictionary to resolve those names.
@@ -89,7 +90,8 @@
 ## Jobs
 
 ??? hint "Saving your session"
-    Your session (aka *job*) will be saved in your browser, under the name *app*`-default`,
+    Your session (aka *job*) will be saved in your browser,
+    under the name *app*`-default`,
     or another name if you rename, duplicate, import or create new sessions.
 
 ??? hint "Multiple windows"
@@ -106,7 +108,7 @@
 ## Shut down
 
 ??? abstract "About"
-    You can close the TF kernel and webserver by pressing Ctrl-C in the terminal
+    You can close the TF kernel and web server by pressing Ctrl-C in the terminal
     or command prompt where you have started `text-fabric`.
 
 ??? abstract "Clean up"
@@ -132,7 +134,7 @@
     your view.
     A new page will open, which you can save as a PDF.
     
-    There is also a button to download all your results.
+    There is also a button to download all your results as data files.
 
 ??? abstract "Exported materials"
     ??? info "job.json"
@@ -176,7 +178,8 @@
       # do something with row 
     ```
 
-    Conversely, if you want to write a CSV with Hebrew in it, to be opened in Excel, take care to:
+    Conversely, if you want to write a CSV with Hebrew in it,
+    to be opened in Excel, take care to:
 
     * give the file name extension `.tsv` (not `.csv`)
     * make the file **tab** separated (do not use the comma or semicolon!)

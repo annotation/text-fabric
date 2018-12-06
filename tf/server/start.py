@@ -31,7 +31,7 @@ EFFECT
 
 If a datasource is given and the -k flag is not passed,
 a TF kernel for that data source is started.
-When the TF kernel is ready, a webserver is started
+When the TF kernel is ready, a web server is started
 serving a website that exposes the data through
 a query interface.
 
@@ -79,23 +79,23 @@ github.
 MISCELLANEOUS
 
 -d  Debug mode. For developers of Text-Fabric itself.
-    The webserver reloads when its code changes.
-    The webserver is a bottle instance, started with reload=True.
+    The web server reloads when its code changes.
+    The web server is a bottle instance, started with reload=True.
 
 -noweb Do not start the default browser
 
--docker Assume you are on docker. The local webserver is passed 0.0.0.0 as host.
+-docker Assume you are on docker. The local web server is passed 0.0.0.0 as host.
 
 
 CLEAN UP
 
-If you press Ctrl-C the webserver is stopped, and after that the TF kernel
+If you press Ctrl-C the web server is stopped, and after that the TF kernel
 as well.
 Normally, you do not have to do any clean up.
 But if the termination is done in an irregular way, you may end up with
 stray processes.
 
--k  Kill mode. If a data source is given, the TF kernel and webserver for that
+-k  Kill mode. If a data source is given, the TF kernel and web server for that
     data source are killed.
     Without a data source, all local webinterface related processes are killed.
 '''
@@ -286,7 +286,7 @@ def main(cargs=sys.argv):
           console('')
           if pWeb:
             pWeb.terminate()
-            console('TF webserver has stopped')
+            console('TF web server has stopped')
           if pKernel:
             pKernel.terminate()
             for line in pKernel.stdout:

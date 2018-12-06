@@ -1379,9 +1379,9 @@ Here is the whole interface.
         that can respond to queries from other processes.
         We call such a process a **TF kernel**.
 
-        Webservers can use such a daemonized TF to build efficient controllers.
+        Web servers can use such a daemonized TF to build efficient controllers.
 
-        A TF kernel and webserver are included in the Text-Fabric code base.
+        A TF kernel and web server are included in the Text-Fabric code base.
         See [kernel](../Server/Kernel.md) and [web](../Server/Web.md).
 
     ??? note "Generator versus tuple"

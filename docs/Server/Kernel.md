@@ -5,7 +5,7 @@
 ??? abstract "TF kernel"
     Text-Fabric can be used as a service.
     The full API of Text-Fabric needs a lot of memory, which makes it unusably for
-    rapid successions of loading and unloading, like when used in a webserver context.
+    rapid successions of loading and unloading, like when used in a web server context.
 
     However, you can start TF as a service process, after which many clients can connect to it,
     all looking at the same (read-only) data. We call this a **TF kernel**.
@@ -48,7 +48,7 @@
 
     ??? example
         See the
-        [local webserver]({{tfghb}}/{{c_local}})
+        [web server]({{tfghb}}/{{c_web}})
         of the text-fabric browser.
 
 ## Kernel API
@@ -56,7 +56,7 @@
 ??? abstract "About"
     The API of the TF kernel is created
     by the function `makeTfKernel` in the 
-    [data]({{tfghb}}/{{c_kernel}})
+    [kernel]({{tfghb}}/{{c_kernel}})
     module of the server subpackage.
 
     It returns a class `TfKernel` with a number

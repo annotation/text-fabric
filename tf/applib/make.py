@@ -17,10 +17,12 @@ from ..parameters import (
 )
 from ..fabric import Fabric
 from ..lib import readSets
-from ..core.helpers import itemize, camel, console, splitModRef, setDir, expandDir
-from .helpers import findAppConfig, findAppClass
+from ..core.helpers import itemize, console, splitModRef, setDir, expandDir
+from .helpers import findAppConfig, findAppClass, getLocalDir, configure, hasData
 from .api import (
     search,
+    displaySetup,
+    displayReset,
     table,
     plainTuple,
     plain,
@@ -37,7 +39,8 @@ from .api import (
 )
 from .display import Display
 
-# START AN APP
+
+# INCANTATION
 
 
 def use(appName, *args, **kwargs):
@@ -75,9 +78,9 @@ def setupApi(
     setattr(app, key, value)
 
   config = findAppConfig(appName)
-  if version is None:
-    version = config.VERSION
-  cfg = config.configure(lgc=lgc, version=version)
+  cfg = configure(config, lgc, version)
+  version = cfg['version']
+  cfg['localDir'] = getLocalDir(cfg, lgc, version)
   for (key, value) in cfg.items():
     setattr(app, key, value)
 
@@ -138,34 +141,6 @@ The app "{appName}" will not work!
       )
 
 
-# COLLECT CONFIG SETTINGS IN A DICT
-
-
-def configureNames(names, lgc, version):
-  '''
-  Collect the all-uppercase globals from a config file
-  and put them in a dict in camel case.
-  '''
-  org = names['ORG']
-  repo = names['REPO']
-  relative = names['RELATIVE']
-  base = _hasData(lgc, org, repo, version, relative)
-
-  if not base:
-    base = EXPRESS_BASE
-
-  localDir = os.path.expanduser(f'{base}/{org}/{repo}/_temp')
-
-  result = {camel(key): value for (key, value) in names.items() if key == key.upper()}
-
-  result.update(dict(
-      localDir=localDir,
-      version=version,
-  ))
-
-  return result
-
-
 # GENERATE LINK TO A PASSAGE IN THE CORPUS IN AN EXTERNAL WEBSITE
 
 
@@ -204,7 +179,7 @@ def getData(org, repo, relative, version, lgc, check, withPaths=False, keep=Fals
   expressInfoFile = f'{expressTarget}/{EXPRESS_INFO}'
   ghBase = os.path.expanduser(GH_BASE)
 
-  dataBase = _hasData(lgc, org, repo, version, relative)
+  dataBase = hasData(lgc, org, repo, version, relative)
   if dataBase == ghBase:
     if not silent:
       console(f'''
@@ -861,26 +836,3 @@ def _featuresPerModule(app):
       html += f'{post} '
     html += '</p>'
   return html
-
-
-def _hasData(lgc, org, repo, version, relative):
-  versionRep = f'/{version}' if version else ''
-  if lgc:
-    ghBase = os.path.expanduser(GH_BASE)
-    ghTarget = f'{ghBase}/{org}/{repo}/{relative}{versionRep}'
-    if os.path.exists(ghTarget):
-      return ghBase
-
-  expressBase = os.path.expanduser(EXPRESS_BASE)
-  expressTarget = f'{expressBase}/{org}/{repo}/{relative}{versionRep}'
-  if os.path.exists(expressTarget):
-    return expressBase
-  return False
-
-
-def displaySetup(app, **options):
-  app.display.setup(**options)
-
-
-def displayReset(app, *options):
-  app.display.reset(*options)

@@ -1,0 +1,138 @@
+.features {
+    font-family: monospace;
+    font-size: medium;
+    font-weight: bold;
+    color: #0a6611;
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 0.1em;
+    margin: 0.1em;
+    direction: ltr;
+}
+.features div,.features span {
+    padding: 0;
+    margin: -0.1rem 0;
+}
+.features .f {
+    font-family: sans-serif;
+    font-size: x-small;
+    font-weight: normal;
+    color: #5555bb;
+}
+.features .xft {
+  color: #000000;
+  background-color: #eeeeee;
+  font-size: medium;
+  margin: 0.1em 0em;
+}
+.features .xft .f {
+  color: #000000;
+  background-color: #eeeeee;
+  font-style: italic;
+  font-size: small;
+  font-weight: normal;
+}
+.verse {
+    display: flex;
+    flex-flow: row wrap;
+    direction: rtl;
+}
+.vl {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-end;
+    align-items: flex-end;
+    direction: ltr;
+    width: 100%;
+}
+.outeritem {
+    display: flex;
+    flex-flow: row wrap;
+    direction: rtl;
+}
+.word {
+    padding: 0.1em;
+    margin: 0.1em;
+    border-radius: 0.1em;
+    border: 1px solid #cccccc;
+    display: flex;
+    flex-flow: column nowrap;
+    direction: rtl;
+    background-color: #ffffff;
+}
+.lextp {
+    padding: 0.1em;
+    margin: 0.1em;
+    border-radius: 0.1em;
+    border: 2px solid #888888;
+    width: fit-content;
+    display: flex;
+    flex-flow: column nowrap;
+    direction: rtl;
+    background-color: #ffffff;
+}
+.occs {
+    font-size: x-small;
+}
+.tr,.tr a:visited,.tr a:link {
+    font-family: sans-serif;
+    font-size: large;
+    color: #000044;
+    direction: ltr;
+    text-decoration: none;
+}
+.trb,.trb a:visited,.trb a:link {
+    font-family: sans-serif;
+    font-size: normal;
+    direction: ltr;
+    text-decoration: none;
+}
+.sy,.sy a:visited,.sy a:link {
+    font-family: "Estrangelo Edessa", sans-serif;
+    font-size: large;
+    color: #000044;
+    direction: rtl;
+    text-decoration: none;
+}
+.syb,.syb a:visited,.syb a:link {
+    font-family: "Estrangelo Edessa", sans-serif;
+    font-size: large;
+    direction: rtl;
+    text-decoration: none;
+}
+.vn {
+  font-size: small !important;
+  padding-right: 1em;
+}
+.sp,.sp a:visited,.sp a:link {
+    font-family: monospace;
+    font-size: medium;
+    color: #0000bb;
+    text-decoration: none;
+}
+.lexeme {
+    font-family: monospace;
+    font-size: medium;
+    color: #0000bb;
+}
+.vs {
+    font-family: monospace;
+    font-size: medium;
+    font-weight: bold;
+    color: #0000bb;
+}
+.vt {
+    font-family: monospace;
+    font-size: medium;
+    font-weight: bold;
+    color: #0000bb;
+}
+.nd {
+    font-family: monospace;
+    font-size: x-small;
+    color: #999999;
+}
+.hl {
+    background-color: #ffee66;
+}
+

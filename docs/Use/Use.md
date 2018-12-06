@@ -12,18 +12,22 @@ See [Corpora](../About/Corpora.md).
 
 ## Text-Fabric browser
 
-Corpora for which apps have been written can be explored without programming in a
-browser interface.
+App-supported corpora can be explored in a browser interface.
+No programming needed, but you will have to familiarize yourself with search templates.
 
 See [Browser](Browser.md)
 
 ## Search templates
 
 Text-Fabric has a powerful yet intuitive search engine that works with templates.
+
 Read [Search](Search.md) to learn everything about it.
 
 ## Text-Fabric API
 
 Explore your corpus by means of programming.
-Start with [Apps](../Api/App.md) for corpora that have been added to Text-Fabric as *apps*
-or dive into the [generic TF machinery](../Api/General.md).
+
+Start with the [App API](../Api/App.md) for corpora
+that have been added to Text-Fabric as *apps*.
+
+And then dive into the generic [TF API](../Api/General.md).
