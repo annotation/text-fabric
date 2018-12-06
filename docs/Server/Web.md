@@ -1,9 +1,9 @@
-# Local Web interface
+# Web interface
 
 ## About
 
-??? abstract "Local web interface"
-    TF contains a local web interface
+??? abstract "Web interface"
+    TF contains a web interface
     in which you can enter a search template and view the results.
 
     This is realized by a web app based on 
@@ -14,12 +14,12 @@
     [templates]({{tfght}}/{{c_views}}).
 
     See the code in
-    [local]({{tfghb}}/{{c_local}}).
+    [web]({{tfghb}}/{{c_web}}).
 
 ## Start up
 
 ??? abstract "Start up"
-    TF kernel, webserver and browser page are started
+    TF kernel, web server and browser page are started
     up by means of a script called `text-fabric`, which will be installed in an executable
     directory by the `pip` installer.
     
@@ -44,24 +44,29 @@
         When it has loaded the data, it sends out a message that loading is done,
         which is picked up by the script.
 
-    ??? abstract "TF webserver"
-        A short while after receiving the "data loading done" message, the TF webserver is started.
+    ??? abstract "TF web server"
+        A short while after receiving the "data loading done" message,
+        the TF web server is started.
         
         ??? hint "Debug mode"
-            If you have passed `-d` to the `text-fabric` script, the **bottle** will be started
-            in debug and reload mode.
-            That means that if you modify `web.py` or a module it imports, the webserver will
-            reload itself automatically.
+            If you have passed `-d` to the `text-fabric` script,
+            the **bottle** will be started in debug and reload mode.
+            That means that if you modify `web.py` or a module it imports,
+            the web server will reload itself automatically.
             When you refresh the browser you see the changes.
-            If you have changed templates, the css, or the javascript, you should do a "refresh from origin".
+            If you have changed templates, the css, or the javascript,
+            you should do a "refresh from origin".
 
     ??? abstract "Load web page"
-        After a short while, the default web browser will be started with a url and port at which the
-        webserver will listen. You see your browser being started up and the TF page being loaded.
+        After a short while, the default web browser will be started
+        with a url and port at which the
+        web server will listen. You see your browser being started up
+        and the TF page being loaded.
 
     ??? abstract "Waiting"
-        The script now waits till the webserver is finished.
-        You finish it by pressing Ctrl-C, and if you have used the `-d` flag, you have to press it twice.
+        The script now waits till the web server is finished.
+        You finish it by pressing Ctrl-C, and if you have used the `-d` flag,
+        you have to press it twice.
 
     ??? abstract "Terminate the TF kernel"
         At this point, the `text-fabric` script will terminate the TF kernel.
@@ -69,7 +74,8 @@
     ??? abstract "Clean up"
         Now all processes that have started up have been killed.
         
-        If something went wrong in this sequence, chances are that a process keeps running.
+        If something went wrong in this sequence,
+        chances are that a process keeps running.
         It will be terminated next time you call the `text-fabric`.
         
         ??? hint "You can kill too"
@@ -122,16 +128,17 @@
     of
     [flexbox]({{cssflex}}).
 
-    There are three sources of CSS formatting:
+    There are several sources of CSS formatting:
 
     * the CSS loaded from the app dependent extraApi, used
       for pretty displays;
-    * [main.css]({{tfghb}}/{{c_static}}/main.css): the formatting of the 
+    * [index.css]({{tfghb}}/{{c_static}}/index.css): the formatting of the 
       *index* web page with which the user interacts;
-    * inside the
-      [export]({{tfghb}}/{{c_views}}/export.tpl)
-      template, for formatting the exported page.
-
+    * [export.css]({{tfghb}}/{{c_views}}/export.css)
+      the formatting of the export page;
+    * [base.css]({{tfghb}}/{{c_views}}/base.css)
+      shared formatting between the index and export pages.
+    
 ## Javascript
 
 ??? abstract "Javascript"
@@ -148,5 +155,3 @@
 
     ??? caution "On Windows?"
         Windows users should install Chrome of Firefox.
-
-    Safari is fine.

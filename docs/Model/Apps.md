@@ -24,20 +24,25 @@
     For each *app*, you find there a subfolder *app* with:
 
     ??? abstract "static"
-        A folder with fonts and logos, to be used by webservers such as the the
+        A folder with styles, fonts and logos, to be used by web servers such as the the
         [text-fabric browser](../Server/Web.md).
+
+        In particular, `display.css` contains the styles used for pretty displays.
+        These styles will be programmatically combined with other styles,
+        to deliver them to the TF browser on the one hand, and to Jupyter notebooks
+        on the other hand.
 
     ??? abstract "config.py"
         Settings to set up a browsing experience and to feed the specific AP
         for this app.
 
-        The TF kernel, local webserver and browser need settings:
+        The TF kernel, web server and browser need settings:
 
         setting | example | description
         --- | --- | ---
-        PROTOCOL | `http://` | protocol of local website
-        HOST | `localhost` | server address of local website
-        PORT | `18981` | port through wich the TF kernel and the webserver communicate
+        PROTOCOL | `http://` | protocol of website
+        HOST | `localhost` | server address of the website
+        PORT | `18981` | port through wich the TF kernel and the web server communicate
         OPTIONS | tuple | names of extra options for searching and displaying query results
 
         The app itself is driven by the following settings
@@ -84,28 +89,9 @@
 
         attribute | kind | description
         --- | --- | ---
-        webLink | method | given a node, produces a link to an online description of the corresponding object (to [shebanq]({{shebanq}}) or [cdli]({{cdli}}) 
+        webLink | method | given a node, produces a link to an online description of the corresponding object (to [shebanq]({{shebanq}}) or [cdli]({{cdli}})) 
         \_plain | method | given a node, produce a plain representation of the corresponding object: not the full structure, but something that identifies it
         \_pretty | method | given a node, produce elements of a pretty display of the corresponding object: the full structure
-
-        ??? note "division of labour"
-            Not all of the `plain` and `pretty` methods needs to be defined by the app.
-            In fact, lots of their functionality is defined generically in the app
-            [api]({{tfghb}}/{{c_api}}).
-
-            The generic `pretty()` starts with determining the slot boundaries and condense container
-            of the node.
-
-            Then it calls the method `_pretty`, which must be defined in the app.
-            This will recursively descend to child nodes in order to pretty display them, and
-            combine the sub displays into a big display of all parts.
-            This is the pure, app-dependent code for displaying nodes.
-
-            In turn, part of `_pretty` is taken care of by the
-            generic `prettyPre` in 
-            [api]({{tfghb}}/{{c_api}}).
-            `prettyPre` is responsible for determining the slot boundaries of the node.
-            It also determines the highlight color from the arguments passed to `pretty()`.
 
 ## Implementation
 
@@ -116,26 +102,6 @@
     and
     [api]({{tfghb}}/{{c_appapi}})
     modules of TF.
-
-??? abstract "Generic/specific"
-    Sometimes there is an intricate mix of functionality that is shared by all apps
-    and that is specific to some app.
-    Here is our logistics of functionality.
-
-    There are a number of methods that are offered as a generic function and
-    just added as a method to the *app*, e.g. `pretty()`:
-
-    ```python
-    app.pretty = types.MethodType(pretty, app)
-    ```
-
-    which adds the function `pretty` as an instance method to the app.
-
-    So although we define `pretty(app, ...)` as a generic function,
-    through its argument `app` we can call app specific functionality.
-
-    We follow this pattern for quite a bit of functions.
-    They all have `app` as first argument.
 
 ??? abstract "Two contexts"
     Most functions with the `app` argument are meant to perform their duty
@@ -215,6 +181,61 @@
     Given a section node, produces a link that copies the section
     to the section pad (only in the TF browser)
 
+### Display
+
+??? abstract "Generic/specific"
+    Displaying nodes is an intricate mix of functionality that is shared by all apps
+    and that is specific to some app.
+    Here is our logistics of pretty displays.
+
+    Like a number of other methods `pretty()` is defined as a generic function and
+    added as a method to each *app*:
+
+    ```python
+    app.pretty = types.MethodType(pretty, app)
+    ```
+
+    So although we define `pretty(app, ...)` as a generic function,
+    through its argument `app` we can call app specific functionality.
+
+    We follow this pattern for quite a bit of functions.
+    They all have `app` as first argument.
+
+    The case of `pretty()` is the most intricate one, since there is a *lot* of generic
+    functionality and a lot of corpus specific functionality, as is evident from examples of the 
+    BHSA corpus and one from the Uruk corpus below.
+
+    Here is the flow of information for `pretty()`:
+
+    1. definition as a generic function
+       [`pretty()`]({{tfghb}}/{{c_appapi}});
+    2. this function fetches the relevant display parameters and gathers information
+       about the node to display, e.g. its boundary slots;
+    3. armed with this information, it calls the app-dependent `_pretty()` function,
+       e.g. from
+       [uruk]({{tfghb}}/{{c_uruk_app}})
+       or
+       [bhsa]({{tfghb}}/{{c_bhsa_app}});
+    4. `_pretty()` is a function that calls itself recursively for all other nodes that
+       are involved in the display;
+    5. for each node that `_pretty()` is going to display, it first computes a few standard
+       things for that node by means of a generic function   
+       [`prettyPre()`]({{tfghb}}/{{c_appapi}}); in particular, it will be computed whether
+       the display of the node in question fits in the display of the node where it all began 
+       with, or whether parts of the display should be clipped; also, a header label for the
+       current node will be comnposed, including relevant hyperlinks and optional extra
+       information reuqired by the display options;
+    6. finally, it is the turn of the app-dependent `_pretty()` to combine the header label
+       with the displays it gets after recursively calling itself for subordinate nodes.
+
+    ![bhsa](../images/bhsa-example.png)
+
+    Above: BHSA pretty display
+
+    Below: Uruk pretty display
+
+    ![uruk](../images/uruk-example.png)
+
 ### TF search performers
 
 ??? abstract "search(app, query, silent=False, sets=None, shallow=False)"
@@ -232,6 +253,7 @@
 
 ??? abstract "runSearch(app, query, cache)"
     A wrapper around the generic search interface of TF.
+
     Before running the TF search, the *query* will be looked up in the *cache*.
     If present, its cached results/error messages will be returned.
     If not, the query will be run, results/error messages collected, put in the *cache*,
@@ -291,8 +313,6 @@
     The functions `getPassageHighlights()`, `getHlNodes()`, `nodesFromTuples()`
     are helpers to apply highlighting to query results in a passage.
 
-### HTML and Markdown
-
 ??? abstract "getBoundary(api, node)"
     Utility function to ask from the TF API the first slot and the last slot contained in a node.
 
@@ -301,6 +321,8 @@
 
 ??? abstract "header(app)"
     Get the app-specific links to data and documentation and wrap it into HTML for display in the TF browser.
+
+### HTML and Markdown
 
 ??? abstract "\_outLink(text, href, title=None, ...)"
     Produce a formatted HTML link.

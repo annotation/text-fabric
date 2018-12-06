@@ -306,7 +306,7 @@ class TfApp(object):
       if nType == slotType:
         lx = L.u(n, otype='lex')[0]
         lexLink = (app.webLink(lx, text=htmlEsc(T.text([n], fmt=d.fmt)), _asString=True))
-        tClass = 'h' if d.fmt.lower() is None or '-orig-' in d.fmt else 'tr'
+        tClass = 'h' if d.fmt is None or '-orig-' in d.fmt else 'tr'
         heading = f'<div class="{tClass}">{lexLink}</div>'
         featurePart = getFeatures(
             app,

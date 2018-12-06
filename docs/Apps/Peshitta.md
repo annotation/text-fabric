@@ -11,3 +11,5 @@ Name: `peshitta`
 Configuration [config.py]({{tfghb}}/{{c_peshitta_config}})
 
 Source code [app.py]({{tfghb}}/{{c_peshitta_app}})
+
+Display styles [display.css]({{tfghb}}/{{c_peshitta_css}})

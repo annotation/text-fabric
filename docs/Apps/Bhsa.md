@@ -11,3 +11,5 @@ Name: `bhsa`
 Configuration [config.py]({{tfghb}}/{{c_bhsa_config}})
 
 Source code [app.py]({{tfghb}}/{{c_bhsa_app}})
+
+Display styles [display.css]({{tfghb}}/{{c_bhsa_css}})

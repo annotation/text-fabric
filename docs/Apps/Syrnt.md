@@ -11,3 +11,5 @@ Name: `syrnt`
 Configuration [config.py]({{tfghb}}/{{c_syrnt_config}})
 
 Source code [app.py]({{tfghb}}/{{c_syrnt_app}})
+
+Display styles [display.css]({{tfghb}}/{{c_syrnt_css}})

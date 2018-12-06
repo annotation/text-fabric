@@ -361,7 +361,7 @@ So that it can be used packaged apps.
 
 2018-07-17
 
-Extra option when starting up the text-fabric web interface: `-docker` to let the webserver
+Extra option when starting up the text-fabric web interface: `-docker` to let the web server
 listen at `0.0.0.0` instead of `localhost`.
 
 So that it can be used in a Docker container.
@@ -395,7 +395,7 @@ Better error reporting of quantified queries.
 
 * Better in catching out-of-memory errors.
 * Prevents creation of corrupt compiled binary TF data.
-* Prevents starting the webserver if the TF kernel fails to load.
+* Prevents starting the web server if the TF kernel fails to load.
 
 ## 5.5.7
 
@@ -503,10 +503,10 @@ Small fix: command line args for text-fabric.
     or
 
     ```
-    text-fabric -k datasource
+    text-fabric -k corpus
     ```
 
-    to kill the processes for a specific datasource only.
+    to kill the processes for a specific corpus only.
 
 ??? abstract "Manual node entry"
     You can enter nodes manually in the TF browser.
@@ -560,7 +560,7 @@ Addressed start-up problems.
 
 2018-06-18
 
-Built in webserver and client for local query running.
+Built in web server and client for local query running.
 It is implemented for Bhsa and Uruk.
 
 ## 4.4.2,3
@@ -569,7 +569,7 @@ It is implemented for Bhsa and Uruk.
 
 New distribution method with setuptools.
 Text-Fabric has now dependencies on modules rpyc and bottle,
-because it contains a built-in TF kernel and webserver.
+because it contains a built-in TF kernel and web server.
 
 This website is still barely functional, though.
 

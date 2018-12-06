@@ -23,15 +23,19 @@ extra:
   c_apps: tf/apps
   c_bhsa_app: tf/apps/bhsa/app.py
   c_bhsa_config: tf/apps/bhsa/config.py
+  c_bhsa_css: tf/apps/bhsa/static/display.css
   c_bhsa_logo: tf/apps/bhsa/static/logo.png
   c_peshitta_app: tf/apps/peshitta/app.py
   c_peshitta_config: tf/apps/peshitta/config.py
+  c_peshitta_css: tf/apps/peshitta/static/display.css
   c_peshitta_logo: tf/apps/peshitta/static/logo.png
   c_syrnt_app: tf/apps/syrnt/app.py
   c_syrnt_config: tf/apps/syrnt/config.py
+  c_syrnt_css: tf/apps/syrnt/static/display.css
   c_syrnt_logo: tf/apps/syrnt/static/logo.png
   c_uruk_app: tf/apps/uruk/app.py
   c_uruk_config: tf/apps/uruk/config.py
+  c_uruk_css: tf/apps/uruk/static/display.css
   c_uruk_logo: tf/apps/uruk/static/logo.png
   c_convert: tf/convert
   c_mql: tf/convert/mql.py
@@ -57,7 +61,7 @@ extra:
   c_static: tf/server/static
   c_common: tf/server/common.py
   c_kernel: tf/server/kernel.py
-  c_local: tf/server/local.py
+  c_web: tf/server/web.py
   c_start: tf/server/start.py
   c_writing: tf/writing
   c_transcription: tf/writing/transcription.py
@@ -86,7 +90,7 @@ extra:
   etcbcnb: https://nbviewer.jupyter.org/github/etcbc
   faqhint1: https://www.computerhope.com/issues/ch000549.htm
   fontlib: https://fontlibrary.org
-  ghapi: https://api.github.com/repos
+  ghapi: https://developer.github.com/v3/
   git: https://git-scm.com/downloads 
   jensengh: https://github.com/ch-jensen/Semantic-mapping-of-participants
   jquery: https://api.jquery.com
@@ -110,6 +114,7 @@ extra:
   sbl1: https://global-learning.org/mod/forum/discuss.php?d=22
   shebanq: https://shebanq.ancient-data.org
   tfdgh: https://github.com/Dans-labs/text-fabric-data
+  tfdnb: https://nbviewer.jupyter.org/github/Dans-labs/text-fabric-data/blob/master
   tfdghb: https://github.com/Dans-labs/text-fabric-data/blob/master 
   tfdght: https://github.com/Dans-labs/text-fabric-data/tree/master 
   tfdoi: https://doi.org/10.5281/zenodo.592193

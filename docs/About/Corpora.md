@@ -12,10 +12,10 @@ with them programmatically.
 
 Here is the list of current apps:
 
-* [bhsa](../Apps/Bhsa.md) (Hebrew Bible)
-* [peshitta](../Apps/Peshitta.md) (Syriac Old Testament)"
-* [syrnt](../Apps/Syrnt.md) (Syriac New Testament)"
-* [uruk](../Apps/Uruk.md) (proto cuneiform tablets from Uruk)"
+* [bhsa](../Apps/Bhsa.md) - Hebrew Bible
+* [peshitta](../Apps/Peshitta.md) - Syriac Old Testament
+* [syrnt](../Apps/Syrnt.md) - Syriac New Testament
+* [uruk](../Apps/Uruk.md) - proto cuneiform tablets from Uruk
 
 ## Get data
 

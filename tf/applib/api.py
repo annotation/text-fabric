@@ -22,358 +22,68 @@ CSS_FONT_API = f'''
 '''
 
 
-def search(app, query, silent=False, sets=None, shallow=False, sort=True):
+# API FUNCTIONS
+
+# SECTION API ENHANCER
+
+def nodeFromSectionStr(app, sectionStr, lang='en'):
   api = app.api
-  info = api.info
-  S = api.S
-  sortKeyTuple = api.sortKeyTuple
-
-  results = S.search(query, sets=sets, shallow=shallow)
-  if not shallow:
-    if not sort:
-      results = list(results)
-    elif sort is True:
-      results = sorted(results, key=sortKeyTuple)
-    else:
-      try:
-        sortedResults = sorted(results, key=sort)
-      except Exception as e:
-        console(
-            (
-                'WARNING: your sort key function caused an error\n'
-                f'{str(e)}'
-                '\nYou get unsorted results'
-            ),
-            error=True
-        )
-        sortedResults = list(results)
-      results = sortedResults
-
-  nResults = len(results)
-  plural = '' if nResults == 1 else 's'
-  if not silent:
-    info(f'{nResults} result{plural}')
-  return results
-
-
-def runSearch(app, query, cache):
-  api = app.api
-  S = api.S
-  plainSearch = S.search
-
-  cacheKey = (query, False)
-  if cacheKey in cache:
-    return cache[cacheKey]
-  options = dict(msgCache=[])
-  if app.sets is not None:
-    options['sets'] = app.sets
-  (queryResults, messages, exe) = plainSearch(query, here=False, **options)
-  features = ()
-  if exe:
-    qnodes = getattr(exe, 'qnodes', [])
-    features = tuple((i, tuple(sorted(q[1].keys()))) for (i, q) in enumerate(qnodes))
-  queryResults = tuple(sorted(queryResults))
-  cache[cacheKey] = (queryResults, messages, features)
-  return (queryResults, messages, features)
-
-
-def runSearchCondensed(app, query, cache, condenseType):
-  api = app.api
-  cacheKey = (query, True, condenseType)
-  if cacheKey in cache:
-    return cache[cacheKey]
-  (queryResults, messages, features) = runSearch(app, query, cache)
-  queryResults = _condense(api, queryResults, condenseType, multiple=True)
-  cache[cacheKey] = (queryResults, messages, features)
-  return (queryResults, messages, features)
-
-
-def getPassageHighlights(app, node, query, cache, cacheSlots):
-  if not query:
-    return (set(), set(), set(), set())
-  cacheSlotsKey = (query, node)
-  if cacheSlotsKey in cacheSlots:
-    return cacheSlots[cacheSlotsKey]
-
-  hlNodes = getHlNodes(app, node, query, cache)
-  cacheSlots[cacheSlotsKey] = hlNodes
-  return hlNodes
-
-
-def getHlNodes(app, node, query, cache):
-  (queryResults, messages, features) = runSearch(app, query, cache)
-  if messages:
-    return (set(), set(), set(), set())
-
-  api = app.api
-  E = api.E
-  F = api.F
-  maxSlot = F.otype.maxSlot
-  eoslots = E.oslots.data
-
-  nodeSlots = eoslots[node - maxSlot - 1]
-  first = nodeSlots[0]
-  last = nodeSlots[-1]
-
-  (sec2s, nodes, plainSlots, prettySlots) = nodesFromTuples(app, first, last, queryResults)
-  return (sec2s, nodes, plainSlots, prettySlots)
-
-
-def nodesFromTuples(app, first, last, results):
-  api = app.api
-  E = api.E
-  F = api.F
   T = api.T
-  L = api.L
-  maxSlot = F.otype.maxSlot
-  slotType = F.otype.slotType
-  eoslots = E.oslots.data
+  sep1 = app.sectionSep1
+  sep2 = app.sectionSep2
+  msg = f'Not a valid passage: "{sectionStr}"'
+  msgi = '{} "{}" is not a number'
+  section = sectionStr.split(sep1)
+  if len(section) > 2:
+    return msg
+  elif len(section) == 2:
+    section2 = section[1].split(sep2)
+    if len(section2) > 2:
+      return msg
+    section = [section[0]] + section2
+  dataTypes = T.sectionFeatureTypes
   sectionTypes = T.sectionTypes
-  sec2Type = sectionTypes[2]
+  sectionTyped = []
+  msgs = []
+  for (i, sectionPart) in enumerate(section):
+    if dataTypes[i] == 'int':
+      try:
+        part = int(sectionPart)
+      except ValueError:
+        msgs.append(msgi.format(sectionTypes[i], sectionPart))
+        part = None
+    else:
+      part = sectionPart
+    sectionTyped.append(part)
+  if msgs:
+    return '\n'.join(msgs)
 
-  sec2s = set()
-  nodes = set()
-  plainSlots = set()
-  prettySlots = set()
-
-  for tup in results:
-    for n in tup:
-      nType = F.otype.v(n)
-
-      if nType == slotType:
-        if first <= n <= last:
-          plainSlots.add(n)
-          prettySlots.add(n)
-      elif nType == sec2Type:
-        sec2s.add(n)
-      elif nType != sectionTypes[0] and nType != sectionTypes[1]:
-        mySlots = eoslots[n - maxSlot - 1]
-        myFirst = mySlots[0]
-        myLast = mySlots[-1]
-        if first <= myFirst <= last or first <= myLast <= last:
-          nodes.add(n)
-          for s in mySlots:
-            if first <= s <= last:
-              plainSlots.add(s)
-  for s in plainSlots:
-    sec2s.add(L.u(s, otype=sec2Type)[0])
-
-  return (sec2s, nodes, plainSlots, prettySlots)
+  sectionNode = T.nodeFromSection(sectionTyped, lang=lang)
+  if sectionNode is None:
+    return msg
+  return sectionNode
 
 
-def composeP(
-    app,
-    features,
-    items,
-    opened,
-    sec2,
-    highlights,
-    getx=None,
-    **options,
-):
-  display = app.display
-
+def sectionStrFromNode(app, n, lang='en', lastSlot=False, fillup=False):
   api = app.api
   T = api.T
+  seps = ('', app.sectionSep1, app.sectionSep2)
 
-  if features:
-    api.ensureLoaded(features)
-    features = features.split()
-  else:
-    features = []
-
-  (hlSec2s, hlNodes, hlPlainSlots, hlPrettySlots) = (
-      highlights if highlights else
-      (set(), set(), set(), set())
+  section = T.sectionFromNode(n, lang=lang, lastSlot=lastSlot, fillup=fillup)
+  return ''.join(
+      '' if part is None else f'{seps[i]}{part}'
+      for (i, part) in enumerate(section)
   )
 
-  if getx is not None:
-    tup = None
-    for s2 in items:
-      i = T.sectionFromNode(s2)[2]
-      if i == getx:
-        tup = (s2, )
-        break
-    return prettyTuple(
-        app,
-        tup,
-        getx,
-        condensed=False,
-        extraFeatures=features,
-        highlights=hlNodes | hlPrettySlots,
-        **display.consume(options, 'condensed', 'extraFeatures', 'highlights')
-    ) if tup is not None else ''
 
-  passageHtml = []
+# DISPLAY API FUNCTIONS
 
-  for item in items:
-    passageHtml.append(
-        plainTextS2(
-            app,
-            item,
-            opened,
-            sec2,
-            highlights,
-            extraFeatures=features,
-            **display.consume(options, 'extraFeatures')
-        )
-    )
-
-  return '\n'.join(passageHtml)
+def displaySetup(app, **options):
+  app.display.setup(**options)
 
 
-def composeT(
-    app,
-    features,
-    tuples,
-    opened,
-    getx=None,
-    **options,
-):
-  display = app.display
-
-  api = app.api
-  F = api.F
-
-  if features:
-    api.ensureLoaded(features)
-    features = features.split()
-  else:
-    features = []
-
-  if getx is not None:
-    tup = None
-    for (i, tp) in tuples:
-      if i == getx:
-        tup = tp
-        break
-    return prettyTuple(
-        app,
-        tup,
-        getx,
-        condensed=False,
-        extraFeatures=features,
-        **display.consume(options, 'condensed', 'extraFeatures')
-    ) if tup is not None else ''
-
-  tuplesHtml = []
-  doHeader = False
-  for (i, tup) in tuples:
-    if i is None:
-      if tup == 'results':
-        doHeader = True
-      else:
-        tuplesHtml.append(
-            f'''
-<div class="dtheadrow">
-  <span>n</span><span>{tup}</span>
-</div>
-'''
-        )
-      continue
-
-    if doHeader:
-      doHeader = False
-      tuplesHtml.append(
-          f'''
-<div class="dtheadrow">
-  <span>n</span><span>{"</span><span>".join(F.otype.v(n) for n in tup)}</span>
-</div>
-'''
-      )
-    tuplesHtml.append(
-        plainTuple(
-            app,
-            tup,
-            i,
-            condensed=False,
-            extraFeatures=features,
-            opened=i in opened,
-            _asString=True,
-            **display.consume(options, 'condensed', 'extraFeatures')
-        )
-    )
-
-  return '\n'.join(tuplesHtml)
-
-
-def compose(
-    app,
-    tuples,
-    features,
-    position,
-    opened,
-    getx=None,
-    **options,
-):
-  display = app.display
-  d = display.get(options)
-
-  api = app.api
-  F = api.F
-
-  item = d.condenseType if d.condensed else RESULT
-
-  if features:
-    api.ensureLoaded(features)
-    features = features.split()
-  else:
-    features = []
-
-  if getx is not None:
-    tup = None
-    for (i, tp) in tuples:
-      if i == getx:
-        tup = tp
-        break
-    return prettyTuple(
-        app,
-        tup,
-        getx,
-        extraFeatures=features,
-        **display.consume(options, 'extraFeatures')
-    ) if tup is not None else ''
-
-  tuplesHtml = []
-  doHeader = False
-  for (i, tup) in tuples:
-    if i is None:
-      if tup == 'results':
-        doHeader = True
-      else:
-        tuplesHtml.append(
-            f'''
-<div class="dtheadrow">
-  <span>n</span><span>{tup}</span>
-</div>
-'''
-        )
-      continue
-
-    if doHeader:
-      doHeader = False
-      tuplesHtml.append(
-          f'''
-<div class="dtheadrow">
-  <span>n</span><span>{"</span><span>".join(F.otype.v(n) for n in tup)}</span>
-</div>
-'''
-      )
-    tuplesHtml.append(
-        plainTuple(
-            app,
-            tup,
-            i,
-            item=item,
-            position=position,
-            opened=i in opened,
-            _asString=True,
-            extraFeatures=features,
-            **display.consume(options, 'extraFeatures')
-        )
-    )
-
-  return '\n'.join(tuplesHtml)
+def displayReset(app, *options):
+  app.display.reset(*options)
 
 
 def table(
@@ -444,7 +154,7 @@ def plainTuple(
   T = api.T
 
   if d.withPassage:
-    passageNode = getRefMember(app, tup, d.linked, d.condensed)
+    passageNode = _getRefMember(app, tup, d.linked, d.condensed)
     passageRef = (
         '' if passageNode is None else
         app._sectionLink(passageNode)
@@ -564,63 +274,6 @@ def plain(
       _asString,
       **options,
   )
-
-
-def plainTextS2(
-    app,
-    sNode,
-    opened,
-    sec2,
-    highlights,
-    **options,
-):
-  display = app.display
-  d = display.get(options)
-
-  api = app.api
-  T = api.T
-  seqNumber = T.sectionFromNode(sNode)[2]
-  itemType = T.sectionTypes[2]
-  isOpened = seqNumber in opened
-  tClass = '' if d.fmt is None else display.formatClass[d.fmt].lower()
-
-  (hlSec2s, hlNodes, hlPlainSlots, hlPrettySlots) = (
-      highlights if highlights else
-      (set(), set(), set(), set())
-  )
-
-  hlDot = '<span class="hldot"></span>' if sNode in hlSec2s else ''
-
-  prettyRep = prettyTuple(
-      app,
-      (sNode, ),
-      seqNumber,
-      condensed=False,
-      condenseType=itemType,
-      highlights=hlPrettySlots | hlNodes,
-      **display.consume(options, 'condensed', 'condenseType'),
-  ) if isOpened else ''
-  current = ' focus' if str(seqNumber) == str(sec2) else ''
-  attOpen = ' open ' if isOpened else ''
-
-  textRep = T.text(sNode, fmt=d.fmt, descend=True, highlights=hlPlainSlots)
-  html = (
-      f'''
-<details
-  class="pretty{current}"
-  seq="{seqNumber}"
-  {attOpen}
->
-  <summary class="{tClass}">
-    {app._sectionLink(sNode, text=seqNumber)}
-    {hlDot}
-    {textRep}
-  </summary>
-  <div class="pretty">{prettyRep}</div>
-</details>
-'''
-  )
-  return html
 
 
 def show(
@@ -774,6 +427,398 @@ def pretty(
   dh(htmlStr)
 
 
+# SEARCH API ENHANCER
+
+def search(app, query, silent=False, sets=None, shallow=False, sort=True):
+  api = app.api
+  info = api.info
+  S = api.S
+  sortKeyTuple = api.sortKeyTuple
+
+  results = S.search(query, sets=sets, shallow=shallow)
+  if not shallow:
+    if not sort:
+      results = list(results)
+    elif sort is True:
+      results = sorted(results, key=sortKeyTuple)
+    else:
+      try:
+        sortedResults = sorted(results, key=sort)
+      except Exception as e:
+        console(
+            (
+                'WARNING: your sort key function caused an error\n'
+                f'{str(e)}'
+                '\nYou get unsorted results'
+            ),
+            error=True
+        )
+        sortedResults = list(results)
+      results = sortedResults
+
+  nResults = len(results)
+  plural = '' if nResults == 1 else 's'
+  if not silent:
+    info(f'{nResults} result{plural}')
+  return results
+
+
+# FUNCTIONS FOR KERNEL AND WEB SERVER
+
+# SEARCH WRAPPER FOR KERNEL
+
+def runSearch(app, query, cache):
+  api = app.api
+  S = api.S
+  plainSearch = S.search
+
+  cacheKey = (query, False)
+  if cacheKey in cache:
+    return cache[cacheKey]
+  options = dict(msgCache=[])
+  if app.sets is not None:
+    options['sets'] = app.sets
+  (queryResults, messages, exe) = plainSearch(query, here=False, **options)
+  features = ()
+  if exe:
+    qnodes = getattr(exe, 'qnodes', [])
+    features = tuple((i, tuple(sorted(q[1].keys()))) for (i, q) in enumerate(qnodes))
+  queryResults = tuple(sorted(queryResults))
+  cache[cacheKey] = (queryResults, messages, features)
+  return (queryResults, messages, features)
+
+
+def runSearchCondensed(app, query, cache, condenseType):
+  api = app.api
+  cacheKey = (query, True, condenseType)
+  if cacheKey in cache:
+    return cache[cacheKey]
+  (queryResults, messages, features) = runSearch(app, query, cache)
+  queryResults = _condense(api, queryResults, condenseType, multiple=True)
+  cache[cacheKey] = (queryResults, messages, features)
+  return (queryResults, messages, features)
+
+
+# QUERY HIGHLIGHTS IN PASSAGES FOR KERNEL
+
+def getPassageHighlights(app, node, query, cache, cacheSlots):
+  if not query:
+    return (set(), set(), set(), set())
+  cacheSlotsKey = (query, node)
+  if cacheSlotsKey in cacheSlots:
+    return cacheSlots[cacheSlotsKey]
+
+  hlNodes = _getHlNodes(app, node, query, cache)
+  cacheSlots[cacheSlotsKey] = hlNodes
+  return hlNodes
+
+
+# TABLE CONSTRUCTION FOR KERNEL
+
+# query results
+
+def compose(
+    app,
+    tuples,
+    features,
+    position,
+    opened,
+    getx=None,
+    **options,
+):
+  display = app.display
+  d = display.get(options)
+
+  api = app.api
+  F = api.F
+
+  item = d.condenseType if d.condensed else RESULT
+
+  if features:
+    api.ensureLoaded(features)
+    features = features.split()
+  else:
+    features = []
+
+  if getx is not None:
+    tup = None
+    for (i, tp) in tuples:
+      if i == getx:
+        tup = tp
+        break
+    return prettyTuple(
+        app,
+        tup,
+        getx,
+        extraFeatures=features,
+        **display.consume(options, 'extraFeatures')
+    ) if tup is not None else ''
+
+  tuplesHtml = []
+  doHeader = False
+  for (i, tup) in tuples:
+    if i is None:
+      if tup == 'results':
+        doHeader = True
+      else:
+        tuplesHtml.append(
+            f'''
+<div class="dtheadrow">
+  <span>n</span><span>{tup}</span>
+</div>
+'''
+        )
+      continue
+
+    if doHeader:
+      doHeader = False
+      tuplesHtml.append(
+          f'''
+<div class="dtheadrow">
+  <span>n</span><span>{"</span><span>".join(F.otype.v(n) for n in tup)}</span>
+</div>
+'''
+      )
+    tuplesHtml.append(
+        plainTuple(
+            app,
+            tup,
+            i,
+            item=item,
+            position=position,
+            opened=i in opened,
+            _asString=True,
+            extraFeatures=features,
+            **display.consume(options, 'extraFeatures')
+        )
+    )
+
+  return '\n'.join(tuplesHtml)
+
+
+# tuples and sections
+
+def composeT(
+    app,
+    features,
+    tuples,
+    opened,
+    getx=None,
+    **options,
+):
+  display = app.display
+
+  api = app.api
+  F = api.F
+
+  if features:
+    api.ensureLoaded(features)
+    features = features.split()
+  else:
+    features = []
+
+  if getx is not None:
+    tup = None
+    for (i, tp) in tuples:
+      if i == getx:
+        tup = tp
+        break
+    return prettyTuple(
+        app,
+        tup,
+        getx,
+        condensed=False,
+        extraFeatures=features,
+        **display.consume(options, 'condensed', 'extraFeatures')
+    ) if tup is not None else ''
+
+  tuplesHtml = []
+  doHeader = False
+  for (i, tup) in tuples:
+    if i is None:
+      if tup == 'results':
+        doHeader = True
+      else:
+        tuplesHtml.append(
+            f'''
+<div class="dtheadrow">
+  <span>n</span><span>{tup}</span>
+</div>
+'''
+        )
+      continue
+
+    if doHeader:
+      doHeader = False
+      tuplesHtml.append(
+          f'''
+<div class="dtheadrow">
+  <span>n</span><span>{"</span><span>".join(F.otype.v(n) for n in tup)}</span>
+</div>
+'''
+      )
+    tuplesHtml.append(
+        plainTuple(
+            app,
+            tup,
+            i,
+            condensed=False,
+            extraFeatures=features,
+            opened=i in opened,
+            _asString=True,
+            **display.consume(options, 'condensed', 'extraFeatures')
+        )
+    )
+
+  return '\n'.join(tuplesHtml)
+
+
+# passages
+
+def composeP(
+    app,
+    features,
+    items,
+    opened,
+    sec2,
+    highlights,
+    getx=None,
+    **options,
+):
+  display = app.display
+
+  api = app.api
+  T = api.T
+
+  if features:
+    api.ensureLoaded(features)
+    features = features.split()
+  else:
+    features = []
+
+  (hlSec2s, hlNodes, hlPlainSlots, hlPrettySlots) = (
+      highlights if highlights else
+      (set(), set(), set(), set())
+  )
+
+  if getx is not None:
+    tup = None
+    for s2 in items:
+      i = T.sectionFromNode(s2)[2]
+      if i == getx:
+        tup = (s2, )
+        break
+    return prettyTuple(
+        app,
+        tup,
+        getx,
+        condensed=False,
+        extraFeatures=features,
+        highlights=hlNodes | hlPrettySlots,
+        **display.consume(options, 'condensed', 'extraFeatures', 'highlights')
+    ) if tup is not None else ''
+
+  passageHtml = []
+
+  for item in items:
+    passageHtml.append(
+        _plainTextS2(
+            app,
+            item,
+            opened,
+            sec2,
+            highlights,
+            extraFeatures=features,
+            **display.consume(options, 'extraFeatures')
+        )
+    )
+
+  return '\n'.join(passageHtml)
+
+
+# COMPOSE TABLES FOR CSV EXPORT FOR KERNEL
+
+def getResultsX(api, results, features, noDescendTypes, fmt=None):
+  F = api.F
+  Fs = api.Fs
+  T = api.T
+  sectionTypes = set(T.sectionTypes)
+  if len(results) == 0:
+    return ()
+  firstResult = results[0]
+  nTuple = len(firstResult)
+  refColumns = [i for (i, n) in enumerate(firstResult) if F.otype.v(n) not in sectionTypes]
+  refColumn = refColumns[0] if refColumns else nTuple - 1
+  header = ['R', 'S1', 'S2', 'S3']
+  emptyA = []
+
+  featureDict = dict(features)
+
+  for j in range(nTuple):
+    i = j + 1
+    n = firstResult[j]
+    nType = F.otype.v(n)
+    header.extend([f'NODE{i}', f'TYPE{i}'])
+    if nType not in sectionTypes:
+      header.append(f'TEXT{i}')
+    header.extend(f'{feature}{i}' for feature in featureDict.get(j, emptyA))
+  rows = [tuple(header)]
+  for (rm, r) in enumerate(results):
+    rn = rm + 1
+    row = [rn]
+    refN = r[refColumn]
+    sParts = T.sectionFromNode(refN)
+    nParts = len(sParts)
+    section = sParts + ((None, ) * (3 - nParts))
+    row.extend(section)
+    for j in range(nTuple):
+      n = r[j]
+      nType = F.otype.v(n)
+      row.extend((n, nType))
+      if nType not in sectionTypes:
+        text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
+        row.append(text)
+      row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
+    rows.append(tuple(row))
+  return tuple(rows)
+
+
+def header(app):
+  return (
+      f'''
+<div class="hdlinks">
+  {app.dataLink}
+  {app.charLink}
+  {app.featureLink}
+  {app.tfsLink}
+  {app.tutLink}
+</div>
+''',
+      f'<img class="hdlogo" src="/data/static/logo.png"/>',
+      f'<img class="hdlogo" src="/server/static/icon.png"/>',
+  )
+
+
+# HELPERS
+
+# DISPLAY HELPERS
+
+def htmlEsc(val):
+  return '' if val is None else str(val).replace('&', '&amp;').replace('<', '&lt;')
+
+
+def mdEsc(val):
+  return '' if val is None else str(val).replace('|', '&#124;')
+
+
+def dm(md):
+  display(Markdown(md))
+
+
+def dh(html):
+  display(HTML(html))
+
+
 def prettyPre(
     app,
     n,
@@ -903,68 +948,11 @@ def getFeatures(
   return featurePart
 
 
-def getResultsX(api, results, features, noDescendTypes, fmt=None):
-  F = api.F
-  Fs = api.Fs
-  T = api.T
-  sectionTypes = set(T.sectionTypes)
-  if len(results) == 0:
-    return ()
-  firstResult = results[0]
-  nTuple = len(firstResult)
-  refColumns = [i for (i, n) in enumerate(firstResult) if F.otype.v(n) not in sectionTypes]
-  refColumn = refColumns[0] if refColumns else nTuple - 1
-  header = ['R', 'S1', 'S2', 'S3']
-  emptyA = []
+# LOCAL HELPERS
 
-  featureDict = dict(features)
+# DISPLAY LOCAL
 
-  for j in range(nTuple):
-    i = j + 1
-    n = firstResult[j]
-    nType = F.otype.v(n)
-    header.extend([f'NODE{i}', f'TYPE{i}'])
-    if nType not in sectionTypes:
-      header.append(f'TEXT{i}')
-    header.extend(f'{feature}{i}' for feature in featureDict.get(j, emptyA))
-  rows = [tuple(header)]
-  for (rm, r) in enumerate(results):
-    rn = rm + 1
-    row = [rn]
-    refN = r[refColumn]
-    sParts = T.sectionFromNode(refN)
-    nParts = len(sParts)
-    section = sParts + ((None, ) * (3 - nParts))
-    row.extend(section)
-    for j in range(nTuple):
-      n = r[j]
-      nType = F.otype.v(n)
-      row.extend((n, nType))
-      if nType not in sectionTypes:
-        text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
-        row.append(text)
-      row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
-    rows.append(tuple(row))
-  return tuple(rows)
-
-
-def header(app):
-  return (
-      f'''
-<div class="hdlinks">
-  {app.dataLink}
-  {app.charLink}
-  {app.featureLink}
-  {app.tfsLink}
-  {app.tutLink}
-</div>
-''',
-      f'<img class="hdlogo" src="/data/static/logo.png"/>',
-      f'<img class="hdlogo" src="/server/static/icon.png"/>',
-  )
-
-
-def getRefMember(app, tup, linked, condensed):
+def _getRefMember(app, tup, linked, condensed):
   api = app.api
   T = api.T
   sectionTypes = T.sectionTypes
@@ -977,72 +965,6 @@ def getRefMember(app, tup, linked, condensed):
       tup[min((linked, ln - 1))] if linked else
       tup[0]
   )
-
-
-def nodeFromSectionStr(app, sectionStr, lang='en'):
-  api = app.api
-  T = api.T
-  sep1 = app.sectionSep1
-  sep2 = app.sectionSep2
-  msg = f'Not a valid passage: "{sectionStr}"'
-  msgi = '{} "{}" is not a number'
-  section = sectionStr.split(sep1)
-  if len(section) > 2:
-    return msg
-  elif len(section) == 2:
-    section2 = section[1].split(sep2)
-    if len(section2) > 2:
-      return msg
-    section = [section[0]] + section2
-  dataTypes = T.sectionFeatureTypes
-  sectionTypes = T.sectionTypes
-  sectionTyped = []
-  msgs = []
-  for (i, sectionPart) in enumerate(section):
-    if dataTypes[i] == 'int':
-      try:
-        part = int(sectionPart)
-      except ValueError:
-        msgs.append(msgi.format(sectionTypes[i], sectionPart))
-        part = None
-    else:
-      part = sectionPart
-    sectionTyped.append(part)
-  if msgs:
-    return '\n'.join(msgs)
-
-  sectionNode = T.nodeFromSection(sectionTyped, lang=lang)
-  if sectionNode is None:
-    return msg
-  return sectionNode
-
-
-def sectionStrFromNode(app, n, lang='en', lastSlot=False, fillup=False):
-  api = app.api
-  T = api.T
-  seps = ('', app.sectionSep1, app.sectionSep2)
-
-  section = T.sectionFromNode(n, lang=lang, lastSlot=lastSlot, fillup=fillup)
-  return ''.join(
-      '' if part is None else f'{seps[i]}{part}'
-      for (i, part) in enumerate(section)
-  )
-
-
-def htmlEsc(val):
-  return '' if val is None else str(val).replace('&', '&amp;').replace('<', '&lt;')
-
-
-def mdEsc(val):
-  return '' if val is None else str(val).replace('|', '&#124;')
-
-
-def dm(md):
-  display(Markdown(md))
-
-
-def dh(html):
-  display(HTML(html))
 
 
 def _tupleEnum(tuples, start, end, limit, item):
@@ -1073,6 +995,65 @@ def _tupleEnum(tuples, start, end, limit, item):
           f'**{rest} more {item}s skipped** because we show a maximum of'
           f' {limit} {item}s at a time'
       )
+
+
+# SEARCH HELPERS LOCAL
+
+def _plainTextS2(
+    app,
+    sNode,
+    opened,
+    sec2,
+    highlights,
+    **options,
+):
+  display = app.display
+  d = display.get(options)
+
+  api = app.api
+  T = api.T
+  seqNumber = T.sectionFromNode(sNode)[2]
+  itemType = T.sectionTypes[2]
+  isOpened = seqNumber in opened
+  tClass = '' if d.fmt is None else display.formatClass[d.fmt].lower()
+
+  (hlSec2s, hlNodes, hlPlainSlots, hlPrettySlots) = (
+      highlights if highlights else
+      (set(), set(), set(), set())
+  )
+
+  hlDot = '<span class="hldot"></span>' if sNode in hlSec2s else ''
+
+  prettyRep = prettyTuple(
+      app,
+      (sNode, ),
+      seqNumber,
+      condensed=False,
+      condenseType=itemType,
+      highlights=hlPrettySlots | hlNodes,
+      **display.consume(options, 'condensed', 'condenseType'),
+  ) if isOpened else ''
+  current = ' focus' if str(seqNumber) == str(sec2) else ''
+  attOpen = ' open ' if isOpened else ''
+
+  textRep = T.text(sNode, fmt=d.fmt, descend=True, highlights=hlPlainSlots)
+  html = (
+      f'''
+<details
+  class="pretty{current}"
+  seq="{seqNumber}"
+  {attOpen}
+>
+  <summary class="{tClass}">
+    {app._sectionLink(sNode, text=seqNumber)}
+    {hlDot}
+    {textRep}
+  </summary>
+  <div class="pretty">{prettyRep}</div>
+</details>
+'''
+  )
+  return html
 
 
 def _condense(api, tuples, condenseType, multiple=False):
@@ -1187,3 +1168,64 @@ def _getHighlights(api, tuples, highlights, colorMap, condenseType, multiple=Fal
         if thisHighlight is not None:
           newHighlights[n] = thisHighlight
   return newHighlights
+
+
+def _getHlNodes(app, node, query, cache):
+  (queryResults, messages, features) = runSearch(app, query, cache)
+  if messages:
+    return (set(), set(), set(), set())
+
+  api = app.api
+  E = api.E
+  F = api.F
+  maxSlot = F.otype.maxSlot
+  eoslots = E.oslots.data
+
+  nodeSlots = eoslots[node - maxSlot - 1]
+  first = nodeSlots[0]
+  last = nodeSlots[-1]
+
+  (sec2s, nodes, plainSlots, prettySlots) = _nodesFromTuples(app, first, last, queryResults)
+  return (sec2s, nodes, plainSlots, prettySlots)
+
+
+def _nodesFromTuples(app, first, last, results):
+  api = app.api
+  E = api.E
+  F = api.F
+  T = api.T
+  L = api.L
+  maxSlot = F.otype.maxSlot
+  slotType = F.otype.slotType
+  eoslots = E.oslots.data
+  sectionTypes = T.sectionTypes
+  sec2Type = sectionTypes[2]
+
+  sec2s = set()
+  nodes = set()
+  plainSlots = set()
+  prettySlots = set()
+
+  for tup in results:
+    for n in tup:
+      nType = F.otype.v(n)
+
+      if nType == slotType:
+        if first <= n <= last:
+          plainSlots.add(n)
+          prettySlots.add(n)
+      elif nType == sec2Type:
+        sec2s.add(n)
+      elif nType != sectionTypes[0] and nType != sectionTypes[1]:
+        mySlots = eoslots[n - maxSlot - 1]
+        myFirst = mySlots[0]
+        myLast = mySlots[-1]
+        if first <= myFirst <= last or first <= myLast <= last:
+          nodes.add(n)
+          for s in mySlots:
+            if first <= s <= last:
+              plainSlots.add(s)
+  for s in plainSlots:
+    sec2s.add(L.u(s, otype=sec2Type)[0])
+
+  return (sec2s, nodes, plainSlots, prettySlots)

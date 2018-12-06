@@ -20,7 +20,7 @@ from tf.app import use
 A = use('uruk', hoist=globals())
 ```
 
-Read more in [Apps](../Api/App.md#incantation)
+Read more in the [App API](../Api/App.md#incantation)
 
 ## Zipping your new data
 
