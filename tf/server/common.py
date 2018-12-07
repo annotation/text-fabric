@@ -9,6 +9,8 @@ appPat = '^([a-zA-Z0-9_-]+)$'
 appRe = re.compile(appPat)
 
 
+# COMMAND LINE ARGS
+
 def getDebug(cargs=sys.argv):
   for arg in cargs[1:]:
     if arg == '-d':
@@ -97,11 +99,15 @@ def getParam(cargs=sys.argv, interactive=False):
   return dataSource
 
 
+# FIND THE APP DIREC~TORY
+
 def getAppDir(myDir, dataSource):
   parentDir = os.path.dirname(myDir)
   tail = '' if dataSource == '' else dataSource
   return f'{parentDir}/apps/{tail}'
 
+
+# FORM VALUES
 
 def getValues(options, form):
   values = {}
@@ -118,6 +124,8 @@ def setValues(options, source, form):
     value = source.get(option, default)
     form[option] = value
 
+
+# HTML FORMATTING
 
 def pageLinks(nResults, position, spread=10):
   if spread <= 1:
@@ -243,6 +251,8 @@ def shapeFormats(textFormats, value):
     )
   return '\n'.join(html)
 
+
+# LOWER LEVEL
 
 def _coarsify(n, spread):
   nAbs = int(round(abs(n) / spread)) * spread

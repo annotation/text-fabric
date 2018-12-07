@@ -1,94 +1,595 @@
-DISPLAY_OPTIONS = dict(
-    colorMap=None,
-    condensed=False,
-    condenseType=None,
-    end=None,
-    extraFeatures=(),
-    fmt=None,
-    highlights={},
-    linked=1,
-    noneValues=None,
-    start=None,
-    suppress=set(),
-    withNodes=False,
-    withPassage=True,
-)
+import types
+
+from ..parameters import URL_TFDOC
+from .helpers import RESULT, dm, dh, mdEsc, htmlEsc
+from .links import outLink
+from .condense import condense, condenseSet
+from .highlight import getTupleHighlights
+
+LIMIT_SHOW = 100
+LIMIT_TABLE = 2000
+
+FONT_BASE = 'https://github.com/Dans-labs/text-fabric/blob/master/tf/server/static/fonts'
+
+CSS_FONT = '''
+    <link rel="stylesheet" href="/server/static/fonts.css"/>
+'''
+
+CSS_FONT_API = f'''
+<style>
+@font-face {{{{
+  font-family: "{{fontName}}";
+  src: url('{FONT_BASE}/{{font}}?raw=true');
+  src: url('{FONT_BASE}/{{fontw}}?raw=true') format('woff');
+}}}}
+</style>
+'''
 
 
-class DisplayCurrent(object):
-  def __init__(self, options):
-    for (k, v) in options.items():
-      setattr(self, k, v)
+def displayApi(app, silent, hoist):
+  app.table = types.MethodType(table, app)
+  app.plainTuple = types.MethodType(plainTuple, app)
+  app.plain = types.MethodType(plain, app)
+  app.show = types.MethodType(show, app)
+  app.prettyTuple = types.MethodType(prettyTuple, app)
+  app.pretty = types.MethodType(pretty, app)
+  app.loadCss = types.MethodType(loadCss, app)
+
+  api = app.api
+
+  app.classNames = (
+      {nType[0]: nType[0] for nType in api.C.levels.data}
+      if app.classNames is None else
+      app.classNames
+  )
+
+  if not app._asApp:
+    app.loadCss()
+    if hoist:
+      docs = api.makeAvailableIn(hoist)
+      if not silent:
+        dh(
+            '<details open><summary><b>API members</b>:</summary>\n' + '<br/>\n'.join(
+                ', '.join(
+                    outLink(
+                        entry,
+                        f'{URL_TFDOC}/Api/General/#{ref}',
+                        title='doc',
+                    ) for entry in entries
+                ) for (ref, entries) in docs
+            ) + '</details>'
+        )
 
 
-class Display(object):
-  def __init__(self, app):
-    self.app = app
+def table(
+    app,
+    tuples,
+    _asString=False,
+    **options,
+):
+  display = app.display
+  if not display.check('table', options):
+    return ''
+  d = display.get(options)
 
-    self._compileFormatClass()
+  api = app.api
+  F = api.F
 
-    self.displayDefaults = {k: v for (k, v) in DISPLAY_OPTIONS.items()}
-    self.displayDefaults = {}
-    for (k, v) in DISPLAY_OPTIONS.items():
-      self.displayDefaults[k] = (
-          v if v is not None else
-          getattr(app, k, None)
+  item = d.condenseType if d.condensed else RESULT
+
+  if d.condensed:
+    tuples = condense(api, tuples, d.condenseType, multiple=True)
+
+  passageHead = ' | p' if d.withPassage else ''
+
+  markdown = []
+  one = True
+  for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_TABLE, item):
+    if one:
+      nColumns = len(tup) + (1 if d.withPassage else 0)
+      markdown.append(f'n{passageHead} | ' + (' | '.join(F.otype.v(n) for n in tup)))
+      markdown.append(' | '.join('---' for n in range(nColumns + 1)))
+      one = False
+    markdown.append(
+        plainTuple(
+            app,
+            tup,
+            i,
+            item=item,
+            position=None,
+            opened=False,
+            _asString=True,
+            **options,
+        )
+    )
+  markdown = '\n'.join(markdown)
+  if _asString:
+    return markdown
+  dm(markdown)
+
+
+def plainTuple(
+    app,
+    tup,
+    seqNumber,
+    item=RESULT,
+    position=None,
+    opened=False,
+    _asString=False,
+    **options,
+):
+  display = app.display
+  if not display.check('plainTuple', options):
+    return ''
+  d = display.get(options)
+
+  _asApp = app._asApp
+  api = app.api
+  F = api.F
+  T = api.T
+
+  if d.withPassage:
+    passageNode = _getRefMember(app, tup, d.linked, d.condensed)
+    passageRef = (
+        '' if passageNode is None else
+        app._sectionLink(passageNode)
+        if _asApp else
+        app.webLink(passageNode, _asString=True)
+    )
+    if passageRef:
+      passageRef = f' {passageRef}'
+  else:
+    passageRef = ''
+
+  newOptions = display.consume(options, 'withPassage')
+
+  if _asApp:
+    prettyRep = prettyTuple(
+        app,
+        tup,
+        seqNumber,
+        withPassage=False,
+        **newOptions,
+    ) if opened else ''
+
+    current = ' focus' if seqNumber == position else ''
+    attOpen = ' open ' if opened else ''
+    tupSeq = ','.join(str(n) for n in tup)
+    if d.withPassage:
+      sParts = T.sectionFromNode(passageNode, fillup=True)
+      passageAtt = ' '.join(
+          f'sec{i}="{sParts[i] if i < len(sParts) else ""}"' for i in range(3)
       )
-    self.displayDefaults.update({o[0]: o[1] for o in app.options})
-    self.reset()
+    else:
+      passageAtt = ''
 
-  def reset(self, *options):
-    api = self.app.api
-    error = api.error
-    for option in options:
-      if option not in self.displayDefaults:
-        error(f'WARNING: unknown display option "{option}" will be ignored')
+    plainRep = ''.join(
+        f'''<span>{mdEsc(app.plain(
+                    n,
+                    isLinked=i == d.linked - 1,
+                    withPassage=False,
+                    **newOptions,
+                  ))
+                }
+            </span>
+        ''' for (i, n) in enumerate(tup)
+    )
+    html = (
+        f'''
+  <details
+    class="pretty dtrow{current}"
+    seq="{seqNumber}"
+    {attOpen}
+  >
+    <summary>
+      <a href="#" class="pq fa fa-solar-panel fa-xs" title="show in context" {passageAtt}></a>
+      <a href="#" class="sq" tup="{tupSeq}">{seqNumber}</a>
+      {passageRef}
+      {plainRep}
+    </summary>
+    <div class="pretty">{prettyRep}</div>
+  </details>
+'''
+    )
+    return html
+
+  markdown = [str(seqNumber)]
+  if passageRef:
+    markdown.append(passageRef)
+  for (i, n) in enumerate(tup):
+    markdown.append(
+        mdEsc(
+            app.plain(
+                n,
+                isLinked=i == d.linked - 1,
+                _asString=True,
+                withPassage=False,
+                **newOptions,
+            )
+        )
+    )
+  markdown = '|'.join(markdown)
+  if _asString:
+    return markdown
+  head = ['n | ' + (' | '.join(F.otype.v(n) for n in tup))]
+  head.append(' | '.join('---' for n in range(len(tup) + 1)))
+  head.append(markdown)
+
+  dm('\n'.join(head))
+
+
+def plain(
+    app,
+    n,
+    isLinked=True,
+    _asString=False,
+    **options,
+):
+  display = app.display
+  if not display.check('plain', options):
+    return ''
+  d = display.get(options)
+
+  api = app.api
+  F = api.F
+  T = api.T
+  sectionTypes = T.sectionTypes
+
+  nType = F.otype.v(n)
+  passage = ''
+
+  if d.withPassage:
+    if nType not in sectionTypes:
+      passage = app.webLink(n, _asString=True)
+
+  return app._plain(
+      n,
+      passage,
+      isLinked,
+      _asString,
+      **options,
+  )
+
+
+def show(
+    app,
+    tuples,
+    **options,
+):
+  display = app.display
+  if not display.check('show', options):
+    return ''
+  d = display.get(options)
+
+  api = app.api
+  F = api.F
+
+  item = d.condenseType if d.condensed else RESULT
+
+  if d.condensed:
+    rawHighlights = getTupleHighlights(
+        api, tuples, d.highlights, d.colorMap, d.condenseType, multiple=True
+    )
+    highlights = {}
+    colorMap = None
+    tuples = condense(api, tuples, d.condenseType, multiple=True)
+  else:
+    highlights = d.highlights
+    rawHighlights = None
+    colorMap = d.colorMap
+
+  for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_SHOW, item):
+    item = F.otype.v(tup[0]) if d.condenseType else RESULT
+    prettyTuple(
+        app,
+        tup,
+        i,
+        item=item,
+        highlights=highlights,
+        colorMap=colorMap,
+        rawHighlights=rawHighlights,
+        **display.consume(options, 'highlights', 'colorMap'),
+    )
+
+
+def prettyTuple(
+    app,
+    tup,
+    seqNumber,
+    item='Result',
+    rawHighlights=None,
+    **options,
+):
+  display = app.display
+  if not display.check('prettyTuple', options):
+    return ''
+  d = display.get(options)
+
+  _asApp = app._asApp
+
+  if len(tup) == 0:
+    if _asApp:
+      return ''
+    else:
+      return
+
+  api = app.api
+  sortKey = api.sortKey
+
+  containers = {tup[0]} if d.condensed else condenseSet(api, tup, d.condenseType)
+  highlights = (
+      getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
+      if rawHighlights is None else rawHighlights
+  )
+
+  if not _asApp:
+    dm(f'''
+
+**{item}** *{seqNumber}*
+
+''')
+  if _asApp:
+    html = []
+  for t in sorted(containers, key=sortKey):
+    h = app.pretty(
+        t,
+        highlights=highlights,
+        **display.consume(options, 'highlights'),
+    )
+    if _asApp:
+      html.append(h)
+  if _asApp:
+    return '\n'.join(html)
+
+
+def pretty(
+    app,
+    n,
+    **options,
+):
+  display = app.display
+  if not display.check('pretty', options):
+    return ''
+  d = display.get(options)
+
+  _asApp = app._asApp
+  api = app.api
+  F = api.F
+  L = api.L
+  T = api.T
+  otypeRank = api.otypeRank
+  sectionTypes = T.sectionTypes
+
+  containerN = None
+
+  nType = F.otype.v(n)
+  if d.condenseType:
+    if nType == d.condenseType:
+      containerN = n
+    elif otypeRank[nType] < otypeRank[d.condenseType]:
+      ups = L.u(n, otype=d.condenseType)
+      if ups:
+        containerN = ups[0]
+
+  (firstSlot, lastSlot) = (
+      getBoundary(api, n) if d.condenseType is None else
+      (None, None) if containerN is None else getBoundary(api, containerN)
+  )
+
+  html = []
+
+  if d.withPassage:
+    if nType not in sectionTypes:
+      html.append(app.webLink(n, _asString=True))
+
+  highlights = (
+      {m: '' for m in d.highlights}
+      if type(d.highlights) is set else
+      d.highlights
+  )
+  app._pretty(
+      n,
+      True,
+      html,
+      firstSlot,
+      lastSlot,
+      highlights=highlights,
+      **display.consume(options, 'highlights'),
+  )
+  htmlStr = '\n'.join(html)
+  if _asApp:
+    return htmlStr
+  dh(htmlStr)
+
+
+def prettyPre(
+    app,
+    n,
+    firstSlot,
+    lastSlot,
+    withNodes,
+    highlights,
+):
+  api = app.api
+  F = api.F
+
+  slotType = F.otype.slotType
+  nType = F.otype.v(n)
+  boundaryClass = ''
+  myStart = None
+  myEnd = None
+
+  (myStart, myEnd) = getBoundary(api, n)
+
+  if firstSlot is not None:
+    if myEnd < firstSlot:
+      return False
+    if myStart < firstSlot:
+      boundaryClass += ' rno'
+  if lastSlot is not None:
+    if myStart > lastSlot:
+      return False
+    if myEnd > lastSlot:
+      boundaryClass += ' lno'
+
+  hl = highlights.get(n, None)
+  hlClass = ''
+  hlStyle = ''
+  if hl is not None:
+    if hl == '':
+      hlClass = ' hl'
+    else:
+      hlStyle = f' style="background-color: {hl};"'
+
+  nodePart = (f'<a href="#" class="nd">{n}</a>' if withNodes else '')
+  className = app.classNames.get(nType, None)
+
+  return (
+      slotType,
+      nType,
+      className.lower() if className else className,
+      boundaryClass.lower() if boundaryClass else boundaryClass,
+      hlClass.lower() if hlClass else hlClass,
+      hlStyle,
+      nodePart,
+      myStart,
+      myEnd,
+  )
+
+
+def getBoundary(api, n):
+  F = api.F
+  slotType = F.otype.slotType
+  if F.otype.v(n) == slotType:
+    return (n, n)
+  E = api.E
+  maxSlot = F.otype.maxSlot
+  slots = E.oslots.data[n - maxSlot - 1]
+  return (slots[0], slots[-1])
+
+
+def getFeatures(
+    app,
+    n,
+    features,
+    o=None,
+    givenValue={},
+    plain=False,
+    **options,
+):
+  display = app.display
+  d = display.get(options)
+
+  api = app.api
+  Fs = api.Fs
+
+  featurePartB = '<div class="features">'
+  featurePartE = '</div>'
+
+  givenFeatureSet = set(features)
+  xFeatures = tuple(f for f in d.extraFeatures if f not in givenFeatureSet)
+  extraSet = set(xFeatures)
+  featureList = tuple(features) + xFeatures
+  nFeatures = len(features)
+
+  withName = set(xFeatures)
+
+  if not plain:
+    featurePart = featurePartB
+    hasB = True
+  else:
+    featurePart = ''
+    hasB = False
+  for (i, name) in enumerate(featureList):
+    if name not in d.suppress:
+      if name in givenValue:
+        value = givenValue[name]
+      else:
+        value = Fs(name).v(n)
+        oValue = None if o is None else Fs(name).v(o)
+        valueRep = None if value in d.noneValues else htmlEsc(value)
+        oValueRep = None if o is None or oValue in d.noneValues else htmlEsc(oValue)
+        if valueRep is None and oValueRep is None:
+          value = None
+        else:
+          sep = '' if valueRep is None or oValueRep is None else '|'
+          valueRep = '' if valueRep is None else valueRep
+          oValueRep = '' if oValueRep is None else oValueRep
+          value = valueRep if valueRep == oValueRep else f'{valueRep}{sep}{oValueRep}'
+      if value is not None:
+        nameRep = f'<span class="f">{name}=</span>' if name in withName else ''
+        xClass = ' xft' if name in extraSet else ''
+        featureRep = f' <span class="{name.lower()}{xClass}">{nameRep}{value}</span>'
+
+        if i >= nFeatures:
+          if not hasB:
+            featurePart += featurePartB
+            hasB = True
+        featurePart += featureRep
+  if hasB:
+    featurePart += featurePartE
+  return featurePart
+
+
+def loadCss(app):
+  '''
+  The CSS is looked up and then loades into a notebook if we are not
+  running in the TF browser,
+  else the CSS is returned.
+  '''
+  _asApp = app._asApp
+  if _asApp:
+    return CSS_FONT + app.css
+  cssFont = (
+      '' if app.fontName is None else CSS_FONT_API.format(
+          fontName=app.fontName,
+          font=app.font,
+          fontw=app.fontw,
+      )
+  )
+  dh(cssFont + app.css)
+
+
+def _getRefMember(app, tup, linked, condensed):
+  api = app.api
+  T = api.T
+  sectionTypes = T.sectionTypes
+
+  ln = len(tup)
+  return (
+      None
+      if not tup or any(n in sectionTypes for n in tup) else
+      tup[0] if condensed else
+      tup[min((linked, ln - 1))] if linked else
+      tup[0]
+  )
+
+
+def _tupleEnum(tuples, start, end, limit, item):
+  if start is None:
+    start = 1
+  i = -1
+  if not hasattr(tuples, '__len__'):
+    if end is None or end - start + 1 > limit:
+      end = start - 1 + limit
+    for tup in tuples:
+      i += 1
+      if i < start - 1:
         continue
-      self.displaySettings[option] = self.displayDefaults[option]
-    if not options:
-      self.displaySettings = {k: v for (k, v) in self.displayDefaults.items()}
-
-  def setup(self, **options):
-    api = self.app.api
-    error = api.error
-    for (option, value) in options.items():
-      if option not in self.displayDefaults:
-        error(f'WARNING: unknown display option "{option}" will be ignored')
-        continue
-      if option == 'extraFeatures':
-        api.ensureLoaded(value)
-        if type(value) is str:
-          value = value.split() if value else []
-      self.displaySettings[option] = value
-
-  def check(self, msg, options):
-    api = self.app.api
-    error = api.error
-    good = True
-    for (option, value) in options.items():
-      if option not in self.displaySettings:
-        error(f'ERROR in {msg}(): unknown display option "{option}={value}"')
-        good = False
-    return good
-
-  def get(self, options):
-    return DisplayCurrent({
-        o: options[o] if o in options else self.displaySettings.get(o, None)
-        for o in self.displaySettings
-    })
-
-  def consume(self, options, *remove):
-    return {o: options[o] for o in options if o not in remove}
-
-  def _compileFormatClass(self):
-    app = self.app
-    result = {None: app.defaultClsOrig}
-    formats = app.api.T.formats
-    for fmt in formats:
-      for (key, cls) in app.formatCss.items():
-        if f'-{key}-' in fmt:
-          result[fmt] = cls
-    for fmt in formats:
-      if fmt not in result:
-        result[fmt] = app.defaultCls
-    self.formatClass = result
+      if i >= end:
+        break
+      yield (i + 1, tup)
+  else:
+    if end is None or end > len(tuples):
+      end = len(tuples)
+    rest = 0
+    if end - (start - 1) > limit:
+      rest = end - (start - 1) - limit
+      end = start - 1 + limit
+    for i in range(start - 1, end):
+      yield (i + 1, tuples[i])
+    if rest:
+      dm(
+          f'**{rest} more {item}s skipped** because we show a maximum of'
+          f' {limit} {item}s at a time'
+      )

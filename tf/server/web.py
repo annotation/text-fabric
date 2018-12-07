@@ -87,9 +87,9 @@ def getProvenance(form, provenance, setNames):
     corpus = d['corpus']
     version = d['version']
     release = d['release']
-    (live, liveUrl) = d['live']
-    liveHtml = f'<a href="{liveUrl}">{live}</a>'
-    liveMd = f'[{live}]({liveUrl})'
+    (live, liveU) = d['live']
+    liveHtml = f'<a href="{liveU}">{live}</a>'
+    liveMd = f'[{live}]({liveU})'
     (doiText, doiUrl) = d['doi']
     doiHtml = f'<a href="{doiUrl}">{doiText}</a>'
     doiMd = f'[{doiText}]({doiUrl})'

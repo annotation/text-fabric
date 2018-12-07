@@ -1,101 +1,14 @@
 import os
-import re
-from glob import glob
-from shutil import copyfile
 
-from tf.core.helpers import console
-from tf.applib.api import (
-    prettyPre,
-    getFeatures,
-    htmlEsc,
-    mdEsc,
-    dm,
-    dh,
-)
-from tf.applib.make import setupApi, outLink, getData
-
-PHOTO_TO = '{}/tablets/photos'
-PHOTO_EXT = 'jpg'
-
-TABLET_TO = '{}/tablets/lineart'
-IDEO_TO = '{}/ideographs/lineart'
-LINEART_EXT = 'jpg'
-
-LOCAL_IMAGE_DIR = 'cdli-imagery'
+from tf.applib.helpers import dm, dh, htmlEsc, mdEsc
+from tf.applib.display import prettyPre, getFeatures
+from tf.applib.api import setupApi
+from tf.applib.links import outLink
+from tf.apps.uruk.atf import Atf
+from tf.apps.uruk.image import wrapLink, URL_FORMAT, imageClass, getImages, getImagery
 
 TEMP_DIR = '_temp'
 REPORT_DIR = 'reports'
-
-URL_FORMAT = dict(
-    tablet=dict(
-        photo=f'https://cdli.ucla.edu/dl/photo/{{}}_d.{PHOTO_EXT}',
-        lineart=f'https://cdli.ucla.edu/dl/lineart/{{}}_l.{LINEART_EXT}',
-        main='https://cdli.ucla.edu/search/search_results.php?SearchMode=Text&ObjectID={}',
-    ),
-    ideograph=dict(
-        lineart=(
-            f'https://cdli.ucla.edu/tools/SignLists/protocuneiform/archsigns/{{}}.{LINEART_EXT}'
-        ),
-        main='https://cdli.ucla.edu/tools/SignLists/protocuneiform/archsigns.html',
-    ),
-)
-
-FLAGS = (
-    ('damage', '#'),
-    ('remarkable', '!'),
-    ('written', ('!(', ')')),
-    ('uncertain', '?'),
-)
-
-OUTER_QUAD_TYPES = {'sign', 'quad'}
-
-CLUSTER_BEGIN = {'[': ']', '<': '>', '(': ')'}
-CLUSTER_END = {y: x for (x, y) in CLUSTER_BEGIN.items()}
-CLUSTER_KIND = {'[': 'uncertain', '(': 'properName', '<': 'supplied'}
-CLUSTER_BRACKETS = dict((name, (bOpen, CLUSTER_BEGIN[bOpen]))
-                        for (bOpen, name) in CLUSTER_KIND.items())
-
-FLEX_STYLE = (
-    'display: flex;'
-    'flex-flow: row nowrap;'
-    'justify-content: flex-start;'
-    'align-items: center;'
-    'align-content: flex-start;'
-)
-CAPTION_STYLE = dict(
-    top=(
-        'display: flex;'
-        'flex-flow: column-reverse nowrap;'
-        'justify-content: space-between;'
-        'align-items: center;'
-        'align-content: space-between;'
-    ),
-    bottom=(
-        'display: flex;'
-        'flex-flow: column nowrap;'
-        'justify-content: space-between;'
-        'align-items: center;'
-        'align-content: space-between;'
-    ),
-    left=(
-        'display: flex;'
-        'flex-flow: row-reverse nowrap;'
-        'justify-content: space-between;'
-        'align-items: center;'
-        'align-content: space-between;'
-    ),
-    right=(
-        'display: flex;'
-        'flex-flow: row nowrap;'
-        'justify-content: space-between;'
-        'align-items: center;'
-        'align-content: space-between;'
-    ),
-)
-
-ITEM_STYLE = ('padding: 0.5rem;')
-
-SIZING = {'height', 'width'}
 
 COMMENT_TYPES = set('''
     tablet
@@ -118,217 +31,12 @@ ATF_TYPES = set('''
 '''.strip().split())
 
 
-class Atf(object):
-
-  def __init__(self, api=None):
-    if api:
-      self.api = api
-
-  def getSource(self, node, nodeType=None, lineNumbers=False):
-    api = self.api
-    F = api.F
-    L = api.L
-    sourceLines = []
-    lineNumber = ''
-    if lineNumbers:
-      lineNo = F.srcLnNum.v(node)
-      lineNumber = f'{lineNo:>5} ' if lineNo else ''
-    sourceLine = F.srcLn.v(node)
-    if sourceLine:
-      sourceLines.append(f'{lineNumber}{sourceLine}')
-    for child in L.d(node, nodeType):
-      sourceLine = F.srcLn.v(child)
-      lineNumber = ''
-      if sourceLine:
-        if lineNumbers:
-          lineNumber = f'{F.srcLnNum.v(child):>5}: '
-        sourceLines.append(f'{lineNumber}{sourceLine}')
-    return sourceLines
-
-  def atfFromSign(self, n, flags=False):
-    F = self.api.F
-    Fs = self.api.Fs
-    if F.otype.v(n) != 'sign':
-      return '«no sign»'
-
-    grapheme = F.grapheme.v(n)
-    if grapheme == '…':
-      grapheme = '...'
-    primeN = F.prime.v(n)
-    prime = ("'" * primeN) if primeN else ''
-
-    variantValue = F.variant.v(n)
-    variant = f'~{variantValue}' if variantValue else ''
-
-    modifierValue = F.modifier.v(n)
-    modifier = f'@{modifierValue}' if modifierValue else ''
-    modifierInnerValue = F.modifierInner.v(n)
-    modifierInner = f'@{modifierInnerValue}' if modifierInnerValue else ''
-
-    modifierFirst = F.modifierFirst.v(n)
-
-    repeat = F.repeat.v(n)
-    if repeat is None:
-      varmod = (f'{modifier}{variant}' if modifierFirst else f'{variant}{modifier}')
-      result = f'{grapheme}{prime}{varmod}'
-    else:
-      if repeat == -1:
-        repeat = 'N'
-      varmod = (f'{modifierInner}{variant}' if modifierFirst else f'{variant}{modifierInner}')
-      result = f'{repeat}({grapheme}{prime}{varmod}){modifier}'
-
-    if flags:
-      for (flag, char) in FLAGS:
-        value = Fs(flag).v(n)
-        if value:
-          if type(char) is tuple:
-            result += f'{char[0]}{value}{char[1]}'
-          else:
-            result += char
-
-    return result
-
-  def atfFromQuad(self, n, flags=False, outer=True):
-    api = self.api
-    E = api.E
-    F = api.F
-    Fs = api.Fs
-    if F.otype.v(n) != 'quad':
-      return '«no quad»'
-
-    children = E.sub.f(n)
-    if not children or len(children) < 2:
-      return f'«quad with less than two sub-quads»'
-    result = ''
-    for child in children:
-      nextChildren = E.op.f(child)
-      if nextChildren:
-        op = nextChildren[0][1]
-      else:
-        op = ''
-      childType = F.otype.v(child)
-
-      thisResult = (
-          self.atfFromQuad(child, flags=flags, outer=False)
-          if childType == 'quad' else self.atfFromSign(child, flags=flags)
-      )
-      result += f'{thisResult}{op}'
-
-    variant = F.variantOuter.v(n)
-    variantStr = f'~{variant}' if variant else ''
-
-    flagStr = ''
-    if flags:
-      for (flag, char) in FLAGS:
-        value = Fs(flag).v(n)
-        if value:
-          if type(char) is tuple:
-            flagStr += f'{char[0]}{value}{char[1]}'
-          else:
-            flagStr += char
-
-    if variant:
-      if flagStr:
-        if outer:
-          result = f'|({result}){variantStr}|{flagStr}'
-        else:
-          result = f'(({result}){variantStr}){flagStr}'
-      else:
-        if outer:
-          result = f'|({result}){variantStr}|'
-        else:
-          result = f'({result}){variantStr}'
-    else:
-      if flagStr:
-        if outer:
-          result = f'|{result}|{flagStr}'
-        else:
-          result = f'({result}){flagStr}'
-      else:
-        if outer:
-          result = f'|{result}|'
-        else:
-          result = f'({result})'
-
-    return result
-
-  def atfFromOuterQuad(self, n, flags=False):
-    api = self.api
-    F = api.F
-    nodeType = F.otype.v(n)
-    if nodeType == 'sign':
-      return self.atfFromSign(n, flags=flags)
-    elif nodeType == 'quad':
-      return self.atfFromQuad(n, flags=flags, outer=True)
-    else:
-      return '«no outer quad»'
-
-  def atfFromCluster(self, n, seen=None):
-    api = self.api
-    F = api.F
-    E = api.E
-    if F.otype.v(n) != 'cluster':
-      return '«no cluster»'
-
-    typ = F.type.v(n)
-    (bOpen, bClose) = CLUSTER_BRACKETS[typ]
-    if bClose == ')':
-      bClose = ')a'
-    children = api.sortNodes(E.sub.f(n))
-
-    if seen is None:
-      seen = set()
-    result = []
-    for child in children:
-      if child in seen:
-        continue
-      childType = F.otype.v(child)
-
-      thisResult = (
-          self.atfFromCluster(child, seen=seen)
-          if childType == 'cluster' else self.atfFromQuad(child, flags=True) if childType == 'quad'
-          else self.atfFromSign(child, flags=True) if childType == 'sign' else None
-      )
-      seen.add(child)
-      if thisResult is None:
-        dm(f'TF: child of cluster has type {childType}:' ' should not happen')
-      result.append(thisResult)
-    return f'{bOpen}{" ".join(result)}{bClose}'
-
-  def getOuterQuads(self, n):
-    api = self.api
-    F = api.F
-    E = api.E
-    L = api.L
-    return [
-        quad for quad in L.d(n) if (
-            F.otype.v(quad) in OUTER_QUAD_TYPES
-            and all(F.otype.v(parent) != 'quad' for parent in E.sub.t(quad))
-        )
-    ]
-
-
 class TfApp(Atf):
 
   def __init__(app, *args, _asApp=False, lgc=False, check=False, silent=False, **kwargs):
     setupApi(app, *args, _asApp=_asApp, lgc=lgc, check=check, silent=silent, **kwargs)
 
-    (imageRelease, imageBase) = getData(
-        app.org,
-        app.repo,
-        app.relativeImages,
-        '',
-        lgc,
-        check,
-        withPaths=True,
-        keep=True,
-        silent=silent,
-    )
-    if not imageBase:
-      app.api = None
-      return
-    app.imageDir = f'{imageBase}/{app.org}/{app.repo}/{app.relativeImages}'
-    app._getImagery()
+    getImagery(app, lgc, check, silent)
 
     app.tempDir = f'{app.repoLocation}/{TEMP_DIR}'
     app.reportDir = f'{app.repoLocation}/{REPORT_DIR}'
@@ -365,10 +73,10 @@ class TfApp(Atf):
     dh(result)
 
   def cdli(app, n, linkText=None, _asString=False):
-    (nType, objectType, identifier) = app._imageClass(n)
+    (nType, objectType, identifier) = imageClass(app, n)
     if linkText is None:
       linkText = identifier
-    result = _wrapLink(linkText, objectType, 'main', identifier)
+    result = wrapLink(linkText, objectType, 'main', identifier)
     if _asString:
       return result
     else:
@@ -408,7 +116,8 @@ class TfApp(Atf):
         if isSign or isQuad:
           width = '2em' if isSign else '4em'
           height = '4em' if isSign else '6em'
-          theLineart = app._getImages(
+          theLineart = getImages(
+              app,
               n, kind='lineart', width=width, height=height, _asString=True, withCaption=False,
               warning=False
           )
@@ -615,7 +324,8 @@ class TfApp(Atf):
         if isOuter:
           width = '2em' if isSign else '4em'
           height = '4em' if isSign else '6em'
-          theLineart = app._getImages(
+          theLineart = getImages(
+              app,
               n, kind='lineart', width=width, height=height, _asString=True, withCaption=False,
               warning=False
           )
@@ -667,65 +377,15 @@ class TfApp(Atf):
 </div>
 ''')
 
-  def lineFromNode(app, n):
-    api = app.api
-    F = api.F
-    L = api.L
-    caseOrLineUp = [m for m in L.u(n) if F.terminal.v(m)]
-    return caseOrLineUp[0] if caseOrLineUp else None
-
-  def nodeFromCase(app, passage):
-    api = app.api
-    F = api.F
-    L = api.L
-    T = api.T
-    section = passage[0:2]
-    caseNum = passage[2].replace('.', '')
-    column = T.nodeFromSection(section)
-    if column is None:
-      return None
-    casesOrLines = [c for c in L.d(column) if F.terminal.v(c) and F.number.v(c) == caseNum]
-    if not casesOrLines:
-      return None
-    return casesOrLines[0]
-
-  def caseFromNode(app, n):
-    api = app.api
-    F = api.F
-    T = api.T
-    L = api.L
-    section = T.sectionFromNode(n)
-    if section is None:
-      return None
-    nodeType = F.otype.v(n)
-    if nodeType in {'sign', 'quad', 'cluster', 'case'}:
-      if nodeType == 'case':
-        caseNumber = F.number.v(n)
-      else:
-        caseOrLine = [m for m in L.u(n) if F.terminal.v(m)][0]
-        caseNumber = F.number.v(caseOrLine)
-      return (section[0], section[1], caseNumber)
-    else:
-      return section
-
-  def casesByLevel(app, lev, terminal=True):
-    api = app.api
-    F = api.F
-    lkey = 'line' if lev == 0 else 'case'
-    if lev == 0:
-      return (tuple(c for c in F.otype.s(lkey) if F.terminal.v(c)) if terminal else F.otype.s(lkey))
-    return (
-        tuple(c for c in F.otype.s(lkey) if F.depth.v(c) == lev and F.terminal.v(c))
-        if terminal else tuple(c for c in F.otype.s(lkey) if F.depth.v(c) == lev)
-    )
-
   def lineart(app, ns, key=None, asLink=False, withCaption=None, **options):
-    return app._getImages(
+    return getImages(
+        app,
         ns, kind='lineart', key=key, asLink=asLink, withCaption=withCaption, **options
     )
 
   def photo(app, ns, key=None, asLink=False, withCaption=None, **options):
-    return app._getImages(
+    return getImages(
+        app,
         ns, kind='photo', key=key, asLink=asLink, withCaption=withCaption, **options
     )
 
@@ -770,194 +430,3 @@ class TfApp(Atf):
     atf = app.atfFromSign(n, flags=True)
     featurePart = f' <span class="srcln">{atf}</span>'
     return featurePart
-
-  def _imageClass(app, n):
-    api = app.api
-    F = api.F
-    if type(n) is str:
-      identifier = n
-      if n == '':
-        identifier = None
-        objectType = None
-        nType = None
-      elif len(n) == 1:
-        objectType = 'ideograph'
-        nType = 'sign/quad'
-      else:
-        if n[0] == 'P' and n[1:].isdigit():
-          objectType = 'tablet'
-          nType = 'tablet'
-        else:
-          objectType = 'ideograph'
-          nType = 'sign/quad'
-    else:
-      nType = F.otype.v(n)
-      if nType in OUTER_QUAD_TYPES:
-        identifier = app.atfFromOuterQuad(n)
-        objectType = 'ideograph'
-      elif nType == 'tablet':
-        identifier = F.catalogId.v(n)
-        objectType = 'tablet'
-      else:
-        identifier = None
-        objectType = None
-    return (nType, objectType, identifier)
-
-  def _getImages(
-      app, ns, kind=None, key=None, asLink=False, withCaption=None, warning=True, _asString=False,
-      **options
-  ):
-    if type(ns) is int or type(ns) is str:
-      ns = [ns]
-    result = []
-    attStr = ' '.join(f'{opt}="{value}"' for (opt, value) in options.items() if opt not in SIZING)
-    cssProps = {}
-    for (opt, value) in options.items():
-      if opt in SIZING:
-        if type(value) is int:
-          force = False
-          realValue = f'{value}px'
-        else:
-          if value.startswith('!'):
-            force = True
-            realValue = value[1:]
-          else:
-            force = False
-            realValue = value
-          if realValue.isdecimal():
-            realValue += 'px'
-        cssProps[f'max-{opt}'] = realValue
-        if force:
-          cssProps[f'min-{opt}'] = realValue
-    cssStr = ' '.join(f'{opt}: {value};' for (opt, value) in cssProps.items())
-    if withCaption is None:
-      withCaption = None if asLink else 'bottom'
-    for n in ns:
-      caption = None
-      (nType, objectType, identifier) = app._imageClass(n)
-      if objectType:
-        imageBase = app._imagery.get(objectType, {}).get(kind, {})
-        images = imageBase.get(identifier, None)
-        if withCaption:
-          caption = _wrapLink(identifier, objectType, 'main', identifier)
-        if images is None:
-          thisImage = (
-              f'<span><b>no {kind}</b> for {objectType} <code>{identifier}</code></span>'
-          ) if warning else ''
-        else:
-          image = images.get(key or '', None)
-          if image is None:
-            imgs = "</code> <code>".join(sorted(images.keys()))
-            thisImage = f'<span><b>try</b> key=<code>{imgs}</code></span>' if warning else ''
-          else:
-            if asLink:
-              thisImage = identifier
-            else:
-              theImage = app._useImage(image, kind, key or '', n)
-              thisImage = (f'<img src="{theImage}" style="display: inline;{cssStr}" {attStr} />')
-        thisResult = _wrapLink(
-            thisImage, objectType, kind, identifier, pos=withCaption, caption=caption
-        ) if thisImage else None
-      else:
-        thisResult = (f'<span><b>no {kind}</b> for <code>{nType}</code>s</span>') if warning else ''
-      result.append(thisResult)
-    if not warning:
-      result = [image for image in result if image]
-    if not result:
-      return ''
-    if _asString:
-      return ''.join(result)
-    resultStr = f'</div><div style="{ITEM_STYLE}">'.join(result)
-    html = (f'<div style="{FLEX_STYLE}">'
-            f'<div style="{ITEM_STYLE}">'
-            f'{resultStr}</div></div>').replace('\n', '')
-    dh(html)
-    if not warning:
-      return True
-
-  def _useImage(app, image, kind, key, node):
-    _asApp = app._asApp
-    api = app.api
-    F = api.F
-    (imageDir, imageName) = os.path.split(image)
-    (base, ext) = os.path.splitext(imageName)
-    localBase = app.localDir if _asApp else app.curDir
-    localDir = f'{localBase}/{LOCAL_IMAGE_DIR}'
-    if not os.path.exists(localDir):
-      os.makedirs(localDir, exist_ok=True)
-    if type(node) is int:
-      nType = F.otype.v(node)
-      if nType == 'tablet':
-        nodeRep = F.catalogId.v(node)
-      elif nType in OUTER_QUAD_TYPES:
-        nodeRep = app.atfFromOuterQuad(node)
-      else:
-        nodeRep = str(node)
-    else:
-      nodeRep = node
-    nodeRep = (
-        nodeRep.lower().replace('|', 'q').replace('~', '-').replace('@', '(a)').replace('&', '(e)')
-        .replace('+', '(p)').replace('.', '(d)')
-    )
-    keyRep = '' if key == '' else f'-{key}'
-    localImageName = f'{kind}-{nodeRep}{keyRep}{ext}'
-    localImagePath = f'{localDir}/{localImageName}'
-    # yapf: disable
-    if (
-        not os.path.exists(localImagePath)
-        or os.path.getmtime(image) > os.path.getmtime(localImagePath)
-    ):
-      copyfile(image, localImagePath)
-    base = '/local/' if _asApp else ''
-    return f'{base}{LOCAL_IMAGE_DIR}/{localImageName}'
-
-  def _getImagery(app):
-    app._imagery = {}
-    for (dirFmt, ext, kind, objectType) in (
-        (IDEO_TO, LINEART_EXT, 'lineart', 'ideograph'),
-        (TABLET_TO, LINEART_EXT, 'lineart', 'tablet'),
-        (PHOTO_TO, PHOTO_EXT, 'photo', 'tablet'),
-    ):
-      srcDir = dirFmt.format(app.imageDir)
-      filePaths = glob(f'{srcDir}/*.{ext}')
-      images = {}
-      idPat = re.compile('P[0-9]+')
-      for filePath in filePaths:
-        (fileDir, fileName) = os.path.split(filePath)
-        (base, thisExt) = os.path.splitext(fileName)
-        if kind == 'lineart' and objectType == 'tablet':
-          ids = idPat.findall(base)
-          if not ids:
-            console(f'skipped non-{objectType} "{fileName}"')
-            continue
-          identifier = ids[0]
-          key = base.replace('_l', '').replace(identifier, '')
-        else:
-          identifier = base
-          if identifier.startswith('['):
-            identifier = '|' + identifier[1:]
-          if identifier.endswith(']'):
-            identifier = identifier[0:-1] + '|'
-          key = ''
-        images.setdefault(identifier, {})[key] = filePath
-      app._imagery.setdefault(objectType, {})[kind] = images
-      if not app.silent:
-        console(f'Found {len(images)} {objectType} {kind}s')
-
-
-def _wrapLink(piece, objectType, kind, identifier, pos='bottom', caption=None):
-  title = (
-      'to CDLI main page for this item'
-      if kind == 'main' else f'to higher resolution {kind} on CDLI'
-  )
-  url = URL_FORMAT.get(objectType, {}).get(kind, '').format(identifier)
-
-  result = outLink(piece, url, title=title) if url else piece
-  if caption:
-    result = (
-        f'<div style="{CAPTION_STYLE[pos]}">'
-        f'<div>{result}</div>'
-        f'<div>{caption}</div>'
-        '</div>'
-    )
-  return result

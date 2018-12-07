@@ -7,35 +7,16 @@ from rpyc.utils.server import ThreadedServer
 
 from ..core.helpers import console
 from ..applib.helpers import findAppConfig, findAppClass
-from ..applib.api import (
-    runSearch, runSearchCondensed,
-    getPassageHighlights,
-    compose, composeP, composeT, getResultsX
-)
+from ..applib.highligt import getPassageHighlights
+from ..applib.search import runSearch, runSearchCondensed
+from ..applib.tables import compose, composeP, composeT, getResultsX
 from .common import (getParam, getModules, getSets, getCheck, getLocalClones)
 
 TF_DONE = 'TF setup done.'
 TF_ERROR = 'Could not set up TF'
 
 
-def batchAround(nResults, position, batch):
-  halfBatch = int((batch + 1) / 2)
-  left = min(max(position - halfBatch, 1), nResults)
-  right = max(min(position + halfBatch, nResults), 1)
-  discrepancy = batch - (right - left + 1)
-  if discrepancy != 0:
-    right += discrepancy
-  if right > nResults:
-    right = nResults
-  return (left, right)
-
-
-def allNodes(table):
-  allN = set()
-  for tup in table:
-    allN |= set(tup)
-  return allN
-
+# KERNEL CREATION
 
 def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
   config = findAppConfig(dataSource)
@@ -91,6 +72,10 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
       )
       return data
 
+    def exposed_header(self):
+      app = self.app
+      return app.header()
+
     def exposed_provenance(self):
       app = self.app
       return app.provenance
@@ -100,10 +85,6 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
       return (
           tuple(sorted(app.sets.keys())) if hasattr(app, 'sets') and type(app.sets) is dict else ()
       )
-
-    def exposed_header(self):
-      app = self.app
-      return app.header()
 
     def exposed_css(self, appDir=None):
       app = self.app
@@ -262,7 +243,7 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
           results = ()
         total += len(results)
 
-      (start, end) = batchAround(total, position, batch)
+      (start, end) = _batchAround(total, position, batch)
 
       selectedResults = results[start - 1:end]
       opened = set(opened)
@@ -370,6 +351,8 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
   })
 
 
+# KERNEL CONNECTION
+
 def makeTfConnection(host, port, timeout):
   class TfConnection(object):
     def connect(self):
@@ -379,6 +362,8 @@ def makeTfConnection(host, port, timeout):
 
   return TfConnection()
 
+
+# TOP LEVEL
 
 def main(cargs=sys.argv):
   dataSource = getParam(cargs=cargs, interactive=True)
@@ -395,6 +380,20 @@ def main(cargs=sys.argv):
       kernel = makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, config.PORT['kernel'])
       if kernel:
         kernel.start()
+
+
+# LOWER LEVEL
+
+def _batchAround(nResults, position, batch):
+  halfBatch = int((batch + 1) / 2)
+  left = min(max(position - halfBatch, 1), nResults)
+  right = max(min(position + halfBatch, nResults), 1)
+  discrepancy = batch - (right - left + 1)
+  if discrepancy != 0:
+    right += discrepancy
+  if right > nResults:
+    right = nResults
+  return (left, right)
 
 
 if __name__ == "__main__":
