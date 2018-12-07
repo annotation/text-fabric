@@ -1,10 +1,28 @@
 import os
 from importlib import import_module
+from IPython.display import display, Markdown, HTML
 
 from ..parameters import EXPRESS_BASE, GH_BASE
 from ..core.helpers import console, camel
 
 RESULT = 'result'
+
+
+def dm(md):
+  display(Markdown(md))
+
+
+def dh(html):
+  display(HTML(html))
+
+
+def htmlEsc(val):
+  return '' if val is None else str(val).replace('&', '&amp;').replace('<', '&lt;')
+
+
+def mdEsc(val):
+  return '' if val is None else str(val).replace('|', '&#124;')
+
 
 # FIND AN APP
 

@@ -1,12 +1,7 @@
-from tf.applib.api import (
-    prettyPre,
-    getFeatures,
-    htmlEsc,
-    mdEsc,
-    dm,
-    dh,
-)
-from tf.applib.make import setupApi, outLink
+from tf.applib.helpers import dm, dh, htmlEsc, mdEsc
+from tf.applib.display import prettyPre, getFeatures
+from tf.applib.api import setupApi
+from tf.applib.links import outLink
 
 PLAIN_LINK = ('https://github.com/{org}/{repo}/blob/master' '/source/{version}/{book}')
 

@@ -32,7 +32,8 @@
 
     function | argument
     --- | ---
-    `getDebug` | `-c`
+    `getCheck` | `-c`
+    `getDebug` | `-d`
     `getDocker` | `-docker`
     `getLocalClones` | `-lgc`
     `getModules` | `--mod=`...
@@ -139,17 +140,31 @@
 
     And so on, until the stepping factor becomes bigger than the result set.
 
-??? abstract "shapeMessages"
-    Wraps error messages into HTML. The messages come from the TF API,
-    through the TF kernel, in response to wrong search templates
-    and other mistaken user input.
+??? abstract "passageLinks(passages, sec0, sec1)"
+    Provide navigation links for passages,
+    in the form of links to sections of level 0, 1 and 2 (books, chapters and verses).
+    
+    If `sec0` is not given, only a list of sec0 links is produced.
 
-??? abstract "shapeOptions"
+    If `sec0` is given, but `sec1` not, a list of links for sec1s within the given `sec0`
+    is produced.
+    
+    If both `sec0` and `sec1` are given, de sec1 entry is focused. 
+
+??? abstract "shapeOptions(options, values)"
     Wraps the options, specified by the option specification in `config.py`
     into HTML.
     See also [App structure](../Model/Apps.md#the-structure-of-apps)
 
-??? abstract "shapeCondense"
+??? abstract "shapeCondense(condenseTypes, value)"
     Provides a radio-buttoned chooser for the
     [condense types](../Kernel/#data-service-api).
+
+    `value` is the currently chosen option.
+
+??? abstract "shapeFormats(textFormats, value)"
+    Provides a radio-buttoned chooser for the
+    [text formats](../Kernel/#data-service-api).
+
+    `value` is the currently chosen option.
 

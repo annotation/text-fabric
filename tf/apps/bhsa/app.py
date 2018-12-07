@@ -1,13 +1,7 @@
-from tf.applib.api import (
-    prettyPre,
-    getBoundary,
-    getFeatures,
-    htmlEsc,
-    mdEsc,
-    dm,
-    dh,
-)
-from tf.applib.make import setupApi, outLink
+from tf.applib.helpers import dm, dh, htmlEsc, mdEsc
+from tf.applib.display import prettyPre, getBoundary, getFeatures
+from tf.applib.api import setupApi
+from tf.applib.links import outLink
 
 SHEBANQ_URL = 'https://shebanq.ancient-data.org/hebrew'
 

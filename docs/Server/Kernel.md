@@ -87,6 +87,13 @@
         such as tuples. They are sent within a single interprocess call,
         and fly swiftly through the connecting pipe. 
 
+??? abstract "monitor()"
+    A utility function that spits out some information from the kernel
+    to the outside work. 
+    At this moment it is only used for debugging, but later
+    it can be useful to monitor the kernel or manage it
+    while it remains running.
+
 ??? abstract "header()"
     Calls the `header()` method of the app,
     which fetches all the stuff to create a header
@@ -97,6 +104,15 @@
     Calls the `provenance()` method of the app,
     which fetches provenance metadata to be shown
     on exported pages.
+
+??? abstract "setNames()"
+    Returns the names of sets that have been provided
+    as custom sets to the kernel by means of the
+    [`--sets=`]() command line argument with which the kernel
+    was started.
+
+    A web server kan use this informatiomn to write out provernance
+    info.
 
 ??? abstract "css()"
     Calls the `loadCSS()` method of the app,
@@ -116,6 +132,68 @@
     * `levels`: information about the node types in this
       data source.
 
+??? abstract "passage()"
+    Asks the kernel for passages (chunks of material corresponding
+    to sections of level 1 (chapters).
+
+    The material will be displayed as a sequence of plain
+    representations of the sec2s, which can be expanded to pretty
+    displays when the user chooses to do so.
+
+    Parameters:
+
+    ??? note "sec0"
+        The level 0 section (book) in which the passage occurs
+
+    ??? note "sec1"
+        The level 1 section (chapter) to fetch
+
+    ??? note "sec2=None"
+        The level 2 section (verse) that should get focus
+
+    ??? note "opened"
+        The set of items that are currently expanded into pretty display
+
+    ??? note "features"
+        The features that should be displayed in pretty displays when expanding
+        a plain representation of a sec2 into a pretty display
+
+    ??? note "query"
+        The query whose results should be highlighted in the passage display.
+
+    ??? note "getx"
+        If given, only a single sec2 (verse) will be fetched, but in pretty
+        display.
+        `getx` is the identifier (section label, verse number) of the item/
+
+    ??? note "\*\*options"
+        Additional, optional display options
+
+??? abstract "table()"
+    Fetches material corresponding to a list of sections or tuples of nodes.
+
+    Parameters:
+
+    ??? note "kind"
+        Either `sections` or `tuples`: whether to find section material or tuple
+        material;
+
+    ??? note "task"
+        The list of things (sections or tuples) to retrieve the material for;
+        Typically coming from the *section pad* / *node pad* in the browser.
+
+    ??? note "opened=set()"
+        As in `passage()`
+
+    ??? note "features"
+        As in `passage()`
+
+    ??? note "getx"
+        As in `passage()`
+
+    ??? note "\*\*options"
+        As in `passage()`
+
 ??? abstract "search()"
     The work horse of this API.
     Executes a TF search template, retrieves
@@ -130,18 +208,28 @@
         Typically coming
         from the *search pad* in the browser.
 
-    ??? note "tuples"
-        Tuples of nodes to look up features for.
-        Typically coming
-        from the *node pad* in the browser.
+    ??? note "batch"
+        The number of table rows to show on one page
+        in the browser.
 
-    ??? note "sections"
-        Sections to look up features for.
-        Typically coming
-        from the *section pad* in the browser.
+    ??? note "position=1"
+        The position that is central in the browser.
+        The navigation links take this position
+        as the focus point, and enable the user
+        to navigate to neighbouring results, in ever bigger
+        strides.
 
-        For the Bhsa these are *verse* references,
-        for Uruk these are tablets by *P-number*.
+    ??? note "opened=set()"
+        Which results have been expanded and need extended results.
+        Normally, only the information to provide a *plain*
+        representation of a result is being fetched,
+        but for the opened ones information is gathered for
+        pretty displays.
+
+    ??? note "getx"
+        If given, only a single result will be fetched, but in pretty
+        display.
+        `getx` is the sequence number of the result.
 
     ??? note "condensed"
         Whether or not the results should be *condensed*.
@@ -169,24 +257,6 @@
             but you condense to verses, the chapter nodes will 
             not show up.
             But if you condense to books, they will show up.
-
-    ??? note "batch"
-        The number of table rows to show on one page
-        in the browser.
-
-    ??? note "position=1"
-        The position that is central in the browser.
-        The navigation links take this position
-        as the focus point, and enable the user
-        to navigate to neighbouring results, in ever bigger
-        strides.
-
-    ??? note "opened=set()"
-        Which results have been expanded and need extended results.
-        Normally, only the information to provide a *plain*
-        representation of a result is being fetched,
-        but for the opened ones information is gathered for
-        pretty displays.
 
     ??? note "withNodes=False"
         Whether to include the node numbers into the formatted
