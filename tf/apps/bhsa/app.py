@@ -1,5 +1,7 @@
-from tf.applib.helpers import dm, dh, htmlEsc, mdEsc
+from tf.core.helpers import htmlEsc, mdEsc
+from tf.applib.helpers import dm, dh
 from tf.applib.display import prettyPre, getBoundary, getFeatures
+from tf.applib.highlight import getHlAtt, hlText, hlRep
 from tf.applib.api import setupApi
 from tf.applib.links import outLink
 
@@ -88,6 +90,7 @@ class TfApp(object):
       passage,
       isLinked,
       _asString,
+      secLabel,
       **options,
   ):
     display = app.display
@@ -100,7 +103,7 @@ class TfApp(object):
     F = api.F
 
     nType = F.otype.v(n)
-    result = f'{passage}&nbsp;' if passage else ''
+    result = passage
     if _asApp:
       nodeRep = f' <a href="#" class="nd">{n}</a> ' if d.withNodes else ''
     else:
@@ -108,25 +111,30 @@ class TfApp(object):
 
     isText = d.fmt is None or '-orig-' in d.fmt
     if nType == 'word':
-      rep = mdEsc(htmlEsc(T.text([n], fmt=d.fmt)))
+      rep = hlText(app, [n], d.highlights, fmt=d.fmt)
     elif nType in SECTION:
-      label = ('{}' if nType == 'book' else '{} {}' if nType == 'chapter' else '{} {}:{}')
-      rep = label.format(*T.sectionFromNode(n))
+      if secLabel:
+        label = ('{}' if nType == 'book' else '{} {}' if nType == 'chapter' else '{} {}:{}')
+        rep = label.format(*T.sectionFromNode(n))
+      else:
+        rep = ''
       isText = False
       if nType == 'half_verse':
         rep += F.label.v(n)
       rep = mdEsc(htmlEsc(rep))
+      rep = hlRep(app, rep, n, d.highlights)
       if nType in VERSE:
         if isLinked:
           rep = app.webLink(n, text=rep, className='vn', _asString=True)
         else:
           rep = f'<span class="vn">{rep}</span>'
-        rep += mdEsc(htmlEsc(T.text(L.d(n, otype="word"), fmt=d.fmt)))
+        rep += hlText(app, L.d(n, otype="word"), d.highlights, fmt=d.fmt)
         isText = True
     elif nType == 'lex':
       rep = mdEsc(htmlEsc(F.voc_lex_utf8.v(n)))
+      rep = hlRep(app, rep, n, d.highlights)
     else:
-      rep = mdEsc(htmlEsc(T.text(L.d(n, otype='word'), fmt=d.fmt)))
+      rep = hlText(app, L.d(n, otype='word'), d.highlights, fmt=d.fmt)
 
     if isLinked and nType not in VERSE:
       rep = app.webLink(n, text=rep, _asString=True)
@@ -166,8 +174,7 @@ class TfApp(object):
         nType,
         className,
         boundaryClass,
-        hlClass,
-        hlStyle,
+        hlAtt,
         nodePart,
         myStart,
         myEnd,
@@ -215,6 +222,8 @@ class TfApp(object):
       children = ()
       lx = L.u(n, otype='lex')[0]
 
+    (hlClass, hlStyle) = hlAtt
+
     superType = ATOMS.get(nType, None)
     if superType:
       (superNode, superStart, superEnd) = app._getSuper(n, superType)
@@ -223,16 +232,11 @@ class TfApp(object):
       if superEnd > myEnd:
         boundaryClass += ' l'
       nodePart = (f'<a href="#" class="nd">{superNode}</a>' if d.withNodes else '')
-      shl = d.highlights.get(superNode, None)
-      shlClass = ''
-      shlStyle = ''
-      if shl is not None:
-        if shl == '':
-          shlClass = ' hl'
-        else:
-          shlStyle = f' style="background-color: {shl};"'
+      (shlClass, shlStyle) = getHlAtt(app, superNode, d.highlights)
+      if shlClass:
         if not hlClass:
           hlClass = shlClass
+        if not hlStyle:
           hlStyle = shlStyle
 
     doOuter = outer and nType in {slotType, 'lex'}
@@ -240,7 +244,7 @@ class TfApp(object):
       html.append('<div class="outeritem">')
 
     html.append(
-        f'<div class="{className} {boundaryClass}{hlClass}"{hlStyle}>')
+        f'<div class="{className} {boundaryClass} {hlClass}" {hlStyle}>')
 
     if nType in {'verse', 'half_verse'}:
       passage = app.webLink(n, _asString=True)
@@ -284,7 +288,7 @@ class TfApp(object):
         )
       html.append(
           f'''
-    <div class="{superType.lower()}{shlClass}"{shlStyle}>
+    <div class="{superType.lower()} {shlClass}" {shlStyle}>
         {typePart} {nodePart} {featurePart}
     </div>
     <div class="atoms">

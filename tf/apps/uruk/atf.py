@@ -1,4 +1,4 @@
-from tf.applib.api import dm
+from tf.applib.helpers import dm
 
 FLAGS = (
     ('damage', '#'),

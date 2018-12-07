@@ -42,7 +42,7 @@ API_REFS = dict(
     otypeRank=('nodes', 'rank', 'navigating-nodes'),
     reset=('messages', 'reset', 'messaging'),
     sortKey=('nodes', 'key', 'navigating-nodes'),
-    sortKeyTuple=('nodes', 'key', 'navigating-nodes'),
+    sortKeyTuple=('nodes', 'keyTuple', 'navigating-nodes'),
     sortNodes=('nodes', 'sort', 'navigating-nodes'),
 )
 

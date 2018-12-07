@@ -1,5 +1,5 @@
 from .data import WARP
-from .helpers import itemize, compileFormats
+from .helpers import itemize, compileFormats, mdEsc, htmlEsc
 
 DEFAULT_FORMAT = 'text-orig-full'
 DEFAULT_FORMAT_TYPE = '{}-default'
@@ -80,8 +80,10 @@ class Text(object):
 
     if nType == sTypes[0]:
       if fillup:
-        r1 = L.u(r, otype=sTypes[1])[0]
-        r2 = L.u(r, otype=sTypes[2])[0]
+        r1 = L.u(r, otype=sTypes[1])
+        r1 = r1[0] if r1 else ''
+        r2 = L.u(r, otype=sTypes[2])
+        r2 = r2[0] if r2 else ''
         return (n, r1, r2)
       return (n,)
 
@@ -90,18 +92,19 @@ class Text(object):
 
     if nType == sTypes[1]:
       if fillup:
-        r2 = L.u(r, otype=sTypes[2])[0]
+        r2 = L.u(r, otype=sTypes[2])
+        r2 = r2[0] if r2 else ''
         return (r0, n, r2)
       return (r0, n)
 
     r1s = L.u(r, sTypes[1])
-    r1 = r1s[0] if r1s else None
+    r1 = r1s[0] if r1s else ''
 
     if nType == sTypes[2]:
       return (r0, r1, n)
 
     r2s = L.u(r, sTypes[2])
-    r2 = r2s[0] if r2s else None
+    r2 = r2s[0] if r2s else ''
 
     return (r0, r1, r2)
 
@@ -133,19 +136,12 @@ class Text(object):
     else:
       return sec2.get(sec0node, {}).get(section[1], {}).get(section[2], None)
 
-  def text(self, nodes, fmt=None, descend=False, highlights=None):
+  def text(self, nodes, fmt=None, descend=False):
     E = self.api.E
     F = self.api.F
     slotType = F.otype.slotType
     maxSlot = F.otype.maxSlot
     eoslots = E.oslots.data
-
-    def hl(n, rep):
-      return (
-          f'<span class="hl">{rep}</span>'
-          if highlights and (n in highlights) else
-          rep
-      )
 
     if type(nodes) is int:
       nType = F.otype.v(nodes)
@@ -157,21 +153,11 @@ class Text(object):
           fmt = DEFAULT_FORMAT
         nodes = [nodes] if nType == slotType else eoslots[nodes - maxSlot - 1]
       else:
-        return hl(nodes, repf(nodes))
+        return repf(nodes)
     else:
       if fmt is None:
         fmt = DEFAULT_FORMAT
     repf = self._xformats.get(fmt, None)
     if repf is None:
-      return ' '.join(hl(n, f'{F.otype.v(n)}_{n}') for n in nodes)
-    return ''.join(hl(n, repf(n)) for n in nodes)
-
-  '''
-    else:
-      if fmt is None:
-        fmt = DEFAULT_FORMAT
-      repf = self._xformats.get(fmt, None)
-      if repf is None:
-        return ' '.join(str(s) for s in slots)
-      return ''.join(repf(s) for s in slots)
-  '''
+      return ' '.join(f'{F.otype.v(n)}_{n}' for n in nodes)
+    return ''.join(repf(n) for n in nodes)

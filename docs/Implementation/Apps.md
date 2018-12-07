@@ -19,7 +19,7 @@
 
 ??? abstract "App components"
     The apps themselves are modules inside 
-    [apps]({{tfght}}/{{c_apps}})
+    [apps]({{tfght}}/{{b_apps}})
 
     For each *app*, you find there a subfolder *app* with:
 
@@ -79,7 +79,6 @@
         FONT_NAME | string | font family name to be used in CSS for representing text in original script
         FONT | string | file name of the offline font specified in FONT_NAME
         FONTW | string | file name of the webfont specified in FONT_NAME
-        CSS | css | CSS styles to be included in Jupyter Notebooks and in the TF browser
 
     ??? abstract "app.py"
         The functionality specific to the corpus in question, organized as an extended
@@ -98,9 +97,7 @@
 ??? abstract "App support"
     Apps turn out to have several things in common that we want to deal with generically.
     These functions are collected in the
-    [make]({{tfghb}}/{{c_appmake}})
-    and
-    [api]({{tfghb}}/{{c_appapi}})
+    [api]({{tfghb}}/{{c_apps}})
     modules of TF.
 
 ??? abstract "Two contexts"
@@ -135,7 +132,7 @@
 
 ### Set up
 
-??? abstract "setupApi"
+??? abstract "setupApi()"
     This method is called by each specific app when it instantiates
     its associated class with
     a single object.
@@ -151,8 +148,8 @@
 ### Data getters
 
 ??? abstract "Auto loading of TF data"
-    The specific apps call the function 
-    [getData()]({{tfghb}}/{{c_appmake}})
+    The specific apps call the functions 
+    [`getModulesData()` and `getData()`]({{tfghb}}/{{c_appdata}})
     to load and download data from github.
 
     When TF stores data in the text-fabric-data directory,
@@ -208,7 +205,7 @@
     Here is the flow of information for `pretty()`:
 
     1. definition as a generic function
-       [`pretty()`]({{tfghb}}/{{c_appapi}});
+       [`pretty()`]({{tfghb}}/{{c_appdisplay}});
     2. this function fetches the relevant display parameters and gathers information
        about the node to display, e.g. its boundary slots;
     3. armed with this information, it calls the app-dependent `_pretty()` function,
@@ -218,14 +215,18 @@
        [bhsa]({{tfghb}}/{{c_bhsa_app}});
     4. `_pretty()` is a function that calls itself recursively for all other nodes that
        are involved in the display;
-    5. for each node that `_pretty()` is going to display, it first computes a few standard
+    5. for each node that `_pretty()` is going to display,
+		   it first computes a few standard
        things for that node by means of a generic function   
-       [`prettyPre()`]({{tfghb}}/{{c_appapi}}); in particular, it will be computed whether
-       the display of the node in question fits in the display of the node where it all began 
-       with, or whether parts of the display should be clipped; also, a header label for the
+       [`prettyPre()`]({{tfghb}}/{{c_appdisplay}});
+			 in particular, it will be computed whether
+       the display of the node in question fits in the display of the node
+			 where it all began with, or whether parts of the display should be clipped;
+			 also, a header label for the
        current node will be comnposed, including relevant hyperlinks and optional extra
        information reuqired by the display options;
-    6. finally, it is the turn of the app-dependent `_pretty()` to combine the header label
+    6. finally, it is the turn of the app-dependent `_pretty()`
+		   to combine the header label
        with the displays it gets after recursively calling itself for subordinate nodes.
 
     ![bhsa](../images/bhsa-example.png)
@@ -238,7 +239,11 @@
 
 ### TF search performers
 
-??? abstract "search(app, query, silent=False, sets=None, shallow=False)"
+??? abstract "search()"
+    ```python
+    search(app, query, silent=False, sets=None, shallow=False)
+    ```
+
     This is a thin wrapper around the generic search interface of TF:
     [S.search](../Api/General.md#search)
 
@@ -251,7 +256,11 @@
         the Jupyter notebook).
         Web apps can better use `runSearch` below.
 
-??? abstract "runSearch(app, query, cache)"
+??? abstract "runSearch()"
+    ```python
+    runSearch(app, query, cache)
+    ```
+
     A wrapper around the generic search interface of TF.
 
     Before running the TF search, the *query* will be looked up in the *cache*.
@@ -262,7 +271,11 @@
     ??? note "Context web app"
         The intended context of this function is: web app.
 
-??? abstract "runSearchCondensed(api, query, cache, condenseType)"
+??? abstract "runSearchCondensed()"
+    ```python
+    runSearchCondensed(api, query, cache, condenseType)
+    ```
+
     When query results need to be condensed into a container,
     this function takes care of that.
     It first tries the *cache* for condensed query results.
@@ -275,7 +288,11 @@
 
 ### Tabular display for the TF-browser
 
-??? abstract "compose(app, tuples, features, position, opened, getx=None, \*\*displayParameters)"
+??? abstract "compose()"
+    ```python
+    compose(app, tuples, features, position, opened, getx=None, **displayParameters)
+    ```
+
     Takes a list of *tuples* and
     composes it into an HTML table.
     Some of the rows will be expandable, namely the rows specified by `opened`,
@@ -293,19 +310,39 @@
     in order to expand
     it.
     
-??? abstract "composeT(app, features, tuples, features, opened, getx=None, \*\*displayParameters)"
+??? abstract "composeT()"
+    ```python
+    composeT(app, features, tuples, features, opened, getx=None, **displayParameters)"
+    ```
+
     Very much like `compose()`,
     but here the tuples come from a sections and/or tuples specification
     in the TF-browser.
 
-??? abstract "composeP(app, sec0, sec1, features, query, sec2=None, opened=set(), getx=None, \*\*displayParameters)"
+??? abstract "composeP(), getx=None, \*\*displayParameters)"
+    ```python
+    composeP(
+      app,
+      sec0, sec1,
+      features, query,
+      sec2=None,
+      opened=set(),
+      getx=None,
+      **displayParameters
+    )
+    ```
+
     Like `composeT()`, but this is meant to compose the items
     at section level 2 (verses) within
     an item of section level 1 (chapter) within an item of section level 0 (a book).
     Typically invoked when a user of the TF-browser is browsing passages.
     The query is used to highlight its results in the passages that the user is browsing.
 
-??? abstract "plainTextS2(sNode, opened, sec2, highlights, \*\*displayParameters)"
+??? abstract "plainTextS2()"
+    ```python
+    plainTextS2(sNode, opened, sec2, highlights, \*\*displayParameters)
+    ```
+
     Produces a single item corresponding to a section 2 level (verse) for display
     in the browser. It will rendered as plain text, but expandable to a pretty display.
 

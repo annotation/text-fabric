@@ -1,4 +1,107 @@
+from functools import reduce
+
+from ..core.helpers import htmlEsc, mdEsc
 from .search import runSearch
+
+
+def getHlAtt(app, n, highlights):
+
+  if highlights is None:
+    return ('', '')
+
+  color = (
+      highlights.get(n, None)
+      if type(highlights) is dict else
+      '' if n in highlights else
+      None
+  )
+
+  if color is None:
+    return ('', '')
+
+  hlClass = 'hl'
+  hlStyle = (
+      f' style="background-color: {color};" '
+      if color != '' else
+      ''
+  )
+
+  return (hlClass, hlStyle)
+
+
+def getHlAttPlain(app, n, highlights):
+  api = app.api
+  F = api.F
+  L = api.L
+  T = api.T
+  sectionTypes = T.sectionTypes
+
+  if highlights is None:
+    return ''
+
+  color = (
+      highlights.get(n, None)
+      if type(highlights) is dict else
+      '' if n in highlights else
+      None
+  )
+  upColors = tuple(
+      highlights[u]
+      for u in L.u(n)
+      if u in highlights and F.otype.v(u) not in sectionTypes
+  )
+  upColor = upColors[0] if upColors else None
+
+  if color is None and upColor is None:
+    return ''
+
+  isSection = F.otype.v(n) in sectionTypes
+  hlClass = []
+  hlStyle = []
+
+  if color is not None:
+    hlClass.append('hldot' if isSection else 'hl')
+    if color != '':
+      hlStyle.append(f'background-color: {color};')
+      if isSection:
+        hlStyle.append(f'border-color: {color};')
+
+  if upColor is not None:
+    hlClass.append('hlup')
+    if upColor != '':
+      hlStyle.append(f'border-color: {upColor};')
+
+  hlClassAtt = ' '.join(hlClass)
+  if hlClassAtt:
+    hlClassAtt = f' class="{hlClassAtt}" '
+  hlStyleAtt = ''.join(hlStyle)
+  if hlStyleAtt:
+    hlStyleAtt = f' style="{hlStyleAtt}" '
+
+  return f'{hlClassAtt}{hlStyleAtt}'
+
+
+def hlRep(app, rep, n, highlights):
+  att = getHlAttPlain(app, n, highlights)
+  return f'<span {att}>{rep}</span>' if att else rep
+
+
+def hlText(app, nodes, highlights, **options):
+  api = app.api
+  T = api.T
+
+  if not highlights:
+    return mdEsc(htmlEsc(T.text(nodes, **options)))
+
+  result = ''
+  for node in nodes:
+    result += hlRep(
+        app,
+        mdEsc(htmlEsc(T.text([node], **options))),
+        node,
+        highlights,
+    )
+  return result
 
 
 def getTupleHighlights(api, tuples, highlights, colorMap, condenseType, multiple=False):
@@ -30,74 +133,16 @@ def getTupleHighlights(api, tuples, highlights, colorMap, condenseType, multiple
   return newHighlights
 
 
-def getPassageHighlights(app, node, query, cache, cacheSlots):
+def getPassageHighlights(app, node, query, cache):
   if not query:
-    return (set(), set(), set(), set())
-  cacheSlotsKey = (query, node)
-  if cacheSlotsKey in cacheSlots:
-    return cacheSlots[cacheSlotsKey]
+    return None
 
-  hlNodes = _getHlNodes(app, node, query, cache)
-  cacheSlots[cacheSlotsKey] = hlNodes
-  return hlNodes
-
-
-def _getHlNodes(app, node, query, cache):
   (queryResults, messages, features) = runSearch(app, query, cache)
   if messages:
-    return (set(), set(), set(), set())
+    return None
 
-  api = app.api
-  E = api.E
-  F = api.F
-  maxSlot = F.otype.maxSlot
-  eoslots = E.oslots.data
-
-  nodeSlots = eoslots[node - maxSlot - 1]
-  first = nodeSlots[0]
-  last = nodeSlots[-1]
-
-  (sec2s, nodes, plainSlots, prettySlots) = _nodesFromTuples(app, first, last, queryResults)
-  return (sec2s, nodes, plainSlots, prettySlots)
-
-
-def _nodesFromTuples(app, first, last, results):
-  api = app.api
-  E = api.E
-  F = api.F
-  T = api.T
-  L = api.L
-  maxSlot = F.otype.maxSlot
-  slotType = F.otype.slotType
-  eoslots = E.oslots.data
-  sectionTypes = T.sectionTypes
-  sec2Type = sectionTypes[2]
-
-  sec2s = set()
-  nodes = set()
-  plainSlots = set()
-  prettySlots = set()
-
-  for tup in results:
-    for n in tup:
-      nType = F.otype.v(n)
-
-      if nType == slotType:
-        if first <= n <= last:
-          plainSlots.add(n)
-          prettySlots.add(n)
-      elif nType == sec2Type:
-        sec2s.add(n)
-      elif nType != sectionTypes[0] and nType != sectionTypes[1]:
-        mySlots = eoslots[n - maxSlot - 1]
-        myFirst = mySlots[0]
-        myLast = mySlots[-1]
-        if first <= myFirst <= last or first <= myLast <= last:
-          nodes.add(n)
-          for s in mySlots:
-            if first <= s <= last:
-              plainSlots.add(s)
-  for s in plainSlots:
-    sec2s.add(L.u(s, otype=sec2Type)[0])
-
-  return (sec2s, nodes, plainSlots, prettySlots)
+  return reduce(
+      set.union,
+      (set(tup) for tup in queryResults),
+      set()
+  )

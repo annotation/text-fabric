@@ -1,10 +1,12 @@
+from os.path import dirname, abspath
 import types
 
 from ..parameters import URL_TFDOC
-from .helpers import RESULT, dm, dh, mdEsc, htmlEsc
+from ..core.helpers import mdEsc, htmlEsc
+from .helpers import RESULT, dm, dh
 from .links import outLink
 from .condense import condense, condenseSet
-from .highlight import getTupleHighlights
+from .highlight import getTupleHighlights, getHlAtt
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
@@ -16,13 +18,11 @@ CSS_FONT = '''
 '''
 
 CSS_FONT_API = f'''
-<style>
 @font-face {{{{
   font-family: "{{fontName}}";
   src: url('{FONT_BASE}/{{font}}?raw=true');
   src: url('{FONT_BASE}/{{fontw}}?raw=true') format('woff');
 }}}}
-</style>
 '''
 
 
@@ -142,6 +142,11 @@ def plainTuple(
     passageRef = ''
 
   newOptions = display.consume(options, 'withPassage')
+  newOptionsH = display.consume(options, 'withPassage', 'highlights')
+
+  highlights = (
+      getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
+  )
 
   if _asApp:
     prettyRep = prettyTuple(
@@ -158,7 +163,8 @@ def plainTuple(
     if d.withPassage:
       sParts = T.sectionFromNode(passageNode, fillup=True)
       passageAtt = ' '.join(
-          f'sec{i}="{sParts[i] if i < len(sParts) else ""}"' for i in range(3)
+          f'sec{i}="{sParts[i] if i < len(sParts) else ""}"'
+          for i in range(3)
       )
     else:
       passageAtt = ''
@@ -168,7 +174,8 @@ def plainTuple(
                     n,
                     isLinked=i == d.linked - 1,
                     withPassage=False,
-                    **newOptions,
+                    highlights=highlights,
+                    **newOptionsH,
                   ))
                 }
             </span>
@@ -204,7 +211,8 @@ def plainTuple(
                 isLinked=i == d.linked - 1,
                 _asString=True,
                 withPassage=False,
-                **newOptions,
+                highlights=highlights,
+                **newOptionsH,
             )
         )
     )
@@ -223,6 +231,7 @@ def plain(
     n,
     isLinked=True,
     _asString=False,
+    secLabel=True,
     **options,
 ):
   display = app.display
@@ -242,12 +251,22 @@ def plain(
     if nType not in sectionTypes:
       passage = app.webLink(n, _asString=True)
 
+  passage = f'{passage}&nbsp;' if passage else ''
+
+  highlights = (
+      {m: '' for m in d.highlights}
+      if type(d.highlights) is set else
+      d.highlights
+  )
+
   return app._plain(
       n,
       passage,
       isLinked,
       _asString,
-      **options,
+      secLabel,
+      highlights=highlights,
+      **display.consume(options, 'highlights'),
   )
 
 
@@ -432,14 +451,7 @@ def prettyPre(
     if myEnd > lastSlot:
       boundaryClass += ' lno'
 
-  hl = highlights.get(n, None)
-  hlClass = ''
-  hlStyle = ''
-  if hl is not None:
-    if hl == '':
-      hlClass = ' hl'
-    else:
-      hlStyle = f' style="background-color: {hl};"'
+  hlAtt = getHlAtt(app, n, highlights)
 
   nodePart = (f'<a href="#" class="nd">{n}</a>' if withNodes else '')
   className = app.classNames.get(nType, None)
@@ -449,8 +461,7 @@ def prettyPre(
       nType,
       className.lower() if className else className,
       boundaryClass.lower() if boundaryClass else boundaryClass,
-      hlClass.lower() if hlClass else hlClass,
-      hlStyle,
+      hlAtt,
       nodePart,
       myStart,
       myEnd,
@@ -539,7 +550,12 @@ def loadCss(app):
   '''
   _asApp = app._asApp
   if _asApp:
-    return CSS_FONT + app.css
+    return CSS_FONT + f'<style type="text/css">{app.css}</style>'
+
+  hlCssFile = f'{dirname(dirname(abspath(__file__)))}/server/static/highlight.css'
+  with open(hlCssFile) as fh:
+    hlCss = fh.read()
+
   cssFont = (
       '' if app.fontName is None else CSS_FONT_API.format(
           fontName=app.fontName,
@@ -547,7 +563,7 @@ def loadCss(app):
           fontw=app.fontw,
       )
   )
-  dh(cssFont + app.css)
+  dh(f'<style>{cssFont + app.css + hlCss}</style>')
 
 
 def _getRefMember(app, tup, linked, condensed):

@@ -7,7 +7,7 @@ from rpyc.utils.server import ThreadedServer
 
 from ..core.helpers import console
 from ..applib.helpers import findAppConfig, findAppClass
-from ..applib.highligt import getPassageHighlights
+from ..applib.highlight import getPassageHighlights
 from ..applib.search import runSearch, runSearchCondensed
 from ..applib.tables import compose, composeP, composeT, getResultsX
 from .common import (getParam, getModules, getSets, getCheck, getLocalClones)
@@ -42,7 +42,6 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
     return False
   app.api.reset()
   cache = {}
-  cacheSlots = {}
   console(f'{TF_DONE}\nListening at port {port}')
 
   class TfKernel(rpyc.Service):
@@ -133,15 +132,15 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
             getx = int(getx)
         node = T.nodeFromSection((sec0, sec1))
         items = L.d(node, otype=sec2Type) if node else []
-        highlights = getPassageHighlights(app, node, query, cache, cacheSlots)
+        highlights = getPassageHighlights(app, node, query, cache)
         passage = composeP(
             app,
             features,
             items,
             opened,
             sec2,
-            highlights,
             getx=getx,
+            highlights=highlights,
             **options,
         )
       sec0s = tuple(T.sectionFromNode(s)[0] for s in F.otype.s(sec0Type))
@@ -181,7 +180,7 @@ def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
           lines = task.split('\n')
           for (i, line) in enumerate(lines):
             line = line.strip()
-            (message, node) = app.nodeFromSectionStr(line)
+            node = app.nodeFromSectionStr(line)
             if type(node) is not int:
               messages.append(str(node))
             else:

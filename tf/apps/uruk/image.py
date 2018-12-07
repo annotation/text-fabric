@@ -4,7 +4,7 @@ from glob import glob
 from shutil import copyfile
 
 from tf.core.helpers import console
-from tf.applib.api import dh
+from tf.applib.helpers import dh
 from tf.applib.links import outLink
 from tf.applib.data import getData
 from tf.apps.uruk.atf import OUTER_QUAD_TYPES

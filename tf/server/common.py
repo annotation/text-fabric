@@ -192,7 +192,7 @@ def passageLinks(passages, sec0, sec1):
 
 def shapeOptions(options, values):
   html = []
-  for (option, typ, acro, desc) in options:
+  for (option, typ, acro, desc, default) in options:
     value = values[option]
     if typ == 'checkbox':
       value = 'checked' if value else ''

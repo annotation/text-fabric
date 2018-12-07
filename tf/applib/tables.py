@@ -1,5 +1,5 @@
 from .helpers import RESULT
-from .display import plainTuple, prettyTuple
+from .display import plain, plainTuple, prettyTuple
 
 
 def compose(
@@ -166,7 +166,6 @@ def composeP(
     items,
     opened,
     sec2,
-    highlights,
     getx=None,
     **options,
 ):
@@ -181,11 +180,6 @@ def composeP(
   else:
     features = []
 
-  (hlSec2s, hlNodes, hlPlainSlots, hlPrettySlots) = (
-      highlights if highlights else
-      (set(), set(), set(), set())
-  )
-
   if getx is not None:
     tup = None
     for s2 in items:
@@ -199,8 +193,7 @@ def composeP(
         getx,
         condensed=False,
         extraFeatures=features,
-        highlights=hlNodes | hlPrettySlots,
-        **display.consume(options, 'condensed', 'extraFeatures', 'highlights')
+        **display.consume(options, 'condensed', 'extraFeatures')
     ) if tup is not None else ''
 
   passageHtml = []
@@ -212,7 +205,6 @@ def composeP(
             item,
             opened,
             sec2,
-            highlights,
             extraFeatures=features,
             **display.consume(options, 'extraFeatures')
         )
@@ -273,7 +265,6 @@ def _plainTextS2(
     sNode,
     opened,
     sec2,
-    highlights,
     **options,
 ):
   display = app.display
@@ -286,26 +277,18 @@ def _plainTextS2(
   isOpened = seqNumber in opened
   tClass = '' if d.fmt is None else display.formatClass[d.fmt].lower()
 
-  (hlSec2s, hlNodes, hlPlainSlots, hlPrettySlots) = (
-      highlights if highlights else
-      (set(), set(), set(), set())
-  )
-
-  hlDot = '<span class="hldot"></span>' if sNode in hlSec2s else ''
-
   prettyRep = prettyTuple(
       app,
       (sNode, ),
       seqNumber,
       condensed=False,
       condenseType=itemType,
-      highlights=hlPrettySlots | hlNodes,
       **display.consume(options, 'condensed', 'condenseType'),
   ) if isOpened else ''
   current = ' focus' if str(seqNumber) == str(sec2) else ''
   attOpen = ' open ' if isOpened else ''
 
-  textRep = T.text(sNode, fmt=d.fmt, descend=True, highlights=hlPlainSlots)
+  textRep = plain(app, sNode, secLabel=False, **options)
   html = (
       f'''
 <details
@@ -315,7 +298,6 @@ def _plainTextS2(
 >
   <summary class="{tClass}">
     {app._sectionLink(sNode, text=seqNumber)}
-    {hlDot}
     {textRep}
   </summary>
   <div class="pretty">{prettyRep}</div>

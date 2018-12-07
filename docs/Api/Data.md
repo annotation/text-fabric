@@ -310,7 +310,7 @@ because `pretty` does not know that it is displaying query results,
 and hence does not know which features were used in the latest query.
 
 So you have to tell which features you want to add to the display.
-That can be done by [`displaySetup()` and `displayReset()`](App.md#pretty-display).
+That can be done by [`displaySetup()` and `displayReset()`](App.md#display).
 
 ### Develop your own data
 
