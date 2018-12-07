@@ -1,10 +1,10 @@
 /* OVERALL */
 
 body,td {
-    font-family: sans-serif;
+	font-family: sans-serif;
 }
 a:link, a:visited {
-    text-decoration: None;
+	text-decoration: None;
 }
 
 *,
@@ -16,49 +16,49 @@ a:link, a:visited {
 /* HEADER */
 
 div.header {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    align-items: flex-start;
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-between;
+	align-items: flex-start;
 }
 img.hdlogo {
-    flex: 0 0 auto;
-    max-width: 5rem;
-    height: 4rem;
+	flex: 0 0 auto;
+	max-width: 5rem;
+	height: 4rem;
 }
 img.mainlogo {
-    max-width: 15rem;
-    height: 5rem;
+	max-width: 15rem;
+	height: 5rem;
 }
 div.hdlinks {
-    flex: 0 1 auto;
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-around;
-    align-items: baseline;
+	flex: 0 1 auto;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-around;
+	align-items: baseline;
 }
 div.hdlinks > a {
-    flex: 1 1 4rem;
+	flex: 1 1 4rem;
 	background-color: var(--blue-haze-back);
-    border-radius: 0.4rem;
-    border: 0.1rem solid var(--grey-rim);
-    padding: 0.2rem 0.2rem;
-    margin: 0.2rem 0.2rem;
-    text-align: center;
-    text-decoration: none;
+	border-radius: 0.4rem;
+	border: 0.1rem solid var(--grey-rim);
+	padding: 0.2rem 0.2rem;
+	margin: 0.2rem 0.2rem;
+	text-align: center;
+	text-decoration: none;
 }
 
 /* OUTPUTS */
 
 div.messages {
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: flex-start;
-    align-items: stretch;
-    width: 100%;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
+	width: 100%;
 }
 .eline {
-    font-size: medium;
+	font-size: medium;
 	color: var(--red-haze-fore);
 	background-color: var(--red-haze-back);
 }
@@ -67,23 +67,23 @@ div.messages {
 	font-family: monospace;
 	color: var(-query-fore);
 	background-color: var(--query-back);
-    white-space: pre;
+	white-space: pre;
 }
 
 /* RIGHT-COL: TABLES */
 
 div.table {
-    width: 100%;
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: flex-start;
-    align-items: stretch;
+	width: 100%;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
 }
 
 div.dtheadrow {
-    font-weight: bold;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+	font-weight: bold;
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
 }
 #sectionsTable div.dtheadrow {
 	background-color: var(--sections-back);
@@ -95,39 +95,39 @@ div.dtheadrow {
 	background-color: var(--query-back);
 }
 div.dtheadrow > span {
-    margin: 0.2rem;
-    padding: 0 0.5rem;
-    border-right: 0.2rem solid var(--light-rim);
+	margin: 0.2rem;
+	padding: 0 0.5rem;
+	border-right: 0.2rem solid var(--light-rim);
 }
 details.dtrow {
-    border: 0.1rem solid var(--gray-rim);
+	border: 0.1rem solid var(--gray-rim);
 }
 details.dtrow > summary {
 	background-color: var(--grey-back);
-    margin: 0.2rem 0;
-    padding: 0.2rem;
+	margin: 0.2rem 0;
+	padding: 0.2rem;
 }
 details.dtrow > summary > span {
-    padding: 0 0.5rem;
-    border-right: 0.2rem solid var(--gray-rim);
+	padding: 0 0.5rem;
+	border-right: 0.2rem solid var(--gray-rim);
 }
 
 div.pretty {
-    width: 100%;
-    margin: 0.2rem 0 0.5rem 0;
+	width: 100%;
+	margin: 0.2rem 0 0.5rem 0;
 	background-color: var(--haze-back);
 }
 
 a.rwh {
-    font-size: small !important;
+	font-size: small !important;
 	background-color: var(--sections-back);
 }
 a.sq {
-    font-size: small !important;
+	font-size: small !important;
 	background-color: var(--tuples-back);
 }
 a.nd {
-    font-size: small; !important
+	font-size: small; !important
 	background-color: var(--tuples-back);
 }
 a.rwh:link,a.rwh:visited,
@@ -136,52 +136,34 @@ a.nd:link,a.nd:visited {
 	color: var(--gray-fore);
 } 
 
-/* HIGHLIGHTS */
-
-span.hldot {
-    background-color: var(--hl-strong);
-    border: 0.2rem solid var(--hl-rim);
-    border-radius: 0.4rem;
-    display: inline-block;
-    width: 0.8rem;
-    height: 0.8rem;
-}
-span.hl {
-    background-color: var(--hl-strong);
-    border: 0.2rem solid var(--hl-rim);
-    border-radius: 0.1rem;
-}
-
 /* COLORS */
 
 :root {
-    --sections-back:    hsla(210, 100%,  90%, 0.9  );
-    --tuples-back:      hsla( 90, 100%,  90%, 0.9  );
-    --query-back:       hsla( 30, 100%,  90%, 0.9  );
-    --query-fore:       hsla( 30, 100%,  30%, 1.0  );
-    --light-back:       hsla(  0, 100%, 100%, 0.9  );
-    --light-rim:        hsla(  0, 100%, 100%, 0.5  );
-    --haze-back:        hsla(  0, 100%,  98%, 0.9  );
-    --red-haze-back:    hsla(  0, 100%,  90%, 0.9  );
-    --red-haze-fore:    hsla(  0,  40%,  20%, 1.0  );
-    --blue-haze-back:   hsla(240, 100%,  97%, 0.9  );
-    --blue-haze-fore:   hsla(240, 100%,  60%, 1.0  );
-    --marine-haze-back: hsla(180, 100%,  97%, 0.9  );
-    --paper-back:       hsla( 50,  45%,  90%, 0.8  );
-    --paper-fore:       hsla(240, 100%,  40%, 1.0  );
-    --gold-haze-back:   hsla( 45, 100%,  87%, 0.9  );
-    --gold-mist-back:   hsla( 45, 100%,  70%, 0.9  );
-    --gold-back:        hsla( 45, 100%,  50%, 0.9  );
-    --grey-back:        hsla(  0,   0%,  93%, 0.9  );
-    --grey-rim:         hsla(  0,   0%,  80%, 0.5  );
-    --gray-back:        hsla(  0,   0%,  85%, 0.9  );
-    --gray-rim:         hsla(  0,   0%,  70%, 0.5  );
-    --gray-fore:        hsla(  0,   0%,  40%, 1.0  );
-    --fog-back:         hsla(  0,   0%,  73%, 0.9  );
-    --fog-rim:          hsla(  0,   0%,  60%, 0.5  );
-    --fog-fore:         hsla(  0,   0%,  40%, 1.0  );
-    --dark-back:        hsla(  0,   0%,   0%, 0.9  );
-    --dark-fore:        hsla(  0, 100%, 100%, 1.0  );
-    --hl-strong:        hsla( 60, 100%,  70%, 0.9  );
-    --hl-rim:           hsla( 55, 100%,  60%, 0.9  );
+	--sections-back:    hsla(210, 100%,  90%, 0.9  );
+	--tuples-back:      hsla( 90, 100%,  90%, 0.9  );
+	--query-back:       hsla( 30, 100%,  90%, 0.9  );
+	--query-fore:       hsla( 30, 100%,  30%, 1.0  );
+	--light-back:       hsla(  0, 100%, 100%, 0.9  );
+	--light-rim:        hsla(  0, 100%, 100%, 0.5  );
+	--haze-back:        hsla(  0, 100%,  98%, 0.9  );
+	--red-haze-back:    hsla(  0, 100%,  90%, 0.9  );
+	--red-haze-fore:    hsla(  0,  40%,  20%, 1.0  );
+	--blue-haze-back:   hsla(240, 100%,  97%, 0.9  );
+	--blue-haze-fore:   hsla(240, 100%,  60%, 1.0  );
+	--marine-haze-back: hsla(180, 100%,  97%, 0.9  );
+	--paper-back:       hsla( 50,  45%,  90%, 0.8  );
+	--paper-fore:       hsla(240, 100%,  40%, 1.0  );
+	--gold-haze-back:   hsla( 45, 100%,  87%, 0.9  );
+	--gold-mist-back:   hsla( 45, 100%,  70%, 0.9  );
+	--gold-back:        hsla( 45, 100%,  50%, 0.9  );
+	--grey-back:        hsla(  0,   0%,  93%, 0.9  );
+	--grey-rim:         hsla(  0,   0%,  80%, 0.5  );
+	--gray-back:        hsla(  0,   0%,  85%, 0.9  );
+	--gray-rim:         hsla(  0,   0%,  70%, 0.5  );
+	--gray-fore:        hsla(  0,   0%,  40%, 1.0  );
+	--fog-back:         hsla(  0,   0%,  73%, 0.9  );
+	--fog-rim:          hsla(  0,   0%,  60%, 0.5  );
+	--fog-fore:         hsla(  0,   0%,  40%, 1.0  );
+	--dark-back:        hsla(  0,   0%,   0%, 0.9  );
+	--dark-fore:        hsla(  0, 100%, 100%, 1.0  );
 }

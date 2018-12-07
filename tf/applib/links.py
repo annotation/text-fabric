@@ -17,7 +17,7 @@ def linksApi(app, appName, silent):
 
   api = app.api
   tutUrl = f'{URL_NB}/{app.org}/{app.repo}/blob/master/tutorial/search.ipynb'
-  extraUrl = f'{URL_TFDOC}/Api/{app.repo.capitalize()}/'
+  extraUrl = f'{URL_TFDOC}/Apps/{app.repo.capitalize()}/'
   dataLink = outLink(
       app.repo.upper(),
       app.docUrl,
@@ -41,7 +41,7 @@ def linksApi(app, appName, silent):
       f'Text-Fabric API {api.TF.version}', f'{URL_TFDOC}/Api/General/', 'text-fabric-api'
   )
   tfsLink = outLink(
-      'Search Reference', f'{URL_TFDOC}/Search/#search-templates',
+      'Search Reference', f'{URL_TFDOC}/Use/Search/',
       'Search Templates Introduction and Reference'
   )
   tutLink = outLink('Search tutorial', tutUrl, 'Search tutorial in Jupyter Notebook')
@@ -179,7 +179,7 @@ def _featuresPerModule(app):
       post = '</i></b>' if isEdge else ''
       html += f' {pre}'
       html += (
-          outLink(featureRep, docUrl.format(feature=feature), title=featurePath)
+          outLink(featureRep, docUrl.format(feature=featureRep), title=featurePath)
           if docUrl else f'<span title="{featurePath}">{featureRep}</span>'
       )
       html += f'{post} '

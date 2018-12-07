@@ -278,7 +278,7 @@
     tupleList = sorted(tuples, key=sortKeyTuple)
     ```
 
-    ??? info "Description"
+    ???+ info "Description"
         Same as `sortKey`, but this one works on tuples instead of nodes.
         It appies `sortKey` to each member of the tuple.
         Handy to sort e.g. search results. We
@@ -385,7 +385,7 @@
 
     When we order nodes and report on which nodes embed which other nodes, we do not
     only take into account the sets of slots the nodes occupy, but also their
-    *level*. See [levels](#levels) and [text](#levels-of-node-types).
+    *level*. See [levels](#sections).
 
     Both the `L.d(n)` and `L.u(n)` work as follows:
 
@@ -1316,7 +1316,7 @@ For a description of Text-Fabric search, go to [Search](../Use/Search.md)
 ???+ info "S"
     The Search API is exposed as `S` or `Search`.
 
-    It's main method, `search`, takes a [search template](../Search#search-templates)
+    It's main method, `search`, takes a [search template](../Use/Search.md#search-templates)
     as argument.
     A template consists of elements that specify nodes with conditions and
     relations between them.
@@ -1350,7 +1350,7 @@ Here is the whole interface.
         Searches for combinations of nodes that together match a search template.
         This method returns a *generator* which yields the results one by one. One result
         is a tuple of nodes, where each node corresponds to an *atom*-line in your
-        [search template](#search-template-introduction).
+        [search template](../Use/Search.md#search-template-reference).
         
     ??? info "query"
         The query is a search template, i.e. a string that conforms to the rules described above.
@@ -1557,7 +1557,9 @@ Here is the whole interface.
 ### MQL
 
 ??? info "Data interchange with MQL"
-    You can interchange with MQL data. Text-Fabric can read and write MQL dumps. An
+    You can interchange with
+    [MQL data]({{emdros}}).
+    Text-Fabric can read and write MQL dumps. An
     MQL dump is a text file, like an SQL dump. It contains the instructions to
     create and fill a complete database.
 

@@ -13,6 +13,14 @@ Consider installing a 64-bit Python.
 MSG64 = '''Running on 64-bit Python'''
 
 
+def htmlEsc(val):
+  return '' if val is None else str(val).replace('&', '&amp;').replace('<', '&lt;')
+
+
+def mdEsc(val):
+  return '' if val is None else str(val).replace('|', '&#124;')
+
+
 def splitModRef(moduleRef):
   parts = moduleRef.split('/', 2)
 

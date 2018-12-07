@@ -36,6 +36,11 @@
     * New functions `A.nodeFromSectionStr()` and `A.sectionStrFromNode()`
       which give the passage string of any kind of node, if possible.
       **[Section support for apps](../Api/App.md#sections)**
+		* The function `A.plain()` now responds to the `highlights` parameter:
+			you can highlight material inside plain displays.
+      **[A.plain](../Api/App.md#display)**
+			and
+			**[display tutorial]({{etcbcnb}}/bhsa/blob/master/tutorial/display.ipynb)**
     * New function `T.sectionTuple(n)` which gives the tuple of section nodes in which `n`
       is embedded
       **[T.sectionTuple](../Api/General.md#sections)**
@@ -48,12 +53,6 @@
     * New API member `sortKeyTuple` to sort tuples of nodes in the
       canonical ordering.
       **[sortKeyTuple](../Api/General.md#navigating-nodes)**
-    * The function `T.text()` has a new optional parameter:
-      `highlights=set()`.
-      Now you can
-      highlight parts of plain representations in the same way
-      as you can highlight in pretty displays, but still with a few limitations.
-      **[T.text](../Api/General.md#text-representation)**
     * The code to detect the file name and path of the script/notebook you are running in,
       is inherently brittle. It is unwise to base decisions on that.
       This code has been removed from TF.

@@ -155,7 +155,8 @@ def _grammar(searchExe):
         searchExe.badSemantics.append((i, f'Features after {prevKind}: "{features}"'))
         good = False
       else:
-        qnodes[-1][1].update(features)
+        if len(qnodes):
+          qnodes[-1][1].update(features)
     elif kind == 'rel':
       fName = token['f']
       tName = token['t']

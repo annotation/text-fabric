@@ -8,7 +8,7 @@ PORT = dict(
 )
 
 OPTIONS = (
-    ('lineart', 'checkbox', 'linea', 'show lineart', False),
+    ('lineart', 'checkbox', 'linea', 'show lineart', True),
     ('lineNumbers', 'checkbox', 'linen', 'show line numbers', False),
 )
 

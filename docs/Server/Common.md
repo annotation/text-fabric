@@ -66,9 +66,9 @@
     Form there this function computes the locstion of the file in which
     the webapp of the *dataSource* resides: the location of the
     *dataSource* package in
-    [apps]({{tfght}}/{{c_apps}}).
+    [apps]({{tfght}}/{{b_apps}}).
 
-    See also [App structure](../Model/Apps.md#the-structure-of-apps)
+    See also [App structure](../Implementation/Apps.md#the-structure-of-apps)
 
 ## Getting and setting form values
 
@@ -154,7 +154,7 @@
 ??? abstract "shapeOptions(options, values)"
     Wraps the options, specified by the option specification in `config.py`
     into HTML.
-    See also [App structure](../Model/Apps.md#the-structure-of-apps)
+    See also [App structure](../Implementation/Apps.md#the-structure-of-apps)
 
 ??? abstract "shapeCondense(condenseTypes, value)"
     Provides a radio-buttoned chooser for the

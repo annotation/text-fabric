@@ -144,7 +144,7 @@ const getTable = (kind, subkind, m, button) => {
 
 const gotoFocus = kind => {
   if (kind == 'passage' || kind == 'query') {
-    const rTarget = $('details.focus')
+    const rTarget = $(`#${kind}Table details.focus`)
     if (rTarget != null && rTarget[0] != null) {
       rTarget[0].scrollIntoView(false)
     }
@@ -210,7 +210,6 @@ const subLinks = (kind, subkind) => {
 const detailc = kind => {
   $(`#${kind}Expac`).click(e => {
     e.preventDefault()
-    const { currentTarget } = e
     const expa = $(`#${kind}Expa`)
     const xpa = expa.val()
     const newXpa =
@@ -218,15 +217,17 @@ const detailc = kind => {
     detailSet(kind, newXpa)
     const dPretty = $(`#${kind}Table details.pretty`)
     if (newXpa == '-1') {
-      dPretty.each(() => {
-        if ($(currentTarget).prop('open')) {
-          $(currentTarget).prop('open', false)
+      dPretty.each((i, elem) => {
+        const el = $(elem)
+        if (el.prop('open')) {
+          el.prop('open', false)
         }
       })
     } else if (newXpa == '1') {
-      dPretty.each(() => {
-        if (!$(currentTarget).prop('open')) {
-          $(currentTarget).prop('open', true)
+      dPretty.each((i, elem) => {
+        const el = $(elem)
+        if (!el.prop('open')) {
+          el.prop('open', true)
         }
       })
     }

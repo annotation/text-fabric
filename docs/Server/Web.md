@@ -11,7 +11,7 @@
 
     This web app connects to the [TF kernel](Kernel.md)
     and merges the retrieved data into a set of 
-    [templates]({{tfght}}/{{c_views}}).
+    [templates]({{tfght}}/{{b_views}}).
 
     See the code in
     [web]({{tfghb}}/{{c_web}}).
@@ -100,7 +100,7 @@
 
     url pattern | effect
     --- | ---
-    `/server/static/...` | serves a static file from the server-wide [static folder]({{tfght}}/{{c_static}})
+    `/server/static/...` | serves a static file from the server-wide [static folder]({{tfght}}/{{b_static}})
     `/data/static/...` | serves a static file from the app specific static folder
     `/local/static/...` | serves a static file from a local directory specified by the app
     anything else | submits the form with user data and return the processed request
@@ -109,7 +109,7 @@
 
 ??? abstract "Templates"
     There are two templates in
-    [views]({{tfght}}/{{c_views}})
+    [views]({{tfght}}/{{b_views}})
     :
 
     * *index*: the normal template for returning responses
@@ -132,18 +132,18 @@
 
     * the CSS loaded from the app dependent extraApi, used
       for pretty displays;
-    * [index.css]({{tfghb}}/{{c_static}}/index.css): the formatting of the 
+    * [index.css]({{tfghb}}/{{b_static}}/index.css): the formatting of the 
       *index* web page with which the user interacts;
-    * [export.css]({{tfghb}}/{{c_views}}/export.css)
+    * [export.css]({{tfghb}}/{{b_views}}/export.css)
       the formatting of the export page;
-    * [base.css]({{tfghb}}/{{c_views}}/base.css)
+    * [base.css]({{tfghb}}/{{b_views}}/base.css)
       shared formatting between the index and export pages.
     
 ## Javascript
 
 ??? abstract "Javascript"
     We use a
-    [modest amount of Javascript]({{tfghb}}/{{c_static}}/tf.js)
+    [modest amount of Javascript]({{tfghb}}/{{b_static}}/tf.js)
     on top of 
     [JQuery](https://api.jquery.com).
 

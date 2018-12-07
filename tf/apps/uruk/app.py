@@ -1,7 +1,9 @@
 import os
 
-from tf.applib.helpers import dm, dh, htmlEsc, mdEsc
+from tf.core.helpers import htmlEsc, mdEsc
+from tf.applib.helpers import dm, dh
 from tf.applib.display import prettyPre, getFeatures
+from tf.applib.highlight import hlRep
 from tf.applib.api import setupApi
 from tf.applib.links import outLink
 from tf.apps.uruk.atf import Atf
@@ -85,8 +87,10 @@ class TfApp(Atf):
   def _plain(
       app,
       n,
+      passage,
       isLinked,
       _asString,
+      secLabel,
       **options,
   ):
     display = app.display
@@ -97,7 +101,7 @@ class TfApp(Atf):
     F = api.F
 
     nType = F.otype.v(n)
-    result = ''
+    result = passage
     if _asApp:
       nodeRep = f' <a href="#" class="nd">{n}</a> ' if d.withNodes else ''
     else:
@@ -109,6 +113,7 @@ class TfApp(Atf):
       rep = (
           app.atfFromSign(n) if isSign else app.atfFromQuad(n) if isQuad else app.atfFromCluster(n)
       )
+      rep = hlRep(app, rep, n, d.highlights)
       if isLinked:
         rep = app.webLink(n, text=rep, _asString=True)
       theLineart = ''
@@ -125,20 +130,22 @@ class TfApp(Atf):
       result = (f'{rep}{nodeRep}{theLineart}') if theLineart else f'{rep}{nodeRep}'
     elif nType == 'comment':
       rep = mdEsc(F.type.v(n))
+      rep = hlRep(app, rep, n, d.highlights)
       if isLinked:
         rep = app.webLink(n, text=rep, _asString=True)
       result = f'{rep}{nodeRep}: {mdEsc(F.text.v(n))}'
     else:
       lineNumbersCondition = d.lineNumbers
       if nType == 'line' or nType == 'case':
-        rep = mdEsc(f'{nType} {F.number.v(n)}')
+        rep = mdEsc(f'{nType} {F.number.v(n)}') if secLabel or nType == 'case' else ''
         lineNumbersCondition = d.lineNumbers and F.terminal.v(n)
       elif nType == 'column':
-        rep = mdEsc(f'{nType} {F.number.v(n)}')
+        rep = mdEsc(f'{nType} {F.number.v(n)}') if secLabel else ''
       elif nType == 'face':
         rep = mdEsc(f'{nType} {F.type.v(n)}')
       elif nType == 'tablet':
-        rep = mdEsc(f'{nType} {F.catalogId.v(n)}')
+        rep = mdEsc(f'{nType} {F.catalogId.v(n)}') if secLabel else ''
+      rep = hlRep(app, rep, n, d.highlights)
       result = app._addLink(
           n,
           rep,
@@ -188,8 +195,7 @@ class TfApp(Atf):
         nType,
         className,
         boundaryClass,
-        hlClass,
-        hlStyle,
+        hlAtt,
         nodePart,
         myStart,
         myEnd,
@@ -200,9 +206,16 @@ class TfApp(Atf):
     L = api.L
     E = api.E
     sortNodes = api.sortNodes
+    otypeRank = api.otypeRank
+
+    bigType = False
+    if d.condenseType is not None and otypeRank[nType] > otypeRank[d.condenseType]:
+      bigType = True
 
     if outer:
       seen = set()
+
+    (hlClass, hlStyle) = hlAtt
 
     heading = ''
     featurePart = ''
@@ -215,6 +228,32 @@ class TfApp(Atf):
     ) if nType in COMMENT_TYPES else ''
     children = ()
 
+    if bigType:
+      children = ()
+    elif nType == 'tablet':
+      children = L.d(n, otype='face')
+    elif nType == 'face':
+      children = L.d(n, otype='column')
+    elif nType == 'column':
+      children = L.d(n, otype='line')
+    elif nType == 'line' or nType == 'case':
+      if F.terminal.v(n):
+        children = sortNodes(
+            set(L.d(n, otype='cluster'))
+            | set(L.d(n, otype='quad'))
+            | set(L.d(n, otype='sign'))
+        )
+      else:
+        children = E.sub.f(n)
+    elif nType == 'cluster':
+      children = sortNodes(
+          set(L.d(n, otype='cluster'))
+          | set(L.d(n, otype='quad'))
+          | set(L.d(n, otype='sign'))
+      )
+    elif nType == 'quad':
+      children = E.sub.f(n)
+
     if nType == 'tablet':
       heading = htmlEsc(F.catalogId.v(n))
       heading += ' '
@@ -225,7 +264,6 @@ class TfApp(Atf):
           plain=True,
           **options,
       )
-      children = L.d(n, otype='face')
     elif nType == 'face':
       heading = htmlEsc(F.type.v(n))
       featurePart = getFeatures(
@@ -234,12 +272,10 @@ class TfApp(Atf):
           ('identifier', 'fragment'),
           **options,
       )
-      children = L.d(n, otype='column')
     elif nType == 'column':
       heading = htmlEsc(F.number.v(n))
       if F.prime.v(n):
         heading += "'"
-      children = L.d(n, otype='line')
     elif nType == 'line' or nType == 'case':
       heading = htmlEsc(F.number.v(n))
       if F.prime.v(n):
@@ -253,13 +289,6 @@ class TfApp(Atf):
             theseFeats,
             **options,
         )
-        children = sortNodes(
-            set(L.d(n, otype='cluster'))
-            | set(L.d(n, otype='quad'))
-            | set(L.d(n, otype='sign'))
-        )
-      else:
-        children = E.sub.f(n)
     elif nType == 'comment':
       heading = htmlEsc(F.type.v(n))
       featurePart = getFeatures(
@@ -271,14 +300,8 @@ class TfApp(Atf):
     elif nType == 'cluster':
       seen.add(n)
       heading = htmlEsc(CLUSTER_TYPES.get(F.type.v(n), ''))
-      children = sortNodes(
-          set(L.d(n, otype='cluster'))
-          | set(L.d(n, otype='quad'))
-          | set(L.d(n, otype='sign'))
-      )
     elif nType == 'quad':
       seen.add(n)
-      children = E.sub.f(n)
     elif nType == slotType:
       featurePart = app._getAtf(n) + getFeatures(app, n, (), **options)
       seen.add(n)
@@ -301,14 +324,14 @@ class TfApp(Atf):
 
     if isCluster:
       if outer:
-        html.append(f'<div class="contnr {className}{hlClass}"{hlStyle}>')
+        html.append(f'<div class="contnr {className} {hlClass}" {hlStyle}>')
       html.append(label)
       if outer:
         html.append(f'<div class="children {className}">')
     else:
       html.append(
           f'''
-<div class="contnr {className}{hlClass}"{hlStyle}>
+<div class="contnr {className} {hlClass}" {hlStyle}>
     {label}
     <div class="meta">
         {featurePart}
@@ -360,7 +383,7 @@ class TfApp(Atf):
     if isCluster:
       html.append(
           f'''
-    <div class="lbl {className}e{hlClass}"{hlStyle}>
+    <div class="lbl {className}e {hlClass}" {hlStyle}>
         {typePart}
         {nodePart}
     </div>
@@ -415,10 +438,9 @@ class TfApp(Atf):
             firstSlot,
             lastSlot,
             condenseType=None,
-            fmt=None,
             lineart=False,
             seen=seen,
-            **display.consume(options, 'lineart')
+            **display.consume(options, 'lineart', 'condenseType')
         )
       html.append('</div>')
       commentsPart = ''.join(html)

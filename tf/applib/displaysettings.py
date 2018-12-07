@@ -1,3 +1,4 @@
+from ..core.helpers import console
 import types
 
 DISPLAY_OPTIONS = dict(
@@ -42,7 +43,7 @@ class DisplaySettings(object):
           v if v is not None else
           getattr(app, k, None)
       )
-    self.displayDefaults.update({o[0]: o[1] for o in app.options})
+    self.displayDefaults.update({o[0]: o[-1] for o in app.options})
     self.reset()
 
   def reset(self, *options):

@@ -48,7 +48,7 @@ of nodes and edges that must be instantiated against the corpus.
 
 ## Apps
 
-TF contains corpus-dependent [apps](../Model/Apps.md) ([stats](StatsApps.md)).
+TF contains corpus-dependent [apps](../Implementation/Apps.md) ([stats](StatsApps.md)).
 
 ??? abstract "Display"
     An app knows how to display a particular corpus.

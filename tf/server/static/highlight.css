@@ -1,0 +1,30 @@
+span.hldot {
+	background-color: var(--hl-strong);
+	border: 0.2rem solid var(--hl-rim);
+	border-radius: 0.4rem;
+	/*
+	display: inline-block;
+	width: 0.8rem;
+	height: 0.8rem;
+	*/
+}
+span.hl {
+	background-color: var(--hl-strong);
+	border-width: 0;
+	border-radius: 0.1rem;
+	border-style: solid;
+}
+
+span.hlup {
+	border-color: var(--hl-dark);
+	border-width: 0.1rem;
+	border-style: solid;
+	border-radius: 0.2rem;
+  padding: 0.2rem;
+}
+
+:root {
+	--hl-strong:        hsla( 60, 100%,  70%, 0.9  );
+	--hl-rim:           hsla( 55, 100%,  60%, 0.9  );
+	--hl-dark:          hsla( 55, 100%,  40%, 0.9  );
+}

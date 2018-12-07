@@ -221,7 +221,6 @@ to see what Text-Fabric can reveal about the data.
     * [file format](Model/File-formats.md)
     * [optimizations](Model/Optimizations.md)
     * [search design](Model/Search.md)
-    * [apps](Model/Apps.md)
 
 ??? note "API Reference"
     Text-Fabric offers lots of functionality that works for all corpora.
@@ -258,3 +257,8 @@ to see what Text-Fabric can reveal about the data.
 
 ![uruk](images/uruk-app.png)
 
+??? note "Implementation"
+    Details
+
+    * [apps](Implementation/Apps.md)
+    * [highlight](Implementation/Highlight.md)

@@ -107,7 +107,7 @@
         Your TF app might be configured to download specific modules.
         The BHSA app invokes the phono features
         and the crossref features.
-        See the app's [config file]({{tfghb}}{{c_bhsa_config}}).
+        See the app's [config file]({{tfghb}}/{{c_bhsa_config}}).
 
         ??? caution "Release sensitive"
             Module data will be downloaded from a specific release
@@ -209,7 +209,8 @@
     ```
     
     ???+ "Description"
-        Searches in the same way as the generic Text-Fabric `S.search()`.
+        Searches in the same way as the generic Text-Fabric
+        [`S.search()`](General.md#search).
         But whereas the `S` version returns a generator which yields the results
         one by one, the `A` version collects all results and sorts them.
         It then reports the number of results.
@@ -406,14 +407,14 @@
         *   Otherwise, it should be mapped to a string that is a valid
             [CSS color]({{moz_color}}).
 
+        ??? hint "color names"
+            The link above points to a series of handy color names and their previews.
+
         ???+ note "highlights takes precedence over colorMap"
             If both `highlights` and `colorMap` are given, `colorMap` is ignored.
             
             If you need to micro-manage, `highlights` is your thing.
             Whenever possible, use `colorMap`.  
-
-      ??? hint "color names"
-          The link above points to a series of handy color names and their previews.
 
     ??? info "condensed=False"
         indicates one of two modes of displaying the result list:
@@ -462,7 +463,8 @@
             Use `T.formats` to inspect what text formats are available in your corpus.
 
     ??? info "highlights={}"
-          When nodes such as verses and sentences are displayed by `pretty()`,
+          When nodes such as verses and sentences are displayed
+					by `plain)_` or `pretty()`,
           their contents is also displayed. You can selectively highlight
           those parts.
 
@@ -558,7 +560,7 @@
 
 ??? abstract "A.plain()"
     ```python
-    A.plain(node, asString=False, isLinked=False, \*\*displayParameters)
+    A.plain(node, asString=False, isLinked=False, **displayParameters)
     ```
 
     ???+ info "Description"
@@ -578,7 +580,7 @@
 
 ??? abstract "A.plainTuple()"
     ```python
-    A.plainTuple(nodes, seqNumber, asString=False, \*\*displayParameters)
+    A.plainTuple(nodes, seqNumber, asString=False, **displayParameters)
     ```
 
     ???+ info "Description"
@@ -599,7 +601,7 @@
 
 ??? abstract "A.table()"
     ```python
-    A.table(results, asString=False, \*\*displayParameters)
+    A.table(results, asString=False, **displayParameters)
     ```
 
     ???+ info "Description"
@@ -617,7 +619,7 @@
 
 ??? abstract "A.pretty()"
     ```python
-    A.pretty(node, \*\*displayParameters)
+    A.pretty(node, **displayParameters)
     ```
 
     ???+ info "Description"
@@ -628,7 +630,7 @@
 
 ??? abstract "A.prettyTuple()"
     ```python
-    A.prettyTuple(tuple, seqNumber, \*\*displayParameters)
+    A.prettyTuple(tuple, seqNumber, **displayParameters)
     ```
 
     ???+ info "Description"
@@ -640,7 +642,7 @@
 
 ??? abstract "A.show()"
     ```python
-    A.show(results, \*\*displayParameters)
+    A.show(results, **displayParameters)
     ```
 
     ???+ info "Description"

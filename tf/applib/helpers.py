@@ -16,14 +16,6 @@ def dh(html):
   display(HTML(html))
 
 
-def htmlEsc(val):
-  return '' if val is None else str(val).replace('&', '&amp;').replace('<', '&lt;')
-
-
-def mdEsc(val):
-  return '' if val is None else str(val).replace('|', '&#124;')
-
-
 # FIND AN APP
 
 
@@ -60,12 +52,7 @@ def configureNames(names, myDir):
   result = {camel(key): value for (key, value) in names.items() if key == key.upper()}
 
   with open(f'{myDir}/static/display.css') as fh:
-    css = fh.read()
-  result['css'] = f'''
-<style type="text/css">
-{css}
-</style>
-'''
+    result['css'] = fh.read()
 
   return result
 
