@@ -635,18 +635,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../Model/Apps/" title="Apps" class="md-nav__link">
-      Apps
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -989,6 +977,54 @@
   </li>
 
     
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-11" type="checkbox" id="nav-11">
+    
+    <label class="md-nav__link" for="nav-11">
+      Implementation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-11">
+        Implementation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Highlight/" title="Highlight" class="md-nav__link">
+      Highlight
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
   </ul>
 </nav>
                   </div>
@@ -1090,18 +1126,20 @@ Sometimes it is faster than hand coding,
 sometimes (much) slower.</p>
 </details>
 <h2 id="apps">Apps<a class="headerlink" href="#apps" title="Permanent link">&para;</a></h2>
-<p>TF contains corpus-dependent <a href="../../Model/Apps/">apps</a> (<a href="../StatsApps/">stats</a>).</p>
+<p>TF contains corpus-dependent <a href="../../Implementation/Apps/">apps</a> (<a href="../StatsApps/">stats</a>).</p>
 <details class="abstract"><summary>Display</summary><p>An app knows how to display a particular corpus.</p>
 </details>
 <details class="abstract"><summary>Download</summary><p>An app knows how to download a particular corpus from its online repository.</p>
 </details>
-<details class="abstract"><summary>Web interface</summary><p>An app can set up a local web interface for a particular corpus.</p>
+<details class="abstract"><summary>Web interface</summary><p>An app can set up a web interface for a particular corpus.</p>
 </details>
 <h2 id="web-interface">Web interface<a class="headerlink" href="#web-interface" title="Permanent link">&para;</a></h2>
 <p>TF contains a 
-<a href="../../Server/Web/">local web interface</a> (<a href="../StatsServer/">stats</a>)
+<a href="../../Server/Web/">web interface</a> (<a href="../StatsServer/">stats</a>)
 for interacting with your corpus without programming.</p>
-<details class="abstract"><summary>Working with your corpus</summary><p>The local web interface lets you fire queries (search templates) to TF and interact
+<p>This interface can be served by a local web server (part of TF),
+or you can set up an internet set served by a TF kernel and web server.</p>
+<details class="abstract"><summary>Working with your corpus</summary><p>The web interface lets you fire queries (search templates) to TF and interact
 with the results:</p>
 <ul>
 <li>expanding rows to pretty displays;</li>

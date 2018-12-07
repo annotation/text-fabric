@@ -635,18 +635,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../Model/Apps/" title="Apps" class="md-nav__link">
-      Apps
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -1123,6 +1111,54 @@
   </li>
 
     
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-11" type="checkbox" id="nav-11">
+    
+    <label class="md-nav__link" for="nav-11">
+      Implementation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-11">
+        Implementation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Highlight/" title="Highlight" class="md-nav__link">
+      Highlight
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
   </ul>
 </nav>
                   </div>
@@ -1336,13 +1372,13 @@ source text is encoded and organized.</p>
 <li>the book of John in the Greek New Testament from XML-TEI to TF:
   <a href="https://github.com/pthu/pilot">pilot</a>;</li>
 <li>the Syriac New Testament:
-  <a href="https://github.com/etcbc/linksyr/tree/master/programs/tfgen">linksyr</a>;</li>
+  <a href="https://github.com/etcbc/syrnt/blob/master/programs/tfFromSyrnt.py">SyrNT</a>;</li>
 <li>the Greek New Testament:
-  <a href="https://github.com/Dans-labs/text-fabric-data/blob/master/programs/tfFromSblgnt.ipynb">tfFromSblgnt</a>;</li>
+  <a href="https://nbviewer.jupyter.org/github/Dans-labs/text-fabric-data/blob/master/programs/tfFromSblgnt.ipynb">tfFromSblgnt</a>;</li>
 <li>Sanskrit writings:
-  <a href="https://github.com/Dans-labs/text-fabric-data/blob/master/programs/tfFromSanskrit.ipynb">tfFromSanskrit</a>;</li>
-<li>Sanskrit writings:
-  <a href="https://github.com/Dans-labs/text-fabric-data/blob/master/programs/tfFromSumerianTEI.ipynb">tfFromSumerianTEI</a>.</li>
+  <a href="https://nbviewer.jupyter.org/github/Dans-labs/text-fabric-data/blob/master/programs/tfFromSanskrit.ipynb">tfFromSanskrit</a>;</li>
+<li>Sumerian writings:
+  <a href="https://nbviewer.jupyter.org/github/Dans-labs/text-fabric-data/blob/master/programs/tfFromSumerianTEI.ipynb">tfFromSumerianTEI</a>.</li>
 </ul>
 <h2 id="analysis">Analysis<a class="headerlink" href="#analysis" title="Permanent link">&para;</a></h2>
 <p>The text is a string with a little bit of structure. Some of that structure
@@ -1555,9 +1591,9 @@ each word in the text.</p>
 <p>Using TF itself it is not that hard to create a new feature <code>pos</code>, that maps
 each word node to the part of speech of that word.</p>
 <p>See for example how Cody Kingham
-<a href="https://github.com/etcbc/lingo/blob/master/heads/Heads2TF.ipynb">adds</a>
+<a href="https://nbviewer.jupyter.org/github/etcbc/lingo/blob/master/heads/Heads2TF.ipynb">adds</a>
 the notion of linguistic head to the BHSA
-datasource of the Hebrew Bible.</p>
+corpus of the Hebrew Bible.</p>
 <h3 id="step-9-add-the-new-feature">Step 9: add the new feature<a class="headerlink" href="#step-9-add-the-new-feature" title="Permanent link">&para;</a></h3>
 <p>Once you have the feature <code>pos</code>, provide a bit of metadata, and call</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
@@ -1608,7 +1644,7 @@ Text-Fabric treats it as one dataset.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../../Model/Apps/" title="Apps" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../../Model/Search/" title="Search" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1617,7 +1653,7 @@ Text-Fabric treats it as one dataset.</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Apps
+                Search
               </span>
             </div>
           </a>

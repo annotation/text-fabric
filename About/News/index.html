@@ -717,18 +717,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../Model/Apps/" title="Apps" class="md-nav__link">
-      Apps
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -1010,6 +998,54 @@
   </li>
 
     
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-11" type="checkbox" id="nav-11">
+    
+    <label class="md-nav__link" for="nav-11">
+      Implementation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-11">
+        Implementation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Highlight/" title="Highlight" class="md-nav__link">
+      Highlight
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
   </ul>
 </nav>
                   </div>
@@ -1132,7 +1168,14 @@ all possibilities:
   <strong><a href="../../Api/App/#search">A.search</a></strong></li>
 <li>New functions <code>A.nodeFromSectionStr()</code> and <code>A.sectionStrFromNode()</code>
   which give the passage string of any kind of node, if possible.
-  <strong><a href="../../Api/App/#sections">Section support for apps</a></strong></li>
+  <strong><a href="../../Api/App/#sections">Section support for apps</a></strong><ul>
+<li>The function <code>A.plain()</code> now responds to the <code>highlights</code> parameter:
+    you can highlight material inside plain displays.
+  <strong><a href="../../Api/App/#display">A.plain</a></strong>
+    and
+    <strong><a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/display.ipynb">display tutorial</a></strong></li>
+</ul>
+</li>
 <li>New function <code>T.sectionTuple(n)</code> which gives the tuple of section nodes in which <code>n</code>
   is embedded
   <strong><a href="../../Api/General/#sections">T.sectionTuple</a></strong></li>
@@ -1145,12 +1188,6 @@ all possibilities:
 <li>New API member <code>sortKeyTuple</code> to sort tuples of nodes in the
   canonical ordering.
   <strong><a href="../../Api/General/#navigating-nodes">sortKeyTuple</a></strong></li>
-<li>The function <code>T.text()</code> has a new optional parameter:
-  <code>highlights=set()</code>.
-  Now you can
-  highlight parts of plain representations in the same way
-  as you can highlight in pretty displays, but still with a few limitations.
-  <strong><a href="../../Api/General/#text-representation">T.text</a></strong></li>
 <li>The code to detect the file name and path of the script/notebook you are running in,
   is inherently brittle. It is unwise to base decisions on that.
   This code has been removed from TF.

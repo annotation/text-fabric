@@ -635,18 +635,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../Model/Apps/" title="Apps" class="md-nav__link">
-      Apps
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -995,6 +983,54 @@
   </li>
 
     
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-11" type="checkbox" id="nav-11">
+    
+    <label class="md-nav__link" for="nav-11">
+      Implementation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-11">
+        Implementation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Highlight/" title="Highlight" class="md-nav__link">
+      Highlight
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
   </ul>
 </nav>
                   </div>
@@ -1072,7 +1108,7 @@
 <h2 id="about">About<a class="headerlink" href="#about" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>TF kernel</summary><p>Text-Fabric can be used as a service.
 The full API of Text-Fabric needs a lot of memory, which makes it unusably for
-rapid successions of loading and unloading, like when used in a webserver context.</p>
+rapid successions of loading and unloading, like when used in a web server context.</p>
 <p>However, you can start TF as a service process, after which many clients can connect to it,
 all looking at the same (read-only) data. We call this a <strong>TF kernel</strong>.</p>
 <p>The API that the TF kernel offers is limited, it is primarily template search that is offered.
@@ -1105,14 +1141,14 @@ of the text-fabric browser.</p>
 
 <p>After this, <code>api</code> can be used to obtain information from the TF kernel.</p>
 <details class="example"><summary>Example</summary><p>See the
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/local.py">local webserver</a>
+<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/web.py">web server</a>
 of the text-fabric browser.</p>
 </details>
 </details>
 <h2 id="kernel-api">Kernel API<a class="headerlink" href="#kernel-api" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>About</summary><p>The API of the TF kernel is created
 by the function <code>makeTfKernel</code> in the 
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/kernel.py">data</a>
+<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/kernel.py">kernel</a>
 module of the server subpackage.</p>
 <p>It returns a class <code>TfKernel</code> with a number
 of exposed methods that can be called by other programs.</p>
@@ -1137,6 +1173,12 @@ such as tuples. They are sent within a single interprocess call,
 and fly swiftly through the connecting pipe. </p>
 </details>
 </details>
+<details class="abstract"><summary>monitor()</summary><p>A utility function that spits out some information from the kernel
+to the outside work. 
+At this moment it is only used for debugging, but later
+it can be useful to monitor the kernel or manage it
+while it remains running.</p>
+</details>
 <details class="abstract"><summary>header()</summary><p>Calls the <code>header()</code> method of the app,
 which fetches all the stuff to create a header
 on the page with links to data and documentation of the
@@ -1145,6 +1187,13 @@ data source.</p>
 <details class="abstract"><summary>provenance()</summary><p>Calls the <code>provenance()</code> method of the app,
 which fetches provenance metadata to be shown
 on exported pages.</p>
+</details>
+<details class="abstract"><summary>setNames()</summary><p>Returns the names of sets that have been provided
+as custom sets to the kernel by means of the
+<a href=""><code>--sets=</code></a> command line argument with which the kernel
+was started.</p>
+<p>A web server kan use this informatiomn to write out provernance
+info.</p>
 </details>
 <details class="abstract"><summary>css()</summary><p>Calls the <code>loadCSS()</code> method of the app,
 which delivers the CSS code to be inserted
@@ -1163,6 +1212,49 @@ generic TF api:</p>
   data source.</li>
 </ul>
 </details>
+<details class="abstract"><summary>passage()</summary><p>Asks the kernel for passages (chunks of material corresponding
+to sections of level 1 (chapters).</p>
+<p>The material will be displayed as a sequence of plain
+representations of the sec2s, which can be expanded to pretty
+displays when the user chooses to do so.</p>
+<p>Parameters:</p>
+<details class="note"><summary>sec0</summary><p>The level 0 section (book) in which the passage occurs</p>
+</details>
+<details class="note"><summary>sec1</summary><p>The level 1 section (chapter) to fetch</p>
+</details>
+<details class="note"><summary>sec2=None</summary><p>The level 2 section (verse) that should get focus</p>
+</details>
+<details class="note"><summary>opened</summary><p>The set of items that are currently expanded into pretty display</p>
+</details>
+<details class="note"><summary>features</summary><p>The features that should be displayed in pretty displays when expanding
+a plain representation of a sec2 into a pretty display</p>
+</details>
+<details class="note"><summary>query</summary><p>The query whose results should be highlighted in the passage display.</p>
+</details>
+<details class="note"><summary>getx</summary><p>If given, only a single sec2 (verse) will be fetched, but in pretty
+display.
+<code>getx</code> is the identifier (section label, verse number) of the item/</p>
+</details>
+<details class="note"><summary>**options</summary><p>Additional, optional display options</p>
+</details>
+</details>
+<details class="abstract"><summary>table()</summary><p>Fetches material corresponding to a list of sections or tuples of nodes.</p>
+<p>Parameters:</p>
+<details class="note"><summary>kind</summary><p>Either <code>sections</code> or <code>tuples</code>: whether to find section material or tuple
+material;</p>
+</details>
+<details class="note"><summary>task</summary><p>The list of things (sections or tuples) to retrieve the material for;
+Typically coming from the <em>section pad</em> / <em>node pad</em> in the browser.</p>
+</details>
+<details class="note"><summary>opened=set()</summary><p>As in <code>passage()</code></p>
+</details>
+<details class="note"><summary>features</summary><p>As in <code>passage()</code></p>
+</details>
+<details class="note"><summary>getx</summary><p>As in <code>passage()</code></p>
+</details>
+<details class="note"><summary>**options</summary><p>As in <code>passage()</code></p>
+</details>
+</details>
 <details class="abstract"><summary>search()</summary><p>The work horse of this API.
 Executes a TF search template, retrieves
 formatted results, retrieves 
@@ -1173,15 +1265,24 @@ sections.</p>
 Typically coming
 from the <em>search pad</em> in the browser.</p>
 </details>
-<details class="note"><summary>tuples</summary><p>Tuples of nodes to look up features for.
-Typically coming
-from the <em>node pad</em> in the browser.</p>
+<details class="note"><summary>batch</summary><p>The number of table rows to show on one page
+in the browser.</p>
 </details>
-<details class="note"><summary>sections</summary><p>Sections to look up features for.
-Typically coming
-from the <em>section pad</em> in the browser.</p>
-<p>For the Bhsa these are <em>verse</em> references,
-for Uruk these are tablets by <em>P-number</em>.</p>
+<details class="note"><summary>position=1</summary><p>The position that is central in the browser.
+The navigation links take this position
+as the focus point, and enable the user
+to navigate to neighbouring results, in ever bigger
+strides.</p>
+</details>
+<details class="note"><summary>opened=set()</summary><p>Which results have been expanded and need extended results.
+Normally, only the information to provide a <em>plain</em>
+representation of a result is being fetched,
+but for the opened ones information is gathered for
+pretty displays.</p>
+</details>
+<details class="note"><summary>getx</summary><p>If given, only a single result will be fetched, but in pretty
+display.
+<code>getx</code> is the sequence number of the result.</p>
 </details>
 <details class="note"><summary>condensed</summary><p>Whether or not the results should be <em>condensed</em>.
 Normally, results come as tuples of nodes, and each
@@ -1205,21 +1306,6 @@ but you condense to verses, the chapter nodes will
 not show up.
 But if you condense to books, they will show up.</p>
 </details>
-</details>
-<details class="note"><summary>batch</summary><p>The number of table rows to show on one page
-in the browser.</p>
-</details>
-<details class="note"><summary>position=1</summary><p>The position that is central in the browser.
-The navigation links take this position
-as the focus point, and enable the user
-to navigate to neighbouring results, in ever bigger
-strides.</p>
-</details>
-<details class="note"><summary>opened=set()</summary><p>Which results have been expanded and need extended results.
-Normally, only the information to provide a <em>plain</em>
-representation of a result is being fetched,
-but for the opened ones information is gathered for
-pretty displays.</p>
 </details>
 <details class="note"><summary>withNodes=False</summary><p>Whether to include the node numbers into the formatted
 results.</p>

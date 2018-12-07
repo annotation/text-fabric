@@ -1731,18 +1731,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../Model/Apps/" title="Apps" class="md-nav__link">
-      Apps
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -2015,6 +2003,54 @@
   <li class="md-nav__item">
     <a href="../../Code/StatsTest/" title="Stats (Tests)" class="md-nav__link">
       Stats (Tests)
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-11" type="checkbox" id="nav-11">
+    
+    <label class="md-nav__link" for="nav-11">
+      Implementation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-11">
+        Implementation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Highlight/" title="Highlight" class="md-nav__link">
+      Highlight
     </a>
   </li>
 
@@ -3393,7 +3429,7 @@ read from sys.argv.</p>
 <p>So that it can be used packaged apps.</p>
 <h2 id="5516">5.5.16<a class="headerlink" href="#5516" title="Permanent link">&para;</a></h2>
 <p>2018-07-17</p>
-<p>Extra option when starting up the text-fabric web interface: <code>-docker</code> to let the webserver
+<p>Extra option when starting up the text-fabric web interface: <code>-docker</code> to let the web server
 listen at <code>0.0.0.0</code> instead of <code>localhost</code>.</p>
 <p>So that it can be used in a Docker container.</p>
 <h2 id="5515">5.5.15<a class="headerlink" href="#5515" title="Permanent link">&para;</a></h2>
@@ -3416,7 +3452,7 @@ listen at <code>0.0.0.0</code> instead of <code>localhost</code>.</p>
 <ul>
 <li>Better in catching out-of-memory errors.</li>
 <li>Prevents creation of corrupt compiled binary TF data.</li>
-<li>Prevents starting the webserver if the TF kernel fails to load.</li>
+<li>Prevents starting the web server if the TF kernel fails to load.</li>
 </ul>
 <h2 id="557">5.5.7<a class="headerlink" href="#557" title="Permanent link">&para;</a></h2>
 <p>2018-07-09</p>
@@ -3482,11 +3518,11 @@ You can also say</p>
 
 <p>to kill all remnant processes,
 or</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric -k datasource
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric -k corpus
 </pre></div>
 </td></tr></table>
 
-<p>to kill the processes for a specific datasource only.</p>
+<p>to kill the processes for a specific corpus only.</p>
 </details>
 <details class="abstract"><summary>Manual node entry</summary><p>You can enter nodes manually in the TF browser.
 Handy for quick inspection.
@@ -3525,13 +3561,13 @@ But it is shown in the tutorials and you can observer it in the text-fabric brow
 <p>Addressed start-up problems.</p>
 <h2 id="50">5.0<a class="headerlink" href="#50" title="Permanent link">&para;</a></h2>
 <p>2018-06-18</p>
-<p>Built in webserver and client for local query running.
+<p>Built in web server and client for local query running.
 It is implemented for Bhsa and Uruk.</p>
 <h2 id="4423">4.4.2,3<a class="headerlink" href="#4423" title="Permanent link">&para;</a></h2>
 <p>2018-06-13</p>
 <p>New distribution method with setuptools.
 Text-Fabric has now dependencies on modules rpyc and bottle,
-because it contains a built-in TF kernel and webserver.</p>
+because it contains a built-in TF kernel and web server.</p>
 <p>This website is still barely functional, though.</p>
 <h2 id="441">4.4.1<a class="headerlink" href="#441" title="Permanent link">&para;</a></h2>
 <p>2018-06-10</p>

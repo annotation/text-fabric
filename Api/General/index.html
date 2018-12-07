@@ -722,6 +722,26 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#helpers" title="Helpers" class="md-nav__link">
+    Helpers
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#messages" title="Messages" class="md-nav__link">
+    Messages
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -861,18 +881,6 @@
   <li class="md-nav__item">
     <a href="../../Model/Search/" title="Search" class="md-nav__link">
       Search
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../Model/Apps/" title="Apps" class="md-nav__link">
-      Apps
     </a>
   </li>
 
@@ -1158,6 +1166,54 @@
   </li>
 
     
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-11" type="checkbox" id="nav-11">
+    
+    <label class="md-nav__link" for="nav-11">
+      Implementation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-11">
+        Implementation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Highlight/" title="Highlight" class="md-nav__link">
+      Highlight
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
   </ul>
 </nav>
                   </div>
@@ -1366,6 +1422,26 @@
           <li class="md-nav__item">
   <a href="#sets" title="Sets" class="md-nav__link">
     Sets
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helpers" title="Helpers" class="md-nav__link">
+    Helpers
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#messages" title="Messages" class="md-nav__link">
+    Messages
   </a>
   
 </li>
@@ -1682,7 +1758,7 @@ thing:</p>
 </pre></div>
 </td></tr></table>
 
-<details class="info"><summary>Description</summary><p>Same as <code>sortKey</code>, but this one works on tuples instead of nodes.
+<details class="info" open="open"><summary>Description</summary><p>Same as <code>sortKey</code>, but this one works on tuples instead of nodes.
 It appies <code>sortKey</code> to each member of the tuple.
 Handy to sort e.g. search results. We
 could sort them in canonical order like this:</p>
@@ -1770,7 +1846,7 @@ of <code>node</code>.</p>
 and the <code>L.d(n)</code> and <code>L.u(n)</code> methods.</p>
 <p>When we order nodes and report on which nodes embed which other nodes, we do not
 only take into account the sets of slots the nodes occupy, but also their
-<em>level</em>. See <a href="#levels">levels</a> and <a href="#levels-of-node-types">text</a>.</p>
+<em>level</em>. See <a href="#sections">levels</a>.</p>
 <p>Both the <code>L.d(n)</code> and <code>L.u(n)</code> work as follows:</p>
 <ul>
 <li><code>L.d(n)</code> returns nodes such that embedding nodes come before embedded nodes
@@ -2566,7 +2642,7 @@ library.</p>
 <h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
 <p>For a description of Text-Fabric search, go to <a href="../../Use/Search/">Search</a></p>
 <details class="info" open="open"><summary>S</summary><p>The Search API is exposed as <code>S</code> or <code>Search</code>.</p>
-<p>It's main method, <code>search</code>, takes a <a href="../Search#search-templates">search template</a>
+<p>It's main method, <code>search</code>, takes a <a href="../../Use/Search/#search-templates">search template</a>
 as argument.
 A template consists of elements that specify nodes with conditions and
 relations between them.
@@ -2594,7 +2670,7 @@ template. It includes the edge features that are available in your dataset.</p>
 <details class="info" open="open"><summary>Description</summary><p>Searches for combinations of nodes that together match a search template.
 This method returns a <em>generator</em> which yields the results one by one. One result
 is a tuple of nodes, where each node corresponds to an <em>atom</em>-line in your
-<a href="#search-template-introduction">search template</a>.</p>
+<a href="../../Use/Search/#search-template-reference">search template</a>.</p>
 </details>
 <details class="info"><summary>query</summary><p>The query is a search template, i.e. a string that conforms to the rules described above.</p>
 </details>
@@ -2615,8 +2691,8 @@ costly <code>load</code> methods.
 You have to come up with a process that runs TF, has all features loaded, and
 that can respond to queries from other processes.
 We call such a process a <strong>TF kernel</strong>.</p>
-<p>Webservers can use such a daemonized TF to build efficient controllers.</p>
-<p>A TF kernel and webserver are included in the Text-Fabric code base.
+<p>Web servers can use such a daemonized TF to build efficient controllers.</p>
+<p>A TF kernel and web server are included in the Text-Fabric code base.
 See <a href="../../Server/Kernel/">kernel</a> and <a href="../../Server/Web/">web</a>.</p>
 </details>
 <details class="note"><summary>Generator versus tuple</summary><p>If <code>limit</code> is specified, the result is not a generator but a tuple of results.</p>
@@ -2761,7 +2837,9 @@ to display your results.</p>
 </details>
 <h2 id="convert">Convert<a class="headerlink" href="#convert" title="Permanent link">&para;</a></h2>
 <h3 id="mql">MQL<a class="headerlink" href="#mql" title="Permanent link">&para;</a></h3>
-<details class="info"><summary>Data interchange with MQL</summary><p>You can interchange with MQL data. Text-Fabric can read and write MQL dumps. An
+<details class="info"><summary>Data interchange with MQL</summary><p>You can interchange with
+<a href="https://emdros.org">MQL data</a>.
+Text-Fabric can read and write MQL dumps. An
 MQL dump is a text file, like an SQL dump. It contains the instructions to
 create and fill a complete database.</p>
 </details>
@@ -2958,6 +3036,19 @@ This file must contain a gzipped, pickled data structure.</p>
 </details>
 <details class="info"><summary>Returns</summary><p>The data structure contained in the file if all went well, <code>False</code> otherwise.</p>
 </details>
+</details>
+<h2 id="helpers">Helpers<a class="headerlink" href="#helpers" title="Permanent link">&para;</a></h2>
+<p>Various functions that have a function that is not directly tied to a class.
+These functions are available in <code>tf.core.helpers</code>,
+so in order to use function <code>fff</code>, say</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.core.helpers</span> <span class="kn">import</span> <span class="n">fff</span>
+</pre></div>
+</td></tr></table>
+
+<h3 id="messages">Messages<a class="headerlink" href="#messages" title="Permanent link">&para;</a></h3>
+<details class="abstract"><summary>shapeMessages</summary><p>Wraps error messages into HTML. The messages come from the TF API,
+through the TF kernel, in response to wrong search templates
+and other mistaken user input.</p>
 </details>
                 
                   

@@ -710,18 +710,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../Model/Apps/" title="Apps" class="md-nav__link">
-      Apps
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -1003,6 +991,54 @@
   </li>
 
     
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-11" type="checkbox" id="nav-11">
+    
+    <label class="md-nav__link" for="nav-11">
+      Implementation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-11">
+        Implementation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Highlight/" title="Highlight" class="md-nav__link">
+      Highlight
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
   </ul>
 </nav>
                   </div>
@@ -1087,7 +1123,7 @@
                 <h1 id="browser">Browser<a class="headerlink" href="#browser" title="Permanent link">&para;</a></h1>
 <details class="abstract"><summary>TF in the browser</summary><p>The Text-Fabric package contains a command to
 work with your corpus in your browser.
-It sets up a local webserver, which interacts with your web browser.
+It sets up a local web server, which interacts with your web browser.
 Then you can view and search the corpus without programming and without
 internet connection.</p>
 <p>For some corpora an internet website has been set up. You can then work
@@ -1150,14 +1186,16 @@ The TF browser can import those sets, so that you can use such queries in the br
 </ul>
 <p><code>filePath</code> must specify a file on your local system
 (you may use <code>~</code> for your home directory).
-That file must have been written by calling <a href="../../Api/General/#sets"><code>tf.lib.writeSets</code></a>.
+That file must have been written by calling
+<a href="../../Api/General/#sets"><code>tf.lib.writeSets</code></a>.
 If so,it contains a dictionary of named node sets.
 These names can be used in search templates,
 and the TF browser will use this dictionary to resolve those names.
 See <a href="../../Api/General/#search-api">S.search() sets argument</a>.</p>
 </details>
 <h2 id="jobs">Jobs<a class="headerlink" href="#jobs" title="Permanent link">&para;</a></h2>
-<details class="hint"><summary>Saving your session</summary><p>Your session (aka <em>job</em>) will be saved in your browser, under the name <em>app</em><code>-default</code>,
+<details class="hint"><summary>Saving your session</summary><p>Your session (aka <em>job</em>) will be saved in your browser,
+under the name <em>app</em><code>-default</code>,
 or another name if you rename, duplicate, import or create new sessions.</p>
 </details>
 <details class="hint"><summary>Multiple windows</summary><p>After you have issued the <code>text-fabric</code> command, a <em>TF kernel</em> is started for you.
@@ -1169,7 +1207,7 @@ and they will load quickly,
 without the long wait you experienced when the TF kernel was loading.</p>
 </details>
 <h2 id="shut-down">Shut down<a class="headerlink" href="#shut-down" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>About</summary><p>You can close the TF kernel and webserver by pressing Ctrl-C in the terminal
+<details class="abstract"><summary>About</summary><p>You can close the TF kernel and web server by pressing Ctrl-C in the terminal
 or command prompt where you have started <code>text-fabric</code>.</p>
 </details>
 <details class="abstract"><summary>Clean up</summary><p>Before starting up, the TF browser will check if there are no running processes
@@ -1186,7 +1224,7 @@ including your own.</p>
 <p>You can use the "Export" tab to tell the story behind your query and then export
 your view.
 A new page will open, which you can save as a PDF.</p>
-<p>There is also a button to download all your results.</p>
+<p>There is also a button to download all your results as data files.</p>
 </details>
 <details class="abstract"><summary>Exported materials</summary><details class="info"><summary>job.json</summary><p>A json file with all information associated with your current session.
 You can import this in the Jobs section, and restore the session by which
@@ -1222,7 +1260,8 @@ in which Excel handles CSV files properly.</p>
 </pre></div>
 </td></tr></table>
 
-<p>Conversely, if you want to write a CSV with Hebrew in it, to be opened in Excel, take care to:</p>
+<p>Conversely, if you want to write a CSV with Hebrew in it,
+to be opened in Excel, take care to:</p>
 <ul>
 <li>give the file name extension <code>.tsv</code> (not <code>.csv</code>)</li>
 <li>make the file <strong>tab</strong> separated (do not use the comma or semicolon!)</li>

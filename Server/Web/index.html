@@ -96,7 +96,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#local-web-interface" tabindex="1" class="md-skip">
+      <a href="#web-interface" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -635,18 +635,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../Model/Apps/" title="Apps" class="md-nav__link">
-      Apps
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -1003,6 +991,54 @@
   </li>
 
     
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-11" type="checkbox" id="nav-11">
+    
+    <label class="md-nav__link" for="nav-11">
+      Implementation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-11">
+        Implementation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Highlight/" title="Highlight" class="md-nav__link">
+      Highlight
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
   </ul>
 </nav>
                   </div>
@@ -1084,9 +1120,9 @@
                   <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/Server/Web.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="local-web-interface">Local Web interface<a class="headerlink" href="#local-web-interface" title="Permanent link">&para;</a></h1>
+                <h1 id="web-interface">Web interface<a class="headerlink" href="#web-interface" title="Permanent link">&para;</a></h1>
 <h2 id="about">About<a class="headerlink" href="#about" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>Local web interface</summary><p>TF contains a local web interface
+<details class="abstract"><summary>Web interface</summary><p>TF contains a web interface
 in which you can enter a search template and view the results.</p>
 <p>This is realized by a web app based on 
 <a href="https://bottlepy.org">bottle</a>.</p>
@@ -1094,10 +1130,10 @@ in which you can enter a search template and view the results.</p>
 and merges the retrieved data into a set of 
 <a href="https://github.com/Dans-labs/text-fabric/tree/master/tf/server/views">templates</a>.</p>
 <p>See the code in
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/local.py">local</a>.</p>
+<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/web.py">web</a>.</p>
 </details>
 <h2 id="start-up">Start up<a class="headerlink" href="#start-up" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>Start up</summary><p>TF kernel, webserver and browser page are started
+<details class="abstract"><summary>Start up</summary><p>TF kernel, web server and browser page are started
 up by means of a script called <code>text-fabric</code>, which will be installed in an executable
 directory by the <code>pip</code> installer.</p>
 <p>What the script does is the same as:</p>
@@ -1117,25 +1153,31 @@ This process loads the bulk of the TF data, so it can take a while.
 When it has loaded the data, it sends out a message that loading is done,
 which is picked up by the script.</p>
 </details>
-<details class="abstract"><summary>TF webserver</summary><p>A short while after receiving the "data loading done" message, the TF webserver is started.</p>
-<details class="hint"><summary>Debug mode</summary><p>If you have passed <code>-d</code> to the <code>text-fabric</code> script, the <strong>bottle</strong> will be started
-in debug and reload mode.
-That means that if you modify <code>web.py</code> or a module it imports, the webserver will
-reload itself automatically.
+<details class="abstract"><summary>TF web server</summary><p>A short while after receiving the "data loading done" message,
+the TF web server is started.</p>
+<details class="hint"><summary>Debug mode</summary><p>If you have passed <code>-d</code> to the <code>text-fabric</code> script,
+the <strong>bottle</strong> will be started in debug and reload mode.
+That means that if you modify <code>web.py</code> or a module it imports,
+the web server will reload itself automatically.
 When you refresh the browser you see the changes.
-If you have changed templates, the css, or the javascript, you should do a "refresh from origin".</p>
+If you have changed templates, the css, or the javascript,
+you should do a "refresh from origin".</p>
 </details>
 </details>
-<details class="abstract"><summary>Load web page</summary><p>After a short while, the default web browser will be started with a url and port at which the
-webserver will listen. You see your browser being started up and the TF page being loaded.</p>
+<details class="abstract"><summary>Load web page</summary><p>After a short while, the default web browser will be started
+with a url and port at which the
+web server will listen. You see your browser being started up
+and the TF page being loaded.</p>
 </details>
-<details class="abstract"><summary>Waiting</summary><p>The script now waits till the webserver is finished.
-You finish it by pressing Ctrl-C, and if you have used the <code>-d</code> flag, you have to press it twice.</p>
+<details class="abstract"><summary>Waiting</summary><p>The script now waits till the web server is finished.
+You finish it by pressing Ctrl-C, and if you have used the <code>-d</code> flag,
+you have to press it twice.</p>
 </details>
 <details class="abstract"><summary>Terminate the TF kernel</summary><p>At this point, the <code>text-fabric</code> script will terminate the TF kernel.</p>
 </details>
 <details class="abstract"><summary>Clean up</summary><p>Now all processes that have started up have been killed.</p>
-<p>If something went wrong in this sequence, chances are that a process keeps running.
+<p>If something went wrong in this sequence,
+chances are that a process keeps running.
 It will be terminated next time you call the <code>text-fabric</code>.</p>
 <details class="hint"><summary>You can kill too</summary><p>If you run</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric -k
@@ -1199,15 +1241,16 @@ It will be terminated next time you call the <code>text-fabric</code>.</p>
 <details class="abstract"><summary>CSS</summary><p>We format the web pages with CSS, with extensive use
 of
 <a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox">flexbox</a>.</p>
-<p>There are three sources of CSS formatting:</p>
+<p>There are several sources of CSS formatting:</p>
 <ul>
 <li>the CSS loaded from the app dependent extraApi, used
   for pretty displays;</li>
-<li><a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/static/main.css">main.css</a>: the formatting of the 
+<li><a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/static/index.css">index.css</a>: the formatting of the 
   <em>index</em> web page with which the user interacts;</li>
-<li>inside the
-  <a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/views/export.tpl">export</a>
-  template, for formatting the exported page.</li>
+<li><a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/views/export.css">export.css</a>
+  the formatting of the export page;</li>
+<li><a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/views/base.css">base.css</a>
+  shared formatting between the index and export pages.</li>
 </ul>
 </details>
 <h2 id="javascript">Javascript<a class="headerlink" href="#javascript" title="Permanent link">&para;</a></h2>
@@ -1222,7 +1265,6 @@ collapsing. Unfortunately it is not supported by the Microsoft
 browsers, not even Edge.</p>
 <details class="caution"><summary>On Windows?</summary><p>Windows users should install Chrome of Firefox.</p>
 </details>
-<p>Safari is fine.</p>
 </details>
                 
                   

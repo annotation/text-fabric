@@ -454,30 +454,36 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#search-templates" title="Search templates" class="md-nav__link">
-    Search templates
+  <a href="#search-template-reference" title="Search template reference" class="md-nav__link">
+    Search template reference
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#feature-specifications" title="Feature specifications" class="md-nav__link">
     Feature specifications
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#relational-operators" title="Relational operators" class="md-nav__link">
     Relational operators
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#quantifiers" title="Quantifiers" class="md-nav__link">
     Quantifiers
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -692,18 +698,6 @@
   <li class="md-nav__item">
     <a href="../../Model/Search/" title="Search" class="md-nav__link">
       Search
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../Model/Apps/" title="Apps" class="md-nav__link">
-      Apps
     </a>
   </li>
 
@@ -989,6 +983,54 @@
   </li>
 
     
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-11" type="checkbox" id="nav-11">
+    
+    <label class="md-nav__link" for="nav-11">
+      Implementation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-11">
+        Implementation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Apps/" title="Apps" class="md-nav__link">
+      Apps
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Highlight/" title="Highlight" class="md-nav__link">
+      Highlight
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
   </ul>
 </nav>
                   </div>
@@ -1010,30 +1052,36 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#search-templates" title="Search templates" class="md-nav__link">
-    Search templates
+  <a href="#search-template-reference" title="Search template reference" class="md-nav__link">
+    Search template reference
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#feature-specifications" title="Feature specifications" class="md-nav__link">
     Feature specifications
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#relational-operators" title="Relational operators" class="md-nav__link">
     Relational operators
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#quantifiers" title="Quantifiers" class="md-nav__link">
     Quantifiers
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1062,12 +1110,11 @@ in your data set. The structure you are interested in has to be written as a
 <em>search template</em>.</p>
 <p>A search template expresses a pattern of nodes and edges with additional conditions
 also known as <em>quantifiers</em>.</p>
-<p>You can query a TF datasource in the TF browser, if your main corpus
-has been wrapped in a Text-Fabric <a href="../../Api/App/">app</a>.</p>
-<p>You can also run queries on arbitrary TF datasources programmatically, e.g. in a Jupyter
+<p>You can query a TF corpus in the TF browser, if your main corpus
+has been wrapped in a Text-Fabric <a href="../../About/Corpora/">app</a>.</p>
+<p>You can also run queries on arbitrary TF corpora programmatically, e.g. in a Jupyter
 notebook, by using the <a href="../../Api/General/#search"><code>S</code> API</a>.</p>
 </details>
-<h2 id="search-templates">Search templates<a class="headerlink" href="#search-templates" title="Permanent link">&para;</a></h2>
 <details class="info"><summary>Search primer</summary><p>A search template consists of a bunch of lines,
 possibly indented, that specify objects to look for. Here is a simple example:</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
@@ -1090,8 +1137,8 @@ singular.</p>
 contained in the same sentence, the sentence is contained in the chapter, the
 chapter in the book.</p>
 <p>The conditions you specify on book, chapter, word are all conditions in terms of
-<a href="#node-features">node features</a>. You can use all features in the corpus for
-this.</p>
+<a href="#feature-specifications">node features</a>.
+You can use all features in the corpus for this.</p>
 <p>The order of the two words is immaterial. If there are cases where the verb
 follows the noun, they will be included in the results.</p>
 <p>Also, the words do not have to be adjacent. If there are cases with words
@@ -1148,7 +1195,8 @@ different relational operator:</p>
 </pre></div>
 </td></tr></table>
 
-<p>There are more kinds of relational operators.</p>
+<p>There are more kinds of
+<a href="#relational-operators">relational operators</a>.</p>
 <p>If the noun must be the first word in the sentence, you can specify it as</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
@@ -1207,7 +1255,7 @@ s := w
 </pre></div>
 </td></tr></table>
 
-<p>You can also use the <a href="#edge-features">edge features</a> in the corpus as
+<p>You can also use the <a href="#relational-operators">edge features</a> in the corpus as
 relational operators as well.</p>
 <p>Suppose we have an edge feature <code>sub</code> between clauses, such that if main clause
 <em>m</em> has subordinate clauses <em>s1</em>, <em>s2</em> and <em>s3</em>, then</p>
@@ -1293,11 +1341,11 @@ In both cases you can also use the other constructs, such as</p>
 </td></tr></table>
 
 <p>To get a more specific introduction to search, consult the search tutorials for
-<a href="https://github.com/etcbc/bhsa/blob/master/tutorial/search.ipynb">Hebrew</a>,
-<a href="https://github.com/etcbc/peshitta/blob/master/tutorial/search.ipynb">Peshitta</a>,
-<a href="https://github.com/etcbc/syrnt/blob/master/tutorial/search.ipynb">SyrNT</a>,
+<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/search.ipynb">BHSA</a>,
+<a href="https://nbviewer.jupyter.org/github/etcbc/peshitta/blob/master/tutorial/search.ipynb">Peshitta</a>,
+<a href="https://nbviewer.jupyter.org/github/etcbc/syrnt/blob/master/tutorial/search.ipynb">SyrNT</a>,
 and
-<a href="https://github.com/Nino-cunei/uruk/blob/master/tutorial/search.ipynb">Cuneiform</a>.</p>
+<a href="https://nbviewer.jupyter.org/github/Nino-cunei/uruk/blob/master/tutorial/search.ipynb">Uruk</a>.</p>
 <p>Finally an example with quantifiers. We want all clauses where Pred-phrases
 consist of verbs only:</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
@@ -1319,12 +1367,13 @@ consist of verbs only:</p>
 </td></tr></table>
 
 </details>
-<details class="info"><summary>Search template reference</summary><p>We have these kinds of lines in a template:</p>
+<h2 id="search-template-reference">Search template reference<a class="headerlink" href="#search-template-reference" title="Permanent link">&para;</a></h2>
+<details class="info"><summary>Template lines</summary><p>We have these kinds of lines in a template:</p>
 <ul>
 <li>
 <p><em>comment</em> lines</p>
 <ul>
-<li>if a line starts with <code>%</code> it is a comment line`;</li>
+<li>if a line starts with <code>%</code> it is a comment line;</li>
 <li>you cannot comment out parts of lines, only whole lines;</li>
 <li>if a line is empty or has whitespace only, it is a comment line;</li>
 <li>comment lines are allowed everywhere;</li>
@@ -1402,7 +1451,9 @@ full variety of feature constraints on nodes and edges.</p>
     preceding atom line or other feature line. This way you can divide lengthy
     feature constraints over multiple lines.</li>
 </ul>
-<p>See <a href="#feature-specifications"><em>feature specifications</em></a> below for the
+<p>See
+<a href="#feature-specifications"><em>feature specifications</em></a>
+below for the
 full variety of feature constraints on nodes and edges.</p>
 </li>
 <li>
@@ -1415,7 +1466,9 @@ full variety of feature constraints on nodes and edges.</p>
 <li>There must be white-space around the operator.</li>
 <li>Operators that come from edge features may be enriched with values.</li>
 </ul>
-<p>See <a href="#relational-operators"><em>relational operators</em></a> below for the
+<p>See
+<a href="#relational-operators"><em>relational operators</em></a>
+below for the
 whole spectrum of relational constraints on nodes.</p>
 </li>
 <li>
@@ -1433,7 +1486,7 @@ whole spectrum of relational constraints on nodes.</p>
 </li>
 </ul>
 </details>
-<h2 id="feature-specifications">Feature specifications<a class="headerlink" href="#feature-specifications" title="Permanent link">&para;</a></h2>
+<h3 id="feature-specifications">Feature specifications<a class="headerlink" href="#feature-specifications" title="Permanent link">&para;</a></h3>
 <details class="info"><summary>About</summary><p>The <strong>features</strong> above is a specification of what features with
 which values to search for. This specification must be written as a white-space
 separated list of <strong>feature specs</strong>.</p>
@@ -1519,7 +1572,7 @@ do not have values).</p>
 </li>
 </ul>
 </details>
-<h2 id="relational-operators">Relational operators<a class="headerlink" href="#relational-operators" title="Permanent link">&para;</a></h2>
+<h3 id="relational-operators">Relational operators<a class="headerlink" href="#relational-operators" title="Permanent link">&para;</a></h3>
 <details class="info"><summary>Node comparison</summary><ul>
 <li><code>=</code>: is equal (meaning the same node, a clause and a verse that occupy the
     same slots are still unequal)
@@ -1595,7 +1648,7 @@ that. Instead of typing the letter <code>k</code>, provide the actual number you
 </li>
 </ul>
 </details>
-<h2 id="quantifiers">Quantifiers<a class="headerlink" href="#quantifiers" title="Permanent link">&para;</a></h2>
+<h3 id="quantifiers">Quantifiers<a class="headerlink" href="#quantifiers" title="Permanent link">&para;</a></h3>
 <details class="info"><summary>What is a quantifier?</summary><p>Quantifiers are powerful expressions in templates.</p>
 <p>They state conditions on a given atom in your template.
 The atom in question is called the <em>parent</em> atom.
