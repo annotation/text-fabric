@@ -74,12 +74,12 @@ class TfApp(Atf):
       return result
     dh(result)
 
-  def cdli(app, n, linkText=None, _asString=False):
+  def cdli(app, n, linkText=None, asString=False):
     (nType, objectType, identifier) = imageClass(app, n)
     if linkText is None:
       linkText = identifier
     result = wrapLink(linkText, objectType, 'main', identifier)
-    if _asString:
+    if asString:
       return result
     else:
       dh(result)

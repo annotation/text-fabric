@@ -12,6 +12,10 @@
 
 ## Queued for next release
 
+## 7.2
+
+2018-12-08
+
 ??? abstract "TF Browser"
     * The TF kernel/server/website is also fit to be served over the internet
     * There is query result highlighting in passage view (like in SHEBANQ)
@@ -36,11 +40,11 @@
     * New functions `A.nodeFromSectionStr()` and `A.sectionStrFromNode()`
       which give the passage string of any kind of node, if possible.
       **[Section support for apps](../Api/App.md#sections)**
-		* The function `A.plain()` now responds to the `highlights` parameter:
-			you can highlight material inside plain displays.
+    * The function `A.plain()` now responds to the `highlights` parameter:
+      you can highlight material inside plain displays.
       **[A.plain](../Api/App.md#display)**
-			and
-			**[display tutorial]({{etcbcnb}}/bhsa/blob/master/tutorial/display.ipynb)**
+      and
+      **[display tutorial]({{etcbcnb}}/bhsa/blob/master/tutorial/display.ipynb)**
     * New function `T.sectionTuple(n)` which gives the tuple of section nodes in which `n`
       is embedded
       **[T.sectionTuple](../Api/General.md#sections)**
