@@ -1095,21 +1095,70 @@
                 <h1 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h1>
 <p><strong>Pre version 7 users: also consult the <a href="../Use7/">v7 guide</a>.</strong></p>
 <h2 id="apps">Apps<a class="headerlink" href="#apps" title="Permanent link">&para;</a></h2>
-<p>Text-Fabric is a generic engine to process text corpora with sets of annotations.</p>
-<p>But for some corpora, additional functionality is available in the form of <em>apps</em>.</p>
-<p>See <a href="../../About/Corpora/">Corpora</a>.</p>
+<p>Text-Fabric is a generic engine to process text corpora enriched with sets of annotations.</p>
+<p>For a growing set of
+<a href="../../About/Corpora/">corpora</a>
+additional functionality is available in the form of <em>apps</em>.</p>
 <h2 id="text-fabric-browser">Text-Fabric browser<a class="headerlink" href="#text-fabric-browser" title="Permanent link">&para;</a></h2>
-<p>App-supported corpora can be explored in a browser interface.
-No programming needed, but you will have to familiarize yourself with search templates.</p>
-<p>See <a href="../Browser/">Browser</a></p>
+<p>App-supported corpora can be explored in a
+<a href="../Browser/">browser interface</a>
+that is usable without programming.
+Only familiarity with search templates is needed.</p>
+<p><img alt="tfbrowser" src="../../images/tfbrowser.png" /></p>
 <h2 id="search-templates">Search templates<a class="headerlink" href="#search-templates" title="Permanent link">&para;</a></h2>
-<p>Text-Fabric has a powerful yet intuitive search engine that works with templates.</p>
-<p>Read <a href="../Search/">Search</a> to learn everything about it.</p>
+<p>Text-Fabric has a powerful yet intuitive search engine that works with
+<a href="../Search/">templates</a>,
+which follow closely the features of the annotations to the corpus.</p>
+<p>(Uruk corpus)</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>tablet catalogId=P448702
+  line
+    case terminal=1 number=2a
+        sign type=ideograph
+        :&gt; sign type=numeral
+</pre></div>
+</td></tr></table>
+
+<p>(Bhsa corpus)</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>clause
+/where/
+  phrase function=Pred
+/have/
+  /without/
+    word sp#verb
+  /-/
+/-/
+  phrase function=Subj
+</pre></div>
+</td></tr></table>
+
 <h2 id="text-fabric-api">Text-Fabric API<a class="headerlink" href="#text-fabric-api" title="Permanent link">&para;</a></h2>
-<p>Explore your corpus by means of programming.</p>
-<p>Start with the <a href="../../Api/App/">App API</a> for corpora
-that have been added to Text-Fabric as <em>apps</em>.</p>
-<p>And then dive into the generic <a href="../../Api/General/">TF API</a>.</p>
+<p>When mere search is not enough,
+analysis by means of programming is the next step.
+You can "talk" to your corpus through an
+<a href="../../Api/App/">API</a>
+dedicated to your corpus which can download its data and display its material.</p>
+<p>You can use it together with the generic <a href="../../Api/General/">TF API</a> to</p>
+<ul>
+<li>search your corpus programmatically by means of the same templates,</li>
+<li>prepare derived data for analysis in R, and</li>
+<li>create new data and distribute it to others.</li>
+</ul>
+<p><img alt="bhsa-jup" src="../../images/bhsa-jup.png" /></p>
+<p>Above: Bhsa programming example</p>
+<p>Below: Uruk programming example</p>
+<p><img alt="uruk-jup" src="../../images/uruk-jup.png" /></p>
                 
                   
                 

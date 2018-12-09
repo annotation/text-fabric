@@ -1103,7 +1103,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
 <li>a tool to contribute additional research data to corpora</li>
 </ul>
 <p>A corpus of ancient texts and linguistic annotations represents a large body of knowledge.
-Text-Fabric makes that knowledge accessible to non-programmers by means of 
+Text-Fabric makes that knowledge accessible to non-programmers by means of a
 built-in a search interface that runs in your browser.</p>
 <p>From there the step to program your own analytics is not so big anymore.</p>
 <p>You can
@@ -1142,37 +1142,41 @@ Text-Fabric will auto-load it for them.</p>
 for example <a href="https://shebanq.ancient-data.org">SHEBANQ</a>.
 In the case of SHEBANQ, data has been converted to mysql databases.
 However, with the built-in <a href="Server/Kernel/">TF kernel</a>,
-it is also possible to
-have one process serve multiple connections and requests.</p>
+it is also possible to TF itself as a database to
+serve multiple connections and requests.</p>
 </details>
 </details>
 <details class="abstract"><summary>Design principles</summary><p>There are a number of things that set Text-Fabric apart from most other ways to encode 
 corpora.</p>
 <details class="abstract" open="open"><summary>Minimalistic model</summary><p>Text-Fabric is based on a minimalistic data model for text plus annotations.</p>
-<p>A defining characteristic is that Text-Fabric does not make use of XML or JSON,
-but stores text as a bunch of features in plain text files.</p>
-<p>These features are interpreted against a <em>graph</em> of nodes and edges, which make up the
-abstract fabric of the text.</p>
+<p>A defining characteristic is that Text-Fabric 
+stores text as a bunch of features in plain text files.</p>
+<p>These features are interpreted against a <em>graph</em> of nodes and edges,
+which make up the abstract fabric of the text.</p>
+<p>A graph is a more general concept than a tree.
+Whilst trees are ubiquitous in linguistic analysis,
+there is much structure in a corpus that is not strictly tree-like.</p>
+<p>Therefore, we do not adopt technologies
+that have the tree as their first class data model.
+Hence, almost by definition, Text-Fabric does not make use of XML technology.</p>
 </details>
 <details class="abstract" open="open"><summary>Performance matters</summary><p>Based on this model, Text-Fabric offers a <a href="Api/General/">processing API</a>
 to search, navigate and process text and its annotations.
 A lot of care has been taken to make this API work as fast as possible.
 Efficiency in data processing has been a design criterion from the start.</p>
-<p>See e.g. the comparisons between the Text-Fabric way of serializing (pickle + gzip)
-and
+<details class="example"><summary>Comparisons</summary><p>See e.g. the comparisons between the Text-Fabric way of serializing
+(pickle + gzip) and
 <a href="https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/avro/avro.ipynb">avro</a>,
 <a href="https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/joblib/joblib.ipynb">joblib</a>, and
 <a href="https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master/test/marshal/marshal.ipynb">marshal</a>.</p>
+</details>
 </details>
 <details class="note" open="open"><summary>Code organization and statistics</summary><p>To get an impression of the software that is Text-Fabric,
 in terms of organization and size, see
 <a href="Code/Overview/">Code</a> and <a href="Code/Stats/">lines</a>.</p>
 </details>
 </details>
-<details class="abstract"><summary>Author and acknowledgements</summary><p><strong>Author</strong>:
-<a href="https://dans.knaw.nl/en/about/organisation-and-policy/staff/roorda?set_language=en">Dirk Roorda</a></p>
-<p>Text-Fabric is a matter of putting a few good ideas by others into practice.</p>
-<details class="explanation" open="open"><summary>History</summary><p>The foundational ideas derive from work done in and around the
+<details class="abstract"><summary>History</summary><p>The foundational ideas derive from work done in and around the
 <a href="http://etcbc.nl">ETCBC</a> avant-la-lettre from 1970 onwards
 by Eep Talstra,
 Crist-Jan Doedens, (<a href="https://books.google.nl/books?id=9ggOBRz1dO4C">Ph.D. thesis</a>),
@@ -1185,13 +1189,22 @@ In 2013 I developed
 <a href="https://github.com/Dans-labs/laf-fabric">LAF-Fabric</a>
 as a tool for constructing the website
 <a href="https://shebanq.ancient-data.org">SHEBANQ</a>.</p>
-</details>
-<details class="explanation" open="open"><summary>House cleaning</summary><p>I have taken out everything that makes LAF-Fabric complicated and
+<details class="explanation" open="open"><summary>House cleaning</summary><p>LAF-Fabric is based on the ISO standard
+<a href="https://www.iso.org/standard/37326.html">Linguistic Annotation Framework (LAF)</a>.
+LAF is an attempt to marry graph models to the 
+<a href="http://www.tei-c.org">Text Encoding Initiative (TEI)</a> which lives in XML.
+It is a good try, but it turns out that using XML technology for
+graphs is a pain. All the usual advantages of using the XML toolchain evaporate.</p>
+<p>So I decided to leave XML and its associated syntactical complexity.
+While I was at it, I took out everything that makes LAF-Fabric complicated and
 all things that are not essential for the sake of raw data processing.
-That was Text-Fabric version 1 at the end of 2016.</p>
-<p>It turned out that this has freed the way to work towards higher-level goals:
-supporting research data workflows.
-<a href="Use/Use7/">Version 7</a> capitalizes on that.</p>
+That became Text-Fabric version 1 at the end of 2016.</p>
+<p>It turned out that this move has freed the way to work towards higher-level goals:</p>
+<ul>
+<li>a new search engine (inspired by <a href="https://emdros.org">MQL</a> and</li>
+<li>support for research data workflows.</li>
+</ul>
+<p><a href="Use/Use7/">Version 7</a> capitalizes on the latter.</p>
 </details>
 <details class="explanation" open="open"><summary>State of the art</summary><p>Time moves on, and nowhere is that felt as keenly as in computing science.
 Programming has become easier, humanists become better programmers,
@@ -1209,6 +1222,10 @@ functions they need <em>now</em>, based on technology that appeals <em>now</em>.
 <p>Hence, my implementation of Text-Fabric search has been done from the ground up,
 and uses a strategy that is very different from Ulrik's MQL search engine.</p>
 </details>
+</details>
+<details class="abstract"><summary>Author and acknowledgements</summary><p><strong>Author</strong>:
+<a href="https://dans.knaw.nl/en/about/organisation-and-policy/staff/roorda?set_language=en">Dirk Roorda</a></p>
+<p>Text-Fabric is a matter of putting a few good ideas by others into practice.</p>
 <details class="explanation" open="open"><summary>Co-creation</summary><p>In version 7, the idea of co-creation becomes fully tangible:
 Text-Fabric does not only work with a few curated corpora,
 but it allows you to add your own data in seamless way.
