@@ -4,30 +4,69 @@
 
 ## Apps
 
-Text-Fabric is a generic engine to process text corpora with sets of annotations.
+Text-Fabric is a generic engine to process text corpora enriched with sets of annotations.
 
-But for some corpora, additional functionality is available in the form of *apps*.
-
-See [Corpora](../About/Corpora.md).
+For a growing set of
+[corpora](../About/Corpora.md)
+additional functionality is available in the form of *apps*.
 
 ## Text-Fabric browser
 
-App-supported corpora can be explored in a browser interface.
-No programming needed, but you will have to familiarize yourself with search templates.
+App-supported corpora can be explored in a
+[browser interface](Browser.md)
+that is usable without programming.
+Only familiarity with search templates is needed.
 
-See [Browser](Browser.md)
+![tfbrowser](../images/tfbrowser.png)
 
 ## Search templates
 
-Text-Fabric has a powerful yet intuitive search engine that works with templates.
+Text-Fabric has a powerful yet intuitive search engine that works with
+[templates](Search.md),
+which follow closely the features of the annotations to the corpus.
 
-Read [Search](Search.md) to learn everything about it.
+(Uruk corpus)
+
+```
+tablet catalogId=P448702
+  line
+    case terminal=1 number=2a
+        sign type=ideograph
+        :> sign type=numeral
+```
+
+(Bhsa corpus)
+
+```
+clause
+/where/
+  phrase function=Pred
+/have/
+  /without/
+    word sp#verb
+  /-/
+/-/
+  phrase function=Subj
+```
 
 ## Text-Fabric API
 
-Explore your corpus by means of programming.
+When mere search is not enough,
+analysis by means of programming is the next step.
+You can "talk" to your corpus through an
+[API](../Api/App.md)
+dedicated to your corpus which can download its data and display its material.
 
-Start with the [App API](../Api/App.md) for corpora
-that have been added to Text-Fabric as *apps*.
+You can use it together with the generic [TF API](../Api/General.md) to
 
-And then dive into the generic [TF API](../Api/General.md).
+* search your corpus programmatically by means of the same templates,
+* prepare derived data for analysis in R, and
+* create new data and distribute it to others.
+
+![bhsa-jup](../images/bhsa-jup.png)
+
+Above: Bhsa programming example
+
+Below: Uruk programming example
+
+![uruk-jup](../images/uruk-jup.png)

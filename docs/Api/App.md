@@ -1,12 +1,13 @@
 # App API
 
 ??? abstract "About"
-    The most important extra functionality that the app API provides, is display.
+    The app-API provides extra functionality of top of the core of TF.
+    The most notable thing is display.
     The functions `plain()` and `pretty()` are able to display nodes using extra
     information about what those nodes typically represent in a specific corpus.
 
-    An app also knows how to download the data,
-    it can be invoked by a simple incantation.
+    The app-API further knows how to download the data,
+    and can be invoked by a simple incantation.
 
 ## Incantation
 
@@ -21,7 +22,8 @@
 
     Hint: think of the `use {database}` statements in MySQL and MongoDb.
 
-    Without further arguments, this will set up an TF API with most features loaded.
+    Without further arguments, this will set up an TF core API with most features loaded,
+    wrapped in an app-specific API.
 
     ??? abstract "Start up sequence"
         During start-up the following happens:
@@ -30,9 +32,9 @@
         if not already present there;
 
         (2) if your data has been freshly downloaded,
-        a series of optimizations are executed;
+        a series of optimizations is executed;
 
-        (3) most optimized features of the Bhsa dataset are loaded;
+        (3) most features of the Bhsa dataset are loaded.
 
     There are many scenarios in which you can work with a TF app:
     in a Python script or in a notebook.
@@ -61,7 +63,7 @@
         these names are linked to their documentation.
 
     Without further arguments, TF thinks you are a user
-    that wants to work with as much data possible with the least of hassles.
+    that wants to work with as much data possible without hassle.
     It makes some standard choices for you, and it will auto-download data.
 
     The following options are for people who want increasingly finer control
@@ -88,8 +90,9 @@
 
     ??? info "mod=None"
         `mod` is a comma-separated list of modules in the form `{org}/{repo}/{path}`.
-        It will load all features of all those modules, and download them from GitHub
-        of they are missing.
+        All features of all those modules will be loaded.
+        If they are not yet present, they will be downloaded from GitHub first.
+
         For example, their is an easter egg module on GitHub, and you can obtain it by
 
         ```
@@ -97,17 +100,20 @@
         ```
 
         Here the `{org}` is `etcbc`, the `{repo}` is `lingo`,
-        and within that repo there is a directory `tf`
-        below which version `c` of the additional feature `egg`
+        and the `{path}` is `easter/tf` under which
+        version `c` of the feature `egg`
         is avaialble in TF format.
 
         You can point to any such directory om the entire GitHub
         if you know that it contains relevant features.
 
         Your TF app might be configured to download specific modules.
-        The BHSA app invokes the phono features
+        For example, the BHSA app invokes the phono features
         and the crossref features.
-        See the app's [config file]({{tfghb}}/{{c_bhsa_config}}).
+        See `MODULE_SPECS` in the app's 
+        [config.py](../Implementation/Apps.md#components),
+        e.g. the one of the 
+        [bhsa app]({{tfghb}}/{{c_bhsa_config}}).
 
         ??? caution "Release sensitive"
             Module data will be downloaded from a specific release
@@ -134,7 +140,8 @@
     ??? info "lgc=False"
         Normally, Text-Fabric will work with data that is stored under your
         `~/text-fabric-data`.
-        But if you have cloned a repository with data into `~/github/{org}/{repo}`,
+        But if you have a local clone of a repository
+        with data in `~/github/{org}/{repo}`,
         and you want to use that instead,
         you can pass `lgc=True`. Text-Fabric will then look at
         your local GitHub directories.
@@ -146,11 +153,12 @@
     ??? info "locations and modules arguments"
         If you want to add other search locations for TF features manually,
         you can pass optional `locations` and `modules` parameters,
-        which will be passed to the underlying
-        [Fabric()](General.md#loading) call.
+        which will be passed to the
+        [Fabric()](General.md#loading) call to the core of TF.
 
         ??? note "More, not less"
-            Using these arguments will load features on top of the default selection.
+            Using these arguments will load features on top of the
+            default selection of features.
             You cannot use these arguments to prevent features from being loaded.
 
     ??? info "api=None"
@@ -158,7 +166,8 @@
         with a more or less standard set of features
         loaded, and make that API avaible to you, under `A.api`.
 
-        But you can also setup an API yourself by using the core TF machinery:
+        But you can also setup an API yourself by using the
+        [core TF machinery](General.md#loading):
 
         ```python
         from tf.fabric import Fabric
@@ -186,7 +195,7 @@
 
         ```python
         TF.load('feature1 feature2', add=True)
-        ```python
+        ```
 
         provided you have used the `hoist=globals()` parameter earlier.
         If not, you have to say
@@ -212,23 +221,25 @@
         Searches in the same way as the generic Text-Fabric
         [`S.search()`](General.md#search).
         But whereas the `S` version returns a generator which yields the results
-        one by one, the `A` version collects all results and sorts them.
+        one by one, the `A` version collects all results and sorts them in the
+        [canonical order](../Api/General.md#navigating-nodes).
+        (but you can change the sorting, see the `sort` parameter).
         It then reports the number of results.
 
     ??? info "query"
-        `query` is the search template that has to be searched for.
+        the search template that has to be searched for.
 
     ??? info "silent"
-        `silent`: if `True` it will suppress the reporting of the number of results.
+        if `True` it will suppress the reporting of the number of results.
 
     ??? info "shallow"
         If `True` or `1`, the result is a set of things that match the top-level element
         of the `query`.
 
         If `2` or a bigger number *n*, return the set of truncated result tuples: only
-        the first *n* members of each tuple is retained.
+        the first *n* members of each tuple are retained.
 
-        If `False` or `0`, a sorted list of all result tuples will be returned.
+        If `False` or `0`, a list of all result tuples will be returned.
 
     ??? info "sets"
         If not `None`, it should be a dictionary of sets, keyed by a names.
@@ -255,6 +266,11 @@
     ??? info "sort"
         If `True` (default), search results will be returned in 
         [canonical order](../Api/General.md#navigating-nodes).
+
+        ??? note "canonical sort key for tuples"
+            This sort is achieved by using the function
+            [sortKeyTuple](../Api/General.md#navigating-nodes)
+            as sort key.
 
         If it is a *sort key*, i.e. function that can be applied to tuples of nodes
         returning values,
@@ -288,10 +304,21 @@
         If you do not provide a link text,
         the passage indicator will be chosen.
 
-    ??? example "Word 100000 on SHEBANQ"
+    ??? example "Ezra 3:4 on SHEBANQ"
+        First we obtain the node
+
         ```python
-        A.webLink(100000)
+        z = A.nodeFromSectionStr('Ezra 3:4')
         ```
+
+        then we call `webLink`
+
+        ```python
+        A.webLink(z)
+        ```
+
+        with this result:
+        [Ezra 3:4](https://shebanq.ancient-data.org/hebrew/text?book=Esra&chapter=3&verse=4&version=c&mr=m&qw=q&tp=txt_p&tr=hb&wget=v&qget=v&nget=vt)
 
 ### Sections
 
@@ -310,9 +337,10 @@
         `sectionStr` must be a valid section specficiation in the
         language specified in `lang`.
 
-        The string may specific a section 0 level only (book), or
-        section 0 and 1 levels (book chapter), or all levels (book
-        chapter verse).
+        The string may specific a section 0 level only (book/tablet), or
+        section 0 and 1 levels (book/tablet chapter/column),
+        or all levels
+        (book/tablet chapter/column verse/line).
 
         Examples:
 
@@ -320,6 +348,12 @@
         Genesis
         Genesis 1
         Genesis 1:1
+        ```
+
+        ```
+        P005381
+        P005381 1
+        P005381 1:1
         ```
 
         Depending on what is passed, the result is a node of section level
@@ -388,8 +422,13 @@
     results. You can pass them as optional arguments to these functions,
     or you can set up them in advance, and reset them to their original state
     when you are done. 
-    All calls to the display functions first look at their given parameters,
-    then at how you have set up them in advance, and then at their default values.
+
+    All calls to the display functions look for the values for these parameters in the
+    following order:
+    
+    * optional parameters passed directly to the function,
+    * values as set up by previous calls to `displaySetup()`,
+    * default values configured by the app.
 
     These are the parameters and their default values:
 
@@ -420,16 +459,13 @@
         indicates one of two modes of displaying the result list:
 
         *   `True`: instead of showing all results one by one,
-            we show all verses with all results in it highlighted.
+            we show container nodes with all results in it highlighted.
             That way, we blur the distinction between the individual results,
             but it is easier to oversee where the results are.
             This is how SHEBANQ displays its query results.
+            **See also the parameter `condenseType`**.
         *   `False`: make a separate display for each result tuple.
             This gives the best account of the exact result set.
-
-        ??? hint "condenseType"
-            Instead of verses as containers, you may choose any node type you like.
-            Use the parameter `condenseType` to specify it.
 
         ???+ caution "mixing up highlights"
             Condensing may mix-up the highlight coloring.
@@ -438,12 +474,12 @@
             Yet one color will be chosen, and it is unpredictable which one.
 
     ??? info "condenseType=None"
-        the node type that acts as a container when lists of tuples are being condensed
-        (see parameter `condensed`).
+        The type of container to be used for condensing results.
+        The default is app dependent, usually `verse` or `tablet`.
 
     ??? info "end=None"
-        `end` is the end point in the results iterable.
-        Default the length of the iterable.
+        `end` is the end point in the iterable of results.
+        If `None`, displaying will stop after the end of the iterable.
 
     ??? info "extraFeatures=()"
         A string or iterable of feature names.
@@ -463,39 +499,39 @@
             Use `T.formats` to inspect what text formats are available in your corpus.
 
     ??? info "highlights={}"
-          When nodes such as verses and sentences are displayed
-					by `plain)_` or `pretty()`,
-          their contents is also displayed. You can selectively highlight
-          those parts.
+        When nodes such as verses and sentences and lines and cases are displayed
+        by `plain()` or `pretty()`,
+        their contents is also displayed. You can selectively highlight
+        those parts.
 
-          `highlights={}` is a set or mapping of nodes that should be highlighted.
-          Only nodes that are involved in the display will be highlighted.
+        `highlights={}` is a set or mapping of nodes that should be highlighted.
+        Only nodes that are involved in the display will be highlighted.
 
-          If `highlights` is a set, its nodes will be highlighted
-          with a default color (yellow).
+        If `highlights` is a set, its nodes will be highlighted
+        with a default color (yellow).
 
-          If it is a dictionary, it should map nodes to colors.
-          Any color that is a valid 
-          [CSS color]({{moz_color}})
-          qualifies.
+        If it is a dictionary, it should map nodes to colors.
+        Any color that is a valid 
+        [CSS color]({{moz_color}})
+        qualifies.
 
-          If you map a node to the empty string, it will get the default highlight color.
+        If you map a node to the empty string, it will get the default highlight color.
 
-          ??? hint "color names"
-              The link above points to a series of handy color names and their previews.
+        ??? hint "color names"
+            The link above points to a series of handy color names and their previews.
 
-          ??? note "one big highlights dictionary"
-              It is OK to first compose a big highlights dictionary
-              for many tuples of nodes,
-              and then run `prettyTuple()` for many different tuples
-              with the same `highlights`.
-              It does not harm performance if `highlights` maps
-              lots of nodes outside the tuple as well.
+        ??? note "one big highlights dictionary"
+            It is OK to first compose a big highlights dictionary
+            for many tuples of nodes,
+            and then run `prettyTuple()` for many different tuples
+            with the same `highlights`.
+            It does not harm performance if `highlights` maps
+            lots of nodes outside the tuple as well.
 
     ??? info "linked=1"
-        the column number where the cell contents is
-        weblinked to the relevant passage;
-        (the first data column is column 1)
+        the number of the column whose cell contents is
+        web-linked to the relevant passage
+        (the first column is column 1).
 
     ??? info "noneValues=None"
         A set of values for which no display should be generated.
@@ -520,8 +556,9 @@
             all features, not only the custom features.
 
     ??? info "start=None"
-        `start` is the starting point in the results iterable (1 is the first one).
-        Default 1.
+        `start` is the starting point for displaying the iterable of results.
+        (1 is the first one).
+        If `None`, displaying starts at the first element of the iterable.
 
     ??? info "suppress=set()"
         a set of names of features that should NOT be displayed.
@@ -547,45 +584,83 @@
     A.displaySetup(parameter1=value1, parameter2=value2, ...)
     ```
 
-    and from then on the value of `sense` will be shown
-    on every item that has a real value for the feature `sense`.
+    Assigns working values to display parameters. All subsequent calls to
+    the display functions will use these values, unless they are passed overriding
+    values as arguments.
+    
+    These working values remain in effect until a new call to `displaySetup()`
+    assigns new values, or a call to `displayReset()` resets the values to the
+    defaults.
 
+    ??? example "extra features"
+        ```python
+        A.displayReset(extraFeatures='egg')
+        ```
+
+        will cause displays to show the values of the `egg` feature for each node
+        that has `egg` values:
+
+        ```python
+        A.pretty(n)
+        ```
+
+        But if you want to suppress the `egg` for a particular display,
+        you can say
+
+        ```python
+        A.pretty(n, extraFeatures='')
+        ```
+
+        And if you want to turn it off for future displays, you can say
+
+        ```python
+        A.displayReset('extraFeatures')
+        ```
+     
 ??? abstract "A.displayReset()"
     ```python
     A.displayReset(parameter1, parameter2, ...)
     ```
 
-    Restore the given display parameters to their default value and let the others
+    Reset the given display parameters to their default value and let the others
     retain their current value.
+
+    So you can reset the display parameters selectively.
+
+    ???+ hint "Reset all"
+        If you call this function without parameters at all, the effect is that
+        *all* display parameters are reset to their default values:
+
+        ```python
+        A.displayReset()
+        ```
 
 ??? abstract "A.plain()"
     ```python
-    A.plain(node, asString=False, isLinked=False, **displayParameters)
+    A.plain(node, isLinked=False, **displayParameters)
     ```
 
     ???+ info "Description"
-        Displays the material that corresponds to a node in a simple way.
+        Displays the material that corresponds to a node in a compact way.
+        Nodes with little content will be represented by their text content,
+        nodes with large content will be represented by an identifying label.
 
     ??? info "node"
         a node of arbitrary type.
 
     ??? info "isLinked"
-        indicates whether the result should be a weblink
+        indicates whether the result should be a web-link
         to the appropriate passage.
-
-    ??? info "asString" 
-        Instead of displaying the result directly in the output of your
-        code cell in a notebook, you can also deliver the markdown as string,
-        just say `asString=True`.
 
 ??? abstract "A.plainTuple()"
     ```python
-    A.plainTuple(nodes, seqNumber, asString=False, **displayParameters)
+    A.plainTuple(nodes, seqNumber, **displayParameters)
     ```
 
     ???+ info "Description"
         Displays the material that corresponds to a tuple of nodes
-        in a simple way as a row of cells.
+        as a row of cells,
+        each displaying a member of the tuple by means of `plain()`.
 
     ??? info "nodes"
         an iterable (list, tuple, set, etc) of arbitrary nodes.
@@ -596,26 +671,26 @@
         This prepares the way for displaying query results, which come as
         a sequence of tuples of nodes.
 
-    ??? info "asString" 
-        As in `plain()`
-
 ??? abstract "A.table()"
     ```python
-    A.table(results, asString=False, **displayParameters)
+    A.table(results, **displayParameters)
     ```
 
     ???+ info "Description"
         Displays an iterable of tuples of nodes.
         The list is displayed as a compact markdown table.
-        Every row is prepended with the sequence number in the iterable.
+        Every row is prepended with the sequence number in the iterable,
+        and then displayed by `plainTuple()`
 
     ??? info "results"
         an iterable of tuples of nodes.
         The results of a search qualify, but it works
         no matter which process has produced the tuples.
 
-    ??? info "asString" 
-        As in `plain()`
+    ??? hint "condense, condenseType"
+        You can condense the list first to containers of `condenseType`,
+        before displaying the list.
+        Pass the display parameters `condense` and `condenseType` (documented above).
 
 ??? abstract "A.pretty()"
     ```python
@@ -624,6 +699,7 @@
 
     ???+ info "Description"
         Displays the material that corresponds to a node in a graphical way.
+        The internal structure of the nodes that are involved is also revealed.
 
     ??? info "node"
         a node of arbitrary type.
@@ -636,6 +712,9 @@
     ???+ info "Description"
         Displays the material that corresponds to a tuple of nodes in a graphical way,
         with customizable highlighting of nodes.
+        The member nodes of the tuple will be collected into containers, which
+        will be displayed with `pretty()`, and the nodes of the tuple
+        will be highlighted in the containers.
 
     ??? info "tuple"
         `tuple` is an arbitrary tuple of nodes of arbitrary types.
@@ -654,4 +733,8 @@
         The results of a search qualify, but it works
         no matter which process has produced the tuples.
 
+    ??? hint "condense, condenseType"
+        You can condense the list first to containers of `condenseType`,
+        before displaying the list.
+        Pass the display parameters `condense` and `condenseType` (documented above).
 

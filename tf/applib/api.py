@@ -1,7 +1,7 @@
 from ..fabric import Fabric
 from ..lib import readSets
 from ..core.helpers import console, setDir
-from .helpers import findAppConfig, findAppClass, getLocalDir, configure
+from .helpers import findAppConfig, getLocalDir, configure
 from .links import linksApi
 from .sections import sectionsApi
 from .displaysettings import displaySettingsApi
@@ -10,18 +10,7 @@ from .search import searchApi
 from .data import getModulesData
 
 
-# INCANTATION
-
-
-def use(appName, *args, **kwargs):
-  appClass = findAppClass(appName)
-  if not appClass:
-    return None
-  return appClass(appName, *args, **kwargs)
-
-
 # SET UP A TF API FOR AN APP
-
 
 def setupApi(
     app,
