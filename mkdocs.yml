@@ -169,7 +169,7 @@ nav:
     - 'Apps': 'Api/App.md'
     - 'Data': 'Api/Data.md'
     - Core:
-      - 'TF': 'Api/Core.md'
+      - 'TF': 'Api/Fabric.md'
       - 'F - Features': 'Api/Features.md'
       - 'N - Nodes': 'Api/Nodes.md'
       - 'L - Locality': 'Api/Locality.md'

@@ -8,8 +8,8 @@ PORT = dict(
 )
 
 OPTIONS = (
-    ('lineart', 'checkbox', 'linea', 'show lineart', True),
-    ('lineNumbers', 'checkbox', 'linen', 'show line numbers', False),
+    ('lineart', True, 'checkbox', 'linea', 'show lineart'),
+    ('lineNumbers', False, 'checkbox', 'linen', 'show line numbers'),
 )
 
 ORG = 'Nino-cunei'

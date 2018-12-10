@@ -53,10 +53,10 @@ def displayApi(app, silent, hoist):
                 ', '.join(
                     outLink(
                         entry,
-                        f'{URL_TFDOC}/Api/General/#{ref}',
+                        f'{URL_TFDOC}/Api/{head}/#{ref}',
                         title='doc',
                     ) for entry in entries
-                ) for (ref, entries) in docs
+                ) for (head, ref, entries) in docs
             ) + '</details>'
         )
 

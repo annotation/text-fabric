@@ -122,6 +122,21 @@
         will be suppressed. This is handy I you want to load data as part of other
         methods, on-the-fly.
 
+??? abstract "ensureLoaded()"
+    ```python
+    ensureLoaded(features)
+    ```
+
+    ???+ info "Description"
+        Reads the features indicated by `features` and checks if they
+        are loaded. The unloaded ones will be loaded. 
+        Makes all of them ready to be used in the rest of the program.
+
+    ??? info "features"
+        `features` is a string containing space separated feature names, or an
+        iterable of feature names. The feature names are just the names of `.tf` files
+        without directory information and without extension.
+
 ???+ abstract "api.makeAvailableIn(globals())"
     ```python
     api.makeAvailableIn(globals())

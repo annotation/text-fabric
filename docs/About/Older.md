@@ -1103,7 +1103,7 @@ Completion: TF defines the concept of
 [edges](../Api/Features.md#edge-features) that
 carry a value. But so far we have not used them. It turned out that it was
 impossible to let TF know that an edge carries values, when
-[saving](../Api/Core.md#saving-features) data
+[saving](../Api/Fabric.md#saving-features) data
 as a new feature. Now it is possible.
 
 ## 2.3.14
@@ -1138,14 +1138,14 @@ Loading TF was not completely silent if `silent=True` was passed. Better now.
 2017-09-18
 
 *   Small fix in
-    [TF.save()](../Api/Core.md#saving-features).
+    [TF.save()](../Api/Fabric.md#saving-features).
     The spec says that the metadata under the empty key will be inserted into all
     features, but in fact this did not happen. Instead it was used as a default
     when some feature did not have metadata specified.
 
     From now on, that metadata will spread through all features.
 
-*   New API function [explore](../Api/Core.md#loading), to get a list of all known
+*   New API function [explore](../Api/Fabric.md#loading), to get a list of all known
     features in a dataset.
 
 ## 2.3.11
@@ -1211,7 +1211,7 @@ Also the `Fabric()` call can be made silent now.
 
 Improvements:
 
-*   you can load features more silently. See [`TF.load()`](../Api/Core.md#loading-features);
+*   you can load features more silently. See [`TF.load()`](../Api/Fabric.md#loading-features);
 *   you can search more silently. See [`S.study()`](../Api/Search.md#prepare-for-search);
 *   you can search more concisely. See the new [`S.search()`](../Api/Search.md#search-command);
 *   when fetching results, the `amount` parameter of

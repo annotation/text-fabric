@@ -12,7 +12,14 @@
 
 ## Queued for next release
 
-Nothing yet.
+Nothing yet
+
+## 7.2.1
+
+2018-12-10
+
+* Fix broken links to the documentation of the TF API members, after the incantation.
+* Fix in the Uruk lineart option: it could not be un-checked.
 
 ## 7.2
 

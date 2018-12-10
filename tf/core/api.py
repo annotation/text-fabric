@@ -5,45 +5,45 @@ from .text import Text
 from ..search.search import Search
 
 API_REFS = dict(
-    AllComputeds=('features', 'computedall', 'computed-data'),
-    AllEdges=('features', 'edgeall', 'edge-features'),
-    AllFeatures=('features', 'nodeall', 'node-features'),
-    C=('features', 'computed', 'computed-data'),
-    Call=('features', 'computedall', 'computed-data'),
-    Computed=('features', 'computed', 'computed-data'),
-    ComputedString=('features', 'computedstr', 'computed-data'),
-    Cs=('features', 'computedstr', 'computed-data'),
-    E=('features', 'edge', 'edge-features'),
-    Eall=('features', 'edgeall', 'edge-features'),
-    Edge=('features', 'edge', 'edge-features'),
-    EdgeString=('features', 'edgestr', 'edge-features'),
-    Es=('features', 'edgestr', 'edge-features'),
-    F=('features', 'node', 'node-features'),
-    Fall=('features', 'nodeall', 'node-features'),
-    Feature=('features', 'node', 'node-features'),
-    FeatureString=('features', 'nodestr', 'node-features'),
-    Fs=('features', 'nodestr', 'node-features'),
-    L=('locality', 'locality', 'locality'),
-    Locality=('locality', 'locality', 'locality'),
-    N=('nodes', 'generator', 'navigating-nodes'),
-    Nodes=('nodes', 'generator', 'navigating-nodes'),
-    S=('search', 'search', 'search'),
-    Search=('search', 'search', 'search'),
-    T=('text', 'text', 'text'),
-    TF=('fabric', 'fabric', 'loading'),
-    Text=('text', 'text', 'text'),
-    cache=('messages', 'cache', 'messaging'),
-    ensureLoaded=('loading', 'ensure', 'loading'),
-    error=('messages', 'error', 'messaging'),
-    ignored=('loading', 'ignored', 'loading'),
-    indent=('messages', 'indent', 'messaging'),
-    info=('messages', 'info', 'messaging'),
-    loadLog=('loading', 'loadlog', 'loading'),
-    otypeRank=('nodes', 'rank', 'navigating-nodes'),
-    reset=('messages', 'reset', 'messaging'),
-    sortKey=('nodes', 'key', 'navigating-nodes'),
-    sortKeyTuple=('nodes', 'keyTuple', 'navigating-nodes'),
-    sortNodes=('nodes', 'sort', 'navigating-nodes'),
+    AllComputeds=('Computed', 'computedall', 'computed-data'),
+    AllEdges=('Features', 'edgeall', 'edge-features'),
+    AllFeatures=('Features', 'nodeall', 'node-features'),
+    C=('Computed', 'computed', 'computed-data'),
+    Call=('Computed', 'computedall', 'computed-data'),
+    Computed=('Computed', 'computed', 'computed-data'),
+    ComputedString=('Computed', 'computedstr', 'computed-data'),
+    Cs=('Computed', 'computedstr', 'computed-data'),
+    E=('Features', 'edge', 'edge-features'),
+    Eall=('Features', 'edgeall', 'edge-features'),
+    Edge=('Features', 'edge', 'edge-features'),
+    EdgeString=('Features', 'edgestr', 'edge-features'),
+    Es=('Features', 'edgestr', 'edge-features'),
+    F=('Features', 'node', 'node-features'),
+    Fall=('Features', 'nodeall', 'node-features'),
+    Feature=('Features', 'node', 'node-features'),
+    FeatureString=('Features', 'nodestr', 'node-features'),
+    Fs=('Features', 'nodestr', 'node-features'),
+    L=('Locality', 'locality', 'locality'),
+    Locality=('Locality', 'locality', 'locality'),
+    N=('Nodes', 'generator', 'navigating-nodes'),
+    Nodes=('Nodes', 'generator', 'navigating-nodes'),
+    S=('Search', 'search', 'search'),
+    Search=('Search', 'search', 'search'),
+    T=('Text', 'text', 'text'),
+    TF=('Fabric', 'fabric', 'loading'),
+    Text=('Text', 'text', 'text'),
+    cache=('Misc', 'cache', 'messaging'),
+    ensureLoaded=('Fabric', 'ensure', 'loading'),
+    error=('Misc', 'error', 'messaging'),
+    ignored=('Fabric', 'ignored', 'loading'),
+    indent=('Misc', 'indent', 'messaging'),
+    info=('Misc', 'info', 'messaging'),
+    loadLog=('Fabric', 'loadlog', 'loading'),
+    otypeRank=('Nodes', 'rank', 'navigating-nodes'),
+    reset=('Misc', 'reset', 'messaging'),
+    sortKey=('Nodes', 'key', 'navigating-nodes'),
+    sortKeyTuple=('Nodes', 'keyTuple', 'navigating-nodes'),
+    sortNodes=('Nodes', 'sort', 'navigating-nodes'),
 )
 
 
@@ -287,6 +287,9 @@ class Api(object):
   def Call(self):
     return sorted(x[0] for x in self.C.__dict__.items())
 
+  # API_REFS:
+  # F=>(Features, node, node-features),
+
   def makeAvailableIn(self, scope):
     for member in dir(self):
       if '_' not in member and member != 'makeAvailableIn':
@@ -298,13 +301,19 @@ class Api(object):
     for (member, (head, sub, ref)) in API_REFS.items():
       grouped.setdefault(ref, {}).setdefault((head, sub), []).append(member)
 
+  # grouped
+  # node-features=>(Features, node)=>[F, ...]
+
     docs = []
     for (ref, groups) in sorted(grouped.items()):
       chunks = []
       for ((head, sub), members) in sorted(groups.items()):
         chunks.append(' '.join(sorted(members, key=lambda x: (len(x), x))))
-      docs.append((ref, tuple(chunks)))
+      docs.append((head, ref, tuple(chunks)))
     return docs
+
+  # docs
+  # (Features, node-features, ('F ...', ...))
 
   def ensureLoaded(self, features):
     F = self.F

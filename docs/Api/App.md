@@ -154,7 +154,7 @@
         If you want to add other search locations for TF features manually,
         you can pass optional `locations` and `modules` parameters,
         which will be passed to the
-        [Fabric()](Core.md#loading) call to the core of TF.
+        [Fabric()](Fabric.md#loading) call to the core of TF.
 
         ??? note "More, not less"
             Using these arguments will load features on top of the
@@ -167,7 +167,7 @@
         loaded, and make that API avaible to you, under `A.api`.
 
         But you can also setup an API yourself by using the
-        [core TF machinery](Core.md#loading):
+        [core TF machinery](Fabric.md#loading):
 
         ```python
         from tf.fabric import Fabric
