@@ -13,7 +13,7 @@
         <meta name="description" content="Text-Fabric is a Python3 package for Text plus Annotations. It provides a data model, a text file format, a binary format, an API, and apps for (ancient) text plus (linguistic) annotations.">
       
       
-        <link rel="canonical" href="https://dans-labs.github.io/text-fabric/Api/Core/">
+        <link rel="canonical" href="https://dans-labs.github.io/text-fabric/Api/Fabric/">
       
       
         <meta name="author" content="Dirk Roorda">
@@ -1291,7 +1291,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/Api/Core.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/Api/Fabric.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
                 <h1 id="text-fabric-api">Text-Fabric API<a class="headerlink" href="#text-fabric-api" title="Permanent link">&para;</a></h1>
@@ -1399,6 +1399,19 @@ Time consuming operations will always be announced, so that you know what
 Text-Fabric is doing. If <code>silent=True</code> is passed, all informational messages
 will be suppressed. This is handy I you want to load data as part of other
 methods, on-the-fly.</p>
+</details>
+</details>
+<details class="abstract"><summary>ensureLoaded()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">ensureLoaded</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<details class="info" open="open"><summary>Description</summary><p>Reads the features indicated by <code>features</code> and checks if they
+are loaded. The unloaded ones will be loaded. 
+Makes all of them ready to be used in the rest of the program.</p>
+</details>
+<details class="info"><summary>features</summary><p><code>features</code> is a string containing space separated feature names, or an
+iterable of feature names. The feature names are just the names of <code>.tf</code> files
+without directory information and without extension.</p>
 </details>
 </details>
 <details class="abstract" open="open"><summary>api.makeAvailableIn(globals())</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">api</span><span class="o">.</span><span class="n">makeAvailableIn</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>

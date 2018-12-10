@@ -1612,7 +1612,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Api/Core/" title="TF" class="md-nav__link">
+    <a href="../../Api/Fabric/" title="TF" class="md-nav__link">
       TF
     </a>
   </li>
@@ -4179,7 +4179,7 @@ enriched MQL, so that the enriched data can be queried by MQL.</p>
 <a href="../../Api/Features/#edge-features">edges</a> that
 carry a value. But so far we have not used them. It turned out that it was
 impossible to let TF know that an edge carries values, when
-<a href="../../Api/Core/#saving-features">saving</a> data
+<a href="../../Api/Fabric/#saving-features">saving</a> data
 as a new feature. Now it is possible.</p>
 <h2 id="2314">2.3.14<a class="headerlink" href="#2314" title="Permanent link">&para;</a></h2>
 <p>2017-09-29</p>
@@ -4205,14 +4205,14 @@ preparation step used</p>
 <ul>
 <li>
 <p>Small fix in
-    <a href="../../Api/Core/#saving-features">TF.save()</a>.
+    <a href="../../Api/Fabric/#saving-features">TF.save()</a>.
     The spec says that the metadata under the empty key will be inserted into all
     features, but in fact this did not happen. Instead it was used as a default
     when some feature did not have metadata specified.</p>
 <p>From now on, that metadata will spread through all features.</p>
 </li>
 <li>
-<p>New API function <a href="../../Api/Core/#loading">explore</a>, to get a list of all known
+<p>New API function <a href="../../Api/Fabric/#loading">explore</a>, to get a list of all known
     features in a dataset.</p>
 </li>
 </ul>
@@ -4258,7 +4258,7 @@ in the template got discarded after an outdent.</p>
 <p>2017-02-11</p>
 <p>Improvements:</p>
 <ul>
-<li>you can load features more silently. See <a href="../../Api/Core/#loading-features"><code>TF.load()</code></a>;</li>
+<li>you can load features more silently. See <a href="../../Api/Fabric/#loading-features"><code>TF.load()</code></a>;</li>
 <li>you can search more silently. See <a href="../../Api/Search/#prepare-for-search"><code>S.study()</code></a>;</li>
 <li>you can search more concisely. See the new <a href="../../Api/Search/#search-command"><code>S.search()</code></a>;</li>
 <li>when fetching results, the <code>amount</code> parameter of

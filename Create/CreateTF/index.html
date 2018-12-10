@@ -516,7 +516,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Api/Core/" title="TF" class="md-nav__link">
+    <a href="../../Api/Fabric/" title="TF" class="md-nav__link">
       TF
     </a>
   </li>
@@ -1785,7 +1785,7 @@ fmt:text-trans-plain: &#39;{g_cons}{trailer}&#39;
 you, the corpus designer.</p>
 <h2 id="writing-out-tf">Writing out TF<a class="headerlink" href="#writing-out-tf" title="Permanent link">&para;</a></h2>
 <p>Once you have assembled your features and metadata as data structures in memory,
-you can use <a href="../../Api/Core/#saving-features"><code>TF.save()</code></a> to write out your data as a bunch
+you can use <a href="../../Api/Fabric/#saving-features"><code>TF.save()</code></a> to write out your data as a bunch
 of Text-Fabric files.</p>
 <h3 id="step-8-invoke-tfsave">Step 8: invoke TF.save()<a class="headerlink" href="#step-8-invoke-tfsave" title="Permanent link">&para;</a></h3>
 <p>The call to make is</p>
@@ -1846,7 +1846,7 @@ repo.</p>
 they call their Text-Fabric, they can point it to both locations, and
 Text-Fabric treats it as one dataset.</p>
 <h3 id="step-10-use-the-new-feature">Step 10: use the new feature<a class="headerlink" href="#step-10-use-the-new-feature" title="Permanent link">&para;</a></h3>
-<p>The call to <a href="../../Api/Core/#importing-and-calling-text-fabric"><code>TF=Fabric()</code></a> looks like this</p>
+<p>The call to <a href="../../Api/Fabric/#importing-and-calling-text-fabric"><code>TF=Fabric()</code></a> looks like this</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="p">[</span><span class="n">corpusLocation</span><span class="p">,</span> <span class="n">moduleLocation</span><span class="p">])</span>
 </pre></div>
 </td></tr></table>
