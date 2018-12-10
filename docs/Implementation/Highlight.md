@@ -8,7 +8,7 @@
 		???+ info "Description"
 				Outputs highlighted text.
 				The function works much the same as 
-				['T.text()'](General.md#text-representation)
+				['T.text()'](Text.md#text-representation)
 				except that you can pass an extra `highlights` parameter
 				to direct the highlighting of portions of the output.
 

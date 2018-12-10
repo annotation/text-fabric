@@ -12,7 +12,7 @@ Some parts of the code are covered by unit [tests](Tests.md).
 ## Base
 
 The
-[generic API](../Api/General.md) ([stats](StatsCore.md))
+[generic API](../Api/Core.md) ([stats](StatsCore.md))
 of Text-Fabric is responsible for:
 
 ??? abstract "Data management"
@@ -30,7 +30,7 @@ of Text-Fabric is responsible for:
 ## Search
 
 TF contains a
-[search engine](../Api/General.md#search) ([stats](StatsSearch.md))
+[search engine](../Api/Search.md#search) ([stats](StatsSearch.md))
 based on templates, which are little graphs
 of nodes and edges that must be instantiated against the corpus.
 

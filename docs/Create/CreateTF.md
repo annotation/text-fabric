@@ -173,7 +173,7 @@ You should also provide some special metadata to the key `otext`. This feature
 has no data, only metadata. It is not a node feature, not an edge feature, but a
 *config* feature. `otext` is responsible for sectioning and text representation.
 
-If you specify `otext` well, the [T-API](../Api/General.md#text) can make use of it, so that
+If you specify `otext` well, the [T-API](../Api/Text.md#text) can make use of it, so that
 you have convenient, generic functions to get at your sections and to serialize
 your text in different formats.
 
@@ -231,7 +231,7 @@ you, the corpus designer.
 ## Writing out TF
 
 Once you have assembled your features and metadata as data structures in memory,
-you can use [`TF.save()`](../Api/General.md#saving-features) to write out your data as a bunch
+you can use [`TF.save()`](../Api/Core.md#saving-features) to write out your data as a bunch
 of Text-Fabric files.
 
 ### Step 8: invoke TF.save()
@@ -308,7 +308,7 @@ Text-Fabric treats it as one dataset.
 
 ### Step 10: use the new feature
 
-The call to [`TF=Fabric()`](../Api/General.md#importing-and-calling-text-fabric) looks like this
+The call to [`TF=Fabric()`](../Api/Core.md#importing-and-calling-text-fabric) looks like this
 
 ```python
 TF = Fabric(locations=[corpusLocation, moduleLocation])

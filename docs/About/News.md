@@ -49,16 +49,16 @@ Nothing yet.
       **[display tutorial]({{etcbcnb}}/bhsa/blob/master/tutorial/display.ipynb)**
     * New function `T.sectionTuple(n)` which gives the tuple of section nodes in which `n`
       is embedded
-      **[T.sectionTuple](../Api/General.md#sections)**
+      **[T.sectionTuple](../Api/Text.md#sections)**
     * **Modified function `T.sectionFromNode(n, fillup=False)`**
       It used to give a tuple (section1, section2, section3), also for nodes of type
       section1 and section2 (like book and chapter). The new behaviour is the same if
       `fillup=True`. But if `fillup=False` (default), it returns a 1-tuple for
       section1 nodes and a 2-tuple for section2 nodes.
-      **[T.sectionFromNode](../Api/General.md#sections)**
+      **[T.sectionFromNode](../Api/Text.md#sections)**
     * New API member `sortKeyTuple` to sort tuples of nodes in the
       canonical ordering.
-      **[sortKeyTuple](../Api/General.md#navigating-nodes)**
+      **[sortKeyTuple](../Api/Nodes.md#navigating-nodes)**
     * The code to detect the file name and path of the script/notebook you are running in,
       is inherently brittle. It is unwise to base decisions on that.
       This code has been removed from TF.

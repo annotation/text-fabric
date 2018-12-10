@@ -168,7 +168,18 @@ nav:
   - Api:
     - 'Apps': 'Api/App.md'
     - 'Data': 'Api/Data.md'
-    - 'General': 'Api/General.md'
+    - Core:
+      - 'TF': 'Api/Core.md'
+      - 'F - Features': 'Api/Features.md'
+      - 'N - Nodes': 'Api/Nodes.md'
+      - 'L - Locality': 'Api/Locality.md'
+      - 'T - Text': 'Api/Text.md'
+      - 'S - Search': 'Api/Search.md'
+      - 'C - Computed': 'Api/Computed.md'
+      - 'Miscellaneous': 'Api/Misc.md'
+      - 'Convert (MQL)': 'Api/Convert.md'
+      - 'Lib': 'Api/Lib.md'
+      - 'Helpers': 'Api/Helpers.md'
   - Writing:
     - 'Hebrew': 'Writing/Hebrew.html'
     - 'Syriac': 'Writing/Syriac.html'
@@ -200,7 +211,14 @@ nav:
     - 'Stats (Tests)' : 'Code/StatsTest.md'
   - Implementation:
     - 'Apps': 'Implementation/Apps.md'
+    - 'Setup': 'Implementation/Setup.md'
+    - 'Data': 'Implementation/Data.md'
+    - 'Display': 'Implementation/Display.md'
     - 'Highlight' : 'Implementation/Highlight.md'
+    - 'Links' : 'Implementation/Links.md'
+    - 'Search' : 'Implementation/Search.md'
+    - 'Tables' : 'Implementation/Tables.md'
+    - 'Helpers' : 'Implementation/Helpers.md'
 
 markdown_extensions:
   - admonition

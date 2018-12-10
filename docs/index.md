@@ -31,13 +31,13 @@ what it is and where it came from. And after it, if you want to cite it, use thi
 
 ??? abstract "Capabilities"
     ???+ abstract "Search for patterns"
-        The [search API](Api/General.md#search)
+        The [search API](Api/Search.md#search)
         works with search templates that define relational patterns
         which will be instantiated by nodes and edges of the big fabric of the corpus.
 
     ???+ abstract "Pick and choose data"
         Students can selectively
-        [load](Api/General.md#loading)
+        [load](Api/Core.md#loading)
         the feature data they need.
         When the time comes to share the fruits of their thought,
         they can do so in various ways:
@@ -50,7 +50,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
 
     ???+ abstract "Contributing data"
         Researchers can easily
-        produce new data [features](Api/General.md#saving-features)
+        produce new data [features](Api/Core.md#saving-features)
         of text-fabric data out of their findings.
 
         They can package their new data into modules and
@@ -88,7 +88,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
         Hence, almost by definition, Text-Fabric does not make use of XML technology.
 
     ???+ abstract "Performance matters"
-        Based on this model, Text-Fabric offers a [processing API](Api/General.md)
+        Based on this model, Text-Fabric offers a [processing API](Api/Core.md)
         to search, navigate and process text and its annotations.
         A lot of care has been taken to make this API work as fast as possible.
         Efficiency in data processing has been a design criterion from the start.
@@ -247,8 +247,8 @@ to see what Text-Fabric can reveal about the data.
     Corpus designers can add *apps* to Text-Fabric that enhance its behaviours,
     especially in displaying the corpus in ways that make sense to people that study the corpus.
 
-    * [TF api](Api/General.md)
     * [TF apps](Api/App.md)
+    * [TF api](Api/Core.md)
 
     See also [Corpora](About/Corpora.md)
    
