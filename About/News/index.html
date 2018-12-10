@@ -585,10 +585,154 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-3" type="checkbox" id="nav-5-3">
+    
+    <label class="md-nav__link" for="nav-5-3">
+      Core
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-5-3">
+        Core
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../Api/General/" title="General" class="md-nav__link">
-      General
+    <a href="../../Api/Core/" title="TF" class="md-nav__link">
+      TF
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Features/" title="F - Features" class="md-nav__link">
+      F - Features
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Nodes/" title="N - Nodes" class="md-nav__link">
+      N - Nodes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Locality/" title="L - Locality" class="md-nav__link">
+      L - Locality
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Text/" title="T - Text" class="md-nav__link">
+      T - Text
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Search/" title="S - Search" class="md-nav__link">
+      S - Search
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Computed/" title="C - Computed" class="md-nav__link">
+      C - Computed
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Misc/" title="Miscellaneous" class="md-nav__link">
+      Miscellaneous
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Convert/" title="Convert (MQL)" class="md-nav__link">
+      Convert (MQL)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Lib/" title="Lib" class="md-nav__link">
+      Lib
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Helpers/" title="Helpers" class="md-nav__link">
+      Helpers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
         
@@ -1042,8 +1186,92 @@
 
 
   <li class="md-nav__item">
+    <a href="../../Implementation/Setup/" title="Setup" class="md-nav__link">
+      Setup
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Data/" title="Data" class="md-nav__link">
+      Data
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Display/" title="Display" class="md-nav__link">
+      Display
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../Implementation/Highlight/" title="Highlight" class="md-nav__link">
       Highlight
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Links/" title="Links" class="md-nav__link">
+      Links
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Search/" title="Search" class="md-nav__link">
+      Search
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Tables/" title="Tables" class="md-nav__link">
+      Tables
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Helpers/" title="Helpers" class="md-nav__link">
+      Helpers
     </a>
   </li>
 
@@ -1193,16 +1421,16 @@ all possibilities:
   <strong><a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/display.ipynb">display tutorial</a></strong></li>
 <li>New function <code>T.sectionTuple(n)</code> which gives the tuple of section nodes in which <code>n</code>
   is embedded
-  <strong><a href="../../Api/General/#sections">T.sectionTuple</a></strong></li>
+  <strong><a href="../../Api/Text/#sections">T.sectionTuple</a></strong></li>
 <li><strong>Modified function <code>T.sectionFromNode(n, fillup=False)</code></strong>
   It used to give a tuple (section1, section2, section3), also for nodes of type
   section1 and section2 (like book and chapter). The new behaviour is the same if
   <code>fillup=True</code>. But if <code>fillup=False</code> (default), it returns a 1-tuple for
   section1 nodes and a 2-tuple for section2 nodes.
-  <strong><a href="../../Api/General/#sections">T.sectionFromNode</a></strong></li>
+  <strong><a href="../../Api/Text/#sections">T.sectionFromNode</a></strong></li>
 <li>New API member <code>sortKeyTuple</code> to sort tuples of nodes in the
   canonical ordering.
-  <strong><a href="../../Api/General/#navigating-nodes">sortKeyTuple</a></strong></li>
+  <strong><a href="../../Api/Nodes/#navigating-nodes">sortKeyTuple</a></strong></li>
 <li>The code to detect the file name and path of the script/notebook you are running in,
   is inherently brittle. It is unwise to base decisions on that.
   This code has been removed from TF.

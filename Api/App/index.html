@@ -570,10 +570,154 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-3" type="checkbox" id="nav-5-3">
+    
+    <label class="md-nav__link" for="nav-5-3">
+      Core
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-5-3">
+        Core
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../General/" title="General" class="md-nav__link">
-      General
+    <a href="../Core/" title="TF" class="md-nav__link">
+      TF
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Features/" title="F - Features" class="md-nav__link">
+      F - Features
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Nodes/" title="N - Nodes" class="md-nav__link">
+      N - Nodes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Locality/" title="L - Locality" class="md-nav__link">
+      L - Locality
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Text/" title="T - Text" class="md-nav__link">
+      T - Text
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Search/" title="S - Search" class="md-nav__link">
+      S - Search
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Computed/" title="C - Computed" class="md-nav__link">
+      C - Computed
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Misc/" title="Miscellaneous" class="md-nav__link">
+      Miscellaneous
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Convert/" title="Convert (MQL)" class="md-nav__link">
+      Convert (MQL)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Lib/" title="Lib" class="md-nav__link">
+      Lib
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Helpers/" title="Helpers" class="md-nav__link">
+      Helpers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
         
@@ -1027,8 +1171,92 @@
 
 
   <li class="md-nav__item">
+    <a href="../../Implementation/Setup/" title="Setup" class="md-nav__link">
+      Setup
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Data/" title="Data" class="md-nav__link">
+      Data
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Display/" title="Display" class="md-nav__link">
+      Display
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../Implementation/Highlight/" title="Highlight" class="md-nav__link">
       Highlight
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Links/" title="Links" class="md-nav__link">
+      Links
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Search/" title="Search" class="md-nav__link">
+      Search
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Tables/" title="Tables" class="md-nav__link">
+      Tables
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Helpers/" title="Helpers" class="md-nav__link">
+      Helpers
     </a>
   </li>
 
@@ -1190,7 +1418,7 @@ version of the main source!</p>
 <details class="info"><summary>mod=None</summary><p><code>mod</code> is a comma-separated list of modules in the form <code>{org}/{repo}/{path}</code>.
 All features of all those modules will be loaded.
 If they are not yet present, they will be downloaded from GitHub first.</p>
-<p>For example, their is an easter egg module on GitHub, and you can obtain it by</p>
+<p>For example, there is an easter egg module on GitHub, and you can obtain it by</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>mod=&#39;etcbc/lingo/easter/tf&#39;
 </pre></div>
 </td></tr></table>
@@ -1242,7 +1470,7 @@ without wanting to publish every intermediate stage.</p>
 <details class="info"><summary>locations and modules arguments</summary><p>If you want to add other search locations for TF features manually,
 you can pass optional <code>locations</code> and <code>modules</code> parameters,
 which will be passed to the
-<a href="../General/#loading">Fabric()</a> call to the core of TF.</p>
+<a href="../Core/#loading">Fabric()</a> call to the core of TF.</p>
 <details class="note"><summary>More, not less</summary><p>Using these arguments will load features on top of the
 default selection of features.
 You cannot use these arguments to prevent features from being loaded.</p>
@@ -1252,7 +1480,7 @@ You cannot use these arguments to prevent features from being loaded.</p>
 with a more or less standard set of features
 loaded, and make that API avaible to you, under <code>A.api</code>.</p>
 <p>But you can also setup an API yourself by using the
-<a href="../General/#loading">core TF machinery</a>:</p>
+<a href="../Core/#loading">core TF machinery</a>:</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.fabric</span> <span class="kn">import</span> <span class="n">Fabric</span>
@@ -1297,14 +1525,16 @@ Error messages will still come through.</p>
 </td></tr></table>
 
 <details open="open"><summary>Description</summary><p>Searches in the same way as the generic Text-Fabric
-<a href="../General/#search"><code>S.search()</code></a>.
+<a href="../Search/#search"><code>S.search()</code></a>.
 But whereas the <code>S</code> version returns a generator which yields the results
 one by one, the <code>A</code> version collects all results and sorts them in the
-<a href="../General/#navigating-nodes">canonical order</a>.
+<a href="../Nodes/#navigating-nodes">canonical order</a>.
 (but you can change the sorting, see the <code>sort</code> parameter).
 It then reports the number of results.</p>
 </details>
-<details class="info"><summary>query</summary><p>the search template that has to be searched for.</p>
+<details class="info"><summary>query</summary><p>the
+<a href="../../Use/Search/#search-template-reference">search template</a>
+that has to be searched for.</p>
 </details>
 <details class="info"><summary>silent</summary><p>if <code>True</code> it will suppress the reporting of the number of results.</p>
 </details>
@@ -1330,13 +1560,13 @@ and then in your query you can say</p>
 <p>This is handy when you need node sets that cannot be conveniently queried.
 You can produce them by hand-coding.
 Once you got them, you can use them over and over again in queries.
-Or you can save them with <a href="../General/#sets">writeSets</a>
+Or you can save them with <a href="../Lib/#sets">writeSets</a>
 and use them in the TF browser.</p>
 </details>
 <details class="info"><summary>sort</summary><p>If <code>True</code> (default), search results will be returned in 
-<a href="../General/#navigating-nodes">canonical order</a>.</p>
+<a href="../Nodes/#navigating-nodes">canonical order</a>.</p>
 <details class="note"><summary>canonical sort key for tuples</summary><p>This sort is achieved by using the function
-<a href="../General/#navigating-nodes">sortKeyTuple</a>
+<a href="../Nodes/#navigating-nodes">sortKeyTuple</a>
 as sort key.</p>
 </details>
 <p>If it is a <em>sort key</em>, i.e. function that can be applied to tuples of nodes
@@ -1386,7 +1616,7 @@ the passage indicator will be chosen.</p>
 
 <details class="info" open="open"><summary>Description</summary><p>Given a section string pointing to a section,
 return the corresponding node (or an error message).</p>
-<p>Compare <a href="../General/#sections"><code>T.nodeFromSection</code></a>.</p>
+<p>Compare <a href="../Text/#sections"><code>T.nodeFromSection</code></a>.</p>
 </details>
 <details class="info"><summary>sectionStr</summary><p><code>sectionStr</code> must be a valid section specficiation in the
 language specified in <code>lang</code>.</p>
@@ -1430,7 +1660,7 @@ The result is a string,
 built from the labels of the individual section levels
 (in language <code>lang</code> where applicable).
 But see the <code>fillup</code> parameter.</p>
-<p>Compare <a href="../General/#sections"><code>T.sectionFromNode</code></a>.</p>
+<p>Compare <a href="../Text/#sections"><code>T.sectionFromNode</code></a>.</p>
 </details>
 <details class="info"><summary>node</summary><p>The node from which we obtain a section specification.</p>
 </details>
@@ -1440,7 +1670,7 @@ But see the <code>fillup</code> parameter.</p>
 <details class="info"><summary>lang</summary><p>The language to be used for the section parts,
 as far as they are language dependent.</p>
 </details>
-<details class="info"><summary>fillup</summary><p>Same as for <a href="../General/#sections"><code>T.sectionTuple()</code></a></p>
+<details class="info"><summary>fillup</summary><p>Same as for <a href="../Text/#sections"><code>T.sectionTuple()</code></a></p>
 </details>
 </details>
 <h2 id="display">Display<a class="headerlink" href="#display" title="Permanent link">&para;</a></h2>

@@ -496,10 +496,154 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5-3" type="checkbox" id="nav-5-3">
+    
+    <label class="md-nav__link" for="nav-5-3">
+      Core
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-5-3">
+        Core
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../Api/General/" title="General" class="md-nav__link">
-      General
+    <a href="../../Api/Core/" title="TF" class="md-nav__link">
+      TF
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Features/" title="F - Features" class="md-nav__link">
+      F - Features
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Nodes/" title="N - Nodes" class="md-nav__link">
+      N - Nodes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Locality/" title="L - Locality" class="md-nav__link">
+      L - Locality
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Text/" title="T - Text" class="md-nav__link">
+      T - Text
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Search/" title="S - Search" class="md-nav__link">
+      S - Search
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Computed/" title="C - Computed" class="md-nav__link">
+      C - Computed
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Misc/" title="Miscellaneous" class="md-nav__link">
+      Miscellaneous
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Convert/" title="Convert (MQL)" class="md-nav__link">
+      Convert (MQL)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Lib/" title="Lib" class="md-nav__link">
+      Lib
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Helpers/" title="Helpers" class="md-nav__link">
+      Helpers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
         
@@ -1148,8 +1292,92 @@
 
 
   <li class="md-nav__item">
+    <a href="../../Implementation/Setup/" title="Setup" class="md-nav__link">
+      Setup
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Data/" title="Data" class="md-nav__link">
+      Data
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Display/" title="Display" class="md-nav__link">
+      Display
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../Implementation/Highlight/" title="Highlight" class="md-nav__link">
       Highlight
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Links/" title="Links" class="md-nav__link">
+      Links
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Search/" title="Search" class="md-nav__link">
+      Search
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Tables/" title="Tables" class="md-nav__link">
+      Tables
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Implementation/Helpers/" title="Helpers" class="md-nav__link">
+      Helpers
     </a>
   </li>
 
@@ -1498,7 +1726,7 @@ as a whole, such as information about decisions that have been taken.</p>
 <p>You should also provide some special metadata to the key <code>otext</code>. This feature
 has no data, only metadata. It is not a node feature, not an edge feature, but a
 <em>config</em> feature. <code>otext</code> is responsible for sectioning and text representation.</p>
-<p>If you specify <code>otext</code> well, the <a href="../../Api/General/#text">T-API</a> can make use of it, so that
+<p>If you specify <code>otext</code> well, the <a href="../../Api/Text/#text">T-API</a> can make use of it, so that
 you have convenient, generic functions to get at your sections and to serialize
 your text in different formats.</p>
 <h3 id="step-6-sectioning-metadata">Step 6: sectioning metadata<a class="headerlink" href="#step-6-sectioning-metadata" title="Permanent link">&para;</a></h3>
@@ -1557,7 +1785,7 @@ fmt:text-trans-plain: &#39;{g_cons}{trailer}&#39;
 you, the corpus designer.</p>
 <h2 id="writing-out-tf">Writing out TF<a class="headerlink" href="#writing-out-tf" title="Permanent link">&para;</a></h2>
 <p>Once you have assembled your features and metadata as data structures in memory,
-you can use <a href="../../Api/General/#saving-features"><code>TF.save()</code></a> to write out your data as a bunch
+you can use <a href="../../Api/Core/#saving-features"><code>TF.save()</code></a> to write out your data as a bunch
 of Text-Fabric files.</p>
 <h3 id="step-8-invoke-tfsave">Step 8: invoke TF.save()<a class="headerlink" href="#step-8-invoke-tfsave" title="Permanent link">&para;</a></h3>
 <p>The call to make is</p>
@@ -1618,7 +1846,7 @@ repo.</p>
 they call their Text-Fabric, they can point it to both locations, and
 Text-Fabric treats it as one dataset.</p>
 <h3 id="step-10-use-the-new-feature">Step 10: use the new feature<a class="headerlink" href="#step-10-use-the-new-feature" title="Permanent link">&para;</a></h3>
-<p>The call to <a href="../../Api/General/#importing-and-calling-text-fabric"><code>TF=Fabric()</code></a> looks like this</p>
+<p>The call to <a href="../../Api/Core/#importing-and-calling-text-fabric"><code>TF=Fabric()</code></a> looks like this</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="p">[</span><span class="n">corpusLocation</span><span class="p">,</span> <span class="n">moduleLocation</span><span class="p">])</span>
 </pre></div>
 </td></tr></table>
