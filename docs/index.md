@@ -37,7 +37,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
 
     ???+ abstract "Pick and choose data"
         Students can selectively
-        [load](Api/Core.md#loading)
+        [load](Api/Fabric.md#loading)
         the feature data they need.
         When the time comes to share the fruits of their thought,
         they can do so in various ways:
@@ -50,7 +50,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
 
     ???+ abstract "Contributing data"
         Researchers can easily
-        produce new data [features](Api/Core.md#saving-features)
+        produce new data [features](Api/Fabric.md#saving-features)
         of text-fabric data out of their findings.
 
         They can package their new data into modules and
@@ -88,7 +88,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
         Hence, almost by definition, Text-Fabric does not make use of XML technology.
 
     ???+ abstract "Performance matters"
-        Based on this model, Text-Fabric offers a [processing API](Api/Core.md)
+        Based on this model, Text-Fabric offers a [processing API](Api/Fabric.md)
         to search, navigate and process text and its annotations.
         A lot of care has been taken to make this API work as fast as possible.
         Efficiency in data processing has been a design criterion from the start.
@@ -248,7 +248,7 @@ to see what Text-Fabric can reveal about the data.
     especially in displaying the corpus in ways that make sense to people that study the corpus.
 
     * [TF apps](Api/App.md)
-    * [TF api](Api/Core.md)
+    * [TF api](Api/Fabric.md)
 
     See also [Corpora](About/Corpora.md)
    

@@ -57,7 +57,7 @@ You can "talk" to your corpus through an
 [API](../Api/App.md)
 dedicated to your corpus which can download its data and display its material.
 
-You can use it together with the generic [TF API](../Api/Core.md) to
+You can use it together with the generic [TF API](../Api/Fabric.md) to
 
 * search your corpus programmatically by means of the same templates,
 * prepare derived data for analysis in R, and

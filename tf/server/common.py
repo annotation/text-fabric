@@ -107,24 +107,6 @@ def getAppDir(myDir, dataSource):
   return f'{parentDir}/apps/{tail}'
 
 
-# FORM VALUES
-
-def getValues(options, form):
-  values = {}
-  for (option, default, typ, acro, desc) in options:
-    value = form.get(option, default)
-    if typ == 'checkbox':
-      value = True if value else False
-    values[option] = value
-  return values
-
-
-def setValues(options, source, form):
-  for (option, default, typ, acro, desc) in options:
-    value = source.get(option, default)
-    form[option] = value
-
-
 # HTML FORMATTING
 
 def pageLinks(nResults, position, spread=10):
@@ -190,9 +172,33 @@ def passageLinks(passages, sec0, sec1):
 '''
 
 
+# FORM VALUES
+
+def getValues(options, form):
+  values = {}
+  for (option, default, typ, acro, desc) in options:
+    value = form.get(option, None)
+    if typ == 'checkbox':
+      value = True if value else False
+    values[option] = value
+  return values
+
+
+def setValues(options, source, form, emptyRequest):
+  for (option, default, typ, acro, desc) in options:
+    # only apply the default value if the form is empty
+    # if the form is not empty, the absence of a checkbox value means
+    # that the checkbox is unchecked
+    # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox
+    value = source.get(option, default if emptyRequest else None)
+    if typ == 'checkbox':
+      value = True if value else False
+    form[option] = value
+
+
 def shapeOptions(options, values):
   html = []
-  for (option, typ, acro, desc, default) in options:
+  for (option, default, typ, acro, desc) in options:
     value = values[option]
     if typ == 'checkbox':
       value = 'checked' if value else ''

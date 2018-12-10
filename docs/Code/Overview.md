@@ -12,7 +12,7 @@ Some parts of the code are covered by unit [tests](Tests.md).
 ## Base
 
 The
-[generic API](../Api/Core.md) ([stats](StatsCore.md))
+[generic API](../Api/Fabric.md) ([stats](StatsCore.md))
 of Text-Fabric is responsible for:
 
 ??? abstract "Data management"

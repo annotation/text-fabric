@@ -2,7 +2,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '7.2.0'
+VERSION = '7.2.1'
 NAME = 'Text-Fabric'
 
 URL_GH_API = 'https://api.github.com/repos'

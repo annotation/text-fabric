@@ -232,19 +232,21 @@ def getInt(x, default=1):
 
 def getFormData():
   form = {}
+  jobName = request.forms.jobName.strip()
+  emptyRequest = False
+  if jobName:
+    form['jobName'] = jobName
+    form['loadJob'] = ''
+  else:
+    emptyRequest = True
+    form['jobName'] = DEFAULT_NAME
+    form['loadJob'] = '1'
   form['query'] = request.forms.query.replace('\r', '')
   form['messages'] = request.forms.messages or ''
   form['features'] = request.forms.features or ''
   form['tuples'] = request.forms.tuples.replace('\r', '')
   form['sections'] = request.forms.sections.replace('\r', '')
   form['appName'] = request.forms.appName
-  jobName = request.forms.jobName.strip()
-  if jobName:
-    form['jobName'] = jobName
-    form['loadJob'] = ''
-  else:
-    form['jobName'] = DEFAULT_NAME
-    form['loadJob'] = '1'
   form['jobName'] = request.forms.jobName.strip() or DEFAULT_NAME
   form['side'] = request.forms.side
   form['help'] = request.forms.help
@@ -269,7 +271,7 @@ def getFormData():
   form['sec0'] = request.forms.sec0
   form['sec1'] = request.forms.sec1
   form['sec2'] = request.forms.sec2
-  setValues(config.OPTIONS, request.forms, form)
+  setValues(config.OPTIONS, request.forms, form, emptyRequest)
   return form
 
 

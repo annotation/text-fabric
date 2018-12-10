@@ -231,7 +231,7 @@ you, the corpus designer.
 ## Writing out TF
 
 Once you have assembled your features and metadata as data structures in memory,
-you can use [`TF.save()`](../Api/Core.md#saving-features) to write out your data as a bunch
+you can use [`TF.save()`](../Api/Fabric.md#saving-features) to write out your data as a bunch
 of Text-Fabric files.
 
 ### Step 8: invoke TF.save()
@@ -308,7 +308,7 @@ Text-Fabric treats it as one dataset.
 
 ### Step 10: use the new feature
 
-The call to [`TF=Fabric()`](../Api/Core.md#importing-and-calling-text-fabric) looks like this
+The call to [`TF=Fabric()`](../Api/Fabric.md#importing-and-calling-text-fabric) looks like this
 
 ```python
 TF = Fabric(locations=[corpusLocation, moduleLocation])
