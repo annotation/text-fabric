@@ -201,7 +201,7 @@ accept additional options:
 
     ??? explanation "Compare `T.nodeFromSection()`"
         This function is analogous to
-        [`T.nodeFromSection()`](../Api/General.md#sections)
+        [`T.nodeFromSection()`](../Api/Text.md#sections)
         of Text-Fabric.
 
     ??? info "case specification"
@@ -227,7 +227,7 @@ accept additional options:
 
     ??? explanation "Compare `T.sectionFromNode()`"
         This function is analogous to
-        [`T.sectionFromNode()`](../Api/General.md#sections)
+        [`T.sectionFromNode()`](../Api/Text.md#sections)
         of Text-Fabric.
 
     ??? explanation "case specification"

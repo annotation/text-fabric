@@ -207,7 +207,7 @@ This change was needed for the Text-Fabric browser, in order to represent *lexem
     * [RESULTSX.tsv]({{tfghb}}/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
 
 It might also be handy for the programmers amongst you.
-See the updated [API doc on T](../Api/General.md#text-representation), expand the T.text() item.
+See the updated [API doc on T](../Api/Text.md#text-representation), expand the T.text() item.
 
 ### Auto update
 The Text-Fabric browser checks if you are using the most recent release of the data.
@@ -844,7 +844,7 @@ Uruk API:
 
 2018-04-23
 
-[Search](../Api/General.md#search):
+[Search](../Api/Search.md#search):
 
 *   You can use regular expressions to specify feature values in queries.
 *   You could already search for nodes which have a non-None value for a certain
@@ -978,7 +978,7 @@ container type only contains small instances of the contained type and not the
 bigger ones.
 
 Now you can override the computation by text-fabric by means of a key-value in
-the *otext* feature. See the [api](../Api/General.md#levels-of-node-types).
+the *otext* feature. See the [api](../Api/Text.md#levels-of-node-types).
 
 ## 3.1.5
 
@@ -1044,7 +1044,7 @@ Edges with edge values did not allow for the absence of values. Now they do.
 
 2017-10-05
 
-A major tweak in the [importMQL()](../Api/General.md#mql-import) function so that it can
+A major tweak in the [importMQL()](../Api/Convert.md#mql-import) function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
 version 3 of the [BHSA]({{etcbcgh}}/bhsa). In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
@@ -1055,7 +1055,7 @@ of slots.
 
 2017-10-05
 
-Another little tweak in the [importMQL()](../Api/General.md#mql-import) function so that it
+Another little tweak in the [importMQL()](../Api/Convert.md#mql-import) function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
 MQL for version 3 of the [BHSA]({{etcbcgh}}/bhsa).
 
@@ -1063,7 +1063,7 @@ MQL for version 3 of the [BHSA]({{etcbcgh}}/bhsa).
 
 2017-10-04
 
-Little tweak in the [importMQL()](../Api/General.md#mql-import) function so that it can handle
+Little tweak in the [importMQL()](../Api/Convert.md#mql-import) function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
 [extrabiblical]({{etcbcgh}}/extrabiblical) material.
 
@@ -1086,7 +1086,7 @@ Bug fix in reading edge features with values.
 2017-10-02
 
 MQL! You can now convert MQL data into a TF dataset:
-[importMQL()](../Api/General.md#mql-import). We had already [exportMQL()](../Api/General.md#mql-export).
+[importMQL()](../Api/Convert.md#mql-import). We had already [exportMQL()](../Api/Convert.md#mql-export).
 
 The consequence is that we can operate with much agility between the worlds of
 MQL and TF.
@@ -1100,10 +1100,10 @@ enriched MQL, so that the enriched data can be queried by MQL.
 2017-09-29
 
 Completion: TF defines the concept of
-[edges](../Api/General.md#edge-features) that
+[edges](../Api/Features.md#edge-features) that
 carry a value. But so far we have not used them. It turned out that it was
 impossible to let TF know that an edge carries values, when
-[saving](../Api/General.md#saving-features) data
+[saving](../Api/Core.md#saving-features) data
 as a new feature. Now it is possible.
 
 ## 2.3.14
@@ -1114,7 +1114,7 @@ Bug fix: it was not possible to get
 `T.nodeFromSection(('2_Chronicles', 36, 23))`, the last verse in the Bible.
 
 This is the consequence of a bug in precomputing the sections
-[sections](../Api/General.md#computed-data). The
+[sections](../Api/Computed.md#computed-data). The
 preparation step used
 
 ```python
@@ -1138,14 +1138,14 @@ Loading TF was not completely silent if `silent=True` was passed. Better now.
 2017-09-18
 
 *   Small fix in
-    [TF.save()](../Api/General.md#saving-features).
+    [TF.save()](../Api/Core.md#saving-features).
     The spec says that the metadata under the empty key will be inserted into all
     features, but in fact this did not happen. Instead it was used as a default
     when some feature did not have metadata specified.
 
     From now on, that metadata will spread through all features.
 
-*   New API function [explore](../Api/General.md#loading), to get a list of all known
+*   New API function [explore](../Api/Core.md#loading), to get a list of all known
     features in a dataset.
 
 ## 2.3.11
@@ -1211,11 +1211,11 @@ Also the `Fabric()` call can be made silent now.
 
 Improvements:
 
-*   you can load features more silently. See [`TF.load()`](../Api/General.md#loading-features);
-*   you can search more silently. See [`S.study()`](../Api/General.md#prepare-for-search);
-*   you can search more concisely. See the new [`S.search()`](../Api/General.md#search-command);
+*   you can load features more silently. See [`TF.load()`](../Api/Core.md#loading-features);
+*   you can search more silently. See [`S.study()`](../Api/Search.md#prepare-for-search);
+*   you can search more concisely. See the new [`S.search()`](../Api/Search.md#search-command);
 *   when fetching results, the `amount` parameter of
-    [`S.fetch()`](../Api/General.md#getting-results) has been renamed to `limit`;
+    [`S.fetch()`](../Api/Search.md#getting-results) has been renamed to `limit`;
 *   the tutorial notebooks (see links on top) have been updated.
 
 ## 2.3.2
@@ -1250,9 +1250,9 @@ Small fixes.
 
 ### New: sortKey
 
-The API has a new member: [`sortKey`](../Api/General.md#sorting-nodes)
+The API has a new member: [`sortKey`](../Api/Nodes.md#sorting-nodes)
 
-New relationships in templates: [`nearness`](../Api/General.md#nearness-comparison). See for
+New relationships in templates: [`nearness`](../Api/Search.md#nearness-comparison). See for
 examples the end of the
 [searchTutorial]({{tfghb}}/docs/searchTutorial.ipynb).
 Thanks to James Cuénod for requesting nearness operators.
@@ -1326,7 +1326,7 @@ Xmas.
 
 ### New
 
-[`F.otype.sInterval()`](../Api/General.md#warp-feature-otype)
+[`F.otype.sInterval()`](../Api/Features.md#warp-feature-otype)
 
 ## 1.2.6
 
@@ -1343,7 +1343,7 @@ It has been remedied.
 
 ??? note
     Your computed data needs to be refreshed. This can be done by calling a new
-    function [`TF.clearCache()`](../Api/General.md#clearing-the-cache). When you use TF after
+    function [`TF.clearCache()`](../Api/Misc.md#clearing-the-cache). When you use TF after
     this, you will see it working quite hard to recompute a bunch of data.
 
 ## 1.2.5
@@ -1363,12 +1363,12 @@ Documentation update
 
 ### Frequency lists ###
 
-[`F.feature.freqList()`](../Api/General.md#node-features): get a sorted frequency list for any
+[`F.feature.freqList()`](../Api/Features.md#node-features): get a sorted frequency list for any
 feature. Handy as a first step in exploring a feature.
 
 ### Export to MQL ###
 
-[`TF.exportMQL()`](../Api/General.md#export-to-mql): export a whole dataset as a MQL database.
+[`TF.exportMQL()`](../Api/Convert.md#export-to-mql): export a whole dataset as a MQL database.
 Including all modules that you have loaded with it.
 
 ### Changed

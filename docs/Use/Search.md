@@ -12,7 +12,7 @@
     has been wrapped in a Text-Fabric [app](../About/Corpora.md).
 
     You can also run queries on arbitrary TF corpora programmatically, e.g. in a Jupyter
-    notebook, by using the [`S` API](../Api/General.md#search).
+    notebook, by using the [`S` API](../Api/Search.md#search).
 
 ??? info "Search primer"
     A search template consists of a bunch of lines,

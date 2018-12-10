@@ -93,7 +93,7 @@
         All features of all those modules will be loaded.
         If they are not yet present, they will be downloaded from GitHub first.
 
-        For example, their is an easter egg module on GitHub, and you can obtain it by
+        For example, there is an easter egg module on GitHub, and you can obtain it by
 
         ```
         mod='etcbc/lingo/easter/tf'
@@ -154,7 +154,7 @@
         If you want to add other search locations for TF features manually,
         you can pass optional `locations` and `modules` parameters,
         which will be passed to the
-        [Fabric()](General.md#loading) call to the core of TF.
+        [Fabric()](Core.md#loading) call to the core of TF.
 
         ??? note "More, not less"
             Using these arguments will load features on top of the
@@ -167,7 +167,7 @@
         loaded, and make that API avaible to you, under `A.api`.
 
         But you can also setup an API yourself by using the
-        [core TF machinery](General.md#loading):
+        [core TF machinery](Core.md#loading):
 
         ```python
         from tf.fabric import Fabric
@@ -219,15 +219,17 @@
     
     ???+ "Description"
         Searches in the same way as the generic Text-Fabric
-        [`S.search()`](General.md#search).
+        [`S.search()`](Search.md#search).
         But whereas the `S` version returns a generator which yields the results
         one by one, the `A` version collects all results and sorts them in the
-        [canonical order](../Api/General.md#navigating-nodes).
+        [canonical order](../Api/Nodes.md#navigating-nodes).
         (but you can change the sorting, see the `sort` parameter).
         It then reports the number of results.
 
     ??? info "query"
-        the search template that has to be searched for.
+        the
+        [search template](../Use/Search.md#search-template-reference)
+        that has to be searched for.
 
     ??? info "silent"
         if `True` it will suppress the reporting of the number of results.
@@ -260,16 +262,16 @@
         This is handy when you need node sets that cannot be conveniently queried.
         You can produce them by hand-coding.
         Once you got them, you can use them over and over again in queries.
-        Or you can save them with [writeSets](General.md#sets)
+        Or you can save them with [writeSets](Lib.md#sets)
         and use them in the TF browser.
 
     ??? info "sort"
         If `True` (default), search results will be returned in 
-        [canonical order](../Api/General.md#navigating-nodes).
+        [canonical order](../Api/Nodes.md#navigating-nodes).
 
         ??? note "canonical sort key for tuples"
             This sort is achieved by using the function
-            [sortKeyTuple](../Api/General.md#navigating-nodes)
+            [sortKeyTuple](../Api/Nodes.md#navigating-nodes)
             as sort key.
 
         If it is a *sort key*, i.e. function that can be applied to tuples of nodes
@@ -331,7 +333,7 @@
         Given a section string pointing to a section,
         return the corresponding node (or an error message).
 
-        Compare [`T.nodeFromSection`](../Api/General.md#sections).
+        Compare [`T.nodeFromSection`](../Api/Text.md#sections).
 
     ??? info "sectionStr"
         `sectionStr` must be a valid section specficiation in the
@@ -378,7 +380,7 @@
         (in language `lang` where applicable).
         But see the `fillup` parameter.
 
-        Compare [`T.sectionFromNode`](../Api/General.md#sections).
+        Compare [`T.sectionFromNode`](../Api/Text.md#sections).
 
     ??? info "node"
         The node from which we obtain a section specification.
@@ -392,7 +394,7 @@
         as far as they are language dependent.
 
     ??? info "fillup"
-        Same as for [`T.sectionTuple()`](../Api/General.md#sections)
+        Same as for [`T.sectionTuple()`](../Api/Text.md#sections)
 
 
 ## Display

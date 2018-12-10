@@ -81,11 +81,11 @@
     `filePath` must specify a file on your local system
     (you may use `~` for your home directory).
     That file must have been written by calling
-    [`tf.lib.writeSets`](../Api/General.md#sets).
+    [`tf.lib.writeSets`](../Api/Lib.md#sets).
     If so,it contains a dictionary of named node sets.
     These names can be used in search templates,
     and the TF browser will use this dictionary to resolve those names.
-    See [S.search() sets argument](../Api/General.md#search-api).
+    See [S.search() sets argument](../Api/Search.md#search-api).
 
 ## Jobs
 
