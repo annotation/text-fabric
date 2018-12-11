@@ -7,7 +7,7 @@
     in which you can enter a search template and view the results.
 
     This is realized by a web app based on 
-    [bottle]({{bottle}}).
+    [Flask]({{flask}}).
 
     This web app connects to the [TF kernel](Kernel.md)
     and merges the retrieved data into a set of 
@@ -50,7 +50,7 @@
         
         ??? hint "Debug mode"
             If you have passed `-d` to the `text-fabric` script,
-            the **bottle** will be started in debug and reload mode.
+            the **Flask** web server will be started in debug and reload mode.
             That means that if you modify `web.py` or a module it imports,
             the web server will reload itself automatically.
             When you refresh the browser you see the changes.

@@ -9,44 +9,44 @@
 		<link rel="stylesheet" href="/server/static/highlight.css"/>
 		<link rel="stylesheet" href="/server/static/export.css"/>
 <style type="text/css">
-	{{!css}}
+	{{css|safe}}
 </style>
 	</head>
 	<body>
 		<div class="header">
-			{{!colofon}}
+			{{colofon|safe}}
 		</div>
 		<div class="prov">
-			{{!provenance}}
+			{{provenance|safe}}
 		</div>
 		<div class="headerdesc">
 			<div class="titleline">{{title}}</div>
 			<div class="authorline">{{author}}</div>
 		</div>
 		<div class="description">
-			{{!descriptionMd}}
+			{{descriptionMd|safe}}
 		</div>
 		<hr/>
 		<div>
 			<pre class="sections">{{sections}}</pre>
 		</div>
 		<div id="sectionsTable" class="table">
-			{{!sectionsTable}}
+			{{sectionsTable|safe}}
 		</div>
 		<hr/>
 		<div>
 				<pre class="tuples">{{tuples}}</pre>
 		</div>
 		<div id="tuplesTable" class="table">
-			{{!tuplesTable}}
+			{{tuplesTable|safe}}
 		</div>
 		<hr/>
 		<div>
 				<pre class="query">{{query}}</pre>
-			{{!setNames}}
+			{{setNames|safe}}
 		</div>
 		<div id="queryTable" class="table">
-			{{!queryTable}}
+			{{queryTable|safe}}
 		</div>
 		<hr/>
 		<div>
