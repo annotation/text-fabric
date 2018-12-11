@@ -8,12 +8,23 @@ import pickle
 
 import markdown
 
-import bottle
-from bottle import (
-    post, get, route, template,
-    request, response,
-    static_file, run, redirect,
+from flask import (
+    Flask,
+    request,
+    redirect,
+    send_file,
+    make_response,
+    render_template,
+    jsonify,
 )
+from werkzeug.serving import run_simple
+
+# import bottle
+# from bottle import (
+#     post, get, route, template,
+#     request, response,
+#     static_file, run, redirect,
+# )
 
 from tf.core.helpers import console, shapeMessages
 from tf.parameters import NAME, VERSION, DOI_TEXT, DOI_URL, COMPOSE_URL, ZIP_OPTIONS
@@ -45,7 +56,7 @@ DEFAULT_NAME = 'default'
 myDir = os.path.dirname(os.path.abspath(__file__))
 appDir = None
 localDir = None
-bottle.TEMPLATE_PATH = [f'{myDir}/views']
+# bottle.TEMPLATE_PATH = [f'{myDir}/views']
 
 dataSource = None
 config = None
@@ -232,7 +243,7 @@ def getInt(x, default=1):
 
 def getFormData():
   form = {}
-  jobName = request.forms.jobName.strip()
+  jobName = request.form.get('jobName', '').strip()
   emptyRequest = False
   if jobName:
     form['jobName'] = jobName
@@ -241,56 +252,104 @@ def getFormData():
     emptyRequest = True
     form['jobName'] = DEFAULT_NAME
     form['loadJob'] = '1'
-  form['query'] = request.forms.query.replace('\r', '')
-  form['messages'] = request.forms.messages or ''
-  form['features'] = request.forms.features or ''
-  form['tuples'] = request.forms.tuples.replace('\r', '')
-  form['sections'] = request.forms.sections.replace('\r', '')
-  form['appName'] = request.forms.appName
-  form['jobName'] = request.forms.jobName.strip() or DEFAULT_NAME
-  form['side'] = request.forms.side
-  form['help'] = request.forms.help
-  form['author'] = request.forms.author.strip()
-  form['title'] = request.forms.title.strip()
-  form['description'] = request.forms.description.replace('\r', '')
-  form['withNodes'] = request.forms.withNodes
-  form['condensed'] = request.forms.condensed
-  form['condenseTp'] = request.forms.condenseTp
-  form['textformat'] = request.forms.textformat
-  form['sectionsExpandAll'] = request.forms.sectionsExpandAll
-  form['tuplesExpandAll'] = request.forms.tuplesExpandAll
-  form['queryExpandAll'] = request.forms.queryExpandAll
-  form['linked'] = getInt(request.forms.linked, default=1)
-  form['passageOpened'] = request.forms.passageOpened
-  form['sectionsOpened'] = request.forms.sectionsOpened
-  form['tuplesOpened'] = request.forms.tuplesOpened
-  form['queryOpened'] = request.forms.queryOpened
-  form['mode'] = request.forms.mode or 'passage'
-  form['position'] = getInt(request.forms.position, default=1)
-  form['batch'] = getInt(request.forms.batch, default=BATCH)
-  form['sec0'] = request.forms.sec0
-  form['sec1'] = request.forms.sec1
-  form['sec2'] = request.forms.sec2
-  setValues(config.OPTIONS, request.forms, form, emptyRequest)
+  form['query'] = request.form.get('query', '').replace('\r', '')
+  form['messages'] = request.form.get('messages', '') or ''
+  form['features'] = request.form.get('features', '') or ''
+  form['tuples'] = request.form.get('tuples', '').replace('\r', '')
+  form['sections'] = request.form.get('sections', '').replace('\r', '')
+  form['appName'] = request.form.get('appName', '')
+  form['jobName'] = request.form.get('jobName', '').strip() or DEFAULT_NAME
+  form['side'] = request.form.get('side', '')
+  form['help'] = request.form.get('help', '')
+  form['author'] = request.form.get('author', '').strip()
+  form['title'] = request.form.get('title', '').strip()
+  form['description'] = request.form.get('description', '').replace('\r', '')
+  form['withNodes'] = request.form.get('withNodes', '')
+  form['condensed'] = request.form.get('condensed', '')
+  form['condenseTp'] = request.form.get('condenseTp', '')
+  form['textformat'] = request.form.get('textformat', '')
+  form['sectionsExpandAll'] = request.form.get('sectionsExpandAll', '')
+  form['tuplesExpandAll'] = request.form.get('tuplesExpandAll', '')
+  form['queryExpandAll'] = request.form.get('queryExpandAll', '')
+  form['linked'] = getInt(request.form.get('linked', ''), default=1)
+  form['passageOpened'] = request.form.get('passageOpened', '')
+  form['sectionsOpened'] = request.form.get('sectionsOpened', '')
+  form['tuplesOpened'] = request.form.get('tuplesOpened', '')
+  form['queryOpened'] = request.form.get('queryOpened', '')
+  form['mode'] = request.form.get('mode', '') or 'passage'
+  form['position'] = getInt(request.form.get('position', ''), default=1)
+  form['batch'] = getInt(request.form.get('batch', ''), default=BATCH)
+  form['sec0'] = request.form.get('sec0', '')
+  form['sec1'] = request.form.get('sec1', '')
+  form['sec2'] = request.form.get('sec2', '')
+  setValues(config.OPTIONS, request.form, form, emptyRequest)
   return form
 
 
-@route('/server/static/<filepath:path>')
-def serveStatic(filepath):
-  return static_file(filepath, root=f'{myDir}/static')
+def factory():
+  app = Flask(__name__)
+
+  @app.route('/server/static/<path:filepath>')
+  def serveStatic(filepath):
+    return send_file(f'{myDir}/static/{filepath}')
+
+  @app.route('/data/static/<path:filepath>')
+  def serveData(filepath):
+    return send_file(f'{appDir}/static/{filepath}')
+
+  @app.route('/local/<path:filepath>')
+  def serveLocal(filepath):
+    return send_file(f'{localDir}/{filepath}')
+
+  @app.route('/sections', methods=['GET', 'POST'])
+  def serveSectionsBare():
+    return serveTable('sections', None)
+
+  @app.route('/sections/<int:getx>', methods=['GET', 'POST'])
+  def serveSections(getx):
+    return serveTable('sections', getx)
+
+  @app.route('/tuples', methods=['GET', 'POST'])
+  def serveTuplesBare():
+    return serveTable('tuples', None)
+
+  @app.route('/tuples/<int:getx>', methods=['GET', 'POST'])
+  def serveTuples(getx):
+    return serveTable('tuples', getx)
+
+  @app.route('/query', methods=['GET', 'POST'])
+  def serveQueryBare():
+    return serveQuery(None)
+
+  @app.route('/query/<int:getx>', methods=['GET', 'POST'])
+  def serveQueryX(getx):
+    return serveQuery(getx)
+
+  @app.route('/passage', methods=['GET', 'POST'])
+  def servePassageBare():
+    return servePassage(None)
+
+  @app.route('/passage/<getx>', methods=['GET', 'POST'])
+  def servePassageX(getx):
+    return servePassage(getx)
+
+  @app.route('/export', methods=['GET', 'POST'])
+  def serveExportX():
+    return serveExport()
+
+  @app.route('/download', methods=['GET', 'POST'])
+  def serveDownloadX():
+    return serveDownload()
+
+  @app.route('/', methods=['GET', 'POST'])
+  @app.route('/<path:anything>', methods=['GET', 'POST'])
+  def serveAllX(anything=None):
+    return serveAll(anything)
+
+  return app
 
 
-@route('/data/static/<filepath:path>')
-def serveData(filepath):
-  return static_file(filepath, root=f'{appDir}/static')
-
-
-@route('/local/<filepath:path>')
-def serveLocal(filepath):
-  return static_file(filepath, root=f'{localDir}')
-
-
-def serveTable(kind, getx=None):
+def serveTable(kind, getx=None, asDict=False):
   form = getFormData()
   textFormat = form['textformat'] or None
   task = form[kind].strip()
@@ -299,6 +358,8 @@ def serveTable(kind, getx=None):
 
   optionSpecs = config.OPTIONS
   options = getValues(optionSpecs, form)
+
+  method = dict if asDict else jsonify
 
   kernelApi = TF.connect()
 
@@ -321,45 +382,14 @@ def serveTable(kind, getx=None):
 
     if messages:
       messages = shapeMessages(messages)
-  return dict(
+
+  return method(
       table=table,
       messages=messages,
   )
 
 
-@post('/sections')
-@get('/sections')
-def serveSectionsBare():
-  return serveTable('sections', None)
-
-
-@post('/sections/<getx:int>')
-@get('/sections/<getx:int>')
-def serveSections(getx):
-  return serveTable('sections', getx)
-
-
-@post('/tuples')
-@get('/tuples')
-def serveTuplesBare():
-  return serveTable('tuples', None)
-
-
-@post('/tuples/<getx:int>')
-@get('/tuples/<getx:int>')
-def serveTuples(getx):
-  return serveTable('tuples', getx)
-
-
-@post('/query')
-@get('/query')
-def serveQueryBare():
-  return serveQuery(None)
-
-
-@post('/query/<getx:int>')
-@get('/query/<getx:int>')
-def serveQuery(getx):
+def serveQuery(getx, asDict=False):
   kind = 'query'
   form = getFormData()
   task = form[kind]
@@ -376,6 +406,7 @@ def serveQuery(getx):
   features = ''
 
   kernelApi = TF.connect()
+  method = dict if asDict else jsonify
 
   if task:
     messages = ''
@@ -422,7 +453,8 @@ def serveQuery(getx):
   else:
     table = f'no {resultKind}s'
     messages = ''
-  return dict(
+
+  return method(
       pages=pages,
       table=table,
       messages=messages,
@@ -430,14 +462,6 @@ def serveQuery(getx):
   )
 
 
-@post('/passage')
-@get('/passage')
-def servePassageBare():
-  return servePassage(None)
-
-
-@post('/passage/<getx>')
-@get('/passage/<getx>')
 def servePassage(getx):
   form = getFormData()
   textFormat = form['textformat'] or None
@@ -471,18 +495,16 @@ def servePassage(getx):
       **options,
   )
   passages = passageLinks(passages, sec0, sec1)
-  return dict(
+  return jsonify(
       table=table,
       passages=passages,
   )
 
 
-@post('/export')
-@get('/export')
 def serveExport():
-  sectionsData = serveSectionsBare()
-  tuplesData = serveTuplesBare()
-  queryData = serveQueryBare()
+  sectionsData = serveTable('sections', None, asDict=True)
+  tuplesData = serveTable('tuples', None, asDict=True)
+  queryData = serveQuery(None, asDict=True)
 
   form = getFormData()
 
@@ -512,8 +534,8 @@ def serveExport():
   queryMessages = queryData['messages']
   queryTable = queryData['table']
 
-  return template(
-      'export',
+  return render_template(
+      'export.html',
       dataSource=dataSource,
       css=css,
       descriptionMd=descriptionMd,
@@ -533,8 +555,6 @@ def serveExport():
   )
 
 
-@post('/download')
-@get('/download')
 def serveDownload():
   form = getFormData()
   kernelApi = TF.connect()
@@ -567,26 +587,26 @@ def serveDownload():
       )
       console(f'{task}\n{messages}', error=True)
       wildQueries.add(task)
-      return dict(messages=messages)
+      return jsonify(messages=messages)
 
   if queryMessages:
     redirect('/')
-    return dict(messages=queryMessages)
+    return jsonify(messages=queryMessages)
 
   csvs = pickle.loads(csvs)
   resultsX = pickle.loads(resultsX)
   (fileName, zipBuffer) = zipData(csvs, resultsX, form)
 
-  response.set_header('Expires', '0')
-  response.set_header('Cache-Control', 'no-cache, no-store, must-revalidate')
-  response.set_header('Content-Type', 'application/octet-stream')
-  response.set_header('Content-Disposition', f'attachment; filename="{fileName}"')
-  response.set_header('Content-Encoding', 'identity')
-  return zipBuffer
+  headers = {
+      'Expires': '0',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': f'attachment; filename="{fileName}"',
+      'Content-Encoding': 'identity',
+  }
+  return make_response(zipBuffer, headers)
 
 
-@post('/<anything:re:.*>')
-@get('/<anything:re:.*>')
 def serveAll(anything):
   form = getFormData()
   condensedAtt = ' checked ' if form['condensed'] else ''
@@ -624,8 +644,8 @@ def serveAll(anything):
   textFormat = form['textformat'] or defaultTextFormat
   textFormatOpts = shapeFormats(textFormats, textFormat)
 
-  return template(
-      'index',
+  return render_template(
+      'index.html',
       dataSource=dataSource,
       css=css,
       header=f'{appLogo}{header}{tfLogo}',
@@ -688,9 +708,11 @@ if __name__ == "__main__":
     onDocker = getDocker()
     console(f'onDocker={onDocker}')
     if config is not None:
-      run(
-          debug=debug,
-          reloader=debug,
-          host='0.0.0.0' if onDocker else config.HOST,
-          port=config.PORT['web'],
+      webapp = factory()
+      run_simple(
+          '0.0.0.0' if onDocker else config.HOST,
+          config.PORT['web'],
+          webapp,
+          use_reloader=debug,
+          use_debugger=debug,
       )

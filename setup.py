@@ -18,7 +18,7 @@ setup(
     ],
     install_requires=[
         'rpyc',
-        'bottle',
+        'flask',
         'psutil',
         'markdown',
         'ipython',

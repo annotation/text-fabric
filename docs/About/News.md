@@ -12,7 +12,11 @@
 
 ## Queued for next release
 
-Nothing yet
+The dependency on
+[Bottle]({{bottle}})
+as webserver has been replaced by
+[Flask]({{flask}})
+because Bottle is lagging behind in support for Python 3.7.
 
 ## 7.2.1
 

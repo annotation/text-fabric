@@ -9,7 +9,7 @@
 		<link rel="stylesheet" href="/server/static/highlight.css"/>
 		<link rel="stylesheet" href="/server/static/index.css"/>
 		<link rel="stylesheet" href="/server/static/fontawesome.css">
-		{{!css}}
+		{{css|safe}}
 	</head>
 	<body>
 		<form id="go" method="post" enctype="multipart/form-data">
@@ -92,7 +92,7 @@
 				</div>
 				<div status="options">
 					<div>
-						{{!textFormatOpts}}
+						{{textFormatOpts|safe}}
 					</div>
 					<div>
 						<input
@@ -107,7 +107,7 @@
 									class="r" type="checkbox" id="cond" name="condensed" {{condensedAtt}}
 								/> <span class="ilab">condense results</span>
 							</summary>
-							{{!condenseOpts}}
+							{{condenseOpts|safe}}
 						</details>
 					</div>
 					<div>
@@ -115,7 +115,7 @@
 							class="r" type="checkbox" id="withn" name="withNodes" {{withNodesAtt}}
 						/> <span class="ilab">show nodes</span>
 					</div>
-					{{!options}}
+					{{options|safe}}
 				</div>
 				<div status="export">
 					<div>
@@ -158,7 +158,7 @@
 				<div status="help">
 					<input type="hidden" id="help" name="help" value="{{help}}"/>
 					<div class="header">
-						{{!header}}
+						{{header|safe}}
 					</div>
 					<details id="helpTf" class="help">
 						<summary>Text-Fabric Browser</summary>
@@ -183,7 +183,7 @@
 					<details id="helpSections" class="help sections">
 						<summary>{{defaultCondenseType.capitalize()}} pad</summary>
 						<p>Enter a reference here,
-						   such as {{!exampleSection}}.</p>
+						   such as {{exampleSection|safe}}.</p>
 						<p>Copy {{defaultCondenseType}}s to here by clicking on a
 						   {{defaultCondenseType}} reference in the result list.</p>
 						<p>Click <b>Go</b> to fetch the results.</p>
@@ -351,7 +351,7 @@
 						<input type="hidden" name="sec0" id="sec0" value="{{sec0}}"/>
 						<input type="hidden" name="sec1" id="sec1" value="{{sec1}}"/>
 						<input type="hidden" name="sec2" id="sec2" value="{{sec2}}"/>
-						<div class="passages" id="passages">{{!passages}}</div>
+						<div class="passages" id="passages">{{passages|safe}}</div>
 					</div>
 					<div>
 						<div id="navigation">
@@ -382,7 +382,7 @@
 							</div>
 						</div>
 						<div class="pages" id="pages">
-							{{!pages}}
+							{{pages|safe}}
 						</div>
 					</div>
 				</div>
