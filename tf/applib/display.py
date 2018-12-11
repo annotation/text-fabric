@@ -382,7 +382,7 @@ def pretty(
   containerN = None
 
   nType = F.otype.v(n)
-  if d.condenseType:
+  if d.condensed and d.condenseType:
     if nType == d.condenseType:
       containerN = n
     elif otypeRank[nType] < otypeRank[d.condenseType]:

@@ -263,7 +263,7 @@ msgLinePat = '^( *[0-9]+) (.*)$'
 msgLineRe = re.compile(msgLinePat)
 
 
-def shapeMessages(messages):
+def wrapMessages(messages):
   if type(messages) is str:
     messages = messages.split('\n')
   html = []

@@ -1,113 +1,10 @@
-import sys
-import os
-import re
-from glob import glob
+import time
+import datetime
 
-from ..core.helpers import console
-
-appPat = '^([a-zA-Z0-9_-]+)$'
-appRe = re.compile(appPat)
+from ..parameters import NAME, VERSION, DOI_TEXT, DOI_URL
 
 
-# COMMAND LINE ARGS
-
-def getDebug(cargs=sys.argv):
-  for arg in cargs[1:]:
-    if arg == '-d':
-      return True
-  return False
-
-
-def getCheck(cargs=sys.argv):
-  for arg in cargs[1:]:
-    if arg == '-c':
-      return True
-  return False
-
-
-def getNoweb(cargs=sys.argv):
-  for arg in cargs[1:]:
-    if arg == '-noweb':
-      return True
-  return False
-
-
-def getDocker(cargs=sys.argv):
-  for arg in cargs[1:]:
-    if arg == '-docker':
-      return True
-  return False
-
-
-def getLocalClones(cargs=sys.argv):
-  for arg in cargs[1:]:
-    if arg == '-lgc':
-      return True
-  return False
-
-
-def getModules(cargs=sys.argv):
-  for arg in cargs[1:]:
-    if arg.startswith('--mod='):
-      return arg
-  return ''
-
-
-def getSets(cargs=sys.argv):
-  for arg in cargs[1:]:
-    if arg.startswith('--sets='):
-      return arg
-  return ''
-
-
-def getParam(cargs=sys.argv, interactive=False):
-  myDir = os.path.dirname(os.path.abspath(__file__))
-  dataSourcesParent = getAppDir(myDir, '')
-  dataSourcesPre = glob(f'{dataSourcesParent}/*/config.py')
-  dataSources = set()
-  for p in dataSourcesPre:
-    parent = os.path.dirname(p)
-    d = os.path.split(parent)[1]
-    match = appRe.match(d)
-    if match:
-      app = match.group(1)
-      dataSources.add(app)
-  dPrompt = '/'.join(dataSources)
-
-  dataSource = None
-  for arg in cargs[1:]:
-    if arg.startswith('-'):
-      continue
-    dataSource = arg
-    break
-
-  if interactive:
-    if dataSource is None:
-      dataSource = input(f'specify data source [{dPrompt}] > ')
-    if dataSource not in dataSources:
-      console('Unknown data source', error=True)
-      dataSource = None
-    if dataSource is None:
-      console(f'Pass a data source [{dPrompt}] as first argument', error=True)
-    return dataSource
-
-  if dataSource is None:
-    return None
-  if dataSource not in dataSources:
-    console('Unknown data source', error=True)
-    return False
-  return dataSource
-
-
-# FIND THE APP DIREC~TORY
-
-def getAppDir(myDir, dataSource):
-  parentDir = os.path.dirname(myDir)
-  tail = '' if dataSource == '' else dataSource
-  return f'{parentDir}/apps/{tail}'
-
-
-# HTML FORMATTING
+# NAVIGATION IN MULTIPLE ITEMS (PAGES, PASSAGES)
 
 def pageLinks(nResults, position, spread=10):
   if spread <= 1:
@@ -172,7 +69,7 @@ def passageLinks(passages, sec0, sec1):
 '''
 
 
-# FORM VALUES
+# OPTIONS
 
 def getValues(options, form):
   values = {}
@@ -196,7 +93,7 @@ def setValues(options, source, form, emptyRequest):
     form[option] = value
 
 
-def shapeOptions(options, values):
+def wrapOptions(options, values):
   html = []
   for (option, default, typ, acro, desc) in options:
     value = values[option]
@@ -215,7 +112,7 @@ def shapeOptions(options, values):
   return '\n'.join(html)
 
 
-def shapeCondense(condenseTypes, value):
+def wrapCondense(condenseTypes, value):
   html = []
   lastType = len(condenseTypes) - 1
   for (i, (otype, av, b, e)) in enumerate(condenseTypes):
@@ -238,7 +135,7 @@ def shapeCondense(condenseTypes, value):
   return '\n'.join(html)
 
 
-def shapeFormats(textFormats, value):
+def wrapFormats(textFormats, value):
   html = []
   for (i, fmt) in enumerate(textFormats):
     checked = ' checked ' if value == fmt else ''
@@ -256,6 +153,108 @@ def shapeFormats(textFormats, value):
   '''
     )
   return '\n'.join(html)
+
+
+# PROVENANCE
+
+def wrapProvenance(form, provenance, setNames):
+  utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
+  utc_offset = datetime.timedelta(seconds=-utc_offset_sec)
+  now = datetime.datetime.now().replace(microsecond=0,
+                                        tzinfo=datetime.timezone(offset=utc_offset)).isoformat()
+  job = form['jobName']
+  author = form['author']
+
+  dataHtml = ''
+  dataMd = ''
+  sep = ''
+
+  for d in provenance:
+    corpus = d['corpus']
+    version = d['version']
+    release = d['release']
+    (live, liveU) = d['live']
+    liveHtml = f'<a href="{liveU}">{live}</a>'
+    liveMd = f'[{live}]({liveU})'
+    (doiText, doiUrl) = d['doi']
+    doiHtml = f'<a href="{doiUrl}">{doiText}</a>'
+    doiMd = f'[{doiText}]({doiUrl})'
+    dataHtml += f'''
+    <div class="pline">
+      <div class="pname">Data:</div>
+      <div class="pval">{corpus}</div>
+    </div>
+    <div class="p2line">
+      <div class="pname">version</div>
+      <div class="pval">{version}</div>
+    </div>
+    <div class="p2line">
+      <div class="pname">release</div>
+      <div class="pval">{release}</div>
+    </div>
+    <div class="p2line">
+      <div class="pname">download</div>
+      <div class="pval">{liveHtml}</div>
+    </div>
+    <div class="p2line">
+      <div class="pname">DOI</div>
+      <div class="pval">{doiHtml}</div>
+    </div>
+'''
+    dataMd += f'''{sep}Data source | {corpus}
+version | {version}
+release | {release}
+download   | {liveMd}
+DOI | {doiMd}'''
+    sep = '\n'
+
+  setHtml = ''
+  setMd = ''
+
+  if setNames:
+    setNamesRep = ', '.join(setNames)
+    setHtml += f'''
+    <div class="psline">
+      <div class="pname">Sets:</div>
+      <div class="pval">{setNamesRep} (<b>not exported</b>)</div>
+    </div>
+'''
+    setMd += f'''Sets | {setNamesRep} (**not exported**)'''
+
+  tool = f'{NAME} {VERSION}'
+  toolDoiHtml = f'<a href="{DOI_URL}">{DOI_TEXT}</a>'
+  toolDoiMd = f'[{DOI_TEXT}]({DOI_URL})'
+
+  html = f'''
+    <div class="pline">
+      <div class="pname">Job:</div><div class="pval">{job}</div>
+    </div>
+    <div class="pline">
+      <div class="pname">Author:</div><div class="pval">{author}</div>
+    </div>
+    <div class="pline">
+      <div class="pname">Created:</div><div class="pval">{now}</div>
+    </div>
+    {dataHtml}
+    {setHtml}
+    <div class="pline">
+      <div class="pname">Tool:</div>
+      <div class="pval">{tool} {toolDoiHtml}</div>
+    </div>
+  '''
+
+  md = f'''
+meta | data
+--- | ---
+Job | {job}
+Author | {author}
+Created | {now}
+{dataMd}
+{setMd}
+Tool | {tool} {toolDoiMd}
+'''
+
+  return (html, md)
 
 
 # LOWER LEVEL

@@ -10,7 +10,14 @@ from ..applib.helpers import findAppConfig, findAppClass
 from ..applib.highlight import getPassageHighlights
 from ..applib.search import runSearch, runSearchCondensed
 from ..applib.tables import compose, composeP, composeT, getResultsX
-from .common import (getParam, getModules, getSets, getCheck, getLocalClones)
+
+from .command import (
+    argCheck,
+    argLocalClones,
+    argModules,
+    argSets,
+    argParam,
+)
 
 TF_DONE = 'TF setup done.'
 TF_ERROR = 'Could not set up TF'
@@ -365,11 +372,11 @@ def makeTfConnection(host, port, timeout):
 # TOP LEVEL
 
 def main(cargs=sys.argv):
-  dataSource = getParam(cargs=cargs, interactive=True)
-  modules = getModules(cargs=cargs)
-  sets = getSets(cargs=cargs)
-  lgc = getLocalClones(cargs=cargs)
-  check = getCheck(cargs=cargs)
+  dataSource = argParam(cargs=cargs, interactive=True)
+  modules = argModules(cargs=cargs)
+  sets = argSets(cargs=cargs)
+  lgc = argLocalClones(cargs=cargs)
+  check = argCheck(cargs=cargs)
 
   if dataSource is not None:
     moduleRefs = modules[6:] if modules else ''

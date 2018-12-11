@@ -138,6 +138,7 @@ class TfApp(Atf):
       lineNumbersCondition = d.lineNumbers
       if nType == 'line' or nType == 'case':
         rep = mdEsc(f'{nType} {F.number.v(n)}') if secLabel or nType == 'case' else ''
+        rep += F.srcLn.v(n) or ''
         lineNumbersCondition = d.lineNumbers and F.terminal.v(n)
       elif nType == 'column':
         rep = mdEsc(f'{nType} {F.number.v(n)}') if secLabel else ''

@@ -1,4 +1,4 @@
-from ..core.helpers import console, shapeMessages
+from ..core.helpers import console, wrapMessages
 from .searchexe import SearchExe
 
 # Search and SearchExe
@@ -85,7 +85,7 @@ class Search(object):
       self.exe = exe
     queryResults = exe.search(limit=limit)
     if type(msgCache) is list:
-      messages = shapeMessages(msgCache)
+      messages = wrapMessages(msgCache)
       return (queryResults, messages) if here else (queryResults, messages, exe)
     return queryResults
 

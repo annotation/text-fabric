@@ -1,3 +1,4 @@
+from ..core.helpers import console
 from .helpers import RESULT
 from .display import plain, plainTuple, prettyTuple
 
@@ -181,6 +182,7 @@ def composeP(
     features = []
 
   if getx is not None:
+    itemType = T.sectionTypes[2]
     tup = None
     for s2 in items:
       i = T.sectionFromNode(s2)[2]
@@ -192,8 +194,9 @@ def composeP(
         tup,
         getx,
         condensed=False,
+        condenseType=itemType,
         extraFeatures=features,
-        **display.consume(options, 'condensed', 'extraFeatures')
+        **display.consume(options, 'condensed', 'condenseType', 'extraFeatures')
     ) if tup is not None else ''
 
   passageHtml = []
@@ -276,6 +279,8 @@ def _plainTextS2(
   itemType = T.sectionTypes[2]
   isOpened = seqNumber in opened
   tClass = '' if d.fmt is None else display.formatClass[d.fmt].lower()
+
+  console('S2' + str(itemType))
 
   prettyRep = prettyTuple(
       app,

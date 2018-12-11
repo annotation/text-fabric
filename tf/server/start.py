@@ -10,10 +10,16 @@ from subprocess import PIPE, Popen
 from ..core.helpers import console
 from ..parameters import NAME, VERSION
 from ..applib.helpers import findAppConfig
-from .common import (
-    getParam, getModules, getSets,
-    getDebug, getCheck, getNoweb, getDocker,
-    getLocalClones
+
+from .command import (
+    argDebug,
+    argCheck,
+    argNoweb,
+    argDocker,
+    argLocalClones,
+    argModules,
+    argSets,
+    argParam,
 )
 from .kernel import TF_DONE, TF_ERROR
 
@@ -80,7 +86,7 @@ MISCELLANEOUS
 
 -d  Debug mode. For developers of Text-Fabric itself.
     The web server reloads when its code changes.
-    The web server is a bottle instance, started with reload=True.
+    The web server is a Flask instance, started with reload=True.
 
 -noweb Do not start the default browser
 
@@ -210,24 +216,23 @@ def main(cargs=sys.argv):
   isWin = system().lower().startswith('win')
 
   kill = getKill(cargs=cargs)
-  dataSource = getParam(cargs=cargs, interactive=not kill)
+  dataSource = argParam(cargs=cargs, interactive=not kill)
+
+  modules = argModules(cargs=cargs)
+  sets = argSets(cargs=cargs)
 
   if kill:
     if dataSource is False:
       return
-    modules = getModules(cargs=cargs)
-    sets = getSets(cargs=cargs)
     killProcesses(dataSource, modules, sets)
     return
 
-  noweb = getNoweb(cargs=cargs)
+  noweb = argNoweb(cargs=cargs)
 
-  debug = getDebug(cargs=cargs)
-  docker = getDocker(cargs=cargs)
-  check = getCheck(cargs=cargs)
-  lgc = getLocalClones(cargs=cargs)
-  modules = getModules(cargs=cargs)
-  sets = getSets(cargs=cargs)
+  debug = argDebug(cargs=cargs)
+  docker = argDocker(cargs=cargs)
+  check = argCheck(cargs=cargs)
+  lgc = argLocalClones(cargs=cargs)
 
   kdataSource = ('-lgc', dataSource) if lgc else (dataSource, )
   kdataSource = ('-c', *kdataSource) if check else kdataSource
