@@ -1,4 +1,3 @@
-from ..core.helpers import console
 import types
 
 DISPLAY_OPTIONS = dict(

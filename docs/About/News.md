@@ -12,11 +12,18 @@
 
 ## Queued for next release
 
-The dependency on
-[Bottle]({{bottle}})
-as webserver has been replaced by
-[Flask]({{flask}})
-because Bottle is lagging behind in support for Python 3.7.
+Nothing yet.
+
+## 7.2.2
+
+??? abstract "Web framework: Bottle => Flask"
+    The dependency on
+    [Bottle]({{bottle}})
+    as webserver has been replaced by
+    [Flask]({{flask}})
+    because Bottle is lagging behind in support for Python 3.7.
+
+Small fixes, in displays in the browser, especially for Uruk.
 
 ## 7.2.1
 

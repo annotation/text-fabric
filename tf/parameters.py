@@ -19,11 +19,6 @@ DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'
 TUTORIAL = 'https://github.com/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb'
 
-COMPOSE_URL = (
-    'https://nbviewer.jupyter.org/github/dans-labs/'
-    'text-fabric/blob/master/examples/compose.ipynb'
-)
-
 DATA = 'https://github.com/Dans-labs/text-fabric-data'
 
 LOCATIONS = [
@@ -42,5 +37,3 @@ ZIP_OPTIONS = dict(
 )
 if sys.version_info[1] >= 7:
   ZIP_OPTIONS['compresslevel'] = 6
-
-

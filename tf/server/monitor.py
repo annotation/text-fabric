@@ -1,9 +1,9 @@
 import sys
 
-from tf.core.helpers import console
-from tf.applib.helpers import findAppConfig
-from tf.server.kernel import makeTfConnection
-from tf.server.common import getParam
+from ..core.helpers import console
+from ..applib.helpers import findAppConfig
+from ..server.kernel import makeTfConnection
+from .command import argParam
 
 TIMEOUT = 180
 
@@ -11,7 +11,7 @@ dataSource = None
 config = None
 
 
-def getStuff(lgc):
+def setup(lgc):
   global TF
   global appDir
 
@@ -24,11 +24,11 @@ def getStuff(lgc):
 
 
 if __name__ == "__main__":
-  dataSource = getParam(interactive=True)
+  dataSource = argParam(interactive=True)
 
   if dataSource is None:
     sys.exit()
-  getStuff(False)
+  setup(False)
 
   commands = {
       '1': 'searchExe',
