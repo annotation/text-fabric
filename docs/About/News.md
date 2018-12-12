@@ -12,7 +12,7 @@
 
 ## Queued for next release
 
-Nothing yet.
+See the [issue list on GitHub](https://github.com/Dans-labs/text-fabric/issues)
 
 ## 7.2.2
 
@@ -23,7 +23,13 @@ Nothing yet.
     [Flask]({{flask}})
     because Bottle is lagging behind in support for Python 3.7.
 
-Small fixes, in displays in the browser, especially for Uruk.
+??? abstract "Plain display in Uruk"
+    The plain display of lines and cases now outputs their ATF source,
+    instead of merely `line 1` or `case a`.
+
+??? abstract "Further code reorganization
+    Most Python files are now less than 200 lines, although there is still
+    a code file of more than 1000 lines.
 
 ## 7.2.1
 
