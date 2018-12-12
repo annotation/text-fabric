@@ -101,11 +101,14 @@ tf/search/spin.py
 tf/search/stitch.py
 tf/search/syntax.py
 tf/server/__init__.py
-tf/server/common.py
+tf/server/command.py
 tf/server/kernel.py
 tf/server/monitor.py
+tf/server/serve.py
+tf/server/servelib.py
 tf/server/start.py
 tf/server/web.py
+tf/server/wrap.py
 tf/server/static/.DS_Store
 tf/server/static/base.css
 tf/server/static/dans.png
@@ -142,8 +145,5 @@ tf/server/static/fonts/fa-solid-900.svg
 tf/server/static/fonts/fa-solid-900.ttf
 tf/server/static/fonts/fa-solid-900.woff
 tf/server/static/fonts/fa-solid-900.woff2
-tf/server/views/.DS_Store
-tf/server/views/export.tpl
-tf/server/views/index.tpl
 tf/writing/__init__.py
 tf/writing/transcription.py
