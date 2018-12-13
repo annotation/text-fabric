@@ -13,7 +13,7 @@
         <meta name="description" content="Text-Fabric is a Python3 package for Text plus Annotations. It provides a data model, a text file format, a binary format, an API, and apps for (ancient) text plus (linguistic) annotations.">
       
       
-        <link rel="canonical" href="https://dans-labs.github.io/text-fabric/Code/Tests/">
+        <link rel="canonical" href="https://annotation.github.io/text-fabric/Code/Tests/">
       
       
         <meta name="author" content="Dirk Roorda">
@@ -105,7 +105,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-header-nav__button md-logo">
+        <a href="https://annotation.github.io/text-fabric/" title="Text-Fabric" class="md-header-nav__button md-logo">
           
             <img src="../../images/tf-small.png" width="24" height="24">
           
@@ -142,7 +142,7 @@
   
 
 
-  <a href="https://github.com/dans-labs/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
+  <a href="https://github.com/annotation/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
     
       <div class="md-source__icon">
         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -176,7 +176,7 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-nav__button md-logo">
+    <a href="https://annotation.github.io/text-fabric/" title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../../images/tf-small.png" width="48" height="48">
       
@@ -191,7 +191,7 @@
   
 
 
-  <a href="https://github.com/dans-labs/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
+  <a href="https://github.com/annotation/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
     
       <div class="md-source__icon">
         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -1303,7 +1303,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/Code/Tests.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/annotation/text-fabric/edit/master/docs/Code/Tests.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
                 <h1 id="unit-tests">Unit tests<a class="headerlink" href="#unit-tests" title="Permanent link">&para;</a></h1>
@@ -1316,10 +1316,10 @@ is by employing <a href="https://en.wikipedia.org/wiki/Unit_testing">unit tests<
 <p>Here we describe the parts that are covered.
 But first a few words about the machinery of unit testing.</p>
 <h2 id="corpus">Corpus<a class="headerlink" href="#corpus" title="Permanent link">&para;</a></h2>
-<p>We build a <a href="https://github.com/Dans-labs/text-fabric/tree/master/test/generic/tf">test corpus</a>,
+<p>We build a <a href="https://github.com/annotation/text-fabric/tree/master/test/generic/tf">test corpus</a>,
 wich contains only 10 slots, with node type <code>sign</code> and one other node type <code>part</code>.</p>
 <p>The code to build it is in
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/test/generic/makeTestTf.py">makeTestTf.py</a>.</p>
+<a href="https://github.com/annotation/text-fabric/blob/master/test/generic/makeTestTf.py">makeTestTf.py</a>.</p>
 <p>Probably the corpus will be enlarged when new tests are being implemented.</p>
 <h2 id="framework">Framework<a class="headerlink" href="#framework" title="Permanent link">&para;</a></h2>
 <p>We use the <a href="https://docs.python.org/3/library/unittest.html#module-unittest">unittest</a>
@@ -1342,7 +1342,7 @@ its operands are guaranteed to be slots or guaranteed to be non-slots, or whethe
 no guarantee can be given.
 For each particular test, all these cases will be triggered.</p>
 <p>All in all we defined
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/test/generic/relations.py">1000 pairs of nodes</a>
+<a href="https://github.com/annotation/text-fabric/blob/master/test/generic/relations.py">1000 pairs of nodes</a>
 leading to 2500 queries, which will
 all be tested against expected answers. </p>
                 

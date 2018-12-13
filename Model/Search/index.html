@@ -13,7 +13,7 @@
         <meta name="description" content="Text-Fabric is a Python3 package for Text plus Annotations. It provides a data model, a text file format, a binary format, an API, and apps for (ancient) text plus (linguistic) annotations.">
       
       
-        <link rel="canonical" href="https://dans-labs.github.io/text-fabric/Model/Search/">
+        <link rel="canonical" href="https://annotation.github.io/text-fabric/Model/Search/">
       
       
         <meta name="author" content="Dirk Roorda">
@@ -105,7 +105,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-header-nav__button md-logo">
+        <a href="https://annotation.github.io/text-fabric/" title="Text-Fabric" class="md-header-nav__button md-logo">
           
             <img src="../../images/tf-small.png" width="24" height="24">
           
@@ -142,7 +142,7 @@
   
 
 
-  <a href="https://github.com/dans-labs/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
+  <a href="https://github.com/annotation/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
     
       <div class="md-source__icon">
         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -176,7 +176,7 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-nav__button md-logo">
+    <a href="https://annotation.github.io/text-fabric/" title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../../images/tf-small.png" width="48" height="48">
       
@@ -191,7 +191,7 @@
   
 
 
-  <a href="https://github.com/dans-labs/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
+  <a href="https://github.com/annotation/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
     
       <div class="md-source__icon">
         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -1495,7 +1495,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/Model/Search.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/annotation/text-fabric/edit/master/docs/Model/Search.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
                 <h1 id="search-design">Search Design<a class="headerlink" href="#search-design" title="Permanent link">&para;</a></h1>
@@ -1830,7 +1830,7 @@ that are involved in the changed yarns.</p>
 <p>Yes, spinning qedges until nothing changes any more, terminates, provided you do
 not try to spin qedges that are up-to-date. If the yarns around an edge have not
 changed, it does not make sense to spin that qedge. See
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/docs/Model/searchProofs.ipynb">here</a>
+<a href="https://github.com/annotation/text-fabric/blob/master/docs/Model/searchProofs.ipynb">here</a>
 for proof.</p>
 <h3 id="what-have-we-got">What have we got?<a class="headerlink" href="#what-have-we-got" title="Permanent link">&para;</a></h3>
 <p>After spinning, it is guaranteed that we have not thrown away results. All nodes
@@ -1839,7 +1839,7 @@ that are parts of valid results, are still in the yarns.</p>
 part of a result? Yes, that is possible.</p>
 <p>Only when the graph of qnodes and qedges does not have a cycle, we know that all
 members of all yarns occur at least once in a result. See
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/docs/Model/searchProofs.ipynb">here</a>
+<a href="https://github.com/annotation/text-fabric/blob/master/docs/Model/searchProofs.ipynb">here</a>
 for proof.</p>
 <p>Quite a few interesting queries, however, have cycles in in their graphs. So, in
 those cases, spinning qedges will not cause the maximal narrowing down of the
@@ -1989,7 +1989,7 @@ has been completely filled in, a copy of it will be yielded, after which
 back-tracking occurs, by which the current stitch will get partly undefined,
 only to be filled up again by further searching.</p>
 <p>Read it all in the source code:
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/search/stitch.py#L442"><code>def stitchOn(e)</code></a>.</p>
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/search/stitch.py#L442"><code>def stitchOn(e)</code></a>.</p>
                 
                   
                 

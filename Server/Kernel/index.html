@@ -13,7 +13,7 @@
         <meta name="description" content="Text-Fabric is a Python3 package for Text plus Annotations. It provides a data model, a text file format, a binary format, an API, and apps for (ancient) text plus (linguistic) annotations.">
       
       
-        <link rel="canonical" href="https://dans-labs.github.io/text-fabric/Server/Kernel/">
+        <link rel="canonical" href="https://annotation.github.io/text-fabric/Server/Kernel/">
       
       
         <meta name="author" content="Dirk Roorda">
@@ -105,7 +105,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-header-nav__button md-logo">
+        <a href="https://annotation.github.io/text-fabric/" title="Text-Fabric" class="md-header-nav__button md-logo">
           
             <img src="../../images/tf-small.png" width="24" height="24">
           
@@ -142,7 +142,7 @@
   
 
 
-  <a href="https://github.com/dans-labs/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
+  <a href="https://github.com/annotation/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
     
       <div class="md-source__icon">
         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -176,7 +176,7 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-nav__button md-logo">
+    <a href="https://annotation.github.io/text-fabric/" title="Text-Fabric" class="md-nav__button md-logo">
       
         <img src="../../images/tf-small.png" width="48" height="48">
       
@@ -191,7 +191,7 @@
   
 
 
-  <a href="https://github.com/dans-labs/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
+  <a href="https://github.com/annotation/text-fabric/" title="Go to repository" class="md-source" data-md-source="github">
     
       <div class="md-source__icon">
         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -1329,7 +1329,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/dans-labs/text-fabric/edit/master/docs/Server/Kernel.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/annotation/text-fabric/edit/master/docs/Server/Kernel.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
                 <h1 id="text-fabric-kernel">Text-Fabric kernel<a class="headerlink" href="#text-fabric-kernel" title="Permanent link">&para;</a></h1>
@@ -1342,7 +1342,7 @@ all looking at the same (read-only) data. We call this a <strong>TF kernel</stro
 <p>The API that the TF kernel offers is limited, it is primarily template search that is offered.
 see <em>Kernel API</em> below.</p>
 <p>The code in
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/kernel.py">kernel</a>
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/server/kernel.py">kernel</a>
 explains how it works.</p>
 </details>
 <h3 id="start">Start<a class="headerlink" href="#start" title="Permanent link">&para;</a></h3>
@@ -1353,7 +1353,7 @@ explains how it works.</p>
 
 <p>where <code>ddd</code> is one of the <a href="../../About/Corpora/">supported apps</a></p>
 <details class="example"><summary>Example</summary><p>See the
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/start.py">start-up script</a>
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/server/start.py">start-up script</a>
 of the text-fabric browser.</p>
 </details>
 </details>
@@ -1369,14 +1369,14 @@ of the text-fabric browser.</p>
 
 <p>After this, <code>api</code> can be used to obtain information from the TF kernel.</p>
 <details class="example"><summary>Example</summary><p>See the
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/web.py">web server</a>
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/server/web.py">web server</a>
 of the text-fabric browser.</p>
 </details>
 </details>
 <h2 id="kernel-api">Kernel API<a class="headerlink" href="#kernel-api" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>About</summary><p>The API of the TF kernel is created
 by the function <code>makeTfKernel</code> in the 
-<a href="https://github.com/Dans-labs/text-fabric/blob/master/tf/server/kernel.py">kernel</a>
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/server/kernel.py">kernel</a>
 module of the server subpackage.</p>
 <p>It returns a class <code>TfKernel</code> with a number
 of exposed methods that can be called by other programs.</p>
