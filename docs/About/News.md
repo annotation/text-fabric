@@ -1,4 +1,4 @@
-![tf](../images/tficon-small.png)
+![tf](../images/tf-small.png)
 
 # Changes in this major version
 
@@ -12,9 +12,24 @@
 
 ## Queued for next release
 
-See the [issue list on GitHub](https://github.com/Dans-labs/text-fabric/issues)
+See the [issue list on GitHub]({{ghissues}})
+
+## 7.2.3
+
+2018-12-13
+
+The TF-browser exports an Excel export of results.
+Now you can also export to Excel from a notebook,
+using `A.export(results)`.
+
+Jump to the tutorial:
+[exportExcel]({{etcbcnb}}/bhsa/blob/master/tutorial/exportExcel.ipynb)
+
+For more info: see [#38]({{ghissues}}/38) 
 
 ## 7.2.2
+
+2018-12-12
 
 ??? abstract "Web framework: Bottle => Flask"
     The dependency on

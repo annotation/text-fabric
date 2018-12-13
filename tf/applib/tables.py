@@ -216,53 +216,6 @@ def composeP(
   return '\n'.join(passageHtml)
 
 
-# COMPOSE TABLES FOR CSV EXPORT FOR KERNEL
-
-def getResultsX(api, results, features, noDescendTypes, fmt=None):
-  F = api.F
-  Fs = api.Fs
-  T = api.T
-  sectionTypes = set(T.sectionTypes)
-  if len(results) == 0:
-    return ()
-  firstResult = results[0]
-  nTuple = len(firstResult)
-  refColumns = [i for (i, n) in enumerate(firstResult) if F.otype.v(n) not in sectionTypes]
-  refColumn = refColumns[0] if refColumns else nTuple - 1
-  header = ['R', 'S1', 'S2', 'S3']
-  emptyA = []
-
-  featureDict = dict(features)
-
-  for j in range(nTuple):
-    i = j + 1
-    n = firstResult[j]
-    nType = F.otype.v(n)
-    header.extend([f'NODE{i}', f'TYPE{i}'])
-    if nType not in sectionTypes:
-      header.append(f'TEXT{i}')
-    header.extend(f'{feature}{i}' for feature in featureDict.get(j, emptyA))
-  rows = [tuple(header)]
-  for (rm, r) in enumerate(results):
-    rn = rm + 1
-    row = [rn]
-    refN = r[refColumn]
-    sParts = T.sectionFromNode(refN)
-    nParts = len(sParts)
-    section = sParts + ((None, ) * (3 - nParts))
-    row.extend(section)
-    for j in range(nTuple):
-      n = r[j]
-      nType = F.otype.v(n)
-      row.extend((n, nType))
-      if nType not in sectionTypes:
-        text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
-        row.append(text)
-      row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
-    rows.append(tuple(row))
-  return tuple(rows)
-
-
 def _plainTextS2(
     app,
     sNode,

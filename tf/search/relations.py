@@ -81,6 +81,7 @@ def basicRelations(searchExe, api, silent):
         return (x, x)
 
       return doyarns
+
     elif isSlotF or isSlotT:
 
       def doyarns(yS, y2):
@@ -99,6 +100,7 @@ def basicRelations(searchExe, api, silent):
 
       if isSlotF:
         return doyarns
+
       else:
 
         def xx(yF, yT):
@@ -106,6 +108,7 @@ def basicRelations(searchExe, api, silent):
           return (nyF, nyT)
 
         return xx
+
     else:
 
       def doyarns(yF, yT):

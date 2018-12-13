@@ -1,8 +1,8 @@
-from os.path import dirname, abspath
+import os
 import types
 
-from ..parameters import URL_TFDOC
-from ..core.helpers import mdEsc, htmlEsc
+from ..parameters import URL_TFDOC, DOWNLOADS
+from ..core.helpers import mdEsc, htmlEsc, flattenToSet
 from .helpers import RESULT, dm, dh
 from .links import outLink
 from .condense import condense, condenseSet
@@ -27,6 +27,7 @@ CSS_FONT_API = f'''
 
 
 def displayApi(app, silent, hoist):
+  app.export = types.MethodType(export, app)
   app.table = types.MethodType(table, app)
   app.plainTuple = types.MethodType(plainTuple, app)
   app.plain = types.MethodType(plain, app)
@@ -59,6 +60,39 @@ def displayApi(app, silent, hoist):
                 ) for (head, ref, entries) in docs
             ) + '</details>'
         )
+
+
+def export(
+    app,
+    tuples,
+    toDir=None,
+    toFile='results.tsv',
+    **options,
+):
+  if toDir is None:
+    toDir = os.path.expanduser(DOWNLOADS)
+    if not os.path.exists(toDir):
+      os.makedirs(toDir, exist_ok=True)
+  toPath = f'{toDir}/{toFile}'
+
+  display = app.display
+  d = display.get(options)
+
+  resultsX = getResultsX(
+      app.api,
+      tuples,
+      d.tupleFeatures,
+      app.noDescendTypes,
+      fmt=d.fmt,
+  )
+
+  with open(toPath, 'w', encoding='utf_16_le') as fh:
+    fh.write(
+        '\ufeff' + ''.join(
+            ('\t'.join('' if t is None else str(t) for t in tup) + '\n')
+            for tup in resultsX
+        )
+    )
 
 
 def table(
@@ -406,14 +440,18 @@ def pretty(
       if type(d.highlights) is set else
       d.highlights
   )
+
+  extraFeatures = sorted(flattenToSet(d.extraFeatures) | flattenToSet(d.tupleFeatures))
+
   app._pretty(
       n,
       True,
       html,
       firstSlot,
       lastSlot,
+      extraFeatures=extraFeatures,
       highlights=highlights,
-      **display.consume(options, 'highlights'),
+      **display.consume(options, 'extraFeatures', 'highlights'),
   )
   htmlStr = '\n'.join(html)
   if _asApp:
@@ -466,6 +504,53 @@ def prettyPre(
       myStart,
       myEnd,
   )
+
+
+# COMPOSE TABLES FOR CSV EXPORT
+
+def getResultsX(api, results, features, noDescendTypes, fmt=None):
+  F = api.F
+  Fs = api.Fs
+  T = api.T
+  sectionTypes = set(T.sectionTypes)
+  if len(results) == 0:
+    return ()
+  firstResult = results[0]
+  nTuple = len(firstResult)
+  refColumns = [i for (i, n) in enumerate(firstResult) if F.otype.v(n) not in sectionTypes]
+  refColumn = refColumns[0] if refColumns else nTuple - 1
+  header = ['R', 'S1', 'S2', 'S3']
+  emptyA = []
+
+  featureDict = {i: tuple(f.split()) if type(f) is str else f for (i, f) in features}
+
+  for j in range(nTuple):
+    i = j + 1
+    n = firstResult[j]
+    nType = F.otype.v(n)
+    header.extend([f'NODE{i}', f'TYPE{i}'])
+    if nType not in sectionTypes:
+      header.append(f'TEXT{i}')
+    header.extend(f'{feature}{i}' for feature in featureDict.get(j, emptyA))
+  rows = [tuple(header)]
+  for (rm, r) in enumerate(results):
+    rn = rm + 1
+    row = [rn]
+    refN = r[refColumn]
+    sParts = T.sectionFromNode(refN)
+    nParts = len(sParts)
+    section = sParts + ((None, ) * (3 - nParts))
+    row.extend(section)
+    for j in range(nTuple):
+      n = r[j]
+      nType = F.otype.v(n)
+      row.extend((n, nType))
+      if nType not in sectionTypes:
+        text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
+        row.append(text)
+      row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
+    rows.append(tuple(row))
+  return tuple(rows)
 
 
 def getBoundary(api, n):
@@ -552,7 +637,10 @@ def loadCss(app):
   if _asApp:
     return CSS_FONT + f'<style type="text/css">{app.css}</style>'
 
-  hlCssFile = f'{dirname(dirname(abspath(__file__)))}/server/static/highlight.css'
+  hlCssFile = (
+      f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}'
+      '/server/static/highlight.css'
+  )
   with open(hlCssFile) as fh:
     hlCss = fh.read()
 

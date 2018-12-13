@@ -1,5 +1,5 @@
 import collections
-from .helpers import makeInverse, makeInverseVal, console
+from .helpers import makeInverse, makeInverseVal, flattenToSet, console
 from .locality import Locality
 from .text import Text
 from ..search.search import Search
@@ -323,9 +323,8 @@ class Api(object):
 
     needToLoad = set()
     loadedFeatures = set()
-    if type(features) is str:
-      features = features.split()
-    for fName in sorted(features):
+
+    for fName in sorted(flattenToSet(features)):
       fObj = TF.features.get(fName, None)
       if not fObj:
         info(f'Cannot load feature "{fName}": not in dataset')

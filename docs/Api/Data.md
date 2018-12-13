@@ -305,12 +305,13 @@ linked to their documentation or repository.
 
 You can use the new features exactly as you are used to, with `F` and `E` (for edge features).
 
-They will not automatically show up in `pretty` displays,
-because `pretty` does not know that it is displaying query results,
-and hence does not know which features were used in the latest query.
+They will also automatically show up in `pretty` displays,
+provided you have run a query using them before.
 
-So you have to tell which features you want to add to the display.
-That can be done by [`displaySetup()` and `displayReset()`](App.md#display).
+Alternatively, you can
+tell which features you want to add to the display.
+That can be done by [`displaySetup()` and `displayReset()`](App.md#display),
+using the parameter `extraFeatures`.
 
 ### Develop your own data
 

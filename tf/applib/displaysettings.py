@@ -6,6 +6,7 @@ DISPLAY_OPTIONS = dict(
     condenseType=None,
     end=None,
     extraFeatures=(),
+    tupleFeatures=(),
     fmt=None,
     highlights={},
     linked=1,
@@ -63,7 +64,7 @@ class DisplaySettings(object):
       if option not in self.displayDefaults:
         error(f'WARNING: unknown display option "{option}" will be ignored')
         continue
-      if option == 'extraFeatures':
+      if option in {'extraFeatures', 'tupleFeatures'}:
         api.ensureLoaded(value)
         if type(value) is str:
           value = value.split() if value else []

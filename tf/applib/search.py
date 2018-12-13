@@ -35,6 +35,12 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
         sortedResults = list(results)
       results = sortedResults
 
+    features = ()
+    if S.exe:
+      qnodes = getattr(S.exe, 'qnodes', [])
+      features = tuple((i, tuple(sorted(q[1].keys()))) for (i, q) in enumerate(qnodes))
+      app.displaySetup(tupleFeatures=features)
+
   nResults = len(results)
   plural = '' if nResults == 1 else 's'
   if not silent:
