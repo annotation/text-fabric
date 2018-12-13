@@ -30,9 +30,9 @@
        about the node to display, e.g. its boundary slots;
     3. armed with this information, it calls the app-dependent `_pretty()` function,
        e.g. from
-       [uruk]({{tfghb}}/{{c_uruk_app}})
+       [uruk]({{an}}/app-uruk)
        or
-       [bhsa]({{tfghb}}/{{c_bhsa_app}});
+       [bhsa]({{an}}/app-bhsa);
     4. `_pretty()` is a function that calls itself recursively for all other nodes that
        are involved in the display;
     5. for each node that `_pretty()` is going to display,

@@ -1,12 +1,7 @@
 # Text-Fabric API
 
 ??? note "Tutorial"
-    The tutorials for the
-    [Hebrew Bible]({{etcbcnb}}/bhsa/blob/master/tutorial/start.ipynb),
-    [Peshitta]({{etcbcnb}}/peshitta/blob/master/tutorial/start.ipynb),
-    [Syriac New Testament]({{etcbcnb}}/syrnt/blob/master/tutorial/start.ipynb),
-    and the
-    [Uruk Cuneiform Tablets]({{ninonb}}/uruk/blob/master/tutorial/start.ipynb)
+    The tutorials for specific [annotated corpora]({{an}})
     put the Text-Fabric API on show for vastly different corpora.
 
 ???+ note "Generic API versus apps"

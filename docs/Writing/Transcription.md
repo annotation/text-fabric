@@ -6,11 +6,7 @@ in a model of nodes, edges, and features, there is need for some additions.
 ## Transcription
 
 ??? abstract "About"
-    [transcription.py]({{tfghb}}/{{c_transcription}}) contains transliteration tables for Hebrew and Syriac that
-    are being used in the
-    [BHSA]({{etcbcgh}}/bhsa),
-    [Peshitta]({{etcbcgh}}/peshitta),
-    [SyrNT]({{etcbcgh}}/syrnt).
+    [transcription.py]({{tfghb}}/{{c_transcription}}) contains transliteration tables for Hebrew and Syriac.
 
     It also calls functions to use these tables for converting Hebrew and Syriac ttext material to transliterated
     representations and back.

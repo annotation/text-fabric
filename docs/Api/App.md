@@ -17,8 +17,7 @@
     A = use(appName)
     ```
 
-    Currently, `bhsa`, `peshitta`, `syrnt` and `uruk` are valid app names.
-    See [Corpora](../About/Corpora.md). 
+    See [Corpora](../About/Corpora.md) for what you can use. 
 
     Hint: think of the `use {database}` statements in MySQL and MongoDb.
 
@@ -28,13 +27,13 @@
     ??? abstract "Start up sequence"
         During start-up the following happens:
 
-        (1) the BHSA data is downloaded to your `~/text-fabric-data` directory,
+        (1) the corpus data is downloaded to your `~/text-fabric-data` directory,
         if not already present there;
 
         (2) if your data has been freshly downloaded,
         a series of optimizations is executed;
 
-        (3) most features of the Bhsa dataset are loaded.
+        (3) most features of the corpus are loaded.
 
     There are many scenarios in which you can work with a TF app:
     in a Python script or in a notebook.
@@ -73,12 +72,12 @@
         If you do not want to work with the default version of your main corpus,
         you can specify a different version here.
 
-        ??? example "BHSA"
+        ??? example "versions"
             ```python
-            A = use('bhsa', version='2017')
+            A = use('xxxx', version='2017')
             ```
 
-            In fact, this single statement will download that BHSA version
+            In fact, this single statement will download that Xxxx version
             if you do not already have it.
 
         ??? note "Modules"
@@ -108,12 +107,8 @@
         if you know that it contains relevant features.
 
         Your TF app might be configured to download specific modules.
-        For example, the BHSA app invokes the phono features
-        and the crossref features.
         See `MODULE_SPECS` in the app's 
         [config.py](../Implementation/Apps.md#components),
-        e.g. the one of the 
-        [bhsa app]({{tfghb}}/{{c_bhsa_config}}).
 
         ??? caution "Release sensitive"
             Module data will be downloaded from a specific release
@@ -180,13 +175,13 @@
         If you want the extra power of the TF app, you can wrap this `api`:
 
         ```python
-        A = use('bhsa', api=api)
+        A = use('xxxx', api=api)
         ```
 
     ??? info "Unloaded features"
         Some apps do not load all available features of the corpus by default.
 
-        For example, the BHSA contains quite a number of features
+        This happens when a corpus contains quite a number of features
         that most people never need.
         Loading them cost time and takes a lot of RAM.
 
@@ -295,8 +290,7 @@
     ```
 
     ???+ "Description"
-        Produces a link to an online website dedicated to the main corpus,
-        e.g. SHEBANQ for the BHSA, and CDLI for Uruk.
+        Produces a link to an online website dedicated to the main corpus.
 
     ??? info "node"
         `node` can be an arbitrary node. The link targets the verse/tablet that
@@ -732,7 +726,7 @@
           displaySetup(tupleFeatures=...)`
 
         See for detailed examples the
-        [exportExcel]({{etcbcnb}}/bhsa/blob/master/tutorial/exportExcel.ipynb)
+        [exportExcel]({{an}}/app-bhsa/blob/master/tutorial/exportExcel.ipynb)
         notebook.
 
     ??? hint "tupleFeatures"

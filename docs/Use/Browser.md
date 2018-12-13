@@ -20,9 +20,10 @@
 
 ???+ note "apps"
     Below, when you see `app`, you have to substitute it by the name
-    of an existing TF app, such as `bhsa`, `peshitta`, `syrnt`, `uruk`.
+    of an existing TF app.
 
-    The Text-Fabric browser fetches the corpora it needs from GitHub automatically.
+    The Text-Fabric browser fetches the apps and corpora
+    it needs from GitHub automatically.
     [More about corpora](../About/Corpora.md)
 
 ??? hint "On Windows?"
@@ -75,7 +76,7 @@
     text-fabric app --sets=filePath
     ```
 
-    * Start a TF browser for `app` (such as `bhsa`).
+    * Start a TF browser for `app`.
     * Loads custom sets from `filePath`.
 
     `filePath` must specify a file on your local system

@@ -1,4 +1,3 @@
-from ..core.helpers import console
 from .helpers import RESULT
 from .display import plain, plainTuple, prettyTuple
 
@@ -232,8 +231,6 @@ def _plainTextS2(
   itemType = T.sectionTypes[2]
   isOpened = seqNumber in opened
   tClass = '' if d.fmt is None else display.formatClass[d.fmt].lower()
-
-  console('S2' + str(itemType))
 
   prettyRep = prettyTuple(
       app,

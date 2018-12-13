@@ -1,7 +1,7 @@
 import time
 import datetime
 
-from ..parameters import NAME, VERSION, DOI_TEXT, DOI_URL
+from ..parameters import NAME, VERSION, DOI_TEXT, DOI_URL, APP_URL
 
 
 # NAVIGATION IN MULTIPLE ITEMS (PAGES, PASSAGES)
@@ -172,9 +172,10 @@ def wrapProvenance(form, provenance, setNames):
   sep = ''
 
   for d in appProvenance:
+    d = dict(d)
     name = d['name']
-    commit = d['name']
-    url = d['url']
+    commit = d['commit']
+    url = f'{APP_URL}/app-{name}/tree/{commit}'
     liveHtml = f'<a href="{url}">{commit}</a>'
     liveMd = f'[{commit}]({url})'
     appHtml += f'''
@@ -196,6 +197,7 @@ commit | {liveMd}'''
   sep = ''
 
   for d in dataProvenance:
+    d = dict(d)
     corpus = d['corpus']
     version = d['version']
     release = d['release']

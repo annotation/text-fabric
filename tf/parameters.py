@@ -2,7 +2,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '7.2.3'
+VERSION = '7.3.0'
 NAME = 'Text-Fabric'
 
 ORG = 'annotation'
@@ -23,8 +23,10 @@ DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 APIREF = 'https://{ORG}.github.io/{REPO}/Api/Fabric/'
 
 APP_URL = f'{URL_GH}/{ORG}'
+APP_NB_URL = f'{URL_NB}/{ORG}/app'
 APP_EXPRESS = f'{EXPRESS_BASE}/__apps__'
 APP_GITHUB = f'{GH_BASE}/annotation'
+APP_CODE = 'code'
 APP_INFO = '__commit.txt'
 
 LOCATIONS = [

@@ -217,11 +217,7 @@
     ```
 
     To get a more specific introduction to search, consult the search tutorials for
-    [BHSA]({{etcbcnb}}/bhsa/blob/master/tutorial/search.ipynb),
-    [Peshitta]({{etcbcnb}}/peshitta/blob/master/tutorial/search.ipynb),
-    [SyrNT]({{etcbcnb}}/syrnt/blob/master/tutorial/search.ipynb),
-    and
-    [Uruk]({{ninonb}}/uruk/blob/master/tutorial/search.ipynb).
+    app supported [annotated corpora]({{an}}).
 
     Finally an example with quantifiers. We want all clauses where Pred-phrases
     consist of verbs only:

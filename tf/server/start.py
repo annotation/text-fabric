@@ -9,7 +9,7 @@ from subprocess import PIPE, Popen
 
 from ..core.helpers import console
 from ..parameters import NAME, VERSION
-from ..applib.app import findAppConfig
+from ..applib.app import findApp, findAppConfig
 
 from .command import (
     argDebug,
@@ -245,58 +245,64 @@ def main(cargs=sys.argv):
   ddataSource = (modules, *ddataSource) if modules else ddataSource
 
   if dataSource is not None:
-    config = findAppConfig(dataSource, lgc, check)
+    (commit, appDir) = findApp(dataSource, lgc, check)
+    if appDir is None:
+      return
+
+    config = findAppConfig(dataSource, appDir)
     pKernel = None
     pWeb = None
-    if config is not None:
-      console(f'Cleaning up remnant processes, if any ...')
-      killProcesses(dataSource, modules, sets, kill=True)
-      pythonExe = 'python' if isWin else 'python3'
+    if config is None:
+      return
 
-      pKernel = Popen(
-          [pythonExe, '-m', 'tf.server.kernel', *kdataSource],
-          stdout=PIPE,
-          bufsize=1,
-          encoding='utf-8',
-      )
+    console(f'Cleaning up remnant processes, if any ...')
+    killProcesses(dataSource, modules, sets, kill=True)
+    pythonExe = 'python' if isWin else 'python3'
 
-      console(f'Loading data for {dataSource}. Please wait ...')
-      for line in pKernel.stdout:
-        sys.stdout.write(line)
-        if line.rstrip() == TF_ERROR:
-          return
-        if line.rstrip() == TF_DONE:
-          break
+    pKernel = Popen(
+        [pythonExe, '-m', 'tf.server.kernel', *kdataSource],
+        stdout=PIPE,
+        bufsize=1,
+        encoding='utf-8',
+    )
+
+    console(f'Loading data for {dataSource}. Please wait ...')
+    for line in pKernel.stdout:
+      sys.stdout.write(line)
+      if line.rstrip() == TF_ERROR:
+        return
+      if line.rstrip() == TF_DONE:
+        break
+    sleep(1)
+
+    pWeb = Popen(
+        [pythonExe, '-m', f'tf.server.web', *ddataSource],
+        bufsize=0,
+    )
+
+    if not noweb:
       sleep(1)
-
-      pWeb = Popen(
-          [pythonExe, '-m', f'tf.server.web', *ddataSource],
-          bufsize=0,
+      console(f'Opening {dataSource} in browser')
+      webbrowser.open(
+          f'{config.PROTOCOL}{config.HOST}:{config.PORT["web"]}',
+          new=2,
+          autoraise=True,
       )
 
-      if not noweb:
-        sleep(1)
-        console(f'Opening {dataSource} in browser')
-        webbrowser.open(
-            f'{config.PROTOCOL}{config.HOST}:{config.PORT["web"]}',
-            new=2,
-            autoraise=True,
-        )
-
-      if pWeb and pKernel:
-        try:
+    if pWeb and pKernel:
+      try:
+        for line in pKernel.stdout:
+          sys.stdout.write(line)
+      except KeyboardInterrupt:
+        console('')
+        if pWeb:
+          pWeb.terminate()
+          console('TF web server has stopped')
+        if pKernel:
+          pKernel.terminate()
           for line in pKernel.stdout:
             sys.stdout.write(line)
-        except KeyboardInterrupt:
-          console('')
-          if pWeb:
-            pWeb.terminate()
-            console('TF web server has stopped')
-          if pKernel:
-            pKernel.terminate()
-            for line in pKernel.stdout:
-              sys.stdout.write(line)
-            console('TF kernel has stopped')
+          console('TF kernel has stopped')
 
 
 if __name__ == "__main__":

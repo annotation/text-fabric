@@ -76,6 +76,7 @@ extra:
   c_uruk_logo: tf/apps/uruk/static/logo.png
   c_web: tf/server/web.py
   c_zipdata: tf/applib/zipdata.py
+  an: https://github.com/annotation
   anaconda: https://www.anaconda.com/download
   arxiv: https://arxiv.org
   arxiv1: https://arxiv.org/abs/1501.01866
@@ -157,11 +158,6 @@ nav:
     - Faq: 'About/Faq.md'
     - News: 'About/News.md'
     - Older: 'About/Older.md'
-  - Apps:
-    - 'Hebrew Bible': 'Apps/Bhsa.md'
-    - 'Peshitta': 'Apps/Peshitta.md'
-    - 'Syriac New Testament': 'Apps/Syrnt.md'
-    - 'Cuneiform Tablets': 'Apps/Uruk.md'
   - Use:
     - Use: 'Use/Use.md'
     - Browser: 'Use/Browser.md'

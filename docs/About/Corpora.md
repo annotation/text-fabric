@@ -10,12 +10,31 @@ Some corpora are supported by Text-Fabric *apps*.
 These apps provide a browser interface for the corpus, and they enhance the API for working
 with them programmatically.
 
-Here is the list of current apps:
+A list of current apps can be found in 
+[annotation]({{an}}) on GitHub.
 
-* [bhsa](../Apps/Bhsa.md) - Hebrew Bible
-* [peshitta](../Apps/Peshitta.md) - Syriac Old Testament
-* [syrnt](../Apps/Syrnt.md) - Syriac New Testament
-* [uruk](../Apps/Uruk.md) - proto cuneiform tablets from Uruk
+
+## Get apps
+
+??? abstract "Automatically"
+    Text-Fabric downloads apps from this [annotation]({{an}}) automatically
+    when you use them.
+
+    So when you say in a notebook
+
+    ```python
+    use('xxxx')
+    ```
+
+    Text-Fabric will fetch the `xxxx` app for you, if it exists.
+
+    And if you use the Text-Fabric browser, and say
+
+    ```sh
+    text-fabric xxxx
+    ```
+
+    the same thing happens.
 
 ## Get data
 
@@ -26,14 +45,11 @@ Here is the list of current apps:
     you get the data when you do the
     [incantation](../Api/App.md#incantation).
 
-    The TF data is fairly compact
-    (25 MB for the Hebrew Bible,
-    2,1 MB for the Peshitta,
-    2,1 MB for the Syriac New Testament,
-    1.6 MB for the Uruk corpus).
+    The TF data is fairly compact,
 
     ??? caution "Size of data"
-        There might be sizable additional data (550 MB images for the Uruk corpus).
+        There might be sizable additional data for some corpora,
+        images for example.
         In that case, take care to have a good internet connection when you use the
         Text-Fabric browser for the first time.
 
@@ -44,24 +60,8 @@ Here is the list of current apps:
 
 ## More corpora
 
-??? abstract "Greek New Testament"
+??? abstract "text-fabric-data"
     The
-    [Greek]({{tfdght}}/greek/sblgnt)
-    New Testament has been converted to TF.
-
-    We have example corpora in Sanskrit, and Babylonian.
-
-??? abstract "From GitHub"
-
-    ```sh
-    cd ~/github
-    git clone {{etcbcgh}}/linksyr
-    ```
-
-    ```sh
-    cd ~/github
-    git clone {{tfdgh}}
-    ```
-
-All these are not supported by extra interfaces.
-
+    [text-fabric-data]({{tfdgh}})
+    repo has some corpora that have been converted to TF,
+    but for which no supporting  TF-apps have been written.

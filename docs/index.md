@@ -220,19 +220,8 @@ If you start using the Text-Fabric API in your programs, you'll definitely need 
 If you are just starting with the Text-Fabric browser,
 consult the [Search guide](Use/Search.md) first.
 It might also help to look at the online tutorials for
-the BHSA, Peshitta, SyrNT, and Uruk corpora
+the app-supported [annotated corpora]({{an}})
 to see what Text-Fabric can reveal about the data.
-
-??? abstract "Tutorials"
-    There are tutorials and exercises to guide you into increasingly involved tasks
-    on specific corpora (outside this repo):
-
-    * [Biblia Hebraica Stuttgartensia Amstelodamensis]({{etcbcnb}}/bhsa/blob/master/tutorial/start.ipynb)
-    * [Peshitta: Syriac Old Testament]({{etcbcnb}}/peshitta/blob/master/tutorial/start.ipynb)
-    * [Syriac New Testament]({{etcbcnb}}/syrnt/blob/master/tutorial/start.ipynb)
-    * [Proto-Cuneiform tablets from Uruk IV/III]({{ninonb}}/uruk/blob/master/tutorial/start.ipynb)
-
-    These links point to the *static* online versions.
 
 ??? note "Concepts"
     The conceptual model of Text-Fabric and how it is realized in a data model and an optimized file format.
