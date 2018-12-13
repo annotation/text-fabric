@@ -3,9 +3,9 @@ import types
 
 from ..parameters import (
     URL_GH,
-    URL_NB,
     URL_TFDOC,
     APP_URL,
+    APP_NB_URL,
 )
 from .helpers import dm, dh
 
@@ -17,7 +17,7 @@ def linksApi(app, appName, silent):
   app.header = types.MethodType(header, app)
 
   api = app.api
-  tutUrl = f'{URL_NB}/{app.org}/{app.repo}/blob/master/tutorial/search.ipynb'
+  tutUrl = f'{APP_NB_URL}-{appName}/blob/master/tutorial/start.ipynb'
   extraUrl = f'{APP_URL}/app-{appName}'
   dataLink = outLink(
       app.repo.upper(),
@@ -45,7 +45,7 @@ def linksApi(app, appName, silent):
       'Search Reference', f'{URL_TFDOC}/Use/Search/',
       'Search Templates Introduction and Reference'
   )
-  tutLink = outLink('Search tutorial', tutUrl, 'Search tutorial in Jupyter Notebook')
+  tutLink = outLink('App tutorial', tutUrl, 'App tutorial in Jupyter Notebook')
   if app._asApp:
     app.dataLink = dataLink
     app.charLink = charLink

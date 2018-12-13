@@ -266,45 +266,58 @@
 
         The default is `text-orig-full` if the first argument is an iterable of `nodes`.
 
-        The default is *nodetype*`-default` if the first argument is a single `node` with type *nodetype*.
+        The default is *nodetype*`-default`
+        if the first argument is a single `node` with type *nodetype*.
 
         If the default format is not defined in the
         `otext` feature of the dataset,
         what will happen is dependent on the first argument, `nodes` or `node`.
 
-        If the argument is an iterable of `nodes`, for each node its node type and node number
+        If the argument is an iterable of `nodes`,
+        for each node its node type and node number
         will be output, connected with a `_` .
 
-        If the argument is a single `node`, Text-Fabric will look up de slot nodes contained in it
-        (by means of `L.d(node, otype=slotType)` and format them with `text-orig-full`.
+        If the argument is a single `node`,
+        Text-Fabric will look up de slot nodes contained in it
+        (by means of `L.d(node, otype=slotType)`
+        and format them with `text-orig-full`.
 
-        If the format **is** defined, and the first argument is a single `node`, 
-        Text-Fabric will apply that format to the node itself, not to the slots contained in that node.
+        If the format **is** defined, and the first argument
+        is a single `node`, 
+        Text-Fabric will apply that format to the node itself,
+        not to the slots contained in that node.
 
-        But you can override that by means of `descend=True`. In that case, regardless of the format,
-        the `node` will be replaced by the slot nodes contained in it, before applying the format.
+        But you can override that by means of `descend=True`.
+        In that case, regardless of the format,
+        the `node` will be replaced by the slot nodes contained in it,
+        before applying the format.
 
         ??? hint "The default is sensible"
             Consider the simplest call to this function: `T.text(node)`.
-            This will apply the default format to `node`. If `node` is non-slot, then in most cases
+            This will apply the default format to `node`.
+            If `node` is non-slot, then in most cases
             the default format will be applied to the slots contained in `node`.
 
-            But for special node types, where the best representation is not obtained by descending down
-            to the contained slot nodes, the dataset may define special default types that use other
+            But for special node types, where the best representation
+            is not obtained by descending down
+            to the contained slot nodes, the dataset may define
+            special default types that use other
             features to furnish a decent representation.
 
-            ??? example "BHSA"
-                In the BHSA case this happens for the type of lexemes: `lex`. Lexemes contain their occurrences
-                as slots, but the representation of a lexeme is not the string of its occurrences, but
+            ??? example "lexemes"
+                In the some corpora case this happens for the type of lexemes: `lex`.
+                Lexemes contain their occurrences
+                as slots, but the representation of a lexeme
+                is not the string of its occurrences, but
                 resides in a feature such as `voc_lex_utf8` (vocalized lexeme in Unicode).
 
-                The BHSA dataset defines the format `lex-default={voc_lex_utf8} ` and this is the only thing
-                needed to regulate the representation of a lexeme.
+                If the dataset defines the format `lex-default={lex} `,
+                this is the only thing needed to regulate the representation of a lexeme.
 
-                Hence, `T.text(lx)` results in the vocalized lexeme representation of `lx`.
+                Hence, `T.text(lx)` results in the lexeme representation of `lx`.
 
-                But if you really want to print out all occurrences of lexeme `lx`, you can say
-                `T.text(lx, descend=True)`.
+                But if you really want to print out all occurrences of lexeme `lx`,
+                you can say `T.text(lx, descend=True)`.
 
                 Beware of this, however:
                 
@@ -312,10 +325,13 @@
 
                 `T.text(phr, fmt='text-orig-full')` prints the empty string. Why?
 
-                `T.text(phr, fmt='text-orig-full', descend=True)` prints the full text of the phrase.
+                `T.text(phr, fmt='text-orig-full', descend=True)`
+                prints the full text of the phrase.
 
-                In the first case there is no `fmt` argument, so the default is taken,
-                which would be `phrase-default`. But this format does not exists, so Text-Fabric
+                In the first case there is no `fmt` argument,
+                so the default is taken,
+                which would be `phrase-default`.
+                But this format does not exists, so Text-Fabric
                 descends to the words of the phrase and applies `text-orig-full` to them.
 
                 In the second case, there is a `fmt` argument, so Text-Fabric applies that 
@@ -328,24 +344,28 @@
                 `T.text(phr, fmt='text-phono-full', descend=True)`
 
         ??? caution "No error messages"
-            This function does not give error messages, because that could easily overwhelm
+            This function does not give error messages,
+            because that could easily overwhelm
             the output stream, especially in a notebook.
 
     ??? note "Non slot nodes allowed"
         In most cases, the nodes fed to `T.text()` are slots, and the formats are
         templates that use features that are defined for slots.
 
-        But nothing prevents you to define a format for non-slot nodes, and use features
+        But nothing prevents you to define a format
+        for non-slot nodes, and use features
         defined for a non-slot node type.
 
-        If, for example, your slot type is *glyph*, and you want a format that renders
-        lexemes, which are not defined for glyphs but for words, you can just define a
-        format in terms of word features.
+        If, for example, your slot type is *glyph*,
+        and you want a format that renders
+        lexemes, which are not defined for glyphs but for words,
+        you can just define a format in terms of word features.
 
-        It is your responsibility to take care to use the formats for node types for
-        which they make sense.
+        It is your responsibility to take care to use the formats
+        for node types for which they make sense.
 
     ??? caution "Escape whitespace in formats"
-        When defining formats in `otext.tf`, if you need a newline or tab in the format,
+        When defining formats in `otext.tf`,
+        if you need a newline or tab in the format,
         specify it as `\n` and `\t`.
 

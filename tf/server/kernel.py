@@ -87,7 +87,13 @@ def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, po
 
     def exposed_provenance(self):
       app = self.app
-      return app.provenance
+      appProvenance = (
+          (
+              ('name', dataSource),
+              ('commit', commit),
+          ),
+      )
+      return (appProvenance, app.provenance)
 
     def exposed_setNames(self):
       app = self.app

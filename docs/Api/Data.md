@@ -17,20 +17,12 @@ The data sharing workflow is built around the following assumptions:
     The new features must sit in a directory named after the version
     of the main corpus they correspond to.
 
-    ??? example "BHSA"
-        For the *BHSA*, that would be version *c*.
-        You can also produce data for multiple versions.
-
 ??? note "local github"
     The data you share must reside in a directory on your hard drive.
     The convention is, that you have a directory `github` under your
     home directory. And inside `github`, you have directories for
     organizations or people first, and then repositories, exactly as 
     the online GitHub is organized. 
-
-    ??? example "BHSA"
-        If you have the BHSA repo, its versioned TF feature directories
-        should be under `~/github/etcbc/bhsa/tf`
 
     Your own data should be in such a repo as well, e.g.
 
@@ -330,18 +322,17 @@ it much less often than you modify it.
     the version of the main data source against which you are building your data.
 
     ??? example "BHSA and versions"
-        The BHSA data source has versions `3`, `4`, `4b`, `2016`, `2017`, and `c`.
         Suppose you are building a the dairy features `butter`, `cheese` and `eggs`,
         in the `dairy/tf` sub folder of your repo. Suppose you build them for versions
-        `2017` and `c`. Then deliver those features in
+        `2017` and `2018` of your corpus. Then deliver those features in
 
         ```
         dairy/tf/2017/butter.tf
         dairy/tf/2017/cheese.tf
         dairy/tf/2017/eggs.tf
-        dairy/tf/c/butter.tf
-        dairy/tf/c/cheese.tf
-        dairy/tf/c/eggs.tf
+        dairy/tf/2018/butter.tf
+        dairy/tf/2018/cheese.tf
+        dairy/tf/2018/eggs.tf
         ```
 
     Currently, your features only live on your computer, in your local github folder.
@@ -401,7 +392,8 @@ it much less often than you modify it.
 ##### More modules
 
 Now that we get the hang of it, we would like to use the `heads` feature
-that Cody Kingham prepared in [etcbc/lingo/heads]({{etcbcgh}}/lingo/tree/master/heads)
+that Cody Kingham prepared in
+[etcbc/lingo/heads]({{etcbcgh}}/lingo/tree/master/heads)
 as well as the `actor` feature that Christian Høygaard-Jensen prepared in
 [ch-jensen/Semantic-mapping-of-participants]({{jensengh}})
 We'll include it next to the valence data, by calling the TF browser like this:
@@ -444,7 +436,7 @@ A = use(
 
 Now you can run the same query as before:
 
-```
+```python
 results = A.search('''
 book book=Leviticus
   phrase sense*
@@ -462,7 +454,7 @@ A.show(results, start=8, end=8, condensed=True, condenseType='verse')
 ```
 
 See the
-[share]({{etcbcnb}}/bhsa/blob/master/tutorial/share.ipynb)
+[share]({{an}}/app-bhsa/blob/master/tutorial/share.ipynb)
 tutorial.
 
 ##### Exercise

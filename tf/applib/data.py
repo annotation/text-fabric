@@ -342,15 +342,15 @@ def _getModuleData(
     (key, default) = item
     info[key] = (getattr(app, key) if isBase else specs[key] if specs and key in specs else default)
   provenance.append(
-      dict(
-          corpus=info['corpus'],
-          version=version,
-          release=release,
-          live=(
+      (
+          ('corpus', info['corpus']),
+          ('version', version),
+          ('release', release),
+          ('live', (
               liveText(org, repo, version, release),
               liveUrl(org, repo, version, release, relative)
-          ),
-          doi=(info['doiText'], info['doiUrl']),
+          )),
+          ('doi', (info['doiText'], info['doiUrl'])),
       )
   )
   return True

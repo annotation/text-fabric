@@ -48,11 +48,10 @@ An optional parameter `silent=False` has been added to the initialisation calls 
 you can say now
 
 ```python
-A = Bhsa(silent=True)
-A = Peshitta(silent=True)
-A = Syrnt(silent=True)
-A = Uruk(silent=True)
+A = Xxxx(silent=True)
 ```
+
+where `Xxxx` is a know corpus.
 
 and then all non-error messages will be suppressed.
 If the underlying TF API needs to precompute data, it will still be shown, because this may cause an otherwise

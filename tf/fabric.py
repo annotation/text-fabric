@@ -1,7 +1,7 @@
 import os
 import collections
 from glob import glob
-from .parameters import VERSION, NAME, APIREF, TUTORIAL, LOCATIONS
+from .parameters import VERSION, NAME, APIREF, LOCATIONS
 from .core.data import Data, WARP, WARP2_DEFAULT, MEM_MSG
 from .core.helpers import (itemize, setDir, expandDir, collectFormats, cleanName, check32, console)
 from .core.timestamp import Timestamp

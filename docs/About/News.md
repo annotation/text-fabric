@@ -4,15 +4,23 @@
 
 ???+ hint "Consult the tutorials after changes"
     When we change the API, we make sure that the tutorials shows off
-    all possibilities:
-    [bhsa]({{etcbcnb}}/bhsa/blob/master/tutorial/start.ipynb)
-    [peshitta]({{etcbcnb}}/peshitta/blob/master/tutorial/start.ipynb)
-    [syrnt]({{etcbcnb}}/syrnt/blob/master/tutorial/start.ipynb)
-    [uruk]({{ninonb}}/uruk/blob/master/tutorial/start.ipynb)
+    all possibilities.
+
+    See the app-specific tutorials in [annotation]({{an}}).
 
 ## Queued for next release
 
 See the [issue list on GitHub]({{ghissues}})
+
+## 7.3
+
+2018-12-13
+
+* Text-Fabric has moved house from `Dans-labs` to `annotation` on GitHub.
+* The TF-apps have been moved to separate repos with name `app-`*xxxx*
+  within [annotation]({{an}})
+* The tutorials have been moved from the repos that store the corpus data
+  to the `app`-*xxxx* repositories.
 
 ## 7.2.3
 
@@ -23,7 +31,7 @@ Now you can also export to Excel from a notebook,
 using `A.export(results)`.
 
 Jump to the tutorial:
-[exportExcel]({{etcbcnb}}/bhsa/blob/master/tutorial/exportExcel.ipynb)
+[exportExcel]({{an}}/app-bhsa/blob/master/tutorial/exportExcel.ipynb)
 
 For more info: see [#38]({{ghissues}}/38) 
 
@@ -85,7 +93,7 @@ For more info: see [#38]({{ghissues}}/38)
       you can highlight material inside plain displays.
       **[A.plain](../Api/App.md#display)**
       and
-      **[display tutorial]({{etcbcnb}}/bhsa/blob/master/tutorial/display.ipynb)**
+      **[display tutorial]({{an}}/app-bhsa/blob/master/tutorial/display.ipynb)**
     * New function `T.sectionTuple(n)` which gives the tuple of section nodes in which `n`
       is embedded
       **[T.sectionTuple](../Api/Text.md#sections)**
@@ -180,7 +188,7 @@ Under the hood:
 * a lot of repeated code inside apps has been factored out
 * it is easier to turn corpora into new text-fabric apps.
 
-Quick start: the new [share]({{etcbcnb}}/bhsa/blob/master/tutorial/share.ipynb)
+Quick start: the new [share]({{an}}/app-bhsa/blob/master/tutorial/share.ipynb)
 
 See the [v7 guide](../Use/Use7.md) for concrete and detailed hints how to make most of this version.
 

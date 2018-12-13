@@ -15,7 +15,7 @@ def setup(lgc, check):
   global TF
   global appDir
 
-  config = findAppConfig(dataSource, lgc, check)
+  config = findAppConfig(dataSource, appDir)
   if config is None:
     return None
 
