@@ -165,11 +165,37 @@ def wrapProvenance(form, provenance, setNames):
   job = form['jobName']
   author = form['author']
 
+  (appProvenance, dataProvenance) = provenance
+
+  appHtml = ''
+  appMd = ''
+  sep = ''
+
+  for d in appProvenance:
+    name = d['name']
+    commit = d['name']
+    url = d['url']
+    liveHtml = f'<a href="{url}">{commit}</a>'
+    liveMd = f'[{commit}]({url})'
+    appHtml += f'''
+    <div class="pline">
+      <div class="pname">TF App:</div>
+      <div class="pval">{name}</div>
+    </div>
+    <div class="p2line">
+      <div class="pname">commit</div>
+      <div class="pval">{liveHtml}</div>
+    </div>
+'''
+    appMd += f'''{sep}TF app | {name}
+commit | {liveMd}'''
+    sep = '\n'
+
   dataHtml = ''
   dataMd = ''
   sep = ''
 
-  for d in provenance:
+  for d in dataProvenance:
     corpus = d['corpus']
     version = d['version']
     release = d['release']
@@ -241,6 +267,7 @@ DOI | {doiMd}'''
       <div class="pname">Tool:</div>
       <div class="pval">{tool} {toolDoiHtml}</div>
     </div>
+    {appHtml}
   '''
 
   md = f'''
@@ -252,6 +279,7 @@ Created | {now}
 {dataMd}
 {setMd}
 Tool | {tool} {toolDoiMd}
+{appMd}
 '''
 
   return (html, md)

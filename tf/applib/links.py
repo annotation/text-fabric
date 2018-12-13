@@ -5,6 +5,7 @@ from ..parameters import (
     URL_GH,
     URL_NB,
     URL_TFDOC,
+    APP_URL,
 )
 from .helpers import dm, dh
 
@@ -17,7 +18,7 @@ def linksApi(app, appName, silent):
 
   api = app.api
   tutUrl = f'{URL_NB}/{app.org}/{app.repo}/blob/master/tutorial/search.ipynb'
-  extraUrl = f'{URL_TFDOC}/Apps/{app.repo.capitalize()}/'
+  extraUrl = f'{APP_URL}/app-{appName}'
   dataLink = outLink(
       app.repo.upper(),
       app.docUrl,

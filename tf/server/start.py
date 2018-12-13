@@ -9,7 +9,7 @@ from subprocess import PIPE, Popen
 
 from ..core.helpers import console
 from ..parameters import NAME, VERSION
-from ..applib.helpers import findAppConfig
+from ..applib.app import findAppConfig
 
 from .command import (
     argDebug,
@@ -245,7 +245,7 @@ def main(cargs=sys.argv):
   ddataSource = (modules, *ddataSource) if modules else ddataSource
 
   if dataSource is not None:
-    config = findAppConfig(dataSource)
+    config = findAppConfig(dataSource, lgc, check)
     pKernel = None
     pWeb = None
     if config is not None:

@@ -25,7 +25,7 @@ This works really well in Jupyter notebooks.
 
 Text Fabric is a Python(3) package on the Python Package Index, so you can install it easily with `pip` from
 the command line. Here are the precise
-[installation instructions](https://dans-labs.github.io/text-fabric/).
+[installation instructions](https://annotation.github.io/text-fabric/).
 
 # Use
 
@@ -65,7 +65,7 @@ There you'll find links to further help.
 There is extensive documentation.
 If you start using the Text-Fabric API in your programs, you'll need it.
 
-Jump off to the [docs](https://dans-labs.github.io/text-fabric/)
+Jump off to the [docs](https://annotation.github.io/text-fabric/)
 
 # Data
 
@@ -90,7 +90,7 @@ An app takes care of automatic downloading of the dataset and it supports the Te
 
 ---
 
-<a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/Dans-labs/text-fabric/directory/"><img src="/docs/images/swh-logo-archive.png" width="100" align="left"/></a>
+<a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/annotation/text-fabric/directory/"><img src="/docs/images/swh-logo-archive.png" width="100" align="left"/></a>
 
 **This repository is being archived continuously by the 
 [Software Heritage Archive](https://archive.softwareheritage.org).

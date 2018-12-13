@@ -6,7 +6,7 @@ import rpyc
 from rpyc.utils.server import ThreadedServer
 
 from ..core.helpers import console
-from ..applib.helpers import findAppConfig, findAppClass
+from ..applib.app import findApp, findAppConfig, findAppClass
 from ..applib.highlight import getPassageHighlights
 from ..applib.search import runSearch, runSearchCondensed
 from ..applib.display import getResultsX
@@ -26,17 +26,19 @@ TF_ERROR = 'Could not set up TF'
 
 # KERNEL CREATION
 
-def makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, port):
-  config = findAppConfig(dataSource)
+def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, port):
+  config = findAppConfig(dataSource, appDir)
   if config is None:
     return None
-  appClass = findAppClass(dataSource)
+  appClass = findAppClass(dataSource, appDir)
   if appClass is None:
     return None
 
   console(f'Setting up TF kernel for {dataSource} {moduleRefs} {setFile}')
   app = appClass(
       dataSource,
+      appDir,
+      commit,
       _asApp=True,
       mod=moduleRefs,
       setFile=setFile,
@@ -382,11 +384,22 @@ def main(cargs=sys.argv):
   if dataSource is not None:
     moduleRefs = modules[6:] if modules else ''
     setFile = sets[7:] if sets else ''
-    config = findAppConfig(dataSource)
-    if config is not None:
-      kernel = makeTfKernel(dataSource, moduleRefs, setFile, lgc, check, config.PORT['kernel'])
-      if kernel:
-        kernel.start()
+    (commit, appDir) = findApp(dataSource, lgc, check)
+    if appDir is not None:
+      config = findAppConfig(dataSource, appDir)
+      if config is not None:
+        kernel = makeTfKernel(
+            dataSource,
+            appDir,
+            commit,
+            moduleRefs,
+            setFile,
+            lgc,
+            check,
+            config.PORT['kernel'],
+        )
+        if kernel:
+          kernel.start()
 
 
 # LOWER LEVEL

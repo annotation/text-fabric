@@ -9,7 +9,7 @@ site_description: >-
   for (ancient) text plus
   (linguistic) annotations.
 
-site_url: 'https://dans-labs.github.io/text-fabric/'
+site_url: 'https://annotation.github.io/text-fabric/'
 
 site_author: Dirk Roorda
 
@@ -100,12 +100,12 @@ extra:
   flask: http://flask.pocoo.org/docs/1.0/
   fontlib: https://fontlibrary.org
   ghapi: https://developer.github.com/v3/
-  ghissues: https://github.com/Dans-labs/text-fabric/issues
+  ghissues: https://github.com/annotation/text-fabric/issues
   git: https://git-scm.com/downloads 
   jensengh: https://github.com/ch-jensen/Semantic-mapping-of-participants
   jquery: https://api.jquery.com
   jup: https://jupyter.org
-  lfgh: https://github.com/Dans-labs/laf-fabric
+  lfgh: https://github.com/annotation/laf-fabric
   mkdocs: https://mkdocs.readthedocs.io/en/stable/
   moz_color: https://developer.mozilla.org/en-US/docs/Web/CSS/color_value 
   moz_details: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
@@ -123,15 +123,15 @@ extra:
   pthugh: https://github.com/pthu
   sbl1: https://global-learning.org/mod/forum/discuss.php?d=22
   shebanq: https://shebanq.ancient-data.org
-  tfdgh: https://github.com/Dans-labs/text-fabric-data
-  tfdnb: https://nbviewer.jupyter.org/github/Dans-labs/text-fabric-data/blob/master
-  tfdghb: https://github.com/Dans-labs/text-fabric-data/blob/master 
-  tfdght: https://github.com/Dans-labs/text-fabric-data/tree/master 
+  tfdgh: https://github.com/annotation/text-fabric-data
+  tfdnb: https://nbviewer.jupyter.org/github/annotation/text-fabric-data/blob/master
+  tfdghb: https://github.com/annotation/text-fabric-data/blob/master 
+  tfdght: https://github.com/annotation/text-fabric-data/tree/master 
   tfdoi: https://doi.org/10.5281/zenodo.592193
-  tfgh: https://github.com/Dans-labs/text-fabric
-  tfghb: https://github.com/Dans-labs/text-fabric/blob/master
-  tfght: https://github.com/Dans-labs/text-fabric/tree/master 
-  tfnb: https://nbviewer.jupyter.org/github/dans-labs/text-fabric/blob/master
+  tfgh: https://github.com/annotation/text-fabric
+  tfghb: https://github.com/annotation/text-fabric/blob/master
+  tfght: https://github.com/annotation/text-fabric/tree/master 
+  tfnb: https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master
   tfpp: https://pypi.org/project/text-fabric/ 
   ubiq1: https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/
   weave: https://sew4home.com/tips-resources/buying-guide/all-about-fabric-weaves-tutorial
@@ -145,7 +145,7 @@ theme:
   favicon: 'images/icon/favicon.ico'
   feature:
     tabs: false
-repo_url: 'https://github.com/dans-labs/text-fabric/'
+repo_url: 'https://github.com/annotation/text-fabric/'
 
 strict: false
 

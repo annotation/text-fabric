@@ -1,7 +1,8 @@
 from ..fabric import Fabric
 from ..lib import readSets
 from ..core.helpers import console, setDir
-from .helpers import findAppConfig, getLocalDir, configure
+from .app import findAppConfig
+from .helpers import getLocalDir, configure
 from .links import linksApi
 from .sections import sectionsApi
 from .displaysettings import displaySettingsApi
@@ -15,6 +16,8 @@ from .data import getModulesData
 def setupApi(
     app,
     appName,
+    appDir,
+    commit,
     hoist=False,
     version=None,
     mod=None,
@@ -36,7 +39,10 @@ def setupApi(
   ).items():
     setattr(app, key, value)
 
-  config = findAppConfig(appName)
+  app.appDir = appDir
+  app.commit = commit
+
+  config = findAppConfig(appName, appDir)
   cfg = configure(config, lgc, version)
   version = cfg['version']
   cfg['localDir'] = getLocalDir(cfg, lgc, version)

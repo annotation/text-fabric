@@ -2,14 +2,14 @@ Metadata-Version: 1.2
 Name: text-fabric
 Version: 7.2.3
 Summary: Processor and browser for Text Fabric Data
-Home-page: https://github.com/Dans-labs/text-fabric
+Home-page: https://github.com/annotation/text-fabric
 Author: Dirk Roorda
 Author-email: dirk.roorda@dans.knaw.nl
 License: UNKNOWN
 Description: Tools to read text corpora with (linguistic) annotations
         and process them efficiently.
         With a built in web-interface for querying a corpus.
-        More info on https://dans-labs.github.io/text-fabric/
+        More info on https://annotation.github.io/text-fabric/
         
 Keywords: text,linguistics,database,graph,hebrew,bible,cuneiform,uruk,greek,syriac
 Platform: UNKNOWN
