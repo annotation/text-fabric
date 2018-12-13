@@ -78,6 +78,23 @@ def isClean(name):
   return all(c in VALID for c in name[1:])
 
 
+def flattenToSet(features):
+  theseFeatures = set()
+  if type(features) is str:
+    theseFeatures |= set(features.split())
+  else:
+    for feature in features:
+      if type(feature) is str:
+        theseFeatures.add(feature)
+      else:
+        feature = feature[1]
+        if type(feature) is str:
+          theseFeatures |= set(feature.split())
+        else:
+          theseFeatures |= set(feature)
+  return theseFeatures
+
+
 def setDir(obj):
   obj.homeDir = os.path.expanduser('~').replace('\\', '/')
   obj.curDir = os.getcwd().replace('\\', '/')

@@ -100,6 +100,7 @@ extra:
   flask: http://flask.pocoo.org/docs/1.0/
   fontlib: https://fontlibrary.org
   ghapi: https://developer.github.com/v3/
+  ghissues: https://github.com/Dans-labs/text-fabric/issues
   git: https://git-scm.com/downloads 
   jensengh: https://github.com/ch-jensen/Semantic-mapping-of-participants
   jquery: https://api.jquery.com
@@ -140,7 +141,7 @@ extra:
 
 theme:
   name: material
-  logo: 'images/tficon-small.png'
+  logo: 'images/tf-small.png'
   favicon: 'images/icon/favicon.ico'
   feature:
     tabs: false

@@ -1,4 +1,4 @@
-![tf](../images/tficon-small.png)
+![tf](../images/tf-small.png)
 
 # Older changes
 

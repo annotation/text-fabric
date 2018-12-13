@@ -226,6 +226,10 @@
         (but you can change the sorting, see the `sort` parameter).
         It then reports the number of results.
 
+        It will also set the display parameter `tupleFeatures` (see below)
+        in such a way that subsequent calls to `A.export()` emit
+        the features that have been used in the query.
+
     ??? info "query"
         the
         [search template](../Use/Search.md#search-template-reference)
@@ -568,6 +572,18 @@
         If you find they clutter the display, you can turn them off
         selectively.
 
+    ??? info "tupleFeatures=()"
+        A bit like "extraFeatures" above, but more intricate.
+        Only meant to steer the
+        `A.export()` function below into outputting the
+        features you choose.
+
+        It should be a tuple of pairs
+        `(i, features)`
+        which means that to member `i` of a result tuple we assign extra `features`.
+
+        `features` may be given as an iterable or a space separated string of feature names.
+
     ??? info "withNodes=False"
         indicates whether node numbers should be displayed.
 
@@ -694,6 +710,73 @@
         before displaying the list.
         Pass the display parameters `condense` and `condenseType` (documented above).
 
+??? abstract "A.export()"
+    ```python
+    A.export(results, toDir=None, toFile=None, **displayParameters)
+    ```
+
+    ???+ info "Description"
+        Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
+        There will be a row for each tuple.
+        The columns are:
+
+        * **R** the sequence number of the result tuple in the result list
+        * **S1 S2 S3** the section as book, chapter, verse, in separate columns;
+          the section is the section of the first non book/chapter node in the tuple
+        * **NODEi TYPEi** the node and its type,
+          for each node **i** in the result tuple
+        * **TEXTi** the full text of node **i**,
+          if the node type admits a concise text representation
+        * **XFi** the value of extra feature **XF** for node **i**,
+          where these features have been declared by a previous 
+          displaySetup(tupleFeatures=...)`
+
+        See for detailed examples the
+        [exportExcel]({{etcbcnb}}/bhsa/blob/master/tutorial/exportExcel.ipynb)
+        notebook.
+
+    ??? hint "tupleFeatures"
+        If the iterable of tuples are the results of a query you have just
+        run, then an appropriate call to `displaySetup(tupleFeatures=...)`
+        has already been issued, so you can just say:
+
+        ```python
+        results = A.search(query)
+        A.export(results)
+        ```
+
+    ??? info "results"
+        an iterable of tuples of nodes.
+        The results of a search qualify, but it works
+        no matter which process has produced the tuples.
+
+    ??? info "toDir"
+        The destination directory for the exported file.
+        By default it is your Downloads folder.
+
+        If the directory does not exist, it will be created.
+
+    ??? info "toFile"
+        The name of the exported file.
+        By default it is `results.tsv`
+
+    ??? info "tupleFeatures="
+        This is a display parameter that steers which features are exported
+        with each member of the tuples in the list.
+        See above under "Setting up display parameters"
+        
+    ??? info "fmt="
+        This display parameter specifies the text format for any nodes
+        that trigger a text value to be exported.
+
+    ??? caution "Encoding"
+        The exported file is written in the `utf_16_le` encoding.
+        This ensures that Excel can open it without hassle, even if there
+        are non-latin characters inside.
+
+        When you want to read the exported file programmatically,
+        open it with `encoding=utf_16`.
+
 ??? abstract "A.pretty()"
     ```python
     A.pretty(node, **displayParameters)
@@ -705,6 +788,10 @@
 
     ??? info "node"
         a node of arbitrary type.
+
+    ??? info "extraFeatures, tupleFeatures"
+        These display parameters govern which extra features will be displayed in pretty
+        displays. The union of what these parameters specify will be taken.
 
 ??? abstract "A.prettyTuple()"
     ```python

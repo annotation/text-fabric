@@ -9,7 +9,8 @@ from ..core.helpers import console
 from ..applib.helpers import findAppConfig, findAppClass
 from ..applib.highlight import getPassageHighlights
 from ..applib.search import runSearch, runSearchCondensed
-from ..applib.tables import compose, composeP, composeT, getResultsX
+from ..applib.display import getResultsX
+from ..applib.tables import compose, composeP, composeT
 
 from .command import (
     argCheck,

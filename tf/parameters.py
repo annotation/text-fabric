@@ -2,12 +2,13 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '7.2.2'
+VERSION = '7.2.3'
 NAME = 'Text-Fabric'
 
 URL_GH_API = 'https://api.github.com/repos'
 URL_GH = 'https://github.com'
 URL_NB = 'https://nbviewer.jupyter.org/github'
+DOWNLOADS = '~/Downloads'
 GH_BASE = '~/github'
 EXPRESS_BASE = '~/text-fabric-data'
 EXPRESS_INFO = '__release.txt'

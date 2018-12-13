@@ -120,7 +120,6 @@ tf/server/static/highlight.css
 tf/server/static/icon.png
 tf/server/static/index.css
 tf/server/static/jquery.js
-tf/server/static/logo.png
 tf/server/static/tf.js
 tf/server/static/fonts/SBL_Hbrw.eot
 tf/server/static/fonts/SBL_Hbrw.ttf
