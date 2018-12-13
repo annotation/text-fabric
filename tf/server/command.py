@@ -84,9 +84,9 @@ def argParam(cargs=sys.argv, interactive=False):
   if interactive:
     if dataSource is None:
       dataSource = input(f'specify data source [{dPrompt}] > ')
-    if dataSource not in dataSources:
-      console('Unknown data source', error=True)
-      dataSource = None
+    # if dataSource not in dataSources:
+    #   console('Unknown data source', error=True)
+    #   dataSource = None
     if dataSource is None:
       console(f'Pass a data source [{dPrompt}] as first argument', error=True)
     return dataSource
