@@ -107,7 +107,7 @@
       <div class="md-flex__cell md-flex__cell--shrink">
         <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-header-nav__button md-logo">
           
-            <img src="../../images/tficon-small.png" width="24" height="24">
+            <img src="../../images/tf-small.png" width="24" height="24">
           
         </a>
       </div>
@@ -178,7 +178,7 @@
   <label class="md-nav__title md-nav__title--site" for="__drawer">
     <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-nav__button md-logo">
       
-        <img src="../../images/tficon-small.png" width="48" height="48">
+        <img src="../../images/tf-small.png" width="48" height="48">
       
     </a>
     Text-Fabric
@@ -1531,6 +1531,9 @@ one by one, the <code>A</code> version collects all results and sorts them in th
 <a href="../Nodes/#navigating-nodes">canonical order</a>.
 (but you can change the sorting, see the <code>sort</code> parameter).
 It then reports the number of results.</p>
+<p>It will also set the display parameter <code>tupleFeatures</code> (see below)
+in such a way that subsequent calls to <code>A.export()</code> emit
+the features that have been used in the query.</p>
 </details>
 <details class="info"><summary>query</summary><p>the
 <a href="../../Use/Search/#search-template-reference">search template</a>
@@ -1813,6 +1816,15 @@ By default, quite a number of features is displayed for a node.
 If you find they clutter the display, you can turn them off
 selectively.</p>
 </details>
+<details class="info"><summary>tupleFeatures=()</summary><p>A bit like "extraFeatures" above, but more intricate.
+Only meant to steer the
+<code>A.export()</code> function below into outputting the
+features you choose.</p>
+<p>It should be a tuple of pairs
+<code>(i, features)</code>
+which means that to member <code>i</code> of a result tuple we assign extra <code>features</code>.</p>
+<p><code>features</code> may be given as an iterable or a space separated string of feature names.</p>
+</details>
 <details class="info"><summary>withNodes=False</summary><p>indicates whether node numbers should be displayed.</p>
 <details class="hint"><summary>zooming in</summary><p>If you are in a Jupyter notebook, you can inspect in a powerful way by
 setting <code>withNodes=True</code>. Then every part of a pretty display shows
@@ -1920,6 +1932,64 @@ before displaying the list.
 Pass the display parameters <code>condense</code> and <code>condenseType</code> (documented above).</p>
 </details>
 </details>
+<details class="abstract"><summary>A.export()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">toDir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">toFile</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">displayParameters</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<details class="info" open="open"><summary>Description</summary><p>Exports an iterable of tuples of nodes to an Excel friendly <code>.tsv</code> file.
+There will be a row for each tuple.
+The columns are:</p>
+<ul>
+<li><strong>R</strong> the sequence number of the result tuple in the result list</li>
+<li><strong>S1 S2 S3</strong> the section as book, chapter, verse, in separate columns;
+  the section is the section of the first non book/chapter node in the tuple</li>
+<li><strong>NODEi TYPEi</strong> the node and its type,
+  for each node <strong>i</strong> in the result tuple</li>
+<li><strong>TEXTi</strong> the full text of node <strong>i</strong>,
+  if the node type admits a concise text representation</li>
+<li><strong>XFi</strong> the value of extra feature <strong>XF</strong> for node <strong>i</strong>,
+  where these features have been declared by a previous 
+  displaySetup(tupleFeatures=...)`</li>
+</ul>
+<p>See for detailed examples the
+<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb">exportExcel</a>
+notebook.</p>
+</details>
+<details class="hint"><summary>tupleFeatures</summary><p>If the iterable of tuples are the results of a query you have just
+run, then an appropriate call to <code>displaySetup(tupleFeatures=...)</code>
+has already been issued, so you can just say:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="n">A</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+</details>
+<details class="info"><summary>results</summary><p>an iterable of tuples of nodes.
+The results of a search qualify, but it works
+no matter which process has produced the tuples.</p>
+</details>
+<details class="info"><summary>toDir</summary><p>The destination directory for the exported file.
+By default it is your Downloads folder.</p>
+<p>If the directory does not exist, it will be created.</p>
+</details>
+<details class="info"><summary>toFile</summary><p>The name of the exported file.
+By default it is <code>results.tsv</code></p>
+</details>
+<details class="info"><summary>tupleFeatures=</summary><p>This is a display parameter that steers which features are exported
+with each member of the tuples in the list.
+See above under "Setting up display parameters"</p>
+</details>
+<details class="info"><summary>fmt=</summary><p>This display parameter specifies the text format for any nodes
+that trigger a text value to be exported.</p>
+</details>
+<details class="caution"><summary>Encoding</summary><p>The exported file is written in the <code>utf_16_le</code> encoding.
+This ensures that Excel can open it without hassle, even if there
+are non-latin characters inside.</p>
+<p>When you want to read the exported file programmatically,
+open it with <code>encoding=utf_16</code>.</p>
+</details>
+</details>
 <details class="abstract"><summary>A.pretty()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">pretty</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="o">**</span><span class="n">displayParameters</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
@@ -1928,6 +1998,9 @@ Pass the display parameters <code>condense</code> and <code>condenseType</code> 
 The internal structure of the nodes that are involved is also revealed.</p>
 </details>
 <details class="info"><summary>node</summary><p>a node of arbitrary type.</p>
+</details>
+<details class="info"><summary>extraFeatures, tupleFeatures</summary><p>These display parameters govern which extra features will be displayed in pretty
+displays. The union of what these parameters specify will be taken.</p>
 </details>
 </details>
 <details class="abstract"><summary>A.prettyTuple()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">prettyTuple</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">seqNumber</span><span class="p">,</span> <span class="o">**</span><span class="n">displayParameters</span><span class="p">)</span>

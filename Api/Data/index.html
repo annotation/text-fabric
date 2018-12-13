@@ -107,7 +107,7 @@
       <div class="md-flex__cell md-flex__cell--shrink">
         <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-header-nav__button md-logo">
           
-            <img src="../../images/tficon-small.png" width="24" height="24">
+            <img src="../../images/tf-small.png" width="24" height="24">
           
         </a>
       </div>
@@ -178,7 +178,7 @@
   <label class="md-nav__title md-nav__title--site" for="__drawer">
     <a href="https://dans-labs.github.io/text-fabric/" title="Text-Fabric" class="md-nav__button md-logo">
       
-        <img src="../../images/tficon-small.png" width="48" height="48">
+        <img src="../../images/tf-small.png" width="48" height="48">
       
     </a>
     Text-Fabric
@@ -1797,11 +1797,12 @@ when you export data from the browser.</p>
 <p>After the incantation, you see an overview of all features per module where they come from,
 linked to their documentation or repository.</p>
 <p>You can use the new features exactly as you are used to, with <code>F</code> and <code>E</code> (for edge features).</p>
-<p>They will not automatically show up in <code>pretty</code> displays,
-because <code>pretty</code> does not know that it is displaying query results,
-and hence does not know which features were used in the latest query.</p>
-<p>So you have to tell which features you want to add to the display.
-That can be done by <a href="../App/#display"><code>displaySetup()</code> and <code>displayReset()</code></a>.</p>
+<p>They will also automatically show up in <code>pretty</code> displays,
+provided you have run a query using them before.</p>
+<p>Alternatively, you can
+tell which features you want to add to the display.
+That can be done by <a href="../App/#display"><code>displaySetup()</code> and <code>displayReset()</code></a>,
+using the parameter <code>extraFeatures</code>.</p>
 <h3 id="develop-your-own-data">Develop your own data<a class="headerlink" href="#develop-your-own-data" title="Permanent link">&para;</a></h3>
 <p>When you develop your own data features, you'll probably make many changes before
 you take the trouble of publishing them in the manner described above.
