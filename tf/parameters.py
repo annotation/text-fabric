@@ -5,6 +5,9 @@ from zipfile import ZIP_DEFLATED
 VERSION = '7.2.3'
 NAME = 'Text-Fabric'
 
+ORG = 'annotation'
+REPO = 'text-fabric'
+
 URL_GH_API = 'https://api.github.com/repos'
 URL_GH = 'https://github.com'
 URL_NB = 'https://nbviewer.jupyter.org/github'
@@ -12,15 +15,17 @@ DOWNLOADS = '~/Downloads'
 GH_BASE = '~/github'
 EXPRESS_BASE = '~/text-fabric-data'
 EXPRESS_INFO = '__release.txt'
-URL_TFDOC = 'https://dans-labs.github.io/text-fabric'
+URL_TFDOC = f'https://{ORG}.github.io/{REPO}'
 
 DOI_TEXT = '10.5281/zenodo.592193'
 DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 
-APIREF = 'https://dans-labs.github.io/text-fabric/Api/General/'
-TUTORIAL = 'https://github.com/Dans-labs/text-fabric/blob/master/docs/tutorial.ipynb'
+APIREF = 'https://{ORG}.github.io/{REPO}/Api/Fabric/'
 
-DATA = 'https://github.com/Dans-labs/text-fabric-data'
+APP_URL = f'{URL_GH}/{ORG}'
+APP_EXPRESS = f'{EXPRESS_BASE}/__apps__'
+APP_GITHUB = f'{GH_BASE}/annotation'
+APP_INFO = '__commit.txt'
 
 LOCATIONS = [
     '~/Downloads/text-fabric-data',

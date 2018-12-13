@@ -5,16 +5,11 @@ setup(
     packages=[
         'tf',
         'tf.applib',
-        'tf.apps',
         'tf.convert',
         'tf.core',
         'tf.search',
         'tf.server',
         'tf.writing',
-        'tf.apps.bhsa',
-        'tf.apps.peshitta',
-        'tf.apps.syrnt',
-        'tf.apps.uruk',
     ],
     install_requires=[
         'rpyc',
@@ -38,7 +33,7 @@ setup(
     description='''Processor and browser for Text Fabric Data''',
     author='Dirk Roorda',
     author_email='dirk.roorda@dans.knaw.nl',
-    url='https://github.com/Dans-labs/text-fabric',
+    url='https://github.com/annotation/text-fabric',
     keywords=[
         'text', 'linguistics',
         'database', 'graph',
@@ -72,6 +67,6 @@ setup(
 Tools to read text corpora with (linguistic) annotations
 and process them efficiently.
 With a built in web-interface for querying a corpus.
-More info on https://dans-labs.github.io/text-fabric/
+More info on https://annotation.github.io/text-fabric/
 ''',
 )

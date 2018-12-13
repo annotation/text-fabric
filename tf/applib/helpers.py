@@ -1,9 +1,8 @@
 import os
-from importlib import import_module, util
 from IPython.display import display, Markdown, HTML
 
 from ..parameters import EXPRESS_BASE, GH_BASE
-from ..core.helpers import console, camel
+from ..core.helpers import camel
 
 RESULT = 'result'
 
@@ -14,61 +13,6 @@ def dm(md):
 
 def dh(html):
   display(HTML(html))
-
-
-# FIND AN APP
-
-
-def findAppConfigX(dataSource):
-  config = None
-
-  try:
-    config = import_module('.config', package=f'tf.apps.{dataSource}')
-  except Exception as e:
-    console(f'findAppConfig: {str(e)}', error=True)
-    console(f'findAppConfig: Configuration for "{dataSource}" not found', error=True)
-  return config
-
-
-def findAppConfig(dataSource):
-  config = None
-  appPath = os.path.expanduser(f'~/text-fabric-data/__apps__/{dataSource}/config.py')
-
-  try:
-    spec = util.spec_from_file_location(f'tf.apps.{dataSource}.config', appPath)
-    config = util.module_from_spec(spec)
-    spec.loader.exec_module(config)
-  except Exception as e:
-    console(f'findAppConfig: {str(e)}', error=True)
-    console(f'findAppConfig: Configuration for "{dataSource}" not found', error=True)
-  return config
-
-
-def findAppClassX(dataSource):
-  appClass = None
-
-  try:
-    code = import_module(f'.app', package=f'tf.apps.{dataSource}')
-    appClass = code.TfApp
-  except Exception as e:
-    console(f'findAppClass: {str(e)}', error=True)
-    console(f'findAppClass: Api for "{dataSource}" not found')
-  return appClass
-
-
-def findAppClass(dataSource):
-  appClass = None
-  appPath = os.path.expanduser(f'~/text-fabric-data/__apps__/{dataSource}/app.py')
-
-  try:
-    spec = util.spec_from_file_location(f'tf.apps.{dataSource}.app', appPath)
-    code = util.module_from_spec(spec)
-    spec.loader.exec_module(code)
-    appClass = code.TfApp
-  except Exception as e:
-    console(f'findAppClass: {str(e)}', error=True)
-    console(f'findAppClass: Api for "{dataSource}" not found')
-  return appClass
 
 
 # COLLECT CONFIG SETTINGS IN A DICT

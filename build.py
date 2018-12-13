@@ -9,7 +9,7 @@ from subprocess import run, Popen
 import psutil
 
 from tf.core.helpers import console
-from tf.applib.helpers import findAppConfig
+from tf.applib.app import findApp, findAppConfig
 from tf.applib.zipdata import zipData
 
 HELP = '''
@@ -57,7 +57,7 @@ VERSION_CONFIG = dict(
     ),
 )
 
-TF_BASE = os.path.expanduser('~/github/Dans-labs/text-fabric')
+TF_BASE = os.path.expanduser('~/github/annotation/text-fabric')
 TEST_BASE = f'{TF_BASE}/test'
 APP_BASE = f'{TF_BASE}/apps'
 PACKAGE = 'text-fabric'
@@ -163,7 +163,10 @@ def shipDocs():
 
 
 def shipData(app, remaining):
-  config = findAppConfig(app)
+  (commit, appDir) = findApp(app, False, False)
+  if not appDir:
+    console('Data not shipped')
+  config = findAppConfig(app, appDir)
   if not config:
     console('Data not shipped')
     return

@@ -5,15 +5,16 @@ from flask import Flask, send_file
 from werkzeug.serving import run_simple
 
 from ..core.helpers import console
-from ..applib.helpers import findAppConfig, getLocalDir, configure
+from ..applib.app import findApp, findAppConfig
+from ..applib.helpers import getLocalDir, configure
 from ..server.kernel import makeTfConnection
 from .command import (
+    argCheck,
     argDebug,
     argDocker,
     argLocalClones,
     argModules,
     argParam,
-    getAppDir,
 )
 from .serve import (
     TIMEOUT,
@@ -30,16 +31,19 @@ myDir = os.path.dirname(os.path.abspath(__file__))
 
 
 class Setup(object):
-  def __init__(self, dataSource, lgc):
+  def __init__(self, dataSource, lgc, check):
     self.dataSource = dataSource
-    config = findAppConfig(dataSource)
+
+    (commit, appDir) = findApp(dataSource, lgc, check)
+    self.appDir = appDir
+
+    config = findAppConfig(dataSource, appDir)
     self.config = config
 
     if config is None:
       return
 
     self.TF = makeTfConnection(config.HOST, config.PORT['kernel'], TIMEOUT)
-    self.appDir = getAppDir(myDir, dataSource)
     self.wildQueries = set()
 
     cfg = configure(config, lgc, None)
@@ -118,8 +122,9 @@ if __name__ == "__main__":
   if dataSource is not None:
     modules = tuple(modules[6:].split(',')) if modules else ()
     lgc = argLocalClones()
+    check = argCheck()
     debug = argDebug()
-    setup = Setup(dataSource, lgc)
+    setup = Setup(dataSource, lgc, check)
     config = setup.config
     if config is not None:
       onDocker = argDocker()

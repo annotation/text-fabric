@@ -1,7 +1,7 @@
 import sys
 
 from ..core.helpers import console
-from ..applib.helpers import findAppConfig
+from ..applib.app import findAppConfig
 from ..server.kernel import makeTfConnection
 from .command import argParam
 
@@ -11,11 +11,11 @@ dataSource = None
 config = None
 
 
-def setup(lgc):
+def setup(lgc, check):
   global TF
   global appDir
 
-  config = findAppConfig(dataSource)
+  config = findAppConfig(dataSource, lgc, check)
   if config is None:
     return None
 
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
   if dataSource is None:
     sys.exit()
-  setup(False)
+  setup(False, False)
 
   commands = {
       '1': 'searchExe',

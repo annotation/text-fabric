@@ -11,7 +11,7 @@ from .highlight import getTupleHighlights, getHlAtt
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
 
-FONT_BASE = 'https://github.com/Dans-labs/text-fabric/blob/master/tf/server/static/fonts'
+FONT_BASE = 'https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts'
 
 CSS_FONT = '''
     <link rel="stylesheet" href="/server/static/fonts.css"/>
