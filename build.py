@@ -251,15 +251,6 @@ def codestats():
 
 
 def tfbrowse(dataset, remaining):
-  datadir = f'{APP_BASE}/{dataset}'
-  good = True
-  try:
-    os.chdir(datadir)
-  except Exception:
-    good = False
-    console(f'Cannot find TF app directory "{datadir}"')
-  if not good:
-    return
   rargs = ' '.join(remaining)
   cmdLine = f'text-fabric {dataset} {rargs}'
   try:
