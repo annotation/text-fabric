@@ -39,7 +39,7 @@ def linksApi(app, appName, silent):
   )
   appLink = outLink(f'{appName} API', extraUrl, f'{appName} API documentation')
   tfLink = outLink(
-      f'Text-Fabric API {api.TF.version}', f'{URL_TFDOC}/Api/General/', 'text-fabric-api'
+      f'Text-Fabric API {api.TF.version}', f'{URL_TFDOC}/Api/Fabric/', 'text-fabric-api'
   )
   tfsLink = outLink(
       'Search Reference', f'{URL_TFDOC}/Use/Search/',

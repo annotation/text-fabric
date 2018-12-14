@@ -1,3 +1,4 @@
+import sys
 import os
 import io
 from shutil import rmtree
@@ -171,12 +172,17 @@ def findAppConfig(dataSource, appDir):
 
 def findAppClass(dataSource, appDir):
   appClass = None
-  appPath = f'{appDir}/app.py'
+  moduleName = f'tf.apps.{dataSource}.app'
 
   try:
-    spec = util.spec_from_file_location(f'tf.apps.{dataSource}.app', appPath)
+    spec = util.spec_from_file_location(
+        moduleName,
+        f'{appDir}/app.py',
+    )
     code = util.module_from_spec(spec)
+    sys.path.insert(0, appDir)
     spec.loader.exec_module(code)
+    sys.path.pop(0)
     appClass = code.TfApp
   except Exception as e:
     console(f'findAppClass: {str(e)}', error=True)

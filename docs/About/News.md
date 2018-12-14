@@ -12,6 +12,17 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.3.1
+
+2018-12-14
+
+Glitch in the Uruk app: it imports other modules, but because of the 
+dynamic way it is imported itself, a trick is needed to
+let it import its submodules correctly.
+
+
+2018-12-13
+
 ## 7.3
 
 2018-12-13
