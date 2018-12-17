@@ -12,7 +12,7 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
-## 7.3.2
+## 7.3.3
 
 2018-12-17
 
