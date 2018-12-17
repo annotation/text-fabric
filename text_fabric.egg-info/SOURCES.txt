@@ -89,5 +89,7 @@ tf/server/static/fonts/fa-solid-900.svg
 tf/server/static/fonts/fa-solid-900.ttf
 tf/server/static/fonts/fa-solid-900.woff
 tf/server/static/fonts/fa-solid-900.woff2
+tf/server/templates/export.html
+tf/server/templates/index.html
 tf/writing/__init__.py
 tf/writing/transcription.py
