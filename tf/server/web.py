@@ -134,6 +134,6 @@ if __name__ == "__main__":
           '0.0.0.0' if onDocker else config.HOST,
           config.PORT['web'],
           webapp,
-          use_reloader=debug,
+          use_reloader=False,
           use_debugger=debug,
       )

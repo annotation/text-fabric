@@ -12,6 +12,15 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.3.2
+
+2018-12-17
+
+The TF browser could not fiund its templates, because I had forgotten
+to include the template files in the Python package.
+(More precisely, I had renamed the templates folder from `views`, which was included,
+to `templates`, and I had forgotten to adapt the `MANIFEST.in` file).
+
 ## 7.3.1
 
 2018-12-14
