@@ -1,6 +1,7 @@
 import sys
 import os
 import re
+from glob import glob
 
 from time import sleep
 from shutil import rmtree
@@ -73,7 +74,7 @@ def readArgs():
     console(HELP)
     return (False, None, [])
   arg = args[0]
-  if arg not in {'a', 't', 'docs', 'clean', 'l', 'i', 'g', 'data', 'r', 'r1', 'r2', 'r3'}:
+  if arg not in {'a', 't', 'docs', 'clean', 'l', 'lp', 'i', 'g', 'data', 'r', 'r1', 'r2', 'r3'}:
     console(HELP)
     return (False, None, [])
   if arg in {'g', 'r', 'r1', 'r2', 'r3'}:
@@ -221,10 +222,10 @@ def filterProcess(proc):
 
 def codestats():
   xd = (
-      '__pycache__,node_modules,.tmp,.git,_temp,'
+      '.pytest_cache,__pycache__,node_modules,.tmp,.git,_temp,'
       '.ipynb_checkpoints,images,fonts,favicons,compiled'
   )
-  xdtf = xd + ',applib,apps,convert,core,search,server,writing'
+  xdtf = xd + ',applib,convert,core,search,server,writing'
   xdtest = xd + ',tf'
   rfFmt = 'docs/Code/Stats{}.md'
   cmdLine = (
@@ -237,17 +238,16 @@ def codestats():
       ' {}'
   )
   nex = 'cloc_exclude.lst'
-  tex = 'cloc_exclude_t.lst'
-  run(cmdLine.format(xd, nex, '', '.'), shell=True)
+  run(cmdLine.format(xd, nex, '', '. ../app-*/code'), shell=True)
   run(cmdLine.format(xdtf, nex, 'Toplevel', 'tf'), shell=True)
   run(cmdLine.format(xd, nex, 'Applib', 'tf/applib'), shell=True)
-  run(cmdLine.format(xd, nex, 'Apps', 'tf/apps'), shell=True)
+  run(cmdLine.format(xd, nex, 'Apps', '../app-*/code'), shell=True)
   run(cmdLine.format(xd, nex, 'Convert', 'tf/convert'), shell=True)
   run(cmdLine.format(xd, nex, 'Core', 'tf/core'), shell=True)
   run(cmdLine.format(xd, nex, 'Search', 'tf/search'), shell=True)
   run(cmdLine.format(xd, nex, 'Server', 'tf/server'), shell=True)
   run(cmdLine.format(xd, nex, 'Writing', 'tf/writing'), shell=True)
-  run(cmdLine.format(xdtest, tex, 'Test', 'test/generic'), shell=True)
+  run(cmdLine.format(xdtest, nex, 'Test', 'test/generic'), shell=True)
 
 
 def tfbrowse(dataset, remaining):
@@ -308,6 +308,11 @@ def main():
   elif task == 'l':
     clean()
     run(['python3', 'setup.py', 'develop'])
+  elif task == 'lp':
+    clean()
+    run(['python3', 'setup.py', 'sdist'])
+    distFiles = glob('dist/text-fabric-*.tar.gz')
+    run(['pip3', 'install', distFiles[0]])
   elif task == 'i':
     clean
     makeDist(pypi=False)

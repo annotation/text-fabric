@@ -5,9 +5,10 @@ dist
 legacydocs
 docs/Stats.md
 site
-apps
 test
 text_fabric.egg-info
+azbnsetup.sh
 cloc_exclude.lst
 MANIFEST
 UNLICENSE.txt
+tf/server/static/fontawesome.css
