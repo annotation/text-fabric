@@ -7,6 +7,7 @@ from ..parameters import (
     APP_URL,
     APP_NB_URL,
 )
+from ..core.helpers import htmlEsc
 from .helpers import dm, dh
 
 
@@ -85,7 +86,7 @@ def outLink(text, href, title=None, passage=None, className=None, target='_blank
   classAtt = f' class="{className.lower()}"' if className else ''
   targetAtt = f' target="{target}"' if target else ''
   passageAtt = f' sec="{passage}"' if passage else ''
-  return f'<a{classAtt}{targetAtt} href="{href}"{titleAtt}{passageAtt}>{text}</a>'
+  return f'<a{classAtt}{targetAtt} href="{htmlEsc(href)}"{titleAtt}{passageAtt}>{text}</a>'
 
 
 def _featuresPerModule(app):

@@ -12,6 +12,15 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.3.4
+
+2018-12-18
+
+In the `plain()` representation NBconvert has a glitch.
+We can prevent that by directly outputting the plain representation as HTML,
+instead of going through Markdown.
+Fixed that.
+
 ## 7.3.3
 
 2018-12-17
