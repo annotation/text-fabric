@@ -12,6 +12,14 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.3.5
+
+2018-12-19
+
+TF-browser: Fixed a performance bottleneck in showing passages.
+The computation of the highlights took too much time
+if the query in question has many results.
+
 ## 7.3.4
 
 2018-12-18

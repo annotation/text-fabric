@@ -103,7 +103,7 @@ def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, po
 
     def exposed_css(self, appDir=None):
       app = self.app
-      return app.loadCss()
+      return f'<style type="text/css">{app.loadCss()}</style>'
 
     def exposed_condenseTypes(self):
       app = self.app
@@ -164,7 +164,7 @@ def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, po
       if sec0:
         sec0Node = T.nodeFromSection((sec0, ))
         sec1s = tuple(T.sectionFromNode(s)[1] for s in L.d(sec0Node, otype=sec1Type))
-      return (passage, (sec0s, sec1s))
+      return (passage, pickle.dumps((sec0s, sec1s)))
 
     def exposed_rawSearch(self, query):
       rawSearch = self.app.api.S.search

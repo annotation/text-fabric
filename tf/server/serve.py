@@ -163,6 +163,7 @@ def servePassage(setup, getx):
       getx=getx,
       **options,
   )
+  passages = pickle.loads(passages)
   passages = passageLinks(passages, sec0, sec1)
   return jsonify(
       table=table,
