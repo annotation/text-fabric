@@ -635,7 +635,7 @@ def loadCss(app):
   '''
   _asApp = app._asApp
   if _asApp:
-    return CSS_FONT + f'<style type="text/css">{app.css}</style>'
+    return app.css
 
   hlCssFile = (
       f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}'

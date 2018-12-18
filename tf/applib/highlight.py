@@ -1,4 +1,4 @@
-from functools import reduce
+# from functools import reduce
 
 from ..core.helpers import htmlEsc, mdEsc
 from .search import runSearch
@@ -141,8 +141,19 @@ def getPassageHighlights(app, node, query, cache):
   if messages:
     return None
 
-  return reduce(
-      set.union,
-      (set(tup) for tup in queryResults),
-      set()
-  )
+  api = app.api
+  L = api.L
+  passageNodes = L.d(node)
+
+  highlights = set()
+  for tup in queryResults:
+    for t in tup:
+      if t in passageNodes:
+        highlights.add(t)
+  return highlights
+
+  # return reduce(
+  #     set.union,
+  #     (set(tup) for tup in queryResults),
+  #     set()
+  # )
