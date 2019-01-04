@@ -12,7 +12,11 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
-Arabic transcription table
+## 7.3.6
+
+2019-01-04
+
+Arabic transcription functions
 
 ## 7.3.5
 
