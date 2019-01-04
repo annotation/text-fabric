@@ -12,6 +12,8 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+Arabic transcription table
+
 ## 7.3.5
 
 2018-12-19
