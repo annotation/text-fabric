@@ -313,6 +313,72 @@ class Transcription(object):
 
   trans_syriac_pat = re.compile(r'([AE@IU][12]?|=[.#:\^/\\]|[\^#][!:\\]|.)')
 
+  arabic_mapping = {
+      ' ': "\u0020",  # SPACE
+      "'": "\u0621",  # ARABIC LETTER HAMZA
+      '>': "\u0623",  # ARABIC LETTER ALEF WITH HAMZA ABOVE
+      '&': "\u0624",  # ARABIC LETTER WAW WITH HAMZA ABOVE
+      '<': "\u0625",  # ARABIC LETTER ALEF WITH HAMZA BELOW
+      '}': "\u0626",  # ARABIC LETTER YEH WITH HAMZA ABOVE
+      'A': "\u0627",  # ARABIC LETTER ALEF
+      'b': "\u0628",  # ARABIC LETTER BEH
+      'p': "\u0629",  # ARABIC LETTER TEH MARBUTA
+      't': "\u062a",  # ARABIC LETTER TEH
+      'v': "\u062b",  # ARABIC LETTER THEH
+      'j': "\u062c",  # ARABIC LETTER JEEM
+      'H': "\u062d",  # ARABIC LETTER HAH
+      'x': "\u062e",  # ARABIC LETTER KHAH
+      'd': "\u062f",  # ARABIC LETTER DAL
+      '*': "\u0630",  # ARABIC LETTER THAL
+      'r': "\u0631",  # ARABIC LETTER REH
+      'z': "\u0632",  # ARABIC LETTER ZAIN
+      's': "\u0633",  # ARABIC LETTER SEEN
+      '$': "\u0634",  # ARABIC LETTER SHEEN
+      'S': "\u0635",  # ARABIC LETTER SAD
+      'D': "\u0636",  # ARABIC LETTER DAD
+      'T': "\u0637",  # ARABIC LETTER TAH
+      'Z': "\u0638",  # ARABIC LETTER ZAH
+      'E': "\u0639",  # ARABIC LETTER AIN
+      'g': "\u063a",  # ARABIC LETTER GHAIN
+      '_': "\u0640",  # ARABIC TATWEEL
+      'f': "\u0641",  # ARABIC LETTER FEH
+      'q': "\u0642",  # ARABIC LETTER QAF
+      'k': "\u0643",  # ARABIC LETTER KAF
+      'l': "\u0644",  # ARABIC LETTER LAM
+      'm': "\u0645",  # ARABIC LETTER MEEM
+      'n': "\u0646",  # ARABIC LETTER NOON
+      'h': "\u0647",  # ARABIC LETTER HEH
+      'w': "\u0648",  # ARABIC LETTER WAW
+      'Y': "\u0649",  # ARABIC LETTER ALEF MAKSURA
+      'y': "\u064a",  # ARABIC LETTER YEH
+      'F': "\u064b",  # ARABIC FATHATAN
+      'N': "\u064c",  # ARABIC DAMMATAN
+      'K': "\u064d",  # ARABIC KASRATAN
+      'a': "\u064e",  # ARABIC FATHA
+      'u': "\u064f",  # ARABIC DAMMA
+      'i': "\u0650",  # ARABIC KASRA
+      '~': "\u0651",  # ARABIC SHADDA
+      'o': "\u0652",  # ARABIC SUKUN
+      '^': "\u0653",  # ARABIC MADDAH ABOVE
+      '#': "\u0654",  # ARABIC HAMZA ABOVE
+      '`': "\u0670",  # ARABIC LETTER SUPERSCRIPT ALEF
+      '{': "\u0671",  # ARABIC LETTER ALEF WASLA
+      ':': "\u06dc",  # ARABIC SMALL HIGH SEEN
+      '@': "\u06df",  # ARABIC SMALL HIGH ROUNDED ZERO
+      '"': "\u06e0",  # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
+      '[': "\u06e2",  # ARABIC SMALL HIGH MEEM ISOLATED FORM
+      ';': "\u06e3",  # ARABIC SMALL LOW SEEN
+      ',': "\u06e5",  # ARABIC SMALL WAW
+      '.': "\u06e6",  # ARABIC SMALL YEH
+      '!': "\u06e8",  # ARABIC SMALL HIGH NOON
+      '-': "\u06ea",  # ARABIC EMPTY CENTRE LOW STOP
+      '+': "\u06eb",  # ARABIC EMPTY CENTRE HIGH STOP
+      '%': "\u06ec",  # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
+      ']': "\u06ed",  # ARABIC SMALL LOW MEEM
+  }
+
+  arabic_mappingi = dict((v, k) for (k, v) in arabic_mapping.items())
+
   def __init__(self):
     self.hebrew_consonants = {Transcription.hebrew_mapping[x] for x in Transcription.hebrew_cons}
     self.hebrew_consonants.add('\u05E9')
@@ -474,3 +540,9 @@ class Transcription(object):
 
   def can_from_syriac(self, word):
     return all(c in self.syriac_mappingi for c in word if c != ' ')
+
+  def to_arabic(word):
+    return ''.join(Transcription.arabic_mapping.get(x, x) for x in word)
+
+  def from_arabic(word):
+    return ''.join(Transcription.arabic_mappingi.get(x, x) for x in word)
