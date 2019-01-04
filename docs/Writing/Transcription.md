@@ -6,9 +6,9 @@ in a model of nodes, edges, and features, there is need for some additions.
 ## Transcription
 
 ??? abstract "About"
-    [transcription.py]({{tfghb}}/{{c_transcription}}) contains transliteration tables for Hebrew and Syriac.
+    [transcription.py]({{tfghb}}/{{c_transcription}}) contains transliteration tables for Hebrew, Syriac and Arabic.
 
-    It also calls functions to use these tables for converting Hebrew and Syriac ttext material to transliterated
+    It also calls functions to use these tables for converting Hebrew and Syriac text material to transliterated
     representations and back.
 
     There is also a phonetic transcription for Hebrew, designed in 
@@ -18,6 +18,8 @@ in a model of nodes, edges, and features, there is need for some additions.
     [Hebrew](../Writing/Hebrew.html): full list of characters covered by the ETCBC and phonetic transcriptions
 
     [Syriac](../Writing/Syriac.html): full list of characters covered by the ETCBC transcriptions
+
+    [Arabic](../Writing/Arabic.html): full list of characters covered by the transcription used for the Quran
 
 ??? abstract "Usage"
     Invoke the transcription functionality as follows:
@@ -39,7 +41,7 @@ in a model of nodes, edges, and features, there is need for some additions.
 
     For each attribute we'll give a usage example.
 
-??? abstract "Transcription.hebrew_mapping"
+??? abstract "Transcription.hebrew mapping"
     Maps all ETCBC transliteration character combinations for Hebrew to Unicode.
 
     Example: print the sof-pasuq:
@@ -54,7 +56,7 @@ in a model of nodes, edges, and features, there is need for some additions.
     ׃
     ```
 
-??? abstract "Transcription.syriac_mapping"
+??? abstract "Transcription.syriac mapping"
     Maps all ETCBC transliteration character combinations for Syriac to Unicode.
 
     Example: print the semkath-final:
@@ -67,6 +69,36 @@ in a model of nodes, edges, and features, there is need for some additions.
 
     ```
     ܤ
+    ```
+
+??? abstract "Transcription.arabic mapping"
+    Maps an Arabic transliteration character to Unicode.
+
+    Example: print the beh 
+
+    ```python
+    print(Transcription.syriac_mapping['b'])
+    ```
+
+    Output:
+
+    ```
+    ب
+    ```
+
+??? abstract "Transcription.arabic mappingi"
+    Maps an Arabic letter in unicode to its transliteration
+
+    Example: print the beh transliteration 
+
+    ```python
+    print(Transcription.syriac_mapping['ب'])
+    ```
+
+    Output:
+
+    ```
+    b
     ```
 
 ??? abstract "Transcription.suffix_and_finales(word)"
@@ -284,5 +316,37 @@ in a model of nodes, edges, and features, there is need for some additions.
 
     ```
     ܡܟܣܝܢ
+    ```
+
+??? abstract "tr.from_arabic(word)"
+    Given a word in Unicode Arabic,
+    produce the word in transliteration.
+
+    Example: 
+
+    ```python
+    print(tr.from_arabic('بِسْمِ'))
+    ```
+
+    Output:
+
+    ```
+    bisomi
+    ```
+
+??? abstract "tr.to_arabic(word)"
+    Given a word in transliteration,
+    produce the word in Unicode Arabic.
+
+    Example: 
+
+    ```python
+    print(tr.to_arabic('bisomi'))
+    ```
+
+    Output:
+
+    ```
+    بِسْمِ
     ```
 
