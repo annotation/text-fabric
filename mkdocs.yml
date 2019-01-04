@@ -179,6 +179,7 @@ nav:
       - 'Lib': 'Api/Lib.md'
       - 'Helpers': 'Api/Helpers.md'
   - Writing:
+    - 'Arabic': 'Writing/Arabic.html'
     - 'Hebrew': 'Writing/Hebrew.html'
     - 'Syriac': 'Writing/Syriac.html'
     - 'Transcription': 'Writing/Transcription.md'
