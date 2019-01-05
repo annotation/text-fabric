@@ -101,7 +101,7 @@ Api reference : {APIREF}
             otextMeta.update(self.features[otextMod].metaData)
         sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
         sectionTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
-        if len(sectionTypes) != 3 or len(sectionFeats) != 3:
+        if not (0 < len(sectionTypes) <= 3) or not (0 < len(sectionFeats) <= 3):
           if not silent:
             self.tm.info(
                 f'Not enough info for sections in {WARP[2]}, section functionality will not work'

@@ -20,7 +20,7 @@ URL_TFDOC = f'https://{ORG}.github.io/{REPO}'
 DOI_TEXT = '10.5281/zenodo.592193'
 DOI_URL = 'https://doi.org/10.5281/zenodo.592193'
 
-APIREF = 'https://{ORG}.github.io/{REPO}/Api/Fabric/'
+APIREF = f'https://{ORG}.github.io/{REPO}/Api/Fabric/'
 
 APP_URL = f'{URL_GH}/{ORG}'
 APP_NB_URL = f'{URL_NB}/{ORG}/app'
