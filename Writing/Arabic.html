@@ -2,8 +2,15 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Arabic Characters</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Amiri">
 </head>
+<style>
+@font-face {
+    font-family: AmiriQuran;
+    src: url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/AmiriQuran.woff2') format('woff2'),
+         url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/AmiriQuran.woff') format('woff'),
+	       url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/AmiriQuran.ttf')  format('truetype');
+}
+</style>
 <style>
 body {
     font-family: sans-serif;
@@ -28,7 +35,7 @@ h1.chars {
     color: #0000ff;
 }
 .g {
-    font-family: "Amiri", sans-serif;
+    font-family: "AmiriQuran", sans-serif;
     font-size: x-large;
 }
 .p {
