@@ -175,6 +175,22 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
   sec2 = {}
   if len(sTypes) < 2:
     return (sec1, sec2)
+  if len(sTypes) < 3:
+    c1 = 0
+    support1 = support[sTypes[1]]
+    for n1 in range(support1[0], support1[1] + 1):
+      # otherwise we miss the last one
+      # for n2 in range(*support[sTypes[2]]):
+      n0 = tuple(x for x in levUp[n1 - 1] if otype[x - maxSlot - 1] == sTypes[0])[0]
+      n1s = sFeats[1][n1]
+      if n0 not in sec1:
+        sec1[n0] = {}
+      if n1s not in sec1[n0]:
+        sec1[n0][n1s] = n1
+        c1 += 1
+    info(f'{c1} {sTypes[1]}s indexed')
+    return (sec1, sec2)
+
   c1 = 0
   c2 = 0
   support2 = support[sTypes[2]]

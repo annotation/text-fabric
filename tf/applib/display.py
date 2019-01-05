@@ -629,7 +629,7 @@ def getFeatures(
 
 def loadCss(app):
   '''
-  The CSS is looked up and then loades into a notebook if we are not
+  The CSS is looked up and then loaded into a notebook if we are not
   running in the TF browser,
   else the CSS is returned.
   '''
