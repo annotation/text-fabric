@@ -353,7 +353,7 @@ Api reference : {APIREF}
     for (fName, dep2) in self.precomputeList:
       if dep2 and not self.sectionsOK:
         continue
-      if not self.features[fName].load(silent=True):
+      if not self.features[fName].load(silent=False):
         good = False
         break
     self.good = good

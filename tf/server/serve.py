@@ -152,10 +152,10 @@ def servePassage(setup, getx):
       table,
       passages,
   ) = kernelApi.passage(
-      sec0,
-      sec1,
       form['features'],
       form['query'],
+      sec0,
+      sec1=sec1,
       sec2=sec2,
       opened=openedSet,
       fmt=textFormat,

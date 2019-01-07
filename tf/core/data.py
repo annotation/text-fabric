@@ -86,7 +86,11 @@ class Data(object):
           good = self._readDataBin()
         elif not binTime or origTime > binTime:
           actionRep = 'C' if self.method else 'T'
-          good = self._compute() if self.method else self._readTf(metaOnly=metaOnly)
+          good = (
+              self._compute(metaOnly=metaOnly, silent=silent)
+              if self.method else
+              self._readTf(metaOnly=metaOnly)
+          )
           if good:
             if self.isConfig or metaOnly:
               actionRep = 'M'
@@ -106,7 +110,14 @@ class Data(object):
     if self.isConfig:
       self.cleanDataBin()
     if good:
-      if actionRep != '=' and not (silent and actionRep == 'M'):
+      if (
+          actionRep != '=' and
+          not (
+              silent or
+              actionRep == 'M' or
+              (actionRep == 'B' and self.method)
+          )
+      ):
         self.tm.info(
             msgFormat.format(actionRep, self.fileName, sourceRep),
             cache=1 if (not silent) or (actionRep in 'CT') else -1,
@@ -293,10 +304,13 @@ class Data(object):
         self.data = tuple(oslots)
     return not errors
 
-  def _compute(self):
+  def _compute(self, metaOnly=False, silent=False):
+    if metaOnly:
+      return True
+
     good = True
     for feature in self.dependencies:
-      if not feature.load():
+      if not feature.load(silent=silent):
         good = False
     if not good:
       return False
@@ -304,11 +318,11 @@ class Data(object):
     def info(msg, tm=True):
       self.tm.info(cmpFormat.format(msg), tm=tm, cache=-1)
 
-    cmpFormat = f'c {self.fileName:<20} {{}}'
-    self.tm.indent(level=2, reset=True)
-
     def error(msg, tm=True):
       self.tm.error(cmpFormat.format(msg), tm=tm)
+
+    cmpFormat = f'c {self.fileName:<20} {{}}'
+    self.tm.indent(level=2, reset=True)
 
     self.data = self.method(
         info, error,
