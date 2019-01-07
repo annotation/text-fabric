@@ -162,10 +162,11 @@ def composeT(
 
 def composeP(
     app,
+    sectionDepth,
     features,
     items,
     opened,
-    sec2,
+    secFinal,
     getx=None,
     **options,
 ):
@@ -180,33 +181,36 @@ def composeP(
   else:
     features = []
 
-  if getx is not None:
-    itemType = T.sectionTypes[2]
-    tup = None
-    for s2 in items:
-      i = T.sectionFromNode(s2)[2]
-      if i == getx:
-        tup = (s2, )
-        break
-    return prettyTuple(
-        app,
-        tup,
-        getx,
-        condensed=False,
-        condenseType=itemType,
-        extraFeatures=features,
-        **display.consume(options, 'condensed', 'condenseType', 'extraFeatures')
-    ) if tup is not None else ''
+  lFinal = sectionDepth - 1
+  if sectionDepth > 2:
+    if getx is not None:
+      itemType = T.sectionTypes[lFinal]
+      tup = None
+      for sFinal in items:
+        i = T.sectionFromNode(sFinal)[lFinal]
+        if i == getx:
+          tup = (sFinal, )
+          break
+      return prettyTuple(
+          app,
+          tup,
+          getx,
+          condensed=False,
+          condenseType=itemType,
+          extraFeatures=features,
+          **display.consume(options, 'condensed', 'condenseType', 'extraFeatures')
+      ) if tup is not None else ''
 
   passageHtml = []
 
   for item in items:
     passageHtml.append(
-        _plainTextS2(
+        _plainTextSFinal(
             app,
+            sectionDepth,
             item,
             opened,
-            sec2,
+            secFinal,
             extraFeatures=features,
             **display.consume(options, 'extraFeatures')
         )
@@ -215,11 +219,12 @@ def composeP(
   return '\n'.join(passageHtml)
 
 
-def _plainTextS2(
+def _plainTextSFinal(
     app,
+    sectionDepth,
     sNode,
     opened,
-    sec2,
+    secFinal,
     **options,
 ):
   display = app.display
@@ -227,8 +232,8 @@ def _plainTextS2(
 
   api = app.api
   T = api.T
-  seqNumber = T.sectionFromNode(sNode)[2]
-  itemType = T.sectionTypes[2]
+  seqNumber = T.sectionFromNode(sNode)[sectionDepth - 1]
+  itemType = T.sectionTypes[sectionDepth - 1]
   isOpened = seqNumber in opened
   tClass = '' if d.fmt is None else display.formatClass[d.fmt].lower()
 
@@ -240,7 +245,7 @@ def _plainTextS2(
       condenseType=itemType,
       **display.consume(options, 'condensed', 'condenseType'),
   ) if isOpened else ''
-  current = ' focus' if str(seqNumber) == str(sec2) else ''
+  current = ' focus' if str(seqNumber) == str(secFinal) else ''
   attOpen = ' open ' if isOpened else ''
 
   textRep = plain(app, sNode, secLabel=False, **options)

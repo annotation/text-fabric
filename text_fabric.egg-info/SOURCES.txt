@@ -66,6 +66,13 @@ tf/server/static/icon.png
 tf/server/static/index.css
 tf/server/static/jquery.js
 tf/server/static/tf.js
+tf/server/static/fonts/.DS_Store
+tf/server/static/fonts/AmiriQuran.ttf
+tf/server/static/fonts/AmiriQuran.woff
+tf/server/static/fonts/AmiriQuran.woff2
+tf/server/static/fonts/AmiriQuranColored.ttf
+tf/server/static/fonts/AmiriQuranColored.woff
+tf/server/static/fonts/AmiriQuranColored.woff2
 tf/server/static/fonts/SBL_Hbrw.eot
 tf/server/static/fonts/SBL_Hbrw.ttf
 tf/server/static/fonts/SBL_Hbrw.woff

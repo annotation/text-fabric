@@ -31,12 +31,12 @@ r     : build for shipping, leave version as is
 r1    : build for shipping, version becomes r1+1.0.0
 r2    : build for shipping, version becomes r1.r2+1.0
 r3    : build for shipping, version becomes r1.r2.r3+1
-a     : open text-fabric browser on specific dataset (bhsa, peshitta, syrnt, uruk)
+a     : open text-fabric browser on specific dataset (quran, bhsa, peshitta, syrnt, uruk)
 t     : run test suite (relations)
 data  : build data files for github release
 
 For g and the r-commands you need to pass a commit message as well.
-For data you need to pass an app argument: bhsa, peshitta, syrnt or uruk
+For data you need to pass an app argument: quran, bhsa, peshitta, syrnt or uruk
 '''
 
 DIST = 'dist'
@@ -85,7 +85,7 @@ def readArgs():
   if arg in {'a', 't', 'data'}:
     if len(args) < 2:
       if arg in {'a', 'data'}:
-        console('Provide a data source [bhsa|peshitta|syrnt|uruk]')
+        console('Provide a data source [quran|bhsa|peshitta|syrnt|uruk]')
       elif arg in {'t'}:
         console('Provide a test suite [relations]')
       return (False, None, [])

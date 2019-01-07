@@ -114,15 +114,16 @@ def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, po
           app.exampleSectionText,
           api.C.levels.data,
           app.api.T.defaultFormat,
-          tuple(fmt for fmt in app.api.T.formats if fmt.startswith('text-')),
+          app.api.T.formats,
+          # tuple(fmt for fmt in app.api.T.formats if fmt.startswith('text-')),
       )
 
     def exposed_passage(
         self,
-        sec0,
-        sec1,
         features,
         query,
+        sec0,
+        sec1=None,
         sec2=None,
         opened=set(),
         getx=None,
@@ -136,34 +137,53 @@ def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, po
       sectionFeatureTypes = T.sectionFeatureTypes
       sec0Type = T.sectionTypes[0]
       sec1Type = T.sectionTypes[1]
-      sec2Type = T.sectionTypes[2]
-      passage = ''
-      if sec0 and sec1:
-        if sectionFeatureTypes[0] == 'int':
-          sec0 = int(sec0)
-        if sectionFeatureTypes[1] == 'int':
-          sec1 = int(sec1)
-        if getx is not None:
-          if sectionFeatureTypes[2] == 'int':
-            getx = int(getx)
-        node = T.nodeFromSection((sec0, sec1))
-        items = L.d(node, otype=sec2Type) if node else []
-        highlights = getPassageHighlights(app, node, query, cache)
-        passage = composeP(
-            app,
-            features,
-            items,
-            opened,
-            sec2,
-            getx=getx,
-            highlights=highlights,
-            **options,
-        )
+      sectionDepth = len(T.sectionTypes)
       sec0s = tuple(T.sectionFromNode(s)[0] for s in F.otype.s(sec0Type))
       sec1s = ()
+      node = None
+
+      if sectionDepth > 2:
+        finalSec = sec2
+        finalSecType = T.sectionTypes[2]
+        passage = ''
+        if sec0 and sec1:
+          if sectionFeatureTypes[0] == 'int':
+            sec0 = int(sec0)
+          if sectionFeatureTypes[1] == 'int':
+            sec1 = int(sec1)
+          if getx is not None:
+            if sectionFeatureTypes[2] == 'int':
+              getx = int(getx)
+          node = T.nodeFromSection((sec0, sec1))
+      elif sectionDepth > 1:
+        finalSec = sec1
+        finalSecType = T.sectionTypes[1]
+        passage = ''
+        if sec0:
+          if sectionFeatureTypes[0] == 'int':
+            sec0 = int(sec0)
+          if getx is not None:
+            if sectionFeatureTypes[1] == 'int':
+              getx = int(getx)
+          node = T.nodeFromSection((sec0,))
       if sec0:
         sec0Node = T.nodeFromSection((sec0, ))
-        sec1s = tuple(T.sectionFromNode(s)[1] for s in L.d(sec0Node, otype=sec1Type))
+        if sectionDepth > 2:
+          sec1s = tuple(T.sectionFromNode(s)[1] for s in L.d(sec0Node, otype=sec1Type))
+
+      items = L.d(node, otype=finalSecType) if node else []
+      highlights = getPassageHighlights(app, node, query, cache) if items else set()
+      passage = composeP(
+          app,
+          sectionDepth,
+          features,
+          items,
+          opened,
+          finalSec,
+          getx=getx,
+          highlights=highlights,
+          **options,
+      )
       return (passage, pickle.dumps((sec0s, sec1s)))
 
     def exposed_rawSearch(self, query):
