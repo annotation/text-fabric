@@ -332,7 +332,7 @@ def show(
     colorMap = d.colorMap
 
   for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_SHOW, item):
-    item = F.otype.v(tup[0]) if d.condenseType else RESULT
+    item = F.otype.v(tup[0]) if d.condensed and d.condenseType else RESULT
     prettyTuple(
         app,
         tup,
@@ -349,7 +349,7 @@ def prettyTuple(
     app,
     tup,
     seqNumber,
-    item='Result',
+    item=RESULT,
     rawHighlights=None,
     **options,
 ):
@@ -513,13 +513,14 @@ def getResultsX(api, results, features, noDescendTypes, fmt=None):
   Fs = api.Fs
   T = api.T
   sectionTypes = set(T.sectionTypes)
+  sectionDepth = len(sectionTypes)
   if len(results) == 0:
     return ()
   firstResult = results[0]
   nTuple = len(firstResult)
   refColumns = [i for (i, n) in enumerate(firstResult) if F.otype.v(n) not in sectionTypes]
   refColumn = refColumns[0] if refColumns else nTuple - 1
-  header = ['R', 'S1', 'S2', 'S3']
+  header = ['R'] + [f'S{i}' for i in range(1, sectionDepth + 1)]
   emptyA = []
 
   featureDict = {i: tuple(f.split()) if type(f) is str else f for (i, f) in features}
@@ -539,7 +540,7 @@ def getResultsX(api, results, features, noDescendTypes, fmt=None):
     refN = r[refColumn]
     sParts = T.sectionFromNode(refN)
     nParts = len(sParts)
-    section = sParts + ((None, ) * (3 - nParts))
+    section = sParts + ((None, ) * (sectionDepth - nParts))
     row.extend(section)
     for j in range(nTuple):
       n = r[j]

@@ -12,6 +12,12 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.3.8
+
+2019-01-07
+
+Small fix.
+
 ## 7.3.7
 
 2019-01-07
