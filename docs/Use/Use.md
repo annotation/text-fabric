@@ -49,6 +49,15 @@ clause
   phrase function=Subj
 ```
 
+(Bhsa corpus)
+
+```
+query = '''\n",
+aya\n",
+  word pos=verb
+  <: word pos=noun posx=proper root=Alh
+```
+
 ## Text-Fabric API
 
 When mere search is not enough,
@@ -63,10 +72,14 @@ You can use it together with the generic [TF API](../Api/Fabric.md) to
 * prepare derived data for analysis in R, and
 * create new data and distribute it to others.
 
-![bhsa-jup](../images/bhsa-jup.png)
-
-Above: Bhsa programming example
-
-Below: Uruk programming example
+Uruk programming example:
 
 ![uruk-jup](../images/uruk-jup.png)
+
+Bhsa programming example:
+
+![bhsa-jup](../images/bhsa-jup.png)
+
+Quran programming example:
+
+![quran-jup](../images/quran-jup.png)

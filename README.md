@@ -53,11 +53,15 @@ Then your browser will open and load the search interface.
 There you'll find links to further help.
 
 <p>
+<img src="/docs/images/uruk-app.png"/>
+</p>
+
+<p>
 <img src="/docs/images/bhsa-app.png"/>
 </p>
 
 <p>
-<img src="/docs/images/uruk-app.png"/>
+<img src="/docs/images/quran-app.png"/>
 </p>
 
 # Documentation
