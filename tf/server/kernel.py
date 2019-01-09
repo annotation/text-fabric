@@ -138,53 +138,57 @@ def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, po
       sec0Type = T.sectionTypes[0]
       sec1Type = T.sectionTypes[1]
       sectionDepth = len(T.sectionTypes)
+      browseNavLevel = app.browseNavLevel
+      browseNavLevel = min((sectionDepth, browseNavLevel))
+      finalSecType = T.sectionTypes[browseNavLevel]
+      finalSec = (sec0, sec1, sec2)[browseNavLevel]
+      browseContentPretty = app.browseContentPretty
+
+      if sec0:
+        if sectionFeatureTypes[0] == 'int':
+          sec0 = int(sec0)
+      if sec1 and browseNavLevel == 2:
+        if sectionFeatureTypes[1] == 'int':
+          sec1 = int(sec1)
+
+      sec0Node = T.nodeFromSection((sec0, )) if sec0 else None
+      sec1Node = T.nodeFromSection((sec0, sec1)) if sec0 and sec1 else None
+      contentNode = (sec0Node, sec1Node)[browseNavLevel - 1]
+
+      if getx is not None:
+        if sectionFeatureTypes[browseNavLevel - 1] == 'int':
+          getx = int(getx)
+
       sec0s = tuple(T.sectionFromNode(s)[0] for s in F.otype.s(sec0Type))
       sec1s = ()
-      node = None
+      if browseNavLevel == 2:
+        sec1s = tuple(T.sectionFromNode(s)[1] for s in L.d(sec0Node, otype=sec1Type))
 
-      if sectionDepth > 2:
-        finalSec = sec2
-        finalSecType = T.sectionTypes[2]
-        passage = ''
-        if sec0 and sec1:
-          if sectionFeatureTypes[0] == 'int':
-            sec0 = int(sec0)
-          if sectionFeatureTypes[1] == 'int':
-            sec1 = int(sec1)
-          if getx is not None:
-            if sectionFeatureTypes[2] == 'int':
-              getx = int(getx)
-          node = T.nodeFromSection((sec0, sec1))
-      elif sectionDepth > 1:
-        finalSec = sec1
-        finalSecType = T.sectionTypes[1]
-        passage = ''
-        if sec0:
-          if sectionFeatureTypes[0] == 'int':
-            sec0 = int(sec0)
-          if getx is not None:
-            if sectionFeatureTypes[1] == 'int':
-              getx = int(getx)
-          node = T.nodeFromSection((sec0,))
-      if sec0:
-        sec0Node = T.nodeFromSection((sec0, ))
-        if sectionDepth > 2:
-          sec1s = tuple(T.sectionFromNode(s)[1] for s in L.d(sec0Node, otype=sec1Type))
-
-      items = L.d(node, otype=finalSecType) if node else []
-      highlights = getPassageHighlights(app, node, query, cache) if items else set()
-      passage = composeP(
-          app,
-          sectionDepth,
-          features,
-          items,
-          opened,
-          finalSec,
-          getx=getx,
-          highlights=highlights,
-          **options,
+      items = (
+          contentNode
+          if browseContentPretty else
+          L.d(contentNode, otype=finalSecType)
+          if contentNode else []
       )
-      return (passage, pickle.dumps((sec0s, sec1s)))
+      highlights = getPassageHighlights(app, contentNode, query, cache) if items else set()
+
+      passage = ''
+
+      if items:
+        passage = composeP(
+            app,
+            browseNavLevel,
+            finalSecType,
+            features,
+            items,
+            opened,
+            finalSec,
+            getx=getx,
+            highlights=highlights,
+            **options,
+        )
+
+      return (passage, sec0Type, pickle.dumps((sec0s, sec1s)), browseNavLevel)
 
     def exposed_rawSearch(self, query):
       rawSearch = self.app.api.S.search

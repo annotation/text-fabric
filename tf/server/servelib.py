@@ -62,6 +62,7 @@ def getFormData(config):
   form['sec0'] = request.form.get('sec0', '')
   form['sec1'] = request.form.get('sec1', '')
   form['sec2'] = request.form.get('sec2', '')
+  form['s0filter'] = request.form.get('s0filter', '')
   setValues(config.OPTIONS, request.form, form, emptyRequest)
   return form
 

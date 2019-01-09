@@ -8,9 +8,33 @@
 
     See the app-specific tutorials in [annotation]({{an}}).
 
+???+ hint "Use check=True or -c"
+    When TF apps have been updated, you can autoload the newest version
+    by calling the app as follows:
+
+    In a program:
+    
+    ```python
+    use(appName, check=True)
+    ```
+
+    Calling the browser
+    ```
+    text-fabric appName -c
+    ```
+
+
 ## Queued for next release
 
 See the [issue list on GitHub]({{ghissues}})
+
+## 7.3.9
+
+2019-01-09
+
+Better browsing for corpora with very many top level sections, such as Uruk.
+
+For more info: see [#38]({{ghissues}}/36) 
 
 ## 7.3.8
 

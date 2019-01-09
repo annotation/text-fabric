@@ -350,6 +350,14 @@ div.sline {
 	line-height: 1.0em;
 	text-decoration: none;
 }
+#s0filter {
+	font-size: small;
+	font-weight: bold;
+}
+#s0total, .s0total {
+	font-size: small;
+	font-weight: normal;
+}
 .focus {
 	border: solid 0.3rem var(--gold-back);
 }

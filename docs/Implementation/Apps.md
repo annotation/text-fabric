@@ -80,6 +80,8 @@
         FONT_NAME | string | font family name to be used in CSS for representing text in original script
         FONT | string | file name of the offline font specified in FONT_NAME
         FONTW | string | file name of the webfont specified in FONT_NAME
+        BROWSE_NAV_LEVEL | int | the section level up to which the browser shows a hierarchical tree. Either 1 or 2
+        BROWSE_CONTENT_PRETTY | bool | whether the content is shown as a list of subsectional items contained in the selected item or as a pretty display of the item itself
 
     ??? abstract "app.py"
         The functionality specific to the corpus in question, organized as an extended

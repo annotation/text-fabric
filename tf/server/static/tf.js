@@ -10,6 +10,7 @@ const switchMode = m => {
   const mode = $('#mode')
   const pageNav = $('#navigation')
   const pages = $('#pages')
+  const passagesNav = $('#passagesnav')
   const passages = $('#passages')
   const sectionsTable = $('#sectionsTable')
   const tuplesTable = $('#tuplesTable')
@@ -23,6 +24,7 @@ const switchMode = m => {
     pageNav.hide()
     pages.hide()
     passages.show()
+    passagesNav.show()
     sectionsTable.hide()
     tuplesTable.hide()
     queryTable.hide()
@@ -32,6 +34,7 @@ const switchMode = m => {
   } else if (m == 'results') {
     pageNav.show()
     pages.show()
+    passagesNav.hide()
     passages.hide()
     sectionsTable.show()
     tuplesTable.show()
@@ -121,6 +124,9 @@ const getTable = (kind, subkind, m, button) => {
         if (subs) {
           destSub.html(subs)
           subLinks(kind, subkind)
+          if (subkind == 'passages') {
+            filterS0()
+          }
         }
       }
       const { features } = data
@@ -351,6 +357,46 @@ const cradios = () => {
   $('.cradio').change(() => {
     $('#cond').prop('checked', true)
   })
+}
+
+/* controlling the filtering of the section list
+ *
+ */
+
+
+const filterS0 = () => {
+  const filterControl = $('#s0filter')
+  const filterTotal = $('#s0total')
+  const s0items = $('.s0nav')
+  const total = s0items.length
+
+  const applyFilter = filterValue => {
+    let s = 0
+    s0items.each((i, elem) => {
+      const el = $(elem)
+      const s0 = el.html().toLowerCase()
+      if (filterValue == '' || s0.indexOf(filterValue) >= 0) {
+        el.show()
+        s += 1
+      }
+      else {
+        el.hide()
+      }
+    })
+    const totalRep = total == s
+    ? `${total}`
+    : `${s} of ${total}`
+    filterTotal.html(totalRep)
+  }
+
+  filterControl.on('input', e => {
+    e.preventDefault()
+    const filterValue = e.target.value.toLowerCase()
+    applyFilter(filterValue)
+    storeForm()
+  })
+
+  applyFilter(filterControl.val())
 }
 
 /* controlling the side bar
