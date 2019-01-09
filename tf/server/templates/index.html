@@ -286,7 +286,7 @@
 			<div class="leftcol">
 				<p class="ilab">
 					<button
-						id="sectionsGo" class="xl fa fa-sync"
+						id="sectionsGo" class="xl fa fa-search"
 						title="get {{defaultCondenseType}}s"
 						type="button"
 					></button>
@@ -303,7 +303,7 @@
 
 				<p class="ilab">
 					<button
-						id="tuplesGo" class="xl fa fa-sync" type="button"
+						id="tuplesGo" class="xl fa fa-search" type="button"
 						title="get nodes"
 					></button>
 					node pad
@@ -321,7 +321,7 @@
 					<button
 						id="queryGo" class="xl" type="button"
 						title="run query and get results"
-					><span class="fa fa-cog"/></button>
+					><span class="fa fa-search"/></button>
 					search pad
 				</p>
 				<textarea
@@ -352,7 +352,16 @@
 						<input type="hidden" name="sec0" id="sec0" value="{{sec0}}"/>
 						<input type="hidden" name="sec1" id="sec1" value="{{sec1}}"/>
 						<input type="hidden" name="sec2" id="sec2" value="{{sec2}}"/>
-						<div class="passages" id="passages">{{passages|safe}}</div>
+						<div id="passagesnav">
+              <input
+                type="text" id="s0filter" value="{{s0filter}}"
+                  autocomplete="off"
+                  placeholder="type to filter ..."
+              />
+            </div>
+            <div id="passages" class="passages">
+              {{passages|safe}}
+            </div>
 					</div>
 					<div>
 						<div id="navigation">

@@ -1,5 +1,5 @@
 from .helpers import RESULT
-from .display import plain, plainTuple, prettyTuple
+from .display import plain, plainTuple, pretty, prettyTuple
 
 
 def compose(
@@ -162,7 +162,8 @@ def composeT(
 
 def composeP(
     app,
-    sectionDepth,
+    browseNavLevel,
+    finalSecType,
     features,
     items,
     opened,
@@ -181,25 +182,28 @@ def composeP(
   else:
     features = []
 
-  lFinal = sectionDepth - 1
-  if sectionDepth > 2:
-    if getx is not None:
-      itemType = T.sectionTypes[lFinal]
-      tup = None
-      for sFinal in items:
-        i = T.sectionFromNode(sFinal)[lFinal]
-        if i == getx:
-          tup = (sFinal, )
-          break
-      return prettyTuple(
-          app,
-          tup,
-          getx,
-          condensed=False,
-          condenseType=itemType,
-          extraFeatures=features,
-          **display.consume(options, 'condensed', 'condenseType', 'extraFeatures')
-      ) if tup is not None else ''
+  if not items:
+    return ''
+
+  if type(items) is int:
+    return pretty(app, items)
+
+  if getx is not None:
+    tup = None
+    for sFinal in items:
+      i = T.sectionFromNode(sFinal)[browseNavLevel]
+      if i == getx:
+        tup = (sFinal, )
+        break
+    return prettyTuple(
+        app,
+        tup,
+        getx,
+        condensed=False,
+        condenseType=finalSecType,
+        extraFeatures=features,
+        **display.consume(options, 'condensed', 'condenseType', 'extraFeatures')
+    ) if tup is not None else ''
 
   passageHtml = []
 
@@ -207,7 +211,8 @@ def composeP(
     passageHtml.append(
         _plainTextSFinal(
             app,
-            sectionDepth,
+            browseNavLevel,
+            finalSecType,
             item,
             opened,
             secFinal,
@@ -221,7 +226,8 @@ def composeP(
 
 def _plainTextSFinal(
     app,
-    sectionDepth,
+    browseNavLevel,
+    finalSecType,
     sNode,
     opened,
     secFinal,
@@ -232,20 +238,19 @@ def _plainTextSFinal(
 
   api = app.api
   T = api.T
-  seqNumber = T.sectionFromNode(sNode)[sectionDepth - 1]
-  itemType = T.sectionTypes[sectionDepth - 1]
-  isOpened = seqNumber in opened
+  secStr = str(T.sectionFromNode(sNode)[browseNavLevel])
+  isOpened = secStr in opened
   tClass = '' if d.fmt is None else display.formatClass[d.fmt].lower()
 
   prettyRep = prettyTuple(
       app,
       (sNode, ),
-      seqNumber,
+      secStr,
       condensed=False,
-      condenseType=itemType,
+      condenseType=finalSecType,
       **display.consume(options, 'condensed', 'condenseType'),
   ) if isOpened else ''
-  current = ' focus' if str(seqNumber) == str(secFinal) else ''
+  current = ' focus' if secStr == str(secFinal) else ''
   attOpen = ' open ' if isOpened else ''
 
   textRep = plain(app, sNode, secLabel=False, **options)
@@ -253,11 +258,11 @@ def _plainTextSFinal(
       f'''
 <details
   class="pretty{current}"
-  seq="{seqNumber}"
+  seq="{secStr}"
   {attOpen}
 >
   <summary class="{tClass}">
-    {app._sectionLink(sNode, text=seqNumber)}
+    {app._sectionLink(sNode, text=secStr)}
     {textRep}
   </summary>
   <div class="pretty">{prettyRep}</div>

@@ -49,7 +49,7 @@ def pageLinks(nResults, position, spread=10):
   return html
 
 
-def passageLinks(passages, sec0, sec1):
+def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
   sec0s = []
   sec1s = []
   for s0 in passages[0]:
@@ -61,6 +61,7 @@ def passageLinks(passages, sec0, sec1):
       sec1s.append(f'<a href="#" class="s1nav {" focus" if selected else ""}">{s1}</a>')
   return f'''
   <div class="sline">
+    <span><span id="s0total"></span> <span class="s0total">{sec0Type}s</span></span>
     {''.join(sec0s)}
   </div>
   <div class="sline">

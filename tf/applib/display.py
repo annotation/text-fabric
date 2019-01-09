@@ -145,7 +145,7 @@ def table(
 def plainTuple(
     app,
     tup,
-    seqNumber,
+    seq,
     item=RESULT,
     position=None,
     opened=False,
@@ -186,12 +186,12 @@ def plainTuple(
     prettyRep = prettyTuple(
         app,
         tup,
-        seqNumber,
+        seq,
         withPassage=False,
         **newOptions,
     ) if opened else ''
 
-    current = ' focus' if seqNumber == position else ''
+    current = ' focus' if seq == position else ''
     attOpen = ' open ' if opened else ''
     tupSeq = ','.join(str(n) for n in tup)
     if d.withPassage:
@@ -219,12 +219,12 @@ def plainTuple(
         f'''
   <details
     class="pretty dtrow{current}"
-    seq="{seqNumber}"
+    seq="{seq}"
     {attOpen}
   >
     <summary>
       <a href="#" class="pq fa fa-solar-panel fa-xs" title="show in context" {passageAtt}></a>
-      <a href="#" class="sq" tup="{tupSeq}">{seqNumber}</a>
+      <a href="#" class="sq" tup="{tupSeq}">{seq}</a>
       {passageRef}
       {plainRep}
     </summary>
@@ -234,7 +234,7 @@ def plainTuple(
     )
     return html
 
-  markdown = [str(seqNumber)]
+  markdown = [str(seq)]
   if passageRef:
     markdown.append(passageRef)
   for (i, n) in enumerate(tup):
@@ -348,7 +348,7 @@ def show(
 def prettyTuple(
     app,
     tup,
-    seqNumber,
+    seq,
     item=RESULT,
     rawHighlights=None,
     **options,
@@ -378,7 +378,7 @@ def prettyTuple(
   if not _asApp:
     dm(f'''
 
-**{item}** *{seqNumber}*
+**{item}** *{seq}*
 
 ''')
   if _asApp:

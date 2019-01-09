@@ -143,14 +143,16 @@ def servePassage(setup, getx):
   kernelApi = setup.TF.connect()
 
   openedKey = 'passageOpened'
-  openedSet = {int(n) for n in form[openedKey].split(',')} if form[openedKey] else set()
+  openedSet = set(form[openedKey].split(',')) if form[openedKey] else set()
 
   sec0 = form['sec0']
   sec1 = form['sec1']
   sec2 = form['sec2']
   (
       table,
+      sec0Type,
       passages,
+      browseNavLevel,
   ) = kernelApi.passage(
       form['features'],
       form['query'],
@@ -164,7 +166,7 @@ def servePassage(setup, getx):
       **options,
   )
   passages = pickle.loads(passages)
-  passages = passageLinks(passages, sec0, sec1)
+  passages = passageLinks(passages, sec0Type, sec0, sec1, browseNavLevel)
   return jsonify(
       table=table,
       passages=passages,
