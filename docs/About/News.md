@@ -28,6 +28,21 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.3.10
+
+2019-01-10
+
+Moved the app tutorials from the annotation/app-appName repos into a new
+annotation/tutorials repo.
+
+The reason: the app-appName are used for downloading the app code.
+It should not be burdened with extra material, which is also often updated,
+giving rise to many spurious redownloads of the app code.
+
+Additionally, for education purposes it is handy to have the tutorials for all apps inside
+one repo. 
+For example, to use in a Microsoft Azure environment.
+
 ## 7.3.9
 
 2019-01-09
@@ -111,7 +126,7 @@ Now you can also export to Excel from a notebook,
 using `A.export(results)`.
 
 Jump to the tutorial:
-[exportExcel]({{an}}/app-bhsa/blob/master/tutorial/exportExcel.ipynb)
+[exportExcel]({{tutnb}}/bhsa/exportExcel.ipynb)
 
 For more info: see [#38]({{ghissues}}/38) 
 
@@ -173,7 +188,7 @@ For more info: see [#38]({{ghissues}}/38)
       you can highlight material inside plain displays.
       **[A.plain](../Api/App.md#display)**
       and
-      **[display tutorial]({{an}}/app-bhsa/blob/master/tutorial/display.ipynb)**
+      **[display tutorial]({{tutnb}}/bhsa/display.ipynb)**
     * New function `T.sectionTuple(n)` which gives the tuple of section nodes in which `n`
       is embedded
       **[T.sectionTuple](../Api/Text.md#sections)**
@@ -268,7 +283,7 @@ Under the hood:
 * a lot of repeated code inside apps has been factored out
 * it is easier to turn corpora into new text-fabric apps.
 
-Quick start: the new [share]({{an}}/app-bhsa/blob/master/tutorial/share.ipynb)
+Quick start: the new [share]({{tutnb}}/bhsa/share.ipynb)
 
 See the [v7 guide](../Use/Use7.md) for concrete and detailed hints how to make most of this version.
 

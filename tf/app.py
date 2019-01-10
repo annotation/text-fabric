@@ -7,7 +7,7 @@ def use(appName, *args, **kwargs):
   (commit, appDir) = findApp(
       appName,
       kwargs.get('lgc', False),
-      kwargs.get('check', False),
+      kwargs.get('check', True),
   )
   if not appDir:
     return None

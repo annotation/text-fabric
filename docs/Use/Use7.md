@@ -34,7 +34,7 @@ to make a distribution of your own features.
 
 For a guide through all the steps of data sharing, see [Data](../Api/Data.md)
 and for examples see the
-[share]({{an}}/app-bhsa/blob/master/tutorial/share.ipynb)
+[share]({{tutnb}}/bhsa/share.ipynb)
 tutorial.
 
 ## Using new data

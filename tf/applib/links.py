@@ -18,7 +18,7 @@ def linksApi(app, appName, silent):
   app.header = types.MethodType(header, app)
 
   api = app.api
-  tutUrl = f'{APP_NB_URL}-{appName}/blob/master/tutorial/start.ipynb'
+  tutUrl = f'{APP_NB_URL}/{appName}/start.ipynb'
   extraUrl = f'{APP_URL}/app-{appName}'
   dataLink = outLink(
       app.repo.upper(),

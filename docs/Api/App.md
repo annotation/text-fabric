@@ -726,7 +726,7 @@
           displaySetup(tupleFeatures=...)`
 
         See for detailed examples the
-        [exportExcel]({{an}}/app-bhsa/blob/master/tutorial/exportExcel.ipynb)
+        [exportExcel]({{tutnb}}/bhsa/exportExcel.ipynb)
         notebook.
 
     ??? hint "tupleFeatures"
