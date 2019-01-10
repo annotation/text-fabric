@@ -13,32 +13,6 @@ from tf.core.helpers import console
 from tf.applib.app import findApp, findAppConfig
 from tf.applib.zipdata import zipData
 
-HELP = '''
-python3 build.py command
-
-command:
-
--h
---help
-help  : print help and exit
-
-docs  : serve docs locally
-clean : clean local develop build
-l     : local develop build
-i     : local non-develop build
-g     : push to github, code and docs
-r     : build for shipping, leave version as is
-r1    : build for shipping, version becomes r1+1.0.0
-r2    : build for shipping, version becomes r1.r2+1.0
-r3    : build for shipping, version becomes r1.r2.r3+1
-a     : open text-fabric browser on specific dataset (quran, bhsa, peshitta, syrnt, uruk)
-t     : run test suite (relations)
-data  : build data files for github release
-
-For g and the r-commands you need to pass a commit message as well.
-For data you need to pass an app argument: quran, bhsa, peshitta, syrnt or uruk
-'''
-
 DIST = 'dist'
 
 VERSION_CONFIG = dict(
@@ -58,7 +32,9 @@ VERSION_CONFIG = dict(
     ),
 )
 
-TF_BASE = os.path.expanduser('~/github/annotation/text-fabric')
+AN_BASE = os.path.expanduser('~/github/annotation')
+TUT_BASE = f'{AN_BASE}/tutorials'
+TF_BASE = f'{AN_BASE}/text-fabric'
 TEST_BASE = f'{TF_BASE}/test'
 APP_BASE = f'{TF_BASE}/apps'
 PACKAGE = 'text-fabric'
@@ -67,6 +43,47 @@ SCRIPT = '/Library/Frameworks/Python.framework/Versions/3.7/bin/text-fabric'
 currentVersion = None
 newVersion = None
 
+appPat = r'^.*/app-([^/]*)$'
+appRe = re.compile(appPat)
+
+apps = set()
+for appDir in glob(f'{AN_BASE}/app-*'):
+  match = appRe.fullmatch(appDir)
+  if match:
+    apps.add(match.group(1))
+apps = sorted(apps)
+appStr = ', '.join(apps)
+
+HELP = f'''
+python3 build.py command
+
+command:
+
+-h
+--help
+help  : print help and exit
+
+docs  : serve docs locally
+clean : clean local develop build
+l     : local develop build
+i     : local non-develop build
+g     : push to github, code and docs
+r     : build for shipping, leave version as is
+r1    : build for shipping, version becomes r1+1.0.0
+r2    : build for shipping, version becomes r1.r2+1.0
+r3    : build for shipping, version becomes r1.r2.r3+1
+apps  : commit and push all tf apps
+tut   : commit and push the tutorials repo
+a     : open text-fabric browser on specific dataset
+        ({appStr})
+t     : run test suite (relations)
+data  : build data files for github release
+
+For g and the r-commands you need to pass a commit message as well.
+For data you need to pass an app argument:
+  {appStr}
+'''
+
 
 def readArgs():
   args = sys.argv[1:]
@@ -74,10 +91,14 @@ def readArgs():
     console(HELP)
     return (False, None, [])
   arg = args[0]
-  if arg not in {'a', 't', 'docs', 'clean', 'l', 'lp', 'i', 'g', 'data', 'r', 'r1', 'r2', 'r3'}:
+  if arg not in {
+      'a', 't', 'docs', 'clean', 'l', 'lp', 'i', 'g', 'data',
+      'apps', 'tut',
+      'r', 'r1', 'r2', 'r3',
+  }:
     console(HELP)
     return (False, None, [])
-  if arg in {'g', 'r', 'r1', 'r2', 'r3'}:
+  if arg in {'g', 'apps', 'tut', 'r', 'r1', 'r2', 'r3'}:
     if len(args) < 2:
       console('Provide a commit message')
       return (False, None, [])
@@ -85,7 +106,7 @@ def readArgs():
   if arg in {'a', 't', 'data'}:
     if len(args) < 2:
       if arg in {'a', 'data'}:
-        console('Provide a data source [quran|bhsa|peshitta|syrnt|uruk]')
+        console(f'Provide a data source [{appStr}]')
       elif arg in {'t'}:
         console('Provide a test suite [relations]')
       return (False, None, [])
@@ -156,6 +177,25 @@ def commit(task, msg):
     commitMessage = f'Release {newVersion}: {msg}'
     run(['git', 'tag', '-a', tagVersion, '-m', commitMessage])
     run(['git', 'push', 'origin', '--tags'])
+
+
+def commitApps(msg):
+  for app in apps:
+    os.chdir(f'{AN_BASE}/app-{app}')
+    console(f'In {os.getcwd()}')
+    run(['git', 'add', '--all', '.'])
+    run(['git', 'commit', '-m', msg])
+    run(['git', 'push', 'origin', 'master'])
+  os.chdir(f'{TF_BASE}')
+
+
+def commitTut(msg):
+  os.chdir(f'{TUT_BASE}')
+  console(f'In {os.getcwd()}')
+  run(['git', 'add', '--all', '.'])
+  run(['git', 'commit', '-m', msg])
+  run(['git', 'push', 'origin', 'master'])
+  os.chdir(f'{TF_BASE}')
 
 
 def shipDocs():
@@ -330,6 +370,10 @@ def main():
     commit(task, msg)
   elif task == 'data':
     shipData(msg, remaining)
+  elif task == 'data':
+    commitApps(msg)
+  elif task == 'tut':
+    commitTut(msg)
   elif task in {'r', 'r1', 'r2', 'r3'}:
     adjustVersion(task)
     shipDocs()

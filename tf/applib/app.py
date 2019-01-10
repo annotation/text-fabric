@@ -39,7 +39,7 @@ Using TF app {dataSource} in {appDir}
         if not silent or not currentCommit:
           console(
               f'''
-Using {dataSource} commit {currentCommitRep}
+Using TF app {dataSource} commit {currentCommitRep}
   in {appDir}
 '''
           )
@@ -101,7 +101,7 @@ Still Using {ORG}/app-{dataSource} commit {currentCommitRep}
     else:
       console(
           f'''
-Could not find data in {ORG}/app-{dataSource}
+Could not find files in {ORG}/app-{dataSource}
   in {appDir}
 ''',
           error=not check,
@@ -112,7 +112,7 @@ Could not find data in {ORG}/app-{dataSource}
     if not silent:
       console(
           f'''
-App is up-to-date.
+TF app is up-to-date.
 Using {ORG}/app-{dataSource} commit {currentCommit} (=latest)
   in {appDir}.
 '''

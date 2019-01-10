@@ -2,9 +2,22 @@
 
 **It does not work. Why?**
 
-## Latest Text-Fabric
+## Stay up to date!
 
 Always use the latest version of Text-Fabric, because there is still a lot of development going on.
+
+A working installation contains three parts that are updated occasionally, sometinmes slowly, other times
+rapidly:
+
+* text-fabric itself, the Python library that you obtained by `pip3 install text-fabric`;
+* TF apps, the apps that are specialized in a specific corpus; you obtained it when you said
+  `text-fabric appName` or `A = use(appName)`;
+* TF data, which was downloaded by that same statement that downloaded the app.
+
+See [Install](Install.md) for instructions how to upgrade these things.
+
+
+## Latest Text-Fabric
 
 ??? note "I have installed Text-Fabric, yet I get complaints that it cannot be found!"
     Most likely, you installed Text-Fabric into another Python than you use when you run your

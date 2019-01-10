@@ -92,6 +92,15 @@ pip install text-fabric
 pip3 install --upgrade text-fabric
 ```
 
+### TF apps and data
+
+In order to work with a corpus you need its data.
+
+For some corpora there is a TF app, which takes care of downloading and updating that data.
+
+[Corpora](Corpora.md) tells you how to install and update a TF app and get the corpus data.
+
+
 ## Jupyter notebook
 
 Optionally install [Jupyter]({{jup}}) as well:

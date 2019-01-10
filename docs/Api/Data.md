@@ -454,7 +454,7 @@ A.show(results, start=8, end=8, condensed=True, condenseType='verse')
 ```
 
 See the
-[share]({{an}}/app-bhsa/blob/master/tutorial/share.ipynb)
+[share]({{tutnb}}/bhsa/share.ipynb)
 tutorial.
 
 ##### Exercise
