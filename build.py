@@ -370,7 +370,7 @@ def main():
     commit(task, msg)
   elif task == 'data':
     shipData(msg, remaining)
-  elif task == 'data':
+  elif task == 'apps':
     commitApps(msg)
   elif task == 'tut':
     commitTut(msg)
