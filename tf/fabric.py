@@ -179,6 +179,7 @@ Api reference : {APIREF}
       fObj.cleanDataBin()
 
   def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}, module=None):
+    good = True
     self.tm.indent(level=0, reset=True)
     self._getWriteLoc(module=module)
     configFeatures = dict(
@@ -203,6 +204,69 @@ Api reference : {APIREF}
       todo.append((fName, data, None, True))
     total = collections.Counter()
     failed = collections.Counter()
+    maxSlot = None
+    maxNode = None
+    slotType = None
+    if WARP[0] in nodeFeatures:
+      otypeData = nodeFeatures[WARP[0]]
+      if type(otypeData) is tuple:
+        maxSlot = otypeData[-1]
+        maxNode = len(otypeData) - 2 + maxSlot
+      elif 1 in otypeData:
+        slotType = otypeData[1]
+        maxSlot = max(n for n in otypeData if otypeData[n] == slotType)
+        maxNode = max(otypeData)
+    if WARP[1] in edgeFeatures:
+      if maxSlot is None or maxNode is None:
+        self.tm.error(f'WARNING: cannot check validity of {WARP[1]} feature')
+        good = False
+      else:
+        self.tm.info(f'maxSlot={maxSlot:>11}')
+        self.tm.info(f'maxNode={maxNode:>11}')
+        oslotsData = edgeFeatures[WARP[1]]
+        maxNodeInData = max(oslotsData)
+        minNodeInData = min(oslotsData)
+        rangeCovered = maxNodeInData - minNodeInData + 1
+        linkedNodes = len(oslotsData)
+        if maxNodeInData < maxNode:
+          self.tm.info(
+              'ERROR: some non-slot nodes between'
+              f' {maxNodeInData + 1} and {maxNode} not linked in {WARP[1]}'
+          )
+          good = False
+        elif maxNodeInData < maxNode:
+          self.tm.info(
+              f'ERROR: {WARP[1]} links some non-existing nodes between'
+              f' {maxNode + 1} and {maxNodeInData}'
+          )
+          good = False
+        if minNodeInData > maxSlot + 1:
+          self.tm.info(
+              'ERROR: some non-slot nodes between'
+              f' {maxSlot + 1} and {minNodeInData} not linked in {WARP[1]}'
+          )
+          good = False
+        elif minNodeInData <= maxSlot:
+          self.tm.info(
+              f'ERROR: {WARP[1]} links some slot nodes between'
+              f' {minNodeInData} and {maxSlot}'
+          )
+          good = False
+        if rangeCovered < linkedNodes:
+          self.tm.error(f'ERROR: {WARP[1]} does not links all slot nodes or non-existent nodes')
+          good = False
+        elif rangeCovered > linkedNodes:
+          self.tm.error(f'ERROR: {WARP[1]} does not link all non-slot nodes')
+          good = False
+        if (
+            rangeCovered == linkedNodes and
+            maxNodeInData == maxNode and
+            minNodeInData == maxSlot + 1
+        ):
+          self.tm.error(f'OK: {WARP[1]} is valid')
+        # when things are wrong: show the amount of nodes per nodetype where the oslots
+        # is lacking or has too much
+
     for (fName, data, isEdge, isConfig) in todo:
       edgeValues = False
       fMeta = {}
@@ -222,7 +286,10 @@ Api reference : {APIREF}
           edgeValues=edgeValues,
       )
       tag = 'config' if isConfig else 'edge' if isEdge else 'node'
-      if fObj.save(nodeRanges=fName == WARP[0], overwrite=True):
+      if fObj.save(
+          nodeRanges=fName == WARP[0],
+          overwrite=True,
+      ):
         total[tag] += 1
       else:
         failed[tag] += 1
@@ -239,6 +306,8 @@ Api reference : {APIREF}
     if len(failed):
       for (tag, nf) in sorted(failed.items()):
         self.tm.error(f'Failed to export {nf} {tag} features')
+      good = False
+    return good
 
   def exportMQL(self, mqlName, mqlDir):
     self.tm.indent(level=0, reset=True)
