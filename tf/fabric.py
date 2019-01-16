@@ -206,11 +206,11 @@ Api reference : {APIREF}
       todo.append((fName, data, None, True))
     total = collections.Counter()
     failed = collections.Counter()
-    self.tm.info(f'VALIDATING {WARP[1]} feature')
     maxSlot = None
     maxNode = None
     slotType = None
     if WARP[0] in nodeFeatures:
+      self.tm.info(f'VALIDATING {WARP[1]} feature')
       otypeData = nodeFeatures[WARP[0]]
       if type(otypeData) is tuple:
         maxSlot = otypeData[-1]
@@ -219,13 +219,13 @@ Api reference : {APIREF}
         slotType = otypeData[1]
         maxSlot = max(n for n in otypeData if otypeData[n] == slotType)
         maxNode = max(otypeData)
-    self.tm.info(f'maxSlot={maxSlot:>11}')
-    self.tm.info(f'maxNode={maxNode:>11}')
     if WARP[1] in edgeFeatures:
       if maxSlot is None or maxNode is None:
         self.tm.error(f'ERROR: cannot check validity of {WARP[1]} feature')
         good = False
       else:
+        self.tm.info(f'maxSlot={maxSlot:>11}')
+        self.tm.info(f'maxNode={maxNode:>11}')
         oslotsData = edgeFeatures[WARP[1]]
         maxNodeInData = max(oslotsData)
         minNodeInData = min(oslotsData)
@@ -266,12 +266,8 @@ Api reference : {APIREF}
             self.tm.error(f'--- unmapped {nType:<10} : {makeExamples(nodes)}')
           good = False
 
-    else:
-        self.tm.error(f'ERROR: no {WARP[1]} feature present')
-        good = False
-
-    if good:
-      self.tm.error(f'OK: {WARP[1]} is valid')
+      if good:
+        self.tm.error(f'OK: {WARP[1]} is valid')
 
     for (fName, data, isEdge, isConfig) in todo:
       edgeValues = False
