@@ -28,6 +28,13 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.3.13
+
+2019-01-16
+
+Feature display within pretty displays: a newline in a feature value will cause a line break
+in the display, by means of a `<br/>` element.
+
 ## 7.3.12
 
 2019-01-16

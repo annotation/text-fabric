@@ -136,7 +136,13 @@ def main(cargs=sys.argv):
 
   (org, repo, relative) = parts
 
-  zipData(org, repo, relative=relative, tf=relative.endswith('tf'))
+  tf = (
+      relative.endswith('tf') or
+      '/tf/' in relative
+  )
+  print(tf)
+
+  zipData(org, repo, relative=relative, tf=tf)
 
 
 if __name__ == "__main__":
