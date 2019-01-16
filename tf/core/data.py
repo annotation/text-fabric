@@ -295,10 +295,21 @@ class Data(object):
         otype.append(maxSlot)
         self.data = tuple(otype)
       elif self.fileName == WARP[1]:
-        slotsList = sorted(data)
-        maxSlot = min(data.keys()) - 1
+        nodeList = sorted(data)
+        maxSlot = nodeList[0] - 1
+        maxNode = nodeList[-1]
+        nodeRange = maxNode - maxSlot
+        nodesMapped = len(nodeList)
+        if nodeRange > nodesMapped:
+          self.tm.error(f'ERROR: {WARP[1]} fails to map {nodeRange - nodesMapped} nodes')
+          errors = True
+        elif nodeRange < nodesMapped:
+          # cannot happen because nodeList is a list of distinct keys
+          # so the min and max values of these keys must differ at least as much
+          # is the number of those keys
+          pass
         oslots = []
-        for n in slotsList:
+        for n in nodeList:
           oslots.append(tuple(sorted(data[n])))
         oslots.append(maxSlot)
         self.data = tuple(oslots)

@@ -3,7 +3,9 @@ import collections
 from glob import glob
 from .parameters import VERSION, NAME, APIREF, LOCATIONS
 from .core.data import Data, WARP, WARP2_DEFAULT, MEM_MSG
-from .core.helpers import (itemize, setDir, expandDir, collectFormats, cleanName, check32, console)
+from .core.helpers import (
+    itemize, setDir, expandDir, collectFormats, cleanName, check32, console, makeExamples
+)
 from .core.timestamp import Timestamp
 from .core.prepare import (levels, order, rank, levUp, levDown, boundary, sections)
 from .core.api import (
@@ -204,6 +206,7 @@ Api reference : {APIREF}
       todo.append((fName, data, None, True))
     total = collections.Counter()
     failed = collections.Counter()
+    self.tm.info(f'VALIDATING {WARP[1]} feature')
     maxSlot = None
     maxNode = None
     slotType = None
@@ -216,56 +219,59 @@ Api reference : {APIREF}
         slotType = otypeData[1]
         maxSlot = max(n for n in otypeData if otypeData[n] == slotType)
         maxNode = max(otypeData)
+    self.tm.info(f'maxSlot={maxSlot:>11}')
+    self.tm.info(f'maxNode={maxNode:>11}')
     if WARP[1] in edgeFeatures:
       if maxSlot is None or maxNode is None:
-        self.tm.error(f'WARNING: cannot check validity of {WARP[1]} feature')
+        self.tm.error(f'ERROR: cannot check validity of {WARP[1]} feature')
         good = False
       else:
-        self.tm.info(f'maxSlot={maxSlot:>11}')
-        self.tm.info(f'maxNode={maxNode:>11}')
         oslotsData = edgeFeatures[WARP[1]]
         maxNodeInData = max(oslotsData)
         minNodeInData = min(oslotsData)
-        rangeCovered = maxNodeInData - minNodeInData + 1
-        linkedNodes = len(oslotsData)
-        if maxNodeInData < maxNode:
-          self.tm.info(
-              'ERROR: some non-slot nodes between'
-              f' {maxNodeInData + 1} and {maxNode} not linked in {WARP[1]}'
-          )
+
+        mappedSlotNodes = []
+        unmappedNodes = []
+        fakeNodes = []
+
+        start = min((maxSlot + 1, minNodeInData))
+        end = max((maxNode, maxNodeInData))
+        for n in range(start, end + 1):
+          if n in oslotsData:
+            if n <= maxSlot:
+              mappedSlotNodes.append(n)
+            elif n > maxNode:
+              fakeNodes.append(n)
+          else:
+            if maxSlot < n <= maxNode:
+              unmappedNodes.append(n)
+
+        if mappedSlotNodes:
+          self.tm.error(f'ERROR: {WARP[1]} maps slot nodes')
+          self.tm.error(makeExamples(mappedSlotNodes), tm=False)
           good = False
-        elif maxNodeInData < maxNode:
-          self.tm.info(
-              f'ERROR: {WARP[1]} links some non-existing nodes between'
-              f' {maxNode + 1} and {maxNodeInData}'
-          )
+        if fakeNodes:
+          self.tm.error(f'ERROR: {WARP[1]} maps nodes that are not in {WARP[0]}')
+          self.tm.error(makeExamples(fakeNodes), tm=False)
           good = False
-        if minNodeInData > maxSlot + 1:
-          self.tm.info(
-              'ERROR: some non-slot nodes between'
-              f' {maxSlot + 1} and {minNodeInData} not linked in {WARP[1]}'
-          )
+        if unmappedNodes:
+          self.tm.error(f'ERROR: {WARP[1]} fails to map nodes:')
+          unmappedByType = {}
+          for n in unmappedNodes:
+            unmappedByType.setdefault(otypeData.get(n, '_UNKNOWN_'), []).append(n)
+          for (nType, nodes) in sorted(
+              unmappedByType.items(),
+              key=lambda x: (-len(x[1]), x[0]),
+          ):
+            self.tm.error(f'--- unmapped {nType:<10} : {makeExamples(nodes)}')
           good = False
-        elif minNodeInData <= maxSlot:
-          self.tm.info(
-              f'ERROR: {WARP[1]} links some slot nodes between'
-              f' {minNodeInData} and {maxSlot}'
-          )
-          good = False
-        if rangeCovered < linkedNodes:
-          self.tm.error(f'ERROR: {WARP[1]} does not links all slot nodes or non-existent nodes')
-          good = False
-        elif rangeCovered > linkedNodes:
-          self.tm.error(f'ERROR: {WARP[1]} does not link all non-slot nodes')
-          good = False
-        if (
-            rangeCovered == linkedNodes and
-            maxNodeInData == maxNode and
-            minNodeInData == maxSlot + 1
-        ):
-          self.tm.error(f'OK: {WARP[1]} is valid')
-        # when things are wrong: show the amount of nodes per nodetype where the oslots
-        # is lacking or has too much
+
+    else:
+        self.tm.error(f'ERROR: no {WARP[1]} feature present')
+        good = False
+
+    if good:
+      self.tm.error(f'OK: {WARP[1]} is valid')
 
     for (fName, data, isEdge, isConfig) in todo:
       edgeValues = False

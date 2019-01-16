@@ -28,6 +28,28 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.3.11
+
+2019-01-16
+
+If the oslots feature is not valid, weird error messages used to occur when TF tried to load
+a dataset containing it. 
+The oslots feature was loaded, but the computing of derived data threw a deep error.
+
+Not anymore.
+
+When TF saves the oslots feature it checks whether it is valid:
+It should map all non-slot nodes and only non-slot nodes to slots.
+
+So, right after you have converted a data source to TF you can check whether the oslots
+is valid, during `TF.save()`.
+
+And further down the line, if you somehow have let a faulty oslots pass,
+and try to load a dataset containing such a oslots feature,
+TF checks whether the range of nodes mapped by oslots does not have holes in it.
+
+If so, it generates a clear error and stops processing.
+
 ## 7.3.10
 
 2019-01-10
