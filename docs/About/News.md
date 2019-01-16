@@ -28,6 +28,17 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.3.12
+
+2019-01-16
+
+Small fix in oslots validation.
+You can save a data set without the oslots feature (a module).
+The previous release wrongly flagged a oslots validation error because of a missing
+oslots feature. 
+
+That has been remedied.
+
 ## 7.3.11
 
 2019-01-16
