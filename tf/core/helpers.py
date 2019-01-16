@@ -298,3 +298,23 @@ def wrapMessages(messages):
       <span class="{className.lower()}">{msg}</span>
     ''')
   return ''.join(html)
+
+
+def makeExamples(nodeList):
+  lN = len(nodeList)
+  if lN <= 10:
+    return (
+        f'{lN:>7} x: '
+        +
+        (', '.join(str(n) for n in nodeList))
+    )
+  else:
+    return (
+        f'{lN:>7} x: '
+        +
+        (', '.join(str(n) for n in nodeList[0:5]))
+        +
+        ' ... '
+        +
+        (', '.join(str(n) for n in nodeList[-5:]))
+    )
