@@ -317,6 +317,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#7311" title="7.3.11" class="md-nav__link">
+    7.3.11
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#7310" title="7.3.10" class="md-nav__link">
     7.3.10
   </a>
@@ -1340,6 +1347,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#7311" title="7.3.11" class="md-nav__link">
+    7.3.11
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#7310" title="7.3.10" class="md-nav__link">
     7.3.10
   </a>
@@ -1518,6 +1532,20 @@ by calling the app as follows:</p>
 </details>
 <h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
+<h2 id="7311">7.3.11<a class="headerlink" href="#7311" title="Permanent link">&para;</a></h2>
+<p>2019-01-16</p>
+<p>If the oslots feature is not valid, weird error messages used to occur when TF tried to load
+a dataset containing it. 
+The oslots feature was loaded, but the computing of derived data threw a deep error.</p>
+<p>Not anymore.</p>
+<p>When TF saves the oslots feature it checks whether it is valid:
+It should map all non-slot nodes and only non-slot nodes to slots.</p>
+<p>So, right after you have converted a data source to TF you can check whether the oslots
+is valid, during <code>TF.save()</code>.</p>
+<p>And further down the line, if you somehow have let a faulty oslots pass,
+and try to load a dataset containing such a oslots feature,
+TF checks whether the range of nodes mapped by oslots does not have holes in it.</p>
+<p>If so, it generates a clear error and stops processing.</p>
 <h2 id="7310">7.3.10<a class="headerlink" href="#7310" title="Permanent link">&para;</a></h2>
 <p>2019-01-10</p>
 <p>Moved the app tutorials from the annotation/app-appName repos into a new
