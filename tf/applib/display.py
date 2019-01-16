@@ -614,6 +614,7 @@ def getFeatures(
           oValueRep = '' if oValueRep is None else oValueRep
           value = valueRep if valueRep == oValueRep else f'{valueRep}{sep}{oValueRep}'
       if value is not None:
+        value = value.replace('\n', '<br/>')
         nameRep = f'<span class="f">{name}=</span>' if name in withName else ''
         xClass = ' xft' if name in extraSet else ''
         featureRep = f' <span class="{name.lower()}{xClass}">{nameRep}{value}</span>'
