@@ -28,6 +28,12 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.3.14
+
+2019-01-16
+
+Make sure it works.
+
 ## 7.3.13
 
 2019-01-16

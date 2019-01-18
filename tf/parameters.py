@@ -2,7 +2,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '7.3.13'
+VERSION = '7.3.14'
 NAME = 'Text-Fabric'
 
 ORG = 'annotation'
