@@ -162,7 +162,12 @@ def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, po
       sec0s = tuple(T.sectionFromNode(s)[0] for s in F.otype.s(sec0Type))
       sec1s = ()
       if browseNavLevel == 2:
-        sec1s = tuple(T.sectionFromNode(s)[1] for s in L.d(sec0Node, otype=sec1Type))
+        sec1s = (
+            ()
+            if sec0Node is None
+            else
+            tuple(T.sectionFromNode(s)[1] for s in L.d(sec0Node, otype=sec1Type))
+        )
 
       items = (
           contentNode
