@@ -23,6 +23,7 @@ from .core.api import (
     addSearch,
 )
 from .convert.mql import MQL, tfFromMql
+from .convert.tokens import Tokens
 
 
 PRECOMPUTE = (
@@ -309,6 +310,14 @@ Api reference : {APIREF}
       for (tag, nf) in sorted(failed.items()):
         self.tm.error(f'Failed to export {nf} {tag} features')
       good = False
+    return good
+
+  def importTokens(self, tokens, slotType, otext={}, generic={}, intFeatures=set(), featureMeta={}):
+    self.tm.indent(level=0, reset=True)
+    tokenObj = Tokens(self.tm)
+    (good, result) = tokenObj.convert(tokens, slotType, otext, generic, intFeatures, featureMeta)
+    if good:
+      self.save(**result)
     return good
 
   def exportMQL(self, mqlName, mqlDir):

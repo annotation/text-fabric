@@ -28,6 +28,14 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.4
+
+2019-01-25
+
+Easier conversion of data sources to TF: via an intermediate token stream.
+For more info: see [#38]({{ghissues}}/45) 
+
+
 ## 7.3.14-15
 
 2019-01-16

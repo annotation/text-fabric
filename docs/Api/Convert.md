@@ -1,5 +1,115 @@
 # Convert
 
+## Token Stream
+
+??? info "Data conversion to TF"
+    You can convert a dataset to TF by writing a token generator for it.
+
+    That is a function that delivers a stream of tokens when reading the data.
+    Text-Fabric can consume that stream and build a valid Text-Fabric dataset out of it.
+    Many checks will be performed.
+
+
+??? abstract "TF.importTokens()"
+    ```python
+    TF.importTokens(
+      tokens,
+      slotType,
+      otext={},
+      generic={},
+      intFeatures=set(),
+      featureMeta={},
+    )
+    ```
+
+    ???+ info "Description"
+        Consumes the tokens, collects their payloads, writes it out as a TF dataset.
+        Most arguments are used to specify the right TF metadata.
+
+        This function will check whether the metadata makes sense and is minimally
+        complete.
+
+        After the creation of the feature data, some extra checks will be performed
+        to see whether the metadata matches the data and vice versa.
+
+    ??? hint "Destination directory"
+        It is recommended to call this `importTokens` on a TF instance called with
+
+        ```python
+        TF = Fabric(locations=targetDir)
+        ```
+
+        Then the resulting features will be written in the targetDir.
+
+        In fact, the rules are exactly the same as for `TF.save()`.
+
+    ??? info "tokens"
+        An *iterable* of tokens. It can be a list, set, iterator, or generator.
+        Think of it as a
+        [generator function](https://wiki.python.org/moin/Generators)
+        that yields one token at a time.
+
+        Writing this function is the main job to do when you want to convert a data source
+        to TF.
+
+    ??? info "slotType"
+        The node type that acts as the type of the slots in the data set.
+
+    ???+ explanation "Token syntax"
+        Tokens are tuples of the following shapes:
+
+        ```
+        ('S', seq, ((type, seq),...)), features)              # slot token       
+        ('N', (type, seq), features)                          # node feature token
+        ('E', (typeFrom, seqFrom), (typeTo, seqTo), features) # edge feature token
+        ```
+
+        `seq` is a positive integer. It is the number of a node within a node `type`,
+        in the case of an `'S'` token the type is taken to be the `slotType`.
+
+        For slot nodes, the resulting sequence of `seq` values must be, after ordering,
+        a consecutive interval 1, ..., maxSlot. 
+
+        For other nodes, there is no such requirement, but the values must be integers.
+
+        Multiple tokens may refer to the same slot or node: the `features` payload will
+        be merged.
+        
+        For `'E'` tokens, both `seqTo` and `seqFrom` must be integers,
+        and `(typeFrom, seqFrom)` and `(typeTo, seqTo)` must occur in some
+        `'N'` tokens.
+        
+        Again, the `features` payload of these tokens will be merged when necessary.
+        
+        In the case of `'S'` nodes, the `((type, seq), ...)` tuple is a series
+        of embedder nodes of that slot. 
+
+        The embedder will be merged with those of other tokens for the same slot.
+
+    ??? info "oText"
+        The configuration information to be stored in the `otext` feature:
+        * section types 
+        * section features 
+        * text formats
+
+        Must be a dict.
+
+    ??? info "generic"
+        Metadata that will be written into the header of all generated TF features.
+
+        Must be a dict.
+
+    ??? info "intFeatures"
+        The set of features that have integer values only.
+
+        Must be an iterable.
+
+    ??? info "featureMeta"
+        For each node or edge feature descriptive metadata can be supplied.
+
+        Must be a dict of dicts.
+
+
 ## MQL
 
 ??? info "Data interchange with MQL"
@@ -140,7 +250,7 @@
         It is recommended to call this `importMQL` on a TF instance called with
 
         ```python
-        locations=targetDir, modules=''
+        TF = Fabric(locations=targetDir)
         ```
 
         Then the resulting features will be written in the targetDir.
