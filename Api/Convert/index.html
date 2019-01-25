@@ -571,6 +571,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#token-stream" title="Token Stream" class="md-nav__link">
+    Token Stream
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#mql" title="MQL" class="md-nav__link">
     MQL
   </a>
@@ -1195,6 +1202,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#token-stream" title="Token Stream" class="md-nav__link">
+    Token Stream
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#mql" title="MQL" class="md-nav__link">
     MQL
   </a>
@@ -1221,6 +1235,94 @@
                 
                 
                 <h1 id="convert">Convert<a class="headerlink" href="#convert" title="Permanent link">&para;</a></h1>
+<h2 id="token-stream">Token Stream<a class="headerlink" href="#token-stream" title="Permanent link">&para;</a></h2>
+<details class="info"><summary>Data conversion to TF</summary><p>You can convert a dataset to TF by writing a token generator for it.</p>
+<p>That is a function that delivers a stream of tokens when reading the data.
+Text-Fabric can consume that stream and build a valid Text-Fabric dataset out of it.
+Many checks will be performed.</p>
+</details>
+<details class="abstract"><summary>TF.importTokens()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">importTokens</span><span class="p">(</span>
+  <span class="n">tokens</span><span class="p">,</span>
+  <span class="n">slotType</span><span class="p">,</span>
+  <span class="n">otext</span><span class="o">=</span><span class="p">{},</span>
+  <span class="n">generic</span><span class="o">=</span><span class="p">{},</span>
+  <span class="n">intFeatures</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
+  <span class="n">featureMeta</span><span class="o">=</span><span class="p">{},</span>
+<span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<details class="info" open="open"><summary>Description</summary><p>Consumes the tokens, collects their payloads, writes it out as a TF dataset.
+Most arguments are used to specify the right TF metadata.</p>
+<p>This function will check whether the metadata makes sense and is minimally
+complete.</p>
+<p>After the creation of the feature data, some extra checks will be performed
+to see whether the metadata matches the data and vice versa.</p>
+</details>
+<details class="hint"><summary>Destination directory</summary><p>It is recommended to call this <code>importTokens</code> on a TF instance called with</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">targetDir</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Then the resulting features will be written in the targetDir.</p>
+<p>In fact, the rules are exactly the same as for <code>TF.save()</code>.</p>
+</details>
+<details class="info"><summary>tokens</summary><p>An <em>iterable</em> of tokens. It can be a list, set, iterator, or generator.
+Think of it as a
+<a href="https://wiki.python.org/moin/Generators">generator function</a>
+that yields one token at a time.</p>
+<p>Writing this function is the main job to do when you want to convert a data source
+to TF.</p>
+</details>
+<details class="info"><summary>slotType</summary><p>The node type that acts as the type of the slots in the data set.</p>
+</details>
+<details class="explanation" open="open"><summary>Token syntax</summary><p>Tokens are tuples of the following shapes:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>(&#39;S&#39;, seq, ((type, seq),...)), features)              # slot token       
+(&#39;N&#39;, (type, seq), features)                          # node feature token
+(&#39;E&#39;, (typeFrom, seqFrom), (typeTo, seqTo), features) # edge feature token
+</pre></div>
+</td></tr></table>
+
+<p><code>seq</code> is a positive integer. It is the number of a node within a node <code>type</code>,
+in the case of an <code>'S'</code> token the type is taken to be the <code>slotType</code>.</p>
+<p>For slot nodes, the resulting sequence of <code>seq</code> values must be, after ordering,
+a consecutive interval 1, ..., maxSlot. </p>
+<p>For other nodes, there is no such requirement, but the values must be integers.</p>
+<p>Multiple tokens may refer to the same slot or node: the <code>features</code> payload will
+be merged.</p>
+<p>For <code>'E'</code> tokens, both <code>seqTo</code> and <code>seqFrom</code> must be integers,
+and <code>(typeFrom, seqFrom)</code> and <code>(typeTo, seqTo)</code> must occur in some
+<code>'N'</code> tokens.</p>
+<p>Again, the <code>features</code> payload of these tokens will be merged when necessary.</p>
+<p>In the case of <code>'S'</code> nodes, the <code>((type, seq), ...)</code> tuple is a series
+of embedder nodes of that slot. </p>
+<p>The embedder will be merged with those of other tokens for the same slot.</p>
+</details>
+<details class="info"><summary>oText</summary><p>The configuration information to be stored in the <code>otext</code> feature:
+<em> section types 
+</em> section features 
+* text formats</p>
+<p>Must be a dict.</p>
+</details>
+<details class="info"><summary>generic</summary><p>Metadata that will be written into the header of all generated TF features.</p>
+<p>Must be a dict.</p>
+</details>
+<details class="info"><summary>intFeatures</summary><p>The set of features that have integer values only.</p>
+<p>Must be an iterable.</p>
+</details>
+<details class="info"><summary>featureMeta</summary><p>For each node or edge feature descriptive metadata can be supplied.</p>
+<p>Must be a dict of dicts.</p>
+</details>
+</details>
 <h2 id="mql">MQL<a class="headerlink" href="#mql" title="Permanent link">&para;</a></h2>
 <details class="info"><summary>Data interchange with MQL</summary><p>You can interchange with
 <a href="https://emdros.org">MQL data</a>.
@@ -1344,7 +1446,7 @@ rm dataset <span class="p">;</span> mql -b <span class="m">3</span> &lt; dataset
 <details class="info" open="open"><summary>Description</summary><p>Converts an MQL database dump to a Text-Fabric dataset.</p>
 </details>
 <details class="hint"><summary>Destination directory</summary><p>It is recommended to call this <code>importMQL</code> on a TF instance called with</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">locations</span><span class="o">=</span><span class="n">targetDir</span><span class="p">,</span> <span class="n">modules</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">targetDir</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
