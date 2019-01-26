@@ -8,7 +8,7 @@ text = '''
 
 Everything about us,
 everything around us,
-everything we know and can know of is composed ultimately of patterns of nothing;
+everything we know [and can know of] is composed ultimately of patterns of nothing;
 that’s the bottom line, the final truth.
 
 So where we find we have any control over those patterns,
@@ -25,6 +25,8 @@ in our own terms?
 #
 # The sentences are divided into lines.
 # We will give each line a number within its sentence.
+# Words within [ ] will not be part of the line, the line has a gap.
+# The gapped words will have a feature gqp=1
 #
 # Lines will be split into words, the slot nodes.
 # We split the word from its punctuation, and add that in a punc feature
@@ -37,6 +39,23 @@ in our own terms?
 #                                                                     #
 #######################################################################
 
+# You have to yield tokens:
+# 
+# node = yield ('N',)          : make new slot node
+# node = ('N', nodeType)       : make a new non slot node
+# ('T',)                       : terminate current node
+# ('R', node)                  : resume the specified non slot node
+# ('T', node)                  : terminate specified node
+# ('F', featureDict)           : add features to current node
+# ('F', node, featureDict)     : add features to specified node
+# ('E', nodeFrom, edgeFrom, featureDict) : add features to specified edge fron nodeFrom to nodeTo
+#
+# after node = yield ('N', nodeType) all slot nodes that are yielded
+# will be linked to node, until a ('T', node) is yielded.
+# If needed, you can resume ('R', node) this node again, after which new slot nodes
+# continue to be linked to this node.
+
+
 def simpleTokens():
   lineCounter = 0
   sentenceCounter = 0
@@ -48,15 +67,15 @@ def simpleTokens():
   for line in text.strip().split('\n'):
     line = line.rstrip()
     if not line:
-      yield('T', curSentence)
+      yield ('T', curSentence)
       sentenceCounter += 1
       lineCounter = 0
-      curSentence = yield('N', 'sentence')
+      curSentence = yield ('N', 'sentence')
       yield ('F', dict(number=sentenceCounter))
       continue
 
     if line.startswith('# '):
-      yield('T', curSection)
+      yield ('T', curSection)
       title = line[2:]
       curSection = yield ('N', 'section')
       sentenceCounter = 0
@@ -64,16 +83,33 @@ def simpleTokens():
       yield ('F', dict(title=title))
       continue
 
-    curLine = yield('N', 'line')
+    curLine = yield ('N', 'line')
     lineCounter += 1
     yield ('F', dict(terminator=line[-1], number=lineCounter))
+    gap = False
     for word in line.split():
-      yield('N')
+      if word.startswith('['):
+        gap = True
+        yield('T', curLine)
+        yield ('N')
+        yield ('F', dict(gap=1))
+        word = word[1:]
+      elif word.endswith(']'):
+        yield('R', curLine)
+        yield ('N')
+        yield ('F', dict(gap=1))
+        gap = False
+        word = word[0:-1]
+      else:
+        yield ('N')
+        if gap:
+          yield ('F', dict(gap=1))
+
       (letters, punc) = wordRe.findall(word)[0]
-      yield('F', dict(letters=letters))
+      yield ('F', dict(letters=letters))
       if punc:
-        yield('F', dict(punc=punc))
-    yield('T', curLine)
+        yield ('F', dict(punc=punc))
+    yield ('T', curLine)
 
 
 #######################################################################
@@ -117,6 +153,11 @@ def weave(slotType, tokens):
         node = tInfo[0] if len(tInfo) > 0 else curNode
         if node is not None:
           curEmbedders.discard(node)
+
+      elif tType == 'R':
+        node = tInfo[0]
+        if node[0] != slotType:
+          curEmbedders.add(node)
 
       if tType == 'N':
         (tType, *tInfo) = tokens.send((nType, seq))
