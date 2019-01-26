@@ -40,7 +40,7 @@ in our own terms?
 #######################################################################
 
 # You have to yield tokens:
-# 
+#
 # node = yield ('N',)          : make new slot node
 # node = ('N', nodeType)       : make a new non slot node
 # ('T',)                       : terminate current node
@@ -178,16 +178,17 @@ def weave(slotType, tokens):
 
 
 def show(oslots, nodeFeatures):
-  print('oslots')
-  for (n, slots) in sorted(oslots.items()):
-    print(f'{n} => {sorted(slots)}')
+  with open('prototf.txt', 'w') as fh:
+    fh.write('oslots\n')
+    for (n, slots) in sorted(oslots.items()):
+      fh.write(f'{n} => {sorted(slots)}\n')
 
-  print('\nfeatures\n')
+    fh.write('\nfeatures\n\n')
 
-  for (f, fData) in sorted(nodeFeatures.items()):
-    print(f)
-    for (n, value) in fData.items():
-      print(f'\t{n} => {value}')
+    for (f, fData) in sorted(nodeFeatures.items()):
+      fh.write(f'{f}\n')
+      for (n, value) in fData.items():
+        fh.write(f'\t{n} => {value}\n')
 
 
 #######################################################################
@@ -200,115 +201,3 @@ def show(oslots, nodeFeatures):
 (oslots, nodeFeatures) = weave('word', simpleTokens())
 
 show(oslots, nodeFeatures)
-
-
-#######################################################################
-#                                                                     #
-# THE OUTPUT                                                          #
-#                                                                     #
-#######################################################################
-
-if False:
-  '''
-oslots
-('line', 1) => [1, 2, 3]
-('line', 2) => [4, 5, 6]
-('line', 3) => [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-('line', 4) => [21, 22, 23, 24, 25, 26, 27]
-('line', 5) => [28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38]
-('line', 6) => [39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51]
-('line', 7) => [52, 53, 54, 55]
-('section', 1) => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55]
-('sentence', 1) => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]
-('sentence', 2) => [28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55]
-
-features
-
-letters
-	('word', 1) => Everything
-	('word', 2) => about
-	('word', 3) => us
-	('word', 4) => everything
-	('word', 5) => around
-	('word', 6) => us
-	('word', 7) => everything
-	('word', 8) => we
-	('word', 9) => know
-	('word', 10) => and
-	('word', 11) => can
-	('word', 12) => know
-	('word', 13) => of
-	('word', 14) => is
-	('word', 15) => composed
-	('word', 16) => ultimately
-	('word', 17) => of
-	('word', 18) => patterns
-	('word', 19) => of
-	('word', 20) => nothing
-	('word', 21) => that’s
-	('word', 22) => the
-	('word', 23) => bottom
-	('word', 24) => line
-	('word', 25) => the
-	('word', 26) => final
-	('word', 27) => truth
-	('word', 28) => So
-	('word', 29) => where
-	('word', 30) => we
-	('word', 31) => find
-	('word', 32) => we
-	('word', 33) => have
-	('word', 34) => any
-	('word', 35) => control
-	('word', 36) => over
-	('word', 37) => those
-	('word', 38) => patterns
-	('word', 39) => why
-	('word', 40) => not
-	('word', 41) => make
-	('word', 42) => the
-	('word', 43) => most
-	('word', 44) => elegant
-	('word', 45) => ones
-	('word', 46) => the
-	('word', 47) => most
-	('word', 48) => enjoyable
-	('word', 49) => and
-	('word', 50) => good
-	('word', 51) => ones
-	('word', 52) => in
-	('word', 53) => our
-	('word', 54) => own
-	('word', 55) => terms
-number
-	('sentence', 1) => 1
-	('line', 1) => 1
-	('line', 2) => 2
-	('line', 3) => 3
-	('line', 4) => 4
-	('sentence', 2) => 2
-	('line', 5) => 1
-	('line', 6) => 2
-	('line', 7) => 3
-punc
-	('word', 3) => ,
-	('word', 6) => ,
-	('word', 20) => ;
-	('word', 24) => ,
-	('word', 27) => .
-	('word', 38) => ,
-	('word', 45) => ,
-	('word', 51) => ,
-	('word', 55) => ?
-terminator
-	('line', 1) => ,
-	('line', 2) => ,
-	('line', 3) => ;
-	('line', 4) => .
-	('line', 5) => ,
-	('line', 6) => ,
-	('line', 7) => ?
-title
-	('section', 1) => Consider Phlebas
-'''
-
