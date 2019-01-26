@@ -90,13 +90,13 @@ def simpleTokens():
     for word in line.split():
       if word.startswith('['):
         gap = True
-        yield('T', curLine)
+        yield ('T', curLine)
         yield ('N')
         yield ('F', dict(gap=1))
         word = word[1:]
       elif word.endswith(']'):
-        yield('R', curLine)
         yield ('N')
+        yield ('R', curLine)
         yield ('F', dict(gap=1))
         gap = False
         word = word[0:-1]
