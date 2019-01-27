@@ -44,8 +44,9 @@ in our own terms?
 # node = yield ('N',)          : make new slot node
 # node = ('N', nodeType)       : make a new non slot node
 # ('T',)                       : terminate current node
-# ('R', node)                  : resume the specified non slot node
 # ('T', node)                  : terminate specified node
+# ('R', node)                  : resume the specified non slot node
+# ('R', node)                  : link current context nodes to the specified slot node
 # ('F', featureDict)           : add features to current node
 # ('F', node, featureDict)     : add features to specified node
 # ('E', nodeFrom, edgeFrom, featureDict) : add features to specified edge fron nodeFrom to nodeTo
