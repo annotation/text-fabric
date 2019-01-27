@@ -5,15 +5,46 @@ import re
 from ..core.data import WARP
 
 
-class Tokens(object):
+class Token(object):
+  N = 'N'
+  T = 'T'
+  R = 'R'
+  F = 'F'
+  E = 'E'
 
-  def __init__(self, tm):
-    self.tm = tm
+  @classmethod
+  def slot(cls):
+    return (cls.N, None)
+
+  @classmethod
+  def node(cls, nType):
+    return (cls.N, nType)
+
+  @classmethod
+  def terminate(cls, node=None):
+    return (cls.T, node)
+
+  @classmethod
+  def resume(cls, node):
+    return (cls.R, node)
+
+  @classmethod
+  def feature(cls, *nodes, **features):
+    if len(nodes) == 0:
+      return (cls.F, None, dict(features))
+    return (cls.F, nodes[0], dict(features))
+
+  @classmethod
+  def edge(cls, nodeFrom, nodeTo, **features):
+    return (cls.E, nodeFrom, nodeTo, dict(features))
+
+  def __init__(self, TF):
+    self.TF = TF
 
   def _showErrors(self):
-    error = self.tm.error
-    info = self.tm.info
-    indent = self.tm.indent
+    error = self.TF.tm.error
+    info = self.TF.tm.info
+    indent = self.TF.tm.indent
 
     good = self.good
     errors = self.errors
@@ -29,15 +60,23 @@ class Tokens(object):
     else:
       info('OK' if good else 'ERROR(S)')
 
-  def convert(self, tokens, slotType, otext, generic, intFeatures, featureMeta):
-    info = self.tm.info
-    indent = self.tm.indent
+  def convert(
+      self,
+      tokens,
+      slotType,
+      otext={},
+      generic={},
+      intFeatures=set(),
+      featureMeta={},
+  ):
+    info = self.TF.tm.info
+    indent = self.TF.tm.indent
 
     indent(level=0, reset=True)
     info('Importing data from tokens ...')
 
     self.good = True
-    self.errors = {}
+    self.errors = collections.defaultdict(list)
     self.slotType = slotType
 
     self.intFeatures = intFeatures
@@ -69,20 +108,19 @@ class Tokens(object):
 
     indent(level=0)
 
-    return (
-        self.good,
-        dict(
-            metaData=self.metaData,
-            nodeFeatures=self.nodeFeatures,
-            edgeFeatures=self.edgeFeatures,
-        ),
-    )
+    if self.good:
+      self.good = self.TF.save(
+          metaData=self.metaData,
+          nodeFeatures=self.nodeFeatures,
+          edgeFeatures=self.edgeFeatures,
+      )
+    return self.good
 
   def _prepareMeta(self, otext, generic):
     varRe = re.compile(r'\{([^}]+)\}')
 
-    info = self.tm.info
-    indent = self.tm.indent
+    info = self.TF.tm.info
+    indent = self.TF.tm.indent
 
     if not self.good:
       return
@@ -113,24 +151,24 @@ class Tokens(object):
     self.textFeatures = set()
 
     if not generic:
-      errors.setdefault('Missing feature meta data in "generic"', []).append(
+      errors['Missing feature meta data in "generic"'].append(
           'Consider adding provenance metadata to all features'
       )
     if not otext:
-      errors.setdefault('Missing "otext" configuration', []).append(
+      errors['Missing "otext" configuration'].append(
           'Consider adding configuration for text representation and section levels'
       )
     else:
       sectionLevels = {}
       for f in ('sectionTypes', 'sectionFeatures'):
         if f not in otext:
-          errors.setdefault('Incomplete section specs in "otext"', []).append(f'no key "{f}"')
+          errors['Incomplete section specs in "otext"'].append(f'no key "{f}"')
           sectionLevels[f] = []
         else:
           sectionLevels[f] = otext[f].split(',')
       sLevels = {f: len(sectionLevels[f]) for f in sectionLevels}
       if min(sLevels.values()) != max(sLevels.values()):
-        errors.setdefault('Inconsistent section info', []).append(
+        errors['Inconsistent section info'].append(
             ' but '.join(f'"{f}" has {sLevels[f]} levels' for f in sLevels)
         )
       self.sectionFeatures = sectionLevels['sectionFeatures']
@@ -148,11 +186,11 @@ class Tokens(object):
           textFormats[k[4:]] = featureSet
           textFeatures |= featureSet
       if not textFormats:
-        errors.setdefault('No text formats in "otext"', []).append(
+        errors['No text formats in "otext"'].append(
             f'add "fmt:text-orig-full"'
         )
       elif 'text-orig-full' not in textFormats:
-        errors.setdefault('No default text format in otext', []).append(
+        errors['No default text format in otext'].append(
             f'add "fmt:text-orig-full"'
         )
       self.textFormats = textFormats
@@ -169,31 +207,31 @@ class Tokens(object):
     for feat in WARP[0:3] + ('',):
       if feat in intFeatures:
         if feat == '':
-          errors.setdefault('intFeatures', []).append(
+          errors['intFeatures'].append(
               'Do not declare the "valueType" for all features'
           )
         else:
-          errors.setdefault('intFeatures', []).append(
+          errors['intFeatures'].append(
               f'Do not mark the "{feat}" feature as integer valued'
           )
         self.good = False
     for (feat, featMeta) in sorted(featureMeta.items()):
       if feat in WARP[0:3] + ('',):
         if feat == '':
-          errors.setdefault('featureMeta', []).append(
+          errors['featureMeta'].append(
               f'Specify the generic feature meta data in "generic"'
           )
         elif feat == WARP[2]:
-          errors.setdefault('featureMeta', []).append(
+          errors['featureMeta'].append(
               f'Specify the "{WARP[2]}" feature in "otext"'
           )
         else:
-          errors.setdefault('featureMeta', []).append(
+          errors['featureMeta'].append(
               f'Do not pass metaData for the "{feat}" feature in "featureMeta"'
           )
           continue
       if 'valueType' in featMeta:
-        errors.setdefault('featureMeta', []).append(
+        errors['featureMeta'].append(
             f'Do not specify "valueType" for the "{feat}" feature in "featureMeta"'
         )
         continue
@@ -202,136 +240,135 @@ class Tokens(object):
 
     self._showErrors()
 
+  def _checkType(self, k, v, i, tokenType):
+    if k in self.intFeatures:
+      try:
+        v = int(v)
+      except Exception:
+        self.errors[f'Not a number'].append(
+            f'token {i}: "{tokenType}" node feature "{k}": "{v}"'
+        )
+
   def _slurp(self, tokens):
 
-    # slot token         (S, seq, ((type, seq),...)), features)
-    # node feature token (N, (type, seq), features)
-    # edge feature token (E, (typeFrom, seqFrom), (typeTo, seqTo), features)
+    # node = yield (N, nodeType) : make a new node of type nodeType or slotNode
+    # (T, node)                  : terminate specified or current node
+    # (R, slot)                  : link current context nodes to the specified slot node
+    # (R, node)                  : resume the specified non slot node
+    # (F, node, featureDict)     : add features to specified or current node
+    # (E, nodeFrom, edgeFrom, featureDict)
+    #                            : add features to specified edge fron nodeFrom to nodeTo
+    #
+    # after node = yield ('N', nodeType) all slot nodes that are yielded
+    # will be linked to node, until a ('T', node) is yielded.
+    # If needed, you can resume this node again, after which new slot nodes
+    # continue to be linked to this node.
+    # If you resume a slot node, it all non slot nodes in the current context
+    # will be linked to it.
 
-    S = 'S'
-    N = 'N'
-    E = 'E'
-    NN = {S, N}
-
-    error = self.tm.error
-    info = self.tm.info
+    error = self.TF.tm.error
+    info = self.TF.tm.info
 
     if not self.good:
       return
 
     info(f'Slurping tokens... ')
 
-    self.otypeProto = {}
-    self.oslotsProto = {}
-    self.nodeFeaturesProto = {}
-    self.edgeFeaturesProto = {}
-    self.slots = set()
-    self.nodesProto = {}
-
     slotType = self.slotType
-    otypeProto = self.otypeProto
-    oslotsProto = self.oslotsProto
-    nodeFeaturesProto = self.nodeFeaturesProto
-    edgeFeaturesProto = self.edgeFeaturesProto
-    nodesProto = self.nodesProto
-    slots = self.slots
     errors = self.errors
+
+    curSeq = collections.Counter()
+    curEmbedders = set()
+    curNode = None
+    oslots = collections.defaultdict(set)
+    nodeFeatures = collections.defaultdict(dict)
+    edgeFeatures = collections.defaultdict(lambda: collections.defaultdict(dict))
+    nodes = collections.defaultdict(set)
+
+    self.oslots = oslots
+    self.nodeFeatures = nodeFeatures
+    self.edgeFeatures = edgeFeatures
+    self.nodeTypes = curSeq
+    self.nodes = nodes
 
     stats = collections.Counter()
     info('Collecting tokens ...')
     i = 0
+    token = next(tokens)
 
-    for token in tokens:
-      i += 1
-      if not token:
-        error(f'Terminated at token {i} = {token}')
-        self.good = False
-        break
+    try:
+      while True:
+        i += 1
 
-      tokenType = token[0]
-      stats[tokenType] += 1
+        if not token:
+          error(f'Terminated at token {i} = {token}')
+          self.good = False
+          tokens.close()
+          continue
 
-      if tokenType == S:
-        nType = slotType
-        seq = token[1]
-        embedders = token[2]
-        features = token[3]
-      elif tokenType == N:
-        nType = token[1][0]
-        seq = token[1][1]
-        features = token[2]
-      elif tokenType == E:
-        nTypeF = token[1][0]
-        seqF = token[1][1]
-        nTypeT = token[2][0]
-        seqT = token[2][1]
-        features = token[3]
-      else:
-        errors.setdefault(f'Unrecognized token type', []).append(
-            f'token {i}: "{tokenType}"'
-        )
-        continue
-      if tokenType in NN:
-        try:
-          seq = int(seq)
-        except Exception:
-          errors.setdefault(f'Not a number', []).append(
-              f'token {i}: "{tokenType}" {nType} "{seq}"'
+        tokenType = token[0]
+        stats[tokenType] += 1
+
+        if tokenType == self.N:
+          nType = token[1]
+          if nType is None:
+            isSlot = True
+            nType = slotType
+          else:
+            isSlot = False
+
+          curSeq[nType] += 1
+          seq = curSeq[nType]
+          curNode = (nType, seq)
+
+          if isSlot:
+            for eNode in curEmbedders:
+              oslots[eNode].add(seq)
+          else:
+            curEmbedders.add(curNode)
+
+        elif tokenType == self.T:
+          node = token[1]
+          if node is None:
+            node = curNode
+          if node is not None:
+            curEmbedders.discard(node)
+
+        elif tokenType == self.R:
+          node = token[1]
+          (nType, seq) = node
+          if nType == slotType:
+            for eNode in curEmbedders:
+              oslots[eNode].add(seq)
+          else:
+            curEmbedders.add(node)
+
+        elif tokenType == self.F:
+          (node, features) = token[1:]
+          if node is None:
+            node = curNode
+          for (k, v) in features.items():
+            self._checkType(k, v, i, tokenType)
+            nodeFeatures[k][node] = v
+
+        elif tokenType == self.E:
+          (nodeFrom, nodeTo, features) = token[1:]
+          for (k, v) in features.items():
+            self._checkType(k, v, i, tokenType)
+            edgeFeatures[k][nodeFrom][nodeTo] = v
+
+        else:
+          errors[f'Unrecognized token type'].append(
+              f'token {i}: "{tokenType}"'
           )
-          break
-      elif tokenType == E:
-        try:
-          seqF = int(seqF)
-        except Exception:
-          errors.setdefault(f'Not a number', []).append(
-              f'token {i}: "{tokenType}" *from* {nTypeF} "{seqF}"'
-          )
-          break
-        try:
-          seqT = int(seqT)
-        except Exception:
-          errors.setdefault(f'Not a number', []).append(
-              f'token {i}: "{tokenType}" *to* {nTypeT} "{seqT}"'
-          )
-          break
 
-      if tokenType in NN:
-        node = (nType, seq)
-        nodesProto.setdefault(nType, set()).add(seq)
-        otypeProto[node] = nType
-        for (k, v) in features.items():
-          if k in self.intFeatures:
-            try:
-              v = int(v)
-            except Exception:
-              errors.setdefault(f'Not a number', []).append(
-                  f'token {i}: "{tokenType}" node feature "{k}": "{v}"'
-              )
-          nodeFeaturesProto.setdefault(k, {})[node] = v
-        if tokenType == S:
-          slots.add(seq)
-          for (nTypeE, seqE) in embedders:
-            try:
-              seqE = int(seqE)
-            except Exception:
-              errors.setdefault(f'Not a number', []).append(
-                  f'token {i}: "{tokenType}" *embedder* {nTypeE} "{seqE}"'
-              )
-              break
-            nodeE = (nTypeE, seqE)
-            oslotsProto.setdefault(nodeE, set()).add(node)
-      elif tokenType == E:
-        nodeF = (nTypeF, seqF)
-        nodeT = (nTypeT, seqT)
-        for (k, v) in features.items():
-          if k in self.intFeatures:
-            try:
-              v = int(v)
-            except Exception:
-              errors.setdefault(f'Not a number', []).append(
-                  f'token {i}: edge feature "{k}": "{v}"'
-              )
-          edgeFeaturesProto.setdefault(k, {}).setdefault(nodeF, {})[nodeT] = v
+        if tokenType == self.N:
+          token = tokens.send((nType, seq))
+        else:
+          token = next(tokens)
+
+    except StopIteration:
+      pass
 
     info(f'collected {i} tokens')
 
@@ -340,11 +377,12 @@ class Tokens(object):
 
     totalNodes = 0
 
-    for (nType, ns) in sorted(nodesProto.items()):
+    for (nType, lastSeq) in sorted(curSeq.items()):
+      for seq in range(1, lastSeq + 1):
+        nodes[nType].add(seq)
       slotRep = ' = slot type' if nType == slotType else ''
-      lns = len(ns)
-      info(f'{lns:>8} x "{nType}" node {slotRep}', tm=False)
-      totalNodes += lns
+      info(f'{lastSeq:>8} x "{nType}" node {slotRep}', tm=False)
+      totalNodes += lastSeq
     info(f'{totalNodes:>8} nodes of all types', tm=False)
 
     self.totalNodes = totalNodes
@@ -352,26 +390,26 @@ class Tokens(object):
     self._showErrors()
 
   def _removeUnlinked(self):
-    info = self.tm.info
-    indent = self.tm.indent
+    info = self.TF.tm.info
+    indent = self.TF.tm.indent
 
     if not self.good:
       return
 
-    nodesProto = self.nodesProto
+    nodeTypes = self.nodeTypes
+    nodes = self.nodes
     slotType = self.slotType
-    otypeProto = self.otypeProto
-    oslotsProto = self.oslotsProto
-    nodeFeaturesProto = self.nodeFeaturesProto
-    edgeFeaturesProto = self.edgeFeaturesProto
+    oslots = self.oslots
+    nodeFeatures = self.nodeFeatures
+    edgeFeatures = self.edgeFeatures
 
     unlinked = {}
 
-    for nType in nodesProto:
+    for nType in nodeTypes:
       if nType == slotType:
         continue
-      for seq in nodesProto[nType]:
-        if (nType, seq) not in oslotsProto:
+      for seq in range(1, nodeTypes[nType] + 1):
+        if (nType, seq) not in oslots:
           unlinked.setdefault(nType, []).append(seq)
 
     if unlinked:
@@ -379,7 +417,7 @@ class Tokens(object):
       indent(level=2)
       totalRemoved = 0
       for (nType, seqs) in unlinked.items():
-        theseNodesProto = nodesProto[nType]
+        theseNodes = nodes[nType]
         lSeqs = len(seqs)
         totalRemoved += lSeqs
         rep = ' ...' if lSeqs > 5 else ''
@@ -387,13 +425,11 @@ class Tokens(object):
         info(f'{lSeqs:>6} unlinked "{nType}" node{pl}: {seqs[0:5]}{rep}')
         for seq in seqs:
           node = (nType, seq)
-          theseNodesProto.discard(seq)
-          if node in otypeProto:
-            del otypeProto[node]
-          for (f, fData) in nodeFeaturesProto.items():
+          theseNodes.discard(seq)
+          for (f, fData) in nodeFeatures.items():
             if node in fData:
               del fData[node]
-          for (f, fData) in edgeFeaturesProto.items():
+          for (f, fData) in edgeFeatures.items():
             if node in fData:
               del fData[node]
               for (fNode, toValues) in fData:
@@ -406,50 +442,38 @@ class Tokens(object):
       indent(level=1)
 
   def _checkGraph(self):
-    info = self.tm.info
+    info = self.TF.tm.info
 
     if not self.good:
       return
 
     info(f'checking for nodes and edges ... ')
 
-    slots = self.slots
-    nodesProto = self.nodesProto
+    nodes = self.nodes
     errors = self.errors
-    edgeFeaturesProto = self.edgeFeaturesProto
-
-    # slot sequence
-
-    lSlots = len(slots)
-    mxSlots = max(slots)
-    mnSlots = min(slots)
-    if len(slots) != max(slots):
-      errors.setdefault('Slot sequence', []).append(
-          f'{lSlots} found between {mnSlots} and {mxSlots}:'
-          f' not an unbroken sequence from 1 to {lSlots}'
-      )
+    edgeFeatures = self.edgeFeatures
 
     # edges refer to nodes
 
-    for (k, featureData) in edgeFeaturesProto.items():
+    for (k, featureData) in edgeFeatures.items():
       for nFrom in featureData:
         (nType, seq) = nFrom
-        if nType not in nodesProto or seq not in nodesProto[nType]:
-          errors.setdefault('Edge feature: illegal node', []).append(
+        if nType not in nodes or seq not in nodes[nType]:
+          errors['Edge feature: illegal node'].append(
               f'"{k}": from-node  {nFrom} not in node set'
           )
           continue
         for nTo in featureData[nFrom]:
           (nType, seq) = nTo
-          if nType not in nodesProto or seq not in nodesProto[nType]:
-            errors.setdefault('Edge feature: illegal node', []).append(
+          if nType not in nodes or seq not in nodes[nType]:
+            errors['Edge feature: illegal node'].append(
                 f'"{k}": to-node  {nTo} not in node set'
             )
 
     self._showErrors()
 
   def _checkFeatures(self):
-    info = self.tm.info
+    info = self.TF.tm.info
 
     if not self.good:
       return
@@ -460,70 +484,79 @@ class Tokens(object):
     featureMeta = self.featureMeta
     metaData = self.metaData
 
-    nodesProto = self.nodesProto
-    nodeFeaturesProto = self.nodeFeaturesProto
-    edgeFeaturesProto = self.edgeFeaturesProto
+    nodes = self.nodes
+    nodeFeatures = self.nodeFeatures
+    edgeFeatures = self.edgeFeatures
 
     errors = self.errors
 
     for feat in intFeatures:
-      if feat not in nodeFeaturesProto and feat not in edgeFeaturesProto:
-        errors.setdefault('intFeatures', []).append(
+      if feat not in nodeFeatures and feat not in edgeFeatures:
+        errors['intFeatures'].append(
             f'"{feat}" is declared as integer valued, but this feature does not occur'
         )
     for nType in self.sectionTypes:
-      if nType not in nodesProto:
-        errors.setdefault('sections', []).append(
+      if nType not in nodes:
+        errors['sections'].append(
             f'node type "{nType}" is declared as a section type, but this node type does not occur'
         )
     for feat in self.sectionFeatures:
-      if feat not in nodeFeaturesProto:
-        errors.setdefault('sections', []).append(
+      if feat not in nodeFeatures:
+        errors['sections'].append(
             f'"{feat}" is declared as a section feature, but this node feature does not occur'
         )
     for feat in self.textFeatures:
-      if feat not in nodeFeaturesProto:
-        errors.setdefault('text formats', []).append(
+      if feat not in nodeFeatures:
+        errors['text formats'].append(
             f'"{feat}" is used in a text format, but this node feature does not occur'
         )
 
     for feat in WARP:
-      if feat in nodeFeaturesProto or feat in edgeFeaturesProto:
-        errors.setdefault(feat, []).append(f'Do not construct the "{feat}" feature yourself')
+      if feat in nodeFeatures or feat in edgeFeatures:
+        errors[feat].append(f'Do not construct the "{feat}" feature yourself')
 
-    for feat in sorted(nodeFeaturesProto) + sorted(edgeFeaturesProto):
+    for feat in sorted(nodeFeatures) + sorted(edgeFeatures):
       if feat not in WARP and feat not in self.featureMeta:
-        errors.setdefault('feature metadata', []).append(
+        errors['feature metadata'].append(
             f'node feature "{feat}" has no metadata in featureMeta'
         )
 
     for feat in sorted(featureMeta):
-      if feat not in WARP and feat not in nodeFeaturesProto and feat not in edgeFeaturesProto:
-        errors.setdefault('feature metadata', []).append(
+      if feat not in WARP and feat not in nodeFeatures and feat not in edgeFeatures:
+        errors['feature metadata'].append(
             f'node feature "{feat}" has metadata in featureMeta but does not occur'
         )
 
-    for feat in sorted(edgeFeaturesProto):
-      metaData.setdefault(feat, {})['edgeValues'] = True
+    for (feat, featData) in sorted(edgeFeatures.items()):
+      hasValues = False
+      for (nodeTo, toValues) in featData.items():
+        if any(v is not None for v in toValues.values()):
+          hasValues = True
+          break
+
+      if not hasValues:
+        edgeFeatures[feat] = {nodeTo: set(toValues) for (nodeTo, toValues) in featData.items()}
+
+      metaData.setdefault(feat, {})['edgeValues'] = hasValues
 
     self._showErrors()
 
   def _reorderNodes(self):
-    info = self.tm.info
+    info = self.TF.tm.info
 
     if not self.good:
       return
 
     info('reordering nodes ...')
 
-    nodesProto = self.nodesProto
-    slots = self.slots
+    nodeTypes = self.nodeTypes
+    nodes = self.nodes
     slotType = self.slotType
 
-    nTypes = (slotType,) + tuple(sorted(nType for nType in nodesProto if nType != slotType))
+    nTypes = (slotType,) + tuple(sorted(nType for nType in nodes if nType != slotType))
 
     self.nodeMap = {}
-    self.maxSlot = len(slots)
+    self.maxSlot = nodeTypes[slotType]
 
     nodeMap = self.nodeMap
     maxSlot = self.maxSlot
@@ -531,16 +564,16 @@ class Tokens(object):
     n = 0
 
     for nType in nTypes:
-      nodes = nodesProto[nType]
       canonical = self._canonical(nType)
       if nType == slotType:
-        sortedNodes = range(1, maxSlot + 1)
+        sortedSeqs = range(1, maxSlot + 1)
       else:
-        info(f'Sorting {len(nodes)} nodes of type "{nType}"')
-        sortedNodes = sorted(nodes, key=canonical)
-      for node in sortedNodes:
+        seqs = nodes[nType]
+        info(f'Sorting {len(seqs)} nodes of type "{nType}"')
+        sortedSeqs = sorted(seqs, key=canonical)
+      for seq in sortedSeqs:
         n += 1
-        nodeMap[(nType, node)] = n
+        nodeMap[(nType, seq)] = n
 
     self.maxNode = n
     info(f'Max node = {n}')
@@ -548,11 +581,11 @@ class Tokens(object):
     self._showErrors()
 
   def _canonical(self, nType):
-    oslotsProto = self.oslotsProto
+    oslots = self.oslots
 
     def before(nodeA, nodeB):
-      slotsA = {x[1] for x in oslotsProto[(nType, nodeA)]}
-      slotsB = {x[1] for x in oslotsProto[(nType, nodeB)]}
+      slotsA = oslots[(nType, nodeA)]
+      slotsB = oslots[(nType, nodeB)]
       if slotsA == slotsB:
         return 0
 
@@ -563,8 +596,8 @@ class Tokens(object):
     return functools.cmp_to_key(before)
 
   def _reassignFeatures(self):
-    info = self.tm.info
-    indent = self.tm.indent
+    info = self.TF.tm.info
+    indent = self.TF.tm.indent
 
     if not self.good:
       return
@@ -572,22 +605,26 @@ class Tokens(object):
     info('reassigning feature values ...')
 
     nodeMap = self.nodeMap
-    otypeProto = self.otypeProto
-    oslotsProto = self.oslotsProto
-    nodeFeaturesProto = self.nodeFeaturesProto
-    edgeFeaturesProto = self.edgeFeaturesProto
-
-    nodeFeaturesProto['otype'] = otypeProto
-    edgeFeaturesProto['oslots'] = oslotsProto
-
+    oslots = self.oslots
     nodeFeatures = self.nodeFeatures
     edgeFeatures = self.edgeFeatures
+
+    otype = {n: nType for ((nType, seq), n) in nodeMap.items()}
+    oslots = {nodeMap[node]: slots for (node, slots) in oslots.items()}
+
+    nodeFeaturesProto = self.nodeFeatures
+    edgeFeaturesProto = self.edgeFeatures
+
+    nodeFeatures = collections.defaultdict(dict)
+    edgeFeatures = collections.defaultdict(lambda: collections.defaultdict(dict))
 
     indent(level=2)
 
     for k in sorted(nodeFeaturesProto):
       featureDataProto = nodeFeaturesProto[k]
-      info(f'node feature "{k}" with {len(featureDataProto)} nodes')
+      ln = len(featureDataProto)
+      pl = '' if ln == 1 else 's'
+      info(f'node feature "{k}" with {ln} node{pl}')
       featureData = {}
       for (node, value) in featureDataProto.items():
         featureData[nodeMap[node]] = value
@@ -595,13 +632,13 @@ class Tokens(object):
 
     for k in sorted(edgeFeaturesProto):
       featureDataProto = edgeFeaturesProto[k]
-      info(f'edge feature "{k}" with {len(featureDataProto)} start nodes')
+      ln = len(featureDataProto)
+      pl = '' if ln == 1 else 's'
+      info(f'edge feature "{k}" with {ln} start node{pl}')
       featureData = {}
       for (nodeFrom, toValues) in featureDataProto.items():
         if type(toValues) is set:
-          toData = set()
-          for nodeTo in toValues:
-            toData.add(nodeMap[nodeTo])
+          toData = {nodeMap[nodeTo] for nodeTo in toValues}
         else:
           toData = {}
           for (nodeTo, value) in toValues.items():
@@ -609,11 +646,14 @@ class Tokens(object):
         featureData[nodeMap[nodeFrom]] = toData
       edgeFeatures[k] = featureData
 
+    nodeFeatures['otype'] = otype
+    edgeFeatures['oslots'] = oslots
+
     indent(level=1)
 
-    self.oslotsProto = None
-    self.otypeProto = None
-    self.nodeFeaturesProto = None
-    self.edgeFeaturesProto = None
+    self.oslots = None
+    self.otype = None
+    self.nodeFeatures = nodeFeatures
+    self.edgeFeatures = edgeFeatures
 
     self._showErrors()
