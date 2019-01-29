@@ -1257,14 +1257,50 @@ Many checks will be performed.</p>
 14
 15
 16
-17</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.fabric</span> <span class="kn">import</span> <span class="n">Fabric</span>
-<span class="kn">from</span> <span class="nn">tf.convert.tokens</span> <span class="kn">import</span> <span class="n">Token</span>
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.fabric</span> <span class="kn">import</span> <span class="n">Fabric</span>
+<span class="kn">from</span> <span class="nn">tf.convert.walker</span> <span class="kn">import</span> <span class="n">CV</span>
 
-<span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">outDir</span><span class="p">)</span>
-<span class="n">token</span> <span class="o">=</span> <span class="n">Token</span><span class="p">(</span><span class="n">TF</span><span class="p">)</span>
+<span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">OUT_DIR</span><span class="p">)</span>
+<span class="n">cv</span> <span class="o">=</span> <span class="n">CV</span><span class="p">(</span><span class="n">TF</span><span class="p">)</span>
 
-<span class="n">good</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span>
-    <span class="n">tokenGenerator</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">director</span><span class="p">(</span><span class="n">cv</span><span class="p">):</span>
+  <span class="c1"># your code to unwrap your source data and trigger </span>
+  <span class="c1"># the generation of TF nodes, edges and features</span>
+
+<span class="n">slotType</span> <span class="o">=</span> <span class="s1">&#39;word&#39;</span>  <span class="c1"># or whatever you choose</span>
+<span class="n">otext</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># dictionary of config data for sections and text formats</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+<span class="n">generic</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># dictionary of metadata meant for all features</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+<span class="n">intFeatures</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># set of integer valued feature names</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+<span class="n">featureMeta</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># per feature dicts with metadata</span>
+   <span class="o">...</span>
+<span class="p">}</span>
+
+<span class="n">good</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span>
+    <span class="n">director</span><span class="p">,</span>
     <span class="n">slotType</span><span class="p">,</span>
     <span class="n">otext</span><span class="o">=</span><span class="n">otext</span><span class="p">,</span>
     <span class="n">generic</span><span class="o">=</span><span class="n">generic</span><span class="p">,</span>
@@ -1277,9 +1313,10 @@ Many checks will be performed.</p>
 </pre></div>
 </td></tr></table>
 
-<details class="info" open="open"><summary>Description</summary><p><code>token.convert0()</code> consumes the tokens,
-and uses it as directions to build a TF graph of nodes and edges and features.</p>
-<p>Most arguments of <code>convert()</code> are used to specify the right TF metadata.</p>
+<details class="info" open="open"><summary>Description</summary><p><code>cv.walk</code> takes your <code>director</code> function which should unravel the source.
+You have to program the <code>director</code>, which takes one argument: <code>cv</code>.
+From the <code>cv</code> you can use a few standard actions that instruct Text-Fabric
+to build a graph.</p>
 <p>This function will check whether the metadata makes sense and is minimally
 complete.</p>
 <p>After the creation of the feature data, some extra checks will be performed
@@ -1287,47 +1324,42 @@ to see whether the metadata matches the data and vice versa.</p>
 </details>
 <details class="hint"><summary>Destination directory</summary><p>The new feature data will be written to the output directory of the
 underlying TF object.
-In fact, the rules are exactly the same as for <code>TF.save()</code>.
-It is recommended to create this TF instance as follows:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">outDir</span><span class="p">)</span>
-</pre></div>
-</td></tr></table>
-
+In fact, the rules are exactly the same as for <code>TF.save()</code>.</p>
 </details>
-<details class="info"><summary>tokenGenerator</summary><p>A
-<a href="https://wiki.python.org/moin/Generators">generator function</a>
-that produces tokens.</p>
+<details class="info"><summary>director</summary><p>An ordinary function that takes one argument, the <code>cv</code> object, and
+should not deliver anything.</p>
 <p>Writing this function is the main job to do when you want to convert a data source
 to TF.</p>
 <p>When you walk through the input data source, you'll encounter things
 that have to become slots, non-slot nodes, edges and features in the new data set.</p>
-<p>You issue these things by means of the keyword <code>yield</code>.</p>
-<p>What you yield is a token, generated by one of the methods listed below.</p>
-<p>When Text-Fabric runs your token generator, it picks up the things you <code>yield</code>.</p>
-<p>When you yield slots or non slot nodes, Text-Fabric will return you a thing
-that stands for the node, and you can pick it up to save for later use:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">curPara</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">token</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="s1">&#39;para&#39;</span><span class="p">)</span>
+<p>You issue these things by means of an <em>method</em> from <code>cv</code>, such as
+<code>cv.slot()</code> or <code>cv.node(nodeType)</code>.</p>
+<p>When your action creates slots or non slot nodes,
+Text-Fabric will return you a reference to that node,
+that you can use later for more actions related to that node.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">curPara</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="s1">&#39;para&#39;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
 <p>There is always a current node.
-If a token must refer to a node, and no node is passed, it will use the current
-node.</p>
-<p>To add features to nodes, issue a <code>token.feature()</code> token.
+If an action must refer to a node, and no node is passed,
+it will use the current node.</p>
+<p>To add features to nodes, use a <code>cv.feature()</code> action.
 It will apply to the last node added, or you can pass it a node as argument.</p>
-<p>To add features to edges, issue a <code>token.edge()</code> token.
-It will require to node arguments: the <em>from</em> node and the <em>to</em> node.</p>
-<p>There is always a set of current embedder nodes.
-When you <code>yield</code> a slot node</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">curWord</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">token</span><span class="o">.</span><span class="n">slot</span><span class="p">()</span>
+<p>To add features to edges, issue a <code>cv.edge()</code> action.
+It will require two node arguments: the <em>from</em> node and the <em>to</em> node.</p>
+<p>There is always a set of current <em>embedder nodes</em>.
+When you create a slot node</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">curWord</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">slot</span><span class="p">()</span>
 </pre></div>
 </td></tr></table>
 
-<p>TF will link all current embedder nodes to the resulting slot.</p>
-<p>There are tokens to add nodes to the embedder nodes, to remove them from it,
+<p>then TF will link all current embedder nodes to the resulting slot.</p>
+<p>There are actions to add nodes to the set of embedder nodes,
+to remove them from it,
 and to add them again. </p>
-<details class="explanation" open="open"><summary>Token methods</summary><p>Tokens methods are class methods of the <code>Token</code> class.
-They are responsible for particular actions that steer the graph building.
+<details class="explanation" open="open"><summary><code>cv</code> action methods</summary><p>The <code>cv</code> class contains methods
+that are responsible for particular <em>actions</em> that steer the graph building.
 You can pass them additional arguments.</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
@@ -1336,40 +1368,40 @@ You can pass them additional arguments.</p>
 5
 6
 7
-8</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">token</span><span class="o">.</span><span class="n">slot</span><span class="p">()</span>
-<span class="n">n</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">token</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="n">nodeType</span><span class="p">)</span>
-<span class="k">yield</span> <span class="n">token</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
-<span class="k">yield</span> <span class="n">token</span><span class="o">.</span><span class="n">terminate</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-<span class="k">yield</span> <span class="n">token</span><span class="o">.</span><span class="n">resume</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-<span class="k">yield</span> <span class="n">token</span><span class="o">.</span><span class="n">feature</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
-<span class="k">yield</span> <span class="n">token</span><span class="o">.</span><span class="n">feature</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
-<span class="k">yield</span> <span class="n">token</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">mf</span><span class="p">,</span> <span class="n">mt</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+8</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">slot</span><span class="p">()</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="n">nodeType</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">terminate</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">resume</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">feature</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">feature</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">mf</span><span class="p">,</span> <span class="n">mt</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
-<details class="explanation"><summary>Remarks</summary><p>To yield a <strong>slot</strong> node, use <code>token.node</code>.</p>
+<details class="explanation"><summary>Remarks</summary><p>To make a <strong>slot</strong> node, use <code>cv.slot</code>.</p>
 <p>No further information is needed.
-Remember that you can add features to the node by later <code>token.feature</code>
-yields.</p>
-<p>To yield a <strong>non-slot node</strong>, use <code>token.node</code>.</p>
+Remember that you can add features to the node by later <code>cv.feature</code>
+calls.</p>
+<p>To make a <strong>non-slot node</strong>, use <code>cv.node</code>.</p>
 <p>You have to pass its <em>node type</em>, i.e. a string.
 Think of <code>sentence</code>, <code>paragraph</code>, <code>phrase</code>.
 Non slot nodes will be automatically added to the set of embedders.</p>
-<p>To <strong>terminate</strong> a node, use <code>token.terminate</code>.</p>
+<p>To <strong>terminate</strong> a node, use <code>cv.terminate</code>.</p>
 <p>The node will be removed from the set of current embedders.
 You can either terminate the current node, or a specific node <em>m</em>.
-This <em>m</em> must be the result of a previous <code>yield</code> expression.</p>
-<p>To <strong>resume</strong> a node, use <code>token.resume</code>.</p>
+This <em>m</em> must be the result of a previous <code>cv</code> action.</p>
+<p>To <strong>resume</strong> a node, use <code>cv.resume</code>.</p>
 <p>If you resume a non-slot node, you add it again to the set of embedders.
 No new node will be created.</p>
 <p>If you resume a slot node, it will be added to the set of current embedders.
 No new slot will be created.</p>
-<p>To add <strong>node features</strong>, use <code>token.feature()</code>.</p>
+<p>To add <strong>node features</strong>, use <code>cv.feature</code>.</p>
 <p>The features are passed as a list of keyword arguments.</p>
 <p>These features are added to the current node, or, if you pass a 
 node <em>m</em>, to <em>m</em>, which must have been obtained by an earlier
-<code>yield</code> expression.</p>
-<p>To add <strong>edge features</strong>, use <code>token.edge()</code>.</p>
+<code>cv</code> action.</p>
+<p>To add <strong>edge features</strong>, use <code>cv.edge</code>.</p>
 <p>You need to pass two nodes, <em>mFrom</em> and <em>mTo</em>.
 Together these specify an edge, and the features will be applied
 to this edge.</p>
