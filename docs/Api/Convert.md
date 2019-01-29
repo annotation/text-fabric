@@ -115,49 +115,52 @@
             yield token.edge(mf, mt, name=value, ... , name=value)
             ```
 
-            ***Remarks**
+            ??? explanation "Remarks"
+                To yield a **slot** node, use `token.node`.
 
-            To yield a **slot** node, use `token.node`.
+                No further information is needed.
+                Remember that you can add features to the node by later `token.feature`
+                yields.
 
-            No further information is needed.
-            Remember that you can add features to the node by later `token.feature`
-            yields.
+                To yield a **non-slot node**, use `token.node`.
 
-            To yield a **non-slot node**, use `token.node`.
+                You have to pass its *node type*, i.e. a string.
+                Think of `sentence`, `paragraph`, `phrase`.
+                Non slot nodes will be automatically added to the set of embedders.
 
-            You have to pass its *node type*, i.e. a string.
-            Think of `sentence`, `paragraph`, `phrase`.
-            Non slot nodes will be automatically added to the set of embedders.
+                To **terminate** a node, use `token.terminate`.
 
-            To **terminate** a node, use `token.terminate`.
+                The node will be removed from the set of current embedders.
+                You can either terminate the current node, or a specific node *m*.
+                This *m* must be the result of a previous `yield` expression.
 
-            The node will be removed from the set of current embedders.
-            You can either terminate the current node, or a specific node *m*.
-            This *m* must be the result of a previous `yield` expression.
+                To **resume** a node, use `token.resume`.
 
-            To **resume** a node, use `token.resume`.
+                If you resume a non-slot node, you add it again to the set of embedders.
+                No new node will be created.
 
-            If you resume a non-slot node, you add it again to the set of embedders.
-            No new node will be created.
+                If you resume a slot node, it will be added to the set of current embedders.
+                No new slot will be created.
 
-            If you resume a slot node, it will be added to the set of current embedders.
-            No new slot will be created.
+                To add **node features**, use `token.feature()`.
 
-            To add **node features**, use `token.feature()`.
+                The features are passed as a list of keyword arguments.
 
-            The features are passed as a list of keyword arguments.
+                These features are added to the current node, or, if you pass a 
+                node *m*, to *m*, which must have been obtained by an earlier
+                `yield` expression.
 
-            These features are added to the current node, or, if you pass a 
-            node *m*, to *m*, which must have been obtained by an earlier
-            `yield` expression.
+                To add **edge features**, use `token.edge()`.
 
-            To add **edge features**, use `token.edge()`.
+                You need to pass two nodes, *mFrom* and *mTo*.
+                Together these specify an edge, and the features will be applied
+                to this edge.
 
-            You need to pass two nodes, *mFrom* and *mTo*.
-            Together these specify an edge, and the features will be applied
-            to this edge.
+                The features are passed as a list of keyword arguments.
 
-            The features are passed as a list of keyword arguments.
+        ???+ hint "Example"
+            See the example for
+            [Old Babylonian](https://github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py)
 
     ??? info "slotType"
         The node type that acts as the type of the slots in the data set.

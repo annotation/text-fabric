@@ -294,7 +294,12 @@ class Token(object):
     stats = collections.Counter()
     info('Collecting tokens ...')
     i = 0
-    token = next(tokens)
+    try:
+      token = next(tokens)
+    except StopIteration:
+      print('No tokens!')
+      self.good = False
+      return
 
     try:
       while True:
@@ -304,7 +309,7 @@ class Token(object):
           error(f'Terminated at token {i} = {token}')
           self.good = False
           tokens.close()
-          continue
+          break
 
         tokenType = token[0]
         stats[tokenType] += 1
@@ -386,6 +391,18 @@ class Token(object):
     info(f'{totalNodes:>8} nodes of all types', tm=False)
 
     self.totalNodes = totalNodes
+
+    if curEmbedders:
+      embedCount = collections.Counter()
+      for (nType, seq) in curEmbedders:
+        embedCount[nType] += 1
+      for (nType, amount) in sorted(
+          embedCount.items(),
+          key=lambda x: (-x[1], x[0]),
+      ):
+        errors['Unterminated nodes'].append(
+            f'{nType}: {amount} x'
+        )
 
     self._showErrors()
 
@@ -589,8 +606,16 @@ class Token(object):
       if slotsA == slotsB:
         return 0
 
-      aMin = min(slotsA - slotsB)
-      bMin = min(slotsB - slotsA)
+      aWithoutB = slotsA - slotsB
+      if not aWithoutB:
+        return 1
+
+      bWithoutA = slotsB - slotsA
+      if not bWithoutA:
+        return -1
+
+      aMin = min(aWithoutB)
+      bMin = min(bWithoutA)
       return -1 if aMin < bMin else 1
 
     return functools.cmp_to_key(before)

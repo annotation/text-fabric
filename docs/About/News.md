@@ -28,6 +28,12 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.4.1
+
+2019-01-29
+
+Small fixes in the token converter.
+
 ## 7.4
 
 2019-01-25
