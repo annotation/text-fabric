@@ -5,38 +5,13 @@ import re
 from ..core.data import WARP
 
 
-class Token(object):
-  N = 'N'
-  T = 'T'
-  R = 'R'
-  F = 'F'
-  E = 'E'
-
-  @classmethod
-  def slot(cls):
-    return (cls.N, None)
-
-  @classmethod
-  def node(cls, nType):
-    return (cls.N, nType)
-
-  @classmethod
-  def terminate(cls, node=None):
-    return (cls.T, node)
-
-  @classmethod
-  def resume(cls, node):
-    return (cls.R, node)
-
-  @classmethod
-  def feature(cls, *nodes, **features):
-    if len(nodes) == 0:
-      return (cls.F, None, dict(features))
-    return (cls.F, nodes[0], dict(features))
-
-  @classmethod
-  def edge(cls, nodeFrom, nodeTo, **features):
-    return (cls.E, nodeFrom, nodeTo, dict(features))
+class CV(object):
+  S = 'slot'
+  N = 'node'
+  T = 'terminate'
+  R = 'resume'
+  F = 'feature'
+  E = 'edge'
 
   def __init__(self, TF):
     self.TF = TF
@@ -60,9 +35,9 @@ class Token(object):
     else:
       info('OK' if good else 'ERROR(S)')
 
-  def convert(
+  def walk(
       self,
-      tokens,
+      director,
       slotType,
       otext={},
       generic={},
@@ -73,7 +48,7 @@ class Token(object):
     indent = self.TF.tm.indent
 
     indent(level=0, reset=True)
-    info('Importing data from tokens ...')
+    info('Importing data from walking through the source ...')
 
     self.good = True
     self.errors = collections.defaultdict(list)
@@ -89,7 +64,7 @@ class Token(object):
     self._prepareMeta(otext, generic)
 
     indent(level=1, reset=True)
-    self._slurp(tokens)
+    self._follow(director)
 
     indent(level=1, reset=True)
     self._removeUnlinked()
@@ -240,25 +215,91 @@ class Token(object):
 
     self._showErrors()
 
-  def _checkType(self, k, v, i, tokenType):
+  def _checkType(self, k, v, featureType):
     if k in self.intFeatures:
       try:
         v = int(v)
       except Exception:
         self.errors[f'Not a number'].append(
-            f'token {i}: "{tokenType}" node feature "{k}": "{v}"'
+            f'"{featureType}" node feature "{k}": "{v}"'
         )
 
-  def _slurp(self, tokens):
+  def stop(self, msg):
+    self.TM.error(f'Forced stop: msg')
+    self.good = False
 
-    # node = yield (N, nodeType) : make a new node of type nodeType or slotNode
-    # (T, node)                  : terminate specified or current node
-    # (R, slot)                  : link current context nodes to the specified slot node
-    # (R, node)                  : resume the specified non slot node
-    # (F, node, featureDict)     : add features to specified or current node
-    # (E, nodeFrom, edgeFrom, featureDict)
-    #                            : add features to specified edge fron nodeFrom to nodeTo
-    #
+  def slot(self):
+    curSeq = self.curSeq
+    curEmbedders = self.curEmbedders
+    oslots = self.oslots
+
+    self.stats[self.S] += 1
+    nType = self.slotType
+
+    curSeq[nType] += 1
+    seq = curSeq[nType]
+    self.curNode = (nType, seq)
+
+    for eNode in curEmbedders:
+      oslots[eNode].add(seq)
+
+    return self.curNode
+
+  def node(self, nType):
+    curSeq = self.curSeq
+    curEmbedders = self.curEmbedders
+
+    self.stats[self.N] += 1
+
+    curSeq[nType] += 1
+    seq = curSeq[nType]
+    self.curNode = (nType, seq)
+
+    curEmbedders.add(self.curNode)
+
+    return self.curNode
+
+  def terminate(self, node=None):
+    self.stats[self.T] += 1
+    if node is None:
+      node = self.curNode
+    if node is not None:
+      self.curEmbedders.discard(node)
+
+  def resume(self, node):
+    curEmbedders = self.curEmbedders
+    oslots = self.oslots
+
+    self.stats[self.R] += 1
+    (nType, seq) = node
+    if nType == self.slotType:
+      for eNode in curEmbedders:
+        oslots[eNode].add(seq)
+    else:
+      curEmbedders.add(node)
+
+  def feature(self, *nodes, **features):
+    nodeFeatures = self.nodeFeatures
+
+    self.stats[self.F] += 1
+
+    node = self.curNode if len(nodes) == 0 else nodes[0]
+
+    for (k, v) in features.items():
+      self._checkType(k, v, self.N)
+      nodeFeatures[k][node] = v
+
+  def edge(self, nodeFrom, nodeTo, **features):
+    edgeFeatures = self.edgeFeatures
+
+    self.stats[self.E] += 1
+
+    for (k, v) in features.items():
+      self._checkType(k, v, self.E)
+      edgeFeatures[k][nodeFrom][nodeTo] = v
+
+  def _follow(self, director):
+
     # after node = yield ('N', nodeType) all slot nodes that are yielded
     # will be linked to node, until a ('T', node) is yielded.
     # If needed, you can resume this node again, after which new slot nodes
@@ -266,123 +307,48 @@ class Token(object):
     # If you resume a slot node, it all non slot nodes in the current context
     # will be linked to it.
 
-    error = self.TF.tm.error
     info = self.TF.tm.info
 
     if not self.good:
       return
 
-    info(f'Slurping tokens... ')
+    info(f'Following director... ')
 
     slotType = self.slotType
     errors = self.errors
 
-    curSeq = collections.Counter()
-    curEmbedders = set()
-    curNode = None
-    oslots = collections.defaultdict(set)
-    nodeFeatures = collections.defaultdict(dict)
-    edgeFeatures = collections.defaultdict(lambda: collections.defaultdict(dict))
-    nodes = collections.defaultdict(set)
+    self.oslots = collections.defaultdict(set)
+    self.nodeFeatures = collections.defaultdict(dict)
+    self.edgeFeatures = collections.defaultdict(lambda: collections.defaultdict(dict))
+    self.nodes = collections.defaultdict(set)
+    nodes = self.nodes
 
-    self.oslots = oslots
-    self.nodeFeatures = nodeFeatures
-    self.edgeFeatures = edgeFeatures
-    self.nodeTypes = curSeq
-    self.nodes = nodes
+    self.curSeq = collections.Counter()
+    self.curNode = None
+    self.curEmbedders = set()
+    curEmbedders = self.curEmbedders
 
-    stats = collections.Counter()
-    info('Collecting tokens ...')
-    i = 0
-    try:
-      token = next(tokens)
-    except StopIteration:
-      print('No tokens!')
+    self.stats = {actionType: 0 for actionType in (
+        self.S,
+        self.N,
+        self.T,
+        self.R,
+        self.F,
+        self.E,
+    )}
+
+    director(self)
+
+    if not self.stats:
       self.good = False
       return
 
-    try:
-      while True:
-        i += 1
-
-        if not token:
-          error(f'Terminated at token {i} = {token}')
-          self.good = False
-          tokens.close()
-          break
-
-        tokenType = token[0]
-        stats[tokenType] += 1
-
-        if tokenType == self.N:
-          nType = token[1]
-          if nType is None:
-            isSlot = True
-            nType = slotType
-          else:
-            isSlot = False
-
-          curSeq[nType] += 1
-          seq = curSeq[nType]
-          curNode = (nType, seq)
-
-          if isSlot:
-            for eNode in curEmbedders:
-              oslots[eNode].add(seq)
-          else:
-            curEmbedders.add(curNode)
-
-        elif tokenType == self.T:
-          node = token[1]
-          if node is None:
-            node = curNode
-          if node is not None:
-            curEmbedders.discard(node)
-
-        elif tokenType == self.R:
-          node = token[1]
-          (nType, seq) = node
-          if nType == slotType:
-            for eNode in curEmbedders:
-              oslots[eNode].add(seq)
-          else:
-            curEmbedders.add(node)
-
-        elif tokenType == self.F:
-          (node, features) = token[1:]
-          if node is None:
-            node = curNode
-          for (k, v) in features.items():
-            self._checkType(k, v, i, tokenType)
-            nodeFeatures[k][node] = v
-
-        elif tokenType == self.E:
-          (nodeFrom, nodeTo, features) = token[1:]
-          for (k, v) in features.items():
-            self._checkType(k, v, i, tokenType)
-            edgeFeatures[k][nodeFrom][nodeTo] = v
-
-        else:
-          errors[f'Unrecognized token type'].append(
-              f'token {i}: "{tokenType}"'
-          )
-
-        if tokenType == self.N:
-          token = tokens.send((nType, seq))
-        else:
-          token = next(tokens)
-
-    except StopIteration:
-      pass
-
-    info(f'collected {i} tokens')
-
-    for tokenType in sorted(stats):
-      info(f'"{tokenType}" tokens: {stats[tokenType]}')
+    for (actionType, amount) in sorted(self.stats.items()):
+      info(f'"{actionType}" actions: {amount}')
 
     totalNodes = 0
 
-    for (nType, lastSeq) in sorted(curSeq.items()):
+    for (nType, lastSeq) in sorted(self.curSeq.items()):
       for seq in range(1, lastSeq + 1):
         nodes[nType].add(seq)
       slotRep = ' = slot type' if nType == slotType else ''
@@ -413,7 +379,7 @@ class Token(object):
     if not self.good:
       return
 
-    nodeTypes = self.nodeTypes
+    nodeTypes = self.curSeq
     nodes = self.nodes
     slotType = self.slotType
     oslots = self.oslots
@@ -566,7 +532,7 @@ class Token(object):
 
     info('reordering nodes ...')
 
-    nodeTypes = self.nodeTypes
+    nodeTypes = self.curSeq
     nodes = self.nodes
     slotType = self.slotType
 

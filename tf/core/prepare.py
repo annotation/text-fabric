@@ -178,6 +178,8 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
   sTypes = itemize(otext['sectionTypes'], ',')
   sec1 = {}
   sec2 = {}
+  nestingProblems = collections.Counter()
+
   if len(sTypes) < 2:
     return (sec1, sec2)
   if len(sTypes) < 3:
@@ -186,8 +188,9 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     for n1 in range(support1[0], support1[1] + 1):
       n0s = tuple(x for x in levUp[n1 - 1] if otype[x - maxSlot - 1] == sTypes[0])
       if not n0s:
+        nestingProblems[f'section {sTypes[1]} without containing {sTypes[0]}'] += 1
         continue
-      n0 = tuple(x for x in levUp[n1 - 1] if otype[x - maxSlot - 1] == sTypes[0])[0]
+      n0 = n0s[0]
       n1s = sFeats[1][n1]
       if n0 not in sec1:
         sec1[n0] = {}
@@ -201,8 +204,16 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
   c2 = 0
   support2 = support[sTypes[2]]
   for n2 in range(support2[0], support2[1] + 1):
-    n0 = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[0])[0]
-    n1 = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[1])[0]
+    n0s = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[0])
+    if not n0s:
+      nestingProblems[f'section {sTypes[2]} without containing {sTypes[0]}'] += 1
+      continue
+    n0 = n0s[0]
+    n1s = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[1])
+    if not n1s:
+      nestingProblems[f'section {sTypes[2]} without containing {sTypes[1]}'] += 1
+      continue
+    n1 = n1s[0]
     n1s = sFeats[1][n1]
     n2s = sFeats[2][n2]
     if n0 not in sec1:
@@ -213,4 +224,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     sec2.setdefault(n0, {}).setdefault(n1s, {})[n2s] = n2
     c2 += 1
   info(f'{c1} {sTypes[1]}s and {c2} {sTypes[2]}s indexed')
+  if nestingProblems:
+    for (msg, amount) in sorted(nestingProblems.items()):
+      error(f'WARNING: {amount:>4} x {msg}')
   return (sec1, sec2)

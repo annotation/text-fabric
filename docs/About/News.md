@@ -28,7 +28,7 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
-## 7.4.1
+## 7.4.1-2
 
 2019-01-29
 
