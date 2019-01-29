@@ -89,7 +89,7 @@ def rank(info, error, otype, order):
   return array.array('I', (nodesRank[n] for n in range(1, maxNode + 1)))
 
 
-def levUp(info, error, otype, oslots, rank):
+def levUp(info, error, otype, oslots, levels, rank):
   (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
   info('making inverse of edge feature oslots')
   oslotsInv = {}
@@ -111,27 +111,32 @@ def levUp(info, error, otype, oslots, rank):
             )
         )
     )
-  for n in range(maxSlot + 1, maxNode + 1):
-    mList = oslots[n - maxSlot - 1]
-    if len(mList) == 0:
-      embedders.append(tuple())
-    else:
-      contentEmbedders = functools.reduce(
-          lambda x, y: x & oslotsInv[y],
-          mList[1:],
-          oslotsInv[mList[0]],
-      )
-      embedders.append(
-          tuple(
-              sorted(
-                  [
-                      m for m in contentEmbedders if m != n
-                      # if rank[m - 1] < rank[n - 1]
-                  ],
-                  key=lambda k: -rank[k - 1],
-              )
-          )
-      )
+  for (nType, dummy, start, end) in levels:
+    if nType == slotType:
+      continue
+
+    # for n in range(maxSlot + 1, maxNode + 1):
+    for n in range(start, end + 1):
+      mList = oslots[n - maxSlot - 1]
+      if len(mList) == 0:
+        embedders.append(tuple())
+      else:
+        contentEmbedders = functools.reduce(
+            lambda x, y: x & oslotsInv[y],
+            mList[1:],
+            oslotsInv[mList[0]],
+        )
+        embedders.append(
+            tuple(
+                sorted(
+                    [
+                        m for m in contentEmbedders if m != n
+                        # if rank[m - 1] < rank[n - 1]
+                    ],
+                    key=lambda k: -rank[k - 1],
+                )
+            )
+        )
   return tuple(embedders)
 
 
@@ -179,8 +184,9 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     c1 = 0
     support1 = support[sTypes[1]]
     for n1 in range(support1[0], support1[1] + 1):
-      # otherwise we miss the last one
-      # for n2 in range(*support[sTypes[2]]):
+      n0s = tuple(x for x in levUp[n1 - 1] if otype[x - maxSlot - 1] == sTypes[0])
+      if not n0s:
+        continue
       n0 = tuple(x for x in levUp[n1 - 1] if otype[x - maxSlot - 1] == sTypes[0])[0]
       n1s = sFeats[1][n1]
       if n0 not in sec1:
@@ -195,8 +201,6 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
   c2 = 0
   support2 = support[sTypes[2]]
   for n2 in range(support2[0], support2[1] + 1):
-    # otherwise we miss the last one
-    # for n2 in range(*support[sTypes[2]]):
     n0 = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[0])[0]
     n1 = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[1])[0]
     n1s = sFeats[1][n1]

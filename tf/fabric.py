@@ -29,7 +29,7 @@ PRECOMPUTE = (
     (False, '__levels__', levels, WARP),
     (False, '__order__', order, WARP[0:2] + ('__levels__', )),
     (False, '__rank__', rank, (WARP[0], '__order__')),
-    (False, '__levUp__', levUp, WARP[0:2] + ('__rank__', )),
+    (False, '__levUp__', levUp, WARP[0:2] + ('__levels__', '__rank__', )),
     (False, '__levDown__', levDown, (WARP[0], '__levUp__', '__rank__')),
     (False, '__boundary__', boundary, WARP[0:2] + ('__rank__', )),
     (True, '__sections__', sections, WARP + ('__levUp__', '__levels__')),
