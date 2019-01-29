@@ -29,7 +29,7 @@ tf/applib/tables.py
 tf/applib/zipdata.py
 tf/convert/__init__.py
 tf/convert/mql.py
-tf/convert/tokens.py
+tf/convert/walker.py
 tf/core/__init__.py
 tf/core/api.py
 tf/core/data.py

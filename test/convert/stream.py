@@ -5,7 +5,9 @@ import re
 
 text = '''
 # Consider Phlebas
+$ author=Iain M. Banks
 
+## 1
 Everything about us,
 everything around us,
 everything we know [and can know of] is composed ultimately of patterns of nothing;
@@ -14,13 +16,21 @@ that’s the bottom line, the final truth.
 So where we find we have any control over those patterns,
 why not make the most elegant ones, the most enjoyable and good ones,
 in our own terms?
+
+## 2
+Besides,
+it left the humans in the Culture free to take care of the things that really mattered in life,
+such as [sports, games, romance,] studying dead languages,
+barbarian societies and impossible problems,
+and climbing high mountains without the aid of a safety harness.
 '''
 
-# The TF will have a node type for section
+# This is a book (section level 1)
+# divided by quotes (section level 2).
+# The authore of the book is given as metadata.
 #
-# Here we have one section, with title Consider Phlebas
-#
-# The sentences are the parts separated by blank lines: we have 2 sentences.
+# The sentences are the parts separated by blank lines:
+# we have 2 sentences in the first quote and 1 in the second one.
 # We will give each sentence a number within its section.
 #
 # The sentences are divided into lines.
@@ -29,7 +39,10 @@ in our own terms?
 # The gapped words will have a feature gqp=1
 #
 # Lines will be split into words, the slot nodes.
-# We split the word from its punctuation, and add that in a punc feature
+# We split the word from its punctuation, and add that in a punc feature.
+
+from tf.fabric import Fabric
+from tf.convert.walker import CV
 
 # The next function is the converter, that the user has to write
 

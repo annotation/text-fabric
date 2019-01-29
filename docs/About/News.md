@@ -28,6 +28,13 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.4.3
+
+2019-01-30
+
+A much simpler implementation of conversions from source data to Text-Fabric.
+Especially the code that the conversion writer has to produce is simplified.
+
 ## 7.4.1-2
 
 2019-01-29
