@@ -181,8 +181,9 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
   nestingProblems = collections.Counter()
 
   if len(sTypes) < 2:
-    return (sec1, sec2)
-  if len(sTypes) < 3:
+    pass
+
+  elif len(sTypes) < 3:
     c1 = 0
     support1 = support[sTypes[1]]
     for n1 in range(support1[0], support1[1] + 1):
@@ -198,33 +199,35 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
         sec1[n0][n1s] = n1
         c1 += 1
     info(f'{c1} {sTypes[1]}s indexed')
-    return (sec1, sec2)
 
-  c1 = 0
-  c2 = 0
-  support2 = support[sTypes[2]]
-  for n2 in range(support2[0], support2[1] + 1):
-    n0s = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[0])
-    if not n0s:
-      nestingProblems[f'section {sTypes[2]} without containing {sTypes[0]}'] += 1
-      continue
-    n0 = n0s[0]
-    n1s = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[1])
-    if not n1s:
-      nestingProblems[f'section {sTypes[2]} without containing {sTypes[1]}'] += 1
-      continue
-    n1 = n1s[0]
-    n1s = sFeats[1][n1]
-    n2s = sFeats[2][n2]
-    if n0 not in sec1:
-      sec1[n0] = {}
-    if n1s not in sec1[n0]:
-      sec1[n0][n1s] = n1
-      c1 += 1
-    sec2.setdefault(n0, {}).setdefault(n1s, {})[n2s] = n2
-    c2 += 1
-  info(f'{c1} {sTypes[1]}s and {c2} {sTypes[2]}s indexed')
+  else:
+    c1 = 0
+    c2 = 0
+    support2 = support[sTypes[2]]
+    for n2 in range(support2[0], support2[1] + 1):
+      n0s = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[0])
+      if not n0s:
+        nestingProblems[f'section {sTypes[2]} without containing {sTypes[0]}'] += 1
+        continue
+      n0 = n0s[0]
+      n1s = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[1])
+      if not n1s:
+        nestingProblems[f'section {sTypes[2]} without containing {sTypes[1]}'] += 1
+        continue
+      n1 = n1s[0]
+      n1s = sFeats[1][n1]
+      n2s = sFeats[2][n2]
+      if n0 not in sec1:
+        sec1[n0] = {}
+      if n1s not in sec1[n0]:
+        sec1[n0][n1s] = n1
+        c1 += 1
+      sec2.setdefault(n0, {}).setdefault(n1s, {})[n2s] = n2
+      c2 += 1
+    info(f'{c1} {sTypes[1]}s and {c2} {sTypes[2]}s indexed')
+
   if nestingProblems:
     for (msg, amount) in sorted(nestingProblems.items()):
       error(f'WARNING: {amount:>4} x {msg}')
+
   return (sec1, sec2)

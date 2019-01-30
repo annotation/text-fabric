@@ -28,6 +28,12 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.4.4
+
+2019-01-30
+
+Added checks to the converter for section structure.
+
 ## 7.4.3
 
 2019-01-30

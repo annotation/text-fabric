@@ -16,24 +16,59 @@ class CV(object):
   def __init__(self, TF):
     self.TF = TF
 
+  def _showWarnings(self):
+    error = self.TF.tm.error
+    info = self.TF.tm.info
+    indent = self.TF.tm.indent
+
+    warnings = self.warnings
+    warn = self.warn
+
+    if warn is None:
+      if warnings:
+        info('use `cv.walk(..., warn=False)` to make warnings visible')
+        info('use `cv.walk(..., warn=True)` to stop on warnings')
+    else:
+      method = error if warn else info
+
+      if warnings:
+        for (kind, msgs) in sorted(warnings.items()):
+          method(f'WARNING {kind} ({len(msgs)} x):')
+          indent(level=2)
+          for msg in sorted(set(msgs))[0:20]:
+            if msg:
+              method(f'{msg}', tm=False)
+        self.warnings = {}
+        if warn:
+          info('use `cv.walk(..., warn=False)` to continue after warnings')
+          info('use `cv.walk(..., warn=None)` to suppress warnings')
+          self.good = False
+        else:
+          info('use `cv.walk(..., warn=True)` to stop after warnings')
+          info('use `cv.walk(..., warn=None)` to suppress warnings')
+
   def _showErrors(self):
     error = self.TF.tm.error
     info = self.TF.tm.info
     indent = self.TF.tm.indent
 
-    good = self.good
     errors = self.errors
 
     if errors:
       for (kind, msgs) in sorted(errors.items()):
         error(f'ERROR {kind} ({len(msgs)} x):')
         indent(level=2)
-        for msg in msgs[0:20]:
-          error(f'{msg}', tm=False)
+        for msg in sorted(set(msgs))[0:20]:
+          if msg:
+            error(f'{msg}', tm=False)
       self.errors = {}
       self.good = False
-    else:
-      info('OK' if good else 'ERROR(S)')
+
+    if not errors:
+      if self.good:
+        info('OK')
+      else:
+        error('STOPPED because of warnings')
 
   def walk(
       self,
@@ -43,6 +78,7 @@ class CV(object):
       generic={},
       intFeatures=set(),
       featureMeta={},
+      warn=True,
   ):
     info = self.TF.tm.info
     indent = self.TF.tm.indent
@@ -52,6 +88,8 @@ class CV(object):
 
     self.good = True
     self.errors = collections.defaultdict(list)
+    self.warnings = collections.defaultdict(list)
+    self.warn = warn
     self.slotType = slotType
 
     self.intFeatures = intFeatures
@@ -89,6 +127,8 @@ class CV(object):
           nodeFeatures=self.nodeFeatures,
           edgeFeatures=self.edgeFeatures,
       )
+    self._showWarnings()
+
     return self.good
 
   def _prepareMeta(self, otext, generic):
@@ -122,6 +162,8 @@ class CV(object):
     self.intFeatures = intFeatures
     self.sectionTypes = []
     self.sectionFeatures = []
+    self.sectionFromLevel = {}
+    self.levelFromSection = {}
     self.textFormats = {}
     self.textFeatures = set()
 
@@ -134,20 +176,25 @@ class CV(object):
           'Consider adding configuration for text representation and section levels'
       )
     else:
-      sectionLevels = {}
+      sectionInfo = {}
       for f in ('sectionTypes', 'sectionFeatures'):
         if f not in otext:
           errors['Incomplete section specs in "otext"'].append(f'no key "{f}"')
-          sectionLevels[f] = []
+          sectionInfo[f] = []
         else:
-          sectionLevels[f] = otext[f].split(',')
-      sLevels = {f: len(sectionLevels[f]) for f in sectionLevels}
+          sFields = otext[f].split(',')
+          sectionInfo[f] = sFields
+          if f == 'sectionTypes':
+            for (i, s) in enumerate(sFields):
+              self.levelFromSection[s] = i + 1
+              self.sectionFromLevel[i + 1] = s
+      sLevels = {f: len(sectionInfo[f]) for f in sectionInfo}
       if min(sLevels.values()) != max(sLevels.values()):
         errors['Inconsistent section info'].append(
             ' but '.join(f'"{f}" has {sLevels[f]} levels' for f in sLevels)
         )
-      self.sectionFeatures = sectionLevels['sectionFeatures']
-      self.sectionTypes = sectionLevels['sectionTypes']
+      self.sectionFeatures = sectionInfo['sectionFeatures']
+      self.sectionTypes = sectionInfo['sectionTypes']
 
       textFormats = {}
       textFeatures = set()
@@ -173,7 +220,7 @@ class CV(object):
 
     info(f'SECTION TYPES:    {", ".join(self.sectionTypes)}', tm=False)
     info(f'SECTION FEATURES: {", ".join(self.sectionFeatures)}', tm=False)
-    info(f'TEXT    FEATURES"', tm=False)
+    info(f'TEXT    FEATURES:', tm=False)
     indent(level=2)
     for (fmt, feats) in sorted(textFormats.items()):
       info(f'{fmt:<20} {", ".join(sorted(feats))}', tm=False)
@@ -216,11 +263,13 @@ class CV(object):
     self._showErrors()
 
   def _checkType(self, k, v, featureType):
+    errors = self.errors
+
     if k in self.intFeatures:
       try:
         v = int(v)
       except Exception:
-        self.errors[f'Not a number'].append(
+        errors[f'Not a number'].append(
             f'"{featureType}" node feature "{k}": "{v}"'
         )
 
@@ -232,20 +281,34 @@ class CV(object):
     curSeq = self.curSeq
     curEmbedders = self.curEmbedders
     oslots = self.oslots
+    levelFromSection = self.levelFromSection
+    warnings = self.warnings
 
     self.stats[self.S] += 1
     nType = self.slotType
 
     curSeq[nType] += 1
     seq = curSeq[nType]
-    self.curNode = (nType, seq)
 
+    inSection = False
     for eNode in curEmbedders:
+      if eNode[0] in levelFromSection:
+        inSection = True
       oslots[eNode].add(seq)
 
-    return self.curNode
+    if levelFromSection and not inSection:
+      warnings['slot outside sections'].append(f'{seq}')
+
+    return (nType, seq)
 
   def node(self, nType):
+    slotType = self.slotType
+    errors = self.errors
+
+    if nType == slotType:
+      errors[f'use `cv.slot()` instead of `cv.node("{nType}")`'].append(None)
+      return
+
     curSeq = self.curSeq
     curEmbedders = self.curEmbedders
 
@@ -253,37 +316,37 @@ class CV(object):
 
     curSeq[nType] += 1
     seq = curSeq[nType]
-    self.curNode = (nType, seq)
+    node = (nType, seq)
 
-    curEmbedders.add(self.curNode)
+    self._checkSecLevel(nType, before=True)
+    curEmbedders.add(node)
 
-    return self.curNode
+    return node
 
-  def terminate(self, node=None):
+  def terminate(self, node):
     self.stats[self.T] += 1
-    if node is None:
-      node = self.curNode
     if node is not None:
       self.curEmbedders.discard(node)
+      self._checkSecLevel(node[0], before=False)
 
   def resume(self, node):
     curEmbedders = self.curEmbedders
     oslots = self.oslots
 
     self.stats[self.R] += 1
+
     (nType, seq) = node
     if nType == self.slotType:
       for eNode in curEmbedders:
         oslots[eNode].add(seq)
     else:
+      self._checkSecLevel(nType, before=None)
       curEmbedders.add(node)
 
-  def feature(self, *nodes, **features):
+  def feature(self, node, **features):
     nodeFeatures = self.nodeFeatures
 
     self.stats[self.F] += 1
-
-    node = self.curNode if len(nodes) == 0 else nodes[0]
 
     for (k, v) in features.items():
       self._checkType(k, v, self.N)
@@ -297,6 +360,33 @@ class CV(object):
     for (k, v) in features.items():
       self._checkType(k, v, self.E)
       edgeFeatures[k][nodeFrom][nodeTo] = v
+
+  def _checkSecLevel(self, nType, before=True):
+    levelFromSection = self.levelFromSection
+    warnings = self.warnings
+    curEmbedders = self.curEmbedders
+
+    msg = 'starts' if before is True else 'ends' if before is False else 'resumes'
+
+    if levelFromSection:
+      level = levelFromSection.get(nType, None)
+      if level is None:
+        return
+
+      for em in curEmbedders:
+        eType = em[0]
+        if eType == nType:
+          warnings[
+              f'section {nType} of level {level}'
+              f' enclosed in another {nType}'
+          ].append(None)
+        elif eType in levelFromSection:
+          eLevel = levelFromSection[eType]
+          if eLevel > level:
+            warnings[
+                f'section {nType} of level {level} {msg}'
+                f' inside a {eType} of level {eLevel}'
+            ].append(None)
 
   def _follow(self, director):
 
@@ -324,7 +414,6 @@ class CV(object):
     nodes = self.nodes
 
     self.curSeq = collections.Counter()
-    self.curNode = None
     self.curEmbedders = set()
     curEmbedders = self.curEmbedders
 
