@@ -43,6 +43,7 @@
         generic=generic,
         intFeatures=intFeatures,
         featureMeta=featureMeta,
+        warn=True,
     )
 
     if good:
@@ -57,6 +58,9 @@
 
         This function will check whether the metadata makes sense and is minimally
         complete.
+
+        During node creation the section structure will be watched,
+        and you will be warned if irregularities occur.
 
         After the creation of the feature data, some extra checks will be performed
         to see whether the metadata matches the data and vice versa.
@@ -87,10 +91,6 @@
         curPara = cv.node('para')
         ```
 
-        There is always a current node.
-        If an action must refer to a node, and no node is passed,
-        it will use the current node.
-
         To add features to nodes, use a `cv.feature()` action.
         It will apply to the last node added, or you can pass it a node as argument.
 
@@ -118,10 +118,8 @@
             ```python
             n = cv.slot()
             n = cv.node(nodeType)
-            cv.terminate()
             cv.terminate(m)
             cv.resume(m)
-            cv.feature(name=value, ... , name=value)
             cv.feature(m, name=value, ... , name=value)
             cv.edge(mf, mt, name=value, ... , name=value)
             ```
@@ -141,8 +139,7 @@
 
                 To **terminate** a node, use `cv.terminate`.
 
-                The node will be removed from the set of current embedders.
-                You can either terminate the current node, or a specific node *m*.
+                The node *m* will be removed from the set of current embedders.
                 This *m* must be the result of a previous `cv` action.
 
                 To **resume** a node, use `cv.resume`.
@@ -157,9 +154,8 @@
 
                 The features are passed as a list of keyword arguments.
 
-                These features are added to the current node, or, if you pass a 
-                node *m*, to *m*, which must have been obtained by an earlier
-                `cv` action.
+                These features are added to node *m*,
+                which must have been obtained by an earlier `cv` action.
 
                 To add **edge features**, use `cv.edge`.
 
@@ -170,7 +166,7 @@
                 The features are passed as a list of keyword arguments.
 
         ???+ hint "Example"
-            Follow the [conversion tutorial]({{tutnb}}/conversion/consider.ipynb)
+            Follow the [conversion tutorial]({{tutnb}}/text-fabric/convert.ipynb)
 
             Or study a more involved example for
             [Old Babylonian](https://github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py)
@@ -202,7 +198,14 @@
 
         Must be a dict of dicts.
 
+    ???+ info "warn=True"
+        This regulates the response to warnings:
 
+        `warn=True` (default): stop after warnings (as if they are errors);
+
+        `warn=False` continue after warnings but do show them;
+
+        `warn=None` suppress all warnings.
 ## MQL
 
 ??? info "Data interchange with MQL"
