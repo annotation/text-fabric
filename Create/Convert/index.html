@@ -1273,7 +1273,8 @@ Many checks will be performed.</p>
 32
 33
 34
-35</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.fabric</span> <span class="kn">import</span> <span class="n">Fabric</span>
+35
+36</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.fabric</span> <span class="kn">import</span> <span class="n">Fabric</span>
 <span class="kn">from</span> <span class="nn">tf.convert.walker</span> <span class="kn">import</span> <span class="n">CV</span>
 
 <span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">OUT_DIR</span><span class="p">)</span>
@@ -1304,6 +1305,7 @@ Many checks will be performed.</p>
     <span class="n">generic</span><span class="o">=</span><span class="n">generic</span><span class="p">,</span>
     <span class="n">intFeatures</span><span class="o">=</span><span class="n">intFeatures</span><span class="p">,</span>
     <span class="n">featureMeta</span><span class="o">=</span><span class="n">featureMeta</span><span class="p">,</span>
+    <span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">good</span><span class="p">:</span>
@@ -1317,6 +1319,8 @@ From the <code>cv</code> you can use a few standard actions that instruct Text-F
 to build a graph.</p>
 <p>This function will check whether the metadata makes sense and is minimally
 complete.</p>
+<p>During node creation the section structure will be watched,
+and you will be warned if irregularities occur.</p>
 <p>After the creation of the feature data, some extra checks will be performed
 to see whether the metadata matches the data and vice versa.</p>
 </details>
@@ -1339,9 +1343,6 @@ that you can use later for more actions related to that node.</p>
 </pre></div>
 </td></tr></table>
 
-<p>There is always a current node.
-If an action must refer to a node, and no node is passed,
-it will use the current node.</p>
 <p>To add features to nodes, use a <code>cv.feature()</code> action.
 It will apply to the last node added, or you can pass it a node as argument.</p>
 <p>To add features to edges, issue a <code>cv.edge()</code> action.
@@ -1364,14 +1365,10 @@ You can pass them additional arguments.</p>
 3
 4
 5
-6
-7
-8</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">slot</span><span class="p">()</span>
+6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">slot</span><span class="p">()</span>
 <span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="n">nodeType</span><span class="p">)</span>
-<span class="n">cv</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
 <span class="n">cv</span><span class="o">.</span><span class="n">terminate</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 <span class="n">cv</span><span class="o">.</span><span class="n">resume</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-<span class="n">cv</span><span class="o">.</span><span class="n">feature</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 <span class="n">cv</span><span class="o">.</span><span class="n">feature</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 <span class="n">cv</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">mf</span><span class="p">,</span> <span class="n">mt</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
@@ -1386,8 +1383,7 @@ calls.</p>
 Think of <code>sentence</code>, <code>paragraph</code>, <code>phrase</code>.
 Non slot nodes will be automatically added to the set of embedders.</p>
 <p>To <strong>terminate</strong> a node, use <code>cv.terminate</code>.</p>
-<p>The node will be removed from the set of current embedders.
-You can either terminate the current node, or a specific node <em>m</em>.
+<p>The node <em>m</em> will be removed from the set of current embedders.
 This <em>m</em> must be the result of a previous <code>cv</code> action.</p>
 <p>To <strong>resume</strong> a node, use <code>cv.resume</code>.</p>
 <p>If you resume a non-slot node, you add it again to the set of embedders.
@@ -1396,9 +1392,8 @@ No new node will be created.</p>
 No new slot will be created.</p>
 <p>To add <strong>node features</strong>, use <code>cv.feature</code>.</p>
 <p>The features are passed as a list of keyword arguments.</p>
-<p>These features are added to the current node, or, if you pass a 
-node <em>m</em>, to <em>m</em>, which must have been obtained by an earlier
-<code>cv</code> action.</p>
+<p>These features are added to node <em>m</em>,
+which must have been obtained by an earlier <code>cv</code> action.</p>
 <p>To add <strong>edge features</strong>, use <code>cv.edge</code>.</p>
 <p>You need to pass two nodes, <em>mFrom</em> and <em>mTo</em>.
 Together these specify an edge, and the features will be applied
@@ -1406,7 +1401,7 @@ to this edge.</p>
 <p>The features are passed as a list of keyword arguments.</p>
 </details>
 </details>
-<details class="hint" open="open"><summary>Example</summary><p>Follow the <a href="https://nbviewer.jupyter.org/github/annotation/blob/master/conversion/consider.ipynb">conversion tutorial</a></p>
+<details class="hint" open="open"><summary>Example</summary><p>Follow the <a href="https://nbviewer.jupyter.org/github/annotation/blob/master/text-fabric/convert.ipynb">conversion tutorial</a></p>
 <p>Or study a more involved example for
 <a href="https://github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py">Old Babylonian</a></p>
 </details>
@@ -1427,6 +1422,11 @@ to this edge.</p>
 </details>
 <details class="info"><summary>featureMeta</summary><p>For each node or edge feature descriptive metadata can be supplied.</p>
 <p>Must be a dict of dicts.</p>
+</details>
+<details class="info" open="open"><summary>warn=True</summary><p>This regulates the response to warnings:</p>
+<p><code>warn=True</code> (default): stop after warnings (as if they are errors);</p>
+<p><code>warn=False</code> continue after warnings but do show them;</p>
+<p><code>warn=None</code> suppress all warnings.</p>
 </details>
 </details>
 <h2 id="mql">MQL<a class="headerlink" href="#mql" title="Permanent link">&para;</a></h2>
