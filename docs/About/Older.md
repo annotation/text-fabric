@@ -1043,7 +1043,7 @@ Edges with edge values did not allow for the absence of values. Now they do.
 
 2017-10-05
 
-A major tweak in the [importMQL()](../Api/Convert.md#mql-import) function so that it can
+A major tweak in the [importMQL()](../Create/Convert.md#mql-import) function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
 version 3 of the [BHSA]({{etcbcgh}}/bhsa). In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
@@ -1054,7 +1054,7 @@ of slots.
 
 2017-10-05
 
-Another little tweak in the [importMQL()](../Api/Convert.md#mql-import) function so that it
+Another little tweak in the [importMQL()](../Create/Convert.md#mql-import) function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
 MQL for version 3 of the [BHSA]({{etcbcgh}}/bhsa).
 
@@ -1062,7 +1062,7 @@ MQL for version 3 of the [BHSA]({{etcbcgh}}/bhsa).
 
 2017-10-04
 
-Little tweak in the [importMQL()](../Api/Convert.md#mql-import) function so that it can handle
+Little tweak in the [importMQL()](../Create/Convert.md#mql-import) function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
 [extrabiblical]({{etcbcgh}}/extrabiblical) material.
 
@@ -1085,7 +1085,7 @@ Bug fix in reading edge features with values.
 2017-10-02
 
 MQL! You can now convert MQL data into a TF dataset:
-[importMQL()](../Api/Convert.md#mql-import). We had already [exportMQL()](../Api/Convert.md#mql-export).
+[importMQL()](../Create/Convert.md#mql-import). We had already [exportMQL()](../Create/Convert.md#mql-export).
 
 The consequence is that we can operate with much agility between the worlds of
 MQL and TF.
@@ -1367,7 +1367,7 @@ feature. Handy as a first step in exploring a feature.
 
 ### Export to MQL ###
 
-[`TF.exportMQL()`](../Api/Convert.md#export-to-mql): export a whole dataset as a MQL database.
+[`TF.exportMQL()`](../Create/Convert.md#export-to-mql): export a whole dataset as a MQL database.
 Including all modules that you have loaded with it.
 
 ### Changed
