@@ -76,6 +76,15 @@ Jump off to the [docs](https://annotation.github.io/text-fabric/)
 In order to work with Text-Fabric, you need a dataset to operate on.
 Such a data set must be in TF format.
 
+If you have digital text that you control, in whatever format, and want to
+convert it to *tf*,
+Text-Fabric meets you half-way.
+
+If you walk through the source, and tell TF what you see, it will pick that
+up and compile a valid TF dataset out of it.
+
+See the [conversion tutorial](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/conversion/consider.ipynb).
+
 # Apps
 
 It is possible to prepare a dataset in TF format and extend Text-Fabric with an *app*
