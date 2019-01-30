@@ -1,16 +1,16 @@
 # Convert
 
-## Token Stream
+## Walking the source
 
 ??? info "Data conversion to TF"
-    You can convert a dataset to TF by writing a token generator for it.
+    You can convert a dataset to TF by writing a function that walks through it.
 
-    That is a function that delivers a stream of tokens when reading the data.
-    Text-Fabric can consume that stream and build a valid Text-Fabric dataset out of it.
+    That is a function that triggers a sequence of actions when reading the data.
+    These actions drive Text-Fabric to build a valid Text-Fabric graph.
     Many checks will be performed.
 
 
-??? abstract "Token(TF)"
+??? abstract "cv.walk()"
     ```python
     from tf.fabric import Fabric
     from tf.convert.walker import CV
