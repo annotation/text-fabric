@@ -170,7 +170,9 @@
                 The features are passed as a list of keyword arguments.
 
         ???+ hint "Example"
-            See the example for
+            Follow the [conversion tutorial]({{tutnb}}/conversion/consider.ipynb)
+
+            Or study a more involved example for
             [Old Babylonian](https://github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py)
 
     ??? info "slotType"

@@ -267,7 +267,7 @@ Api reference : {APIREF}
           good = False
 
       if good:
-        self.tm.error(f'OK: {WARP[1]} is valid')
+        self.tm.info(f'OK: {WARP[1]} is valid')
 
     for (fName, data, isEdge, isConfig) in todo:
       edgeValues = False
