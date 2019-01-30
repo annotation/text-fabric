@@ -766,8 +766,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#token-stream" title="Token Stream" class="md-nav__link">
-    Token Stream
+  <a href="#walking-the-source" title="Walking the source" class="md-nav__link">
+    Walking the source
   </a>
   
 </li>
@@ -1200,8 +1200,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#token-stream" title="Token Stream" class="md-nav__link">
-    Token Stream
+  <a href="#walking-the-source" title="Walking the source" class="md-nav__link">
+    Walking the source
   </a>
   
 </li>
@@ -1233,13 +1233,13 @@
                 
                 
                 <h1 id="convert">Convert<a class="headerlink" href="#convert" title="Permanent link">&para;</a></h1>
-<h2 id="token-stream">Token Stream<a class="headerlink" href="#token-stream" title="Permanent link">&para;</a></h2>
-<details class="info"><summary>Data conversion to TF</summary><p>You can convert a dataset to TF by writing a token generator for it.</p>
-<p>That is a function that delivers a stream of tokens when reading the data.
-Text-Fabric can consume that stream and build a valid Text-Fabric dataset out of it.
+<h2 id="walking-the-source">Walking the source<a class="headerlink" href="#walking-the-source" title="Permanent link">&para;</a></h2>
+<details class="info"><summary>Data conversion to TF</summary><p>You can convert a dataset to TF by writing a function that walks through it.</p>
+<p>That is a function that triggers a sequence of actions when reading the data.
+These actions drive Text-Fabric to build a valid Text-Fabric graph.
 Many checks will be performed.</p>
 </details>
-<details class="abstract"><summary>Token(TF)</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span> 1
+<details class="abstract"><summary>cv.walk()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span> 1
  2
  3
  4
