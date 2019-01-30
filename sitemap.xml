@@ -101,11 +101,6 @@
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://annotation.github.io/text-fabric/Api/Convert/</loc>
-     <lastmod>2019-01-30</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-    <url>
      <loc>https://annotation.github.io/text-fabric/Api/Lib/</loc>
      <lastmod>2019-01-30</lastmod>
      <changefreq>daily</changefreq>
@@ -152,6 +147,11 @@
     </url>
     <url>
      <loc>https://annotation.github.io/text-fabric/Model/Search/</loc>
+     <lastmod>2019-01-30</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://annotation.github.io/text-fabric/Create/Convert/</loc>
      <lastmod>2019-01-30</lastmod>
      <changefreq>daily</changefreq>
     </url>

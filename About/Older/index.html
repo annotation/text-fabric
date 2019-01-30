@@ -1636,18 +1636,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Api/Convert/" title="Convert (MQL)" class="md-nav__link">
-      Convert (MQL)
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../../Api/Lib/" title="Lib" class="md-nav__link">
       Lib
     </a>
@@ -1838,6 +1826,18 @@
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
         
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Create/Convert/" title="Convert (MQL)" class="md-nav__link">
+      Convert (MQL)
+    </a>
+  </li>
+
         
           
           
@@ -4075,7 +4075,7 @@ with the <code>IN</code> relationship of MQL, like <code>[chapter book IN (Genes
 <p>Edges with edge values did not allow for the absence of values. Now they do.</p>
 <h2 id="306">3.0.6<a class="headerlink" href="#306" title="Permanent link">&para;</a></h2>
 <p>2017-10-05</p>
-<p>A major tweak in the <a href="../../Api/Convert/#mql-import">importMQL()</a> function so that it can
+<p>A major tweak in the <a href="../../Create/Convert/#mql-import">importMQL()</a> function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
 version 3 of the <a href="https://github.com/etcbc/bhsa">BHSA</a>. In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
@@ -4083,12 +4083,12 @@ Hebrew Bible. I transform a gapped sequence of monads into a continuous sequence
 of slots.</p>
 <h2 id="305">3.0.5<a class="headerlink" href="#305" title="Permanent link">&para;</a></h2>
 <p>2017-10-05</p>
-<p>Another little tweak in the <a href="../../Api/Convert/#mql-import">importMQL()</a> function so that it
+<p>Another little tweak in the <a href="../../Create/Convert/#mql-import">importMQL()</a> function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
 MQL for version 3 of the <a href="https://github.com/etcbc/bhsa">BHSA</a>.</p>
 <h2 id="304">3.0.4<a class="headerlink" href="#304" title="Permanent link">&para;</a></h2>
 <p>2017-10-04</p>
-<p>Little tweak in the <a href="../../Api/Convert/#mql-import">importMQL()</a> function so that it can handle
+<p>Little tweak in the <a href="../../Create/Convert/#mql-import">importMQL()</a> function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
 <a href="https://github.com/etcbc/extrabiblical">extrabiblical</a> material.</p>
 <h2 id="302-303">3.0.2, 3.0.3<a class="headerlink" href="#302-303" title="Permanent link">&para;</a></h2>
@@ -4102,7 +4102,7 @@ has moved from <a href="https://github.com/etcbc">ETCBC</a> to
 <h2 id="300">3.0.0<a class="headerlink" href="#300" title="Permanent link">&para;</a></h2>
 <p>2017-10-02</p>
 <p>MQL! You can now convert MQL data into a TF dataset:
-<a href="../../Api/Convert/#mql-import">importMQL()</a>. We had already <a href="../../Api/Convert/#mql-export">exportMQL()</a>.</p>
+<a href="../../Create/Convert/#mql-import">importMQL()</a>. We had already <a href="../../Create/Convert/#mql-export">exportMQL()</a>.</p>
 <p>The consequence is that we can operate with much agility between the worlds of
 MQL and TF.</p>
 <p>We can start with source data in MQL, convert it to TF, combine it with other TF
@@ -4292,7 +4292,7 @@ this, you will see it working quite hard to recompute a bunch of data.</p>
 <p><a href="../../Api/Features/#node-features"><code>F.feature.freqList()</code></a>: get a sorted frequency list for any
 feature. Handy as a first step in exploring a feature.</p>
 <h3 id="export-to-mql">Export to MQL<a class="headerlink" href="#export-to-mql" title="Permanent link">&para;</a></h3>
-<p><a href="../../Api/Convert/#export-to-mql"><code>TF.exportMQL()</code></a>: export a whole dataset as a MQL database.
+<p><a href="../../Create/Convert/#export-to-mql"><code>TF.exportMQL()</code></a>: export a whole dataset as a MQL database.
 Including all modules that you have loaded with it.</p>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <p>The slot numbers start at 0, no longer at 1. Personally I prefer the zero
