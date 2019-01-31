@@ -111,32 +111,27 @@ def levUp(info, error, otype, oslots, levels, rank):
             )
         )
     )
-  for (nType, dummy, start, end) in levels:
-    if nType == slotType:
-      continue
-
-    # for n in range(maxSlot + 1, maxNode + 1):
-    for n in range(start, end + 1):
-      mList = oslots[n - maxSlot - 1]
-      if len(mList) == 0:
-        embedders.append(tuple())
-      else:
-        contentEmbedders = functools.reduce(
-            lambda x, y: x & oslotsInv[y],
-            mList[1:],
-            oslotsInv[mList[0]],
-        )
-        embedders.append(
-            tuple(
-                sorted(
-                    [
-                        m for m in contentEmbedders if m != n
-                        # if rank[m - 1] < rank[n - 1]
-                    ],
-                    key=lambda k: -rank[k - 1],
-                )
-            )
-        )
+  for n in range(maxSlot + 1, maxNode + 1):
+    mList = oslots[n - maxSlot - 1]
+    if len(mList) == 0:
+      embedders.append(tuple())
+    else:
+      contentEmbedders = functools.reduce(
+          lambda x, y: x & oslotsInv[y],
+          mList[1:],
+          oslotsInv[mList[0]],
+      )
+      embedders.append(
+          tuple(
+              sorted(
+                  [
+                      m for m in contentEmbedders if m != n
+                      # if rank[m - 1] < rank[n - 1]
+                  ],
+                  key=lambda k: -rank[k - 1],
+              )
+          )
+      )
   return tuple(embedders)
 
 

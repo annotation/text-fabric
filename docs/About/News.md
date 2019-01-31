@@ -28,6 +28,35 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.4.5
+
+2019-01-31
+
+Bug fix in data pre-computation.
+The bug was introduced in version **7.4.2**.
+
+**If you have been running that version or a newer one, you might need to
+recompute your features. Here is how.**
+
+Manually: delete the `.tf` directory in `~/github/.../.../tf/version` or in
+`~/text-fabric-data/.../.../tf/version/`.
+
+This directory is hidden on the Mac and Linux and you can make it visible by pressing
+`Cmd+Shift+.` on the Mac, or you can navigate to this directory in a terminal and do
+`ls -al` (Mac and Linux).
+
+The other method can be used in a Jupyter notebook:
+
+```
+from tf.app import Fabric
+A = use(...)
+TF.clearCache
+```
+
+After this, restart the notebook, and run it again, except the `TF.clearCache`.
+
+If you are still pre 7.4.2, you're out of trouble. You can upgrade to 7.4.5
+
 ## 7.4.4
 
 2019-01-30
