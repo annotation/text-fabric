@@ -317,6 +317,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#745" title="7.4.5" class="md-nav__link">
+    7.4.5
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#744" title="7.4.4" class="md-nav__link">
     7.4.4
   </a>
@@ -1396,6 +1403,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#745" title="7.4.5" class="md-nav__link">
+    7.4.5
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#744" title="7.4.4" class="md-nav__link">
     7.4.4
   </a>
@@ -1630,6 +1644,28 @@ by calling the app as follows:</p>
 </details>
 <h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
+<h2 id="745">7.4.5<a class="headerlink" href="#745" title="Permanent link">&para;</a></h2>
+<p>2019-01-31</p>
+<p>Bug fix in data pre-computation.
+The bug was introduced in version <strong>7.4.2</strong>.</p>
+<p><strong>If you have been running that version or a newer one, you might need to
+recompute your features. Here is how.</strong></p>
+<p>Manually: delete the <code>.tf</code> directory in <code>~/github/.../.../tf/version</code> or in
+<code>~/text-fabric-data/.../.../tf/version/</code>.</p>
+<p>This directory is hidden on the Mac and Linux and you can make it visible by pressing
+<code>Cmd+Shift+.</code> on the Mac, or you can navigate to this directory in a terminal and do
+<code>ls -al</code> (Mac and Linux).</p>
+<p>The other method can be used in a Jupyter notebook:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>from tf.app import Fabric
+A = use(...)
+TF.clearCache
+</pre></div>
+</td></tr></table>
+
+<p>After this, restart the notebook, and run it again, except the <code>TF.clearCache</code>.</p>
+<p>If you are still pre 7.4.2, you're out of trouble. You can upgrade to 7.4.5</p>
 <h2 id="744">7.4.4<a class="headerlink" href="#744" title="Permanent link">&para;</a></h2>
 <p>2019-01-30</p>
 <p>Added checks to the converter for section structure.</p>
