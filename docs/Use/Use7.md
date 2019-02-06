@@ -47,13 +47,13 @@ By means of these arguments you can load extra features, either from your own
 system, or from GitHub.
 
 ```sh
-text-fabric --mod=bhsa etcbc/valence/tf
+text-fabric bhsa --mod=etcbc/valence/tf
 ```
 
 or if you want to check for new versions online:
 
 ```sh
-text-fabric --mod=bhsa etcbc/valence/tf
+text-fabric bhsa --mod=etcbc/valence/tf
 ```
 
 See the [incantation](../Api/App.md#incantation).

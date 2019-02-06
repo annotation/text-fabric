@@ -260,6 +260,15 @@ def makeFunc(feat, features):
     f1 = features[ft1].data
     f2 = features[ft2].data
     return (lambda n: (f1.get(n, f2.get(n, ''))))
+  else:
+    def getValue(n):
+      v = None
+      for ft in feat:
+        v = features[ft].data.get(n, None)
+        if v is not None:
+          break
+      return v or ''
+    return getValue
 
 
 def itemize(string, sep=None):
