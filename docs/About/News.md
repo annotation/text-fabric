@@ -28,6 +28,22 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
+## 7.4.6
+
+2019-02-07
+
+When querying integer valued features with inequality conditions, such as 
+
+```
+word level>0
+```
+
+an unpleasant error was raised if not all words have a level, or if some words have level `None`.
+
+That has been fixed now.
+
+Missing values and `None` values always cause the `>` and `<` comparisons to be `False`. 
+
 ## 7.4.5
 
 2019-01-31
