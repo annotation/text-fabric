@@ -1724,6 +1724,8 @@ do not have values).</p>
 <li><em>value</em> must be an integer (negative values allowed);</li>
 <li>You can do numeric comparisons only on number-valued features,
     not on string-valued features.</li>
+<li>If the feature in question is not defined for a node, or has the value <code>None</code>
+    the outcome is always <code>False</code>.</li>
 </ul>
 </li>
 <li><em>regular expression</em> must be a string that conforms to the Python

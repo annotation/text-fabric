@@ -317,6 +317,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#746" title="7.4.6" class="md-nav__link">
+    7.4.6
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#745" title="7.4.5" class="md-nav__link">
     7.4.5
   </a>
@@ -1403,6 +1410,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#746" title="7.4.6" class="md-nav__link">
+    7.4.6
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#745" title="7.4.5" class="md-nav__link">
     7.4.5
   </a>
@@ -1644,6 +1658,16 @@ by calling the app as follows:</p>
 </details>
 <h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
+<h2 id="746">7.4.6<a class="headerlink" href="#746" title="Permanent link">&para;</a></h2>
+<p>2019-02-07</p>
+<p>When querying integer valued features with inequality conditions, such as </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>word level&gt;0
+</pre></div>
+</td></tr></table>
+
+<p>an unpleasant error was raised if not all words have a level, or if some words have level <code>None</code>.</p>
+<p>That has been fixed now.</p>
+<p>Missing values and <code>None</code> values always cause the <code>&gt;</code> and <code>&lt;</code> comparisons to be <code>False</code>. </p>
 <h2 id="745">7.4.5<a class="headerlink" href="#745" title="Permanent link">&para;</a></h2>
 <p>2019-01-31</p>
 <p>Bug fix in data pre-computation.
