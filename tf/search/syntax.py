@@ -625,8 +625,8 @@ def deContext(quantifier, parentName):
 
 def _makeLimit(n, isLower):
   if isLower:
-    return lambda x: x > n
-  return lambda x: x < n
+    return lambda x: x is not None and x > n
+  return lambda x: x is not None and x < n
 
 
 def _esc(x):
