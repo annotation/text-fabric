@@ -86,18 +86,20 @@ def hlRep(app, rep, n, highlights):
   return f'<span {att}>{rep}</span>' if att else rep
 
 
-def hlText(app, nodes, highlights, **options):
+def hlText(app, nodes, highlights, textFunc=None, **options):
   api = app.api
-  T = api.T
+  if textFunc is None:
+    T = api.T
+    textFunc = T.text
 
   if not highlights:
-    return mdEsc(htmlEsc(T.text(nodes, **options)))
+    return mdEsc(htmlEsc(textFunc(nodes, **options)))
 
   result = ''
   for node in nodes:
     result += hlRep(
         app,
-        mdEsc(htmlEsc(T.text([node], **options))),
+        mdEsc(htmlEsc(textFunc([node], **options))),
         node,
         highlights,
     )

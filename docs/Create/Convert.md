@@ -80,7 +80,7 @@
         When you walk through the input data source, you'll encounter things
         that have to become slots, non-slot nodes, edges and features in the new data set.
 
-        You issue these things by means of an *method* from `cv`, such as
+        You issue these things by means of an *action method* from `cv`, such as
         `cv.slot()` or `cv.node(nodeType)`.
 
         When your action creates slots or non slot nodes,
@@ -122,6 +122,9 @@
             cv.resume(m)
             cv.feature(m, name=value, ... , name=value)
             cv.edge(mf, mt, name=value, ... , name=value)
+            cv.linked(m)
+            cv.get(feature, n)
+            cv.get(feature, nf, nt)
             ```
 
             ??? explanation "Remarks"
@@ -157,13 +160,39 @@
                 These features are added to node *m*,
                 which must have been obtained by an earlier `cv` action.
 
+                **If a feature value is `None` it will not be added!**
+
                 To add **edge features**, use `cv.edge`.
 
                 You need to pass two nodes, *mFrom* and *mTo*.
                 Together these specify an edge, and the features will be applied
                 to this edge.
 
+                You may pass values that are `None`, and a corresponding edge will be created.
+                If for all pairs *mFrom*, *mTo* the value is `None`, 
+                an edge without values will be created. For every *mFrom*, such a feature
+                essentially specifies a set of nodes `{` *mTo* `}`.
+
                 The features are passed as a list of keyword arguments.
+
+                To retrieve feature values, use `cv.get(feature, n)`, where `feature` is
+                the name of the feature, and `n` is the node.
+
+                For edge features use `cv.get(feature, nFrom, nTo)`.
+
+        ???+ hint "Unlinked nodes"
+            If you construct non-slot nodes without linking them to slots,
+            they will be removed when TF validates the collective result
+            of the action methods.
+            For each node type it will be reported which nodes are still unlinked.
+            But this information may be too terse to do something about it.
+
+            For that reason there is an action method which does nothing, but
+            returns the slots to which a node is currently linked: use
+
+            ```python
+            cv.linked(node)
+            ```
 
         ???+ hint "Example"
             Follow the [conversion tutorial]({{tutnb}}/text-fabric/convert.ipynb)
@@ -206,6 +235,11 @@
         `warn=False` continue after warnings but do show them;
 
         `warn=None` suppress all warnings.
+
+    ???+ info "generateTf=True"
+        You can pass `False` here to suppress the actual writing of TF data.
+        In that way you can dry-run the director to check for errors and warnings
+
 ## MQL
 
 ??? info "Data interchange with MQL"

@@ -79,6 +79,7 @@ class CV(object):
       intFeatures=set(),
       featureMeta={},
       warn=True,
+      generateTf=True,
   ):
     info = self.TF.tm.info
     indent = self.TF.tm.indent
@@ -119,14 +120,17 @@ class CV(object):
     indent(level=1, reset=True)
     self._reassignFeatures()
 
-    indent(level=0)
+    if generateTf:
 
-    if self.good:
-      self.good = self.TF.save(
-          metaData=self.metaData,
-          nodeFeatures=self.nodeFeatures,
-          edgeFeatures=self.edgeFeatures,
-      )
+      indent(level=0)
+
+      if self.good:
+        self.good = self.TF.save(
+            metaData=self.metaData,
+            nodeFeatures=self.nodeFeatures,
+            edgeFeatures=self.edgeFeatures,
+        )
+
     self._showWarnings()
 
     return self.good
@@ -318,7 +322,7 @@ class CV(object):
     seq = curSeq[nType]
     node = (nType, seq)
 
-    self._checkSecLevel(nType, before=True)
+    self._checkSecLevel(node, before=True)
     curEmbedders.add(node)
 
     return node
@@ -327,7 +331,11 @@ class CV(object):
     self.stats[self.T] += 1
     if node is not None:
       self.curEmbedders.discard(node)
-      self._checkSecLevel(node[0], before=False)
+      self._checkSecLevel(node, before=False)
+
+  def linked(self, node):
+    oslots = self.oslots
+    return tuple(oslots.get(node, []))
 
   def resume(self, node):
     curEmbedders = self.curEmbedders
@@ -340,7 +348,7 @@ class CV(object):
       for eNode in curEmbedders:
         oslots[eNode].add(seq)
     else:
-      self._checkSecLevel(nType, before=None)
+      self._checkSecLevel(node, before=None)
       curEmbedders.add(node)
 
   def feature(self, node, **features):
@@ -349,8 +357,25 @@ class CV(object):
     self.stats[self.F] += 1
 
     for (k, v) in features.items():
+      if v is None:
+        continue
       self._checkType(k, v, self.N)
       nodeFeatures[k][node] = v
+
+  def get(self, feature, *args):
+    errors = self.errors
+    nodeFeatures = self.nodeFeatures
+    edgeFeatures = self.edgeFeatures
+    nArgs = len(args)
+    if nArgs == 0 or nArgs > 2:
+      errors[f'use `cv.get(ft, n)` or `cv.get(ft, nf, nt)`'].append(None)
+      return None
+
+    return (
+        nodeFeatures.get(feature, {}).get(args[0], None)
+        if len(args) == 1 else
+        edgeFeatures.get(feature, {}).get(args[0], {}).get(args[1], None)
+    )
 
   def edge(self, nodeFrom, nodeTo, **features):
     edgeFeatures = self.edgeFeatures
@@ -361,10 +386,14 @@ class CV(object):
       self._checkType(k, v, self.E)
       edgeFeatures[k][nodeFrom][nodeTo] = v
 
-  def _checkSecLevel(self, nType, before=True):
+  def _checkSecLevel(self, node, before=True):
     levelFromSection = self.levelFromSection
+    sectionFeatures = self.sectionFeatures
+    nodeFeatures = self.nodeFeatures
     warnings = self.warnings
     curEmbedders = self.curEmbedders
+
+    (nType, seq) = node
 
     msg = 'starts' if before is True else 'ends' if before is False else 'resumes'
 
@@ -373,19 +402,27 @@ class CV(object):
       if level is None:
         return
 
+      headingFeature = sectionFeatures[level - 1]
+      nHeading = nodeFeatures.get(headingFeature, {}).get(node, '??')
+
       for em in curEmbedders:
         eType = em[0]
+        if eType in levelFromSection:
+          eLevel = levelFromSection.get(eType, None)
+          eHeadingFeature = sectionFeatures[eLevel - 1]
+          eHeading = nodeFeatures.get(eHeadingFeature, {}).get(em, '??')
+
         if eType == nType:
           warnings[
-              f'section {nType} of level {level}'
-              f' enclosed in another {nType}'
+              f'section {nType} "{nHeading}" of level {level}'
+              f' enclosed in another {nType}: {eHeading}'
           ].append(None)
         elif eType in levelFromSection:
           eLevel = levelFromSection[eType]
           if eLevel > level:
             warnings[
-                f'section {nType} of level {level} {msg}'
-                f' inside a {eType} of level {eLevel}'
+                f'section {nType} "{nHeading}" of level {level} {msg}'
+                f' inside a {eType} "{eHeading}" of level {eLevel}'
             ].append(None)
 
   def _follow(self, director):

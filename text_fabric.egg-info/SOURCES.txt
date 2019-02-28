@@ -80,6 +80,10 @@ tf/server/static/fonts/SBL_Hbrw.woff
 tf/server/static/fonts/SILEOT.eot
 tf/server/static/fonts/SILEOT.ttf
 tf/server/static/fonts/SILEOT.woff
+tf/server/static/fonts/Santakku.ttf
+tf/server/static/fonts/Santakku.woff
+tf/server/static/fonts/SantakkuM.ttf
+tf/server/static/fonts/SantakkuM.woff
 tf/server/static/fonts/SyrCOMEdessa.otf
 tf/server/static/fonts/SyrCOMEdessa.woff
 tf/server/static/fonts/fa-brands-400.eot

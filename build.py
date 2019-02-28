@@ -204,7 +204,7 @@ def shipDocs():
 
 
 def shipData(app, remaining):
-  (commit, appDir) = findApp(app, False, False)
+  (commit, appDir) = findApp(app, True, False)
   if not appDir:
     console('Data not shipped')
   config = findAppConfig(app, appDir)

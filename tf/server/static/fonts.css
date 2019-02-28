@@ -40,3 +40,18 @@
          url('/server/static/fonts/AmiriQuranColored.woff') format('woff'),
 	       url('/server/static/fonts/AmiriQuranColored.ttf')  format('truetype'); /* Safari, Android, iOS */
 }
+
+@font-face {
+	font-family: "Santakku";
+  src: local('Santakku');
+	src: url('/server/static/fonts/Santakku.woff') format('woff'), /* Modern Browsers */
+	     url('/server/static/fonts/Santakku.ttf')  format('truetype'); /* Safari, Android, iOS */
+}
+
+@font-face {
+	font-family: "SantakkuM";
+  src: local('SantakkuM');
+	src: url('/server/static/fonts/SantakkuM.woff') format('woff'), /* Modern Browsers */
+	     url('/server/static/fonts/SantakkuM.ttf')  format('truetype'); /* Safari, Android, iOS */
+}
+
