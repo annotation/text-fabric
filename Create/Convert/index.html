@@ -1334,7 +1334,7 @@ should not deliver anything.</p>
 to TF.</p>
 <p>When you walk through the input data source, you'll encounter things
 that have to become slots, non-slot nodes, edges and features in the new data set.</p>
-<p>You issue these things by means of an <em>method</em> from <code>cv</code>, such as
+<p>You issue these things by means of an <em>action method</em> from <code>cv</code>, such as
 <code>cv.slot()</code> or <code>cv.node(nodeType)</code>.</p>
 <p>When your action creates slots or non slot nodes,
 Text-Fabric will return you a reference to that node,
@@ -1365,12 +1365,18 @@ You can pass them additional arguments.</p>
 3
 4
 5
-6</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">slot</span><span class="p">()</span>
+6
+7
+8
+9</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">slot</span><span class="p">()</span>
 <span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="n">nodeType</span><span class="p">)</span>
 <span class="n">cv</span><span class="o">.</span><span class="n">terminate</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 <span class="n">cv</span><span class="o">.</span><span class="n">resume</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 <span class="n">cv</span><span class="o">.</span><span class="n">feature</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 <span class="n">cv</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">mf</span><span class="p">,</span> <span class="n">mt</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">linked</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">nt</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
@@ -1394,12 +1400,32 @@ No new slot will be created.</p>
 <p>The features are passed as a list of keyword arguments.</p>
 <p>These features are added to node <em>m</em>,
 which must have been obtained by an earlier <code>cv</code> action.</p>
+<p><strong>If a feature value is <code>None</code> it will not be added!</strong></p>
 <p>To add <strong>edge features</strong>, use <code>cv.edge</code>.</p>
 <p>You need to pass two nodes, <em>mFrom</em> and <em>mTo</em>.
 Together these specify an edge, and the features will be applied
 to this edge.</p>
+<p>You may pass values that are <code>None</code>, and a corresponding edge will be created.
+If for all pairs <em>mFrom</em>, <em>mTo</em> the value is <code>None</code>, 
+an edge without values will be created. For every <em>mFrom</em>, such a feature
+essentially specifies a set of nodes <code>{</code> <em>mTo</em> <code>}</code>.</p>
 <p>The features are passed as a list of keyword arguments.</p>
+<p>To retrieve feature values, use <code>cv.get(feature, n)</code>, where <code>feature</code> is
+the name of the feature, and <code>n</code> is the node.</p>
+<p>For edge features use <code>cv.get(feature, nFrom, nTo)</code>.</p>
 </details>
+</details>
+<details class="hint" open="open"><summary>Unlinked nodes</summary><p>If you construct non-slot nodes without linking them to slots,
+they will be removed when TF validates the collective result
+of the action methods.
+For each node type it will be reported which nodes are still unlinked.
+But this information may be too terse to do something about it.</p>
+<p>For that reason there is an action method which does nothing, but
+returns the slots to which a node is currently linked: use</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">cv</span><span class="o">.</span><span class="n">linked</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
 </details>
 <details class="hint" open="open"><summary>Example</summary><p>Follow the <a href="https://nbviewer.jupyter.org/github/annotation/blob/master/text-fabric/convert.ipynb">conversion tutorial</a></p>
 <p>Or study a more involved example for
@@ -1427,6 +1453,9 @@ to this edge.</p>
 <p><code>warn=True</code> (default): stop after warnings (as if they are errors);</p>
 <p><code>warn=False</code> continue after warnings but do show them;</p>
 <p><code>warn=None</code> suppress all warnings.</p>
+</details>
+<details class="info" open="open"><summary>generateTf=True</summary><p>You can pass <code>False</code> here to suppress the actual writing of TF data.
+In that way you can dry-run the director to check for errors and warnings</p>
 </details>
 </details>
 <h2 id="mql">MQL<a class="headerlink" href="#mql" title="Permanent link">&para;</a></h2>
