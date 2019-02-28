@@ -569,6 +569,7 @@ def getFeatures(
     app,
     n,
     features,
+    withName=None,
     o=None,
     givenValue={},
     plain=False,
@@ -589,7 +590,7 @@ def getFeatures(
   featureList = tuple(features) + xFeatures
   nFeatures = len(features)
 
-  withName = set(xFeatures)
+  showWithName = set(xFeatures)
 
   if not plain:
     featurePart = featurePartB
@@ -615,7 +616,8 @@ def getFeatures(
           value = valueRep if valueRep == oValueRep else f'{valueRep}{sep}{oValueRep}'
       if value is not None:
         value = value.replace('\n', '<br/>')
-        nameRep = f'<span class="f">{name}=</span>' if name in withName else ''
+        showName = withName or (withName is None and name in showWithName)
+        nameRep = f'<span class="f">{name}=</span>' if showName else ''
         xClass = ' xft' if name in extraSet else ''
         featureRep = f' <span class="{name.lower()}{xClass}">{nameRep}{value}</span>'
 

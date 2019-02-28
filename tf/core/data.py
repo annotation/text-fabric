@@ -412,7 +412,8 @@ class Data(object):
             nodeSpec2 = specFromRanges(rangesFromSet(mset))
             nodeSpec = '' if n == implicitNode else n
             implicitNode = n + 1
-            if value is None:
+            tfValue = value if value is None else tfFromValue(value)
+            if tfValue is None:
               fh.write('{}{}{}\n'.format(
                   nodeSpec,
                   '\t' if nodeSpec else '',
@@ -424,7 +425,7 @@ class Data(object):
                       nodeSpec,
                       '\t' if nodeSpec else '',
                       nodeSpec2,
-                      tfFromValue(value),
+                      tfValue,
                   )
               )
         else:
@@ -444,21 +445,26 @@ class Data(object):
           else:
             nodeSpec = specFromRanges(rangesFromSet(nset))
           implicitNode = nset[-1]
-          fh.write('{}{}{}\n'.format(
-              nodeSpec,
-              '\t' if nodeSpec else '',
-              tfFromValue(value),
-          ))
+          tfValue = value if value is None else tfFromValue(value)
+          if tfValue is not None:
+            fh.write('{}{}{}\n'.format(
+                nodeSpec,
+                '\t' if nodeSpec else '',
+                tfValue,
+            ))
       else:
         implicitNode = 1
         for n in sorted(data):
           nodeSpec = '' if n == implicitNode else n
           implicitNode = n + 1
-          fh.write('{}{}{}\n'.format(
-              nodeSpec,
-              '\t' if nodeSpec else '',
-              tfFromValue(data[n]),
-          ))
+          value = data[n]
+          tfValue = value if value is None else tfFromValue(value)
+          if tfValue is not None:
+            fh.write('{}{}{}\n'.format(
+                nodeSpec,
+                '\t' if nodeSpec else '',
+                tfValue,
+            ))
     return True
 
   def _readDataBin(self):

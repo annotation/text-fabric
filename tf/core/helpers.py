@@ -174,6 +174,12 @@ def valueFromTf(tf):
 
 
 def tfFromValue(val):
+  valTp = type(val)
+  isInt = valTp is int
+  isStr = valTp is str
+  if not isInt and not isStr:
+    console(f'Wrong type for a TF value: {valTp}: {val}', error=True)
+    return None
   return (
       str(val)
       if type(val) is int else val.replace('\\', '\\\\').replace('\t', '\\t').replace('\n', '\\n')
