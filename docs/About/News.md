@@ -28,20 +28,15 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
-## 7.4.8
+## 7.4.7
 
 2019-02-28
 
 When converting a new corpus, Old Babylonian Letters (cuneiform),
 I tuned the conversion module a bit.
-Several other small changes have been applied here and there.
-
-## 7.4.7
-
-2019-02-12
-
 Several improvements in the conversion program.
 Better warnings for potential problems.
+Several other small changes have been applied here and there.
 
 ## 7.4.6
 
