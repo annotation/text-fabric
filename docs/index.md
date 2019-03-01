@@ -29,6 +29,17 @@ what it is and where it came from. And after it, if you want to cite it, use thi
     you can call the Text-Fabric API from your Python programs.
     This works really well in Jupyter notebooks.
 
+??? abstract "Apps"
+    When the generic functions of TF are not enough, *apps* come into play.
+    TF offers an API for apps that contain custom code for the display
+    of specific corpora.
+    Apps can also make use of functions to retrieve online data and update
+    it later on.
+
+    * [current TF apps](About/Corpora.md)
+    * [app-api](Api/App.md)
+    * [implementation](Implementation/Apps.md)
+
 ??? abstract "Capabilities"
     ???+ abstract "Search for patterns"
         The [search API](Api/Search.md#search)
@@ -258,16 +269,3 @@ to see what Text-Fabric can reveal about the data.
     [SBL 2016]({{sbl1}})
     in the Lutheran Church of San Antonio.
 
-![bhsa](images/bhsa-app.png)
-
-*Above: Querying the BHSA data*
-
-*Below: Querying the Uruk data*
-
-![uruk](images/uruk-app.png)
-
-??? note "Implementation"
-    Details
-
-    * [apps](Implementation/Apps.md)
-    * [highlight](Implementation/Highlight.md)
