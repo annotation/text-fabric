@@ -590,7 +590,7 @@ def getFeatures(
   featureList = tuple(features) + xFeatures
   nFeatures = len(features)
 
-  showWithName = set(xFeatures)
+  showWithName = extraSet
 
   if not plain:
     featurePart = featurePartB
@@ -603,6 +603,8 @@ def getFeatures(
       if name in givenValue:
         value = givenValue[name]
       else:
+        if Fs(name) is None:
+          continue
         value = Fs(name).v(n)
         oValue = None if o is None else Fs(name).v(o)
         valueRep = None if value in d.noneValues else htmlEsc(value)
