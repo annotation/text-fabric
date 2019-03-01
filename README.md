@@ -1,6 +1,6 @@
 <img src="/docs/images/tf-small.png" align="left"/>
 
-# text-fabric
+# Text-Fabric
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1008899.svg)](https://doi.org/10.5281/zenodo.592193)
 
@@ -21,6 +21,15 @@ And if that is not enough,
 you can call the Text-Fabric API from your Python programs.
 This works really well in Jupyter notebooks.
  
+# Apps
+
+It is possible to prepare a dataset in TF format and extend Text-Fabric with an *app*
+that has further knowledge of that specific dataset.
+
+A TF-app takes care of automatic downloading of the dataset and it supports the Text-Fabric browser.
+
+[Current TF apps](https://annotation.github.io/text-fabric/About/Corpora/)
+
 # Install
 
 Text Fabric is a Python(3) package on the Python Package Index, so you can install it easily with `pip` from
@@ -52,18 +61,6 @@ and be loaded into text-fabric.
 Then your browser will open and load the search interface.
 There you'll find links to further help.
 
-<p>
-<img src="/docs/images/uruk-app.png"/>
-</p>
-
-<p>
-<img src="/docs/images/bhsa-app.png"/>
-</p>
-
-<p>
-<img src="/docs/images/quran-app.png"/>
-</p>
-
 # Documentation
 
 There is extensive documentation.
@@ -84,22 +81,6 @@ If you walk through the source, and tell TF what you see, it will pick that
 up and compile a valid TF dataset out of it.
 
 See the [conversion tutorial](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/text-fabric/convert.ipynb).
-
-# Apps
-
-It is possible to prepare a dataset in TF format and extend Text-Fabric with an *app*
-that has further knowledge of that specific dataset.
-
-The current distribution of Text-Fabric contains the following apps:
-
-app | dataset
---- | ---
-`bhsa` | [Biblia Hebraica Stuttgartensia Amstelodamensis](https://github.com/etcbc/bhsa)
-`peshitta` | [Peshitta (Syriac Old Testament](https://github.com/etcbc/peshitta)
-`syrnt` | [Syriac New Testament](https://github.com/etcbc/syrnt)
-`uruk` | [Proto-Cuneiform tablets from Uruk IV/III](https://github.com/nino-cunei/uruk)
-
-An app takes care of automatic downloading of the dataset and it supports the Text-Fabric browser.
 
 ---
 

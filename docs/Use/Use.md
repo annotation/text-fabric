@@ -25,7 +25,7 @@ Text-Fabric has a powerful yet intuitive search engine that works with
 [templates](Search.md),
 which follow closely the features of the annotations to the corpus.
 
-(Uruk corpus)
+(Uruk)
 
 ```
 tablet catalogId=P448702
@@ -35,7 +35,7 @@ tablet catalogId=P448702
         :> sign type=numeral
 ```
 
-(Bhsa corpus)
+(Bhsa)
 
 ```
 clause
@@ -49,7 +49,7 @@ clause
   phrase function=Subj
 ```
 
-(Bhsa corpus)
+(Quran)
 
 ```
 query = '''\n",
@@ -71,15 +71,3 @@ You can use it together with the generic [TF API](../Api/Fabric.md) to
 * search your corpus programmatically by means of the same templates,
 * prepare derived data for analysis in R, and
 * create new data and distribute it to others.
-
-Uruk programming example:
-
-![uruk-jup](../images/uruk-jup.png)
-
-Bhsa programming example:
-
-![bhsa-jup](../images/bhsa-jup.png)
-
-Quran programming example:
-
-![quran-jup](../images/quran-jup.png)

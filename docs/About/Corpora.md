@@ -12,7 +12,18 @@ with them programmatically.
 
 A TF app can also download and update the corpus *data*.
 
-A list of current apps can be found in 
+The list of current apps is
+
+acronym | language/writing system | name | period | long name
+--- | --- | --- | --- | ---
+[bhsa]({{anapp}}bhsa) | Hebrew | Hebrew Bible | 1000 BC - 900 AD | [Biblia Hebraica Stuttgartensia (Amstelodamensis)]({{bhsaabout}})
+[peshitta]({{anapp}}peshitta) | Syriac | Syriac Old Testament | 1000 BC - 900 AD | [Vetus Testamentum Syriace]({{peshittaabout}})
+[syrnt]({{anapp}}syrnt) | Syriac | Syriac New Testament | 0 - 1000 AD | [Novum Testamentum Syriace]({{syrntabout}})
+[quran]({{anapp}}quran) | Arabic | Quran | 600 - 900 AD | [Quranic Arabic Corpus]({{quranabout}})
+[oldbabylonian]({{anapp}}oldbabylonian) | Akkadian / cuneiform | Old Babylonian letters | 4000 - 3100 BC | [Altbabylonische Briefe in Umschrift und Übersetzung]({{oldbabylonianabout}})
+[uruk]({{anapp}}uruk) | proto-cuneiform | Uruk | 1900 - 1600 BC | [Archaic tablets from Uruk]({{urukabout}})
+
+All these apps can be found in 
 [annotation]({{an}}) on GitHub.
 Each repo named `app-`*appName* hosts the app named *appName*.
 
