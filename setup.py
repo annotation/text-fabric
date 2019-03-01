@@ -37,8 +37,8 @@ setup(
     keywords=[
         'text', 'linguistics',
         'database', 'graph',
-        'hebrew', 'bible', 'cuneiform', 'uruk',
-        'greek', 'syriac',
+        'hebrew', 'bible', 'peshitta', 'quran', 'cuneiform', 'uruk',
+        'greek', 'syriac', 'akkadian', 'babylonian'
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -53,15 +53,17 @@ setup(
         "Natural Language :: Hebrew",
         "Natural Language :: Greek",
         "Operating System :: MacOS :: MacOS X",
-        "Operating System :: Microsoft :: Windows",
+        "Operating System :: Microsoft :: Windows :: Windows 10",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: JavaScript",
         "Topic :: Religion",
         "Topic :: Scientific/Engineering :: Information Analysis",
+        "Topic :: Sociology :: History",
         "Topic :: Text Processing :: Filters",
         "Topic :: Text Processing :: Linguistic",
-        "Topic :: Text Processing :: Markup :: XML",
+        "Topic :: Text Processing :: Markup",
     ],
     long_description='''\
 Tools to read text corpora with (linguistic) annotations
