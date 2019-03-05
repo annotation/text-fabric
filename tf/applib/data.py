@@ -30,12 +30,21 @@ def getData(org, repo, relative, version, lgc, check, withPaths=False, keep=Fals
   ghBase = os.path.expanduser(GH_BASE)
 
   dataBase = hasData(lgc, org, repo, version, relative)
+
   if dataBase == ghBase:
     if not silent:
       console(f'''
 Using {org}/{repo}{relativeRep}{versionRep2} in {ghBase}
 ''')
     return (None, dataBase)
+
+  if lgc:
+    console(
+        f'''
+Cannot find {org}/{repo}{relativeRep}{versionRep2} in {ghBase}
+I need to look online ...
+'''
+    )
 
   currentRelease = None
 
