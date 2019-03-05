@@ -82,6 +82,12 @@ up and compile a valid TF dataset out of it.
 
 See the [conversion tutorial](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/text-fabric/convert.ipynb).
 
+# Contributing
+
+Want to contribute?
+
+Start with the [contribution notes](codestyle/contributing.md).
+
 ---
 
 <a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/annotation/text-fabric/directory/"><img src="/docs/images/swh-logo-archive.png" width="100" align="left"/></a>
