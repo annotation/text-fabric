@@ -28,6 +28,20 @@ Here is a quick overview of the
 * The TF-apps themselves. They are outside the this text-fabric repo, you find them under the same
   [organization](https://github.com/ammotation) as the repos whose names start with `-app`.
 
+## Paradigm
+
+Text-Fabric has parts that deal with long tables of data, especially the core part.
+Here we adopt a plain, iterative style for performance reasons.
+
+Parts that face the user directly, e.g. the top-level parts of an API are suitable for
+Object Oriented programming.
+We refrain from adding an OOP flavour all the way down to the smallest particles of data.
+
+However, in many cases we prefer Functional techniques to organise functionality:
+taking functions as arguments and delivering functions as results of other functions.
+
+In the Javascript parts we particularly are function-oriented.
+
 ## Style
 
 Programming the core requires ordinary Python programming and a bit of HTML + JQUERY + Javascript for the
