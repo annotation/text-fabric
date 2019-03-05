@@ -1670,8 +1670,16 @@ by calling the app as follows:</p>
 </pre></div>
 </td></tr></table></p>
 </details>
-<h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
+<h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
+<p>When looking for data in <code>lgc=True</code> mode, TF will report clearly when
+data cannot be found in local github clones.
+In such cases TF will look for an online release of the repo with
+the desired data attached.
+Before it was not clear enough that TF was looking online, despite the
+<code>lgc</code> flag, because of missing data.
+So if you misspelled a module path, you got messages that did not point
+you to the root cause.</p>
 <h2 id="747">7.4.7<a class="headerlink" href="#747" title="Permanent link">&para;</a></h2>
 <p>2019-02-28</p>
 <p>When converting a new corpus, Old Babylonian Letters (cuneiform),
