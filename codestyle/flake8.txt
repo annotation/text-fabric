@@ -1,0 +1,11 @@
+[flake8]
+ignore =
+    E111,
+    E114,
+    W503,
+    W504,
+    # E401,
+    # E402,
+    # E501,
+max-line-length = 100
+

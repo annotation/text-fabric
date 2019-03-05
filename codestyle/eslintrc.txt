@@ -1,0 +1,234 @@
+parserOptions:
+  ecmaFeatures:
+    jsx: true
+  sourceType: module
+  failOnError: true
+
+plugins:
+  - react
+
+settings:
+  react:
+    version: 16.2.0
+
+env:
+  browser: true
+  es6: true
+
+rules:
+  react/display-name: off
+  react/jsx-no-duplicate-props: warn
+  react/jsx-no-undef: error
+  react/jsx-uses-react: warn
+  react/jsx-uses-vars: warn
+  react/no-deprecated: warn
+  react/no-direct-mutation-state: warn
+  react/no-find-dom-node: warn
+  react/no-is-mounted: warn
+  react/no-unknown-property: warn
+  react/no-render-return-value: warn
+  react/prop-types: off
+  react/react-in-jsx-scope: warn
+  react/require-render-return: warn
+
+  react/no-array-index-key: off
+  react/no-did-mount-set-state:
+    - warn
+    - disallow-in-func
+  react/no-did-update-set-state:
+    - warn
+    - disallow-in-func
+  react/no-multi-comp:
+    - warn
+    - ignoreStateless: true
+  react/no-set-state: off
+  react/no-string-refs: warn
+  react/no-unescaped-entities: warn
+  react/no-unused-prop-types: warn
+  react/prefer-es6-class: 
+    - warn
+    - always
+  react/prefer-stateless-function: warn
+  react/require-default-props: off
+  react/require-optimization: off
+  react/self-closing-comp: warn
+  react/sort-comp: off
+  react/sort-prop-types: off
+  react/style-prop-object: warn
+  react/void-dom-elements-no-children: warn
+  react/jsx-boolean-value:
+    - warn
+    - always
+  react/jsx-closing-bracket-location: 
+    - warn
+    - tag-aligned
+  react/jsx-curly-spacing: 
+    - warn
+    - never
+  react/jsx-equals-spacing: 
+    - warn
+    - never
+  react/jsx-filename-extension: off
+  react/jsx-first-prop-new-line: 
+    - warn
+    - multiline-multiprop
+  react/jsx-handler-names:
+    - warn
+    - eventHandlerPrefix: handle
+      eventHandlerPropPrefix: on
+  react/jsx-indent:
+    - off
+    - 2
+  react/jsx-indent-props: off
+  react/jsx-key: warn
+  react/jsx-max-props-per-line:
+    - warn
+    - maximum: 1
+      when: multiline
+  react/jsx-no-bind: warn
+  react/jsx-no-comment-textnodes: warn
+  react/jsx-no-literals: warn
+  react/jsx-no-target-blank: warn
+  react/jsx-pascal-case: warn
+  react/jsx-sort-props:
+    - warn
+    - callbacksLast: true
+      noSortAlphabetically: true
+  react/jsx-tag-spacing:
+    - warn
+    - closingSlash: never
+      beforeSelfClosing: always
+      afterOpening: never
+  react/jsx-wrap-multilines: off
+
+  block-spacing:
+    - warn
+    - never
+  curly:
+    - warn
+    - all
+  no-unneeded-ternary:
+    - warn
+    - defaultAssignment: false
+  no-unused-vars:
+    - warn
+    - ignoreRestSiblings: true
+  no-implicit-globals: warn
+  no-invalid-this: off
+  no-loop-func: warn
+  no-multi-spaces: warn
+  no-new: warn
+  no-param-reassign: warn
+  no-return-assign:
+    - warn
+    - always
+  no-sequences: warn
+  no-unused-expressions: warn
+  no-useless-concat: warn
+  no-useless-escape: warn
+  camelcase:
+    - warn
+    - properties: always
+  comma-dangle:
+    - warn
+    - arrays: always-multiline
+      objects: always-multiline
+      imports: always-multiline
+      exports: always-multiline
+      functions: only-multiline
+  comma-spacing:
+    - warn
+    - before: false
+      after: true
+  computed-property-spacing:
+    - warn
+    - never
+  indent-legacy:
+    - off
+    - 2
+    - SwitchCase: 1
+  jsx-quotes:
+    - warn
+    - prefer-double
+  key-spacing:
+    - warn
+    - beforeColon: false
+      afterColon: true
+      mode: strict
+  keyword-spacing:
+    - warn
+    - before: true
+      after: true
+  no-trailing-spaces: warn
+  object-curly-newline: off
+  semi:
+    - warn
+    - never
+  semi-spacing: warn
+  space-before-blocks:
+    - warn
+    - always
+  space-before-function-paren:
+    - warn
+    - never
+  space-in-parens:
+    - warn
+    - never
+  space-infix-ops: warn
+  space-unary-ops:
+    - warn
+    - words: true
+      nonwords: false
+
+  no-template-curly-in-string: warn
+  no-unsafe-negation: warn
+  valid-jsdoc: off
+  arrow-body-style:
+    - warn
+    - as-needed
+  arrow-parens:
+    - warn
+    - as-needed
+  arrow-spacing:
+    - warn
+    - before: true
+      after: true
+  no-duplicate-imports: warn
+  no-useless-computed-key: warn
+  no-useless-constructor: warn
+  no-useless-rename: warn
+  no-var: warn
+  object-shorthand:
+    - warn
+    - always
+  prefer-arrow-callback: warn
+  prefer-const:
+    - warn
+    - destructuring: any
+      ignoreReadBeforeAssign: false
+  prefer-destructuring:
+    - warn
+    - array: false
+      object: true
+    - enforceForRenamedProperties: false
+  prefer-rest-params: warn
+  prefer-spread: warn
+  prefer-template: warn
+  rest-spread-spacing:
+    - warn
+    - never
+  template-curly-spacing:
+    - warn
+    - never
+  no-console:
+    - warn
+    - allow:
+      - error
+  no-constant-condition: warn
+  operator-linebreak:
+    - off
+    - before
+  no-unreachable: warn
+
+extends:
+  - eslint:recommended
