@@ -69,3 +69,11 @@ Note that in both languages
 * we prefer camelCase names;
   in Python we use underscores only in ALL_CAPS names, mostly constants,
   and private methods may start with an underscore. 
+
+## Releases
+
+We still do not have a formal release procedure with evaluation of intermediate releases.
+The user base is still small, and we react fast to upcoming requirements.
+
+Once we have more diverse users and more developers, we will consider a more
+thoughtful release procedure.
