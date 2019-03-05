@@ -4,6 +4,7 @@ from ..core.helpers import console, setDir
 from .app import findAppConfig
 from .helpers import getLocalDir, configure
 from .links import linksApi
+from .text import textApi
 from .sections import sectionsApi
 from .displaysettings import displaySettingsApi
 from .display import displayApi
@@ -92,6 +93,7 @@ def setupApi(
 
   if app.api:
     linksApi(app, appName, silent)
+    textApi(app)
     searchApi(app)
     sectionsApi(app)
     displaySettingsApi(app)

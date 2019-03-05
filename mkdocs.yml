@@ -172,8 +172,8 @@ nav:
     - Search: 'Use/Search.md'
     - v7-Guide: 'Use/Use7.md'
   - Api:
-    - 'Apps': 'Api/App.md'
-    - 'Data': 'Api/Data.md'
+    - Apps: 'Api/App.md'
+    - Data: 'Api/Data.md'
     - Core:
       - 'TF': 'Api/Fabric.md'
       - 'F - Features': 'Api/Features.md'
@@ -186,23 +186,23 @@ nav:
       - 'Lib': 'Api/Lib.md'
       - 'Helpers': 'Api/Helpers.md'
   - Writing:
-    - 'Arabic': 'Writing/Arabic.html'
-    - 'Hebrew': 'Writing/Hebrew.html'
-    - 'Syriac': 'Writing/Syriac.html'
-    - 'Transcription': 'Writing/Transcription.md'
+    - Arabic: 'Writing/Arabic.html'
+    - Hebrew: 'Writing/Hebrew.html'
+    - Syriac: 'Writing/Syriac.html'
+    - Transcription: 'Writing/Transcription.md'
   - Model:
-    - 'Data': 'Model/Data-Model.md'
-    - 'Format': 'Model/File-formats.md'
-    - 'Tweaks': 'Model/Optimizations.md'
-    - 'Search': 'Model/Search.md'
+    - Data: 'Model/Data-Model.md'
+    - Format: 'Model/File-formats.md'
+    - Tweaks: 'Model/Optimizations.md'
+    - Search: 'Model/Search.md'
   - Create:
     - 'Convert (MQL)': 'Create/Convert.md'
     - 'Make TF': 'Create/CreateTF.md'
     - 'Example data': 'Create/ExampleText.md'
   - Server:
-    - 'Kernel': 'Server/Kernel.md'
-    - 'Web': 'Server/Web.md'
-    - 'Common': 'Server/Common.md'
+    - Kernel: 'Server/Kernel.md'
+    - Web: 'Server/Web.md'
+    - Common: 'Server/Common.md'
   - Code:
     - 'Overview' : 'Code/Overview.md'
     - 'Tests' : 'Code/Tests.md'
@@ -217,15 +217,15 @@ nav:
     - 'Stats (TF-apps)' : 'Code/StatsApps.md'
     - 'Stats (Tests)' : 'Code/StatsTest.md'
   - Implementation:
-    - 'Apps': 'Implementation/Apps.md'
-    - 'Setup': 'Implementation/Setup.md'
-    - 'Data': 'Implementation/Data.md'
-    - 'Display': 'Implementation/Display.md'
-    - 'Highlight' : 'Implementation/Highlight.md'
-    - 'Links' : 'Implementation/Links.md'
-    - 'Search' : 'Implementation/Search.md'
-    - 'Tables' : 'Implementation/Tables.md'
-    - 'Helpers' : 'Implementation/Helpers.md'
+    - Apps: 'Implementation/Apps.md'
+    - Setup: 'Implementation/Setup.md'
+    - Data: 'Implementation/Data.md'
+    - Display: 'Implementation/Display.md'
+    - Highlight : 'Implementation/Highlight.md'
+    - Links : 'Implementation/Links.md'
+    - Search : 'Implementation/Search.md'
+    - Tables : 'Implementation/Tables.md'
+    - Helpers : 'Implementation/Helpers.md'
 
 markdown_extensions:
   - admonition

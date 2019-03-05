@@ -150,7 +150,7 @@ class Text(object):
     else:
       return sec2.get(sec0node, {}).get(section[1], {}).get(section[2], None)
 
-  def text(self, nodes, fmt=None, descend=False):
+  def text(self, nodes, fmt=None, descend=False, func=None):
     E = self.api.E
     F = self.api.F
     slotType = F.otype.slotType
@@ -161,7 +161,7 @@ class Text(object):
       nType = F.otype.v(nodes)
       if fmt is None:
         fmt = DEFAULT_FORMAT_TYPE.format(nType)
-      repf = self._xformats.get(fmt, None)
+      repf = func or self._xformats.get(fmt, None)
       if repf is None or descend:
         if repf is None:
           fmt = DEFAULT_FORMAT
@@ -171,7 +171,7 @@ class Text(object):
     else:
       if fmt is None:
         fmt = DEFAULT_FORMAT
-    repf = self._xformats.get(fmt, None)
+    repf = func or self._xformats.get(fmt, None)
     if repf is None:
       return ' '.join(f'{F.otype.v(n)}_{n}' for n in nodes)
     return ''.join(repf(n) for n in nodes)

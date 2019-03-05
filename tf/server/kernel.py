@@ -327,8 +327,6 @@ def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, po
       display = app.display
       d = display.get(options)
 
-      api = self.app.api
-
       sectionResults = []
       if sections:
         sectionLines = sections.split('\n')
@@ -381,7 +379,7 @@ def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, po
             (f'resultsBy{d.condenseType}', queryResultsC),
         )
       resultsX = getResultsX(
-          api,
+          app,
           queryResults,
           features,
           app.noDescendTypes,

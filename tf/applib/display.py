@@ -79,7 +79,7 @@ def export(
   d = display.get(options)
 
   resultsX = getResultsX(
-      app.api,
+      app,
       tuples,
       d.tupleFeatures,
       app.noDescendTypes,
@@ -508,7 +508,8 @@ def prettyPre(
 
 # COMPOSE TABLES FOR CSV EXPORT
 
-def getResultsX(api, results, features, noDescendTypes, fmt=None):
+def getResultsX(app, results, features, noDescendTypes, fmt=None):
+  api = app.api
   F = api.F
   Fs = api.Fs
   T = api.T

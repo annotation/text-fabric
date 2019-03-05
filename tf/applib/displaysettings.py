@@ -91,13 +91,15 @@ class DisplaySettings(object):
 
   def _compileFormatClass(self):
     app = self.app
+    api = app.api
+    T = api.T
+
     result = {None: app.defaultClsOrig}
-    formats = app.api.T.formats
-    for fmt in formats:
+    for fmt in T.formats:
       for (key, cls) in app.formatCss.items():
         if f'-{key}-' in fmt:
           result[fmt] = cls
-    for fmt in formats:
+    for fmt in T.formats:
       if fmt not in result:
         result[fmt] = app.defaultCls
     self.formatClass = result
