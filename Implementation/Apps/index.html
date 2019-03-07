@@ -1453,6 +1453,11 @@ for this app.</p>
 <td>file name of the webfont specified in FONT_NAME</td>
 </tr>
 <tr>
+<td>TEXT_FORMATS</td>
+<td>dict</td>
+<td>additional text formats that can use HTML styling. Keys: names of new text formats. Values: name of a method that implements that format. If the name is <code>xxx</code>, then <code>app.py</code> should implement a method <code>fmt_xxx(node)</code> to produce html for node <code>node</code></td>
+</tr>
+<tr>
 <td>BROWSE_NAV_LEVEL</td>
 <td>int</td>
 <td>the section level up to which the browser shows a hierarchical tree. Either 1 or 2</td>

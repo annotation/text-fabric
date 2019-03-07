@@ -1250,6 +1250,11 @@ and other mistaken user input.</p>
 <h2 id="html-and-markdown">HTML and Markdown<a class="headerlink" href="#html-and-markdown" title="Permanent link">&para;</a></h2>
 <details class="abstract"><summary>_outLink(text, href, title=None, ...)</summary><p>Produce a formatted HTML link.</p>
 </details>
+<details class="abstract"><summary>mathEsc(val)</summary><p>Produce a representation of <em>val</em> where $ signs are escaped to <code>&lt;span&gt;$&lt;/span&gt;</code>
+so that they are not interpreted as math in a Jupyter notebook.</p>
+</details>
+<details class="abstract"><summary>htmlEsc(val)</summary><p>Produce a representation of <em>val</em> that is safe for usage in a Markdown and HTML context.</p>
+</details>
 <details class="abstract"><summary>htmlEsc(val)</summary><p>Produce a representation of <em>val</em> that is safe for usage in a HTML context.</p>
 </details>
 <details class="abstract"><summary>mdEsc(val)</summary><p>Produce a representation of <em>val</em> that is safe for usage in a Markdown context.</p>
