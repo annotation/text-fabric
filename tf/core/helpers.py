@@ -13,12 +13,38 @@ Consider installing a 64-bit Python.
 MSG64 = '''Running on 64-bit Python'''
 
 
-def htmlEsc(val):
-  return '' if val is None else str(val).replace('&', '&amp;').replace('<', '&lt;')
+def mathEsc(val):
+  return '' if val is None else (
+      str(val)
+      .replace('$', '<span>$</span>')
+  )
 
 
 def mdEsc(val):
-  return '' if val is None else str(val).replace('|', '&#124;')
+  return '' if val is None else (
+      str(val)
+      .replace('|', '&#124;')
+      .replace('$', '<span>$</span>')
+  )
+
+
+def htmlEsc(val):
+  return '' if val is None else (
+      str(val)
+      .replace('&', '&amp;')
+      .replace('<', '&lt;')
+      .replace('$', '<span>$</span>')
+  )
+
+
+def mdhtmlEsc(val):
+  return '' if val is None else (
+      str(val)
+      .replace('&', '&amp;')
+      .replace('<', '&lt;')
+      .replace('|', '&#124;')
+      .replace('$', '<span>$</span>')
+  )
 
 
 def splitModRef(moduleRef):

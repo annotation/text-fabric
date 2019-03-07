@@ -26,6 +26,7 @@ tf/applib/links.py
 tf/applib/search.py
 tf/applib/sections.py
 tf/applib/tables.py
+tf/applib/text.py
 tf/applib/zipdata.py
 tf/convert/__init__.py
 tf/convert/mql.py
@@ -56,6 +57,7 @@ tf/server/servelib.py
 tf/server/start.py
 tf/server/web.py
 tf/server/wrap.py
+tf/server/static/.DS_Store
 tf/server/static/base.css
 tf/server/static/dans.png
 tf/server/static/export.css

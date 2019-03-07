@@ -80,6 +80,7 @@
         FONT_NAME | string | font family name to be used in CSS for representing text in original script
         FONT | string | file name of the offline font specified in FONT_NAME
         FONTW | string | file name of the webfont specified in FONT_NAME
+        TEXT_FORMATS | dict | additional text formats that can use HTML styling. Keys: names of new text formats. Values: name of a method that implements that format. If the name is `xxx`, then `app.py` should implement a method `fmt_xxx(node)` to produce html for node `node`
         BROWSE_NAV_LEVEL | int | the section level up to which the browser shows a hierarchical tree. Either 1 or 2
         BROWSE_CONTENT_PRETTY | bool | whether the content is shown as a list of subsectional items contained in the selected item or as a pretty display of the item itself
 

@@ -253,7 +253,9 @@ def _plainTextSFinal(
   current = ' focus' if secStr == str(secFinal) else ''
   attOpen = ' open ' if isOpened else ''
 
-  textRep = plain(app, sNode, secLabel=False, **options)
+  textRep = plain(
+      app, sNode, secLabel=False, withPassage=False, **display.consume(options, 'withPassage')
+  )
   html = (
       f'''
 <details

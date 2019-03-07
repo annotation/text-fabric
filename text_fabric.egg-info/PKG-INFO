@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: text-fabric
-Version: 7.4.7
+Version: 7.4.8
 Summary: Processor and browser for Text Fabric Data
 Home-page: https://github.com/annotation/text-fabric
 Author: Dirk Roorda
@@ -11,7 +11,7 @@ Description: Tools to read text corpora with (linguistic) annotations
         With a built in web-interface for querying a corpus.
         More info on https://annotation.github.io/text-fabric/
         
-Keywords: text,linguistics,database,graph,hebrew,bible,cuneiform,uruk,greek,syriac
+Keywords: text,linguistics,database,graph,hebrew,bible,peshitta,quran,cuneiform,uruk,greek,syriac,akkadian,babylonian
 Platform: UNKNOWN
 Classifier: Development Status :: 4 - Beta
 Classifier: Environment :: Other Environment
@@ -25,13 +25,15 @@ Classifier: Natural Language :: English
 Classifier: Natural Language :: Hebrew
 Classifier: Natural Language :: Greek
 Classifier: Operating System :: MacOS :: MacOS X
-Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: Microsoft :: Windows :: Windows 10
 Classifier: Operating System :: POSIX :: Linux
 Classifier: Programming Language :: Python :: 3 :: Only
 Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: JavaScript
 Classifier: Topic :: Religion
 Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Classifier: Topic :: Sociology :: History
 Classifier: Topic :: Text Processing :: Filters
 Classifier: Topic :: Text Processing :: Linguistic
-Classifier: Topic :: Text Processing :: Markup :: XML
+Classifier: Topic :: Text Processing :: Markup
 Requires-Python: >=3.6.3
