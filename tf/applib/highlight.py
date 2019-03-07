@@ -1,6 +1,6 @@
 # from functools import reduce
 
-from ..core.helpers import htmlEsc, mdEsc
+from ..core.helpers import mathEsc, mdhtmlEsc
 from .search import runSearch
 
 
@@ -93,14 +93,14 @@ def hlText(app, nodes, highlights, **options):
 
   if not highlights:
     text = T.text(nodes, **options)
-    return text if isHtml else mdEsc(htmlEsc(text))
+    return mathEsc(text) if isHtml else mdhtmlEsc(text)
 
   result = ''
   for node in nodes:
     text = T.text([node], **options)
     result += hlRep(
         app,
-        text if isHtml else mdEsc(htmlEsc(text)),
+        mathEsc(text) if isHtml else mdhtmlEsc(text),
         node,
         highlights,
     )

@@ -28,14 +28,19 @@ See the [issue list on GitHub]({{ghissues}})
 
 ## Queued for next release
 
-When looking for data in `lgc=True` mode, TF will report clearly when
-data cannot be found in local github clones.
-In such cases TF will look for an online release of the repo with
-the desired data attached.
-Before it was not clear enough that TF was looking online, despite the
-`lgc` flag, because of missing data.
-So if you misspelled a module path, you got messages that did not point
-you to the root cause.
+## 7.4.8
+
+2019-02-28
+
+* When looking for data in `lgc=True` mode, TF will report clearly when
+  data cannot be found in local github clones.
+  In such cases TF will look for an online release of the repo with
+  the desired data attached.
+  Before it was not clear enough that TF was looking online, despite the
+  `lgc` flag, because of missing data.
+  So if you misspelled a module path, you got messages that did not point
+  you to the root cause.
+* Some fixes in the plain display having to do with the passage label.
 
 ## 7.4.7
 

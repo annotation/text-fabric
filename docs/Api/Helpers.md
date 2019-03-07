@@ -20,6 +20,13 @@ from tf.core.helpers import fff
 ??? abstract "\_outLink(text, href, title=None, ...)"
     Produce a formatted HTML link.
 
+??? abstract "mathEsc(val)"
+    Produce a representation of *val* where $ signs are escaped to `<span>$</span>`
+    so that they are not interpreted as math in a Jupyter notebook.
+
+??? abstract "htmlEsc(val)"
+    Produce a representation of *val* that is safe for usage in a Markdown and HTML context.
+
 ??? abstract "htmlEsc(val)"
     Produce a representation of *val* that is safe for usage in a HTML context.
 
