@@ -6,6 +6,7 @@ DISPLAY_OPTIONS = dict(
     condenseType=None,
     end=None,
     extraFeatures=(),
+    full=False,
     tupleFeatures=(),
     fmt=None,
     highlights={},
@@ -78,6 +79,11 @@ class DisplaySettings(object):
       if option not in self.displaySettings:
         error(f'ERROR in {msg}(): unknown display option "{option}={value}"')
         good = False
+      if option == 'condenseType':
+        if value is not None:
+          if value not in api.F.otype.all:
+            error(f'ERROR in {msg}(): unknown node type in "{option}={value}"')
+            good = False
     return good
 
   def get(self, options):
@@ -97,7 +103,7 @@ class DisplaySettings(object):
     result = {None: app.defaultClsOrig}
     for fmt in T.formats:
       for (key, cls) in app.formatCss.items():
-        if f'-{key}-' in fmt:
+        if f'-{key}-' in fmt or fmt.startswith(f'{key}-') or fmt.endswith(f'-{key}'):
           result[fmt] = cls
     for fmt in T.formats:
       if fmt not in result:
