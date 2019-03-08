@@ -1691,6 +1691,11 @@ provided the value is not <code>None</code>, or something like None.</p>
 necessary.</p>
 </details>
 </details>
+<details class="info"><summary>full=False</summary><p>For pretty displays: indicates that the whole object should be
+displayed, even if it is big.</p>
+<details class="hint"><summary>Big objects</summary><p>Big objects are objects of a type that is bigger than the default condense type.</p>
+</details>
+</details>
 <details class="info"><summary>fmt=None</summary><p><code>fmt</code> is the text format that will be used for the representation.
 E.g. <code>text-orig-full</code>. </p>
 <details class="hint"><summary>Text formats</summary><p>Use <code>T.formats</code> to inspect what text formats are available in your corpus.</p>
@@ -1932,6 +1937,14 @@ open it with <code>encoding=utf_16</code>.</p>
 The internal structure of the nodes that are involved is also revealed.</p>
 </details>
 <details class="info"><summary>node</summary><p>a node of arbitrary type.</p>
+</details>
+<details class="info"><summary>full</summary><p>True or False.
+Normally <code>pretty(n)</code> only displays a summary of <code>n</code> if <code>n</code> is big, i.e.
+it has a type bigger than the <em>condense type</em>. 
+If you still want to see the whole big object, pass True: <code>pretty(n, full=True)</code>.</p>
+<details class="hint"><summary>condense type</summary><p>Alternatively, you could have said <code>pretty(n, condenseType='xxx')</code> with
+<code>xxx</code> a big enough type, but this is a bit clumsy.</p>
+</details>
 </details>
 <details class="info"><summary>extraFeatures, tupleFeatures</summary><p>These display parameters govern which extra features will be displayed in pretty
 displays. The union of what these parameters specify will be taken.</p>
