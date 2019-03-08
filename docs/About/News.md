@@ -28,9 +28,17 @@ See the [issue list on GitHub]({{ghissues}})
 
 ## Queued for next release
 
+## 7.4.9
+
+2019-03-08
+
+* Changes in font handling
+* New flag in `pretty()`: `full=False`.
+  See the [docs](../Api/App.md#display)
+
 ## 7.4.8
 
-2019-02-28
+2019-03-07
 
 * When looking for data in `lgc=True` mode, TF will report clearly when
   data cannot be found in local github clones.

@@ -20,8 +20,9 @@ CSS_FONT = '''
 CSS_FONT_API = f'''
 @font-face {{{{
   font-family: "{{fontName}}";
-  src: url('{FONT_BASE}/{{font}}?raw=true');
-  src: url('{FONT_BASE}/{{fontw}}?raw=true') format('woff');
+  src:
+    local("{{font}}"),
+    url("{FONT_BASE}/{{fontw}}?raw=true");
 }}}}
 '''
 

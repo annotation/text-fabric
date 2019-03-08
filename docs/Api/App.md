@@ -491,6 +491,13 @@
             These features will load automatically, no explicit loading is
             necessary.
 
+    ??? info "full=False"
+        For pretty displays: indicates that the whole object should be
+        displayed, even if it is big.
+
+        ??? hint "Big objects"
+            Big objects are objects of a type that is bigger than the default condense type.
+
     ??? info "fmt=None"
         `fmt` is the text format that will be used for the representation.
         E.g. `text-orig-full`. 
@@ -782,6 +789,16 @@
 
     ??? info "node"
         a node of arbitrary type.
+
+    ??? info "full"
+        True or False.
+        Normally `pretty(n)` only displays a summary of `n` if `n` is big, i.e.
+        it has a type bigger than the *condense type*. 
+        If you still want to see the whole big object, pass True: `pretty(n, full=True)`.
+
+        ??? hint "condense type"
+            Alternatively, you could have said `pretty(n, condenseType='xxx')` with
+            `xxx` a big enough type, but this is a bit clumsy.
 
     ??? info "extraFeatures, tupleFeatures"
         These display parameters govern which extra features will be displayed in pretty
