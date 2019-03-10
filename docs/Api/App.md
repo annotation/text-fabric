@@ -727,14 +727,20 @@
         * **NODEi TYPEi** the node and its type,
           for each node **i** in the result tuple
         * **TEXTi** the full text of node **i**,
-          if the node type admits a concise text representation
+          if the node type admits a concise text representation;
+          the criterion is whether the node type has a type not bigger than the
+          default condense type, which is app specific.
+          If you pass an explicit `condenseType=`*xxx* as display parameter,
+          then this is the reference condenseType on which the decision is based.
         * **XFi** the value of extra feature **XF** for node **i**,
           where these features have been declared by a previous 
           displaySetup(tupleFeatures=...)`
 
         See for detailed examples the
         [exportExcel]({{tutnb}}/bhsa/exportExcel.ipynb)
-        notebook.
+        and
+        [exportExcel]({{tutnb}}/oldbabylonian/exportExcel.ipynb)
+        notebooks.
 
     ??? hint "tupleFeatures"
         If the iterable of tuples are the results of a query you have just

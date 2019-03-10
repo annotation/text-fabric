@@ -3,7 +3,7 @@ import types
 
 from ..parameters import URL_TFDOC, DOWNLOADS
 from ..core.helpers import mdEsc, htmlEsc, flattenToSet
-from .helpers import RESULT, dm, dh
+from .helpers import RESULT, dh
 from .links import outLink
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights, getHlAtt
@@ -70,19 +70,22 @@ def export(
     toFile='results.tsv',
     **options,
 ):
+  display = app.display
+  if not display.check('table', options):
+    return ''
+  d = display.get(options)
+
   if toDir is None:
     toDir = os.path.expanduser(DOWNLOADS)
     if not os.path.exists(toDir):
       os.makedirs(toDir, exist_ok=True)
   toPath = f'{toDir}/{toFile}'
 
-  display = app.display
-  d = display.get(options)
-
   resultsX = getResultsX(
       app,
       tuples,
       d.tupleFeatures,
+      d.condenseType or app.condenseType,
       app.noDescendTypes,
       fmt=d.fmt,
   )
@@ -115,17 +118,16 @@ def table(
   if d.condensed:
     tuples = condense(api, tuples, d.condenseType, multiple=True)
 
-  passageHead = ' | p' if d.withPassage else ''
+  passageHead = '</th><th>p' if d.withPassage else ''
 
-  markdown = []
+  html = []
   one = True
   for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_TABLE, item):
     if one:
-      nColumns = len(tup) + (1 if d.withPassage else 0)
-      markdown.append(f'n{passageHead} | ' + (' | '.join(F.otype.v(n) for n in tup)))
-      markdown.append(' | '.join('---' for n in range(nColumns + 1)))
+      heads = '</th><th>'.join(F.otype.v(n) for n in tup)
+      html.append(f'<tr><th>n{passageHead}</th><th>{heads}</th></tr>')
       one = False
-    markdown.append(
+    html.append(
         plainTuple(
             app,
             tup,
@@ -137,10 +139,10 @@ def table(
             **options,
         )
     )
-  markdown = '\n'.join(markdown)
+  html = '<table>' + '\n'.join(html) + '</table>'
   if _asString:
-    return markdown
-  dm(markdown)
+    return html
+  dh(html)
 
 
 def plainTuple(
@@ -235,30 +237,27 @@ def plainTuple(
     )
     return html
 
-  markdown = [str(seq)]
+  html = [str(seq)]
   if passageRef:
-    markdown.append(passageRef)
+    html.append(passageRef)
   for (i, n) in enumerate(tup):
-    markdown.append(
-        mdEsc(
-            app.plain(
-                n,
-                isLinked=i == d.linked - 1,
-                _asString=True,
-                withPassage=False,
-                highlights=highlights,
-                **newOptionsH,
-            )
+    html.append(
+        app.plain(
+            n,
+            isLinked=i == d.linked - 1,
+            _asString=True,
+            withPassage=False,
+            highlights=highlights,
+            **newOptionsH,
         )
     )
-  markdown = '|'.join(markdown)
+  html = '<tr><td>' + ('</td><td>'.join(html)) + '</td></tr>'
   if _asString:
-    return markdown
-  head = ['n | ' + (' | '.join(F.otype.v(n) for n in tup))]
-  head.append(' | '.join('---' for n in range(len(tup) + 1)))
-  head.append(markdown)
+    return html
+  head = ['<tr><th>n</th><th>' + ('</th><th>'.join(F.otype.v(n) for n in tup)) + '</th></tr>']
+  head.append(html)
 
-  dm('\n'.join(head))
+  dh('\n'.join(head))
 
 
 def plain(
@@ -377,11 +376,7 @@ def prettyTuple(
   )
 
   if not _asApp:
-    dm(f'''
-
-**{item}** *{seq}*
-
-''')
+    dh(f'<p><b>{item}</b> <i>{seq}</i></p>')
   if _asApp:
     html = []
   for t in sorted(containers, key=sortKey):
@@ -509,11 +504,12 @@ def prettyPre(
 
 # COMPOSE TABLES FOR CSV EXPORT
 
-def getResultsX(app, results, features, noDescendTypes, fmt=None):
+def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
   api = app.api
   F = api.F
   Fs = api.Fs
   T = api.T
+  otypeRank = api.otypeRank
   sectionTypes = set(T.sectionTypes)
   sectionDepth = len(sectionTypes)
   if len(results) == 0:
@@ -527,12 +523,19 @@ def getResultsX(app, results, features, noDescendTypes, fmt=None):
 
   featureDict = {i: tuple(f.split()) if type(f) is str else f for (i, f) in features}
 
+  def withText(nodeType):
+    return (
+        condenseType is None and nodeType not in sectionTypes
+        or
+        otypeRank[nodeType] <= otypeRank[condenseType]
+    )
+
   for j in range(nTuple):
     i = j + 1
     n = firstResult[j]
     nType = F.otype.v(n)
     header.extend([f'NODE{i}', f'TYPE{i}'])
-    if nType not in sectionTypes:
+    if withText(nType):
       header.append(f'TEXT{i}')
     header.extend(f'{feature}{i}' for feature in featureDict.get(j, emptyA))
   rows = [tuple(header)]
@@ -548,7 +551,7 @@ def getResultsX(app, results, features, noDescendTypes, fmt=None):
       n = r[j]
       nType = F.otype.v(n)
       row.extend((n, nType))
-      if nType not in sectionTypes:
+      if withText(nType):
         text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
         row.append(text)
       row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
@@ -701,7 +704,7 @@ def _tupleEnum(tuples, start, end, limit, item):
     for i in range(start - 1, end):
       yield (i + 1, tuples[i])
     if rest:
-      dm(
-          f'**{rest} more {item}s skipped** because we show a maximum of'
+      dh(
+          f'<b>{rest} more {item}s skipped</b> because we show a maximum of'
           f' {limit} {item}s at a time'
       )

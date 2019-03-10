@@ -28,6 +28,24 @@ See the [issue list on GitHub]({{ghissues}})
 
 ## Queued for next release
 
+## 7.4.10
+
+2019-03-10
+
+* The markdown display in online notebooks showed many spurious `</span>`.
+  This is a bug in the Markdown renderer used by Github and NBViewer.
+  It happens if table cells have doubly nested `<span>` elements.
+  It did not show up in local notebooks.
+  In order to avoid it, TF does no longer work with the Markdown renderer.
+  Instead, it produces output in HTML and uses the HTML renderer in notebooks.
+  That fixes the issue.
+* When using `A.export()` to export data to Excel-friendly CSV files,
+  some node types will get their text exported, and some just a label.
+  It depended on whether the node type was a section or not.
+  Now it depends on whether the node type is small or big. We export text for
+  small node types. A node type is small if it is not bigger than the condense
+  type. This behaviour is now the same as for pretty displays.
+
 ## 7.4.9
 
 2019-03-08

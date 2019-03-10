@@ -281,7 +281,7 @@ def main(cargs=sys.argv):
     )
 
     if not noweb:
-      sleep(1)
+      sleep(2)
       console(f'Opening {dataSource} in browser')
       webbrowser.open(
           f'{config.PROTOCOL}{config.HOST}:{config.PORT["web"]}',
