@@ -1885,14 +1885,20 @@ The columns are:</p>
 <li><strong>NODEi TYPEi</strong> the node and its type,
   for each node <strong>i</strong> in the result tuple</li>
 <li><strong>TEXTi</strong> the full text of node <strong>i</strong>,
-  if the node type admits a concise text representation</li>
+  if the node type admits a concise text representation;
+  the criterion is whether the node type has a type not bigger than the
+  default condense type, which is app specific.
+  If you pass an explicit <code>condenseType=</code><em>xxx</em> as display parameter,
+  then this is the reference condenseType on which the decision is based.</li>
 <li><strong>XFi</strong> the value of extra feature <strong>XF</strong> for node <strong>i</strong>,
   where these features have been declared by a previous 
   displaySetup(tupleFeatures=...)`</li>
 </ul>
 <p>See for detailed examples the
 <a href="https://nbviewer.jupyter.org/github/annotation/blob/master/bhsa/exportExcel.ipynb">exportExcel</a>
-notebook.</p>
+and
+<a href="https://nbviewer.jupyter.org/github/annotation/blob/master/oldbabylonian/exportExcel.ipynb">exportExcel</a>
+notebooks.</p>
 </details>
 <details class="hint"><summary>tupleFeatures</summary><p>If the iterable of tuples are the results of a query you have just
 run, then an appropriate call to <code>displaySetup(tupleFeatures=...)</code>
