@@ -8,7 +8,7 @@ from ..parameters import (
     APP_NB_URL,
 )
 from ..core.helpers import htmlEsc
-from .helpers import dm, dh
+from .helpers import dh
 
 
 pathRe = re.compile(r'^(.*/(?:github|text-fabric-data))/([^/]+)/([^/]+)/(.*)$', flags=re.I)
@@ -55,11 +55,9 @@ def linksApi(app, appName, silent):
     app.tutLink = tutLink
   else:
     if not silent:
-      dm(
-          '**Documentation:**'
-          f' {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}'
-      )
       dh(
+          '<b>Documentation:</b>'
+          f' {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}'
           '<details open><summary><b>Loaded features</b>:</summary>\n' + _featuresPerModule(app) +
           '</details>'
       )
