@@ -28,6 +28,13 @@ See the [issue list on GitHub]({{ghissues}})
 
 ## Queued for next release
 
+## 7.4.11
+
+2019-03-11
+
+* `TF.save()`an now write to any absolute location by means of the
+  optional parameter `location`.
+
 ## 7.4.10
 
 2019-03-10
