@@ -1448,7 +1448,7 @@ It also shows the messages that have been suppressed due to <code>silent=True</c
 </details>
 </details>
 <h2 id="saving-features">Saving features<a class="headerlink" href="#saving-features" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>TF.save()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nodeFeatures</span><span class="o">=</span><span class="p">{},</span> <span class="n">edgeFeatures</span><span class="o">=</span><span class="p">{},</span> <span class="n">metaData</span><span class="o">=</span><span class="p">{},</span> <span class="n">module</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<details class="abstract"><summary>TF.save()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nodeFeatures</span><span class="o">=</span><span class="p">{},</span> <span class="n">edgeFeatures</span><span class="o">=</span><span class="p">{},</span> <span class="n">metaData</span><span class="o">=</span><span class="p">{},</span> <span class="n">location</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
@@ -1488,11 +1488,17 @@ These fields will be written into the separate config feature <code>otext</code>
 with no data associated.</p>
 </details>
 </details>
-<details class="note"><summary>save location</summary><p>The (meta)data will be written to the very last module in the list of locations
-that you specified when calling <code>Fabric()</code> or to what you passed as <code>module</code> in
-the same location. If that module does not exist, it will be created in the last
-<code>location</code>. If both <code>locations</code> and <code>modules</code> are empty, writing will take place
+<details class="note"><summary>save location</summary><p>The (meta)data will be written to the very last directory that TF searched when
+looking for features (this is determined by the <code>locations</code> and <code>modules</code> parameters
+with which you called TF.</p>
+<p>If both <code>locations</code> and <code>modules</code> are empty, writing will take place
 in the current directory.</p>
+<p>But you can override it:</p>
+<p>If you pass <code>module=something</code>, TF will save in <code>loc/something</code>,
+where <code>loc</code> is the last member of the <code>locations</code> parameter of TF.</p>
+<p>If you pass <code>location=something</code>, TF will save in <code>something/mod</code>,
+where <code>mod</code> is the last meber of the <code>modules</code> parameter of TF.</p>
+<p>If you pass <code>location=path1</code> and <code>module=path2</code>, TF will save in <code>path1/path2</code>.</p>
 </details>
 </details>
                 
