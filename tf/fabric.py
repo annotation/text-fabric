@@ -180,10 +180,10 @@ Api reference : {APIREF}
     for (fName, fObj) in self.features.items():
       fObj.cleanDataBin()
 
-  def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}, module=None):
+  def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}, location=None, module=None):
     good = True
     self.tm.indent(level=0, reset=True)
-    self._getWriteLoc(module=module)
+    self._getWriteLoc(location=location, module=module)
     configFeatures = dict(
         f for f in metaData.items()
         if f[0] != '' and f[0] not in nodeFeatures and f[0] not in edgeFeatures
@@ -411,10 +411,21 @@ Api reference : {APIREF}
       self.precomputeList.append((fName, dep2))
     self.good = good
 
-  def _getWriteLoc(self, dirName=None, module=None):
-    writeLoc = dirName if dirName is not None else '' if len(self.locations
-                                                             ) == 0 else self.locations[-1]
-    writeMod = module if module is not None else '' if len(self.modules) == 0 else self.modules[-1]
+  def _getWriteLoc(self, location=None, module=None):
+    writeLoc = (
+        location
+        if location is not None else
+        ''
+        if len(self.locations) == 0 else
+        self.locations[-1]
+    )
+    writeMod = (
+        module
+        if module is not None else
+        ''
+        if len(self.modules) == 0 else
+        self.modules[-1]
+    )
     self.writeDir = (
         f'{writeLoc}{writeMod}' if writeLoc == '' or writeMod == '' else f'{writeLoc}/{writeMod}'
     )

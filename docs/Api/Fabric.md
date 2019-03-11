@@ -194,7 +194,7 @@
 
 ??? abstract "TF.save()"
     ```python
-    TF.save(nodeFeatures={}, edgeFeatures={}, metaData={}, module=None)
+    TF.save(nodeFeatures={}, edgeFeatures={}, metaData={}, location=None, module=None)
     ```
 
     ???+ info "Description"
@@ -243,9 +243,19 @@
             with no data associated.
 
     ??? note "save location"
-        The (meta)data will be written to the very last module in the list of locations
-        that you specified when calling `Fabric()` or to what you passed as `module` in
-        the same location. If that module does not exist, it will be created in the last
-        `location`. If both `locations` and `modules` are empty, writing will take place
+        The (meta)data will be written to the very last directory that TF searched when
+        looking for features (this is determined by the `locations` and `modules` parameters
+        with which you called TF.
+
+        If both `locations` and `modules` are empty, writing will take place
         in the current directory.
 
+        But you can override it:
+
+        If you pass `module=something`, TF will save in `loc/something`,
+        where `loc` is the last member of the `locations` parameter of TF.
+
+        If you pass `location=something`, TF will save in `something/mod`,
+        where `mod` is the last meber of the `modules` parameter of TF.
+
+        If you pass `location=path1` and `module=path2`, TF will save in `path1/path2`.
