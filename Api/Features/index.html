@@ -42,7 +42,7 @@
     
     
       
-        <title>F - Features - Text-Fabric</title>
+        <title>E/F - (Edge-)Features - Text-Fabric</title>
       
     
     
@@ -122,7 +122,7 @@
                 Text-Fabric
               </span>
               <span class="md-header-nav__topic">
-                F - Features
+                E/F - (Edge-)Features
               </span>
             
           
@@ -467,11 +467,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        F - Features
+        E/F - (Edge-)Features
       </label>
     
-    <a href="./" title="F - Features" class="md-nav__link md-nav__link--active">
-      F - Features
+    <a href="./" title="E/F - (Edge-)Features" class="md-nav__link md-nav__link--active">
+      E/F - (Edge-)Features
     </a>
     
       
@@ -1254,7 +1254,7 @@
                   <a href="https://github.com/annotation/text-fabric/edit/master/docs/Api/Features.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                  <h1>F - Features</h1>
+                  <h1>E/F - (Edge-)Features</h1>
                 
                 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <details class="info" open="open"><summary>Features</summary><p>TF can give you information of all features it has encountered.</p>
@@ -1471,6 +1471,33 @@ the members are pairs (tuples) of a node and a value.</p>
 <p>If there are no edges to <code>n</code>, the empty tuple is returned, rather than <code>None</code>.</p>
 </details>
 <details class="info"><summary>node</summary><p>The node <strong>to</strong> which the edges in question go.</p>
+</details>
+</details>
+<details class="abstract"><summary>E.<em>feature</em>.b(node)</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">E</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">b</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<details class="info" open="open"><summary>Description</summary><p>Get the nodes from and to a certain node by a <em>feature</em>-edge.
+These edges must be specified in <em>feature</em>, in this case <code>head</code>.
+The result is an ordered tuple
+(again, in the <em>canonical order</em>. The members of the
+result are just nodes, if <code>head</code> describes edges without values. Otherwise
+the members are pairs (tuples) of a node and a value.</p>
+<p>If there are no edges from or to the node,
+the empty tuple is returned, rather than <code>None</code>.</p>
+</details>
+<details class="info"><summary>node</summary><p>The node <strong>from</strong> which the edges in question start or <em>to</em> which they go.
+Think of <strong>both</strong>, hence the <strong>b</strong>.</p>
+</details>
+<details class="hint"><summary>symmetric closure</summary><p>The <code>.b()</code> methods gives the <em>symmetric closure</em> of a set of edges:
+if there is an edge between <em>n</em> and <em>m</em>, this method will produce it,
+no matter the direction of the edge.</p>
+<p>Some edge sets are semantically symmetric, for example <em>similarity</em>.
+If <em>n</em> is similar to <em>m</em>, then <em>m</em> is similar to <em>n</em>.</p>
+<p>But if you store such an edge feature completely, half of the data is redundant.
+So you do not have to do that, you only need to store one of the edges between
+<em>n</em> and <em>m</em> (it does not matter which one), and <code>E.sim.b()</code> will nevertheless
+produce the complete results.</p>
 </details>
 </details>
 <details class="abstract"><summary>E.<em>feature</em>.freqList()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">E</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">freqList</span><span class="p">(</span><span class="n">nodeTypesFrom</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">nodeTypesTo</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
