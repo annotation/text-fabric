@@ -247,6 +247,39 @@
     ??? info "node"
         The node **to** which the edges in question go.
 
+??? abstract "E.*feature*.b(node)"
+    ```python
+    E.head.b(node)
+    ```
+
+    ???+ info "Description"
+        Get the nodes from and to a certain node by a *feature*-edge.
+        These edges must be specified in *feature*, in this case `head`.
+        The result is an ordered tuple
+        (again, in the *canonical order*. The members of the
+        result are just nodes, if `head` describes edges without values. Otherwise
+        the members are pairs (tuples) of a node and a value.
+
+        If there are no edges from or to the node,
+        the empty tuple is returned, rather than `None`.
+
+    ??? info "node"
+        The node **from** which the edges in question start or *to* which they go.
+        Think of **both**, hence the **b**.
+
+    ??? hint "symmetric closure"
+        The `.b()` methods gives the *symmetric closure* of a set of edges:
+        if there is an edge between *n* and *m*, this method will produce it,
+        no matter the direction of the edge.
+
+        Some edge sets are semantically symmetric, for example *similarity*.
+        If *n* is similar to *m*, then *m* is similar to *n*.
+
+        But if you store such an edge feature completely, half of the data is redundant.
+        So you do not have to do that, you only need to store one of the edges between
+        *n* and *m* (it does not matter which one), and `E.sim.b()` will nevertheless
+        produce the complete results.
+
 ??? abstract "E.*feature*.freqList()"
     ```python
     E.op.freqList(nodeTypesFrom=None, nodeTypesTo=None)
