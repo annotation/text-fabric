@@ -146,34 +146,60 @@ class EdgeFeature(object):
       self.dataInv = makeInverseVal(self.data) if doValues else makeInverse(self.data)
 
   def f(self, n):
+    if n not in self.data:
+      return ()
     Crank = self.api.C.rank.data
-    if n in self.data:
-      if self.doValues:
-        return tuple(sorted(
-            self.data[n].items(),
-            key=lambda mv: Crank[mv[0] - 1],
-        ))
-      else:
-        return tuple(sorted(
-            self.data[n],
-            key=lambda m: Crank[m - 1],
-        ))
-    return ()
+    if self.doValues:
+      return tuple(sorted(
+          self.data[n].items(),
+          key=lambda mv: Crank[mv[0] - 1],
+      ))
+    else:
+      return tuple(sorted(
+          self.data[n],
+          key=lambda m: Crank[m - 1],
+      ))
 
   def t(self, n):
+    if n not in self.dataInv:
+      return ()
     Crank = self.api.C.rank.data
-    if n in self.dataInv:
-      if self.doValues:
-        return tuple(sorted(
-            self.dataInv[n].items(),
-            key=lambda mv: Crank[mv[0] - 1],
-        ))
-      else:
-        return tuple(sorted(
-            self.dataInv[n],
-            key=lambda m: Crank[m - 1],
-        ))
-    return ()
+    if self.doValues:
+      return tuple(sorted(
+          self.dataInv[n].items(),
+          key=lambda mv: Crank[mv[0] - 1],
+      ))
+    else:
+      return tuple(sorted(
+          self.dataInv[n],
+          key=lambda m: Crank[m - 1],
+      ))
+
+  def b(self, n):
+    if n not in self.data and n not in self.dataInv:
+      return ()
+    Crank = self.api.C.rank.data
+    if self.doValues:
+      result = {}
+      if n in self.data:
+        if self.doValues:
+          result.update(self.data[n].items())
+      if n in self.dataInv:
+          result.update(self.dataInv[n].items())
+      return tuple(sorted(
+          result.items(),
+          key=lambda mv: Crank[mv[0] - 1],
+      ))
+    else:
+      result = set()
+      if n in self.data:
+        result |= self.data[n]
+      if n in self.dataInv:
+        result |= self.dataInv[n]
+      return tuple(sorted(
+          result,
+          key=lambda m: Crank[m - 1],
+      ))
 
   def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
     if nodeTypesFrom is None and nodeTypesTo is None:

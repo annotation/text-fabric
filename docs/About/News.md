@@ -28,6 +28,18 @@ See the [issue list on GitHub]({{ghissues}})
 
 ## Queued for next release
 
+## 7.5
+
+2019-03-13
+
+API addition for `E` (edges):
+[`E.feature.b()`](https://annotation.github.io/text-fabric/Api/Features/#edge-features)
+gives the symmetrical closure
+of the edges under `feature`. That means it combines the results of
+`E.feature.f()` and `E.feature.t()`.
+In plain speech: `E.feature.b(m)` collects the nodes
+that have an incoming edge from `m` and the nodes that have an outgoing edge to `m`.
+
 ## 7.4.11
 
 2019-03-11

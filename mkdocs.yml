@@ -176,7 +176,7 @@ nav:
     - Data: 'Api/Data.md'
     - Core:
       - 'TF': 'Api/Fabric.md'
-      - 'F - Features': 'Api/Features.md'
+      - 'E/F - (Edge-)Features': 'Api/Features.md'
       - 'N - Nodes': 'Api/Nodes.md'
       - 'L - Locality': 'Api/Locality.md'
       - 'T - Text': 'Api/Text.md'
