@@ -118,14 +118,21 @@ def table(
   if d.condensed:
     tuples = condense(api, tuples, d.condenseType, multiple=True)
 
-  passageHead = '</th><th>p' if d.withPassage else ''
+  passageHead = '</th><th class="tf">p' if d.withPassage else ''
 
   html = []
   one = True
   for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_TABLE, item):
     if one:
       heads = '</th><th>'.join(F.otype.v(n) for n in tup)
-      html.append(f'<tr><th>n{passageHead}</th><th>{heads}</th></tr>')
+      html.append(
+          f'''
+<tr class="tf">
+  <th class="tf">n{passageHead}</th>
+  <th class="tf">{heads}</th>
+</tr>
+'''
+      )
       one = False
     html.append(
         plainTuple(
@@ -251,10 +258,14 @@ def plainTuple(
             **newOptionsH,
         )
     )
-  html = '<tr><td>' + ('</td><td>'.join(html)) + '</td></tr>'
+  html = '<tr class="tf"><td class="tf">' + ('</td><td class="tf">'.join(html)) + '</td></tr>'
   if _asString:
     return html
-  head = ['<tr><th>n</th><th>' + ('</th><th>'.join(F.otype.v(n) for n in tup)) + '</th></tr>']
+  head = [
+      '<tr class="tf"><th class="tf">n</th><th class="tf">' +
+      ('</th><th class="tf">'.join(F.otype.v(n) for n in tup)) +
+      '</th></tr>'
+  ]
   head.append(html)
 
   dh('\n'.join(head))
@@ -662,7 +673,13 @@ def loadCss(app):
           fontw=app.fontw,
       )
   )
-  dh(f'<style>{cssFont + app.css + hlCss}</style>')
+  tableCss = '''
+tr.tf, td.tf, th.tf {
+  text-align: left;
+}
+
+'''
+  dh(f'<style>{cssFont + app.css + tableCss + hlCss}</style>')
 
 
 def _getRefMember(app, tup, linked, condensed):

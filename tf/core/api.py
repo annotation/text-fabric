@@ -181,21 +181,20 @@ class EdgeFeature(object):
     Crank = self.api.C.rank.data
     if self.doValues:
       result = {}
-      if n in self.data:
-        if self.doValues:
-          result.update(self.data[n].items())
       if n in self.dataInv:
-          result.update(self.dataInv[n].items())
+        result.update(self.dataInv[n].items())
+      if n in self.data:
+        result.update(self.data[n].items())
       return tuple(sorted(
           result.items(),
           key=lambda mv: Crank[mv[0] - 1],
       ))
     else:
       result = set()
-      if n in self.data:
-        result |= self.data[n]
       if n in self.dataInv:
         result |= self.dataInv[n]
+      if n in self.data:
+        result |= self.data[n]
       return tuple(sorted(
           result,
           key=lambda m: Crank[m - 1],

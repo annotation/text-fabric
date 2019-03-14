@@ -28,6 +28,14 @@ See the [issue list on GitHub]({{ghissues}})
 
 ## Queued for next release
 
+## 7.5.1
+
+2019-03-14
+
+Modified `E.feature.b()` so that it gives precedence to outgoing edges.
+
+Further tweaks in layout of `plain()`.
+
 ## 7.5
 
 2019-03-13
