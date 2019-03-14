@@ -1499,6 +1499,23 @@ So you do not have to do that, you only need to store one of the edges between
 <em>n</em> and <em>m</em> (it does not matter which one), and <code>E.sim.b()</code> will nevertheless
 produce the complete results.</p>
 </details>
+<details class="caution"><summary>conflicting values</summary><p>If your set of edges is not symmetric, and edges carry values, it might
+very well be the case that edges between the same pair of nodes carry
+different values for the two directions.</p>
+<p>In that case, the <code>.b()</code> method gives precedence to the edges that <em>depart</em> from a node.</p>
+<p>Suppose we have </p>
+<p><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>n == value=4 ==&gt; m
+m == value=6 ==&gt; n
+</pre></div>
+</td></tr></table>
+then 
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>E.b(n) = (m, 4)
+E.b(m) = (n, 6)
+</pre></div>
+</td></tr></table></p>
+</details>
 </details>
 <details class="abstract"><summary>E.<em>feature</em>.freqList()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">E</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">freqList</span><span class="p">(</span><span class="n">nodeTypesFrom</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">nodeTypesTo</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
