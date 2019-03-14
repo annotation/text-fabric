@@ -280,6 +280,25 @@
         *n* and *m* (it does not matter which one), and `E.sim.b()` will nevertheless
         produce the complete results.
 
+    ??? caution "conflicting values"
+        If your set of edges is not symmetric, and edges carry values, it might
+        very well be the case that edges between the same pair of nodes carry
+        different values for the two directions.
+
+        In that case, the `.b()` method gives precedence to the edges that *depart* from a node.
+
+        Suppose we have 
+        
+        ```
+        n == value=4 ==> m
+        m == value=6 ==> n
+        ```
+        then 
+        ```
+        E.b(n) = (m, 4)
+        E.b(m) = (n, 6)
+        ```
+
 ??? abstract "E.*feature*.freqList()"
     ```python
     E.op.freqList(nodeTypesFrom=None, nodeTypesTo=None)
