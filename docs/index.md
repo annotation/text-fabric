@@ -33,8 +33,8 @@ what it is and where it came from. And after it, if you want to cite it, use thi
     When the generic functions of TF are not enough, *apps* come into play.
     TF offers an API for apps that contain custom code for the display
     of specific corpora.
-    Apps can also make use of functions to retrieve online data and update
-    it later on.
+    Apps can also make use of functions to retrieve online data that has been
+    added later as the results of research.
 
     * [current TF apps](About/Corpora.md)
     * [app-api](Api/App.md)
@@ -57,7 +57,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
           [exported](Use/Browser.md#work-with-exported-results) as a PDF
           plus a zip archive of tab separated files and stored in a repository;
         * when programming in a notebook, these notebooks can easily be shared online
-          by using GitHub of NBViewer.
+          by using GitHub or NBViewer.
 
     ???+ abstract "Contributing data"
         Researchers can easily
@@ -181,7 +181,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
     ???+ explanation "Co-creation"
         In version 7, the idea of co-creation becomes fully tangible:
         Text-Fabric does not only work with a few curated corpora,
-        but it allows you to add your own data in seamless way.
+        but it allows you to add your own data in a seamless way.
         So you when you do research,
         you have the fruits of many people's work at your finger tips.
 
