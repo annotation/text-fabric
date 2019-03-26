@@ -89,7 +89,7 @@ def hlRep(app, rep, n, highlights):
 def hlText(app, nodes, highlights, **options):
   api = app.api
   T = api.T
-  isHtml = options.get('fmt', None) in app.textFormats
+  isHtml = hasattr(app, 'textFormats') and options.get('fmt', None) in app.textFormats
 
   if not highlights:
     text = T.text(nodes, **options)

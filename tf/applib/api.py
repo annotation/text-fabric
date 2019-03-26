@@ -1,4 +1,5 @@
 from ..fabric import Fabric
+from ..parameters import TEMP_DIR
 from ..lib import readSets
 from ..core.helpers import console, setDir
 from .app import findAppConfig
@@ -76,6 +77,7 @@ def setupApi(
     )
     if specs:
       (locations, modules) = specs
+      app.tempDir = f'{app.repoLocation}/{TEMP_DIR}'
       TF = Fabric(locations=locations, modules=modules, silent=True)
       api = TF.load('', silent=True)
       if api:

@@ -2,7 +2,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '7.5.1'
+VERSION = '7.5.2'
 NAME = 'Text-Fabric'
 
 ORG = 'annotation'
@@ -28,6 +28,8 @@ APP_EXPRESS = f'{EXPRESS_BASE}/__apps__'
 APP_GITHUB = f'{GH_BASE}/annotation'
 APP_CODE = 'code'
 APP_INFO = '__commit.txt'
+
+TEMP_DIR = '_temp'
 
 LOCATIONS = [
     '~/Downloads/text-fabric-data',

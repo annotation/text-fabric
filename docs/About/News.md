@@ -28,6 +28,13 @@ See the [issue list on GitHub]({{ghissues}})
 
 ## Queued for next release
 
+## 7.5.2
+
+2019-03-26
+
+Small fix: a TF app that did not define its own text-formats caused an error.
+Now the generic TF applib is robust against this.
+
 ## 7.5.1
 
 2019-03-14
