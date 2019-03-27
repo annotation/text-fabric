@@ -28,6 +28,12 @@ See the [issue list on GitHub]({{ghissues}})
 
 ## Queued for next release
 
+## 7.5.3
+
+2019-03-27
+
+Small fix in Excel export when called by the TF kernel.
+
 ## 7.5.2
 
 2019-03-26

@@ -382,6 +382,7 @@ def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, po
           app,
           queryResults,
           features,
+          d.condenseType or app.condenseType,
           app.noDescendTypes,
           fmt=d.fmt,
       )
