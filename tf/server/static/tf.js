@@ -10,6 +10,7 @@ const switchMode = m => {
   const mode = $('#mode')
   const pageNav = $('#navigation')
   const pages = $('#pages')
+  const nresults = $('#nresults')
   const passagesNav = $('#passagesnav')
   const passages = $('#passages')
   const sectionsTable = $('#sectionsTable')
@@ -23,6 +24,7 @@ const switchMode = m => {
   if (m == 'passage') {
     pageNav.hide()
     pages.hide()
+    nresults.hide()
     passages.show()
     passagesNav.show()
     sectionsTable.hide()
@@ -34,6 +36,7 @@ const switchMode = m => {
   } else if (m == 'results') {
     pageNav.show()
     pages.show()
+    nresults.show()
     passagesNav.hide()
     passages.hide()
     sectionsTable.show()
@@ -104,10 +107,14 @@ const getTable = (kind, subkind, m, button) => {
   const destTable = $(`#${kind}Table`)
   const destMsg = $(`#${kind}Messages`)
   const destSub = $(`#${subkind}`)
+  const nresults = $('.nresults')
   const go = document.querySelector('form')
   const formData = new FormData(go)
   if (button) {
     button.addClass('fa-spin')
+  }
+  if (kind == 'query') {
+    nresults.html('...')
   }
   $.ajax({
     type: 'POST',
@@ -116,8 +123,11 @@ const getTable = (kind, subkind, m, button) => {
     processData: false,
     contentType: false,
     success: data => {
-      const { table = '', messages = '' } = data
+      const { table = '', messages = '', nResults = 0 } = data
       destTable.html(table)
+      if (kind == 'query') {
+        nresults.html(nResults)
+      }
       destMsg.html(messages)
       if (subkind != null) {
         const subs = data[subkind]

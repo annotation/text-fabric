@@ -76,6 +76,7 @@ def serveQuery(setup, getx, asDict=False):
 
   kernelApi = setup.TF.connect()
   method = dict if asDict else jsonify
+  total = 0
 
   if task:
     messages = ''
@@ -113,6 +114,7 @@ def serveQuery(setup, getx, asDict=False):
         )
         console(f'{task}\n{messages}', error=True)
         setup.wildQueries.add(task)
+        total = 0
 
     if table is not None:
       pages = pageLinks(total, form['position'])
@@ -126,6 +128,7 @@ def serveQuery(setup, getx, asDict=False):
   return method(
       pages=pages,
       table=table,
+      nResults=total,
       messages=messages,
       features=features,
   )
