@@ -318,6 +318,24 @@ div.passages {
 	justify-content: flex-end;
 	align-items: center;
 }
+#nresults {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: flex-end;
+	align-items: center;
+}
+.nresults {
+  font-weight: bold;
+}
+.total {
+	color: var(--blue-haze-fore);
+	background-color: var(--blue-haze-back);
+	border-radius: 0.4rem;
+  border: 1pt solid var(--grey-rim);
+	line-height: 1.6em;
+	padding: 0.1rem 0.1rem;
+	margin: 0.4rem 0.2rem;
+}
 div.pline {
 	display: flex;
 	flex-flow: column nowrap;

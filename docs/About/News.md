@@ -28,6 +28,14 @@ See the [issue list on GitHub]({{ghissues}})
 
 ## Queued for next release
 
+Nothing in particular
+
+## 7.5.4
+
+2019-03-28
+
+The TF browser now displays the total number of results clearly.
+
 ## 7.5.3
 
 2019-03-27
