@@ -30,6 +30,19 @@ See the [issue list on GitHub]({{ghissues}})
 
 Nothing in particular
 
+## 7.6
+
+Simplified sharing: pushing to GitHub is enough.
+It is still recommended to make a release on GitHub now and them,
+but it is not necessary.
+
+When calling up data and a TF-app, you can go back in history:
+to previous releases and previous commits.
+
+This is yet another step in making your scholarly work reproducible.
+
+See [Data](../Api/Data.md)
+
 ## 7.5.4
 
 2019-03-28
@@ -501,5 +514,6 @@ Under the hood:
 
 Quick start: the new [share]({{tutnb}}/bhsa/share.ipynb)
 
-See the [v7 guide](../Use/Use7.md) for concrete and detailed hints how to make most of this version.
+See the [advanced guide](../Use/UseX.md)
+for concrete and detailed hints how to make most of this version.
 

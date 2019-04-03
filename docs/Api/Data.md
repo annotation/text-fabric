@@ -33,13 +33,23 @@ The data sharing workflow is built around the following assumptions:
     `etcbc/lingo/heads/tf`
 
 ??? note "synchronized with GitHub"
-    You must have your local repo contents synchronized with that on GitHub
+    You must have your local repo contents synchronized with that on GitHub.
 
-??? note "online GitHub"
-    Before you share your data, you must make a *release* on GitHub.
+    Now other people can use your data.
+    Whenever you push updates, users may fetch the updated data, depending
+    on how they call up your data, see below.
+
+??? note "release on GitHub"
+    If your data is reasonably stable, consider making an official *release*
+    on GitHub.
     Then you must attach your features as a zip file to that release.
     Text-Fabric has a command to produce a zip file with exactly the
     right structure and name.
+
+    Consider to connect your repo with 
+    [Zenodo]({{zenodo}}).
+    Then every time to make a release, your repo will be archived for the long term,
+    and you get a DOI pointing to the released version. 
 
 ??? note "get data"
     In order to get data, the only thing Text-Fabric needs to know,
@@ -50,7 +60,12 @@ The data sharing workflow is built around the following assumptions:
     repository, check the latest release, find the zip file,
     download and expand it to your local
     `~/text-fabric/data/{org}/{repo}/{path}`
-    
+
+    If there are no releases, it will find the latest commit and use the
+    data from there.
+
+    But you may go back in the history, see below.
+
 ??? note "everywhere"
     The extra data is accessible whether you work in a Jupyter notebook,
     or in the Text-Fabric browser.
@@ -102,7 +117,11 @@ and as a result you have this in your Downloads folder
     tf-c.zip
 ```
         
-### Make a release
+### Push your data to GitHub
+
+??? caution "Write access"
+    You can only do this for repositories for which you have write access,
+    so do not try to perform this on `etcbc/valence` but use a repo of your own.**
 
 Locally, commit your changes and push them to GitHub
 
@@ -112,8 +131,11 @@ git commit -m "releasing data"
 git push origin master
 ```
 
-**You can only do this for repositories for which you have write access,
-so do not try to perform this on `etcbc/valence` but use a repo of your own.**
+### Make a release
+
+??? caution "Write access"
+    You can only do this for repositories for which you have write access,
+    so do not try to perform this on `etcbc/valence` but use a repo of your own.**
 
 Go to the online version on GitHub, and click *releases*
 
@@ -244,6 +266,25 @@ And if there is a new release for the valence data, it will be downloaded.
     TF setup done.
     ```
 
+??? note "Going back in the history"
+    We consider a few scenarios for choosing points in the history.
+
+    1.    Give me the latest stable release (default)
+          If the data producer has made a release, you get the
+          data according to the latest release.
+          If there are new commits after that, but not yet released,
+          you do not get them.
+          If there are no releases, you will get the data of the latest commit.
+    2.    Give me the latest stable release, or nothing.
+          Use the specifier `latest`.
+    3.    Give me the latest commit, no matter the releases.
+          Use the specifier `hot`.
+    4.    Give me the data of a specific earlier release.
+          Use the release tag as specifier, e.g. `v1.3`.
+    5.    Give me the data of a specific earlier commit, no matter the release.
+          Use the commit hash as specifier,
+          e.g. `2d0ca1f593805af0c13c4a62ed7405b94d870045`.
+    
 You can now use the new features in the TF browser.
 
 Fill out this query:

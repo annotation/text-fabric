@@ -17,6 +17,7 @@ from .command import (
     argNoweb,
     argDocker,
     argLocalClones,
+    argCheckout,
     argModules,
     argSets,
     argParam,
@@ -28,10 +29,20 @@ USAGE
 
 text-fabric --help
 text-fabric --version
-
-text-fabric datasource [-lgc] [-d] [-c] [-noweb] [-docker] [--mod=modules] [--set=file]
-
 text-fabric -k [datasource]
+
+text-fabric datasource[:specifier] args
+
+where all args are optional and args have one of these forms:
+
+  -lgc
+  -d
+  -c
+  -noweb
+  -docker
+  --checkout=specifier
+  --mod=modules
+  --set=file
 
 EFFECT
 
@@ -44,6 +55,23 @@ a query interface.
 The website can be served or on the internet.
 The default browser will be opened, except when -noweb is passed.
 
+:specifier (after the datasource)
+--checkout=specifier
+
+The TF app itself can be downloaded on the fly from GitHub.
+The main data can be downloaded on the fly from GitHub.
+The specifier indicates a point in the history from where the app should be retrieved.
+  ;specifier is for the TF app code.
+  --checkout=specifier is for the main data.
+
+Specifiers may be:
+  latest                - get the latest release
+  hot                   - get the latest commit
+  tag (e.g. v1.3)       - get specific release
+  hash (e.g. 78a03b...) - get specific commit
+
+No specifier or the empty string means: latest release if there is one, else latest commit.
+
 --mod=modules
 
 Optionally, you can pass a comma-separated list of modules.
@@ -52,11 +80,13 @@ You specify a module by giving the github repository where it is created,
 in the form
 
   {org}/{repo}/{path}
+  {org}/{repo}/{path}:specifier
 
 where
   {org} is the github organization,
   {repo} the name of the repository in that organization
   {path} the path to the data within that repo.
+  {specifier} points to a release or commit in the history
 
 It is assumed that the data is stored in directories under {path},
 where the directories are named as the versions that exists in the main data source.
@@ -124,6 +154,7 @@ def filterProcess(proc):
 
   found = False
   kind = None
+  checkoutData = ''
   modules = ''
   sets = ''
   dataSource = None
@@ -155,6 +186,8 @@ def filterProcess(proc):
       if kind in {'data', 'web', 'tf'}:
         if kind == 'tf' and part == '-k':
           break
+        if part.startswith('--checkout='):
+          checkoutData = part
         if part.startswith('--mod='):
           modules = part
         elif part.startswith('--sets='):
@@ -165,22 +198,27 @@ def filterProcess(proc):
     if good:
       found = True
   if found:
-    return (kind, dataSource, modules, sets)
+    return (kind, dataSource, checkoutData, modules, sets)
   return False
 
 
-def killProcesses(dataSource, modules, sets, kill=False):
+def killProcesses(dataSource, checkoutData, modules, sets, kill=False):
   tfProcs = {}
   for proc in psutil.process_iter(attrs=['pid', 'name']):
     test = filterProcess(proc)
     if test:
-      (kind, ds, mods, sts) = test
-      tfProcs.setdefault((ds, (mods, sts)), {}).setdefault(kind, []).append(proc.info['pid'])
+      (kind, ds, chk, mods, sts) = test
+      tfProcs.\
+          setdefault((ds, (chk, mods, sts)), {}).\
+          setdefault(kind, []).append(proc.info['pid'])
 
   item = 'killed' if kill else 'terminated'
   myself = os.getpid()
-  for ((ds, (mods, sets)), kinds) in tfProcs.items():
-    if dataSource is None or (ds == dataSource and mods == modules and sts == sets):
+  for ((ds, (chk, mods, sets)), kinds) in tfProcs.items():
+    if (
+        dataSource is None or
+        (ds == dataSource and chk == checkoutData and mods == modules and sts == sets)
+    ):
       checkKinds = ('data', 'web', 'tf')
       for kind in checkKinds:
         pids = kinds.get(kind, [])
@@ -217,14 +255,19 @@ def main(cargs=sys.argv):
 
   kill = getKill(cargs=cargs)
   dataSource = argParam(cargs=cargs, interactive=not kill)
+  parts = dataSource.split(':', maxsplit=1)
+  if len(parts) == 1:
+    parts.append('')
+  (dataSource, checkoutApp) = parts
 
+  checkoutData = argCheckout(cargs=cargs)
   modules = argModules(cargs=cargs)
   sets = argSets(cargs=cargs)
 
   if kill:
     if dataSource is False:
       return
-    killProcesses(dataSource, modules, sets)
+    killProcesses(dataSource, checkoutData, modules, sets)
     return
 
   noweb = argNoweb(cargs=cargs)
@@ -236,16 +279,18 @@ def main(cargs=sys.argv):
 
   kdataSource = ('-lgc', dataSource) if lgc else (dataSource, )
   kdataSource = ('-c', *kdataSource) if check else kdataSource
+  kdataSource = (checkoutData, *kdataSource) if checkoutData else kdataSource
   kdataSource = (modules, *kdataSource) if modules else kdataSource
   kdataSource = (sets, *kdataSource) if sets else kdataSource
 
   ddataSource = ('-d', dataSource) if debug else (dataSource, )
   ddataSource = ('-docker', *ddataSource) if docker else ddataSource
   ddataSource = ('-lgc', *ddataSource) if lgc else ddataSource
+  ddataSource = (checkoutData, *ddataSource) if checkoutData else ddataSource
   ddataSource = (modules, *ddataSource) if modules else ddataSource
 
   if dataSource is not None:
-    (commit, appDir) = findApp(dataSource, lgc, check)
+    (commit, appDir) = findApp(dataSource, checkoutApp, lgc, check)
     if appDir is None:
       return
 
@@ -256,7 +301,7 @@ def main(cargs=sys.argv):
       return
 
     console(f'Cleaning up remnant processes, if any ...')
-    killProcesses(dataSource, modules, sets, kill=True)
+    killProcesses(dataSource, checkoutData, modules, sets, kill=True)
     pythonExe = 'python' if isWin else 'python3'
 
     pKernel = Popen(

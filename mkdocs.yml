@@ -170,7 +170,7 @@ nav:
     - Use: 'Use/Use.md'
     - Browser: 'Use/Browser.md'
     - Search: 'Use/Search.md'
-    - v7-Guide: 'Use/Use7.md'
+    - Advanced: 'Use/UseX.md'
   - Api:
     - Apps: 'Api/App.md'
     - Data: 'Api/Data.md'

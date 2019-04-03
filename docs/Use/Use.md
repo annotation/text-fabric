@@ -1,7 +1,5 @@
 # Usage
 
-**Pre version 7 users: also consult the [v7 guide](Use7.md).**
-
 ## Apps
 
 Text-Fabric is a generic engine to process text corpora enriched with sets of annotations.
@@ -71,3 +69,8 @@ You can use it together with the generic [TF API](../Api/Fabric.md) to
 * search your corpus programmatically by means of the same templates,
 * prepare derived data for analysis in R, and
 * create new data and distribute it to others.
+
+## Advanced
+The [advanced guide](UseX.md)
+tells more about data usage and data sharing.
+

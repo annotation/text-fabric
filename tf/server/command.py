@@ -1,5 +1,4 @@
 import sys
-import os
 import re
 
 from ..parameters import APP_URL
@@ -23,6 +22,13 @@ def argCheck(cargs=sys.argv):
     if arg == '-c':
       return True
   return False
+
+
+def argCheckout(cargs=sys.argv):
+  for arg in cargs[1:]:
+    if arg.startswith('--checkout='):
+      return arg
+  return ''
 
 
 def argNoweb(cargs=sys.argv):

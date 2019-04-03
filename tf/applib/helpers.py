@@ -1,8 +1,10 @@
 import os
+
 from IPython.display import display, Markdown, HTML
 
 from ..parameters import EXPRESS_BASE, GH_BASE
 from ..core.helpers import camel
+
 
 RESULT = 'result'
 

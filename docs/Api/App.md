@@ -49,7 +49,43 @@
 
     A TF app can be invoked for all these scenarios
     by supplying additional arguments to the incantation.
-     
+
+    ??? hint "appName:specifier, checkData=specifier"
+        The specifiers let you use a specific point in the
+        history of the app and data.
+
+        *appName:specifier* is for the TF-app application code.
+
+        *checkoutData=specifier* is for the main data of the TF-app.
+
+        *   ` ` (empty string or absent) (**default**):
+            use the latest release;
+            if there are no releases, use the latest commit.
+        *   `latest`: use the latest release. If there are commits after the commit
+            that has been tagged with the latest release, these will **not** be used.
+        *   `hot`: use the latest commit, even if it comes after the
+            latest commit of the latest release.
+        *   *release tag*, e.g. `v1.3`: use exactly this release. More precisely,
+            this is the commit that has been tagged with that release tag.
+        *   *commit hash*, e.g. `2d0ca1f593805af0c13c4a62ed7405b94d870045`:
+            use exactly this commit
+
+        ??? caution "Not when using data in your local github clones"
+            This only works if you use downloaded data from GitHub.
+            Your *~/text-fabric-data* directory is used to
+            fetch the data you specify.
+
+            It will only contain one incarnation of the data.
+            Whenever you switch points in the history, the
+            current local version will be deleted and the
+            specified version will be downloaded into place.
+
+            When you instruct TF to use your local github clones
+            it will take the files it finds on your system there,
+            and there is no way to go back in history.
+
+            See the parameter *lgc* below.
+
     ??? info "hoist=globals()"
         This makes the API elements directly available as global names
         in your script or notebook:
@@ -88,7 +124,13 @@
             version of the main source!
 
     ??? info "mod=None"
-        `mod` is a comma-separated list of modules in the form `{org}/{repo}/{path}`.
+        `mod` is a comma-separated list of modules in one of the forms
+
+        ```
+        {org}/{repo}/{path}
+        {org}/{repo}/{path}:specifier
+        ```
+
         All features of all those modules will be loaded.
         If they are not yet present, they will be downloaded from GitHub first.
 
@@ -101,23 +143,17 @@
         Here the `{org}` is `etcbc`, the `{repo}` is `lingo`,
         and the `{path}` is `easter/tf` under which
         version `c` of the feature `egg`
-        is avaialble in TF format.
+        is available in TF format.
 
         You can point to any such directory om the entire GitHub
         if you know that it contains relevant features.
 
+        The specifier is as in `appName:specifier` and `checkData=specifier`
+        above: for using a different point in the history.
+
         Your TF app might be configured to download specific modules.
         See `MODULE_SPECS` in the app's 
         [config.py](../Implementation/Apps.md#components),
-
-        ??? caution "Release sensitive"
-            Module data will be downloaded from a specific release
-            of the relevant GitHub repo.
-            See the [Data](../Api/Data.md) for details how to publish feature data.
-            It will be downloaded to the
-            `text-fabric-data` folder in your home directory.
-            Next to the data will be a little text file which
-            indicates from which release the data is taken.
 
         ??? caution "Let TF manage your text-fabric-data directory"
             It is better not to fiddle with your `~/text-fabric-data` directory manually.
@@ -430,6 +466,7 @@
     * values as set up by previous calls to `displaySetup()`,
     * default values configured by the app.
 
+??? abstract "List of display parameters"
     These are the parameters and their default values:
 
     ??? info "colorMap=None"
@@ -603,7 +640,8 @@
     A.displaySetup(parameter1=value1, parameter2=value2, ...)
     ```
 
-    Assigns working values to display parameters. All subsequent calls to
+    Assigns working values to display parameters (see the section above).
+    All subsequent calls to
     the display functions will use these values, unless they are passed overriding
     values as arguments.
     

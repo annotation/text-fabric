@@ -150,7 +150,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
         * a new search engine (inspired by [MQL]({{emdros}}) and
         * support for research data workflows.
 
-        [Version 7](Use/Use7.md) capitalizes on the latter.
+        [Version 7](Use/UseX.md) capitalizes on the latter.
 
     ???+ explanation "State of the art"
         Time moves on, and nowhere is that felt as keenly as in computing science.
@@ -218,9 +218,7 @@ what it is and where it came from. And after it, if you want to cite it, use thi
 
 [Use](Use/Use.md)
 
-## Existing users
-
-Read the [version 7 guide](Use/Use7.md)
+[Advanced](Use/UseX.md)
 
 ## Documentation
 

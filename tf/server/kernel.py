@@ -14,6 +14,7 @@ from ..applib.tables import compose, composeP, composeT
 
 from .command import (
     argCheck,
+    argCheckout,
     argLocalClones,
     argModules,
     argSets,
@@ -26,7 +27,17 @@ TF_ERROR = 'Could not set up TF'
 
 # KERNEL CREATION
 
-def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, port):
+def makeTfKernel(
+    dataSource,
+    appDir,
+    commit,
+    moduleRefs,
+    setFile,
+    checkoutData,
+    lgc,
+    check,
+    port,
+):
   config = findAppConfig(dataSource, appDir)
   if config is None:
     return None
@@ -43,6 +54,7 @@ def makeTfKernel(dataSource, appDir, commit, moduleRefs, setFile, lgc, check, po
       mod=moduleRefs,
       setFile=setFile,
       version=config.VERSION,
+      checkoutData=checkoutData,
       lgc=lgc,
       check=check,
   )
@@ -410,6 +422,11 @@ def makeTfConnection(host, port, timeout):
 
 def main(cargs=sys.argv):
   dataSource = argParam(cargs=cargs, interactive=True)
+  parts = dataSource.split(':', maxsplit=1)
+  if len(parts) == 1:
+    parts.append('')
+  (dataSource, checkoutApp) = parts
+  checkoutData = argCheckout(cargs=cargs)
   modules = argModules(cargs=cargs)
   sets = argSets(cargs=cargs)
   lgc = argLocalClones(cargs=cargs)
@@ -418,7 +435,8 @@ def main(cargs=sys.argv):
   if dataSource is not None:
     moduleRefs = modules[6:] if modules else ''
     setFile = sets[7:] if sets else ''
-    (commit, appDir) = findApp(dataSource, lgc, check)
+    checkoutData = checkoutData[11:] if checkoutData else ''
+    (commit, appDir) = findApp(dataSource, checkoutApp, lgc, check)
     if appDir is not None:
       config = findAppConfig(dataSource, appDir)
       if config is not None:
@@ -428,6 +446,7 @@ def main(cargs=sys.argv):
             commit,
             moduleRefs,
             setFile,
+            checkoutData,
             lgc,
             check,
             config.PORT['kernel'],

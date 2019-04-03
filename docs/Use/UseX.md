@@ -1,14 +1,12 @@
-# v7 Guide
+# Advanced Guide
 
-Here are hints to help you to get the most out version 7 of Text-Fabric.
+Here are hints to help you to get the most out of Text-Fabric apps.
 
 **For the full reference, start with [Use](Use.md).**
 
 ## Incantation 
 
-The old incantations `B = Bhsa()` and `CN = Cunei()` do no longer work.
-
-The new way is as follows:
+Start an app like this: 
 
 ```python
 from tf.app import use
@@ -24,7 +22,7 @@ Read more in the [App API](../Api/App.md#incantation)
 
 ## Zipping your new data
 
-There is a new command
+There is a command
 
 ```sh
 text-fabric-zip
@@ -39,7 +37,7 @@ tutorial.
 
 ## Using new data
 
-The `text-fabric` command has several new optional command line arguments: 
+The `text-fabric` command has several optional command line arguments: 
 
 `--mod=...` and `-c`
 
@@ -57,6 +55,15 @@ text-fabric bhsa --mod=etcbc/valence/tf
 ```
 
 See the [incantation](../Api/App.md#incantation).
+
+## Using old data and apps
+
+It is even possible to go back to earlier versions of the data and apps,
+which might be needed if you want to reproduce results obtained with
+those versions.
+
+For app and data, you can add specifiers to point to a specific
+release or commit.
 
 Read more about your data life-cycle in the [Data](../Api/Data.md) guide.
 
