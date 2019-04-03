@@ -48,7 +48,11 @@ def mdhtmlEsc(val):
 
 
 def splitModRef(moduleRef):
-  parts = moduleRef.split('/', 2)
+  parts = moduleRef.split(':', 1)
+  if len(parts) == 1:
+    parts.append('')
+  (ref, specifier) = parts
+  parts = ref.split('/', 2)
 
   if len(parts) < 2:
     console(
@@ -62,7 +66,7 @@ Module ref "{moduleRef}" is not "{{org}}/{{repo}}/{{path}}"
   if len(parts) == 2:
     parts.append('')
 
-  return parts
+  return [*parts, specifier]
 
 
 def camel(name):

@@ -9,6 +9,7 @@ from ..applib.app import findApp, findAppConfig
 from ..applib.helpers import getLocalDir, configure
 from ..server.kernel import makeTfConnection
 from .command import (
+    argCheckout,
     argCheck,
     argDebug,
     argDocker,
@@ -31,10 +32,10 @@ myDir = os.path.dirname(os.path.abspath(__file__))
 
 
 class Setup(object):
-  def __init__(self, dataSource, lgc, check):
+  def __init__(self, dataSource, checkoutData, lgc, check):
     self.dataSource = dataSource
 
-    (commit, appDir) = findApp(dataSource, lgc, check)
+    (commit, appDir) = findApp(dataSource, checkoutData, lgc, check)
     self.appDir = appDir
 
     config = findAppConfig(dataSource, appDir)
@@ -117,14 +118,16 @@ def factory(setup):
 
 if __name__ == "__main__":
   dataSource = argParam(interactive=True)
+  checkoutData = argCheckout()
   modules = argModules()
 
   if dataSource is not None:
+    checkoutData = checkoutData[11:] if checkoutData else ''
     modules = tuple(modules[6:].split(',')) if modules else ()
     lgc = argLocalClones()
     check = argCheck()
     debug = argDebug()
-    setup = Setup(dataSource, lgc, check)
+    setup = Setup(dataSource, checkoutData, lgc, check)
     config = setup.config
     if config is not None:
       onDocker = argDocker()

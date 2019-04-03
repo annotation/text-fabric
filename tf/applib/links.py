@@ -8,6 +8,7 @@ from ..parameters import (
     APP_NB_URL,
 )
 from ..core.helpers import htmlEsc
+from .repo import RepoData
 from .helpers import dh
 
 
@@ -187,10 +188,14 @@ def _featuresPerModule(app):
   return html
 
 
-def liveText(org, repo, version, release):
-  return f'{org}/{repo} v:{version} (r{release})'
+def liveText(org, repo, version, commit, release):
+  return f'{org}/{repo} v:{version} ({RepoData.toString(commit, release)})'
 
 
-def liveUrl(org, repo, version, release, relative):
+def liveUrl(org, repo, version, commit, release, relative):
   relativeFlat = relative.replace('/', '-')
-  return f'{URL_GH}/{org}/{repo}/releases/download/{release}/{relativeFlat}-{version}.zip'
+  return (
+      f'{URL_GH}/{org}/{repo}/releases/download/{release}/{relativeFlat}-{version}.zip'
+      if release else
+      f'{URL_GH}/{org}/{repo}/tree/{commit}/{relative}'
+  )

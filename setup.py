@@ -18,6 +18,7 @@ setup(
         'markdown',
         'ipython',
         'requests',
+        'pygithub',
     ],
     python_requires='>=3.6.3',
     include_package_data=True,
