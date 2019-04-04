@@ -22,20 +22,11 @@ from ..core.helpers import console
 
 class RepoData(object):
 
-  # representing commit/release:
-
-  # value '' means: latest
-  # value None means: not relevant
-
-  # in fromString:
-
-  # latest means: latest release
-  # hot means: latest commit
-
   @staticmethod
   def fromString(string):
     commit = None
     release = None
+    local = None
     if not string:
       commit = None
       release = None
@@ -45,29 +36,45 @@ class RepoData(object):
     elif string == 'hot':
       commit = ''
       release = None
+    elif string in {'local', 'clone'}:
+      commit = None
+      release = None
+      local = string
     elif '.' in string or len(string) < 12:
       commit = None
       release = string
     else:
       commit = string
       release = None
-    return (commit, release)
+    return (commit, release, local)
 
   @staticmethod
-  def toString(commit, release):
+  def toString(commit, release, local):
+    extra = ''
+    if local:
+      baseRep = GH_BASE if local == 'clone' else EXPRESS_BASE
+      extra = f' offline under {baseRep}'
     if commit and release:
-      return f'r{release}=#{commit}'
-    if commit:
-      return f'#{commit}'
-    if release:
-      return f'r{release}'
-    if commit is None and release is None:
-      return 'unknown release or commit'
-    if commit is None:
-      return 'latest release'
-    if release is None:
-      return 'latest commit'
-    return 'latest release or commit'
+      result = f'r{release}=#{commit}'
+    elif commit:
+      result = f'#{commit}'
+    elif release:
+      result = f'r{release}'
+    elif commit is None and release is None:
+      result = f'unknown release or commit'
+    elif commit is None:
+      result = f'latest release'
+    elif release is None:
+      result = f'latest commit'
+    else:
+      result = f'latest release or commit'
+    return f'{result}{extra}'
+
+  def isClone(self):
+    return self.local == 'clone'
+
+  def isOffline(self):
+    return self.local in {'clone', 'local'}
 
   def __init__(
       self,
@@ -75,8 +82,6 @@ class RepoData(object):
       repo,
       relative,
       checkoutData,
-      lgc,
-      check,
       keep,
       withPaths,
       silent,
@@ -85,6 +90,10 @@ class RepoData(object):
   ):
     self.org = org
     self.repo = repo
+    (self.commitChk, self.releaseChk, self.local) = self.fromString(checkoutData)
+    clone = self.isClone()
+    offline = self.isOffline()
+
     if isApp:
       parts = repo.split('-', maxsplit=1)
       self.app = parts[0] if len(parts) == 1 else parts[1]
@@ -99,6 +108,7 @@ class RepoData(object):
     self.baseTfd = os.path.expanduser(APP_EXPRESS if isApp else EXPRESS_BASE)
     orgRepo = self.app if isApp else f'{org}/{repo}'
     self.dataRelTfd = f'{orgRepo}{relativeRep}'
+    self.dirPathSaveTfd = f'{self.baseTfd}/{orgRepo}'
     self.dirPathTfd = f'{self.baseTfd}/{self.dataRelTfd}{versionRep}'
     self.dataPathTfd = f'{self.dataRelTfd}{versionRep}'
     self.filePathTfd = f'{self.dirPathTfd}/{APP_INFO if isApp else EXPRESS_INFO}'
@@ -110,46 +120,40 @@ class RepoData(object):
 
     self.baseRep = (
         f'{GH_BASE}/{self.dataRelLgc}'
-        if lgc else
+        if clone else
         f'{EXPRESS_BASE}/{self.dataRelTfd}'
     ) + versionRep
+    self.dataPath = self.dataPathLgc if clone else self.dataPathTfd
 
-    self.lgc = lgc
-    self.check = check
     self.keep = keep
     self.withPaths = withPaths
-    self.gh = None
-
-    self.checkout = checkoutData
+    self.ghConn = None
 
     self.commitOff = None
     self.releaseOff = None
-    (self.commitChk, self.releaseChk) = self.fromString(self.checkout)
     self.commitOn = None
     self.releaseOn = None
     self.releaseCommitOn = None
 
+    self.silent = silent
+
+    self.repoOnline = None
     self.base = False
 
-    if not self.lgc:
+    if clone:
+      self.commitOff = None
+      self.releaseOff = None
+      self.local = 'clone'
+    else:
       self.readInfo()
-    if not self.silent:
-      offString = self.toString(self.commitOff, self.releaseOff)
-      console(f'Offline data in {self.baseRep}:')
-      console(f'\t{offString}')
 
-    if self.check or not(self.commitOff or self.releaseOff):
+    if not offline:
+      self.connect()
       self.fetchInfo()
-      if not self.silent:
-        checkoutRep = self.toString(self.commitChk, self.releaseChk)
-        console(f'Checkout data: {checkoutRep}')
 
   def makeSureLocal(self):
-    if self.lgc:
-      base = self.baseLgc
-      dirPath = self.dirPathLgc
-      self.base = base if os.path.exists(dirPath) else False
-      return
+    offline = self.isOffline()
+    clone = self.isClone()
 
     cOff = self.commitOff
     rOff = self.releaseOff
@@ -158,53 +162,66 @@ class RepoData(object):
     cOn = self.commitOn
     rOn = self.releaseOn
 
-    isLocal = (
-        cChk and cChk == cOff or
-        cChk == '' and cOff and cOn == cOff
-        or
-        rChk and rChk == rOff or
-        rChk == '' and rOff and rOn == rOff
-    )
-    isLocalStale = (
-        cChk == '' and cOff and cOn != cOff
-        or
-        rChk == '' and rOff and rOn != rOff
-    )
-    noLocal = not (cOff or rOff)
+    silent = self.silent
 
-    isOnline = (
-        cChk and cChk == cOn or
-        cChk == '' and cOn
-        or
-        rChk and rChk == rOn or
-        rChk == '' and rOn
-    )
-
-    canFetch = self.repoOnline
-    mayFetch = self.check or noLocal
-    wantFetch = isLocalStale
-    mustFetch = not isLocal
-    willFetch = isOnline
-
-    if mustFetch or (wantFetch and mayFetch):
-      if canFetch and willFetch:
-        self.base = self.baseTfd if self.downLoad(mustFetch, wantFetch, mayFetch) else False
+    if offline:
+      if clone:
+        base = self.baseLgc
+        dirPath = self.dirPathLgc
+        self.base = base if os.path.exists(dirPath) else False
       else:
-        msg = (
-            f'The requested data is not available online'
-            if not willFetch else
-            f'I cannot go online'
+        base = self.baseTfd
+        self.base = (
+            base if (
+                cChk and cChk == cOff or
+                cChk == '' and cOff or
+                rChk and rChk == rOff or
+                rChk == '' and rOff
+            ) else
+            False
         )
-        console(msg, error=True)
-        self.base = False
+      if not self.base:
+        console(f'The requested data is not available offline', error=True)
     else:
-      self.base = self.baseTfd
+      isLocal = (
+          cChk and cChk == cOff or
+          cChk == '' and cOff and cOn == cOff
+          or
+          rChk and rChk == rOff or
+          rChk == '' and rOff and rOn == rOff
+      )
+      isLocalStale = (
+          cChk == '' and cOff and cOn != cOff
+          or
+          rChk == '' and rOff and rOn != rOff
+      )
+
+      isOnline = (
+          cChk and cChk == cOn or
+          cChk == '' and cOn
+          or
+          rChk and rChk == rOn or
+          rChk == '' and rOn
+      )
+
+      canOnline = self.repoOnline
+
+      if not isLocal or isLocalStale:
+        if not silent:
+          console(f'The requested data is not available offline')
+        if not canOnline:
+          console(f'No online connection', error=True)
+        elif not isOnline:
+          console(f'The requested data is not available online', error=True)
+        else:
+          self.base = self.baseTfd if self.download() else False
+
     if self.base:
-      offString = self.toString(self.commitOff, self.releaseOff)
+      offString = self.toString(self.commitOff, self.releaseOff, self.local)
       console(f'Using data in {self.base}/{self.dataPath}:')
       console(f'\t{offString}')
 
-  def download(self, must, want, may):
+  def download(self):
     cChk = self.commitChk
     rChk = self.releaseChk
 
@@ -306,6 +323,7 @@ class RepoData(object):
       return None
 
     dest = f'{self.dirPathTfd}'
+    destSave = f'{self.dirPathSaveTfd}'
     if not self.keep:
       if os.path.exists(dest):
         rmtree(dest)
@@ -331,13 +349,14 @@ class RepoData(object):
         if content.type == 'dir':
           if not silent:
             console('directory')
-          os.makedirs(f'{dest}/{thisPath}', exist_ok=True)
+          os.makedirs(f'{destSave}/{thisPath}', exist_ok=True)
           _downloadDir(thisPath, level + 1)
         else:
           try:
             fileContent = g.get_git_blob(content.sha)
             fileData = base64.b64decode(fileContent.content)
-            fileDest = f'{dest}/{thisPath}'
+            fileDest = f'{destSave}/{thisPath}'
+            print(f'\n{destSave} ==== {thisPath}')
             with open(fileDest, 'wb') as fd:
               fd.write(fileData)
             if not silent:
@@ -433,12 +452,11 @@ class RepoData(object):
     self.releaseOn = release
 
   def readInfo(self):
-    string = ''
     if os.path.exists(self.filePathTfd):
       with open(self.filePathTfd) as f:
         for line in f:
           string = line.strip()
-          (commit, release) = self.fromString(string)
+          (commit, release, local) = self.fromString(string)
           if commit:
             self.commitOff = commit
           if release:
@@ -455,18 +473,47 @@ class RepoData(object):
 
   def connect(self):
     if self.repoOnline:
-      return good
-    if not self.gh:
+      return True
+    if not self.ghConn:
       try:
-        self.gh = Github()
+        self.ghConn = Github()
       except Exception as exc:
         console(exc, error=True)
         console('Cannot reach GitHub', error=True)
         return False
     try:
-      self.repoOnline = self.gh.get_repo(f'{self.org}/{self.repo}')
+      self.repoOnline = self.ghConn.get_repo(f'{self.org}/{self.repo}')
     except (GithubException, IOError) as exc:
       console(exc, error=True)
       console('Cannot access online GitHub repo "{org}/{repo}"', error=True)
       return False
-    return good
+    return True
+
+
+def getData(
+    org,
+    repo,
+    relative,
+    version,
+    checkoutData,
+    withPaths=False,
+    keep=False,
+    silent=False,
+):
+  rData = RepoData(
+      org,
+      repo,
+      relative,
+      checkoutData,
+      keep,
+      withPaths,
+      silent,
+      version=version,
+  )
+  rData.makeSureLocal()
+  return (
+      rData.commitOff,
+      rData.releaseOff,
+      rData.local,
+      rData.base,
+  ) if rData.base else (None, None, False, False)

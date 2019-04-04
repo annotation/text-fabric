@@ -13,9 +13,7 @@ from ..applib.display import getResultsX
 from ..applib.tables import compose, composeP, composeT
 
 from .command import (
-    argCheck,
     argCheckout,
-    argLocalClones,
     argModules,
     argSets,
     argParam,
@@ -31,11 +29,11 @@ def makeTfKernel(
     dataSource,
     appDir,
     commit,
+    release,
+    local,
     moduleRefs,
     setFile,
     checkoutData,
-    lgc,
-    check,
     port,
 ):
   config = findAppConfig(dataSource, appDir)
@@ -50,13 +48,13 @@ def makeTfKernel(
       dataSource,
       appDir,
       commit,
+      release,
+      local,
       _asApp=True,
       mod=moduleRefs,
       setFile=setFile,
       version=config.VERSION,
       checkoutData=checkoutData,
-      lgc=lgc,
-      check=check,
   )
 
   if not app.api:
@@ -429,14 +427,12 @@ def main(cargs=sys.argv):
   checkoutData = argCheckout(cargs=cargs)
   modules = argModules(cargs=cargs)
   sets = argSets(cargs=cargs)
-  lgc = argLocalClones(cargs=cargs)
-  check = argCheck(cargs=cargs)
 
   if dataSource is not None:
     moduleRefs = modules[6:] if modules else ''
     setFile = sets[7:] if sets else ''
     checkoutData = checkoutData[11:] if checkoutData else ''
-    (commit, appDir) = findApp(dataSource, checkoutApp, lgc, check)
+    (commit, release, local, appDir) = findApp(dataSource, checkoutApp)
     if appDir is not None:
       config = findAppConfig(dataSource, appDir)
       if config is not None:
@@ -444,11 +440,11 @@ def main(cargs=sys.argv):
             dataSource,
             appDir,
             commit,
+            release,
+            local,
             moduleRefs,
             setFile,
             checkoutData,
-            lgc,
-            check,
             config.PORT['kernel'],
         )
         if kernel:

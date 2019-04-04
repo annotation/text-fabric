@@ -11,7 +11,7 @@ dataSource = None
 config = None
 
 
-def setup(lgc, check):
+def setup():
   global TF
   global appDir
 
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
   if dataSource is None:
     sys.exit()
-  setup(False, False)
+  setup()
 
   commands = {
       '1': 'searchExe',

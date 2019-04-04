@@ -10,10 +10,8 @@ from ..applib.helpers import getLocalDir, configure
 from ..server.kernel import makeTfConnection
 from .command import (
     argCheckout,
-    argCheck,
     argDebug,
     argDocker,
-    argLocalClones,
     argModules,
     argParam,
 )
@@ -32,10 +30,10 @@ myDir = os.path.dirname(os.path.abspath(__file__))
 
 
 class Setup(object):
-  def __init__(self, dataSource, checkoutData, lgc, check):
+  def __init__(self, dataSource, checkoutData):
     self.dataSource = dataSource
 
-    (commit, appDir) = findApp(dataSource, checkoutData, lgc, check)
+    (commit, release, local, appDir) = findApp(dataSource, checkoutData)
     self.appDir = appDir
 
     config = findAppConfig(dataSource, appDir)
@@ -47,9 +45,9 @@ class Setup(object):
     self.TF = makeTfConnection(config.HOST, config.PORT['kernel'], TIMEOUT)
     self.wildQueries = set()
 
-    cfg = configure(config, lgc, None)
+    cfg = configure(config, None)
     version = cfg['version']
-    cfg['localDir'] = getLocalDir(cfg, lgc, version)
+    cfg['localDir'] = getLocalDir(cfg, local, version)
     self.localDir = cfg['localDir']
 
 
@@ -124,10 +122,8 @@ if __name__ == "__main__":
   if dataSource is not None:
     checkoutData = checkoutData[11:] if checkoutData else ''
     modules = tuple(modules[6:].split(',')) if modules else ()
-    lgc = argLocalClones()
-    check = argCheck()
     debug = argDebug()
-    setup = Setup(dataSource, checkoutData, lgc, check)
+    setup = Setup(dataSource, checkoutData)
     config = setup.config
     if config is not None:
       onDocker = argDocker()
