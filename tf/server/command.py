@@ -17,13 +17,6 @@ def argDebug(cargs=sys.argv):
   return False
 
 
-def argCheck(cargs=sys.argv):
-  for arg in cargs[1:]:
-    if arg == '-c':
-      return True
-  return False
-
-
 def argCheckout(cargs=sys.argv):
   for arg in cargs[1:]:
     if arg.startswith('--checkout='):
@@ -41,13 +34,6 @@ def argNoweb(cargs=sys.argv):
 def argDocker(cargs=sys.argv):
   for arg in cargs[1:]:
     if arg == '-docker':
-      return True
-  return False
-
-
-def argLocalClones(cargs=sys.argv):
-  for arg in cargs[1:]:
-    if arg == '-lgc':
       return True
   return False
 

@@ -10,14 +10,12 @@ from ..core.helpers import console
 from .repo import RepoData
 
 
-def findApp(dataSource, checkoutApp, lgc, check, silent=False):
+def findApp(dataSource, checkoutApp, silent=False):
   rData = RepoData(
       ORG,
       f'app-{dataSource}',
       APP_CODE,
       checkoutApp,
-      lgc,
-      check,
       False,
       True,
       silent,
@@ -25,7 +23,7 @@ def findApp(dataSource, checkoutApp, lgc, check, silent=False):
   )
   rData.makeSureLocal()
   base = rData.base
-  return (rData.commitOff, rData.releaseOff, base) if base else (None, None, False)
+  return (rData.commitOff, rData.releaseOff, rData.local) if base else (None, None, False, False)
 
 
 def findAppConfig(dataSource, appDir):

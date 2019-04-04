@@ -32,19 +32,19 @@ def configureNames(names, myDir):
   return result
 
 
-def configure(config, lgc, version):
+def configure(config, version):
   (names, path) = config.deliver()
   result = configureNames(names, path)
   result['version'] = config.VERSION if version is None else version
   return result
 
 
-def getLocalDir(names, lgc, version):
+def getLocalDir(names, local, version):
   org = names['org']
   repo = names['repo']
   relative = names['relative']
   version = names['version'] if version is None else version
-  base = hasData(lgc, org, repo, version, relative)
+  base = hasData(local, org, repo, version, relative)
 
   if not base:
     base = EXPRESS_BASE
@@ -52,9 +52,9 @@ def getLocalDir(names, lgc, version):
   return os.path.expanduser(f'{base}/{org}/{repo}/_temp')
 
 
-def hasData(lgc, org, repo, version, relative):
+def hasData(local, org, repo, version, relative):
   versionRep = f'/{version}' if version else ''
-  if lgc:
+  if local == 'clone':
     ghBase = os.path.expanduser(GH_BASE)
     ghTarget = f'{ghBase}/{org}/{repo}/{relative}{versionRep}'
     if os.path.exists(ghTarget):

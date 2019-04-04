@@ -20,12 +20,12 @@ def setupApi(
     appName,
     appDir,
     commit,
+    release,
+    local,
     hoist=False,
     version=None,
     checkoutData='',
     mod=None,
-    lgc=False,
-    check=False,
     locations=None,
     modules=None,
     api=None,
@@ -46,9 +46,9 @@ def setupApi(
   app.commit = commit
 
   config = findAppConfig(appName, appDir)
-  cfg = configure(config, lgc, version)
+  cfg = configure(config, version)
   version = cfg['version']
-  cfg['localDir'] = getLocalDir(cfg, lgc, version)
+  cfg['localDir'] = getLocalDir(cfg, local, version)
   for (key, value) in cfg.items():
     setattr(app, key, value)
 
@@ -73,8 +73,6 @@ def setupApi(
         modules,
         version,
         checkoutData,
-        lgc,
-        check,
         silent,
     )
     if specs:

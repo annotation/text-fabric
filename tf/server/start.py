@@ -13,10 +13,8 @@ from ..applib.app import findApp, findAppConfig
 
 from .command import (
     argDebug,
-    argCheck,
     argNoweb,
     argDocker,
-    argLocalClones,
     argCheckout,
     argModules,
     argSets,
@@ -35,9 +33,7 @@ text-fabric datasource[:specifier] args
 
 where all args are optional and args have one of these forms:
 
-  -lgc
   -d
-  -c
   -noweb
   -docker
   --checkout=specifier
@@ -105,13 +101,6 @@ Text-Fabric looks for data in ~/text-fabric-data.
 If data is not found there, it first downloads the relevant data from
 github.
 
--lgc Look for data first in local github clones under ~/github.
-  If data is not found there, get data in the normal way.
-
--c   Check for data updates online. If a newer release of the data is found,
-     it will be downloaded.
-
-
 MISCELLANEOUS
 
 -d  Debug mode. For developers of Text-Fabric itself.
@@ -137,9 +126,7 @@ stray processes.
 '''
 
 FLAGS = set('''
-    -c
     -d
-    -lgc
     -noweb
     -docker
 '''.strip().split())
@@ -274,23 +261,18 @@ def main(cargs=sys.argv):
 
   debug = argDebug(cargs=cargs)
   docker = argDocker(cargs=cargs)
-  check = argCheck(cargs=cargs)
-  lgc = argLocalClones(cargs=cargs)
 
-  kdataSource = ('-lgc', dataSource) if lgc else (dataSource, )
-  kdataSource = ('-c', *kdataSource) if check else kdataSource
-  kdataSource = (checkoutData, *kdataSource) if checkoutData else kdataSource
+  kdataSource = (checkoutData, dataSource) if checkoutData else (dataSource,)
   kdataSource = (modules, *kdataSource) if modules else kdataSource
   kdataSource = (sets, *kdataSource) if sets else kdataSource
 
   ddataSource = ('-d', dataSource) if debug else (dataSource, )
   ddataSource = ('-docker', *ddataSource) if docker else ddataSource
-  ddataSource = ('-lgc', *ddataSource) if lgc else ddataSource
   ddataSource = (checkoutData, *ddataSource) if checkoutData else ddataSource
   ddataSource = (modules, *ddataSource) if modules else ddataSource
 
   if dataSource is not None:
-    (commit, appDir) = findApp(dataSource, checkoutApp, lgc, check)
+    (commit, release, local, appDir) = findApp(dataSource, checkoutApp)
     if appDir is None:
       return
 

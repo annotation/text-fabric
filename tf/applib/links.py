@@ -188,12 +188,14 @@ def _featuresPerModule(app):
   return html
 
 
-def liveText(org, repo, version, commit, release):
-  return f'{org}/{repo} v:{version} ({RepoData.toString(commit, release)})'
+def liveText(org, repo, version, commit, release, local):
+  return f'{org}/{repo} v:{version} ({RepoData.toString(commit, release, local)})'
 
 
-def liveUrl(org, repo, version, commit, release, relative):
+def liveUrl(org, repo, version, commit, release, local, relative):
   relativeFlat = relative.replace('/', '-')
+  if local:
+    return f'{URL_GH}/{org}/{repo}/tree/master/{relative}'
   return (
       f'{URL_GH}/{org}/{repo}/releases/download/{release}/{relativeFlat}-{version}.zip'
       if release else
