@@ -22,6 +22,7 @@ acronym | language/writing system | name | period | long name
 [quran]({{anapp}}quran) | Arabic | Quran | 600 - 900 AD | [Quranic Arabic Corpus]({{quranabout}})
 [oldbabylonian]({{anapp}}oldbabylonian) | Akkadian / cuneiform | Old Babylonian letters | 1900 - 1600 BC | [Altbabylonische Briefe in Umschrift und Übersetzung]({{oldbabylonianabout}})
 [uruk]({{anapp}}uruk) | proto-cuneiform | Uruk | 4000 - 3100 BC | [Archaic tablets from Uruk]({{urukabout}})
+[banks]({{anapp}}banks) | modern english | Iain M. Banks | 1984 - 1987 AD | 99 words from the SF novel [Consider Phlebas]({{banksphlebas}})
 
 All these apps can be found in 
 [annotation]({{an}}) on GitHub.

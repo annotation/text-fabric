@@ -33,10 +33,10 @@ class Setup(object):
   def __init__(self, dataSource, checkoutData):
     self.dataSource = dataSource
 
-    (commit, release, local, appDir) = findApp(dataSource, checkoutData)
-    self.appDir = appDir
+    (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutData)
+    self.appDir = f'{appBase}/{appDir}'
 
-    config = findAppConfig(dataSource, appDir)
+    config = findAppConfig(dataSource, self.appDir)
     self.config = config
 
     if config is None:

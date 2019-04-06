@@ -8,7 +8,7 @@ from ..parameters import (
     APP_NB_URL,
 )
 from ..core.helpers import htmlEsc
-from .repo import RepoData
+from .repo import Checkout
 from .helpers import dh
 
 
@@ -189,7 +189,7 @@ def _featuresPerModule(app):
 
 
 def liveText(org, repo, version, commit, release, local):
-  return f'{org}/{repo} v:{version} ({RepoData.toString(commit, release, local)})'
+  return f'{org}/{repo} v:{version} ({Checkout.toString(commit, release, local)})'
 
 
 def liveUrl(org, repo, version, commit, release, local, relative):

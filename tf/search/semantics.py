@@ -92,12 +92,7 @@ def _grammar(searchExe):
         if indent == top[0]:
           # sibling of previous atom
           if len(atomNest) > 1:
-            if 'name' not in token:
-              # lonely operator:
-              # left is previous atom, right is parent atom
-              qedges.append((top[1], op, atomNest[-2][1]))
-              edgeLine[len(qedges) - 1] = i
-            else:
+            if 'name' in token:
               # take the qnode of the subtop of the
               # atomStack, if there is one
               qedges.append((q, ']]', atomNest[-2][1]))
@@ -105,25 +100,47 @@ def _grammar(searchExe):
               if op is not None:
                 qedges.append((top[1], op, q))
                 edgeLine[len(qedges) - 1] = i
+            else:
+              # lonely operator:
+              # left is previous atom, right is parent atom
+              qedges.append((top[1], op, atomNest[-2][1]))
+              edgeLine[len(qedges) - 1] = i
           else:
             if op is not None:
               qedges.append((top[1], op, q))
               edgeLine[len(qedges) - 1] = i
         elif indent > top[0]:
-          if 'name' not in token:
-            searchExe.badSemantics.append((i, f'Lonely relation: not allowed as first child'))
-            good = False
-          else:
+          if 'name' in token:
             # child of previous atom
             qedges.append((q, ']]', top[1]))
             edgeLine[len(qedges) - 1] = i
             if op is not None:
               qedges.append((top[1], op, q))
               edgeLine[len(qedges) - 1] = i
+          else:
+            searchExe.badSemantics.append((i, f'Lonely relation: not allowed as first child'))
+            good = False
         else:
           # outdent action:
           # look up the proper parent in the stack
-          if indent not in atomStack:
+          if indent in atomStack:
+            parents = [at[1] for at in atomNest if at[0] < indent]
+            if 'name' in token:
+              if op is not None:
+                qedges.append((atomStack[indent], op, q))
+                edgeLine[len(qedges) - 1] = i
+            if len(parents) != 0:  # if not already at outermost level
+              if 'name' in token:
+                qedges.append((q, ']]', parents[-1]))
+                edgeLine[len(qedges) - 1] = i
+              else:
+                # connect previous sibling to parent
+                qedges.append((atomStack[indent], op, parents[-1]))
+                edgeLine[len(qedges) - 1] = i
+            removeKeys = [at[0] for at in atomNest if at[0] > indent]
+            for rk in removeKeys:
+              del atomStack[rk]
+          else:
             # parent cannot be found: indentation error
             searchExe.badSemantics.append((
                 i, 'Unexpected indent: {}, expected one of {}'.format(
@@ -132,22 +149,6 @@ def _grammar(searchExe):
                 )
             ))
             good = False
-          else:
-            parents = [at[1] for at in atomNest if at[0] < indent]
-            if len(parents) != 0:  # if not already at outermost level
-              if 'name' not in token:
-                # connect previous sibling to parent
-                qedges.append((atomStack[indent], op, parents[-1]))
-                edgeLine[len(qedges) - 1] = i
-              else:
-                qedges.append((q, ']]', parents[-1]))
-                edgeLine[len(qedges) - 1] = i
-                if op is not None:
-                  qedges.append((atomStack[indent], op, q))
-                  edgeLine[len(qedges) - 1] = i
-            removeKeys = [at[0] for at in atomNest if at[0] > indent]
-            for rk in removeKeys:
-              del atomStack[rk]
         atomStack[indent] = q
     elif kind == 'feat':
       features = token['features']

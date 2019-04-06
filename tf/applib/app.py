@@ -7,23 +7,20 @@ from ..parameters import (
     APP_CODE
 )
 from ..core.helpers import console
-from .repo import RepoData
+from .repo import checkoutRepo
 
 
 def findApp(dataSource, checkoutApp, silent=False):
-  rData = RepoData(
-      ORG,
-      f'app-{dataSource}',
-      APP_CODE,
-      checkoutApp,
-      False,
-      True,
-      silent,
-      isApp=True,
+  return checkoutRepo(
+      org=ORG,
+      repo=f'app-{dataSource}',
+      folder=APP_CODE,
+      checkout=checkoutApp,
+      withPaths=True,
+      keep=False,
+      silent=silent,
+      label='TF-app',
   )
-  rData.makeSureLocal()
-  base = rData.base
-  return (rData.commitOff, rData.releaseOff, rData.local) if base else (None, None, False, False)
 
 
 def findAppConfig(dataSource, appDir):

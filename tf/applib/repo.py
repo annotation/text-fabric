@@ -10,17 +10,17 @@ from zipfile import ZipFile
 from github import Github, GithubException, UnknownObjectException
 
 from ..parameters import (
-    APP_INFO,
     APP_EXPRESS,
     URL_GH,
     GH_BASE,
     EXPRESS_BASE,
-    EXPRESS_INFO,
+    EXPRESS_SYNC,
+    EXPRESS_SYNC_LEGACY,
 )
 from ..core.helpers import console
 
 
-class RepoData(object):
+class Checkout(object):
 
   @staticmethod
   def fromString(string):
@@ -28,8 +28,8 @@ class RepoData(object):
     release = None
     local = None
     if not string:
-      commit = None
-      release = None
+      commit = ''
+      release = ''
     elif string == 'latest':
       commit = None
       release = ''
@@ -87,7 +87,9 @@ class RepoData(object):
       silent,
       version=None,
       isApp=False,
+      label='data'
   ):
+    self.label = label
     self.org = org
     self.repo = repo
     (self.commitChk, self.releaseChk, self.local) = self.fromString(checkoutData)
@@ -111,7 +113,7 @@ class RepoData(object):
     self.dirPathSaveTfd = f'{self.baseTfd}/{orgRepo}'
     self.dirPathTfd = f'{self.baseTfd}/{self.dataRelTfd}{versionRep}'
     self.dataPathTfd = f'{self.dataRelTfd}{versionRep}'
-    self.filePathTfd = f'{self.dirPathTfd}/{APP_INFO if isApp else EXPRESS_INFO}'
+    self.filePathTfd = f'{self.dirPathTfd}/{EXPRESS_SYNC}'
 
     self.baseLgc = os.path.expanduser(GH_BASE)
     self.dataRelLgc = f'{org}/{repo}{relativeRep}'
@@ -138,13 +140,15 @@ class RepoData(object):
     self.silent = silent
 
     self.repoOnline = None
-    self.base = False
+    self.localBase = False
+    self.localDir = None
 
     if clone:
       self.commitOff = None
       self.releaseOff = None
       self.local = 'clone'
     else:
+      self.fixInfo()
       self.readInfo()
 
     if not offline:
@@ -152,6 +156,7 @@ class RepoData(object):
       self.fetchInfo()
 
   def makeSureLocal(self):
+    label = self.label
     offline = self.isOffline()
     clone = self.isClone()
 
@@ -166,29 +171,29 @@ class RepoData(object):
 
     if offline:
       if clone:
-        base = self.baseLgc
+        localBase = self.baseLgc
         dirPath = self.dirPathLgc
-        self.base = base if os.path.exists(dirPath) else False
+        self.localBase = localBase if os.path.exists(dirPath) else False
       else:
-        base = self.baseTfd
-        self.base = (
-            base if (
+        localBase = self.baseTfd
+        self.localBase = (
+            localBase if (
                 cChk and cChk == cOff or
-                cChk == '' and cOff or
+                cChk is None and cOff or
                 rChk and rChk == rOff or
-                rChk == '' and rOff
+                rChk is None and rOff
             ) else
             False
         )
-      if not self.base:
-        console(f'The requested data is not available offline', error=True)
+      if not self.localBase:
+        console(f'The requested {label} is not available offline', error=True)
     else:
       isLocal = (
           cChk and cChk == cOff or
-          cChk == '' and cOff and cOn == cOff
+          cChk == '' and cOff
           or
           rChk and rChk == rOff or
-          rChk == '' and rOff and rOn == rOff
+          rChk == '' and rOff
       )
       isLocalStale = (
           cChk == '' and cOff and cOn != cOff
@@ -206,36 +211,50 @@ class RepoData(object):
 
       canOnline = self.repoOnline
 
-      if not isLocal or isLocalStale:
+      if isLocal and not isLocalStale:
+        self.localBase = self.baseTfd
+      else:
         if not silent:
-          console(f'The requested data is not available offline')
+          console(f'The requested {label} is not available offline')
         if not canOnline:
           console(f'No online connection', error=True)
         elif not isOnline:
-          console(f'The requested data is not available online', error=True)
+          console(f'The requested {label} is not available online', error=True)
         else:
-          self.base = self.baseTfd if self.download() else False
+          self.localBase = self.baseTfd if self.download() else False
 
-    if self.base:
+    if self.localBase:
+      self.localBase = self.dataPath
+      state = (
+          'requested' if cChk or rChk else
+          'latest release' if rChk == '' and self.releaseOff else
+          'latest commit' if cChk == '' and self.commitOff else
+          'latest' if cChk == '' or rChk == '' else
+          'local - without online check' if self.local == 'local' else
+          'local github - without online check' if self.local == 'clone' else
+          'for whatever reason'
+      )
       offString = self.toString(self.commitOff, self.releaseOff, self.local)
-      console(f'Using data in {self.base}/{self.dataPath}:')
-      console(f'\t{offString}')
+      if not silent:
+        console(f'Using {label} in {self.localBase}/{self.localDir}:')
+        console(f'\t{offString} ({state})')
 
   def download(self):
     cChk = self.commitChk
     rChk = self.releaseChk
 
+    fetched = False
     if rChk is not None:
-      fetched = self.downloadRelease(rChk)
-    elif cChk is not None:
+      fetched = self.downloadRelease(rChk, showErrors=cChk is None)
+    if not fetched and cChk is not None:
       fetched = self.downloadCommit(cChk)
 
     if fetched:
       self.writeInfo()
-    return False
+    return fetched
 
-  def downloadRelease(self, release):
-    r = self.getReleaseObj(release)
+  def downloadRelease(self, release, showErrors=True):
+    r = self.getReleaseObj(release, showErrors=showErrors)
     if not r:
       return False
     (commit, release) = self.getReleaseFromObj(r)
@@ -261,7 +280,7 @@ class RepoData(object):
       fetched = self.downloadCommit(commit)
     if fetched:
       self.commitOff = commit
-      self.releaseOff = commit
+      self.releaseOff = release
     return fetched
 
   def downloadCommit(self, commit):
@@ -269,9 +288,14 @@ class RepoData(object):
     if not c:
       return False
     commit = self.getCommitFromObj(c)
-    return self.downloadDir(commit, exclude=r'\.tfx')
+    fetched = self.downloadDir(commit, exclude=r'\.tfx')
+    if fetched:
+      self.commitOff = commit
+      self.releaseOff = None
+    return fetched
 
   def downloadZip(self, dataUrl, showErrors=True):
+    label = self.label
     silent = self.silent
     if not silent:
       console(f'\tdownloading {dataUrl} ... ')
@@ -281,12 +305,12 @@ class RepoData(object):
         console(f'\tunzipping ... ')
       zf = io.BytesIO(r.content)
     except Exception as e:
-      if showErrors:
-        console(f'\t{str(e)}\n\tcould not download {dataUrl}', error=True)
+      if showErrors or not silent:
+        console(f'\t{str(e)}\n\tcould not download {dataUrl}', error=showErrors)
       return False
 
     if not silent:
-      console(f'\tsaving data')
+      console(f'\tsaving {label}')
 
     cwd = os.getcwd()
     try:
@@ -310,8 +334,8 @@ class RepoData(object):
           zInfo.filename = os.path.basename(zInfo.filename)
           z.extract(zInfo)
     except Exception as e:
-      if showErrors:
-        console(f'\t{str(e)}\n\tcould not save data to {dest}', error=True)
+      if showErrors or not silent:
+        console(f'\t{str(e)}\n\tcould not save {label} to {dest}', error=showErrors)
       os.chdir(cwd)
       return False
     os.chdir(cwd)
@@ -356,13 +380,13 @@ class RepoData(object):
             fileContent = g.get_git_blob(content.sha)
             fileData = base64.b64decode(fileContent.content)
             fileDest = f'{destSave}/{thisPath}'
-            print(f'\n{destSave} ==== {thisPath}')
             with open(fileDest, 'wb') as fd:
               fd.write(fileData)
             if not silent:
               console('downloaded')
           except (GithubException, IOError) as exc:
-            console('error')
+            if not silent:
+              console('error')
             console(f'{lead}{exc}', error=True)
             good = False
 
@@ -376,8 +400,8 @@ class RepoData(object):
 
     return good
 
-  def getRelease(self, release):
-    r = self.getReleaseObj(release)
+  def getRelease(self, release, showErrors=True):
+    r = self.getReleaseObj(release, showErrors=showErrors)
     if not r:
       return None
     return self.getReleaseFromObj(r)
@@ -388,7 +412,7 @@ class RepoData(object):
       return None
     return self.getCommitFromObj(c)
 
-  def getReleaseObj(self, release):
+  def getReleaseObj(self, release, showErrors=True):
     g = self.repoOnline
     if not g:
       return None
@@ -399,9 +423,11 @@ class RepoData(object):
     try:
       r = g.get_release(release) if release else g.get_latest_release()
     except UnknownObjectException:
-      console(f'\tno release{msg}', error=True)
+      if showErrors or not self.silent:
+        console(f'\tno release{msg}', error=showErrors)
     except Exception as exc:
-      console(f'\tcannot find release{msg}: {exc}', error=True)
+      if showErrors or not self.silent:
+        console(f'\tcannot find release{msg}: {exc}', error=showErrors)
     return r
 
   def getCommitObj(self, commit):
@@ -441,15 +467,28 @@ class RepoData(object):
     commit = None
     release = None
     if self.releaseChk is not None:
-      result = self.getRelease(self.releaseChk)
+      result = self.getRelease(self.releaseChk, showErrors=self.commitChk is None)
       if result:
         (commit, release) = result
-      elif self.releaseChk == '':
+      elif self.commitChk is not None:
         commit = self.getCommit('')
     elif self.commitChk is not None:
       commit = self.getCommit(self.commitChk)
     self.commitOn = commit
     self.releaseOn = release
+
+  def fixInfo(self):
+    sDir = self.dirPathTfd
+    if not os.path.exists(sDir):
+      return
+    for sFile in EXPRESS_SYNC_LEGACY:
+      sPath = f'{sDir}/{sFile}'
+      if os.path.exists(sPath):
+        goodPath = f'{sDir}/{EXPRESS_SYNC}'
+        if os.path.exists(goodPath):
+          os.remove(sPath)
+        else:
+          os.rename(sPath, goodPath)
 
   def readInfo(self):
     if os.path.exists(self.filePathTfd):
@@ -476,7 +515,9 @@ class RepoData(object):
       return True
     if not self.ghConn:
       try:
-        self.ghConn = Github()
+        ghClient = os.environ.get('GHCLIENT', None)
+        ghSecret = os.environ.get('GHSECRET', None)
+        self.ghConn = Github(client_id=ghClient, client_secret=ghSecret)
       except Exception as exc:
         console(exc, error=True)
         console('Cannot reach GitHub', error=True)
@@ -490,30 +531,33 @@ class RepoData(object):
     return True
 
 
-def getData(
-    org,
-    repo,
-    relative,
-    version,
-    checkoutData,
-    withPaths=False,
-    keep=False,
+def checkoutRepo(
+    org='annotation',
+    repo='tutorials',
+    folder='text-fabric/examples/banks/tf',
+    version='',
+    checkout='',
+    withPaths=True,
+    keep=True,
     silent=False,
+    label='data',
 ):
-  rData = RepoData(
+  rData = Checkout(
       org,
       repo,
-      relative,
-      checkoutData,
+      folder,
+      checkout,
       keep,
       withPaths,
       silent,
       version=version,
+      label=label,
   )
   rData.makeSureLocal()
   return (
       rData.commitOff,
       rData.releaseOff,
       rData.local,
-      rData.base,
-  ) if rData.base else (None, None, False, False)
+      rData.localBase,
+      rData.localDir,
+  ) if rData.localBase else (None, None, False, False)

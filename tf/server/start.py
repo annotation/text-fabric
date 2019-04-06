@@ -272,11 +272,11 @@ def main(cargs=sys.argv):
   ddataSource = (modules, *ddataSource) if modules else ddataSource
 
   if dataSource is not None:
-    (commit, release, local, appDir) = findApp(dataSource, checkoutApp)
-    if appDir is None:
+    (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
+    if not appBase:
       return
 
-    config = findAppConfig(dataSource, appDir)
+    config = findAppConfig(dataSource, f'{appBase}/{appDir}')
     pKernel = None
     pWeb = None
     if config is None:
