@@ -8,12 +8,12 @@ def use(appName, *args, **kwargs):
   if len(parts) == 1:
     parts.append('')
   (appName, checkoutApp) = parts
-  (commit, release, local, appDir) = findApp(appName, checkoutApp)
-  if not appDir:
+  (commit, release, local, appBase, appDir) = findApp(appName, checkoutApp)
+  if not appBase:
     return None
 
-  appClass = findAppClass(appName, appDir)
+  appClass = findAppClass(appName, f'{appBase}/{appDir}')
   if not appClass:
     return None
 
-  return appClass(appName, appDir, commit, release, local, *args, **kwargs)
+  return appClass(appName, f'{appBase}/{appDir}', commit, release, local, *args, **kwargs)

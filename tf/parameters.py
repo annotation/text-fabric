@@ -14,7 +14,11 @@ URL_NB = 'https://nbviewer.jupyter.org/github'
 DOWNLOADS = '~/Downloads'
 GH_BASE = '~/github'
 EXPRESS_BASE = '~/text-fabric-data'
-EXPRESS_INFO = '__release.txt'
+EXPRESS_SYNC = '__checkout__.txt'
+EXPRESS_SYNC_LEGACY = [
+    '__release.txt',
+    '__commit.txt',
+]
 URL_TFDOC = f'https://{ORG}.github.io/{REPO}'
 
 DOI_TEXT = '10.5281/zenodo.592193'
@@ -27,7 +31,6 @@ APP_NB_URL = f'{URL_NB}/{ORG}/tutorials/blob/master'
 APP_EXPRESS = f'{EXPRESS_BASE}/__apps__'
 APP_GITHUB = f'{GH_BASE}/annotation'
 APP_CODE = 'code'
-APP_INFO = '__commit.txt'
 
 TEMP_DIR = '_temp'
 

@@ -11,6 +11,7 @@ def connectedness(searchExe):
   for (f, rela, t) in qedges:
     if f != t:
       componentIndex[f] |= componentIndex[t]
+      componentIndex[t] = componentIndex[f]
       for u in componentIndex[f] - {f}:
         componentIndex[u] = componentIndex[f]
   components = sorted(set(frozenset(c) for c in componentIndex.values()))

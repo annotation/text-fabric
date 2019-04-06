@@ -58,27 +58,37 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
   relativeDest = relative.replace('/', '-')
 
   if tf:
+    versionEntries = []
     for versionEntry in glob(f'{sourceDir}/*'):
-      if not os.path.isdir(versionEntry):
-        continue
-      (versionDir, version) = os.path.split(versionEntry)
+      if os.path.isdir(versionEntry):
+        (versionDir, version) = os.path.split(versionEntry)
+        versionEntries.append((versionDir, version))
+    if versionEntries:
+      console(f'Found {len(versionEntries)} versions')
+    else:
+      versionEntries.append((sourceDir, ''))
+      console(f'Found unversioned features')
+    for (versionDir, version) in versionEntries:
       if version == TEMP:
         continue
-      for tfEntry in glob(f'{versionEntry}/*'):
+      versionRep = f'/{version}' if version else ''
+      versionRep2 = f'{version}/' if version else ''
+      versionRep3 = f'-{version}' if version else ''
+      for tfEntry in glob(f'{versionDir}{versionRep}/*'):
         if not os.path.isfile(tfEntry):
           continue
         (tfDir, featureFile) = os.path.split(tfEntry)
         if featureFile in EXCLUDE:
           continue
         if not featureFile.endswith('.tf'):
-          console(f'WARNING: non feature file "{version}/{featureFile}"', error=True)
+          console(f'WARNING: non feature file "{versionRep2}{featureFile}"', error=True)
           continue
         dataFiles.setdefault(version, set()).add(featureFile)
 
     console(f'zip files end up in {destDir}')
     for (version, features) in sorted(dataFiles.items()):
       item = f'{org}/{repo}'
-      target = f'{relativeDest}-{version}.zip'
+      target = f'{relativeDest}{versionRep3}.zip'
       console(f'zipping {item:<25} {version:>4} with {len(features):>3} features ==> {target}')
       with ZipFile(
           f'{destDir}/{target}',
@@ -87,7 +97,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
       ) as zipFile:
         for featureFile in sorted(features):
           zipFile.write(
-              f'{sourceDir}/{version}/{featureFile}',
+              f'{sourceDir}{versionRep}/{featureFile}',
               arcname=featureFile,
           )
   else:

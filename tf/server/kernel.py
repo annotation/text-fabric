@@ -432,13 +432,13 @@ def main(cargs=sys.argv):
     moduleRefs = modules[6:] if modules else ''
     setFile = sets[7:] if sets else ''
     checkoutData = checkoutData[11:] if checkoutData else ''
-    (commit, release, local, appDir) = findApp(dataSource, checkoutApp)
-    if appDir is not None:
-      config = findAppConfig(dataSource, appDir)
+    (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
+    if appBase:
+      config = findAppConfig(dataSource, f'{appBase}/{appDir}')
       if config is not None:
         kernel = makeTfKernel(
             dataSource,
-            appDir,
+            f'{appBase}/{appDir}',
             commit,
             release,
             local,

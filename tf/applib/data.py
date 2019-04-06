@@ -1,5 +1,5 @@
 from ..core.helpers import itemize, splitModRef, expandDir
-from .repo import getData
+from .repo import checkoutRepo
 from .links import liveText, liveUrl
 
 
@@ -31,7 +31,7 @@ class AppData(object):
         app.org,
         app.repo,
         app.relative,
-        self.checkoutData,
+        self.checkout,
         isBase=True,
     ):
       self.good = False
@@ -43,7 +43,7 @@ class AppData(object):
           m['org'],
           m['repo'],
           m['relative'],
-          m.get('checkoutData', ''),
+          m.get('checkout', ''),
           specs=m,
       ):
         self.good = False
@@ -124,20 +124,23 @@ class AppData(object):
     if moduleRef in self.seen:
       return True
 
-    (commit, release, local, base) = getData(
-        org,
-        repo,
-        relative,
-        self.version,
-        checkoutData,
+    (commit, release, local, localBase, localDir) = checkoutRepo(
+        org=org,
+        repo=repo,
+        folder=relative,
+        version=self.version,
+        checkout=checkoutData,
+        withPaths=False,
+        keep=False,
         silent=self.silent,
     )
     if not local:
       return False
 
     self.seen.add(moduleRef)
-    repoLocation = f'{base}/{org}/{repo}'
-    self.mLocations.append(f'{repoLocation}/{relative}')
+    repoLocation = f'{localBase}/{org}/{repo}'
+    # self.mLocations.append(f'{repoLocation}/{relative}')
+    self.mLocations.append(f'{localBase}/{localDir}')
     if isBase:
       self.app.repoLocation = repoLocation
 
