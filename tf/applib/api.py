@@ -18,13 +18,13 @@ from .data import getModulesData
 def setupApi(
     app,
     appName,
-    appDir,
+    appPath,
     commit,
     release,
     local,
     hoist=False,
     version=None,
-    checkoutData='',
+    checkout='',
     mod=None,
     locations=None,
     modules=None,
@@ -42,10 +42,10 @@ def setupApi(
   ).items():
     setattr(app, key, value)
 
-  app.appDir = appDir
+  app.appPath = appPath
   app.commit = commit
 
-  config = findAppConfig(appName, appDir)
+  config = findAppConfig(appName, appPath)
   cfg = configure(config, version)
   version = cfg['version']
   cfg['localDir'] = getLocalDir(cfg, local, version)
@@ -72,7 +72,7 @@ def setupApi(
         locations,
         modules,
         version,
-        checkoutData,
+        checkout,
         silent,
     )
     if specs:

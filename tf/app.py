@@ -12,8 +12,9 @@ def use(appName, *args, **kwargs):
   if not appBase:
     return None
 
-  appClass = findAppClass(appName, f'{appBase}/{appDir}')
+  appPath = f'{appBase}/{appDir}'
+  appClass = findAppClass(appName, appPath)
   if not appClass:
     return None
 
-  return appClass(appName, f'{appBase}/{appDir}', commit, release, local, *args, **kwargs)
+  return appClass(appName, appPath, commit, release, local, *args, **kwargs)

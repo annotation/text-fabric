@@ -144,7 +144,7 @@ def main(cargs=sys.argv):
     console(HELP)
     return
 
-  (org, repo, relative, checkoutData) = parts
+  (org, repo, relative, checkout) = parts
 
   tf = (
       relative.endswith('tf') or

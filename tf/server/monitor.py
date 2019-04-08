@@ -1,34 +1,34 @@
-import sys
-
 from ..core.helpers import console
-from ..applib.app import findAppConfig
+from ..applib.app import findApp, findAppConfig
 from ..server.kernel import makeTfConnection
 from .command import argParam
 
 TIMEOUT = 180
 
-dataSource = None
-config = None
 
-
-def setup():
+def setup(dataSource, checkoutApp):
   global TF
-  global appDir
 
-  config = findAppConfig(dataSource, appDir)
+  (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
+  if not appBase:
+    return
+  appPath = f'{appBase}/{appDir}'
+  config = findAppConfig(dataSource, appPath)
   if config is None:
     return None
 
   TF = makeTfConnection(config.HOST, config.PORT['kernel'], TIMEOUT)
-  return config
+  return TF
 
 
-if __name__ == "__main__":
-  dataSource = argParam(interactive=True)
-
+def main():
+  (dataSource, checkoutApp) = argParam(interactive=True)
   if dataSource is None:
-    sys.exit()
-  setup()
+    return
+
+  TF = setup(dataSource, checkoutApp)
+  if TF is None:
+    return
 
   commands = {
       '1': 'searchExe',
@@ -44,4 +44,8 @@ if __name__ == "__main__":
       console(f'{command} = {data[command]}\n')
   except KeyboardInterrupt:
     console('\nquitting')
-    sys.exit()
+    return
+
+
+if __name__ == "__main__":
+  main()

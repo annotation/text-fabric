@@ -28,7 +28,6 @@ APIREF = f'https://{ORG}.github.io/{REPO}/Api/Fabric/'
 
 APP_URL = f'{URL_GH}/{ORG}'
 APP_NB_URL = f'{URL_NB}/{ORG}/tutorials/blob/master'
-APP_EXPRESS = f'{EXPRESS_BASE}/__apps__'
 APP_GITHUB = f'{GH_BASE}/annotation'
 APP_CODE = 'code'
 

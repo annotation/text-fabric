@@ -27,26 +27,26 @@ TF_ERROR = 'Could not set up TF'
 
 def makeTfKernel(
     dataSource,
-    appDir,
+    appPath,
     commit,
     release,
     local,
     moduleRefs,
     setFile,
-    checkoutData,
+    checkout,
     port,
 ):
-  config = findAppConfig(dataSource, appDir)
+  config = findAppConfig(dataSource, appPath)
   if config is None:
     return None
-  appClass = findAppClass(dataSource, appDir)
+  appClass = findAppClass(dataSource, appPath)
   if appClass is None:
     return None
 
   console(f'Setting up TF kernel for {dataSource} {moduleRefs} {setFile}')
   app = appClass(
       dataSource,
-      appDir,
+      appPath,
       commit,
       release,
       local,
@@ -54,7 +54,7 @@ def makeTfKernel(
       mod=moduleRefs,
       setFile=setFile,
       version=config.VERSION,
-      checkoutData=checkoutData,
+      checkout=checkout,
   )
 
   if not app.api:
@@ -111,7 +111,7 @@ def makeTfKernel(
           tuple(sorted(app.sets.keys())) if hasattr(app, 'sets') and type(app.sets) is dict else ()
       )
 
-    def exposed_css(self, appDir=None):
+    def exposed_css(self):
       app = self.app
       return f'<style type="text/css">{app.loadCss()}</style>'
 
@@ -419,32 +419,30 @@ def makeTfConnection(host, port, timeout):
 # TOP LEVEL
 
 def main(cargs=sys.argv):
-  dataSource = argParam(cargs=cargs, interactive=True)
-  parts = dataSource.split(':', maxsplit=1)
-  if len(parts) == 1:
-    parts.append('')
-  (dataSource, checkoutApp) = parts
-  checkoutData = argCheckout(cargs=cargs)
-  modules = argModules(cargs=cargs)
-  sets = argSets(cargs=cargs)
+  (dataSource, checkoutApp) = argParam(cargs=cargs, interactive=True)
+  if dataSource is None:
+    return
+  checkout = argCheckout(cargs=cargs)
+  if checkout is None:
+    checkout = ''
+  moduleRefs = argModules(cargs=cargs)
+  setFile = argSets(cargs=cargs)
 
   if dataSource is not None:
-    moduleRefs = modules[6:] if modules else ''
-    setFile = sets[7:] if sets else ''
-    checkoutData = checkoutData[11:] if checkoutData else ''
     (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
     if appBase:
-      config = findAppConfig(dataSource, f'{appBase}/{appDir}')
+      appPath = f'{appBase}/{appDir}'
+      config = findAppConfig(dataSource, appPath)
       if config is not None:
         kernel = makeTfKernel(
             dataSource,
-            f'{appBase}/{appDir}',
+            appPath,
             commit,
             release,
             local,
             moduleRefs,
             setFile,
-            checkoutData,
+            checkout,
             config.PORT['kernel'],
         )
         if kernel:

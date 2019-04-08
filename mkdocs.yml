@@ -77,6 +77,7 @@ extra:
   c_web: tf/server/web.py
   c_zipdata: tf/applib/zipdata.py
   an: https://github.com/annotation
+  antut: https://github.com/annotation/tutorials
   anaconda: https://www.anaconda.com/download
   anapp: https://github.com/annotation/app-
   arxiv: https://arxiv.org
@@ -140,7 +141,7 @@ extra:
   tfght: https://github.com/annotation/text-fabric/tree/master 
   tfnb: https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master
   tfpp: https://pypi.org/project/text-fabric/ 
-  tutnb: https://nbviewer.jupyter.org/github/annotation/blob/master
+  tutnb: https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master
   ubiq1: https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/
   urukabout: https://github.com/Nino-cunei/uruk/blob/master/docs/about.md
   weave: https://sew4home.com/tips-resources/buying-guide/all-about-fabric-weaves-tutorial
