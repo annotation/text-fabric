@@ -78,50 +78,47 @@ The data sharing workflow is built around the following assumptions:
 
 ### Data in place
 
-We use the existing [etcbc/valence/tf]({{etcbcgh}}/valence) data as an example.
+We use the existing
+[annotation/tutorials/text-fabric/examples/banks/tf]({{tutnb}}/text-fabric/convert.ipynb)
+data as an example.
 
 We assume you have this data locally, in 
 
 ```
-~/github/etcbc/valence/tf
+~/github/annotation/tutorials/text-fabric/examples/banks/tf
 ```
 
-under which there are versions such as `c`, `2017`, which contain the actual `.tf` files.
+under which there are versions such as `0.1`, which contain the actual `.tf` files.
 
 ### Package into zip files
 
 To create zip files for the data, execute the following command in your terminal:
 
 ```sh
-text-fabric-zip etcbc/valence/tf
+text-fabric-zip annotation/tutorials/text-fabric/examples/banks/tf
 ```
 
 You'll see
 
 ```
-zipping etcbc/valence             2016 with  10 features
-zipping etcbc/valence             2017 with  10 features
-zipping etcbc/valence                4 with  10 features
-zipping etcbc/valence               4b with  10 features
-zipping etcbc/valence                c with  10 features
+Create release data for annotation/tutorials/text-fabric/examples/banks/tf
+Found 1 versions
+zip files end up in /Users/dirk/Downloads/annotation-release/tutorials
+zipping annotation/tutorials       0.1 with  10 features ==> text-fabric-examples-banks-tf-0.1.zip
+```
 ```
 
 and as a result you have this in your Downloads folder
 
 ```
-~/Downloads/etcbc-release/valence/
-    tf-4.zip
-    tf-4b.zip
-    tf-2016.zip
-    tf-2017.zip
-    tf-c.zip
+~/Downloads/annotation-release/tutorials/text-fabric-examples-banks-tf-01.zip
 ```
         
 ### Push your data to GitHub
 
 ??? caution "Write access"
     You can only do this for repositories for which you have write access,
-    so do not try to perform this on `etcbc/valence` but use a repo of your own.**
+    so do not try to perform this on `annotation/tutorials` but use a repo of your own.**
 
 Locally, commit your changes and push them to GitHub
 
@@ -145,7 +142,7 @@ Then click *Draft a new release*
 
 ![releases](../images/add-draft.png)
 
-Fill in the details, especially the version (something like `1.6`),
+Fill in the details, especially the release version (something like `0.1`),
 although nothing in the workflow depends on the exact form of the version number;
 you will see the release version in the provenance, though.
 
@@ -160,8 +157,10 @@ Now your data is available to others.
 
 ### Use data
 
-The valence data has been made available by the ETCBC, so the following steps
-you can perform literally.
+Now we are just reading data,
+so the following steps
+you can perform literally,
+without fear of overwriting data.
 
 #### In the TF browser
 
@@ -172,99 +171,10 @@ text-fabric bhsa --mod=etcbc/valence/tf
 ```
 
 You will see that the valence data is being used.
-If you do not have `~/github/etcbc/valence/tf`
-nor `~/text-fabric-data/etcbc/valence/tf`
-data will be downloaded and expanded to the
-latter location.
-
-??? note "output when loading new data"
-    ```
-    Setting up TF kernel for bhsa etcbc/valence/tf
-    Using etcbc/bhsa - c r1.5 in ~/text-fabric-data/etcbc/bhsa/tf/c
-    Using etcbc/phono - c r1.2 in ~/text-fabric-data/etcbc/phono/tf/c
-    Using etcbc/parallels - c r1.2 in ~/text-fabric-data/etcbc/parallels/tf/c
-      downloading etcbc/valence - c r1.1
-      from https://github.com/etcbc/valence/releases/download/1.1/tf-c.zip ...
-      unzipping ...
-      saving etcbc/valence - c r1.1
-      saved etcbc/valence - c r1.1
-    Using etcbc/valence - c r1.1 (=latest) in ~/text-fabric-data/etcbc/valence/tf/c
-       |     0.29s T cfunction            from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.23s T f_correction         from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.46s T grammatical          from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.31s T lexical              from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.23s T original             from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.46s T predication          from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.23s T s_manual             from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.31s T semantic             from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.14s T sense                from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.47s T valence              from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-    TF setup done.
-    ```
-
-If you run it a second time, all data is in place.
-
-??? note "output when all data is in place"
-    ```
-    Setting up TF kernel for bhsa etcbc/valence/tf
-    Using etcbc/bhsa - c r1.5 in ~/text-fabric-data/etcbc/bhsa/tf/c
-    Using etcbc/phono - c r1.2 in ~/text-fabric-data/etcbc/phono/tf/c
-    Using etcbc/parallels - c r1.2 in ~/text-fabric-data/etcbc/parallels/tf/c
-    Using etcbc/valence - c r1.1 in ~/text-fabric-data/etcbc/valence/tf/c
-    TF setup done.
-    ```
-
-If you have reasons to think that there is a new release of any of the data
-involved, you can pass the `-c` switch:
-
-```sh
-text-fabric bhsa --mod=etcbc/valence/tf -c
-```
-
-??? note "output when all checking for data updates"
-    ```
-    Loading data for bhsa. Please wait ...
-    Setting up TF kernel for bhsa etcbc/valence/tf
-    No new data release available online.
-    Using bhsa - c r1.5 (=latest) in ~/text-fabric-data/etcbc/bhsa/tf/c.
-    No new data release available online.
-    Using phono - c r1.2 (=latest) in ~/text-fabric-data/etcbc/phono/tf/c.
-    No new data release available online.
-    Using parallels - c r1.2 (=latest) in ~/text-fabric-data/etcbc/parallels/tf/c.
-    No new data release available online.
-    Using valence - c r1.1 (=latest) in ~/text-fabric-data/etcbc/valence/tf/c.
-    TF setup done.
-    ```
-
-And if there is a new release for the valence data, it will be downloaded.
-
-??? note "output when updating a data module"
-    ```
-    Setting up TF kernel for bhsa etcbc/valence/tf
-    No new data release available online.
-    Using bhsa - c r1.5 (=latest) in ~/text-fabric-data/etcbc/bhsa/tf/c.
-    No new data release available online.
-    Using phono - c r1.2 (=latest) in ~/text-fabric-data/etcbc/phono/tf/c.
-    No new data release available online.
-    Using parallels - c r1.2 (=latest) in ~/text-fabric-data/etcbc/parallels/tf/c.
-      downloading etcbc/valence - c r1.1
-      from https://github.com/etcbc/valence/releases/download/1.1/tf-c.zip ...
-      unzipping ...
-      saving etcbc/valence - c r1.1
-      saved etcbc/valence - c r1.1
-    Using etcbc/valence - c r1.1 (=latest) in ~/text-fabric-data/etcbc/valence/tf/c
-       |     0.30s T cfunction            from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.23s T f_correction         from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.47s T grammatical          from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.32s T lexical              from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.23s T original             from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.47s T predication          from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.23s T s_manual             from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.32s T semantic             from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.14s T sense                from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-       |     0.49s T valence              from /Users/dirk/text-fabric-data/etcbc/valence/tf/c
-    TF setup done.
-    ```
+If you do not have
+`~/text-fabric-data/annotation/tutorials/text-fabric/examples/banks/tf`
+data will be downloaded and expanded to this
+location.
 
 ??? note "Going back in the history"
     We consider a few scenarios for choosing points in the history.
@@ -275,15 +185,77 @@ And if there is a new release for the valence data, it will be downloaded.
           If there are new commits after that, but not yet released,
           you do not get them.
           If there are no releases, you will get the data of the latest commit.
+
+          ```
+          use('banks', ...)
+          ```
+
+          ```
+          text-fabric banks
+          ```
     2.    Give me the latest stable release, or nothing.
           Use the specifier `latest`.
+
+          ```
+          use('banks', checkout='latest', ...)
+          ```
+
+          ```
+          text-fabric banks --checkout=latest
+          ```
     3.    Give me the latest commit, no matter the releases.
           Use the specifier `hot`.
+
+          ```
+          use('banks', checkout='hot', ...)
+          ```
+
+          ```
+          text-fabric banks --checkout=hot
+          ```
     4.    Give me the data of a specific earlier release.
           Use the release tag as specifier, e.g. `v1.3`.
+
+          ```
+          use('banks', checkout='v1.3', ...)
+          ```
+
+          ```
+          text-fabric banks --checkout=v1.3
+          ```
     5.    Give me the data of a specific earlier commit, no matter the release.
           Use the commit hash as specifier,
           e.g. `2d0ca1f593805af0c13c4a62ed7405b94d870045`.
+
+          ```
+          use('banks', checkout='2d0ca1f593805af0c13c4a62ed7405b94d870045', ...)
+          ```
+
+          ```
+          text-fabric banks --checkout=2d0ca1f593805af0c13c4a62ed7405b94d870045
+          ```
+
+    6.    Give me the data I already have downloaded, without checking online.
+          Use the specifier `local`.
+
+          ```
+          use('banks', checkout='local', ...)
+          ```
+
+          ```
+          text-fabric banks --checkout=local
+          ```
+    
+    7.    Give me the data I am developing in my local github repo, without checking online.
+          Use the specifier `clone`.
+
+          ```
+          use('banks', checkout='clone', ...)
+          ```
+
+          ```
+          text-fabric banks --checkout=clone
+          ```
     
 You can now use the new features in the TF browser.
 

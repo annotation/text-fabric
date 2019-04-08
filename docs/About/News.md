@@ -36,12 +36,75 @@ Simplified sharing: pushing to GitHub is enough.
 It is still recommended to make a release on GitHub now and them,
 but it is not necessary.
 
+The `use()` function and the calling of the TF browser undergo an API change.
+
+### API addition:
+
 When calling up data and a TF-app, you can go back in history:
-to previous releases and previous commits.
+to previous releases and previous commits, using a `checkout` parameter.
+
+You can specify the checkout parameter separately for 
+
+* the TF-app code (so you can back to previous instantiations of the TF-app
+* the main data of the app plus its standard data modules
+* every data-module that you include by means of the `--mod=` parameter.
+
+The values of the checkout parameters are
+
+* `clone`: locally present under `~/github` in the appropriate please
+* `local`: locally present under `~/text-fabric-data` in the appropriate please
+* `latest`: from the latest release
+* `hot`: from the latest commit
+* the empty string (default):
+  from the latest release, or if there are no releases, from the latest commit
+* `2387abc78f9de...`: a concrete commit hash from git
+* `v1.3`: a release tag from git
+
+### API deletion (backwards incompatible):
+
+The parameters `check=...` and `lgc=...` of `use()` and `-lgc` and `-c` when
+calling the TF browser have been removed.
+
+These parameters were all or nothing, they were applied TF app code, main data,
+and included data modules.
+
+### Advice
+
+In most cases, just do not use the checkout parameters at all.
+Then the TF-app will be kept updated, and you keep using the newest data.
+
+If you are producing fixed output, run TF once with a particular version or commit,
+and after that supply the value `local` as long as you wish.
+
+If you are developing data yourself, place the data in your repository
+under `~/github`, and use the value `clone` for checkout.
+
+See [Data](../Api/Data.md)
 
 This is yet another step in making your scholarly work reproducible.
 
-See [Data](../Api/Data.md)
+### Fix in query parsing
+
+Queries like 
+
+```
+sentence
+<: sentence
+```
+
+caused TF to complain erroneously about disconnected components.
+You had to say
+
+```
+s1:sentence
+s2:sentence
+s1 <: s2
+```
+
+instead.
+That workaround is not needed anymore.
+
+Thanks to Oliver Glanz for mentioning this behaviour.
 
 ## 7.5.4
 

@@ -9,10 +9,8 @@ from ..applib.app import findApp, findAppConfig
 from ..applib.helpers import getLocalDir, configure
 from ..server.kernel import makeTfConnection
 from .command import (
-    argCheckout,
     argDebug,
     argDocker,
-    argModules,
     argParam,
 )
 from .serve import (
@@ -30,13 +28,16 @@ myDir = os.path.dirname(os.path.abspath(__file__))
 
 
 class Setup(object):
-  def __init__(self, dataSource, checkoutData):
+  def __init__(self, dataSource, checkoutApp):
     self.dataSource = dataSource
 
-    (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutData)
-    self.appDir = f'{appBase}/{appDir}'
+    (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
+    if not appBase:
+      return
+    appPath = f'{appBase}/{appDir}'
+    self.appPath = appPath
 
-    config = findAppConfig(dataSource, self.appDir)
+    config = findAppConfig(dataSource, self.appPath)
     self.config = config
 
     if config is None:
@@ -60,7 +61,7 @@ def factory(setup):
 
   @app.route('/data/static/<path:filepath>')
   def serveData(filepath):
-    return send_file(f'{setup.appDir}/static/{filepath}')
+    return send_file(f'{setup.appPath}/static/{filepath}')
 
   @app.route('/local/<path:filepath>')
   def serveLocal(filepath):
@@ -114,16 +115,14 @@ def factory(setup):
   return app
 
 
-if __name__ == "__main__":
-  dataSource = argParam(interactive=True)
-  checkoutData = argCheckout()
-  modules = argModules()
+def main():
+  (dataSource, checkoutApp) = argParam(interactive=True)
+  if dataSource is None:
+    return
 
   if dataSource is not None:
-    checkoutData = checkoutData[11:] if checkoutData else ''
-    modules = tuple(modules[6:].split(',')) if modules else ()
     debug = argDebug()
-    setup = Setup(dataSource, checkoutData)
+    setup = Setup(dataSource, checkoutApp)
     config = setup.config
     if config is not None:
       onDocker = argDocker()
@@ -136,3 +135,7 @@ if __name__ == "__main__":
           use_reloader=False,
           use_debugger=debug,
       )
+
+
+if __name__ == "__main__":
+  main()

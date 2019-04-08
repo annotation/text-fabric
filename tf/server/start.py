@@ -141,7 +141,7 @@ def filterProcess(proc):
 
   found = False
   kind = None
-  checkoutData = ''
+  checkout = ''
   modules = ''
   sets = ''
   dataSource = None
@@ -174,37 +174,47 @@ def filterProcess(proc):
         if kind == 'tf' and part == '-k':
           break
         if part.startswith('--checkout='):
-          checkoutData = part
+          checkout = part[11:]
         if part.startswith('--mod='):
-          modules = part
+          modules = part[7:]
         elif part.startswith('--sets='):
-          sets = part
+          sets = part[6:]
         else:
           dataSource = part
+          subParts = part.split(':', maxsplit=1)
+          if len(subParts) == 1:
+            subParts.append('')
+          (dataSource, checkoutApp) = subParts
         good = True
     if good:
       found = True
   if found:
-    return (kind, dataSource, checkoutData, modules, sets)
+    return (kind, dataSource, checkoutApp, checkout, modules, sets)
   return False
 
 
-def killProcesses(dataSource, checkoutData, modules, sets, kill=False):
+def killProcesses(dataSource, checkoutApp, checkout, modules, sets, kill=False):
   tfProcs = {}
   for proc in psutil.process_iter(attrs=['pid', 'name']):
     test = filterProcess(proc)
     if test:
-      (kind, ds, chk, mods, sts) = test
+      (kind, ds, chkA, chk, mods, sts) = test
       tfProcs.\
-          setdefault((ds, (chk, mods, sts)), {}).\
+          setdefault((ds, (chkA, chk, mods, sts)), {}).\
           setdefault(kind, []).append(proc.info['pid'])
 
   item = 'killed' if kill else 'terminated'
   myself = os.getpid()
-  for ((ds, (chk, mods, sets)), kinds) in tfProcs.items():
+  for ((ds, (chkA, chk, mods, sets)), kinds) in tfProcs.items():
     if (
         dataSource is None or
-        (ds == dataSource and chk == checkoutData and mods == modules and sts == sets)
+        (
+            ds == dataSource and
+            chkA == checkoutApp and
+            chk == checkout and
+            mods == modules and
+            sts == sets
+        )
     ):
       checkKinds = ('data', 'web', 'tf')
       for kind in checkKinds:
@@ -241,20 +251,35 @@ def main(cargs=sys.argv):
   isWin = system().lower().startswith('win')
 
   kill = getKill(cargs=cargs)
-  dataSource = argParam(cargs=cargs, interactive=not kill)
-  parts = dataSource.split(':', maxsplit=1)
-  if len(parts) == 1:
-    parts.append('')
-  (dataSource, checkoutApp) = parts
+  (dataSource, checkoutApp) = argParam(cargs=cargs, interactive=not kill)
 
-  checkoutData = argCheckout(cargs=cargs)
+  checkout = argCheckout(cargs=cargs)
   modules = argModules(cargs=cargs)
   sets = argSets(cargs=cargs)
+
+  # This start script needs the app, so it downloads it.
+  # It cqlls the TF kernel and the TF webserver.
+  # Both kernel and webserver can be called stand alone,
+  # and both can find and download the app as well.
+  # Now, if this start script has found and downloaded the
+  # app, the kernel and web server can use the local app
+  # So we call them both with a datasource argument extended with
+  # a checkout value that is either 'local' or 'clone',
+  # depending on the original checkoutApp.
+  # Similarly, the kernel will download the data.
+  # The webserver does not have to do that.
+
+  localCheckout = 'clone' if checkout == 'clone' else 'local'
+  localCheckoutApp = 'clone' if checkoutApp == 'clone' else 'local'
+  localDataSource = f'{dataSource}:{localCheckoutApp}'
 
   if kill:
     if dataSource is False:
       return
-    killProcesses(dataSource, checkoutData, modules, sets)
+    killProcesses(dataSource, checkoutApp, checkout, modules, sets)
+    return
+
+  if dataSource is None:
     return
 
   noweb = argNoweb(cargs=cargs)
@@ -262,28 +287,31 @@ def main(cargs=sys.argv):
   debug = argDebug(cargs=cargs)
   docker = argDocker(cargs=cargs)
 
-  kdataSource = (checkoutData, dataSource) if checkoutData else (dataSource,)
-  kdataSource = (modules, *kdataSource) if modules else kdataSource
-  kdataSource = (sets, *kdataSource) if sets else kdataSource
+  kdataSource = (localDataSource,)
+  kdataSource = kdataSource if checkout is None else (f'--checkout={checkout}', *kdataSource)
+  kdataSource = (f'--mod={modules}', *kdataSource) if modules else kdataSource
+  kdataSource = (f'--sets={sets}', *kdataSource) if sets else kdataSource
 
-  ddataSource = ('-d', dataSource) if debug else (dataSource, )
+  ddataSource = (localDataSource,)
+  ddataSource = ('-d', *ddataSource) if debug else ddataSource
   ddataSource = ('-docker', *ddataSource) if docker else ddataSource
-  ddataSource = (checkoutData, *ddataSource) if checkoutData else ddataSource
-  ddataSource = (modules, *ddataSource) if modules else ddataSource
+  ddataSource = (f'--checkout={localCheckout}', *ddataSource)
+  ddataSource = (f'--mod={modules}', *ddataSource) if modules else ddataSource
 
   if dataSource is not None:
     (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
     if not appBase:
       return
 
-    config = findAppConfig(dataSource, f'{appBase}/{appDir}')
+    appPath = f'{appBase}/{appDir}'
+    config = findAppConfig(dataSource, appPath)
     pKernel = None
     pWeb = None
     if config is None:
       return
 
     console(f'Cleaning up remnant processes, if any ...')
-    killProcesses(dataSource, checkoutData, modules, sets, kill=True)
+    killProcesses(dataSource, checkoutApp, checkout, modules, sets, kill=True)
     pythonExe = 'python' if isWin else 'python3'
 
     pKernel = Popen(

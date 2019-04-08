@@ -20,8 +20,8 @@ def argDebug(cargs=sys.argv):
 def argCheckout(cargs=sys.argv):
   for arg in cargs[1:]:
     if arg.startswith('--checkout='):
-      return arg
-  return ''
+      return arg[11:]
+  return None
 
 
 def argNoweb(cargs=sys.argv):
@@ -41,21 +41,22 @@ def argDocker(cargs=sys.argv):
 def argModules(cargs=sys.argv):
   for arg in cargs[1:]:
     if arg.startswith('--mod='):
-      return arg
+      return arg[6:]
   return ''
 
 
 def argSets(cargs=sys.argv):
   for arg in cargs[1:]:
     if arg.startswith('--sets='):
-      return arg
+      return arg[7:]
   return ''
 
 
 def argParam(cargs=sys.argv, interactive=False):
   dPrompt = f'see {APP_URL} for app-xxxx choices. xxxx = ? '
-
   dataSource = None
+  checkoutApp = None
+
   for arg in cargs[1:]:
     if arg.startswith('-'):
       continue
@@ -64,11 +65,18 @@ def argParam(cargs=sys.argv, interactive=False):
 
   if interactive:
     if dataSource is None:
-      dataSource = input(f'specify data source [{dPrompt}] > ')
+      dataSource = input(f'specify data source[:checkout] [{dPrompt}] > ')
     if dataSource is None:
-      console(f'Pass a data source [{dPrompt}] as first argument', error=True)
-    return dataSource
+      console(
+          f'Pass a data source[:checkout] [{dPrompt}] as first argument',
+          error=True,
+      )
 
   if dataSource is None:
-    return None
-  return dataSource
+    return (None, None)
+
+  parts = dataSource.split(':', maxsplit=1)
+  if len(parts) == 1:
+    parts.append('')
+  (dataSource, checkoutApp) = parts
+  return (dataSource, checkoutApp)

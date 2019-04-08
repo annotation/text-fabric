@@ -23,9 +23,9 @@ def findApp(dataSource, checkoutApp, silent=False):
   )
 
 
-def findAppConfig(dataSource, appDir):
+def findAppConfig(dataSource, appPath):
   config = None
-  appPath = f'{appDir}/config.py'
+  appPath = f'{appPath}/config.py'
 
   try:
     spec = util.spec_from_file_location(f'tf.apps.{dataSource}.config', appPath)
@@ -37,17 +37,17 @@ def findAppConfig(dataSource, appDir):
   return config
 
 
-def findAppClass(dataSource, appDir):
+def findAppClass(dataSource, appPath):
   appClass = None
   moduleName = f'tf.apps.{dataSource}.app'
 
   try:
     spec = util.spec_from_file_location(
         moduleName,
-        f'{appDir}/app.py',
+        f'{appPath}/app.py',
     )
     code = util.module_from_spec(spec)
-    sys.path.insert(0, appDir)
+    sys.path.insert(0, appPath)
     spec.loader.exec_module(code)
     sys.path.pop(0)
     appClass = code.TfApp

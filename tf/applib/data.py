@@ -14,7 +14,7 @@ class AppData(object):
       locations,
       modules,
       version,
-      checkoutData,
+      checkout,
       silent,
   ):
     self.app = app
@@ -22,7 +22,7 @@ class AppData(object):
     self.locationsArg = locations
     self.modulesArg = modules
     self.version = version
-    self.checkout = checkoutData
+    self.checkout = checkout
     self.silent = silent
 
   def getMain(self):
@@ -43,7 +43,7 @@ class AppData(object):
           m['org'],
           m['repo'],
           m['relative'],
-          m.get('checkout', ''),
+          m.get('checkout', self.checkout),
           specs=m,
       ):
         self.good = False
@@ -116,7 +116,7 @@ class AppData(object):
       org,
       repo,
       relative,
-      checkoutData,
+      checkout,
       isBase=False,
       specs=None,
   ):
@@ -129,12 +129,12 @@ class AppData(object):
         repo=repo,
         folder=relative,
         version=self.version,
-        checkout=checkoutData,
+        checkout=checkout,
         withPaths=False,
         keep=False,
         silent=self.silent,
     )
-    if not local:
+    if not localBase:
       return False
 
     self.seen.add(moduleRef)
