@@ -4,3 +4,4 @@ psutil
 markdown
 ipython
 requests
+pygithub

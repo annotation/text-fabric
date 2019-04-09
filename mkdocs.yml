@@ -142,8 +142,10 @@ extra:
   tfghb: https://github.com/annotation/text-fabric/blob/master
   tfght: https://github.com/annotation/text-fabric/tree/master 
   tfnb: https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master
+  tfbanks: https://nbviewer.jupyter.org/github/annotation/banks/blob/master
   tfpp: https://pypi.org/project/text-fabric/ 
   tutnb: https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master
+  tutnbt: https://nbviewer.jupyter.org/github/annotation/tutorials/tree/master
   ubiq1: https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/
   urukabout: https://github.com/Nino-cunei/uruk/blob/master/docs/about.md
   weave: https://sew4home.com/tips-resources/buying-guide/all-about-fabric-weaves-tutorial
