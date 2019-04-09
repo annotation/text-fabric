@@ -780,16 +780,6 @@
         [exportExcel]({{tutnb}}/oldbabylonian/exportExcel.ipynb)
         notebooks.
 
-    ??? hint "tupleFeatures"
-        If the iterable of tuples are the results of a query you have just
-        run, then an appropriate call to `displaySetup(tupleFeatures=...)`
-        has already been issued, so you can just say:
-
-        ```python
-        results = A.search(query)
-        A.export(results)
-        ```
-
     ??? info "results"
         an iterable of tuples of nodes.
         The results of a search qualify, but it works
@@ -805,14 +795,34 @@
         The name of the exported file.
         By default it is `results.tsv`
 
+    ??? info "condensed="
+        Has no effect. Exports to Excel will not be condensed, because the
+        number of columns is variable per row in that case.
+        Excel itself as nice possibilities for grouping rows.
+        You can also filter your tuples by means of hand-coding before exporting them.
+
+    ??? info "condenseType="
+        The condense type influences for which nodes the full text will be exported.
+        Only nodes that are "smaller" than the condense type will have 
+        their full text exported.
+
+    ??? info "fmt="
+        This display parameter specifies the text format for any nodes
+        that trigger a text value to be exported.
+
     ??? info "tupleFeatures="
         This is a display parameter that steers which features are exported
         with each member of the tuples in the list.
         See above under "Setting up display parameters"
         
-    ??? info "fmt="
-        This display parameter specifies the text format for any nodes
-        that trigger a text value to be exported.
+        If the iterable of tuples are the results of a query you have just
+        run, then an appropriate call to `displaySetup(tupleFeatures=...)`
+        has already been issued, so you can just say:
+
+        ```python
+        results = A.search(query)
+        A.export(results)
+        ```
 
     ??? caution "Encoding"
         The exported file is written in the `utf_16_le` encoding.

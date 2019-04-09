@@ -87,11 +87,12 @@ def check32():
   return (on32, warn, msg)
 
 
-def console(msg, error=False):
+def console(msg, error=False, newline=True):
   msg = msg[1:] if msg.startswith('\n') else msg
   msg = msg[0:-1] if msg.endswith('\n') else msg
   target = sys.stderr if error else sys.stdout
-  target.write(f'{msg}\n')
+  nl = '\n' if newline else ''
+  target.write(f'{msg}{nl}')
   target.flush()
 
 

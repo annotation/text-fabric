@@ -88,6 +88,8 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
     console(f'zip files end up in {destDir}')
     for (version, features) in sorted(dataFiles.items()):
       item = f'{org}/{repo}'
+      versionRep = f'/{version}' if version else ''
+      versionRep3 = f'-{version}' if version else ''
       target = f'{relativeDest}{versionRep3}.zip'
       console(f'zipping {item:<25} {version:>4} with {len(features):>3} features ==> {target}')
       with ZipFile(

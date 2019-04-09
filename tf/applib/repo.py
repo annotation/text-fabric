@@ -1,4 +1,3 @@
-import sys
 import os
 import io
 import re
@@ -48,10 +47,10 @@ class Checkout(object):
     return (commit, release, local)
 
   @staticmethod
-  def toString(commit, release, local):
+  def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     extra = ''
     if local:
-      baseRep = GH_BASE if local == 'clone' else EXPRESS_BASE
+      baseRep = source if local == 'clone' else dest
       extra = f' offline under {baseRep}'
     if local == 'clone':
       result = f'repo clone'
@@ -83,6 +82,8 @@ class Checkout(object):
       repo,
       relative,
       checkout,
+      source,
+      dest,
       keep,
       withPaths,
       silent,
@@ -92,6 +93,8 @@ class Checkout(object):
     self.label = label
     self.org = org
     self.repo = repo
+    self.source = source
+    self.dest = dest
     (self.commitChk, self.releaseChk, self.local) = self.fromString(checkout)
     clone = self.isClone()
     offline = self.isOffline()
@@ -105,19 +108,19 @@ class Checkout(object):
     self.baseGh = f'{URL_GH}/{org}/{repo}{relativeGh}{versionRep}'
     self.dataDir = f'{relative}{versionRep}'
 
-    self.baseTfd = os.path.expanduser(EXPRESS_BASE)
-    self.dataRelTfd = f'{org}/{repo}{relativeRep}'
-    self.dirPathSaveTfd = f'{self.baseTfd}/{org}/{repo}'
-    self.dirPathTfd = f'{self.baseTfd}/{self.dataRelTfd}{versionRep}'
-    self.dataPathTfd = f'{self.dataRelTfd}{versionRep}'
-    self.filePathTfd = f'{self.dirPathTfd}/{EXPRESS_SYNC}'
+    self.baseLocal = os.path.expanduser(self.dest)
+    self.dataRelLocal = f'{org}/{repo}{relativeRep}'
+    self.dirPathSaveLocal = f'{self.baseLocal}/{org}/{repo}'
+    self.dirPathLocal = f'{self.baseLocal}/{self.dataRelLocal}{versionRep}'
+    self.dataPathLocal = f'{self.dataRelLocal}{versionRep}'
+    self.filePathLocal = f'{self.dirPathLocal}/{EXPRESS_SYNC}'
 
-    self.baseLgc = os.path.expanduser(GH_BASE)
-    self.dataRelLgc = f'{org}/{repo}{relativeRep}'
-    self.dirPathLgc = f'{self.baseLgc}/{self.dataRelLgc}{versionRep}'
-    self.dataPathLgc = f'{self.dataRelLgc}{versionRep}'
+    self.baseClone = os.path.expanduser(self.source)
+    self.dataRelClone = f'{org}/{repo}{relativeRep}'
+    self.dirPathClone = f'{self.baseClone}/{self.dataRelClone}{versionRep}'
+    self.dataPathClone = f'{self.dataRelClone}{versionRep}'
 
-    self.dataPath = self.dataRelLgc if clone else self.dataRelTfd
+    self.dataPath = self.dataRelClone if clone else self.dataRelLocal
 
     self.keep = keep
     self.withPaths = withPaths
@@ -138,7 +141,6 @@ class Checkout(object):
     if clone:
       self.commitOff = None
       self.releaseOff = None
-      self.local = 'clone'
     else:
       self.fixInfo()
       self.readInfo()
@@ -146,6 +148,11 @@ class Checkout(object):
     if not offline:
       self.connect()
       self.fetchInfo()
+
+  def log(self, msg, error=False, newline=True):
+    silent = self.silent
+    if not silent or error:
+      console(msg, error=error, newline=newline)
 
   def makeSureLocal(self):
     label = self.label
@@ -160,15 +167,49 @@ class Checkout(object):
     rOn = self.releaseOn
     rcOn = self.releaseCommitOn
 
-    silent = self.silent
+    askExact = rChk or cChk
+    askExactRelease = rChk
+    askExactCommit = cChk
+    askLatest = not askExact and (rChk == '' or cChk == '')
+    askLatestAny = rChk == '' and cChk == ''
+    askLatestRelease = rChk == '' and cChk is None
+    askLatestCommit = cChk == '' and rChk is None
+
+    isExactReleaseOff = rChk and rChk == rOff
+    isExactCommitOff = cChk and cChk == cOff
+    isExactReleaseOn = rChk and rChk == rOn
+    isExactCommitOn = cChk and cChk == cOn
+    isLatestRelease = rOff and rOff == rOn or cOff and cOff == rcOn
+    isLatestCommit = cOff and cOff == cOn
+
+    isLocal = (
+        askExactRelease and isExactReleaseOff or
+        askExactCommit and isExactCommitOff or
+        askLatestAny and (isLatestRelease or isLatestCommit) or
+        askLatestRelease and isLatestRelease or
+        askLatestCommit and isLatestCommit
+    )
+    mayLocal = (
+        askLatestAny and (rOff or cOff) or
+        askLatestRelease and rOff or
+        askLatestCommit and cOff
+    )
+    canOnline = self.repoOnline
+    isOnline = canOnline and (
+        askExactRelease and isExactReleaseOn or
+        askExactCommit and isExactCommitOn or
+        askLatestAny or
+        askLatestRelease or
+        askLatestCommit
+    )
 
     if offline:
       if clone:
-        dirPath = self.dirPathLgc
-        self.localBase = self.baseLgc if os.path.exists(dirPath) else False
+        dirPath = self.dirPathClone
+        self.localBase = self.baseClone if os.path.exists(dirPath) else False
       else:
         self.localBase = (
-            self.baseTfd if (
+            self.baseLocal if (
                 cChk and cChk == cOff or
                 cChk is None and cOff or
                 rChk and rChk == rOff or
@@ -177,64 +218,42 @@ class Checkout(object):
             False
         )
       if not self.localBase:
-        console(f'The requested {label} is not available offline', error=True)
+        self.log(f'The requested {label} is not available offline', error=True)
     else:
-      askExactRelease = rChk
-      askExactCommit = cChk
-      askLatest = rChk == '' and cChk == ''
-      askLatestRelease = rChk == '' and cChk is None
-      askLatestCommit = cChk == '' and rChk is None
-      isExactReleaseOff = rChk and rChk == rOff
-      isExactCommitOff = cChk and cChk == cOff
-      isExactReleaseOn = rChk and rChk == rOn
-      isExactCommitOn = cChk and cChk == cOn
-      isLatestRelease = rOff and rOff == rOn or cOff and cOff == rcOn
-      isLatestCommit = cOff and cOff == cOn
-
-      isLocal = (
-          askExactRelease and isExactReleaseOff or
-          askExactCommit and isExactCommitOff or
-          askLatest and (isLatestRelease or isLatestCommit) or
-          askLatestRelease and isLatestRelease or
-          askLatestCommit and isLatestCommit
-      )
-      isOnline = (
-          askExactRelease and isExactReleaseOn or
-          askExactCommit and isExactCommitOn or
-          askLatest or
-          askLatestRelease or
-          askLatestCommit
-      )
-
-      canOnline = self.repoOnline
-
       if isLocal:
-        self.localBase = self.baseTfd
+        self.localBase = self.baseLocal
       else:
-        if not silent:
-          console(f'The requested {label} is not available offline')
         if not canOnline:
-          console(f'No online connection', error=True)
+          if askLatest:
+            if mayLocal:
+              self.log(f'The offline {label} may not be the latest')
+              self.localBase = self.baseLocal
+            else:
+              self.log(f'The requested {label} is not available offline', error=True)
+          else:
+            self.log(f'The requested {label} is not available offline')
+            self.log(f'No online connection', error=True)
         elif not isOnline:
-          console(f'The requested {label} is not available online', error=True)
+          self.log(f'The requested {label} is not available online', error=True)
         else:
-          self.localBase = self.baseTfd if self.download() else False
+          self.localBase = self.baseLocal if self.download() else False
 
     if self.localBase:
       self.localDir = self.dataPath
       state = (
-          'requested' if cChk or rChk else
-          'latest release' if rChk == '' and self.releaseOff else
-          'latest commit' if cChk == '' and self.commitOff else
-          'latest' if cChk == '' or rChk == '' else
-          'local - without online check' if self.local == 'local' else
-          'local github - without online check' if self.local == 'clone' else
+          'requested' if askExact else
+          'latest release' if rChk == '' and canOnline and self.releaseOff else
+          'latest? release' if rChk == '' and not canOnline and self.releaseOff else
+          'latest commit' if cChk == '' and canOnline and self.commitOff else
+          'latest? commit' if cChk == '' and not canOnline and self.commitOff else
+          'local release' if self.local == 'local' and self.releaseOff else
+          'local commit' if self.local == 'local' and self.commitOff else
+          'local github' if self.local == 'clone' else
           'for whatever reason'
       )
-      offString = self.toString(self.commitOff, self.releaseOff, self.local)
-      if not silent:
-        console(f'Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:')
-        console(f'\t{offString} ({state})')
+      offString = self.toString(self.commitOff, self.releaseOff, self.local, dest=self.dest)
+      self.log(f'Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:')
+      self.log(f'\t{offString} ({state})')
 
   def download(self):
     cChk = self.commitChk
@@ -251,6 +270,7 @@ class Checkout(object):
     return fetched
 
   def downloadRelease(self, release, showErrors=True):
+    cChk = self.commitChk
     r = self.getReleaseObj(release, showErrors=showErrors)
     if not r:
       return False
@@ -274,7 +294,8 @@ class Checkout(object):
     if assetUrl:
       fetched = self.downloadZip(assetUrl, showErrors=False)
     if not fetched:
-      fetched = self.downloadCommit(commit, showErrors=False)
+      thisShowErrors = not cChk == ''
+      fetched = self.downloadCommit(commit, showErrors=thisShowErrors)
     if fetched:
       self.commitOff = commit
       self.releaseOff = release
@@ -294,32 +315,29 @@ class Checkout(object):
   def downloadZip(self, dataUrl, showErrors=True):
     label = self.label
     silent = self.silent
-    if not silent:
-      console(f'\tdownloading {dataUrl} ... ')
+    self.log(f'\tdownloading {dataUrl} ... ')
     try:
       r = requests.get(dataUrl, allow_redirects=True)
-      if not silent:
-        console(f'\tunzipping ... ')
+      self.log(f'\tunzipping ... ')
       zf = io.BytesIO(r.content)
     except Exception as e:
-      if showErrors or not silent:
-        console(f'\t{str(e)}\n\tcould not download {dataUrl}', error=showErrors)
+      self.log(f'\t{str(e)}\n\tcould not download {dataUrl}', error=showErrors)
       if not showErrors:
-        console(f'\tWill try something else')
+        self.log(f'\tWill try something else')
       return False
 
     if not silent:
-      console(f'\tsaving {label}')
+      self.log(f'\tsaving {label}')
 
     cwd = os.getcwd()
+    destZip = self.dirPathLocal
     try:
       z = ZipFile(zf)
-      dest = self.dirPathTfd
       if not self.keep:
-        if os.path.exists(dest):
-          rmtree(dest)
-      os.makedirs(dest, exist_ok=True)
-      os.chdir(dest)
+        if os.path.exists(destZip):
+          rmtree(destZip)
+      os.makedirs(destZip, exist_ok=True)
+      os.chdir(destZip)
       if self.withPaths:
         z.extractall()
         if os.path.exists('__MACOSX'):
@@ -332,12 +350,10 @@ class Checkout(object):
             continue
           zInfo.filename = os.path.basename(zInfo.filename)
           z.extract(zInfo)
-    except Exception as exc:
-      if showErrors or not silent:
-        rawExc = exc if showErrors else ''
-        console(f'\t{rawExc}\n\tcould not save {label} to {dest}', error=showErrors)
+    except Exception:
+      self.log(f'\tcould not save {label} to {destZip}', error=showErrors)
       if not showErrors:
-        console(f'\tWill try something else')
+        self.log(f'\tWill try something else')
       os.chdir(cwd)
       return False
     os.chdir(cwd)
@@ -348,12 +364,12 @@ class Checkout(object):
     if not g:
       return None
 
-    dest = f'{self.dirPathTfd}'
-    destSave = f'{self.dirPathSaveTfd}'
+    destDir = f'{self.dirPathLocal}'
+    destSave = f'{self.dirPathSaveLocal}'
     if not self.keep:
-      if os.path.exists(dest):
-        rmtree(dest)
-    os.makedirs(dest, exist_ok=True)
+      if os.path.exists(destDir):
+        rmtree(destDir)
+    os.makedirs(destDir, exist_ok=True)
 
     excludeRe = re.compile(exclude) if exclude else None
     silent = self.silent
@@ -367,29 +383,24 @@ class Checkout(object):
       lead = '\t' * level
       try:
         contents = g.get_dir_contents(subPath, ref=commit)
-      except UnknownObjectException as exc:
-        if showErrors or not silent:
-          console(
-              f'{lead}No directory {subPath} in {self.toString(commit, None, False)}',
-              error=showErrors,
-          )
-          if showErrors:
-            console(f'{lead}{exc}', error=showErrors)
-          else:
-            console(f'{lead}Will try something else')
+      except UnknownObjectException:
+        self.log(
+            f'{lead}No directory {subPath} in {self.toString(commit, None, False)}',
+            error=showErrors,
+        )
+        if not showErrors:
+          self.log(f'{lead}Will try something else')
         good = False
         return
       for content in contents:
         thisPath = content.path
         if not silent:
-          sys.stdout.write(f'\t{lead}{thisPath}...')
+          console(f'\t{lead}{thisPath}...', newline=False)
         if exclude and excludeRe.search(thisPath):
-          if not silent:
-            console('excluded')
+          self.log('excluded')
           continue
         if content.type == 'dir':
-          if not silent:
-            console('directory')
+          self.log('directory')
           os.makedirs(f'{destSave}/{thisPath}', exist_ok=True)
           _downloadDir(thisPath, level + 1)
         else:
@@ -399,29 +410,19 @@ class Checkout(object):
             fileDest = f'{destSave}/{thisPath}'
             with open(fileDest, 'wb') as fd:
               fd.write(fileData)
-            if not silent:
-              console('downloaded')
-          except (GithubException, IOError) as exc:
-            if not silent:
-              console('error')
-            if showErrors or not silent:
-              rawExc = exc if showErrors else ''
-              console(f'{lead}{rawExc}', error=showErrors)
+            self.log('downloaded')
+          except (GithubException, IOError):
+            self.log('error')
             if not showErrors:
-              console(f'{lead}Will try something else')
+              self.log(f'{lead}Will try something else')
             good = False
 
     _downloadDir(self.dataDir, 0)
 
     if good:
-      if not silent:
-        console('\tOK')
+      self.log('\tOK')
     else:
-      if showErrors or not silent:
-        if showErrors:
-          console('\tDone. There were errors', error=showErrors)
-        else:
-          console('\tDone')
+      self.log('\tFailed', error=showErrors)
 
     return good
 
@@ -448,12 +449,9 @@ class Checkout(object):
     try:
       r = g.get_release(release) if release else g.get_latest_release()
     except UnknownObjectException:
-      if showErrors or not self.silent:
-        console(f'\tno release{msg}', error=showErrors)
-    except Exception as exc:
-      if showErrors or not self.silent:
-        rawExc = exc if showErrors else ''
-        console(f'\tcannot find release{msg}. {rawExc}', error=showErrors)
+      self.log(f'\tno release{msg}', error=showErrors)
+    except Exception:
+      self.log(f'\tcannot find release{msg}', error=showErrors)
     return r
 
   def getCommitObj(self, commit):
@@ -469,9 +467,9 @@ class Checkout(object):
       if cs.totalCount:
         c = cs[0]
       else:
-        console(f'\tno commit{msg}', error=True)
-    except Exception as exc:
-      console(f'\tcannot find commit{msg}: {exc}', error=True)
+        self.log(f'\tno commit{msg}', error=True)
+    except Exception:
+      self.log(f'\tcannot find commit{msg}', error=True)
     return c
 
   def getReleaseFromObj(self, r):
@@ -506,7 +504,7 @@ class Checkout(object):
         self.commitOn = result
 
   def fixInfo(self):
-    sDir = self.dirPathTfd
+    sDir = self.dirPathLocal
     if not os.path.exists(sDir):
       return
     for sFile in EXPRESS_SYNC_LEGACY:
@@ -519,8 +517,8 @@ class Checkout(object):
           os.rename(sPath, goodPath)
 
   def readInfo(self):
-    if os.path.exists(self.filePathTfd):
-      with open(self.filePathTfd) as f:
+    if os.path.exists(self.filePathLocal):
+      with open(self.filePathLocal) as f:
         for line in f:
           string = line.strip()
           (commit, release, local) = self.fromString(string)
@@ -530,35 +528,25 @@ class Checkout(object):
             self.releaseOff = release
 
   def writeInfo(self):
-    if not os.path.exists(self.dirPathTfd):
-      os.makedirs(self.dirPathTfd, exist_ok=True)
-    with open(self.filePathTfd, 'w') as f:
+    if not os.path.exists(self.dirPathLocal):
+      os.makedirs(self.dirPathLocal, exist_ok=True)
+    with open(self.filePathLocal, 'w') as f:
       if self.releaseOff:
         f.write(f'{self.releaseOff}\n')
       if self.commitOff:
         f.write(f'{self.commitOff}\n')
 
   def connect(self):
-    silent = self.silent
     if not self.ghConn:
       ghClient = os.environ.get('GHCLIENT', None)
       ghSecret = os.environ.get('GHSECRET', None)
-      try:
-        if not silent:
-          console(f'Connection to Github ...')
-        self.ghConn = Github(client_id=ghClient, client_secret=ghSecret)
-        if not silent:
-          console(f'\tconnected')
-      except Exception as exc:
-        console(f'Cannot reach GitHub: {exc}', error=True)
+      self.ghConn = Github(client_id=ghClient, client_secret=ghSecret)
     try:
-      if not silent:
-        console(f'\tconnecting to repo {self.org}/{self.repo}')
+      self.log(f'\tconnecting to online GitHub repo {self.org}/{self.repo} ... ', newline=False)
       self.repoOnline = self.ghConn.get_repo(f'{self.org}/{self.repo}')
-      if not silent:
-          console(f'\tconnected')
-    except (GithubException, IOError) as exc:
-      console(f'Cannot access online GitHub repo "{self.org}/{self.repo}": {exc}', error=True)
+      self.log(f'connected')
+    except (GithubException, IOError):
+      self.log(f'failed')
 
 
 def checkoutRepo(
@@ -567,6 +555,8 @@ def checkoutRepo(
     folder='text-fabric/examples/banks/tf',
     version='',
     checkout='',
+    source=GH_BASE,
+    dest=EXPRESS_BASE,
     withPaths=True,
     keep=True,
     silent=False,
@@ -577,6 +567,8 @@ def checkoutRepo(
       repo,
       folder,
       checkout,
+      source,
+      dest,
       keep,
       withPaths,
       silent,
