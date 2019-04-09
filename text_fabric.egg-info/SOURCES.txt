@@ -23,6 +23,7 @@ tf/applib/displaysettings.py
 tf/applib/helpers.py
 tf/applib/highlight.py
 tf/applib/links.py
+tf/applib/repo.py
 tf/applib/search.py
 tf/applib/sections.py
 tf/applib/tables.py
@@ -76,6 +77,8 @@ tf/server/static/fonts/AmiriQuran.woff2
 tf/server/static/fonts/AmiriQuranColored.ttf
 tf/server/static/fonts/AmiriQuranColored.woff
 tf/server/static/fonts/AmiriQuranColored.woff2
+tf/server/static/fonts/GentiumPlus-R.ttf
+tf/server/static/fonts/GentiumPlus-R.woff
 tf/server/static/fonts/SBL_Hbrw.eot
 tf/server/static/fonts/SBL_Hbrw.ttf
 tf/server/static/fonts/SBL_Hbrw.woff

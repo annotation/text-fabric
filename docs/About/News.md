@@ -6,7 +6,7 @@
     When we change the API, we make sure that the tutorials shows off
     all possibilities.
 
-    See the app-specific tutorials in [annotation]({{an}}).
+    See the app-specific tutorials in [annotation]({{tutnbt}}).
 
 ???+ hint "Auto-update"
     When TF apps have been updated, they will be autoloaded to the newest version
@@ -56,20 +56,21 @@ to previous releases and previous commits, using a `checkout` parameter.
 
 You can specify the checkout parameter separately for 
 
-* the TF-app code (so you can back to previous instantiations of the TF-app
+* the TF-app code (so you can go back to previous instantiations of the TF-app)
 * the main data of the app plus its standard data modules
 * every data-module that you include by means of the `--mod=` parameter.
 
-The values of the checkout parameters are
+The values of the checkout parameters tell you to use data that is:
 
-* `clone`: locally present under `~/github` in the appropriate please
-* `local`: locally present under `~/text-fabric-data` in the appropriate please
-* `latest`: from the latest release
-* `hot`: from the latest commit
-* the empty string (default):
-  from the latest release, or if there are no releases, from the latest commit
-* `2387abc78f9de...`: a concrete commit hash from git
-* `v1.3`: a release tag from git
+* `clone`: locally present under `~/github` in the appropriate place
+* `local`: locally present under `~/text-fabric-data` in the appropriate place
+* `latest`: from the latest online release
+* `hot`: from the latest online commit
+* `''`: (default):
+  from the latest online release, or if there are no releases,
+  from the latest online commit
+* `2387abc78f9de...`: a concrete commit hash found on GitHub (under Commits)
+* `v1.3`: a release tag found on GitHub (under Releases)
 
 Or consult the [repo]({{tutnb}}/text-fabric/repo.ipynb) notebook.
 
