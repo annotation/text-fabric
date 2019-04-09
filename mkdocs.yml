@@ -104,6 +104,8 @@ extra:
   flask: http://flask.pocoo.org/docs/1.0/
   fontlib: https://fontlibrary.org
   ghapi: https://developer.github.com/v3/
+  ghappreg: https://github.com/settings/applications/new
+  ghrate: https://developer.github.com/v3/#rate-limiting
   ghissues: https://github.com/annotation/text-fabric/issues
   git: https://git-scm.com/downloads 
   jensengh: https://github.com/ch-jensen/Semantic-mapping-of-participants
@@ -174,7 +176,9 @@ nav:
     - Advanced: 'Use/UseX.md'
   - Api:
     - Apps: 'Api/App.md'
-    - Data: 'Api/Data.md'
+    - Data flow:
+      - Data: 'Api/Data.md'
+      - Repo: 'Api/Repo.md'
     - Core:
       - 'TF': 'Api/Fabric.md'
       - 'E/F - (Edge-)Features': 'Api/Features.md'

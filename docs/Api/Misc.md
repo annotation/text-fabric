@@ -73,4 +73,3 @@
 
     ??? hint "No need to load"
         It is not needed to execute a `TF.load()` first.
-

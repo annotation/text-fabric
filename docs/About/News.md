@@ -8,21 +8,32 @@
 
     See the app-specific tutorials in [annotation]({{an}}).
 
-???+ hint "Use check=True or -c"
-    When TF apps have been updated, you can autoload the newest version
-    by calling the app as follows:
+???+ hint "Auto-update"
+    When TF apps have been updated, they will be autoloaded to the newest version
+    provided you call the app as follows:
 
     In a program:
     
     ```python
-    use(appName, check=True)
+    use('appName', ... )
     ```
 
     Calling the browser
+
     ```
-    text-fabric appName -c
+    text-fabric appName
     ```
 
+    This will get you the newest stable version.
+    To get the newest unstable version:
+
+    ```python
+    use('appName:hot', ...)
+    ```
+
+    ```
+    text-fabric appName:hot
+    ```
 
 See the [issue list on GitHub]({{ghissues}})
 
@@ -60,12 +71,14 @@ The values of the checkout parameters are
 * `2387abc78f9de...`: a concrete commit hash from git
 * `v1.3`: a release tag from git
 
+Or consult the [repo]({{tutnb}}/text-fabric/repo.ipynb) notebook.
+
 ### API deletion (backwards incompatible):
 
 The parameters `check=...` and `lgc=...` of `use()` and `-lgc` and `-c` when
 calling the TF browser have been removed.
 
-These parameters were all or nothing, they were applied TF app code, main data,
+These parameters were all-or-nothing, they were applied TF app code, main data,
 and included data modules.
 
 ### Advice
@@ -73,13 +86,31 @@ and included data modules.
 In most cases, just do not use the checkout parameters at all.
 Then the TF-app will be kept updated, and you keep using the newest data.
 
-If you are producing fixed output, run TF once with a particular version or commit,
+If you want to producing fixed output, not influenced by future changes,
+run TF once with a particular version or commit,
 and after that supply the value `local` as long as you wish.
 
 If you are developing data yourself, place the data in your repository
 under `~/github`, and use the value `clone` for checkout.
 
-See [Data](../Api/Data.md)
+### Sharing
+
+If you create your own features and want to share them, it is no longer needed
+to zip the data and attach it to a newly created release on GitHub.
+Just pushing your repo to GitHub is sufficient.
+
+Still it is a good practice to make a release every now and then.
+
+Even then, you do not need to attach your data as a binary.
+But, if you have much data or many files, doing so makes the downloading
+more efficient for the users.
+
+### `checkoutRepo()`
+
+There is a new utility function `checkoutRepo()`, by which you can
+maintain a local copy of any subdirectory of any repo on Github.
+
+See [Repo](../Api/Repo.md)
 
 This is yet another step in making your scholarly work reproducible.
 
