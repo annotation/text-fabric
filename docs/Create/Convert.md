@@ -195,7 +195,7 @@
             ```
 
         ???+ hint "Example"
-            Follow the [conversion tutorial]({{tutnb}}/text-fabric/convert.ipynb)
+            Follow the [conversion tutorial]({{tfbanks}}/programs/convert.ipynb)
 
             Or study a more involved example for
             [Old Babylonian](https://github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py)
