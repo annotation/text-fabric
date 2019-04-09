@@ -309,7 +309,7 @@ without fear of overwriting data.
     Note that you can pass different specifiers for the distinct portions of data and code
     that you want to use.
 
-    To see it in action, consult the [repo]({{tutnb}}/text-fabric/repo.ipynb) notebook.
+    To see it in action, consult the [repo]({{tutnb}}/banks/repo.ipynb) notebook.
 
 ??? abstract "More about using data modules"
     Suppose you have called up a data module:

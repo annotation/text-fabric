@@ -59,7 +59,7 @@
     by passing *source* and *dest* respectively.
 
     See the
-    [checkoutRepo]({{tutnb}}/text-fabric/checkoutRepo.ipynb)
+    [repo]({{tutnb}}/banks/repo.ipynb)
     notebook for an exhaustive demo of all the checkout options.
 
 ??? explanation "other parameters"

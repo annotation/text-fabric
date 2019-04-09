@@ -72,7 +72,7 @@ The values of the checkout parameters tell you to use data that is:
 * `2387abc78f9de...`: a concrete commit hash found on GitHub (under Commits)
 * `v1.3`: a release tag found on GitHub (under Releases)
 
-Or consult the [repo]({{tutnb}}/text-fabric/repo.ipynb) notebook.
+Or consult the [repo]({{tutnb}}/banks/repo.ipynb) notebook.
 
 ### API deletion (backwards incompatible):
 
