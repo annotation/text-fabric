@@ -317,6 +317,61 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#76" title="7.6" class="md-nav__link">
+    7.6
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-addition" title="API addition:" class="md-nav__link">
+    API addition:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-deletion-backwards-incompatible" title="API deletion (backwards incompatible):" class="md-nav__link">
+    API deletion (backwards incompatible):
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advice" title="Advice" class="md-nav__link">
+    Advice
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sharing" title="Sharing" class="md-nav__link">
+    Sharing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkoutrepo" title="checkoutRepo()" class="md-nav__link">
+    checkoutRepo()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fix-in-query-parsing" title="Fix in query parsing" class="md-nav__link">
+    Fix in query parsing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#754" title="7.5.4" class="md-nav__link">
     7.5.4
   </a>
@@ -685,8 +740,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Use/Use7/" title="v7-Guide" class="md-nav__link">
-      v7-Guide
+    <a href="../../Use/UseX/" title="Advanced" class="md-nav__link">
+      Advanced
     </a>
   </li>
 
@@ -732,10 +787,46 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-2" type="checkbox" id="nav-4-2">
+    
+    <label class="md-nav__link" for="nav-4-2">
+      Data flow
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-4-2">
+        Data flow
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../../Api/Data/" title="Data" class="md-nav__link">
       Data
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Repo/" title="Repo" class="md-nav__link">
+      Repo
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
         
@@ -1480,6 +1571,61 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#76" title="7.6" class="md-nav__link">
+    7.6
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-addition" title="API addition:" class="md-nav__link">
+    API addition:
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-deletion-backwards-incompatible" title="API deletion (backwards incompatible):" class="md-nav__link">
+    API deletion (backwards incompatible):
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advice" title="Advice" class="md-nav__link">
+    Advice
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sharing" title="Sharing" class="md-nav__link">
+    Sharing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkoutrepo" title="checkoutRepo()" class="md-nav__link">
+    checkoutRepo()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fix-in-query-parsing" title="Fix in query parsing" class="md-nav__link">
+    Fix in query parsing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#754" title="7.5.4" class="md-nav__link">
     7.5.4
   </a>
@@ -1782,23 +1928,108 @@
 <h1 id="changes-in-this-major-version">Changes in this major version<a class="headerlink" href="#changes-in-this-major-version" title="Permanent link">&para;</a></h1>
 <details class="hint" open="open"><summary>Consult the tutorials after changes</summary><p>When we change the API, we make sure that the tutorials shows off
 all possibilities.</p>
-<p>See the app-specific tutorials in <a href="https://github.com/annotation">annotation</a>.</p>
+<p>See the app-specific tutorials in <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/tree/master">annotation</a>.</p>
 </details>
-<details class="hint" open="open"><summary>Use check=True or -c</summary><p>When TF apps have been updated, you can autoload the newest version
-by calling the app as follows:</p>
+<details class="hint" open="open"><summary>Auto-update</summary><p>When TF apps have been updated, they will be autoloaded to the newest version
+provided you call the app as follows:</p>
 <p>In a program:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">use</span><span class="p">(</span><span class="n">appName</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;appName&#39;</span><span class="p">,</span> <span class="o">...</span> <span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
-<p>Calling the browser
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric appName -c
+<p>Calling the browser</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric appName
 </pre></div>
-</td></tr></table></p>
+</td></tr></table>
+
+<p>This will get you the newest stable version.
+To get the newest unstable version:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;appName:hot&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric appName:hot
+</pre></div>
+</td></tr></table>
+
 </details>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
 <h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
 <p>Nothing in particular</p>
+<h2 id="76">7.6<a class="headerlink" href="#76" title="Permanent link">&para;</a></h2>
+<p>Simplified sharing: pushing to GitHub is enough.
+It is still recommended to make a release on GitHub now and them,
+but it is not necessary.</p>
+<p>The <code>use()</code> function and the calling of the TF browser undergo an API change.</p>
+<h3 id="api-addition">API addition:<a class="headerlink" href="#api-addition" title="Permanent link">&para;</a></h3>
+<p>When calling up data and a TF-app, you can go back in history:
+to previous releases and previous commits, using a <code>checkout</code> parameter.</p>
+<p>You can specify the checkout parameter separately for </p>
+<ul>
+<li>the TF-app code (so you can go back to previous instantiations of the TF-app)</li>
+<li>the main data of the app plus its standard data modules</li>
+<li>every data-module that you include by means of the <code>--mod=</code> parameter.</li>
+</ul>
+<p>The values of the checkout parameters tell you to use data that is:</p>
+<ul>
+<li><code>clone</code>: locally present under <code>~/github</code> in the appropriate place</li>
+<li><code>local</code>: locally present under <code>~/text-fabric-data</code> in the appropriate place</li>
+<li><code>latest</code>: from the latest online release</li>
+<li><code>hot</code>: from the latest online commit</li>
+<li><code>''</code>: (default):
+  from the latest online release, or if there are no releases,
+  from the latest online commit</li>
+<li><code>2387abc78f9de...</code>: a concrete commit hash found on GitHub (under Commits)</li>
+<li><code>v1.3</code>: a release tag found on GitHub (under Releases)</li>
+</ul>
+<p>Or consult the <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/text-fabric/repo.ipynb">repo</a> notebook.</p>
+<h3 id="api-deletion-backwards-incompatible">API deletion (backwards incompatible):<a class="headerlink" href="#api-deletion-backwards-incompatible" title="Permanent link">&para;</a></h3>
+<p>The parameters <code>check=...</code> and <code>lgc=...</code> of <code>use()</code> and <code>-lgc</code> and <code>-c</code> when
+calling the TF browser have been removed.</p>
+<p>These parameters were all-or-nothing, they were applied TF app code, main data,
+and included data modules.</p>
+<h3 id="advice">Advice<a class="headerlink" href="#advice" title="Permanent link">&para;</a></h3>
+<p>In most cases, just do not use the checkout parameters at all.
+Then the TF-app will be kept updated, and you keep using the newest data.</p>
+<p>If you want to producing fixed output, not influenced by future changes,
+run TF once with a particular version or commit,
+and after that supply the value <code>local</code> as long as you wish.</p>
+<p>If you are developing data yourself, place the data in your repository
+under <code>~/github</code>, and use the value <code>clone</code> for checkout.</p>
+<h3 id="sharing">Sharing<a class="headerlink" href="#sharing" title="Permanent link">&para;</a></h3>
+<p>If you create your own features and want to share them, it is no longer needed
+to zip the data and attach it to a newly created release on GitHub.
+Just pushing your repo to GitHub is sufficient.</p>
+<p>Still it is a good practice to make a release every now and then.</p>
+<p>Even then, you do not need to attach your data as a binary.
+But, if you have much data or many files, doing so makes the downloading
+more efficient for the users.</p>
+<h3 id="checkoutrepo"><code>checkoutRepo()</code><a class="headerlink" href="#checkoutrepo" title="Permanent link">&para;</a></h3>
+<p>There is a new utility function <code>checkoutRepo()</code>, by which you can
+maintain a local copy of any subdirectory of any repo on Github.</p>
+<p>See <a href="../../Api/Repo/">Repo</a></p>
+<p>This is yet another step in making your scholarly work reproducible.</p>
+<h3 id="fix-in-query-parsing">Fix in query parsing<a class="headerlink" href="#fix-in-query-parsing" title="Permanent link">&para;</a></h3>
+<p>Queries like </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>sentence
+&lt;: sentence
+</pre></div>
+</td></tr></table>
+
+<p>caused TF to complain erroneously about disconnected components.
+You had to say</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>s1:sentence
+s2:sentence
+s1 &lt;: s2
+</pre></div>
+</td></tr></table>
+
+<p>instead.
+That workaround is not needed anymore.</p>
+<p>Thanks to Oliver Glanz for mentioning this behaviour.</p>
 <h2 id="754">7.5.4<a class="headerlink" href="#754" title="Permanent link">&para;</a></h2>
 <p>2019-03-28</p>
 <p>The TF browser now displays the total number of results clearly.</p>
@@ -2008,7 +2239,7 @@ let it import its submodules correctly.</p>
 Now you can also export to Excel from a notebook,
 using <code>A.export(results)</code>.</p>
 <p>Jump to the tutorial:
-<a href="https://nbviewer.jupyter.org/github/annotation/blob/master/bhsa/exportExcel.ipynb">exportExcel</a></p>
+<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/exportExcel.ipynb">exportExcel</a></p>
 <p>For more info: see <a href="https://github.com/annotation/text-fabric/issues/38">#38</a> </p>
 <h2 id="722">7.2.2<a class="headerlink" href="#722" title="Permanent link">&para;</a></h2>
 <p>2018-12-12</p>
@@ -2061,7 +2292,7 @@ instead of merely <code>line 1</code> or <code>case a</code>.</p>
   you can highlight material inside plain displays.
   <strong><a href="../../Api/App/#display">A.plain</a></strong>
   and
-  <strong><a href="https://nbviewer.jupyter.org/github/annotation/blob/master/bhsa/display.ipynb">display tutorial</a></strong></li>
+  <strong><a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/display.ipynb">display tutorial</a></strong></li>
 <li>New function <code>T.sectionTuple(n)</code> which gives the tuple of section nodes in which <code>n</code>
   is embedded
   <strong><a href="../../Api/Text/#sections">T.sectionTuple</a></strong></li>
@@ -2147,8 +2378,9 @@ here is major version 7.</p>
 <li>a lot of repeated code inside apps has been factored out</li>
 <li>it is easier to turn corpora into new text-fabric apps.</li>
 </ul>
-<p>Quick start: the new <a href="https://nbviewer.jupyter.org/github/annotation/blob/master/bhsa/share.ipynb">share</a></p>
-<p>See the <a href="../../Use/Use7/">v7 guide</a> for concrete and detailed hints how to make most of this version.</p>
+<p>Quick start: the new <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/share.ipynb">share</a></p>
+<p>See the <a href="../../Use/UseX/">advanced guide</a>
+for concrete and detailed hints how to make most of this version.</p>
                 
                   
                 

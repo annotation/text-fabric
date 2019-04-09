@@ -365,8 +365,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../Use/Use7/" title="v7-Guide" class="md-nav__link">
-      v7-Guide
+    <a href="../../Use/UseX/" title="Advanced" class="md-nav__link">
+      Advanced
     </a>
   </li>
 
@@ -486,10 +486,46 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-2" type="checkbox" id="nav-4-2">
+    
+    <label class="md-nav__link" for="nav-4-2">
+      Data flow
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-4-2">
+        Data flow
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../Data/" title="Data" class="md-nav__link">
       Data
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Repo/" title="Repo" class="md-nav__link">
+      Repo
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
         
@@ -1324,6 +1360,36 @@ or you want to experiment with
 features you are developing. </p>
 <p>A TF app can be invoked for all these scenarios
 by supplying additional arguments to the incantation.</p>
+<details class="hint"><summary>appName:specifier, checkData=specifier</summary><p>The specifiers let you use a specific point in the
+history of the app and data.</p>
+<p><em>appName:specifier</em> is for the TF-app application code.</p>
+<p><em>checkoutData=specifier</em> is for the main data of the TF-app.</p>
+<ul>
+<li><code></code> (empty string or absent) (<strong>default</strong>):
+    use the latest release;
+    if there are no releases, use the latest commit.</li>
+<li><code>latest</code>: use the latest release. If there are commits after the commit
+    that has been tagged with the latest release, these will <strong>not</strong> be used.</li>
+<li><code>hot</code>: use the latest commit, even if it comes after the
+    latest commit of the latest release.</li>
+<li><em>release tag</em>, e.g. <code>v1.3</code>: use exactly this release. More precisely,
+    this is the commit that has been tagged with that release tag.</li>
+<li><em>commit hash</em>, e.g. <code>2d0ca1f593805af0c13c4a62ed7405b94d870045</code>:
+    use exactly this commit</li>
+</ul>
+<details class="caution"><summary>Not when using data in your local github clones</summary><p>This only works if you use downloaded data from GitHub.
+Your <em>~/text-fabric-data</em> directory is used to
+fetch the data you specify.</p>
+<p>It will only contain one incarnation of the data.
+Whenever you switch points in the history, the
+current local version will be deleted and the
+specified version will be downloaded into place.</p>
+<p>When you instruct TF to use your local github clones
+it will take the files it finds on your system there,
+and there is no way to go back in history.</p>
+<p>See the parameter <em>lgc</em> below.</p>
+</details>
+</details>
 <details class="info"><summary>hoist=globals()</summary><p>This makes the API elements directly available as global names
 in your script or notebook:
 you can refer to <code>F</code>, <code>L</code>, <code>T</code>, etc. directly,
@@ -1354,8 +1420,14 @@ Every properly designed data module must refer to a specific
 version of the main source!</p>
 </details>
 </details>
-<details class="info"><summary>mod=None</summary><p><code>mod</code> is a comma-separated list of modules in the form <code>{org}/{repo}/{path}</code>.
-All features of all those modules will be loaded.
+<details class="info"><summary>mod=None</summary><p><code>mod</code> is a comma-separated list of modules in one of the forms</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>{org}/{repo}/{path}
+{org}/{repo}/{path}:specifier
+</pre></div>
+</td></tr></table>
+
+<p>All features of all those modules will be loaded.
 If they are not yet present, they will be downloaded from GitHub first.</p>
 <p>For example, there is an easter egg module on GitHub, and you can obtain it by</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>mod=&#39;etcbc/lingo/easter/tf&#39;
@@ -1365,20 +1437,14 @@ If they are not yet present, they will be downloaded from GitHub first.</p>
 <p>Here the <code>{org}</code> is <code>etcbc</code>, the <code>{repo}</code> is <code>lingo</code>,
 and the <code>{path}</code> is <code>easter/tf</code> under which
 version <code>c</code> of the feature <code>egg</code>
-is avaialble in TF format.</p>
+is available in TF format.</p>
 <p>You can point to any such directory om the entire GitHub
 if you know that it contains relevant features.</p>
+<p>The specifier is as in <code>appName:specifier</code> and <code>checkData=specifier</code>
+above: for using a different point in the history.</p>
 <p>Your TF app might be configured to download specific modules.
 See <code>MODULE_SPECS</code> in the app's 
 <a href="../../Implementation/Apps/#components">config.py</a>,</p>
-<details class="caution"><summary>Release sensitive</summary><p>Module data will be downloaded from a specific release
-of the relevant GitHub repo.
-See the <a href="../Data/">Data</a> for details how to publish feature data.
-It will be downloaded to the
-<code>text-fabric-data</code> folder in your home directory.
-Next to the data will be a little text file which
-indicates from which release the data is taken.</p>
-</details>
 <details class="caution"><summary>Let TF manage your text-fabric-data directory</summary><p>It is better not to fiddle with your <code>~/text-fabric-data</code> directory manually.
 Let it be filled with auto-downloaded data.
 You can then delete data sources and modules when needed,
@@ -1640,7 +1706,8 @@ following order:</p>
 <li>values as set up by previous calls to <code>displaySetup()</code>,</li>
 <li>default values configured by the app.</li>
 </ul>
-<p>These are the parameters and their default values:</p>
+</details>
+<details class="abstract"><summary>List of display parameters</summary><p>These are the parameters and their default values:</p>
 <details class="info"><summary>colorMap=None</summary><p>Which nodes of a tuple (or list of tuples) will be highlighted.
 If <code>colorMap</code> is <code>None</code> or missing, all nodes will be highlighted with
 the default highlight color, which is yellow.</p>
@@ -1779,7 +1846,8 @@ or tuple of nodes.</p>
 </pre></div>
 </td></tr></table>
 
-<p>Assigns working values to display parameters. All subsequent calls to
+<p>Assigns working values to display parameters (see the section above).
+All subsequent calls to
 the display functions will use these values, unless they are passed overriding
 values as arguments.</p>
 <p>These working values remain in effect until a new call to <code>displaySetup()</code>
@@ -1895,20 +1963,10 @@ The columns are:</p>
   displaySetup(tupleFeatures=...)`</li>
 </ul>
 <p>See for detailed examples the
-<a href="https://nbviewer.jupyter.org/github/annotation/blob/master/bhsa/exportExcel.ipynb">exportExcel</a>
+<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/exportExcel.ipynb">exportExcel</a>
 and
-<a href="https://nbviewer.jupyter.org/github/annotation/blob/master/oldbabylonian/exportExcel.ipynb">exportExcel</a>
+<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/oldbabylonian/exportExcel.ipynb">exportExcel</a>
 notebooks.</p>
-</details>
-<details class="hint"><summary>tupleFeatures</summary><p>If the iterable of tuples are the results of a query you have just
-run, then an appropriate call to <code>displaySetup(tupleFeatures=...)</code>
-has already been issued, so you can just say:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
-2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-<span class="n">A</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-</pre></div>
-</td></tr></table>
-
 </details>
 <details class="info"><summary>results</summary><p>an iterable of tuples of nodes.
 The results of a search qualify, but it works
@@ -1921,12 +1979,30 @@ By default it is your Downloads folder.</p>
 <details class="info"><summary>toFile</summary><p>The name of the exported file.
 By default it is <code>results.tsv</code></p>
 </details>
-<details class="info"><summary>tupleFeatures=</summary><p>This is a display parameter that steers which features are exported
-with each member of the tuples in the list.
-See above under "Setting up display parameters"</p>
+<details class="info"><summary>condensed=</summary><p>Has no effect. Exports to Excel will not be condensed, because the
+number of columns is variable per row in that case.
+Excel itself as nice possibilities for grouping rows.
+You can also filter your tuples by means of hand-coding before exporting them.</p>
+</details>
+<details class="info"><summary>condenseType=</summary><p>The condense type influences for which nodes the full text will be exported.
+Only nodes that are "smaller" than the condense type will have 
+their full text exported.</p>
 </details>
 <details class="info"><summary>fmt=</summary><p>This display parameter specifies the text format for any nodes
 that trigger a text value to be exported.</p>
+</details>
+<details class="info"><summary>tupleFeatures=</summary><p>This is a display parameter that steers which features are exported
+with each member of the tuples in the list.
+See above under "Setting up display parameters"</p>
+<p>If the iterable of tuples are the results of a query you have just
+run, then an appropriate call to <code>displaySetup(tupleFeatures=...)</code>
+has already been issued, so you can just say:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="n">A</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
 </details>
 <details class="caution"><summary>Encoding</summary><p>The exported file is written in the <code>utf_16_le</code> encoding.
 This ensures that Excel can open it without hassle, even if there
@@ -2005,7 +2081,7 @@ Pass the display parameters <code>condense</code> and <code>condenseType</code> 
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../../Use/Use7/" title="v7-Guide" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../../Use/UseX/" title="Advanced" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -2014,7 +2090,7 @@ Pass the display parameters <code>condense</code> and <code>condenseType</code> 
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                v7-Guide
+                Advanced
               </span>
             </div>
           </a>
