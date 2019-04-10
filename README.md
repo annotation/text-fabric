@@ -2,7 +2,7 @@
 
 # Text-Fabric
 
-[![sha](sha.png)](https://archive.softwareheritage.org/browse/origin/https://github.com/dirkroorda/text-fabric/)
+[![sha](sha.png) Software Heritage Archive](https://archive.softwareheritage.org/browse/origin/https://github.com/dirkroorda/text-fabric/)
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1008899.svg)](https://doi.org/10.5281/zenodo.592193)
 
