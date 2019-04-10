@@ -41,6 +41,10 @@ See the [issue list on GitHub]({{ghissues}})
 
 Nothing in particular
 
+## 7.6.1
+
+Small fix in reporting of the location of data being used.
+
 ## 7.6
 
 Simplified sharing: pushing to GitHub is enough.
