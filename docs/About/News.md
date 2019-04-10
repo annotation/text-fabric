@@ -43,9 +43,13 @@ Nothing in particular
 
 ## 7.6.1
 
+2019-04-10
+
 Small fix in reporting of the location of data being used.
 
 ## 7.6
+
+2019-04-09
 
 Simplified sharing: pushing to GitHub is enough.
 It is still recommended to make a release on GitHub now and them,
