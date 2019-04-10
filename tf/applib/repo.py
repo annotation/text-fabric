@@ -251,7 +251,13 @@ class Checkout(object):
           'local github' if self.local == 'clone' else
           'for whatever reason'
       )
-      offString = self.toString(self.commitOff, self.releaseOff, self.local, dest=self.dest)
+      offString = self.toString(
+          self.commitOff,
+          self.releaseOff,
+          self.local,
+          dest=self.dest,
+          source=self.source,
+      )
       self.log(f'Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:')
       self.log(f'\t{offString} ({state})')
 

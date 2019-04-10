@@ -42,8 +42,11 @@
     *   *kindLocal* indicates whether an online check has been performed:
         it is `None` if there has been an online check. Otherwise it is
         `clone` if the data is in your `~/github` directory else it is `local`.
-    *   *localBase* where the data is under: `~/github` or `~/text-fabric-data`
+    *   *localBase* where the data is under: `~/github` or `~/text-fabric-data`,
+        or whatever you have passed as *source* and *dest*, see below.
     *   *localDir* releative path from *localBase* to your data.
+        If your data has versions, *localDir* points to directory that has the versions,
+        not to a specific version.
      
 
     Your local copy can be found under your `~/github` or `~/text-fabric-data`
