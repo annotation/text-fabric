@@ -1305,8 +1305,11 @@ expected location.</p>
 <li><em>kindLocal</em> indicates whether an online check has been performed:
     it is <code>None</code> if there has been an online check. Otherwise it is
     <code>clone</code> if the data is in your <code>~/github</code> directory else it is <code>local</code>.</li>
-<li><em>localBase</em> where the data is under: <code>~/github</code> or <code>~/text-fabric-data</code></li>
-<li><em>localDir</em> releative path from <em>localBase</em> to your data.</li>
+<li><em>localBase</em> where the data is under: <code>~/github</code> or <code>~/text-fabric-data</code>,
+    or whatever you have passed as <em>source</em> and <em>dest</em>, see below.</li>
+<li><em>localDir</em> releative path from <em>localBase</em> to your data.
+    If your data has versions, <em>localDir</em> points to directory that has the versions,
+    not to a specific version.</li>
 </ul>
 <p>Your local copy can be found under your <code>~/github</code> or <code>~/text-fabric-data</code>
 directory using a relative path <em>org/repo/folder</em> if there is a <em>version</em>, else
