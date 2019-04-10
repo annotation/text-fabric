@@ -2,6 +2,8 @@
 
 # Text-Fabric
 
+[![sha](sha.png)](https://archive.softwareheritage.org/browse/origin/https://github.com/annotation/text-fabric/)
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1008899.svg)](https://doi.org/10.5281/zenodo.592193)
 
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2592/badge)](https://bestpractices.coreinfrastructure.org/projects/2592)
@@ -92,7 +94,7 @@ Start with the [contribution notes](codestyle/contributing.md).
 
 ---
 
-<a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/annotation/text-fabric/directory/"><img src="/docs/images/swh-logo-archive.png" width="100" align="left"/></a>
+<a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/annotation/text-fabric/directory/"><img src="/docs/images/sha-logo.png" width="100" align="left"/></a>
 
 **This repository is being archived continuously by the 
 [Software Heritage Archive](https://archive.softwareheritage.org).
