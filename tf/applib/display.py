@@ -432,7 +432,7 @@ def pretty(
         containerN = ups[0]
 
   (firstSlot, lastSlot) = (
-      getBoundary(api, n) if d.condenseType is None else
+      getBoundary(api, n) if not d.condensed or not d.condenseType else
       (None, None) if containerN is None else getBoundary(api, containerN)
   )
 

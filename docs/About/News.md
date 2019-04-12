@@ -41,6 +41,19 @@ See the [issue list on GitHub]({{ghissues}})
 
 Nothing in particular
 
+## 7.6.2
+
+2019-04-12
+
+Small but important fix in the display logic of the `pretty()` function.
+The bug is not in the particular TF-apps that partly implementt `pretty()`,
+but in the generic `tf.applib.display` library that implements the other part.
+
+Thanks to Gyusang Jin, Christiaan Erwich and Cody Kingham for spottting it.
+
+I wrote an account of the bug and its fixing in this 
+[notebook]({{tfnb}}/test/fixing/Ps18-49.ipynb).
+
 ## 7.6.1
 
 2019-04-10
