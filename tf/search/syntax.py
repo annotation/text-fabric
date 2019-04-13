@@ -481,8 +481,11 @@ def parseLine(line):
 
 def parseFeatureVals(searchExe, featStr, features, i, asEdge=False):
   if asEdge:
-    if not ((featStr[0] == '-' and featStr[-1] == '>') or
-            (featStr[0] == '<' and featStr[-1] == '-')):
+    if not (
+        (featStr[0] == '-' and featStr[-1] == '>') or
+        (featStr[0] == '<' and featStr[-1] == '-') or
+        (featStr[0] == '<' and featStr[-1] == '>')
+    ):
       return True
     feat = featStr[1:-1]
   else:

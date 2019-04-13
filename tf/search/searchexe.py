@@ -229,7 +229,6 @@ class SearchExe(object):
     for q in range(len(self.qnodes)):
       self._showNode(q)
 
-
 # TOP-LEVEL IMPLEMENTATION METHODS
 
   def _parse(self):

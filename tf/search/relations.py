@@ -927,7 +927,17 @@ def basicRelations(searchExe, api, silent):
 
       return edgeIR
 
-    return (edgeRV, edgeIRV)
+    def edgeSRV(value):
+
+      def edgeSR(fTp, tTp):
+        Es = api.Es
+        Edata = Es(efName)
+        doValues = Edata.doValues
+        return edgeAccess(Edata.b, doValues, value)
+
+      return edgeSR
+
+    return (edgeRV, edgeIRV, edgeSRV)
 
   # COLLECT ALL RELATIONS IN A TUPLE
 
@@ -1012,7 +1022,7 @@ def basicRelations(searchExe, api, silent):
       continue
     r = len(relations)
 
-    (edgeRV, edgeIRV) = makeEdgeMaps(efName)
+    (edgeRV, edgeIRV, edgeSRV) = makeEdgeMaps(efName)
     doValues = api.TF.features[efName].edgeValues
     extra = ' with value specification allowed' if doValues else ''
     relations.append((
@@ -1021,6 +1031,14 @@ def basicRelations(searchExe, api, silent):
     ))
     edgeMap[2 * r] = (efName, 1)
     edgeMap[2 * r + 1] = (efName, -1)
+
+    r = len(relations)
+    relations.append((
+        (f'<{efName}>', True, edgeSRV, f'edge feature "{efName}"{extra} (either direction)'),
+        (f'<{efName}>', True, edgeSRV, None),
+    ))
+    edgeMap[2 * r] = (efName, 0)
+    edgeMap[2 * r + 1] = (efName, 0)
   lr = len(relations)
 
   relationsAll = []
@@ -1091,15 +1109,22 @@ def add_V_Relations(searchExe, varRels):
   tasks = collections.defaultdict(set)
   for (acro, vals) in sorted(varRels.items()):
     for (eName, val) in vals:
-      conv = acro[0] == '<'
+      (b, mid, e) = (acro[0], acro[1:-1], acro[-1])
+      norm = b == '-' and e == '>'
+      conv = b == '<' and e == '-'
       eRel = f'-{eName}>'
       eReli = f'<{eName}-'
-      acroi = f'-{acro[1:-1]}>' if conv else f'<{acro[1:-1]}-'
+      eRels = f'<{eName}>'
+      acroi = f'-{mid}>' if conv else f'<{mid}-' if norm else f'<{mid}>'
       if conv:
         (acro, acroi) = (acroi, acro)
       j = searchExe.relationFromName[eRel]
       ji = searchExe.relationFromName[eReli]
-      tasks[(eName, j, acro, ji, acroi)].add(val)
+      js = searchExe.relationFromName[eRels]
+      if norm or conv:
+        tasks[(eName, j, acro, ji, acroi)].add(val)
+      else:
+        tasks[(eName, js, acro, js, acro)].add(val)
 
   for ((eName, j, acro, ji, acroi), vals) in sorted(tasks.items()):
     for val in vals:
@@ -1122,7 +1147,11 @@ def add_V_Relations(searchExe, varRels):
       ])
       searchExe.relationFromName[acro] = lr
       searchExe.relationFromName[acroi] = lr + 1
-      searchExe.edgeMap[lr] = (eName, 1)
-      searchExe.edgeMap[lr + 1] = (eName, -1)
+      if j == ji:
+        searchExe.edgeMap[lr] = (eName, 0)
+        searchExe.edgeMap[lr + 1] = (eName, 0)
+      else:
+        searchExe.edgeMap[lr] = (eName, 1)
+        searchExe.edgeMap[lr + 1] = (eName, -1)
       searchExe.converse[lr] = lr + 1
       searchExe.converse[lr + 1] = lr

@@ -289,7 +289,12 @@ def _validation(searchExe):
   # make an entry in the relation map for each value of k
   addRels = {}
   for (e, (f, op, t)) in enumerate(searchExe.qedgesRaw):
-    if (type(op) is tuple or (op[0] == '-' and op[-1] == '>') or (op[0] == '<' and op[-1] == '-')):
+    if (
+        type(op) is tuple or
+        (op[0] == '-' and op[-1] == '>') or
+        (op[0] == '<' and op[-1] == '-') or
+        (op[0] == '<' and op[-1] == '>')
+    ):
       continue
     match = kRe.findall(op)
     if len(match):
