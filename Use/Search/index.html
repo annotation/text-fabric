@@ -1509,28 +1509,28 @@ as values. This number is an integer between 0 and 100.
 We can ask for parallel verses in an unqualified way:</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>verse
--crossref&gt; verse
+&lt;crossref&gt; verse
 </pre></div>
 </td></tr></table>
 
 <p>But we can also ask for the cases with a specific confidence:</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>verse
--crossref=90&gt; verse
+&lt;crossref=90&gt; verse
 </pre></div>
 </td></tr></table>
 
 <p>or cases with a high confidence:</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>verse
--crossref&gt;95&gt; verse
+&lt;crossref&gt;95&gt; verse
 </pre></div>
 </td></tr></table>
 
 <p>or cases with a low confidence:</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>verse
--crossref&lt;80&gt; verse
+&lt;crossref&lt;80&gt; verse
 </pre></div>
 </td></tr></table>
 
@@ -1540,7 +1540,7 @@ you can use comparisons; if it is string valued, you can use regular expressions
 In both cases you can also use the other constructs, such as</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>verse
--crossref=66|77&gt; verse
+&lt;crossref=66|77&gt; verse
 </pre></div>
 </td></tr></table>
 
@@ -1662,6 +1662,7 @@ full variety of feature constraints on nodes and edges.</p>
 <li><code>s := w</code></li>
 <li><code>m -sub&gt; s</code></li>
 <li><code>m &lt;sub- s</code></li>
+<li><code>m &lt;sub&gt; s</code></li>
 <li>Indents and spacing are ignored.</li>
 <li>There must be white-space around the operator.</li>
 <li>Operators that come from edge features may be enriched with values.</li>
@@ -1744,7 +1745,9 @@ It will not influence the search results.</p>
 to retrieve result information to be presented to the user. So if you want to include
 the values of a particular feature, mention that feature with a <code>*</code>.</p>
 </details>
-<p>All these forms are also valid as <code>-</code><em>name</em> <em>form</em><code>&gt;</code> and <code>&lt;</code><em>name</em> <em>form</em><code>-</code>, in which case
+<p>All these forms are also valid as
+<code>-</code><em>name</em> <em>form</em><code>&gt;</code> and <code>&lt;</code><em>name</em> <em>form</em><code>-</code> and <code>&lt;</code><em>name</em> <em>form</em><code>&gt;</code>,
+in which case
 they specify value constraints on edge features.
 This is only meaningful if the edge feature is declared to have values (most edge features
 do not have values).</p>
@@ -1831,22 +1834,34 @@ that. Instead of typing the letter <code>k</code>, provide the actual number you
     <img alt="op" src="../../images/Spatial/Spatial.016.png" /></li>
 </ul>
 </details>
-<details class="info"><summary>Based on edge features</summary><ul>
-<li>
-<p><code>-</code><em>name</em><code>&gt;</code> <code>&lt;</code><em>name</em><code>-</code>: connected by the edge feature <em>name</em></p>
+<details class="info"><summary>Based on edge features</summary><p>Edge features are based on directed edges.
+An edge from <code>n</code> to <code>m</code> is not the same as an edge from <code>m</code> to <code>n</code>.
+For each direction there is a relation operator.
+And there is an operator corresponding to the <em>symmetric closure</em>
+of the edges.</p>
 <ul>
-<li>in both directions;</li>
-<li>these forms work for edges that do and do not have values;</li>
+<li>
+<p>without values</p>
+<ul>
+<li>A <code>-</code><em>name</em><code>&gt;</code> B: edge from A to B</li>
+<li>A <code>&lt;</code><em>name</em><code>-</code> B: edge from B to A</li>
+<li>A <code>&lt;</code><em>name</em><code>&gt;</code> B: edge from A to B or from B to A or both</li>
 </ul>
+<p>These forms work for edges that do and do not have values;</p>
 <p><img alt="op" src="../../images/Spatial/Spatial.018.png" /></p>
+<p><img alt="op" src="../../images/Spatial/Spatial.020.png" /></p>
 </li>
 <li>
-<p><code>-</code><em>name</em> <em>valueSpec</em><code>&gt;</code> <code>&lt;</code><em>name</em> <em>valueSpec</em><code>-</code>: connected by the edge feature <em>name</em></p>
+<p>with values</p>
 <ul>
-<li>in both directions;</li>
-<li>these forms work only for edges that do have values.</li>
+<li>A <code>-</code><em>name</em> <em>valueSpec</em><code>&gt;</code> B: edge with value from A to B</li>
+<li>A <code>&lt;</code><em>name</em> <em>valueSpec</em><code>-</code> B: edge with value from B to A</li>
+<li>A <code>&lt;</code><em>name</em> <em>valueSpec</em><code>&gt;</code> B: edge with value from A to B
+    or form B to A or both</li>
 </ul>
+<p>These forms work only for edges that do have values.</p>
 <p><img alt="op" src="../../images/Spatial/Spatial.019.png" /></p>
+<p><img alt="op" src="../../images/Spatial/Spatial.021.png" /></p>
 </li>
 </ul>
 </details>

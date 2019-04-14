@@ -317,6 +317,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#763" title="7.6.3" class="md-nav__link">
+    7.6.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#762" title="7.6.2" class="md-nav__link">
     7.6.2
   </a>
@@ -1585,6 +1592,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#763" title="7.6.3" class="md-nav__link">
+    7.6.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#762" title="7.6.2" class="md-nav__link">
     7.6.2
   </a>
@@ -1984,6 +1998,33 @@ To get the newest unstable version:</p>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
 <h2 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h2>
 <p>Nothing in particular</p>
+<h2 id="763">7.6.3<a class="headerlink" href="#763" title="Permanent link">&para;</a></h2>
+<p>2019-04-14</p>
+<p>Small addition to search templates.
+You could already use edges in search by means of the relational operator</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>  -edgeFeature&gt;
+</pre></div>
+</td></tr></table>
+
+<p>that look for <code>n</code> and <code>m</code> such that there is an <code>edgeFeature</code> edge from <code>n</code> to <code>m</code>,
+and likewise</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>  &lt;edgeFeature-
+</pre></div>
+</td></tr></table>
+
+<p>for edges in the opposite direction.</p>
+<p>Now you can also use</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>  &lt;edgeFeature&gt;
+</pre></div>
+</td></tr></table>
+
+<p>that look for <code>n</code> and <code>m</code> such that there is an <code>edgeFeature</code> edge from <code>n</code> to <code>m</code>,
+or from <code>m</code> to <code>n</code>, or both.</p>
+<p>See the <a href="../../Use/Search/#relational-operators">docs</a></p>
+<p>This corresponds to
+<a href="../../Api/Features/#edge-features"><code>E.</code><em>edgeFeature</em><code>.b()</code></a>.</p>
+<p>See also the
+<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/app.ipynb">Banks example</a>.</p>
 <h2 id="762">7.6.2<a class="headerlink" href="#762" title="Permanent link">&para;</a></h2>
 <p>2019-04-12</p>
 <p>Small but important fix in the display logic of the <code>pretty()</code> function.
