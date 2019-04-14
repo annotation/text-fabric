@@ -41,6 +41,43 @@ See the [issue list on GitHub]({{ghissues}})
 
 Nothing in particular
 
+## 7.6.3
+
+2019-04-14
+
+Small addition to search templates.
+You could already use edges in search by means of the relational operator
+
+```
+  -edgeFeature>
+```
+
+that look for `n` and `m` such that there is an `edgeFeature` edge from `n` to `m`,
+and likewise
+
+```
+  <edgeFeature-
+```
+
+for edges in the opposite direction.
+
+Now you can also use
+
+```
+  <edgeFeature>
+```
+
+that look for `n` and `m` such that there is an `edgeFeature` edge from `n` to `m`,
+or from `m` to `n`, or both.
+
+See the [docs](../Use/Search.md#relational-operators)
+
+This corresponds to
+[`E.`*edgeFeature*`.b()`](../Api/Features.md#edge-features).
+
+See also the
+[Banks example]({{tutnb}}/banks/app.ipynb).
+
 ## 7.6.2
 
 2019-04-12

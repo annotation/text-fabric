@@ -180,28 +180,28 @@
 
     ```
     verse
-    -crossref> verse
+    <crossref> verse
     ```
 
     But we can also ask for the cases with a specific confidence:
 
     ```
     verse
-    -crossref=90> verse
+    <crossref=90> verse
     ```
 
     or cases with a high confidence:
 
     ```
     verse
-    -crossref>95> verse
+    <crossref>95> verse
     ```
 
     or cases with a low confidence:
 
     ```
     verse
-    -crossref<80> verse
+    <crossref<80> verse
     ```
 
 
@@ -213,7 +213,7 @@
 
     ```
     verse
-    -crossref=66|77> verse
+    <crossref=66|77> verse
     ```
 
     To get a more specific introduction to search, consult the search tutorials for
@@ -313,6 +313,7 @@
         *   `s := w`
         *   `m -sub> s`
         *   `m <sub- s`
+        *   `m <sub> s`
         *   Indents and spacing are ignored.
         *   There must be white-space around the operator.
         *   Operators that come from edge features may be enriched with values.
@@ -370,7 +371,9 @@
         to retrieve result information to be presented to the user. So if you want to include
         the values of a particular feature, mention that feature with a `*`.
 
-    All these forms are also valid as `-`*name* *form*`>` and `<`*name* *form*`-`, in which case
+    All these forms are also valid as
+    `-`*name* *form*`>` and `<`*name* *form*`-` and `<`*name* *form*`>`,
+    in which case
     they specify value constraints on edge features.
     This is only meaningful if the edge feature is declared to have values (most edge features
     do not have values).
@@ -455,20 +458,36 @@
         ![op](../images/Spatial/Spatial.016.png)
 
 ??? info "Based on edge features"
+    Edge features are based on directed edges.
+    An edge from `n` to `m` is not the same as an edge from `m` to `n`.
+    For each direction there is a relation operator.
+    And there is an operator corresponding to the *symmetric closure*
+    of the edges.
 
-    *   `-`*name*`>` `<`*name*`-`: connected by the edge feature *name*
+    *   without values
 
-        *   in both directions;
-        *   these forms work for edges that do and do not have values;
+        *   A `-`*name*`>` B: edge from A to B
+        *   A `<`*name*`-` B: edge from B to A
+        *   A `<`*name*`>` B: edge from A to B or from B to A or both
+
+        These forms work for edges that do and do not have values;
 
         ![op](../images/Spatial/Spatial.018.png)
 
-    *   `-`*name* *valueSpec*`>` `<`*name* *valueSpec*`-`: connected by the edge feature *name*
+        ![op](../images/Spatial/Spatial.020.png)
 
-        *   in both directions;
-        *   these forms work only for edges that do have values.
+    *   with values
+
+        *   A `-`*name* *valueSpec*`>` B: edge with value from A to B
+        *   A `<`*name* *valueSpec*`-` B: edge with value from B to A
+        *   A `<`*name* *valueSpec*`>` B: edge with value from A to B
+            or form B to A or both
+
+        These forms work only for edges that do have values.
 
         ![op](../images/Spatial/Spatial.019.png)
+
+        ![op](../images/Spatial/Spatial.021.png)
 
 ### Quantifiers
 
