@@ -32,10 +32,9 @@
 
     function | argument
     --- | ---
-    `getCheck` | `-c`
+    `getCheckout` | `--checkout=`
     `getDebug` | `-d`
     `getDocker` | `-docker`
-    `getLocalClones` | `-lgc`
     `getModules` | `--mod=`...
     `getNoweb` | `-noweb`
     `getSets` | `--sets=`...

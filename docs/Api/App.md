@@ -58,7 +58,7 @@
 
         *checkoutData=specifier* is for the main data of the TF-app.
 
-        *   ` ` (empty string or absent) (**default**):
+        *   `''` (empty string or absent) (**default**):
             use the latest release;
             if there are no releases, use the latest commit.
         *   `latest`: use the latest release. If there are commits after the commit
@@ -68,23 +68,11 @@
         *   *release tag*, e.g. `v1.3`: use exactly this release. More precisely,
             this is the commit that has been tagged with that release tag.
         *   *commit hash*, e.g. `2d0ca1f593805af0c13c4a62ed7405b94d870045`:
-            use exactly this commit
-
-        ??? caution "Not when using data in your local github clones"
-            This only works if you use downloaded data from GitHub.
-            Your *~/text-fabric-data* directory is used to
-            fetch the data you specify.
-
-            It will only contain one incarnation of the data.
-            Whenever you switch points in the history, the
-            current local version will be deleted and the
-            specified version will be downloaded into place.
-
-            When you instruct TF to use your local github clones
-            it will take the files it finds on your system there,
-            and there is no way to go back in history.
-
-            See the parameter *lgc* below.
+            use exactly this commit.
+        *   `local`: use local data from your `~/text-fabric-data` directory if it is present,
+            otherwise fail.
+        *   `clone`: use local data from your `~/github` directory if it is present,
+            otherwise fail.
 
     ??? info "hoist=globals()"
         This makes the API elements directly available as global names
@@ -161,25 +149,6 @@
             You can then delete data sources and modules when needed,
             and have them redownloaded
             at your wish, without any hassle or data loss.
-
-    ??? info "check=False"
-        If `True`, Text-Fabric will check the main source and each module
-        for newer releases.
-        For every dataset for which a newer release than the locally available one
-        is found, the newest data will be downloaded.
-
-    ??? info "lgc=False"
-        Normally, Text-Fabric will work with data that is stored under your
-        `~/text-fabric-data`.
-        But if you have a local clone of a repository
-        with data in `~/github/{org}/{repo}`,
-        and you want to use that instead,
-        you can pass `lgc=True`. Text-Fabric will then look at
-        your local GitHub directories.
-
-        This is handy when you are still developing your own data,
-        and you make frequent changes
-        without wanting to publish every intermediate stage.
 
     ??? info "locations and modules arguments"
         If you want to add other search locations for TF features manually,

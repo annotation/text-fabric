@@ -41,6 +41,16 @@ See the [issue list on GitHub]({{ghissues}})
 
 Nothing in particular
 
+## 7.6.4
+
+2019-04-25
+
+The walker conversion module has an extra check: if you assign features to None,
+it will be reported.
+
+There is an extra `cv.meta()` function to accomodate a use case brought in by
+Ernst Boogert.
+
 ## 7.6.3
 
 2019-04-14

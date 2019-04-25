@@ -93,7 +93,7 @@ class CV(object):
     self.warn = warn
     self.slotType = slotType
 
-    self.intFeatures = intFeatures
+    self.intFeatures = set(intFeatures)
     self.featureMeta = featureMeta
     self.metaData = {}
     self.nodeFeatures = {}
@@ -241,45 +241,108 @@ class CV(object):
               f'Do not mark the "{feat}" feature as integer valued'
           )
         self.good = False
+
     for (feat, featMeta) in sorted(featureMeta.items()):
-      if feat in WARP[0:3] + ('',):
-        if feat == '':
-          errors['featureMeta'].append(
-              f'Specify the generic feature meta data in "generic"'
-          )
-        elif feat == WARP[2]:
-          errors['featureMeta'].append(
-              f'Specify the "{WARP[2]}" feature in "otext"'
-          )
-        else:
-          errors['featureMeta'].append(
-              f'Do not pass metaData for the "{feat}" feature in "featureMeta"'
-          )
-          continue
-      if 'valueType' in featMeta:
-        errors['featureMeta'].append(
-            f'Do not specify "valueType" for the "{feat}" feature in "featureMeta"'
-        )
-        continue
+      good = self._checkFeatMeta(
+          feat,
+          featMeta,
+          checkRegular=True,
+          valueTypeAllowed=False,
+          showErrors=False,
+      )
+      if not good:
+        self.good = False
       metaData.setdefault(feat, {}).update(featMeta)
       metaData[feat]['valueType'] = 'int' if feat in intFeatures else 'str'
 
     self._showErrors()
 
-  def _checkType(self, k, v, featureType):
-    errors = self.errors
+  def _checkFeatMeta(
+      self,
+      feat,
+      featMeta,
+      checkRegular=False,
+      valueTypeAllowed=True,
+      showErrors=True,
+  ):
+    errors = collections.defaultdict(list)
+    good = True
 
-    if k in self.intFeatures:
-      try:
-        v = int(v)
-      except Exception:
-        errors[f'Not a number'].append(
-            f'"{featureType}" node feature "{k}": "{v}"'
+    if checkRegular:
+      if feat in WARP[0:3] + ('',):
+        if feat == '':
+          errors['featureMeta'].append(
+              f'Specify the generic feature meta data in "generic"'
+          )
+          good = False
+        elif feat == WARP[2]:
+          errors['featureMeta'].append(
+              f'Specify the "{WARP[2]}" feature in "otext"'
+          )
+          good = False
+        else:
+          errors['featureMeta'].append(
+              f'Do not pass metaData for the "{feat}" feature in "featureMeta"'
+          )
+          good = False
+    if 'valueType' in featMeta:
+      if not valueTypeAllowed:
+        errors['featureMeta'].append(
+            f'Do not specify "valueType" for the "{feat}" feature in "featureMeta"'
         )
+        good = False
+      elif featMeta['valueType'] not in {'int', 'str'}:
+        errors['featureMeta'].append(
+            f'valueType must be "int" or "str"'
+        )
+        good = False
+
+    for (e, eData) in errors.items():
+      self.errors[e].extend(eData)
+    if showErrors:
+      self._showErrors
+    return good
+
+  # def _checkType(self, k, v, featureType):
+  #   errors = self.errors
+  #
+  #   if k in self.intFeatures:
+  #     try:
+  #       v = int(v)
+  #     except Exception:
+  #       errors[f'Not a number'].append(
+  #           f'"{featureType}" feature "{k}": "{v}"'
+  #       )
 
   def stop(self, msg):
     self.TM.error(f'Forced stop: msg')
     self.good = False
+
+  def meta(self, feat, **metadata):
+    errors = self.errors
+    metaData = self.metaData
+    featMeta = metaData.get(feat, {})
+
+    good = True
+
+    for (field, text) in metadata.items():
+      if text is None:
+        if field == 'valueType':
+          errors[f'did not delete metadata field "valueType"'].append(feat)
+          good = False
+        else:
+          if field in featMeta:
+            del featMeta[field]
+      else:
+        metaData.setdefault(feat, {})[field] = text
+        featMeta[field] = text
+        if field == 'valueType':
+          if text == 'int':
+            self.intFeatures.add(feat)
+          else:
+            self.intFeatures.discard(feat)
+
+    self.good = self._checkFeatMeta(feat, featMeta) and good
 
   def slot(self):
     curSeq = self.curSeq
@@ -359,7 +422,7 @@ class CV(object):
     for (k, v) in features.items():
       if v is None:
         continue
-      self._checkType(k, v, self.N)
+      # self._checkType(k, v, self.N)
       nodeFeatures[k][node] = v
 
   def get(self, feature, *args):
@@ -383,7 +446,7 @@ class CV(object):
     self.stats[self.E] += 1
 
     for (k, v) in features.items():
-      self._checkType(k, v, self.E)
+      # self._checkType(k, v, self.E)
       edgeFeatures[k][nodeFrom][nodeTo] = v
 
   def _checkSecLevel(self, node, before=True):
@@ -636,6 +699,22 @@ class CV(object):
             f'node feature "{feat}" has metadata in featureMeta but does not occur'
         )
 
+    for (feat, featData) in sorted(nodeFeatures.items()):
+      if None in featData:
+        errors['feature values assigned to None'].append(
+            f'node feature "{feat}" has a node None'
+        )
+    for (feat, featData) in sorted(edgeFeatures.items()):
+      if None in featData:
+        errors['feature values assigned to None'].append(
+            f'edge feature "{feat}" has a from-node None'
+        )
+      for toValues in featData.values():
+        if None in toValues:
+          errors['feature values assigned to None'].append(
+              f'edge feature "{feat}" has a to-node None'
+          )
+
     for (feat, featData) in sorted(edgeFeatures.items()):
       hasValues = False
       for (nodeTo, toValues) in featData.items():
@@ -645,8 +724,28 @@ class CV(object):
 
       if not hasValues:
         edgeFeatures[feat] = {nodeTo: set(toValues) for (nodeTo, toValues) in featData.items()}
-
       metaData.setdefault(feat, {})['edgeValues'] = hasValues
+
+    for feat in intFeatures:
+      if feat in nodeFeatures:
+        featData = nodeFeatures[feat]
+        for (k, v) in featData.items():
+          try:
+            v = int(v)
+          except Exception:
+            errors[f'Not a number'].append(
+                f'"node feature "{k}": "{v}"'
+            )
+      if feat in edgeFeatures and metaData[feat]['edgeValues']:
+        featData = edgeFeatures[feat]
+        for (fromNode, toValues) in featData.items():
+          for v in toValues.values():
+            try:
+              v = int(v)
+            except Exception:
+              errors[f'Not a number'].append(
+                  f'"edge feature "{k}": "{v}"'
+              )
 
     self._showErrors()
 

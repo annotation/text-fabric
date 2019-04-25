@@ -97,16 +97,19 @@ Each repo named `app-`*appName* hosts the app named *appName*.
     text-fabric xxxx
     ```
 
-    And when you want to upgrade, pass 
-    `-c` resp `check=True`
+    This will also automatically upgrade your data if there are new releases.
+    If you want to avoid upgrades, add the `:local` specifier.
 
     ```python
-    use('xxxx', check=True)
+    use('xxxx', checkout='local')
     ```
 
     ```sh
-    text-fabric xxxx -c
+    text-fabric xxxx --checkout=local
     ```
+
+    There are more options, see the
+    [incantation](../Api/App.md#incantation).
 
     Data ends up in `text-fabric-data/`*orgName*/*repoName* relative your home directory,
     where *orgName* is the organization or person on GitHub that has
@@ -129,16 +132,16 @@ Each repo named `app-`*appName* hosts the app named *appName*.
     where *orgName* is the organization or person on GitHub under which you have
     found the repo.
 
-    Then, when you invoke the app, pass the extra argument `lgc=True` or `-lgc`.
+    Then, when you invoke the app, pass the specifier `:clone`.
     This instructs Text-Fabric to look in your local GitHub clone, rather
     than online or in `text-fabric-data`, where downloaded data is stored.
 
     ```python
-    use('xxxx', lgc=True)
+    use('xxxx:clone')
     ```
 
     ```sh
-    text-fabric xxxx -lgc
+    text-fabric xxxx --checkout=clone
     ```
 
     In this way, you can work with data that is under your control.

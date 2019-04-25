@@ -70,6 +70,54 @@
         underlying TF object.
         In fact, the rules are exactly the same as for `TF.save()`.
 
+    ??? info "slotType"
+        The node type that acts as the type of the slots in the data set.
+
+    ??? info "oText"
+        The configuration information to be stored in the `otext` feature:
+        * section types 
+        * section features 
+        * text formats
+
+        Must be a dict.
+
+    ??? info "generic"
+        Metadata that will be written into the header of all generated TF features.
+
+        Must be a dict.
+
+        ??? "hint"
+            You can make changes to this later on, dynamically in your director.
+
+    ??? info "intFeatures"
+        The set of features that have integer values only.
+
+        Must be an iterable.
+
+        ??? "hint"
+            You can make changes to this later on, dynamically in your director.
+
+    ??? info "featureMeta"
+        For each node or edge feature descriptive metadata can be supplied.
+
+        Must be a dict of dicts.
+
+        ??? "hint"
+            You can make changes to this later on, dynamically in your director.
+
+    ???+ info "warn=True"
+        This regulates the response to warnings:
+
+        `warn=True` (default): stop after warnings (as if they are errors);
+
+        `warn=False` continue after warnings but do show them;
+
+        `warn=None` suppress all warnings.
+
+    ???+ info "generateTf=True"
+        You can pass `False` here to suppress the actual writing of TF data.
+        In that way you can dry-run the director to check for errors and warnings
+
     ??? info "director"
         An ordinary function that takes one argument, the `cv` object, and
         should not deliver anything.
@@ -110,135 +158,156 @@
         to remove them from it,
         and to add them again. 
 
-        ???+ explanation "`cv` action methods"
-            The `cv` class contains methods
-            that are responsible for particular *actions* that steer the graph building.
-            You can pass them additional arguments.
+        ??? "hint" Metadata
+            When the director runs, you have already specified all your feature
+            metadata, including the value types.
 
+            But if some of that information is dependent on what you encounter in the
+            data, you can do two things:
+
+            (A) Run a preliminary pass over the data and gather the required information,
+            before running the director.
+
+            (B) Update the metadata later on
+            by issuing `cv.meta()` actions from within your director, see below.
+
+    ???+ explanation "`cv` action methods"
+        The `cv` class contains methods
+        that are responsible for particular *actions* that steer the graph building.
+
+        ??? abstract "cv.slot()"
             ```python
             n = cv.slot()
+            ```
+
+            Make a slot node and return the handle to it in `n`.
+
+            No further information is needed.
+            Remember that you can add features to the node by later
+            `cv.feature(n, key=value, ...)`
+            calls.
+
+        ??? abstract "cv.node()"
+            ```python
             n = cv.node(nodeType)
-            cv.terminate(m)
-            cv.resume(m)
-            cv.feature(m, name=value, ... , name=value)
-            cv.edge(mf, mt, name=value, ... , name=value)
-            cv.linked(m)
+            ```
+
+            Make a non-slot node and return the handle to it in `n`.
+            You have to pass its *node type*, i.e. a string.
+            Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
+            Non slot nodes will be automatically added to the set of embedders.
+
+            Remember that you can add features to the node by later
+            `cv.feature(n, key=value, ...)`
+            calls.
+
+        ??? abstract "cv.terminate()"
+            ```python
+            cv.terminate(n)
+            ```
+
+            **terminate** a node.
+
+            The node `n` will be removed from the set of current embedders.
+            This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+
+        ??? abstract "cv.resume()"
+            ```python
+            cv.resume(n)
+            ```
+
+            **resume** a node.
+
+            If you resume a non-slot node, you add it again to the set of embedders.
+            No new node will be created.
+
+            If you resume a slot node, it will be added to the set of current embedders.
+            No new slot will be created.
+
+        ??? abstract "cv.feature()"
+            ```python
+            cv.feature(n, name=value, ... , name=value)
+            ```
+
+            Add **node features**.
+
+            The features are passed as a list of keyword arguments.
+
+            These features are added to node `n`.
+            This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+
+            **If a feature value is `None` it will not be added!**
+
+            The features are passed as a list of keyword arguments.
+
+        ??? abstract "cv.edge()"
+            ```python
+            cv.edge(nf, nt, name=value, ... , name=value)
+            ```
+
+            Add **edge features**.
+
+            You need to pass two nodes, `nf` (*from*) and `nt` (*to*).
+            Together these specify an edge, and the features will be applied
+            to this edge.
+
+            You may pass values that are `None`, and a corresponding edge will be created.
+            If for all pairs `nf`, `nt` the value is `None`, 
+            an edge without values will be created. For every `nf`, such a feature
+            essentially specifies a set of nodes `{ nt }`.
+
+            The features are passed as a list of keyword arguments.
+
+        ??? abstract "cv.meta()"
+            ```python
+            cv.meta(feature, name=value, ... , name=value)
+            ```
+
+            Add, modify, delete metadata fields of features.
+
+            `feature` is the feature name.
+
+            If a `value` is `None`, that `name` will be deleted from the metadata fields.
+
+            If you modify the field `valueType` of a feature, that feature will be added
+            or removed from the set of `intFeatures`.
+            It will be checked whether you specify either `int` or `str`.
+
+        ??? abstract "cv.linked()"
+            ```python
+            ss = cv.linked(m)
+            ```
+
+            Returns the slots `ss` to which a node is currently linked.
+
+            If you construct non-slot nodes without linking them to slots,
+            they will be removed when TF validates the collective result
+            of the action methods.
+
+            If you want to prevent that, you can insert an extra slot, but in order
+            to do so, you have to detect that a node is still unlinked.
+
+            This action is precisely meant for that.
+
+        ??? abstract "cv.get()"
+            ```python
             cv.get(feature, n)
             cv.get(feature, nf, nt)
             ```
 
-            ??? explanation "Remarks"
-                To make a **slot** node, use `cv.slot`.
+            Retrieve feature values.
+            
+            `feature` is the name of the feature.
 
-                No further information is needed.
-                Remember that you can add features to the node by later `cv.feature`
-                calls.
+            For node features, `n` is the node which carries the value.
 
-                To make a **non-slot node**, use `cv.node`.
-
-                You have to pass its *node type*, i.e. a string.
-                Think of `sentence`, `paragraph`, `phrase`.
-                Non slot nodes will be automatically added to the set of embedders.
-
-                To **terminate** a node, use `cv.terminate`.
-
-                The node *m* will be removed from the set of current embedders.
-                This *m* must be the result of a previous `cv` action.
-
-                To **resume** a node, use `cv.resume`.
-
-                If you resume a non-slot node, you add it again to the set of embedders.
-                No new node will be created.
-
-                If you resume a slot node, it will be added to the set of current embedders.
-                No new slot will be created.
-
-                To add **node features**, use `cv.feature`.
-
-                The features are passed as a list of keyword arguments.
-
-                These features are added to node *m*,
-                which must have been obtained by an earlier `cv` action.
-
-                **If a feature value is `None` it will not be added!**
-
-                To add **edge features**, use `cv.edge`.
-
-                You need to pass two nodes, *mFrom* and *mTo*.
-                Together these specify an edge, and the features will be applied
-                to this edge.
-
-                You may pass values that are `None`, and a corresponding edge will be created.
-                If for all pairs *mFrom*, *mTo* the value is `None`, 
-                an edge without values will be created. For every *mFrom*, such a feature
-                essentially specifies a set of nodes `{` *mTo* `}`.
-
-                The features are passed as a list of keyword arguments.
-
-                To retrieve feature values, use `cv.get(feature, n)`, where `feature` is
-                the name of the feature, and `n` is the node.
-
-                For edge features use `cv.get(feature, nFrom, nTo)`.
-
-        ???+ hint "Unlinked nodes"
-            If you construct non-slot nodes without linking them to slots,
-            they will be removed when TF validates the collective result
-            of the action methods.
-            For each node type it will be reported which nodes are still unlinked.
-            But this information may be too terse to do something about it.
-
-            For that reason there is an action method which does nothing, but
-            returns the slots to which a node is currently linked: use
-
-            ```python
-            cv.linked(node)
-            ```
+            For edge features, `nf, nt` is the pair of from-to nodes which carries the value.
 
         ???+ hint "Example"
             Follow the [conversion tutorial]({{tfbanks}}/programs/convert.ipynb)
 
             Or study a more involved example for
             [Old Babylonian](https://github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py)
-
-    ??? info "slotType"
-        The node type that acts as the type of the slots in the data set.
-
-
-    ??? info "oText"
-        The configuration information to be stored in the `otext` feature:
-        * section types 
-        * section features 
-        * text formats
-
-        Must be a dict.
-
-    ??? info "generic"
-        Metadata that will be written into the header of all generated TF features.
-
-        Must be a dict.
-
-    ??? info "intFeatures"
-        The set of features that have integer values only.
-
-        Must be an iterable.
-
-    ??? info "featureMeta"
-        For each node or edge feature descriptive metadata can be supplied.
-
-        Must be a dict of dicts.
-
-    ???+ info "warn=True"
-        This regulates the response to warnings:
-
-        `warn=True` (default): stop after warnings (as if they are errors);
-
-        `warn=False` continue after warnings but do show them;
-
-        `warn=None` suppress all warnings.
-
-    ???+ info "generateTf=True"
-        You can pass `False` here to suppress the actual writing of TF data.
-        In that way you can dry-run the director to check for errors and warnings
 
 ## MQL
 
