@@ -1364,6 +1364,37 @@ to see whether the metadata matches the data and vice versa.</p>
 underlying TF object.
 In fact, the rules are exactly the same as for <code>TF.save()</code>.</p>
 </details>
+<details class="info"><summary>slotType</summary><p>The node type that acts as the type of the slots in the data set.</p>
+</details>
+<details class="info"><summary>oText</summary><p>The configuration information to be stored in the <code>otext</code> feature:
+<em> section types 
+</em> section features 
+* text formats</p>
+<p>Must be a dict.</p>
+</details>
+<details class="info"><summary>generic</summary><p>Metadata that will be written into the header of all generated TF features.</p>
+<p>Must be a dict.</p>
+<details><summary>hint</summary><p>You can make changes to this later on, dynamically in your director.</p>
+</details>
+</details>
+<details class="info"><summary>intFeatures</summary><p>The set of features that have integer values only.</p>
+<p>Must be an iterable.</p>
+<details><summary>hint</summary><p>You can make changes to this later on, dynamically in your director.</p>
+</details>
+</details>
+<details class="info"><summary>featureMeta</summary><p>For each node or edge feature descriptive metadata can be supplied.</p>
+<p>Must be a dict of dicts.</p>
+<details><summary>hint</summary><p>You can make changes to this later on, dynamically in your director.</p>
+</details>
+</details>
+<details class="info" open="open"><summary>warn=True</summary><p>This regulates the response to warnings:</p>
+<p><code>warn=True</code> (default): stop after warnings (as if they are errors);</p>
+<p><code>warn=False</code> continue after warnings but do show them;</p>
+<p><code>warn=None</code> suppress all warnings.</p>
+</details>
+<details class="info" open="open"><summary>generateTf=True</summary><p>You can pass <code>False</code> here to suppress the actual writing of TF data.
+In that way you can dry-run the director to check for errors and warnings</p>
+</details>
 <details class="info"><summary>director</summary><p>An ordinary function that takes one argument, the <code>cv</code> object, and
 should not deliver anything.</p>
 <p>Writing this function is the main job to do when you want to convert a data source
@@ -1393,105 +1424,133 @@ When you create a slot node</p>
 <p>There are actions to add nodes to the set of embedder nodes,
 to remove them from it,
 and to add them again. </p>
-<details class="explanation" open="open"><summary><code>cv</code> action methods</summary><p>The <code>cv</code> class contains methods
-that are responsible for particular <em>actions</em> that steer the graph building.
-You can pass them additional arguments.</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+<p>??? "hint" Metadata
+    When the director runs, you have already specified all your feature
+    metadata, including the value types.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
 5
 6
 7
-8
-9</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">slot</span><span class="p">()</span>
-<span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="n">nodeType</span><span class="p">)</span>
-<span class="n">cv</span><span class="o">.</span><span class="n">terminate</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-<span class="n">cv</span><span class="o">.</span><span class="n">resume</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-<span class="n">cv</span><span class="o">.</span><span class="n">feature</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
-<span class="n">cv</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">mf</span><span class="p">,</span> <span class="n">mt</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
-<span class="n">cv</span><span class="o">.</span><span class="n">linked</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-<span class="n">cv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
-<span class="n">cv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">nt</span><span class="p">)</span>
+8</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>But if some of that information is dependent on what you encounter in the
+data, you can do two things:
+
+(A) Run a preliminary pass over the data and gather the required information,
+before running the director.
+
+(B) Update the metadata later on
+by issuing `cv.meta()` actions from within your director, see below.
 </pre></div>
 </td></tr></table>
 
-<details class="explanation"><summary>Remarks</summary><p>To make a <strong>slot</strong> node, use <code>cv.slot</code>.</p>
+</details>
+<details class="explanation" open="open"><summary><code>cv</code> action methods</summary><p>The <code>cv</code> class contains methods
+that are responsible for particular <em>actions</em> that steer the graph building.</p>
+<details class="abstract"><summary>cv.slot()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">slot</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+
+<p>Make a slot node and return the handle to it in <code>n</code>.</p>
 <p>No further information is needed.
-Remember that you can add features to the node by later <code>cv.feature</code>
+Remember that you can add features to the node by later
+<code>cv.feature(n, key=value, ...)</code>
 calls.</p>
-<p>To make a <strong>non-slot node</strong>, use <code>cv.node</code>.</p>
-<p>You have to pass its <em>node type</em>, i.e. a string.
-Think of <code>sentence</code>, <code>paragraph</code>, <code>phrase</code>.
+</details>
+<details class="abstract"><summary>cv.node()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="n">nodeType</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Make a non-slot node and return the handle to it in <code>n</code>.
+You have to pass its <em>node type</em>, i.e. a string.
+Think of <code>sentence</code>, <code>paragraph</code>, <code>phrase</code>, <code>word</code>, <code>sign</code>, whatever.
 Non slot nodes will be automatically added to the set of embedders.</p>
-<p>To <strong>terminate</strong> a node, use <code>cv.terminate</code>.</p>
-<p>The node <em>m</em> will be removed from the set of current embedders.
-This <em>m</em> must be the result of a previous <code>cv</code> action.</p>
-<p>To <strong>resume</strong> a node, use <code>cv.resume</code>.</p>
+<p>Remember that you can add features to the node by later
+<code>cv.feature(n, key=value, ...)</code>
+calls.</p>
+</details>
+<details class="abstract"><summary>cv.terminate()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">cv</span><span class="o">.</span><span class="n">terminate</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p><strong>terminate</strong> a node.</p>
+<p>The node <code>n</code> will be removed from the set of current embedders.
+This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <code>cv.node()</code> action.</p>
+</details>
+<details class="abstract"><summary>cv.resume()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">cv</span><span class="o">.</span><span class="n">resume</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p><strong>resume</strong> a node.</p>
 <p>If you resume a non-slot node, you add it again to the set of embedders.
 No new node will be created.</p>
 <p>If you resume a slot node, it will be added to the set of current embedders.
 No new slot will be created.</p>
-<p>To add <strong>node features</strong>, use <code>cv.feature</code>.</p>
-<p>The features are passed as a list of keyword arguments.</p>
-<p>These features are added to node <em>m</em>,
-which must have been obtained by an earlier <code>cv</code> action.</p>
-<p><strong>If a feature value is <code>None</code> it will not be added!</strong></p>
-<p>To add <strong>edge features</strong>, use <code>cv.edge</code>.</p>
-<p>You need to pass two nodes, <em>mFrom</em> and <em>mTo</em>.
-Together these specify an edge, and the features will be applied
-to this edge.</p>
-<p>You may pass values that are <code>None</code>, and a corresponding edge will be created.
-If for all pairs <em>mFrom</em>, <em>mTo</em> the value is <code>None</code>, 
-an edge without values will be created. For every <em>mFrom</em>, such a feature
-essentially specifies a set of nodes <code>{</code> <em>mTo</em> <code>}</code>.</p>
-<p>The features are passed as a list of keyword arguments.</p>
-<p>To retrieve feature values, use <code>cv.get(feature, n)</code>, where <code>feature</code> is
-the name of the feature, and <code>n</code> is the node.</p>
-<p>For edge features use <code>cv.get(feature, nFrom, nTo)</code>.</p>
 </details>
-</details>
-<details class="hint" open="open"><summary>Unlinked nodes</summary><p>If you construct non-slot nodes without linking them to slots,
-they will be removed when TF validates the collective result
-of the action methods.
-For each node type it will be reported which nodes are still unlinked.
-But this information may be too terse to do something about it.</p>
-<p>For that reason there is an action method which does nothing, but
-returns the slots to which a node is currently linked: use</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">cv</span><span class="o">.</span><span class="n">linked</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<details class="abstract"><summary>cv.feature()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">cv</span><span class="o">.</span><span class="n">feature</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
+<p>Add <strong>node features</strong>.</p>
+<p>The features are passed as a list of keyword arguments.</p>
+<p>These features are added to node <code>n</code>.
+This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <code>cv.node()</code> action.</p>
+<p><strong>If a feature value is <code>None</code> it will not be added!</strong></p>
+<p>The features are passed as a list of keyword arguments.</p>
+</details>
+<details class="abstract"><summary>cv.edge()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">cv</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">nf</span><span class="p">,</span> <span class="n">nt</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Add <strong>edge features</strong>.</p>
+<p>You need to pass two nodes, <code>nf</code> (<em>from</em>) and <code>nt</code> (<em>to</em>).
+Together these specify an edge, and the features will be applied
+to this edge.</p>
+<p>You may pass values that are <code>None</code>, and a corresponding edge will be created.
+If for all pairs <code>nf</code>, <code>nt</code> the value is <code>None</code>, 
+an edge without values will be created. For every <code>nf</code>, such a feature
+essentially specifies a set of nodes <code>{ nt }</code>.</p>
+<p>The features are passed as a list of keyword arguments.</p>
+</details>
+<details class="abstract"><summary>cv.meta()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">cv</span><span class="o">.</span><span class="n">meta</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Add, modify, delete metadata fields of features.</p>
+<p><code>feature</code> is the feature name.</p>
+<p>If a <code>value</code> is <code>None</code>, that <code>name</code> will be deleted from the metadata fields.</p>
+<p>If you modify the field <code>valueType</code> of a feature, that feature will be added
+or removed from the set of <code>intFeatures</code>.
+It will be checked whether you specify either <code>int</code> or <code>str</code>.</p>
+</details>
+<details class="abstract"><summary>cv.linked()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">ss</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">linked</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Returns the slots <code>ss</code> to which a node is currently linked.</p>
+<p>If you construct non-slot nodes without linking them to slots,
+they will be removed when TF validates the collective result
+of the action methods.</p>
+<p>If you want to prevent that, you can insert an extra slot, but in order
+to do so, you have to detect that a node is still unlinked.</p>
+<p>This action is precisely meant for that.</p>
+</details>
+<details class="abstract"><summary>cv.get()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">cv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">nt</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Retrieve feature values.</p>
+<p><code>feature</code> is the name of the feature.</p>
+<p>For node features, <code>n</code> is the node which carries the value.</p>
+<p>For edge features, <code>nf, nt</code> is the pair of from-to nodes which carries the value.</p>
 </details>
 <details class="hint" open="open"><summary>Example</summary><p>Follow the <a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/convert.ipynb">conversion tutorial</a></p>
 <p>Or study a more involved example for
 <a href="https://github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py">Old Babylonian</a></p>
 </details>
-</details>
-<details class="info"><summary>slotType</summary><p>The node type that acts as the type of the slots in the data set.</p>
-</details>
-<details class="info"><summary>oText</summary><p>The configuration information to be stored in the <code>otext</code> feature:
-<em> section types 
-</em> section features 
-* text formats</p>
-<p>Must be a dict.</p>
-</details>
-<details class="info"><summary>generic</summary><p>Metadata that will be written into the header of all generated TF features.</p>
-<p>Must be a dict.</p>
-</details>
-<details class="info"><summary>intFeatures</summary><p>The set of features that have integer values only.</p>
-<p>Must be an iterable.</p>
-</details>
-<details class="info"><summary>featureMeta</summary><p>For each node or edge feature descriptive metadata can be supplied.</p>
-<p>Must be a dict of dicts.</p>
-</details>
-<details class="info" open="open"><summary>warn=True</summary><p>This regulates the response to warnings:</p>
-<p><code>warn=True</code> (default): stop after warnings (as if they are errors);</p>
-<p><code>warn=False</code> continue after warnings but do show them;</p>
-<p><code>warn=None</code> suppress all warnings.</p>
-</details>
-<details class="info" open="open"><summary>generateTf=True</summary><p>You can pass <code>False</code> here to suppress the actual writing of TF data.
-In that way you can dry-run the director to check for errors and warnings</p>
 </details>
 </details>
 <h2 id="mql">MQL<a class="headerlink" href="#mql" title="Permanent link">&para;</a></h2>

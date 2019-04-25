@@ -1365,7 +1365,7 @@ history of the app and data.</p>
 <p><em>appName:specifier</em> is for the TF-app application code.</p>
 <p><em>checkoutData=specifier</em> is for the main data of the TF-app.</p>
 <ul>
-<li><code></code> (empty string or absent) (<strong>default</strong>):
+<li><code>''</code> (empty string or absent) (<strong>default</strong>):
     use the latest release;
     if there are no releases, use the latest commit.</li>
 <li><code>latest</code>: use the latest release. If there are commits after the commit
@@ -1375,20 +1375,12 @@ history of the app and data.</p>
 <li><em>release tag</em>, e.g. <code>v1.3</code>: use exactly this release. More precisely,
     this is the commit that has been tagged with that release tag.</li>
 <li><em>commit hash</em>, e.g. <code>2d0ca1f593805af0c13c4a62ed7405b94d870045</code>:
-    use exactly this commit</li>
+    use exactly this commit.</li>
+<li><code>local</code>: use local data from your <code>~/text-fabric-data</code> directory if it is present,
+    otherwise fail.</li>
+<li><code>clone</code>: use local data from your <code>~/github</code> directory if it is present,
+    otherwise fail.</li>
 </ul>
-<details class="caution"><summary>Not when using data in your local github clones</summary><p>This only works if you use downloaded data from GitHub.
-Your <em>~/text-fabric-data</em> directory is used to
-fetch the data you specify.</p>
-<p>It will only contain one incarnation of the data.
-Whenever you switch points in the history, the
-current local version will be deleted and the
-specified version will be downloaded into place.</p>
-<p>When you instruct TF to use your local github clones
-it will take the files it finds on your system there,
-and there is no way to go back in history.</p>
-<p>See the parameter <em>lgc</em> below.</p>
-</details>
 </details>
 <details class="info"><summary>hoist=globals()</summary><p>This makes the API elements directly available as global names
 in your script or notebook:
@@ -1451,22 +1443,6 @@ You can then delete data sources and modules when needed,
 and have them redownloaded
 at your wish, without any hassle or data loss.</p>
 </details>
-</details>
-<details class="info"><summary>check=False</summary><p>If <code>True</code>, Text-Fabric will check the main source and each module
-for newer releases.
-For every dataset for which a newer release than the locally available one
-is found, the newest data will be downloaded.</p>
-</details>
-<details class="info"><summary>lgc=False</summary><p>Normally, Text-Fabric will work with data that is stored under your
-<code>~/text-fabric-data</code>.
-But if you have a local clone of a repository
-with data in <code>~/github/{org}/{repo}</code>,
-and you want to use that instead,
-you can pass <code>lgc=True</code>. Text-Fabric will then look at
-your local GitHub directories.</p>
-<p>This is handy when you are still developing your own data,
-and you make frequent changes
-without wanting to publish every intermediate stage.</p>
 </details>
 <details class="info"><summary>locations and modules arguments</summary><p>If you want to add other search locations for TF features manually,
 you can pass optional <code>locations</code> and <code>modules</code> parameters,

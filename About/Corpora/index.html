@@ -1420,16 +1420,18 @@ you get the data when you do the
 </pre></div>
 </td></tr></table>
 
-<p>And when you want to upgrade, pass 
-<code>-c</code> resp <code>check=True</code></p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;xxxx&#39;</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<p>This will also automatically upgrade your data if there are new releases.
+If you want to avoid upgrades, add the <code>:local</code> specifier.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;xxxx&#39;</span><span class="p">,</span> <span class="n">checkout</span><span class="o">=</span><span class="s1">&#39;local&#39;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric xxxx -c
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric xxxx --checkout<span class="o">=</span><span class="nb">local</span>
 </pre></div>
 </td></tr></table>
 
+<p>There are more options, see the
+<a href="../../Api/App/#incantation">incantation</a>.</p>
 <p>Data ends up in <code>text-fabric-data/</code><em>orgName</em>/<em>repoName</em> relative your home directory,
 where <em>orgName</em> is the organization or person on GitHub that has
 the repo <em>repoName</em> that contains the data.</p>
@@ -1446,14 +1448,14 @@ You can manually clone such a data repository and point Text-Fabric to that data
 home directory)
 where </em>orgName* is the organization or person on GitHub under which you have
 found the repo.</p>
-<p>Then, when you invoke the app, pass the extra argument <code>lgc=True</code> or <code>-lgc</code>.
+<p>Then, when you invoke the app, pass the specifier <code>:clone</code>.
 This instructs Text-Fabric to look in your local GitHub clone, rather
 than online or in <code>text-fabric-data</code>, where downloaded data is stored.</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;xxxx&#39;</span><span class="p">,</span> <span class="n">lgc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;xxxx:clone&#39;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric xxxx -lgc
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>text-fabric xxxx --checkout<span class="o">=</span>clone
 </pre></div>
 </td></tr></table>
 
