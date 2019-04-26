@@ -331,11 +331,10 @@ class CV(object):
           errors[f'did not delete metadata field "valueType"'].append(feat)
           good = False
         else:
-          if field in featMeta:
-            del featMeta[field]
+          if feat in metaData and field in metaData[feat]:
+            del metaData[feat][field]
       else:
         metaData.setdefault(feat, {})[field] = text
-        featMeta[field] = text
         if field == 'valueType':
           if text == 'int':
             self.intFeatures.add(feat)
@@ -653,7 +652,6 @@ class CV(object):
     info(f'checking features ... ')
 
     intFeatures = self.intFeatures
-    featureMeta = self.featureMeta
     metaData = self.metaData
 
     nodes = self.nodes
@@ -663,7 +661,7 @@ class CV(object):
     errors = self.errors
 
     for feat in intFeatures:
-      if feat not in nodeFeatures and feat not in edgeFeatures:
+      if feat not in WARP and feat not in nodeFeatures and feat not in edgeFeatures:
         errors['intFeatures'].append(
             f'"{feat}" is declared as integer valued, but this feature does not occur'
         )
@@ -688,15 +686,15 @@ class CV(object):
         errors[feat].append(f'Do not construct the "{feat}" feature yourself')
 
     for feat in sorted(nodeFeatures) + sorted(edgeFeatures):
-      if feat not in WARP and feat not in self.featureMeta:
+      if feat not in self.metaData:
         errors['feature metadata'].append(
-            f'node feature "{feat}" has no metadata in featureMeta'
+            f'node feature "{feat}" has no metadata'
         )
 
-    for feat in sorted(featureMeta):
-      if feat not in WARP and feat not in nodeFeatures and feat not in edgeFeatures:
+    for feat in sorted(metaData):
+      if feat and feat not in WARP and feat not in nodeFeatures and feat not in edgeFeatures:
         errors['feature metadata'].append(
-            f'node feature "{feat}" has metadata in featureMeta but does not occur'
+            f'node feature "{feat}" has metadata but does not occur'
         )
 
     for (feat, featData) in sorted(nodeFeatures.items()):
@@ -716,6 +714,8 @@ class CV(object):
           )
 
     for (feat, featData) in sorted(edgeFeatures.items()):
+      if feat in WARP:
+        continue
       hasValues = False
       for (nodeTo, toValues) in featData.items():
         if any(v is not None for v in toValues.values()):
@@ -727,6 +727,8 @@ class CV(object):
       metaData.setdefault(feat, {})['edgeValues'] = hasValues
 
     for feat in intFeatures:
+      if feat in WARP:
+        continue
       if feat in nodeFeatures:
         featData = nodeFeatures[feat]
         for (k, v) in featData.items():

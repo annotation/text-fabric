@@ -41,12 +41,14 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
-## 7.6.5
+## 7.6.5-6
 
 2019-04-26
 
 Added punctation geresh and gershayim to the Hebrew mapping from unicode to ETCBC transcription.
 The ETCBC transcription only mapped the *accents* but not the *punctuation* characters of these.
+
+Fixed a bug in `cv.meta()` in the conversion walker.
 
 ## 7.6.4
 
