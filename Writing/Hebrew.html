@@ -653,13 +653,22 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="u">0020</td>
 </tr>
 <tr>
-  <td class="t"></td>
+  <td class="t">0000</td>
   <td class="t">±</td>
-  <td class="g"></td>
+  <td class="g">׃׃</td>
   <td class="p"></td>
-  <td class="r">Dead Sea scrolls. We use as Hebrew character the gershayim.</td>
+  <td class="r">Dead Sea scrolls. We use as Hebrew character a double sof pasuq.</td>
   <td class="n">paleo-divider</td>
-  <td class="u">05F4</td>
+  <td class="u">05C3 05C3</td>
+</tr>
+<tr>
+  <td class="t">05</td>
+  <td class="t">/</td>
+  <td class="g">׀</td>
+  <td class="p"></td>
+  <td class="r">Dead Sea scrolls. We use as Hebrew character a paseq.</td>
+  <td class="n">morpheme-break</td>
+  <td class="u">05C0</td>
 </tr>
     </tbody>
 </table>
@@ -945,67 +954,118 @@ where the phonetic transcription is computed and thoroughly documented.</p>
 <h1 class="chars">Numerals</h1>
 
 <p>These signs occur in the Dead Sea scrolls.
-They do not have an associated glyph in Unicode.</p>
-<p>The ETCBC does not have codes for these.
-We propose ETCBC-compatible codes here.
-They are surrounded by space.</p>
+We represent them with conventional Hebrew characters for numbers
+and use the geresh and gershayim to mark the expression as a numeral: 
+a single letter numeral is preceded by a geresh; in a multiletter numeral,
+there will be a gershayim in front of the last letter.
+In the table below we omit the geresh and gershayim, but we will give
+a few full examples.</p>
+<p>The ETCBC codes are obtained by translating back from the unicode.</p>
 
 <table class="chars" summary="numerals">
     <thead>
         <tr>
             <th>transcription (ETCBC)</th>
             <th>transcription (Abegg)</th>
+            <th>glyph</th>
             <th>remarks</th>
             <th>name</th>
         </tr>
     </thead>
     <tbody>
 <tr>
-  <td class="t">1A</td>
+  <td class="t">&gt;</td>
   <td class="t">A</td>
+  <td class="g">א</td>
   <td class="r"></td>
   <td class="n"><i>number</i> 1</td>
 </tr>
 <tr>
-  <td class="t">1a</td>
+  <td class="t">&gt;52</td>
   <td class="t">å</td>
-  <td class="r">alternative for 1, often at the end of a number</td>
+  <td class="g">אׄ</td>
+  <td class="r">alternative for 1, often at the end of a number,
+  we use the upper dot to distinguish it from the other 1</td>
   <td class="n"><i>number</i> 1</td>
 </tr>
 <tr>
-  <td class="t">1B</td>
+  <td class="t">&gt;53</td>
   <td class="t">B</td>
-  <td class="r">alternative for 1, often at the end of a number</td>
+  <td class="g">אׅ</td>
+  <td class="r">alternative for 1, often at the end of a number,
+  we use the lower dot to distinguish it from the other 1</td>
   <td class="n"><i>number</i> 1</td>
 </tr>
 <tr>
-  <td class="t">1f</td>
+  <td class="t">&gt;35</td>
   <td class="t">∫</td>
-  <td class="r">alternative for 1, often at the end of a number</td>
+  <td class="g">אֽ</td>
+  <td class="r">alternative for 1, often at the end of a number,
+  we use the meteg to distinguish it from the other 1</td>
   <td class="n"><i>number</i> 1</td>
 </tr>
 <tr>
-  <td class="t">10</td>
+  <td class="t">J</td>
   <td class="t">C</td>
+  <td class="g">י</td>
   <td class="r"></td>
   <td class="n"><i>number</i> 10</td>
 </tr>
 <tr>
-  <td class="t">20</td>
+  <td class="t">k</td>
   <td class="t">D</td>
+  <td class="g">ך</td>
   <td class="r"></td>
   <td class="n"><i>number</i> 20</td>
 </tr>
 <tr>
-  <td class="t">100</td>
+  <td class="t">Q</td>
   <td class="t">F</td>
+  <td class="g">ק</td>
   <td class="r"></td>
   <td class="n"><i>number</i> 100</td>
 </tr>
 <tr>
+  <td class="t">&amp;</td>
   <td class="t">+</td>
-  <td class="r">between numbers</td>
+  <td class="g">־</td>
+  <td class="r">we use the maqaf to represent addition between numbers</td>
   <td class="n">add</td>
+</tr>
+<tr>
+  <td class="t">J&gt;&gt;"&gt;52</td>
+  <td class="t">CAAå</td>
+  <td class="g">יאא״אׄ</td>
+  <td class="r"></td>
+  <td class="n"><i>number</i> 13</td>
+</tr>
+<tr>
+  <td class="t">&gt;Qkk"J</td>
+  <td class="t">AFDDC </td>
+  <td class="g">אקךך״י</td>
+  <td class="r"></td>
+  <td class="n"><i>number</i> 151</td>
+</tr>
+<tr>
+  <td class="t">&gt;&gt;&gt;"&gt;95</td>
+  <td class="t">AAA∫</td>
+  <td class="g">אאא״אֽ</td>
+  <td class="r"></td>
+  <td class="n"><i>number</i> 4</td>
+</tr>
+<tr>
+  <td class="t">&gt;&gt;&gt;53&gt;"&gt;52</td>
+  <td class="t">AABAå</td>
+  <td class="g">אאאׅא״אׄ</td>
+  <td class="r"></td>
+  <td class="n"><i>number</i> 5</td>
+</tr>
+<tr>
+  <td class="t">'k</td>
+  <td class="t">D</td>
+  <td class="g">׳ך</td>
+  <td class="r"></td>
+  <td class="n"><i>number</i> 20</td>
 </tr>
     </tbody>
 </table>
