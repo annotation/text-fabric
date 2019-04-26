@@ -37,9 +37,16 @@
 
 See the [issue list on GitHub]({{ghissues}})
 
-## Queued for next release
+### Queued for next release
 
-Nothing in particular
+---
+
+## 7.6.5
+
+2019-04-26
+
+Added punctation geresh and gershayim to the Hebrew mapping from unicode to ETCBC transcription.
+The ETCBC transcription only mapped the *accents* but not the *punctuation* characters of these.
 
 ## 7.6.4
 

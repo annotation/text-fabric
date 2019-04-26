@@ -101,6 +101,8 @@ class Transcription(object):
       '56': "<UNMAPPED 56=small letter>",  # small_letter
       '57': "<UNMAPPED 57=suspended letter>",  # suspended_letter
       '-': "",  # suppress space afterward
+      "'": "\u05f3",  # punctuation geresh
+      '"': "\u05f4",  # punctuation gershayim
   }
   hebrew_cons = '>BGDHWZXVJKLMNS<PYQRFCT'
   trans_final_pat = re.compile(
