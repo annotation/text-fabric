@@ -1310,7 +1310,8 @@ Many checks will be performed.</p>
 33
 34
 35
-36</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.fabric</span> <span class="kn">import</span> <span class="n">Fabric</span>
+36
+37</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.fabric</span> <span class="kn">import</span> <span class="n">Fabric</span>
 <span class="kn">from</span> <span class="nn">tf.convert.walker</span> <span class="kn">import</span> <span class="n">CV</span>
 
 <span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">OUT_DIR</span><span class="p">)</span>
@@ -1342,6 +1343,7 @@ Many checks will be performed.</p>
     <span class="n">intFeatures</span><span class="o">=</span><span class="n">intFeatures</span><span class="p">,</span>
     <span class="n">featureMeta</span><span class="o">=</span><span class="n">featureMeta</span><span class="p">,</span>
     <span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">force</span><span class="o">=</span><span class="bp">False</span>
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">good</span><span class="p">:</span>
@@ -1391,6 +1393,14 @@ In fact, the rules are exactly the same as for <code>TF.save()</code>.</p>
 <p><code>warn=True</code> (default): stop after warnings (as if they are errors);</p>
 <p><code>warn=False</code> continue after warnings but do show them;</p>
 <p><code>warn=None</code> suppress all warnings.</p>
+</details>
+<details class="info" open="open"><summary>force=False</summary><p>This forces the process to continue after errors.
+Your TF set might not be valid.
+Yet this can be useful during testing, when you know
+that not everything is OK, but you want to check some results.
+Especially when dealing with large datasets, you might want to test
+with little pieces. But then you get a kind of non-fatal errors that
+stand in the way of testing. For those cases: <code>force=True</code>.</p>
 </details>
 <details class="info" open="open"><summary>generateTf=True</summary><p>You can pass <code>False</code> here to suppress the actual writing of TF data.
 In that way you can dry-run the director to check for errors and warnings</p>
