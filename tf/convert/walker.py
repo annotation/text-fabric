@@ -80,6 +80,7 @@ class CV(object):
       featureMeta={},
       warn=True,
       generateTf=True,
+      force=False,
   ):
     info = self.TF.tm.info
     indent = self.TF.tm.indent
@@ -87,6 +88,7 @@ class CV(object):
     indent(level=0, reset=True)
     info('Importing data from walking through the source ...')
 
+    self.force = force
     self.good = True
     self.errors = collections.defaultdict(list)
     self.warnings = collections.defaultdict(list)
@@ -124,7 +126,7 @@ class CV(object):
 
       indent(level=0)
 
-      if self.good:
+      if self.good or self.force:
         self.good = self.TF.save(
             metaData=self.metaData,
             nodeFeatures=self.nodeFeatures,
@@ -141,7 +143,7 @@ class CV(object):
     info = self.TF.tm.info
     indent = self.TF.tm.indent
 
-    if not self.good:
+    if not self.good and not self.force:
       return
 
     info(f'Preparing metadata... ')
@@ -317,6 +319,7 @@ class CV(object):
   def stop(self, msg):
     self.TM.error(f'Forced stop: msg')
     self.good = False
+    self.force = False
 
   def meta(self, feat, **metadata):
     errors = self.errors
@@ -564,7 +567,7 @@ class CV(object):
     info = self.TF.tm.info
     indent = self.TF.tm.indent
 
-    if not self.good:
+    if not self.good and not self.force:
       return
 
     nodeTypes = self.curSeq
@@ -615,7 +618,7 @@ class CV(object):
   def _checkGraph(self):
     info = self.TF.tm.info
 
-    if not self.good:
+    if not self.good and not self.force:
       return
 
     info(f'checking for nodes and edges ... ')
@@ -646,7 +649,7 @@ class CV(object):
   def _checkFeatures(self):
     info = self.TF.tm.info
 
-    if not self.good:
+    if not self.good and not self.force:
       return
 
     info(f'checking features ... ')
@@ -754,7 +757,7 @@ class CV(object):
   def _reorderNodes(self):
     info = self.TF.tm.info
 
-    if not self.good:
+    if not self.good and not self.force:
       return
 
     info('reordering nodes ...')
@@ -817,7 +820,7 @@ class CV(object):
     info = self.TF.tm.info
     indent = self.TF.tm.indent
 
-    if not self.good:
+    if not self.good and not self.force:
       return
 
     info('reassigning feature values ...')

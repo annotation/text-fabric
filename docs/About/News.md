@@ -41,6 +41,13 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
+## 7.6.7
+
+2019-04-27
+
+Added the option `force=True` to the `cv.walk()` function,
+to continue conversion after errors.
+
 ## 7.6.5-6
 
 2019-04-26

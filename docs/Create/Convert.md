@@ -44,6 +44,7 @@
         intFeatures=intFeatures,
         featureMeta=featureMeta,
         warn=True,
+        force=False
     )
 
     if good:
@@ -113,6 +114,15 @@
         `warn=False` continue after warnings but do show them;
 
         `warn=None` suppress all warnings.
+
+    ???+ info "force=False"
+        This forces the process to continue after errors.
+        Your TF set might not be valid.
+        Yet this can be useful during testing, when you know
+        that not everything is OK, but you want to check some results.
+        Especially when dealing with large datasets, you might want to test
+        with little pieces. But then you get a kind of non-fatal errors that
+        stand in the way of testing. For those cases: `force=True`.
 
     ???+ info "generateTf=True"
         You can pass `False` here to suppress the actual writing of TF data.
