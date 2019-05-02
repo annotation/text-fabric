@@ -42,7 +42,7 @@
     
     
       
-        <title>Make TF - Text-Fabric</title>
+        <title>Pattern - Text-Fabric</title>
       
     
     
@@ -96,7 +96,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#create-a-tf-dataset" tabindex="1" class="md-skip">
+      <a href="#patterns-in-creating-tf-datasets" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -122,7 +122,7 @@
                 Text-Fabric
               </span>
               <span class="md-header-nav__topic">
-                Make TF
+                Pattern
               </span>
             
           
@@ -775,8 +775,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../Convert/" title="Convert (MQL)" class="md-nav__link">
-      Convert (MQL)
+    <a href="../Convert/" title="Convert" class="md-nav__link">
+      Convert
     </a>
   </li>
 
@@ -796,11 +796,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Make TF
+        Pattern
       </label>
     
-    <a href="./" title="Make TF" class="md-nav__link md-nav__link--active">
-      Make TF
+    <a href="./" title="Pattern" class="md-nav__link md-nav__link--active">
+      Pattern
     </a>
     
       
@@ -994,6 +994,18 @@
   <li class="md-nav__item">
     <a href="../ExampleText/" title="Example data" class="md-nav__link">
       Example data
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../MQL/" title="MQL" class="md-nav__link">
+      MQL
     </a>
   </li>
 
@@ -1564,44 +1576,53 @@
                   <a href="https://github.com/annotation/text-fabric/edit/master/docs/Create/CreateTF.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="create-a-tf-dataset">Create a TF dataset<a class="headerlink" href="#create-a-tf-dataset" title="Permanent link">&para;</a></h1>
-<p>We describe a conversion of an <a href="../ExampleText/">example text</a> to Text-Fabric.</p>
+                <h1 id="patterns-in-creating-tf-datasets">Patterns in creating TF datasets<a class="headerlink" href="#patterns-in-creating-tf-datasets" title="Permanent link">&para;</a></h1>
+<p>A detailed account of a conversion from arbitrary data to TF is given
+by the example of the 99-word mini-corpus
+<a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/convert.ipynb">Banks</a>.</p>
+<p>Here we describe a such a process at a higher level of abstraction.
+We use a slightly bigger
+<a href="../ExampleText/">example text</a>.</p>
 <p>This is not meant as a recipe, but as a description of the pieces of information
 that have to be assembled from the source text, and how to compose that into a
 Text-Fabric resource, which is a set of features.</p>
 <p>How you turn this insight into an executable program is dependent on how the
 source text is encoded and organized.</p>
-<p>Have a look at the following examples:</p>
-<ul>
-<li>the book of John in the Greek New Testament from XML-TEI to TF:
-  <a href="https://github.com/pthu/pilot">pilot</a>;</li>
-<li>the Syriac New Testament:
-  <a href="https://github.com/etcbc/syrnt/blob/master/programs/tfFromSyrnt.py">SyrNT</a>;</li>
-<li>the Greek New Testament:
-  <a href="https://nbviewer.jupyter.org/github/annotation/text-fabric-data/blob/master/programs/tfFromSblgnt.ipynb">tfFromSblgnt</a>;</li>
-<li>Sanskrit writings:
-  <a href="https://nbviewer.jupyter.org/github/annotation/text-fabric-data/blob/master/programs/tfFromSanskrit.ipynb">tfFromSanskrit</a>;</li>
-<li>Sumerian writings:
-  <a href="https://nbviewer.jupyter.org/github/annotation/text-fabric-data/blob/master/programs/tfFromSumerianTEI.ipynb">tfFromSumerianTEI</a>.</li>
-</ul>
+<p>You do not have to worry about the TF side of things, because TF itself will take
+care of that, by means of its source
+<a href="../Convert/">walker</a> module.</p>
 <h2 id="analysis">Analysis<a class="headerlink" href="#analysis" title="Permanent link">&para;</a></h2>
-<p>The text is a string with a little bit of structure. Some of that structure
+<p>The
+<a href="../ExampleText/">example text</a>
+is a string with a little bit of structure. Some of that structure
 gives us our node types, and other bits give us the features.</p>
 <h2 id="node-types">Node types<a class="headerlink" href="#node-types" title="Permanent link">&para;</a></h2>
 <p>The text is divided into main sections, subsections, paragraphs, and sentences.
 The sentences are divided into words by white-space and/or punctuation.</p>
 <h3 id="step-1-define-slots">Step 1: define slots<a class="headerlink" href="#step-1-define-slots" title="Permanent link">&para;</a></h3>
-<p>Make a copy of the text, strip out all headings and split the string on
-white-space. We get a sequence of "words". These words may contain punctuation or
+<p>Perform the following operation mentally:
+<em>   strip out all headings;
+</em>   split the string on white-space;
+<em>   number the resulting "words" from 1 up to as many as there are;
+</em>   call the resulting numbers, let's say 1 .. <em>S</em>, the <em>slots</em> of the text.</p>
+<p>These words may contain punctuation or
 other non-alphabetical signs. We do not care for the moment.</p>
-<p>The indexes in this sequence, from 1 till the number of "words", are our slots.
-Let's say we have <em>S</em> of them.</p>
-<p>We start constructing a mapping from numbers to node types, called <code>otype</code>.</p>
-<p>We assign to numbers 1, ... ,<em>S</em> the string <code>word</code>.</p>
+<p>We just conceptualized the textual positions. They act as a skeleton without flesh.</p>
+<p>Everything in the text, the words themselves, but also additional annotations,
+will be added as features, which map positions to values.</p>
+<p>We start constructing a mapping <code>otype</code> from numbers to node types.</p>
+<p>We assign the string <code>word</code> to the numbers 1, ... ,<em>S</em>.</p>
 <p>That means, we have now <em>S</em> nodes, all of type <code>word</code>.</p>
 <h3 id="step-2-add-higher-level-nodes">Step 2: add higher level nodes<a class="headerlink" href="#step-2-add-higher-level-nodes" title="Permanent link">&para;</a></h3>
-<p>For each level of <em>section</em>, <em>subsection</em> and <em>paragraph</em>, make new nodes. Nodes
-are numbers, and we start making new nodes directly after <em>S</em>.</p>
+<p>Continue the mental operation as follows:</p>
+<ul>
+<li>for each level of <em>section</em>, <em>subsection</em> and <em>paragraph</em>, make new nodes;</li>
+<li>nodes are numbers, start making new nodes directly after <em>S</em>.</li>
+<li>call all numbers so far, let's say 1 .. <em>S</em> .. <em>N</em> , the <em>nodes</em> of the text.</li>
+</ul>
+<p>We have added nodes to our skeleton, which now consists of <em>N</em> nodes.
+The first <em>S</em> of them are slots, i.e. textual positions.
+The rest of the nodes will be <em>linked</em> to slots.</p>
 <p>We have 4 main sections, so we extend the <code>otype</code> mapping as follows:</p>
 <ul>
 <li><em>S+1</em> ~ <code>section</code></li>
@@ -1624,7 +1645,7 @@ values to nodes, is called a (node-)feature.</p>
 <h2 id="containment">Containment<a class="headerlink" href="#containment" title="Permanent link">&para;</a></h2>
 <p>We also have to record which words belong to which nodes. This information takes
 the shape of a mapping of nodes to sets of nodes. Or, with a slight twist, we
-have to lists pairs of nodes <code>(n, w)</code> such that the word <code>w</code> "belongs" to the
+have to lists pairs of nodes <code>(n, s)</code> such that the slot <code>s</code> "belongs" to the
 node <code>n</code>.</p>
 <p>This is in fact a set of edges (pairs of nodes are edges), and a set of edges is
 an <em>edge feature</em>. In general it is possible to assign values to pairs of nodes,
@@ -1634,7 +1655,7 @@ we have in our set.</p>
 <code>oslots</code>.</p>
 <h3 id="step-3-map-nodes-to-sets-of-words">Step 3: map nodes to sets of words<a class="headerlink" href="#step-3-map-nodes-to-sets-of-words" title="Permanent link">&para;</a></h3>
 <p>For each of the higher level nodes <code>n</code> (the ones beyond <em>S</em>) we have to
-lookup/remember/compute which words <code>w</code> belong to it, and put that in the
+lookup/remember/compute which slots <code>w</code> belong to it, and put that in the
 <code>oslots</code> mapping:</p>
 <ul>
 <li><em>S+1</em> ~ { 1, 2, 3, ... x, ..., y }</li>
@@ -1645,7 +1666,7 @@ lookup/remember/compute which words <code>w</code> belong to it, and put that in
 </ul>
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <p>Now we have two features, a node feature <code>otype</code> and an edge feature <code>oslots</code>.
-This is merely the skeleton of our text, the <em>warp</em> so to speak. It contains the
+This is merely the frame of our text, the <em>warp</em> so to speak. It contains the
 textual positions, and the information what the meaningful chunks are.</p>
 <p>Now it is time to weave the information in.</p>
 <h3 id="step-4-the-actual-text">Step 4: the actual text<a class="headerlink" href="#step-4-the-actual-text" title="Permanent link">&para;</a></h3>
@@ -1775,6 +1796,9 @@ names and valued by the feature data of those features.</p>
 <p>And the metadata you have composed goes into the <code>metaData</code> parameter.</p>
 <p>Finally, the <code>module</code> parameter dictates where on your system the TF-files will
 be written.</p>
+<p>If you use the
+<a href="../Convert/">walker</a> module.
+module, TF will do this step automatically.</p>
 <h2 id="first-time-usage">First time usage<a class="headerlink" href="#first-time-usage" title="Permanent link">&para;</a></h2>
 <p>When you start using your new dataset in Text-Fabric, you'll notice that there
 is some upfront computation going on. Text-Fabric computes derived data,
@@ -1848,7 +1872,7 @@ Text-Fabric treats it as one dataset.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../Convert/" title="Convert (MQL)" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../Convert/" title="Convert" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1857,7 +1881,7 @@ Text-Fabric treats it as one dataset.</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Convert (MQL)
+                Convert
               </span>
             </div>
           </a>

@@ -42,7 +42,7 @@
     
     
       
-        <title>Convert (MQL) - Text-Fabric</title>
+        <title>Convert - Text-Fabric</title>
       
     
     
@@ -122,7 +122,7 @@
                 Text-Fabric
               </span>
               <span class="md-header-nav__topic">
-                Convert (MQL)
+                Convert
               </span>
             
           
@@ -783,45 +783,9 @@
       
     
     
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Convert (MQL)
-      </label>
-    
-    <a href="./" title="Convert (MQL)" class="md-nav__link md-nav__link--active">
-      Convert (MQL)
+    <a href="./" title="Convert" class="md-nav__link md-nav__link--active">
+      Convert
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#walking-the-source" title="Walking the source" class="md-nav__link">
-    Walking the source
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mql" title="MQL" class="md-nav__link">
-    MQL
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
     
   </li>
 
@@ -832,8 +796,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../CreateTF/" title="Make TF" class="md-nav__link">
-      Make TF
+    <a href="../CreateTF/" title="Pattern" class="md-nav__link">
+      Pattern
     </a>
   </li>
 
@@ -846,6 +810,18 @@
   <li class="md-nav__item">
     <a href="../ExampleText/" title="Example data" class="md-nav__link">
       Example data
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../MQL/" title="MQL" class="md-nav__link">
+      MQL
     </a>
   </li>
 
@@ -1232,29 +1208,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#walking-the-source" title="Walking the source" class="md-nav__link">
-    Walking the source
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mql" title="MQL" class="md-nav__link">
-    MQL
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1269,11 +1222,14 @@
                 
                 
                 <h1 id="convert">Convert<a class="headerlink" href="#convert" title="Permanent link">&para;</a></h1>
-<h2 id="walking-the-source">Walking the source<a class="headerlink" href="#walking-the-source" title="Permanent link">&para;</a></h2>
-<details class="info"><summary>Data conversion to TF</summary><p>You can convert a dataset to TF by writing a function that walks through it.</p>
+<details class="info"><summary>Data conversion to TF by walking through the source</summary><p>You can convert a dataset to TF by writing a function that walks through it.</p>
 <p>That is a function that triggers a sequence of actions when reading the data.
 These actions drive Text-Fabric to build a valid Text-Fabric graph.
 Many checks will be performed.</p>
+</details>
+<details class="hint"><summary>to and from MQL</summary><p>If your source is MQL, you are even better off: Text-Fabric has a
+<a href="../MQL/">module</a>
+to import from MQL and to export to MQL.</p>
 </details>
 <details class="abstract"><summary>cv.walk()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span> 1
  2
@@ -1456,6 +1412,7 @@ by issuing `cv.meta()` actions from within your director, see below.
 </td></tr></table>
 
 </details>
+</details>
 <details class="explanation" open="open"><summary><code>cv</code> action methods</summary><p>The <code>cv</code> class contains methods
 that are responsible for particular <em>actions</em> that steer the graph building.</p>
 <details class="abstract"><summary>cv.slot()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">slot</span><span class="p">()</span>
@@ -1530,9 +1487,28 @@ essentially specifies a set of nodes <code>{ nt }</code>.</p>
 <p>Add, modify, delete metadata fields of features.</p>
 <p><code>feature</code> is the feature name.</p>
 <p>If a <code>value</code> is <code>None</code>, that <code>name</code> will be deleted from the metadata fields.</p>
+<p>A bare <code>cv.meta(feature)</code> will remove the feature from the metadata.</p>
 <p>If you modify the field <code>valueType</code> of a feature, that feature will be added
 or removed from the set of <code>intFeatures</code>.
 It will be checked whether you specify either <code>int</code> or <code>str</code>.</p>
+</details>
+<details class="abstract"><summary>cv.occurs()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">occurs</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">occurs</span><span class="p">(</span><span class="n">featureName</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Returns True if the feature with name <code>featureName</code> occurs in the
+resulting data, else False.
+If you have assigned None values to a feature, that will count, i.e.
+that feature occurs in the data.</p>
+<p>If you add feature values conditionally, it might happen that some
+features will not be used at all.
+For example, if your conversion produces errors, you might
+add the error information to the result in the form of error features.</p>
+<p>Later on, when the errors have been weeded out, these features will
+not occur any more in the result, but then TF will complain that
+such is feature is declared but not used.
+At the end of your director you can remove unused features
+conditionally, using this function.</p>
 </details>
 <details class="abstract"><summary>cv.linked()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">ss</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">linked</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 </pre></div>
@@ -1560,170 +1536,6 @@ to do so, you have to detect that a node is still unlinked.</p>
 <details class="hint" open="open"><summary>Example</summary><p>Follow the <a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/convert.ipynb">conversion tutorial</a></p>
 <p>Or study a more involved example for
 <a href="https://github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py">Old Babylonian</a></p>
-</details>
-</details>
-</details>
-<h2 id="mql">MQL<a class="headerlink" href="#mql" title="Permanent link">&para;</a></h2>
-<details class="info"><summary>Data interchange with MQL</summary><p>You can interchange with
-<a href="https://emdros.org">MQL data</a>.
-Text-Fabric can read and write MQL dumps. An
-MQL dump is a text file, like an SQL dump. It contains the instructions to
-create and fill a complete database.</p>
-</details>
-<details class="abstract"><summary>TF.exportMQL()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">exportMQL</span><span class="p">(</span><span class="n">dbName</span><span class="p">,</span> <span class="n">dirName</span><span class="p">)</span>
-</pre></div>
-</td></tr></table>
-
-<details class="info" open="open"><summary>Description</summary><p>Exports the complete TF dataset into single MQL database.</p>
-</details>
-<details class="info"><summary>dirName, dbName</summary><p>The exported file will be written to <code>dirName/dbName.mql</code>. If <code>dirName</code> starts
-with <code>~</code>, the <code>~</code> will be expanded to your home directory. Likewise, <code>..</code> will
-be expanded to the parent of the current directory, and <code>.</code> to the current
-directory, both only at the start of <code>dirName</code>.</p>
-</details>
-<details class="explanation"><summary>Correspondence TF and MQL</summary><p>The resulting MQL database has the following properties with respect to the
-Text-Fabric dataset it comes from:</p>
-<ul>
-<li>the TF <em>slots</em> correspond exactly with the MQL <em>monads</em> and have the same
-    numbers; provided the monad numbers in the MQL dump are consecutive. In MQL
-    this is not obligatory. Even if there gaps in the monads sequence, we will
-    fill the holes during conversion, so the slots are tightly consecutive;</li>
-<li>the TF <em>nodes</em> correspond exactly with the MQL <em>objects</em> and have the same
-    numbers</li>
-</ul>
-</details>
-<details class="note"><summary>Node features in MQL</summary><p>The values of TF features are of two types, <code>int</code> and <code>str</code>, and they translate
-to corresponding MQL types <code>integer</code> and <code>string</code>. The actual values do not
-undergo any transformation.</p>
-<p>That means that in MQL queries, you use quotes if the feature is a string feature.
-Only if the feature is a number feature, you may omit the quotes:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
-2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>[word sp=&#39;verb&#39;]
-[verse chapter=1 and verse=1]
-</pre></div>
-</td></tr></table>
-
-</details>
-<details class="note"><summary>Enumeration types</summary><p>It is attractive to use eumeration types for the values of a feature, whereever
-possible, because then you can query those features in MQL with <code>IN</code> and without
-quotes:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>[chapter book IN (Genesis, Exodus)]
-</pre></div>
-</td></tr></table>
-
-<p>We will generate enumerations for eligible features.</p>
-<p>Integer values can already be queried like this, even if they are not part of an
-enumeration. So we restrict ourselves to node features with string values. We
-put the following extra restrictions:</p>
-<ul>
-<li>the number of distinct values is less than 1000</li>
-<li>all values must be legal C names, in practice: starting with a letter,
-    followed by letters, digits, or <code>_</code>. The letters can only be plain ASCII
-    letters, uppercase and lowercase.</li>
-</ul>
-<p>Features that comply with these restrictions will get an enumeration type.
-Currently, we provide no ways to configure this in more detail.</p>
-<details class="note"><summary>Merged enumeration types</summary><p>Instead of creating separate enumeration types for individual features,
-we collect all enumerated values for all those features into one
-big enumeration type.</p>
-<p>The reason is that MQL considers equal values in different types as
-distinct values. If we had separate types, we could never compare
-values for different features.</p>
-</details>
-</details>
-<details class="caution"><summary>Values of edge features are ignored</summary><p>There is no place for edge values in
-MQL. There is only one concept of feature in MQL: object features,
-which are node features.
-But TF edges without values can be seen as node features: nodes are
-mapped onto sets of nodes to which the edges go. And that notion is supported by
-MQL:
-edge features are translated into MQL features of type <code>LIST OF id_d</code>,
-i.e. lists of object identifiers.</p>
-</details>
-<details class="caution"><summary>Legal names in MQL</summary><p>MQL names for databases, object types and features must be valid C identifiers
-(yes, the computer language C). The requirements are:</p>
-<ul>
-<li>start with a letter (ASCII, upper-case or lower-case)</li>
-<li>follow by any sequence of ASCII upper/lower-case letters or digits or
-    underscores (<code>_</code>)</li>
-<li>avoid being a reserved word in the C language</li>
-</ul>
-<p>So, we have to change names coming from TF if they are invalid in MQL. We do
-that by replacing illegal characters by <code>_</code>, and, if the result does not start
-with a letter, we prepend an <code>x</code>. We do not check whether the name is a reserved
-C word.</p>
-<p>With these provisos:</p>
-<ul>
-<li>the given <code>dbName</code> correspond to the MQL <em>database name</em></li>
-<li>the TF <em>otypes</em> correspond to the MQL <em>objects</em></li>
-<li>the TF <em>features</em> correspond to the MQL <em>features</em></li>
-</ul>
-</details>
-<details class="hint"><summary>File size</summary><p>The MQL export is usually quite massive (500 MB for the Hebrew Bible).
-It can be compressed greatly, especially by the program <code>bzip2</code>.</p>
-</details>
-<details class="caution"><summary>Exisiting database</summary><p>If you try to import an MQL file in Emdros, and there exists already a file or
-directory with the same name as the MQL database, your import will fail
-spectacularly. So do not do that. A good way to prevent it is:</p>
-<ul>
-<li>export the MQL to outside your <code>text-fabric-data</code> directory, e.g. to
-    <code>~/Downloads</code>;</li>
-<li>before importing the MQL file, delete the previous copy;</li>
-</ul>
-<details class="example"><summary>Delete existing copy</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
-2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="nb">cd</span> ~/Downloads
-rm dataset <span class="p">;</span> mql -b <span class="m">3</span> &lt; dataset.mql
-</pre></div>
-</td></tr></table>
-
-</details>
-</details>
-</details>
-<details class="abstract"><summary>TF.importMQL()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">importMQL</span><span class="p">(</span><span class="n">mqlFile</span><span class="p">,</span> <span class="n">slotType</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">otext</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-</pre></div>
-</td></tr></table>
-
-<details class="info" open="open"><summary>Description</summary><p>Converts an MQL database dump to a Text-Fabric dataset.</p>
-</details>
-<details class="hint"><summary>Destination directory</summary><p>It is recommended to call this <code>importMQL</code> on a TF instance called with</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">targetDir</span><span class="p">)</span>
-</pre></div>
-</td></tr></table>
-
-<p>Then the resulting features will be written in the targetDir.</p>
-<p>In fact, the rules are exactly the same as for <code>TF.save()</code>.</p>
-</details>
-<details class="info"><summary>slotType</summary><p>You have to tell which object type in the MQL file acts as the slot type,
-because TF cannot see that on its own.</p>
-</details>
-<details class="info"><summary>otext</summary><p>You can pass the information about sections and text formats as the parameter
-<code>otext</code>. This info will end up in the <code>otext.tf</code> feature. Pass it as a
-dictionary of keys and values, like so:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
-2
-3
-4</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">otext</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;fmt:text-trans-plain&#39;</span><span class="p">:</span> <span class="s1">&#39;{glyphs}{trailer}&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;sectionFeatures&#39;</span><span class="p">:</span> <span class="s1">&#39;book,chapter,verse&#39;</span><span class="p">,</span>
-<span class="p">}</span>
-</pre></div>
-</td></tr></table>
-
-</details>
-<details class="info"><summary>meta</summary><p>Likewise, you can add a dictionary of keys and values that will added to the
-metadata of all features. Handy to add provenance data here:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">meta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;DLC&#39;</span><span class="p">,</span>
-    <span class="n">datasetName</span><span class="o">=</span><span class="s1">&#39;Digital Language Corpus&#39;</span><span class="p">,</span>
-    <span class="n">author</span><span class="o">=</span><span class="s2">&quot;That &#39;s me&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</td></tr></table>
-
 </details>
 </details>
                 
@@ -1761,13 +1573,13 @@ metadata of all features. Handy to add provenance data here:</p>
           </a>
         
         
-          <a href="../CreateTF/" title="Make TF" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../CreateTF/" title="Pattern" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Make TF
+                Pattern
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
