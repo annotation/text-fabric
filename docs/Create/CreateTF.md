@@ -1,6 +1,12 @@
-# Create a TF dataset
+# Patterns in creating TF datasets
 
-We describe a conversion of an [example text](ExampleText.md) to Text-Fabric.
+A detailed account of a conversion from arbitrary data to TF is given
+by the example of the 99-word mini-corpus
+[Banks]({{tfbanks}}/programs/convert.ipynb).
+
+Here we describe a such a process at a higher level of abstraction.
+We use a slightly bigger
+[example text](ExampleText.md).
 
 This is not meant as a recipe, but as a description of the pieces of information
 that have to be assembled from the source text, and how to compose that into a
@@ -9,22 +15,15 @@ Text-Fabric resource, which is a set of features.
 How you turn this insight into an executable program is dependent on how the
 source text is encoded and organized.
 
-Have a look at the following examples:
-
-* the book of John in the Greek New Testament from XML-TEI to TF:
-  [pilot]({{pthugh}}/pilot);
-* the Syriac New Testament:
-  [SyrNT]({{etcbcgh}}/syrnt/blob/master/programs/tfFromSyrnt.py);
-* the Greek New Testament:
-  [tfFromSblgnt]({{tfdnb}}/programs/tfFromSblgnt.ipynb);
-* Sanskrit writings:
-  [tfFromSanskrit]({{tfdnb}}/programs/tfFromSanskrit.ipynb);
-* Sumerian writings:
-  [tfFromSumerianTEI]({{tfdnb}}/programs/tfFromSumerianTEI.ipynb).
+You do not have to worry about the TF side of things, because TF itself will take
+care of that, by means of its source
+[walker](Convert.md) module.
 
 ## Analysis
 
-The text is a string with a little bit of structure. Some of that structure
+The
+[example text](ExampleText.md)
+is a string with a little bit of structure. Some of that structure
 gives us our node types, and other bits give us the features.
 
 ## Node types
@@ -34,23 +33,37 @@ The sentences are divided into words by white-space and/or punctuation.
 
 ### Step 1: define slots
 
-Make a copy of the text, strip out all headings and split the string on
-white-space. We get a sequence of "words". These words may contain punctuation or
+Perform the following operation mentally:
+*   strip out all headings;
+*   split the string on white-space;
+*   number the resulting "words" from 1 up to as many as there are;
+*   call the resulting numbers, let's say 1 .. *S*, the *slots* of the text.
+
+These words may contain punctuation or
 other non-alphabetical signs. We do not care for the moment.
 
-The indexes in this sequence, from 1 till the number of "words", are our slots.
-Let's say we have *S* of them.
+We just conceptualized the textual positions. They act as a skeleton without flesh.
 
-We start constructing a mapping from numbers to node types, called `otype`.
+Everything in the text, the words themselves, but also additional annotations,
+will be added as features, which map positions to values.
 
-We assign to numbers 1, ... ,*S* the string `word`.
+We start constructing a mapping `otype` from numbers to node types.
+
+We assign the string `word` to the numbers 1, ... ,*S*.
 
 That means, we have now *S* nodes, all of type `word`.
 
 ### Step 2: add higher level nodes
 
-For each level of *section*, *subsection* and *paragraph*, make new nodes. Nodes
-are numbers, and we start making new nodes directly after *S*.
+Continue the mental operation as follows:
+
+*   for each level of *section*, *subsection* and *paragraph*, make new nodes;
+*   nodes are numbers, start making new nodes directly after *S*.
+*   call all numbers so far, let's say 1 .. *S* .. *N* , the *nodes* of the text.
+
+We have added nodes to our skeleton, which now consists of *N* nodes.
+The first *S* of them are slots, i.e. textual positions.
+The rest of the nodes will be *linked* to slots.
 
 We have 4 main sections, so we extend the `otype` mapping as follows:
 
@@ -78,7 +91,7 @@ values to nodes, is called a (node-)feature.
 
 We also have to record which words belong to which nodes. This information takes
 the shape of a mapping of nodes to sets of nodes. Or, with a slight twist, we
-have to lists pairs of nodes `(n, w)` such that the word `w` "belongs" to the
+have to lists pairs of nodes `(n, s)` such that the slot `s` "belongs" to the
 node `n`.
 
 This is in fact a set of edges (pairs of nodes are edges), and a set of edges is
@@ -92,7 +105,7 @@ The edge feature that records the containment of words in nodes, is called
 ### Step 3: map nodes to sets of words
 
 For each of the higher level nodes `n` (the ones beyond *S*) we have to
-lookup/remember/compute which words `w` belong to it, and put that in the
+lookup/remember/compute which slots `w` belong to it, and put that in the
 `oslots` mapping:
 
 *   *S+1* ~ { 1, 2, 3, ... x, ..., y }
@@ -104,7 +117,7 @@ lookup/remember/compute which words `w` belong to it, and put that in the
 ## Features
 
 Now we have two features, a node feature `otype` and an edge feature `oslots`.
-This is merely the skeleton of our text, the *warp* so to speak. It contains the
+This is merely the frame of our text, the *warp* so to speak. It contains the
 textual positions, and the information what the meaningful chunks are.
 
 Now it is time to weave the information in.
@@ -251,6 +264,10 @@ And the metadata you have composed goes into the `metaData` parameter.
 
 Finally, the `module` parameter dictates where on your system the TF-files will
 be written.
+
+If you use the
+[walker](Convert.md) module.
+module, TF will do this step automatically.
 
 ## First time usage
 

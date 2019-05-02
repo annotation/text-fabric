@@ -203,9 +203,10 @@ nav:
     - Tweaks: 'Model/Optimizations.md'
     - Search: 'Model/Search.md'
   - Create:
-    - 'Convert (MQL)': 'Create/Convert.md'
-    - 'Make TF': 'Create/CreateTF.md'
+    - 'Convert': 'Create/Convert.md'
+    - 'Pattern': 'Create/CreateTF.md'
     - 'Example data': 'Create/ExampleText.md'
+    - 'MQL': 'Create/MQL.md'
   - Server:
     - Kernel: 'Server/Kernel.md'
     - Web: 'Server/Web.md'

@@ -41,6 +41,15 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
+## 7.6.8
+
+2019-05-02
+
+There is an extra `cv.occurs()` function to check whether a feature actually
+occurs in the result data.
+
+`cv.meta(feature)` without more arguments deletes the feature from the metadata,
+
 ## 7.6.7
 
 2019-04-27

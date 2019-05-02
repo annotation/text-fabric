@@ -321,31 +321,6 @@ class CV(object):
     self.good = False
     self.force = False
 
-  def meta(self, feat, **metadata):
-    errors = self.errors
-    metaData = self.metaData
-    featMeta = metaData.get(feat, {})
-
-    good = True
-
-    for (field, text) in metadata.items():
-      if text is None:
-        if field == 'valueType':
-          errors[f'did not delete metadata field "valueType"'].append(feat)
-          good = False
-        else:
-          if feat in metaData and field in metaData[feat]:
-            del metaData[feat][field]
-      else:
-        metaData.setdefault(feat, {})[field] = text
-        if field == 'valueType':
-          if text == 'int':
-            self.intFeatures.add(feat)
-          else:
-            self.intFeatures.discard(feat)
-
-    self.good = self._checkFeatMeta(feat, featMeta) and good
-
   def slot(self):
     curSeq = self.curSeq
     curEmbedders = self.curEmbedders
@@ -398,10 +373,6 @@ class CV(object):
       self.curEmbedders.discard(node)
       self._checkSecLevel(node, before=False)
 
-  def linked(self, node):
-    oslots = self.oslots
-    return tuple(oslots.get(node, []))
-
   def resume(self, node):
     curEmbedders = self.curEmbedders
     oslots = self.oslots
@@ -426,6 +397,48 @@ class CV(object):
         continue
       # self._checkType(k, v, self.N)
       nodeFeatures[k][node] = v
+
+  def occurs(self, feat):
+    nodeFeatures = self.nodeFeatures
+    edgeFeatures = self.edgeFeatures
+    if feat in nodeFeatures or feat in edgeFeatures:
+      return True
+    return False
+
+  def meta(self, feat, **metadata):
+    errors = self.errors
+    intFeatures = self.intFeatures
+    metaData = self.metaData
+    featMeta = metaData.get(feat, {})
+
+    good = True
+
+    if not metadata:
+      if feat in metaData:
+        del metaData[feat]
+        intFeatures.discard(feat)
+
+    for (field, text) in metadata.items():
+      if text is None:
+        if field == 'valueType':
+          errors[f'did not delete metadata field "valueType"'].append(feat)
+          good = False
+        else:
+          if feat in metaData and field in metaData[feat]:
+            del metaData[feat][field]
+      else:
+        metaData.setdefault(feat, {})[field] = text
+        if field == 'valueType':
+          if text == 'int':
+            intFeatures.add(feat)
+          else:
+            intFeatures.discard(feat)
+
+    self.good = self._checkFeatMeta(feat, featMeta) and good
+
+  def linked(self, node):
+    oslots = self.oslots
+    return tuple(oslots.get(node, []))
 
   def get(self, feature, *args):
     errors = self.errors
