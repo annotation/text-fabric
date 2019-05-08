@@ -206,28 +206,83 @@
     Text can be represented in multiple ways. We provide a number of formats with
     structured names.
 
-    A format name is a string of keywords separated by `-`:
+    ??? "format names"
+        A format name is a string of keywords separated by `-`:
 
-    *what*`-`*how*`-`*fullness*`-`*modifier*
+        *what*`-`*how*`-`*fullness*`-`*modifier*
 
-    For Hebrew any combination of the follwoing could be useful formats:
+        For Hebrew any combination of the follwoing could be useful formats:
 
-    keyword | value | meaning
-    ------- | ----- | -------
-    *what* | `text` | words as they belong to the text
-    *what* | `lex` | lexemes of the words
-    *how* | `orig` | in the original script (Hebrew, Greek, Syriac) (all Unicode)
-    *how* | `trans` | in (latin) transliteration
-    *how* | `phono` | in phonetic/phonological transcription
-    *fullness* | `full` | complete with accents and all diacritical marks
-    *fullness* | `plain` | with accents and diacritical marks stripped, in Hebrew only the consonants are left
-    *modifier* | `ketiv` | (Hebrew): where there is ketiv/qere, follow ketiv instead of qere (default);
+        keyword | value | meaning
+        ------- | ----- | -------
+        *what* | `text` | words as they belong to the text
+        *what* | `lex` | lexemes of the words
+        *how* | `orig` | in the original script (Hebrew, Greek, Syriac) (all Unicode)
+        *how* | `trans` | in (latin) transliteration
+        *how* | `phono` | in phonetic/phonological transcription
+        *fullness* | `full` | complete with accents and all diacritical marks
+        *fullness* | `plain` | with accents and diacritical marks stripped, in Hebrew only the consonants are left
+        *modifier* | `ketiv` | (Hebrew): where there is ketiv/qere, follow ketiv instead of qere (default);
 
-    The default format is `text-orig-full`, we assume that every TF dataset defines
-    this format.
+        The default format is `text-orig-full`, we assume that every TF dataset defines
+        this format.
 
-    TF datasets may also define formats of the form *nodetype*`-default` where *nodetype* is a valid type
-    of node in the dataset. These formats have a special meaning for Text-Fabric.
+    ??? "format content"
+        A format is a template string, with fixed text and variable text.
+        The variable text comes from features.
+        You specify the interpolation of features by surrounding the feature name
+        by `{ }`.
+        
+        For example, if `letters` and `after` are features, this is a text format:
+
+        ```
+        {letters}{after}
+        ```
+
+        If you need tabs and newlines in a format, specify them by \\t and \\n.
+
+        You can also conditionally choose between features, to
+        substitute the value of another feature in case of empty values.
+
+        For example, if you want to use the `normal` feature to represent a word,
+        but if there is also a rare feature `special` that you want to use if it
+        is defined for that word, you can make a format
+
+        ```
+        {special/normal}
+        ```
+
+        This tries the feature `special` first, and if that is empty, it takes
+        `normal`.
+
+        You can also add a fixed default. If you want to display a `.` if
+        neither `special` nor `normal` exist, you can say
+
+        ```
+        {special/normal:.}
+        ```
+
+    ???+ "formats specialized to a node type"
+        TF datasets may also define formats of the form
+        
+        *nodetype*`-default`
+        
+        where *nodetype* is a valid type of node in the dataset.
+
+        These formats will be invoked in cases where no explicit format is specified as
+        a fall back for some kind of nodes. See `T.text()` below.
+
+    ???+ "target node types for formats"
+        A node type may also be prepended to a format, with `#` as separator:
+
+        *nodetype*`#`*textformat*
+
+        In general, a format can be applied to any kind of node, and it will 
+        lookup the features defined in its template for that node.
+        But some features have meaningful values for particular node types only.
+         
+        So formats may indicate that they should be applied to nodes of a specific type.
+        See `T.text()` below.
 
     Remember that the formats are defined in the `otext` warp config feature of your
     set, not by Text-Fabric.
@@ -235,6 +290,11 @@
     ??? note "Freedom of names for formats"
         There is complete freedom of choosing names for text formats.
         They do not have to complied with the above-mentioned scheme.
+
+    ???+ "layout in formats"
+        So far, text formats only result in plain text.
+        A [TF-app](../Implementation/Apps.md) may define and implement extra text
+        formats which may invoke all HTML+CSS styling that you can think of.
 
 ??? abstract "T.formats"
     ```python
@@ -247,106 +307,130 @@
 ??? abstract "T.text()"
     ```python
     T.text(nodes, fmt=None)
-    T.text(node, fmt=None, descend=False)
+    T.text(node, fmt=None, descend=None)
+    T.text(node, fmt=None, descend=None, explain=False)
     ```
 
     ???+ info "Description"
         Gives the text that corresponds to a bunch of nodes.
 
     ??? info "nodes"
-        `nodes` can be an arbitrary iterable of nodes.
+        `nodes` can be a single node or an arbitrary iterable of nodes
+        of arbitrary types.
         No attempt will be made to sort the nodes.
         If you need order, it is
         better to order the nodes before you feed them to `T.text()`.
 
     ??? info "fmt"
-        The format of text-representation is given with `fmt`, with default `text-orig-full`.
-        If the `fmt`
-        cannot be found, the default is taken.
+        The format of the text representation is given with `fmt`.
 
-        The default is `text-orig-full` if the first argument is an iterable of `nodes`.
+        If it is not specified or None, each node will be formatted with
+        a node type specific format, defined as *nodeType*`-default`, if it
+        exists.
 
-        The default is *nodetype*`-default`
-        if the first argument is a single `node` with type *nodetype*.
+        If there is no node specific format, the default format
+        `text-orig-full` will be used.
 
-        If the default format is not defined in the
-        `otext` feature of the dataset,
-        what will happen is dependent on the first argument, `nodes` or `node`.
+        If `text-orig-full` is not defined, an error message will be issued,
+        and the nodes will be represented by their types and numbers.
 
-        If the argument is an iterable of `nodes`,
-        for each node its node type and node number
-        will be output, connected with a `_` .
+        If a value for *fmt* is passed, but it is not a format defined in the
+        *otext.tf* feature, there will be an error message and `None` is returned.
 
-        If the argument is a single `node`,
-        Text-Fabric will look up de slot nodes contained in it
-        (by means of `L.d(node, otype=slotType)`
-        and format them with `text-orig-full`.
+    ??? info "descend"
+        Whether to descend to constituent nodes.
 
-        If the format **is** defined, and the first argument
-        is a single `node`, 
-        Text-Fabric will apply that format to the node itself,
-        not to the slots contained in that node.
+        If True, nodes will be replaced by a sequence of their consituent nodes,
+        which have a type specified by the format chosen, or, if the format does
+        not specify such a type, the node will be replaced by the slots contained in it.
 
-        But you can override that by means of `descend=True`.
-        In that case, regardless of the format,
-        the `node` will be replaced by the slot nodes contained in it,
-        before applying the format.
+        If False, nodes will not be replaced.
 
-        ??? hint "The default is sensible"
-            Consider the simplest call to this function: `T.text(node)`.
-            This will apply the default format to `node`.
-            If `node` is non-slot, then in most cases
-            the default format will be applied to the slots contained in `node`.
+        If *descend* is not specified or None,
+        a node will be replaced by its constituent nodes,
+        unless its type is associated with the given format or,
+        if no format is given, by the default format of its type, or,
+        if there is no such format, by its slots.
 
-            But for special node types, where the best representation
-            is not obtained by descending down
-            to the contained slot nodes, the dataset may define
-            special default types that use other
-            features to furnish a decent representation.
+        ??? caution "no nodes to descend to"
+            If you call `T.text(n, fmt=myfmt)`
+            and `myfmt` is targeted to a node type that is
+            bigger than the node type of `n`,
+            then the so-called descending leads to an empty
+            sequence of nodes and hence to an empty string.
 
-            ??? example "lexemes"
-                In the some corpora case this happens for the type of lexemes: `lex`.
-                Lexemes contain their occurrences
-                as slots, but the representation of a lexeme
-                is not the string of its occurrences, but
-                resides in a feature such as `voc_lex_utf8` (vocalized lexeme in Unicode).
+    ??? info "explain"
+        The logic of this function is subtle.
+        If you call it and the results baffles you, pass `explain=True`
+        and it will explain what it is doing.
 
-                If the dataset defines the format `lex-default={lex} `,
-                this is the only thing needed to regulate the representation of a lexeme.
+    ??? hint "The default is sensible"
+        Consider the simplest call to this function: `T.text(node)`.
+        This will apply the default format to `node`.
+        If `node` is non-slot, then in most cases
+        the default format will be applied to the slots contained in `node`.
 
-                Hence, `T.text(lx)` results in the lexeme representation of `lx`.
+        But for special node types, where the best representation
+        is not obtained by descending down
+        to the contained slot nodes, the dataset may define
+        special default types that use other
+        features to furnish a decent representation.
 
-                But if you really want to print out all occurrences of lexeme `lx`,
-                you can say `T.text(lx, descend=True)`.
+        ??? example "lexemes"
+            In some corpora case this happens for the type of lexemes: `lex`.
+            Lexemes contain their occurrences
+            as slots, but the representation of a lexeme
+            is not the string of its occurrences, but
+            resides in a feature such as `voc_lex_utf8` (vocalized lexeme in Unicode).
 
-                Beware of this, however:
-                
-                `T.text(phr)` prints the full text of `phr` if `phr` is a phrase node.
+            If the dataset defines the format `lex-default={lex} `,
+            this is the only thing needed to regulate the representation of a lexeme.
 
-                `T.text(phr, fmt='text-orig-full')` prints the empty string. Why?
+            Hence, `T.text(lx)` results in the lexeme representation of `lx`.
 
-                `T.text(phr, fmt='text-orig-full', descend=True)`
-                prints the full text of the phrase.
+            But if you really want to print out all occurrences of lexeme `lx`,
+            you can say `T.text(lx, descend=True)`.
 
-                In the first case there is no `fmt` argument,
-                so the default is taken,
-                which would be `phrase-default`.
-                But this format does not exists, so Text-Fabric
-                descends to the words of the phrase and applies `text-orig-full` to them.
+        ??? example "words and signs"
+            In some corpora the characters or signs are the slot level, and there is
+            a non slot level of words. 
+            Some text formats are best defined on signs, others best on words.
 
-                In the second case, there is a `fmt` argument, so Text-Fabric applies that 
-                to the `node`. But `text-orig-full` uses features that have values on words,
-                not on phrases.
+            For example, if words are associated with lexemes, stored in a word
+            feature `lex`, we can define a text format
 
-                The third case is what you probably wanted, and this is what you need if you 
-                want to print the phrase in non-default formats:
 
-                `T.text(phr, fmt='text-phono-full', descend=True)`
+            ```lex-orig-full=word#{lex} ```
 
-        ??? caution "No error messages"
-            This function does not give error messages,
-            because that could easily overwhelm
-            the output stream, especially in a notebook.
+            When you call `T.text(n)` for a non-slot, non-word node,
+            normally the node will be replaced by the slot nodes it contains,
+            before applying the template in the format.
+            But if you pass a format that specifies a different node type,
+            nodes will be replaced by contained nodes of that type. So 
+
+            ```T.text(n, fmt='lex-orig-full')```
+
+            will lookup all word nodes under n and apply the template `{lex} ` to them.
+            
+    ???+ caution "same and different behaviours"
+        The consequences of the rules might be unexpected in some cases.
+        Here are a few observations:
+
+        * formats like `phrase-default` can be implicitly invoked for phrase nodes,
+          but `descend=True` prevents that;
+        * when a format targeted at phrases is invoked for phrase nodes,
+          `descend=True` will not cause the expansion of those nodes to slot nodes, because
+          the phrase node is already expanded to the target type of the format;
+
+
+    ???+ hint "memory aid"
+        *   If *fmt* is explicitly passed, it will be the format used no matter what,
+            and it determines the level of the nodes to descend to;
+        *   Descending is the norm, it can only be prevented by setting default formats
+            for node types or by passing `descend=False` to `T.text()`;
+        *   `descend=True` is stronger than type-specific default formats, but weaker than 
+            explicitly passed formats;
+        *   **Pass `explain=True` for a dynamic explanation.**
 
     ??? note "Non slot nodes allowed"
         In most cases, the nodes fed to `T.text()` are slots, and the formats are

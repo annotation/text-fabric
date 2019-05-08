@@ -209,7 +209,8 @@ class CV(object):
           featureSet = set()
           features = varRe.findall(v)
           for ff in features:
-            for f in ff.split('/'):
+            fr = ff.rsplit(':', maxsplit=1)[0]
+            for f in fr.split('/'):
               featureSet.add(f)
           textFormats[k[4:]] = featureSet
           textFeatures |= featureSet

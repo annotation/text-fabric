@@ -243,16 +243,19 @@ def nbytes(by):
 
 
 def collectFormats(config):
-  varPattern = re.compile(r'\{([^}]+)\}')
+  varPattern = re.compile(r'\{([^}]+?)(:[^}]+)?\}')
   featureSet = set()
 
   def collectFormat(tpl):
     features = []
+    default = ''
 
     def varReplace(match):
+      nonlocal default
       varText = match.group(1)
+      default = (match.group(2) or ':')[1:]
       fts = tuple(varText.split('/'))
-      features.append(fts)
+      features.append((fts, default))
       for ft in fts:
         featureSet.add(ft)
       return '{}'
@@ -265,47 +268,6 @@ def collectFormats(config):
     if fmt.startswith('fmt:'):
       formats[fmt[4:]] = collectFormat(tpl)
   return (formats, sorted(featureSet))
-
-
-def compileFormats(cformats, features):
-  xformats = {}
-  for (fmt, (rtpl, feats)) in sorted(cformats.items()):
-    tpl = rtpl.replace('\\n', '\n').replace('\\t', '\t')
-    xformats[fmt] = compileFormat(tpl, feats, features)
-  return xformats
-
-
-def compileFormat(rtpl, feats, features):
-  replaceFuncs = []
-  for feat in feats:
-    replaceFuncs.append(makeFunc(feat, features))
-
-  def g(n):
-    values = tuple(replaceFunc(n) for replaceFunc in replaceFuncs)
-    return rtpl.format(*values)
-
-  return g
-
-
-def makeFunc(feat, features):
-  if len(feat) == 1:
-    ft = feat[0]
-    f = features[ft].data
-    return (lambda n: f.get(n, ''))
-  elif len(feat) == 2:
-    (ft1, ft2) = feat
-    f1 = features[ft1].data
-    f2 = features[ft2].data
-    return (lambda n: (f1.get(n, f2.get(n, ''))))
-  else:
-    def getValue(n):
-      v = None
-      for ft in feat:
-        v = features[ft].data.get(n, None)
-        if v is not None:
-          break
-      return v or ''
-    return getValue
 
 
 def itemize(string, sep=None):

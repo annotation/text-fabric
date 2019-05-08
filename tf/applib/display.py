@@ -3,7 +3,8 @@ import types
 
 from ..parameters import URL_TFDOC, DOWNLOADS
 from ..core.helpers import mdEsc, htmlEsc, flattenToSet
-from .helpers import RESULT, dh
+from .app import findAppConfig
+from .helpers import configure, RESULT, dh
 from .links import outLink
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights, getHlAtt
@@ -649,15 +650,22 @@ def getFeatures(
   return featurePart
 
 
-def loadCss(app):
+def loadCss(app, reload=False):
   '''
   The CSS is looked up and then loaded into a notebook if we are not
   running in the TF browser,
   else the CSS is returned.
+
+  With reload=True, the app-specific display.css will be read again from disk
   '''
   _asApp = app._asApp
   if _asApp:
     return app.css
+
+  if reload:
+    config = findAppConfig(app.appName, app.appPath)
+    cfg = configure(config, app.version)
+    app.css = cfg['css']
 
   hlCssFile = (
       f'{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}'

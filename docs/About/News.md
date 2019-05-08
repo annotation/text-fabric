@@ -41,6 +41,24 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
+## 7.7.0
+
+2019-05-08
+
+Big improvement on `T.text()`.
+It now accepts one or more nodes of arbitrary types and produces text
+for them all.
+
+Largely backward compatible, in that:
+
+*   it takes the same arguments
+*   when it produced sensisble results, it will produce the same results
+*   when it produced nothing, it will now produce sensible things, in many cases.
+
+You have to use the `descend` parameter a lot less.
+
+See the [docs](../Api/Text.md#text-representation)
+
 ## 7.6.8
 
 2019-05-02
