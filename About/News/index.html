@@ -317,6 +317,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#770" title="7.7.0" class="md-nav__link">
+    7.7.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#768" title="7.6.8" class="md-nav__link">
     7.6.8
   </a>
@@ -1632,6 +1639,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#770" title="7.7.0" class="md-nav__link">
+    7.7.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#768" title="7.6.8" class="md-nav__link">
     7.6.8
   </a>
@@ -2066,6 +2080,19 @@ To get the newest unstable version:</p>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
 <h3 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h3>
 <hr />
+<h2 id="770">7.7.0<a class="headerlink" href="#770" title="Permanent link">&para;</a></h2>
+<p>2019-05-08</p>
+<p>Big improvement on <code>T.text()</code>.
+It now accepts one or more nodes of arbitrary types and produces text
+for them all.</p>
+<p>Largely backward compatible, in that:</p>
+<ul>
+<li>it takes the same arguments</li>
+<li>when it produced sensisble results, it will produce the same results</li>
+<li>when it produced nothing, it will now produce sensible things, in many cases.</li>
+</ul>
+<p>You have to use the <code>descend</code> parameter a lot less.</p>
+<p>See the <a href="../../Api/Text/#text-representation">docs</a></p>
 <h2 id="768">7.6.8<a class="headerlink" href="#768" title="Permanent link">&para;</a></h2>
 <p>2019-05-02</p>
 <p>There is an extra <code>cv.occurs()</code> function to check whether a feature actually

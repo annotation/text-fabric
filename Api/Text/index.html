@@ -1462,7 +1462,7 @@ and <code>T.bookNode()</code> we have then <code>T.tabletName()</code> and <code
 <h2 id="text-representation">Text representation<a class="headerlink" href="#text-representation" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Text formats</summary><p>Text can be represented in multiple ways. We provide a number of formats with
 structured names.</p>
-<p>A format name is a string of keywords separated by <code>-</code>:</p>
+<details><summary>format names</summary><p>A format name is a string of keywords separated by <code>-</code>:</p>
 <p><em>what</em><code>-</code><em>how</em><code>-</code><em>fullness</em><code>-</code><em>modifier</em></p>
 <p>For Hebrew any combination of the follwoing could be useful formats:</p>
 <table>
@@ -1518,12 +1518,57 @@ structured names.</p>
 </table>
 <p>The default format is <code>text-orig-full</code>, we assume that every TF dataset defines
 this format.</p>
-<p>TF datasets may also define formats of the form <em>nodetype</em><code>-default</code> where <em>nodetype</em> is a valid type
-of node in the dataset. These formats have a special meaning for Text-Fabric.</p>
+</details>
+<details><summary>format content</summary><p>A format is a template string, with fixed text and variable text.
+The variable text comes from features.
+You specify the interpolation of features by surrounding the feature name
+by <code>{ }</code>.</p>
+<p>For example, if <code>letters</code> and <code>after</code> are features, this is a text format:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>{letters}{after}
+</pre></div>
+</td></tr></table>
+
+<p>If you need tabs and newlines in a format, specify them by \t and \n.</p>
+<p>You can also conditionally choose between features, to
+substitute the value of another feature in case of empty values.</p>
+<p>For example, if you want to use the <code>normal</code> feature to represent a word,
+but if there is also a rare feature <code>special</code> that you want to use if it
+is defined for that word, you can make a format</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>{special/normal}
+</pre></div>
+</td></tr></table>
+
+<p>This tries the feature <code>special</code> first, and if that is empty, it takes
+<code>normal</code>.</p>
+<p>You can also add a fixed default. If you want to display a <code>.</code> if
+neither <code>special</code> nor <code>normal</code> exist, you can say</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>{special/normal:.}
+</pre></div>
+</td></tr></table>
+
+</details>
+<details open="open"><summary>formats specialized to a node type</summary><p>TF datasets may also define formats of the form</p>
+<p><em>nodetype</em><code>-default</code></p>
+<p>where <em>nodetype</em> is a valid type of node in the dataset.</p>
+<p>These formats will be invoked in cases where no explicit format is specified as
+a fall back for some kind of nodes. See <code>T.text()</code> below.</p>
+</details>
+<details open="open"><summary>target node types for formats</summary><p>A node type may also be prepended to a format, with <code>#</code> as separator:</p>
+<p><em>nodetype</em><code>#</code><em>textformat</em></p>
+<p>In general, a format can be applied to any kind of node, and it will 
+lookup the features defined in its template for that node.
+But some features have meaningful values for particular node types only.</p>
+<p>So formats may indicate that they should be applied to nodes of a specific type.
+See <code>T.text()</code> below.</p>
+</details>
 <p>Remember that the formats are defined in the <code>otext</code> warp config feature of your
 set, not by Text-Fabric.</p>
 <details class="note"><summary>Freedom of names for formats</summary><p>There is complete freedom of choosing names for text formats.
 They do not have to complied with the above-mentioned scheme.</p>
+</details>
+<details open="open"><summary>layout in formats</summary><p>So far, text formats only result in plain text.
+A <a href="../../Implementation/Apps/">TF-app</a> may define and implement extra text
+formats which may invoke all HTML+CSS styling that you can think of.</p>
 </details>
 </details>
 <details class="abstract"><summary>T.formats</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">formats</span>
@@ -1534,42 +1579,53 @@ They do not have to complied with the above-mentioned scheme.</p>
 </details>
 </details>
 <details class="abstract"><summary>T.text()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
-2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-<span class="n">T</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">descend</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<span class="n">T</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">descend</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<span class="n">T</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">descend</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">explain</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
 <details class="info" open="open"><summary>Description</summary><p>Gives the text that corresponds to a bunch of nodes.</p>
 </details>
-<details class="info"><summary>nodes</summary><p><code>nodes</code> can be an arbitrary iterable of nodes.
+<details class="info"><summary>nodes</summary><p><code>nodes</code> can be a single node or an arbitrary iterable of nodes
+of arbitrary types.
 No attempt will be made to sort the nodes.
 If you need order, it is
 better to order the nodes before you feed them to <code>T.text()</code>.</p>
 </details>
-<details class="info"><summary>fmt</summary><p>The format of text-representation is given with <code>fmt</code>, with default <code>text-orig-full</code>.
-If the <code>fmt</code>
-cannot be found, the default is taken.</p>
-<p>The default is <code>text-orig-full</code> if the first argument is an iterable of <code>nodes</code>.</p>
-<p>The default is <em>nodetype</em><code>-default</code>
-if the first argument is a single <code>node</code> with type <em>nodetype</em>.</p>
-<p>If the default format is not defined in the
-<code>otext</code> feature of the dataset,
-what will happen is dependent on the first argument, <code>nodes</code> or <code>node</code>.</p>
-<p>If the argument is an iterable of <code>nodes</code>,
-for each node its node type and node number
-will be output, connected with a <code>_</code> .</p>
-<p>If the argument is a single <code>node</code>,
-Text-Fabric will look up de slot nodes contained in it
-(by means of <code>L.d(node, otype=slotType)</code>
-and format them with <code>text-orig-full</code>.</p>
-<p>If the format <strong>is</strong> defined, and the first argument
-is a single <code>node</code>, 
-Text-Fabric will apply that format to the node itself,
-not to the slots contained in that node.</p>
-<p>But you can override that by means of <code>descend=True</code>.
-In that case, regardless of the format,
-the <code>node</code> will be replaced by the slot nodes contained in it,
-before applying the format.</p>
+<details class="info"><summary>fmt</summary><p>The format of the text representation is given with <code>fmt</code>.</p>
+<p>If it is not specified or None, each node will be formatted with
+a node type specific format, defined as <em>nodeType</em><code>-default</code>, if it
+exists.</p>
+<p>If there is no node specific format, the default format
+<code>text-orig-full</code> will be used.</p>
+<p>If <code>text-orig-full</code> is not defined, an error message will be issued,
+and the nodes will be represented by their types and numbers.</p>
+<p>If a value for <em>fmt</em> is passed, but it is not a format defined in the
+<em>otext.tf</em> feature, there will be an error message and <code>None</code> is returned.</p>
+</details>
+<details class="info"><summary>descend</summary><p>Whether to descend to constituent nodes.</p>
+<p>If True, nodes will be replaced by a sequence of their consituent nodes,
+which have a type specified by the format chosen, or, if the format does
+not specify such a type, the node will be replaced by the slots contained in it.</p>
+<p>If False, nodes will not be replaced.</p>
+<p>If <em>descend</em> is not specified or None,
+a node will be replaced by its constituent nodes,
+unless its type is associated with the given format or,
+if no format is given, by the default format of its type, or,
+if there is no such format, by its slots.</p>
+<details class="caution"><summary>no nodes to descend to</summary><p>If you call <code>T.text(n, fmt=myfmt)</code>
+and <code>myfmt</code> is targeted to a node type that is
+bigger than the node type of <code>n</code>,
+then the so-called descending leads to an empty
+sequence of nodes and hence to an empty string.</p>
+</details>
+</details>
+<details class="info"><summary>explain</summary><p>The logic of this function is subtle.
+If you call it and the results baffles you, pass <code>explain=True</code>
+and it will explain what it is doing.</p>
+</details>
 <details class="hint"><summary>The default is sensible</summary><p>Consider the simplest call to this function: <code>T.text(node)</code>.
 This will apply the default format to <code>node</code>.
 If <code>node</code> is non-slot, then in most cases
@@ -1579,7 +1635,7 @@ is not obtained by descending down
 to the contained slot nodes, the dataset may define
 special default types that use other
 features to furnish a decent representation.</p>
-<details class="example"><summary>lexemes</summary><p>In the some corpora case this happens for the type of lexemes: <code>lex</code>.
+<details class="example"><summary>lexemes</summary><p>In some corpora case this happens for the type of lexemes: <code>lex</code>.
 Lexemes contain their occurrences
 as slots, but the representation of a lexeme
 is not the string of its occurrences, but
@@ -1589,28 +1645,41 @@ this is the only thing needed to regulate the representation of a lexeme.</p>
 <p>Hence, <code>T.text(lx)</code> results in the lexeme representation of <code>lx</code>.</p>
 <p>But if you really want to print out all occurrences of lexeme <code>lx</code>,
 you can say <code>T.text(lx, descend=True)</code>.</p>
-<p>Beware of this, however:</p>
-<p><code>T.text(phr)</code> prints the full text of <code>phr</code> if <code>phr</code> is a phrase node.</p>
-<p><code>T.text(phr, fmt='text-orig-full')</code> prints the empty string. Why?</p>
-<p><code>T.text(phr, fmt='text-orig-full', descend=True)</code>
-prints the full text of the phrase.</p>
-<p>In the first case there is no <code>fmt</code> argument,
-so the default is taken,
-which would be <code>phrase-default</code>.
-But this format does not exists, so Text-Fabric
-descends to the words of the phrase and applies <code>text-orig-full</code> to them.</p>
-<p>In the second case, there is a <code>fmt</code> argument, so Text-Fabric applies that 
-to the <code>node</code>. But <code>text-orig-full</code> uses features that have values on words,
-not on phrases.</p>
-<p>The third case is what you probably wanted, and this is what you need if you 
-want to print the phrase in non-default formats:</p>
-<p><code>T.text(phr, fmt='text-phono-full', descend=True)</code></p>
+</details>
+<details class="example"><summary>words and signs</summary><p>In some corpora the characters or signs are the slot level, and there is
+a non slot level of words. 
+Some text formats are best defined on signs, others best on words.</p>
+<p>For example, if words are associated with lexemes, stored in a word
+feature <code>lex</code>, we can define a text format</p>
+<p><code>lex-orig-full=word#{lex}</code></p>
+<p>When you call <code>T.text(n)</code> for a non-slot, non-word node,
+normally the node will be replaced by the slot nodes it contains,
+before applying the template in the format.
+But if you pass a format that specifies a different node type,
+nodes will be replaced by contained nodes of that type. So </p>
+<p><code>T.text(n, fmt='lex-orig-full')</code></p>
+<p>will lookup all word nodes under n and apply the template <code>{lex}</code> to them.</p>
 </details>
 </details>
-<details class="caution"><summary>No error messages</summary><p>This function does not give error messages,
-because that could easily overwhelm
-the output stream, especially in a notebook.</p>
+<details class="caution" open="open"><summary>same and different behaviours</summary><p>The consequences of the rules might be unexpected in some cases.
+Here are a few observations:</p>
+<ul>
+<li>formats like <code>phrase-default</code> can be implicitly invoked for phrase nodes,
+  but <code>descend=True</code> prevents that;</li>
+<li>when a format targeted at phrases is invoked for phrase nodes,
+  <code>descend=True</code> will not cause the expansion of those nodes to slot nodes, because
+  the phrase node is already expanded to the target type of the format;</li>
+</ul>
 </details>
+<details class="hint" open="open"><summary>memory aid</summary><ul>
+<li>If <em>fmt</em> is explicitly passed, it will be the format used no matter what,
+    and it determines the level of the nodes to descend to;</li>
+<li>Descending is the norm, it can only be prevented by setting default formats
+    for node types or by passing <code>descend=False</code> to <code>T.text()</code>;</li>
+<li><code>descend=True</code> is stronger than type-specific default formats, but weaker than 
+    explicitly passed formats;</li>
+<li><strong>Pass <code>explain=True</code> for a dynamic explanation.</strong></li>
+</ul>
 </details>
 <details class="note"><summary>Non slot nodes allowed</summary><p>In most cases, the nodes fed to <code>T.text()</code> are slots, and the formats are
 templates that use features that are defined for slots.</p>
