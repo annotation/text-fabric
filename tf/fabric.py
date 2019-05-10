@@ -445,8 +445,11 @@ Api reference : {APIREF}
       return None
     api = Api(self)
 
-    setattr(api.F, WARP[0], OtypeFeature(api, self.features[WARP[0]].data))
-    setattr(api.E, WARP[1], OslotsFeature(api, self.features[WARP[1]].data))
+    w0info = self.features[WARP[0]]
+    w1info = self.features[WARP[1]]
+
+    setattr(api.F, WARP[0], OtypeFeature(api, w0info.metaData, w0info.data))
+    setattr(api.E, WARP[1], OslotsFeature(api, w1info.metaData, w1info.data))
 
     sectionFeats = []
     if WARP[2] in self.features:
@@ -470,9 +473,9 @@ Api reference : {APIREF}
             if fName in WARP:
               continue
             elif fObj.isEdge:
-              setattr(api.E, fName, EdgeFeature(api, fObj.data, fObj.edgeValues))
+              setattr(api.E, fName, EdgeFeature(api, fObj.metaData, fObj.data, fObj.edgeValues))
             else:
-              setattr(api.F, fName, NodeFeature(api, fObj.data))
+              setattr(api.F, fName, NodeFeature(api, fObj.metaData, fObj.data))
           else:
             if (fName in WARP or fName in sectionFeats or fName in self._formatFeats):
               continue
@@ -514,10 +517,10 @@ Api reference : {APIREF}
               continue
             elif fObj.isEdge:
               if not hasattr(api.E, fName):
-                setattr(api.E, fName, EdgeFeature(api, fObj.data, fObj.edgeValues))
+                setattr(api.E, fName, EdgeFeature(api, fObj.metaData, fObj.data, fObj.edgeValues))
             else:
               if not hasattr(api.F, fName):
-                setattr(api.F, fName, NodeFeature(api, fObj.data))
+                setattr(api.F, fName, NodeFeature(api, fObj.metaData, fObj.data))
           else:
             if (fName in WARP or fName in sectionFeats or fName in self._formatFeats):
               continue

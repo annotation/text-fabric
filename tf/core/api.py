@@ -49,8 +49,9 @@ API_REFS = dict(
 
 class OtypeFeature(object):
 
-  def __init__(self, api, data=None):
+  def __init__(self, api, metaData, data):
     self.api = api
+    self.meta = metaData
     self.data = data
     self.slotType = self.data[-2]
     self.maxSlot = self.data[-1]
@@ -84,8 +85,9 @@ class OtypeFeature(object):
 
 class OslotsFeature(object):
 
-  def __init__(self, api, data=None):
+  def __init__(self, api, metaData, data):
     self.api = api
+    self.meta = metaData
     self.data = data
     self.maxSlot = self.data[-1]
 
@@ -102,8 +104,9 @@ class OslotsFeature(object):
 
 class NodeFeature(object):
 
-  def __init__(self, api, data):
+  def __init__(self, api, metaData, data):
     self.api = api
+    self.meta = metaData
     self.data = data
 
   def v(self, n):
@@ -135,8 +138,9 @@ class NodeFeature(object):
 
 class EdgeFeature(object):
 
-  def __init__(self, api, data, doValues):
+  def __init__(self, api, metaData, data, doValues):
     self.api = api
+    self.meta = metaData
     self.doValues = doValues
     if type(data) is tuple:
       self.data = data[0]

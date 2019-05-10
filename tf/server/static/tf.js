@@ -380,7 +380,8 @@ const filterS0 = () => {
   const s0items = $('.s0nav')
   const total = s0items.length
 
-  const applyFilter = filterValue => {
+  const applyFilter = filterValueRaw => {
+    const filterValue = filterValueRaw.toLowerCase()
     let s = 0
     s0items.each((i, elem) => {
       const el = $(elem)

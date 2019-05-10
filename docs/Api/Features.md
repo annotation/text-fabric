@@ -27,6 +27,33 @@
         There are other functions that give you the loaded node features (`Fall()`)
         and the loaded edge features (`Eall()`).
 
+??? abstract "TF.features"
+    A dictionary of all features that TF has found, whether loaded or not.
+    Under each feature name is all info about that feature.
+
+    ???+ caution "Do not print!"
+        If a feature is loaded, its data is also in the feature info.
+        This can be an enormous amount of information, and you can easily
+        overwhelm your notebook if you print it.
+
+    The best use of this is to get the metadata of features:
+
+    ```python
+    TF.features['otype'].metaData
+    ```
+
+    This works for all features that have been found, not just `otype`,
+    whether the feature is loaded or not.
+
+    ???+ hint "Use F"
+        If the feature is loaded, use
+
+        ```python
+        F.otype.meta
+        ```
+
+        or for any other loaded feature than `otype`.
+
 ### Node features
 
 ???+ info "F"
@@ -91,6 +118,13 @@
     ??? note "Simple forms"
         In the sequel we'll give examples based on the simple form only.
 
+
+??? abstract "F.*feature*.meta"
+    ```python
+    F.part_of_speech.meta
+    ```
+
+    The dictionary of meta data found at the start of the `part_of_speech.tf` file.
 
 ??? abstract "F.*feature*.v(node)"
     ```python
@@ -210,6 +244,13 @@
 
     ??? note "Simple forms"
         In the sequel we'll give examples based on the simple form only.
+
+??? abstract "E.*feature*.meta"
+    ```python
+    E.head.meta
+    ```
+
+    The dictionary of meta data found at the start of the `head.tf` file.
 
 ??? abstract "E.*feature*.f(node)"
     ```python

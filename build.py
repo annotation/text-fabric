@@ -204,7 +204,8 @@ def shipDocs():
 
 
 def shipData(app, remaining):
-  (commit, appDir) = findApp(app, True, False)
+  result = findApp(app, 'clone', silent=False)
+  appDir = f'{result[3]}/{result[4]}'
   if not appDir:
     console('Data not shipped')
   config = findAppConfig(app, appDir)

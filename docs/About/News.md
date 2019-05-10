@@ -41,6 +41,21 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
+## 7.7.1
+
+2019-05-10
+
+*   You can ask the meta data of any feature by `TF.features['featureName'].metaData`.
+    That is not new.
+    You can get it also by `F.featureName.meta`, for node features
+    and `E.featureName.meta` for edge features.
+    Both only work for loaded features.
+    This is a bit more crisp.
+    Thanks to Ernst Boogert for bringing this up.
+*   In the TF browser, in the control where you select a book/document/scroll:
+    the chosen item disappeared from the view if you narrowed down the list by typing
+    a capital letter. Fixed.
+
 ## 7.7.0
 
 2019-05-08
