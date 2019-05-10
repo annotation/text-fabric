@@ -1325,6 +1325,27 @@ There are other functions that give you the loaded node features (<code>Fall()</
 and the loaded edge features (<code>Eall()</code>).</p>
 </details>
 </details>
+<details class="abstract"><summary>TF.features</summary><p>A dictionary of all features that TF has found, whether loaded or not.
+Under each feature name is all info about that feature.</p>
+<details class="caution" open="open"><summary>Do not print!</summary><p>If a feature is loaded, its data is also in the feature info.
+This can be an enormous amount of information, and you can easily
+overwhelm your notebook if you print it.</p>
+</details>
+<p>The best use of this is to get the metadata of features:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="s1">&#39;otype&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">metaData</span>
+</pre></div>
+</td></tr></table>
+
+<p>This works for all features that have been found, not just <code>otype</code>,
+whether the feature is loaded or not.</p>
+<details class="hint" open="open"><summary>Use F</summary><p>If the feature is loaded, use</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">otype</span><span class="o">.</span><span class="n">meta</span>
+</pre></div>
+</td></tr></table>
+
+<p>or for any other loaded feature than <code>otype</code>.</p>
+</details>
+</details>
 <h3 id="node-features">Node features<a class="headerlink" href="#node-features" title="Permanent link">&para;</a></h3>
 <details class="info" open="open"><summary>F</summary><p>The node features API is exposed as <code>F</code> (<code>Fs</code>) or <code>Feature</code> (<code>FeatureString</code>).</p>
 </details>
@@ -1383,6 +1404,12 @@ Then the result of</code>Fs(feature)<code>and</code>F.pos` is identical.</p>
 </details>
 <details class="note"><summary>Simple forms</summary><p>In the sequel we'll give examples based on the simple form only.</p>
 </details>
+</details>
+<details class="abstract"><summary>F.<em>feature</em>.meta</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">part_of_speech</span><span class="o">.</span><span class="n">meta</span>
+</pre></div>
+</td></tr></table>
+
+<p>The dictionary of meta data found at the start of the <code>part_of_speech.tf</code> file.</p>
 </details>
 <details class="abstract"><summary>F.<em>feature</em>.v(node)</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">part_of_speech</span><span class="o">.</span><span class="n">v</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 </pre></div>
@@ -1490,6 +1517,12 @@ Then the result of</code>Es(feature)<code>and</code>E.pos` is identical.</p>
 </details>
 <details class="note"><summary>Simple forms</summary><p>In the sequel we'll give examples based on the simple form only.</p>
 </details>
+</details>
+<details class="abstract"><summary>E.<em>feature</em>.meta</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">E</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">meta</span>
+</pre></div>
+</td></tr></table>
+
+<p>The dictionary of meta data found at the start of the <code>head.tf</code> file.</p>
 </details>
 <details class="abstract"><summary>E.<em>feature</em>.f(node)</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">E</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 </pre></div>

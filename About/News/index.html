@@ -317,6 +317,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#771" title="7.7.1" class="md-nav__link">
+    7.7.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#770" title="7.7.0" class="md-nav__link">
     7.7.0
   </a>
@@ -1639,6 +1646,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#771" title="7.7.1" class="md-nav__link">
+    7.7.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#770" title="7.7.0" class="md-nav__link">
     7.7.0
   </a>
@@ -2080,6 +2094,20 @@ To get the newest unstable version:</p>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
 <h3 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h3>
 <hr />
+<h2 id="771">7.7.1<a class="headerlink" href="#771" title="Permanent link">&para;</a></h2>
+<p>2019-05-10</p>
+<ul>
+<li>You can ask the meta data of any feature by <code>TF.features['featureName'].metaData</code>.
+    That is not new.
+    You can get it also by <code>F.featureName.meta</code>, for node features
+    and <code>E.featureName.meta</code> for edge features.
+    Both only work for loaded features.
+    This is a bit more crisp.
+    Thanks to Ernst Boogert for bringing this up.</li>
+<li>In the TF browser, in the control where you select a book/document/scroll:
+    the chosen item disappeared from the view if you narrowed down the list by typing
+    a capital letter. Fixed.</li>
+</ul>
 <h2 id="770">7.7.0<a class="headerlink" href="#770" title="Permanent link">&para;</a></h2>
 <p>2019-05-08</p>
 <p>Big improvement on <code>T.text()</code>.
