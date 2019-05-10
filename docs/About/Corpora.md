@@ -17,6 +17,7 @@ The list of current apps is
 acronym | language/writing system | name | period | long name
 --- | --- | --- | --- | ---
 [bhsa]({{anapp}}bhsa) | Hebrew | Hebrew Bible | 1000 BC - 900 AD | [Biblia Hebraica Stuttgartensia (Amstelodamensis)]({{bhsaabout}})
+[dss]({{anapp}}dss) | Hebrew | Dead Sea Scrolls | 300 BC - 100 AD | [Transcriptions based on Martin Abegg's data files]({{dssabout}})
 [peshitta]({{anapp}}peshitta) | Syriac | Syriac Old Testament | 1000 BC - 900 AD | [Vetus Testamentum Syriace]({{peshittaabout}})
 [syrnt]({{anapp}}syrnt) | Syriac | Syriac New Testament | 0 - 1000 AD | [Novum Testamentum Syriace]({{syrntabout}})
 [quran]({{anapp}}quran) | Arabic | Quran | 600 - 900 AD | [Quranic Arabic Corpus]({{quranabout}})
