@@ -559,6 +559,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#structure" title="Structure" class="md-nav__link">
+    Structure
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#sections" title="Sections" class="md-nav__link">
     Sections
   </a>
@@ -1257,6 +1264,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#structure" title="Structure" class="md-nav__link">
+    Structure
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#sections" title="Sections" class="md-nav__link">
     Sections
   </a>
@@ -1300,10 +1314,9 @@
 <details class="info"><summary>Overview</summary><p>Here are the functions that enable you to get the actual text in the dataset.
 There are several things to accomplish here, such as</p>
 <ul>
-<li>getting text given book, chapter, and verse;</li>
-<li>given a node, produce the book, chapter and verse indicators in which the node
-    is contained;</li>
-<li>handle multilingual book names;</li>
+<li>support the structure of the corpus</li>
+<li>support a rigid section system usable by the TF browser</li>
+<li>handle multilingual section labels;</li>
 <li>switch between various text representations.</li>
 </ul>
 <p>The details of the Text API are dependent on the <em>warp</em> feature <code>otext</code>, which
@@ -1311,11 +1324,148 @@ is a config feature.</p>
 </details>
 <details class="info" open="open"><summary>T</summary><p>The Text API is exposed as <code>T</code> or <code>Text</code>.</p>
 </details>
+<details class="note"><summary>otext is optional</summary><p>If <code>otext</code> is missing, the Text API will not be build. If it exists, but
+does not specify structure or sections,
+those parts of the Text API will not be built.
+Likewise for text representations.</p>
+</details>
+<h2 id="structure">Structure<a class="headerlink" href="#structure" title="Permanent link">&para;</a></h2>
+<details class="explanation"><summary>Structure types</summary><p>If a corpus has sectional elements, such as
+series, volume, book, part, document, chapter, fragment, verse, halfverse,
+line, etc, then you can configure those elements as structural types.</p>
+<p>If your TF dataset designer has done that, the <code>T.api</code> will provide a number
+of handy functions to navigate your corpus along its structure, programmatically.</p>
+<p>The
+<a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/structure.ipynb">banks</a>
+example corpus shows a full example.</p>
+<p>Structure is defined in the <code>otext</code> feature, by means of the keys
+<code>structureTypes</code> and <code>structureFeatures</code>.
+These are comma-separated lists of equal length.</p>
+<p><code>structureTypes</code> specifies the node types
+that act as structural types, in the order from biggest to smallest.</p>
+<p><code>structureFeatures</code> specifies a feature that corresponds to each
+structural type. This feature must contain the label of the structural
+element, e.g. the title of a book, the number of a verse, etc.</p>
+<p>The order of the section types is significant.
+Suppose you have a book with a single chapter. Is the chapter part of the book,
+or is the book part of the chapter?
+The order decides. If <code>book</code> is mentioned in <code>structureTypes</code> before <code>chapter</code>
+then the chapter is part of the book, and not the other way around.</p>
+<p>However, it is allowed to have nesting of elements of the same kind.</p>
+</details>
+<details class="caution"><summary>Proper embedding not required</summary><p>There are no assumptions on how exactly the structural elements lie
+embedded in each other, and whether they consist of uninterrupted stretches
+of material or not.</p>
+<p>Suppose a we have a book with two disjoint chapters and there is a verse that
+has material in both chapters. Then that verse is part of neither chapter,
+but it is still part of the book.
+If you go down from that book to its substructural elements, you find not only
+its chapters, but also that verse. </p>
+<p>So the great freedom with respect to structural elements also brings greater
+responsibility when using that structure.</p>
+</details>
+<details class="abstract"><summary>T.structureInfo()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">structureInfo</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+
+<p>Gives a summary of how structure has bee configured in the dataset.
+If there are headings that are the same for multiple structural nodes,
+you'll get a warning here, and you are told how you can get all of those.</p>
+<p>It also shows a short description of all structure-related methods
+of the <code>T</code> API.</p>
+</details>
+<details class="abstract"><summary>T.structure()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">structure</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Gives the structure of <code>node</code> and everything below it as a tuple.
+If <code>node</code> is None, it gives the complete structure of the whole dataset.</p>
+</details>
+<details class="abstract"><summary>T.structurePretty()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">structure</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fullHeading</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Gives the structure of <code>node</code> and everything below it as a string
+with pretty indentation..
+If <code>node</code> is None, it gives the complete structure of the whole dataset.</p>
+<p>For each structural element, only its own heading is added.</p>
+<p>But if you want to see the full heading, consisting of the headings of a
+node and all of its parents, you can get that if you pass
+<code>fullHeading=True</code>.</p>
+</details>
+<details class="abstract"><summary>T.top()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">top</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+
+<p>Gives all top-level structural nodes in the dataset.
+These are the nodes that are not embedded in a structural node of the same
+or a higher level.</p>
+</details>
+<details class="abstract"><summary>T.up()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Gives the parent of <code>node</code>, provided <code>node</code> is structural.
+The parent is that structural node that has the heading you get from
+<code>node</code> minus the last element.</p>
+<p>E.g., the parent of <code>((book, Genesis), (chapter, 3), (verse, 16))</code> is the node
+that has heading <code>((book, Genesis), (chapter, 3))</code>.</p>
+</details>
+<details class="abstract"><summary>T.down()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">down</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Gives the children of <code>node</code>, provided <code>node</code> is structural.
+The children are those structural nodes that have headings that are one
+longer than the one you get from <code>node</code>.</p>
+<p>E.g., the children of <code>((book, Genesis), (chapter, 3))</code> are the nodes
+with heading <code>((book, Genesis), (chapter, 3), (verse, 1))</code>, etc.</p>
+</details>
+<details class="abstract"><summary>T.headingFromNode()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">headingFromNode</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Gives the full heading of <code>node</code>, provided <code>node</code> is structural.</p>
+<p>The heading is defined of the tuple of pairs (node type, feature value)
+for all ancestors of that node. </p>
+<p>E.g., the heading of the verse node corresponding to Genesis 3:16
+is <code>((book, Genesis), (chapter, 3), (verse, 16))</code>.</p>
+<p>If you are interested in the complete mapping: it is stored in 
+the dictionary <code>T.hdFromNd</code>.</p>
+</details>
+<details class="abstract"><summary>T.nodeFromHeading()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">T</span><span class="o">.</span><span class="n">nodeFromHeading</span><span class="p">(</span><span class="n">heading</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Gives the full node corresponding to a heading, provided it exists.
+It is the inverse of <code>T.headingFromNode()</code>.</p>
+<p>If you are interested in the complete mapping: it is stored in 
+the dictionary <code>T.ndFromHd</code>.</p>
+<p>If there is more than one node that corresponds to the heading, only the last
+one in the corpus will be returned.</p>
+<p><code>T.hdMult</code> contains all such cases.</p>
+</details>
 <h2 id="sections">Sections<a class="headerlink" href="#sections" title="Permanent link">&para;</a></h2>
 <details class="explanation"><summary>Section levels</summary><p>In <code>otext</code> the main section levels (usually <code>book</code>, <code>chapter</code>, <code>verse</code>) can be
 defined. It loads the features it needs (so you do not have to specify those
 features, unless you want to use them via <code>F</code>). And finally, it makes some
 functions available by which you can make handy use of that information.</p>
+<details class="note"><summary>Section levels from a limited, rigid system</summary><p>There are up to three section levels, and this is a hard coded boundary.
+That makes this section system unsuitable to faithfully reflect the
+rich sectioning that may be present in a corpus.</p>
+<p>On the other hand, applications (such as TF apps) can access a predictable
+sectioning system by which they can chunk the material in practical portions.</p>
+<p>The rule of thumb is:</p>
+<p>Level 1 divides the corpus into top level units,
+of which there might be (very) many. The TF browser has a control that
+can deal with long lists.</p>
+<p>Level 2 divides a level 1 section into a chunk that can be loaded into 
+a webpage, without overwhelming the browser.
+Even better, it should be just one or a few screenfuls of text, when
+represented in <code>plain</code> view.</p>
+<p>Level 3 divides a level 2 section into chunks that roughly corresponds to lines.
+Such lines typically take up one screenful if represented in <code>pretty</code> view.</p>
+</details>
 <details class="note"><summary>Section levels are generic</summary><p>In this documentation, we call the main section level <code>book</code>, the second level
 <code>chapter</code>, and the third level <code>verse</code>. Text-Fabric, however, is completely
 agnostic about how these levels are called. It is prepared to distinguish three
@@ -1331,10 +1481,6 @@ feature <em>valueType</em> as <code>str</code> or as <code>int</code>.</p>
 <p>Conceivably, other works might have chapter and verse numbers
 like <code>XIV</code>, '3A', '4.5', and in those cases these numbers are obviously not
 <code>int</code>s.</p>
-</details>
-<details class="note"><summary>otext is optional</summary><p>If <code>otext</code> is missing, the Text API will not be build. If it exists, but
-does not specify sections, that part of the Text API will not be built. Likewise
-for text representations.</p>
 </details>
 <details class="caution"><summary>levels of node types</summary><p>Usually, Text-Fabric computes the hierarchy of node types correctly, in the
 sense that node types that act as containers have a lower level than node types
@@ -1586,7 +1732,10 @@ formats which may invoke all HTML+CSS styling that you can think of.</p>
 </pre></div>
 </td></tr></table>
 
-<details class="info" open="open"><summary>Description</summary><p>Gives the text that corresponds to a bunch of nodes.</p>
+<details class="info" open="open"><summary>Description</summary><p>Gives the text that corresponds to a bunch of nodes.
+The
+<a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/formats.ipynb">banks</a>
+example corpus shows examples.</p>
 </details>
 <details class="info"><summary>nodes</summary><p><code>nodes</code> can be a single node or an arbitrary iterable of nodes
 of arbitrary types.
