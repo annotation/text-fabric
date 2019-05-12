@@ -226,3 +226,81 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
       error(f'WARNING: {amount:>4} x {msg}')
 
   return (sec1, sec2)
+
+
+def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
+  (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
+  sTypeList = itemize(otext['structureTypes'], ',')
+  nsTypes = len(sTypeList)
+  nsFeats = len(sFeats)
+
+  if nsTypes != nsFeats:
+    error(f'WARNING: {nsTypes} structure levels but {nsFeats} corresponding features')
+    return ({}, {})
+
+  sTypes = set(sTypeList)
+  if len(sTypes) != nsTypes:
+    error(f'WARNING: duplicate structure levels')
+    return ({}, {})
+
+  higherTypes = collections.defaultdict(set)
+  for (i, highType) in enumerate(sTypeList):
+    for lowType in sTypeList[i:]:
+      higherTypes[lowType].add(highType)
+
+  featFromType = {sTypeList[i]: sFeats[i] for i in range(nsTypes)}
+
+  multiple = collections.defaultdict(list)
+  headingFromNode = {}
+  nodeFromHeading = {}
+
+  for n in range(maxSlot + 1, maxNode + 1):
+    nType = otype[n - maxSlot - 1]
+    if nType not in sTypes:
+      continue
+    ups = (u for u in levUp[n - 1] if otype[u - maxSlot - 1] in higherTypes[nType])
+    sKey = tuple(reversed(tuple(
+        (
+            otype[x - maxSlot - 1],
+            featFromType[otype[x - maxSlot - 1]][x],
+        )
+        for x in (n, *ups)
+    )))
+
+    if sKey in nodeFromHeading:
+      if sKey not in multiple:
+        multiple[sKey].append(nodeFromHeading[sKey])
+      multiple[sKey].append(n)
+    nodeFromHeading[sKey] = n
+    headingFromNode[n] = sKey
+  multiple = {
+      sKey: tuple(sorted(
+          ns,
+          key=lambda n: rank[n - 1],
+      ))
+      for (sKey, ns) in multiple.items()
+  }
+
+  top = tuple(sorted(
+      (n for (n, h) in headingFromNode.items() if len(h) == 1),
+      key=lambda n: rank[n - 1],
+  ))
+
+  up = {
+      n: nodeFromHeading[heading[0:-1]]
+      for (n, heading) in headingFromNode.items()
+      if len(heading) > 1
+  }
+
+  down = {}
+  for (n, heading) in headingFromNode.items():
+    if len(heading) == 1:
+      continue
+    down.setdefault(up[n], []).append(n)
+
+  down = {
+      n: tuple(sorted(ms, key=lambda m: rank[m - 1]))
+      for (n, ms) in down.items()
+  }
+
+  return (headingFromNode, nodeFromHeading, multiple, top, up, down)

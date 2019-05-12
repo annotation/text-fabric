@@ -11,6 +11,7 @@ class Text(object):
 
   def __init__(self, api):
     self.api = api
+    C = api.C
     self.languages = {}
     self.nameFromNode = {}
     self.nodeFromName = {}
@@ -19,9 +20,24 @@ class Text(object):
     sectionFeats = itemize(config.get('sectionFeatures', ''), ',')
     self.sectionFeatures = []
     self.sectionFeatureTypes = []
+    self.structureTypes = itemize(config.get('structureTypes', ''), ',')
+    self.structureFeatures = itemize(config.get('structureFeatures', ''), ',')
+    self.structureTypeSet = set(self.structureTypes)
     self.config = config
     self.defaultFormat = DEFAULT_FORMAT
     self.defaultFormats = {}
+    structure = getattr(C, 'structure', None)
+
+    (self.hdFromNd, self.ndFromHd, self.hdMult, self.hdTop, self.hdUp, self.hdDown) = (
+        structure.data
+        if structure else
+        (None, None, None, None, None, None)
+    )
+    self.headings = (
+        ()
+        if structure is None else
+        tuple(zip(self.structureTypes, self.structureFeatures))
+    )
     otypeInfo = api.F.otype
     otype = otypeInfo.v
 
@@ -152,6 +168,163 @@ class Text(object):
       return sec1.get(sec0node, {}).get(section[1], None)
     else:
       return sec2.get(sec0node, {}).get(section[1], {}).get(section[2], None)
+
+  def structureInfo(self):
+    api = self.api
+    info = api.info
+    error = api.error
+    hdMult = self.hdMult
+    hdFromNd = self.hdFromNd
+    headings = self.headings
+
+    if hdFromNd is None:
+      info('No structural elements configured', tm=False)
+      return
+    info(f'A heading is a tuple of pairs (node type, feature value)', tm=False)
+    info(
+        f'\tof node types and features that have been configured as structural elements',
+        tm=False
+    )
+    info(f'These {len(headings)} structural elements have been configured', tm=False)
+    for (tp, ft) in headings:
+      info(f'\tnode type {tp:<10} with heading feature {ft}', tm=False)
+    info(f'You can get them as a tuple with T.headings.', tm=False)
+    info(f'''
+Structure API:
+\tT.structure(node=None)       gives the structure below node, or everything if node is None
+\tT.structurePretty(node=None) prints the structure below node, or everything if node is None
+\tT.top()                      gives all top-level nodes
+\tT.up(node)                   gives the (immediate) parent node
+\tT.down(node)                 gives the (immediate) children nodes
+\tT.headingFromNode(node)      gives the heading of a node
+\tT.nodeFromHeading(heading)   gives the node of a heading
+\tT.ndFromHd                   complete mapping from nodes to headings
+\tT.hdFromNd                   complete mapping from headings to nodes
+\tT.hdMult are all headings    with their nodes that occur multiple times
+
+There are {len(hdFromNd)} structural elements in the dataset.
+''', tm=False)
+
+    if hdMult:
+      nMultiple = len(hdMult)
+      tMultiple = sum(len(x) for x in hdMult.values())
+      error(
+          f'WARNING: {nMultiple} structure headings with hdMult occurrences (total {tMultiple})',
+          tm=False,
+      )
+      for (sKey, nodes) in sorted(hdMult.items())[0:10]:
+        sKeyRep = '-'.join(':'.join(str(p) for p in part) for part in sKey)
+        nNodes = len(nodes)
+        error(f'\t{sKeyRep} has {nNodes} occurrences', tm=False)
+        error(f'\t\t{", ".join(str(n) for n in nodes[0:5])}', tm=False)
+        if nNodes > 5:
+          error(f'\t\tand {nNodes - 5} more', tm=False)
+      if nMultiple > 10:
+        error(f'\tand {nMultiple - 10} headings more')
+
+  def structure(self, node=None):
+    api = self.api
+    error = api.error
+    F = api.F
+    hdTop = self.hdTop
+
+    if hdTop is None:
+      error(f'structure types are not configured')
+      return None
+    if node is None:
+      return tuple(self.structure(node=t) for t in self.top())
+
+    nType = F.otype.v(node)
+    if nType not in self.structureTypeSet:
+      error(f'{node} is an {nType} which is not configured as a structure type')
+      return None
+
+    return (node, tuple(self.structure(node=d) for d in self.down(node)))
+
+  def structurePretty(self, node=None, fullHeading=False):
+    structure = self.structure(node=node)
+    if structure is None:
+      return
+
+    material = []
+
+    def generate(struct, indent=''):
+      if type(struct) is int:
+        sKey = self.headingFromNode(struct)
+        if not fullHeading:
+          sKey = (sKey[-1],)
+        sKeyRep = '-'.join(':'.join(str(p) for p in part) for part in sKey)
+        material.append(f'{indent}{sKeyRep}')
+      else:
+        for item in struct:
+          generate(item, indent=indent + '  ')
+
+    generate(structure)
+    return '\n'.join(material)
+
+  def top(self):
+    api = self.api
+    error = api.error
+    hdTop = self.hdTop
+
+    if hdTop is None:
+      error(f'structure types are not configured')
+      return None
+    return hdTop
+
+  def up(self, n):
+    api = self.api
+    F = api.F
+    error = api.error
+
+    hdUp = self.hdUp
+    if hdUp is None:
+      error(f'structure types are not configured')
+      return None
+    nType = F.otype.v(n)
+    if nType not in self.structureTypeSet:
+      error(f'{n} is an {nType} which is not configured as a structure type')
+      return None
+    return hdUp.get(n, None)
+
+  def down(self, n):
+    api = self.api
+    F = api.F
+    error = api.error
+    hdDown = self.hdDown
+    if hdDown is None:
+      error(f'structure types are not configured')
+      return None
+    nType = F.otype.v(n)
+    if nType not in self.structureTypeSet:
+      error(f'{n} is an {nType} which is not configured as a structure type')
+      return None
+    return hdDown.get(n, ())
+
+  def headingFromNode(self, n):
+    api = self.api
+    F = api.F
+    error = api.error
+    hdFromNd = self.hdFromNd
+    if hdFromNd is None:
+      error(f'structure types are not configured')
+      return None
+    nType = F.otype.v(n)
+    if nType not in self.structureTypeSet:
+      error(f'{n} is an {nType} which is not configured as a structure type')
+      return None
+    return hdFromNd.get(n, None)
+
+  def nodeFromHeading(self, head):
+    api = self.api
+    error = api.error
+    ndFromHd = self.ndFromHd
+    if ndFromHd is None:
+      error(f'structure types are not configured')
+    n = ndFromHd.get(head, None)
+    if n is None:
+      error(f'no structure node with heading {head}')
+    return n
 
   def text(self, nodes, fmt=None, descend=None, func=None, explain=False):
     api = self.api

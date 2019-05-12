@@ -4,10 +4,9 @@
     Here are the functions that enable you to get the actual text in the dataset.
     There are several things to accomplish here, such as
 
-    *   getting text given book, chapter, and verse;
-    *   given a node, produce the book, chapter and verse indicators in which the node
-        is contained;
-    *   handle multilingual book names;
+    *   support the structure of the corpus
+    *   support a rigid section system usable by the TF browser
+    *   handle multilingual section labels;
     *   switch between various text representations.
 
     The details of the Text API are dependent on the *warp* feature `otext`, which
@@ -16,6 +15,160 @@
 ???+ info "T"
     The Text API is exposed as `T` or `Text`.
 
+??? note "otext is optional"
+    If `otext` is missing, the Text API will not be build. If it exists, but
+    does not specify structure or sections,
+    those parts of the Text API will not be built.
+    Likewise for text representations.
+
+## Structure
+
+??? explanation "Structure types"
+    If a corpus has sectional elements, such as
+    series, volume, book, part, document, chapter, fragment, verse, halfverse,
+    line, etc, then you can configure those elements as structural types.
+
+    If your TF dataset designer has done that, the `T.api` will provide a number
+    of handy functions to navigate your corpus along its structure, programmatically.
+
+    The
+    [banks]({{tfbanks}}/programs/structure.ipynb)
+    example corpus shows a full example.
+
+    Structure is defined in the `otext` feature, by means of the keys
+    `structureTypes` and `structureFeatures`.
+    These are comma-separated lists of equal length.
+
+    `structureTypes` specifies the node types
+    that act as structural types, in the order from biggest to smallest.
+
+    `structureFeatures` specifies a feature that corresponds to each
+    structural type. This feature must contain the label of the structural
+    element, e.g. the title of a book, the number of a verse, etc.
+
+    The order of the section types is significant.
+    Suppose you have a book with a single chapter. Is the chapter part of the book,
+    or is the book part of the chapter?
+    The order decides. If `book` is mentioned in `structureTypes` before `chapter`
+    then the chapter is part of the book, and not the other way around.
+
+    However, it is allowed to have nesting of elements of the same kind.
+
+??? caution "Proper embedding not required" 
+    There are no assumptions on how exactly the structural elements lie
+    embedded in each other, and whether they consist of uninterrupted stretches
+    of material or not.
+
+    Suppose a we have a book with two disjoint chapters and there is a verse that
+    has material in both chapters. Then that verse is part of neither chapter,
+    but it is still part of the book.
+    If you go down from that book to its substructural elements, you find not only
+    its chapters, but also that verse. 
+
+    So the great freedom with respect to structural elements also brings greater
+    responsibility when using that structure.
+
+??? abstract "T.structureInfo()"
+    ```python
+    T.structureInfo()
+    ```
+
+    Gives a summary of how structure has bee configured in the dataset.
+    If there are headings that are the same for multiple structural nodes,
+    you'll get a warning here, and you are told how you can get all of those.
+
+    It also shows a short description of all structure-related methods
+    of the `T` API.
+
+??? abstract "T.structure()"
+    ```python
+    T.structure(node=None)
+    ```
+
+    Gives the structure of `node` and everything below it as a tuple.
+    If `node` is None, it gives the complete structure of the whole dataset.
+
+??? abstract "T.structurePretty()"
+    ```python
+    T.structure(node=None, fullHeading=False)
+    ```
+
+    Gives the structure of `node` and everything below it as a string
+    with pretty indentation..
+    If `node` is None, it gives the complete structure of the whole dataset.
+
+    For each structural element, only its own heading is added.
+
+    But if you want to see the full heading, consisting of the headings of a
+    node and all of its parents, you can get that if you pass
+    `fullHeading=True`.
+
+??? abstract "T.top()"
+    ```python
+    T.top()
+    ```
+
+    Gives all top-level structural nodes in the dataset.
+    These are the nodes that are not embedded in a structural node of the same
+    or a higher level.
+
+??? abstract "T.up()"
+    ```python
+    T.up(node)
+    ```
+
+    Gives the parent of `node`, provided `node` is structural.
+    The parent is that structural node that has the heading you get from
+    `node` minus the last element.
+
+    E.g., the parent of `((book, Genesis), (chapter, 3), (verse, 16))` is the node
+    that has heading `((book, Genesis), (chapter, 3))`.
+
+??? abstract "T.down()"
+    ```python
+    T.down(node)
+    ```
+
+    Gives the children of `node`, provided `node` is structural.
+    The children are those structural nodes that have headings that are one
+    longer than the one you get from `node`.
+
+    E.g., the children of `((book, Genesis), (chapter, 3))` are the nodes
+    with heading `((book, Genesis), (chapter, 3), (verse, 1))`, etc.
+
+??? abstract "T.headingFromNode()"
+    ```python
+    T.headingFromNode(node)
+    ```
+
+    Gives the full heading of `node`, provided `node` is structural.
+
+    The heading is defined of the tuple of pairs (node type, feature value)
+    for all ancestors of that node. 
+
+    E.g., the heading of the verse node corresponding to Genesis 3:16
+    is `((book, Genesis), (chapter, 3), (verse, 16))`.
+
+    If you are interested in the complete mapping: it is stored in 
+    the dictionary `T.hdFromNd`.
+
+??? abstract "T.nodeFromHeading()"
+    ```python
+    T.nodeFromHeading(heading)
+    ```
+
+    Gives the full node corresponding to a heading, provided it exists.
+    It is the inverse of `T.headingFromNode()`.
+
+    If you are interested in the complete mapping: it is stored in 
+    the dictionary `T.ndFromHd`.
+
+    If there is more than one node that corresponds to the heading, only the last
+    one in the corpus will be returned.
+
+    `T.hdMult` contains all such cases.
+
+
 ## Sections
 
 ??? explanation "Section levels"
@@ -23,6 +176,28 @@
     defined. It loads the features it needs (so you do not have to specify those
     features, unless you want to use them via `F`). And finally, it makes some
     functions available by which you can make handy use of that information.
+
+    ??? note "Section levels from a limited, rigid system"
+        There are up to three section levels, and this is a hard coded boundary.
+        That makes this section system unsuitable to faithfully reflect the
+        rich sectioning that may be present in a corpus.
+
+        On the other hand, applications (such as TF apps) can access a predictable
+        sectioning system by which they can chunk the material in practical portions.
+
+        The rule of thumb is:
+        
+        Level 1 divides the corpus into top level units,
+        of which there might be (very) many. The TF browser has a control that
+        can deal with long lists.
+
+        Level 2 divides a level 1 section into a chunk that can be loaded into 
+        a webpage, without overwhelming the browser.
+        Even better, it should be just one or a few screenfuls of text, when
+        represented in `plain` view.
+
+        Level 3 divides a level 2 section into chunks that roughly corresponds to lines.
+        Such lines typically take up one screenful if represented in `pretty` view.
 
     ??? note "Section levels are generic"
         In this documentation, we call the main section level `book`, the second level
@@ -42,11 +217,6 @@
         Conceivably, other works might have chapter and verse numbers
         like `XIV`, '3A', '4.5', and in those cases these numbers are obviously not
         `int`s.
-
-    ??? note "otext is optional"
-        If `otext` is missing, the Text API will not be build. If it exists, but
-        does not specify sections, that part of the Text API will not be built. Likewise
-        for text representations.
 
     ??? caution "levels of node types"
         Usually, Text-Fabric computes the hierarchy of node types correctly, in the
@@ -313,6 +483,10 @@
 
     ???+ info "Description"
         Gives the text that corresponds to a bunch of nodes.
+        The
+        [banks]({{tfbanks}}/programs/formats.ipynb)
+        example corpus shows examples.
+
 
     ??? info "nodes"
         `nodes` can be a single node or an arbitrary iterable of nodes

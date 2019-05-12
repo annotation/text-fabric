@@ -7,7 +7,7 @@ from .core.helpers import (
     itemize, setDir, expandDir, collectFormats, cleanName, check32, console, makeExamples
 )
 from .core.timestamp import Timestamp
-from .core.prepare import (levels, order, rank, levUp, levDown, boundary, sections)
+from .core.prepare import (levels, order, rank, levUp, levDown, boundary, sections, structure)
 from .core.api import (
     Api,
     NodeFeature,
@@ -33,6 +33,11 @@ PRECOMPUTE = (
     (False, '__levDown__', levDown, (WARP[0], '__levUp__', '__rank__')),
     (False, '__boundary__', boundary, WARP[0:2] + ('__rank__', )),
     (True, '__sections__', sections, WARP + ('__levUp__', '__levels__')),
+    (True, '__structure__', structure, WARP + ('__rank__', '__levUp__',)),
+)
+KIND = dict(
+    __sections__='section',
+    __structure__='structure',
 )
 
 
@@ -83,6 +88,7 @@ Api reference : {APIREF}
     if not silent:
       self.tm.info('loading features ...')
     self.sectionsOK = True
+    self.structureOK = True
     self.good = True
     if self.good:
       featuresRequested = itemize(features) if type(features) is str else sorted(features)
@@ -103,6 +109,8 @@ Api reference : {APIREF}
             otextMeta.update(self.features[otextMod].metaData)
         sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
         sectionTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
+        structureFeats = itemize(otextMeta.get('structureFeatures', ''), ',')
+        structureTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
         if not (0 < len(sectionTypes) <= 3) or not (0 < len(sectionFeats) <= 3):
           if not silent:
             self.tm.info(
@@ -112,6 +120,15 @@ Api reference : {APIREF}
         else:
           for (i, fName) in enumerate(sectionFeats):
             self._loadFeature(fName, silent=silent)
+        if not structureTypes or not structureFeats:
+          if not silent:
+            self.tm.info(
+                f'Not enough info for structure in {WARP[2]}, structure functionality will not work'
+            )
+          self.structureOK = False
+        else:
+          for (i, fName) in enumerate(structureFeats):
+            self._loadFeature(fName, silent=silent)
         if self.good:
           (cformats, formatFeats) = collectFormats(otextMeta)
           for fName in formatFeats:
@@ -120,6 +137,7 @@ Api reference : {APIREF}
           self._formatFeats = formatFeats
       else:
         self.sectionsOK = False
+        self.structureOK = False
 
     if self.good:
       self._precompute()
@@ -394,8 +412,9 @@ Api reference : {APIREF}
         continue
       if dep2:
         otextMeta = self.features[WARP[2]].metaData
-        sectionFeats = tuple(itemize(otextMeta.get('sectionFeatures', ''), ','))
-        dependencies = dependencies + sectionFeats
+        sFeatures = f'{KIND[fName]}Features'
+        sFeats = tuple(itemize(otextMeta.get(sFeatures, ''), ','))
+        dependencies = dependencies + sFeats
       for dep in dependencies:
         if dep not in self.features:
           self.tm.error(f'Missing dependency for computed data feature "{fName}": "{dep}"')
@@ -433,7 +452,8 @@ Api reference : {APIREF}
   def _precompute(self):
     good = True
     for (fName, dep2) in self.precomputeList:
-      if dep2 and not self.sectionsOK:
+      ok = getattr(self, f'{fName.strip("_")}OK', False)
+      if dep2 and not ok:
         continue
       if not self.features[fName].load(silent=False):
         good = False
@@ -452,17 +472,20 @@ Api reference : {APIREF}
     setattr(api.E, WARP[1], OslotsFeature(api, w1info.metaData, w1info.data))
 
     sectionFeats = []
+    structureFeats = []
     if WARP[2] in self.features:
       otextMeta = self.features[WARP[2]].metaData
       sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
+      structureFeats = itemize(otextMeta.get('structureFeatures', ''), ',')
 
     for fName in self.features:
       fObj = self.features[fName]
       if fObj.dataLoaded and not fObj.isConfig:
         if fObj.method:
           feat = fName.strip('_')
+          ok = getattr(self, f'{feat}OK', False)
           ap = api.C
-          if fName in [x[0] for x in self.precomputeList if not x[1] or self.sectionsOK]:
+          if fName in [x[0] for x in self.precomputeList if not x[1] or ok]:
             setattr(ap, feat, Computed(api, fObj.data))
           else:
             fObj.unload()
@@ -477,7 +500,12 @@ Api reference : {APIREF}
             else:
               setattr(api.F, fName, NodeFeature(api, fObj.metaData, fObj.data))
           else:
-            if (fName in WARP or fName in sectionFeats or fName in self._formatFeats):
+            if (
+                fName in WARP or
+                fName in sectionFeats or
+                fName in structureFeats or
+                fName in self._formatFeats
+            ):
               continue
             elif fObj.isEdge:
               if hasattr(api.E, fName):
@@ -504,9 +532,11 @@ Api reference : {APIREF}
     api = self.api
 
     sectionFeats = []
+    structureFeats = []
     if WARP[2] in self.features:
       otextMeta = self.features[WARP[2]].metaData
       sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
+      structureFeats = itemize(otextMeta.get('structureFeatures', ''), ',')
 
     for fName in self.features:
       fObj = self.features[fName]
@@ -522,7 +552,12 @@ Api reference : {APIREF}
               if not hasattr(api.F, fName):
                 setattr(api.F, fName, NodeFeature(api, fObj.metaData, fObj.data))
           else:
-            if (fName in WARP or fName in sectionFeats or fName in self._formatFeats):
+            if (
+                fName in WARP or
+                fName in sectionFeats or
+                fName in structureFeats or
+                fName in self._formatFeats
+            ):
               continue
             elif fObj.isEdge:
               if hasattr(api.E, fName):

@@ -41,6 +41,23 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
+## 7.7.2
+
+2019-05-12
+
+The `T` API has been extended with *structure types*.
+Structure types is a flexible sectioning system with unlimited levels.
+It can be configured next to the more rigid sections that `T` already supported.
+
+The rigid system is meant to be used by the TF browser for chunking up the material
+in decent portions.
+
+The new, flexible system is meant to reflect the structure of the corpus, and will
+give you means to navigate the copus accordingly.
+
+Quick examples: [banks]({{tfbanks}}/programs/structure.ipynb).
+Documentation: [structure](../Api/Text.md#structure). 
+
 ## 7.7.1
 
 2019-05-10
