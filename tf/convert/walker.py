@@ -3,6 +3,7 @@ import functools
 import re
 
 from ..core.data import WARP
+from ..core.helpers import itemize
 
 
 class CV(object):
@@ -170,6 +171,9 @@ class CV(object):
     self.sectionFeatures = []
     self.sectionFromLevel = {}
     self.levelFromSection = {}
+    self.structureTypes = []
+    self.structureFeatures = []
+    self.structureLevel = {}
     self.textFormats = {}
     self.textFeatures = set()
 
@@ -188,7 +192,7 @@ class CV(object):
           errors['Incomplete section specs in "otext"'].append(f'no key "{f}"')
           sectionInfo[f] = []
         else:
-          sFields = otext[f].split(',')
+          sFields = itemize(otext[f], sep=',')
           sectionInfo[f] = sFields
           if f == 'sectionTypes':
             for (i, s) in enumerate(sFields):
@@ -201,6 +205,33 @@ class CV(object):
         )
       self.sectionFeatures = sectionInfo['sectionFeatures']
       self.sectionTypes = sectionInfo['sectionTypes']
+
+      structureInfo = {}
+      for f in ('structureTypes', 'structureFeatures'):
+        if f not in otext:
+          structureInfo[f] = []
+          continue
+        sFields = itemize(otext[f], sep=',')
+        structureInfo[f] = sFields
+      if not structureInfo:
+        info('No structure definition found in otext')
+      sLevels = {f: len(structureInfo[f]) for f in structureInfo}
+      if min(sLevels.values()) != max(sLevels.values()):
+        errors['Inconsistent structure info'].append(
+            ' but '.join(f'"{f}" has {sLevels[f]} levels' for f in sLevels)
+        )
+        structureInfo = {}
+      if not structureInfo or all(len(info) == 0 for (s, info) in structureInfo.items()):
+        errors['No structure nodes will be set up']
+        self.structureFeatures = []
+        self.structureTypes = []
+      self.structureFeatures = structureInfo['structureFeatures']
+      self.structureTypes = structureInfo['structureTypes']
+      self.featFromType = {
+          typ: feat
+          for (typ, feat) in zip(self.structureTypes, self.structureFeatures)
+      }
+      self.structureSet = set(self.structureTypes)
 
       textFormats = {}
       textFeatures = set()
@@ -225,9 +256,11 @@ class CV(object):
       self.textFormats = textFormats
       self.textFeatures = textFeatures
 
-    info(f'SECTION TYPES:    {", ".join(self.sectionTypes)}', tm=False)
-    info(f'SECTION FEATURES: {", ".join(self.sectionFeatures)}', tm=False)
-    info(f'TEXT    FEATURES:', tm=False)
+    info(f'SECTION   TYPES:    {", ".join(self.sectionTypes)}', tm=False)
+    info(f'SECTION   FEATURES: {", ".join(self.sectionFeatures)}', tm=False)
+    info(f'STRUCTURE TYPES:    {", ".join(self.structureTypes)}', tm=False)
+    info(f'STRUCTURE FEATURES: {", ".join(self.structureFeatures)}', tm=False)
+    info(f'TEXT      FEATURES:', tm=False)
     indent(level=2)
     for (fmt, feats) in sorted(textFormats.items()):
       info(f'{fmt:<20} {", ".join(sorted(feats))}', tm=False)
@@ -692,6 +725,31 @@ class CV(object):
         errors['sections'].append(
             f'"{feat}" is declared as a section feature, but this node feature does not occur'
         )
+    for nType in self.structureTypes:
+      if nType not in nodes:
+        errors['structure'].append(
+            f'node type "{nType}" is declared as a structure type,'
+            f' but this node type does not occur'
+        )
+    for feat in self.structureFeatures:
+      if feat not in nodeFeatures:
+        errors['structure'].append(
+            f'"{feat}" is declared as a structure feature, but this node feature does not occur'
+        )
+        nodeFeatures[feat] = {}
+
+    structureSet = self.structureSet
+    featFromType = self.featFromType
+    for nType in nodes:
+      if nType not in structureSet:
+        continue
+      feat = featFromType[nType]
+      for seq in nodes[nType]:
+        if (nType, seq) not in nodeFeatures[feat]:
+          errors['structure features'].append(
+              f'"structure element "{nType}" {seq} has no value for "{feat}"'
+          )
+
     for feat in self.textFeatures:
       if feat not in nodeFeatures:
         errors['text formats'].append(

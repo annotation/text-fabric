@@ -198,8 +198,8 @@ Structure API:
 \tT.down(node)                 gives the (immediate) children nodes
 \tT.headingFromNode(node)      gives the heading of a node
 \tT.nodeFromHeading(heading)   gives the node of a heading
-\tT.ndFromHd                   complete mapping from nodes to headings
-\tT.hdFromNd                   complete mapping from headings to nodes
+\tT.ndFromHd                   complete mapping from headings to nodes
+\tT.hdFromNd                   complete mapping from nodes to headings
 \tT.hdMult are all headings    with their nodes that occur multiple times
 
 There are {len(hdFromNd)} structural elements in the dataset.
@@ -229,14 +229,14 @@ There are {len(hdFromNd)} structural elements in the dataset.
     hdTop = self.hdTop
 
     if hdTop is None:
-      error(f'structure types are not configured')
+      error(f'structure types are not configured', tm=False)
       return None
     if node is None:
       return tuple(self.structure(node=t) for t in self.top())
 
     nType = F.otype.v(node)
     if nType not in self.structureTypeSet:
-      error(f'{node} is an {nType} which is not configured as a structure type')
+      error(f'{node} is an {nType} which is not configured as a structure type', tm=False)
       return None
 
     return (node, tuple(self.structure(node=d) for d in self.down(node)))
@@ -268,7 +268,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
     hdTop = self.hdTop
 
     if hdTop is None:
-      error(f'structure types are not configured')
+      error(f'structure types are not configured', tm=False)
       return None
     return hdTop
 
@@ -279,11 +279,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
 
     hdUp = self.hdUp
     if hdUp is None:
-      error(f'structure types are not configured')
+      error(f'structure types are not configured', tm=False)
       return None
     nType = F.otype.v(n)
     if nType not in self.structureTypeSet:
-      error(f'{n} is an {nType} which is not configured as a structure type')
+      error(f'{n} is an {nType} which is not configured as a structure type', tm=False)
       return None
     return hdUp.get(n, None)
 
@@ -293,11 +293,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
     error = api.error
     hdDown = self.hdDown
     if hdDown is None:
-      error(f'structure types are not configured')
+      error(f'structure types are not configured', tm=False)
       return None
     nType = F.otype.v(n)
     if nType not in self.structureTypeSet:
-      error(f'{n} is an {nType} which is not configured as a structure type')
+      error(f'{n} is an {nType} which is not configured as a structure type', tm=False)
       return None
     return hdDown.get(n, ())
 
@@ -307,11 +307,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
     error = api.error
     hdFromNd = self.hdFromNd
     if hdFromNd is None:
-      error(f'structure types are not configured')
+      error(f'structure types are not configured', tm=False)
       return None
     nType = F.otype.v(n)
     if nType not in self.structureTypeSet:
-      error(f'{n} is an {nType} which is not configured as a structure type')
+      error(f'{n} is an {nType} which is not configured as a structure type', tm=False)
       return None
     return hdFromNd.get(n, None)
 
@@ -320,10 +320,10 @@ There are {len(hdFromNd)} structural elements in the dataset.
     error = api.error
     ndFromHd = self.ndFromHd
     if ndFromHd is None:
-      error(f'structure types are not configured')
+      error(f'structure types are not configured', tm=False)
     n = ndFromHd.get(head, None)
     if n is None:
-      error(f'no structure node with heading {head}')
+      error(f'no structure node with heading {head}', tm=False)
     return n
 
   def text(self, nodes, fmt=None, descend=None, func=None, explain=False):

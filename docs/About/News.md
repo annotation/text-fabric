@@ -41,6 +41,13 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
+## 7.7.3
+
+2019-05-13
+
+Added more checks for the new structure API when using the walk converter.
+Made the pre-computing for structure more robust.
+
 ## 7.7.2
 
 2019-05-12

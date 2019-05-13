@@ -262,7 +262,7 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     sKey = tuple(reversed(tuple(
         (
             otype[x - maxSlot - 1],
-            featFromType[otype[x - maxSlot - 1]][x],
+            featFromType[otype[x - maxSlot - 1]].get(x, None),
         )
         for x in (n, *ups)
     )))
@@ -286,11 +286,18 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
       key=lambda n: rank[n - 1],
   ))
 
-  up = {
-      n: nodeFromHeading[heading[0:-1]]
-      for (n, heading) in headingFromNode.items()
-      if len(heading) > 1
-  }
+  up = {}
+  for (n, heading) in headingFromNode.items():
+    lHeading = len(heading)
+    if lHeading == 1:
+      continue
+    upNode = None
+    for i in range(lHeading - 1, 0, -1):
+      upHeading = heading[0:i]
+      upNode = nodeFromHeading.get(upHeading, None)
+      if upNode is not None:
+        up[n] = upNode
+        break
 
   down = {}
   for (n, heading) in headingFromNode.items():
