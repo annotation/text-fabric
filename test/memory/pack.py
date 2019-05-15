@@ -104,7 +104,7 @@ def pack(origData, containerSpec, elementSpec, threshold=1000, amount=5):
   isStr = elementType is str
   isTup = elementType is tuple
 
-  arraySpecifier = 'I'
+  arraySpecifier = 'i'
 
   if isStr:
     arraySpecifier = 'B'

@@ -39,6 +39,8 @@ See the [issue list on GitHub]({{ghissues}})
 
 ### Queued for next release
 
+* bug fix: silent means silent again in `A.use()`
+
 ---
 
 ## 7.7.3
