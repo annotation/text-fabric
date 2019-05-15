@@ -8,7 +8,9 @@ def use(appName, *args, **kwargs):
   if len(parts) == 1:
     parts.append('')
   (appName, checkoutApp) = parts
-  (commit, release, local, appBase, appDir) = findApp(appName, checkoutApp)
+  (commit, release, local, appBase, appDir) = findApp(
+      appName, checkoutApp, silent=kwargs.get('silent', False)
+  )
   if not appBase:
     return None
 
