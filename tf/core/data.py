@@ -313,6 +313,33 @@ class Data(object):
           oslots.append(tuple(sorted(data[n])))
         oslots.append(maxSlot)
         self.data = tuple(oslots)
+      elif isEdge:
+        seen = {}
+        datax = {}
+        if edgeValues:
+          for (n, ms) in data.items():
+            msx = {}
+            for (m, v) in ms.items():
+              if v not in seen:
+                seen[v] = v
+              msx[m] = seen[v]
+            datax[n] = msx
+        else:
+          for (n, ms) in data.items():
+            msx = frozenset(ms)
+            if msx not in seen:
+              seen[msx] = msx
+            datax[n] = seen[msx]
+        self.data = datax
+      else:
+        seen = {}
+        datax = {}
+        for (n, ms) in data.items():
+          if ms not in seen:
+            seen[ms] = ms
+          datax[n] = seen[ms]
+        self.data = datax
+
     return not errors
 
   def _compute(self, metaOnly=False, silent=False):

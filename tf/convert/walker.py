@@ -222,7 +222,7 @@ class CV(object):
         )
         structureInfo = {}
       if not structureInfo or all(len(info) == 0 for (s, info) in structureInfo.items()):
-        errors['No structure nodes will be set up']
+        info('No structure nodes will be set up')
         self.structureFeatures = []
         self.structureTypes = []
       self.structureFeatures = structureInfo['structureFeatures']

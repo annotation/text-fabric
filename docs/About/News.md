@@ -39,9 +39,19 @@ See the [issue list on GitHub]({{ghissues}})
 
 ### Queued for next release
 
-* bug fix: silent means silent again in `A.use()`
-
 ---
+
+## 7.7.4
+
+2019-05-16
+
+Optimization: the memory footprint of the features has been reduced by ca 30%.
+
+The BHSA now needs 2.2 GB of RAM, instead of the 3.4 before.
+
+Bug fixes:
+*   silent means silent again in `A.use()`
+*   the walk converter will not stop if there is no structure configured
 
 ## 7.7.3
 

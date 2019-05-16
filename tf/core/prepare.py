@@ -132,7 +132,14 @@ def levUp(info, error, otype, oslots, levels, rank):
               )
           )
       )
-  return tuple(embedders)
+  # reuse embedder tuples, because lots of nodes share embedders
+  seen = {}
+  embeddersx = []
+  for t in embedders:
+    if t not in seen:
+      seen[t] = t
+    embeddersx.append(seen[t])
+  return tuple(embeddersx)
 
 
 def levDown(info, error, otype, levUp, rank):
