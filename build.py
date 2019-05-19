@@ -26,7 +26,7 @@ VERSION_CONFIG = dict(
     parameters=dict(
         file='tf/parameters.py',
         re=re.compile(
-            r'''VERSION\s*=\s*['"]([^'"]*)['"]'''
+            r'''\bVERSION\s*=\s*['"]([^'"]*)['"]'''
         ),
         mask="VERSION = '{}'",
     ),

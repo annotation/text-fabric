@@ -2,7 +2,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '7.7.4'
+VERSION = '7.7.5'
 NAME = 'Text-Fabric'
 
 PACK_VERSION = '2'

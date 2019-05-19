@@ -368,7 +368,6 @@ class Api(object):
           needToLoad,
           add=True,
           silent=True,
-          api=self,
       )
       loadedFeatures |= needToLoad
     return loadedFeatures

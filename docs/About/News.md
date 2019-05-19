@@ -43,9 +43,9 @@ See the [issue list on GitHub]({{ghissues}})
 
 ## 7.7.5
 
-2019-05-19
+2019-05-18
 
-An other 20% of the original memory footprint has been shaved off.
+Another 20% of the original memory footprint has been shaved off.
 Method: using arrays instead of tuples for sequences of integers.
 
 ## 7.7.4
