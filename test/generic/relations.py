@@ -10,7 +10,6 @@ api = TF.load('sign name')
 F = api.F
 S = api.S
 
-
 # MAKE CUSTOM SETS OF NODES
 
 Sign = set(range(1, F.otype.maxSlot + 1))

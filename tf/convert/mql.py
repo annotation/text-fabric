@@ -263,7 +263,9 @@ GO
             len(self.levels),
         )
     )
-    self.oslots = self.tfFeatures[WARP[1]].data
+    oslotsData = self.tfFeatures[WARP[1]].data
+    self.oslots = oslotsData[0]
+    self.maxSlot = oslotsData[1]
     for (otype, av, start, end) in self.levels:
       self._writeData(otype, start, end)
 
@@ -273,7 +275,7 @@ GO
     tm.indent(level=1, reset=True)
     tm.info(f'{otype} data ...')
     oslots = self.oslots
-    maxSlot = oslots[-1]
+    maxSlot = self.maxSlot
     oFeats = self.otypes[otype]
     features = self.features
     featureMethods = self.featureMethods

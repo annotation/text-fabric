@@ -59,7 +59,7 @@ class Locality(object):
     if myPrev <= 0:
       return ()
 
-    result = lastNode[myPrev - 1] + (myPrev, )
+    result = tuple(lastNode[myPrev - 1]) + (myPrev, )
 
     if otype is None:
       return result
@@ -84,7 +84,7 @@ class Locality(object):
     if myNext > maxSlot:
       return ()
 
-    result = (myNext, ) + firstNode[myNext - 1]
+    result = (myNext, ) + tuple(firstNode[myNext - 1])
 
     if otype is None:
       return result

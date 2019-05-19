@@ -1,17 +1,12 @@
-import array
+from array import array
 import collections
 import functools
 from .helpers import itemize
 
 
-def getOtypeInfo(info, otype):
-  result = (otype[-2], otype[-1], len(otype) - 2 + otype[-1])
-  info('slot={}:1-{};node-{}'.format(*result))
-  return result
-
-
 def levels(info, error, otype, oslots, otext):
-  (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
+  (otype, maxSlot, maxNode, slotType) = otype
+  oslots = oslots[0]
   levelOrder = otext.get('levels', None)
   if levelOrder is not None:
     levelRank = {level: i for (i, level) in enumerate(levelOrder.split(','))}
@@ -20,7 +15,7 @@ def levels(info, error, otype, oslots, otext):
   otypeMax = {}
   slotSetLengths = collections.Counter()
   info('get ranking of otypes')
-  for k in range(len(oslots) - 1):
+  for k in range(len(oslots)):
     ntp = otype[k]
     otypeCount[ntp] += 1
     slotSetLengths[ntp] += len(oslots[k])
@@ -44,7 +39,8 @@ def levels(info, error, otype, oslots, otext):
 
 
 def order(info, error, otype, oslots, levels):
-  (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
+  (otype, maxSlot, maxNode, slotType) = otype
+  oslots = oslots[0]
   info('assigning otype levels to nodes')
   otypeLevels = dict(((x[0], i) for (i, x) in enumerate(levels)))
 
@@ -79,21 +75,22 @@ def order(info, error, otype, oslots, levels):
   canonKey = functools.cmp_to_key(before)
   info('sorting nodes')
   nodes = sorted(range(1, maxNode + 1), key=canonKey)
-  return array.array('I', nodes)
+  return array('I', nodes)
 
 
 def rank(info, error, otype, order):
-  (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
+  (otype, maxSlot, maxNode, slotType) = otype
   info('ranking nodes')
   nodesRank = dict(((n, i) for (i, n) in enumerate(order)))
-  return array.array('I', (nodesRank[n] for n in range(1, maxNode + 1)))
+  return array('I', (nodesRank[n] for n in range(1, maxNode + 1)))
 
 
 def levUp(info, error, otype, oslots, levels, rank):
-  (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
+  (otype, maxSlot, maxNode, slotType) = otype
+  oslots = oslots[0]
   info('making inverse of edge feature oslots')
   oslotsInv = {}
-  for (k, mList) in enumerate(oslots[0:-1]):
+  for (k, mList) in enumerate(oslots):
     for m in mList:
       oslotsInv.setdefault(m, set()).add(k + 1 + maxSlot)
   info('listing embedders of all nodes')
@@ -103,10 +100,7 @@ def levUp(info, error, otype, oslots, levels, rank):
     embedders.append(
         tuple(
             sorted(
-                [
-                    m for m in contentEmbedders if m != n
-                    # if rank[m - 1] < rank[n - 1]
-                ],
+                [m for m in contentEmbedders if m != n],
                 key=lambda k: -rank[k - 1],
             )
         )
@@ -124,10 +118,7 @@ def levUp(info, error, otype, oslots, levels, rank):
       embedders.append(
           tuple(
               sorted(
-                  [
-                      m for m in contentEmbedders if m != n
-                      # if rank[m - 1] < rank[n - 1]
-                  ],
+                  [m for m in contentEmbedders if m != n],
                   key=lambda k: -rank[k - 1],
               )
           )
@@ -137,13 +128,13 @@ def levUp(info, error, otype, oslots, levels, rank):
   embeddersx = []
   for t in embedders:
     if t not in seen:
-      seen[t] = t
+      seen[t] = array('I', t)
     embeddersx.append(seen[t])
   return tuple(embeddersx)
 
 
 def levDown(info, error, otype, levUp, rank):
-  (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
+  (otype, maxSlot, maxNode, slotType) = otype
   info('inverting embedders')
   inverse = {}
   for n in range(maxSlot + 1, maxNode + 1):
@@ -152,7 +143,7 @@ def levDown(info, error, otype, levUp, rank):
   info('turning embeddees into list')
   embeddees = []
   for n in range(maxSlot + 1, maxNode + 1):
-    embeddees.append(tuple(sorted(
+    embeddees.append(array('I', sorted(
         inverse.get(n, []),
         key=lambda m: rank[m - 1],
     )))
@@ -160,22 +151,24 @@ def levDown(info, error, otype, levUp, rank):
 
 
 def boundary(info, error, otype, oslots, rank):
+  (otype, maxSlot, maxNode, slotType) = otype
+  oslots = oslots[0]
   firstSlotsD = {}
   lastSlotsD = {}
-  (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
-  for (k, mList) in enumerate(oslots[0:-1]):
+  for (k, mList) in enumerate(oslots):
     firstSlotsD.setdefault(mList[0], []).append(k + 1 + maxSlot)
     lastSlotsD.setdefault(mList[-1], []).append(k + 1 + maxSlot)
   firstSlots = []
   lastSlots = []
   for n in range(1, maxSlot + 1):
-    firstSlots.append(tuple(sorted(firstSlotsD.get(n, []), key=lambda k: -rank[k - 1])))
-    lastSlots.append(tuple(sorted(lastSlotsD.get(n, []), key=lambda k: rank[k - 1])))
+    firstSlots.append(array('I', sorted(firstSlotsD.get(n, []), key=lambda k: -rank[k - 1])))
+    lastSlots.append(array('I', sorted(lastSlotsD.get(n, []), key=lambda k: rank[k - 1])))
   return (tuple(firstSlots), tuple(lastSlots))
 
 
 def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
-  (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
+  (otype, maxSlot, maxNode, slotType) = otype
+  oslots = oslots[0]
   support = dict(((o[0], (o[2], o[3])) for o in levels))
   sTypes = itemize(otext['sectionTypes'], ',')
   sec1 = {}
@@ -236,7 +229,8 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
 
 
 def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
-  (slotType, maxSlot, maxNode) = getOtypeInfo(info, otype)
+  (otype, maxSlot, maxNode, slotType) = otype
+  oslots = oslots[0]
   sTypeList = itemize(otext['structureTypes'], ',')
   nsTypes = len(sTypeList)
   nsFeats = len(sFeats)

@@ -2,9 +2,10 @@ import os
 import pickle
 import gzip
 import collections
+from array import array
 import time
 from datetime import datetime
-from ..parameters import PICKLE_PROTOCOL, GZIP_LEVEL
+from ..parameters import PACK_VERSION, PICKLE_PROTOCOL, GZIP_LEVEL
 from .helpers import (
     setFromSpec, valueFromTf, tfFromValue, specFromRanges, rangesFromSet, check32, console
 )
@@ -44,7 +45,7 @@ class Data(object):
     self.dirName = dirName
     self.fileName = fileName
     self.extension = extension
-    self.binDir = f'{dirName}/.tf'
+    self.binDir = f'{dirName}/.tf/{PACK_VERSION}'
     self.binPath = f'{self.binDir}/{self.fileName}.tfx'
     self.edgeValues = edgeValues
     self.isEdge = isEdge
@@ -291,12 +292,11 @@ class Data(object):
             maxSlot = n
             continue
           otype.append(data[n])
-        otype.append(slotType)
-        otype.append(maxSlot)
-        self.data = tuple(otype)
+        maxNode = len(data)
+        self.data = (tuple(otype), maxSlot, maxNode, slotType)
       elif self.fileName == WARP[1]:
         nodeList = sorted(data)
-        maxSlot = nodeList[0] - 1
+        maxSlot = nodeList[0] - 1  # vital assumption: all non slot nodes are linked
         maxNode = nodeList[-1]
         nodeRange = maxNode - maxSlot
         nodesMapped = len(nodeList)
@@ -310,9 +310,8 @@ class Data(object):
           pass
         oslots = []
         for n in nodeList:
-          oslots.append(tuple(sorted(data[n])))
-        oslots.append(maxSlot)
-        self.data = tuple(oslots)
+          oslots.append(array('I', sorted(data[n])))
+        self.data = (tuple(oslots), maxSlot, maxNode)
       elif isEdge:
         seen = {}
         datax = {}
@@ -421,11 +420,20 @@ class Data(object):
   def _writeDataTf(self, fh, nodeRanges=False):
     data = self.data
     if type(data) is tuple:
-      maxSlot = data[-1]
-      if self.fileName == WARP[0]:
-        data = dict(((k + 1 + maxSlot, data[k]) for k in range(0, len(data) - 2)))
+      # just in case the WARP data is present as a sequence and not a dict
+      # in case it has been loaded from a binary representation
+      fName = self.fileName
+      if fName not in {WARP[0], WARP[1]}:
+        self.tm.error('Data type tuple not suitable for non-WARP feature')
+        return False
+      maxSlot = data[2] if fName == WARP[0] else data[1]
+      slotType = data[1] if fName == WARP[0] else None
+      data = data[0]
+      if fName == WARP[0]:
+        data = dict(((k, slotType) for k in range(1, maxSlot + 1)))
+        data.update(dict(((k + 1 + maxSlot, data[k]) for k in range(len(data)))))
       elif self.fileName == WARP[1]:
-        data = dict(((k + 1 + maxSlot, data[k]) for k in range(0, len(data) - 1)))
+        data = dict(((k + 1 + maxSlot, data[k]) for k in range(len(data))))
     edgeValues = self.edgeValues
     if self.isEdge:
       implicitNode = 1

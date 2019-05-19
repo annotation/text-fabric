@@ -1,5 +1,4 @@
 from .data import WARP
-from .helpers import itemize
 
 DEFAULT_FORMAT = 'text-orig-full'
 DEFAULT_FORMAT_TYPE = '{}-default'
@@ -12,20 +11,24 @@ class Text(object):
   def __init__(self, api):
     self.api = api
     C = api.C
+    Fs = api.Fs
+    TF = api.TF
     self.languages = {}
     self.nameFromNode = {}
     self.nodeFromName = {}
     config = api.TF.features[WARP[2]].metaData if WARP[2] in api.TF.features else {}
-    self.sectionTypes = itemize(config.get('sectionTypes', ''), ',')
-    sectionFeats = itemize(config.get('sectionFeatures', ''), ',')
+    self.sectionTypes = TF.sectionTypes
+    self.sectionFeats = TF.sectionFeats
+    self.sectionFeatsWithLanguage = getattr(TF, 'sectionFeatsWithLanguage', set())
     self.sectionFeatures = []
     self.sectionFeatureTypes = []
-    self.structureTypes = itemize(config.get('structureTypes', ''), ',')
-    self.structureFeatures = itemize(config.get('structureFeatures', ''), ',')
+    self.structureTypes = TF.structureTypes
+    self.structureFeats = TF.structureFeats
     self.structureTypeSet = set(self.structureTypes)
     self.config = config
     self.defaultFormat = DEFAULT_FORMAT
     self.defaultFormats = {}
+
     structure = getattr(C, 'structure', None)
 
     (self.hdFromNd, self.ndFromHd, self.hdMult, self.hdTop, self.hdUp, self.hdDown) = (
@@ -36,35 +39,31 @@ class Text(object):
     self.headings = (
         ()
         if structure is None else
-        tuple(zip(self.structureTypes, self.structureFeatures))
+        tuple(zip(self.structureTypes, self.structureFeats))
     )
     otypeInfo = api.F.otype
     otype = otypeInfo.v
 
     good = True
-    if len(sectionFeats) != 0 and len(self.sectionTypes) != 0:
-      for (fName,
-           fObj) in sorted(f for f in api.TF.features.items()
-                           if f[0] == sectionFeats[0] or f[0].startswith(f'{sectionFeats[0]}@')):
-        if not fObj.load(silent=True):
-          good = False
-          continue
+    if len(self.sectionFeats) != 0 and len(self.sectionTypes) != 0:
+      for fName in self.sectionFeatsWithLanguage:
+        fObj = api.TF.features[fName]
         meta = fObj.metaData
         code = meta.get('languageCode', '')
-        self.languages[code] = dict(((k, meta.get(k, 'default'))
-                                     for k in ('language', 'languageEnglish')))
-        self.nameFromNode[code] = fObj.data
+        self.languages[code] = {
+            k: meta.get(k, 'default')
+            for k in ('language', 'languageEnglish')
+        }
+        cData = Fs(fName).data
+        self.nameFromNode[code] = cData
         self.nodeFromName[code] = dict(
             ((otype(node), name), node)
-            for (node, name) in fObj.data.items()
+            for (node, name) in cData.items()
         )
-      for fName in (sectionFeats):
-        if not api.TF.features[fName].load(silent=True):
-          good = False
-          continue
-        sectionFeature = api.TF.features[fName]
-        self.sectionFeatures.append(sectionFeature.data)
-        self.sectionFeatureTypes.append(sectionFeature.dataType)
+      for fName in (self.sectionFeats):
+        dataType = api.TF.features[fName].dataType
+        self.sectionFeatures.append(api.Fs(fName).data)
+        self.sectionFeatureTypes.append(dataType)
 
       sec0 = self.sectionTypes[0]
       setattr(self, f'{sec0}Name', self._sec0Name)
@@ -488,8 +487,7 @@ EXPLANATION: T.text) called with parameters:
   def _compileFormats(self):
     api = self.api
     TF = api.TF
-    cformats = TF._cformats
-    features = TF.features
+    cformats = TF.cformats
 
     self.formats = {}
     self._xformats = {}
@@ -501,7 +499,7 @@ EXPLANATION: T.text) called with parameters:
       (descendType, rtpl) = self.splitFormat(rtpl)
       tpl = rtpl.replace('\\n', '\n').replace('\\t', '\t')
       self._xdTypes[fmt] = descendType
-      self._xformats[fmt] = _compileFormat(tpl, feats, features)
+      self._xformats[fmt] = self._compileFormat(tpl, feats)
       self.formats[fmt] = descendType
 
   def splitFormat(self, tpl):
@@ -528,36 +526,36 @@ EXPLANATION: T.text) called with parameters:
         None
     )
 
+  def _compileFormat(self, rtpl, feats):
+    replaceFuncs = []
+    for feat in feats:
+      (feat, default) = feat
+      replaceFuncs.append(self._makeFunc(feat, default))
 
-def _compileFormat(rtpl, feats, features):
-  replaceFuncs = []
-  for feat in feats:
-    (feat, default) = feat
-    replaceFuncs.append(_makeFunc(feat, default, features))
+    def g(n):
+      values = tuple(replaceFunc(n) for replaceFunc in replaceFuncs)
+      return rtpl.format(*values)
 
-  def g(n):
-    values = tuple(replaceFunc(n) for replaceFunc in replaceFuncs)
-    return rtpl.format(*values)
+    return g
 
-  return g
-
-
-def _makeFunc(feat, default, features):
-  if len(feat) == 1:
-    ft = feat[0]
-    f = features[ft].data
-    return (lambda n: f.get(n, default))
-  elif len(feat) == 2:
-    (ft1, ft2) = feat
-    f1 = features[ft1].data
-    f2 = features[ft2].data
-    return (lambda n: (f1.get(n, f2.get(n, default))))
-  else:
-    def getValue(n):
-      v = None
-      for ft in feat:
-        v = features[ft].data.get(n, None)
-        if v is not None:
-          break
-      return v or default
-    return getValue
+  def _makeFunc(self, feat, default):
+    api = self.api
+    Fs = api.Fs
+    if len(feat) == 1:
+      ft = feat[0]
+      f = Fs(ft).data
+      return (lambda n: f.get(n, default))
+    elif len(feat) == 2:
+      (ft1, ft2) = feat
+      f1 = Fs(ft1).data
+      f2 = Fs(ft2).data
+      return (lambda n: (f1.get(n, f2.get(n, default))))
+    else:
+      def getValue(n):
+        v = None
+        for ft in feat:
+          v = Fs(ft).data.get(n, None)
+          if v is not None:
+            break
+        return v or default
+      return getValue

@@ -5,6 +5,8 @@ from zipfile import ZIP_DEFLATED
 VERSION = '7.7.4'
 NAME = 'Text-Fabric'
 
+PACK_VERSION = '2'
+
 ORG = 'annotation'
 REPO = 'text-fabric'
 

@@ -52,18 +52,18 @@ class OtypeFeature(object):
   def __init__(self, api, metaData, data):
     self.api = api
     self.meta = metaData
-    self.data = data
-    self.slotType = self.data[-2]
-    self.maxSlot = self.data[-1]
-    self.maxNode = len(self.data) - 2 + self.maxSlot
+    self.data = data[0]
+    self.maxSlot = data[1]
+    self.maxNode = data[2]
+    self.slotType = data[3]
 
   def v(self, n):
     if n == 0:
       return None
     if n < self.maxSlot + 1:
-      return self.data[-2]
+      return self.slotType
     m = n - self.maxSlot
-    if m <= len(self.data) - 2:
+    if m <= len(self.data):
       return self.data[m - 1]
     return None
 
@@ -88,8 +88,9 @@ class OslotsFeature(object):
   def __init__(self, api, metaData, data):
     self.api = api
     self.meta = metaData
-    self.data = data
-    self.maxSlot = self.data[-1]
+    self.data = data[0]
+    self.maxSlot = data[1]
+    self.maxNode = data[2]
 
   def s(self, n):
     if n == 0:
@@ -97,7 +98,7 @@ class OslotsFeature(object):
     if n < self.maxSlot + 1:
       return (n, )
     m = n - self.maxSlot
-    if m <= len(self.data) - 1:
+    if m <= len(self.data):
       return self.data[m - 1]
     return ()
 
@@ -367,6 +368,7 @@ class Api(object):
           needToLoad,
           add=True,
           silent=True,
+          api=self,
       )
       loadedFeatures |= needToLoad
     return loadedFeatures

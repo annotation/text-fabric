@@ -99,42 +99,46 @@ Api reference : {APIREF}
       for fName in list(WARP):
         self._loadFeature(fName, optional=fName == WARP[2], silent=silent)
     if self.good:
-      self._cformats = {}
-      self._formatFeats = []
+      self.textFeatures = set()
       if WARP[2] in self.features:
         otextMeta = self.features[WARP[2]].metaData
         for otextMod in self.features:
           if otextMod.startswith(WARP[2] + '@'):
             self._loadFeature(otextMod, silent=silent)
             otextMeta.update(self.features[otextMod].metaData)
-        sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
-        sectionTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
-        structureFeats = itemize(otextMeta.get('structureFeatures', ''), ',')
-        structureTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
-        if not (0 < len(sectionTypes) <= 3) or not (0 < len(sectionFeats) <= 3):
+        self.sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
+        self.sectionTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
+        self.structureFeats = itemize(otextMeta.get('structureFeatures', ''), ',')
+        self.structureTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
+        (self.cformats, self.formatFeats) = collectFormats(otextMeta)
+        if not (0 < len(self.sectionTypes) <= 3) or not (0 < len(self.sectionFeats) <= 3):
           if not silent:
             self.tm.info(
                 f'Not enough info for sections in {WARP[2]}, section functionality will not work'
             )
           self.sectionsOK = False
         else:
-          for (i, fName) in enumerate(sectionFeats):
-            self._loadFeature(fName, silent=silent)
-        if not structureTypes or not structureFeats:
+          self.textFeatures |= set(self.sectionFeats)
+          self.sectionFeatsWithLanguage = {
+              f
+              for f in self.features
+              if f == self.sectionFeats[0] or f.startswith(f'{self.sectionFeats[0]}@')
+          }
+          self.textFeatures |= set(self.sectionFeatsWithLanguage)
+        if not self.structureTypes or not self.structureFeats:
           if not silent:
             self.tm.info(
                 f'Not enough info for structure in {WARP[2]}, structure functionality will not work'
             )
           self.structureOK = False
         else:
-          for (i, fName) in enumerate(structureFeats):
-            self._loadFeature(fName, silent=silent)
-        if self.good:
-          (cformats, formatFeats) = collectFormats(otextMeta)
-          for fName in formatFeats:
-            self._loadFeature(fName, silent=silent)
-          self._cformats = cformats
-          self._formatFeats = formatFeats
+          self.textFeatures |= set(self.structureFeats)
+
+        self.textFeatures |= set(self.formatFeats)
+
+        for fName in self.textFeatures:
+          self._loadFeature(fName, silent=silent)
+
       else:
         self.sectionsOK = False
         self.structureOK = False
@@ -231,20 +235,22 @@ Api reference : {APIREF}
       self.tm.info(f'VALIDATING {WARP[1]} feature')
       otypeData = nodeFeatures[WARP[0]]
       if type(otypeData) is tuple:
-        maxSlot = otypeData[-1]
-        maxNode = len(otypeData) - 2 + maxSlot
+        (otypeData, slotType, maxSlot, maxNode) = otypeData
       elif 1 in otypeData:
         slotType = otypeData[1]
         maxSlot = max(n for n in otypeData if otypeData[n] == slotType)
         maxNode = max(otypeData)
     if WARP[1] in edgeFeatures:
+      self.tm.info(f'VALIDATING {WARP[1]} feature')
+      oslotsData = edgeFeatures[WARP[1]]
+      if type(oslotsData) is tuple:
+        (oslotsData, maxSlot, maxNode) = oslotsData
       if maxSlot is None or maxNode is None:
         self.tm.error(f'ERROR: cannot check validity of {WARP[1]} feature')
         good = False
       else:
         self.tm.info(f'maxSlot={maxSlot:>11}')
         self.tm.info(f'maxNode={maxNode:>11}')
-        oslotsData = edgeFeatures[WARP[1]]
         maxNodeInData = max(oslotsData)
         minNodeInData = min(oslotsData)
 
@@ -471,12 +477,7 @@ Api reference : {APIREF}
     setattr(api.F, WARP[0], OtypeFeature(api, w0info.metaData, w0info.data))
     setattr(api.E, WARP[1], OslotsFeature(api, w1info.metaData, w1info.data))
 
-    sectionFeats = []
-    structureFeats = []
-    if WARP[2] in self.features:
-      otextMeta = self.features[WARP[2]].metaData
-      sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
-      structureFeats = itemize(otextMeta.get('structureFeatures', ''), ',')
+    requestedSet = set(self.featuresRequested)
 
     for fName in self.features:
       fObj = self.features[fName]
@@ -492,7 +493,7 @@ Api reference : {APIREF}
             if hasattr(ap, feat):
               delattr(api.C, feat)
         else:
-          if fName in self.featuresRequested:
+          if fName in requestedSet | self.textFeatures:
             if fName in WARP:
               continue
             elif fObj.isEdge:
@@ -502,9 +503,7 @@ Api reference : {APIREF}
           else:
             if (
                 fName in WARP or
-                fName in sectionFeats or
-                fName in structureFeats or
-                fName in self._formatFeats
+                fName in self.textFeatures
             ):
               continue
             elif fObj.isEdge:
@@ -531,18 +530,13 @@ Api reference : {APIREF}
       return None
     api = self.api
 
-    sectionFeats = []
-    structureFeats = []
-    if WARP[2] in self.features:
-      otextMeta = self.features[WARP[2]].metaData
-      sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
-      structureFeats = itemize(otextMeta.get('structureFeatures', ''), ',')
+    requestedSet = set(self.featuresRequested)
 
     for fName in self.features:
       fObj = self.features[fName]
       if fObj.dataLoaded and not fObj.isConfig:
         if not fObj.method:
-          if fName in self.featuresRequested:
+          if fName in requestedSet | self.textFeatures:
             if fName in WARP:
               continue
             elif fObj.isEdge:
@@ -554,9 +548,7 @@ Api reference : {APIREF}
           else:
             if (
                 fName in WARP or
-                fName in sectionFeats or
-                fName in structureFeats or
-                fName in self._formatFeats
+                fName in self.textFeatures
             ):
               continue
             elif fObj.isEdge:

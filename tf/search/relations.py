@@ -1,5 +1,7 @@
 import collections
+from array import array
 import types
+from itertools import chain
 from functools import reduce
 
 from ..core.data import WARP
@@ -141,9 +143,13 @@ def basicRelations(searchExe, api, silent):
     if isSlotF and isSlotT:
       return lambda n: (n, )
     elif isSlotT:
-      return lambda n, m: ((Eoslots[n - maxSlot - 1] if n > maxSlot else (n, )) == (m, ))
+      return lambda n, m: (
+          tuple(Eoslots[n - maxSlot - 1] if n > maxSlot else (n, )) == (m, )
+      )
     elif isSlotF:
-      return lambda n, m: ((Eoslots[m - maxSlot - 1] if m > maxSlot else (m, )) == (n, ))
+      return lambda n, m: (
+          tuple(Eoslots[m - maxSlot - 1] if m > maxSlot else (m, )) == (n, )
+      )
     else:
       return (
           lambda n, m: ((n <= maxSlot and m == n) or (
@@ -360,7 +366,7 @@ def basicRelations(searchExe, api, silent):
       return lambda n: (n, )
     elif isSlotF:
       if isSlotT is None:
-        return lambda n: CfirstSlots[n - 1] + (n, )
+        return lambda n: CfirstSlots[n - 1] + array('I', (n, ))
       else:
         return lambda n: CfirstSlots[n - 1]
     elif isSlotT:
@@ -370,7 +376,7 @@ def basicRelations(searchExe, api, silent):
       def xx(n):
         fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
         if isSlotT is None:
-          return CfirstSlots[fn - 1] + (fn, )
+          return CfirstSlots[fn - 1] + array('I', (fn, ))
         else:
           return CfirstSlots[fn - 1]
 
@@ -385,7 +391,7 @@ def basicRelations(searchExe, api, silent):
       return lambda n: (n, )
     elif isSlotF:
       if isSlotT is None:
-        return lambda n: ClastSlots[n - 1] + (n, )
+        return lambda n: ClastSlots[n - 1] + array('I', (n, ))
       else:
         return lambda n: ClastSlots[n - 1]
     elif isSlotT:
@@ -395,7 +401,7 @@ def basicRelations(searchExe, api, silent):
       def xx(n):
         ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
         if isSlotT is None:
-          return ClastSlots[ln - 1] + (ln, )
+          return ClastSlots[ln - 1] + array('I', (ln, ))
         else:
           return ClastSlots[ln - 1]
 
@@ -412,8 +418,8 @@ def basicRelations(searchExe, api, silent):
       if isSlotT is None:
 
         def xx(n):
-          fok = set(CfirstSlots[n - 1] + (n, ))
-          lok = set(ClastSlots[n - 1] + (n, ))
+          fok = set(chain(CfirstSlots[n - 1], (n, )))
+          lok = set(chain(ClastSlots[n - 1], (n, )))
           return tuple(fok & lok)
 
       else:
@@ -439,8 +445,8 @@ def basicRelations(searchExe, api, silent):
         def xx(n):
           fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
           ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
-          fok = set(CfirstSlots[fn - 1] + (fn, ))
-          lok = set(ClastSlots[ln - 1] + (ln, ))
+          fok = set(chain(CfirstSlots[fn - 1], (fn, )))
+          lok = set(chain(ClastSlots[ln - 1], (ln, )))
           return tuple(fok & lok)
 
       else:
@@ -471,7 +477,7 @@ def basicRelations(searchExe, api, silent):
             return tuple(
                 reduce(
                     set.union,
-                    (set(CfirstSlots[l - 1] + (l, )) for l in near),
+                    (set(chain(CfirstSlots[l - 1], (l, ))) for l in near),
                     set(),
                 )
             )
@@ -503,7 +509,7 @@ def basicRelations(searchExe, api, silent):
             return tuple(
                 reduce(
                     set.union,
-                    (set(CfirstSlots[l - 1] + (l, )) for l in near),
+                    (set(chain(CfirstSlots[l - 1], (l, ))) for l in near),
                     set(),
                 )
             )
@@ -540,7 +546,7 @@ def basicRelations(searchExe, api, silent):
             return tuple(
                 reduce(
                     set.union,
-                    (set(ClastSlots[l - 1] + (l, )) for l in near),
+                    (set(chain(ClastSlots[l - 1], (l, ))) for l in near),
                     set(),
                 )
             )
@@ -572,7 +578,7 @@ def basicRelations(searchExe, api, silent):
             return tuple(
                 reduce(
                     set.union,
-                    (set(ClastSlots[l - 1] + (l, )) for l in near),
+                    (set(chain(ClastSlots[l - 1], (l, ))) for l in near),
                     set(),
                 )
             )
@@ -608,12 +614,12 @@ def basicRelations(searchExe, api, silent):
             near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
             fok = set(reduce(
                 set.union,
-                (set(CfirstSlots[l - 1] + (l, )) for l in near),
+                (set(chain(CfirstSlots[l - 1], (l, ))) for l in near),
                 set(),
             ))
             lok = set(reduce(
                 set.union,
-                (set(ClastSlots[l - 1] + (l, )) for l in near),
+                (set(chain(ClastSlots[l - 1], (l, ))) for l in near),
                 set(),
             ))
             return tuple(fok & lok)
@@ -656,12 +662,12 @@ def basicRelations(searchExe, api, silent):
             nearl = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k)) + 1))
             fok = set(reduce(
                 set.union,
-                (set(CfirstSlots[l - 1] + (l, )) for l in nearf),
+                (set(chain(CfirstSlots[l - 1], (l, ))) for l in nearf),
                 set(),
             ))
             lok = set(reduce(
                 set.union,
-                (set(ClastSlots[l - 1] + (l, )) for l in nearl),
+                (set(chain(ClastSlots[l - 1], (l, ))) for l in nearl),
                 set(),
             ))
             return tuple(fok & lok)
@@ -715,7 +721,7 @@ def basicRelations(searchExe, api, silent):
           myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
           if myNext > maxSlot:
             return ()
-          return CfirstSlots[myNext - 1] + (myNext, )
+          return CfirstSlots[myNext - 1] + array('I', (myNext, ))
 
       else:
 
@@ -756,7 +762,7 @@ def basicRelations(searchExe, api, silent):
           myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
           if myPrev <= 1:
             return ()
-          return (myPrev, ) + ClastSlots[myPrev - 1]
+          return array('I', (myPrev, )) + ClastSlots[myPrev - 1]
 
       else:
 
