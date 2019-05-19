@@ -41,11 +41,19 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
+## 7.7.5
+
+2019-05-19
+
+An other 20% of the original memory footprint has been shaved off.
+Method: using arrays instead of tuples for sequences of integers.
+
 ## 7.7.4
 
 2019-05-16
 
 Optimization: the memory footprint of the features has been reduced by ca 30%.
+Method: reusing readonly objects with the same value.
 
 The BHSA now needs 2.2 GB of RAM, instead of the 3.4 before.
 
