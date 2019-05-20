@@ -1510,7 +1510,7 @@ such is feature is declared but not used.
 At the end of your director you can remove unused features
 conditionally, using this function.</p>
 </details>
-<details class="abstract"><summary>cv.linked()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">ss</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">linked</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<details class="abstract"><summary>cv.linked()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">ss</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">linked</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
@@ -1521,6 +1521,23 @@ of the action methods.</p>
 <p>If you want to prevent that, you can insert an extra slot, but in order
 to do so, you have to detect that a node is still unlinked.</p>
 <p>This action is precisely meant for that.</p>
+</details>
+<details class="abstract"><summary>cv.active()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">isActive</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">active</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Returns whether the node <code>n</code> is currently active, i.e. in the set
+of embedders. </p>
+<p>If you construct your nodes in a very dynamic way, it might be
+hard to keep track for each node whether it has been created, terminated,
+or resumed, in other words, whether it is active or not.</p>
+<p>This action is provides a direct and precise way to know whether a node is active.</p>
+</details>
+<details class="abstract"><summary>cv.activeTypes()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">nTypes</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">activeTypes</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+
+<p>Returns the node types of the currently active nodes, i.e. the embedders.</p>
 </details>
 <details class="abstract"><summary>cv.get()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">cv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
