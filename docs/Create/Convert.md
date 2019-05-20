@@ -310,7 +310,7 @@
 
     ??? abstract "cv.linked()"
         ```python
-        ss = cv.linked(m)
+        ss = cv.linked(n)
         ```
 
         Returns the slots `ss` to which a node is currently linked.
@@ -323,6 +323,27 @@
         to do so, you have to detect that a node is still unlinked.
 
         This action is precisely meant for that.
+
+    ??? abstract "cv.active()"
+        ```python
+        isActive = cv.active(n)
+        ```
+
+        Returns whether the node `n` is currently active, i.e. in the set
+        of embedders. 
+
+        If you construct your nodes in a very dynamic way, it might be
+        hard to keep track for each node whether it has been created, terminated,
+        or resumed, in other words, whether it is active or not.
+
+        This action is provides a direct and precise way to know whether a node is active.
+
+    ??? abstract "cv.activeTypes()"
+        ```python
+        nTypes = cv.activeTypes()
+        ```
+
+        Returns the node types of the currently active nodes, i.e. the embedders.
 
     ??? abstract "cv.get()"
         ```python

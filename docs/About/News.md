@@ -41,6 +41,16 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
+## 7.7.6
+
+2019-05-20
+
+New functions
+`cv.active()`
+and
+`cv.activeTypes()`
+in the walker conversion (requested by Ernst Boogert). 
+
 ## 7.7.5
 
 2019-05-18

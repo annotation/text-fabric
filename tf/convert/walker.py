@@ -432,6 +432,15 @@ class CV(object):
       # self._checkType(k, v, self.N)
       nodeFeatures[k][node] = v
 
+  def edge(self, nodeFrom, nodeTo, **features):
+    edgeFeatures = self.edgeFeatures
+
+    self.stats[self.E] += 1
+
+    for (k, v) in features.items():
+      # self._checkType(k, v, self.E)
+      edgeFeatures[k][nodeFrom][nodeTo] = v
+
   def occurs(self, feat):
     nodeFeatures = self.nodeFeatures
     edgeFeatures = self.edgeFeatures
@@ -474,6 +483,12 @@ class CV(object):
     oslots = self.oslots
     return tuple(oslots.get(node, []))
 
+  def active(self, node):
+    return node in self.curEmbedders
+
+  def activeTypes(self):
+    return {node[0] for node in self.curEmbedders}
+
   def get(self, feature, *args):
     errors = self.errors
     nodeFeatures = self.nodeFeatures
@@ -488,15 +503,6 @@ class CV(object):
         if len(args) == 1 else
         edgeFeatures.get(feature, {}).get(args[0], {}).get(args[1], None)
     )
-
-  def edge(self, nodeFrom, nodeTo, **features):
-    edgeFeatures = self.edgeFeatures
-
-    self.stats[self.E] += 1
-
-    for (k, v) in features.items():
-      # self._checkType(k, v, self.E)
-      edgeFeatures[k][nodeFrom][nodeTo] = v
 
   def _checkSecLevel(self, node, before=True):
     levelFromSection = self.levelFromSection
