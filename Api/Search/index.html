@@ -1389,7 +1389,53 @@ description of how the results will be retrieved.</p>
 <details class="note"><summary>after S.study()</summary><p>This function is only meaningful after a call to <code>S.study()</code>.</p>
 </details>
 </details>
-<details class="abstract"><summary>S.tweakPerformance()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">tweakPerformance</span><span class="p">(</span><span class="n">gapRatio</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tryLimitFrom</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tryLimitTo</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<details class="abstract"><summary>S.tweakPerformance()</summary><details class="explanation"><summary>Theory</summary><p>Before the search engine retrieves result tuples of nodes,
+there is a process to narrow down the search space.</p>
+<p>See 
+<a href="../../Model/Search/#spinning-thin-yarns">search design</a>
+and remember that we use the term <em>yarn</em> for
+the sets of candidate nodes from which
+we stitch our results together.</p>
+<p><em>Edge spinning</em> is the process of
+transferring constraints on one node via edges to constraints on 
+another node. The one node has a yarn, i.e. a set of candidate nodes, 
+and the node at the other side of the edge has a yarn.</p>
+<p>If the first yarn is small, and candidates in the first yarn must be related
+to candidates in the second yarn, then we might be able to
+reduce the second yarn by computing the relation for the nodes in the small yarn
+and seeing which nodes you get in the second yarn.
+The relation corresponds to the edge, hence the term edge spinning.</p>
+<p>The success of edge spinning depends mainly on two factors:</p>
+<details class="info"><summary>Size difference</summary><p>Edge spinning works best if there is a big difference in size
+between the candidate
+sets for the nodes at both sides of an edge.</p>
+</details>
+<details class="info"><summary>Spread</summary><p>The spread of a relation is the number of different edges
+that can start from the same node or end at the same node.</p>
+<p>For example, the spread of the <code>equality</code> operator is just 1, but
+the spread of the <code>inequality</code> operator is virtually as big
+as the relevant yarn.</p>
+<p>If there are constraints on a node in one yarn, and if there is an edge
+between that yarn and another one, and if the spread is big,
+not much of the constraint can be transferred to the other yarn.</p>
+</details>
+<details class="example" open="open"><summary>Example</summary><p>Suppose both yarns are words, the first yarn has been constrained
+to verbs, and the equality relation holds must hold between the yarns.
+Then in all results the node from the second yarn is also a verb.
+So we can constrain the second yarn to verbs too.</p>
+<p>But if the relation is inequality, we cannot impose any additional
+restriction on nodes in the second yarn. All nodes in the second
+yarn are unequal to at least one verb.</p>
+</details>
+<p>If there is a big size difference between the two yarns, and the spread is
+small, a the bigger yarn will be restricted considerably.</p>
+<details class="info"><summary>Estimating the spread</summary><p>We estimate the spreads of edges over and over again, in a series
+of iterations where we reduce yarns.</p>
+<p>An exhaustive computation would be too expensive, so we take
+a sample of a limited amount of relation computations. </p>
+</details>
+</details>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">tweakPerformance</span><span class="p">(</span><span class="n">yarnRatio</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tryLimitFrom</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tryLimitTo</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
@@ -1397,26 +1443,24 @@ description of how the results will be retrieved.</p>
 <p>If you do not pass a parameter, its value will not be changed.</p>
 <p>If you pass <code>None</code>, its value will be reset to the default value.</p>
 <p>Or you can pass a value of your choosing.</p>
-<details class="info"><summary>gapRatio</summary><p>Edge spinning is the process by which the search space is narrowed down
-by transferring constraints on one node via edges to constraints on 
-another node.</p>
-<p>That works best if there is a big difference in size between the candidate
-sets for both nodes involved.
-Also, it works best if thec relation involved has a low spread, in that 
-it a source node does not have too many targets or vice versa.</p>
-<p>For example, the spread of the <code>equality</code> operator is just 1, but
-the spread of the <code>inequality</code> operator is almost infinite.</p>
-<p>The <code>gapRatio</code> is the minimal factor between the sizes of
+<details class="info"><summary>yarnRatio</summary><p>The <code>yarnRatio</code> is the minimal factor between the sizes of
 the smallest and the biggest set of candidates of the nodes at both ends of
-the edge.
-We divide it by the spread of the relation.</p>
-<p>So, if our gapRatio is 1.5, and we have candidate sets of 1000 and 100 members,
-and the spread is 5, then 1000 / 100 / 5 = 2, which is higher than the
-gapRatio, so the search engine decides that edge spinning is worth it.</p>
+the edge. And that divided by the spread of the relation as estimated
+by a sample.</p>
+<details class="example" open="open"><summary>Example</summary><p>Suppose we set the yarnRatio to 1.5.
+Then, if we have yarns of 100,000 and 10,000 members,
+with a relation between them with spread 5,
+then 100,000 / 10,000 / 5 = 2.
+This is higher than the yarnRatio of 1.5,
+so the search engine decides that edge spinning is worth it.</p>
+<p>The reasoning is that the 10,000 nodes in the smallest yarn are expected
+to reach only 10,000 * 5 nodes in the other yarn by the relation,
+and so we can achieve a significant reduction.</p>
+</details>
 <p>If you have a very slow query, and you think that a bit more edge spinning
-helps, decrease the gapRatio towards 0.</p>
+helps, decrease the yarnRatio towards 0.</p>
 <p>If you find that a lot of queries spend too much time in edge spinning,
-increase the gapRatio.</p>
+increase the yarnRatio.</p>
 </details>
 <details class="info"><summary>tryLimitFrom, tryLimitTo</summary><p>In order to determine the spreads of the relations, TF takes
 random samples and extrapolates the results. It takes some nodes
