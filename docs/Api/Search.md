@@ -138,8 +138,68 @@ Here is the whole interface.
         This function is only meaningful after a call to `S.study()`.
 
 ??? abstract "S.tweakPerformance()"
+    ??? explanation "Theory"
+        Before the search engine retrieves result tuples of nodes,
+        there is a process to narrow down the search space.
+
+        See 
+        [search design](../Model/Search.md#spinning-thin-yarns)
+        and remember that we use the term *yarn* for
+        the sets of candidate nodes from which
+        we stitch our results together.
+
+        *Edge spinning* is the process of
+        transferring constraints on one node via edges to constraints on 
+        another node. The one node has a yarn, i.e. a set of candidate nodes, 
+        and the node at the other side of the edge has a yarn.
+
+        If the first yarn is small, and candidates in the first yarn must be related
+        to candidates in the second yarn, then we might be able to
+        reduce the second yarn by computing the relation for the nodes in the small yarn
+        and seeing which nodes you get in the second yarn.
+        The relation corresponds to the edge, hence the term edge spinning.
+
+        The success of edge spinning depends mainly on two factors:
+        
+        ??? info "Size difference"
+            Edge spinning works best if there is a big difference in size
+            between the candidate
+            sets for the nodes at both sides of an edge.
+
+        ??? info "Spread"
+            The spread of a relation is the number of different edges
+            that can start from the same node or end at the same node.
+
+            For example, the spread of the `equality` operator is just 1, but
+            the spread of the `inequality` operator is virtually as big
+            as the relevant yarn.
+
+            If there are constraints on a node in one yarn, and if there is an edge
+            between that yarn and another one, and if the spread is big,
+            not much of the constraint can be transferred to the other yarn.
+
+        ???+ example "Example"
+            Suppose both yarns are words, the first yarn has been constrained
+            to verbs, and the equality relation holds must hold between the yarns.
+            Then in all results the node from the second yarn is also a verb.
+            So we can constrain the second yarn to verbs too.
+        
+            But if the relation is inequality, we cannot impose any additional
+            restriction on nodes in the second yarn. All nodes in the second
+            yarn are unequal to at least one verb.
+         
+        If there is a big size difference between the two yarns, and the spread is
+        small, a the bigger yarn will be restricted considerably.
+
+        ??? info "Estimating the spread"
+            We estimate the spreads of edges over and over again, in a series
+            of iterations where we reduce yarns.
+            
+            An exhaustive computation would be too expensive, so we take
+            a sample of a limited amount of relation computations. 
+
     ```python
-    S.tweakPerformance(gapRatio=None, tryLimitFrom=None, tryLimitTo=None)
+    S.tweakPerformance(yarnRatio=None, tryLimitFrom=None, tryLimitTo=None)
     ```
 
     Tweaks parameters that influence the performance of the search engine.
@@ -150,33 +210,30 @@ Here is the whole interface.
 
     Or you can pass a value of your choosing.
 
-    ??? info "gapRatio"
-        Edge spinning is the process by which the search space is narrowed down
-        by transferring constraints on one node via edges to constraints on 
-        another node.
+    ??? info "yarnRatio"
 
-        That works best if there is a big difference in size between the candidate
-        sets for both nodes involved.
-        Also, it works best if thec relation involved has a low spread, in that 
-        it a source node does not have too many targets or vice versa.
-
-        For example, the spread of the `equality` operator is just 1, but
-        the spread of the `inequality` operator is almost infinite.
-
-        The `gapRatio` is the minimal factor between the sizes of
+        The `yarnRatio` is the minimal factor between the sizes of
         the smallest and the biggest set of candidates of the nodes at both ends of
-        the edge.
-        We divide it by the spread of the relation.
+        the edge. And that divided by the spread of the relation as estimated
+        by a sample.
 
-        So, if our gapRatio is 1.5, and we have candidate sets of 1000 and 100 members,
-        and the spread is 5, then 1000 / 100 / 5 = 2, which is higher than the
-        gapRatio, so the search engine decides that edge spinning is worth it.
+        ???+ example "Example"
+            Suppose we set the yarnRatio to 1.5.
+            Then, if we have yarns of 100,000 and 10,000 members,
+            with a relation between them with spread 5,
+            then 100,000 / 10,000 / 5 = 2.
+            This is higher than the yarnRatio of 1.5,
+            so the search engine decides that edge spinning is worth it.
+
+            The reasoning is that the 10,000 nodes in the smallest yarn are expected
+            to reach only 10,000 * 5 nodes in the other yarn by the relation,
+            and so we can achieve a significant reduction.
 
         If you have a very slow query, and you think that a bit more edge spinning
-        helps, decrease the gapRatio towards 0.
+        helps, decrease the yarnRatio towards 0.
 
         If you find that a lot of queries spend too much time in edge spinning,
-        increase the gapRatio.
+        increase the yarnRatio.
 
     ??? info "tryLimitFrom, tryLimitTo"
         In order to determine the spreads of the relations, TF takes
