@@ -1340,7 +1340,7 @@ Timers at different levels are independent of each other.</p>
 </details>
 </details>
 <h2 id="clearing-the-cache">Clearing the cache<a class="headerlink" href="#clearing-the-cache" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>TF.clearCache()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">clearCache</span><span class="p">()</span>
+<details class="abstract"><summary>clearCache()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">clearCache</span><span class="p">()</span>
 </pre></div>
 </td></tr></table>
 
@@ -1352,7 +1352,38 @@ results.</p>
 <p>Calling this function just does it, and it is equivalent with manually removing
 all <code>.tfx</code> files inside the hidden <code>.tf</code> directory inside your dataset.</p>
 </details>
+<details class="hint"><summary>See also  clean() below</summary><p>From version 7.7.7 onwards, Text-Fabric uses a parameter called <code>PACK_VERSION</code>
+to mark the stored pre-computed data.
+Whenever there are incompatible changes in the packed data format, this
+version number will be increased and Text-Fabric will not attempt to load
+the older pre-computed data.</p>
+<p>The older data will not be removed, however. Use the function <code>clean()</code>
+below to get rid of pre-computed data that you no longer need.</p>
+</details>
 <details class="hint"><summary>No need to load</summary><p>It is not needed to execute a <code>TF.load()</code> first.</p>
+</details>
+</details>
+<details class="abstract"><summary>clean()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.clean</span> <span class="kn">import</span> <span class="n">clean</span>
+<span class="n">clean</span><span class="p">(</span><span class="n">tfd</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">gh</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">dry</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<details class="info" open="open"><summary>Description</summary><p>Removes all precomputed data resulting from other <code>PACK_VERSION</code>s
+than the one currently used by Text-Fabric.</p>
+<p>You find the current pack version in the
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/parameters.py">parameters file</a>.</p>
+</details>
+<details class="info"><summary>tfd</summary><p>By default, your <code>~/text-fabric-data</code> is traversed and cleaned,
+but if you pass <code>tfd=False</code> it will be skipped.</p>
+</details>
+<details class="info"><summary>gh</summary><p>By default, your <code>~/github</code> will be skipped,
+but if you pass <code>gh=True</code> it will be
+traversed and cleaned.</p>
+</details>
+<details class="info"><summary>dry</summary><p>By default, nothing will be deleted, and you only get a list of
+what will be deleted if it were not a dry run.
+If you pass <code>dry=False</code> the delete actions will really be executed.</p>
 </details>
 </details>
                 

@@ -1389,6 +1389,49 @@ description of how the results will be retrieved.</p>
 <details class="note"><summary>after S.study()</summary><p>This function is only meaningful after a call to <code>S.study()</code>.</p>
 </details>
 </details>
+<details class="abstract"><summary>S.tweakPerformance()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">tweakPerformance</span><span class="p">(</span><span class="n">gapRatio</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tryLimitFrom</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tryLimitTo</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Tweaks parameters that influence the performance of the search engine.</p>
+<p>If you do not pass a parameter, its value will not be changed.</p>
+<p>If you pass <code>None</code>, its value will be reset to the default value.</p>
+<p>Or you can pass a value of your choosing.</p>
+<details class="info"><summary>gapRatio</summary><p>Edge spinning is the process by which the search space is narrowed down
+by transferring constraints on one node via edges to constraints on 
+another node.</p>
+<p>That works best if there is a big difference in size between the candidate
+sets for both nodes involved.
+Also, it works best if thec relation involved has a low spread, in that 
+it a source node does not have too many targets or vice versa.</p>
+<p>For example, the spread of the <code>equality</code> operator is just 1, but
+the spread of the <code>inequality</code> operator is almost infinite.</p>
+<p>The <code>gapRatio</code> is the minimal factor between the sizes of
+the smallest and the biggest set of candidates of the nodes at both ends of
+the edge.
+We divide it by the spread of the relation.</p>
+<p>So, if our gapRatio is 1.5, and we have candidate sets of 1000 and 100 members,
+and the spread is 5, then 1000 / 100 / 5 = 2, which is higher than the
+gapRatio, so the search engine decides that edge spinning is worth it.</p>
+<p>If you have a very slow query, and you think that a bit more edge spinning
+helps, decrease the gapRatio towards 0.</p>
+<p>If you find that a lot of queries spend too much time in edge spinning,
+increase the gapRatio.</p>
+</details>
+<details class="info"><summary>tryLimitFrom, tryLimitTo</summary><p>In order to determine the spreads of the relations, TF takes
+random samples and extrapolates the results. It takes some nodes
+from the set at the <em>from</em> side of an edge, and some nodes at the
+<em>to</em> side of the same edge, and computes in how many cases the relation
+holds. That is a measure for the spread.</p>
+<p>The parameters <code>tryLimitFrom</code> and <code>tryLimitTo</code> dictate how big these
+samples are. The bigger, the better the estimation of the spread.
+But also the more work it is.</p>
+<p>If you find that your queries take consistently a tad too much time,
+consider lowering these parameters to 10.</p>
+<p>If you find that the times your queries take varies a lot,
+increase these values to 10000.</p>
+</details>
+</details>
 <h2 id="search-results">Search results<a class="headerlink" href="#search-results" title="Permanent link">&para;</a></h2>
 <details class="info"><summary>Preparation versus result fetching</summary><p>The method <code>S.search()</code> above combines the interpretation of a given
 template, the setting up of a plan, the constraining of the search space

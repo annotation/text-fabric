@@ -1230,6 +1230,23 @@ data needed for the special functions of the WARP features and the L-API.</p>
 <p>Normally, you do not use this data, but since it is there, it might be valuable,
 so we have made it accessible in the <code>C</code>-api, which we document here.</p>
 </details>
+<details class="explanation"><summary>Pre-computed data storage</summary><p>Pre-computed data is stored in cache directories in a directory <code>.tf</code> inside the
+directory where the <code>otype</code> feature is encountered.</p>
+<p>After precomputation the result is pickled and gzipped and written to a <code>.tfx</code> file
+with the same name as the name of the feature. This is done for nromal features
+and pre-computed features likewise.</p>
+<p>After version 7.7.7 version the memory footprint of some precomputed features
+has been reduced. Because the precomputed features on disk are exact replicas
+of the precomputed features in RAM, older precomputed data does not work with
+versions of TF after 7.7.7. </p>
+<p>But from that version onwards, there is a parameter, <code>PACK_VERSION</code> that indicates
+the version of the packing algorithm. Precomputed data is not stored directly
+in the <code>.tf</code> cache directory, but in the <code>.tf/{PACK_VERSION}</code> directory.</p>
+<p>There is a  utility,
+<a href="../Misc/#clearing-the-cache"><code>clean()</code></a> that removes all outdated generated data from
+your <code>~/text-fabric-data</code> directory, and optionally from your
+<code>~/github</code> directory.</p>
+</details>
 <details class="abstract"><summary>Call() aka AllComputeds()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">Call</span><span class="p">()</span>
 <span class="n">AllComputeds</span><span class="p">()</span>

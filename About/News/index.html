@@ -317,6 +317,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#779" title="7.7.9" class="md-nav__link">
+    7.7.9
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#776-8" title="7.7.6-8" class="md-nav__link">
     7.7.6-8
   </a>
@@ -1681,6 +1688,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#779" title="7.7.9" class="md-nav__link">
+    7.7.9
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#776-8" title="7.7.6-8" class="md-nav__link">
     7.7.6-8
   </a>
@@ -2164,6 +2178,20 @@ To get the newest unstable version:</p>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
 <h3 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h3>
 <hr />
+<h2 id="779">7.7.9<a class="headerlink" href="#779" title="Permanent link">&para;</a></h2>
+<p>2019-05-21</p>
+<p>Some queries perform much better now.
+Especially the ones with <code>==</code> (same slots), <code>&amp;&amp;</code> (overlapping slots), and
+<code>::</code> (same boundaries).</p>
+<p>The performance of the machinery has been tuned with new parameters, and all BHSA
+queries in the tutorials have been tested.</p>
+<p>There was a pair of queries in
+<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/searchGaps.ipynb">searchGaps</a>
+that
+either took 9 seconds or 40, randomly. Now it is consistently 9 seconds.</p>
+<p>See
+<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/searchRough.ipynb">searchRough</a>
+at the end where the performance parameters are tweaked.</p>
 <h2 id="776-8">7.7.6-8<a class="headerlink" href="#776-8" title="Permanent link">&para;</a></h2>
 <p>2019-05-20</p>
 <p>New functions
