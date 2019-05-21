@@ -13,7 +13,7 @@ class Locality(object):
     levUp = self.api.C.levUp.data
 
     if otype is None:
-      return levUp[n - 1]
+      return tuple(levUp[n - 1])
     else:
       return tuple(m for m in levUp[n - 1] if Fotype.v(m) == otype)
 
@@ -31,15 +31,15 @@ class Locality(object):
     levDown = self.api.C.levDown.data
     slotType = Fotype.slotType
     if otype is None:
-      return sorted(
+      return tuple(sorted(
           levDown[n - maxSlot - 1] + Eoslots.s(n),
           key=lambda m: Crank[m - 1],
-      )
+      ))
     elif otype == slotType:
-      return sorted(
+      return tuple(sorted(
           Eoslots.s(n),
           key=lambda m: Crank[m - 1],
-      )
+      ))
     else:
       return tuple(m for m in levDown[n - maxSlot - 1] if Fotype.v(m) == otype)
 

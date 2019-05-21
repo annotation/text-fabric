@@ -142,21 +142,19 @@ def basicRelations(searchExe, api, silent):
     isSlotT = isSlotType(tTp)
     if isSlotF and isSlotT:
       return lambda n: (n, )
-    elif isSlotT:
-      return lambda n, m: (
-          tuple(Eoslots[n - maxSlot - 1] if n > maxSlot else (n, )) == (m, )
-      )
-    elif isSlotF:
-      return lambda n, m: (
-          tuple(Eoslots[m - maxSlot - 1] if m > maxSlot else (m, )) == (n, )
-      )
     else:
-      return (
-          lambda n, m: ((n <= maxSlot and m == n) or (
-              frozenset(Eoslots[n - maxSlot - 1] if n > maxSlot else (n, )) ==
-              frozenset(Eoslots[m - maxSlot - 1] if m > maxSlot else (m, ))
-          ))
-      )
+      def xx(n):
+        if n <= maxSlot:
+          nA = array('I', (n,))
+          return tuple(m for m in ClevUp[n - 1] if Eoslots[m - maxSlot - 1] == nA) + (n,)
+        nSlots = Eoslots[n - maxSlot - 1]
+        if len(nSlots) == 1:
+          slot1 = nSlots[0]
+          nA = array('I', (slot1,))
+          nT = (slot1,)
+          return tuple(m for m in ClevUp[n - 1] if Eoslots[m - maxSlot - 1] == nA) + (n,) + nT
+        return tuple(m for m in ClevUp[n - 1] if n in ClevUp[m - 1]) + (n,)
+      return xx
 
   # OVERLAP
 
@@ -236,7 +234,7 @@ def basicRelations(searchExe, api, silent):
 
       return doyarns
 
-  def overlapR(fTp, tTp):
+  def overlapR_____(fTp, tTp):
     isSlotF = isSlotType(fTp)
     isSlotT = isSlotType(tTp)
     if isSlotF and isSlotT:
@@ -254,6 +252,25 @@ def basicRelations(searchExe, api, silent):
               ) != 0
           )
       )
+
+  def overlapR(fTp, tTp):
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
+      return lambda n: (n, )
+    elif isSlotT:
+      return lambda n: (Eoslots[n - maxSlot - 1] if n > maxSlot else (n, ))
+    elif isSlotF:
+      return lambda n: ClevUp[n - 1] + array('I', (n, ))
+    else:
+      def xx(n):
+        nSlots = Eoslots[n - maxSlot - 1] if n > maxSlot else (n,)
+        return tuple(nSlots) + tuple(reduce(
+            set.union,
+            (set(ClevUp[s - 1]) for s in nSlots),
+            set(),
+        ))
+      return xx
 
   # DIFFERENT SLOTS
 

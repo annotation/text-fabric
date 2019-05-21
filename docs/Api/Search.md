@@ -137,6 +137,64 @@ Here is the whole interface.
     ??? note "after S.study()"
         This function is only meaningful after a call to `S.study()`.
 
+??? abstract "S.tweakPerformance()"
+    ```python
+    S.tweakPerformance(gapRatio=None, tryLimitFrom=None, tryLimitTo=None)
+    ```
+
+    Tweaks parameters that influence the performance of the search engine.
+
+    If you do not pass a parameter, its value will not be changed.
+
+    If you pass `None`, its value will be reset to the default value.
+
+    Or you can pass a value of your choosing.
+
+    ??? info "gapRatio"
+        Edge spinning is the process by which the search space is narrowed down
+        by transferring constraints on one node via edges to constraints on 
+        another node.
+
+        That works best if there is a big difference in size between the candidate
+        sets for both nodes involved.
+        Also, it works best if thec relation involved has a low spread, in that 
+        it a source node does not have too many targets or vice versa.
+
+        For example, the spread of the `equality` operator is just 1, but
+        the spread of the `inequality` operator is almost infinite.
+
+        The `gapRatio` is the minimal factor between the sizes of
+        the smallest and the biggest set of candidates of the nodes at both ends of
+        the edge.
+        We divide it by the spread of the relation.
+
+        So, if our gapRatio is 1.5, and we have candidate sets of 1000 and 100 members,
+        and the spread is 5, then 1000 / 100 / 5 = 2, which is higher than the
+        gapRatio, so the search engine decides that edge spinning is worth it.
+
+        If you have a very slow query, and you think that a bit more edge spinning
+        helps, decrease the gapRatio towards 0.
+
+        If you find that a lot of queries spend too much time in edge spinning,
+        increase the gapRatio.
+
+    ??? info "tryLimitFrom, tryLimitTo"
+        In order to determine the spreads of the relations, TF takes
+        random samples and extrapolates the results. It takes some nodes
+        from the set at the *from* side of an edge, and some nodes at the
+        *to* side of the same edge, and computes in how many cases the relation
+        holds. That is a measure for the spread.
+
+        The parameters `tryLimitFrom` and `tryLimitTo` dictate how big these
+        samples are. The bigger, the better the estimation of the spread.
+        But also the more work it is.
+
+        If you find that your queries take consistently a tad too much time,
+        consider lowering these parameters to 10.
+
+        If you find that the times your queries take varies a lot,
+        increase these values to 10000.
+
 ## Search results
 
 ??? info "Preparation versus result fetching"

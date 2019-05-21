@@ -55,7 +55,7 @@
 
 ## Clearing the cache
 
-??? abstract "TF.clearCache()"
+??? abstract "clearCache()"
     ```python
     TF.clearCache()
     ```
@@ -71,5 +71,42 @@
         Calling this function just does it, and it is equivalent with manually removing
         all `.tfx` files inside the hidden `.tf` directory inside your dataset.
 
+    ??? hint "See also  clean() below"
+        From version 7.7.7 onwards, Text-Fabric uses a parameter called `PACK_VERSION`
+        to mark the stored pre-computed data.
+        Whenever there are incompatible changes in the packed data format, this
+        version number will be increased and Text-Fabric will not attempt to load
+        the older pre-computed data.
+
+        The older data will not be removed, however. Use the function `clean()`
+        below to get rid of pre-computed data that you no longer need.
+
     ??? hint "No need to load"
         It is not needed to execute a `TF.load()` first.
+
+??? abstract "clean()"
+    ```python
+    from tf.clean import clean
+    clean(tfd=True, gh=False, dry=False)
+    ```
+
+    ???+ info "Description"
+        Removes all precomputed data resulting from other `PACK_VERSION`s
+        than the one currently used by Text-Fabric.
+
+        You find the current pack version in the
+        [parameters file]({{tfghb}}/tf/parameters.py).
+
+    ??? info "tfd"
+        By default, your `~/text-fabric-data` is traversed and cleaned,
+        but if you pass `tfd=False` it will be skipped.
+
+    ??? info "gh"
+        By default, your `~/github` will be skipped,
+        but if you pass `gh=True` it will be
+        traversed and cleaned.
+
+    ??? info "dry"
+        By default, nothing will be deleted, and you only get a list of
+        what will be deleted if it were not a dry run.
+        If you pass `dry=False` the delete actions will really be executed.

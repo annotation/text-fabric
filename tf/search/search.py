@@ -58,6 +58,33 @@ class Search(object):
     self.api = api
     self.silent = silent
     self.exe = None
+    self.perfDefaults = dict(
+        yarnRatio=1.2,
+        tryLimitFrom=100,
+        tryLimitTo=100,
+    )
+    self.perfParams = {}
+    self.perfParams.update(self.perfDefaults)
+    SearchExe.setPerfParams(self.perfParams)
+
+  def tweakPerformance(self, **kwargs):
+    error = self.api.error
+    info = self.api.info
+    defaults = self.perfDefaults
+    for (k, v) in kwargs.items():
+      if k not in defaults:
+        error(f'No such performance parameter: "{k}"', tm=False)
+        continue
+      if v is None:
+        v = defaults[k]
+      elif type(v) is not int and k != 'yarnRatio':
+        error(f'Performance parameter "{k}" must be set to an integer, not to "{v}"', tm=False)
+        continue
+      self.perfParams[k] = v
+    info('Performance parameters, current values:', tm=False)
+    for (k, v) in sorted(self.perfParams.items()):
+      info(f'\t{k:<20} = {v:>7}', tm=False)
+    SearchExe.setPerfParams(self.perfParams)
 
   def search(
       self,

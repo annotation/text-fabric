@@ -41,6 +41,26 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
+## 7.7.9
+
+2019-05-21
+
+Some queries perform much better now.
+Especially the ones with `==` (same slots), `&&` (overlapping slots), and
+`::` (same boundaries).
+
+The performance of the machinery has been tuned with new parameters, and all BHSA
+queries in the tutorials have been tested.
+
+There was a pair of queries in
+[searchGaps]({{tutnb}}/bhsa/searchGaps.ipynb)
+that
+either took 9 seconds or 40, randomly. Now it is consistently 9 seconds.
+
+See
+[searchRough]({{tutnb}}/bhsa/searchRough.ipynb)
+at the end where the performance parameters are tweaked.
+
 ## 7.7.6-8
 
 2019-05-20

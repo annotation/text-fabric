@@ -8,6 +8,28 @@
     Normally, you do not use this data, but since it is there, it might be valuable,
     so we have made it accessible in the `C`-api, which we document here.
 
+??? explanation "Pre-computed data storage"
+    Pre-computed data is stored in cache directories in a directory `.tf` inside the
+    directory where the `otype` feature is encountered.
+
+    After precomputation the result is pickled and gzipped and written to a `.tfx` file
+    with the same name as the name of the feature. This is done for nromal features
+    and pre-computed features likewise.
+
+    After version 7.7.7 version the memory footprint of some precomputed features
+    has been reduced. Because the precomputed features on disk are exact replicas
+    of the precomputed features in RAM, older precomputed data does not work with
+    versions of TF after 7.7.7. 
+
+    But from that version onwards, there is a parameter, `PACK_VERSION` that indicates
+    the version of the packing algorithm. Precomputed data is not stored directly
+    in the `.tf` cache directory, but in the `.tf/{PACK_VERSION}` directory.
+
+    There is a  utility,
+    [`clean()`](Misc.md#clearing-the-cache) that removes all outdated generated data from
+    your `~/text-fabric-data` directory, and optionally from your
+    `~/github` directory.
+
 ??? abstract "Call() aka AllComputeds()"
     ```python
     Call()

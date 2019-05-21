@@ -219,8 +219,8 @@ def spinAtoms(searchExe):
 
 
 def estimateSpreads(searchExe, both=False):
-  TRY_LIMIT_F = 10
-  TRY_LIMIT_T = 10
+  TRY_LIMIT_F = searchExe.perfParams['tryLimitFrom']
+  TRY_LIMIT_T = searchExe.perfParams['tryLimitTo']
   qnodes = searchExe.qnodes
   relations = searchExe.relations
   converse = searchExe.converse
@@ -245,7 +245,6 @@ def estimateSpreads(searchExe, both=False):
         continue
       yarnF = list(yarnF)
       yarnT = yarns[tt]
-      totalSpread = 0
       yarnFl = len(yarnF)
       if yarnFl < TRY_LIMIT_F:
         triesn = yarnF
@@ -256,6 +255,7 @@ def estimateSpreads(searchExe, both=False):
       else:
         r = relations[trela]['func'](qnodes[tf][0], qnodes[tt][0])
         nparams = len(signature(r).parameters)
+        totalSpread = 0
         if nparams == 1:
           for n in triesn:
             mFromN = set(r(n)) & yarnT
@@ -308,7 +308,7 @@ def _chooseEdge(searchExe):
 
 
 def _spinEdge(searchExe, e):
-  SPIN_LIMIT = 1000
+  YARN_RATIO = searchExe.perfParams['yarnRatio']
   qnodes = searchExe.qnodes
   relations = searchExe.relations
   yarns = searchExe.yarns
@@ -326,13 +326,20 @@ def _spinEdge(searchExe, e):
   # also big, spinning costs an enormous amount of time,
   # and will not help in reducing the search space.
   # condition for skipping: spread times length from-yarn >= SPIN_LIMIT
-  if spreads[e] * len(yarnF) >= SPIN_LIMIT:
-    return
+  yarnFl = len(yarnF)
+  yarnTl = len(yarnT)
+  if (
+      yarnFl and yarnTl and spreads[e] and
+      max((yarnFl / yarnTl, yarnTl / yarnFl)) / spreads[e] < YARN_RATIO
+  ):
+    return False
+  # if spreads[e] * len(yarnF) >= SPIN_LIMIT:
+  #   return False
 
   # for some basic relations we know that spinning is useless
   s = relations[rela]['spin']
   if type(s) is float:
-    return
+    return False
 
   # for other basic realtions we have an optimized spin function
   # if type(s) is types.FunctionType:
@@ -369,12 +376,15 @@ def _spinEdge(searchExe, e):
   searchExe.yarns[f] = newYarnF
   searchExe.yarns[t] = newYarnT
 
+  return affectedF or affectedT
+
 
 def spinEdges(searchExe):
   qnodes = searchExe.qnodes
   qedges = searchExe.qedges
   yarns = searchExe.yarns
   uptodate = searchExe.uptodate
+  thinned = {}
 
   estimateSpreads(searchExe)
 
@@ -393,5 +403,8 @@ def spinEdges(searchExe):
       break
     e = _chooseEdge(searchExe)
     (f, rela, t) = qedges[e]
-    _spinEdge(searchExe, e)
+    affected = _spinEdge(searchExe, e)
+    if affected:
+      thinned[e] = 1
     it += 1
+  searchExe.thinned = thinned

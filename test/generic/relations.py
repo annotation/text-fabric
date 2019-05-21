@@ -146,6 +146,7 @@ comparisons = {
         ('part', 'john', 'part', 'small4', False),
         ('sign', 'a', 'part', 's1', True),
         ('part', 's1', 'sign', 'a', True),
+        ('part', 's1', 'part', 'ss1', True),
         ('part', 'small1', 'part', 'big', False),
         ('part', 'big', 'part', 'small1', False),
     ),

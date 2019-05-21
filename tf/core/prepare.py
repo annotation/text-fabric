@@ -85,7 +85,7 @@ def rank(info, error, otype, order):
   return array('I', (nodesRank[n] for n in range(1, maxNode + 1)))
 
 
-def levUp(info, error, otype, oslots, levels, rank):
+def levUp(info, error, otype, oslots, rank):
   (otype, maxSlot, maxNode, slotType) = otype
   oslots = oslots[0]
   info('making inverse of edge feature oslots')

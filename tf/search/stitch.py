@@ -153,7 +153,7 @@ def _small_choice_first(searchExe):
   # the initial yarn may have an enormous spread.
   # Here we try out the strategy of postponing
   # broad choices as long as possible.
-  # The inituition is that while we are making smaller choices,
+  # The intuition is that while we are making smaller choices,
   # constraints are encountered,
   # severely limiting the broader choices later on.
 

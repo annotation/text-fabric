@@ -7,6 +7,11 @@ from .stitch import setStrategy, stitch
 
 
 class SearchExe(object):
+  perfParams = {}
+
+  @classmethod
+  def setPerfParams(cls, info):
+    cls.perfParams = info
 
   def __init__(
       self,
@@ -68,6 +73,8 @@ class SearchExe(object):
     if not self.silent:
       info(f'Constraining search space with {len(self.qedges)} relations ...', cache=msgCache)
     spinEdges(self)
+    if not self.silent:
+      info(f'\t{len(self.thinned)} edges thinned', cache=msgCache)
     if not self.silent:
       info('Setting up retrieval plan ...', cache=msgCache)
     stitch(self)
@@ -155,6 +162,9 @@ class SearchExe(object):
       for q in qs:
         self._showNode(q)
       if len(es) != 0:
+        info('Performance parameters:', tm=False, cache=msgCache)
+        for (k, v) in self.perfParams.items():
+          info(f'\t{k:<20} = {v:>7}', tm=False, cache=msgCache)
         info('Instantiations are computed along the following relations:', tm=False, cache=msgCache)
         (firstE, firstDir) = es[0]
         (f, rela, t) = qedges[firstE]
@@ -211,17 +221,19 @@ class SearchExe(object):
     relations = self.relations
     spreads = self.spreads
     spreadsC = self.spreadsC
+    thinned = self.thinned
     (f, rela, t) = qedges[e]
     if dir == -1:
       (f, rela, t) = (t, converse[rela], f)
     info(
-        'edge {:>2}-{:<13} {:^2} {:>2}-{:<13} ({:8.1f} choices)'.format(
+        'edge {:>2}-{:<13} {:^2} {:>2}-{:<13} ({:8.1f} choices{})'.format(
             f,
             qnodes[f][0],
             relations[rela]['acro'],
             t,
             qnodes[t][0],
             spreads.get(e, -1) if dir == 1 else spreadsC.get(e, -1),
+            ' (thinned)' if e in thinned else '',
         ), tm=False, cache=msgCache
     )
 
