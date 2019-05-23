@@ -1,0 +1,5 @@
+clause
+  phrase function=Pred|PreC
+    word sp=verb vs=hif lex=QWM[
+  phrase function=Objc
+    word lex=BRJT/

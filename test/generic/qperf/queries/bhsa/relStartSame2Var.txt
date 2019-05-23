@@ -1,0 +1,5 @@
+chapter book=Genesis chapter=1
+  c:clause
+  p:phrase
+    
+  c =2: p

@@ -1,0 +1,10 @@
+verse
+    p:phrase
+      wPreGap:word lex=L
+      wLast:word
+      :=
+
+wGap:word
+wPreGap <: wGap
+wGap < wLast
+p || wGap

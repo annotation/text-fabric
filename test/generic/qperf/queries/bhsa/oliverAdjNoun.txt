@@ -1,0 +1,4 @@
+phrase typ=PP
+  word sp=prep
+  <: word sp=adjv
+  <: word sp=subs

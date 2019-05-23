@@ -1,0 +1,3 @@
+verse
+  clause
+    =: rare otype=phrase

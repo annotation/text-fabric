@@ -1,0 +1,4 @@
+verse
+  s:sentence
+    =: sa:sentence_atom
+  s ## sa

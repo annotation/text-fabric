@@ -1,0 +1,15 @@
+p:phrase
+    =: wFirst:word
+    wLast:word
+    :=
+
+wGap:word
+wFirst < wGap
+wLast > wGap
+
+p || wGap
+
+v:verse
+
+v [[ wLast
+v [[ wGap

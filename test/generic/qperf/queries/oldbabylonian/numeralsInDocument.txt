@@ -1,0 +1,2 @@
+document pnumber=P510556
+  sign type=numeral repeat>3

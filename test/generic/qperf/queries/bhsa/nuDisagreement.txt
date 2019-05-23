@@ -1,0 +1,7 @@
+clause
+  phrase function=Subj
+    =: word nu=sg|pl
+    :=
+  phrase function=Pred|PreO
+    word sp=verb
+         nu=sg|pl

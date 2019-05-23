@@ -1,0 +1,5 @@
+book
+  chapter
+    verse
+      phrase det=und
+        word lex=>LHJM/

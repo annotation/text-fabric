@@ -1,0 +1,4 @@
+verse
+  c:common otype=clause
+    :: p:common otype=phrase
+c ## p

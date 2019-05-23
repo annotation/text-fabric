@@ -1,0 +1,9 @@
+clause
+  p1:phrase function=Pred|PreC
+    word sp=verb vs=qal lex=MY>[
+  p2:phrase function=Objc
+    word lex=XN/
+  p3:phrase function=Cmpl
+    word lex=B
+    <: word lex=<JN/
+  p2 << p3

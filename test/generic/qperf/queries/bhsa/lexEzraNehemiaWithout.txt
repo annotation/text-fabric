@@ -1,0 +1,6 @@
+lex
+/without/
+book book@en#Ezra|Nehemiah
+  w:word
+  w ]] ..
+/-/

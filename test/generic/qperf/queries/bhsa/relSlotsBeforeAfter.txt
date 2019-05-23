@@ -1,0 +1,7 @@
+verse
+  sentence
+    c1:clause
+    p:phrase
+    c2:clause
+    c1 << p
+    c2 >> p

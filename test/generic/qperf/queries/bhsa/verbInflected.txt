@@ -1,0 +1,2 @@
+word sp=verb vs#qal vt#infc|infa|ptca|ptcp ps#p3 nu#sg gn#m
+

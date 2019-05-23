@@ -1,0 +1,12 @@
+clause
+    =: first:word
+    last:word
+    :=
+v1:verse
+    w1:word
+v2:verse
+    w2:word
+    
+first = w1
+last = w2
+v1 # v2

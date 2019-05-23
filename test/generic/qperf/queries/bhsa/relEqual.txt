@@ -1,0 +1,13 @@
+v1:verse
+  sentence
+    clause rela=Objc
+      phrase
+        word sp=verb gn=f nu=pl
+v2:verse
+  sentence
+    c1:clause
+    c2:clause
+    c3:clause
+    c1 < c2
+    c2 < c3
+v1 = v2

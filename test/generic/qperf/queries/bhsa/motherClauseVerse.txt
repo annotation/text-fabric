@@ -1,0 +1,7 @@
+v1:verse
+    c1:clause
+v2:verse
+    c2:clause
+
+c1 -mother> c2
+v1 # v2

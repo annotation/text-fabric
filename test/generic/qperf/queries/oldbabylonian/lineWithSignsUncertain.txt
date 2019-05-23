@@ -1,0 +1,4 @@
+line
+  sign missing=1
+  sign question=1
+  sign damage=1

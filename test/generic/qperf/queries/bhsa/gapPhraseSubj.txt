@@ -1,0 +1,1 @@
+gapphrase function=Subj

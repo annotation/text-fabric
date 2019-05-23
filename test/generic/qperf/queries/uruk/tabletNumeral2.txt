@@ -1,0 +1,9 @@
+tablet
+/without/
+  case
+    sign type=numeral
+/-/
+/with/
+  case
+/-/
+  sign type=numeral

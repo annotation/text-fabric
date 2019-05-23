@@ -1,0 +1,15 @@
+clause
+  phrase function=Subj
+  /without/
+  <: phrase function=Pred
+  /-/
+    phrase_atom rela#Appo|Para|Spec
+      word pdp=subs|nmpr|prps|prde|prin|adjv
+  << phrase function=PreC
+  /without/
+  :> phrase function=Pred
+  /-/
+  /without/
+    word pdp=prep
+  /-/
+    word pdp=subs|nmpr|prin|adjv ls=card|ordn

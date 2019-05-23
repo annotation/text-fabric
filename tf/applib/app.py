@@ -55,3 +55,17 @@ def findAppClass(dataSource, appPath):
     console(f'findAppClass: {str(e)}', error=True)
     console(f'findAppClass: Api for "{dataSource}" not found')
   return appClass
+
+
+def loadModule(dataSource, appPath, moduleName):
+  try:
+    spec = util.spec_from_file_location(
+        f'tf.apps.{dataSource}.{moduleName}',
+        f'{appPath}/{moduleName}.py',
+    )
+    module = util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+  except Exception as e:
+    console(f'loadModule: {str(e)}', error=True)
+    console(f'loadModule: {moduleName} in "{dataSource}" not found')
+  return module

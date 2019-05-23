@@ -1,0 +1,1 @@
+sign type=ideograph grapheme~[0-9]

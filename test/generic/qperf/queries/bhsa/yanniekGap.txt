@@ -1,0 +1,13 @@
+@limit=4
+
+c:clause
+  PreGap:phrase_atom
+  LastPhrase:phrase_atom
+  :=
+
+Gap:clause_atom
+  :: word
+
+PreGap < Gap
+Gap < LastPhrase
+c || Gap

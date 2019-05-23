@@ -1,0 +1,2 @@
+infrequent otype=sentence
+  := word rank_lex<100

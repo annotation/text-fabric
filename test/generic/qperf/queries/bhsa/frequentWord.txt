@@ -1,0 +1,2 @@
+infrequent otype=sentence
+  frequent otype=clause

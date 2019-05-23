@@ -1,0 +1,4 @@
+verse
+  s:common otype=sentence
+    =: sa:sentence_atom
+  s ## sa

@@ -1,0 +1,4 @@
+verse
+/without/
+  word freq_lex<70
+/-/

@@ -1,0 +1,7 @@
+lex
+/where/
+  w:word
+/have/
+b:book book@en=Ezra|Nehemiah
+w ]] b
+/-/

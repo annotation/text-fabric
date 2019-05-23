@@ -1,0 +1,3 @@
+aya
+  word pos=verb
+  <: word pos=noun posx=proper root=Alh

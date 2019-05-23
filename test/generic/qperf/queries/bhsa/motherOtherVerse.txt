@@ -1,0 +1,9 @@
+cm:clause
+-mother> cd:clause
+
+v1:verse
+v2:verse
+v1 # v2
+
+cm ]] v1
+cd ]] v2

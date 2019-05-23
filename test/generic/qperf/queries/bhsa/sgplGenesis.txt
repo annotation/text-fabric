@@ -1,0 +1,7 @@
+book book=Genesis
+  chapter chapter=1
+    verse verse=1
+      sentence
+% order is not important!
+        word nu=sg
+        word nu=pl

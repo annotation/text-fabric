@@ -1,0 +1,11 @@
+tablet
+/where/
+  case
+/have/
+  /without/
+    sign type=numeral
+  /-/
+/-/
+/with/
+  case
+/-/

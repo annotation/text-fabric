@@ -1,0 +1,2 @@
+word
+  sign type=numeral repeat>3

@@ -1,0 +1,2 @@
+tablet catalogId=P005381
+  sign type=numeral

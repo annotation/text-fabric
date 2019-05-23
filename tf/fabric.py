@@ -109,7 +109,7 @@ Api reference : {APIREF}
         self.sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
         self.sectionTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
         self.structureFeats = itemize(otextMeta.get('structureFeatures', ''), ',')
-        self.structureTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
+        self.structureTypes = itemize(otextMeta.get('structureTypes', ''), ',')
         (self.cformats, self.formatFeats) = collectFormats(otextMeta)
         if not (0 < len(self.sectionTypes) <= 3) or not (0 < len(self.sectionFeats) <= 3):
           if not silent:

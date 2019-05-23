@@ -1,0 +1,8 @@
+common otype=sentence
+/with/
+v1:verse
+&& ..
+v2:verse
+&& ..
+v1 < v2
+/-/

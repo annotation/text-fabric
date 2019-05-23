@@ -1,0 +1,5 @@
+line
+  case terminal=1
+% order is not important
+    sign type=ideograph
+    sign type=numeral

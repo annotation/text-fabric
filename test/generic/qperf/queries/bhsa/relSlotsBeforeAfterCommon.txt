@@ -1,0 +1,7 @@
+verse
+  sentence
+    c1:common otype=clause
+    p:rare otype=phrase
+    c2:common otype=clause
+    c1 << p
+    c2 >> p

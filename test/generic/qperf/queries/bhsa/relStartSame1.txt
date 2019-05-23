@@ -1,0 +1,3 @@
+chapter book=Genesis chapter=1
+  clause
+    =1: phrase

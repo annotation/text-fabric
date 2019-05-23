@@ -1,0 +1,3 @@
+v:verse
+-crossref> w:verse
+v < w

@@ -1,0 +1,5 @@
+verse
+  p:phrase
+    s1:subphrase
+    < s2:subphrase
+  s1 || s2

@@ -76,7 +76,7 @@ apps  : commit and push all tf apps
 tut   : commit and push the tutorials repo
 a     : open text-fabric browser on specific dataset
         ({appStr})
-t     : run test suite (relations)
+t     : run test suite (relations, qperf)
 data  : build data files for github release
 
 For g and the r-commands you need to pass a commit message as well.
@@ -108,7 +108,7 @@ def readArgs():
       if arg in {'a', 'data'}:
         console(f'Provide a data source [{appStr}]')
       elif arg in {'t'}:
-        console('Provide a test suite [relations]')
+        console('Provide a test suite [relations, qperf]')
       return (False, None, [])
     return (arg, args[1], args[2:])
   return (arg, None, [])

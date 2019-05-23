@@ -1,0 +1,4 @@
+clause
+  =: phrase
+  <: phrase
+  :=

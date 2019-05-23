@@ -1,5 +1,6 @@
 from ..core.helpers import console, wrapMessages
 from .searchexe import SearchExe
+from ..parameters import YARN_RATIO, TRY_LIMIT_FROM, TRY_LIMIT_TO
 
 # Search and SearchExe
 #
@@ -59,9 +60,9 @@ class Search(object):
     self.silent = silent
     self.exe = None
     self.perfDefaults = dict(
-        yarnRatio=1.2,
-        tryLimitFrom=100,
-        tryLimitTo=100,
+        yarnRatio=YARN_RATIO,
+        tryLimitFrom=TRY_LIMIT_FROM,
+        tryLimitTo=TRY_LIMIT_TO,
     )
     self.perfParams = {}
     self.perfParams.update(self.perfDefaults)

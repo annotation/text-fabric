@@ -1,0 +1,4 @@
+case
+/without/
+  sign type=numeral
+/-/

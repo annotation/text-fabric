@@ -1,0 +1,3 @@
+v:common otype=verse
+    s:common otype=sentence
+v == s

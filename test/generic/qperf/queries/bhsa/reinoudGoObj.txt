@@ -1,0 +1,6 @@
+clause
+  p1:phrase function=Pred|PreC
+    word sp=verb vs=qal lex=HLK[
+  p2:phrase
+    =: word lex=>T
+  p1 # p2

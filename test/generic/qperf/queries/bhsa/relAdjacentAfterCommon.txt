@@ -1,0 +1,4 @@
+verse
+  clause
+    common otype=phrase
+    :> rare otype=phrase

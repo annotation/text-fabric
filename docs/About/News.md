@@ -41,6 +41,22 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
+# 7.7.10
+
+2019-05-23
+
+Fixed a bug in fabric.py spotted by Ernst Boogert, where there was
+a confusion between `sections` and `structure`
+
+If a TF-app needs to import its own modules, there is the risk of conflicts
+when several TF-apps get loaded in the same program and they import modules
+with the same name.
+TF offers a function
+[`loadModule()`](../Implementation/Apps.md#components)
+by which an app can dynamically load
+a module, and this function makes sure that the imported module gets
+an app-dependent internal name.
+
 ## 7.7.9
 
 2019-05-21

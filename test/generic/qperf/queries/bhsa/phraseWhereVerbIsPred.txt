@@ -1,0 +1,6 @@
+phrase
+/where/
+  w:word pdp=verb
+/have/
+.. function=Pred
+/-/
