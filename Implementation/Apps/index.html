@@ -1291,9 +1291,11 @@ and pretty displays of nodes of each type in the corpus.</p>
 <p>For a list of current apps, see <a href="../../About/Corpora/">Corpora</a></p>
 </details>
 <h2 id="components">Components<a class="headerlink" href="#components" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>App components</summary><p>The apps themselves are modules inside 
-<a href="https://github.com/annotation/text-fabric/tree/master/tf/apps">apps</a></p>
-<p>For each <em>app</em>, you find there a subfolder <em>app</em> with:</p>
+<details class="abstract"><summary>App components</summary><p>The apps themselves are those repos inside 
+<a href="https://github.com/annotation">annotation</a>
+whose names start with <code>app-</code>.
+The part after the <code>app-</code> is the name of the app.</p>
+<p>For each <em>app</em>, you find there a subfolder <code>code</code> with:</p>
 <details class="abstract"><summary>static</summary><p>A folder with styles, fonts and logos, to be used by web servers such as the the
 <a href="../../Server/Web/">text-fabric browser</a>.</p>
 <p>In particular, <code>display.css</code> contains the styles used for pretty displays.
@@ -1547,6 +1549,67 @@ TF api. In the code you see this stored in variables with name <code>app</code>.
 </tr>
 </tbody>
 </table>
+</details>
+<details class="abstract"><summary>other modules</summary><p>If you organize bits of the functionality of the app in modules to be imported by <code>app.py</code>,
+you can put them in this same directory.</p>
+<details class="caution" open="open"><summary>Do not <code>import</code> app-dependent modules</summary><p>If you import these other modules by means of the Python import system using 
+<code>import module</code> or <code>from module import name</code> then everything works fine until you
+load two apps in the same program, that in turn load their other modules.
+As long as different apps load modules with different names, there is no problem/
+But if two apps both have a module with the same name, then the first of them
+will be loaded, and both apps use the same code.</p>
+<p>In order to prevent this, you can use the function <code>loadModule()</code> to
+dynamically load these modules. They will be given an app-dependent internal
+name, so the Python importer will not conflate them.</p>
+</details>
+<details class="abstract"><summary>loadModule()</summary><p>Here is how you load auxiliary modules in your <code>app.py</code>.
+The example is taken from the <code>uruk</code> app, which loads
+two modules, <code>atf</code> and <code>image</code>.</p>
+<p><code>atf</code> is a bunch of functions that enrich the api of the app.
+The <code>atf</code> module contains a function that adds all these functions
+to an object: 
+<a href="https://github.com/annotation/app-uruk/blob/master/code/atf.py"><code>atfApi</code></a></p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.applib.app</span> <span class="kn">import</span> <span class="n">loadModule</span>
+
+<span class="k">class</span> <span class="nc">TfApp</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">_asApp</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="n">atf</span> <span class="o">=</span> <span class="n">loadModule</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;atf&#39;</span><span class="p">)</span>
+    <span class="n">atf</span><span class="o">.</span><span class="n">atfApi</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+    <span class="n">app</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">loadModule</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;image&#39;</span><span class="p">)</span>
+
+    <span class="n">setupApi</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">_asApp</span><span class="o">=</span><span class="n">_asApp</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="n">silent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>The place to put the <code>loadModule()</code> calls is in the <code>__init()__</code> method of the
+<code>TfApp</code> object, before the call to <code>setupApi()</code>.
+Here the name of the app and the path to the code directory of the
+app are known.
+They are provided by the first two arguments by which the <code>__init__()</code> method is called.</p>
+<p><code>loadModule()</code> needs the app name and the path to the code, to we pass it <code>*args[0:2]</code>,
+the first two arguments received by <code>__init__()</code>.</p>
+<p>The third argument for <code>loadModule()</code> is the file name of the module, without the <code>.py</code>.</p>
+<p>The result of loading the module is a code object, from which you can get all the names
+defined by the module and their semantics.</p>
+<p>In the <code>atf</code> case, we use the <code>atfApi()</code> function of the module to add 
+a bunch of functions defined in that module as methods to the TfApp object.</p>
+<p>In the <code>image</code> case, we add the code object as an attribute to the TfApp object,
+so that all its methods can retrieve all names defined by the <code>image</code> module.</p>
+</details>
 </details>
 </details>
 <h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
