@@ -1,28 +1,48 @@
 import sys
 import os
+import collections
 import time
+from itertools import product
 from datetime import date, datetime
 from tf.app import use
 from tf.parameters import YARN_RATIO, TRY_LIMIT_FROM, TRY_LIMIT_TO
 from tf.core.timestamp import Timestamp
 
-PERF_PARAMS = (
-    ('yarnRatio', YARN_RATIO, float),
-    ('tryLimitFrom', TRY_LIMIT_FROM, int),
-    ('tryLimitTo', TRY_LIMIT_TO, int),
+TASKS = (
+    'measure',
+    'compare',
 )
-PERF_DEFAULTS = {x[0]: x[1] for x in PERF_PARAMS}
+TASKS_SET = set(TASKS)
+
+YARN = 'yarnRatio'
+TRYF = 'tryLimitFrom'
+TRYT = 'tryLimitTo'
+
+YARN_RATIO_RANGE = '1.0,1.1,1.2,1.25,1.3,1.4,1.5,1.6'
+
+PERF_PARAMS = (
+    (YARN, YARN_RATIO, float),
+    (TRYF, TRY_LIMIT_FROM, int),
+    (TRYT, TRY_LIMIT_TO, int),
+)
+PERF_DEFAULTS = {x[0]: (x[1],) for x in PERF_PARAMS}
 PERF_TYPES = {x[0]: x[2] for x in PERF_PARAMS}
 
+
+LIMIT = 'limit'
+LIMITQ = 'limit'
+NAME = 'name'
+NAMEQ = 'name'
+
 SUITE_PARAMS = (
-    ('limit', None, int),
-    ('name', None, str),
+    (LIMITQ, None, int),
+    (NAMEQ, None, str),
 )
 SUITE_DEFAULTS = {x[0]: x[1] for x in SUITE_PARAMS}
 SUITE_TYPES = {x[0]: x[2] for x in SUITE_PARAMS}
 
 META_PARAMS = (
-    ('limit', None, int),
+    (LIMIT, None, int),
 )
 META_DEFAULTS = {x[0]: x[1] for x in META_PARAMS}
 META_TYPES = {x[0]: x[2] for x in META_PARAMS}
@@ -30,7 +50,13 @@ META_TYPES = {x[0]: x[2] for x in META_PARAMS}
 perfParamRep = '\n'.join(f'{x[0]}={x[2]}' for x in PERF_PARAMS)
 
 HELP = f'''
-USAGE python3 qperf.py apps parameters
+USAGE python3 qperf.py task arguments
+
+=========================
+task = measure
+
+USAGE python3 qperf.py measure apps parameters
+-------------------------
 
 Runs query performance tests for selected apps and parameters.
 
@@ -42,36 +68,85 @@ If any app is given, only indicated apps are run.
 If an app is preceded with a -, it will not be run.
 
 Performance parameters:
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 {perfParamRep}
 
+For each parameter, you may specify a comma separated list of values.
+
+If you give - for the yarn ratio, a standard range of values will be used:
+    {YARN_RATIO_RANGE}
+
 Suite parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 limit=integer: only run so many queries per app
-name=strin: only if a query has this name, it will be run
+name=string: comma separated list of query names to be done, the rest are skipped
 
+=========================
+task = compare
+
+USAGE python3 qperf.py compare name refletter dateStr perfparamStr
+-------------------------
+
+Collects all measurements specified by the refletter (reference measurement),
+and other measurments on all the dates specified by dateStr
+with all the perfparams specified in perfParamStr.
+
+The dateStr and perfparamStr are comma-separated lists of dates and perfparamstrings.
+
+You may set dateStr and/or perfParamStr to - .
+
+If dateStr is - all reports of today will be selected.
+
+If perfParamStr is - , all choices of perfParams for the chosen date are selected.
+
+The name of the file with comparison results is composed of the
+args name, refletter and the first date in dateStr.
+
+=========================
 --help gives help.
 '''
 
-GH_BASE = '~/github'
-GH_BASEX = os.path.expanduser(GH_BASE)
+GH_BASE = os.path.expanduser('~/github')
 TEST_BASE = f'{GH_BASE}/annotation/text-fabric/test/generic/qperf'
-TEST_BASEX = f'{GH_BASEX}/annotation/text-fabric/test/generic/qperf'
-QUERY_DIR = f'{TEST_BASEX}/queries'
+QUERY_DIR = f'{TEST_BASE}/queries'
+REF_DIR = f'{TEST_BASE}/reference'
 REPORT_DIR = f'{TEST_BASE}/reports'
-REPORT_DIRX = f'{TEST_BASEX}/reports'
+COMPARE_DIR = f'{TEST_BASE}/compare'
 
-META_FIELDS = set('''
-    limit
-'''.strip().split())
+RESULTS = 'results'
+RESULTSC = 'resultsOK'
+STUDY = 'study'
+STUDYF = 'studyFrac'
+STUDYD = 'studyDiff'
+FETCH = 'fetch'
+FETCHF = 'fetchFrac'
+FETCHD = 'fetchDiff'
 
-FIELDS = '''
+FIELDS = f'''
   app
   query
-  results
-  limited
-  study time
-  fetch time
+  {LIMIT}
+  {RESULTS}
+  {STUDY}
+  {FETCH}
+'''.strip().split()
+
+REF_FIELDS = f'''
+  {RESULTS}
+  {STUDY}
+  {FETCH}
+'''.strip().split()
+
+COMPARE_FIELDS = f'''
+  {RESULTSC}
+  {STUDY}
+  {STUDYF}
+  {STUDYD}
+  {FETCH}
+  {FETCHF}
+  {FETCHD}
 '''.strip().split()
 
 apps = {}
@@ -86,6 +161,10 @@ info = TM.info
 error = TM.error
 
 
+def ir(n):
+  return int(round(n))
+
+
 def readApps():
   apps = set()
   with os.scandir(QUERY_DIR) as d:
@@ -93,6 +172,114 @@ def readApps():
       if entry.is_dir():
         apps.add(entry.name)
   return apps
+
+
+def readQueries(app):
+  queryDir = f'{QUERY_DIR}/{app}'
+  queries = {}
+  with os.scandir(queryDir) as d:
+    for entry in d:
+      if not (entry.is_file() and entry.name.endswith('.txt')):
+        continue
+      qName = entry.name[0:-4]
+      with open(f'{queryDir}/{entry.name}') as qf:
+        metaData = {}
+        qText = ''
+        for line in qf:
+          if line.startswith('@'):
+            (key, value) = line[1:].strip().split('=', maxsplit=1)
+            if key not in META_DEFAULTS:
+              error(
+                  'Query {qName}: warning: unrecognized meta data key "{key}"',
+                  tm=False,
+              )
+            typ = META_TYPES[key]
+            try:
+              metaData[key] = typ(value)
+            except ValueError:
+              error(f'{value} has wrong type for meta param @{key}: {typ}')
+          else:
+            qText += line
+
+      queries[qName] = (metaData, qText)
+  return queries
+
+
+def readRefs():
+  refs = {}
+  with os.scandir(REF_DIR) as d:
+    for entry in d:
+      if not entry.is_file():
+        continue
+
+      name = entry.name
+      if not name.endswith('.tsv'):
+        continue
+
+      nameBare = name[0:-4]
+      parts = nameBare.split('-', maxsplit=1)
+      if len(parts) != 2:
+        continue
+
+      (letter, rest) = parts
+      if len(letter) != 1 or not letter.isupper():
+        continue
+
+      parts = rest.split('-', maxsplit=3)
+      if len(parts) != 4:
+        continue
+
+      datum = '-'.join(parts[0:3])
+      perf = parts[3]
+      refs[letter] = dict(name=name, letter=letter, date=datum, perf=perf)
+  return refs
+
+
+def readReports():
+  reports = {}
+  with os.scandir(REPORT_DIR) as d:
+    for entry in d:
+      if not entry.is_file():
+        continue
+
+      name = entry.name
+      if not name.endswith('.tsv'):
+        continue
+
+      nameBare = name[0:-4]
+      parts = nameBare.split('-', maxsplit=3)
+      if len(parts) != 4:
+        continue
+
+      datum = '-'.join(parts[0:3])
+      rest = parts[3]
+      parts = rest.split('@', maxsplit=1)
+      perf = parts[0]
+      reports.setdefault(datum, {})[perf] = dict(name=name, date=datum, perf=perf)
+  return reports
+
+
+def readFields(fields):
+    fieldDict = dict(zip(FIELDS[2:], fields[2:]))
+    for f in (STUDY, FETCH):
+      val = fieldDict[f].strip()
+      fieldDict[f] = float(val) if len(val) else None
+    for f in (RESULTS,):
+      val = fieldDict[f]
+      fieldDict[f] = int(val) if len(val) else None
+    return fieldDict
+
+
+def readItem(item):
+  isRef = 'letter' in item
+  dirName = REF_DIR if isRef else REPORT_DIR
+  fileName = item[NAME]
+  filePath = f'{dirName}/{fileName}'
+  with open(filePath) as fh:
+    lines = [line.rstrip('\n').split('\t') for line in fh][1:]
+  info = {tuple(fields[0:2]): dict(zip(FIELDS[2:], fields[2:])) for fields in lines}
+  info = {tuple(fields[0:2]): readFields(fields) for fields in lines}
+  return info
 
 
 def checkArgs(cargs):
@@ -103,71 +290,166 @@ def checkArgs(cargs):
   if len(cargs) and cargs[0] == '-v':
     cargs = cargs[1:]
 
-  appsYes = set()
-  appsNo = set()
-  perfParams = {}
-  perfParams.update(PERF_DEFAULTS)
-  suiteParams = {}
+  if len(cargs) == 0 or cargs[0] not in TASKS_SET:
+    task = TASKS[0]
+  else:
+    task = cargs[0]
+    cargs = cargs[1:]
 
-  good = True
+  if task == TASKS[0]:
+    appsYes = set()
+    appsNo = set()
+    perfParams = {}
+    perfParams.update(PERF_DEFAULTS)
+    suiteParams = {}
+    suiteParams.update(SUITE_DEFAULTS)
 
-  for arg in cargs:
-    parts = arg.split('=', maxsplit=1)
-    if len(parts) == 2:
-      (key, value) = parts
-      if key in SUITE_DEFAULTS:
-        typ = SUITE_TYPES[key]
-        try:
-          suiteParams[key] = typ(value)
-        except ValueError:
+    good = True
+
+    for arg in cargs:
+      parts = arg.split('=', maxsplit=1)
+      if len(parts) == 2:
+        (key, value) = parts
+        if key in SUITE_DEFAULTS:
+          typ = SUITE_TYPES[key]
+          if key == NAMEQ:
+            vals = []
+            for val in value.split(','):
+              try:
+                vals.append(typ(val))
+              except ValueError:
+                good = False
+                error(f'{val} has wrong type for suite param {key}: {typ}')
+            suiteParams[key] = vals
+          else:
+            try:
+              suiteParams[key] = typ(value)
+            except ValueError:
+              good = False
+              error(f'{value} has wrong type for suite param {key}: {typ}')
+        elif key in PERF_DEFAULTS:
+          typ = PERF_TYPES[key]
+          vals = []
+          if key == YARN and value == '-':
+            value = YARN_RATIO_RANGE
+          for val in value.split(','):
+            try:
+              vals.append(typ(val))
+            except ValueError:
+              good = False
+              error(f'{val} has wrong type for perf param {key}: {typ}')
+          perfParams[key] = vals
+        else:
+          error(f'unknown parameter {key}={value}', tm=False)
           good = False
-          error(f'{value} has wrong type for suite param {key}: {typ}')
-      elif key in PERF_DEFAULTS:
-        typ = PERF_TYPES[key]
-        try:
-          perfParams[key] = typ(value)
-        except ValueError:
-          good = False
-          error(f'{value} has wrong type for perf param {key}: {typ}')
       else:
-        error(f'unknown parameter {key}={value}', tm=False)
+        if arg.startswith('-'):
+          appsNo.add(arg[1:])
+        else:
+          appsYes.add(arg)
+
+    appsPresent = readApps()
+    appsRep = ' '.join(sorted(appsPresent))
+    info(f'Found tests for {len(appsPresent)} apps:\n\t{appsRep}', tm=False)
+
+    apps = set()
+
+    for app in appsYes:
+      if app not in appsPresent:
+        error(f'No such app "{app}"', tm=False)
         good = False
-    else:
-      if arg.startswith('-'):
-        appsNo.add(arg[1:])
-      else:
-        appsYes.add(arg)
-
-  appsPresent = readApps()
-  appsRep = ' '.join(sorted(appsPresent))
-  info(f'Found tests for {len(appsPresent)} apps:\n\t{appsRep}', tm=False)
-
-  apps = set()
-
-  for app in appsYes:
-    if app not in appsPresent:
-      error(f'No such app "{app}"', tm=False)
-      good = False
-  for app in appsNo:
-    if app not in appsPresent:
-      error(f'No such app -"{app}"', tm=False)
-      good = False
-  for app in appsPresent:
-    if app in appsNo:
-      continue
-    if appsYes:
-      if app not in appsYes:
+    for app in appsNo:
+      if app not in appsPresent:
+        error(f'No such app -"{app}"', tm=False)
+        good = False
+    for app in appsPresent:
+      if app in appsNo:
         continue
-    apps.add(app)
+      if appsYes:
+        if app not in appsYes:
+          continue
+      apps.add(app)
 
-  if not apps:
-    info('No apps selected', tm=False)
-    return None
+    if not apps:
+      info('No apps selected', tm=False)
+      return (task, None)
 
-  if not good:
-    return False
+    if not good:
+      return (task, False)
 
-  return (apps, perfParams, suiteParams)
+    queries = {}
+    for app in apps:
+      queries[app] = readQueries(app)
+
+    names = suiteParams[NAMEQ]
+    if names:
+      appsRep = ', '.join(apps)
+      notFound = []
+      for name in names:
+        found = False
+        for app in apps:
+          if name in queries[app]:
+            found = True
+            break
+        if not found:
+          notFound.append(name)
+      if notFound:
+        notFoundRep = ', '.join(notFound)
+        error(f'queries {notFoundRep} do not occur in any of {appsRep}')
+        return (task, False)
+
+    queryLists = {}
+
+    for app in apps:
+      myQueries = queries[app]
+      names = suiteParams.get(NAMEQ, None)
+      if names is not None:
+        nameSet = set(names)
+        myQueries = {q[0]: q[1] for q in myQueries.items() if q[0] in nameSet}
+      queryList = sorted(myQueries.items())
+      limit = suiteParams.get(LIMITQ, None)
+      if limit is not None and not names:
+        queryList = queryList[0:limit]
+      queryLists[app] = queryList
+
+    return (task, apps, queryLists, perfParams, suiteParams)
+
+  refs = readRefs()
+  reports = readReports()
+  runDate = date.today().isoformat()
+
+  if task == TASKS[1]:
+    if len(cargs) < 4:
+      info('Not all of name, refletter, dates and perfparams supplied', tm=False)
+      return (task, None)
+
+    (name, refLetter, datumStr, perfStr) = cargs[0:4]
+    if datumStr == '-':
+      datumStr = runDate
+    if perfStr == '-':
+      perfStr = None
+
+    if len(refLetter) != 1 or not refLetter.isupper() or refLetter not in refs:
+      error('No such reference report letter "{refLetter}"', tm=False)
+      return (task, False)
+
+    chosenRef = refs[refLetter]
+
+    good = True
+    datums = set(datumStr.split(','))
+    perfs = None if perfStr is None else set(perfStr.split(','))
+
+    chosenReports = []
+    for (datum, dates) in sorted(reports.items()):
+      for (perf, item) in sorted(dates.items()):
+        if datum in datums and (perfs is None or perf in perfs):
+          chosenReports.append(item)
+    if not chosenReports:
+      info('nothing meets the criteria; nothing to compare', tm=False)
+      return ('task', None)
+    nReports = len(chosenReports)
+    info(f'{nReports} reports to compare', tm=False)
+    return (task, name, refLetter, sorted(datums)[0], chosenRef, chosenReports)
 
 
 def stamp():
@@ -260,70 +542,57 @@ tablet
 
 
 class Tester(object):
-  def __init__(self, apps, perfParams, suiteParams):
+  def __init__(self, apps, queryLists, perfParams, suiteParams):
     self.apps = apps
+    self.queryLists = queryLists
     self.perfParams = perfParams
     self.suiteParams = suiteParams
     self.customSets = {}
     self.good = True
-    self.nQueries = 0
+    self.nQueries = collections.Counter()
     self.runDate = date.today().isoformat()
     self.runTime = datetime.now().isoformat()
     indent(reset=True)
     self.rh = None
-    self.perfKey = '-'.join(str(self.perfParams[x[0]]) for x in PERF_PARAMS)
-    self.perfStr = '\n\t'.join(
-        f'{x[0]:<15} = {self.perfParams[x[0]]:>7}'
-        for x in PERF_PARAMS
+
+    limit = suiteParams[LIMITQ]
+    names = suiteParams[NAMEQ]
+    suiteRep = (
+        f'queries: {", ".join(names)}\n'
+        if names is not None else
+        f'only: {limit} queries per corpus\n'
+        if limit else
+        ''
     )
 
     info(f'''This is QPERF measuring queries:
 Run started: {self.runTime}
-Parameters:\n\t{self.perfStr}
-''', tm=False)
-    reportFile = f'{self.runDate}-{self.perfKey}.tsv'
-    reportPath = f'{REPORT_DIRX}/{reportFile}'
-    self.rh = open(reportPath, 'w')
-    self.rh.write('\t'.join(FIELDS))
-    self.rh.write('\n')
-    info(f'Report in {reportFile}\n\tin directory {REPORT_DIR}', tm=False)
+{suiteRep}''', tm=False)
 
   def finalize(self):
-    if self.rh:
-      self.rh.close()
+    suiteParams = self.suiteParams
+    nQueries = self.nQueries
     indent(level=0)
-    info(f'{self.nQueries} tested')
+    info(f'{sum(nQueries.values())} measurements of {len(nQueries)} queries')
 
-  def readQueries(self):
-    app = self.app
-    queryDir = f'{QUERY_DIR}/{app}'
-    queries = {}
-    with os.scandir(queryDir) as d:
-      for entry in d:
-        if not (entry.is_file() and entry.name.endswith('.txt')):
-          continue
-        qName = entry.name[0:-4]
-        with open(f'{queryDir}/{entry.name}') as qf:
-          metaData = {}
-          qText = ''
-          for line in qf:
-            if line.startswith('@'):
-              (key, value) = line[1:].strip().split('=', maxsplit=1)
-              if key not in META_DEFAULTS:
-                error(
-                    'Query {qName}: warning: unrecognized meta data key "{key}"',
-                    tm=False,
-                )
-              typ = META_TYPES[key]
-              try:
-                metaData[key] = typ(value)
-              except ValueError:
-                error(f'{value} has wrong type for meta param @{key}: {typ}')
-            else:
-              qText += line
+    limit = suiteParams[LIMITQ]
+    names = suiteParams[NAMEQ]
 
-        queries[qName] = (metaData, qText)
-    self.queries = queries
+    limit = '' if limit is None or names else f'@{limit}'
+    name = '' if names is None else f'@{names[0]}'
+
+    for (perfKey, lines) in self.results.items():
+      reportFile = f'{self.runDate}-{perfKey}{name}{limit}.tsv'
+      reportPath = f'{REPORT_DIR}/{reportFile}'
+      rh = open(reportPath, 'w')
+      rh.write('\t'.join(FIELDS))
+      rh.write('\n')
+      for fields in lines:
+        line = '\t'.join(str(f) for f in fields)
+        rh.write(f'{line}\n')
+      rh.close()
+      info(f'report {reportFile}', tm=False)
+    info(f'Reports in directory {REPORT_DIR}', tm=False)
 
   def makeSets(self):
     app = self.app
@@ -345,15 +614,16 @@ Parameters:\n\t{self.perfStr}
     qMeta = self.qMeta
     qText = self.qText
     customSets = self.customSets
+    perfKey = self.perfKey
 
     indent(level=3, reset=True)
-    info(qName, tm=False, nl=False)
+    info(f'{"." * 8}{qName:<30} {perfKey}', tm=False, nl=False)
 
     stamp()
     resultGen = S.search(qText, sets=customSets)
     studyTime = elapsed()
 
-    limit = qMeta.get('limit', None)
+    limit = qMeta.get(LIMIT, None)
     stamp()
     if limit is None:
       results = list(resultGen)
@@ -366,44 +636,51 @@ Parameters:\n\t{self.perfStr}
     fetchTime = elapsed()
 
     nResults = len(results)
-    line = '\t'.join(
-        str(x)
-        for x in (
-            app,
-            qName,
-            nResults,
-            limit or '',
-            f'{studyTime:5.2f}',
-            f'{fetchTime:5.2f}',
-        )
+    fields = (
+        app,
+        qName,
+        limit or '',
+        nResults,
+        f'{studyTime * 1000}',
+        f'{fetchTime * 1000}',
     )
-    self.rh.write(f'{line}\n')
-    self.nQueries += 1
+    self.results.setdefault(perfKey, []).append(fields)
+    self.nQueries[qName] += 1
     sys.stdout.write('\r')
-    sys.stdout.write('  ' * 30 + '\r')
+    sys.stdout.write('  ' * 20 + '\r')
     sys.stdout.flush()
-    info(qName)
+    info(f'{qName:<30} {perfKey}')
 
   def runQueries(self):
-    queries = self.queries
-    name = self.suiteParams.get('name', None)
-    if name is not None:
-      queries = {q[0]: q[1] for q in queries.items() if q[0] == name}
-    queryList = sorted(queries.items())
-    limit = self.suiteParams.get('limit', None)
-    if limit is not None:
-      queryList = queryList[0:limit]
+    perfParams = self.perfParams
+    A = self.A
+    api = A.api
+    S = api.S
+
+    app = self.app
+    queryList = self.queryLists[app]
+    perfParamCombis = tuple(product(*(perfParams[x[0]] for x in PERF_PARAMS)))
+
     for (qName, (qMeta, qText)) in queryList:
       self.qName = qName
       self.qText = qText
       self.qMeta = qMeta
-      self.runQuery()
+      for perfParamCombi in perfParamCombis:
+        perfSetting = {
+            k: v
+            for (k, v) in zip(
+                (x[0] for x in PERF_PARAMS),
+                perfParamCombi,
+            )
+        }
+        S.tweakPerformance(silent=True, **perfSetting)
+        self.perfKey = '-'.join(str(x) for x in perfParamCombi)
+        self.runQuery()
 
   def executeApp(self):
     app = self.app
     indent(level=1, reset=True)
-    self.readQueries()
-    info(f'BEGIN testing {app} with {len(self.queries)} queries')
+    info(f'BEGIN testing {app} with {len(self.queryLists[app])} queries')
     indent(level=2, reset=True)
     info(f'loading {app}')
     self.A = use(f'{app}:clone', checkout='clone', silent=True)
@@ -412,28 +689,141 @@ Parameters:\n\t{self.perfStr}
     info(f'running queries for {app}')
     self.runQueries()
     indent(level=2)
-    info(f'queries run')
+    info(f'all queries run')
     indent(level=1)
     info(f'END testing {app}')
 
   def execute(self):
+    self.results = {}
     for app in sorted(self.apps):
       self.app = app
       self.executeApp()
     self.finalize()
 
 
+class Comparer(object):
+  def __init__(self, name, ref, reports):
+    self.name = name
+    self.ref = ref
+    self.reports = reports
+
+  def readData(self):
+    ref = self.ref
+    reports = self.reports
+    refInfo = readItem(ref)
+    letter = ref['letter']
+    reportInfos = [readItem(report) for report in reports]
+    allKeys = set(refInfo)
+    for rInfo in reportInfos:
+      allKeys |= set(rInfo)
+    allKeys = sorted(allKeys)
+    self.refInfo = refInfo
+    self.letter = letter
+    self.reportInfos = reportInfos
+    self.allKeys = allKeys
+    info(f'comparing measurements of {len(allKeys)} queries', tm=False)
+
+  def compare(self):
+    refInfo = self.refInfo
+    letter = self.letter
+    reportInfos = self.reportInfos
+    allKeys = self.allKeys
+    compareFields = list(FIELDS[0:3])
+    compareFields.extend(f'{field}{letter}' for field in REF_FIELDS)
+
+    for i in range(len(reportInfos)):
+      compareFields.extend(f'{field}{i + 1}' for field in COMPARE_FIELDS)
+    compareLines = [compareFields]
+
+    for key in allKeys:
+      fields = [key[0], key[1]]
+
+      ref = refInfo.get(key, {})
+      limitN = ref.get(LIMIT, '')
+      resultsN = ref.get(RESULTS, None)
+      studyN = ref.get(STUDY, None)
+      fetchN = ref.get(FETCH, None)
+
+      fields.append('?' if limitN is None else limitN)
+      fields.append('?' if resultsN is None else resultsN)
+      fields.append('?' if studyN is None else ir(studyN))
+      fields.append('?' if fetchN is None else ir(fetchN))
+
+      for reportInfo in reportInfos:
+        rep = reportInfo.get(key, {})
+        resultsI = rep.get(RESULTS, None)
+        studyI = rep.get(STUDY, None)
+        fetchI = rep.get(FETCH, None)
+
+        resultsC = None
+        studyF = None
+        studyD = None
+        fetchF = None
+        fetchD = None
+
+        if resultsN is not None and resultsI is not None:
+          resultsC = 'OK' if resultsI == resultsN else resultsI
+        if studyN is not None and studyI is not None:
+          studyF = studyI / studyN if studyN else None
+          studyD = studyI - studyN
+        if fetchN is not None and fetchI is not None:
+          fetchF = fetchI / fetchN if fetchN else None
+          fetchD = fetchI - fetchN
+
+        fields.append('?' if resultsC is None else resultsC)
+
+        fields.append('?' if studyI is None else ir(studyI))
+        fields.extend([
+            '?' if f is None else f'{f:.3f}' for f in (studyF, studyD)
+        ])
+        fields.append('?' if fetchI is None else ir(fetchI))
+        fields.extend([
+            '?' if f is None else f'{f:.3f}' for f in (fetchF, fetchD)
+        ])
+
+      compareLines.append(fields)
+
+    self.lines = compareLines
+
+  def export(self):
+    name = self.name
+    lines = self.lines
+
+    fileName = f'{name}.tsv'
+    filePath = f'{COMPARE_DIR}/{fileName}'
+    with open(filePath, 'w') as fh:
+      for fields in lines:
+        lineStr = '\t'.join(str(x) for x in fields)
+        fh.write(f'{lineStr}\n')
+    info(f'Comparison written to {fileName}', tm=False)
+    info(f'\tin {COMPARE_DIR}', tm=False)
+
+  def produce(self):
+    self.readData()
+    self.compare()
+    self.export()
+
+
 def main(cargs=sys.argv[1:]):
   result = checkArgs(cargs)
   if result is None:
     return
-  if result is False:
-    error('aborted', tm=False)
+  (task, *result) = result
+  if result[0] is None:
+    return
+  if result[0] is False:
+    error(f'{task} aborted', tm=False)
     return
 
-  (apps, perfParams, suiteParams) = result
-  T = Tester(apps, perfParams, suiteParams)
-  T.execute()
+  if task == TASKS[0]:
+    (apps, queryLists, perfParams, suiteParams) = result
+    T = Tester(apps, queryLists, perfParams, suiteParams)
+    T.execute()
+
+  if task == TASKS[1]:
+    (name, letter, datum, ref, reports) = result
+    C = Comparer(f'{name}-{letter}-{datum}', ref, reports)
+    C.produce()
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ from .spin import estimateSpreads
 # STITCHING: STRATEGIES ###
 
 STRATEGY = '''
+    by_yarn_size
     small_choice_first
     spread_1_first
     big_choice_first
@@ -181,6 +182,83 @@ def _small_choice_first(searchExe):
   remainingEdgesO = sorted(
       remainingEdges,
       key=lambda e: (searchExe.spreads[e[0]] if e[1] == 1 else searchExe.spreadsC[e[0]]),
+  )
+
+  while 1:
+    added = False
+    for (e, dir) in remainingEdgesO:
+      if e in doneEdges:
+        continue
+      (f, rela, t) = qedges[e]
+      if dir == -1:
+        (f, t) = (t, f)
+      if f in newNodes and t in newNodes:
+        newEdges.append((e, dir))
+        doneEdges.add(e)
+        added = True
+    for (e, dir) in remainingEdgesO:
+      if e in doneEdges:
+        continue
+      (f, rela, t) = qedges[e]
+      if dir == -1:
+        (f, t) = (t, f)
+      if f in newNodes:
+        newNodes.add(t)
+        newEdges.append((e, dir))
+        doneEdges.add(e)
+        added = True
+        break
+    if not added:
+      break
+
+  searchExe.newNodes = newNodes
+  searchExe.newEdges = newEdges
+
+
+def _by_yarn_size(searchExe):
+
+  # This strategy is like small choice first,
+  # but we measure the choices differently,
+  # namely by yarn size and spread.
+
+  # So, we pick the yarn with the least amount of nodes
+  # as our starting point.
+  # The corresponding node is our singleton start set.
+  # In every iteration we do the following:
+  # - we pick all edges of which from- and to-nodes
+  #   are already in the node set
+  # - we pick the edge with biggest yarn ratio
+  #   that has a starting point in the set
+  # Until nothing changes anymore
+
+  qedges = searchExe.qedges
+  qnodes = searchExe.qnodes
+  yarns = searchExe.yarns
+  spreads = searchExe.spreads
+  spreadsC = searchExe.spreadsC
+
+  def eKey(e, dr):
+    (f, rela, t) = qedges[e]
+    spr = spreads
+    if dr == -1:
+      (t, f) = (f, t)
+      spr = spreadsC
+    yFl = len(yarns[f])
+    yTl = len(yarns[t])
+    spre = spr[e]
+    return spre * yFl * yTl
+
+  newNodes = {sorted(range(len(qnodes)), key=lambda x: len(searchExe.yarns[x]))[0]}
+  newEdges = []
+  doneEdges = set()
+
+  remainingEdges = set()
+  for e in range(len(qedges)):
+    remainingEdges.add((e, 1))
+    remainingEdges.add((e, -1))
+  remainingEdgesO = sorted(
+      remainingEdges,
+      key=lambda e: eKey(*e),
   )
 
   while 1:

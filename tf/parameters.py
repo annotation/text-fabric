@@ -52,6 +52,6 @@ ZIP_OPTIONS = dict(
 if sys.version_info[1] >= 7:
   ZIP_OPTIONS['compresslevel'] = 6
 
-YARN_RATIO = 1.2
-TRY_LIMIT_FROM = 100
-TRY_LIMIT_TO = 100
+YARN_RATIO = 1.25
+TRY_LIMIT_FROM = 40
+TRY_LIMIT_TO = 40

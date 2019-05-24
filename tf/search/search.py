@@ -68,7 +68,7 @@ class Search(object):
     self.perfParams.update(self.perfDefaults)
     SearchExe.setPerfParams(self.perfParams)
 
-  def tweakPerformance(self, **kwargs):
+  def tweakPerformance(self, silent=False, **kwargs):
     error = self.api.error
     info = self.api.info
     defaults = self.perfDefaults
@@ -82,9 +82,10 @@ class Search(object):
         error(f'Performance parameter "{k}" must be set to an integer, not to "{v}"', tm=False)
         continue
       self.perfParams[k] = v
-    info('Performance parameters, current values:', tm=False)
-    for (k, v) in sorted(self.perfParams.items()):
-      info(f'\t{k:<20} = {v:>7}', tm=False)
+    if not silent:
+      info('Performance parameters, current values:', tm=False)
+      for (k, v) in sorted(self.perfParams.items()):
+        info(f'\t{k:<20} = {v:>7}', tm=False)
     SearchExe.setPerfParams(self.perfParams)
 
   def search(

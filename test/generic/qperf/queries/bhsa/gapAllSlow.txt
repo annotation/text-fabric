@@ -1,9 +1,9 @@
 @limit=8
 
 p:phrase
-    =: wFirst:word
-    wLast:word
-    :=
+  =: wFirst:word
+  wLast:word
+  :=
 
 wGap:word
 wFirst < wGap

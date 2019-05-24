@@ -280,7 +280,7 @@ def estimateSpreads(searchExe, both=False):
   searchExe.spreadsC = spreadsC
 
 
-def _chooseEdge(searchExe):
+def _chooseEdge_____(searchExe):
   F = searchExe.api.F
   yarnFractionNode = {}
   qnodes = searchExe.qnodes
@@ -304,6 +304,38 @@ def _chooseEdge(searchExe):
       continue
     yarnFractionEdge[e] = yarnFractionNode[f] + yarnFractionNode[t] + spreads[e]
   firstEdge = sorted(yarnFractionEdge.items(), key=lambda x: x[1])[0][0]
+  return firstEdge
+
+
+def _chooseEdge_____1(searchExe):
+  qedges = searchExe.qedges
+  yarns = searchExe.yarns
+  spreads = searchExe.spreads
+  yarnRatio = {}
+  for (e, (f, rela, t)) in enumerate(qedges):
+    if searchExe.uptodate[e]:
+      continue
+    yarnFl = len(yarns[f])
+    yarnTl = len(yarns[t])
+    yarnRatio[e] = (
+        max((yarnFl / yarnTl, yarnTl / yarnFl)) / (spreads[e] or 0.01)
+    )
+  firstEdge = sorted(yarnRatio.items(), key=lambda x: -x[1])[0][0]
+  return firstEdge
+
+
+def _chooseEdge(searchExe):
+  qedges = searchExe.qedges
+  yarns = searchExe.yarns
+  spreads = searchExe.spreads
+  yarnSize = {}
+  for (e, (f, rela, t)) in enumerate(qedges):
+    if searchExe.uptodate[e]:
+      continue
+    yarnFl = len(yarns[f])
+    yarnTl = len(yarns[t])
+    yarnSize[e] = yarnFl * yarnTl * spreads[e]
+  firstEdge = sorted(yarnSize.items(), key=lambda x: x[1])[0][0]
   return firstEdge
 
 
@@ -341,7 +373,7 @@ def _spinEdge(searchExe, e):
   if type(s) is float:
     return False
 
-  # for other basic realtions we have an optimized spin function
+  # for other basic relations we have an optimized spin function
   # if type(s) is types.FunctionType:
   if isinstance(s, types.FunctionType):
     (newYarnF, newYarnT) = s(qnodes[f][0], qnodes[t][0])(yarnF, yarnT)
@@ -363,6 +395,28 @@ def _spinEdge(searchExe, e):
         if len(mFromN):
           newYarnT |= mFromN
           newYarnF.add(n)
+
+    '''
+    if nparams == 1:
+      for n in yarnF:
+        found = False
+        for m in r(n):
+          if m not in yarnT:
+            continue
+          newYarnT.add(m)
+          found = True
+        if found:
+          newYarnF.add(n)
+    else:
+      for n in yarnF:
+        found = False
+        for m in yarnT:
+          if r(n, m):
+            newYarnT.add(m)
+            found = True
+        if found:
+          newYarnF.add(n)
+    '''
 
   affectedF = len(newYarnF) != len(yarns[f])
   affectedT = len(newYarnT) != len(yarns[t])
@@ -394,11 +448,6 @@ def spinEdges(searchExe):
   while 1:
     if min(len(yarns[q]) for q in range(len(qnodes))) == 0:
       break
-    # if reduce(
-    #    lambda y,z: y and z,
-    #    (uptodate[e] for e in range(len(qedges))),
-    #    True,
-    # ): break
     if all(uptodate[e] for e in range(len(qedges))):
       break
     e = _chooseEdge(searchExe)
