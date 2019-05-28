@@ -639,6 +639,42 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-4" type="checkbox" id="nav-4-4">
+    
+    <label class="md-nav__link" for="nav-4-4">
+      Compose
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-4-4">
+        Compose
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Api/Compose/" title="Combining" class="md-nav__link">
+      Combining
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -1297,7 +1333,20 @@ To get the newest unstable version:</p>
 </details>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
 <h3 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h3>
+<ul>
+<li>New tf.compose package with operators to manipulate TF data sets: combine,
+    add/remove node types, etc.</li>
+<li>New TF.loadAll() function to load all features in one go.</li>
+</ul>
 <hr />
+<h1 id="7711">7.7.11<a class="headerlink" href="#7711" title="Permanent link">&para;</a></h1>
+<p>2019-05-27</p>
+<p>Small fixes:</p>
+<ul>
+<li>tweaks in edge spinning (part of the search engine), but no real performance improvements</li>
+<li>nothing in TF relies on Python's <code>glob</code> module anymore, which turned out to miss
+    file names with characters such as <code>[ ]</code> in it.</li>
+</ul>
 <h1 id="7710">7.7.10<a class="headerlink" href="#7710" title="Permanent link">&para;</a></h1>
 <p>2019-05-23</p>
 <p>Fixed a bug in fabric.py spotted by Ernst Boogert, where there was
