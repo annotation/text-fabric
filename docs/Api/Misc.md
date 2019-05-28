@@ -87,7 +87,7 @@
 ??? abstract "clean()"
     ```python
     from tf.clean import clean
-    clean(tfd=True, gh=False, dry=False)
+    clean(tfd=True, gh=False, dry=False, specific=None, current=False)
     ```
 
     ???+ info "Description"
@@ -105,6 +105,15 @@
         By default, your `~/github` will be skipped,
         but if you pass `gh=True` it will be
         traversed and cleaned.
+
+    ??? info "specific"
+        You can pass a specific directory here. The standard directories
+        `~/github` and `~/text-fabric-data` will not be used, only
+        the directory you pass here. `~` will be expanded to your home directory.
+
+    ??? info "current"
+        If current=True, also the precomputed results of the current version will
+        be removed.
 
     ??? info "dry"
         By default, nothing will be deleted, and you only get a list of

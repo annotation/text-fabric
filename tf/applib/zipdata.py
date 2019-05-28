@@ -1,6 +1,5 @@
 import os
 import sys
-from glob import glob
 from shutil import rmtree
 from zipfile import ZipFile
 
@@ -58,11 +57,14 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
   relativeDest = relative.replace('/', '-')
 
   if tf:
-    versionEntries = []
-    for versionEntry in glob(f'{sourceDir}/*'):
-      if os.path.isdir(versionEntry):
-        (versionDir, version) = os.path.split(versionEntry)
-        versionEntries.append((versionDir, version))
+    if not os.path.exists(sourceDir):
+      return
+    with os.scandir(sourceDir) as sd:
+      versionEntries = [
+          (sourceDir, e.name)
+          for e in sd
+          if e.is_dir()
+      ]
     if versionEntries:
       console(f'Found {len(versionEntries)} versions')
     else:
@@ -74,16 +76,18 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
       versionRep = f'/{version}' if version else ''
       versionRep2 = f'{version}/' if version else ''
       versionRep3 = f'-{version}' if version else ''
-      for tfEntry in glob(f'{versionDir}{versionRep}/*'):
-        if not os.path.isfile(tfEntry):
-          continue
-        (tfDir, featureFile) = os.path.split(tfEntry)
-        if featureFile in EXCLUDE:
-          continue
-        if not featureFile.endswith('.tf'):
-          console(f'WARNING: non feature file "{versionRep2}{featureFile}"', error=True)
-          continue
-        dataFiles.setdefault(version, set()).add(featureFile)
+      tfDir = f'{versionDir}{versionRep}'
+      with os.scandir(tfDir) as sd:
+        for e in sd:
+          if not e.is_file():
+            continue
+          featureFile = e.name
+          if featureFile in EXCLUDE:
+            continue
+          if not featureFile.endswith('.tf'):
+            console(f'WARNING: non feature file "{versionRep2}{featureFile}"', error=True)
+            continue
+          dataFiles.setdefault(version, set()).add(featureFile)
 
     console(f'zip files end up in {destDir}')
     for (version, features) in sorted(dataFiles.items()):
@@ -107,14 +111,15 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
     def collectFiles(base, path, results):
       thisPath = f'{base}/{path}' if path else base
       internalBase = f'{relative}/{path}' if path else relative
-      for entry in glob(f'{thisPath}/*'):
-        (entryDir, name) = os.path.split(entry)
-        if name in EXCLUDE:
-          continue
-        if os.path.isfile(entry):
-          results.append((f'{internalBase}/{name}', f'{base}/{path}/{name}'))
-        elif os.path.isdir(entry):
-          collectFiles(base, f'{path}/{name}', results)
+      with os.scanDir(thisPath) as sd:
+        for e in sd:
+          name = e.name
+          if name in EXCLUDE:
+            continue
+          if e.is_file():
+            results.append((f'{internalBase}/{name}', f'{base}/{path}/{name}'))
+          elif e.is_dir():
+            collectFiles(base, f'{path}/{name}', results)
 
     results = []
     collectFiles(sourceDir, '', results)

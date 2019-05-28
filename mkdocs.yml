@@ -193,6 +193,8 @@ nav:
       - 'Miscellaneous': 'Api/Misc.md'
       - 'Lib': 'Api/Lib.md'
       - 'Helpers': 'Api/Helpers.md'
+    - Compose:
+      - 'Combining': 'Api/Compose.md'
   - Writing:
     - Arabic: 'Writing/Arabic.html'
     - Hebrew: 'Writing/Hebrew.html'

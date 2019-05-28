@@ -24,13 +24,17 @@ def err(msg):
   sys.stderr.flush()
 
 
-def clean(tfd=True, gh=False, dry=True):
-  for root in ROOTS:
-    if root == TFD and not tfd or root == GH and not gh:
-      print(f'skipped {root}')
-      continue
+def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
+  if specific is not None:
+    bases = [os.path.expanduser(specific)]
+  else:
+    for root in ROOTS:
+      if root == TFD and not tfd or root == GH and not gh:
+        print(f'skipped {root}')
+        continue
+      bases.append(os.path.expanduser(f'~/{root}'))
 
-    base = os.path.expanduser(f'~/{root}')
+  for base in bases:
     for triple in os.walk(base):
       d = triple[0]
       if binRe.search(d):
@@ -47,7 +51,7 @@ def clean(tfd=True, gh=False, dry=True):
       match = binvRe.search(d)
       if match:
         binv = match.group(1)
-        if binv == PACK_VERSION:
+        if not current and binv == PACK_VERSION:
           out(f'{d} version {binv}: keep\n')
         else:
           files = triple[2]

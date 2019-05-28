@@ -117,6 +117,18 @@
         will be suppressed. This is handy I you want to load data as part of other
         methods, on-the-fly.
 
+??? abstract "api=TF.loadAll()"
+    ```python
+    api = TF.loadAll(silent=True)
+    ```
+
+    ???+ info "Description"
+        Reads all available features and loads them in memory
+        ready to be used in the rest of the program.
+
+    ??? info "silent"
+        As in TF.load().
+
 ??? abstract "ensureLoaded()"
     ```python
     ensureLoaded(features)

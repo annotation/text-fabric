@@ -1,6 +1,5 @@
 import os
 import collections
-from glob import glob
 from .parameters import VERSION, NAME, APIREF, LOCATIONS
 from .core.data import Data, WARP, WARP2_DEFAULT, MEM_MSG
 from .core.helpers import (
@@ -198,6 +197,13 @@ Api reference : {APIREF}
       return dict((kind, tuple(sorted(kindSet)))
                   for (kind, kindSet) in sorted(self.featureSets.items(), key=lambda x: x[0]))
 
+  def loadAll(self, silent=True):
+    api = self.load('', silent=silent)
+    allFeatures = self.explore(silent=True, show=True)
+    loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
+    self.load(loadableFeatures, add=True, silent=silent)
+    return api
+
   def clearCache(self):
     for (fName, fObj) in self.features.items():
       fObj.cleanDataBin()
@@ -367,13 +373,14 @@ Api reference : {APIREF}
     tfFiles = {}
     for loc in self.locations:
       for mod in self.modules:
-        files = glob(f'{loc}/{mod}/*.tf')
-        for f in files:
-          if not os.path.isfile(f):
-            continue
-          (dirF, fileF) = os.path.split(f)
+        dirF = f'{loc}/{mod}'
+        if not os.path.exists(dirF):
+          continue
+        with os.scandir(dirF) as sd:
+          files = tuple(e.name for e in sd if e.is_file() and e.name.endswith('.tf'))
+        for fileF in files:
           (fName, ext) = os.path.splitext(fileF)
-          tfFiles.setdefault(fName, []).append(f)
+          tfFiles.setdefault(fName, []).append(f'{dirF}/{fileF}')
     for (fName, featurePaths) in sorted(tfFiles.items()):
       chosenFPath = featurePaths[-1]
       for featurePath in sorted(set(featurePaths[0:-1])):

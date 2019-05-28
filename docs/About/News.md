@@ -39,7 +39,21 @@ See the [issue list on GitHub]({{ghissues}})
 
 ### Queued for next release
 
+*   New tf.compose package with operators to manipulate TF data sets: combine,
+    add/remove node types, etc.
+*   New TF.loadAll() function to load all features in one go.
+
 ---
+
+# 7.7.11
+
+2019-05-27
+
+Small fixes:
+
+*   tweaks in edge spinning (part of the search engine), but no real performance improvements
+*   nothing in TF relies on Python's `glob` module anymore, which turned out to miss
+    file names with characters such as `[ ]` in it.
 
 # 7.7.10
 

@@ -6,6 +6,7 @@ setup(
         'tf',
         'tf.applib',
         'tf.convert',
+        'tf.compose',
         'tf.core',
         'tf.search',
         'tf.server',
