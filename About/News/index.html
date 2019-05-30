@@ -1333,12 +1333,26 @@ To get the newest unstable version:</p>
 </details>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
 <h3 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h3>
-<ul>
-<li>New tf.compose package with operators to manipulate TF data sets: combine,
-    add/remove node types, etc.</li>
-<li>New TF.loadAll() function to load all features in one go.</li>
-</ul>
+<p>Nothing</p>
 <hr />
+<h1 id="78">7.8<a class="headerlink" href="#78" title="Permanent link">&para;</a></h1>
+<h2 id="compose">Compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
+<p>The biggest addition is
+a new <code>tf.compose</code> package with operators to manipulate TF data sets:
+<code>combine()</code> and <code>modify()</code>.</p>
+<p>See
+<a href="../../Api/Compose/">specs</a>
+and the
+<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/compose.ipynb">compose chapter</a>
+in the Banks tutorial, where you can see it in action
+on (2 copies of) the nice little 100-word example corpus.</p>
+<p>Minor goodies:</p>
+<ul>
+<li>New <code>TF.loadAll()</code> function to load all features in one go.</li>
+<li>New method <code>items()</code> for all features, which yields all pairs in the
+    mapping of the feature one by one.
+    See [../Api/Features.md#generics-for-features].</li>
+</ul>
 <h1 id="7711">7.7.11<a class="headerlink" href="#7711" title="Permanent link">&para;</a></h1>
 <p>2019-05-27</p>
 <p>Small fixes:</p>

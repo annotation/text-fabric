@@ -523,6 +523,13 @@
     Features
   </a>
   
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generics-for-features" title="Generics for features" class="md-nav__link">
+    Generics for features
+  </a>
+  
     <nav class="md-nav">
       <ul class="md-nav__list">
         
@@ -1297,6 +1304,13 @@
     Features
   </a>
   
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generics-for-features" title="Generics for features" class="md-nav__link">
+    Generics for features
+  </a>
+  
     <nav class="md-nav">
       <ul class="md-nav__list">
         
@@ -1381,6 +1395,33 @@ whether the feature is loaded or not.</p>
 
 <p>or for any other loaded feature than <code>otype</code>.</p>
 </details>
+</details>
+<h2 id="generics-for-features">Generics for features<a class="headerlink" href="#generics-for-features" title="Permanent link">&para;</a></h2>
+<details class="explanation"><summary>Features are mappings</summary><p>Every feature is logically a mapping from nodes to values.</p>
+<p>A feature object gives you methods that you can pass a node and that returns
+its value for that node.</p>
+<p>It is easiest to think of all features as a dictionary keyed by nodes.</p>
+<p>However, some features have an optimized representation, and do not have
+a dictionary underneath.</p>
+<p>But you can still iterate over the data of a feature as if it were a dictionary.</p>
+</details>
+<details class="abstract"><summary>F.<em>feature</em>.items()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">F</span><span class="o">.</span><span class="n">part_of_speech</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="n">E</span><span class="o">.</span><span class="n">similarity</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+
+<p>A generator that yields the items of the feature, seen as a mapping.
+It does not yield entries for nodes without values,
+so this gives you a rather efficient way to iterate over just the feature
+data,
+instead of over all nodes.</p>
+<p>If you need this repeatedly, or you need the whole dictionary, you can store
+the result as follows:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">part_of_speech</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+</pre></div>
+</td></tr></table>
+
 </details>
 <h3 id="node-features">Node features<a class="headerlink" href="#node-features" title="Permanent link">&para;</a></h3>
 <details class="info" open="open"><summary>F</summary><p>The node features API is exposed as <code>F</code> (<code>Fs</code>) or <code>Feature</code> (<code>FeatureString</code>).</p>
