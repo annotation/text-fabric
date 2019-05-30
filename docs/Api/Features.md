@@ -54,6 +54,40 @@
 
         or for any other loaded feature than `otype`.
 
+## Generics for features
+
+??? explanation "Features are mappings"
+    Every feature is logically a mapping from nodes to values.
+
+    A feature object gives you methods that you can pass a node and that returns
+    its value for that node.
+
+    It is easiest to think of all features as a dictionary keyed by nodes.
+    
+    However, some features have an optimized representation, and do not have
+    a dictionary underneath.
+
+    But you can still iterate over the data of a feature as if it were a dictionary.
+
+??? abstract "F.*feature*.items()"
+    ```python
+    F.part_of_speech.items()
+    E.similarity.items()
+    ```
+
+    A generator that yields the items of the feature, seen as a mapping.
+    It does not yield entries for nodes without values,
+    so this gives you a rather efficient way to iterate over just the feature
+    data,
+    instead of over all nodes.
+    
+    If you need this repeatedly, or you need the whole dictionary, you can store
+    the result as follows:
+
+    ```python
+    data = dict(F.part_of_speech.items())
+    ```
+
 ### Node features
 
 ???+ info "F"

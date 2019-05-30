@@ -57,6 +57,21 @@ class OtypeFeature(object):
     self.maxNode = data[2]
     self.slotType = data[3]
 
+  def items(self):
+    slotType = self.slotType
+    maxSlot = self.maxSlot
+    data = self.data
+
+    for n in range(1, maxSlot + 1):
+      yield (n, slotType)
+
+    maxNode = self.maxNode
+
+    shift = maxSlot + 1
+
+    for n in range(maxSlot + 1, maxNode + 1):
+      yield (n, data[n - shift])
+
   def v(self, n):
     if n == 0:
       return None
@@ -92,6 +107,16 @@ class OslotsFeature(object):
     self.maxSlot = data[1]
     self.maxNode = data[2]
 
+  def items(self):
+    maxSlot = self.maxSlot
+    data = self.data
+    maxNode = self.maxNode
+
+    shift = maxSlot + 1
+
+    for n in range(maxSlot + 1, maxNode + 1):
+      yield (n, data[n - shift])
+
   def s(self, n):
     if n == 0:
       return ()
@@ -109,6 +134,9 @@ class NodeFeature(object):
     self.api = api
     self.meta = metaData
     self.data = data
+
+  def items(self):
+    return self.data.items()
 
   def v(self, n):
     if n in self.data:
@@ -149,6 +177,9 @@ class EdgeFeature(object):
     else:
       self.data = data
       self.dataInv = makeInverseVal(self.data) if doValues else makeInverse(self.data)
+
+  def items(self):
+    return self.data.items()
 
   def f(self, n):
     if n not in self.data:

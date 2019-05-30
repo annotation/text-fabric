@@ -13,6 +13,18 @@ Consider installing a 64-bit Python.
 MSG64 = '''Running on 64-bit Python'''
 
 
+def dirEmpty(target):
+  return not os.path.exists(target) or not os.listdir(target)
+
+
+def isInt(val):
+  try:
+    val = int(val)
+  except Exception:
+    return False
+  return True
+
+
 def mathEsc(val):
   return '' if val is None else (
       str(val)

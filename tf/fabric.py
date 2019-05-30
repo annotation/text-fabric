@@ -411,7 +411,7 @@ Api reference : {APIREF}
             self.features[WARP[2]].dataLoaded = True
         else:
           if not self.silent:
-            self.tm.error(f'Warp feature "{fName}" not found in\n{self.locationRep}')
+            self.tm.info(f'Warp feature "{fName}" not found in\n{self.locationRep}')
           good = False
       elif fName == WARP[2]:
         self._loadFeature(fName, optional=True, silent=True)
@@ -430,7 +430,7 @@ Api reference : {APIREF}
         dependencies = dependencies + sFeats
       for dep in dependencies:
         if dep not in self.features:
-          self.tm.error(f'Missing dependency for computed data feature "{fName}": "{dep}"')
+          self.tm.info(f'Missing dependency for computed data feature "{fName}": "{dep}"')
           thisGood = False
       if not thisGood:
         good = False

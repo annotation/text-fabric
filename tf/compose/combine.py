@@ -4,7 +4,7 @@ import collections
 from ..fabric import Fabric
 from ..core.data import WARP
 from ..core.timestamp import Timestamp
-from ..core.helpers import itemize
+from ..core.helpers import dirEmpty
 
 OTYPE = WARP[0]
 OSLOTS = WARP[1]
@@ -27,17 +27,17 @@ def combine(
     targetLocation,
     componentType=None,
     componentFeature=None,
-    deleteTypes=None,
     mergeTypes=None,
     featureMeta=None,
-    **otext,
 ):
+  if not dirEmpty(targetLocation):
+    error(
+        f'Output directory is not empty. Clean it or remove it or choose another location',
+        tm=False,
+    )
+    return False
+
   locations = sorted(locations)
-  deleteTypes = set(
-      []
-      if not deleteTypes else
-      itemize(deleteTypes) if type(deleteTypes) is str else list(deleteTypes)
-  )
   nodeTypesComp = collections.defaultdict(dict)
   slotTypes = collections.defaultdict(dict)
   slotType = None
@@ -68,17 +68,6 @@ def combine(
       srcs[i + 1] = name
   locItems = sorted(x for x in locs.items() if x[0])
 
-  def getApi(location, full=False):
-    TF = Fabric(locations=location, silent=True)
-    if full:
-      api = TF.loadAll(silent=True)
-    else:
-      api = TF.load('', silent=True)
-    if not api:
-      error(f'Cannot load features of TF set in {location}', tm=False)
-      return False
-    return api
-
   def getMetas():
     meta = collections.defaultdict(
         lambda: collections.defaultdict(
@@ -90,10 +79,6 @@ def combine(
       for (key, value) in keys.items():
         if value is not None:
           meta[feat][key][value] = {0}
-
-    for (key, value) in otext.items():
-      if value is not None:
-        meta[OTEXT][key][value] = {0}
 
     if componentFeature:
       meta[componentFeature]['valueType']['str'] = {0}
@@ -147,7 +132,11 @@ def combine(
 
     for (i, loc) in locItems:
       info(f'\r{i:>3} {os.path.basename(loc)})', nl=False)
-      api = getApi(loc)
+      TF = Fabric(locations=loc, silent=True)
+      api = TF.load('', silent=True)
+      if not api:
+        good = False
+        continue
       C = api.C
       nTypeInfo = C.levels.data
       for (t, (nType, av, nF, nT)) in enumerate(nTypeInfo):
@@ -155,16 +144,12 @@ def combine(
           clashes.add(i)
         if t == len(nTypeInfo) - 1:
           slotTypes[nType][i] = (1, nT)
-          if nType in deleteTypes:
-            error(f'Slot type cannot be deleted: {nType}', tm=False)
-            good = False
           maxSlot = nT
           maxNode = nT
         else:
-          if nType not in deleteTypes:
-            nodeTypesComp[nType][i] = (nF, nT)
-            if nT > maxNode:
-              maxNode = nT
+          nodeTypesComp[nType][i] = (nF, nT)
+          if nT > maxNode:
+            maxNode = nT
       if componentType:
         nodeTypesComp[componentType][i] = (maxNode + 1, maxNode + 1)
         componentOslots[i] = maxSlot
@@ -215,8 +200,9 @@ def combine(
     indent(level=1, reset=True)
     for (i, loc) in locItems:
       info(f'\r{i:>3} {os.path.basename(loc)})', nl=False)
-      api = getApi(loc, full=True)
-      if api:
+      TF = Fabric(locations=loc, silent=True)
+      api = TF.loadAll(silent=True)
+      if not api:
         return False
 
       F = api.F
@@ -305,45 +291,6 @@ def combine(
 
     return True
 
-  def thinTypes():
-    if mergeTypes is None:
-      return True
-
-    good = True
-
-    indent(level=1, reset=True)
-
-    for (newType, oldTypes) in mergeTypes.items():
-      info(newType)
-      if newType == slotType:
-        error('Merge result cannot be the slot type', tm=False)
-        good = False
-        continue
-
-      withFeatures = type(oldTypes) is dict
-
-      for oldType in oldTypes:
-        if oldType == slotType:
-          error('Slot type is not mergeable', tm=False)
-          good = False
-          continue
-
-        if oldType not in nodeTypes:
-          error(f'Cannot merge non-existing node types: {oldType}', tm=False)
-          good = False
-          continue
-
-        addFeatures = oldTypes[oldType] if withFeatures else {}
-        addFeatures[OTYPE] = newType
-        (nF, nT) = nodeTypes[oldType]
-        for (feat, val) in addFeatures.items():
-          for n in range(nF, nT + 1):
-            nodeFeatures.setdefault(feat, {})[n] = val
-
-    info('done')
-
-    return good
-
   def writeTf():
     TF = Fabric(locations=targetLocation)
     TF.save(metaData=metaData, nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures)
@@ -362,9 +309,6 @@ def combine(
       return False
     info('remap features ...')
     if not remapFeatures():
-      return False
-    info('merge types ...')
-    if not thinTypes():
       return False
     info('write TF data ...')
     if not writeTf():

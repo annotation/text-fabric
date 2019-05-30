@@ -39,11 +39,31 @@ See the [issue list on GitHub]({{ghissues}})
 
 ### Queued for next release
 
-*   New tf.compose package with operators to manipulate TF data sets: combine,
-    add/remove node types, etc.
-*   New TF.loadAll() function to load all features in one go.
+Nothing
 
 ---
+
+# 7.8
+
+## Compose
+
+The biggest addition is
+a new `tf.compose` package with operators to manipulate TF data sets:
+`combine()` and `modify()`.
+
+See
+[specs](../Api/Compose.md)
+and the
+[compose chapter]({{tutnb}}/banks/compose.ipynb)
+in the Banks tutorial, where you can see it in action
+on (2 copies of) the nice little 100-word example corpus.
+
+Minor goodies:
+
+*   New `TF.loadAll()` function to load all features in one go.
+*   New method `items()` for all features, which yields all pairs in the
+    mapping of the feature one by one.
+    See [../Api/Features.md#generics-for-features].
 
 # 7.7.11
 

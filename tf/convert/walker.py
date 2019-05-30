@@ -3,7 +3,7 @@ import functools
 import re
 
 from ..core.data import WARP
-from ..core.helpers import itemize
+from ..core.helpers import itemize, isInt
 
 
 class CV(object):
@@ -338,17 +338,6 @@ class CV(object):
     if showErrors:
       self._showErrors
     return good
-
-  # def _checkType(self, k, v, featureType):
-  #   errors = self.errors
-  #
-  #   if k in self.intFeatures:
-  #     try:
-  #       v = int(v)
-  #     except Exception:
-  #       errors[f'Not a number'].append(
-  #           f'"{featureType}" feature "{k}": "{v}"'
-  #       )
 
   def stop(self, msg):
     self.TM.error(f'Forced stop: msg')
@@ -813,9 +802,7 @@ class CV(object):
       if feat in nodeFeatures:
         featData = nodeFeatures[feat]
         for (k, v) in featData.items():
-          try:
-            v = int(v)
-          except Exception:
+          if not isInt(v):
             errors[f'Not a number'].append(
                 f'"node feature "{k}": "{v}"'
             )
@@ -823,9 +810,7 @@ class CV(object):
         featData = edgeFeatures[feat]
         for (fromNode, toValues) in featData.items():
           for v in toValues.values():
-            try:
-              v = int(v)
-            except Exception:
+            if not isInt(v):
               errors[f'Not a number'].append(
                   f'"edge feature "{k}": "{v}"'
               )

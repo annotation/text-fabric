@@ -30,6 +30,9 @@ tf/applib/sections.py
 tf/applib/tables.py
 tf/applib/text.py
 tf/applib/zipdata.py
+tf/compose/__init__.py
+tf/compose/combine.py
+tf/compose/modify.py
 tf/convert/__init__.py
 tf/convert/mql.py
 tf/convert/walker.py
