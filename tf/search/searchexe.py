@@ -37,21 +37,25 @@ class SearchExe(object):
     self.sets = sets
     self.shallow = 0 if not shallow else 1 if shallow is True else shallow
     self.silent = silent
+    api.setSilent(silent)
     self.showQuantifiers = showQuantifiers
     self.msgCache = msgCache if type(msgCache) is list else -1 if msgCache else 0
     self.good = True
     self.setInfo = setInfo
-    basicRelations(self, api, silent)
+    basicRelations(self, api)
 
 # API METHODS ###
 
   def search(self, limit=None):
-    self.silent = True
+    api = self.api
+    setSilent = api.setSilent
+    setSilent(True)
     self.study()
     return self.fetch(limit=limit)
 
   def study(self, strategy=None):
-    info = self.api.info
+    api = self.api
+    info = api.info
     msgCache = self.msgCache
     self.api.indent(level=0, reset=True)
     self.good = True
@@ -60,32 +64,24 @@ class SearchExe(object):
     if not self.good:
       return
 
-    if not self.silent:
-      info('Checking search template ...', cache=msgCache)
+    info('Checking search template ...', cache=msgCache)
 
     self._parse()
     self._prepare()
     if not self.good:
       return
-    if not self.silent:
-      info(f'Setting up search space for {len(self.qnodes)} objects ...', cache=msgCache)
+    info(f'Setting up search space for {len(self.qnodes)} objects ...', cache=msgCache)
     spinAtoms(self)
-    if not self.silent:
-      info(f'Constraining search space with {len(self.qedges)} relations ...', cache=msgCache)
+    info(f'Constraining search space with {len(self.qedges)} relations ...', cache=msgCache)
     spinEdges(self)
-    if not self.silent:
-      info(f'\t{len(self.thinned)} edges thinned', cache=msgCache)
-    if not self.silent:
-      info('Setting up retrieval plan ...', cache=msgCache)
+    info(f'\t{len(self.thinned)} edges thinned', cache=msgCache)
+    info('Setting up retrieval plan ...', cache=msgCache)
     stitch(self)
     if self.good:
-      if not self.silent:
-        yarnContent = sum(len(y) for y in self.yarns.values())
-        info(f'Ready to deliver results from {yarnContent} nodes', cache=msgCache)
-      if not self.silent:
-        info('Iterate over S.fetch() to get the results', tm=False, cache=msgCache)
-      if not self.silent:
-        info('See S.showPlan() to interpret the results', tm=False, cache=msgCache)
+      yarnContent = sum(len(y) for y in self.yarns.values())
+      info(f'Ready to deliver results from {yarnContent} nodes', cache=msgCache)
+      info('Iterate over S.fetch() to get the results', tm=False, cache=msgCache)
+      info('See S.showPlan() to interpret the results', tm=False, cache=msgCache)
 
   def fetch(self, limit=None):
     if not self.good:
@@ -150,7 +146,12 @@ class SearchExe(object):
   def showPlan(self, details=False):
     if not self.good:
       return
-    info = self.api.info
+    api = self.api
+    setSilent = api.setSilent
+    isSilent = api.isSilent
+    info = api.info
+    wasSilent = isSilent()
+    setSilent(True)
     msgCache = self.msgCache
     nodeLine = self.nodeLine
     qedges = self.qedges
@@ -182,6 +183,8 @@ class SearchExe(object):
       rNode = resultNode.get(i, '')
       prefix = '' if rNode == '' else 'R'
       info(f'{i + offset:>2} {prefix:<1}{rNode:<2} {line}', tm=False, cache=msgCache)
+
+    setSilent(wasSilent)
 
   def showOuterTemplate(self, msgCache):
     error = self.api.error

@@ -266,7 +266,7 @@ def codestats():
       '.pytest_cache,__pycache__,node_modules,.tmp,.git,_temp,'
       '.ipynb_checkpoints,images,fonts,favicons,compiled'
   )
-  xdtf = xd + ',applib,convert,core,search,server,writing'
+  xdtf = xd + ',applib,convert,compose,core,search,server,writing'
   xdtest = xd + ',tf'
   rfFmt = 'docs/Code/Stats{}.md'
   cmdLine = (
@@ -283,6 +283,7 @@ def codestats():
   run(cmdLine.format(xdtf, nex, 'Toplevel', 'tf'), shell=True)
   run(cmdLine.format(xd, nex, 'Applib', 'tf/applib'), shell=True)
   run(cmdLine.format(xd, nex, 'Apps', '../app-*/code'), shell=True)
+  run(cmdLine.format(xd, nex, 'Compose', 'tf/compose'), shell=True)
   run(cmdLine.format(xd, nex, 'Convert', 'tf/convert'), shell=True)
   run(cmdLine.format(xd, nex, 'Core', 'tf/core'), shell=True)
   run(cmdLine.format(xd, nex, 'Search', 'tf/search'), shell=True)

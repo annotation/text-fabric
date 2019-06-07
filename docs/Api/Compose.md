@@ -27,6 +27,7 @@ in the Banks tutorial.
         deleteTypes=None,
         addTypes=None,
         featureMeta=None,
+        silent=False,
     )
     ```
 
@@ -333,6 +334,9 @@ in the Banks tutorial.
 
     If you want to remove a key from a feature, give it the value None.
 
+??? info "silent"
+    Suppress or enable informational messages.
+
 ## Combine
 
 ???+ abstract "usage"
@@ -368,6 +372,9 @@ in the Banks tutorial.
     The combination will be the union of all nodes of the components,
     rearranged according to their types, where node types with the
     same names will be merged.
+
+    The slots of the result are the concatenation of the slots of the
+    components, which must all have the same slot type.
 
     The node and edge features will be remapped, so that they have
     the same values in the combined data as they had in the individual
@@ -492,6 +499,7 @@ in the Banks tutorial.
                     sectionFeatures='title,number,number',
                 ),
             ),
+            silent=False,
         )
         ```
 
@@ -528,3 +536,7 @@ in the Banks tutorial.
         @writtenBy=Text-Fabric
         @dateWritten=2019-05-28T10:55:06Z
         ```
+
+??? info "silent"
+    Suppress or enable informational messages.
+

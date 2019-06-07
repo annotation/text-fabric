@@ -56,7 +56,7 @@ def setupApi(
 
   if app.api:
     if app.standardFeatures is None:
-      allFeatures = app.api.TF.explore(silent=True, show=True)
+      allFeatures = app.api.TF.explore(silent=silent or True, show=True)
       loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
       app.standardFeatures = loadableFeatures
   else:
@@ -78,16 +78,16 @@ def setupApi(
     if specs:
       (locations, modules) = specs
       app.tempDir = f'{app.repoLocation}/{TEMP_DIR}'
-      TF = Fabric(locations=locations, modules=modules, silent=True)
-      api = TF.load('', silent=True)
+      TF = Fabric(locations=locations, modules=modules, silent=silent or True)
+      api = TF.load('', silent=silent or True)
       if api:
         app.api = api
-        allFeatures = TF.explore(silent=True, show=True)
+        allFeatures = TF.explore(silent=silent or True, show=True)
         loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
         if app.standardFeatures is None:
           app.standardFeatures = loadableFeatures
         useFeatures = [f for f in loadableFeatures if f not in app.excludedFeatures]
-        result = TF.load(useFeatures, add=True, silent=True)
+        result = TF.load(useFeatures, add=True, silent=silent or True)
         if result is False:
           app.api = None
     else:

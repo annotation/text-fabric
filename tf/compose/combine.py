@@ -19,7 +19,10 @@ GENERATED = set('''
 TM = Timestamp()
 indent = TM.indent
 info = TM.info
+warning = TM.warning
 error = TM.error
+setSilent = TM.setSilent
+isSilent = TM.isSilent
 
 
 def combine(
@@ -29,6 +32,7 @@ def combine(
     componentFeature=None,
     mergeTypes=None,
     featureMeta=None,
+    silent=False,
 ):
   if not dirEmpty(targetLocation):
     error(
@@ -85,11 +89,11 @@ def combine(
       meta[componentFeature]['description'][f'label of {componentType}'] = {0}
 
     for (i, loc) in locItems:
-      TF = Fabric(locations=loc, silent=True)
+      TF = Fabric(locations=loc, silent=silent)
       for (feat, fObj) in TF.features.items():
         if fObj.method:
           continue
-        fObj.load(metaOnly=True, silent=True)
+        fObj.load(metaOnly=True, silent=silent or True)
         thisMeta = fObj.metaData
         for (k, v) in thisMeta.items():
           meta[feat][k][v].add(i)
@@ -99,7 +103,7 @@ def combine(
         isGenerated = k in GENERATED
         if k == 'valueType':
           if len(vs) > 1:
-            info(f'WARNING: {feat}: valueType varies in components; will be str', tm=False)
+            warning(f'WARNING: {feat}: valueType varies in components; will be str', tm=False)
           else:
             metaData[feat][k] = sorted(vs)[0]
         elif len(vs) == 1 and not isGenerated:
@@ -115,7 +119,7 @@ def combine(
                 key = f'{k}!{srcs[i]}'
               metaData[feat][key] = v
           if not hasCombinedValue and not isGenerated:
-            info(f'WARNING: {feat}.{k} metadata varies across sources', tm=False)
+            warning(f'WARNING: {feat}.{k} metadata varies across sources', tm=False)
 
     return True
 
@@ -132,8 +136,8 @@ def combine(
 
     for (i, loc) in locItems:
       info(f'\r{i:>3} {os.path.basename(loc)})', nl=False)
-      TF = Fabric(locations=loc, silent=True)
-      api = TF.load('', silent=True)
+      TF = Fabric(locations=loc, silent=silent)
+      api = TF.load('', silent=silent)
       if not api:
         good = False
         continue
@@ -156,11 +160,12 @@ def combine(
         componentOtype[i] = maxNode + 1
         componentValue[i][maxNode + 1] = srcs[i]
     if len(slotTypes) > 1:
-      error('Multiple slot types: {slotTypeRep}', tm=False)
+      slotRep = ', '.join(sorted(slotTypes))
+      error(f'Multiple slot types: {slotRep}', tm=False)
       good = False
     commonTypes = set(slotTypes) & set(nodeTypesComp)
     if len(commonTypes):
-      error('Some node types are slots in one source and non slots in another', tm=False)
+      error(f'Some node types are slots in one source and non slots in another', tm=False)
       error(', '.sorted(commonTypes), tm=False)
       good = False
     if clashes:
@@ -200,8 +205,8 @@ def combine(
     indent(level=1, reset=True)
     for (i, loc) in locItems:
       info(f'\r{i:>3} {os.path.basename(loc)})', nl=False)
-      TF = Fabric(locations=loc, silent=True)
-      api = TF.loadAll(silent=True)
+      TF = Fabric(locations=loc, silent=silent)
+      api = TF.loadAll(silent=silent)
       if not api:
         return False
 
@@ -292,8 +297,13 @@ def combine(
     return True
 
   def writeTf():
-    TF = Fabric(locations=targetLocation)
-    TF.save(metaData=metaData, nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures)
+    TF = Fabric(locations=targetLocation, silent=True)
+    TF.save(
+        metaData=metaData,
+        nodeFeatures=nodeFeatures,
+        edgeFeatures=edgeFeatures,
+        silent=silent or True,
+    )
     return True
 
   def process():
@@ -316,4 +326,8 @@ def combine(
     info('done')
     return True
 
-  return process()
+  wasSilent = isSilent()
+  setSilent(silent)
+  result = process()
+  setSilent(wasSilent)
+  return result

@@ -222,6 +222,7 @@ nav:
     - 'Stats (TF-core)' : 'Code/StatsCore.md'
     - 'Stats (TF-search)' : 'Code/StatsSearch.md'
     - 'Stats (TF-convert)' : 'Code/StatsConvert.md'
+    - 'Stats (TF-compose)' : 'Code/StatsCompose.md'
     - 'Stats (TF-writing)' : 'Code/StatsWriting.md'
     - 'Stats (TF-server)' : 'Code/StatsServer.md'
     - 'Stats (TF-app support)' : 'Code/StatsApplib.md'

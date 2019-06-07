@@ -58,7 +58,10 @@ class Data(object):
     self.dataError = False
     self.dataType = 'str'
 
-  def load(self, metaOnly=False, silent=False):
+  def load(self, metaOnly=False, silent=None):
+    if silent is not None:
+      wasSilent = self.tm.isSilent()
+      self.tm.setSilent(silent)
     self.tm.indent(level=1, reset=True)
     origTime = self._getModified()
     binTime = self._getModified(bin=True)
@@ -88,7 +91,7 @@ class Data(object):
         elif not binTime or origTime > binTime:
           actionRep = 'C' if self.method else 'T'
           good = (
-              self._compute(metaOnly=metaOnly, silent=silent)
+              self._compute(metaOnly=metaOnly)
               if self.method else
               self._readTf(metaOnly=metaOnly)
           )
@@ -114,26 +117,35 @@ class Data(object):
       if (
           actionRep != '=' and
           not (
-              silent or
               actionRep == 'M' or
               (actionRep == 'B' and self.method)
           )
       ):
-        self.tm.info(
-            msgFormat.format(actionRep, self.fileName, sourceRep),
-            cache=1 if (not silent) or (actionRep in 'CT') else -1,
-        )
+        pass
+      self.tm.info(
+          msgFormat.format(actionRep, self.fileName, sourceRep),
+          cache=1 if actionRep in 'CT' else -1,
+      )
     else:
       self.dataError = True
       self.tm.error(msgFormat.format(actionRep, self.fileName, sourceRep))
+
+    if silent is not None:
+      self.tm.setSilent(wasSilent)
     return good
 
   def unload(self):
     self.data = None
     self.dataLoaded = False
 
-  def save(self, overwrite=False, nodeRanges=False):
-    return self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
+  def save(self, overwrite=False, nodeRanges=False, silent=None):
+    if silent is not None:
+      wasSilent = self.tm.isSilent()
+      self.tm.setSilent(silent)
+    result = self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
+    if silent is not None:
+      self.tm.setSilent(wasSilent)
+    return result
 
   def _setDataType(self):
     if self.isConfig:
@@ -341,13 +353,13 @@ class Data(object):
 
     return not errors
 
-  def _compute(self, metaOnly=False, silent=False):
+  def _compute(self, metaOnly=False):
     if metaOnly:
       return True
 
     good = True
     for feature in self.dependencies:
-      if not feature.load(silent=silent):
+      if not feature.load():
         good = False
     if not good:
       return False
@@ -372,7 +384,7 @@ class Data(object):
 
   def _writeTf(
       self, dirName=None, fileName=None, overwrite=True, extension=None, metaOnly=False,
-      nodeRanges=False
+      nodeRanges=False,
   ):
     self.tm.indent(level=1, reset=True)
     metaOnly = metaOnly or self.isConfig

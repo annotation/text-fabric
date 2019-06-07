@@ -45,20 +45,19 @@ class Fabric(object):
   def __init__(self, locations=None, modules=None, silent=False):
     self.silent = silent
     self.tm = Timestamp()
+    self.tm.setSilent(silent)
     self.banner = f'This is {NAME} {VERSION}'
     self.version = VERSION
     (on32, warn, msg) = check32()
     if on32:
       self.tm.info(warn, tm=False)
     if msg:
-      if not silent:
-        self.tm.info(msg, tm=False)
-    if not silent:
-      self.tm.info(
-          f'''{self.banner}
+      self.tm.info(msg, tm=False)
+    self.tm.info(
+        f'''{self.banner}
 Api reference : {APIREF}
 ''', tm=False
-      )
+    )
     self.good = True
 
     if modules is None:
@@ -82,10 +81,12 @@ Api reference : {APIREF}
     self.featuresRequested = []
     self._makeIndex()
 
-  def load(self, features, add=False, silent=False):
+  def load(self, features, add=False, silent=None):
+    if silent is not None:
+      wasSilent = self.tm.isSilent()
+      self.tm.setSilent(silent)
     self.tm.indent(level=0, reset=True)
-    if not silent:
-      self.tm.info('loading features ...')
+    self.tm.info('loading features ...')
     self.sectionsOK = True
     self.structureOK = True
     self.good = True
@@ -96,14 +97,14 @@ Api reference : {APIREF}
       else:
         self.featuresRequested = featuresRequested
       for fName in list(WARP):
-        self._loadFeature(fName, optional=fName == WARP[2], silent=silent)
+        self._loadFeature(fName, optional=fName == WARP[2])
     if self.good:
       self.textFeatures = set()
       if WARP[2] in self.features:
         otextMeta = self.features[WARP[2]].metaData
         for otextMod in self.features:
           if otextMod.startswith(WARP[2] + '@'):
-            self._loadFeature(otextMod, silent=silent)
+            self._loadFeature(otextMod)
             otextMeta.update(self.features[otextMod].metaData)
         self.sectionFeats = itemize(otextMeta.get('sectionFeatures', ''), ',')
         self.sectionTypes = itemize(otextMeta.get('sectionTypes', ''), ',')
@@ -111,9 +112,9 @@ Api reference : {APIREF}
         self.structureTypes = itemize(otextMeta.get('structureTypes', ''), ',')
         (self.cformats, self.formatFeats) = collectFormats(otextMeta)
         if not (0 < len(self.sectionTypes) <= 3) or not (0 < len(self.sectionFeats) <= 3):
-          if not silent:
-            self.tm.info(
-                f'Not enough info for sections in {WARP[2]}, section functionality will not work'
+          if not add:
+            self.tm.warning(
+                f'No section config in {WARP[2]}, the section part of the T-API cannot be used'
             )
           self.sectionsOK = False
         else:
@@ -125,9 +126,9 @@ Api reference : {APIREF}
           }
           self.textFeatures |= set(self.sectionFeatsWithLanguage)
         if not self.structureTypes or not self.structureFeats:
-          if not silent:
-            self.tm.info(
-                f'Not enough info for structure in {WARP[2]}, structure functionality will not work'
+          if not add:
+            self.tm.warning(
+                f'No structure info in {WARP[2]}, the structure part of the T-API cannot be used'
             )
           self.structureOK = False
         else:
@@ -136,7 +137,7 @@ Api reference : {APIREF}
         self.textFeatures |= set(self.formatFeats)
 
         for fName in self.textFeatures:
-          self._loadFeature(fName, silent=silent)
+          self._loadFeature(fName)
 
       else:
         self.sectionsOK = False
@@ -146,33 +147,39 @@ Api reference : {APIREF}
       self._precompute()
     if self.good:
       for fName in self.featuresRequested:
-        self._loadFeature(fName, silent=silent)
+        self._loadFeature(fName)
     if not self.good:
       self.tm.indent(level=0)
       self.tm.error('Not all features could be loaded/computed')
       self.tm.cache()
-      return False
-    if add:
+      result = False
+    elif add:
       try:
-        self._updateApi(silent)
+        self._updateApi()
       except MemoryError:
         console(MEM_MSG)
-        return False
+        result = False
     else:
       try:
-        result = self._makeApi(silent)
+        result = self._makeApi()
       except MemoryError:
         console(MEM_MSG)
-        return False
+        result = False
+    if silent is not None:
+      self.tm.setSilent(wasSilent)
+    if not add:
       return result
 
-  def explore(self, silent=True, show=True):
+  def explore(self, silent=None, show=True):
+    if silent is not None:
+      wasSilent = self.tm.isSilent()
+      self.tm.setSilent(silent)
     nodes = set()
     edges = set()
     configs = set()
     computeds = set()
     for (fName, fObj) in self.features.items():
-      fObj.load(metaOnly=True, silent=True)
+      fObj.load(metaOnly=True)
       dest = None
       if fObj.method:
         dest = computeds
@@ -183,23 +190,24 @@ Api reference : {APIREF}
       else:
         dest = nodes
       dest.add(fName)
-    if not silent:
-      self.tm.info(
-          'Feature overview: {} for nodes; {} for edges; {} configs; {} computed'.format(
-              len(nodes),
-              len(edges),
-              len(configs),
-              len(computeds),
-          )
-      )
+    self.tm.info(
+        'Feature overview: {} for nodes; {} for edges; {} configs; {} computed'.format(
+            len(nodes),
+            len(edges),
+            len(configs),
+            len(computeds),
+        )
+    )
     self.featureSets = dict(nodes=nodes, edges=edges, configs=configs, computeds=computeds)
+    if silent is not None:
+      self.tm.setSilent(wasSilent)
     if show:
       return dict((kind, tuple(sorted(kindSet)))
                   for (kind, kindSet) in sorted(self.featureSets.items(), key=lambda x: x[0]))
 
-  def loadAll(self, silent=True):
+  def loadAll(self, silent=None):
     api = self.load('', silent=silent)
-    allFeatures = self.explore(silent=True, show=True)
+    allFeatures = self.explore(silent=silent or True, show=True)
     loadableFeatures = allFeatures['nodes'] + allFeatures['edges']
     self.load(loadableFeatures, add=True, silent=silent)
     return api
@@ -208,23 +216,33 @@ Api reference : {APIREF}
     for (fName, fObj) in self.features.items():
       fObj.cleanDataBin()
 
-  def save(self, nodeFeatures={}, edgeFeatures={}, metaData={}, location=None, module=None):
+  def save(
+      self,
+      nodeFeatures={},
+      edgeFeatures={},
+      metaData={},
+      location=None,
+      module=None,
+      silent=None,
+  ):
     good = True
+    if silent is not None:
+      wasSilent = self.tm.isSilent()
+      self.tm.setSilent(silent)
     self.tm.indent(level=0, reset=True)
     self._getWriteLoc(location=location, module=module)
     configFeatures = dict(
         f for f in metaData.items()
         if f[0] != '' and f[0] not in nodeFeatures and f[0] not in edgeFeatures
     )
-    if not self.silent:
-      self.tm.info(
-          'Exporting {} node and {} edge and {} config features to {}:'.format(
-              len(nodeFeatures),
-              len(edgeFeatures),
-              len(configFeatures),
-              self.writeDir,
-          )
-      )
+    self.tm.info(
+        'Exporting {} node and {} edge and {} config features to {}:'.format(
+            len(nodeFeatures),
+            len(edgeFeatures),
+            len(configFeatures),
+            self.writeDir,
+        )
+    )
     todo = []
     for (fName, data) in sorted(nodeFeatures.items()):
       todo.append((fName, data, False, False))
@@ -326,19 +344,21 @@ Api reference : {APIREF}
       else:
         failed[tag] += 1
     self.tm.indent(level=0)
-    if not self.silent:
-      self.tm.info(
-          'Exported {} node features and {} edge features and {} config features to {}'.format(
-              total['node'],
-              total['edge'],
-              total['config'],
-              self.writeDir,
-          )
-      )
+    self.tm.info(
+        'Exported {} node features and {} edge features and {} config features to {}'.format(
+            total['node'],
+            total['edge'],
+            total['config'],
+            self.writeDir,
+        )
+    )
     if len(failed):
       for (tag, nf) in sorted(failed.items()):
         self.tm.error(f'Failed to export {nf} {tag} features')
       good = False
+
+    if silent is not None:
+      self.tm.setSilent(wasSilent)
     return good
 
   def exportMQL(self, mqlName, mqlDir):
@@ -356,15 +376,17 @@ Api reference : {APIREF}
     if good:
       self.save(nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures, metaData=metaData)
 
-  def _loadFeature(self, fName, optional=False, silent=False):
+  def _loadFeature(self, fName, optional=False):
     if not self.good:
       return False
+    silent = self.tm.isSilent()
     if fName not in self.features:
       if not optional:
         self.tm.error(f'Feature "{fName}" not available in\n{self.locationRep}')
         self.good = False
     else:
-      if not self.features[fName].load(silent=silent or (fName not in self.featuresRequested)):
+      # if not self.features[fName].load(silent=silent or (fName not in self.featuresRequested)):
+      if not self.features[fName].load(silent=silent):
         self.good = False
 
   def _makeIndex(self):
@@ -388,33 +410,30 @@ Api reference : {APIREF}
           self.featuresIgnored.setdefault(fName, []).append(featurePath)
       self.features[fName] = Data(chosenFPath, self.tm)
     self._getWriteLoc()
-    if not self.silent:
-      self.tm.info(
-          '{} features found and {} ignored'.format(
-              len(tfFiles),
-              sum(len(x) for x in self.featuresIgnored.values()),
-          ), tm=False
-      )
+    self.tm.info(
+        '{} features found and {} ignored'.format(
+            len(tfFiles),
+            sum(len(x) for x in self.featuresIgnored.values()),
+        ), tm=False
+    )
 
     good = True
     for fName in WARP:
       if fName not in self.features:
         if fName == WARP[2]:
-          if not self.silent:
-            self.tm.info((f'Warp feature "{WARP[2]}" not found. Working without Text-API\n'))
-            self.features[WARP[2]] = Data(
-                f'{WARP[2]}.tf',
-                self.tm,
-                isConfig=True,
-                metaData=WARP2_DEFAULT,
-            )
-            self.features[WARP[2]].dataLoaded = True
+          self.tm.info((f'Warp feature "{WARP[2]}" not found. Working without Text-API\n'))
+          self.features[WARP[2]] = Data(
+              f'{WARP[2]}.tf',
+              self.tm,
+              isConfig=True,
+              metaData=WARP2_DEFAULT,
+          )
+          self.features[WARP[2]].dataLoaded = True
         else:
-          if not self.silent:
-            self.tm.info(f'Warp feature "{fName}" not found in\n{self.locationRep}')
+          self.tm.info(f'Warp feature "{fName}" not found in\n{self.locationRep}')
           good = False
       elif fName == WARP[2]:
-        self._loadFeature(fName, optional=True, silent=True)
+        self._loadFeature(fName, optional=True)
     if not good:
       return False
     self.warpDir = self.features[WARP[0]].dirName
@@ -445,7 +464,7 @@ Api reference : {APIREF}
 
   def _getWriteLoc(self, location=None, module=None):
     writeLoc = (
-        location
+        os.path.expanduser(location)
         if location is not None else
         ''
         if len(self.locations) == 0 else
@@ -468,14 +487,16 @@ Api reference : {APIREF}
       ok = getattr(self, f'{fName.strip("_")}OK', False)
       if dep2 and not ok:
         continue
-      if not self.features[fName].load(silent=False):
+      if not self.features[fName].load():
         good = False
         break
     self.good = good
 
-  def _makeApi(self, silent):
+  def _makeApi(self):
     if not self.good:
       return None
+
+    silent = self.tm.isSilent()
     api = Api(self)
 
     w0info = self.features[WARP[0]]
@@ -527,12 +548,11 @@ Api reference : {APIREF}
     addText(api)
     addSearch(api, silent)
     self.tm.indent(level=0)
-    if not silent:
-      self.tm.info('All features loaded/computed - for details use loadLog()')
+    self.tm.info('All features loaded/computed - for details use loadLog()')
     self.api = api
     return api
 
-  def _updateApi(self, silent):
+  def _updateApi(self):
     if not self.good:
       return None
     api = self.api
@@ -566,5 +586,4 @@ Api reference : {APIREF}
                 delattr(api.F, fName)
             fObj.unload()
     self.tm.indent(level=0)
-    if not silent:
-      self.tm.info('All additional features loaded - for details use loadLog()')
+    self.tm.info('All additional features loaded - for details use loadLog()')

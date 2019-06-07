@@ -38,6 +38,11 @@ API_REFS = dict(
     ignored=('Fabric', 'ignored', 'loading'),
     indent=('Misc', 'indent', 'messaging'),
     info=('Misc', 'info', 'messaging'),
+    warning=('Misc', 'warning', 'messaging'),
+    isSilent=('Misc', 'isSilent', 'messaging'),
+    setSilent=('Misc', 'setSilent', 'messaging'),
+    silentOn=('Misc', 'silentOn', 'messaging'),
+    silentOff=('Misc', 'silentOff', 'messaging'),
     loadLog=('Fabric', 'loadlog', 'loading'),
     otypeRank=('Nodes', 'rank', 'navigating-nodes'),
     reset=('Misc', 'reset', 'messaging'),
@@ -299,12 +304,18 @@ class Api(object):
     self.Edge = self.E
     self.C = Computeds()
     self.Computed = self.C
-    self.info = TF.tm.info
-    self.error = TF.tm.error
-    self.cache = TF.tm.cache
-    self.reset = TF.tm.reset
-    self.indent = TF.tm.indent
-    self.loadLog = TF.tm.cache
+    tm = TF.tm
+    self.silentOn = tm.silentOn
+    self.silentOff = tm.silentOff
+    self.isSilent = tm.isSilent
+    self.setSilent = tm.setSilent
+    self.info = tm.info
+    self.warning = tm.warning
+    self.error = tm.error
+    self.cache = tm.cache
+    self.reset = tm.reset
+    self.indent = tm.indent
+    self.loadLog = tm.cache
     setattr(self, 'FeatureString', self.Fs)
     setattr(self, 'EdgeString', self.Es)
     setattr(self, 'ComputedString', self.Cs)
@@ -380,7 +391,7 @@ class Api(object):
     F = self.F
     E = self.E
     TF = self.TF
-    info = self.info
+    warning = self.warning
 
     needToLoad = set()
     loadedFeatures = set()
@@ -388,7 +399,7 @@ class Api(object):
     for fName in sorted(flattenToSet(features)):
       fObj = TF.features.get(fName, None)
       if not fObj:
-        info(f'Cannot load feature "{fName}": not in dataset')
+        warning(f'Cannot load feature "{fName}": not in dataset')
         continue
       if fObj.dataLoaded and (hasattr(F, fName) or hasattr(E, fName)):
         loadedFeatures.add(fName)
@@ -398,7 +409,7 @@ class Api(object):
       TF.load(
           needToLoad,
           add=True,
-          silent=True,
+          silent='deep',
       )
       loadedFeatures |= needToLoad
     return loadedFeatures

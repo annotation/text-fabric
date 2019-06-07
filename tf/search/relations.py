@@ -10,7 +10,7 @@ from .syntax import reTp
 # LOW-LEVEL NODE RELATIONS SEMANTICS ###
 
 
-def basicRelations(searchExe, api, silent):
+def basicRelations(searchExe, api):
   C = api.C
   F = api.F
   E = api.E
@@ -216,15 +216,13 @@ def basicRelations(searchExe, api, silent):
           # spinning is not worth it
           return (yF, yT)
 
-        if not silent:
-          info(f'1. reducing over {len(nyS)} elements', cache=msgCache)
+        info(f'1. reducing over {len(nyS)} elements', cache=msgCache)
         nyF = reduce(
             set.union,
             (sindexF[s] for s in nyS),
             set(),
         )
-        if not silent:
-          info(f'2. reducing over {len(nyS)} elements', cache=msgCache)
+        info(f'2. reducing over {len(nyS)} elements', cache=msgCache)
         nyT = reduce(
             set.union,
             (sindexT[s] for s in nyS),
@@ -1037,7 +1035,7 @@ def basicRelations(searchExe, api, silent):
 
   # BUILD AND INITIALIZE ALL RELATIONAL FUNCTIONS
 
-  api.TF.explore(silent=silent)
+  api.TF.explore(silent='deep')
   edgeMap = {}
 
   for efName in sorted(api.TF.featureSets['edges']):

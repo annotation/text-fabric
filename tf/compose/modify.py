@@ -42,6 +42,8 @@ TM = Timestamp()
 indent = TM.indent
 info = TM.info
 error = TM.error
+isSilent = TM.isSilent
+setSilent = TM.setSilent
 
 
 def _itemize(arg):
@@ -66,6 +68,7 @@ def modify(
     deleteTypes=None,
     addTypes=None,
     featureMeta=None,
+    silent=False,
 ):
   addFeatures = addFeatures or {}
   deleteFeatures = set(_itemize(deleteFeatures))
@@ -155,13 +158,13 @@ def modify(
     info('preparing and checking ...')
     indent(level=1, reset=True)
 
-    TF = Fabric(locations=location, silent=True)
-    origAllFeatures = TF.explore(silent=True, show=True)
+    TF = Fabric(locations=location, silent=silent)
+    origAllFeatures = TF.explore(silent=silent or True, show=True)
     origNodeFeatures = set(origAllFeatures[NODES])
     origEdgeFeatures = set(origAllFeatures[EDGES])
     origFeatures = origNodeFeatures | origEdgeFeatures
 
-    api = TF.load('', silent=True)
+    api = TF.load('', silent=silent)
     if not api:
       return False
 
@@ -732,8 +735,12 @@ def modify(
     indent(level=0)
     info('write TF data ...')
     indent(level=1, reset=True)
-    TF = Fabric(locations=targetLocation)
-    TF.save(metaData=metaDataOut, nodeFeatures=nodeFeaturesOut, edgeFeatures=edgeFeaturesOut)
+    TF = Fabric(locations=targetLocation, silent=silent or True)
+    TF.save(
+        metaData=metaDataOut,
+        nodeFeatures=nodeFeaturesOut,
+        edgeFeatures=edgeFeaturesOut,
+    )
     return True
 
   def finalize():
@@ -758,4 +765,8 @@ def modify(
         return False
     return True
 
-  return process()
+  wasSilent = isSilent()
+  setSilent(silent)
+  result = process()
+  setSilent(wasSilent)
+  return result

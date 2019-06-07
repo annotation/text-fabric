@@ -14,8 +14,10 @@ class CV(object):
   F = 'feature'
   E = 'edge'
 
-  def __init__(self, TF):
+  def __init__(self, TF, silent=False):
     self.TF = TF
+    self.wasSilent = self.TF.tm.isSilent()
+    self.TF.tm.setSilent(silent)
 
   def _showWarnings(self):
     error = self.TF.tm.error
@@ -135,6 +137,7 @@ class CV(object):
         )
 
     self._showWarnings()
+    self.TF.tm.setSilent(self.wasSilent)
 
     return self.good
 

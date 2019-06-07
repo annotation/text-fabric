@@ -46,7 +46,8 @@
         intFeatures=intFeatures,
         featureMeta=featureMeta,
         warn=True,
-        force=False
+        force=False,
+        silent=False,
     )
 
     if good:
@@ -116,6 +117,9 @@
         `warn=False` continue after warnings but do show them;
 
         `warn=None` suppress all warnings.
+
+    ???- info "silent=False"
+        By this you can suppress informational messages: `silent=True`.
 
     ???+ info "force=False"
         This forces the process to continue after errors.

@@ -11,6 +11,8 @@ def searchApi(app):
 def search(app, query, silent=False, sets=None, shallow=False, sort=True):
   api = app.api
   info = api.info
+  isSilent = api.isSilent
+  setSilent = api.setSilent
   S = api.S
   sortKeyTuple = api.sortKeyTuple
 
@@ -43,8 +45,10 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
 
   nResults = len(results)
   plural = '' if nResults == 1 else 's'
-  if not silent:
-    info(f'{nResults} result{plural}')
+  wasSilent = isSilent
+  setSilent(silent)
+  info(f'{nResults} result{plural}')
+  setSilent(wasSilent)
   return results
 
 

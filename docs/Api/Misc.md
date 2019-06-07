@@ -17,15 +17,62 @@
 ??? info "Timed messages"
     Error and informational messages can be issued, with a time indication.
 
-??? abstract "info(), error()"
+??? abstract "silentOn(), silentOff(), isSilent(), setSilent()"
+    Suppress or enable *informational* messages, i.e. messages
+    issued through `info()` below.
+
+    This is no influence on *error* messages, i.e. messages
+    issued through `error()` below.
+
+    ```python
+    silentOn(deep=False)
+    ```
+
+    Suppress informational messages.
+    If `deep=True` also suppresses warnings.
+    
+    ```python
+    silentOff()
+    ```
+
+    Enable informational messages.
+    
+    ```python
+    setSilent(flag)
+    ```
+
+    e.g.
+
+    ```
+    setSilent(False)
+    setSilent(True)
+    setSilent('deep')
+    ```
+
+    Enable or suppress informational/warning messages dependent on `flag`.
+
+    ```python
+    isSilent()
+    ```
+
+    Whether informational messages are currently suppressed or not.
+
+??? abstract "info(), warning(), error()"
     ```python
     info(msg, tm=True, nl=True)
+    warning(msg, tm=True, nl=True)
+    error(msg, tm=True, nl=True)
     ```
     
     ???+ info "Description"
         Sends a message to standard output, possibly with time and newline.
 
-        *   if `info()` is being used, the message is sent to `stdout`;
+        *   if `info()` is being used, the message is suppressed
+            if the silent mode is currently on;
+        *   if the silent mode is not `True` but `'deep'`, `warnings()`
+            will also be suppressed;
+        *   `error()` messages always come through;
+        *   if `info()` or warning is being used, the message is sent to `stdout`;
         *   if `error()` is being used, the message is sent to `stderr`;
 
         In a Jupyter notebook, the standard error is displayed with

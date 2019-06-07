@@ -39,7 +39,15 @@ See the [issue list on GitHub]({{ghissues}})
 
 ### Queued for next release
 
-Nothing
+The working of `silent=True` has been fine-tuned (i.e. it is
+easier to silence TF in more cases.)
+There is also a `silent` parameter for the
+[walker conversion](../Create/Convert.md).
+
+The `info()` function always checks whether it should be silent or not.
+There is a new `warning()` function that is silent of `silent='deep'`.
+So you can use `warning()` to issue messages that you do not want to be silenced
+by `silence=True`.
 
 ---
 

@@ -9,7 +9,8 @@ class Timestamp(object):
     self.timestamp = {}
     self.indent(level=level, reset=True)
     self.log = []
-    self.verbose = -2
+    self.verbose = -2  # regulates all messages
+    self.silent = False  # regulates informational messages only
 
   def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
     # cache is a list: append to cache, do not output anything
@@ -52,18 +53,35 @@ class Timestamp(object):
       return result
 
   def info(self, msg, tm=True, nl=True, cache=0):
-    self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
+    if not self.silent:
+      self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
+
+  def warning(self, msg, tm=True, nl=True, cache=0):
+    if self.silent != 'deep':
+      self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
   def error(self, msg, tm=True, nl=True, cache=0):
     self.raw_msg(msg, tm=tm, nl=nl, cache=cache, error=True)
 
   def indent(self, level=None, reset=False, verbose=None):
-    self.level = level if level is not None else 0
+    self.level = 0 if level is None else level
     self.levelRep = self.oneLevelRep * self.level
     if reset:
       self.timestamp[self.level] = time.time()
     if verbose is not None:
       self.verbose = verbose
+
+  def isSilent(self):
+    return self.silent
+
+  def setSilent(self, silent):
+    self.silent = silent
+
+  def silentOn(self, deep=False):
+    self.silent = True if not deep else 'deep'
+
+  def silentOff(self):
+    self.silent = False
 
   def _elapsed(self):
     interval = time.time() - self.timestamp.setdefault(self.level, time.time())

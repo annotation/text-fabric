@@ -206,7 +206,11 @@
 
 ??? abstract "TF.save()"
     ```python
-    TF.save(nodeFeatures={}, edgeFeatures={}, metaData={}, location=None, module=None)
+    TF.save(
+        nodeFeatures={}, edgeFeatures={}, metaData={},
+        location=None, module=None,
+        silent=None,
+    )
     ```
 
     ???+ info "Description"
@@ -271,3 +275,7 @@
         where `mod` is the last meber of the `modules` parameter of TF.
 
         If you pass `location=path1` and `module=path2`, TF will save in `path1/path2`.
+
+    ??? note "silent"
+        TF is silent if you specified `silent=True` in a preceding `TF=Fabric()` call.
+        But if you did not, you can also pass `silent=True` to this call.
