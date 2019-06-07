@@ -1,6 +1,6 @@
 import types
 
-from .relations import add_K_Relations, add_V_Relations
+from .relations import add_K_Relations, add_F_Relations, add_V_Relations
 from .syntax import reTp, kRe, deContext
 
 # SEMANTIC ANALYSIS OF SEARCH TEMPLATE ###
@@ -240,6 +240,7 @@ def _validation(searchExe):
   qnodes = searchExe.qnodes
   nodeLine = searchExe.nodeLine
   edgeMap = searchExe.edgeMap
+  nodeMap = searchExe.nodeMap
 
   edgeLine = searchExe.edgeLine
   relationFromName = searchExe.relationFromName
@@ -293,7 +294,8 @@ def _validation(searchExe):
         type(op) is tuple or
         (op[0] == '-' and op[-1] == '>') or
         (op[0] == '<' and op[-1] == '-') or
-        (op[0] == '<' and op[-1] == '>')
+        (op[0] == '<' and op[-1] == '>') or
+        (op[0] == '.' and op[-1] == '.')
     ):
       continue
     match = kRe.findall(op)
@@ -303,6 +305,26 @@ def _validation(searchExe):
       addRels.setdefault(opNameK, set()).add(int(k))
   if not missingFeatures and not wrongValues:
     add_K_Relations(searchExe, addRels)
+
+  # relations may have one or two node features f,g in them (feature-comparison)
+  # make an entry in the relation map for each value of (f, g)
+  addRels = {}
+  for (e, (f, op, t)) in enumerate(searchExe.qedgesRaw):
+    if type(op) is tuple:
+        continue
+    if (op[0] != '.' or op[-1] != '.'):
+      continue
+    feats = op[1:-1].split('=', maxsplit=1)
+    if len(feats) == 1:
+      fF = feats[0]
+      opNameF = '.f.'
+      addRels.setdefault(opNameF, set()).add(((f, fF), (t, fF)))
+    else:
+      (fF, gF) = feats
+      opNameFG = '.f=g.'
+      addRels.setdefault(opNameFG, set()).add(((f, fF), (t, gF)))
+  if not missingFeatures and not wrongValues:
+    add_F_Relations(searchExe, addRels)
 
   # edge relations may have a value spec in them
   # make an entry in the relation map for each value spec
@@ -376,10 +398,12 @@ def _validation(searchExe):
     if efName is not None:
       eFeatsUsed.add(efName)
   nFeatsUsed = set()
-  for qdata in qnodes:
+  for (n, qdata) in enumerate(qnodes):
     features = qdata[1]
     for nfName in features:
       nFeatsUsed.add(nfName)
+    if n in nodeMap:
+      nFeatsUsed |= nodeMap[n]
 
   if good:
     searchExe.api.ensureLoaded(eFeatsUsed | nFeatsUsed)

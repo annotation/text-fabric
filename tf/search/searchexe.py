@@ -48,9 +48,12 @@ class SearchExe(object):
 
   def search(self, limit=None):
     api = self.api
+    isSilent = api.isSilent
     setSilent = api.setSilent
+    wasSilent = isSilent()
     setSilent(True)
     self.study()
+    setSilent(wasSilent)
     return self.fetch(limit=limit)
 
   def study(self, strategy=None):
@@ -151,7 +154,7 @@ class SearchExe(object):
     isSilent = api.isSilent
     info = api.info
     wasSilent = isSilent()
-    setSilent(True)
+    setSilent(False)
     msgCache = self.msgCache
     nodeLine = self.nodeLine
     qedges = self.qedges

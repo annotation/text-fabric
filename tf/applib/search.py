@@ -40,7 +40,11 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     features = ()
     if S.exe:
       qnodes = getattr(S.exe, 'qnodes', [])
-      features = tuple((i, tuple(sorted(q[1].keys()))) for (i, q) in enumerate(qnodes))
+      nodeMap = getattr(S.exe, 'nodeMap', {})
+      features = tuple(
+          (i, tuple(sorted(set(q[1].keys()) | nodeMap.get(i, set()))))
+          for (i, q) in enumerate(qnodes)
+      )
       app.displaySetup(tupleFeatures=features)
 
   nResults = len(results)
@@ -67,7 +71,11 @@ def runSearch(app, query, cache):
   features = ()
   if exe:
     qnodes = getattr(exe, 'qnodes', [])
-    features = tuple((i, tuple(sorted(q[1].keys()))) for (i, q) in enumerate(qnodes))
+    nodeMap = getattr(S.exe, 'nodeMap', {})
+    features = tuple(
+        (i, tuple(sorted(set(q[1].keys()) | nodeMap.get(i, set()))))
+        for (i, q) in enumerate(qnodes)
+    )
   queryResults = tuple(sorted(queryResults))
   cache[cacheKey] = (queryResults, messages, features)
   return (queryResults, messages, features)

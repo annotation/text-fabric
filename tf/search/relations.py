@@ -5,6 +5,7 @@ from itertools import chain
 from functools import reduce
 
 from ..core.data import WARP
+from ..core.helpers import makeIndex
 from .syntax import reTp
 
 # LOW-LEVEL NODE RELATIONS SEMANTICS ###
@@ -13,6 +14,7 @@ from .syntax import reTp
 def basicRelations(searchExe, api):
   C = api.C
   F = api.F
+  Fs = api.Fs
   E = api.E
   info = api.info
   msgCache = searchExe.msgCache
@@ -25,6 +27,8 @@ def basicRelations(searchExe, api):
   maxSlot = F.otype.maxSlot
   sets = searchExe.sets
   setInfo = searchExe.setInfo
+  searchExe.featureValueIndex = {}
+  Sindex = searchExe.featureValueIndex
 
   def isSlotType(nType):
     if sets is not None and nType in sets:
@@ -45,9 +49,6 @@ def basicRelations(searchExe, api):
 
   # EQUAL
 
-  def equalR(fTp, tTp):
-    return lambda n: (n, )
-
   def spinEqual(fTp, tTp):
 
     def doyarns(yF, yT):
@@ -55,6 +56,9 @@ def basicRelations(searchExe, api):
       return (x, x)
 
     return doyarns
+
+  def equalR(fTp, tTp):
+    return lambda n: (n, )
 
   # UNEQUAL
 
@@ -903,6 +907,51 @@ def basicRelations(searchExe, api):
 
     return zz
 
+  # SAME FEATURE VALUES
+
+  def spinLeftFisRightG(f, g):
+
+    def zz(fTp, tTp):
+      if f not in Sindex:
+        Sindex[f] = makeIndex(Fs(f).data)
+      if g not in Sindex:
+        Sindex[g] = makeIndex(Fs(g).data)
+      indF = Sindex[f]
+      indG = Sindex[g]
+      commonValues = set(indF) & set(indG)
+
+      fNodes = reduce(
+          set.union,
+          (indF[v] for v in commonValues),
+          set(),
+      )
+      gNodes = reduce(
+          set.union,
+          (indG[v] for v in commonValues),
+          set(),
+      )
+
+      def doyarns(yF, yT):
+        return (yF & fNodes, yT & gNodes)
+
+      return doyarns
+
+    return zz
+
+  def spinLeftGisRightF(f, g):
+    return spinLeftFisRightG(g, f)
+
+  def leftFisRightGR(f, g):
+
+    def zz(fTp, tTp):
+
+      return lambda n: Sindex.get(g, {}).get(Fs(f).v(n), set())
+
+    return zz
+
+  def leftGisRightFR(g, f):
+    return leftFisRightGR(g, f)
+
   # EDGES
 
   def makeEdgeMaps(efName):
@@ -1031,12 +1080,21 @@ def basicRelations(searchExe, api):
           ('<k:', True, nearBeforeR, 'left k-nearly before right'),
           (':k>', True, nearAfterR, 'left k-nearly after right'),
       ),
+      (
+          ('.f.', spinLeftFisRightG, leftFisRightGR, 'left.f = right.f'),
+          ('.f.', spinLeftGisRightF, leftGisRightFR, None),
+      ),
+      (
+          ('.f=g.', spinLeftFisRightG, leftFisRightGR, 'left.f = right.g'),
+          ('.g=f.', spinLeftGisRightF, leftGisRightFR, None),
+      ),
   ]
 
   # BUILD AND INITIALIZE ALL RELATIONAL FUNCTIONS
 
   api.TF.explore(silent='deep')
   edgeMap = {}
+  nodeMap = {}
 
   for efName in sorted(api.TF.featureSets['edges']):
     if efName == WARP[1]:
@@ -1084,6 +1142,7 @@ One of the above relations on nodes and/or slots will suit you better.
       tuple((2 * i, 2 * i + 1) for i in range(lr)) + tuple((2 * i + 1, 2 * i) for i in range(lr))
   )
   searchExe.edgeMap = edgeMap
+  searchExe.nodeMap = nodeMap
 
 
 def add_K_Relations(searchExe, varRels):
@@ -1121,6 +1180,47 @@ def add_K_Relations(searchExe, varRels):
       ])
       searchExe.relationFromName[newAcro] = lr
       searchExe.relationFromName[newAcroi] = lr + 1
+      searchExe.converse[lr] = lr + 1
+      searchExe.converse[lr + 1] = lr
+
+
+def add_F_Relations(searchExe, varRels):
+  relations = searchExe.relations
+  tasks = collections.defaultdict(set)
+  for (acro, feats) in varRels.items():
+    j = searchExe.relationFromName[acro]
+    ji = searchExe.converse[j]
+    if ji < j:
+      (j, ji) = (ji, j)
+    acro = relations[j]['acro']
+    acroi = relations[ji]['acro']
+    tasks[(j, acro, ji, acroi)] |= feats
+
+  for ((j, acro, ji, acroi), feats) in tasks.items():
+    for ((f, fF), (t, gF)) in feats:
+      newAcro = acro.replace('f', fF).replace('g', gF)
+      newAcroi = acroi.replace('f', fF).replace('g', gF)
+      r = relations[j]
+      ri = relations[ji]
+      lr = len(relations)
+      relations.extend([
+          dict(
+              acro=newAcro,
+              spin=r['spin'](fF, gF),
+              func=r['func'](fF, gF),
+              desc=r['desc'],
+          ),
+          dict(
+              acro=newAcroi,
+              spin=ri['spin'](fF, gF),
+              func=ri['func'](fF, gF),
+              desc=ri['desc'],
+          ),
+      ])
+      searchExe.relationFromName[newAcro] = lr
+      searchExe.relationFromName[newAcroi] = lr + 1
+      searchExe.nodeMap.setdefault(f, set()).add(fF)
+      searchExe.nodeMap.setdefault(t, set()).add(gF)
       searchExe.converse[lr] = lr + 1
       searchExe.converse[lr + 1] = lr
 

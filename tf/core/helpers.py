@@ -229,6 +229,13 @@ def tfFromValue(val):
   )
 
 
+def makeIndex(data):
+  inv = {}
+  for (n, m) in data.items():
+    inv.setdefault(m, set()).add(n)
+  return inv
+
+
 def makeInverse(data):
   inverse = {}
   for n in data:
