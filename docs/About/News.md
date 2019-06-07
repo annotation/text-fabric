@@ -49,6 +49,9 @@ There is a new `warning()` function that is silent of `silent='deep'`.
 So you can use `warning()` to issue messages that you do not want to be silenced
 by `silence=True`.
 
+Feature comparison in queries, as asked for by Oliver Glanz.
+For more info: see [#50]({{ghissues}}/50) 
+
 ---
 
 # 7.8
@@ -561,7 +564,7 @@ Small fixes in the token converter.
 2019-01-25
 
 Easier conversion of data sources to TF: via an intermediate token stream.
-For more info: see [#38]({{ghissues}}/45) 
+For more info: see [#45]({{ghissues}}/45) 
 
 
 ## 7.3.14-15
