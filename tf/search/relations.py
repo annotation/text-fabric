@@ -952,6 +952,21 @@ def basicRelations(searchExe, api):
   def leftGisRightFR(g, f):
     return leftFisRightGR(g, f)
 
+  def leftFunequalRightGR(f, g):
+
+    def zz(fTp, tTp):
+
+      def uu(n, m):
+        nVal = Fs(f).v(n)
+        mVal = Fs(g).v(m)
+        return nVal is None and mVal is None or nVal != mVal
+      return uu
+
+    return zz
+
+  def leftGunequalRightFR(g, f):
+    return leftFunequalRightGR(g, f)
+
   # EDGES
 
   def makeEdgeMaps(efName):
@@ -1088,6 +1103,10 @@ def basicRelations(searchExe, api):
           ('.f=g.', spinLeftFisRightG, leftFisRightGR, 'left.f = right.g'),
           ('.g=f.', spinLeftGisRightF, leftGisRightFR, None),
       ),
+      (
+          ('.f#g.', 0.8, leftFunequalRightGR, 'left.f # right.g'),
+          ('.g#f.', 0.8, leftGunequalRightFR, None),
+      ),
   ]
 
   # BUILD AND INITIALIZE ALL RELATIONAL FUNCTIONS
@@ -1198,21 +1217,29 @@ def add_F_Relations(searchExe, varRels):
 
   for ((j, acro, ji, acroi), feats) in tasks.items():
     for ((f, fF), (t, gF)) in feats:
-      newAcro = acro.replace('f', fF).replace('g', gF)
-      newAcroi = acroi.replace('f', fF).replace('g', gF)
+      acroFmt = acro.replace('f', '{f}').replace('g', '{g}')
+      acroiFmt = acroi.replace('f', '{f}').replace('g', '{g}')
+      newAcro = acroFmt.format(f=fF, g=gF)
+      newAcroi = acroiFmt.format(f=fF, g=gF)
       r = relations[j]
       ri = relations[ji]
       lr = len(relations)
+      spin = r['spin']
+      if isinstance(spin, types.FunctionType):
+        spin = spin(fF, gF)
+      spini = ri['spin']
+      if isinstance(spini, types.FunctionType):
+        spini = spini(fF, gF)
       relations.extend([
           dict(
               acro=newAcro,
-              spin=r['spin'](fF, gF),
+              spin=spin,
               func=r['func'](fF, gF),
               desc=r['desc'],
           ),
           dict(
               acro=newAcroi,
-              spin=ri['spin'](fF, gF),
+              spin=spini,
               func=ri['func'](fF, gF),
               desc=ri['desc'],
           ),

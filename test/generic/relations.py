@@ -64,6 +64,12 @@ relationKey = {
     ':0>': 'adjacentAfter0',
     ':1>': 'adjacentAfter1',
     ':2>': 'adjacentAfter2',
+    '.namesign=namepart.': 'featureEqualSP',
+    '.namesign=namesign.': 'featureEqualSS',
+    '.namesign#namesign.': 'featureUnequalSS',
+    '.namesign.': 'featureEqualSS',
+    '.number.': 'featureEqualN',
+    '.number#number.': 'featureUnEqualN',
 }
 
 # DEFINE THE PARAMETERS FOR EACH TEST
@@ -1098,6 +1104,40 @@ comparisons = {
         ('part', 'tome2n', 'part', 'time', True),
         ('part', 'time', 'part', 'tome2p', True),
         ('part', 'tome2p', 'part', 'time', False),
+    ),
+    '.namesign.': (
+        ('sign', 'a', 'sign', 'a', True),
+        ('sign', 'b', 'sign', 'a', False),
+        ('sign', 'b', 'sign', 'b', False),
+    ),
+    '.namesign=namesign.': (
+        ('sign', 'a', 'sign', 'a', True),
+        ('sign', 'b', 'sign', 'a', False),
+        ('sign', 'b', 'sign', 'b', False),
+    ),
+    '.namesign=namepart.': (
+        ('sign', 'a', 'part', 's1', True),
+        ('sign', 'b', 'part', 's1', False),
+        ('part', 's1', 'sign', 'a', False),
+    ),
+    '.number.': (
+        ('sign', 'a', 'part', 's1', True),
+        ('sign', 'a', 'sign', 'a', True),
+        ('sign', 'a', 'sign', 'b', False),
+        ('sign', 'b', 'part', 's1', False),
+        ('sign', 'b', 'part', 's2', True),
+    ),
+    '.namesign#namesign.': (
+        ('sign', 'a', 'sign', 'a', False),
+        ('sign', 'b', 'sign', 'a', True),
+        ('sign', 'b', 'sign', 'b', True),
+    ),
+    '.number#number.': (
+        ('sign', 'a', 'part', 's1', False),
+        ('sign', 'a', 'sign', 'a', False),
+        ('sign', 'a', 'sign', 'b', True),
+        ('sign', 'b', 'part', 's1', True),
+        ('sign', 'b', 'part', 's2', False),
     ),
 }
 

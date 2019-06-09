@@ -1,4 +1,5 @@
 import types
+import re
 
 from .relations import add_K_Relations, add_F_Relations, add_V_Relations
 from .syntax import reTp, kRe, deContext
@@ -308,21 +309,26 @@ def _validation(searchExe):
 
   # relations may have one or two node features f,g in them (feature-comparison)
   # make an entry in the relation map for each value of (f, g)
+  fPatOne = r'^\.([^=#<>]+)\.$'
+  fPatBoth = r'^\.([^=#<>]+)([=#<>])(.*)\.$'
+  fOneRe = re.compile(fPatOne)
+  fBothRe = re.compile(fPatBoth)
+
   addRels = {}
   for (e, (f, op, t)) in enumerate(searchExe.qedgesRaw):
     if type(op) is tuple:
         continue
-    if (op[0] != '.' or op[-1] != '.'):
-      continue
-    feats = op[1:-1].split('=', maxsplit=1)
-    if len(feats) == 1:
-      fF = feats[0]
-      opNameF = '.f.'
-      addRels.setdefault(opNameF, set()).add(((f, fF), (t, fF)))
-    else:
-      (fF, gF) = feats
-      opNameFG = '.f=g.'
+    match = fBothRe.findall(op)
+    if len(match):
+      (fF, r, gF) = match[0]
+      opNameFG = f'.f{r}g.'
       addRels.setdefault(opNameFG, set()).add(((f, fF), (t, gF)))
+    else:
+      match = fOneRe.findall(op)
+      if len(match):
+        opNameF = '.f.'
+        fF = match[0]
+        addRels.setdefault(opNameF, set()).add(((f, fF), (t, fF)))
   if not missingFeatures and not wrongValues:
     add_F_Relations(searchExe, addRels)
 
