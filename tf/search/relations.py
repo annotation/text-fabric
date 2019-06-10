@@ -1,6 +1,7 @@
 import collections
 from array import array
 import types
+import re
 from itertools import chain
 from functools import reduce
 
@@ -950,7 +951,80 @@ def basicRelations(searchExe, api):
     return zz
 
   def leftGisRightFR(g, f):
-    return leftFisRightGR(g, f)
+    return leftFisRightGR(f, g)
+
+  # MATCH FEATURE VALUES
+
+  def spinLeftFmatchRightG(f, rPat, rRe, g):
+
+    def zz(fTp, tTp):
+      fR = f'{f}~{rPat}'
+      gR = f'{g}~{rPat}'
+
+      if fR not in Sindex:
+        if f not in Sindex:
+          Sindex[f] = makeIndex(Fs(f).data)
+        indFR = {}
+        for (v, ns) in Sindex[f].items():
+          vR = rRe.sub('', v)
+          for n in ns:
+            indFR.setdefault(vR, set()).add(n)
+        Sindex[fR] = indFR
+      if gR not in Sindex:
+        if g not in Sindex:
+          Sindex[g] = makeIndex(Fs(g).data)
+        indGR = {}
+        for (v, ns) in Sindex[g].items():
+          vR = rRe.sub('', v)
+          for n in ns:
+            indGR.setdefault(vR, set()).add(n)
+        Sindex[gR] = indGR
+
+      indFR = Sindex[fR]
+      indGR = Sindex[gR]
+
+      commonValues = set(indFR) & set(indGR)
+
+      fNodes = reduce(
+          set.union,
+          (indFR[v] for v in commonValues),
+          set(),
+      )
+      gNodes = reduce(
+          set.union,
+          (indGR[v] for v in commonValues),
+          set(),
+      )
+
+      def doyarns(yF, yT):
+        return (yF & fNodes, yT & gNodes)
+
+      return doyarns
+
+    return zz
+
+  def spinLeftGmatchRightF(f, rPat, rRe, g):
+    return spinLeftFmatchRightG(g, rPat, rRe, f)
+
+  def leftFmatchRightGR(f, rPat, rRe, g):
+    gR = f'{g}~{rPat}'
+
+    def zz(fTp, tTp):
+
+      def uu(n):
+        nVal = Fs(f).v(n)
+        if nVal is None:
+          return set()
+        nVal = rRe.sub('', nVal)
+        return Sindex.get(gR, {}).get(nVal, set())
+      return uu
+
+    return zz
+
+  def leftGmatchRightFR(g, rPat, rRe, f):
+    return leftFmatchRightGR(f, rPat, rRe, g)
+
+  # UNEQUAL FEATURE VALUES
 
   def leftFunequalRightGR(f, g):
 
@@ -965,7 +1039,41 @@ def basicRelations(searchExe, api):
     return zz
 
   def leftGunequalRightFR(g, f):
-    return leftFunequalRightGR(g, f)
+    return leftFunequalRightGR(f, g)
+
+  # GREATER FEATURE VALUES
+
+  def leftFgreaterRightGR(f, g):
+
+    def zz(fTp, tTp):
+
+      def uu(n, m):
+        nVal = Fs(f).v(n)
+        mVal = Fs(g).v(m)
+        return nVal is not None and mVal is not None and nVal > mVal
+      return uu
+
+    return zz
+
+  def leftGlesserRightFR(g, f):
+    return leftFgreaterRightGR(f, g)
+
+  # LESSER FEATURE VALUES
+
+  def leftFlesserRightGR(f, g):
+
+    def zz(fTp, tTp):
+
+      def uu(n, m):
+        nVal = Fs(f).v(n)
+        mVal = Fs(g).v(m)
+        return nVal is not None and mVal is not None and nVal < mVal
+      return uu
+
+    return zz
+
+  def leftGgreaterRightFR(g, f):
+    return leftFlesserRightGR(f, g)
 
   # EDGES
 
@@ -1104,8 +1212,20 @@ def basicRelations(searchExe, api):
           ('.g=f.', spinLeftGisRightF, leftGisRightFR, None),
       ),
       (
+          ('.f~r~g.', spinLeftFmatchRightG, leftFmatchRightGR, 'left.f matches right.g'),
+          ('.g~r~f.', spinLeftGmatchRightF, leftGmatchRightFR, None),
+      ),
+      (
           ('.f#g.', 0.8, leftFunequalRightGR, 'left.f # right.g'),
           ('.g#f.', 0.8, leftGunequalRightFR, None),
+      ),
+      (
+          ('.f>g.', 0.4, leftFgreaterRightGR, 'left.f > right.g'),
+          ('.g<f.', 0.4, leftGlesserRightFR, None),
+      ),
+      (
+          ('.f<g.', 0.4, leftFlesserRightGR, 'left.f > right.g'),
+          ('.g>f.', 0.4, leftGgreaterRightFR, None),
       ),
   ]
 
@@ -1216,31 +1336,44 @@ def add_F_Relations(searchExe, varRels):
     tasks[(j, acro, ji, acroi)] |= feats
 
   for ((j, acro, ji, acroi), feats) in tasks.items():
-    for ((f, fF), (t, gF)) in feats:
-      acroFmt = acro.replace('f', '{f}').replace('g', '{g}')
-      acroiFmt = acroi.replace('f', '{f}').replace('g', '{g}')
-      newAcro = acroFmt.format(f=fF, g=gF)
-      newAcroi = acroiFmt.format(f=fF, g=gF)
+    for featInfo in feats:
+      if len(featInfo) == 2:
+        ((f, fF), (t, gF)) = featInfo
+        acroFmt = acro.replace('f', '{f}').replace('g', '{g}')
+        acroiFmt = acroi.replace('f', '{f}').replace('g', '{g}')
+        newAcro = acroFmt.format(f=fF, g=gF)
+        newAcroi = acroiFmt.format(f=fF, g=gF)
+        spinArgs = (fF, gF)
+        fArgs = spinArgs
+      else:
+        ((f, fF), rPat, (t, gF)) = featInfo
+        acroFmt = acro.replace('f', '{f}').replace('r', '{r}').replace('g', '{g}')
+        acroiFmt = acroi.replace('f', '{f}').replace('r', '{r}').replace('g', '{g}')
+        newAcro = acroFmt.format(f=fF, r=rPat, g=gF)
+        newAcroi = acroiFmt.format(f=fF, r=rPat, g=gF)
+        rRe = re.compile(rPat)
+        fArgs = (fF, rPat, rRe, gF)
+
       r = relations[j]
       ri = relations[ji]
       lr = len(relations)
       spin = r['spin']
       if isinstance(spin, types.FunctionType):
-        spin = spin(fF, gF)
+        spin = spin(*fArgs)
       spini = ri['spin']
       if isinstance(spini, types.FunctionType):
-        spini = spini(fF, gF)
+        spini = spini(*fArgs)
       relations.extend([
           dict(
               acro=newAcro,
               spin=spin,
-              func=r['func'](fF, gF),
+              func=r['func'](*fArgs),
               desc=r['desc'],
           ),
           dict(
               acro=newAcroi,
               spin=spini,
-              func=ri['func'](fF, gF),
+              func=ri['func'](*fArgs),
               desc=ri['desc'],
           ),
       ])

@@ -39,22 +39,70 @@ See the [issue list on GitHub]({{ghissues}})
 
 ### Queued for next release
 
+---
+
+# 7.8.1
+
+2019-06-10
+
+Main thing in this release: new relations in queries, based on feature comparison,
+as asked for by Oliver Glanz.
+For more info: see [#50]({{ghissues}}/50) 
+
+Key examples:
+
+```
+phrase
+  word
+  .nu. word
+```
+
+which gives the pairs of words in phrases that agree in `nu` (= grammatical number),
+provided both words are marked for number.
+
+```
+phrase
+  word
+  .nu#nu. word
+```
+
+which gives the pairs of words in phrases that **disagree** in `nu`,
+provided both words are marked for number.
+
+```
+phrase
+  word
+  .nu=prs_nu. word
+```
+
+which gives the pairs of words in phrases of which the number of the first word agrees
+with the number of the pronominal suffix of the second word,
+provided feature `nu` is present on the first word and feature `prs_nu` is present on the
+second word.
+
+These are only examples, the new relations work for any combination of node features.
+
+You can also test on `>` and `<` if the node features are integer valued.
+
+And for string valued features, you can also reduce the values before comparing by means
+of a regular expression, which specifies the parts of the value that will be stripped.
+
+See also the [docs](../Use/Search.md#relational-operators),
+jump to **Based on node features**.
+
 The working of `silent=True` has been fine-tuned (i.e. it is
 easier to silence TF in more cases.)
 There is also a `silent` parameter for the
 [walker conversion](../Create/Convert.md).
 
 The `info()` function always checks whether it should be silent or not.
-There is a new `warning()` function that is silent of `silent='deep'`.
+There is a new `warning()` function that is silent if `silent='deep'`.
 So you can use `warning()` to issue messages that you do not want to be silenced
-by `silence=True`.
-
-Feature comparison in queries, as asked for by Oliver Glanz.
-For more info: see [#50]({{ghissues}}/50) 
-
----
+by `silent=True`.
 
 # 7.8
+
+2019-05-30
 
 ## Compose
 

@@ -9,9 +9,17 @@ otype = {i: 'sign' for i in range(1, maxSlot + 1)}
 oslots = {}
 
 name = {i: chr(i + ord('a') - 1) for i in range(1, maxSlot + 1)}
-number = {i: i for i in range(1, maxSlot + 1)}
-nameS = {1: 'special'}
-nameP = {maxSlot + 1: 'special'}
+number = {i: i for i in range(1, int(round(maxSlot / 2)))}
+nameS = {
+    1: 'special',
+    2: 'ss-special-ss',
+    3: 'ss-peculiar-ss',
+}
+nameP = {
+    maxSlot + 1: 'special',
+    maxSlot + 2: 'pp-special-pp',
+    maxSlot + 3: 'pp-peculiar-pp',
+}
 
 p = 0
 
@@ -31,7 +39,8 @@ def addPart(nm, signs):
   otype[node] = 'part'
   oslots[node] = mySlots
   name[node] = nm
-  number[node] = p
+  if p < maxSlot:
+    number[node] = p
 
 
 # create singlet parts, doublets, triplets, etc
@@ -120,9 +129,6 @@ metaData = {
         'valueType': 'str',
     },
     'oslots': {
-        'valueType': 'str',
-    },
-    'sign': {
         'valueType': 'str',
     },
     'number': {

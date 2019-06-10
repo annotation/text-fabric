@@ -24,6 +24,7 @@ def semantics(searchExe):
     for (ln, eline) in searchExe.badSemantics:
       txt = eline if ln is None else f'line {ln + offset}: {eline}'
       error(txt, tm=False, cache=msgCache)
+      print(txt)
     return
 
   if searchExe.good:
@@ -197,7 +198,8 @@ def _grammar(searchExe):
 
 
 def _validateFeature(
-    searchExe, q, fName, features, missingFeatures, wrongValues, hasValues={}, asEdge=False
+    searchExe, q, fName, features, missingFeatures, wrongValues,
+    hasValues={}, asEdge=False,
 ):
   values = features[fName]
   fSet = 'edges' if asEdge else 'nodes'
@@ -275,7 +277,9 @@ def _validation(searchExe):
 
   missingFeatures = {}
   wrongValues = {}
+  wrongTypes = {}
   hasValues = {}
+
   for (q, qdata) in enumerate(qnodes):
     features = qdata[1]
     for fName in sorted(features):
@@ -311,24 +315,41 @@ def _validation(searchExe):
   # make an entry in the relation map for each value of (f, g)
   fPatOne = r'^\.([^=#<>]+)\.$'
   fPatBoth = r'^\.([^=#<>]+)([=#<>])(.*)\.$'
+  fPatMatch = r'^\.([^~]+)~(.*?)~([^~]+)\.$'
   fOneRe = re.compile(fPatOne)
   fBothRe = re.compile(fPatBoth)
+  fMatchRe = re.compile(fPatMatch)
 
   addRels = {}
   for (e, (f, op, t)) in enumerate(searchExe.qedgesRaw):
     if type(op) is tuple:
         continue
-    match = fBothRe.findall(op)
+    match = fMatchRe.findall(op)
     if len(match):
       (fF, r, gF) = match[0]
-      opNameFG = f'.f{r}g.'
-      addRels.setdefault(opNameFG, set()).add(((f, fF), (t, gF)))
+      opNameFG = f'.f~r~g.'
+      addRels.setdefault(opNameFG, set()).add(((f, fF), r, (t, gF)))
+      for fName in (fF, gF):
+        fType = searchExe.api.TF.features[fName].dataType
+        if fType != 'str':
+          wrongTypes.setdefault(fName, {}).setdefault(fType, set()).add(e)
     else:
-      match = fOneRe.findall(op)
+      match = fBothRe.findall(op)
       if len(match):
-        opNameF = '.f.'
-        fF = match[0]
-        addRels.setdefault(opNameF, set()).add(((f, fF), (t, fF)))
+        (fF, r, gF) = match[0]
+        opNameFG = f'.f{r}g.'
+        addRels.setdefault(opNameFG, set()).add(((f, fF), (t, gF)))
+        if r in {'<', '>'}:
+          for fName in (fF, gF):
+            fType = searchExe.api.TF.features[fName].dataType
+            if fType != 'int':
+              wrongTypes.setdefault(fName, {}).setdefault(fType, set()).add(e)
+      else:
+        match = fOneRe.findall(op)
+        if len(match):
+          opNameF = '.f.'
+          fF = match[0]
+          addRels.setdefault(opNameF, set()).add(((f, fF), (t, fF)))
   if not missingFeatures and not wrongValues:
     add_F_Relations(searchExe, addRels)
 
@@ -388,6 +409,18 @@ def _validation(searchExe):
       for (val, qs) in sorted(wrongs.items()):
         searchExe.badSemantics.append((
             None, '    "{}" is not a number: line(s) {}'.format(
+                val,
+                ', '.join(str(nodeLine[q] + offset) for q in qs),
+            )
+        ))
+    good = False
+
+  if len(wrongTypes):
+    for (fName, wrongs) in sorted(wrongTypes.items()):
+      searchExe.badSemantics.append((None, f'Feature "{fName}" has wrong type:'))
+      for (val, qs) in sorted(wrongs.items()):
+        searchExe.badSemantics.append((
+            None, '    "{}" is the wrong type: line(s) {}'.format(
                 val,
                 ', '.join(str(nodeLine[q] + offset) for q in qs),
             )

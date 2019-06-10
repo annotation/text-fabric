@@ -264,17 +264,19 @@ def estimateSpreads(searchExe, both=False):
           for n in triesn:
             thisSpread = 0
             yarnTl = len(yarnT)
-            if yarnTl < TRY_LIMIT_T:
-              triesm = yarnT
-            else:
-              triesm = set(list(yarnT)[randrange(yarnTl)] for m in range(TRY_LIMIT_T))
+            triesm = (
+                yarnT
+                if yarnTl < TRY_LIMIT_T else
+                set(list(yarnT)[randrange(yarnTl)] for m in range(TRY_LIMIT_T))
+            )
             if len(triesm) == 0:
               thisSpread = 0
             else:
               for m in triesm:
                 if r(n, m):
                   thisSpread += 1
-            totalSpread += yarnTl * thisSpread / len(triesm)
+              thisSpread = thisSpread / len(triesm)
+            totalSpread += yarnTl * thisSpread
         dest[e] = totalSpread / len(triesn)
   searchExe.spreads = spreads
   searchExe.spreadsC = spreadsC

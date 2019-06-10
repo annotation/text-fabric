@@ -457,6 +457,61 @@
     *   `:k:` left and right start and end at `k`-near slots
         ![op](../images/Spatial/Spatial.016.png)
 
+??? info "Based on node features"
+
+    Nodes can be compared on the basis of the features that they have.
+    For each pair of node features *f*, *g* there is a relation between nodes
+    that holds precisely when feature *f* of the first node has the same value as
+    feature *g* on the second node. This can be used in search templates.
+    Not only equality is covered, also inequality, comparison, and matching.
+
+    *   `.f.` and `.f=g.` feature equality:
+        the `f` value of the left node is equal to the `g` value of the right node.
+
+        `.f.` is an abbreviation for `.f=f.`.
+        ![op](../images/Spatial/Spatial.022.png)
+        
+        ???+ caution "None values"
+            If one or both of the nodes does not have a value, the result is `False`.
+
+            In particular, two nodes that have both `None` for a feature `f`, count as
+            having unequal values for `f`.
+    *   `.f#g.` feature inequality:
+        the `f` value of the left node is unequal to the `g` value of the right node.
+        ![op](../images/Spatial/Spatial.023.png)
+        
+        ???+ caution "None values"
+            If one or both of the nodes does not have a value, the result is `True`.
+
+            In particular, two nodes that have both `None` for a feature `f`, count as
+            having unequal values for `f`.
+    *   `.f<g.` and `.f>g.` feature less than and greater than:
+        the `f` value of the left node is less/greater than the `g` value of right node.
+        This is only legal if both `f` and `g` are integer valued features.
+        ![op](../images/Spatial/Spatial.024.png)
+        
+        ???+ caution "None values"
+            If one or both of the nodes does not have a value, the result is `False`.
+    *   `.f~regex~g.` Features match:
+        they are equal modulo the replacement of the parts that match the `regex`.
+        This is only legal if both `f` and `g` are string valued features.
+        ![op](../images/Spatial/Spatial.025.png)
+        
+        ??? example
+            If node `n` has feature `lex` with value `donkey_1`
+            and node `m` has feature `lex` with value `donkey_2`,
+            then the following holds:
+
+            ```
+            n .lex~_[0-9]*$~lex. m
+            ```
+
+            The values are stripped of their final `_1` and `_2` strings before they
+            are being compared, leaving the comparison `donkey` = `donkey`, which is True.
+
+        ???+ caution "None values"
+            If one or both of the nodes does not have a value, the result is `False`.
+
 ??? info "Based on edge features"
     Edge features are based on directed edges.
     An edge from `n` to `m` is not the same as an edge from `m` to `n`.
