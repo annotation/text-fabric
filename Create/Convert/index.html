@@ -1036,6 +1036,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../Code/StatsCompose/" title="Stats (TF-compose)" class="md-nav__link">
+      Stats (TF-compose)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../Code/StatsWriting/" title="Stats (TF-writing)" class="md-nav__link">
       Stats (TF-writing)
     </a>
@@ -1303,7 +1315,8 @@ to import from MQL and to export to MQL.</p>
 34
 35
 36
-37</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.fabric</span> <span class="kn">import</span> <span class="n">Fabric</span>
+37
+38</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.fabric</span> <span class="kn">import</span> <span class="n">Fabric</span>
 <span class="kn">from</span> <span class="nn">tf.convert.walker</span> <span class="kn">import</span> <span class="n">CV</span>
 
 <span class="n">TF</span> <span class="o">=</span> <span class="n">Fabric</span><span class="p">(</span><span class="n">locations</span><span class="o">=</span><span class="n">OUT_DIR</span><span class="p">)</span>
@@ -1335,7 +1348,8 @@ to import from MQL and to export to MQL.</p>
     <span class="n">intFeatures</span><span class="o">=</span><span class="n">intFeatures</span><span class="p">,</span>
     <span class="n">featureMeta</span><span class="o">=</span><span class="n">featureMeta</span><span class="p">,</span>
     <span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-    <span class="n">force</span><span class="o">=</span><span class="bp">False</span>
+    <span class="n">force</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">good</span><span class="p">:</span>
@@ -1385,6 +1399,8 @@ In fact, the rules are exactly the same as for <code>TF.save()</code>.</p>
 <p><code>warn=True</code> (default): stop after warnings (as if they are errors);</p>
 <p><code>warn=False</code> continue after warnings but do show them;</p>
 <p><code>warn=None</code> suppress all warnings.</p>
+</details>
+<details class="- info"><summary>silent=False</summary><p>By this you can suppress informational messages: <code>silent=True</code>.</p>
 </details>
 <details class="info" open="open"><summary>force=False</summary><p>This forces the process to continue after errors.
 Your TF set might not be valid.

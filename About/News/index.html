@@ -1065,6 +1065,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../Code/StatsCompose/" title="Stats (TF-compose)" class="md-nav__link">
+      Stats (TF-compose)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../Code/StatsWriting/" title="Stats (TF-writing)" class="md-nav__link">
       Stats (TF-writing)
     </a>
@@ -1333,9 +1345,61 @@ To get the newest unstable version:</p>
 </details>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
 <h3 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h3>
-<p>Nothing</p>
 <hr />
+<h1 id="781">7.8.1<a class="headerlink" href="#781" title="Permanent link">&para;</a></h1>
+<p>2019-06-10</p>
+<p>Main thing in this release: new relations in queries, based on feature comparison,
+as asked for by Oliver Glanz.
+For more info: see <a href="https://github.com/annotation/text-fabric/issues/50">#50</a> </p>
+<p>Key examples:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>phrase
+  word
+  .nu. word
+</pre></div>
+</td></tr></table>
+
+<p>which gives the pairs of words in phrases that agree in <code>nu</code> (= grammatical number),
+provided both words are marked for number.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>phrase
+  word
+  .nu#nu. word
+</pre></div>
+</td></tr></table>
+
+<p>which gives the pairs of words in phrases that <strong>disagree</strong> in <code>nu</code>,
+provided both words are marked for number.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>phrase
+  word
+  .nu=prs_nu. word
+</pre></div>
+</td></tr></table>
+
+<p>which gives the pairs of words in phrases of which the number of the first word agrees
+with the number of the pronominal suffix of the second word,
+provided feature <code>nu</code> is present on the first word and feature <code>prs_nu</code> is present on the
+second word.</p>
+<p>These are only examples, the new relations work for any combination of node features.</p>
+<p>You can also test on <code>&gt;</code> and <code>&lt;</code> if the node features are integer valued.</p>
+<p>And for string valued features, you can also reduce the values before comparing by means
+of a regular expression, which specifies the parts of the value that will be stripped.</p>
+<p>See also the <a href="../../Use/Search/#relational-operators">docs</a>,
+jump to <strong>Based on node features</strong>.</p>
+<p>The working of <code>silent=True</code> has been fine-tuned (i.e. it is
+easier to silence TF in more cases.)
+There is also a <code>silent</code> parameter for the
+<a href="../../Create/Convert/">walker conversion</a>.</p>
+<p>The <code>info()</code> function always checks whether it should be silent or not.
+There is a new <code>warning()</code> function that is silent if <code>silent='deep'</code>.
+So you can use <code>warning()</code> to issue messages that you do not want to be silenced
+by <code>silent=True</code>.</p>
 <h1 id="78">7.8<a class="headerlink" href="#78" title="Permanent link">&para;</a></h1>
+<p>2019-05-30</p>
 <h2 id="compose">Compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <p>The biggest addition is
 a new <code>tf.compose</code> package with operators to manipulate TF data sets:
@@ -1699,7 +1763,7 @@ Especially the code that the conversion writer has to produce is simplified.</p>
 <h2 id="74">7.4<a class="headerlink" href="#74" title="Permanent link">&para;</a></h2>
 <p>2019-01-25</p>
 <p>Easier conversion of data sources to TF: via an intermediate token stream.
-For more info: see <a href="https://github.com/annotation/text-fabric/issues/45">#38</a> </p>
+For more info: see <a href="https://github.com/annotation/text-fabric/issues/45">#45</a> </p>
 <h2 id="7314-15">7.3.14-15<a class="headerlink" href="#7314-15" title="Permanent link">&para;</a></h2>
 <p>2019-01-16</p>
 <p>Make sure it works.</p>

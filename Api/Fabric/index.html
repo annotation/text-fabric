@@ -1074,6 +1074,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../Code/StatsCompose/" title="Stats (TF-compose)" class="md-nav__link">
+      Stats (TF-compose)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../Code/StatsWriting/" title="Stats (TF-writing)" class="md-nav__link">
       Stats (TF-writing)
     </a>
@@ -1542,7 +1554,15 @@ It also shows the messages that have been suppressed due to <code>silent=True</c
 </details>
 </details>
 <h2 id="saving-features">Saving features<a class="headerlink" href="#saving-features" title="Permanent link">&para;</a></h2>
-<details class="abstract"><summary>TF.save()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nodeFeatures</span><span class="o">=</span><span class="p">{},</span> <span class="n">edgeFeatures</span><span class="o">=</span><span class="p">{},</span> <span class="n">metaData</span><span class="o">=</span><span class="p">{},</span> <span class="n">location</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<details class="abstract"><summary>TF.save()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">TF</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+    <span class="n">nodeFeatures</span><span class="o">=</span><span class="p">{},</span> <span class="n">edgeFeatures</span><span class="o">=</span><span class="p">{},</span> <span class="n">metaData</span><span class="o">=</span><span class="p">{},</span>
+    <span class="n">location</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">silent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
@@ -1593,6 +1613,9 @@ where <code>loc</code> is the last member of the <code>locations</code> paramete
 <p>If you pass <code>location=something</code>, TF will save in <code>something/mod</code>,
 where <code>mod</code> is the last meber of the <code>modules</code> parameter of TF.</p>
 <p>If you pass <code>location=path1</code> and <code>module=path2</code>, TF will save in <code>path1/path2</code>.</p>
+</details>
+<details class="note"><summary>silent</summary><p>TF is silent if you specified <code>silent=True</code> in a preceding <code>TF=Fabric()</code> call.
+But if you did not, you can also pass <code>silent=True</code> to this call.</p>
 </details>
 </details>
                 

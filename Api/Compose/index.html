@@ -1074,6 +1074,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../Code/StatsCompose/" title="Stats (TF-compose)" class="md-nav__link">
+      Stats (TF-compose)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../Code/StatsWriting/" title="Stats (TF-writing)" class="md-nav__link">
       Stats (TF-writing)
     </a>
@@ -1341,7 +1353,8 @@ in the Banks tutorial.</p>
  9
 10
 11
-12</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.compose</span> <span class="kn">import</span> <span class="n">add</span>
+12
+13</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">tf.compose</span> <span class="kn">import</span> <span class="n">add</span>
 <span class="n">modify</span><span class="p">(</span>
     <span class="n">location</span><span class="p">,</span>
     <span class="n">targetLocation</span><span class="p">,</span>
@@ -1352,6 +1365,7 @@ in the Banks tutorial.</p>
     <span class="n">deleteTypes</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
     <span class="n">addTypes</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
     <span class="n">featureMeta</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </td></tr></table>
@@ -1706,6 +1720,8 @@ Just specify them as keys and values to the <code>otext</code> feature.</p>
 parameter will be merged into existing meta data.</p>
 <p>If you want to remove a key from a feature, give it the value None.</p>
 </details>
+<details class="info"><summary>silent</summary><p>Suppress or enable informational messages.</p>
+</details>
 <h2 id="combine">Combine<a class="headerlink" href="#combine" title="Permanent link">&para;</a></h2>
 <details class="abstract" open="open"><summary>usage</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
@@ -1755,6 +1771,8 @@ You may pass as many component data sources as you want.</p>
 <p>The combination will be the union of all nodes of the components,
 rearranged according to their types, where node types with the
 same names will be merged.</p>
+<p>The slots of the result are the concatenation of the slots of the
+components, which must all have the same slot type.</p>
 <p>The node and edge features will be remapped, so that they have
 the same values in the combined data as they had in the individual
 components.</p>
@@ -1874,7 +1892,8 @@ that is already in one of the components.</p>
 10
 11
 12
-13</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">combine</span><span class="p">(</span>
+13
+14</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">combine</span><span class="p">(</span>
     <span class="p">(</span><span class="s1">&#39;banks&#39;</span><span class="p">,</span> <span class="s1">&#39;banks/tf/0.2&#39;</span><span class="p">),</span>
     <span class="p">(</span><span class="s1">&#39;river&#39;</span><span class="p">,</span> <span class="s1">&#39;banks/tf/0.4&#39;</span><span class="p">),</span>
     <span class="s1">&#39;riverbanks/tf/1.0&#39;</span><span class="p">,</span>
@@ -1886,6 +1905,7 @@ that is already in one of the components.</p>
             <span class="n">sectionFeatures</span><span class="o">=</span><span class="s1">&#39;title,number,number&#39;</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">),</span>
+    <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </td></tr></table>
@@ -1951,6 +1971,8 @@ that is already in one of the components.</p>
 </td></tr></table>
 
 </details>
+</details>
+<details class="info"><summary>silent</summary><p>Suppress or enable informational messages.</p>
 </details>
                 
                   

@@ -1081,6 +1081,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../Code/StatsCompose/" title="Stats (TF-compose)" class="md-nav__link">
+      Stats (TF-compose)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../Code/StatsWriting/" title="Stats (TF-writing)" class="md-nav__link">
       Stats (TF-writing)
     </a>
@@ -1345,13 +1357,57 @@ library.</p>
 <h2 id="messaging">Messaging<a class="headerlink" href="#messaging" title="Permanent link">&para;</a></h2>
 <details class="info"><summary>Timed messages</summary><p>Error and informational messages can be issued, with a time indication.</p>
 </details>
-<details class="abstract"><summary>info(), error()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">tm</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">nl</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<details class="abstract"><summary>silentOn(), silentOff(), isSilent(), setSilent()</summary><p>Suppress or enable <em>informational</em> messages, i.e. messages
+issued through <code>info()</code> below.</p>
+<p>This is no influence on <em>error</em> messages, i.e. messages
+issued through <code>error()</code> below.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">silentOn</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Suppress informational messages.
+If <code>deep=True</code> also suppresses warnings.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">silentOff</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+
+<p>Enable informational messages.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">setSilent</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>e.g.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>setSilent(False)
+setSilent(True)
+setSilent(&#39;deep&#39;)
+</pre></div>
+</td></tr></table>
+
+<p>Enable or suppress informational/warning messages dependent on <code>flag</code>.</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">isSilent</span><span class="p">()</span>
+</pre></div>
+</td></tr></table>
+
+<p>Whether informational messages are currently suppressed or not.</p>
+</details>
+<details class="abstract"><summary>info(), warning(), error()</summary><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">tm</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">nl</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">tm</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">nl</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">tm</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">nl</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </td></tr></table>
 
 <details class="info" open="open"><summary>Description</summary><p>Sends a message to standard output, possibly with time and newline.</p>
 <ul>
-<li>if <code>info()</code> is being used, the message is sent to <code>stdout</code>;</li>
+<li>if <code>info()</code> is being used, the message is suppressed
+    if the silent mode is currently on;</li>
+<li>if the silent mode is not <code>True</code> but <code>'deep'</code>, <code>warnings()</code>
+    will also be suppressed;</li>
+<li><code>error()</code> messages always come through;</li>
+<li>if <code>info()</code> or warning is being used, the message is sent to <code>stdout</code>;</li>
 <li>if <code>error()</code> is being used, the message is sent to <code>stderr</code>;</li>
 </ul>
 <p>In a Jupyter notebook, the standard error is displayed with

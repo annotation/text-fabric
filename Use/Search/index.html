@@ -1092,6 +1092,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../Code/StatsCompose/" title="Stats (TF-compose)" class="md-nav__link">
+      Stats (TF-compose)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../Code/StatsWriting/" title="Stats (TF-writing)" class="md-nav__link">
       Stats (TF-writing)
     </a>
@@ -1880,6 +1892,59 @@ that. Instead of typing the letter <code>k</code>, provide the actual number you
     <img alt="op" src="../../images/Spatial/Spatial.015.png" /></li>
 <li><code>:k:</code> left and right start and end at <code>k</code>-near slots
     <img alt="op" src="../../images/Spatial/Spatial.016.png" /></li>
+</ul>
+</details>
+<details class="info"><summary>Based on node features</summary><p>Nodes can be compared on the basis of the features that they have.
+For each pair of node features <em>f</em>, <em>g</em> there is a relation between nodes
+that holds precisely when feature <em>f</em> of the first node has the same value as
+feature <em>g</em> on the second node. This can be used in search templates.
+Not only equality is covered, also inequality, comparison, and matching.</p>
+<ul>
+<li>
+<p><code>.f.</code> and <code>.f=g.</code> feature equality:
+    the <code>f</code> value of the left node is equal to the <code>g</code> value of the right node.</p>
+<p><code>.f.</code> is an abbreviation for <code>.f=f.</code>.
+<img alt="op" src="../../images/Spatial/Spatial.022.png" /></p>
+<details class="caution" open="open"><summary>None values</summary><p>If one or both of the nodes does not have a value, the result is <code>False</code>.</p>
+<p>In particular, two nodes that have both <code>None</code> for a feature <code>f</code>, count as
+having unequal values for <code>f</code>.</p>
+</details>
+<ul>
+<li><code>.f#g.</code> feature inequality:
+the <code>f</code> value of the left node is unequal to the <code>g</code> value of the right node.
+<img alt="op" src="../../images/Spatial/Spatial.023.png" /></li>
+</ul>
+<details class="caution" open="open"><summary>None values</summary><p>If one or both of the nodes does not have a value, the result is <code>True</code>.</p>
+<p>In particular, two nodes that have both <code>None</code> for a feature <code>f</code>, count as
+having unequal values for <code>f</code>.</p>
+</details>
+<ul>
+<li><code>.f&lt;g.</code> and <code>.f&gt;g.</code> feature less than and greater than:
+the <code>f</code> value of the left node is less/greater than the <code>g</code> value of right node.
+This is only legal if both <code>f</code> and <code>g</code> are integer valued features.
+<img alt="op" src="../../images/Spatial/Spatial.024.png" /></li>
+</ul>
+<details class="caution" open="open"><summary>None values</summary><p>If one or both of the nodes does not have a value, the result is <code>False</code>.</p>
+</details>
+<ul>
+<li><code>.f~regex~g.</code> Features match:
+they are equal modulo the replacement of the parts that match the <code>regex</code>.
+This is only legal if both <code>f</code> and <code>g</code> are string valued features.
+<img alt="op" src="../../images/Spatial/Spatial.025.png" /></li>
+</ul>
+<details class="example"><summary>Example</summary><p>If node <code>n</code> has feature <code>lex</code> with value <code>donkey_1</code>
+and node <code>m</code> has feature <code>lex</code> with value <code>donkey_2</code>,
+then the following holds:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>n .lex~_[0-9]*$~lex. m
+</pre></div>
+</td></tr></table>
+
+<p>The values are stripped of their final <code>_1</code> and <code>_2</code> strings before they
+are being compared, leaving the comparison <code>donkey</code> = <code>donkey</code>, which is True.</p>
+</details>
+<details class="caution" open="open"><summary>None values</summary><p>If one or both of the nodes does not have a value, the result is <code>False</code>.</p>
+</details>
+</li>
 </ul>
 </details>
 <details class="info"><summary>Based on edge features</summary><p>Edge features are based on directed edges.
