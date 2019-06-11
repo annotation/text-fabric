@@ -1,0 +1,7 @@
+clause
+  phrase function=Pred
+    w1:word pdp=verb
+  phrase function=Subj
+    =: w2:word pdp=subs
+    :=
+w1 .nu#nu. w2

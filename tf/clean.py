@@ -30,7 +30,7 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
   else:
     for root in ROOTS:
       if root == TFD and not tfd or root == GH and not gh:
-        print(f'skipped {root}')
+        sys.stdout.write(f'skipped {root}\n')
         continue
       bases.append(os.path.expanduser(f'~/{root}'))
 
@@ -62,6 +62,6 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
             rmtree(d)
             err('done\n')
   if dry:
-    print('')
+    sys.stdout.write('\n')
     sys.stderr.write('This was a dry run\n')
     sys.stderr.write('Say clean(dry=False) to perform the cleaning\n')

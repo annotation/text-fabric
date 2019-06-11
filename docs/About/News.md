@@ -41,6 +41,14 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
+# 7.8.2
+
+2019-06-11
+
+The performance of the new feature comparison relations turned out to be bad.
+They have been greatly improved. Now they are workable.
+But it is possible that new cases will turn up with a bad performance.
+
 # 7.8.1
 
 2019-06-10

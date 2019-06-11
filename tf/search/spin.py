@@ -250,6 +250,7 @@ def estimateSpreads(searchExe, both=False):
         triesn = yarnF
       else:
         triesn = set(yarnF[randrange(yarnFl)] for n in range(TRY_LIMIT_F))
+
       if len(triesn) == 0:
         dest[e] = 0
       else:
@@ -259,19 +260,21 @@ def estimateSpreads(searchExe, both=False):
         if nparams == 1:
           for n in triesn:
             mFromN = set(r(n)) & yarnT
+            mFromN = {m for m in r(n) if m in yarnT}
             totalSpread += len(mFromN)
         else:
+          yarnTl = len(yarnT)
+          yarnTL = list(yarnT)
           for n in triesn:
-            thisSpread = 0
-            yarnTl = len(yarnT)
             triesm = (
                 yarnT
                 if yarnTl < TRY_LIMIT_T else
-                set(list(yarnT)[randrange(yarnTl)] for m in range(TRY_LIMIT_T))
+                set(yarnTL[randrange(yarnTl)] for m in range(TRY_LIMIT_T))
             )
             if len(triesm) == 0:
               thisSpread = 0
             else:
+              thisSpread = 0
               for m in triesm:
                 if r(n, m):
                   thisSpread += 1
@@ -362,10 +365,12 @@ def _spinEdge(searchExe, e):
   # condition for skipping: spread times length from-yarn >= SPIN_LIMIT
   yarnFl = len(yarnF)
   yarnTl = len(yarnT)
-  if (
-      yarnFl and yarnTl and spreads[e] and
-      max((yarnFl / yarnTl, yarnTl / yarnFl)) / spreads[e] < YARN_RATIO
-  ):
+  thisYarnRatio = (
+      max((yarnFl / yarnTl, yarnTl / yarnFl)) / spreads[e]
+      if yarnFl and yarnTl and spreads[e] else
+      - YARN_RATIO
+  )
+  if thisYarnRatio < YARN_RATIO:
     return False
   # if spreads[e] * len(yarnF) >= SPIN_LIMIT:
   #   return False
@@ -387,20 +392,6 @@ def _spinEdge(searchExe, e):
 
     if nparams == 1:
       for n in yarnF:
-        mFromN = set(r(n)) & yarnT
-        if len(mFromN):
-          newYarnT |= mFromN
-          newYarnF.add(n)
-    else:
-      for n in yarnF:
-        mFromN = set(m for m in yarnT if r(n, m))
-        if len(mFromN):
-          newYarnT |= mFromN
-          newYarnF.add(n)
-
-    '''
-    if nparams == 1:
-      for n in yarnF:
         found = False
         for m in r(n):
           if m not in yarnT:
@@ -418,7 +409,6 @@ def _spinEdge(searchExe, e):
             found = True
         if found:
           newYarnF.add(n)
-    '''
 
   affectedF = len(newYarnF) != len(yarns[f])
   affectedT = len(newYarnT) != len(yarns[t])

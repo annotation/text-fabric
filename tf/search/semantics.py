@@ -24,7 +24,6 @@ def semantics(searchExe):
     for (ln, eline) in searchExe.badSemantics:
       txt = eline if ln is None else f'line {ln + offset}: {eline}'
       error(txt, tm=False, cache=msgCache)
-      print(txt)
     return
 
   if searchExe.good:

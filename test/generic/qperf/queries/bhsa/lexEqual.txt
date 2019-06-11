@@ -1,0 +1,5 @@
+phrase
+  =: w1:word
+  <: w2:word
+  
+w1 .lex. w2

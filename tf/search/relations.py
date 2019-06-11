@@ -3,7 +3,6 @@ from array import array
 import types
 import re
 from itertools import chain
-from functools import reduce
 
 from ..core.data import WARP
 from ..core.helpers import makeIndex
@@ -17,8 +16,6 @@ def basicRelations(searchExe, api):
   F = api.F
   Fs = api.Fs
   E = api.E
-  info = api.info
-  msgCache = searchExe.msgCache
   Crank = C.rank.data
   ClevDown = C.levDown.data
   ClevUp = C.levUp.data
@@ -98,11 +95,7 @@ def basicRelations(searchExe, api):
           if len(ss) == 1:
             sindex.setdefault(ss[0], set()).add(m)
         nyS = yS & set(sindex.keys())
-        ny2 = reduce(
-            set.union,
-            (sindex[s] for s in nyS),
-            set(),
-        )
+        ny2 = set(chain.from_iterable(sindex[s] for s in nyS))
         return (nyS, ny2)
 
       if isSlotF:
@@ -128,16 +121,8 @@ def basicRelations(searchExe, api):
           s = frozenset(Eoslots[m - maxSlot - 1] if m > maxSlot else (m, ))
           sindexT.setdefault(s, set()).add(m)
         nyS = set(sindexF.keys()) & set(sindexT.keys())
-        nyF = reduce(
-            set.union,
-            (sindexF[s] for s in nyS),
-            set(),
-        )
-        nyT = reduce(
-            set.union,
-            (sindexT[s] for s in nyS),
-            set(),
-        )
+        nyF = set(chain.from_iterable(sindexF[s] for s in nyS))
+        nyT = set(chain.from_iterable(sindexT[s] for s in nyS))
         return (nyF, nyT)
 
       return doyarns
@@ -181,11 +166,7 @@ def basicRelations(searchExe, api):
           for s in Eoslots[m - maxSlot - 1] if m > maxSlot else (m, ):
             sindex.setdefault(s, set()).add(m)
         nyS = yS & set(sindex.keys())
-        ny2 = reduce(
-            set.union,
-            (sindex[s] for s in nyS),
-            set(),
-        )
+        ny2 = set(chain.from_iterable(sindex[s] for s in nyS))
         return (nyS, ny2)
 
       if isSlotF:
@@ -221,18 +202,8 @@ def basicRelations(searchExe, api):
           # spinning is not worth it
           return (yF, yT)
 
-        info(f'1. reducing over {len(nyS)} elements', cache=msgCache)
-        nyF = reduce(
-            set.union,
-            (sindexF[s] for s in nyS),
-            set(),
-        )
-        info(f'2. reducing over {len(nyS)} elements', cache=msgCache)
-        nyT = reduce(
-            set.union,
-            (sindexT[s] for s in nyS),
-            set(),
-        )
+        nyF = set(chain.from_iterable(sindexF[s] for s in nyS))
+        nyT = set(chain.from_iterable(sindexT[s] for s in nyS))
         return (nyF, nyT)
 
       return doyarns
@@ -268,10 +239,8 @@ def basicRelations(searchExe, api):
     else:
       def xx(n):
         nSlots = Eoslots[n - maxSlot - 1] if n > maxSlot else (n,)
-        return tuple(nSlots) + tuple(reduce(
-            set.union,
-            (set(ClevUp[s - 1]) for s in nSlots),
-            set(),
+        return tuple(nSlots) + tuple(chain.from_iterable(
+            set(ClevUp[s - 1]) for s in nSlots
         ))
       return xx
 
@@ -495,21 +464,19 @@ def basicRelations(searchExe, api):
           def xx(n):
             near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
             return tuple(
-                reduce(
-                    set.union,
-                    (set(chain(CfirstSlots[l - 1], (l, ))) for l in near),
-                    set(),
+                chain.from_iterable(
+                    set(chain(CfirstSlots[l - 1], (l, ))) for l in near
                 )
             )
         else:
 
           def xx(n):
             near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
-            return tuple(reduce(
-                set.union,
-                (set(CfirstSlots[l - 1]) for l in near),
-                set(),
-            ))
+            return tuple(
+                chain.from_iterable(
+                    set(CfirstSlots[l - 1]) for l in near
+                )
+            )
 
         return xx
       elif isSlotT:
@@ -527,10 +494,8 @@ def basicRelations(searchExe, api):
             fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
             near = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k)) + 1))
             return tuple(
-                reduce(
-                    set.union,
-                    (set(chain(CfirstSlots[l - 1], (l, ))) for l in near),
-                    set(),
+                chain.from_iterable(
+                    set(chain(CfirstSlots[l - 1], (l, ))) for l in near
                 )
             )
 
@@ -539,11 +504,11 @@ def basicRelations(searchExe, api):
           def xx(n):
             fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
             near = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k)) + 1))
-            return tuple(reduce(
-                set.union,
-                (set(CfirstSlots[l - 1]) for l in near),
-                set(),
-            ))
+            return tuple(
+                chain.from_iterable(
+                    set(CfirstSlots[l - 1]) for l in near
+                )
+            )
 
         return xx
 
@@ -564,10 +529,8 @@ def basicRelations(searchExe, api):
           def xx(n):
             near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
             return tuple(
-                reduce(
-                    set.union,
-                    (set(chain(ClastSlots[l - 1], (l, ))) for l in near),
-                    set(),
+                chain.from_iterable(
+                    set(chain(ClastSlots[l - 1], (l, ))) for l in near
                 )
             )
 
@@ -575,11 +538,11 @@ def basicRelations(searchExe, api):
 
           def xx(n):
             near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
-            return tuple(reduce(
-                set.union,
-                (set(ClastSlots[l - 1]) for l in near),
-                set(),
-            ))
+            return tuple(
+                chain.from_iterable(
+                    (set(ClastSlots[l - 1]) for l in near)
+                )
+            )
 
         return xx
       elif isSlotT:
@@ -596,10 +559,8 @@ def basicRelations(searchExe, api):
             ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
             near = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k)) + 1))
             return tuple(
-                reduce(
-                    set.union,
-                    (set(chain(ClastSlots[l - 1], (l, ))) for l in near),
-                    set(),
+                chain.from_iterable(
+                    (set(chain(ClastSlots[l - 1], (l, ))) for l in near)
                 )
             )
 
@@ -608,11 +569,11 @@ def basicRelations(searchExe, api):
           def xx(n):
             ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
             near = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k)) + 1))
-            return tuple(reduce(
-                set.union,
-                (set(ClastSlots[l - 1]) for l in near),
-                set(),
-            ))
+            return tuple(
+                chain.from_iterable(
+                    (set(ClastSlots[l - 1]) for l in near)
+                )
+            )
 
         return xx
 
@@ -632,32 +593,32 @@ def basicRelations(searchExe, api):
 
           def xx(n):
             near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
-            fok = set(reduce(
-                set.union,
-                (set(chain(CfirstSlots[l - 1], (l, ))) for l in near),
-                set(),
-            ))
-            lok = set(reduce(
-                set.union,
-                (set(chain(ClastSlots[l - 1], (l, ))) for l in near),
-                set(),
-            ))
+            fok = set(
+                chain.from_iterable(
+                    (set(chain(CfirstSlots[l - 1], (l, ))) for l in near)
+                )
+            )
+            lok = set(
+                chain.from_iterable(
+                    (set(chain(ClastSlots[l - 1], (l, ))) for l in near)
+                )
+            )
             return tuple(fok & lok)
 
         else:
 
           def xx(n):
             near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
-            fok = set(reduce(
-                set.union,
-                (set(CfirstSlots[l - 1]) for l in near),
-                set(),
-            ))
-            lok = set(reduce(
-                set.union,
-                (set(ClastSlots[l - 1]) for l in near),
-                set(),
-            ))
+            fok = set(
+                chain.from_iterable(
+                    (set(CfirstSlots[l - 1]) for l in near)
+                )
+            )
+            lok = set(
+                chain.from_iterable(
+                    (set(ClastSlots[l - 1]) for l in near)
+                )
+            )
             return tuple(fok & lok)
 
         return xx
@@ -680,16 +641,16 @@ def basicRelations(searchExe, api):
             ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
             nearf = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k)) + 1))
             nearl = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k)) + 1))
-            fok = set(reduce(
-                set.union,
-                (set(chain(CfirstSlots[l - 1], (l, ))) for l in nearf),
-                set(),
-            ))
-            lok = set(reduce(
-                set.union,
-                (set(chain(ClastSlots[l - 1], (l, ))) for l in nearl),
-                set(),
-            ))
+            fok = set(
+                chain.from_iterable(
+                    (set(chain(CfirstSlots[l - 1], (l, ))) for l in nearf)
+                )
+            )
+            lok = set(
+                chain.from_iterable(
+                    (set(chain(ClastSlots[l - 1], (l, ))) for l in nearl)
+                )
+            )
             return tuple(fok & lok)
 
         else:
@@ -699,16 +660,16 @@ def basicRelations(searchExe, api):
             ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
             nearf = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k)) + 1))
             nearl = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k)) + 1))
-            fok = set(reduce(
-                set.union,
-                (set(CfirstSlots[l - 1]) for l in nearf),
-                set(),
-            ))
-            lok = set(reduce(
-                set.union,
-                (set(ClastSlots[l - 1]) for l in nearl),
-                set(),
-            ))
+            fok = set(
+                chain.from_iterable(
+                    (set(CfirstSlots[l - 1]) for l in nearf)
+                )
+            )
+            lok = set(
+                chain.from_iterable(
+                    (set(ClastSlots[l - 1]) for l in nearl)
+                )
+            )
             return tuple(fok & lok)
 
         return xx
@@ -825,10 +786,8 @@ def basicRelations(searchExe, api):
                                    min((maxSlot, myNext + k)) + 1)
             )
             nextSet = set(
-                reduce(
-                    set.union,
-                    (set(CfirstSlots[ls - 1]) for ls in myNextNear),
-                    set(),
+                chain.from_iterable(
+                    (set(CfirstSlots[ls - 1]) for ls in myNextNear)
                 )
             )
             return tuple(nextSet) + myNextNear
@@ -842,10 +801,8 @@ def basicRelations(searchExe, api):
                                    min((maxSlot, myNext + k)) + 1)
             )
             nextSet = set(
-                reduce(
-                    set.union,
-                    (set(CfirstSlots[ls - 1]) for ls in myNextNear),
-                    set(),
+                chain.from_iterable(
+                    (set(CfirstSlots[ls - 1]) for ls in myNextNear)
                 )
             )
             return tuple(nextSet)
@@ -882,11 +839,11 @@ def basicRelations(searchExe, api):
                 l for l in range(max((1, myPrev - k)),
                                  min((maxSlot, myPrev + k)) + 1)
             )
-            prevSet = set(reduce(
-                set.union,
-                (set(ClastSlots[l - 1]) for l in myPrevNear),
-                set(),
-            ))
+            prevSet = set(
+                chain.from_iterable(
+                    (set(ClastSlots[l - 1]) for l in myPrevNear)
+                )
+            )
             return tuple(prevSet) + myPrevNear
 
         else:
@@ -897,11 +854,11 @@ def basicRelations(searchExe, api):
                 l for l in range(max((1, myPrev - k)),
                                  min((maxSlot, myPrev + k)) + 1)
             )
-            prevSet = set(reduce(
-                set.union,
-                (set(ClastSlots[l - 1]) for l in myPrevNear),
-                set(),
-            ))
+            prevSet = set(
+                chain.from_iterable(
+                    (set(ClastSlots[l - 1]) for l in myPrevNear)
+                )
+            )
             return tuple(prevSet)
 
         return xx
@@ -915,25 +872,17 @@ def basicRelations(searchExe, api):
     def zz(fTp, tTp):
       if f not in Sindex:
         Sindex[f] = makeIndex(Fs(f).data)
-      if g not in Sindex:
-        Sindex[g] = makeIndex(Fs(g).data)
+      if f != g:
+        if g not in Sindex:
+          Sindex[g] = makeIndex(Fs(g).data)
       indF = Sindex[f]
       indG = Sindex[g]
-      commonValues = set(indF) & set(indG)
-
-      fNodes = reduce(
-          set.union,
-          (indF[v] for v in commonValues),
-          set(),
-      )
-      gNodes = reduce(
-          set.union,
-          (indG[v] for v in commonValues),
-          set(),
-      )
+      commonValues = set(indF) if f == g else set(indF) & set(indG)
 
       def doyarns(yF, yT):
-        return (yF & fNodes, yT & gNodes)
+        fNodes = {n for n in chain.from_iterable(indF[v] for v in commonValues) if n in yF}
+        gNodes = {n for n in chain.from_iterable(indG[v] for v in commonValues) if n in yT}
+        return (fNodes, gNodes)
 
       return doyarns
 
@@ -944,9 +893,19 @@ def basicRelations(searchExe, api):
 
   def leftFisRightGR(f, g):
 
-    def zz(fTp, tTp):
+    def zz2(fTp, tTp):
+      fData = Fs(f).v
+      indG = Sindex.get(g, {})
+      return lambda n: indG.get(fData(n), set())
 
-      return lambda n: Sindex.get(g, {}).get(Fs(f).v(n), set())
+    def zz(fTp, tTp):
+      fData = Fs(f).v
+      gData = Fs(g).v
+
+      def uu(n, m):
+        nVal = fData(n)
+        return False if nVal is None else nVal == gData(m)
+      return uu
 
     return zz
 
@@ -985,19 +944,10 @@ def basicRelations(searchExe, api):
 
       commonValues = set(indFR) & set(indGR)
 
-      fNodes = reduce(
-          set.union,
-          (indFR[v] for v in commonValues),
-          set(),
-      )
-      gNodes = reduce(
-          set.union,
-          (indGR[v] for v in commonValues),
-          set(),
-      )
-
       def doyarns(yF, yT):
-        return (yF & fNodes, yT & gNodes)
+        fNodes = {n for n in chain.from_iterable(indFR[v] for v in commonValues) if n in yF}
+        gNodes = {n for n in chain.from_iterable(indGR[v] for v in commonValues) if n in yT}
+        return (fNodes, gNodes)
 
       return doyarns
 
@@ -1009,7 +959,7 @@ def basicRelations(searchExe, api):
   def leftFmatchRightGR(f, rPat, rRe, g):
     gR = f'{g}~{rPat}'
 
-    def zz(fTp, tTp):
+    def zz2(fTp, tTp):
 
       def uu(n):
         nVal = Fs(f).v(n)
@@ -1017,6 +967,22 @@ def basicRelations(searchExe, api):
           return set()
         nVal = rRe.sub('', nVal)
         return Sindex.get(gR, {}).get(nVal, set())
+      return uu
+
+    def zz(fTp, tTp):
+      fData = Fs(f).v
+      gData = Fs(g).v
+
+      def uu(n, m):
+        nVal = fData(n)
+        if nVal is None:
+          return False
+        nVal = rRe.sub('', nVal)
+        mVal = gData(m)
+        if mVal is None:
+          return False
+        mVal = rRe.sub('', mVal)
+        return nVal == mVal
       return uu
 
     return zz
@@ -1029,10 +995,12 @@ def basicRelations(searchExe, api):
   def leftFunequalRightGR(f, g):
 
     def zz(fTp, tTp):
+      fData = Fs(f).v
+      gData = Fs(g).v
 
       def uu(n, m):
-        nVal = Fs(f).v(n)
-        mVal = Fs(g).v(m)
+        nVal = fData(n)
+        mVal = gData(m)
         return nVal is None and mVal is None or nVal != mVal
       return uu
 
@@ -1046,10 +1014,12 @@ def basicRelations(searchExe, api):
   def leftFgreaterRightGR(f, g):
 
     def zz(fTp, tTp):
+      fData = Fs(f).v
+      gData = Fs(g).v
 
       def uu(n, m):
-        nVal = Fs(f).v(n)
-        mVal = Fs(g).v(m)
+        nVal = fData(n)
+        mVal = gData(m)
         return nVal is not None and mVal is not None and nVal > mVal
       return uu
 
@@ -1063,10 +1033,12 @@ def basicRelations(searchExe, api):
   def leftFlesserRightGR(f, g):
 
     def zz(fTp, tTp):
+      fData = Fs(f).v
+      gData = Fs(g).v
 
       def uu(n, m):
-        nVal = Fs(f).v(n)
-        mVal = Fs(g).v(m)
+        nVal = fData(n)
+        mVal = gData(m)
         return nVal is not None and mVal is not None and nVal < mVal
       return uu
 
@@ -1343,8 +1315,7 @@ def add_F_Relations(searchExe, varRels):
         acroiFmt = acroi.replace('f', '{f}').replace('g', '{g}')
         newAcro = acroFmt.format(f=fF, g=gF)
         newAcroi = acroiFmt.format(f=fF, g=gF)
-        spinArgs = (fF, gF)
-        fArgs = spinArgs
+        fArgs = (fF, gF)
       else:
         ((f, fF), rPat, (t, gF)) = featInfo
         acroFmt = acro.replace('f', '{f}').replace('r', '{r}').replace('g', '{g}')
@@ -1363,17 +1334,19 @@ def add_F_Relations(searchExe, varRels):
       spini = ri['spin']
       if isinstance(spini, types.FunctionType):
         spini = spini(*fArgs)
+      func = r['func'](*fArgs)
+      funci = ri['func'](*fArgs)
       relations.extend([
           dict(
               acro=newAcro,
               spin=spin,
-              func=r['func'](*fArgs),
+              func=func,
               desc=r['desc'],
           ),
           dict(
               acro=newAcroi,
               spin=spini,
-              func=ri['func'](*fArgs),
+              func=funci,
               desc=ri['desc'],
           ),
       ])

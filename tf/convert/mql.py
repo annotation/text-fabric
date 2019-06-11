@@ -1,6 +1,6 @@
 import os
 import re
-from functools import reduce
+from itertools import chain
 from ..core.data import WARP
 from ..core.helpers import (
     cleanName,
@@ -155,10 +155,8 @@ GO
       self.tm.info(f'Written {len(self.enums)} enumerations')
 
   def _writeEnumsAsOne(self):
-    fValues = reduce(
-        set.union,
-        (set(fV) for fV in self.enums.values()),
-        set(),
+    fValues = chain.from_iterable(
+        (set(fV) for fV in self.enums.values())
     )
     if len(fValues):
       self.tm.info(f'Writing an all-in-one enum with {len(fValues):>4} values')

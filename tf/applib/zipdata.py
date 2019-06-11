@@ -157,7 +157,7 @@ def main(cargs=sys.argv):
       relative.endswith('tf') or
       '/tf/' in relative
   )
-  print(tf)
+  sys.stdout.write(f'{tf}\n')
 
   zipData(org, repo, relative=relative, tf=tf)
 
