@@ -541,16 +541,21 @@ def _stitchResults(searchExe):
       sN = stitch[f]
       sM = stitch[t]
       if sM is not None:
-        if nparams == 1:
-          if sM in set(r(sN)):  # & yarnT:
-            for s in stitchOn(e + 1):
-              yield s
-        else:
-          if r(sN, sM):
-            for s in stitchOn(e + 1):
-              yield s
+        stitchFurther = (
+            sM in r(sN)
+            if nparams == 1 else
+            r(sN, sM)
+        )
+        if stitchFurther:
+          # if sM in set(r(sN)):
+          for s in stitchOn(e + 1):
+            yield s
         return
-      mFromN = tuple(set(r(sN)) & yarnT) if nparams == 1 else tuple(m for m in yarnT if r(sN, m))
+      mFromN = (
+          (m for m in r(sN) if m in yarnT)
+          if nparams == 1 else
+          (m for m in yarnT if r(sN, m))
+      )
       for m in mFromN:
         stitch[t] = m
         for s in stitchOn(e + 1):

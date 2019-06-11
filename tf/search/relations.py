@@ -870,6 +870,7 @@ def basicRelations(searchExe, api):
   def spinLeftFisRightG(f, g):
 
     def zz(fTp, tTp):
+      print('ZZZ', 'spinning')
       if f not in Sindex:
         Sindex[f] = makeIndex(Fs(f).data)
       if f != g:
@@ -892,11 +893,6 @@ def basicRelations(searchExe, api):
     return spinLeftFisRightG(g, f)
 
   def leftFisRightGR(f, g):
-
-    def zz2(fTp, tTp):
-      fData = Fs(f).v
-      indG = Sindex.get(g, {})
-      return lambda n: indG.get(fData(n), set())
 
     def zz(fTp, tTp):
       fData = Fs(f).v
@@ -957,17 +953,6 @@ def basicRelations(searchExe, api):
     return spinLeftFmatchRightG(g, rPat, rRe, f)
 
   def leftFmatchRightGR(f, rPat, rRe, g):
-    gR = f'{g}~{rPat}'
-
-    def zz2(fTp, tTp):
-
-      def uu(n):
-        nVal = Fs(f).v(n)
-        if nVal is None:
-          return set()
-        nVal = rRe.sub('', nVal)
-        return Sindex.get(gR, {}).get(nVal, set())
-      return uu
 
     def zz(fTp, tTp):
       fData = Fs(f).v
