@@ -39,6 +39,8 @@ See the [issue list on GitHub]({{ghissues}})
 
 ### Queued for next release
 
+Small performance tweaks in querying.
+
 ---
 
 # 7.8.2

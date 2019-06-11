@@ -136,14 +136,13 @@ def basicRelations(searchExe, api):
       def xx(n):
         if n <= maxSlot:
           nA = array('I', (n,))
-          return tuple(m for m in ClevUp[n - 1] if Eoslots[m - maxSlot - 1] == nA) + (n,)
+          return chain((m for m in ClevUp[n - 1] if Eoslots[m - maxSlot - 1] == nA), (n,))
         nSlots = Eoslots[n - maxSlot - 1]
         if len(nSlots) == 1:
           slot1 = nSlots[0]
           nA = array('I', (slot1,))
-          nT = (slot1,)
-          return tuple(m for m in ClevUp[n - 1] if Eoslots[m - maxSlot - 1] == nA) + (n,) + nT
-        return tuple(m for m in ClevUp[n - 1] if n in ClevUp[m - 1]) + (n,)
+          return chain((m for m in ClevUp[n - 1] if Eoslots[m - maxSlot - 1] == nA), (n,), nA)
+        return chain((m for m in ClevUp[n - 1] if n in ClevUp[m - 1]), (n,))
       return xx
 
   # OVERLAP
@@ -208,25 +207,6 @@ def basicRelations(searchExe, api):
 
       return doyarns
 
-  def overlapR_____(fTp, tTp):
-    isSlotF = isSlotType(fTp)
-    isSlotT = isSlotType(tTp)
-    if isSlotF and isSlotT:
-      return lambda n: (n, )
-    elif isSlotT:
-      return lambda n: (Eoslots[n - maxSlot - 1] if n > maxSlot else (n, ))
-    elif isSlotF:
-      return lambda n, m: (n in frozenset(Eoslots[m - maxSlot - 1] if m > maxSlot else (m, )))
-    else:
-      return (
-          lambda n, m: (
-              len(
-                  frozenset(Eoslots[n - maxSlot - 1] if n > maxSlot else (n, ))
-                  & frozenset(Eoslots[m - maxSlot - 1] if m > maxSlot else (m, ))
-              ) != 0
-          )
-      )
-
   def overlapR(fTp, tTp):
     isSlotF = isSlotType(fTp)
     isSlotT = isSlotType(tTp)
@@ -235,13 +215,13 @@ def basicRelations(searchExe, api):
     elif isSlotT:
       return lambda n: (Eoslots[n - maxSlot - 1] if n > maxSlot else (n, ))
     elif isSlotF:
-      return lambda n: ClevUp[n - 1] + array('I', (n, ))
+      return lambda n: chain(ClevUp[n - 1], (n, ))
     else:
       def xx(n):
         nSlots = Eoslots[n - maxSlot - 1] if n > maxSlot else (n,)
-        return tuple(nSlots) + tuple(chain.from_iterable(
-            set(ClevUp[s - 1]) for s in nSlots
-        ))
+        return chain(nSlots, set(chain.from_iterable(
+            ClevUp[s - 1] for s in nSlots
+        )))
       return xx
 
   # DIFFERENT SLOTS
@@ -311,8 +291,11 @@ def basicRelations(searchExe, api):
       return lambda n: Eoslots[n - maxSlot - 1] if n > maxSlot else ()
     else:
       if isSlotT is None:
-        return lambda n: ((ClevDown[n - maxSlot - 1] + Eoslots[n - maxSlot - 1])
-                          if n > maxSlot else ())
+        return lambda n: (
+            chain(ClevDown[n - maxSlot - 1], Eoslots[n - maxSlot - 1])
+            if n > maxSlot else
+            ()
+        )
       else:
         return lambda n: (ClevDown[n - maxSlot - 1] if n > maxSlot else ())
 
@@ -355,7 +338,7 @@ def basicRelations(searchExe, api):
       return lambda n: (n, )
     elif isSlotF:
       if isSlotT is None:
-        return lambda n: CfirstSlots[n - 1] + array('I', (n, ))
+        return lambda n: chain(CfirstSlots[n - 1], (n, ))
       else:
         return lambda n: CfirstSlots[n - 1]
     elif isSlotT:
@@ -365,7 +348,7 @@ def basicRelations(searchExe, api):
       def xx(n):
         fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
         if isSlotT is None:
-          return CfirstSlots[fn - 1] + array('I', (fn, ))
+          return chain(CfirstSlots[fn - 1], (fn, ))
         else:
           return CfirstSlots[fn - 1]
 
@@ -380,7 +363,7 @@ def basicRelations(searchExe, api):
       return lambda n: (n, )
     elif isSlotF:
       if isSlotT is None:
-        return lambda n: ClastSlots[n - 1] + array('I', (n, ))
+        return lambda n: chain(ClastSlots[n - 1], (n, ))
       else:
         return lambda n: ClastSlots[n - 1]
     elif isSlotT:
@@ -390,7 +373,7 @@ def basicRelations(searchExe, api):
       def xx(n):
         ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
         if isSlotT is None:
-          return ClastSlots[ln - 1] + array('I', (ln, ))
+          return chain(ClastSlots[ln - 1], (ln, ))
         else:
           return ClastSlots[ln - 1]
 
@@ -409,14 +392,14 @@ def basicRelations(searchExe, api):
         def xx(n):
           fok = set(chain(CfirstSlots[n - 1], (n, )))
           lok = set(chain(ClastSlots[n - 1], (n, )))
-          return tuple(fok & lok)
+          return fok & lok
 
       else:
 
         def xx(n):
           fok = set(CfirstSlots[n - 1])
           lok = set(ClastSlots[n - 1])
-          return tuple(fok & lok)
+          return fok & lok
 
       return xx
     elif isSlotT:
@@ -436,7 +419,7 @@ def basicRelations(searchExe, api):
           ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
           fok = set(chain(CfirstSlots[fn - 1], (fn, )))
           lok = set(chain(ClastSlots[ln - 1], (ln, )))
-          return tuple(fok & lok)
+          return fok & lok
 
       else:
 
@@ -445,7 +428,7 @@ def basicRelations(searchExe, api):
           ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
           fok = set(CfirstSlots[fn - 1])
           lok = set(ClastSlots[ln - 1])
-          return tuple(fok & lok)
+          return fok & lok
 
       return xx
 
@@ -457,33 +440,25 @@ def basicRelations(searchExe, api):
       isSlotF = isSlotType(fTp)
       isSlotT = isSlotType(tTp)
       if isSlotF and isSlotT:
-        return lambda n: tuple(m for m in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
+        return lambda n: range(max((1, n - k)), min((maxSlot, n + k)) + 1)
       elif isSlotF:
         if isSlotT is None:
 
           def xx(n):
-            near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
-            return tuple(
-                chain.from_iterable(
-                    set(chain(CfirstSlots[l - 1], (l, ))) for l in near
-                )
-            )
+            near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+            return chain(near, chain.from_iterable(CfirstSlots[l - 1] for l in near))
         else:
 
           def xx(n):
-            near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
-            return tuple(
-                chain.from_iterable(
-                    set(CfirstSlots[l - 1]) for l in near
-                )
-            )
+            near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+            return chain.from_iterable(CfirstSlots[l - 1] for l in near)
 
         return xx
       elif isSlotT:
 
         def xx(n):
           fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
-          return tuple(m for m in range(max((1, fn - k)), min((maxSlot, fn + k)) + 1))
+          return range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
 
         return xx
 
@@ -492,23 +467,15 @@ def basicRelations(searchExe, api):
 
           def xx(n):
             fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
-            near = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k)) + 1))
-            return tuple(
-                chain.from_iterable(
-                    set(chain(CfirstSlots[l - 1], (l, ))) for l in near
-                )
-            )
+            near = range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+            return chain(near, chain.from_iterable(CfirstSlots[l - 1] for l in near))
 
         else:
 
           def xx(n):
             fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
-            near = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k)) + 1))
-            return tuple(
-                chain.from_iterable(
-                    set(CfirstSlots[l - 1]) for l in near
-                )
-            )
+            near = range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+            return chain.from_iterable(CfirstSlots[l - 1] for l in near)
 
         return xx
 
@@ -522,34 +489,26 @@ def basicRelations(searchExe, api):
       isSlotF = isSlotType(fTp)
       isSlotT = isSlotType(tTp)
       if isSlotF and isSlotT:
-        return lambda n: tuple(m for m in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
+        return lambda n: range(max((1, n - k)), min((maxSlot, n + k)) + 1)
       elif isSlotF:
         if isSlotT is None:
 
           def xx(n):
-            near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
-            return tuple(
-                chain.from_iterable(
-                    set(chain(ClastSlots[l - 1], (l, ))) for l in near
-                )
-            )
+            near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+            return chain(near, chain.from_iterable(ClastSlots[l - 1] for l in near))
 
         else:
 
           def xx(n):
-            near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
-            return tuple(
-                chain.from_iterable(
-                    (set(ClastSlots[l - 1]) for l in near)
-                )
-            )
+            near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+            return chain.from_iterable(ClastSlots[l - 1] for l in near)
 
         return xx
       elif isSlotT:
 
         def xx(n):
           ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
-          return tuple(m for m in range(max((1, ln - k)), min((maxSlot, ln + k)) + 1))
+          return range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
 
         return xx
       else:
@@ -557,23 +516,15 @@ def basicRelations(searchExe, api):
 
           def xx(n):
             ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
-            near = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k)) + 1))
-            return tuple(
-                chain.from_iterable(
-                    (set(chain(ClastSlots[l - 1], (l, ))) for l in near)
-                )
-            )
+            near = range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+            return chain(near, chain.from_iterable(ClastSlots[l - 1] for l in near))
 
         else:
 
           def xx(n):
             ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
-            near = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k)) + 1))
-            return tuple(
-                chain.from_iterable(
-                    (set(ClastSlots[l - 1]) for l in near)
-                )
-            )
+            near = range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+            return chain.from_iterable(ClastSlots[l - 1] for l in near)
 
         return xx
 
@@ -587,39 +538,23 @@ def basicRelations(searchExe, api):
       isSlotF = isSlotType(fTp)
       isSlotT = isSlotType(tTp)
       if isSlotF and isSlotT:
-        return lambda n: tuple(m for m in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
+        return lambda n: range(max((1, n - k)), min((maxSlot, n + k)) + 1)
       elif isSlotF:
         if isSlotT is None:
 
           def xx(n):
-            near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
-            fok = set(
-                chain.from_iterable(
-                    (set(chain(CfirstSlots[l - 1], (l, ))) for l in near)
-                )
-            )
-            lok = set(
-                chain.from_iterable(
-                    (set(chain(ClastSlots[l - 1], (l, ))) for l in near)
-                )
-            )
-            return tuple(fok & lok)
+            near = set(range(max((1, n - k)), min((maxSlot, n + k)) + 1))
+            fok = set(chain.from_iterable(CfirstSlots[l - 1] for l in near))
+            lok = set(chain.from_iterable(ClastSlots[l - 1] for l in near))
+            return near | (fok & lok)
 
         else:
 
           def xx(n):
-            near = set(l for l in range(max((1, n - k)), min((maxSlot, n + k)) + 1))
-            fok = set(
-                chain.from_iterable(
-                    (set(CfirstSlots[l - 1]) for l in near)
-                )
-            )
-            lok = set(
-                chain.from_iterable(
-                    (set(ClastSlots[l - 1]) for l in near)
-                )
-            )
-            return tuple(fok & lok)
+            near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+            fok = set(chain.from_iterable(CfirstSlots[l - 1] for l in near))
+            lok = set(chain.from_iterable(ClastSlots[l - 1] for l in near))
+            return fok & lok
 
         return xx
       elif isSlotT:
@@ -628,9 +563,9 @@ def basicRelations(searchExe, api):
           slots = Eoslots[n - maxSlot - 1] if n > maxSlot else (n, )
           fs = slots[0]
           ls = slots[-1]
-          fok = set(m for m in range(max((1, fs - k)), min((maxSlot, fs + k)) + 1))
-          lok = set(m for m in range(max((1, ls - k)), min((maxSlot, ls + k)) + 1))
-          return tuple(fok & lok)
+          fok = set(range(max((1, fs - k)), min((maxSlot, fs + k)) + 1))
+          lok = set(range(max((1, ls - k)), min((maxSlot, ls + k)) + 1))
+          return fok & lok
 
         return xx
       else:
@@ -639,38 +574,22 @@ def basicRelations(searchExe, api):
           def xx(n):
             fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
             ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
-            nearf = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k)) + 1))
-            nearl = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k)) + 1))
-            fok = set(
-                chain.from_iterable(
-                    (set(chain(CfirstSlots[l - 1], (l, ))) for l in nearf)
-                )
-            )
-            lok = set(
-                chain.from_iterable(
-                    (set(chain(ClastSlots[l - 1], (l, ))) for l in nearl)
-                )
-            )
-            return tuple(fok & lok)
+            nearf = range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+            nearl = range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+            fok = set(chain(nearf, chain.from_iterable(CfirstSlots[l - 1] for l in nearf)))
+            lok = set(chain(nearl, chain.from_iterable(ClastSlots[l - 1] for l in nearl)))
+            return fok & lok
 
         else:
 
           def xx(n):
             fn = Eoslots[n - maxSlot - 1][0] if n > maxSlot else n
             ln = Eoslots[n - maxSlot - 1][-1] if n > maxSlot else n
-            nearf = set(l for l in range(max((1, fn - k)), min((maxSlot, fn + k)) + 1))
-            nearl = set(l for l in range(max((1, ln - k)), min((maxSlot, ln + k)) + 1))
-            fok = set(
-                chain.from_iterable(
-                    (set(CfirstSlots[l - 1]) for l in nearf)
-                )
-            )
-            lok = set(
-                chain.from_iterable(
-                    (set(ClastSlots[l - 1]) for l in nearl)
-                )
-            )
-            return tuple(fok & lok)
+            nearf = range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+            nearl = range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+            fok = set(chain.from_iterable(CfirstSlots[l - 1] for l in nearf))
+            lok = set(chain.from_iterable(ClastSlots[l - 1] for l in nearl))
+            return fok & lok
 
         return xx
 
@@ -702,7 +621,7 @@ def basicRelations(searchExe, api):
           myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
           if myNext > maxSlot:
             return ()
-          return CfirstSlots[myNext - 1] + array('I', (myNext, ))
+          return chain(CfirstSlots[myNext - 1], (myNext, ))
 
       else:
 
@@ -743,7 +662,7 @@ def basicRelations(searchExe, api):
           myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
           if myPrev <= 1:
             return ()
-          return array('I', (myPrev, )) + ClastSlots[myPrev - 1]
+          return chain((myPrev, ), ClastSlots[myPrev - 1])
 
       else:
 
@@ -765,47 +684,27 @@ def basicRelations(searchExe, api):
       isSlotF = isSlotType(fTp)
       isSlotT = isSlotType(tTp)
       if isSlotF and isSlotT:
-        return lambda n: tuple(m for m in range(max((1, n + 1 - k)), min((maxSlot, n + 1 + k)) + 1))
+        return lambda n: range(max((1, n + 1 - k)), min((maxSlot, n + 1 + k)) + 1)
       else:
         if isSlotT:
 
           def xx(n):
             myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
-            myNextNear = tuple(
-                ls for ls in range(max((1, myNext - k)),
-                                   min((maxSlot, myNext + k)) + 1)
-            )
-            return myNextNear
+            return range(max((1, myNext - k)), min((maxSlot, myNext + k)) + 1)
 
         elif isSlotT is None:
 
           def xx(n):
             myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
-            myNextNear = tuple(
-                ls for ls in range(max((1, myNext - k)),
-                                   min((maxSlot, myNext + k)) + 1)
-            )
-            nextSet = set(
-                chain.from_iterable(
-                    (set(CfirstSlots[ls - 1]) for ls in myNextNear)
-                )
-            )
-            return tuple(nextSet) + myNextNear
+            near = range(max((1, myNext - k)), min((maxSlot, myNext + k)) + 1)
+            return chain(near, chain.from_iterable(CfirstSlots[ls - 1] for ls in near))
 
         else:
 
           def xx(n):
             myNext = n + 1 if n < maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
-            myNextNear = tuple(
-                ls for ls in range(max((1, myNext - k)),
-                                   min((maxSlot, myNext + k)) + 1)
-            )
-            nextSet = set(
-                chain.from_iterable(
-                    (set(CfirstSlots[ls - 1]) for ls in myNextNear)
-                )
-            )
-            return tuple(nextSet)
+            near = range(max((1, myNext - k)), min((maxSlot, myNext + k)) + 1)
+            return chain.from_iterable(CfirstSlots[ls - 1] for ls in near)
 
         return xx
 
@@ -819,47 +718,27 @@ def basicRelations(searchExe, api):
       isSlotF = isSlotType(fTp)
       isSlotT = isSlotType(tTp)
       if isSlotF and isSlotT:
-        return lambda n: tuple(m for m in range(max((1, n - 1 - k)), min((maxSlot, n - 1 + k)) + 1))
+        return lambda n: range(max((1, n - 1 - k)), min((maxSlot, n - 1 + k)) + 1)
       else:
         if isSlotT:
 
           def xx(n):
             myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
-            myPrevNear = tuple(
-                l for l in range(max((1, myPrev - k)),
-                                 min((maxSlot, myPrev + k)) + 1)
-            )
-            return myPrevNear
+            return tuple(range(max((1, myPrev - k)), min((maxSlot, myPrev + k)) + 1))
 
         elif isSlotT is None:
 
           def xx(n):
             myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
-            myPrevNear = tuple(
-                l for l in range(max((1, myPrev - k)),
-                                 min((maxSlot, myPrev + k)) + 1)
-            )
-            prevSet = set(
-                chain.from_iterable(
-                    (set(ClastSlots[l - 1]) for l in myPrevNear)
-                )
-            )
-            return tuple(prevSet) + myPrevNear
+            near = range(max((1, myPrev - k)), min((maxSlot, myPrev + k)) + 1)
+            return chain(near, chain.from_iterable(ClastSlots[l - 1] for l in near))
 
         else:
 
           def xx(n):
             myPrev = n - 1 if n < maxSlot else Eoslots[n - maxSlot - 1][0] - 1
-            myPrevNear = tuple(
-                l for l in range(max((1, myPrev - k)),
-                                 min((maxSlot, myPrev + k)) + 1)
-            )
-            prevSet = set(
-                chain.from_iterable(
-                    (set(ClastSlots[l - 1]) for l in myPrevNear)
-                )
-            )
-            return tuple(prevSet)
+            near = range(max((1, myPrev - k)), min((maxSlot, myPrev + k)) + 1)
+            return chain.from_iterable(ClastSlots[l - 1] for l in near)
 
         return xx
 
@@ -1039,21 +918,21 @@ def basicRelations(searchExe, api):
     def edgeAccess(eFunc, doValues, value):
       if doValues:
         if value is None:
-          return lambda n: tuple(m[0] for m in eFunc(n) if m[1] is None)
+          return lambda n: (m[0] for m in eFunc(n) if m[1] is None)
         elif value is True:
-          return lambda n: tuple(m[0] for m in eFunc(n))
+          return lambda n: (m[0] for m in eFunc(n))
         elif isinstance(value, types.FunctionType):
-          return lambda n: tuple(m[0] for m in eFunc(n) if value(m[1]))
+          return lambda n: (m[0] for m in eFunc(n) if value(m[1]))
         elif isinstance(value, reTp):
-          return lambda n: tuple(m[0] for m in eFunc(n) if value is not None and value.search(m[1]))
+          return lambda n: (m[0] for m in eFunc(n) if value is not None and value.search(m[1]))
         else:
           (ident, value) = value
           if (ident is None and value is True):
-            return lambda n: tuple(m[0] for m in eFunc(n))
+            return lambda n: (m[0] for m in eFunc(n))
           elif ident:
-            return lambda n: tuple(m[0] for m in eFunc(n) if m[1] in value)
+            return lambda n: (m[0] for m in eFunc(n) if m[1] in value)
           else:
-            return lambda n: tuple(m[0] for m in eFunc(n) if m[1] not in value)
+            return lambda n: (m[0] for m in eFunc(n) if m[1] not in value)
       else:
         return lambda n: eFunc(n)
 

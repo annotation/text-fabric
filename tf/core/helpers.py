@@ -171,7 +171,7 @@ def setFromSpec(spec):
 
 
 def rangesFromSet(nodeSet):
-  ranges = []
+  # ranges = []
   curstart = None
   curend = None
   for n in sorted(nodeSet):
@@ -181,16 +181,18 @@ def rangesFromSet(nodeSet):
     elif n == curend + 1:
       curend = n
     else:
-      ranges.append((curstart, curend))
+      yield (curstart, curend)
+      # ranges.append((curstart, curend))
       curstart = n
       curend = n
   if curstart is not None:
-    ranges.append((curstart, curend))
-  return ranges
+    yield (curstart, curend)
+    # ranges.append((curstart, curend))
+  # return ranges
 
 
 def rangesFromList(nodeList):  # the list must be sorted
-  ranges = []
+  # ranges = []
   curstart = None
   curend = None
   for n in nodeList:
@@ -200,12 +202,14 @@ def rangesFromList(nodeList):  # the list must be sorted
     elif n == curend + 1:
       curend = n
     else:
-      ranges.append((curstart, curend))
+      yield (curstart, curend)
+      # ranges.append((curstart, curend))
       curstart = n
       curend = n
   if curstart is not None:
-    ranges.append((curstart, curend))
-  return ranges
+    yield (curstart, curend)
+    # ranges.append((curstart, curend))
+  # return ranges
 
 
 def specFromRanges(ranges):  # ranges must be normalized
