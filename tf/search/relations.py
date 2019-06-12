@@ -1152,7 +1152,6 @@ def add_K_Relations(searchExe, varRels):
       relations.extend([
           dict(
               name=acro,
-              param=k,
               acro=newAcro,
               spin=r['spin'],
               func=r['func'](k),
@@ -1160,7 +1159,6 @@ def add_K_Relations(searchExe, varRels):
           ),
           dict(
               name=acroi,
-              param=k,
               acro=newAcroi,
               spin=ri['spin'],
               func=ri['func'](k),
@@ -1217,7 +1215,6 @@ def add_F_Relations(searchExe, varRels):
       relations.extend([
           dict(
               name=acro,
-              param=fArgs,
               acro=newAcro,
               spin=spin,
               func=func,
@@ -1225,7 +1222,6 @@ def add_F_Relations(searchExe, varRels):
           ),
           dict(
               name=acroi,
-              param=fArgs,
               acro=newAcroi,
               spin=spini,
               func=funci,

@@ -25,12 +25,6 @@ BOUNDED = {
     '<k:',
 }
 
-OFFSETS = {
-    '=': (0, 0, 0, 0),
-    '==': (0, 0, None, None),
-    '&&': (0, 0, None, None),
-}
-
 
 def connectedness(searchExe):
   error = searchExe.api.error
@@ -71,7 +65,6 @@ def connectedness(searchExe):
 
 
 def boundedness(searchExe):
-  info = searchExe.api.info
   error = searchExe.api.error
   qnodes = searchExe.qnodes
   qedges = searchExe.qedges
@@ -97,7 +90,8 @@ def boundedness(searchExe):
       componentIndex[q] = c
 
   intraEdges = {}
-  interEdges = {}
+  toUpper = {}
+  toLower = {}
   for (e, (f, rela, t)) in enumerate(qedges):
     relInfo = relations[rela]
     acro = relInfo.get('name', relInfo['acro'])
@@ -109,7 +103,27 @@ def boundedness(searchExe):
       else:
         error(f'bounded inter edge! {cF} {acro} {cT}', cache=msgCache)
     elif acro in HALFBOUNDED:
-      interEdges.setdefault((cF, cT), []).append((e, HALFBOUNDED[acro]))
+      dir = HALFBOUNDED[acro]
+      (cA, cB) = (cF, cT) if dir == 1 else (cT, cF)
+      (a, b) = (f, t) if dir == 1 else (t, f)
+      toUpper.setdefault(cA, {}).setdefault(b, []).append(e)
+      toLower.setdefault(cB, {}).setdefault(a, []).append(e)
+
+  bounds = {}
+
+  for c in set(toUpper) & set(toLower):
+    upperNodes = set(toUpper[c])
+    lowerNodes = set(toLower[c])
+    boundNodes = upperNodes & lowerNodes
+    boundEdges = {}
+    for n in boundNodes:
+      upperEdges = toUpper[c][n]
+      lowerEdges = toLower[c][n]
+      nEdges = min((len(upperEdges), len(lowerEdges)))
+      boundEdges[n] = list(zip(upperEdges[:nEdges], lowerEdges[:nEdges]))
+    bounds[c] = boundEdges
+
+  print(bounds)
 
   bounded = []
   complexity = 1
@@ -120,41 +134,13 @@ def boundedness(searchExe):
     bounded.append(c)
     complexity *= size
 
-  upperBound = {}
-  lowerBound = {}
-  for ((cF, cT), es) in interEdges.items():
-    for (e, dir) in es:
-      (cA, cB) = (cF, cT) if dir == 1 else (cT, cF)
-      upperBound.setdefault(cA, {}).setdefault(cB, []).append(e)
-      lowerBound.setdefault(cB, {}).setdefault(cA, []).append(e)
-
-  print(upperBound)
-  print(lowerBound)
-
   searchExe.yarnSize = yarnSize
   searchExe.complexity = complexity
   searchExe.bounded = bounded
-  searchExe.interEdges = interEdges
   searchExe.intraEdges = intraEdges
+  searchExe.bounds = bounds
 
-  getOffsets(searchExe)
-
-  info(f'complexity: {complexity:.1e}', cache=msgCache)
   displayChunks(searchExe)
-
-
-def getOffsets(searchExe):
-  qedges = searchExe.qedges
-  intraEdges = searchExe.intraEdges
-  relations = searchExe.relations
-
-  for (c, es) in intraEdges.items():
-    for e in es:
-      (f, rela, t) = qedges[e]
-      relInfo = relations[rela]
-      acro = relInfo.get('name', relInfo['acro'])
-      param = relInfo.get('param', None)
-      print(acro, param)
 
 
 def displayPlan(searchExe, details=False):
@@ -213,8 +199,10 @@ def displayChunks(searchExe):
   msgCache = searchExe.msgCache
   chunks = searchExe.bounded
   intraEdges = searchExe.intraEdges
-  interEdges = searchExe.interEdges
   yarnSize = searchExe.yarnSize
+  complexity = searchExe.complexity
+
+  info(f'complexity: {complexity:.1e}', cache=msgCache)
   info(f'{len(chunks)} internally bounded chunks', tm=False, cache=msgCache)
   for c in chunks:
     size = yarnSize[c]
@@ -223,12 +211,6 @@ def displayChunks(searchExe):
     for e in intraEdges.get(c, []):
       displayEdge(searchExe, e, 1)
   info(f'Edges between chunks:')
-  for ((cF, cT), es) in (interEdges.items()):
-    cFRep = ','.join(sorted(str(x) for x in cF))
-    cTRep = ','.join(sorted(str(x) for x in cT))
-    info(f'  from {cFRep} to {cTRep}')
-    for e in es:
-      displayEdge(searchExe, *e)
 
   setSilent(wasSilent)
 
