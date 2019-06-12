@@ -1,0 +1,6 @@
+w1:word
+<20: w2:word
+  
+w1 < w2
+w1 .g_cons=g_cons. w2
+w1 .lex#lex. w2

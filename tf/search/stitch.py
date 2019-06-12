@@ -5,8 +5,8 @@ from .spin import estimateSpreads
 # STITCHING: STRATEGIES ###
 
 STRATEGY = '''
-    by_yarn_size
     small_choice_first
+    by_yarn_size
     spread_1_first
     big_choice_first
 '''.strip().split()
@@ -33,6 +33,7 @@ def setStrategy(searchExe, strategy, keep=False):
     error(f'Strategy is defined, but not implemented: "{strategy}"', cache=msgCache)
     searchExe.good = False
   searchExe.strategy = types.MethodType(func, searchExe)
+  searchExe.strategyName = strategy
 
 
 def _spread_1_first(searchExe):

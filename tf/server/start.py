@@ -61,6 +61,8 @@ The specifier indicates a point in the history from where the app should be retr
   --checkout=specifier is for the main data.
 
 Specifiers may be:
+  local                 - get the data from your local text-fabric-data directory
+  clone                 - get the data from your local github clone
   latest                - get the latest release
   hot                   - get the latest commit
   tag (e.g. v1.3)       - get specific release
