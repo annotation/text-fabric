@@ -39,9 +39,27 @@ See the [issue list on GitHub]({{ghissues}})
 
 ### Queued for next release
 
-Small performance tweaks in querying.
-
 ---
+
+# 7.8.3
+
+2019-06-13
+
+Performance tweaks in querying.
+Especially long running queries perform better.
+The query planning can now handle multiple relationships of the kind
+`a < b` and `b < c`.
+
+Formerly, every `b` after `a` was searched, including the ones after `c`, and they then failed.
+Now the ones after `c` are not tried anymore.
+
+Yet the gain is not as high as I had hoped, because finding the right `b`-s between `a` and
+`b` turns out to be tricky. The machinery for getting that in place and then walking
+in the right direction worked, but was so costly itself, that it defeated the purpose
+of a performance gain.
+
+Have a look at some
+[profiling results]({{tfnb}}/test/query/bounded.ipynb).
 
 # 7.8.2
 
