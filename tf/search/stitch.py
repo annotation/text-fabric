@@ -720,6 +720,9 @@ def _stitchResults(searchExe):
             yield s
         return
 
+      #   (m for m in yarnT if all(r[i](stitch[x], m) for (i, x) in enumerate(f)))
+      #   (m for m in yarnT if all(ri(stitch[xi], m) for (ri, xi) in zip(r, f)))
+
       mFromN = (
           (m for m in yarnT if all(r[i](stitch[x], m) for (i, x) in enumerate(f)))
           if isMulti else
