@@ -1,4 +1,3 @@
-from array import array
 from itertools import chain
 
 # INSPECTING WITH THE SEARCH GRAPH ###
@@ -101,57 +100,6 @@ def multiEdges(searchExe):
   # so medges is a collection sets of edges
   # each set consists of directed edges that have the same qnode as destination
   searchExe.medges = medges
-
-
-def sortYarns(searchExe):
-  relations = searchExe.relations
-  qedges = searchExe.qedges
-  firstMulti = searchExe.firstMulti
-  yarns = searchExe.yarns
-  api = searchExe.api
-  sortKey = api.sortKey
-
-  yarnsSorted = {}
-  yarnsLookup = {}
-  boundDir = {}
-
-  plan = searchExe.stitchPlan
-  planEdges = plan[1]
-
-  toSort = set()
-
-  for (e, dir) in planEdges:
-    isMulti = e >= firstMulti
-    (f, rela, t) = qedges[e]
-    if dir == -1:
-      # never the case for multi-edges
-      (f, t) = (t, f)
-    if isMulti:
-      toSort.add(t)
-      for (i, r) in enumerate(rela):
-        relInfo = relations[r]
-        acro = relInfo.get('name', relInfo['acro'])
-        bDir = HALFBOUNDED[acro]
-        boundDir.setdefault(e, {})[i] = bDir
-    else:
-      relInfo = relations[rela]
-      acro = relInfo.get('name', relInfo['acro'])
-      bDir = HALFBOUNDED.get(acro, None)
-      if bDir:
-        toSort.add(t)
-        # the planEdges do not have two directions of the same edge
-        boundDir[e] = bDir * dir
-
-  for t in toSort:
-    data = array('I', sorted(
-        yarns[t],
-        key=sortKey,
-    ))
-    yarnsSorted[t] = data
-    yarnsLookup[t] = {n: i for (i, n) in enumerate(data)}
-  searchExe.yarnsSorted = yarnsSorted
-  searchExe.yarnsLookup = yarnsLookup
-  searchExe.boundDir = boundDir
 
 
 def displayPlan(searchExe, details=False):
