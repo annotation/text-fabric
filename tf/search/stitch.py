@@ -1,10 +1,13 @@
 import types
+from itertools import chain, takewhile
 from inspect import signature
 from .spin import estimateSpreads
+from .graph import multiEdges, sortYarns
 
 # STITCHING: STRATEGIES ###
 
 STRATEGY = '''
+    small_choice_multi
     small_choice_first
     by_yarn_size
     spread_1_first
@@ -141,10 +144,9 @@ def _spread_1_first(searchExe):
     if not added:
       break
 
-  results = {}
-  results['newNodes'] = newNodes
-  results['newEdges'] = newEdges
-  return results
+  searchExe.newNodes = newNodes
+  searchExe.newEdges = newEdges
+  searchExe.removedEdges = set()
 
 
 def _small_choice_first(searchExe):
@@ -214,6 +216,136 @@ def _small_choice_first(searchExe):
 
   searchExe.newNodes = newNodes
   searchExe.newEdges = newEdges
+  searchExe.removedEdges = set()
+
+
+def _small_choice_multi(searchExe):
+
+  # This strategy is like small_choice_first
+  # but it tries to combine multi-edges as much as possible.
+
+  # A multi edge is a collection of half-bound edges from the same node,
+  # some of wich provide an upper bound for that node, and some a lower bound.
+  # So, a multi edge constrains choices much more than each of the individual edges.
+
+  qedges = searchExe.qedges
+  qnodes = searchExe.qnodes
+  converse = searchExe.converse
+  spreads = searchExe.spreads
+  spreadsC = searchExe.spreadsC
+  yarns = searchExe.yarns
+
+  # add the multiedges to the qedges and determine their spreads
+
+  firstMulti = searchExe.firstMulti  # has been set to len(qedges)
+
+  multiEdges(searchExe)
+  medges = searchExe.medges
+  isMulti = {}
+  inMulti = {}
+
+  for (i, me) in enumerate(medges):
+    curE = firstMulti + i
+    fs = []
+    relas = []
+    ts = set()  # should end up as a singleton
+    minSpread = None
+    for (e, dir) in me:
+      isMulti.setdefault(curE, []).append((e, dir))
+      inMulti[e] = curE
+      (a, ru, b) = qedges[e]
+      (f, t) = (a, b) if dir == 1 else (b, a)
+      spread = spreads[e] if dir == 1 else spreadsC[e]
+      if minSpread is None or spread < minSpread:
+        minSpread = spread
+      r = ru if dir == 1 else converse[ru]
+      fs.append(f)
+      relas.append(r)
+      ts.add(t)
+    t = sorted(ts)[0]
+    qedges.append((tuple(fs), tuple(relas), t))
+    spreads[curE] = minSpread / 10
+    curE += 1
+
+  newNodes = {sorted(range(len(qnodes)), key=lambda x: len(yarns[x]))[0]}
+  newEdges = []
+  doneEdges = set()
+
+  remainingEdges = set()
+  for e in range(len(qedges)):
+    remainingEdges.add((e, 1))
+    if e < firstMulti:
+      remainingEdges.add((e, -1))
+  remainingEdgesO = sorted(
+      remainingEdges,
+      key=lambda e: (searchExe.spreads[e[0]] if e[1] == 1 else searchExe.spreadsC[e[0]]),
+  )
+  removedEdges = set()
+
+  while 1:
+    added = False
+    for (e, dir) in remainingEdgesO:
+      if e in doneEdges:
+        continue
+      (f, rela, t) = qedges[e]
+      if dir == -1:
+        (f, t) = (t, f)
+      if e in isMulti:
+        if all(x in newNodes for x in chain(f, (t,))):
+          newEdges.append((e, dir))
+          doneEdges.add(e)
+          for ed in isMulti[e]:
+            ex = ed[0]
+            if ex not in doneEdges:
+              removedEdges.add(ex)
+            doneEdges.add(ex)
+          added = True
+      else:
+        if f in newNodes and t in newNodes:
+          newEdges.append((e, dir))
+          doneEdges.add(e)
+          if e in inMulti:
+            ex = inMulti[e]
+            if ex not in doneEdges:
+              removedEdges.add(ex)
+            doneEdges.add(ex)
+          added = True
+    for (e, dir) in remainingEdgesO:
+      if e in doneEdges:
+        continue
+      (f, rela, t) = qedges[e]
+      if dir == -1:
+        (f, t) = (t, f)
+      if e in isMulti:
+        if all(x in newNodes for x in f):
+          newNodes.add(t)
+          newEdges.append((e, dir))
+          doneEdges.add(e)
+          for ed in isMulti[e]:
+            ex = ed[0]
+            if ex not in doneEdges:
+              removedEdges.add(ex)
+            doneEdges.add(ex)
+          added = True
+          break
+      else:
+        if f in newNodes:
+          newNodes.add(t)
+          newEdges.append((e, dir))
+          doneEdges.add(e)
+          if e in inMulti:
+            ex = inMulti[e]
+            if ex not in doneEdges:
+              removedEdges.add(ex)
+            doneEdges.add(ex)
+          added = True
+          break
+    if not added:
+      break
+
+  searchExe.newNodes = newNodes
+  searchExe.newEdges = newEdges
+  searchExe.removedEdges = removedEdges
 
 
 def _by_yarn_size(searchExe):
@@ -291,6 +423,7 @@ def _by_yarn_size(searchExe):
 
   searchExe.newNodes = newNodes
   searchExe.newEdges = newEdges
+  searchExe.removedEdges = set()
 
 
 def _big_choice_first(searchExe):
@@ -341,10 +474,9 @@ def _big_choice_first(searchExe):
     if not added:
       break
 
-  results = {}
-  results['newNodes'] = newNodes
-  results['newEdges'] = newEdges
-  return results
+  searchExe.newNodes = newNodes
+  searchExe.newEdges = newEdges
+  searchExe.removedEdges = set()
 
 
 # STITCHING ###
@@ -373,6 +505,7 @@ def _stitchPlan(searchExe, strategy=None):
   good = True
 
   # Apply the chosen strategy
+  searchExe.firstMulti = len(qedges)
   searchExe.strategy()
 
   # remove spurious edges:
@@ -381,6 +514,7 @@ def _stitchPlan(searchExe, strategy=None):
 
   newNodes = searchExe.newNodes
   newEdges = searchExe.newEdges
+  removedEdges = searchExe.removedEdges
 
   newCedges = set()
   newCedgesOrder = []
@@ -405,19 +539,20 @@ In plan    : {newNodesO}''', tm=False, cache=msgCache
     good = False
 
   qedgesO = tuple(range(len(qedges)))
-  newCedgesO = tuple(sorted(newCedges))
+  newCedgesO = tuple(sorted(chain(newCedges, removedEdges)))
   if newCedgesO != qedgesO:
     error(
         f'''Relation mismatch in plan:
 In template: {qedgesO}
 In plan    : {newCedgesO}''', tm=False, cache=msgCache
     )
-    good = False
+    # good = False
 
   if not good:
     searchExe.good = False
   else:
     searchExe.stitchPlan = (newNodes, newCedgesOrder)
+    sortYarns(searchExe)
 
 
 # STITCHING: DELIVERING ###
@@ -430,6 +565,13 @@ def _stitchResults(searchExe):
   relations = searchExe.relations
   converse = searchExe.converse
   yarns = searchExe.yarns
+  yarnsSorted = searchExe.yarnsSorted
+  yarnsLookup = searchExe.yarnsLookup
+  boundDir = searchExe.boundDir
+  firstMulti = searchExe.firstMulti
+
+  api = searchExe.api
+  sortKey = api.sortKey
 
   planEdges = plan[1]
   if len(planEdges) == 0:
@@ -448,7 +590,7 @@ def _stitchResults(searchExe):
     searchExe.results = results
     return
 
-# The next function must be optimized, and the lookup of functions and data
+# The next function is optimized, and the lookup of functions and data
 # should be as direct as possible.
 # Because deliver() below fetches the results,
 # of wich there are unpredictably many.
@@ -492,29 +634,60 @@ def _stitchResults(searchExe):
 # We start compiling and permuting
 
   edgesCompiled = []
+  edgesLookup = {}
   qPermuted = []  # row of nodes in the order as will be created during stitching
-  qPermutedInv = {}  # mapping from original q node number to index in the permuted order
+  qPermutedPos = {}  # mapping from original q node number to index in the permuted order
+
   for (i, (e, dir)) in enumerate(planEdges):
+    isMul = e >= firstMulti
     (f, rela, t) = qedges[e]
     if dir == -1:
+      # never the case for multi-edges
       (f, rela, t) = (t, converse[rela], f)
-    r = relations[rela]['func'](qnodes[f][0], qnodes[t][0])
-    nparams = len(signature(r).parameters)
+    r = (
+        tuple(
+            relations[r]['func'](qnodes[f[j]][0], qnodes[t][0])
+            for (j, r) in enumerate(rela)
+        )
+        if isMul else
+        relations[rela]['func'](qnodes[f][0], qnodes[t][0])
+    )
+
+    # in case of a multi edge, we use the following implementation detail:
+    # the function that computes the relation takes two parameters, not one.
+    # Multi-edges are combinations of edges based on < > << >>,
+    # and these all have arity 2.
+
+    nparams = 2 if isMul else len(signature(r).parameters)
     if i == 0:
+      # we cannot have a multi-edge here
+      # because they are only in play if all its from nodes
+      # have been stitched
       qPermuted.append(f)
-      qPermutedInv[f] = len(qPermuted) - 1
+      qPermutedPos[f] = len(qPermuted) - 1
     if t not in qPermuted:
       qPermuted.append(t)
-      qPermutedInv[t] = len(qPermuted) - 1
+      qPermutedPos[t] = len(qPermuted) - 1
 
-    edgesCompiled.append((qPermutedInv[f], qPermutedInv[t], r, nparams))
+    compiledF = (
+        tuple(qPermutedPos[x] for x in f)
+        if isMul else
+        qPermutedPos[f]
+    )
+    compiledT = qPermutedPos[t]
+
+    edgesCompiled.append((compiledF, compiledT, r, nparams, isMul))
+    edgesLookup[i] = e
 
 
 # now permute the yarns
 
   yarnsPermuted = [yarns[q] for q in qPermuted]
+  yarnsSortedPermuted = [yarnsSorted.get(q, None) for q in qPermuted]
+  yarnsLookupPermuted = [yarnsLookup.get(q, None) for q in qPermuted]
 
   shallow = searchExe.shallow
+  print('BOUNDDIR', boundDir)
 
   def deliver(remap=True):
     stitch = [None for q in range(len(qPermuted))]
@@ -522,41 +695,89 @@ def _stitchResults(searchExe):
     qs = tuple(range(lStitch))
     edgesC = edgesCompiled
     yarnsP = yarnsPermuted
+    yarnsSP = yarnsSortedPermuted
+    yarnsLP = yarnsLookupPermuted
 
     def stitchOn(e):
       if e >= len(edgesC):
         if remap:
-          yield tuple(stitch[qPermutedInv[q]] for q in qs)
+          yield tuple(stitch[qPermutedPos[q]] for q in qs)
         else:
           yield tuple(stitch)
         return
-      (f, t, r, nparams) = edgesC[e]
+      (f, t, r, nparams, isMul) = edgesC[e]
       yarnT = yarnsP[t]
       if e == 0 and stitch[f] is None:
+        # this cannot happen for a multi-edge
         yarnF = yarnsP[f]
         for sN in yarnF:
           stitch[f] = sN
           for s in stitchOn(e):
             yield s
         return
-      sN = stitch[f]
+
       sM = stitch[t]
       if sM is not None:
         stitchFurther = (
-            sM in r(sN)
-            if nparams == 1 else
-            r(sN, sM)
+            all(r[i](stitch[x], sM) for (i, x) in enumerate(f))
+            if isMul else (
+                sM in r(stitch[f])
+                if nparams == 1 else
+                r(stitch[f], sM)
+            )
         )
         if stitchFurther:
-          # if sM in set(r(sN)):
           for s in stitchOn(e + 1):
             yield s
         return
-      mFromN = (
-          (m for m in r(sN) if m in yarnT)
-          if nparams == 1 else
-          (m for m in yarnT if r(sN, m))
-      )
+
+      yarnST = yarnsSP[t]
+      yarnLT = yarnsLP[t]
+
+      origE = edgesLookup[e]
+
+      if isMul:
+        upperIs = tuple(i for i in range(len(f)) if boundDir[origE][i] == 1)
+        lowerIs = tuple(i for i in range(len(f)) if boundDir[origE][i] == -1)
+        upperStart = sorted((stitch[f[i]] for i in upperIs), key=sortKey)[0]
+        lowerStart = sorted((stitch[f[i]] for i in lowerIs), key=sortKey)[-1]
+
+        mFromN = chain(
+            takewhile(
+                lambda m: all(
+                    r[i](stitch[f[i]], m)
+                    for i in upperIs
+                ),
+                yarnST[yarnLT[upperStart]:]
+            ),
+            takewhile(
+                lambda m: all(
+                    r[i](stitch[f[i]], m)
+                    for i in lowerIs
+                ),
+                yarnST[yarnLT[lowerStart]::-1]
+            ),
+        )
+      else:
+        sN = stitch[f]
+        if nparams == 1:
+          mFromN = (m for m in r(sN) if m in yarnT)
+        else:
+          bDir = boundDir.get(e)
+          if bDir is None:
+            mFromN = (m for m in yarnT if r(sN, m))
+          else:
+            if bDir == 1:
+              mFromN = takewhile(
+                  lambda m: r(sN, m),
+                  yarnST[yarnLT[sN]:]
+              )
+            else:
+              mFromN = takewhile(
+                  lambda m: r(sN, m),
+                  yarnST[yarnLT[sN]::-1]
+              )
+
       for m in mFromN:
         stitch[t] = m
         for s in stitchOn(e + 1):
@@ -572,17 +793,19 @@ def _stitchResults(searchExe):
     stitch = [None for q in range(tupleSize)]
     edgesC = edgesCompiled
     yarnsP = yarnsPermuted
-    resultQ = qPermutedInv[0]
-    resultQmax = max(qPermutedInv[q] for q in range(shallowTupleSize))
+    resultQ = qPermutedPos[0]
+    resultQmax = max(qPermutedPos[q] for q in range(shallowTupleSize))
     resultSet = set()
+    qs = tuple(range(shallow))
 
     def stitchOn(e):
       if e >= len(edgesC):
         yield tuple(stitch)
         return
-      (f, t, r, nparams) = edgesC[e]
+      (f, t, r, nparams, isMul) = edgesC[e]
       yarnT = yarnsP[t]
       if e == 0 and stitch[f] is None:
+        # this cannot happen for a multi-edge
         yarnF = yarnsP[f]
         if f == resultQmax:
           for sN in yarnF:
@@ -597,25 +820,46 @@ def _stitchResults(searchExe):
             for s in stitchOn(e):
               yield s
         return
-      sN = stitch[f]
-      if f == resultQmax:
-        if sN in resultSet:
+
+      if (
+          isMul and resultQmax in f
+          or
+          not isMul and resultQmax == f
+      ):
+        result = tuple(stitch[qPermutedPos[q]] for q in qs)
+        if result in resultSet:
           return
+
       sM = stitch[t]
       if sM is not None:
         if t == resultQmax:
-          if sM in resultSet:
+          result = tuple(stitch[qPermutedPos[q]] for q in qs)
+          if result in resultSet:
             return
-        if nparams == 1:
-          if sM in set(r(sN)):  # & yarnT:
-            for s in stitchOn(e + 1):
-              yield s
-        else:
-          if r(sN, sM):
-            for s in stitchOn(e + 1):
-              yield s
+
+        stitchFurther = (
+            all(r[i](stitch[x], sM) for (i, x) in enumerate(f))
+            if isMul else (
+                sM in r(stitch[f])
+                if nparams == 1 else
+                r(stitch[f], sM)
+            )
+        )
+        if stitchFurther:
+          for s in stitchOn(e + 1):
+            yield s
         return
-      mFromN = tuple(set(r(sN)) & yarnT) if nparams == 1 else tuple(m for m in yarnT if r(sN, m))
+
+      mFromN = (
+          (m for m in yarnT if all(r[i](stitch[x], m) for (i, x) in enumerate(f)))
+          if isMul else
+          (
+              (m for m in r(stitch[f]) if m in yarnT)
+              if nparams == 1 else
+              (m for m in yarnT if r(stitch[f], m))
+          )
+      )
+
       for m in mFromN:
         stitch[t] = m
         for s in stitchOn(e + 1):
@@ -627,9 +871,8 @@ def _stitchResults(searchExe):
         result = s[resultQ]
         resultSet.add(result)
     else:  # shallow > 1
-      qs = tuple(range(shallow))
       for s in stitchOn(0):
-        result = tuple(s[qPermutedInv[q]] for q in qs)
+        result = tuple(s[qPermutedPos[q]] for q in qs)
         resultSet.add(result)
 
     return resultSet

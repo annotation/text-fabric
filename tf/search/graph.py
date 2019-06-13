@@ -1,3 +1,6 @@
+from array import array
+from itertools import chain
+
 # INSPECTING WITH THE SEARCH GRAPH ###
 
 
@@ -64,83 +67,91 @@ def connectedness(searchExe):
     searchExe.good = False
 
 
-def boundedness(searchExe):
-  error = searchExe.api.error
-  qnodes = searchExe.qnodes
-  qedges = searchExe.qedges
+def multiEdges(searchExe):
   relations = searchExe.relations
+  qedges = searchExe.qedges
   msgCache = searchExe.msgCache
+  api = searchExe.api
+  error = api.error
 
-  componentIndex = dict(((q, {q}) for q in range(len(qnodes))))
-  for (f, rela, t) in qedges:
-    acro = relations[rela]['acro']
-    relInfo = relations[rela]
-    acro = relInfo.get('name', relInfo['acro'])
-    if f != t:
-      if acro in BOUNDED:
-        componentIndex[f] |= componentIndex[t]
-        componentIndex[t] = componentIndex[f]
-        for u in componentIndex[f] - {f}:
-          componentIndex[u] = componentIndex[f]
-  components = sorted(set(frozenset(c) for c in componentIndex.values()))
-
-  componentIndex = {}
-  for c in components:
-    for q in c:
-      componentIndex[q] = c
-
-  intraEdges = {}
-  toUpper = {}
-  toLower = {}
+  medgesIndex = {}
+  # will be a dict keyed by edge destination, then by upper/lower bound
+  # and then the values are directed edges
   for (e, (f, rela, t)) in enumerate(qedges):
     relInfo = relations[rela]
     acro = relInfo.get('name', relInfo['acro'])
-    cF = componentIndex[f]
-    cT = componentIndex[t]
-    if acro in BOUNDED:
-      if cF == cT:
-        intraEdges.setdefault(cF, []).append(e)
-      else:
-        error(f'bounded inter edge! {cF} {acro} {cT}', cache=msgCache)
-    elif acro in HALFBOUNDED:
+    if acro in HALFBOUNDED:
       dir = HALFBOUNDED[acro]
-      (cA, cB) = (cF, cT) if dir == 1 else (cT, cF)
-      (a, b) = (f, t) if dir == 1 else (t, f)
-      toUpper.setdefault(cA, {}).setdefault(b, []).append(e)
-      toLower.setdefault(cB, {}).setdefault(a, []).append(e)
+      # edge e,1 arrives at t which acts as an upper bound
+      medgesIndex.setdefault(t, {}).setdefault(dir, set()).add((e, 1))
+      # edge e,-1 arrives at f which acts as a lower bound
+      medgesIndex.setdefault(f, {}).setdefault(-dir, set()).add((e, -1))
 
-  bounds = {}
+  medges = []
+  for eInfo in medgesIndex.values():
+    if 1 in eInfo and -1 in eInfo:
+      es = eInfo[1] | eInfo[-1]
+      ts = {qedges[e][2 if dir == 1 else 0] for (e, dir) in es}
+      if len(ts) != 1:
+        # if this happens, it is a fault in the business logic, not caused by the user
+        eRep = ' | '.join(str(qedges[e]) for (e, dir) in es)
+        error(f'Multi-edge with {len(ts)} destinations: {eRep}', tm=False, cache=msgCache)
+      medges.append(es)
 
-  for c in set(toUpper) & set(toLower):
-    upperNodes = set(toUpper[c])
-    lowerNodes = set(toLower[c])
-    boundNodes = upperNodes & lowerNodes
-    boundEdges = {}
-    for n in boundNodes:
-      upperEdges = toUpper[c][n]
-      lowerEdges = toLower[c][n]
-      nEdges = min((len(upperEdges), len(lowerEdges)))
-      boundEdges[n] = list(zip(upperEdges[:nEdges], lowerEdges[:nEdges]))
-    bounds[c] = boundEdges
+  # so medges is a collection sets of edges
+  # each set consists of directed edges that have the same qnode as destination
+  searchExe.medges = medges
 
-  print(bounds)
 
-  bounded = []
-  complexity = 1
-  yarnSize = {}
-  for c in components:
-    size = sum(len(y) for (n, y) in searchExe.yarns.items() if n in c)
-    yarnSize[c] = size
-    bounded.append(c)
-    complexity *= size
+def sortYarns(searchExe):
+  relations = searchExe.relations
+  qedges = searchExe.qedges
+  firstMulti = searchExe.firstMulti
+  yarns = searchExe.yarns
+  api = searchExe.api
+  sortKey = api.sortKey
 
-  searchExe.yarnSize = yarnSize
-  searchExe.complexity = complexity
-  searchExe.bounded = bounded
-  searchExe.intraEdges = intraEdges
-  searchExe.bounds = bounds
+  yarnsSorted = {}
+  yarnsLookup = {}
+  boundDir = {}
 
-  displayChunks(searchExe)
+  plan = searchExe.stitchPlan
+  planEdges = plan[1]
+
+  toSort = set()
+
+  for (e, dir) in planEdges:
+    isMulti = e >= firstMulti
+    (f, rela, t) = qedges[e]
+    if dir == -1:
+      # never the case for multi-edges
+      (f, t) = (t, f)
+    if isMulti:
+      toSort.add(t)
+      for (i, r) in enumerate(rela):
+        relInfo = relations[r]
+        acro = relInfo.get('name', relInfo['acro'])
+        bDir = HALFBOUNDED[acro]
+        boundDir.setdefault(e, {})[i] = bDir
+    else:
+      relInfo = relations[rela]
+      acro = relInfo.get('name', relInfo['acro'])
+      bDir = HALFBOUNDED.get(acro, None)
+      if bDir:
+        toSort.add(t)
+        # the planEdges do not have two directions of the same edge
+        boundDir[e] = bDir * dir
+
+  for t in toSort:
+    data = array('I', sorted(
+        yarns[t],
+        key=sortKey,
+    ))
+    yarnsSorted[t] = data
+    yarnsLookup[t] = {n: i for (i, n) in enumerate(data)}
+  searchExe.yarnsSorted = yarnsSorted
+  searchExe.yarnsLookup = yarnsLookup
+  searchExe.boundDir = boundDir
 
 
 def displayPlan(searchExe, details=False):
@@ -157,9 +168,10 @@ def displayPlan(searchExe, details=False):
   qedges = searchExe.qedges
   (qs, es) = searchExe.stitchPlan
   offset = searchExe.offset
+
   if details:
     info(f'Search with {len(qs)} objects and {len(es)} relations', tm=False, cache=msgCache)
-    info('Results are instantiations of the following objects:', tm=False)
+    info('Results are instantiations of the following objects:', tm=False, cache=msgCache)
     for q in qs:
       displayNode(searchExe, q)
     if len(es) != 0:
@@ -172,8 +184,10 @@ def displayPlan(searchExe, details=False):
       if firstDir == -1:
         (f, t) = (t, f)
       displayNode(searchExe, f, pos2=True)
+
+      nodesSeen = {f}
       for e in es:
-        displayEdge(searchExe, *e)
+        nodesSeen |= displayEdge(searchExe, *e, nodesSeen)
   info('The results are connected to the original search template as follows:', cache=msgCache)
 
   resultNode = {}
@@ -187,46 +201,18 @@ def displayPlan(searchExe, details=False):
   setSilent(wasSilent)
 
 
-def displayChunks(searchExe):
-  if not searchExe.good:
-    return
-  api = searchExe.api
-  setSilent = api.setSilent
-  isSilent = api.isSilent
-  info = api.info
-  wasSilent = isSilent()
-  setSilent(False)
-  msgCache = searchExe.msgCache
-  chunks = searchExe.bounded
-  intraEdges = searchExe.intraEdges
-  yarnSize = searchExe.yarnSize
-  complexity = searchExe.complexity
-
-  info(f'complexity: {complexity:.1e}', cache=msgCache)
-  info(f'{len(chunks)} internally bounded chunks', tm=False, cache=msgCache)
-  for c in chunks:
-    size = yarnSize[c]
-    cRep = ','.join(str(x) for x in sorted(c))
-    info(f'Chunk {cRep} with {size} nodes in its yarns')
-    for e in intraEdges.get(c, []):
-      displayEdge(searchExe, e, 1)
-  info(f'Edges between chunks:')
-
-  setSilent(wasSilent)
-
-
 def displayNode(searchExe, q, pos2=False):
   info = searchExe.api.info
   msgCache = searchExe.msgCache
   qnodes = searchExe.qnodes
   yarns = searchExe.yarns
-  space = ' ' * 19
-  nodeInfo = 'node {} {:>2}-{:<13} ({:>6}   choices)'.format(
+  space = ' ' * 31
+  nodeInfo = 'node {} {:>2}-{:<13} {:>6}   choices'.format(
       space,
       q,
       qnodes[q][0],
       len(yarns[q]),
-  ) if pos2 else 'node {:>2}-{:<13} {} ({:>6}   choices)'.format(
+  ) if pos2 else 'node {:>2}-{:<13} {} {:>6}   choices'.format(
       q,
       qnodes[q][0],
       space,
@@ -235,7 +221,7 @@ def displayNode(searchExe, q, pos2=False):
   info(nodeInfo, tm=False, cache=msgCache)
 
 
-def displayEdge(searchExe, e, dir):
+def displayEdge(searchExe, e, dir, nodesSeen):
   info = searchExe.api.info
   msgCache = searchExe.msgCache
   qnodes = searchExe.qnodes
@@ -246,17 +232,33 @@ def displayEdge(searchExe, e, dir):
   spreadsC = searchExe.spreadsC
   thinned = getattr(searchExe, 'thinned', set())
   (f, rela, t) = qedges[e]
+  if type(f) is not tuple:
+    f = (f,)
+  if type(t) is not tuple:
+    t = (t,)
+  if type(rela) is not tuple:
+    rela = (rela,)
   if dir == -1:
-    (f, rela, t) = (t, converse[rela], f)
+    (f, rela, t) = (t, tuple(converse[r] for r in rela), f)
+
+  nodesInvolved = set(chain(f, t))
+  seen = all(q in nodesSeen for q in nodesInvolved)
+  thinRep = '' if seen else ' (thinned)' if e in thinned else ''
+  spread = (
+      f'{0:>6}  '
+      if seen else
+      f'{spreads.get(e, -1) if dir == 1 else spreadsC.get(e, -1):8.1f}'
+  )
   info(
-      'edge {:>2}-{:<13} {:^2} {:>2}-{:<13} ({:8.1f} choices{})'.format(
-          f,
-          qnodes[f][0],
-          relations[rela]['acro'],
-          t,
-          qnodes[t][0],
-          spreads.get(e, -1) if dir == 1 else spreadsC.get(e, -1),
-          ' (thinned)' if e in thinned else '',
+      'edge {:>8}-{:<13} {:^8} {:>2}-{:<13} {} choices{}'.format(
+          ','.join(str(x) for x in f),
+          ','.join(set(qnodes[x][0] for x in f)),
+          ','.join(relations[x]['acro'] for x in rela),
+          ','.join(str(x) for x in set(t)),
+          ','.join(qnodes[x][0] for x in set(t)),
+          spread,
+          thinRep,
       ),
       tm=False, cache=msgCache
   )
+  return nodesInvolved

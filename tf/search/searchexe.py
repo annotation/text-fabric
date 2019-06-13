@@ -1,7 +1,7 @@
 from .relations import basicRelations
 from .syntax import syntax
 from .semantics import semantics
-from .graph import connectedness, boundedness, displayPlan
+from .graph import connectedness, displayPlan
 from .spin import spinAtoms, spinEdges
 from .stitch import setStrategy, stitch
 
@@ -78,7 +78,6 @@ class SearchExe(object):
     info(f'Constraining search space with {len(self.qedges)} relations ...', cache=msgCache)
     spinEdges(self)
     info(f'\t{len(self.thinned)} edges thinned', cache=msgCache)
-    boundedness(self)
     info(f'Setting up retrieval plan with strategy {self.strategyName} ...', cache=msgCache)
     stitch(self)
     if self.good:
