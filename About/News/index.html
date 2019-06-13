@@ -1346,6 +1346,20 @@ To get the newest unstable version:</p>
 <p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a></p>
 <h3 id="queued-for-next-release">Queued for next release<a class="headerlink" href="#queued-for-next-release" title="Permanent link">&para;</a></h3>
 <hr />
+<h1 id="783">7.8.3<a class="headerlink" href="#783" title="Permanent link">&para;</a></h1>
+<p>2019-06-13</p>
+<p>Performance tweaks in querying.
+Especially long running queries perform better.
+The query planning can now handle multiple relationships of the kind
+<code>a &lt; b</code> and <code>b &lt; c</code>.</p>
+<p>Formerly, every <code>b</code> after <code>a</code> was searched, including the ones after <code>c</code>, and they then failed.
+Now the ones after <code>c</code> are not tried anymore.</p>
+<p>Yet the gain is not as high as I had hoped, because finding the right <code>b</code>-s between <code>a</code> and
+<code>b</code> turns out to be tricky. The machinery for getting that in place and then walking
+in the right direction worked, but was so costly itself, that it defeated the purpose
+of a performance gain.</p>
+<p>Have a look at some
+<a href="https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/test/query/bounded.ipynb">profiling results</a>.</p>
 <h1 id="782">7.8.2<a class="headerlink" href="#782" title="Permanent link">&para;</a></h1>
 <p>2019-06-11</p>
 <p>The performance of the new feature comparison relations turned out to be bad.
