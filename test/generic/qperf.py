@@ -764,21 +764,21 @@ class Comparer(object):
         if resultsN is not None and resultsI is not None:
           resultsC = 'OK' if resultsI == resultsN else resultsI
         if studyN is not None and studyI is not None:
-          studyF = studyI / studyN if studyN else None
-          studyD = studyI - studyN
+          studyF = int(round(1000 * studyI / studyN)) if studyN else None
+          studyD = int(round(studyI - studyN))
         if fetchN is not None and fetchI is not None:
-          fetchF = fetchI / fetchN if fetchN else None
-          fetchD = fetchI - fetchN
+          fetchF = int(round(1000 * fetchI / fetchN)) if fetchN else None
+          fetchD = int(round(fetchI - fetchN))
 
         fields.append('?' if resultsC is None else resultsC)
 
         fields.append('?' if studyI is None else ir(studyI))
         fields.extend([
-            '?' if f is None else f'{f:.3f}' for f in (studyF, studyD)
+            '?' if f is None else f'{f}' for f in (studyF, studyD)
         ])
         fields.append('?' if fetchI is None else ir(fetchI))
         fields.extend([
-            '?' if f is None else f'{f:.3f}' for f in (fetchF, fetchD)
+            '?' if f is None else f'{f}' for f in (fetchF, fetchD)
         ])
 
       compareLines.append(fields)

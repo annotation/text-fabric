@@ -66,11 +66,21 @@ def basicRelations(searchExe, api):
   # CANONICAL BEFORE
 
   def canonicalBeforeR(fTp, tTp):
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
+      return lambda n, m: n < m
+
     return lambda n, m: Crank[n - 1] < Crank[m - 1]
 
   # CANONICAL AFTER
 
   def canonicalAfterR(fTp, tTp):
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
+      return lambda n, m: n > m
+
     return lambda n, m: Crank[n - 1] > Crank[m - 1]
 
   # SAME SLOTS
@@ -1141,12 +1151,14 @@ def add_K_Relations(searchExe, varRels):
       lr = len(relations)
       relations.extend([
           dict(
+              name=acro,
               acro=newAcro,
               spin=r['spin'],
               func=r['func'](k),
               desc=r['desc'],
           ),
           dict(
+              name=acroi,
               acro=newAcroi,
               spin=ri['spin'],
               func=ri['func'](k),
@@ -1202,12 +1214,14 @@ def add_F_Relations(searchExe, varRels):
       funci = ri['func'](*fArgs)
       relations.extend([
           dict(
+              name=acro,
               acro=newAcro,
               spin=spin,
               func=func,
               desc=r['desc'],
           ),
           dict(
+              name=acroi,
               acro=newAcroi,
               spin=spini,
               func=funci,

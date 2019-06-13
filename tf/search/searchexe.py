@@ -1,7 +1,7 @@
 from .relations import basicRelations
 from .syntax import syntax
 from .semantics import semantics
-from .graph import connectedness
+from .graph import connectedness, displayPlan
 from .spin import spinAtoms, spinEdges
 from .stitch import setStrategy, stitch
 
@@ -78,7 +78,7 @@ class SearchExe(object):
     info(f'Constraining search space with {len(self.qedges)} relations ...', cache=msgCache)
     spinEdges(self)
     info(f'\t{len(self.thinned)} edges thinned', cache=msgCache)
-    info('Setting up retrieval plan ...', cache=msgCache)
+    info(f'Setting up retrieval plan with strategy {self.strategyName} ...', cache=msgCache)
     stitch(self)
     if self.good:
       yarnContent = sum(len(y) for y in self.yarns.values())
@@ -147,47 +147,7 @@ class SearchExe(object):
 # SHOWING WITH THE SEARCH GRAPH ###
 
   def showPlan(self, details=False):
-    if not self.good:
-      return
-    api = self.api
-    setSilent = api.setSilent
-    isSilent = api.isSilent
-    info = api.info
-    wasSilent = isSilent()
-    setSilent(False)
-    msgCache = self.msgCache
-    nodeLine = self.nodeLine
-    qedges = self.qedges
-    (qs, es) = self.stitchPlan
-    offset = self.offset
-    if details:
-      info(f'Search with {len(qs)} objects and {len(es)} relations', tm=False, cache=msgCache)
-      info('Results are instantiations of the following objects:', tm=False)
-      for q in qs:
-        self._showNode(q)
-      if len(es) != 0:
-        info('Performance parameters:', tm=False, cache=msgCache)
-        for (k, v) in self.perfParams.items():
-          info(f'\t{k:<20} = {v:>7}', tm=False, cache=msgCache)
-        info('Instantiations are computed along the following relations:', tm=False, cache=msgCache)
-        (firstE, firstDir) = es[0]
-        (f, rela, t) = qedges[firstE]
-        if firstDir == -1:
-          (f, t) = (t, f)
-        self._showNode(f, pos2=True)
-        for e in es:
-          self._showEdge(*e)
-    info('The results are connected to the original search template as follows:', cache=msgCache)
-
-    resultNode = {}
-    for q in qs:
-      resultNode[nodeLine[q]] = q
-    for (i, line) in enumerate(self.searchLines):
-      rNode = resultNode.get(i, '')
-      prefix = '' if rNode == '' else 'R'
-      info(f'{i + offset:>2} {prefix:<1}{rNode:<2} {line}', tm=False, cache=msgCache)
-
-    setSilent(wasSilent)
+    displayPlan(self, details=details)
 
   def showOuterTemplate(self, msgCache):
     error = self.api.error
@@ -198,54 +158,6 @@ class SearchExe(object):
       for (i, line) in enumerate(outerTemplate.split('\n')):
         error(f'{i:>2} {line}', tm=False, cache=msgCache)
       error(f'line {offset:>2}: Error under {quKind}:', tm=False, cache=msgCache)
-
-  def _showNode(self, q, pos2=False):
-    info = self.api.info
-    msgCache = self.msgCache
-    qnodes = self.qnodes
-    yarns = self.yarns
-    space = ' ' * 19
-    nodeInfo = 'node {} {:>2}-{:<13} ({:>6}   choices)'.format(
-        space,
-        q,
-        qnodes[q][0],
-        len(yarns[q]),
-    ) if pos2 else 'node {:>2}-{:<13} {} ({:>6}   choices)'.format(
-        q,
-        qnodes[q][0],
-        space,
-        len(yarns[q]),
-    )
-    info(nodeInfo, tm=False, cache=msgCache)
-
-  def _showEdge(self, e, dir):
-    info = self.api.info
-    msgCache = self.msgCache
-    qnodes = self.qnodes
-    qedges = self.qedges
-    converse = self.converse
-    relations = self.relations
-    spreads = self.spreads
-    spreadsC = self.spreadsC
-    thinned = self.thinned
-    (f, rela, t) = qedges[e]
-    if dir == -1:
-      (f, rela, t) = (t, converse[rela], f)
-    info(
-        'edge {:>2}-{:<13} {:^2} {:>2}-{:<13} ({:8.1f} choices{})'.format(
-            f,
-            qnodes[f][0],
-            relations[rela]['acro'],
-            t,
-            qnodes[t][0],
-            spreads.get(e, -1) if dir == 1 else spreadsC.get(e, -1),
-            ' (thinned)' if e in thinned else '',
-        ), tm=False, cache=msgCache
-    )
-
-  def _showYarns(self):
-    for q in range(len(self.qnodes)):
-      self._showNode(q)
 
 # TOP-LEVEL IMPLEMENTATION METHODS
 

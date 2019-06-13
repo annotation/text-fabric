@@ -431,7 +431,7 @@ def spinEdges(searchExe):
   uptodate = searchExe.uptodate
   thinned = {}
 
-  estimateSpreads(searchExe)
+  estimateSpreads(searchExe, both=True)
 
   for e in range(len(qedges)):
     uptodate[e] = False
