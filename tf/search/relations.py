@@ -148,6 +148,37 @@ def basicRelations(searchExe, api):
         nmin = n - 1
         if n < maxSlotP:
           nA = array('I', (n,))
+          yield n
+          for m in ClevUp[nmin]:
+            if Eoslots[m - maxSlotP] == nA:
+              yield m
+          return
+        nSlots = Eoslots[n - maxSlotP]
+        if len(nSlots) == 1:
+          slot1 = nSlots[0]
+          nA = array('I', (slot1,))
+          yield n
+          yield slot1
+          for m in ClevUp[nmin]:
+            if Eoslots[m - maxSlotP] == nA:
+              yield m
+          return
+        yield n
+        for m in ClevUp[nmin]:
+          if n in ClevUp[m - 1]:
+            yield m
+      return xx
+
+  def sameSlotsR_ORIG(fTp, tTp):
+    isSlotF = isSlotType(fTp)
+    isSlotT = isSlotType(tTp)
+    if isSlotF and isSlotT:
+      return lambda n: (n, )
+    else:
+      def xx(n):
+        nmin = n - 1
+        if n < maxSlotP:
+          nA = array('I', (n,))
           return chain((m for m in ClevUp[nmin] if Eoslots[m - maxSlotP] == nA), (n,))
         nSlots = Eoslots[n - maxSlotP]
         if len(nSlots) == 1:
