@@ -11,6 +11,10 @@ from .syntax import reTp
 # LOW-LEVEL NODE RELATIONS SEMANTICS ###
 
 
+OTYPE = WARP[0]
+OSLOTS = WARP[1]
+
+
 def basicRelations(searchExe, api):
   C = api.C
   F = api.F
@@ -169,30 +173,12 @@ def basicRelations(searchExe, api):
             yield m
       return xx
 
-  def sameSlotsR_ORIG(fTp, tTp):
-    isSlotF = isSlotType(fTp)
-    isSlotT = isSlotType(tTp)
-    if isSlotF and isSlotT:
-      return lambda n: (n, )
-    else:
-      def xx(n):
-        nmin = n - 1
-        if n < maxSlotP:
-          nA = array('I', (n,))
-          return chain((m for m in ClevUp[nmin] if Eoslots[m - maxSlotP] == nA), (n,))
-        nSlots = Eoslots[n - maxSlotP]
-        if len(nSlots) == 1:
-          slot1 = nSlots[0]
-          nA = array('I', (slot1,))
-          return chain((m for m in ClevUp[nmin] if Eoslots[m - maxSlotP] == nA), (n,), nA)
-        return chain((m for m in ClevUp[nmin] if n in ClevUp[m - 1]), (n,))
-      return xx
-
   # OVERLAP
 
   def spinOverlap(fTp, tTp):
     isSlotF = isSlotType(fTp)
     isSlotT = isSlotType(tTp)
+
     if isSlotF and isSlotT:
 
       def doyarns(yF, yT):
@@ -200,6 +186,7 @@ def basicRelations(searchExe, api):
         return (x, x)
 
       return doyarns
+
     elif isSlotF or isSlotT:
 
       def doyarns(yS, y2):
@@ -213,6 +200,7 @@ def basicRelations(searchExe, api):
 
       if isSlotF:
         return doyarns
+
       else:
 
         def xx(yF, yT):
@@ -449,6 +437,7 @@ def basicRelations(searchExe, api):
           return fok & lok
 
       return xx
+
     elif isSlotT:
 
       def xx(n):
@@ -458,6 +447,7 @@ def basicRelations(searchExe, api):
         return (fs, ) if fs == ls else ()
 
       return xx
+
     else:
       if isSlotT is None:
 
@@ -822,7 +812,7 @@ def basicRelations(searchExe, api):
   def spinLeftGisRightF(f, g):
     return spinLeftFisRightG(g, f)
 
-  def leftFisRightGR(f, g):
+  def leftFisRightGR_ORIG(f, g):
 
     def zz(fTp, tTp):
       fData = Fs(f).v
@@ -831,6 +821,51 @@ def basicRelations(searchExe, api):
       def uu(n, m):
         nVal = fData(n)
         return False if nVal is None else nVal == gData(m)
+      return uu
+
+    return zz
+
+  def leftFisRightGR_TRY(f, g):
+    # very slow, nearly an order slower than the function below
+
+    def zz(fTp, tTp):
+      fData = Fs(f).v if f == OTYPE else lambda n: Fs(f).data.get(n, None)
+      gData = Fs(g).v if g == OTYPE else lambda n: Fs(g).data.get(n, None)
+
+      def uu(n, m):
+        nVal = fData(n)
+        return False if nVal is None else nVal == gData(m)
+      return uu
+
+    return zz
+
+  def leftFisRightGR(f, g):
+
+    def zz(fTp, tTp):
+      fData = Fs(f).v if f == OTYPE else Fs(f).data
+      gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+      if f == OTYPE and g == OTYPE:
+        def uu(n, m):
+          nVal = fData(n)
+          return False if nVal is None else nVal == gData(m)
+        return uu
+
+      if f == OTYPE:
+        def uu(n, m):
+          nVal = fData(n)
+          return False if nVal is None else nVal == gData.get(m, None)
+        return uu
+
+      if g == OTYPE:
+        def uu(n, m):
+          nVal = fData.get(n, None)
+          return False if nVal is None else nVal == gData(m)
+        return uu
+
+      def uu(n, m):
+        nVal = fData.get(n, None)
+        return False if nVal is None else nVal == gData.get(m, None)
       return uu
 
     return zz
@@ -885,15 +920,54 @@ def basicRelations(searchExe, api):
   def leftFmatchRightGR(f, rPat, rRe, g):
 
     def zz(fTp, tTp):
-      fData = Fs(f).v
-      gData = Fs(g).v
+      fData = Fs(f).v if f == OTYPE else Fs(f).data
+      gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+      if f == OTYPE and g == OTYPE:
+        def uu(n, m):
+          nVal = fData(n)
+          if nVal is None:
+            return False
+          nVal = rRe.sub('', nVal)
+          mVal = gData(m)
+          if mVal is None:
+            return False
+          mVal = rRe.sub('', mVal)
+          return nVal == mVal
+        return uu
+
+      if f == OTYPE:
+        def uu(n, m):
+          nVal = fData(n)
+          if nVal is None:
+            return False
+          nVal = rRe.sub('', nVal)
+          mVal = gData.get(m, None)
+          if mVal is None:
+            return False
+          mVal = rRe.sub('', mVal)
+          return nVal == mVal
+        return uu
+
+      if g == OTYPE:
+        def uu(n, m):
+          nVal = fData.get(n, None)
+          if nVal is None:
+            return False
+          nVal = rRe.sub('', nVal)
+          mVal = gData(m)
+          if mVal is None:
+            return False
+          mVal = rRe.sub('', mVal)
+          return nVal == mVal
+        return uu
 
       def uu(n, m):
-        nVal = fData(n)
+        nVal = fData.get(n, None)
         if nVal is None:
           return False
         nVal = rRe.sub('', nVal)
-        mVal = gData(m)
+        mVal = gData.get(m, None)
         if mVal is None:
           return False
         mVal = rRe.sub('', mVal)
@@ -910,12 +984,33 @@ def basicRelations(searchExe, api):
   def leftFunequalRightGR(f, g):
 
     def zz(fTp, tTp):
-      fData = Fs(f).v
-      gData = Fs(g).v
+      fData = Fs(f).v if f == OTYPE else Fs(f).data
+      gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+      if f == OTYPE and g == OTYPE:
+        def uu(n, m):
+          nVal = fData(n)
+          mVal = gData(m)
+          return nVal is None and mVal is None or nVal != mVal
+        return uu
+
+      if f == OTYPE:
+        def uu(n, m):
+          nVal = fData(n)
+          mVal = gData.get(m, None)
+          return nVal is None and mVal is None or nVal != mVal
+        return uu
+
+      if g == OTYPE:
+        def uu(n, m):
+          nVal = fData.get(n, None)
+          mVal = gData(m)
+          return nVal is None and mVal is None or nVal != mVal
+        return uu
 
       def uu(n, m):
-        nVal = fData(n)
-        mVal = gData(m)
+        nVal = fData.get(n, None)
+        mVal = gData.get(m, None)
         return nVal is None and mVal is None or nVal != mVal
       return uu
 
@@ -929,12 +1024,33 @@ def basicRelations(searchExe, api):
   def leftFgreaterRightGR(f, g):
 
     def zz(fTp, tTp):
-      fData = Fs(f).v
-      gData = Fs(g).v
+      fData = Fs(f).v if f == OTYPE else Fs(f).data
+      gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+      if f == OTYPE and g == OTYPE:
+        def uu(n, m):
+          nVal = fData(n)
+          mVal = gData(m)
+          return nVal is not None and mVal is not None and nVal > mVal
+        return uu
+
+      if f == OTYPE:
+        def uu(n, m):
+          nVal = fData(n)
+          mVal = gData.get(m, None)
+          return nVal is not None and mVal is not None and nVal > mVal
+        return uu
+
+      if g == OTYPE:
+        def uu(n, m):
+          nVal = fData.get(n, None)
+          mVal = gData(m)
+          return nVal is not None and mVal is not None and nVal > mVal
+        return uu
 
       def uu(n, m):
-        nVal = fData(n)
-        mVal = gData(m)
+        nVal = fData.get(n, None)
+        mVal = gData.get(m, None)
         return nVal is not None and mVal is not None and nVal > mVal
       return uu
 
@@ -948,12 +1064,33 @@ def basicRelations(searchExe, api):
   def leftFlesserRightGR(f, g):
 
     def zz(fTp, tTp):
-      fData = Fs(f).v
-      gData = Fs(g).v
+      fData = Fs(f).v if f == OTYPE else Fs(f).data
+      gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+      if f == OTYPE and g == OTYPE:
+        def uu(n, m):
+          nVal = fData(n)
+          mVal = gData(m)
+          return nVal is not None and mVal is not None and nVal < mVal
+        return uu
+
+      if f == OTYPE:
+        def uu(n, m):
+          nVal = fData(n)
+          mVal = gData.get(m, None)
+          return nVal is not None and mVal is not None and nVal < mVal
+        return uu
+
+      if g == OTYPE:
+        def uu(n, m):
+          nVal = fData.get(n, None)
+          mVal = gData(m)
+          return nVal is not None and mVal is not None and nVal < mVal
+        return uu
 
       def uu(n, m):
-        nVal = fData(n)
-        mVal = gData(m)
+        nVal = fData.get(n, None)
+        mVal = gData.get(m, None)
         return nVal is not None and mVal is not None and nVal < mVal
       return uu
 
@@ -1123,7 +1260,7 @@ def basicRelations(searchExe, api):
   nodeMap = {}
 
   for efName in sorted(api.TF.featureSets['edges']):
-    if efName == WARP[1]:
+    if efName == OSLOTS:
       continue
     r = len(relations)
 
@@ -1161,7 +1298,7 @@ def basicRelations(searchExe, api):
       f'{r["acro"]:>23} {r["desc"]}' for r in searchExe.relations if r['desc'] is not None
   )
   searchExe.relationLegend += f'''
-The warp feature "{WARP[1]}" cannot be used in searches.
+The warp feature "{OSLOTS}" cannot be used in searches.
 One of the above relations on nodes and/or slots will suit you better.
 '''
   searchExe.converse = dict(

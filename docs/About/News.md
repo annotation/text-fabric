@@ -43,6 +43,13 @@ A small performance imporvement
 
 ---
 
+# 7.8.4
+
+2019-06-14
+
+All queries go a tad faster.
+Additional small fixes.
+
 # 7.8.3
 
 2019-06-13

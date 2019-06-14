@@ -74,6 +74,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
   msgCache = searchExe.msgCache
   indent = searchExe.api.indent
   showQuantifiers = searchExe.showQuantifiers
+  silent = searchExe.silent
   level = searchExe.level
   universe = yarn
   cleanAtom = cleanParent(atom, parentName)
@@ -95,6 +96,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
         sets=searchExe.sets,
         shallow=True,
         showQuantifiers=showQuantifiers,
+        silent=silent,
         msgCache=msgCache,
         setInfo=searchExe.setInfo,
     )
@@ -120,6 +122,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
         sets=searchExe.sets,
         shallow=False,
         showQuantifiers=showQuantifiers,
+        silent=silent,
         msgCache=msgCache,
         setInfo=searchExe.setInfo,
     )
@@ -149,6 +152,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
           sets=searchExe.sets,
           shallow=sizeA,
           showQuantifiers=showQuantifiers,
+          silent=silent,
           msgCache=msgCache,
           setInfo=searchExe.setInfo,
       )
@@ -187,6 +191,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
           sets=searchExe.sets,
           shallow=True,
           showQuantifiers=showQuantifiers,
+          silent=silent,
           msgCache=msgCache,
           setInfo=searchExe.setInfo,
       )
