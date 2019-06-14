@@ -706,37 +706,59 @@ def _stitchResults(searchExe):
         return
 
       sM = stitch[t]
+
+      # case where sM is already in the graph: just check the conditions
+
       if sM is not None:
-        stitchFurther = (
-            all(r[i](stitch[x], sM) for (i, x) in enumerate(f))
-            if isMulti else (
-                sM in r(stitch[f])
-                if nparams == 1 else
-                r(stitch[f], sM)
-            )
-        )
-        if stitchFurther:
-          for s in stitchOn(e + 1):
-            yield s
+        if isMulti:
+          satisfied = True
+          for (i, x) in enumerate(f):
+            if not r[i](stitch[x], sM):
+              satisfied = False
+              break
+          if satisfied:
+            for s in stitchOn(e + 1):
+              yield s
+        else:
+          sN = stitch[f]
+          if nparams == 1:
+            if sM in r(sN):
+              for s in stitchOn(e + 1):
+                yield s
+          else:
+            if r(sN, sM):
+              for s in stitchOn(e + 1):
+                yield s
         return
 
-      #   (m for m in yarnT if all(r[i](stitch[x], m) for (i, x) in enumerate(f)))
-      #   (m for m in yarnT if all(ri(stitch[xi], m) for (ri, xi) in zip(r, f)))
+      # case where we have to visit all choices in the target yarn
 
-      mFromN = (
-          (m for m in yarnT if all(r[i](stitch[x], m) for (i, x) in enumerate(f)))
-          if isMulti else
-          (
-              (m for m in r(stitch[f]) if m in yarnT)
-              if nparams == 1 else
-              (m for m in yarnT if r(stitch[f], m))
-          )
-      )
+      if isMulti:
+        for m in yarnT:
+          satisfied = True
+          for (i, x) in enumerate(f):
+            if not r[i](stitch[x], m):
+              satisfied = False
+              break
+          if satisfied:
+            stitch[t] = m
+            for s in stitchOn(e + 1):
+              yield s
+      else:
+        sN = stitch[f]
+        if nparams == 1:
+          for m in r(sN):
+            if m in yarnT:
+              stitch[t] = m
+              for s in stitchOn(e + 1):
+                yield s
+        else:
+          for m in yarnT:
+            if r(sN, m):
+              stitch[t] = m
+              for s in stitchOn(e + 1):
+                yield s
 
-      for m in mFromN:
-        stitch[t] = m
-        for s in stitchOn(e + 1):
-          yield s
       stitch[t] = None
 
     for s in stitchOn(0):
@@ -786,39 +808,64 @@ def _stitchResults(searchExe):
           return
 
       sM = stitch[t]
+
+      # case where sM is already in the graph: just check the conditions
+
       if sM is not None:
         if t == resultQmax:
           result = tuple(stitch[qPermutedPos[q]] for q in qs)
           if result in resultSet:
             return
 
-        stitchFurther = (
-            all(r[i](stitch[x], sM) for (i, x) in enumerate(f))
-            if isMulti else (
-                sM in r(stitch[f])
-                if nparams == 1 else
-                r(stitch[f], sM)
-            )
-        )
-        if stitchFurther:
-          for s in stitchOn(e + 1):
-            yield s
+        if isMulti:
+          satisfied = True
+          for (i, x) in enumerate(f):
+            if not r[i](stitch[x], sM):
+              satisfied = False
+              break
+          if satisfied:
+            for s in stitchOn(e + 1):
+              yield s
+        else:
+          sN = stitch[f]
+          if nparams == 1:
+            if sM in r(sN):
+              for s in stitchOn(e + 1):
+                yield s
+          else:
+            if r(sN, sM):
+              for s in stitchOn(e + 1):
+                yield s
         return
 
-      mFromN = (
-          (m for m in yarnT if all(r[i](stitch[x], m) for (i, x) in enumerate(f)))
-          if isMulti else
-          (
-              (m for m in r(stitch[f]) if m in yarnT)
-              if nparams == 1 else
-              (m for m in yarnT if r(stitch[f], m))
-          )
-      )
+      # case where we have to visit all choices in the target yarn
 
-      for m in mFromN:
-        stitch[t] = m
-        for s in stitchOn(e + 1):
-          yield s
+      if isMulti:
+        for m in yarnT:
+          satisfied = True
+          for (i, x) in enumerate(f):
+            if not r[i](stitch[x], m):
+              satisfied = False
+              break
+          if satisfied:
+            stitch[t] = m
+            for s in stitchOn(e + 1):
+              yield s
+      else:
+        sN = stitch[f]
+        if nparams == 1:
+          for m in r(sN):
+            if m in yarnT:
+              stitch[t] = m
+              for s in stitchOn(e + 1):
+                yield s
+        else:
+          for m in yarnT:
+            if r(sN, m):
+              stitch[t] = m
+              for s in stitchOn(e + 1):
+                yield s
+
       stitch[t] = None
 
     if shallow == 1:
