@@ -289,50 +289,6 @@ def estimateSpreads(searchExe, both=False):
   searchExe.spreadsC = spreadsC
 
 
-def _chooseEdge_____(searchExe):
-  F = searchExe.api.F
-  yarnFractionNode = {}
-  qnodes = searchExe.qnodes
-  qedges = searchExe.qedges
-  spreads = searchExe.spreads
-  sets = searchExe.sets
-  for (q, qdata) in enumerate(qnodes):
-    otype = qdata[0]
-    if sets is not None and otype in sets:
-      nodeSet = sets[otype]
-      nOtype = len(nodeSet)
-    else:
-      (begin, end) = F.otype.sInterval(otype)
-      nOtype = 1 + end - begin
-    nYarn = len(searchExe.yarns[q])
-    yf = nYarn / nOtype
-    yarnFractionNode[q] = yf * yf
-  yarnFractionEdge = {}
-  for (e, (f, rela, t)) in enumerate(qedges):
-    if searchExe.uptodate[e]:
-      continue
-    yarnFractionEdge[e] = yarnFractionNode[f] + yarnFractionNode[t] + spreads[e]
-  firstEdge = sorted(yarnFractionEdge.items(), key=lambda x: x[1])[0][0]
-  return firstEdge
-
-
-def _chooseEdge_____1(searchExe):
-  qedges = searchExe.qedges
-  yarns = searchExe.yarns
-  spreads = searchExe.spreads
-  yarnRatio = {}
-  for (e, (f, rela, t)) in enumerate(qedges):
-    if searchExe.uptodate[e]:
-      continue
-    yarnFl = len(yarns[f])
-    yarnTl = len(yarns[t])
-    yarnRatio[e] = (
-        max((yarnFl / yarnTl, yarnTl / yarnFl)) / (spreads[e] or 0.01)
-    )
-  firstEdge = sorted(yarnRatio.items(), key=lambda x: -x[1])[0][0]
-  return firstEdge
-
-
 def _chooseEdge(searchExe):
   qedges = searchExe.qedges
   yarns = searchExe.yarns
