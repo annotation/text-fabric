@@ -1390,6 +1390,28 @@ for this app.</p>
 </tr>
 </tbody>
 </table>
+<details class="explanation"><summary>OPTIONS</summary><p>Each option is itself a tuple of 5 elements, like</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="p">(</span><span class="s1">&#39;showLines&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">&#39;checkbox&#39;</span><span class="p">,</span> <span class="s1">&#39;linen&#39;</span><span class="p">,</span> <span class="s1">&#39;show line numbers&#39;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table>
+
+<p>Such an option triggers the display of an HTML element in the TF browser
+by which the user can specify a value for an option:</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
+2</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;linen&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;showLines&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>show line numbers<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</pre></div>
+</td></tr></table>
+
+<p>So the members of the tuple are:</p>
+<ul>
+<li>name of the option, in HTML and in Python</li>
+<li>default value</li>
+<li>type of <code>&lt;input&gt;</code>, see <a href="">input</a> </li>
+<li>id string for the input element in HTML</li>
+<li>label by which the option is presented to the user</li>
+</ul>
+</details>
 <p>The app itself is driven by the following settings</p>
 <table>
 <thead>
