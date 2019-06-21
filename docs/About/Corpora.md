@@ -16,14 +16,22 @@ The list of current apps is
 
 acronym | language/writing system | name | period | long name
 --- | --- | --- | --- | ---
+[banks]({{anapp}}banks) | modern english | Iain M. Banks | 1984 - 1987 AD | 99 words from the SF novel [Consider Phlebas]({{banksphlebas}})
 [bhsa]({{anapp}}bhsa) | Hebrew | Hebrew Bible | 1000 BC - 900 AD | [Biblia Hebraica Stuttgartensia (Amstelodamensis)]({{bhsaabout}})
 [dss]({{anapp}}dss) | Hebrew | Dead Sea Scrolls | 300 BC - 100 AD | [Transcriptions based on Martin Abegg's data files]({{dssabout}})
-[peshitta]({{anapp}}peshitta) | Syriac | Syriac Old Testament | 1000 BC - 900 AD | [Vetus Testamentum Syriace]({{peshittaabout}})
-[syrnt]({{anapp}}syrnt) | Syriac | Syriac New Testament | 0 - 1000 AD | [Novum Testamentum Syriace]({{syrntabout}})
-[quran]({{anapp}}quran) | Arabic | Quran | 600 - 900 AD | [Quranic Arabic Corpus]({{quranabout}})
+[nena]({{anapp}}nena) | Aramaic | North Eastern Neo-Aramaic Corpus | 2000 AD | [Nena Cambridge]({{nena}})
 [oldbabylonian]({{anapp}}oldbabylonian) | Akkadian / cuneiform | Old Babylonian letters | 1900 - 1600 BC | [Altbabylonische Briefe in Umschrift und Übersetzung]({{oldbabylonianabout}})
+[peshitta]({{anapp}}peshitta) | Syriac | Syriac Old Testament | 1000 BC - 900 AD | [Vetus Testamentum Syriace]({{peshittaabout}})
+[quran]({{anapp}}quran) | Arabic | Quran | 600 - 900 AD | [Quranic Arabic Corpus]({{quranabout}})
+[syrnt]({{anapp}}syrnt) | Syriac | Syriac New Testament | 0 - 1000 AD | [Novum Testamentum Syriace]({{syrntabout}})
 [uruk]({{anapp}}uruk) | proto-cuneiform | Uruk | 4000 - 3100 BC | [Archaic tablets from Uruk]({{urukabout}})
-[banks]({{anapp}}banks) | modern english | Iain M. Banks | 1984 - 1987 AD | 99 words from the SF novel [Consider Phlebas]({{banksphlebas}})
+
+In the works:
+
+acronym | language/writing system | name | period | long name
+--- | --- | --- | --- | ---
+[oldassyrian]({{anapp}}oldassyrian) | Akkadian / cuneiform | Old Assyrian documents | 2000 - 1900 | [About]({{oldassyrianabout}})
+[patristics]({{anapp}}patristics) | Greek | Works by Church Fathers| 200 AD - 600 AD | [PThU]({{patristicsabout}})
 
 All these apps can be found in 
 [annotation]({{an}}) on GitHub.

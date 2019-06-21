@@ -117,11 +117,15 @@ extra:
   moz_color: https://developer.mozilla.org/en-US/docs/Web/CSS/color_value 
   moz_details: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
   moz_length: https://developer.mozilla.org/en-US/docs/Web/CSS/length 
+  moz_input: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
+  nena: https://nena.ames.cam.ac.uk
   ninogh: https://github.com/Nino-cunei
   ninonb: https://nbviewer.jupyter.org/github/Nino-cunei
   node: https://nodejs.org/en/
   oldbabylonianabout: https://github.com/Nino-cunei/oldbabylonian/blob/master/docs/about.md
+  oldassyrianabout: https://github.com/Nino-cunei/oldassyrian/blob/master/docs/about.md
   oracc: http://oracc.museum.upenn.edu/doc/help
+  patristicsabout: https://github.com/pthu/patristics
   peshittaabout: https://github.com/ETCBC/peshitta/blob/master/docs/about.md
   python: https://docs.python.org/3
   pythond: https://www.python.org/downloads/

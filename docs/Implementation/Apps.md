@@ -48,6 +48,29 @@
         PORT['web'] | `8101` | port at which the TF web server listens for requests
         OPTIONS | tuple | names of extra options for searching and displaying query results
 
+        ??? explanation "OPTIONS"
+            Each option is itself a tuple of 5 elements, like
+
+            ```python
+            ('showLines', False, 'checkbox', 'linen', 'show line numbers')
+            ```
+
+            Such an option triggers the display of an HTML element in the TF browser
+            by which the user can specify a value for an option:
+
+            ```html
+            <input type="checkbox" id="linen" name="showLines">
+            <span>show line numbers</span>
+            ```
+
+            So the members of the tuple are:
+
+            *   name of the option, in HTML and in Python
+            *   default value
+            *   type of `<input>`, see [input]({{mozinput}}) 
+            *   id string for the input element in HTML
+            *   label by which the option is presented to the user
+
         The app itself is driven by the following settings
 
         setting | type | description
