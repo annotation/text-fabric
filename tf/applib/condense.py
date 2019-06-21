@@ -2,6 +2,7 @@ def condense(api, tuples, condenseType, multiple=False):
   F = api.F
   E = api.E
   L = api.L
+  fOtype = F.otype.v
   sortNodes = api.sortNodes
   otypeRank = api.otypeRank
   maxSlot = F.otype.maxSlot
@@ -16,7 +17,7 @@ def condense(api, tuples, condenseType, multiple=False):
     tuples = (tuples, )
   for tup in tuples:
     for n in tup:
-      nType = F.otype.v(n)
+      nType = fOtype(n)
       if nType == condenseType:
         containers.setdefault(n, set())
       elif nType == slotType:
@@ -46,6 +47,7 @@ def condenseSet(api, tuples, condenseType, multiple=False):
   F = api.F
   E = api.E
   L = api.L
+  fOtype = F.otype.v
   sortNodes = api.sortNodes
   otypeRank = api.otypeRank
   maxSlot = F.otype.maxSlot
@@ -60,7 +62,7 @@ def condenseSet(api, tuples, condenseType, multiple=False):
     tuples = (tuples, )
   for tup in tuples:
     for n in tup:
-      nType = F.otype.v(n)
+      nType = fOtype(n)
       if nType == condenseType:
         containers.add(n)
       elif nType == slotType:

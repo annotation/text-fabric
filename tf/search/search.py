@@ -186,6 +186,7 @@ class Search(object):
     T = self.api.T
     F = self.api.F
     E = self.api.E
+    fOtype = F.otype.v
     slotType = F.otype.slotType
     maxSlot = F.otype.maxSlot
     eoslots = E.oslots.data
@@ -195,7 +196,7 @@ class Search(object):
       return ''
     fields = []
     for (i, n) in enumerate(r):
-      otype = F.otype.v(n)
+      otype = fOtype(n)
       words = [n] if otype == slotType else eoslots[n - maxSlot - 1]
       if otype == T.sectionTypes[2]:
         field = '{} {}:{}'.format(*T.sectionFromNode(n))

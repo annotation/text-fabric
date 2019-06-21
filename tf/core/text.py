@@ -42,7 +42,7 @@ class Text(object):
         tuple(zip(self.structureTypes, self.structureFeats))
     )
     otypeInfo = api.F.otype
-    otype = otypeInfo.v
+    fOtype = otypeInfo.v
 
     good = True
     if len(self.sectionFeats) != 0 and len(self.sectionTypes) != 0:
@@ -57,7 +57,7 @@ class Text(object):
         cData = Fs(fName).data
         self.nameFromNode[code] = cData
         self.nodeFromName[code] = dict(
-            ((otype(node), name), node)
+            ((fOtype(node), name), node)
             for (node, name) in cData.items()
         )
       for fName in (self.sectionFeats):
@@ -74,8 +74,8 @@ class Text(object):
 
   def _sec0Name(self, n, lang='en'):
     sec0T = self.sectionTypes[0]
-    otype = self.api.F.otype.v
-    refNode = n if otype(n) == sec0T else self.api.L.u(n, sec0T)[0]
+    fOtype = self.api.F.otype.v
+    refNode = n if fOtype(n) == sec0T else self.api.L.u(n, sec0T)[0]
     lookup = (
         self.nameFromNode['' if lang not in self.languages else lang]
     )
@@ -93,10 +93,11 @@ class Text(object):
     F = self.api.F
     E = self.api.E
     L = self.api.L
+    fOtype = F.otype.v
     slotType = F.otype.slotType
     maxSlot = F.otype.maxSlot
     eoslots = E.oslots.data
-    nType = F.otype.v(n)
+    nType = fOtype(n)
 
     if nType == slotType:
       r = n
@@ -225,6 +226,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
     api = self.api
     error = api.error
     F = api.F
+    fOtype = F.otype.v
     hdTop = self.hdTop
 
     if hdTop is None:
@@ -233,7 +235,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
     if node is None:
       return tuple(self.structure(node=t) for t in self.top())
 
-    nType = F.otype.v(node)
+    nType = fOtype(node)
     if nType not in self.structureTypeSet:
       error(f'{node} is an {nType} which is not configured as a structure type', tm=False)
       return None
@@ -275,12 +277,13 @@ There are {len(hdFromNd)} structural elements in the dataset.
     api = self.api
     F = api.F
     error = api.error
+    fOtype = F.otype.v
 
     hdUp = self.hdUp
     if hdUp is None:
       error(f'structure types are not configured', tm=False)
       return None
-    nType = F.otype.v(n)
+    nType = fOtype(n)
     if nType not in self.structureTypeSet:
       error(f'{n} is an {nType} which is not configured as a structure type', tm=False)
       return None
@@ -289,12 +292,13 @@ There are {len(hdFromNd)} structural elements in the dataset.
   def down(self, n):
     api = self.api
     F = api.F
+    fOtype = F.otype.v
     error = api.error
     hdDown = self.hdDown
     if hdDown is None:
       error(f'structure types are not configured', tm=False)
       return None
-    nType = F.otype.v(n)
+    nType = fOtype(n)
     if nType not in self.structureTypeSet:
       error(f'{n} is an {nType} which is not configured as a structure type', tm=False)
       return None
@@ -304,11 +308,12 @@ There are {len(hdFromNd)} structural elements in the dataset.
     api = self.api
     F = api.F
     error = api.error
+    fOtype = F.otype.v
     hdFromNd = self.hdFromNd
     if hdFromNd is None:
       error(f'structure types are not configured', tm=False)
       return None
-    nType = F.otype.v(n)
+    nType = fOtype(n)
     if nType not in self.structureTypeSet:
       error(f'{n} is an {nType} which is not configured as a structure type', tm=False)
       return None
@@ -332,6 +337,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
     L = api.L
     error = api.error
 
+    fOtype = F.otype.v
     slotType = F.otype.slotType
     maxSlot = F.otype.maxSlot
     eoslots = E.oslots.data
@@ -345,7 +351,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
       return ''
 
     def rescue(n):
-      return f'{F.otype.v(n)}{n}'
+      return f'{fOtype(n)}{n}'
 
     single = type(nodes) is int
     material = []
@@ -386,7 +392,7 @@ EXPLANATION: T.text) called with parameters:
 ''', tm=False)
 
     for node in nodes:
-      nType = F.otype.v(node)
+      nType = fOtype(node)
       if explain:
         error(f'\tNODE: {nType} {node}', tm=False)
       if descend:
@@ -478,7 +484,7 @@ EXPLANATION: T.text) called with parameters:
         rep = repf(n)
         material.append(rep)
         if explain:
-          error(f'\t\t\t{F.otype.v(n)} {n} ADDS "{rep}"', tm=False)
+          error(f'\t\t\t{fOtype(n)} {n} ADDS "{rep}"', tm=False)
 
     if not good:
       error('Text format "{DEFAULT_FORMAT}" not defined in otext.tf', tm=False)

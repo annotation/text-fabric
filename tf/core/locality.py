@@ -7,6 +7,7 @@ class Locality(object):
     if n <= 0:
       return tuple()
     Fotype = self.api.F.otype
+    fOtype = Fotype.v
     maxNode = Fotype.maxNode
     if n > maxNode:
       return tuple()
@@ -15,10 +16,11 @@ class Locality(object):
     if otype is None:
       return tuple(levUp[n - 1])
     else:
-      return tuple(m for m in levUp[n - 1] if Fotype.v(m) == otype)
+      return tuple(m for m in levUp[n - 1] if fOtype(m) == otype)
 
   def d(self, n, otype=None):
     Fotype = self.api.F.otype
+    fOtype = Fotype.v
     maxSlot = Fotype.maxSlot
     if n <= maxSlot:
       return tuple()
@@ -41,12 +43,13 @@ class Locality(object):
           key=lambda m: Crank[m - 1],
       ))
     else:
-      return tuple(m for m in levDown[n - maxSlot - 1] if Fotype.v(m) == otype)
+      return tuple(m for m in levDown[n - maxSlot - 1] if fOtype(m) == otype)
 
   def p(self, n, otype=None):
     if n <= 1:
       return tuple()
     Fotype = self.api.F.otype
+    fOtype = Fotype.v
     maxNode = Fotype.maxNode
     if n > maxNode:
       return tuple()
@@ -64,12 +67,13 @@ class Locality(object):
     if otype is None:
       return result
     else:
-      return tuple(m for m in result if Fotype.v(m) == otype)
+      return tuple(m for m in result if fOtype(m) == otype)
 
   def n(self, n, otype=None):
     if n <= 0:
       return tuple()
     Fotype = self.api.F.otype
+    fOtype = Fotype.v
     maxNode = Fotype.maxNode
     maxSlot = Fotype.maxSlot
     if n == maxSlot:
@@ -89,4 +93,4 @@ class Locality(object):
     if otype is None:
       return result
     else:
-      return tuple(m for m in result if Fotype.v(m) == otype)
+      return tuple(m for m in result if fOtype(m) == otype)

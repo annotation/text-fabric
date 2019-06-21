@@ -113,6 +113,7 @@ def table(
 
   api = app.api
   F = api.F
+  fOtype = F.otype.v
 
   item = d.condenseType if d.condensed else RESULT
 
@@ -125,7 +126,7 @@ def table(
   one = True
   for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_TABLE, item):
     if one:
-      heads = '</th><th>'.join(F.otype.v(n) for n in tup)
+      heads = '</th><th>'.join(fOtype(n) for n in tup)
       html.append(
           f'''
 <tr class="tf">
@@ -172,6 +173,8 @@ def plainTuple(
   api = app.api
   F = api.F
   T = api.T
+
+  fOtype = F.otype.v
 
   if d.withPassage:
     passageNode = _getRefMember(app, tup, d.linked, d.condensed)
@@ -264,7 +267,7 @@ def plainTuple(
     return html
   head = [
       '<tr class="tf"><th class="tf">n</th><th class="tf">' +
-      ('</th><th class="tf">'.join(F.otype.v(n) for n in tup)) +
+      ('</th><th class="tf">'.join(fOtype(n) for n in tup)) +
       '</th></tr>'
   ]
   head.append(html)
@@ -289,8 +292,9 @@ def plain(
   F = api.F
   T = api.T
   sectionTypes = T.sectionTypes
+  fOtype = F.otype.v
 
-  nType = F.otype.v(n)
+  nType = fOtype(n)
   passage = ''
 
   if d.withPassage:
@@ -418,12 +422,13 @@ def pretty(
   F = api.F
   L = api.L
   T = api.T
+  fOtype = F.otype.v
   otypeRank = api.otypeRank
   sectionTypes = T.sectionTypes
 
   containerN = None
 
-  nType = F.otype.v(n)
+  nType = fOtype(n)
   if d.condensed and d.condenseType:
     if nType == d.condenseType:
       containerN = n
@@ -477,9 +482,10 @@ def prettyPre(
 ):
   api = app.api
   F = api.F
+  fOtype = F.otype.v
 
   slotType = F.otype.slotType
-  nType = F.otype.v(n)
+  nType = fOtype(n)
   boundaryClass = ''
   myStart = None
   myEnd = None
@@ -521,6 +527,7 @@ def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
   F = api.F
   Fs = api.Fs
   T = api.T
+  fOtype = F.otype.v
   otypeRank = api.otypeRank
   sectionTypes = set(T.sectionTypes)
   sectionDepth = len(sectionTypes)
@@ -528,7 +535,7 @@ def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
     return ()
   firstResult = results[0]
   nTuple = len(firstResult)
-  refColumns = [i for (i, n) in enumerate(firstResult) if F.otype.v(n) not in sectionTypes]
+  refColumns = [i for (i, n) in enumerate(firstResult) if fOtype(n) not in sectionTypes]
   refColumn = refColumns[0] if refColumns else nTuple - 1
   header = ['R'] + [f'S{i}' for i in range(1, sectionDepth + 1)]
   emptyA = []
@@ -545,7 +552,7 @@ def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
   for j in range(nTuple):
     i = j + 1
     n = firstResult[j]
-    nType = F.otype.v(n)
+    nType = fOtype(n)
     header.extend([f'NODE{i}', f'TYPE{i}'])
     if withText(nType):
       header.append(f'TEXT{i}')
@@ -561,7 +568,7 @@ def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
     row.extend(section)
     for j in range(nTuple):
       n = r[j]
-      nType = F.otype.v(n)
+      nType = fOtype(n)
       row.extend((n, nType))
       if withText(nType):
         text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
@@ -573,8 +580,9 @@ def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
 
 def getBoundary(api, n):
   F = api.F
+  fOtype = F.otype.v
   slotType = F.otype.slotType
-  if F.otype.v(n) == slotType:
+  if fOtype(n) == slotType:
     return (n, n)
   E = api.E
   maxSlot = F.otype.maxSlot

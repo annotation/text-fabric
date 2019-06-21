@@ -32,6 +32,7 @@ def getHlAttPlain(app, n, highlights):
   F = api.F
   L = api.L
   T = api.T
+  fOtype = F.otype.v
   sectionTypes = T.sectionTypes
 
   if highlights is None:
@@ -46,14 +47,14 @@ def getHlAttPlain(app, n, highlights):
   upColors = tuple(
       highlights[u]
       for u in L.u(n)
-      if u in highlights and F.otype.v(u) not in sectionTypes
+      if u in highlights and fOtype(u) not in sectionTypes
   )
   upColor = upColors[0] if upColors else None
 
   if color is None and upColor is None:
     return ''
 
-  isSection = F.otype.v(n) in sectionTypes
+  isSection = fOtype(n) in sectionTypes
   hlClass = []
   hlStyle = []
 
@@ -107,6 +108,7 @@ def hlText(app, nodes, highlights, **options):
 
 def getTupleHighlights(api, tuples, highlights, colorMap, condenseType, multiple=False):
   F = api.F
+  fOtype = F.otype.v
   otypeRank = api.otypeRank
 
   condenseRank = otypeRank[condenseType]
@@ -120,7 +122,7 @@ def getTupleHighlights(api, tuples, highlights, colorMap, condenseType, multiple
     tuples = (tuples, )
   for tup in tuples:
     for (i, n) in enumerate(tup):
-      nType = F.otype.v(n)
+      nType = fOtype(n)
       if otypeRank[nType] < condenseRank:
         thisHighlight = None
         if highlights:

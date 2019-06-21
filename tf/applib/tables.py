@@ -16,6 +16,7 @@ def compose(
 
   api = app.api
   F = api.F
+  fOtype = F.otype.v
 
   item = d.condenseType if d.condensed else RESULT
 
@@ -60,7 +61,7 @@ def compose(
       tuplesHtml.append(
           f'''
 <div class="dtheadrow">
-  <span>n</span><span>{"</span><span>".join(F.otype.v(n) for n in tup)}</span>
+  <span>n</span><span>{"</span><span>".join(fOtype(n) for n in tup)}</span>
 </div>
 '''
       )
@@ -95,6 +96,7 @@ def composeT(
 
   api = app.api
   F = api.F
+  fOtype = F.otype.v
 
   if features:
     api.ensureLoaded(features)
@@ -138,7 +140,7 @@ def composeT(
       tuplesHtml.append(
           f'''
 <div class="dtheadrow">
-  <span>n</span><span>{"</span><span>".join(F.otype.v(n) for n in tup)}</span>
+  <span>n</span><span>{"</span><span>".join(fOtype(n) for n in tup)}</span>
 </div>
 '''
       )

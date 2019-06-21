@@ -213,6 +213,7 @@ def combine(
       F = api.F
       Fs = api.Fs
       Es = api.Es
+      fOtype = F.otype.v
 
       # node features
 
@@ -281,13 +282,13 @@ def combine(
             if edgeValues:
               newVal = {}
               for (m, v) in values:
-                mType = F.otype.v(m)
+                mType = fOtype(m)
                 thatOffset = offsets[mType][i]
                 newVal[thatOffset + m] = v
             else:
               newVal = set()
               for m in values:
-                mType = F.otype.v(m)
+                mType = fOtype(m)
                 thatOffset = offsets[mType][i]
                 newVal.add(thatOffset + m)
             data[nOff] = newVal
