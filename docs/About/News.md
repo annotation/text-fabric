@@ -43,6 +43,13 @@ A small performance imporvement
 
 ---
 
+# 7.8.5
+
+Added fonts for the upcoming
+[NENA](https://github.com/annotation/app-nena) corpus with TF app by Cody Kingham.
+
+Updated docs for app writers.
+
 # 7.8.4
 
 2019-06-14

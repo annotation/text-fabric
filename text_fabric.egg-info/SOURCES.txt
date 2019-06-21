@@ -81,6 +81,8 @@ tf/server/static/fonts/AmiriQuran.woff2
 tf/server/static/fonts/AmiriQuranColored.ttf
 tf/server/static/fonts/AmiriQuranColored.woff
 tf/server/static/fonts/AmiriQuranColored.woff2
+tf/server/static/fonts/CharisSIL-R.ttf
+tf/server/static/fonts/CharisSIL-R.woff
 tf/server/static/fonts/GentiumPlus-R.ttf
 tf/server/static/fonts/GentiumPlus-R.woff
 tf/server/static/fonts/SBL_Hbrw.eot
