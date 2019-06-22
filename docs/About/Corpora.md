@@ -19,6 +19,7 @@ acronym | language/writing system | name | period | long name
 [banks]({{anapp}}banks) | modern english | Iain M. Banks | 1984 - 1987 AD | 99 words from the SF novel [Consider Phlebas]({{banksphlebas}})
 [bhsa]({{anapp}}bhsa) | Hebrew | Hebrew Bible | 1000 BC - 900 AD | [Biblia Hebraica Stuttgartensia (Amstelodamensis)]({{bhsaabout}})
 [dss]({{anapp}}dss) | Hebrew | Dead Sea Scrolls | 300 BC - 100 AD | [Transcriptions based on Martin Abegg's data files]({{dssabout}})
+[nena]({{anapp}}nena) | Aramaic | North Eastern Neo-Aramaic Corpus | 2000 AD | [Nena Cambridge]({{nena}})
 [oldbabylonian]({{anapp}}oldbabylonian) | Akkadian / cuneiform | Old Babylonian letters | 1900 - 1600 BC | [Altbabylonische Briefe in Umschrift und Übersetzung]({{oldbabylonianabout}})
 [peshitta]({{anapp}}peshitta) | Syriac | Syriac Old Testament | 1000 BC - 900 AD | [Vetus Testamentum Syriace]({{peshittaabout}})
 [quran]({{anapp}}quran) | Arabic | Quran | 600 - 900 AD | [Quranic Arabic Corpus]({{quranabout}})
@@ -29,7 +30,6 @@ In the works:
 
 acronym | language/writing system | name | period | long name
 --- | --- | --- | --- | ---
-[nena]({{anapp}}nena) | Aramaic | North Eastern Neo-Aramaic Corpus | 2000 AD | [Nena Cambridge]({{nena}})
 [oldassyrian]({{anapp}}oldassyrian) | Akkadian / cuneiform | Old Assyrian documents | 2000 - 1900 | [About]({{oldassyrianabout}})
 [patristics]({{anapp}}patristics) | Greek | Works by Church Fathers| 200 AD - 600 AD | [PThU]({{patristicsabout}})
 
