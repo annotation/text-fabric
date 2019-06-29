@@ -510,7 +510,6 @@ def parseFeatureVals(searchExe, featStr, features, i, asEdge=False):
       featName = _unesc(featN)
       featValSet = frozenset(_unesc(featVal) for featVal in featValStr.split('|'))
       featVals = (comp == '=', featValSet)
-      print('XXXX', featVals)
       break
     match = compRe.match(feat)
     if match:
