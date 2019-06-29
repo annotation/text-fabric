@@ -1,4 +1,4 @@
-ite_name: Text-Fabric
+site_name: Text-Fabric
 site_description: >- 
   Text-Fabric is a Python3 package for Text plus Annotations.
   It provides a data model,
