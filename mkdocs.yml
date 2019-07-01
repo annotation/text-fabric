@@ -10,8 +10,110 @@ site_description: >-
   (linguistic) annotations.
 
 site_url: 'https://annotation.github.io/text-fabric/'
-
 site_author: Dirk Roorda
+
+repo_url: 'https://github.com/annotation/text-fabric/'
+
+theme:
+  name: dans
+  logo: 'images/tf-small.png'
+  favicon: 'images/icon/favicon.ico'
+  development: false
+
+strict: false
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+      linenums: true
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+
+plugins:
+  - markdownextradata
+  - search
+  - minify:
+      minify_html: true
+
+nav:
+  - Home: 'index.md'
+  - About:
+    - Install: 'About/Install.md'
+    - Corpora: 'About/Corpora.md'
+    - Faq: 'About/Faq.md'
+    - News: 'About/News.md'
+    - Older: 'About/Older.md'
+  - Use:
+    - Use: 'Use/Use.md'
+    - Browser: 'Use/Browser.md'
+    - Search: 'Use/Search.md'
+    - Advanced: 'Use/UseX.md'
+  - Api:
+    - Apps: 'Api/App.md'
+    - Data flow:
+      - Data: 'Api/Data.md'
+      - Repo: 'Api/Repo.md'
+    - Core:
+      - 'TF': 'Api/Fabric.md'
+      - 'E/F - (Edge-)Features': 'Api/Features.md'
+      - 'N - Nodes': 'Api/Nodes.md'
+      - 'L - Locality': 'Api/Locality.md'
+      - 'T - Text': 'Api/Text.md'
+      - 'S - Search': 'Api/Search.md'
+      - 'C - Computed': 'Api/Computed.md'
+      - 'Miscellaneous': 'Api/Misc.md'
+      - 'Lib': 'Api/Lib.md'
+      - 'Helpers': 'Api/Helpers.md'
+    - Compose:
+      - 'Combining': 'Api/Compose.md'
+  - Writing:
+    - Arabic: 'Writing/Arabic.html'
+    - Hebrew: 'Writing/Hebrew.html'
+    - Syriac: 'Writing/Syriac.html'
+    - Transcription: 'Writing/Transcription.md'
+  - Model:
+    - Data: 'Model/Data-Model.md'
+    - Format: 'Model/File-formats.md'
+    - Tweaks: 'Model/Optimizations.md'
+    - Search: 'Model/Search.md'
+  - Create:
+    - 'Convert': 'Create/Convert.md'
+    - 'Pattern': 'Create/CreateTF.md'
+    - 'Example data': 'Create/ExampleText.md'
+    - 'MQL': 'Create/MQL.md'
+  - Server:
+    - Kernel: 'Server/Kernel.md'
+    - Web: 'Server/Web.md'
+    - Common: 'Server/Common.md'
+  - Code:
+    - 'Overview' : 'Code/Overview.md'
+    - 'Tests' : 'Code/Tests.md'
+    - 'Stats (overall)' : 'Code/Stats.md'
+    - 'Stats (TF-toplevel)' : 'Code/StatsToplevel.md'
+    - 'Stats (TF-core)' : 'Code/StatsCore.md'
+    - 'Stats (TF-search)' : 'Code/StatsSearch.md'
+    - 'Stats (TF-convert)' : 'Code/StatsConvert.md'
+    - 'Stats (TF-compose)' : 'Code/StatsCompose.md'
+    - 'Stats (TF-writing)' : 'Code/StatsWriting.md'
+    - 'Stats (TF-server)' : 'Code/StatsServer.md'
+    - 'Stats (TF-app support)' : 'Code/StatsApplib.md'
+    - 'Stats (TF-apps)' : 'Code/StatsApps.md'
+    - 'Stats (Tests)' : 'Code/StatsTest.md'
+  - Implementation:
+    - Apps: 'Implementation/Apps.md'
+    - Setup: 'Implementation/Setup.md'
+    - Data: 'Implementation/Data.md'
+    - Display: 'Implementation/Display.md'
+    - Highlight : 'Implementation/Highlight.md'
+    - Links : 'Implementation/Links.md'
+    - Search : 'Implementation/Search.md'
+    - Tables : 'Implementation/Tables.md'
+    - Helpers : 'Implementation/Helpers.md'
 
 extra:
   b_apps: tf/apps
@@ -156,103 +258,3 @@ extra:
   weave: https://sew4home.com/tips-resources/buying-guide/all-about-fabric-weaves-tutorial
   wikip: https://en.wikipedia.org/wiki
   zenodo: https://zenodo.org
-
-
-theme:
-  name: material
-  logo: 'images/tf-small.png'
-  favicon: 'images/icon/favicon.ico'
-  feature:
-    tabs: false
-repo_url: 'https://github.com/annotation/text-fabric/'
-
-strict: false
-
-nav:
-  - Home: 'index.md'
-  - About:
-    - Install: 'About/Install.md'
-    - Corpora: 'About/Corpora.md'
-    - Faq: 'About/Faq.md'
-    - News: 'About/News.md'
-    - Older: 'About/Older.md'
-  - Use:
-    - Use: 'Use/Use.md'
-    - Browser: 'Use/Browser.md'
-    - Search: 'Use/Search.md'
-    - Advanced: 'Use/UseX.md'
-  - Api:
-    - Apps: 'Api/App.md'
-    - Data flow:
-      - Data: 'Api/Data.md'
-      - Repo: 'Api/Repo.md'
-    - Core:
-      - 'TF': 'Api/Fabric.md'
-      - 'E/F - (Edge-)Features': 'Api/Features.md'
-      - 'N - Nodes': 'Api/Nodes.md'
-      - 'L - Locality': 'Api/Locality.md'
-      - 'T - Text': 'Api/Text.md'
-      - 'S - Search': 'Api/Search.md'
-      - 'C - Computed': 'Api/Computed.md'
-      - 'Miscellaneous': 'Api/Misc.md'
-      - 'Lib': 'Api/Lib.md'
-      - 'Helpers': 'Api/Helpers.md'
-    - Compose:
-      - 'Combining': 'Api/Compose.md'
-  - Writing:
-    - Arabic: 'Writing/Arabic.html'
-    - Hebrew: 'Writing/Hebrew.html'
-    - Syriac: 'Writing/Syriac.html'
-    - Transcription: 'Writing/Transcription.md'
-  - Model:
-    - Data: 'Model/Data-Model.md'
-    - Format: 'Model/File-formats.md'
-    - Tweaks: 'Model/Optimizations.md'
-    - Search: 'Model/Search.md'
-  - Create:
-    - 'Convert': 'Create/Convert.md'
-    - 'Pattern': 'Create/CreateTF.md'
-    - 'Example data': 'Create/ExampleText.md'
-    - 'MQL': 'Create/MQL.md'
-  - Server:
-    - Kernel: 'Server/Kernel.md'
-    - Web: 'Server/Web.md'
-    - Common: 'Server/Common.md'
-  - Code:
-    - 'Overview' : 'Code/Overview.md'
-    - 'Tests' : 'Code/Tests.md'
-    - 'Stats (overall)' : 'Code/Stats.md'
-    - 'Stats (TF-toplevel)' : 'Code/StatsToplevel.md'
-    - 'Stats (TF-core)' : 'Code/StatsCore.md'
-    - 'Stats (TF-search)' : 'Code/StatsSearch.md'
-    - 'Stats (TF-convert)' : 'Code/StatsConvert.md'
-    - 'Stats (TF-compose)' : 'Code/StatsCompose.md'
-    - 'Stats (TF-writing)' : 'Code/StatsWriting.md'
-    - 'Stats (TF-server)' : 'Code/StatsServer.md'
-    - 'Stats (TF-app support)' : 'Code/StatsApplib.md'
-    - 'Stats (TF-apps)' : 'Code/StatsApps.md'
-    - 'Stats (Tests)' : 'Code/StatsTest.md'
-  - Implementation:
-    - Apps: 'Implementation/Apps.md'
-    - Setup: 'Implementation/Setup.md'
-    - Data: 'Implementation/Data.md'
-    - Display: 'Implementation/Display.md'
-    - Highlight : 'Implementation/Highlight.md'
-    - Links : 'Implementation/Links.md'
-    - Search : 'Implementation/Search.md'
-    - Tables : 'Implementation/Tables.md'
-    - Helpers : 'Implementation/Helpers.md'
-
-markdown_extensions:
-  - admonition
-  - codehilite:
-      guess_lang: false
-      linenums: true
-  - toc:
-      permalink: true
-  - pymdownx.details
-  - pymdownx.superfences
-  - pymdownx.mark
-
-plugins:
-  - markdownextradata

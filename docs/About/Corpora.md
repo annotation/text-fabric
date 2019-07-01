@@ -31,6 +31,7 @@ In the works:
 acronym | language/writing system | name | period | long name
 --- | --- | --- | --- | ---
 [oldassyrian]({{anapp}}oldassyrian) | Akkadian / cuneiform | Old Assyrian documents | 2000 - 1900 | [About]({{oldassyrianabout}})
+oldroyal | Akkadian-Sumerian cuneiform | Bilingual royal inscriptions | 2000 - 1600 | more info to come
 [patristics]({{anapp}}patristics) | Greek | Works by Church Fathers| 200 AD - 600 AD | [PThU]({{patristicsabout}})
 
 All these apps can be found in 
