@@ -39,9 +39,11 @@ See the [issue list on GitHub]({{ghissues}})
 
 ### Queued for next release
 
-A small performance imporvement
-
 ---
+
+# 7.8.6
+
+Unmentionable fixes.
 
 # 7.8.5
 
