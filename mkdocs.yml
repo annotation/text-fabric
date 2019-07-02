@@ -55,6 +55,7 @@ markdown_extensions:
   - pymdownx.tilde
 
 plugins:
+  - markdownextradata
   - search
   - minify:
       minify_html: true
