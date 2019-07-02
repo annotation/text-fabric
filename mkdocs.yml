@@ -23,19 +23,38 @@ theme:
 strict: false
 
 markdown_extensions:
+  - attr_list
   - admonition
   - codehilite:
       guess_lang: false
       linenums: true
+  - def_list
+  - footnotes
+  - meta
   - toc:
       permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: Dans-labs
+      repo: mkdocs-dans
   - pymdownx.mark
   - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
 
 plugins:
-  - markdownextradata
   - search
   - minify:
       minify_html: true
