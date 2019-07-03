@@ -48,20 +48,18 @@ const switchMode = m => {
   }
 }
 
+const modesEvent = kind => e => {
+  e.preventDefault()
+  storeForm()
+  switchMode(kind)
+}
+
 const modes = () => {
   const mode = $('#mode')
   const m = mode.val()
 
-  $('#moderesults').click(e => {
-    e.preventDefault()
-    storeForm()
-    switchMode('results')
-  })
-  $('#modepassage').click(e => {
-    e.preventDefault()
-    storeForm()
-    switchMode('passage')
-  })
+  $('#moderesults').off('click').click(modesEvent('results'))
+  $('#modepassage').off('click').click(modesEvent('passage'))
   ensureLoaded('passage', 'passages', m)
   if (mode.val() == 'results') {
     ensureLoaded('sections', null, m)
@@ -72,21 +70,23 @@ const modes = () => {
 
 // switch to passage mode after clicking on a result
 
+const switchEvent = e => {
+  e.preventDefault()
+  const { currentTarget } = e
+  const seq = $(currentTarget)
+    .closest('details')
+    .attr('seq')
+  $('#mode').val('passages')
+  $('#sec0').val($(currentTarget).attr('sec0'))
+  $('#sec1').val($(currentTarget).attr('sec1'))
+  $('#sec2').val($(currentTarget).attr('sec2'))
+  $('#pos').val(seq)
+  storeForm()
+  getTable('passage', 'passages', 'passage')
+}
+
 const switchPassage = () => {
-  $('.pq').click(e => {
-    e.preventDefault()
-    const { currentTarget } = e
-    const seq = $(currentTarget)
-      .closest('details')
-      .attr('seq')
-    $('#mode').val('passages')
-    $('#sec0').val($(currentTarget).attr('sec0'))
-    $('#sec1').val($(currentTarget).attr('sec1'))
-    $('#sec2').val($(currentTarget).attr('sec2'))
-    $('#pos').val(seq)
-    storeForm()
-    getTable('passage', 'passages', 'passage')
-  })
+  $('.pq').off('click').click(switchEvent)
 }
 
 /* tables: getting tabular data from the server
@@ -170,7 +170,7 @@ const gotoFocus = kind => {
 const activateTables = (kind, subkind) => {
   const button = $(`#${kind}Go`)
   const passButton = button.find('span')
-  button.click(e => {
+  button.off('click').click(e => {
     e.preventDefault()
     storeForm()
     let m = $('#mode').val()
@@ -190,7 +190,7 @@ const activateTables = (kind, subkind) => {
 
 const subLinks = (kind, subkind) => {
   if (subkind == 'pages') {
-    $('.pnav').click(e => {
+    $('.pnav').off('click').click(e => {
       e.preventDefault()
       const { currentTarget } = e
       $('#pos').val($(currentTarget).html())
@@ -199,7 +199,7 @@ const subLinks = (kind, subkind) => {
     })
   } else if (subkind == 'passages') {
     const opKey = `${kind}Op`
-    $('.s0nav').click(e => {
+    $('.s0nav').off('click').click(e => {
       e.preventDefault()
       const { currentTarget } = e
       $('#sec0').val($(currentTarget).html())
@@ -209,7 +209,7 @@ const subLinks = (kind, subkind) => {
       storeForm()
       getTable(kind, subkind, 'passages')
     })
-    $('.s1nav').click(e => {
+    $('.s1nav').off('click').click(e => {
       e.preventDefault()
       const { currentTarget } = e
       $('#sec1').val($(currentTarget).html())
@@ -224,7 +224,7 @@ const subLinks = (kind, subkind) => {
 // controlling the "open all" checkbox
 
 const detailc = kind => {
-  $(`#${kind}Expac`).click(e => {
+  $(`#${kind}Expac`).off('click').click(e => {
     e.preventDefault()
     const expa = $(`#${kind}Expa`)
     const xpa = expa.val()
@@ -440,7 +440,7 @@ const sidebar = () => {
       el.removeClass('active')
     }
   })
-  $('#sidebar a').click(e => {
+  $('#sidebar a').off('click').click(e => {
     e.preventDefault()
     const { currentTarget } = e
     const header = $(currentTarget).closest('div')
@@ -496,38 +496,46 @@ const help = () => {
  * populate the pads
  */
 
+const sectionsEvent = e => {
+  const elems = $('#sections')
+  e.preventDefault()
+  e.stopPropagation()
+  const { currentTarget } = e
+  const txt = $(currentTarget).attr('sec')
+  const orig = elems.val()
+  elems.val(`${orig}\n${txt}`)
+}
+
 const sections = () => {
-  const secs = $('#sections')
-  $('.rwh').click(e => {
-    e.preventDefault()
-    e.stopPropagation()
-    const { currentTarget } = e
-    const sec = $(currentTarget).attr('sec')
-    const orig = secs.val()
-    secs.val(`${orig}\n${sec}`)
-  })
+  $('.rwh').off('click').click(sectionsEvent)
 }
+
+const tuplesEvent = e => {
+  const elems = $('#tuples')
+  e.preventDefault()
+  e.stopPropagation()
+  const { currentTarget } = e
+  const txt = $(currentTarget).attr('tup')
+  const orig = elems.val()
+  elems.val(`${orig}\n${txt}`)
+}
+
 const tuples = () => {
-  const tups = $('#tuples')
-  $('.sq').click(e => {
-    e.preventDefault()
-    e.stopPropagation()
-    const { currentTarget } = e
-    const tup = $(currentTarget).attr('tup')
-    const orig = tups.val()
-    tups.val(`${orig}\n${tup}`)
-  })
+  $('.sq').off('click').click(tuplesEvent)
 }
+
+const nodesEvent = e => {
+  const elems = $('#tuples')
+  e.preventDefault()
+  e.stopPropagation()
+  const { currentTarget } = e
+  const txt = $(currentTarget).html()
+  const orig = elems.val()
+  elems.val(`${orig}\n${txt}`)
+}
+
 const nodes = () => {
-  const tups = $('#tuples')
-  $('.nd').click(e => {
-    e.preventDefault()
-    e.stopPropagation()
-    const { currentTarget } = e
-    const nd = $(currentTarget).html()
-    const orig = tups.val()
-    tups.val(`${orig}\n${nd}`)
-  })
+  $('.nd').off('click').click(nodesEvent)
 }
 
 /* job control
@@ -615,20 +623,20 @@ const jobControls = () => {
     form.submit()
   })
 
-  jClear.click(() => {
+  jClear.off('click').click(() => {
     clearForm()
     storeForm()
     setLastJob($('#appName').val(), $('#jobh').val())
   })
 
-  jDelete.click(() => {
+  jDelete.off('click').click(() => {
     setLastJob($('#appName').val(), '')
     deleteForm()
     jobh.val('')
     clearForm()
   })
 
-  jRename.click(e => {
+  jRename.off('click').click(e => {
     const jobName = jobh.val()
     const newName = suggestName(jobName)
     if (newName == null) {
@@ -641,7 +649,7 @@ const jobControls = () => {
     setLastJob($('#appName').val(), $('#jobh').val())
   })
 
-  jOpen.click(() => {
+  jOpen.off('click').click(() => {
     jFileDiv.show()
   })
   jFile.change(() => {
@@ -668,7 +676,7 @@ const jobControls = () => {
     reader.readAsText(jobFile)
   })
 
-  jNew.click(e => {
+  jNew.off('click').click(e => {
     const jobName = jobh.val()
     const newName = suggestName(jobName)
     if (newName == null) {

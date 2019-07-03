@@ -41,6 +41,10 @@ See the [issue list on GitHub]({{ghissues}})
 
 ---
 
+# 7.8.7
+
+Fixed adding multiple click events in the javascript of the TF browser.
+
 # 7.8.6
 
 Unmentionable fixes.
