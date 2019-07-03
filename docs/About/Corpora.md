@@ -3,8 +3,6 @@
 Corpora are usually stored in an online repository, such as GitHub or a research data archive
 such as [DANS]({{dans}}/front-page?set_language=en).
 
-## Current apps
-
 Some corpora are supported by Text-Fabric *apps*.
 
 These apps provide a browser interface for the corpus, and they enhance the API for working
@@ -12,31 +10,37 @@ with them programmatically.
 
 A TF app can also download and update the corpus *data*.
 
-The list of current apps is
+### Current TF apps
 
-acronym | language/writing system | name | period | long name
---- | --- | --- | --- | ---
-[banks]({{anapp}}banks) | modern english | Iain M. Banks | 1984 - 1987 AD | 99 words from the SF novel [Consider Phlebas]({{banksphlebas}})
-[bhsa]({{anapp}}bhsa) | Hebrew | Hebrew Bible | 1000 BC - 900 AD | [Biblia Hebraica Stuttgartensia (Amstelodamensis)]({{bhsaabout}})
-[dss]({{anapp}}dss) | Hebrew | Dead Sea Scrolls | 300 BC - 100 AD | [Transcriptions with morphology based on Martin Abegg's data files]({{dssabout}})
-[nena]({{anapp}}nena) | Aramaic | North Eastern Neo-Aramaic Corpus | 2000 AD | [Nena Cambridge]({{nena}})
-[oldbabylonian]({{anapp}}oldbabylonian) | Akkadian / cuneiform | Old Babylonian letters | 1900 - 1600 BC | [Altbabylonische Briefe in Umschrift und Übersetzung]({{oldbabylonianabout}})
-[peshitta]({{anapp}}peshitta) | Syriac | Syriac Old Testament | 1000 BC - 900 AD | [Vetus Testamentum Syriace]({{peshittaabout}})
-[quran]({{anapp}}quran) | Arabic | Quran | 600 - 900 AD | [Quranic Arabic Corpus]({{quranabout}})
-[syrnt]({{anapp}}syrnt) | Syriac | Syriac New Testament | 0 - 1000 AD | [Novum Testamentum Syriace]({{syrntabout}})
-[uruk]({{anapp}}uruk) | proto-cuneiform | Uruk | 4000 - 3100 BC | [Archaic tablets from Uruk]({{urukabout}})
-
-In the works:
-
-acronym | language/writing system | name | period | long name
---- | --- | --- | --- | ---
-[oldassyrian]({{anapp}}oldassyrian) | Akkadian / cuneiform | Old Assyrian documents | 2000 - 1900 | [About]({{oldassyrianabout}})
-oldroyal | Akkadian-Sumerian cuneiform | Bilingual royal inscriptions | 2000 - 1600 | more info to come
-[patristics]({{anapp}}patristics) | Greek | Works by Church Fathers| 200 AD - 600 AD | [PThU]({{patristicsabout}})
+acronym | language/writing system | name | period | description | converted by
+--- | --- | --- | --- | --- | ---
+[banks]({{anapp}}banks) | modern english | Iain M. Banks | 1984 - 1987 | 99 words from the SF novel [Consider Phlebas]({{banksphlebas}}) | Dirk Roorda
+[bhsa]({{anapp}}bhsa) | Hebrew | Hebrew Bible | 1000 BC - 900 AD | [Biblia Hebraica Stuttgartensia (Amstelodamensis)]({{bhsaabout}}) | Dirk Roorda + ETCBC
+[dss]({{anapp}}dss) | Hebrew | Dead Sea Scrolls | 300 BC - 100 AD | [Transcriptions with morphology based on Martin Abegg's data files]({{dssabout}}) | Dirk Roorda, Jarod Jacobs
+[nena]({{anapp}}nena) | Aramaic | North Eastern Neo-Aramaic Corpus | 2000 | [Nena Cambridge]({{nena}}) | Cody Kingham
+[oldbabylonian]({{anapp}}oldbabylonian) | Akkadian / cuneiform | Old Babylonian letters | 1900 - 1600 BC | [Altbabylonische Briefe in Umschrift und Übersetzung]({{oldbabylonianabout}}) | Dirk Roorda, Cale Johnson
+[peshitta]({{anapp}}peshitta) | Syriac | Syriac Old Testament | 1000 BC - 900 AD | [Vetus Testamentum Syriace]({{peshittaabout}}) | Dirk Roorda, Hannes Vlaardingerbroek
+[quran]({{anapp}}quran) | Arabic | Quran | 600 - 900 | [Quranic Arabic Corpus]({{quranabout}}) | Dirk Roorda, Cornelis van Lit
+[syrnt]({{anapp}}syrnt) | Syriac | Syriac New Testament | 0 - 1000 | [Novum Testamentum Syriace]({{syrntabout}}) | Dirk Roorda, Hannes Vlaardingerbroek
+[uruk]({{anapp}}uruk) | proto-cuneiform | Uruk | 4000 - 3100 BC | [Archaic tablets from Uruk]({{urukabout}}) | Dirk Roorda, Cale Johnson
 
 All these apps can be found in 
 [annotation]({{an}}) on GitHub.
 Each repo named `app-`*appName* hosts the app named *appName*.
+
+### Current TF corpora without an app
+
+acronym | language/writing system | name | period | description | converted by
+--- | --- | --- | --- | --- | ---
+[patristics]({{anapp}}patristics) | Greek | Works by Church Fathers| 200 - 600 | see [PThU]({{patristicsabout}}) | Ernst Boogert
+[tisch]({{tischtf}}) | Greek | New Testament | 50 - 450 | Greek New Testament in Tischendorf 8th Edition | Cody Kingham
+
+### Intentions
+
+acronym | language/writing system | name | period | description | converted by
+--- | --- | --- | --- | --- | ---
+[oldassyrian]({{anapp}}oldassyrian) | Akkadian / cuneiform | Old Assyrian documents | 2000 - 1900 | see [About]({{oldassyrianabout}}) | Dirk Roorda, Cale Johnson, Alba de Ridder, Martijn Kokken
+oldroyal | Akkadian-Sumerian cuneiform | Bilingual royal inscriptions | 2000 - 1600 | more info to come | Martijn Kokken, Dirk Roorda
 
 
 ## Get apps
