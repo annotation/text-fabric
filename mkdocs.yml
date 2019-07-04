@@ -19,6 +19,8 @@ theme:
   logo: 'images/tf-small.png'
   favicon: 'images/icon/favicon.ico'
   development: false
+  feature:
+    tabs: true
 
 strict: false
 
@@ -92,9 +94,9 @@ nav:
     - Compose:
       - 'Combining': 'Api/Compose.md'
   - Writing:
-    - Arabic: 'Writing/Arabic.html'
-    - Hebrew: 'Writing/Hebrew.html'
-    - Syriac: 'Writing/Syriac.html'
+    - Arabic: 'Writing/Arabic.md'
+    - Hebrew: 'Writing/Hebrew.md'
+    - Syriac: 'Writing/Syriac.md'
     - Transcription: 'Writing/Transcription.md'
   - Model:
     - Data: 'Model/Data-Model.md'

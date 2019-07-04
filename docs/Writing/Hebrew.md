@@ -1,3 +1,5 @@
+## Hebrew characters
+
 <style type="text/css">
 @font-face {
 	font-family: "Ezra SIL";
@@ -53,25 +55,34 @@ h1.chars {
 }
 </style>
 
-<p><b>This just a look-up table, not a full exposition of the organisation of the Masoretic system.</b></p>
-<p>The ETCBC transcription is used by the ETCBC. It has entries for all accents, but not
-for text-critical annotations such as uncertainty, and correction.
-The Abegg transcription is used in the Dead Sea scrolls. It has no entries for 
-accents, but it has a repertoire of text-critical marks.
-We have back translated the latter to etcbc-compatible variants and entered them in the
-etcbc column, although they are not strictly etcbc marks.</p>
-<p>The phonetic representation is meant as a tentative 1-1 correspondence with pronunciation,
-not with the script.
-See
-<a target="_blank" href="{{etcbcnb}}/phono/blob/master/programs/phono.ipynb">phono.ipynb</a>,
-where the phonetic transcription is computed and thoroughly documented.</p>
+???+ note "Disclaimer"
+    This just a look-up table, not a full exposition of the organisation of the Masoretic system.
 
-<h1 class="chars">Consonants</h1>
-<ul>
-<li>For most  consonants: an inner dot is a <i>dagesh forte</i>.</li>
-<li>For the <span class="g">בגדכפת</span> consonants: an inner dot is either a <i>dagesh forte</i> or a <i>dagesh lene</i>.</li>
-<li>When the <span class="g">ה</span> contains a dot, it is called a <i>mappiq</i>.</li>
-</ul>
+??? abstract "Transcriptions"
+    The ETCBC transcription is used by the ETCBC.
+    It has entries for all accents, but not
+    for text-critical annotations such as uncertainty, and correction.
+    The Abegg transcription is used in the Dead Sea scrolls.
+    It has no entries for 
+    accents, but it has a repertoire of text-critical marks.
+    We have back translated the latter to etcbc-compatible variants
+    and entered them in the
+    etcbc column, although they are not strictly etcbc marks.
+
+??? abstract "Phonetics"
+    The phonetic representation is meant as a
+    tentative 1-1 correspondence with pronunciation, not with the script.
+    See
+    [phono.ipynb]({{etcbcnb}}/phono/blob/master/programs/phono.ipynb),
+    where the phonetic transcription is computed and thoroughly documented.
+
+## Consonants
+
+??? abstract "Details"
+    *   For most  consonants: an inner dot is a *dagesh forte*.
+    *   For the <span class="g">בגדכפת</span> consonants:
+        an inner dot is either a *dagesh forte* or a *dagesh lene*.
+    *   When the <span class="g">ה</span> contains a dot, it is called a *mappiq*.
 
 <table class="chars" summary="consonants">
     <thead>
@@ -91,8 +102,8 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="t">a</td>
   <td class="g">א</td>
   <td class="p">ʔ</td>
-  <td class="r">when not <i>mater lectionis</i></td>
-  <td class="n"><i>letter</i> alef</td>
+  <td class="r">when not *mater lectionis*</td>
+  <td class="n">*letter* alef</td>
   <td class="u">05D0</td>
 </tr>
 <tr>
@@ -101,7 +112,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ב</td>
   <td class="p">bb<br/>b<br/>v</td>
   <td class="r">forte<br/>lene<br/>normal</td>
-  <td class="n"><i>letter</i> bet</td>
+  <td class="n">*letter* bet</td>
   <td class="u">05D1</td>
 </tr>
 <tr>
@@ -110,7 +121,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ג</td>
   <td class="p">gg<br/>g<br/>ḡ</td>
   <td class="r">forte<br/>lene<br/>normal</td>
-  <td class="n"><i>letter</i> gimel</td>
+  <td class="n">*letter* gimel</td>
   <td class="u">05D2</td>
 </tr>
 <tr>
@@ -119,7 +130,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ד</td>
   <td class="p">dd<br/>d<br/>ḏ</td>
   <td class="r">forte<br/>lene<br/>normal</td>
-  <td class="n"><i>letter</i> dalet</td>
+  <td class="n">*letter* dalet</td>
   <td class="u">05D3</td>
 </tr>
 <tr>
@@ -127,8 +138,8 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="t">h</td>
   <td class="g">ה</td>
   <td class="p">h</td>
-  <td class="r">also with <i>mappiq</i>; when not <i>mater lectionis</i></td>
-  <td class="n"><i>letter</i> he</td>
+  <td class="r">also with *mappiq*; when not *mater lectionis*</td>
+  <td class="n">*letter* he</td>
   <td class="u">05D4</td>
 </tr>
 <tr>
@@ -137,7 +148,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ו</td>
   <td class="p">ww<br/>w<br/>û</td>
   <td class="r">forte<br/>when not part of a long vowel<br/>with dagesh as vowel</td>
-  <td class="n"><i>letter</i> vav</td>
+  <td class="n">*letter* vav</td>
   <td class="u">05D5</td>
 </tr>
 <tr>
@@ -146,7 +157,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ז</td>
   <td class="p">zz<br/>z</td>
   <td class="r">forte<br/>normal</td>
-  <td class="n"><i>letter</i> zayin</td>
+  <td class="n">*letter* zayin</td>
   <td class="u">05D6</td>
 </tr>
 <tr>
@@ -155,7 +166,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ח</td>
   <td class="p">ḥ</td>
   <td class="r"></td>
-  <td class="n"><i>letter</i> het</td>
+  <td class="n">*letter* het</td>
   <td class="u">05D7</td>
 </tr>
 <tr>
@@ -164,7 +175,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ט</td>
   <td class="p">ṭ</td>
   <td class="r"></td>
-  <td class="n"><i>letter</i> tet</td>
+  <td class="n">*letter* tet</td>
   <td class="u">05D8</td>
 </tr>
 <tr>
@@ -173,7 +184,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">י</td>
   <td class="p">yy<br/>y<br/>ʸ</td>
   <td class="r">forte<br/>when not part of long vowel<br/>in front of final <span class="g">ו</span></td>
-  <td class="n"><i>letter</i> yod</td>
+  <td class="n">*letter* yod</td>
   <td class="u">05D9</td>
 </tr>
 <tr>
@@ -182,7 +193,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">כ</td>
   <td class="p">kk<br/>k<br/>ḵ</td>
   <td class="r">forte<br/>lene<br/>normal</td>
-  <td class="n"><i>letter</i> kaf</td>
+  <td class="n">*letter* kaf</td>
   <td class="u">05DB</td>
 </tr>
 <tr>
@@ -191,7 +202,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ך</td>
   <td class="p">k<br/>ḵ</td>
   <td class="r">forte<br/>normal</td>
-  <td class="n"><i>letter</i> final kaf</td>
+  <td class="n">*letter* final kaf</td>
   <td class="u">05DA</td>
 </tr>
 <tr>
@@ -200,7 +211,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ל</td>
   <td class="p">ll<br/>l</td>
   <td class="r">forte<br/>normal</td>
-  <td class="n"><i>letter</i> lamed</td>
+  <td class="n">*letter* lamed</td>
   <td class="u">05DC</td>
 </tr>
 <tr>
@@ -209,7 +220,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">מ</td>
   <td class="p">mm<br/>m</td>
   <td class="r">forte<br/>normal</td>
-  <td class="n"><i>letter</i> mem</td>
+  <td class="n">*letter* mem</td>
   <td class="u">05DE</td>
 </tr>
 <tr>
@@ -218,7 +229,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ם</td>
   <td class="p">m</td>
   <td class="r"></td>
-  <td class="n"><i>letter</i> final mem</td>
+  <td class="n">*letter* final mem</td>
   <td class="u">05DD</td>
 </tr>
 <tr>
@@ -227,7 +238,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">נ</td>
   <td class="p">nn<br/>n</td>
   <td class="r">forte<br/>normal</td>
-  <td class="n"><i>letter</i> nun</td>
+  <td class="n">*letter* nun</td>
   <td class="u">05E0</td>
 </tr>
 <tr>
@@ -236,7 +247,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ן</td>
   <td class="p">n</td>
   <td class="r"></td>
-  <td class="n"><i>letter</i> final nun</td>
+  <td class="n">*letter* final nun</td>
   <td class="u">05DF</td>
 </tr>
 <tr>
@@ -245,7 +256,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ס</td>
   <td class="p">ss<br/>s</td>
   <td class="r">forte<br/>normal</td>
-  <td class="n"><i>letter</i> samekh</td>
+  <td class="n">*letter* samekh</td>
   <td class="u">05E1</td>
 </tr>
 <tr>
@@ -254,7 +265,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ע</td>
   <td class="p">ʕ</td>
   <td class="r"></td>
-  <td class="n"><i>letter</i> ayin</td>
+  <td class="n">*letter* ayin</td>
   <td class="u">05E2</td>
 </tr>
 <tr>
@@ -263,7 +274,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">פ</td>
   <td class="p">pp<br/>p<br/>f</td>
   <td class="r">forte<br/>lene<br/>normal</td>
-  <td class="n"><i>letter</i> pe</td>
+  <td class="n">*letter* pe</td>
   <td class="u">05E4</td>
 </tr>
 <tr>
@@ -272,7 +283,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ף</td>
   <td class="p">p<br/>f</td>
   <td class="r">forte<br/>normal</td>
-  <td class="n"><i>letter</i> final pe</td>
+  <td class="n">*letter* final pe</td>
   <td class="u">05E3</td>
 </tr>
 <tr>
@@ -281,7 +292,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">צ</td>
   <td class="p">ṣṣ<br/>ṣ</td>
   <td class="r">forte<br/>normal</td>
-  <td class="n"><i>letter</i> tsadi</td>
+  <td class="n">*letter* tsadi</td>
   <td class="u">05E6</td>
 </tr>
 <tr>
@@ -290,7 +301,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ץ</td>
   <td class="p">ṣ</td>
   <td class="r"></td>
-  <td class="n"><i>letter</i> final tsadi</td>
+  <td class="n">*letter* final tsadi</td>
   <td class="u">05E5</td>
 </tr>
 <tr>
@@ -299,7 +310,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ק</td>
   <td class="p">qq<br/>q</td>
   <td class="r">forte<br/>normal</td>
-  <td class="n"><i>letter</i> qof</td>
+  <td class="n">*letter* qof</td>
   <td class="u">05E7</td>
 </tr>
 <tr>
@@ -308,7 +319,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ר</td>
   <td class="p">rr<br/>r</td>
   <td class="r">forte<br/>normal</td>
-  <td class="n"><i>letter</i> resh</td>
+  <td class="n">*letter* resh</td>
   <td class="u">05E8</td>
 </tr>
 <tr>
@@ -317,7 +328,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ש</td>
   <td class="p">ŝ</td>
   <td class="r"></td>
-  <td class="n"><i>letter</i> shin without dot</td>
+  <td class="n">*letter* shin without dot</td>
   <td class="u">05E9</td>
 </tr>
 <tr>
@@ -326,7 +337,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">שׁ</td>
   <td class="p">šš<br/>š</td>
   <td class="r">forte<br/>normal</td>
-  <td class="n"><i>letter</i> shin with shin dot</td>
+  <td class="n">*letter* shin with shin dot</td>
   <td class="u">FB2A</td>
 </tr>
 <tr>
@@ -335,7 +346,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">שׂ</td>
   <td class="p">śś<br/>ś</td>
   <td class="r">forte<br/>normal</td>
-  <td class="n"><i>letter</i> shin with sin dot</td>
+  <td class="n">*letter* shin with sin dot</td>
   <td class="u">FB2B</td>
 </tr>
 <tr>
@@ -344,13 +355,24 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">ת</td>
   <td class="p">tt<br/>t<br/>ṯ</td>
   <td class="r">forte<br/>lene<br/>normal</td>
-  <td class="n"><i>letter</i> tav</td>
+  <td class="n">*letter* tav</td>
   <td class="u">05EA</td>
 </tr>
     </tbody>
 </table>
 
-<h1 class="chars">Vowels</h1>
+## Vowels
+
+??? caution "Qere Ketiv"
+    The phonetics follows the *qere*, not the *ketiv*,
+    when they are different.
+    In that case a `*` is added.
+
+??? caution "Tetragrammaton"
+    The tetragrammaton <span class="g">יהוה</span>
+    is (vowel)-pointed in different ways;
+    the phonetics follows the pointing, but the tetragrammaton
+    is put between `[ ]`.
 
 <table class="chars" summary="vowels">
     <thead>
@@ -370,8 +392,8 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="t">A Å</td>
   <td class="g"> ַ</td>
   <td class="p">a<br/>ₐ</td>
-  <td class="r">normal<br/><i>furtive</i></td>
-  <td class="n"><i>point</i> patah</td>
+  <td class="r">normal<br/>*furtive*</td>
+  <td class="n">*point* patah</td>
   <td class="u">05B7</td>
 </tr>
 <tr>
@@ -380,7 +402,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֲ</td>
   <td class="p">ᵃ</td>
   <td class="r"></td>
-  <td class="n"><i>point</i> hataf patah</td>
+  <td class="n">*point* hataf patah</td>
   <td class="u">05B2</td>
 </tr>
 <tr>
@@ -389,7 +411,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ָ</td>
   <td class="p">ā<br/>o</td>
   <td class="r">gadol<br/>qatan</td>
-  <td class="n"><i>point</i> qamats</td>
+  <td class="n">*point* qamats</td>
   <td class="u">05B8</td>
 </tr>
 <tr>
@@ -398,7 +420,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֳ</td>
   <td class="p">ᵒ</td>
   <td class="r"></td>
-  <td class="n"><i>point</i> hataf qamats</td>
+  <td class="n">*point* hataf qamats</td>
   <td class="u">05B3</td>
 </tr>
 <tr>
@@ -407,7 +429,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֶ</td>
   <td class="p">e<br/>eʸ</td>
   <td class="r">normal<br/>with following <span class="g">י</span></td>
-  <td class="n"><i>point</i> segol</td>
+  <td class="n">*point* segol</td>
   <td class="u">05B6</td>
 </tr>
 <tr>
@@ -416,7 +438,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֱ</td>
   <td class="p">ᵉ<br/>ᵉʸ</td>
   <td class="r">normal<br/>with following <span class="g">י</span></td>
-  <td class="n"><i>point</i> hataf segol</td>
+  <td class="n">*point* hataf segol</td>
   <td class="u">05B1</td>
 </tr>
 <tr>
@@ -425,7 +447,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֵ</td>
   <td class="p">ê<br/>ē</td>
   <td class="r">with following <span class="g">י</span><br/>alone</td>
-  <td class="n"><i>point</i> tsere</td>
+  <td class="n">*point* tsere</td>
   <td class="u">05B5</td>
 </tr>
 <tr>
@@ -434,7 +456,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ִ</td>
   <td class="p">î<br/>i</td>
   <td class="r">with following <span class="g">י</span><br/>alone</td>
-  <td class="n"><i>point</i> hiriq</td>
+  <td class="n">*point* hiriq</td>
   <td class="u">05B4</td>
 </tr>
 <tr>
@@ -443,7 +465,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֹ</td>
   <td class="p">ô<br/>ō</td>
   <td class="r">with following <span class="g">ו</span><br/>alone</td>
-  <td class="n"><i>point</i> holam</td>
+  <td class="n">*point* holam</td>
   <td class="u">05B9</td>
 </tr>
 <tr>
@@ -452,7 +474,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֻ</td>
   <td class="p">u</td>
   <td class="r"></td>
-  <td class="n"><i>point</i> qubuts</td>
+  <td class="n">*point* qubuts</td>
   <td class="u">05BB</td>
 </tr>
 <tr>
@@ -461,17 +483,13 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ְ</td>
   <td class="p">ᵊ</td>
   <td class="r">left out if silent</td>
-  <td class="n"><i>point</i> sheva</td>
+  <td class="n">*point* sheva</td>
   <td class="u">05B0</td>
 </tr>
     </tbody>
 </table>
 
-<p>The tetragrammaton <span class="g">יהוה</span> is (vowel)-pointed in different ways;
-    the phonetics follows the pointing, but the tetragrammaton
-    is put between <code>[ ]</code>.</p>
-
-<h1 class="chars">Other points and marks</h1>
+## Other points and marks
 
 <table class="chars" summary="other points and marks">
     <thead>
@@ -492,7 +510,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ּ</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>point</i> dagesh or mapiq</td>
+  <td class="n">*point* dagesh or mapiq</td>
   <td class="u">05BC</td>
 </tr>
 <tr>
@@ -501,7 +519,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ׁ</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>point</i> shin dot</td>
+  <td class="n">*point* shin dot</td>
   <td class="u">05C1</td>
 </tr>
 <tr>
@@ -510,7 +528,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ׂ</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>point</i> sin dot</td>
+  <td class="n">*point* sin dot</td>
   <td class="u">05C2</td>
 </tr>
 <tr>
@@ -519,7 +537,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֿ</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>point</i> rafe</td>
+  <td class="n">*point* rafe</td>
   <td class="u">05BF</td>
 </tr>
 <tr>
@@ -528,7 +546,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֽ</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>point</i> meteg</td>
+  <td class="n">*point* meteg</td>
   <td class="u">05BD</td>
 </tr>
 <tr>
@@ -537,7 +555,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֽ</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>point</i> meteg</td>
+  <td class="n">*point* meteg</td>
   <td class="u">05BD</td>
 </tr>
 <tr>
@@ -546,7 +564,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֽ</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>point</i> meteg</td>
+  <td class="n">*point* meteg</td>
   <td class="u">05BD</td>
 </tr>
 <tr>
@@ -555,7 +573,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ׄ</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>mark</i> upper dot</td>
+  <td class="n">*mark* upper dot</td>
   <td class="u">05C4</td>
 </tr>
 <tr>
@@ -564,35 +582,33 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ׅ</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>mark</i> lower dot</td>
+  <td class="n">*mark* lower dot</td>
   <td class="u">05C5</td>
 </tr>
 <tr>
-  <td class="t">*</td>
+  <td class="t">&#42;</td>
   <td class="t"></td>
   <td class="g"> ֯</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>mark</i> masora circle</td>
+  <td class="n">*mark* masora circle</td>
   <td class="u">05AF</td>
 </tr>
     </tbody>
 </table>
 
-<p>The phonetics follows the <i>qere</i>, not the <i>ketiv</i>,
-    when they are different.
-    In that case a <code>*</code> is added.</p>
+## Punctuation
 
-<h1 class="chars">Punctuation</h1>
+??? abstract "Details"
+    Some specialties in the Masoretic system are not reflected
+    in the phonetics:
 
-<p>Some specialties in the Masoretic system are not reflected in the phonetics:
-    <i>setumah</i>
-    <span class="g">ס</span>;
-    <i>petuhah</i>
-    <span class="g">ף</span>;
-    <i>nun-hafuka</i>
-    <span class="g"> ̇׆</span>.
-</p>
+    *   *setumah*
+        <span class="g">ס</span>;
+    *   *petuhah*
+        <span class="g">ף</span>;
+    *   *nun-hafuka*
+        <span class="g"> ̇׆</span>.
 
 <table class="chars" summary="punctuation">
     <thead>
@@ -613,7 +629,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">׃</td>
   <td class="p">.</td>
   <td class="r"></td>
-  <td class="n"><i>punctuation</i> sof pasuq</td>
+  <td class="n">*punctuation* sof pasuq</td>
   <td class="u">05C3</td>
 </tr>
 <tr>
@@ -622,7 +638,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">׀</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>punctuation</i> paseq</td>
+  <td class="n">*punctuation* paseq</td>
   <td class="u">05C0</td>
 </tr>
 <tr>
@@ -631,7 +647,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">׆</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>punctuation</i> nun hafukha</td>
+  <td class="n">*punctuation* nun hafukha</td>
   <td class="u">05C6</td>
 </tr>
 <tr>
@@ -640,11 +656,11 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g">־</td>
   <td class="p">-</td>
   <td class="r"></td>
-  <td class="n"><i>punctuation</i> maqaf</td>
+  <td class="n">*punctuation* maqaf</td>
   <td class="u">05BE</td>
 </tr>
 <tr>
-  <td class="t">_</td>
+  <td class="t">&#95;</td>
   <td class="t">&nbsp; (non breaking space)</td>
   <td class="g">&nbsp;</td>
   <td class="p"></td>
@@ -673,12 +689,13 @@ where the phonetic transcription is computed and thoroughly documented.</p>
     </tbody>
 </table>
 
-<h1 class="chars">Accents</h1>
+## Accents
 
-<p>Some accents play a role in deciding whether a schwa is silent or mobile and
-    whether a qamets is gadol or qatan.
-    In the phonetics those accents appear as <code>ˈ</code> or <code>ˌ</code>.
-    Implied accents are also added.</p>
+??? abstract "Details"
+    Some accents play a role in deciding whether a schwa is silent or mobile
+    and whether a qamets is gadol or qatan.
+    In the phonetics those accents appear as `ˈ` or `ˌ`.
+    Implied accents are also added.
 
 <table class="chars" summary="accents">
     <thead>
@@ -697,7 +714,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֧</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> darga</td>
+  <td class="n">*accent* darga</td>
   <td class="u">05A7</td>
 </tr>
 <tr>
@@ -705,7 +722,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֭</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> dehi</td>
+  <td class="n">*accent* dehi</td>
   <td class="u">05AD</td>
 </tr>
 <tr>
@@ -713,7 +730,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֑</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> etnahta</td>
+  <td class="n">*accent* etnahta</td>
   <td class="u">0591</td>
 </tr>
 <tr>
@@ -721,7 +738,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֜</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> geresh</td>
+  <td class="n">*accent* geresh</td>
   <td class="u">059C</td>
 </tr>
 <tr>
@@ -729,7 +746,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֝</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> geresh muqdam</td>
+  <td class="n">*accent* geresh muqdam</td>
   <td class="u">059D</td>
 </tr>
 <tr>
@@ -737,7 +754,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֞</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> gershayim</td>
+  <td class="n">*accent* gershayim</td>
   <td class="u">059E</td>
 </tr>
 <tr>
@@ -745,7 +762,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֬</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> iluy</td>
+  <td class="n">*accent* iluy</td>
   <td class="u">05AC</td>
 </tr>
 <tr>
@@ -753,7 +770,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֤</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> mahapakh</td>
+  <td class="n">*accent* mahapakh</td>
   <td class="u">05A4</td>
 </tr>
 <tr>
@@ -761,7 +778,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֥</td>
   <td class="p">ˌ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> merkha</td>
+  <td class="n">*accent* merkha</td>
   <td class="u">05A5</td>
 </tr>
 <tr>
@@ -769,7 +786,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֦</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> merkha kefula</td>
+  <td class="n">*accent* merkha kefula</td>
   <td class="u">05A6</td>
 </tr>
 <tr>
@@ -777,7 +794,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֣</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> munah</td>
+  <td class="n">*accent* munah</td>
   <td class="u">05A3</td>
 </tr>
 <tr>
@@ -785,7 +802,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֫</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> ole</td>
+  <td class="n">*accent* ole</td>
   <td class="u">05AB</td>
 </tr>
 <tr>
@@ -793,7 +810,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֙</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> pashta</td>
+  <td class="n">*accent* pashta</td>
   <td class="u">0599</td>
 </tr>
 <tr>
@@ -801,7 +818,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֡</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> pazer</td>
+  <td class="n">*accent* pazer</td>
   <td class="u">05A1</td>
 </tr>
 <tr>
@@ -809,7 +826,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֨</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> qadma</td>
+  <td class="n">*accent* qadma</td>
   <td class="u">05A8</td>
 </tr>
 <tr>
@@ -817,7 +834,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֨</td>
   <td class="p">ˌ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> qadma</td>
+  <td class="n">*accent* qadma</td>
   <td class="u">05A8</td>
 </tr>
 <tr>
@@ -825,7 +842,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֟</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> qarney para</td>
+  <td class="n">*accent* qarney para</td>
   <td class="u">059F</td>
 </tr>
 <tr>
@@ -833,7 +850,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֗</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> revia</td>
+  <td class="n">*accent* revia</td>
   <td class="u">0597</td>
 </tr>
 <tr>
@@ -841,7 +858,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֒</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> segol</td>
+  <td class="n">*accent* segol</td>
   <td class="u">0592</td>
 </tr>
 <tr>
@@ -849,7 +866,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֓</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> shalshelet</td>
+  <td class="n">*accent* shalshelet</td>
   <td class="u">0593</td>
 </tr>
 <tr>
@@ -857,7 +874,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֩</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> telisha qetana</td>
+  <td class="n">*accent* telisha qetana</td>
   <td class="u">05A9</td>
 </tr>
 <tr>
@@ -865,7 +882,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֩</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> telisha qetana</td>
+  <td class="n">*accent* telisha qetana</td>
   <td class="u">05A9</td>
 </tr>
 <tr>
@@ -873,7 +890,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֠</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> telisha gedola</td>
+  <td class="n">*accent* telisha gedola</td>
   <td class="u">05A0</td>
 </tr>
 <tr>
@@ -881,7 +898,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֠</td>
   <td class="p"></td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> telisha gedola</td>
+  <td class="n">*accent* telisha gedola</td>
   <td class="u">05A0</td>
 </tr>
 <tr>
@@ -889,7 +906,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֛</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> tevir</td>
+  <td class="n">*accent* tevir</td>
   <td class="u">059B</td>
 </tr>
 <tr>
@@ -897,7 +914,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֖</td>
   <td class="p">ˌ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> tipeha</td>
+  <td class="n">*accent* tipeha</td>
   <td class="u">0596</td>
 </tr>
 <tr>
@@ -905,7 +922,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֪</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> yerah ben yomo</td>
+  <td class="n">*accent* yerah ben yomo</td>
   <td class="u">05AA</td>
 </tr>
 <tr>
@@ -913,7 +930,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֚</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> yetiv</td>
+  <td class="n">*accent* yetiv</td>
   <td class="u">059A</td>
 </tr>
 <tr>
@@ -921,7 +938,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֔</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> zaqef qatan</td>
+  <td class="n">*accent* zaqef qatan</td>
   <td class="u">0594</td>
 </tr>
 <tr>
@@ -929,7 +946,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֕</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> zaqef gadol</td>
+  <td class="n">*accent* zaqef gadol</td>
   <td class="u">0595</td>
 </tr>
 <tr>
@@ -937,7 +954,7 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֘</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> zarqa</td>
+  <td class="n">*accent* zarqa</td>
   <td class="u">0598</td>
 </tr>
 <tr>
@@ -945,18 +962,21 @@ where the phonetic transcription is computed and thoroughly documented.</p>
   <td class="g"> ֮</td>
   <td class="p">ˈ</td>
   <td class="r"></td>
-  <td class="n"><i>accent</i> zinor</td>
+  <td class="n">*accent* zinor</td>
   <td class="u">05AE</td>
 </tr>
     </tbody>
 </table>
 
-<h1 class="chars">Numerals</h1>
+## Numerals
 
-<p>These signs occur in the Dead Sea scrolls.
-We represent them with conventional Hebrew characters for numbers
-and use the geresh accent or another accent to mark the letter as a numeral.</p>
-<p>The ETCBC codes are obtained by translating back from the unicode.</p>
+??? abstract "Details"
+    These signs occur in the Dead Sea scrolls.
+    We represent them with conventional Hebrew characters for numbers
+    and use the geresh accent or another accent to mark the letter
+    as a numeral.
+
+    The ETCBC codes are obtained by translating back from the unicode.
 
 <table class="chars" summary="numerals">
     <thead>
@@ -974,7 +994,7 @@ and use the geresh accent or another accent to mark the letter as a numeral.</p>
   <td class="t">A</td>
   <td class="g">א֜</td>
   <td class="r"></td>
-  <td class="n"><i>number</i> 1</td>
+  <td class="n">*number* 1</td>
 </tr>
 <tr>
   <td class="t">&gt;52</td>
@@ -982,7 +1002,7 @@ and use the geresh accent or another accent to mark the letter as a numeral.</p>
   <td class="g">אׄ</td>
   <td class="r">alternative for 1, often at the end of a number,
   we use the upper dot to distinguish it from the other 1</td>
-  <td class="n"><i>number</i> 1</td>
+  <td class="n">*number* 1</td>
 </tr>
 <tr>
   <td class="t">&gt;53</td>
@@ -990,7 +1010,7 @@ and use the geresh accent or another accent to mark the letter as a numeral.</p>
   <td class="g">אׅ</td>
   <td class="r">alternative for 1, often at the end of a number,
   we use the lower dot to distinguish it from the other 1</td>
-  <td class="n"><i>number</i> 1</td>
+  <td class="n">*number* 1</td>
 </tr>
 <tr>
   <td class="t">&gt;35</td>
@@ -998,28 +1018,28 @@ and use the geresh accent or another accent to mark the letter as a numeral.</p>
   <td class="g">אֽ</td>
   <td class="r">alternative for 1, often at the end of a number,
   we use the meteg to distinguish it from the other 1</td>
-  <td class="n"><i>number</i> 1</td>
+  <td class="n">*number* 1</td>
 </tr>
 <tr>
   <td class="t">J'</td>
   <td class="t">C</td>
   <td class="g">י֜</td>
   <td class="r"></td>
-  <td class="n"><i>number</i> 10</td>
+  <td class="n">*number* 10</td>
 </tr>
 <tr>
   <td class="t">k'</td>
   <td class="t">D</td>
   <td class="g">ך֜</td>
   <td class="r"></td>
-  <td class="n"><i>number</i> 20</td>
+  <td class="n">*number* 20</td>
 </tr>
 <tr>
   <td class="t">Q'</td>
   <td class="t">F</td>
   <td class="g">ק֜</td>
   <td class="r"></td>
-  <td class="n"><i>number</i> 100</td>
+  <td class="n">*number* 100</td>
 </tr>
 <tr>
   <td class="t">&amp;</td>
@@ -1031,19 +1051,23 @@ and use the geresh accent or another accent to mark the letter as a numeral.</p>
     </tbody>
 </table>
 
-<h1 class="chars">Text-critical</h1>
+## Text-critical
 
-<p>These signs occur in the Dead Sea scrolls.
-They are used to indicate uncertainty and editing acts by ancient scribes
-or modern editors.
-They do not have an associated glyph in Unicode.</p>
-<p>The ETCBC does not have codes for them, but we propose an
-ETCBC-compatible encoding for them.
-The ETCBC codes are surrounded by space, except for the brackets,
-where a space at the side of the ( or ) is not necessary.</p>
-<p>Codes that are marked as <i>flag</i> apply to the preceding character.</p>
-<p>Codes that are marked as <i>brackets</i> apply to the material
-within them.</p>
+??? abstract "Details"
+    These signs occur in the Dead Sea scrolls.
+    They are used to indicate uncertainty and editing acts by ancient scribes
+    or modern editors.
+    They do not have an associated glyph in Unicode.
+
+    The ETCBC does not have codes for them, but we propose an
+    ETCBC-compatible encoding for them.
+    The ETCBC codes are surrounded by space, except for the brackets,
+    where a space at the side of the ( or ) is not necessary.
+
+    Codes that are marked as *flag* apply to the preceding character.
+
+    Codes that are marked as *brackets* apply to the material
+    within them.
 
 <table class="chars" summary="text-critical">
     <thead>
@@ -1068,7 +1092,7 @@ within them.</p>
   <td class="n">uncertain (degree 1)</td>
 </tr>
 <tr>
-  <td class="t">\</td>
+  <td class="t">&#92;</td>
   <td class="t"> # </td>
   <td class="r">token</td>
   <td class="n">uncertain (degree 2)</td>
@@ -1078,7 +1102,6 @@ within them.</p>
   <td class="t"> #? </td>
   <td class="r">token</td>
   <td class="n">uncertain (degree 3)</td>
-  <td class="n">unknown</td>
 </tr>
 <tr>
   <td class="t">Ø</td>
@@ -1099,7 +1122,7 @@ within them.</p>
   <td class="n">uncertain (degree 3)</td>
 </tr>
 <tr>
-  <td class="t">|</td>
+  <td class="t">&#124;</td>
   <td class="t">##</td>
   <td class="r">flag, applies to preceding character</td>
   <td class="n">uncertain (degree 4)</td>
@@ -1135,8 +1158,8 @@ within them.</p>
   <td class="n">removed (modern)</td>
 </tr>
 <tr>
-  <td class="t">{{ }}</td>
-  <td class="t">{{ }}</td>
+  <td class="t">{&#123; }}</td>
+  <td class="t">{&#123; }}</td>
   <td class="r">brackets</td>
   <td class="n">removed (ancient)</td>
 </tr>

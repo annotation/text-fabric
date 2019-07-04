@@ -15,11 +15,11 @@ in a model of nodes, edges, and features, there is need for some additions.
     [phono.ipynb]({{etcbcnb}}/phono/blob/master/programs/phono.ipynb)
 
 ???+ abstract "Character tables"
-    [Hebrew](../Writing/Hebrew.html): full list of characters covered by the ETCBC and phonetic transcriptions
+    [Hebrew](../Writing/Hebrew.md): full list of characters covered by the ETCBC and phonetic transcriptions
 
-    [Syriac](../Writing/Syriac.html): full list of characters covered by the ETCBC transcriptions
+    [Syriac](../Writing/Syriac.md): full list of characters covered by the ETCBC transcriptions
 
-    [Arabic](../Writing/Arabic.html): full list of characters covered by the transcription used for the Quran
+    [Arabic](../Writing/Arabic.md): full list of characters covered by the transcription used for the Quran
 
 ??? abstract "Usage"
     Invoke the transcription functionality as follows:
