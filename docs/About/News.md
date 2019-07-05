@@ -2,13 +2,13 @@
 
 # Changes in this major version
 
-???+ hint "Consult the tutorials after changes"
+??? hint "Consult the tutorials after changes"
     When we change the API, we make sure that the tutorials shows off
     all possibilities.
 
     See the app-specific tutorials in [annotation]({{tutnbt}}).
 
-???+ hint "Auto-update"
+??? hint "Auto-update"
     When TF apps have been updated, they will be autoloaded to the newest version
     provided you call the app as follows:
 
@@ -35,21 +35,45 @@
     text-fabric appName:hot
     ```
 
-See the [issue list on GitHub]({{ghissues}})
+??? hint "What's going on"
+    See the [issue list on GitHub]({{ghissues}}).
 
-### Queued for next release
+    Queued for next release:
+
+    Support for workflows where TF data is exported to be annotated
+    by other tools whose results are to be imported as TF features.
+     The first step has been set: the Recorder.
 
 ---
 
+# 7.8.8
+
+2019-07-05
+
+Something new: **Recorder**, a device to export plain text from
+TF in such a way that the position of nodes in that text is stored.
+Then you can annotate the plain text in some tool, e.g. BRAT,
+and after that, the Recorder can turn those annotations into TF features.
+
+It is not documented yet, but this 
+[notebook]({{tfnb}}/test/varia/recorder.ipynb) 
+shows you a complete examnple.
+
 # 7.8.7
+
+2019-07-03
 
 Fixed adding multiple click events in the javascript of the TF browser.
 
 # 7.8.6
 
+2019-07-02
+
 Unmentionable fixes.
 
 # 7.8.5
+
+2019-06-21
 
 Added fonts for the upcoming
 [NENA](https://github.com/annotation/app-nena) corpus with TF app by Cody Kingham.

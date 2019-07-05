@@ -94,7 +94,7 @@ Start with the [contribution notes](codestyle/contributing.md).
 
 ---
 
-<a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/annotation/text-fabric/directory/"><img src="/docs/images/sha-logo.png" width="100" align="left"/></a>
+<a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/annotation/text-fabric/directory/"><img src="/docs/images/shalogo.png" width="100" align="left"/></a>
 
 **This repository is being archived continuously by the 
 [Software Heritage Archive](https://archive.softwareheritage.org).

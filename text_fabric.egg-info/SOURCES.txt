@@ -35,6 +35,7 @@ tf/compose/combine.py
 tf/compose/modify.py
 tf/convert/__init__.py
 tf/convert/mql.py
+tf/convert/recorder.py
 tf/convert/walker.py
 tf/core/__init__.py
 tf/core/api.py
