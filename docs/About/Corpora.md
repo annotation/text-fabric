@@ -14,6 +14,7 @@ A TF app can also download and update the corpus *data*.
 
 acronym | language/writing system | name | period | description | converted by
 --- | --- | --- | --- | --- | ---
+[athenaeus]({{anapp}}athenaeus) | Greek | Works of Athenaeus | 80 - 170 | Deipnosophistae | Ernst Boogert
 [banks]({{anapp}}banks) | modern english | Iain M. Banks | 1984 - 1987 | 99 words from the SF novel [Consider Phlebas]({{banksphlebas}}) | Dirk Roorda
 [bhsa]({{anapp}}bhsa) | Hebrew | Hebrew Bible | 1000 BC - 900 AD | [Biblia Hebraica Stuttgartensia (Amstelodamensis)]({{bhsaabout}}) | Dirk Roorda + ETCBC
 [dss]({{anapp}}dss) | Hebrew | Dead Sea Scrolls | 300 BC - 100 AD | [Transcriptions with morphology based on Martin Abegg's data files]({{dssabout}}) | Dirk Roorda, Jarod Jacobs
@@ -22,7 +23,7 @@ acronym | language/writing system | name | period | description | converted by
 [peshitta]({{anapp}}peshitta) | Syriac | Syriac Old Testament | 1000 BC - 900 AD | [Vetus Testamentum Syriace]({{peshittaabout}}) | Dirk Roorda, Hannes Vlaardingerbroek
 [quran]({{anapp}}quran) | Arabic | Quran | 600 - 900 | [Quranic Arabic Corpus]({{quranabout}}) | Dirk Roorda, Cornelis van Lit
 [syrnt]({{anapp}}syrnt) | Syriac | Syriac New Testament | 0 - 1000 | [Novum Testamentum Syriace]({{syrntabout}}) | Dirk Roorda, Hannes Vlaardingerbroek
-[tisch]({{tischtf}}) | Greek | New Testament | 50 - 450 | Greek New Testament in Tischendorf 8th Edition | Cody Kingham
+[tisch]({{anapp}}tisch | Greek | New Testament | 50 - 450 | Greek New Testament in Tischendorf 8th Edition | Cody Kingham
 [uruk]({{anapp}}uruk) | proto-cuneiform | Uruk | 4000 - 3100 BC | [Archaic tablets from Uruk]({{urukabout}}) | Dirk Roorda, Cale Johnson
 
 All these apps can be found in 
