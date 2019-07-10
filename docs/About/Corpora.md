@@ -23,7 +23,7 @@ acronym | language/writing system | name | period | description | converted by
 [peshitta]({{anapp}}peshitta) | Syriac | Syriac Old Testament | 1000 BC - 900 AD | [Vetus Testamentum Syriace]({{peshittaabout}}) | Dirk Roorda, Hannes Vlaardingerbroek
 [quran]({{anapp}}quran) | Arabic | Quran | 600 - 900 | [Quranic Arabic Corpus]({{quranabout}}) | Dirk Roorda, Cornelis van Lit
 [syrnt]({{anapp}}syrnt) | Syriac | Syriac New Testament | 0 - 1000 | [Novum Testamentum Syriace]({{syrntabout}}) | Dirk Roorda, Hannes Vlaardingerbroek
-[tisch]({{anapp}}tisch | Greek | New Testament | 50 - 450 | Greek New Testament in Tischendorf 8th Edition | Cody Kingham
+[tisch]({{anapp}}tisch) | Greek | New Testament | 50 - 450 | Greek New Testament in Tischendorf 8th Edition | Cody Kingham
 [uruk]({{anapp}}uruk) | proto-cuneiform | Uruk | 4000 - 3100 BC | [Archaic tablets from Uruk]({{urukabout}}) | Dirk Roorda, Cale Johnson
 
 All these apps can be found in 
