@@ -551,8 +551,11 @@ class Checkout(object):
       self.log(f'\tconnecting to online GitHub repo {self.org}/{self.repo} ... ', newline=False)
       self.repoOnline = self.ghConn.get_repo(f'{self.org}/{self.repo}')
       self.log(f'connected')
-    except (GithubException, IOError):
+    except GithubException as why:
       self.log(f'failed')
+      self.log(f'GitHub says: {why}')
+    except IOError:
+      self.log(f'no internet')
 
 
 def checkoutRepo(

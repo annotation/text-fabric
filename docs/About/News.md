@@ -46,6 +46,13 @@
 
 ---
 
+# 7.8.9-10
+
+2019-07-11
+
+When TF wants to fetch data from GitHub, but cannot get connection, it will give
+some sort of message as to why.
+
 # 7.8.8
 
 2019-07-05

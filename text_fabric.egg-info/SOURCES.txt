@@ -86,6 +86,7 @@ tf/server/static/fonts/CharisSIL-R.ttf
 tf/server/static/fonts/CharisSIL-R.woff
 tf/server/static/fonts/GentiumPlus-R.ttf
 tf/server/static/fonts/GentiumPlus-R.woff
+tf/server/static/fonts/SBL_BLit.ttf
 tf/server/static/fonts/SBL_Hbrw.eot
 tf/server/static/fonts/SBL_Hbrw.ttf
 tf/server/static/fonts/SBL_Hbrw.woff
