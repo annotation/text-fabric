@@ -84,7 +84,7 @@ Text-Fabric meets you half-way.
 If you walk through the source, and tell TF what you see, it will pick that
 up and compile a valid TF dataset out of it.
 
-See the [conversion tutorial](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/text-fabric/convert.ipynb).
+See the [conversion tutorial](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/convert.ipynb).
 
 # Contributing
 
