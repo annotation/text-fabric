@@ -12,6 +12,7 @@ site_description: >-
 site_url: 'https://annotation.github.io/text-fabric/'
 site_author: Dirk Roorda
 
+repo_name: annotation/text-fabric
 repo_url: 'https://github.com/annotation/text-fabric/'
 
 theme:
