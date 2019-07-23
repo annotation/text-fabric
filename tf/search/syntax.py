@@ -64,7 +64,8 @@ opStripRe = re.compile(opStripPat)
 quLineRe = re.compile(quLinePat)
 relRe = re.compile(relPat)
 reRe = re.compile(rePat)
-whiteRe = re.compile(r'^\s*$')
+# whiteRe = re.compile(r'^\s*$')
+whiteRe = re.compile(r'^\s*(%|$)')
 
 reTp = type(reRe)
 
@@ -125,7 +126,7 @@ def _tokenize(searchExe):
   curQuTemplates = None
 
   for (i, line) in enumerate(searchLines):
-    if line.startswith('%') or whiteRe.match(line):
+    if whiteRe.match(line):
       continue
     opFeatures = {}
 

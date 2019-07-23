@@ -633,15 +633,6 @@ h1.chars {
   <td class="u">05C3</td>
 </tr>
 <tr>
-  <td class="t">05</td>
-  <td class="t"></td>
-  <td class="g">׀</td>
-  <td class="p"></td>
-  <td class="r"></td>
-  <td class="n">*punctuation* paseq</td>
-  <td class="u">05C0</td>
-</tr>
-<tr>
   <td class="t">ñ</td>
   <td class="t"></td>
   <td class="g">׆</td>
@@ -685,6 +676,39 @@ h1.chars {
   <td class="r">Dead Sea scrolls. We use as Hebrew character a geresh.</td>
   <td class="n">morpheme-break</td>
   <td class="u">05F3</td>
+</tr>
+    </tbody>
+</table>
+
+## Hybrid
+
+??? abstract "Details"
+    There is a character that is mostly punctuation, but that 
+    can also influence the nature of some accents occurring in the word before.
+    Such a character is a hybrid between punctuation and accent.
+    See also the documentation of the BHSA about
+    [cantillation](https://etcbc.github.io/bhsa/cantillation/).
+
+<table class="chars" summary="accents">
+    <thead>
+        <tr>
+            <th>transcription</th>
+            <th>glyph</th>
+            <th>phonetic</th>
+            <th>remarks</th>
+            <th>name</th>
+            <th>unicode</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td class="t">05</td>
+  <td class="t"></td>
+  <td class="g">׀</td>
+  <td class="p"></td>
+  <td class="r"></td>
+  <td class="n">*punctuation* paseq</td>
+  <td class="u">05C0</td>
 </tr>
     </tbody>
 </table>

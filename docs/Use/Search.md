@@ -240,8 +240,8 @@
 
     *   *comment* lines
 
-        *   if a line starts with `%` it is a comment line;
-        *   you cannot comment out parts of lines, only whole lines;
+        *   if the first non-white character on a line is `%` it is a comment line;
+        *   you cannot comment out parts of lines after a non-white part;
         *   if a line is empty or has whitespace only, it is a comment line;
         *   comment lines are allowed everywhere;
         *   comment lines are ignored.

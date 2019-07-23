@@ -46,6 +46,16 @@
 
 ---
 
+# 7.8.11
+
+2019-07-23
+
+Following a suggestion by Camil Staps:
+
+In search templates, the comment sign `%` does not have to be at the start of a line,
+it may also be indented by white space.
+Still, you cannot use % to comment out trailing parts of lines after non-blank parts.
+
 # 7.8.9-10
 
 2019-07-11
