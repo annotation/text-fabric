@@ -46,6 +46,17 @@
 
 ---
 
+# 7.8.12
+
+2019-07-24
+
+Fix a bug spotted by Robert Voogdgeert: in search templates with qunatifiers:
+if the line before the quantifier is not an atom line but a feature line,
+TF crashes.
+Not anymore.
+The fix is at the syntactical level of queries.
+I have tested most known queries and they gave identical results as before.
+
 # 7.8.11
 
 2019-07-23

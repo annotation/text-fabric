@@ -91,6 +91,18 @@ def syntax(searchExe):
 
 def _tokenize(searchExe):
 
+  tokens = []
+
+  def lastAtomToken():
+    for token in reversed(tokens):
+      kind = token['kind']
+      if kind == 'feat':
+        continue
+      if kind == 'atom' and 'otype' in token:
+        return token
+      return None
+    return None
+
   def readFeatures(x, i):
     features = {}
     featureString = x.replace('\\ ', chr(1)) if x is not None else ''
@@ -102,7 +114,6 @@ def _tokenize(searchExe):
     return features if good else None
 
   searchLines = searchExe.searchLines
-  tokens = []
   allGood = True
 
   # the template may contain nested quantifiers
@@ -208,8 +219,11 @@ def _tokenize(searchExe):
     if UBO:
       ES = lineQuKind not in QINIT
       ET = len(tokens) == 0
-      EA = (len(tokens) and tokens[-1]['kind'] != 'atom' and 'otype' not in tokens[-1])
-      EI = (len(tokens) and tokens[-1]['indent'] != lineIndent)
+      lastAtom = lastAtomToken()
+      EA = (len(tokens) and not lastAtomToken)
+      EI = (len(tokens) and lastAtom['indent'] != lineIndent)
+      # EA = (len(tokens) and tokens[-1]['kind'] != 'atom' and 'otype' not in tokens[-1])
+      # EI = (len(tokens) and tokens[-1]['indent'] != lineIndent)
 
     if PCO or PCI:
       EP = ((lineQuKind == QHAVE and curQuKind != QWHERE)
