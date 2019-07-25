@@ -550,6 +550,15 @@ h1.chars {
   <td class="u">05BD</td>
 </tr>
 <tr>
+  <td class="t">45</td>
+  <td class="t"></td>
+  <td class="g"> ֽ</td>
+  <td class="p">ˈ</td>
+  <td class="r"></td>
+  <td class="n">*point* meteg</td>
+  <td class="u">05BD</td>
+</tr>
+<tr>
   <td class="t">75</td>
   <td class="t"></td>
   <td class="g"> ֽ</td>
