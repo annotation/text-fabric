@@ -50,20 +50,21 @@ the command line.
 
 ### Install Text-Fabric:
 
-```sh
+```sh tab="mac or linux (non-anaconda)"
 pip3 install text-fabric
 ```
 
-On Windows:
-
-```sh
+```sh tab="windows and/or anaconda"
 pip install text-fabric
 ```
 
 ??? note "to 3 or not to 3?"
     From now on we always use `python3` and `pip3` in instructions.
+
     On Windows you have to say `python` and `pip`.
     There are more differences, when you go further with programming.
+
+    Also, if you use Anaconda, whether on Windows or Mac or Linux, it is `pip`.
 
     Advice: if you are serious on programming, consider switching to a `Unix`-like
     platform, such as Linux or the Mac (macos).

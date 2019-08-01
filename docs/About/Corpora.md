@@ -50,21 +50,17 @@ oldroyal | Akkadian-Sumerian cuneiform | Bilingual royal inscriptions | 2000 - 1
     Text-Fabric downloads apps from [annotation]({{an}}) automatically
     when you use them.
 
-    So when you say in a notebook
+    If you do:
 
-    ```python
+    ```python tab="notebook or program"
     use('xxxx')
     ```
 
-    Text-Fabric will fetch the `xxxx` app for you, if it exists.
-
-    And if you use the Text-Fabric browser, and say
-
-    ```sh
+    ```sh tab="TF browser"
     text-fabric xxxx
     ```
 
-    the same thing happens.
+    then Text-Fabric will fetch the `xxxx` app for you, if it exists.
 
     Once you have the app, Text-Fabric will use your offline copy.
     It will not check for newer versions by default.
@@ -73,15 +69,11 @@ oldroyal | Akkadian-Sumerian cuneiform | Bilingual royal inscriptions | 2000 - 1
     for newer versions of the app and if there are,
     it will download the newest version and run it.
 
-    ```python
+    ```python tab="notebook or program"
     use('xxxx', check=True)
     ```
 
-    Text-Fabric will fetch the `xxxx` app for you, if it exists.
-
-    And if you use the Text-Fabric browser, and say
-
-    ```sh
+    ```sh tab="TF browser"
     text-fabric xxxx -c
     ```
 
@@ -94,32 +86,32 @@ oldroyal | Akkadian-Sumerian cuneiform | Bilingual royal inscriptions | 2000 - 1
 ## Get data
 
 ???+ abstract "Automatically"
-    Text-Fabric apps download the corpus data for you
-    automatically. When you use the browser, it happens when you start it up.
+    Text-Fabric apps download the corpus data for you automatically.
+
+    When you use the browser, it happens when you start it up.
+
     And from within a Python program,
     you get the data when you do the
     [incantation](../Api/App.md#incantation).
 
     In a program (e.g. a Jupyter notebook):
 
-    ```python
+    ```python tab="notebook or program"
     use('xxxx')
     ```
 
-    Browser:
-
-    ```sh
+    ```sh tab="TF browser"
     text-fabric xxxx
     ```
 
     This will also automatically upgrade your data if there are new releases.
     If you want to avoid upgrades, add the `:local` specifier.
 
-    ```python
+    ```python tab="notebook or program"
     use('xxxx', checkout='local')
     ```
 
-    ```sh
+    ```sh tab="TF browser"
     text-fabric xxxx --checkout=local
     ```
 
@@ -151,11 +143,11 @@ oldroyal | Akkadian-Sumerian cuneiform | Bilingual royal inscriptions | 2000 - 1
     This instructs Text-Fabric to look in your local GitHub clone, rather
     than online or in `text-fabric-data`, where downloaded data is stored.
 
-    ```python
+    ```python tab="notebook or program"
     use('xxxx:clone')
     ```
 
-    ```sh
+    ```sh tab="TF browser"
     text-fabric xxxx --checkout=clone
     ```
 

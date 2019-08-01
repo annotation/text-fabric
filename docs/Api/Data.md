@@ -298,11 +298,11 @@ without fear of overwriting data.
     Text-Fabric in a program (or notebook) and when you call up the text-fabric
     browser on the command line:
 
-    ```python
+    ```python tab="notebook or program"
     use('banks:clone', checkout='latest', mod='annotation/banks/sim/tf:hot')
     ```
 
-    ```sh
+    ```sh tab="TF browser"
     text-fabric banks:clone --checkout=latest --mod=annotation/banks/sim/tf:hot
     ```
 
@@ -314,13 +314,11 @@ without fear of overwriting data.
 ??? abstract "More about using data modules"
     Suppose you have called up a data module:
 
-    ```python
+    ```python tab="notebook or program"
     A = use('banks', mod='annotation/banks/sim/tf')
     ```
 
-    or
-
-    ```sh
+    ```sh tab="TF browser"
     text-fabric banks --mod=annotation/banks/sim/tf
     ```
 

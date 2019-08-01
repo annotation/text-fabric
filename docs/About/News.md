@@ -12,26 +12,22 @@
     When TF apps have been updated, they will be autoloaded to the newest version
     provided you call the app as follows:
 
-    In a program:
-    
-    ```python
+    ```python tab="notebook or program"
     use('appName', ... )
     ```
 
-    Calling the browser
-
-    ```
+    ```sh tab="TF browser"
     text-fabric appName
     ```
 
     This will get you the newest stable version.
     To get the newest unstable version:
 
-    ```python
+    ```python tab="notebook or program"
     use('appName:hot', ...)
     ```
 
-    ```
+    ```sh tab="TF browser"
     text-fabric appName:hot
     ```
 
