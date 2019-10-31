@@ -6,7 +6,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1008899.svg)](https://doi.org/10.5281/zenodo.592193)
 
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2592/badge)](https://bestpractices.coreinfrastructure.org/projects/2592)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2592/badge)](https://bestpractices.coreinfrastructure.org/projects/2592) [![Join the chat at https://gitter.im/annotation/text-fabric](https://badges.gitter.im/annotation/text-fabric.svg)](https://gitter.im/annotation/text-fabric?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Text-Fabric is several things:
 
