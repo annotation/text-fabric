@@ -56,18 +56,20 @@ The linter and formatting options are in this directory:
 * Python 3:
   [flake8](https://github.com/annotation/text-fabric/blob/master/codestyle/flake8.txt)
   and
-  [yapf](https://github.com/annotation/text-fabric/blob/master/codestyle/style.yapf.txt)
+  [black](https://github.com/psf/black)
 
 * ES6:
   [eslint](https://github.com/annotation/text-fabric/blob/master/codestyle/eslintrc.txt)
   and
   [prettier](https://github.com/annotation/text-fabric/blob/master/codestyle/prettierrc.txt)
 
+Note that in
+* Javascript we use an indent of 2 characters;
+* in Python we use 4 chars, both for control of flow indenting and for sub-expression indenting;
+
 Note that in both languages
-* we use an indent of 2 characters;
-  in Python we use 2 chars for control of flow indenting and 4 chars for sub-expression indenting;
 * we prefer camelCase names;
-  in Python we use underscores only in ALL_CAPS names, mostly constants,
+  we use underscores only in ALL_CAPS names, mostly constants,
   and private methods may start with an underscore. 
 
 ## Releases
