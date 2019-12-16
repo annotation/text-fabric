@@ -1,8 +1,8 @@
-cloc|github.com/AlDanial/cloc v 1.78  T=0.02 s (108.2 files/s, 29811.3 lines/s)
+cloc|github.com/AlDanial/cloc v 1.82  T=0.03 s (68.5 files/s, 18694.2 lines/s)
 --- | ---
 
 Language|files|blank|comment|code
 :-------|-------:|-------:|-------:|-------:
-Python|2|55|27|469
+Python|2|37|27|482
 --------|--------|--------|--------|--------
-SUM:|2|55|27|469
+SUM:|2|37|27|482

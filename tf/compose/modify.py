@@ -69,6 +69,10 @@ def modify(
     silent=False,
 ):
     addFeatures = addFeatures or {}
+    onlyDeliverUpdatedFeatures = False
+    if type(deleteFeatures) is bool and deleteFeatures:
+        deleteFeatures = set()
+        onlyDeliverUpdatedFeatures = True
     deleteFeatures = set(_itemize(deleteFeatures))
     mergeFeatures = mergeFeatures or {}
 
@@ -671,7 +675,8 @@ def modify(
             (NODE, origNodeFeatures, Fs, nodeFeatures, nodeFeaturesOut),
             (EDGE, origEdgeFeatures, Es, edgeFeatures, edgeFeaturesOut),
         ):
-            for feat in (set(featSet) | set(featUpd)) - deletedFeatures:
+            allFeatSet = set() if onlyDeliverUpdatedFeatures else set(featSet)
+            for feat in (allFeatSet | set(featUpd)) - deletedFeatures:
                 outData = {}
                 outMeta = {}
                 if feat in featSet:
@@ -726,7 +731,7 @@ def modify(
         indent(level=0)
         info("write TF data ...")
         indent(level=1, reset=True)
-        TF = Fabric(locations=targetLocation, silent=silent or True)
+        TF = Fabric(locations=targetLocation, silent=silent)
         TF.save(
             metaData=metaDataOut,
             nodeFeatures=nodeFeaturesOut,

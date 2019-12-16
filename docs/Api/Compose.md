@@ -16,7 +16,7 @@ in the Banks tutorial.
 
 ???+ abstract "usage"
     ```python
-    from tf.compose import add
+    from tf.compose import compose
     modify(
         location,
         targetLocation,
@@ -57,6 +57,11 @@ in the Banks tutorial.
 
     Finally, the resulting features will be written to disk.
 
+    !!! hint "Only added/merged features"
+        It is possible to output only the added and merged features instead
+        of a complete dataset. Just pass the boolean value `True` to `deleteFeatures`
+        below.
+
 ??? info "location"
     You can pass just the location of the original dataset in the file system,
     i.e. the directory that contains the .tf files.
@@ -87,8 +92,11 @@ in the Banks tutorial.
     hard to deduce it from the data available.
 
 ??? info "deleteFeatures"
-    This should be an iterable or space separated string of features that
-    you want to delete from the result.
+    This should be either a boolean value `True` or an iterable or space
+    separated string of features that you want to delete from the result.
+
+    `True` means: all features will be deleted that are not the result of merging
+    or adding features (see `mergeFeatures` above and `addFeatures` below.
 
 ??? info "addFeatures"
     You can add as many features as you want, assigning values to all types,

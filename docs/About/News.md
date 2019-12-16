@@ -42,6 +42,18 @@
 
 ---
 
+# 7.9
+
+2019-12-16
+
+Add behaviour to the `modify()` function in the
+[compose API](../Api/Compose.md)
+so that you can output modified features only instead of a whole dataset.
+(Following a suggestion by Cody Kingham).
+
+
+2019-07-24
+
 # 7.8.12
 
 2019-07-24
