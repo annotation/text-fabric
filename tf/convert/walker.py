@@ -339,7 +339,7 @@ class CV(object):
         return good
 
     def stop(self, msg):
-        self.TM.error(f"Forced stop: msg")
+        self.TM.error(f"Forced stop: {msg}")
         self.good = False
         self.force = False
 
