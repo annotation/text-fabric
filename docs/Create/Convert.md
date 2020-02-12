@@ -363,6 +363,17 @@
 
         For edge features, `nf, nt` is the pair of from-to nodes which carries the value.
 
+    ??? abstract "cv.stop()"
+        ```python
+        cv.stop(msg)
+        ```
+
+        Stops the director. No further input will be read.
+        The director will exit with a non-good status  and issue the message `msg`.
+        If you have called `walk()` with `force=True`, indicating that the
+        director must proceed after errors, then this stop command will cause termination
+        nevertheless.
+
     ???+ hint "Example"
         Follow the [conversion tutorial]({{tfbanks}}/programs/convert.ipynb)
 

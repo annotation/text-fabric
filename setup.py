@@ -34,7 +34,7 @@ setup(
     version='7.9.0',
     description="""Processor and browser for Text Fabric Data""",
     author="Dirk Roorda",
-    author_email="dirk.roorda@dans.knaw.nl",
+    author_email="info@annotation.nl",
     url="https://github.com/annotation/text-fabric",
     keywords=[
         "text",
