@@ -1,11 +1,36 @@
+"""Fixed values for the whole program.
+"""
+
 import sys
 from zipfile import ZIP_DEFLATED
 
 
 VERSION = '7.10.1'
+"""Program version.
+
+This value is under control of the update process, as run by
+`build.py` in the top-level directory of the repo.
+"""
+
 NAME = "Text-Fabric"
+"""The name of the game: this program.
+"""
 
 PACK_VERSION = "2"
+"""Data serialization version.
+
+Plain text feature files will be compressed to zipped, pickled datastructures
+that load must faster.
+
+These methods evolve, sometimes in incompatible ways.
+In those cases we bump this version number.
+That will cause TF not to use compressed files that have been compressed by
+older, incompatible methods.
+Instead, TF will produce freshly compressed data files.
+
+The compressed data files are stored in a directory `.tf/{PVN}/` next
+to the original `tf`  files, where `{PVN}` is the package version number.
+"""
 
 ORG = "annotation"
 REPO = "text-fabric"

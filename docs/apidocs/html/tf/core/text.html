@@ -1,0 +1,1825 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.2" />
+<title>tf.core.text API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.core.text</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from .data import WARP
+
+DEFAULT_FORMAT = &#34;text-orig-full&#34;
+DEFAULT_FORMAT_TYPE = &#34;{}-default&#34;
+SEP = &#34;-&#34;
+TYPE_FMT_SEP = &#34;#&#34;
+
+
+class Text(object):
+    def __init__(self, api):
+        self.api = api
+        C = api.C
+        Fs = api.Fs
+        TF = api.TF
+        self.languages = {}
+        self.nameFromNode = {}
+        self.nodeFromName = {}
+        config = api.TF.features[WARP[2]].metaData if WARP[2] in api.TF.features else {}
+        self.sectionTypes = TF.sectionTypes
+        self.sectionFeats = TF.sectionFeats
+        self.sectionFeatsWithLanguage = getattr(TF, &#34;sectionFeatsWithLanguage&#34;, set())
+        self.sectionFeatures = []
+        self.sectionFeatureTypes = []
+        self.structureTypes = TF.structureTypes
+        self.structureFeats = TF.structureFeats
+        self.structureTypeSet = set(self.structureTypes)
+        self.config = config
+        self.defaultFormat = DEFAULT_FORMAT
+        self.defaultFormats = {}
+
+        structure = getattr(C, &#34;structure&#34;, None)
+
+        (
+            self.hdFromNd,
+            self.ndFromHd,
+            self.hdMult,
+            self.hdTop,
+            self.hdUp,
+            self.hdDown,
+        ) = (structure.data if structure else (None, None, None, None, None, None))
+        self.headings = (
+            ()
+            if structure is None
+            else tuple(zip(self.structureTypes, self.structureFeats))
+        )
+        otypeInfo = api.F.otype
+        fOtype = otypeInfo.v
+
+        good = True
+        if len(self.sectionFeats) != 0 and len(self.sectionTypes) != 0:
+            for fName in self.sectionFeatsWithLanguage:
+                fObj = api.TF.features[fName]
+                meta = fObj.metaData
+                code = meta.get(&#34;languageCode&#34;, &#34;&#34;)
+                self.languages[code] = {
+                    k: meta.get(k, &#34;default&#34;) for k in (&#34;language&#34;, &#34;languageEnglish&#34;)
+                }
+                cData = Fs(fName).data
+                self.nameFromNode[code] = cData
+                self.nodeFromName[code] = dict(
+                    ((fOtype(node), name), node) for (node, name) in cData.items()
+                )
+            for fName in self.sectionFeats:
+                dataType = api.TF.features[fName].dataType
+                self.sectionFeatures.append(api.Fs(fName).data)
+                self.sectionFeatureTypes.append(dataType)
+
+            sec0 = self.sectionTypes[0]
+            setattr(self, f&#34;{sec0}Name&#34;, self._sec0Name)
+            setattr(self, f&#34;{sec0}Node&#34;, self._sec0Node)
+
+        self._compileFormats()
+        self.good = good
+
+    def _sec0Name(self, n, lang=&#34;en&#34;):
+        sec0T = self.sectionTypes[0]
+        fOtype = self.api.F.otype.v
+        refNode = n if fOtype(n) == sec0T else self.api.L.u(n, sec0T)[0]
+        lookup = self.nameFromNode[&#34;&#34; if lang not in self.languages else lang]
+        return lookup.get(refNode, f&#34;not a {sec0T} node&#34;)
+
+    def _sec0Node(self, name, lang=&#34;en&#34;):
+        sec0T = self.sectionTypes[0]
+        return self.nodeFromName[&#34;&#34; if lang not in self.languages else lang].get(
+            (sec0T, name), None
+        )
+
+    def sectionTuple(self, n, lastSlot=False, fillup=False):
+        sTypes = self.sectionTypes
+        lsTypes = len(sTypes)
+        if lsTypes == 0:
+            return ()
+        F = self.api.F
+        E = self.api.E
+        L = self.api.L
+        fOtype = F.otype.v
+        slotType = F.otype.slotType
+        maxSlot = F.otype.maxSlot
+        eoslots = E.oslots.data
+        nType = fOtype(n)
+
+        if nType == slotType:
+            r = n
+        else:
+            slots = eoslots[n - maxSlot - 1]
+            r = slots[-1 if lastSlot else 0]
+
+        if nType == sTypes[0]:
+            if fillup:
+                r1 = L.u(r, otype=sTypes[1])
+                r1 = r1[0] if r1 else &#34;&#34;
+                if lsTypes &gt; 2:
+                    r2 = L.u(r, otype=sTypes[2])
+                    r2 = r2[0] if r2 else &#34;&#34;
+                    return (n, r1, r2)
+                return (n, r1)
+            return (n,)
+
+        r0s = L.u(r, sTypes[0])
+        r0 = r0s[0] if r0s else None
+
+        if nType == sTypes[1]:
+            if fillup:
+                if lsTypes &gt; 2:
+                    r2 = L.u(r, otype=sTypes[2])
+                    r2 = r2[0] if r2 else &#34;&#34;
+                    return (r0, n, r2)
+            return (r0, n)
+
+        r1s = L.u(r, sTypes[1])
+        r1 = r1s[0] if r1s else &#34;&#34;
+
+        if lsTypes &lt; 3:
+            return (r0, r1)
+
+        if nType == sTypes[2]:
+            return (r0, r1, n)
+
+        r2s = L.u(r, sTypes[2])
+        r2 = r2s[0] if r2s else &#34;&#34;
+
+        return (r0, r1, r2)
+
+    def sectionFromNode(self, n, lastSlot=False, lang=&#34;en&#34;, fillup=False):
+        sTuple = self.sectionTuple(n, lastSlot=lastSlot, fillup=fillup)
+        if len(sTuple) == 0:
+            return ()
+
+        sFs = self.sectionFeatures
+
+        return tuple(
+            &#34;&#34;
+            if n is None
+            else self._sec0Name(n, lang=lang)
+            if i == 0
+            else sFs[i].get(n, None)
+            for (i, n) in enumerate(sTuple)
+        )
+
+    def nodeFromSection(self, section, lang=&#34;en&#34;):
+        sTypes = self.sectionTypes
+        if len(sTypes) == 0:
+            return None
+        (sec1, sec2) = self.api.C.sections.data
+        sec0node = self._sec0Node(section[0], lang=lang)
+        if len(section) == 1:
+            return sec0node
+        elif len(section) == 2:
+            return sec1.get(sec0node, {}).get(section[1], None)
+        else:
+            return sec2.get(sec0node, {}).get(section[1], {}).get(section[2], None)
+
+    def structureInfo(self):
+        api = self.api
+        info = api.info
+        error = api.error
+        hdMult = self.hdMult
+        hdFromNd = self.hdFromNd
+        headings = self.headings
+
+        if hdFromNd is None:
+            info(&#34;No structural elements configured&#34;, tm=False)
+            return
+        info(f&#34;A heading is a tuple of pairs (node type, feature value)&#34;, tm=False)
+        info(
+            f&#34;\tof node types and features that have been configured as structural elements&#34;,
+            tm=False,
+        )
+        info(
+            f&#34;These {len(headings)} structural elements have been configured&#34;, tm=False
+        )
+        for (tp, ft) in headings:
+            info(f&#34;\tnode type {tp:&lt;10} with heading feature {ft}&#34;, tm=False)
+        info(f&#34;You can get them as a tuple with T.headings.&#34;, tm=False)
+        info(
+            f&#34;&#34;&#34;
+Structure API:
+\tT.structure(node=None)       gives the structure below node, or everything if node is None
+\tT.structurePretty(node=None) prints the structure below node, or everything if node is None
+\tT.top()                      gives all top-level nodes
+\tT.up(node)                   gives the (immediate) parent node
+\tT.down(node)                 gives the (immediate) children nodes
+\tT.headingFromNode(node)      gives the heading of a node
+\tT.nodeFromHeading(heading)   gives the node of a heading
+\tT.ndFromHd                   complete mapping from headings to nodes
+\tT.hdFromNd                   complete mapping from nodes to headings
+\tT.hdMult are all headings    with their nodes that occur multiple times
+
+There are {len(hdFromNd)} structural elements in the dataset.
+&#34;&#34;&#34;,
+            tm=False,
+        )
+
+        if hdMult:
+            nMultiple = len(hdMult)
+            tMultiple = sum(len(x) for x in hdMult.values())
+            error(
+                f&#34;WARNING: {nMultiple} structure headings with hdMult occurrences (total {tMultiple})&#34;,
+                tm=False,
+            )
+            for (sKey, nodes) in sorted(hdMult.items())[0:10]:
+                sKeyRep = &#34;-&#34;.join(&#34;:&#34;.join(str(p) for p in part) for part in sKey)
+                nNodes = len(nodes)
+                error(f&#34;\t{sKeyRep} has {nNodes} occurrences&#34;, tm=False)
+                error(f&#39;\t\t{&#34;, &#34;.join(str(n) for n in nodes[0:5])}&#39;, tm=False)
+                if nNodes &gt; 5:
+                    error(f&#34;\t\tand {nNodes - 5} more&#34;, tm=False)
+            if nMultiple &gt; 10:
+                error(f&#34;\tand {nMultiple - 10} headings more&#34;)
+
+    def structure(self, node=None):
+        api = self.api
+        error = api.error
+        F = api.F
+        fOtype = F.otype.v
+        hdTop = self.hdTop
+
+        if hdTop is None:
+            error(f&#34;structure types are not configured&#34;, tm=False)
+            return None
+        if node is None:
+            return tuple(self.structure(node=t) for t in self.top())
+
+        nType = fOtype(node)
+        if nType not in self.structureTypeSet:
+            error(
+                f&#34;{node} is an {nType} which is not configured as a structure type&#34;,
+                tm=False,
+            )
+            return None
+
+        return (node, tuple(self.structure(node=d) for d in self.down(node)))
+
+    def structurePretty(self, node=None, fullHeading=False):
+        structure = self.structure(node=node)
+        if structure is None:
+            return
+
+        material = []
+
+        def generate(struct, indent=&#34;&#34;):
+            if type(struct) is int:
+                sKey = self.headingFromNode(struct)
+                if not fullHeading:
+                    sKey = (sKey[-1],)
+                sKeyRep = &#34;-&#34;.join(&#34;:&#34;.join(str(p) for p in part) for part in sKey)
+                material.append(f&#34;{indent}{sKeyRep}&#34;)
+            else:
+                for item in struct:
+                    generate(item, indent=indent + &#34;  &#34;)
+
+        generate(structure)
+        return &#34;\n&#34;.join(material)
+
+    def top(self):
+        api = self.api
+        error = api.error
+        hdTop = self.hdTop
+
+        if hdTop is None:
+            error(f&#34;structure types are not configured&#34;, tm=False)
+            return None
+        return hdTop
+
+    def up(self, n):
+        api = self.api
+        F = api.F
+        error = api.error
+        fOtype = F.otype.v
+
+        hdUp = self.hdUp
+        if hdUp is None:
+            error(f&#34;structure types are not configured&#34;, tm=False)
+            return None
+        nType = fOtype(n)
+        if nType not in self.structureTypeSet:
+            error(
+                f&#34;{n} is an {nType} which is not configured as a structure type&#34;,
+                tm=False,
+            )
+            return None
+        return hdUp.get(n, None)
+
+    def down(self, n):
+        api = self.api
+        F = api.F
+        fOtype = F.otype.v
+        error = api.error
+        hdDown = self.hdDown
+        if hdDown is None:
+            error(f&#34;structure types are not configured&#34;, tm=False)
+            return None
+        nType = fOtype(n)
+        if nType not in self.structureTypeSet:
+            error(
+                f&#34;{n} is an {nType} which is not configured as a structure type&#34;,
+                tm=False,
+            )
+            return None
+        return hdDown.get(n, ())
+
+    def headingFromNode(self, n):
+        api = self.api
+        F = api.F
+        error = api.error
+        fOtype = F.otype.v
+        hdFromNd = self.hdFromNd
+        if hdFromNd is None:
+            error(f&#34;structure types are not configured&#34;, tm=False)
+            return None
+        nType = fOtype(n)
+        if nType not in self.structureTypeSet:
+            error(
+                f&#34;{n} is an {nType} which is not configured as a structure type&#34;,
+                tm=False,
+            )
+            return None
+        return hdFromNd.get(n, None)
+
+    def nodeFromHeading(self, head):
+        api = self.api
+        error = api.error
+        ndFromHd = self.ndFromHd
+        if ndFromHd is None:
+            error(f&#34;structure types are not configured&#34;, tm=False)
+        n = ndFromHd.get(head, None)
+        if n is None:
+            error(f&#34;no structure node with heading {head}&#34;, tm=False)
+        return n
+
+    def text(self, nodes, fmt=None, descend=None, func=None, explain=False):
+        api = self.api
+        E = api.E
+        F = api.F
+        L = api.L
+        error = api.error
+
+        fOtype = F.otype.v
+        slotType = F.otype.slotType
+        maxSlot = F.otype.maxSlot
+        eoslots = E.oslots.data
+
+        defaultFormats = self.defaultFormats
+        xformats = self._xformats
+        xdTypes = self._xdTypes
+
+        if fmt and fmt not in xformats:
+            error(f&#39;Undefined format &#34;{fmt}&#34;&#39;, tm=False)
+            return &#34;&#34;
+
+        def rescue(n):
+            return f&#34;{fOtype(n)}{n}&#34;
+
+        single = type(nodes) is int
+        material = []
+        good = True
+
+        if single:
+            nodes = [nodes]
+        else:
+            nodes = list(nodes) if explain else nodes
+        if explain:
+            fmttStr = &#34;format target type&#34;
+            ntStr = &#34;node type&#34;
+
+            nRep = &#34;single node&#34; if single else f&#34;iterable of {len(nodes)} nodes&#34;
+            fmtRep = &#34;implicit&#34; if not fmt else f&#34;{fmt} targeted at {xdTypes[fmt]}&#34;
+            descendRep = (
+                &#34;implicit&#34; if descend is None else &#34;True&#34; if descend else &#34;False&#34;
+            )
+            funcRep = f&#39;{&#34;&#34; if func else &#34;no &#34;} custom format implementation&#39;
+            error(
+                f&#34;&#34;&#34;
+EXPLANATION: T.text) called with parameters:
+\tnodes  : {nRep}
+\tfmt    : {fmtRep}
+\tdescend: {descendRep}
+\tfunc   : {funcRep}
+&#34;&#34;&#34;,
+                tm=False,
+            )
+
+        for node in nodes:
+            nType = fOtype(node)
+            if explain:
+                error(f&#34;\tNODE: {nType} {node}&#34;, tm=False)
+            if descend:
+                if explain:
+                    downRep = fmttStr
+                if fmt:
+                    repf = xformats[fmt]
+                    downType = xdTypes[fmt]
+                    if explain:
+                        fmtRep = f&#34;explicit {fmt}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=True) ({downRep})&#34;
+                else:
+                    repf = xformats[DEFAULT_FORMAT]
+                    downType = xdTypes[DEFAULT_FORMAT]
+                    if explain:
+                        fmtRep = f&#34;implicit {DEFAULT_FORMAT}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=True) ({downRep})&#34;
+            else:
+                downType = nType
+                if explain:
+                    downRep = ntStr
+                if fmt:
+                    repf = xformats[fmt]
+                    if descend is None:
+                        downType = xdTypes[fmt]
+                        if explain:
+                            downRep = fmttStr
+                    if explain:
+                        fmtRep = f&#34;explicit {fmt}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=None) ({downRep})&#34;
+                elif nType in defaultFormats:
+                    dfmt = defaultFormats[nType]
+                    repf = xformats[dfmt]
+                    if descend is None:
+                        downType = nType
+                        if explain:
+                            downRep = fmttStr
+                    if explain:
+                        fmtRep = f&#34;implicit {dfmt}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=None) ({downRep})&#34;
+                else:
+                    repf = xformats[DEFAULT_FORMAT]
+                    if descend is None:
+                        downType = xdTypes[DEFAULT_FORMAT]
+                        if explain:
+                            downRep = fmttStr
+                    if explain:
+                        fmtRep = f&#34;implicit {DEFAULT_FORMAT}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=None) ({downRep})&#34;
+
+            if explain:
+                expandRep2 = &#34;&#34;
+            if downType == nType:
+                if explain:
+                    expandRep2 = f&#34;(no expansion needed)&#34;
+                downType = None
+
+            if explain:
+                error(f&#34;\t\tTARGET LEVEL: {expandRep.format(expandRep2)}&#34;, tm=False)
+
+            if explain:
+                plural = &#34;s&#34;
+            if downType == slotType:
+                xnodes = eoslots[node - maxSlot - 1]
+            elif downType:
+                xnodes = L.d(node, otype=downType)
+            else:
+                xnodes = [node]
+                if explain:
+                    plural = &#34;&#34;
+            if explain:
+                nodeRep = f&#39;{len(xnodes)} {downType or nType}{plural} {&#34;, &#34;.join(str(x) for x in xnodes)}&#39;
+                error(f&#34;\t\tEXPANSION: {nodeRep}&#34;, tm=False)
+
+            if func:
+                repf = func
+                if explain:
+                    fmtRep += f&#34; (overridden with the explicit func argument)&#34;
+            if not repf:
+                repf = rescue
+                good = False
+                if explain:
+                    fmtRep += &#34;\n\t\t\twhich is not defined: formatting as node types and numbers&#34;
+
+            if explain:
+                error(f&#34;\t\tFORMATTING: {fmtRep}&#34;, tm=False)
+                error(f&#34;\t\tMATERIAL:&#34;, tm=False)
+            for n in xnodes:
+                rep = repf(n)
+                material.append(rep)
+                if explain:
+                    error(f&#39;\t\t\t{fOtype(n)} {n} ADDS &#34;{rep}&#34;&#39;, tm=False)
+
+        if not good:
+            error(&#39;Text format &#34;{DEFAULT_FORMAT}&#34; not defined in otext.tf&#39;, tm=False)
+        return &#34;&#34;.join(material)
+
+    def _compileFormats(self):
+        api = self.api
+        TF = api.TF
+        cformats = TF.cformats
+
+        self.formats = {}
+        self._xformats = {}
+        self._xdTypes = {}
+        for (fmt, (rtpl, feats)) in sorted(cformats.items()):
+            defaultType = self.splitDefaultFormat(fmt)
+            if defaultType:
+                self.defaultFormats[defaultType] = fmt
+            (descendType, rtpl) = self.splitFormat(rtpl)
+            tpl = rtpl.replace(&#34;\\n&#34;, &#34;\n&#34;).replace(&#34;\\t&#34;, &#34;\t&#34;)
+            self._xdTypes[fmt] = descendType
+            self._xformats[fmt] = self._compileFormat(tpl, feats)
+            self.formats[fmt] = descendType
+
+    def splitFormat(self, tpl):
+        api = self.api
+        F = api.F
+        slotType = F.otype.slotType
+        otypes = set(F.otype.all)
+
+        descendType = slotType
+        parts = tpl.split(TYPE_FMT_SEP, maxsplit=1)
+        if len(parts) == 2 and parts[0] in otypes:
+            (descendType, tpl) = parts
+        return (descendType, tpl)
+
+    def splitDefaultFormat(self, tpl):
+        api = self.api
+        F = api.F
+        otypes = set(F.otype.all)
+
+        parts = tpl.rsplit(SEP, maxsplit=1)
+        return (
+            parts[0]
+            if len(parts) == 2 and parts[1] == &#34;default&#34; and parts[0] in otypes
+            else None
+        )
+
+    def _compileFormat(self, rtpl, feats):
+        replaceFuncs = []
+        for feat in feats:
+            (feat, default) = feat
+            replaceFuncs.append(self._makeFunc(feat, default))
+
+        def g(n):
+            values = tuple(replaceFunc(n) for replaceFunc in replaceFuncs)
+            return rtpl.format(*values)
+
+        return g
+
+    def _makeFunc(self, feat, default):
+        api = self.api
+        Fs = api.Fs
+        if len(feat) == 1:
+            ft = feat[0]
+            f = Fs(ft).data
+            return lambda n: f.get(n, default)
+        elif len(feat) == 2:
+            (ft1, ft2) = feat
+            f1 = Fs(ft1).data
+            f2 = Fs(ft2).data
+            return lambda n: (f1.get(n, f2.get(n, default)))
+        else:
+
+            def getValue(n):
+                v = None
+                for ft in feat:
+                    v = Fs(ft).data.get(n, None)
+                    if v is not None:
+                        break
+                return v or default
+
+            return getValue</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.core.text.Text"><code class="flex name class">
+<span>class <span class="ident">Text</span></span>
+<span>(</span><span>api)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Text(object):
+    def __init__(self, api):
+        self.api = api
+        C = api.C
+        Fs = api.Fs
+        TF = api.TF
+        self.languages = {}
+        self.nameFromNode = {}
+        self.nodeFromName = {}
+        config = api.TF.features[WARP[2]].metaData if WARP[2] in api.TF.features else {}
+        self.sectionTypes = TF.sectionTypes
+        self.sectionFeats = TF.sectionFeats
+        self.sectionFeatsWithLanguage = getattr(TF, &#34;sectionFeatsWithLanguage&#34;, set())
+        self.sectionFeatures = []
+        self.sectionFeatureTypes = []
+        self.structureTypes = TF.structureTypes
+        self.structureFeats = TF.structureFeats
+        self.structureTypeSet = set(self.structureTypes)
+        self.config = config
+        self.defaultFormat = DEFAULT_FORMAT
+        self.defaultFormats = {}
+
+        structure = getattr(C, &#34;structure&#34;, None)
+
+        (
+            self.hdFromNd,
+            self.ndFromHd,
+            self.hdMult,
+            self.hdTop,
+            self.hdUp,
+            self.hdDown,
+        ) = (structure.data if structure else (None, None, None, None, None, None))
+        self.headings = (
+            ()
+            if structure is None
+            else tuple(zip(self.structureTypes, self.structureFeats))
+        )
+        otypeInfo = api.F.otype
+        fOtype = otypeInfo.v
+
+        good = True
+        if len(self.sectionFeats) != 0 and len(self.sectionTypes) != 0:
+            for fName in self.sectionFeatsWithLanguage:
+                fObj = api.TF.features[fName]
+                meta = fObj.metaData
+                code = meta.get(&#34;languageCode&#34;, &#34;&#34;)
+                self.languages[code] = {
+                    k: meta.get(k, &#34;default&#34;) for k in (&#34;language&#34;, &#34;languageEnglish&#34;)
+                }
+                cData = Fs(fName).data
+                self.nameFromNode[code] = cData
+                self.nodeFromName[code] = dict(
+                    ((fOtype(node), name), node) for (node, name) in cData.items()
+                )
+            for fName in self.sectionFeats:
+                dataType = api.TF.features[fName].dataType
+                self.sectionFeatures.append(api.Fs(fName).data)
+                self.sectionFeatureTypes.append(dataType)
+
+            sec0 = self.sectionTypes[0]
+            setattr(self, f&#34;{sec0}Name&#34;, self._sec0Name)
+            setattr(self, f&#34;{sec0}Node&#34;, self._sec0Node)
+
+        self._compileFormats()
+        self.good = good
+
+    def _sec0Name(self, n, lang=&#34;en&#34;):
+        sec0T = self.sectionTypes[0]
+        fOtype = self.api.F.otype.v
+        refNode = n if fOtype(n) == sec0T else self.api.L.u(n, sec0T)[0]
+        lookup = self.nameFromNode[&#34;&#34; if lang not in self.languages else lang]
+        return lookup.get(refNode, f&#34;not a {sec0T} node&#34;)
+
+    def _sec0Node(self, name, lang=&#34;en&#34;):
+        sec0T = self.sectionTypes[0]
+        return self.nodeFromName[&#34;&#34; if lang not in self.languages else lang].get(
+            (sec0T, name), None
+        )
+
+    def sectionTuple(self, n, lastSlot=False, fillup=False):
+        sTypes = self.sectionTypes
+        lsTypes = len(sTypes)
+        if lsTypes == 0:
+            return ()
+        F = self.api.F
+        E = self.api.E
+        L = self.api.L
+        fOtype = F.otype.v
+        slotType = F.otype.slotType
+        maxSlot = F.otype.maxSlot
+        eoslots = E.oslots.data
+        nType = fOtype(n)
+
+        if nType == slotType:
+            r = n
+        else:
+            slots = eoslots[n - maxSlot - 1]
+            r = slots[-1 if lastSlot else 0]
+
+        if nType == sTypes[0]:
+            if fillup:
+                r1 = L.u(r, otype=sTypes[1])
+                r1 = r1[0] if r1 else &#34;&#34;
+                if lsTypes &gt; 2:
+                    r2 = L.u(r, otype=sTypes[2])
+                    r2 = r2[0] if r2 else &#34;&#34;
+                    return (n, r1, r2)
+                return (n, r1)
+            return (n,)
+
+        r0s = L.u(r, sTypes[0])
+        r0 = r0s[0] if r0s else None
+
+        if nType == sTypes[1]:
+            if fillup:
+                if lsTypes &gt; 2:
+                    r2 = L.u(r, otype=sTypes[2])
+                    r2 = r2[0] if r2 else &#34;&#34;
+                    return (r0, n, r2)
+            return (r0, n)
+
+        r1s = L.u(r, sTypes[1])
+        r1 = r1s[0] if r1s else &#34;&#34;
+
+        if lsTypes &lt; 3:
+            return (r0, r1)
+
+        if nType == sTypes[2]:
+            return (r0, r1, n)
+
+        r2s = L.u(r, sTypes[2])
+        r2 = r2s[0] if r2s else &#34;&#34;
+
+        return (r0, r1, r2)
+
+    def sectionFromNode(self, n, lastSlot=False, lang=&#34;en&#34;, fillup=False):
+        sTuple = self.sectionTuple(n, lastSlot=lastSlot, fillup=fillup)
+        if len(sTuple) == 0:
+            return ()
+
+        sFs = self.sectionFeatures
+
+        return tuple(
+            &#34;&#34;
+            if n is None
+            else self._sec0Name(n, lang=lang)
+            if i == 0
+            else sFs[i].get(n, None)
+            for (i, n) in enumerate(sTuple)
+        )
+
+    def nodeFromSection(self, section, lang=&#34;en&#34;):
+        sTypes = self.sectionTypes
+        if len(sTypes) == 0:
+            return None
+        (sec1, sec2) = self.api.C.sections.data
+        sec0node = self._sec0Node(section[0], lang=lang)
+        if len(section) == 1:
+            return sec0node
+        elif len(section) == 2:
+            return sec1.get(sec0node, {}).get(section[1], None)
+        else:
+            return sec2.get(sec0node, {}).get(section[1], {}).get(section[2], None)
+
+    def structureInfo(self):
+        api = self.api
+        info = api.info
+        error = api.error
+        hdMult = self.hdMult
+        hdFromNd = self.hdFromNd
+        headings = self.headings
+
+        if hdFromNd is None:
+            info(&#34;No structural elements configured&#34;, tm=False)
+            return
+        info(f&#34;A heading is a tuple of pairs (node type, feature value)&#34;, tm=False)
+        info(
+            f&#34;\tof node types and features that have been configured as structural elements&#34;,
+            tm=False,
+        )
+        info(
+            f&#34;These {len(headings)} structural elements have been configured&#34;, tm=False
+        )
+        for (tp, ft) in headings:
+            info(f&#34;\tnode type {tp:&lt;10} with heading feature {ft}&#34;, tm=False)
+        info(f&#34;You can get them as a tuple with T.headings.&#34;, tm=False)
+        info(
+            f&#34;&#34;&#34;
+Structure API:
+\tT.structure(node=None)       gives the structure below node, or everything if node is None
+\tT.structurePretty(node=None) prints the structure below node, or everything if node is None
+\tT.top()                      gives all top-level nodes
+\tT.up(node)                   gives the (immediate) parent node
+\tT.down(node)                 gives the (immediate) children nodes
+\tT.headingFromNode(node)      gives the heading of a node
+\tT.nodeFromHeading(heading)   gives the node of a heading
+\tT.ndFromHd                   complete mapping from headings to nodes
+\tT.hdFromNd                   complete mapping from nodes to headings
+\tT.hdMult are all headings    with their nodes that occur multiple times
+
+There are {len(hdFromNd)} structural elements in the dataset.
+&#34;&#34;&#34;,
+            tm=False,
+        )
+
+        if hdMult:
+            nMultiple = len(hdMult)
+            tMultiple = sum(len(x) for x in hdMult.values())
+            error(
+                f&#34;WARNING: {nMultiple} structure headings with hdMult occurrences (total {tMultiple})&#34;,
+                tm=False,
+            )
+            for (sKey, nodes) in sorted(hdMult.items())[0:10]:
+                sKeyRep = &#34;-&#34;.join(&#34;:&#34;.join(str(p) for p in part) for part in sKey)
+                nNodes = len(nodes)
+                error(f&#34;\t{sKeyRep} has {nNodes} occurrences&#34;, tm=False)
+                error(f&#39;\t\t{&#34;, &#34;.join(str(n) for n in nodes[0:5])}&#39;, tm=False)
+                if nNodes &gt; 5:
+                    error(f&#34;\t\tand {nNodes - 5} more&#34;, tm=False)
+            if nMultiple &gt; 10:
+                error(f&#34;\tand {nMultiple - 10} headings more&#34;)
+
+    def structure(self, node=None):
+        api = self.api
+        error = api.error
+        F = api.F
+        fOtype = F.otype.v
+        hdTop = self.hdTop
+
+        if hdTop is None:
+            error(f&#34;structure types are not configured&#34;, tm=False)
+            return None
+        if node is None:
+            return tuple(self.structure(node=t) for t in self.top())
+
+        nType = fOtype(node)
+        if nType not in self.structureTypeSet:
+            error(
+                f&#34;{node} is an {nType} which is not configured as a structure type&#34;,
+                tm=False,
+            )
+            return None
+
+        return (node, tuple(self.structure(node=d) for d in self.down(node)))
+
+    def structurePretty(self, node=None, fullHeading=False):
+        structure = self.structure(node=node)
+        if structure is None:
+            return
+
+        material = []
+
+        def generate(struct, indent=&#34;&#34;):
+            if type(struct) is int:
+                sKey = self.headingFromNode(struct)
+                if not fullHeading:
+                    sKey = (sKey[-1],)
+                sKeyRep = &#34;-&#34;.join(&#34;:&#34;.join(str(p) for p in part) for part in sKey)
+                material.append(f&#34;{indent}{sKeyRep}&#34;)
+            else:
+                for item in struct:
+                    generate(item, indent=indent + &#34;  &#34;)
+
+        generate(structure)
+        return &#34;\n&#34;.join(material)
+
+    def top(self):
+        api = self.api
+        error = api.error
+        hdTop = self.hdTop
+
+        if hdTop is None:
+            error(f&#34;structure types are not configured&#34;, tm=False)
+            return None
+        return hdTop
+
+    def up(self, n):
+        api = self.api
+        F = api.F
+        error = api.error
+        fOtype = F.otype.v
+
+        hdUp = self.hdUp
+        if hdUp is None:
+            error(f&#34;structure types are not configured&#34;, tm=False)
+            return None
+        nType = fOtype(n)
+        if nType not in self.structureTypeSet:
+            error(
+                f&#34;{n} is an {nType} which is not configured as a structure type&#34;,
+                tm=False,
+            )
+            return None
+        return hdUp.get(n, None)
+
+    def down(self, n):
+        api = self.api
+        F = api.F
+        fOtype = F.otype.v
+        error = api.error
+        hdDown = self.hdDown
+        if hdDown is None:
+            error(f&#34;structure types are not configured&#34;, tm=False)
+            return None
+        nType = fOtype(n)
+        if nType not in self.structureTypeSet:
+            error(
+                f&#34;{n} is an {nType} which is not configured as a structure type&#34;,
+                tm=False,
+            )
+            return None
+        return hdDown.get(n, ())
+
+    def headingFromNode(self, n):
+        api = self.api
+        F = api.F
+        error = api.error
+        fOtype = F.otype.v
+        hdFromNd = self.hdFromNd
+        if hdFromNd is None:
+            error(f&#34;structure types are not configured&#34;, tm=False)
+            return None
+        nType = fOtype(n)
+        if nType not in self.structureTypeSet:
+            error(
+                f&#34;{n} is an {nType} which is not configured as a structure type&#34;,
+                tm=False,
+            )
+            return None
+        return hdFromNd.get(n, None)
+
+    def nodeFromHeading(self, head):
+        api = self.api
+        error = api.error
+        ndFromHd = self.ndFromHd
+        if ndFromHd is None:
+            error(f&#34;structure types are not configured&#34;, tm=False)
+        n = ndFromHd.get(head, None)
+        if n is None:
+            error(f&#34;no structure node with heading {head}&#34;, tm=False)
+        return n
+
+    def text(self, nodes, fmt=None, descend=None, func=None, explain=False):
+        api = self.api
+        E = api.E
+        F = api.F
+        L = api.L
+        error = api.error
+
+        fOtype = F.otype.v
+        slotType = F.otype.slotType
+        maxSlot = F.otype.maxSlot
+        eoslots = E.oslots.data
+
+        defaultFormats = self.defaultFormats
+        xformats = self._xformats
+        xdTypes = self._xdTypes
+
+        if fmt and fmt not in xformats:
+            error(f&#39;Undefined format &#34;{fmt}&#34;&#39;, tm=False)
+            return &#34;&#34;
+
+        def rescue(n):
+            return f&#34;{fOtype(n)}{n}&#34;
+
+        single = type(nodes) is int
+        material = []
+        good = True
+
+        if single:
+            nodes = [nodes]
+        else:
+            nodes = list(nodes) if explain else nodes
+        if explain:
+            fmttStr = &#34;format target type&#34;
+            ntStr = &#34;node type&#34;
+
+            nRep = &#34;single node&#34; if single else f&#34;iterable of {len(nodes)} nodes&#34;
+            fmtRep = &#34;implicit&#34; if not fmt else f&#34;{fmt} targeted at {xdTypes[fmt]}&#34;
+            descendRep = (
+                &#34;implicit&#34; if descend is None else &#34;True&#34; if descend else &#34;False&#34;
+            )
+            funcRep = f&#39;{&#34;&#34; if func else &#34;no &#34;} custom format implementation&#39;
+            error(
+                f&#34;&#34;&#34;
+EXPLANATION: T.text) called with parameters:
+\tnodes  : {nRep}
+\tfmt    : {fmtRep}
+\tdescend: {descendRep}
+\tfunc   : {funcRep}
+&#34;&#34;&#34;,
+                tm=False,
+            )
+
+        for node in nodes:
+            nType = fOtype(node)
+            if explain:
+                error(f&#34;\tNODE: {nType} {node}&#34;, tm=False)
+            if descend:
+                if explain:
+                    downRep = fmttStr
+                if fmt:
+                    repf = xformats[fmt]
+                    downType = xdTypes[fmt]
+                    if explain:
+                        fmtRep = f&#34;explicit {fmt}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=True) ({downRep})&#34;
+                else:
+                    repf = xformats[DEFAULT_FORMAT]
+                    downType = xdTypes[DEFAULT_FORMAT]
+                    if explain:
+                        fmtRep = f&#34;implicit {DEFAULT_FORMAT}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=True) ({downRep})&#34;
+            else:
+                downType = nType
+                if explain:
+                    downRep = ntStr
+                if fmt:
+                    repf = xformats[fmt]
+                    if descend is None:
+                        downType = xdTypes[fmt]
+                        if explain:
+                            downRep = fmttStr
+                    if explain:
+                        fmtRep = f&#34;explicit {fmt}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=None) ({downRep})&#34;
+                elif nType in defaultFormats:
+                    dfmt = defaultFormats[nType]
+                    repf = xformats[dfmt]
+                    if descend is None:
+                        downType = nType
+                        if explain:
+                            downRep = fmttStr
+                    if explain:
+                        fmtRep = f&#34;implicit {dfmt}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=None) ({downRep})&#34;
+                else:
+                    repf = xformats[DEFAULT_FORMAT]
+                    if descend is None:
+                        downType = xdTypes[DEFAULT_FORMAT]
+                        if explain:
+                            downRep = fmttStr
+                    if explain:
+                        fmtRep = f&#34;implicit {DEFAULT_FORMAT}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=None) ({downRep})&#34;
+
+            if explain:
+                expandRep2 = &#34;&#34;
+            if downType == nType:
+                if explain:
+                    expandRep2 = f&#34;(no expansion needed)&#34;
+                downType = None
+
+            if explain:
+                error(f&#34;\t\tTARGET LEVEL: {expandRep.format(expandRep2)}&#34;, tm=False)
+
+            if explain:
+                plural = &#34;s&#34;
+            if downType == slotType:
+                xnodes = eoslots[node - maxSlot - 1]
+            elif downType:
+                xnodes = L.d(node, otype=downType)
+            else:
+                xnodes = [node]
+                if explain:
+                    plural = &#34;&#34;
+            if explain:
+                nodeRep = f&#39;{len(xnodes)} {downType or nType}{plural} {&#34;, &#34;.join(str(x) for x in xnodes)}&#39;
+                error(f&#34;\t\tEXPANSION: {nodeRep}&#34;, tm=False)
+
+            if func:
+                repf = func
+                if explain:
+                    fmtRep += f&#34; (overridden with the explicit func argument)&#34;
+            if not repf:
+                repf = rescue
+                good = False
+                if explain:
+                    fmtRep += &#34;\n\t\t\twhich is not defined: formatting as node types and numbers&#34;
+
+            if explain:
+                error(f&#34;\t\tFORMATTING: {fmtRep}&#34;, tm=False)
+                error(f&#34;\t\tMATERIAL:&#34;, tm=False)
+            for n in xnodes:
+                rep = repf(n)
+                material.append(rep)
+                if explain:
+                    error(f&#39;\t\t\t{fOtype(n)} {n} ADDS &#34;{rep}&#34;&#39;, tm=False)
+
+        if not good:
+            error(&#39;Text format &#34;{DEFAULT_FORMAT}&#34; not defined in otext.tf&#39;, tm=False)
+        return &#34;&#34;.join(material)
+
+    def _compileFormats(self):
+        api = self.api
+        TF = api.TF
+        cformats = TF.cformats
+
+        self.formats = {}
+        self._xformats = {}
+        self._xdTypes = {}
+        for (fmt, (rtpl, feats)) in sorted(cformats.items()):
+            defaultType = self.splitDefaultFormat(fmt)
+            if defaultType:
+                self.defaultFormats[defaultType] = fmt
+            (descendType, rtpl) = self.splitFormat(rtpl)
+            tpl = rtpl.replace(&#34;\\n&#34;, &#34;\n&#34;).replace(&#34;\\t&#34;, &#34;\t&#34;)
+            self._xdTypes[fmt] = descendType
+            self._xformats[fmt] = self._compileFormat(tpl, feats)
+            self.formats[fmt] = descendType
+
+    def splitFormat(self, tpl):
+        api = self.api
+        F = api.F
+        slotType = F.otype.slotType
+        otypes = set(F.otype.all)
+
+        descendType = slotType
+        parts = tpl.split(TYPE_FMT_SEP, maxsplit=1)
+        if len(parts) == 2 and parts[0] in otypes:
+            (descendType, tpl) = parts
+        return (descendType, tpl)
+
+    def splitDefaultFormat(self, tpl):
+        api = self.api
+        F = api.F
+        otypes = set(F.otype.all)
+
+        parts = tpl.rsplit(SEP, maxsplit=1)
+        return (
+            parts[0]
+            if len(parts) == 2 and parts[1] == &#34;default&#34; and parts[0] in otypes
+            else None
+        )
+
+    def _compileFormat(self, rtpl, feats):
+        replaceFuncs = []
+        for feat in feats:
+            (feat, default) = feat
+            replaceFuncs.append(self._makeFunc(feat, default))
+
+        def g(n):
+            values = tuple(replaceFunc(n) for replaceFunc in replaceFuncs)
+            return rtpl.format(*values)
+
+        return g
+
+    def _makeFunc(self, feat, default):
+        api = self.api
+        Fs = api.Fs
+        if len(feat) == 1:
+            ft = feat[0]
+            f = Fs(ft).data
+            return lambda n: f.get(n, default)
+        elif len(feat) == 2:
+            (ft1, ft2) = feat
+            f1 = Fs(ft1).data
+            f2 = Fs(ft2).data
+            return lambda n: (f1.get(n, f2.get(n, default)))
+        else:
+
+            def getValue(n):
+                v = None
+                for ft in feat:
+                    v = Fs(ft).data.get(n, None)
+                    if v is not None:
+                        break
+                return v or default
+
+            return getValue</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.core.text.Text.down"><code class="name flex">
+<span>def <span class="ident">down</span></span>(<span>self, n)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def down(self, n):
+    api = self.api
+    F = api.F
+    fOtype = F.otype.v
+    error = api.error
+    hdDown = self.hdDown
+    if hdDown is None:
+        error(f&#34;structure types are not configured&#34;, tm=False)
+        return None
+    nType = fOtype(n)
+    if nType not in self.structureTypeSet:
+        error(
+            f&#34;{n} is an {nType} which is not configured as a structure type&#34;,
+            tm=False,
+        )
+        return None
+    return hdDown.get(n, ())</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.headingFromNode"><code class="name flex">
+<span>def <span class="ident">headingFromNode</span></span>(<span>self, n)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def headingFromNode(self, n):
+    api = self.api
+    F = api.F
+    error = api.error
+    fOtype = F.otype.v
+    hdFromNd = self.hdFromNd
+    if hdFromNd is None:
+        error(f&#34;structure types are not configured&#34;, tm=False)
+        return None
+    nType = fOtype(n)
+    if nType not in self.structureTypeSet:
+        error(
+            f&#34;{n} is an {nType} which is not configured as a structure type&#34;,
+            tm=False,
+        )
+        return None
+    return hdFromNd.get(n, None)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.nodeFromHeading"><code class="name flex">
+<span>def <span class="ident">nodeFromHeading</span></span>(<span>self, head)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nodeFromHeading(self, head):
+    api = self.api
+    error = api.error
+    ndFromHd = self.ndFromHd
+    if ndFromHd is None:
+        error(f&#34;structure types are not configured&#34;, tm=False)
+    n = ndFromHd.get(head, None)
+    if n is None:
+        error(f&#34;no structure node with heading {head}&#34;, tm=False)
+    return n</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.nodeFromSection"><code class="name flex">
+<span>def <span class="ident">nodeFromSection</span></span>(<span>self, section, lang='en')</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nodeFromSection(self, section, lang=&#34;en&#34;):
+    sTypes = self.sectionTypes
+    if len(sTypes) == 0:
+        return None
+    (sec1, sec2) = self.api.C.sections.data
+    sec0node = self._sec0Node(section[0], lang=lang)
+    if len(section) == 1:
+        return sec0node
+    elif len(section) == 2:
+        return sec1.get(sec0node, {}).get(section[1], None)
+    else:
+        return sec2.get(sec0node, {}).get(section[1], {}).get(section[2], None)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.sectionFromNode"><code class="name flex">
+<span>def <span class="ident">sectionFromNode</span></span>(<span>self, n, lastSlot=False, lang='en', fillup=False)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sectionFromNode(self, n, lastSlot=False, lang=&#34;en&#34;, fillup=False):
+    sTuple = self.sectionTuple(n, lastSlot=lastSlot, fillup=fillup)
+    if len(sTuple) == 0:
+        return ()
+
+    sFs = self.sectionFeatures
+
+    return tuple(
+        &#34;&#34;
+        if n is None
+        else self._sec0Name(n, lang=lang)
+        if i == 0
+        else sFs[i].get(n, None)
+        for (i, n) in enumerate(sTuple)
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.sectionTuple"><code class="name flex">
+<span>def <span class="ident">sectionTuple</span></span>(<span>self, n, lastSlot=False, fillup=False)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sectionTuple(self, n, lastSlot=False, fillup=False):
+    sTypes = self.sectionTypes
+    lsTypes = len(sTypes)
+    if lsTypes == 0:
+        return ()
+    F = self.api.F
+    E = self.api.E
+    L = self.api.L
+    fOtype = F.otype.v
+    slotType = F.otype.slotType
+    maxSlot = F.otype.maxSlot
+    eoslots = E.oslots.data
+    nType = fOtype(n)
+
+    if nType == slotType:
+        r = n
+    else:
+        slots = eoslots[n - maxSlot - 1]
+        r = slots[-1 if lastSlot else 0]
+
+    if nType == sTypes[0]:
+        if fillup:
+            r1 = L.u(r, otype=sTypes[1])
+            r1 = r1[0] if r1 else &#34;&#34;
+            if lsTypes &gt; 2:
+                r2 = L.u(r, otype=sTypes[2])
+                r2 = r2[0] if r2 else &#34;&#34;
+                return (n, r1, r2)
+            return (n, r1)
+        return (n,)
+
+    r0s = L.u(r, sTypes[0])
+    r0 = r0s[0] if r0s else None
+
+    if nType == sTypes[1]:
+        if fillup:
+            if lsTypes &gt; 2:
+                r2 = L.u(r, otype=sTypes[2])
+                r2 = r2[0] if r2 else &#34;&#34;
+                return (r0, n, r2)
+        return (r0, n)
+
+    r1s = L.u(r, sTypes[1])
+    r1 = r1s[0] if r1s else &#34;&#34;
+
+    if lsTypes &lt; 3:
+        return (r0, r1)
+
+    if nType == sTypes[2]:
+        return (r0, r1, n)
+
+    r2s = L.u(r, sTypes[2])
+    r2 = r2s[0] if r2s else &#34;&#34;
+
+    return (r0, r1, r2)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.splitDefaultFormat"><code class="name flex">
+<span>def <span class="ident">splitDefaultFormat</span></span>(<span>self, tpl)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def splitDefaultFormat(self, tpl):
+    api = self.api
+    F = api.F
+    otypes = set(F.otype.all)
+
+    parts = tpl.rsplit(SEP, maxsplit=1)
+    return (
+        parts[0]
+        if len(parts) == 2 and parts[1] == &#34;default&#34; and parts[0] in otypes
+        else None
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.splitFormat"><code class="name flex">
+<span>def <span class="ident">splitFormat</span></span>(<span>self, tpl)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def splitFormat(self, tpl):
+    api = self.api
+    F = api.F
+    slotType = F.otype.slotType
+    otypes = set(F.otype.all)
+
+    descendType = slotType
+    parts = tpl.split(TYPE_FMT_SEP, maxsplit=1)
+    if len(parts) == 2 and parts[0] in otypes:
+        (descendType, tpl) = parts
+    return (descendType, tpl)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.structure"><code class="name flex">
+<span>def <span class="ident">structure</span></span>(<span>self, node=None)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def structure(self, node=None):
+    api = self.api
+    error = api.error
+    F = api.F
+    fOtype = F.otype.v
+    hdTop = self.hdTop
+
+    if hdTop is None:
+        error(f&#34;structure types are not configured&#34;, tm=False)
+        return None
+    if node is None:
+        return tuple(self.structure(node=t) for t in self.top())
+
+    nType = fOtype(node)
+    if nType not in self.structureTypeSet:
+        error(
+            f&#34;{node} is an {nType} which is not configured as a structure type&#34;,
+            tm=False,
+        )
+        return None
+
+    return (node, tuple(self.structure(node=d) for d in self.down(node)))</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.structureInfo"><code class="name flex">
+<span>def <span class="ident">structureInfo</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">    def structureInfo(self):
+        api = self.api
+        info = api.info
+        error = api.error
+        hdMult = self.hdMult
+        hdFromNd = self.hdFromNd
+        headings = self.headings
+
+        if hdFromNd is None:
+            info(&#34;No structural elements configured&#34;, tm=False)
+            return
+        info(f&#34;A heading is a tuple of pairs (node type, feature value)&#34;, tm=False)
+        info(
+            f&#34;\tof node types and features that have been configured as structural elements&#34;,
+            tm=False,
+        )
+        info(
+            f&#34;These {len(headings)} structural elements have been configured&#34;, tm=False
+        )
+        for (tp, ft) in headings:
+            info(f&#34;\tnode type {tp:&lt;10} with heading feature {ft}&#34;, tm=False)
+        info(f&#34;You can get them as a tuple with T.headings.&#34;, tm=False)
+        info(
+            f&#34;&#34;&#34;
+Structure API:
+\tT.structure(node=None)       gives the structure below node, or everything if node is None
+\tT.structurePretty(node=None) prints the structure below node, or everything if node is None
+\tT.top()                      gives all top-level nodes
+\tT.up(node)                   gives the (immediate) parent node
+\tT.down(node)                 gives the (immediate) children nodes
+\tT.headingFromNode(node)      gives the heading of a node
+\tT.nodeFromHeading(heading)   gives the node of a heading
+\tT.ndFromHd                   complete mapping from headings to nodes
+\tT.hdFromNd                   complete mapping from nodes to headings
+\tT.hdMult are all headings    with their nodes that occur multiple times
+
+There are {len(hdFromNd)} structural elements in the dataset.
+&#34;&#34;&#34;,
+            tm=False,
+        )
+
+        if hdMult:
+            nMultiple = len(hdMult)
+            tMultiple = sum(len(x) for x in hdMult.values())
+            error(
+                f&#34;WARNING: {nMultiple} structure headings with hdMult occurrences (total {tMultiple})&#34;,
+                tm=False,
+            )
+            for (sKey, nodes) in sorted(hdMult.items())[0:10]:
+                sKeyRep = &#34;-&#34;.join(&#34;:&#34;.join(str(p) for p in part) for part in sKey)
+                nNodes = len(nodes)
+                error(f&#34;\t{sKeyRep} has {nNodes} occurrences&#34;, tm=False)
+                error(f&#39;\t\t{&#34;, &#34;.join(str(n) for n in nodes[0:5])}&#39;, tm=False)
+                if nNodes &gt; 5:
+                    error(f&#34;\t\tand {nNodes - 5} more&#34;, tm=False)
+            if nMultiple &gt; 10:
+                error(f&#34;\tand {nMultiple - 10} headings more&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.structurePretty"><code class="name flex">
+<span>def <span class="ident">structurePretty</span></span>(<span>self, node=None, fullHeading=False)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def structurePretty(self, node=None, fullHeading=False):
+    structure = self.structure(node=node)
+    if structure is None:
+        return
+
+    material = []
+
+    def generate(struct, indent=&#34;&#34;):
+        if type(struct) is int:
+            sKey = self.headingFromNode(struct)
+            if not fullHeading:
+                sKey = (sKey[-1],)
+            sKeyRep = &#34;-&#34;.join(&#34;:&#34;.join(str(p) for p in part) for part in sKey)
+            material.append(f&#34;{indent}{sKeyRep}&#34;)
+        else:
+            for item in struct:
+                generate(item, indent=indent + &#34;  &#34;)
+
+    generate(structure)
+    return &#34;\n&#34;.join(material)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.text"><code class="name flex">
+<span>def <span class="ident">text</span></span>(<span>self, nodes, fmt=None, descend=None, func=None, explain=False)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">    def text(self, nodes, fmt=None, descend=None, func=None, explain=False):
+        api = self.api
+        E = api.E
+        F = api.F
+        L = api.L
+        error = api.error
+
+        fOtype = F.otype.v
+        slotType = F.otype.slotType
+        maxSlot = F.otype.maxSlot
+        eoslots = E.oslots.data
+
+        defaultFormats = self.defaultFormats
+        xformats = self._xformats
+        xdTypes = self._xdTypes
+
+        if fmt and fmt not in xformats:
+            error(f&#39;Undefined format &#34;{fmt}&#34;&#39;, tm=False)
+            return &#34;&#34;
+
+        def rescue(n):
+            return f&#34;{fOtype(n)}{n}&#34;
+
+        single = type(nodes) is int
+        material = []
+        good = True
+
+        if single:
+            nodes = [nodes]
+        else:
+            nodes = list(nodes) if explain else nodes
+        if explain:
+            fmttStr = &#34;format target type&#34;
+            ntStr = &#34;node type&#34;
+
+            nRep = &#34;single node&#34; if single else f&#34;iterable of {len(nodes)} nodes&#34;
+            fmtRep = &#34;implicit&#34; if not fmt else f&#34;{fmt} targeted at {xdTypes[fmt]}&#34;
+            descendRep = (
+                &#34;implicit&#34; if descend is None else &#34;True&#34; if descend else &#34;False&#34;
+            )
+            funcRep = f&#39;{&#34;&#34; if func else &#34;no &#34;} custom format implementation&#39;
+            error(
+                f&#34;&#34;&#34;
+EXPLANATION: T.text) called with parameters:
+\tnodes  : {nRep}
+\tfmt    : {fmtRep}
+\tdescend: {descendRep}
+\tfunc   : {funcRep}
+&#34;&#34;&#34;,
+                tm=False,
+            )
+
+        for node in nodes:
+            nType = fOtype(node)
+            if explain:
+                error(f&#34;\tNODE: {nType} {node}&#34;, tm=False)
+            if descend:
+                if explain:
+                    downRep = fmttStr
+                if fmt:
+                    repf = xformats[fmt]
+                    downType = xdTypes[fmt]
+                    if explain:
+                        fmtRep = f&#34;explicit {fmt}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=True) ({downRep})&#34;
+                else:
+                    repf = xformats[DEFAULT_FORMAT]
+                    downType = xdTypes[DEFAULT_FORMAT]
+                    if explain:
+                        fmtRep = f&#34;implicit {DEFAULT_FORMAT}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=True) ({downRep})&#34;
+            else:
+                downType = nType
+                if explain:
+                    downRep = ntStr
+                if fmt:
+                    repf = xformats[fmt]
+                    if descend is None:
+                        downType = xdTypes[fmt]
+                        if explain:
+                            downRep = fmttStr
+                    if explain:
+                        fmtRep = f&#34;explicit {fmt}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=None) ({downRep})&#34;
+                elif nType in defaultFormats:
+                    dfmt = defaultFormats[nType]
+                    repf = xformats[dfmt]
+                    if descend is None:
+                        downType = nType
+                        if explain:
+                            downRep = fmttStr
+                    if explain:
+                        fmtRep = f&#34;implicit {dfmt}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=None) ({downRep})&#34;
+                else:
+                    repf = xformats[DEFAULT_FORMAT]
+                    if descend is None:
+                        downType = xdTypes[DEFAULT_FORMAT]
+                        if explain:
+                            downRep = fmttStr
+                    if explain:
+                        fmtRep = f&#34;implicit {DEFAULT_FORMAT}&#34;
+                        expandRep = f&#34;{downType} {{}} (descend=None) ({downRep})&#34;
+
+            if explain:
+                expandRep2 = &#34;&#34;
+            if downType == nType:
+                if explain:
+                    expandRep2 = f&#34;(no expansion needed)&#34;
+                downType = None
+
+            if explain:
+                error(f&#34;\t\tTARGET LEVEL: {expandRep.format(expandRep2)}&#34;, tm=False)
+
+            if explain:
+                plural = &#34;s&#34;
+            if downType == slotType:
+                xnodes = eoslots[node - maxSlot - 1]
+            elif downType:
+                xnodes = L.d(node, otype=downType)
+            else:
+                xnodes = [node]
+                if explain:
+                    plural = &#34;&#34;
+            if explain:
+                nodeRep = f&#39;{len(xnodes)} {downType or nType}{plural} {&#34;, &#34;.join(str(x) for x in xnodes)}&#39;
+                error(f&#34;\t\tEXPANSION: {nodeRep}&#34;, tm=False)
+
+            if func:
+                repf = func
+                if explain:
+                    fmtRep += f&#34; (overridden with the explicit func argument)&#34;
+            if not repf:
+                repf = rescue
+                good = False
+                if explain:
+                    fmtRep += &#34;\n\t\t\twhich is not defined: formatting as node types and numbers&#34;
+
+            if explain:
+                error(f&#34;\t\tFORMATTING: {fmtRep}&#34;, tm=False)
+                error(f&#34;\t\tMATERIAL:&#34;, tm=False)
+            for n in xnodes:
+                rep = repf(n)
+                material.append(rep)
+                if explain:
+                    error(f&#39;\t\t\t{fOtype(n)} {n} ADDS &#34;{rep}&#34;&#39;, tm=False)
+
+        if not good:
+            error(&#39;Text format &#34;{DEFAULT_FORMAT}&#34; not defined in otext.tf&#39;, tm=False)
+        return &#34;&#34;.join(material)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.top"><code class="name flex">
+<span>def <span class="ident">top</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def top(self):
+    api = self.api
+    error = api.error
+    hdTop = self.hdTop
+
+    if hdTop is None:
+        error(f&#34;structure types are not configured&#34;, tm=False)
+        return None
+    return hdTop</code></pre>
+</details>
+</dd>
+<dt id="tf.core.text.Text.up"><code class="name flex">
+<span>def <span class="ident">up</span></span>(<span>self, n)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def up(self, n):
+    api = self.api
+    F = api.F
+    error = api.error
+    fOtype = F.otype.v
+
+    hdUp = self.hdUp
+    if hdUp is None:
+        error(f&#34;structure types are not configured&#34;, tm=False)
+        return None
+    nType = fOtype(n)
+    if nType not in self.structureTypeSet:
+        error(
+            f&#34;{n} is an {nType} which is not configured as a structure type&#34;,
+            tm=False,
+        )
+        return None
+    return hdUp.get(n, None)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.core" href="index.html">tf.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.core.text.Text" href="#tf.core.text.Text">Text</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.core.text.Text.down" href="#tf.core.text.Text.down">down</a></code></li>
+<li><code><a title="tf.core.text.Text.headingFromNode" href="#tf.core.text.Text.headingFromNode">headingFromNode</a></code></li>
+<li><code><a title="tf.core.text.Text.nodeFromHeading" href="#tf.core.text.Text.nodeFromHeading">nodeFromHeading</a></code></li>
+<li><code><a title="tf.core.text.Text.nodeFromSection" href="#tf.core.text.Text.nodeFromSection">nodeFromSection</a></code></li>
+<li><code><a title="tf.core.text.Text.sectionFromNode" href="#tf.core.text.Text.sectionFromNode">sectionFromNode</a></code></li>
+<li><code><a title="tf.core.text.Text.sectionTuple" href="#tf.core.text.Text.sectionTuple">sectionTuple</a></code></li>
+<li><code><a title="tf.core.text.Text.splitDefaultFormat" href="#tf.core.text.Text.splitDefaultFormat">splitDefaultFormat</a></code></li>
+<li><code><a title="tf.core.text.Text.splitFormat" href="#tf.core.text.Text.splitFormat">splitFormat</a></code></li>
+<li><code><a title="tf.core.text.Text.structure" href="#tf.core.text.Text.structure">structure</a></code></li>
+<li><code><a title="tf.core.text.Text.structureInfo" href="#tf.core.text.Text.structureInfo">structureInfo</a></code></li>
+<li><code><a title="tf.core.text.Text.structurePretty" href="#tf.core.text.Text.structurePretty">structurePretty</a></code></li>
+<li><code><a title="tf.core.text.Text.text" href="#tf.core.text.Text.text">text</a></code></li>
+<li><code><a title="tf.core.text.Text.top" href="#tf.core.text.Text.top">top</a></code></li>
+<li><code><a title="tf.core.text.Text.up" href="#tf.core.text.Text.up">up</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

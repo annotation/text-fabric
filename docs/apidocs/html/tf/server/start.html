@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.2" />
+<title>tf.server.start API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.server.start</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import sys
+import os
+from platform import system
+
+import psutil
+import webbrowser
+from time import sleep
+from subprocess import PIPE, Popen
+
+from ..core.helpers import console
+from ..parameters import NAME, VERSION
+from ..applib.app import findApp, findAppConfig
+
+from .command import (
+    argDebug,
+    argNoweb,
+    argDocker,
+    argCheckout,
+    argModules,
+    argSets,
+    argParam,
+)
+from .kernel import TF_DONE, TF_ERROR
+
+HELP = &#34;&#34;&#34;
+USAGE
+
+text-fabric --help
+text-fabric --version
+text-fabric -k [datasource]
+
+text-fabric datasource[:specifier] args
+
+where all args are optional and args have one of these forms:
+
+  -d
+  -noweb
+  -docker
+  --checkout=specifier
+  --mod=modules
+  --set=file
+
+EFFECT
+
+If a datasource is given and the -k flag is not passed,
+a TF kernel for that data source is started.
+When the TF kernel is ready, a web server is started
+serving a website that exposes the data through
+a query interface.
+
+The website can be served or on the internet.
+The default browser will be opened, except when -noweb is passed.
+
+:specifier (after the datasource)
+--checkout=specifier
+
+The TF app itself can be downloaded on the fly from GitHub.
+The main data can be downloaded on the fly from GitHub.
+The specifier indicates a point in the history from where the app should be retrieved.
+  ;specifier is for the TF app code.
+  --checkout=specifier is for the main data.
+
+Specifiers may be:
+  local                 - get the data from your local text-fabric-data directory
+  clone                 - get the data from your local github clone
+  latest                - get the latest release
+  hot                   - get the latest commit
+  tag (e.g. v1.3)       - get specific release
+  hash (e.g. 78a03b...) - get specific commit
+
+No specifier or the empty string means: latest release if there is one, else latest commit.
+
+--mod=modules
+
+Optionally, you can pass a comma-separated list of modules.
+Modules are extra sets of features on top op the chosen data source.
+You specify a module by giving the github repository where it is created,
+in the form
+
+  {org}/{repo}/{path}
+  {org}/{repo}/{path}:specifier
+
+where
+  {org} is the github organization,
+  {repo} the name of the repository in that organization
+  {path} the path to the data within that repo.
+  {specifier} points to a release or commit in the history
+
+It is assumed that the data is stored in directories under {path},
+where the directories are named as the versions that exists in the main data source.
+
+--set=file
+
+Optionally, you can pass a file name with the definition of custom sets in it.
+This must be a dictionary were the keys are names of sets, and the values
+are node sets.
+This dictionary will be passed to the TF kernel, which will use it when it runs
+queries.
+
+DATA LOADING
+
+Text-Fabric looks for data in ~/text-fabric-data.
+If data is not found there, it first downloads the relevant data from
+github.
+
+MISCELLANEOUS
+
+-d  Debug mode. For developers of Text-Fabric itself.
+    The web server reloads when its code changes.
+    The web server is a Flask instance, started with reload=True.
+
+-noweb Do not start the default browser
+
+-docker Assume you are on docker. The local web server is passed 0.0.0.0 as host.
+
+
+CLEAN UP
+
+If you press Ctrl-C the web server is stopped, and after that the TF kernel
+as well.
+Normally, you do not have to do any clean up.
+But if the termination is done in an irregular way, you may end up with
+stray processes.
+
+-k  Kill mode. If a data source is given, the TF kernel and web server for that
+    data source are killed.
+    Without a data source, all local webinterface related processes are killed.
+&#34;&#34;&#34;
+
+FLAGS = set(
+    &#34;&#34;&#34;
+    -d
+    -noweb
+    -docker
+&#34;&#34;&#34;.strip().split()
+)
+
+BANNER = f&#34;This is {NAME} {VERSION}&#34;
+
+
+def filterProcess(proc):
+    procName = proc.info[&#34;name&#34;]
+    commandName = &#34;&#34; if procName is None else procName.lower()
+    # commandName = proc.info[&#39;name&#39;].lower()
+
+    found = False
+    kind = None
+    checkout = &#34;&#34;
+    modules = &#34;&#34;
+    sets = &#34;&#34;
+    dataSource = None
+
+    trigger = &#34;python&#34;
+    if commandName.endswith(trigger) or commandName.endswith(f&#34;{trigger}.exe&#34;):
+        good = False
+        parts = proc.cmdline()
+        for part in parts:
+            part = part.lower()
+            if part in FLAGS:
+                continue
+            trigger = &#34;text-fabric&#34;
+            if part.endswith(trigger) or part.endswith(f&#34;{trigger}.exe&#34;):
+                kind = &#34;tf&#34;
+                continue
+            if part == &#34;tf.server.kernel&#34;:
+                kind = &#34;data&#34;
+                good = True
+                continue
+            if part == &#34;tf.server.web&#34;:
+                kind = &#34;web&#34;
+                good = True
+                continue
+            if part.endswith(&#34;web.py&#34;):
+                kind = &#34;web&#34;
+                good = True
+                continue
+            if kind in {&#34;data&#34;, &#34;web&#34;, &#34;tf&#34;}:
+                if kind == &#34;tf&#34; and part == &#34;-k&#34;:
+                    break
+                if part.startswith(&#34;--checkout=&#34;):
+                    checkout = part[11:]
+                if part.startswith(&#34;--mod=&#34;):
+                    modules = part[7:]
+                elif part.startswith(&#34;--sets=&#34;):
+                    sets = part[6:]
+                else:
+                    dataSource = part
+                    subParts = part.split(&#34;:&#34;, maxsplit=1)
+                    if len(subParts) == 1:
+                        subParts.append(&#34;&#34;)
+                    (dataSource, checkoutApp) = subParts
+                good = True
+        if good:
+            found = True
+    if found:
+        return (kind, dataSource, checkoutApp, checkout, modules, sets)
+    return False
+
+
+def killProcesses(dataSource, checkoutApp, checkout, modules, sets, kill=False):
+    tfProcs = {}
+    for proc in psutil.process_iter(attrs=[&#34;pid&#34;, &#34;name&#34;]):
+        test = filterProcess(proc)
+        if test:
+            (kind, ds, chkA, chk, mods, sts) = test
+            tfProcs.setdefault((ds, (chkA, chk, mods, sts)), {}).setdefault(
+                kind, []
+            ).append(proc.info[&#34;pid&#34;])
+
+    item = &#34;killed&#34; if kill else &#34;terminated&#34;
+    myself = os.getpid()
+    for ((ds, (chkA, chk, mods, sets)), kinds) in tfProcs.items():
+        if dataSource is None or (
+            ds == dataSource
+            # and chkA == checkoutApp
+            # and chk == checkout
+            # and mods == modules
+            # and sts == sets
+        ):
+            checkKinds = (&#34;data&#34;, &#34;web&#34;, &#34;tf&#34;)
+            for kind in checkKinds:
+                pids = kinds.get(kind, [])
+                for pid in pids:
+                    if pid == myself:
+                        continue
+                    try:
+                        proc = psutil.Process(pid=pid)
+                        if kill:
+                            proc.kill()
+                        else:
+                            proc.terminate()
+                        console(f&#34;Process {kind} server for {ds}: {item}&#34;)
+                    except psutil.NoSuchProcess:
+                        console(
+                            f&#34;Process {kind} server for {ds}: already {item}&#34;,
+                            error=True,
+                        )
+
+
+def getKill(cargs=sys.argv):
+    for arg in cargs[1:]:
+        if arg == &#34;-k&#34;:
+            return True
+    return False
+
+
+def main(cargs=sys.argv):
+    console(BANNER)
+    if len(cargs) &gt;= 2 and any(
+        arg in {&#34;--help&#34;, &#34;-help&#34;, &#34;-h&#34;, &#34;?&#34;, &#34;-?&#34;} for arg in cargs[1:]
+    ):
+        console(HELP)
+        return
+    if len(cargs) &gt;= 2 and any(
+        arg in {&#34;--version&#34;, &#34;-version&#34;, &#34;-v&#34;} for arg in cargs[1:]
+    ):
+        return
+
+    isWin = system().lower().startswith(&#34;win&#34;)
+
+    kill = getKill(cargs=cargs)
+    (dataSource, checkoutApp) = argParam(cargs=cargs, interactive=not kill)
+
+    checkout = argCheckout(cargs=cargs)
+    modules = argModules(cargs=cargs)
+    sets = argSets(cargs=cargs)
+
+    # This start script needs the app, so it downloads it.
+    # It cqlls the TF kernel and the TF webserver.
+    # Both kernel and webserver can be called stand alone,
+    # and both can find and download the app as well.
+    # Now, if this start script has found and downloaded the
+    # app, the kernel and web server can use the local app
+    # So we call them both with a datasource argument extended with
+    # a checkout value that is either &#39;local&#39; or &#39;clone&#39;,
+    # depending on the original checkoutApp.
+    # Similarly, the kernel will download the data.
+    # The webserver does not have to do that.
+
+    localCheckout = &#34;clone&#34; if checkout == &#34;clone&#34; else &#34;local&#34;
+    localCheckoutApp = &#34;clone&#34; if checkoutApp == &#34;clone&#34; else &#34;local&#34;
+    localDataSource = f&#34;{dataSource}:{localCheckoutApp}&#34;
+
+    if kill:
+        if dataSource is False:
+            return
+        killProcesses(dataSource, checkoutApp, checkout, modules, sets)
+        return
+
+    if dataSource is None:
+        return
+
+    noweb = argNoweb(cargs=cargs)
+
+    debug = argDebug(cargs=cargs)
+    docker = argDocker(cargs=cargs)
+
+    kdataSource = (localDataSource,)
+    kdataSource = (
+        kdataSource if checkout is None else (f&#34;--checkout={checkout}&#34;, *kdataSource)
+    )
+    kdataSource = (f&#34;--mod={modules}&#34;, *kdataSource) if modules else kdataSource
+    kdataSource = (f&#34;--sets={sets}&#34;, *kdataSource) if sets else kdataSource
+
+    ddataSource = (localDataSource,)
+    ddataSource = (&#34;-d&#34;, *ddataSource) if debug else ddataSource
+    ddataSource = (&#34;-docker&#34;, *ddataSource) if docker else ddataSource
+    ddataSource = (f&#34;--checkout={localCheckout}&#34;, *ddataSource)
+    ddataSource = (f&#34;--mod={modules}&#34;, *ddataSource) if modules else ddataSource
+
+    if dataSource is not None:
+        (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
+        if not appBase:
+            return
+
+        appPath = f&#34;{appBase}/{appDir}&#34;
+        config = findAppConfig(dataSource, appPath)
+        pKernel = None
+        pWeb = None
+        if config is None:
+            return
+
+        console(f&#34;Cleaning up remnant processes, if any ...&#34;)
+        killProcesses(dataSource, checkoutApp, checkout, modules, sets, kill=True)
+        pythonExe = &#34;python&#34; if isWin else &#34;python3&#34;
+
+        pKernel = Popen(
+            [pythonExe, &#34;-m&#34;, &#34;tf.server.kernel&#34;, *kdataSource],
+            stdout=PIPE,
+            bufsize=1,
+            encoding=&#34;utf-8&#34;,
+        )
+
+        console(f&#34;Loading data for {dataSource}. Please wait ...&#34;)
+        for line in pKernel.stdout:
+            sys.stdout.write(line)
+            if line.rstrip() == TF_ERROR:
+                return
+            if line.rstrip() == TF_DONE:
+                break
+        sleep(1)
+        stopped = pKernel.poll()
+
+        if not stopped:
+
+            pWeb = Popen([pythonExe, &#34;-m&#34;, f&#34;tf.server.web&#34;, *ddataSource], bufsize=0,)
+
+            if not noweb:
+                sleep(2)
+                stopped = pWeb.poll() or pKernel.poll()
+                if not stopped:
+                    console(f&#34;Opening {dataSource} in browser&#34;)
+                    webbrowser.open(
+                        f&#39;{config.PROTOCOL}{config.HOST}:{config.PORT[&#34;web&#34;]}&#39;,
+                        new=2,
+                        autoraise=True,
+                    )
+
+        if pWeb and pKernel:
+            try:
+                for line in pKernel.stdout:
+                    sys.stdout.write(line)
+            except KeyboardInterrupt:
+                console(&#34;&#34;)
+                if pWeb:
+                    pWeb.terminate()
+                    console(&#34;TF web server has stopped&#34;)
+                if pKernel:
+                    pKernel.terminate()
+                    for line in pKernel.stdout:
+                        sys.stdout.write(line)
+                    console(&#34;TF kernel has stopped&#34;)
+
+
+if __name__ == &#34;__main__&#34;:
+    main()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.server.start.filterProcess"><code class="name flex">
+<span>def <span class="ident">filterProcess</span></span>(<span>proc)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def filterProcess(proc):
+    procName = proc.info[&#34;name&#34;]
+    commandName = &#34;&#34; if procName is None else procName.lower()
+    # commandName = proc.info[&#39;name&#39;].lower()
+
+    found = False
+    kind = None
+    checkout = &#34;&#34;
+    modules = &#34;&#34;
+    sets = &#34;&#34;
+    dataSource = None
+
+    trigger = &#34;python&#34;
+    if commandName.endswith(trigger) or commandName.endswith(f&#34;{trigger}.exe&#34;):
+        good = False
+        parts = proc.cmdline()
+        for part in parts:
+            part = part.lower()
+            if part in FLAGS:
+                continue
+            trigger = &#34;text-fabric&#34;
+            if part.endswith(trigger) or part.endswith(f&#34;{trigger}.exe&#34;):
+                kind = &#34;tf&#34;
+                continue
+            if part == &#34;tf.server.kernel&#34;:
+                kind = &#34;data&#34;
+                good = True
+                continue
+            if part == &#34;tf.server.web&#34;:
+                kind = &#34;web&#34;
+                good = True
+                continue
+            if part.endswith(&#34;web.py&#34;):
+                kind = &#34;web&#34;
+                good = True
+                continue
+            if kind in {&#34;data&#34;, &#34;web&#34;, &#34;tf&#34;}:
+                if kind == &#34;tf&#34; and part == &#34;-k&#34;:
+                    break
+                if part.startswith(&#34;--checkout=&#34;):
+                    checkout = part[11:]
+                if part.startswith(&#34;--mod=&#34;):
+                    modules = part[7:]
+                elif part.startswith(&#34;--sets=&#34;):
+                    sets = part[6:]
+                else:
+                    dataSource = part
+                    subParts = part.split(&#34;:&#34;, maxsplit=1)
+                    if len(subParts) == 1:
+                        subParts.append(&#34;&#34;)
+                    (dataSource, checkoutApp) = subParts
+                good = True
+        if good:
+            found = True
+    if found:
+        return (kind, dataSource, checkoutApp, checkout, modules, sets)
+    return False</code></pre>
+</details>
+</dd>
+<dt id="tf.server.start.getKill"><code class="name flex">
+<span>def <span class="ident">getKill</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getKill(cargs=sys.argv):
+    for arg in cargs[1:]:
+        if arg == &#34;-k&#34;:
+            return True
+    return False</code></pre>
+</details>
+</dd>
+<dt id="tf.server.start.killProcesses"><code class="name flex">
+<span>def <span class="ident">killProcesses</span></span>(<span>dataSource, checkoutApp, checkout, modules, sets, kill=False)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def killProcesses(dataSource, checkoutApp, checkout, modules, sets, kill=False):
+    tfProcs = {}
+    for proc in psutil.process_iter(attrs=[&#34;pid&#34;, &#34;name&#34;]):
+        test = filterProcess(proc)
+        if test:
+            (kind, ds, chkA, chk, mods, sts) = test
+            tfProcs.setdefault((ds, (chkA, chk, mods, sts)), {}).setdefault(
+                kind, []
+            ).append(proc.info[&#34;pid&#34;])
+
+    item = &#34;killed&#34; if kill else &#34;terminated&#34;
+    myself = os.getpid()
+    for ((ds, (chkA, chk, mods, sets)), kinds) in tfProcs.items():
+        if dataSource is None or (
+            ds == dataSource
+            # and chkA == checkoutApp
+            # and chk == checkout
+            # and mods == modules
+            # and sts == sets
+        ):
+            checkKinds = (&#34;data&#34;, &#34;web&#34;, &#34;tf&#34;)
+            for kind in checkKinds:
+                pids = kinds.get(kind, [])
+                for pid in pids:
+                    if pid == myself:
+                        continue
+                    try:
+                        proc = psutil.Process(pid=pid)
+                        if kill:
+                            proc.kill()
+                        else:
+                            proc.terminate()
+                        console(f&#34;Process {kind} server for {ds}: {item}&#34;)
+                    except psutil.NoSuchProcess:
+                        console(
+                            f&#34;Process {kind} server for {ds}: already {item}&#34;,
+                            error=True,
+                        )</code></pre>
+</details>
+</dd>
+<dt id="tf.server.start.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main(cargs=sys.argv):
+    console(BANNER)
+    if len(cargs) &gt;= 2 and any(
+        arg in {&#34;--help&#34;, &#34;-help&#34;, &#34;-h&#34;, &#34;?&#34;, &#34;-?&#34;} for arg in cargs[1:]
+    ):
+        console(HELP)
+        return
+    if len(cargs) &gt;= 2 and any(
+        arg in {&#34;--version&#34;, &#34;-version&#34;, &#34;-v&#34;} for arg in cargs[1:]
+    ):
+        return
+
+    isWin = system().lower().startswith(&#34;win&#34;)
+
+    kill = getKill(cargs=cargs)
+    (dataSource, checkoutApp) = argParam(cargs=cargs, interactive=not kill)
+
+    checkout = argCheckout(cargs=cargs)
+    modules = argModules(cargs=cargs)
+    sets = argSets(cargs=cargs)
+
+    # This start script needs the app, so it downloads it.
+    # It cqlls the TF kernel and the TF webserver.
+    # Both kernel and webserver can be called stand alone,
+    # and both can find and download the app as well.
+    # Now, if this start script has found and downloaded the
+    # app, the kernel and web server can use the local app
+    # So we call them both with a datasource argument extended with
+    # a checkout value that is either &#39;local&#39; or &#39;clone&#39;,
+    # depending on the original checkoutApp.
+    # Similarly, the kernel will download the data.
+    # The webserver does not have to do that.
+
+    localCheckout = &#34;clone&#34; if checkout == &#34;clone&#34; else &#34;local&#34;
+    localCheckoutApp = &#34;clone&#34; if checkoutApp == &#34;clone&#34; else &#34;local&#34;
+    localDataSource = f&#34;{dataSource}:{localCheckoutApp}&#34;
+
+    if kill:
+        if dataSource is False:
+            return
+        killProcesses(dataSource, checkoutApp, checkout, modules, sets)
+        return
+
+    if dataSource is None:
+        return
+
+    noweb = argNoweb(cargs=cargs)
+
+    debug = argDebug(cargs=cargs)
+    docker = argDocker(cargs=cargs)
+
+    kdataSource = (localDataSource,)
+    kdataSource = (
+        kdataSource if checkout is None else (f&#34;--checkout={checkout}&#34;, *kdataSource)
+    )
+    kdataSource = (f&#34;--mod={modules}&#34;, *kdataSource) if modules else kdataSource
+    kdataSource = (f&#34;--sets={sets}&#34;, *kdataSource) if sets else kdataSource
+
+    ddataSource = (localDataSource,)
+    ddataSource = (&#34;-d&#34;, *ddataSource) if debug else ddataSource
+    ddataSource = (&#34;-docker&#34;, *ddataSource) if docker else ddataSource
+    ddataSource = (f&#34;--checkout={localCheckout}&#34;, *ddataSource)
+    ddataSource = (f&#34;--mod={modules}&#34;, *ddataSource) if modules else ddataSource
+
+    if dataSource is not None:
+        (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
+        if not appBase:
+            return
+
+        appPath = f&#34;{appBase}/{appDir}&#34;
+        config = findAppConfig(dataSource, appPath)
+        pKernel = None
+        pWeb = None
+        if config is None:
+            return
+
+        console(f&#34;Cleaning up remnant processes, if any ...&#34;)
+        killProcesses(dataSource, checkoutApp, checkout, modules, sets, kill=True)
+        pythonExe = &#34;python&#34; if isWin else &#34;python3&#34;
+
+        pKernel = Popen(
+            [pythonExe, &#34;-m&#34;, &#34;tf.server.kernel&#34;, *kdataSource],
+            stdout=PIPE,
+            bufsize=1,
+            encoding=&#34;utf-8&#34;,
+        )
+
+        console(f&#34;Loading data for {dataSource}. Please wait ...&#34;)
+        for line in pKernel.stdout:
+            sys.stdout.write(line)
+            if line.rstrip() == TF_ERROR:
+                return
+            if line.rstrip() == TF_DONE:
+                break
+        sleep(1)
+        stopped = pKernel.poll()
+
+        if not stopped:
+
+            pWeb = Popen([pythonExe, &#34;-m&#34;, f&#34;tf.server.web&#34;, *ddataSource], bufsize=0,)
+
+            if not noweb:
+                sleep(2)
+                stopped = pWeb.poll() or pKernel.poll()
+                if not stopped:
+                    console(f&#34;Opening {dataSource} in browser&#34;)
+                    webbrowser.open(
+                        f&#39;{config.PROTOCOL}{config.HOST}:{config.PORT[&#34;web&#34;]}&#39;,
+                        new=2,
+                        autoraise=True,
+                    )
+
+        if pWeb and pKernel:
+            try:
+                for line in pKernel.stdout:
+                    sys.stdout.write(line)
+            except KeyboardInterrupt:
+                console(&#34;&#34;)
+                if pWeb:
+                    pWeb.terminate()
+                    console(&#34;TF web server has stopped&#34;)
+                if pKernel:
+                    pKernel.terminate()
+                    for line in pKernel.stdout:
+                        sys.stdout.write(line)
+                    console(&#34;TF kernel has stopped&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.server" href="index.html">tf.server</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.server.start.filterProcess" href="#tf.server.start.filterProcess">filterProcess</a></code></li>
+<li><code><a title="tf.server.start.getKill" href="#tf.server.start.getKill">getKill</a></code></li>
+<li><code><a title="tf.server.start.killProcesses" href="#tf.server.start.killProcesses">killProcesses</a></code></li>
+<li><code><a title="tf.server.start.main" href="#tf.server.start.main">main</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

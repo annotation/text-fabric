@@ -1,0 +1,1642 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.2" />
+<title>tf.writing.transcription API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.writing.transcription</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import re
+
+
+class Transcription(object):
+    decomp = {
+        &#34;\u05E9\u05C1&#34;: &#34;\uFB2A&#34;,
+        &#34;\u05E9\u05C2&#34;: &#34;\uFB2B&#34;,
+    }
+    hebrew_mapping = {
+        &#34;_&#34;: &#34; &#34;,  # space inside word
+        &#34;92&#34;: &#34;\u0591&#34;,  # etnahta = atnach
+        &#34;01&#34;: &#34;\u0592&#34;,  # segolta
+        &#34;65&#34;: &#34;\u0593&#34;,  # shalshelet
+        &#34;80&#34;: &#34;\u0594&#34;,  # zaqef_qatan
+        &#34;85&#34;: &#34;\u0595&#34;,  # zaqef_gadol
+        &#34;73&#34;: &#34;\u0596&#34;,  # tipeha = tifcha
+        &#34;81&#34;: &#34;\u0597&#34;,  # revia = rebia
+        &#34;82&#34;: &#34;\u0598&#34;,  # zarqa = tsinorit = zinorit = sinnorit
+        &#34;03&#34;: &#34;\u0599&#34;,  # pashta
+        &#34;10&#34;: &#34;\u059A&#34;,  # yetiv = yetib
+        &#34;91&#34;: &#34;\u059B&#34;,  # tevir = tebir
+        &#34;61&#34;: &#34;\u059C&#34;,  # geresh
+        &#34;11&#34;: &#34;\u059D&#34;,  # geresh muqdam = mugrash
+        &#34;62&#34;: &#34;\u059E&#34;,  # gershayim = garshayim
+        &#34;84&#34;: &#34;\u059F&#34;,  # qarney para = pazer_gadol
+        &#34;14&#34;: &#34;\u05A0&#34;,  # telisha_gedola
+        &#34;44&#34;: &#34;\u05A0&#34;,  # telisha_gedola = telisha_gedola_med
+        &#34;83&#34;: &#34;\u05A1&#34;,  # pazer
+        &#34;74&#34;: &#34;\u05A3&#34;,  # munah = munach
+        &#34;70&#34;: &#34;\u05A4&#34;,  # mahapakh = mehuppach
+        &#34;71&#34;: &#34;\u05A5&#34;,  # merkha = merecha
+        &#34;72&#34;: &#34;\u05A6&#34;,  # merkha kefula = merecha_kepula
+        &#34;94&#34;: &#34;\u05A7&#34;,  # darga
+        &#34;63&#34;: &#34;\u05A8&#34;,  # qadma = azla
+        &#34;33&#34;: &#34;\u05A8&#34;,  # pashta_med &lt; qadma
+        &#34;04&#34;: &#34;\u05A9&#34;,  # telisha_qetana
+        &#34;24&#34;: &#34;\u05A9&#34;,  # telisha_qetana = telisha_qetana_med
+        &#34;93&#34;: &#34;\u05AA&#34;,  # yera ben yomo = yerach
+        &#34;60&#34;: &#34;\u05AB&#34;,  # ole = ole_weyored
+        &#34;64&#34;: &#34;\u05AC&#34;,  # iluy = illuy
+        &#34;13&#34;: &#34;\u05AD&#34;,  # dehi = dechi
+        &#34;02&#34;: &#34;\u05AE&#34;,  # zinor = sinnor
+        &#34;*&#34;: &#34;\u05AF&#34;,  # masora circle
+        &#34;:&#34;: &#34;\u05B0&#34;,  # sheva = shewa
+        &#34;:E&#34;: &#34;\u05B1&#34;,  # hataf segol = chataph_segol
+        &#34;:A&#34;: &#34;\u05B2&#34;,  # hataf patah = chataph_patach
+        &#34;:@&#34;: &#34;\u05B3&#34;,  # hataf qamats = chataph_qamats
+        &#34;I&#34;: &#34;\u05B4&#34;,  # hiriq = chiriq
+        &#34;;&#34;: &#34;\u05B5&#34;,  # tsere
+        &#34;E&#34;: &#34;\u05B6&#34;,  # segol
+        &#34;A&#34;: &#34;\u05B7&#34;,  # patach
+        &#34;@&#34;: &#34;\u05B8&#34;,  # qamats
+        &#34;O&#34;: &#34;\u05B9&#34;,  # holam = cholam
+        &#34;U&#34;: &#34;\u05BB&#34;,  # qubuts = qubbuts
+        &#34;.&#34;: &#34;\u05BC&#34;,  # dagesh
+        &#34;25&#34;: &#34;\u05BD&#34;,  # silluq yamin
+        &#34;45&#34;: &#34;\u05BD&#34;,  # meteg
+        &#34;35&#34;: &#34;\u05BD&#34;,  # meteg (tikon)
+        &#34;75&#34;: &#34;\u05BD&#34;,  # siluq = silluq
+        &#34;95&#34;: &#34;\u05BD&#34;,  # meteg = meteg_yamin
+        &#34;&amp;&#34;: &#34;\u05BE&#34;,  # maqaf
+        &#34;,&#34;: &#34;\u05BF&#34;,  # rafe = raphe
+        &#34;05&#34;: &#34;\u05C0&#34;,  # paseq
+        &#34;.c&#34;: &#34;\u05C1&#34;,  # shin dot
+        &#34;.f&#34;: &#34;\u05C2&#34;,  # sin dot
+        &#34;00&#34;: &#34;\u05C3&#34;,  # sof_pasuq
+        &#34;52&#34;: &#34;\u05C4&#34;,  # upper dot = puncta_above
+        &#34;53&#34;: &#34;\u05C5&#34;,  # lower dot = puncta_below
+        &#34;ñ&#34;: &#34;\u05C6\u0307&#34;,  # nun hafukha
+        &#34;Ñ&#34;: &#34;\u05C6\u0307&#34;,  # nun hafukha
+        &#34;&gt;&#34;: &#34;\u05D0&#34;,  # alef
+        &#34;B&#34;: &#34;\u05D1&#34;,  # bet
+        &#34;G&#34;: &#34;\u05D2&#34;,  # gimel
+        &#34;D&#34;: &#34;\u05D3&#34;,  # dalet
+        &#34;H&#34;: &#34;\u05D4&#34;,  # he
+        &#34;W&#34;: &#34;\u05D5&#34;,  # vav
+        &#34;Z&#34;: &#34;\u05D6&#34;,  # zayin
+        &#34;X&#34;: &#34;\u05D7&#34;,  # het
+        &#34;V&#34;: &#34;\u05D8&#34;,  # tet
+        &#34;J&#34;: &#34;\u05D9&#34;,  # yod
+        &#34;k&#34;: &#34;\u05DA&#34;,  # kaf final
+        &#34;K&#34;: &#34;\u05DB&#34;,  # kaf
+        &#34;L&#34;: &#34;\u05DC&#34;,  # lamed
+        &#34;m&#34;: &#34;\u05DD&#34;,  # mem final
+        &#34;M&#34;: &#34;\u05DE&#34;,  # mem
+        &#34;n&#34;: &#34;\u05DF&#34;,  # nun final
+        &#34;N&#34;: &#34;\u05E0&#34;,  # nun
+        &#34;S&#34;: &#34;\u05E1&#34;,  # samekh
+        &#34;&lt;&#34;: &#34;\u05E2&#34;,  # ayin
+        &#34;p&#34;: &#34;\u05E3&#34;,  # pe final
+        &#34;P&#34;: &#34;\u05E4&#34;,  # pe
+        &#34;y&#34;: &#34;\u05E5&#34;,  # tsadi final
+        &#34;Y&#34;: &#34;\u05E6&#34;,  # tsadi
+        &#34;Q&#34;: &#34;\u05E7&#34;,  # qof
+        &#34;R&#34;: &#34;\u05E8&#34;,  # resh
+        &#34;#&#34;: &#34;\u05E9&#34;,  # sin unpointed
+        &#34;T&#34;: &#34;\u05EA&#34;,  # tav
+        &#34;C&#34;: &#34;\uFB2A&#34;,  # shin pointed
+        &#34;F&#34;: &#34;\uFB2B&#34;,  # sin pointed
+        &#34;55&#34;: &#34;&lt;UNMAPPED 55=large letter&gt;&#34;,  # large_letter
+        &#34;56&#34;: &#34;&lt;UNMAPPED 56=small letter&gt;&#34;,  # small_letter
+        &#34;57&#34;: &#34;&lt;UNMAPPED 57=suspended letter&gt;&#34;,  # suspended_letter
+        &#34;-&#34;: &#34;&#34;,  # suppress space afterward
+        &#34;&#39;&#34;: &#34;\u05f3&#34;,  # punctuation geresh
+        &#39;&#34;&#39;: &#34;\u05f4&#34;,  # punctuation gershayim
+    }
+    hebrew_cons = &#34;&gt;BGDHWZXVJKLMNS&lt;PYQRFCT&#34;
+    trans_final_pat = re.compile(
+        r&#34;([&#34;
+        + hebrew_cons
+        + r&#34;][^_&amp;]*)([KMNPY])([^&#34;
+        + hebrew_cons
+        + r&#34;_&amp;]*(:?[_&amp;]|\Z))&#34;
+    )
+    trans_hebrew_pat = re.compile(r&#34;(:[AE@]|.[cf]|:|[0-9][0-9]|.)&#34;)
+    swap_accent_pat = re.compile(
+        r&#34;(\A|[_&amp;])([0-9][0-9])([&#34; + hebrew_cons + r&#34;])([:;,.EAIOU@]*)&#34;
+    )
+    remove_accent_pat = re.compile(r&#34;((?:[0-9][0-9])|[,*])&#34;)
+    remove_point_pat = re.compile(
+        r&#34;((?:[0-9][0-9])|(?:\.[cf])|(?::[@AE])|[,.:;@AEIOU*])&#34;
+    )
+    remove_psn_pat = re.compile(r&#34;00[ _SPNÑñ]*&#34;)
+    remove_psq_pat = re.compile(r&#34;(?:[ _]+05[ _]*)|(?:05[ _]+)&#34;)
+    shin_pat = re.compile(r&#34;[CF]&#34;)
+    ph_simple_pat = re.compile(r&#34;([ˈˌᵊᵃᵒᵉāo*])&#34;)
+    noorigspace = re.compile(
+        r&#34;&#34;&#34;
+          (?: [&amp;-]\Z)           # space, maqef or nospace
+        | (?:
+               0[05]            # sof pasuq or paseq
+               (?:_[SNP])*      # nun hafukha, setumah, petuhah at end of verse
+               \Z
+          )
+        | (?:_[SPN])+           #  nun hafukha, setumah, petuhah between words
+    &#34;&#34;&#34;,
+        re.X,
+    )
+
+    syriac_mapping_simple = {
+        &#34;&gt;&#34;: &#34;\u0710&#34;,  # alaph
+        &#34;B&#34;: &#34;\u0712&#34;,  # beth
+        &#34;G&#34;: &#34;\u0713&#34;,  # gamal
+        &#34;D&#34;: &#34;\u0715&#34;,  # dalat
+        &#34;H&#34;: &#34;\u0717&#34;,  # he
+        &#34;W&#34;: &#34;\u0718&#34;,  # waw
+        &#34;Z&#34;: &#34;\u0719&#34;,  # zain
+        &#34;X&#34;: &#34;\u071A&#34;,  # heth
+        &#34;V&#34;: &#34;\u071B&#34;,  # teth
+        &#34;J&#34;: &#34;\u071D&#34;,  # yudh
+        &#34;K&#34;: &#34;\u071F&#34;,  # kaph
+        &#34;L&#34;: &#34;\u0720&#34;,  # lamadh
+        &#34;M&#34;: &#34;\u0721&#34;,  # mim
+        &#34;N&#34;: &#34;\u0722&#34;,  # nun
+        &#34;S&#34;: &#34;\u0723&#34;,  # semkath
+        &#34;&lt;&#34;: &#34;\u0725&#34;,  # e
+        &#34;P&#34;: &#34;\u0726&#34;,  # pe
+        &#34;Y&#34;: &#34;\u0728&#34;,  # sadhe
+        &#34;Q&#34;: &#34;\u0729&#34;,  # qaph
+        &#34;R&#34;: &#34;\u072A&#34;,  # rish
+        &#34;C&#34;: &#34;\u072B&#34;,  # shin
+        &#34;T&#34;: &#34;\u072C&#34;,  # taw
+        &#34;s&#34;: &#34;\u0724&#34;,  # semkath final
+        &#34;p&#34;: &#34;\u0727&#34;,  # pe reversed
+    }
+
+    syriac_mapping_pil = {
+        # LETTERS
+        &#34;&#39;&#34;: &#34;\u0710&#34;,  # alaph
+        &#34;b&#34;: &#34;\u0712&#34;,  # beth
+        &#34;g&#34;: &#34;\u0713&#34;,  # gamal
+        &#34;d&#34;: &#34;\u0715&#34;,  # dalat
+        &#34;h&#34;: &#34;\u0717&#34;,  # he
+        &#34;w&#34;: &#34;\u0718&#34;,  # waw
+        &#34;z&#34;: &#34;\u0719&#34;,  # zain
+        &#34;H&#34;: &#34;\u071A&#34;,  # heth
+        &#34;T&#34;: &#34;\u071B&#34;,  # teth
+        &#34;y&#34;: &#34;\u071D&#34;,  # yod
+        &#34;k&#34;: &#34;\u071F&#34;,  # kaf
+        &#34;l&#34;: &#34;\u0720&#34;,  # lamad
+        &#34;m&#34;: &#34;\u0721&#34;,  # mim
+        &#34;n&#34;: &#34;\u0722&#34;,  # nun
+        &#34;s&#34;: &#34;\u0723&#34;,  # semkath
+        &#34;`&#34;: &#34;\u0725&#34;,  # &#39;e
+        &#34;p&#34;: &#34;\u0726&#34;,  # pe
+        &#34;S&#34;: &#34;\u0728&#34;,  # tsade
+        &#34;q&#34;: &#34;\u0729&#34;,  # qof
+        &#34;r&#34;: &#34;\u072A&#34;,  # resh
+        &#34;$&#34;: &#34;\u072B&#34;,  # shin
+        &#34;t&#34;: &#34;\u072C&#34;,  # taw
+        # WORD-BOUND DIACRITICS
+        &#39;&#34;&#39;: &#34;\u0308&#34;,  # seyame
+        &#34;#&#34;: &#34;\u0323&#34;,  # diacritical dot below
+        &#34;^&#34;: &#34;\u0307&#34;,  # diacritical dot above
+        &#34;~&#34;: &#34;\u0307&#34;,  # abbreviation mark
+        # NON-VOCALIC LETTER-BOUND DIACRITICS
+        &#34;#,&#34;: &#34;\u0742&#34;,  # rukkakha
+        &#39;#&#34;&#39;: &#34;\u0342&#34;,  # unclear (COMBINING DIAERESIS BELOW)
+        &#34;#!&#34;: &#34;\u0744&#34;,  # unclear (SYRIAC TWO VERTICAL DOTS BELOW)
+        &#34;#_&#34;: &#34;\u0331&#34;,  # linea occultans infera
+        &#34;^,&#34;: &#34;\u0741&#34;,  # qushshaya
+        &#34;^!&#34;: &#34;\u0743&#34;,  # unclear (SYRIAC TWO VERTICAL DOTS ABOVE)
+        &#34;^_&#34;: &#34;\u0304&#34;,  # linea occultans supera
+        # VOCALIC LETTER-BOUND DIACRITICS
+        &#34;:&#34;: &#34;&#34;,  # shewa
+        &#34;A&#34;: &#34;\u0733&#34;,  # qamets
+        &#34;A1&#34;: &#34;\u0734&#34;,  # zeqapa
+        &#34;A2&#34;: &#34;\u0735&#34;,  # zeqofo
+        &#34;E&#34;: &#34;\u0739&#34;,  # tsere, revasa karya
+        &#34;O&#34;: &#34;\u073F&#34;,  # holem, rewaha
+        &#34;a&#34;: &#34;\u0730&#34;,  # patah
+        &#34;a1&#34;: &#34;\u0731&#34;,  # petaha
+        &#34;a2&#34;: &#34;\u0732&#34;,  # petoho
+        &#34;e&#34;: &#34;\u0736&#34;,  # segol
+        &#34;e1&#34;: &#34;\u0737&#34;,  # revasa arrika
+        &#34;e2&#34;: &#34;\u0738&#34;,  # revoso
+        &#34;i&#34;: &#34;\u073A&#34;,  # hireq
+        &#34;i1&#34;: &#34;\u073B&#34;,  # hevoso
+        &#34;y#&#34;: &#34;\u071D\u073C&#34;,  # hevasa
+        &#34;u&#34;: &#34;\u073D&#34;,  # qubbuts
+        &#34;u1&#34;: &#34;\u073E&#34;,  # esoso
+        &#34;w#&#34;: &#34;\u0718\u073C&#34;,  # esasa allisa
+        &#34;w^&#34;: &#34;\u0718\u073F&#34;,  # esasa rewiha
+        # INTERPUNCTION
+        &#34;#.&#34;: &#34;\u0702&#34;,  # menachta, meshalyana (ES), metdamrana, samka
+        &#34;#:&#34;: &#34;\u0704&#34;,  # metkashpana (ES)
+        &#34;#\\&#34;: &#34;\u0709&#34;,  # tahtaya, metkashpana (WS), meshalyana (WS)
+        &#34;=.&#34;: &#34;\u002E&#34;,  # pasuqa
+        &#34;=/&#34;: &#34;\u0707&#34;,  # elaya
+        &#34;=:&#34;: &#34;\u003A&#34;,  # shewaya (WS), zauga (ES)
+        &#34;=\\&#34;: &#34;\u0706&#34;,  # unclear (SYRIAC COLON SKEWED LEFT)
+        &#34;^.&#34;: &#34;\u0701&#34;,  # paquda, metkashpana (ES), meshalyana (ES), etsyana, meshalana?
+        &#39;^&#34;&#39;: &#34;\u0705&#34;,  # rahta
+        &#34;^:&#34;: &#34;\u0703&#34;,  # taksa (WS), zauga elaya (ES)
+        &#34;^\\&#34;: &#34;\u0708&#34;,  # unclear (SYRIAC SUPRALINEAR COLON SKEWED LEFT)
+        # PERICOPE MARKERS
+        &#34;*&#34;: &#34;\u0700&#34;,  # rosette
+        &#34;.&#34;: &#34;\u00B7&#34;,  # common dot in caesuras
+        &#34;@&#34;: &#34;\u2722&#34;,  # vignette
+        &#34;_&#34;: &#34;\u2014&#34;,  # dash in caesuras
+        &#34;o&#34;: &#34;\u2022&#34;,  # large dot in caesuras
+    }
+
+    syriac_mapping = {  # this is WIT
+        # LETTERS
+        &#34;&gt;&#34;: &#34;\u0710&#34;,  # alaph
+        &#34;B&#34;: &#34;\u0712&#34;,  # beth
+        &#34;G&#34;: &#34;\u0713&#34;,  # gamal
+        &#34;D&#34;: &#34;\u0715&#34;,  # dalat
+        &#34;H&#34;: &#34;\u0717&#34;,  # he
+        &#34;W&#34;: &#34;\u0718&#34;,  # waw
+        &#34;Z&#34;: &#34;\u0719&#34;,  # zain
+        &#34;X&#34;: &#34;\u071A&#34;,  # heth
+        &#34;V&#34;: &#34;\u071B&#34;,  # teth
+        &#34;J&#34;: &#34;\u071D&#34;,  # yod
+        &#34;K&#34;: &#34;\u071F&#34;,  # kaf
+        &#34;L&#34;: &#34;\u0720&#34;,  # lamad
+        &#34;M&#34;: &#34;\u0721&#34;,  # mim
+        &#34;N&#34;: &#34;\u0722&#34;,  # nun
+        &#34;S&#34;: &#34;\u0723&#34;,  # semkath
+        &#34;&lt;&#34;: &#34;\u0725&#34;,  # &#39;e
+        &#34;P&#34;: &#34;\u0726&#34;,  # pe
+        &#34;Y&#34;: &#34;\u0728&#34;,  # tsade
+        &#34;Q&#34;: &#34;\u0729&#34;,  # qof
+        &#34;R&#34;: &#34;\u072A&#34;,  # resh
+        &#34;C&#34;: &#34;\u072B&#34;,  # shin
+        &#34;T&#34;: &#34;\u072C&#34;,  # taw
+        # WORD-BOUND DIACRITICS
+        &#39;&#34;&#39;: &#34;\u0308&#34;,  # seyame
+        &#34;#&#34;: &#34;\u0323&#34;,  # diacritical dot below
+        &#34;^&#34;: &#34;\u0307&#34;,  # diacritical dot above
+        # NON-VOCALIC LETTER-BOUND DIACRITICS
+        &#34;^!&#34;: &#34;\u0743&#34;,  # unclear (SYRIAC TWO VERTICAL DOTS ABOVE)
+        # VOCALIC LETTER-BOUND DIACRITICS
+        &#34;:&#34;: &#34;&#34;,  # shewa
+        &#34;A&#34;: &#34;\u0733&#34;,  # qamets
+        &#34;A1&#34;: &#34;\u0734&#34;,  # zeqapa
+        &#34;A2&#34;: &#34;\u0735&#34;,  # zeqofo
+        &#34;O&#34;: &#34;\u073F&#34;,  # holem, rewaha
+        &#34;@&#34;: &#34;\u0730&#34;,  # patah
+        &#34;@1&#34;: &#34;\u0731&#34;,  # petaha
+        &#34;@2&#34;: &#34;\u0732&#34;,  # petoho
+        &#34;E&#34;: &#34;\u0736&#34;,  # segol
+        &#34;E1&#34;: &#34;\u0737&#34;,  # revasa arrika
+        &#34;E2&#34;: &#34;\u0738&#34;,  # revoso
+        &#34;I&#34;: &#34;\u073A&#34;,  # hireq
+        &#34;I1&#34;: &#34;\u073B&#34;,  # hevoso
+        &#34;U&#34;: &#34;\u073D&#34;,  # qubbuts
+        &#34;U1&#34;: &#34;\u073E&#34;,  # esoso
+        # INTERPUNCTION
+        &#34;#\\&#34;: &#34;\u0709&#34;,  # tahtaya, metkashpana (WS), meshalyana (WS)
+        &#34;=.&#34;: &#34;\u002E&#34;,  # pasuqa
+        &#34;=#&#34;: &#34;\u0707&#34;,  # elaya
+        &#34;=:&#34;: &#34;\u003A&#34;,  # shewaya (WS), zauga (ES)
+        &#34;=^&#34;: &#34;\u0706&#34;,  # unclear (SYRIAC COLON SKEWED LEFT)
+        &#34;=/&#34;: &#34;\u0707&#34;,  # elaya
+        &#34;=\\&#34;: &#34;\u0706&#34;,  # unclear (SYRIAC COLON SKEWED LEFT)
+        &#34;^:&#34;: &#34;\u0703&#34;,  # taksa (WS), zauga elaya (ES)
+        &#34;^\\&#34;: &#34;\u0708&#34;,  # unclear (SYRIAC SUPRALINEAR COLON SKEWED LEFT)
+        # PERICOPE MARKERS
+        &#34;*&#34;: &#34;\u0700&#34;,  # rosette
+        &#34;.&#34;: &#34;\u00B7&#34;,  # common dot in caesuras
+        &#34;_&#34;: &#34;\u2014&#34;,  # dash in caesuras
+        &#34;o&#34;: &#34;\u2022&#34;,  # large dot in caesuras
+    }
+
+    trans_syriac_pat = re.compile(r&#34;([AE@IU][12]?|=[.#:\^/\\]|[\^#][!:\\]|.)&#34;)
+
+    arabic_mapping = {
+        &#34; &#34;: &#34;\u0020&#34;,  # SPACE
+        &#34;&#39;&#34;: &#34;\u0621&#34;,  # ARABIC LETTER HAMZA
+        &#34;&gt;&#34;: &#34;\u0623&#34;,  # ARABIC LETTER ALEF WITH HAMZA ABOVE
+        &#34;&amp;&#34;: &#34;\u0624&#34;,  # ARABIC LETTER WAW WITH HAMZA ABOVE
+        &#34;&lt;&#34;: &#34;\u0625&#34;,  # ARABIC LETTER ALEF WITH HAMZA BELOW
+        &#34;}&#34;: &#34;\u0626&#34;,  # ARABIC LETTER YEH WITH HAMZA ABOVE
+        &#34;A&#34;: &#34;\u0627&#34;,  # ARABIC LETTER ALEF
+        &#34;b&#34;: &#34;\u0628&#34;,  # ARABIC LETTER BEH
+        &#34;p&#34;: &#34;\u0629&#34;,  # ARABIC LETTER TEH MARBUTA
+        &#34;t&#34;: &#34;\u062a&#34;,  # ARABIC LETTER TEH
+        &#34;v&#34;: &#34;\u062b&#34;,  # ARABIC LETTER THEH
+        &#34;j&#34;: &#34;\u062c&#34;,  # ARABIC LETTER JEEM
+        &#34;H&#34;: &#34;\u062d&#34;,  # ARABIC LETTER HAH
+        &#34;x&#34;: &#34;\u062e&#34;,  # ARABIC LETTER KHAH
+        &#34;d&#34;: &#34;\u062f&#34;,  # ARABIC LETTER DAL
+        &#34;*&#34;: &#34;\u0630&#34;,  # ARABIC LETTER THAL
+        &#34;r&#34;: &#34;\u0631&#34;,  # ARABIC LETTER REH
+        &#34;z&#34;: &#34;\u0632&#34;,  # ARABIC LETTER ZAIN
+        &#34;s&#34;: &#34;\u0633&#34;,  # ARABIC LETTER SEEN
+        &#34;$&#34;: &#34;\u0634&#34;,  # ARABIC LETTER SHEEN
+        &#34;S&#34;: &#34;\u0635&#34;,  # ARABIC LETTER SAD
+        &#34;D&#34;: &#34;\u0636&#34;,  # ARABIC LETTER DAD
+        &#34;T&#34;: &#34;\u0637&#34;,  # ARABIC LETTER TAH
+        &#34;Z&#34;: &#34;\u0638&#34;,  # ARABIC LETTER ZAH
+        &#34;E&#34;: &#34;\u0639&#34;,  # ARABIC LETTER AIN
+        &#34;g&#34;: &#34;\u063a&#34;,  # ARABIC LETTER GHAIN
+        &#34;_&#34;: &#34;\u0640&#34;,  # ARABIC TATWEEL
+        &#34;f&#34;: &#34;\u0641&#34;,  # ARABIC LETTER FEH
+        &#34;q&#34;: &#34;\u0642&#34;,  # ARABIC LETTER QAF
+        &#34;k&#34;: &#34;\u0643&#34;,  # ARABIC LETTER KAF
+        &#34;l&#34;: &#34;\u0644&#34;,  # ARABIC LETTER LAM
+        &#34;m&#34;: &#34;\u0645&#34;,  # ARABIC LETTER MEEM
+        &#34;n&#34;: &#34;\u0646&#34;,  # ARABIC LETTER NOON
+        &#34;h&#34;: &#34;\u0647&#34;,  # ARABIC LETTER HEH
+        &#34;w&#34;: &#34;\u0648&#34;,  # ARABIC LETTER WAW
+        &#34;Y&#34;: &#34;\u0649&#34;,  # ARABIC LETTER ALEF MAKSURA
+        &#34;y&#34;: &#34;\u064a&#34;,  # ARABIC LETTER YEH
+        &#34;F&#34;: &#34;\u064b&#34;,  # ARABIC FATHATAN
+        &#34;N&#34;: &#34;\u064c&#34;,  # ARABIC DAMMATAN
+        &#34;K&#34;: &#34;\u064d&#34;,  # ARABIC KASRATAN
+        &#34;a&#34;: &#34;\u064e&#34;,  # ARABIC FATHA
+        &#34;u&#34;: &#34;\u064f&#34;,  # ARABIC DAMMA
+        &#34;i&#34;: &#34;\u0650&#34;,  # ARABIC KASRA
+        &#34;~&#34;: &#34;\u0651&#34;,  # ARABIC SHADDA
+        &#34;o&#34;: &#34;\u0652&#34;,  # ARABIC SUKUN
+        &#34;^&#34;: &#34;\u0653&#34;,  # ARABIC MADDAH ABOVE
+        &#34;#&#34;: &#34;\u0654&#34;,  # ARABIC HAMZA ABOVE
+        &#34;`&#34;: &#34;\u0670&#34;,  # ARABIC LETTER SUPERSCRIPT ALEF
+        &#34;{&#34;: &#34;\u0671&#34;,  # ARABIC LETTER ALEF WASLA
+        &#34;:&#34;: &#34;\u06dc&#34;,  # ARABIC SMALL HIGH SEEN
+        &#34;@&#34;: &#34;\u06df&#34;,  # ARABIC SMALL HIGH ROUNDED ZERO
+        &#39;&#34;&#39;: &#34;\u06e0&#34;,  # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
+        &#34;[&#34;: &#34;\u06e2&#34;,  # ARABIC SMALL HIGH MEEM ISOLATED FORM
+        &#34;;&#34;: &#34;\u06e3&#34;,  # ARABIC SMALL LOW SEEN
+        &#34;,&#34;: &#34;\u06e5&#34;,  # ARABIC SMALL WAW
+        &#34;.&#34;: &#34;\u06e6&#34;,  # ARABIC SMALL YEH
+        &#34;!&#34;: &#34;\u06e8&#34;,  # ARABIC SMALL HIGH NOON
+        &#34;-&#34;: &#34;\u06ea&#34;,  # ARABIC EMPTY CENTRE LOW STOP
+        &#34;+&#34;: &#34;\u06eb&#34;,  # ARABIC EMPTY CENTRE HIGH STOP
+        &#34;%&#34;: &#34;\u06ec&#34;,  # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
+        &#34;]&#34;: &#34;\u06ed&#34;,  # ARABIC SMALL LOW MEEM
+    }
+
+    arabic_mappingi = dict((v, k) for (k, v) in arabic_mapping.items())
+
+    def __init__(self):
+        self.hebrew_consonants = {
+            Transcription.hebrew_mapping[x] for x in Transcription.hebrew_cons
+        }
+        self.hebrew_consonants.add(&#34;\u05E9&#34;)
+        self.hebrew_mappingi = dict(
+            (v, k) for (k, v) in Transcription.hebrew_mapping.items() if k != &#34;&#34;
+        )
+        self.syriac_mappingi = dict(
+            (v, k) for (k, v) in Transcription.syriac_mapping.items() if k != &#34;&#34;
+        )
+        # special treatment needed for nun hafukha,
+        # since it is consists of two characters
+        self.hebrew_mappingi[&#34;\u05C6&#34;] = &#34;ñ&#34;
+        self.hebrew_mappingi[&#34;\u0307&#34;] = &#34;&#34;
+        self.syriac_punctuation_trans = (
+            &#34;#\\&#34;,
+            &#34;=.&#34;,
+            &#34;=#&#34;,
+            &#34;=:&#34;,
+            &#34;=^&#34;,
+            &#34;=/&#34;,
+            &#34;=\\&#34;,
+            &#34;^:&#34;,
+            &#34;^\\&#34;,
+        )
+        self.syriac_punctuation_syc = tuple(
+            Transcription.syriac_mapping[c] for c in self.syriac_punctuation_trans
+        )
+
+    def sycSplitPunc(self):
+        pass
+
+    def _comp(s):
+        for (d, c) in Transcription.decomp.items():
+            s = s.replace(d, c)
+        return s
+
+    def _decomp(s):
+        for (d, c) in Transcription.decomp.items():
+            s = s.replace(c, d)
+        return s
+
+    def suffix_and_finales(word):
+        # first split the word proper from the suffix,
+        # and add a space if there is no other suffix
+        add_space = &#34;&#34;
+        suffix = &#34;&#34;
+        new_word = word
+        if not word:
+            return (new_word, suffix + add_space)
+        lastch = new_word[-1]
+        if lastch == &#34;-&#34; or lastch == &#34;&amp;&#34;:
+            new_word = new_word[0:-1]
+            suffix = lastch
+        else:
+            if len(new_word) &gt;= 2:
+                lastch = new_word[-1]
+                llastch = new_word[-2]
+                if llastch == &#34;_&#34; and (lastch == &#34;P&#34; or lastch == &#34;S&#34;):
+                    new_word = new_word[0:-2]
+                    suffix = &#34; &#34; + lastch + suffix + &#34; &#34;
+            if len(new_word) &gt;= 2:
+                lastch = new_word[-1]
+                llastch = new_word[-2]
+                if llastch == &#34;_&#34; and (lastch == &#34;N&#34;):
+                    new_word = new_word[0:-2]
+                    suffix = &#34; ñ&#34; + suffix + &#34; &#34;
+            if len(new_word) &gt;= 2:
+                lastch = new_word[-1]
+                llastch = new_word[-2]
+                if llastch == &#34;0&#34; and (lastch == &#34;0&#34; or lastch == &#34;5&#34;):
+                    new_word = new_word[0:-2]
+                    suffix = (&#34; &#34; if lastch == &#34;5&#34; else &#34;&#34;) + llastch + lastch + suffix
+                    add_space = &#34;\n&#34; if lastch == &#34;0&#34; else &#34; &#34;
+        if suffix == &#34;&#34;:
+            add_space = &#34; &#34;
+        elif suffix == &#34;-&#34;:
+            add_space = &#34;&#34;
+            suffix = &#34;&#34;
+        # second: replace consonants by their final forms when needed
+        new_word = Transcription.trans_final_pat.sub(Transcription._map_final, new_word)
+        return (new_word, suffix + add_space)
+
+    def _map_final(m):
+        return m.group(1) + m.group(2).lower() + m.group(3)
+
+    def _map_hebrew(m):
+        return Transcription.hebrew_mapping.get(m.group(1), m.group(1))
+
+    def _map_syriac(m):
+        return Transcription.syriac_mapping.get(m.group(1), m.group(1))
+
+    def _swap_accent(m):
+        return m.group(1) + m.group(3) + m.group(4) + m.group(2)
+
+    def _remove_accent(m):
+        return &#34;00&#34; if m.group(1) == &#34;00&#34; else &#34;05&#34; if m.group(1) == &#34;05&#34; else &#34;&#34;
+
+    def _remove_point(m):
+        return &#34;00&#34; if m.group(1) == &#34;00&#34; else &#34;05&#34; if m.group(1) == &#34;05&#34; else &#34;&#34;
+
+    def _ph_simple(m):
+        return &#34;å&#34; if m.group(1) in &#34;āo&#34; else &#34;&#34;
+
+    # unicode normalization is harmful
+    # if there is a combination of dagesh, vowel and accent.
+
+    def suppress_space(word):
+        return Transcription.noorigspace.search(word)
+
+    def to_etcbc_v(word):
+        return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)
+
+    def to_etcbc_c(word):
+        word = Transcription.remove_point_pat.sub(Transcription._remove_point, word)
+        word = Transcription.remove_psn_pat.sub(
+            &#34;00&#34;, word
+        )  # remove nun hafukha, setumah, petuhah at the end of a verse
+        word = Transcription.remove_psq_pat.sub(
+            &#34; &#34;, word
+        )  # replace paseq with attached spaces by single space
+        word = word.upper()  # no final forms of consonants
+        return Transcription.shin_pat.sub(&#34;#&#34;, word)
+
+    def to_hebrew(word):
+        word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
+        return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)
+
+    def to_hebrew_v(word):
+        return Transcription.trans_hebrew_pat.sub(
+            Transcription._map_hebrew, Transcription.to_etcbc_v(word)
+        )
+
+    def to_hebrew_c(word):
+        return Transcription.trans_hebrew_pat.sub(
+            Transcription._map_hebrew, Transcription.to_etcbc_c(word)
+        )
+
+    def to_hebrew_x(word):
+        return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)
+
+    def ph_simplify(pword):
+        return Transcription.ph_simple_pat.sub(Transcription._ph_simple, pword)
+
+    def from_hebrew(self, word):
+        return &#34;&#34;.join(
+            self.hebrew_mappingi.get(x, x) for x in Transcription._comp(word)
+        )
+
+    def to_syriac(self, word):
+        return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)
+
+    def from_syriac(self, word):
+        return &#34;&#34;.join(self.syriac_mappingi.get(x, x) for x in word)
+
+    def can_to_syriac(self, word):
+        return all(
+            candidate in Transcription.syriac_mapping
+            for candidate in Transcription.trans_syriac_pat.findall(word)
+            if candidate != &#34; &#34;
+        )
+
+    def can_from_syriac(self, word):
+        return all(c in self.syriac_mappingi for c in word if c != &#34; &#34;)
+
+    def to_arabic(word):
+        return &#34;&#34;.join(Transcription.arabic_mapping.get(x, x) for x in word)
+
+    def from_arabic(word):
+        return &#34;&#34;.join(Transcription.arabic_mappingi.get(x, x) for x in word)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.writing.transcription.Transcription"><code class="flex name class">
+<span>class <span class="ident">Transcription</span></span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Transcription(object):
+    decomp = {
+        &#34;\u05E9\u05C1&#34;: &#34;\uFB2A&#34;,
+        &#34;\u05E9\u05C2&#34;: &#34;\uFB2B&#34;,
+    }
+    hebrew_mapping = {
+        &#34;_&#34;: &#34; &#34;,  # space inside word
+        &#34;92&#34;: &#34;\u0591&#34;,  # etnahta = atnach
+        &#34;01&#34;: &#34;\u0592&#34;,  # segolta
+        &#34;65&#34;: &#34;\u0593&#34;,  # shalshelet
+        &#34;80&#34;: &#34;\u0594&#34;,  # zaqef_qatan
+        &#34;85&#34;: &#34;\u0595&#34;,  # zaqef_gadol
+        &#34;73&#34;: &#34;\u0596&#34;,  # tipeha = tifcha
+        &#34;81&#34;: &#34;\u0597&#34;,  # revia = rebia
+        &#34;82&#34;: &#34;\u0598&#34;,  # zarqa = tsinorit = zinorit = sinnorit
+        &#34;03&#34;: &#34;\u0599&#34;,  # pashta
+        &#34;10&#34;: &#34;\u059A&#34;,  # yetiv = yetib
+        &#34;91&#34;: &#34;\u059B&#34;,  # tevir = tebir
+        &#34;61&#34;: &#34;\u059C&#34;,  # geresh
+        &#34;11&#34;: &#34;\u059D&#34;,  # geresh muqdam = mugrash
+        &#34;62&#34;: &#34;\u059E&#34;,  # gershayim = garshayim
+        &#34;84&#34;: &#34;\u059F&#34;,  # qarney para = pazer_gadol
+        &#34;14&#34;: &#34;\u05A0&#34;,  # telisha_gedola
+        &#34;44&#34;: &#34;\u05A0&#34;,  # telisha_gedola = telisha_gedola_med
+        &#34;83&#34;: &#34;\u05A1&#34;,  # pazer
+        &#34;74&#34;: &#34;\u05A3&#34;,  # munah = munach
+        &#34;70&#34;: &#34;\u05A4&#34;,  # mahapakh = mehuppach
+        &#34;71&#34;: &#34;\u05A5&#34;,  # merkha = merecha
+        &#34;72&#34;: &#34;\u05A6&#34;,  # merkha kefula = merecha_kepula
+        &#34;94&#34;: &#34;\u05A7&#34;,  # darga
+        &#34;63&#34;: &#34;\u05A8&#34;,  # qadma = azla
+        &#34;33&#34;: &#34;\u05A8&#34;,  # pashta_med &lt; qadma
+        &#34;04&#34;: &#34;\u05A9&#34;,  # telisha_qetana
+        &#34;24&#34;: &#34;\u05A9&#34;,  # telisha_qetana = telisha_qetana_med
+        &#34;93&#34;: &#34;\u05AA&#34;,  # yera ben yomo = yerach
+        &#34;60&#34;: &#34;\u05AB&#34;,  # ole = ole_weyored
+        &#34;64&#34;: &#34;\u05AC&#34;,  # iluy = illuy
+        &#34;13&#34;: &#34;\u05AD&#34;,  # dehi = dechi
+        &#34;02&#34;: &#34;\u05AE&#34;,  # zinor = sinnor
+        &#34;*&#34;: &#34;\u05AF&#34;,  # masora circle
+        &#34;:&#34;: &#34;\u05B0&#34;,  # sheva = shewa
+        &#34;:E&#34;: &#34;\u05B1&#34;,  # hataf segol = chataph_segol
+        &#34;:A&#34;: &#34;\u05B2&#34;,  # hataf patah = chataph_patach
+        &#34;:@&#34;: &#34;\u05B3&#34;,  # hataf qamats = chataph_qamats
+        &#34;I&#34;: &#34;\u05B4&#34;,  # hiriq = chiriq
+        &#34;;&#34;: &#34;\u05B5&#34;,  # tsere
+        &#34;E&#34;: &#34;\u05B6&#34;,  # segol
+        &#34;A&#34;: &#34;\u05B7&#34;,  # patach
+        &#34;@&#34;: &#34;\u05B8&#34;,  # qamats
+        &#34;O&#34;: &#34;\u05B9&#34;,  # holam = cholam
+        &#34;U&#34;: &#34;\u05BB&#34;,  # qubuts = qubbuts
+        &#34;.&#34;: &#34;\u05BC&#34;,  # dagesh
+        &#34;25&#34;: &#34;\u05BD&#34;,  # silluq yamin
+        &#34;45&#34;: &#34;\u05BD&#34;,  # meteg
+        &#34;35&#34;: &#34;\u05BD&#34;,  # meteg (tikon)
+        &#34;75&#34;: &#34;\u05BD&#34;,  # siluq = silluq
+        &#34;95&#34;: &#34;\u05BD&#34;,  # meteg = meteg_yamin
+        &#34;&amp;&#34;: &#34;\u05BE&#34;,  # maqaf
+        &#34;,&#34;: &#34;\u05BF&#34;,  # rafe = raphe
+        &#34;05&#34;: &#34;\u05C0&#34;,  # paseq
+        &#34;.c&#34;: &#34;\u05C1&#34;,  # shin dot
+        &#34;.f&#34;: &#34;\u05C2&#34;,  # sin dot
+        &#34;00&#34;: &#34;\u05C3&#34;,  # sof_pasuq
+        &#34;52&#34;: &#34;\u05C4&#34;,  # upper dot = puncta_above
+        &#34;53&#34;: &#34;\u05C5&#34;,  # lower dot = puncta_below
+        &#34;ñ&#34;: &#34;\u05C6\u0307&#34;,  # nun hafukha
+        &#34;Ñ&#34;: &#34;\u05C6\u0307&#34;,  # nun hafukha
+        &#34;&gt;&#34;: &#34;\u05D0&#34;,  # alef
+        &#34;B&#34;: &#34;\u05D1&#34;,  # bet
+        &#34;G&#34;: &#34;\u05D2&#34;,  # gimel
+        &#34;D&#34;: &#34;\u05D3&#34;,  # dalet
+        &#34;H&#34;: &#34;\u05D4&#34;,  # he
+        &#34;W&#34;: &#34;\u05D5&#34;,  # vav
+        &#34;Z&#34;: &#34;\u05D6&#34;,  # zayin
+        &#34;X&#34;: &#34;\u05D7&#34;,  # het
+        &#34;V&#34;: &#34;\u05D8&#34;,  # tet
+        &#34;J&#34;: &#34;\u05D9&#34;,  # yod
+        &#34;k&#34;: &#34;\u05DA&#34;,  # kaf final
+        &#34;K&#34;: &#34;\u05DB&#34;,  # kaf
+        &#34;L&#34;: &#34;\u05DC&#34;,  # lamed
+        &#34;m&#34;: &#34;\u05DD&#34;,  # mem final
+        &#34;M&#34;: &#34;\u05DE&#34;,  # mem
+        &#34;n&#34;: &#34;\u05DF&#34;,  # nun final
+        &#34;N&#34;: &#34;\u05E0&#34;,  # nun
+        &#34;S&#34;: &#34;\u05E1&#34;,  # samekh
+        &#34;&lt;&#34;: &#34;\u05E2&#34;,  # ayin
+        &#34;p&#34;: &#34;\u05E3&#34;,  # pe final
+        &#34;P&#34;: &#34;\u05E4&#34;,  # pe
+        &#34;y&#34;: &#34;\u05E5&#34;,  # tsadi final
+        &#34;Y&#34;: &#34;\u05E6&#34;,  # tsadi
+        &#34;Q&#34;: &#34;\u05E7&#34;,  # qof
+        &#34;R&#34;: &#34;\u05E8&#34;,  # resh
+        &#34;#&#34;: &#34;\u05E9&#34;,  # sin unpointed
+        &#34;T&#34;: &#34;\u05EA&#34;,  # tav
+        &#34;C&#34;: &#34;\uFB2A&#34;,  # shin pointed
+        &#34;F&#34;: &#34;\uFB2B&#34;,  # sin pointed
+        &#34;55&#34;: &#34;&lt;UNMAPPED 55=large letter&gt;&#34;,  # large_letter
+        &#34;56&#34;: &#34;&lt;UNMAPPED 56=small letter&gt;&#34;,  # small_letter
+        &#34;57&#34;: &#34;&lt;UNMAPPED 57=suspended letter&gt;&#34;,  # suspended_letter
+        &#34;-&#34;: &#34;&#34;,  # suppress space afterward
+        &#34;&#39;&#34;: &#34;\u05f3&#34;,  # punctuation geresh
+        &#39;&#34;&#39;: &#34;\u05f4&#34;,  # punctuation gershayim
+    }
+    hebrew_cons = &#34;&gt;BGDHWZXVJKLMNS&lt;PYQRFCT&#34;
+    trans_final_pat = re.compile(
+        r&#34;([&#34;
+        + hebrew_cons
+        + r&#34;][^_&amp;]*)([KMNPY])([^&#34;
+        + hebrew_cons
+        + r&#34;_&amp;]*(:?[_&amp;]|\Z))&#34;
+    )
+    trans_hebrew_pat = re.compile(r&#34;(:[AE@]|.[cf]|:|[0-9][0-9]|.)&#34;)
+    swap_accent_pat = re.compile(
+        r&#34;(\A|[_&amp;])([0-9][0-9])([&#34; + hebrew_cons + r&#34;])([:;,.EAIOU@]*)&#34;
+    )
+    remove_accent_pat = re.compile(r&#34;((?:[0-9][0-9])|[,*])&#34;)
+    remove_point_pat = re.compile(
+        r&#34;((?:[0-9][0-9])|(?:\.[cf])|(?::[@AE])|[,.:;@AEIOU*])&#34;
+    )
+    remove_psn_pat = re.compile(r&#34;00[ _SPNÑñ]*&#34;)
+    remove_psq_pat = re.compile(r&#34;(?:[ _]+05[ _]*)|(?:05[ _]+)&#34;)
+    shin_pat = re.compile(r&#34;[CF]&#34;)
+    ph_simple_pat = re.compile(r&#34;([ˈˌᵊᵃᵒᵉāo*])&#34;)
+    noorigspace = re.compile(
+        r&#34;&#34;&#34;
+          (?: [&amp;-]\Z)           # space, maqef or nospace
+        | (?:
+               0[05]            # sof pasuq or paseq
+               (?:_[SNP])*      # nun hafukha, setumah, petuhah at end of verse
+               \Z
+          )
+        | (?:_[SPN])+           #  nun hafukha, setumah, petuhah between words
+    &#34;&#34;&#34;,
+        re.X,
+    )
+
+    syriac_mapping_simple = {
+        &#34;&gt;&#34;: &#34;\u0710&#34;,  # alaph
+        &#34;B&#34;: &#34;\u0712&#34;,  # beth
+        &#34;G&#34;: &#34;\u0713&#34;,  # gamal
+        &#34;D&#34;: &#34;\u0715&#34;,  # dalat
+        &#34;H&#34;: &#34;\u0717&#34;,  # he
+        &#34;W&#34;: &#34;\u0718&#34;,  # waw
+        &#34;Z&#34;: &#34;\u0719&#34;,  # zain
+        &#34;X&#34;: &#34;\u071A&#34;,  # heth
+        &#34;V&#34;: &#34;\u071B&#34;,  # teth
+        &#34;J&#34;: &#34;\u071D&#34;,  # yudh
+        &#34;K&#34;: &#34;\u071F&#34;,  # kaph
+        &#34;L&#34;: &#34;\u0720&#34;,  # lamadh
+        &#34;M&#34;: &#34;\u0721&#34;,  # mim
+        &#34;N&#34;: &#34;\u0722&#34;,  # nun
+        &#34;S&#34;: &#34;\u0723&#34;,  # semkath
+        &#34;&lt;&#34;: &#34;\u0725&#34;,  # e
+        &#34;P&#34;: &#34;\u0726&#34;,  # pe
+        &#34;Y&#34;: &#34;\u0728&#34;,  # sadhe
+        &#34;Q&#34;: &#34;\u0729&#34;,  # qaph
+        &#34;R&#34;: &#34;\u072A&#34;,  # rish
+        &#34;C&#34;: &#34;\u072B&#34;,  # shin
+        &#34;T&#34;: &#34;\u072C&#34;,  # taw
+        &#34;s&#34;: &#34;\u0724&#34;,  # semkath final
+        &#34;p&#34;: &#34;\u0727&#34;,  # pe reversed
+    }
+
+    syriac_mapping_pil = {
+        # LETTERS
+        &#34;&#39;&#34;: &#34;\u0710&#34;,  # alaph
+        &#34;b&#34;: &#34;\u0712&#34;,  # beth
+        &#34;g&#34;: &#34;\u0713&#34;,  # gamal
+        &#34;d&#34;: &#34;\u0715&#34;,  # dalat
+        &#34;h&#34;: &#34;\u0717&#34;,  # he
+        &#34;w&#34;: &#34;\u0718&#34;,  # waw
+        &#34;z&#34;: &#34;\u0719&#34;,  # zain
+        &#34;H&#34;: &#34;\u071A&#34;,  # heth
+        &#34;T&#34;: &#34;\u071B&#34;,  # teth
+        &#34;y&#34;: &#34;\u071D&#34;,  # yod
+        &#34;k&#34;: &#34;\u071F&#34;,  # kaf
+        &#34;l&#34;: &#34;\u0720&#34;,  # lamad
+        &#34;m&#34;: &#34;\u0721&#34;,  # mim
+        &#34;n&#34;: &#34;\u0722&#34;,  # nun
+        &#34;s&#34;: &#34;\u0723&#34;,  # semkath
+        &#34;`&#34;: &#34;\u0725&#34;,  # &#39;e
+        &#34;p&#34;: &#34;\u0726&#34;,  # pe
+        &#34;S&#34;: &#34;\u0728&#34;,  # tsade
+        &#34;q&#34;: &#34;\u0729&#34;,  # qof
+        &#34;r&#34;: &#34;\u072A&#34;,  # resh
+        &#34;$&#34;: &#34;\u072B&#34;,  # shin
+        &#34;t&#34;: &#34;\u072C&#34;,  # taw
+        # WORD-BOUND DIACRITICS
+        &#39;&#34;&#39;: &#34;\u0308&#34;,  # seyame
+        &#34;#&#34;: &#34;\u0323&#34;,  # diacritical dot below
+        &#34;^&#34;: &#34;\u0307&#34;,  # diacritical dot above
+        &#34;~&#34;: &#34;\u0307&#34;,  # abbreviation mark
+        # NON-VOCALIC LETTER-BOUND DIACRITICS
+        &#34;#,&#34;: &#34;\u0742&#34;,  # rukkakha
+        &#39;#&#34;&#39;: &#34;\u0342&#34;,  # unclear (COMBINING DIAERESIS BELOW)
+        &#34;#!&#34;: &#34;\u0744&#34;,  # unclear (SYRIAC TWO VERTICAL DOTS BELOW)
+        &#34;#_&#34;: &#34;\u0331&#34;,  # linea occultans infera
+        &#34;^,&#34;: &#34;\u0741&#34;,  # qushshaya
+        &#34;^!&#34;: &#34;\u0743&#34;,  # unclear (SYRIAC TWO VERTICAL DOTS ABOVE)
+        &#34;^_&#34;: &#34;\u0304&#34;,  # linea occultans supera
+        # VOCALIC LETTER-BOUND DIACRITICS
+        &#34;:&#34;: &#34;&#34;,  # shewa
+        &#34;A&#34;: &#34;\u0733&#34;,  # qamets
+        &#34;A1&#34;: &#34;\u0734&#34;,  # zeqapa
+        &#34;A2&#34;: &#34;\u0735&#34;,  # zeqofo
+        &#34;E&#34;: &#34;\u0739&#34;,  # tsere, revasa karya
+        &#34;O&#34;: &#34;\u073F&#34;,  # holem, rewaha
+        &#34;a&#34;: &#34;\u0730&#34;,  # patah
+        &#34;a1&#34;: &#34;\u0731&#34;,  # petaha
+        &#34;a2&#34;: &#34;\u0732&#34;,  # petoho
+        &#34;e&#34;: &#34;\u0736&#34;,  # segol
+        &#34;e1&#34;: &#34;\u0737&#34;,  # revasa arrika
+        &#34;e2&#34;: &#34;\u0738&#34;,  # revoso
+        &#34;i&#34;: &#34;\u073A&#34;,  # hireq
+        &#34;i1&#34;: &#34;\u073B&#34;,  # hevoso
+        &#34;y#&#34;: &#34;\u071D\u073C&#34;,  # hevasa
+        &#34;u&#34;: &#34;\u073D&#34;,  # qubbuts
+        &#34;u1&#34;: &#34;\u073E&#34;,  # esoso
+        &#34;w#&#34;: &#34;\u0718\u073C&#34;,  # esasa allisa
+        &#34;w^&#34;: &#34;\u0718\u073F&#34;,  # esasa rewiha
+        # INTERPUNCTION
+        &#34;#.&#34;: &#34;\u0702&#34;,  # menachta, meshalyana (ES), metdamrana, samka
+        &#34;#:&#34;: &#34;\u0704&#34;,  # metkashpana (ES)
+        &#34;#\\&#34;: &#34;\u0709&#34;,  # tahtaya, metkashpana (WS), meshalyana (WS)
+        &#34;=.&#34;: &#34;\u002E&#34;,  # pasuqa
+        &#34;=/&#34;: &#34;\u0707&#34;,  # elaya
+        &#34;=:&#34;: &#34;\u003A&#34;,  # shewaya (WS), zauga (ES)
+        &#34;=\\&#34;: &#34;\u0706&#34;,  # unclear (SYRIAC COLON SKEWED LEFT)
+        &#34;^.&#34;: &#34;\u0701&#34;,  # paquda, metkashpana (ES), meshalyana (ES), etsyana, meshalana?
+        &#39;^&#34;&#39;: &#34;\u0705&#34;,  # rahta
+        &#34;^:&#34;: &#34;\u0703&#34;,  # taksa (WS), zauga elaya (ES)
+        &#34;^\\&#34;: &#34;\u0708&#34;,  # unclear (SYRIAC SUPRALINEAR COLON SKEWED LEFT)
+        # PERICOPE MARKERS
+        &#34;*&#34;: &#34;\u0700&#34;,  # rosette
+        &#34;.&#34;: &#34;\u00B7&#34;,  # common dot in caesuras
+        &#34;@&#34;: &#34;\u2722&#34;,  # vignette
+        &#34;_&#34;: &#34;\u2014&#34;,  # dash in caesuras
+        &#34;o&#34;: &#34;\u2022&#34;,  # large dot in caesuras
+    }
+
+    syriac_mapping = {  # this is WIT
+        # LETTERS
+        &#34;&gt;&#34;: &#34;\u0710&#34;,  # alaph
+        &#34;B&#34;: &#34;\u0712&#34;,  # beth
+        &#34;G&#34;: &#34;\u0713&#34;,  # gamal
+        &#34;D&#34;: &#34;\u0715&#34;,  # dalat
+        &#34;H&#34;: &#34;\u0717&#34;,  # he
+        &#34;W&#34;: &#34;\u0718&#34;,  # waw
+        &#34;Z&#34;: &#34;\u0719&#34;,  # zain
+        &#34;X&#34;: &#34;\u071A&#34;,  # heth
+        &#34;V&#34;: &#34;\u071B&#34;,  # teth
+        &#34;J&#34;: &#34;\u071D&#34;,  # yod
+        &#34;K&#34;: &#34;\u071F&#34;,  # kaf
+        &#34;L&#34;: &#34;\u0720&#34;,  # lamad
+        &#34;M&#34;: &#34;\u0721&#34;,  # mim
+        &#34;N&#34;: &#34;\u0722&#34;,  # nun
+        &#34;S&#34;: &#34;\u0723&#34;,  # semkath
+        &#34;&lt;&#34;: &#34;\u0725&#34;,  # &#39;e
+        &#34;P&#34;: &#34;\u0726&#34;,  # pe
+        &#34;Y&#34;: &#34;\u0728&#34;,  # tsade
+        &#34;Q&#34;: &#34;\u0729&#34;,  # qof
+        &#34;R&#34;: &#34;\u072A&#34;,  # resh
+        &#34;C&#34;: &#34;\u072B&#34;,  # shin
+        &#34;T&#34;: &#34;\u072C&#34;,  # taw
+        # WORD-BOUND DIACRITICS
+        &#39;&#34;&#39;: &#34;\u0308&#34;,  # seyame
+        &#34;#&#34;: &#34;\u0323&#34;,  # diacritical dot below
+        &#34;^&#34;: &#34;\u0307&#34;,  # diacritical dot above
+        # NON-VOCALIC LETTER-BOUND DIACRITICS
+        &#34;^!&#34;: &#34;\u0743&#34;,  # unclear (SYRIAC TWO VERTICAL DOTS ABOVE)
+        # VOCALIC LETTER-BOUND DIACRITICS
+        &#34;:&#34;: &#34;&#34;,  # shewa
+        &#34;A&#34;: &#34;\u0733&#34;,  # qamets
+        &#34;A1&#34;: &#34;\u0734&#34;,  # zeqapa
+        &#34;A2&#34;: &#34;\u0735&#34;,  # zeqofo
+        &#34;O&#34;: &#34;\u073F&#34;,  # holem, rewaha
+        &#34;@&#34;: &#34;\u0730&#34;,  # patah
+        &#34;@1&#34;: &#34;\u0731&#34;,  # petaha
+        &#34;@2&#34;: &#34;\u0732&#34;,  # petoho
+        &#34;E&#34;: &#34;\u0736&#34;,  # segol
+        &#34;E1&#34;: &#34;\u0737&#34;,  # revasa arrika
+        &#34;E2&#34;: &#34;\u0738&#34;,  # revoso
+        &#34;I&#34;: &#34;\u073A&#34;,  # hireq
+        &#34;I1&#34;: &#34;\u073B&#34;,  # hevoso
+        &#34;U&#34;: &#34;\u073D&#34;,  # qubbuts
+        &#34;U1&#34;: &#34;\u073E&#34;,  # esoso
+        # INTERPUNCTION
+        &#34;#\\&#34;: &#34;\u0709&#34;,  # tahtaya, metkashpana (WS), meshalyana (WS)
+        &#34;=.&#34;: &#34;\u002E&#34;,  # pasuqa
+        &#34;=#&#34;: &#34;\u0707&#34;,  # elaya
+        &#34;=:&#34;: &#34;\u003A&#34;,  # shewaya (WS), zauga (ES)
+        &#34;=^&#34;: &#34;\u0706&#34;,  # unclear (SYRIAC COLON SKEWED LEFT)
+        &#34;=/&#34;: &#34;\u0707&#34;,  # elaya
+        &#34;=\\&#34;: &#34;\u0706&#34;,  # unclear (SYRIAC COLON SKEWED LEFT)
+        &#34;^:&#34;: &#34;\u0703&#34;,  # taksa (WS), zauga elaya (ES)
+        &#34;^\\&#34;: &#34;\u0708&#34;,  # unclear (SYRIAC SUPRALINEAR COLON SKEWED LEFT)
+        # PERICOPE MARKERS
+        &#34;*&#34;: &#34;\u0700&#34;,  # rosette
+        &#34;.&#34;: &#34;\u00B7&#34;,  # common dot in caesuras
+        &#34;_&#34;: &#34;\u2014&#34;,  # dash in caesuras
+        &#34;o&#34;: &#34;\u2022&#34;,  # large dot in caesuras
+    }
+
+    trans_syriac_pat = re.compile(r&#34;([AE@IU][12]?|=[.#:\^/\\]|[\^#][!:\\]|.)&#34;)
+
+    arabic_mapping = {
+        &#34; &#34;: &#34;\u0020&#34;,  # SPACE
+        &#34;&#39;&#34;: &#34;\u0621&#34;,  # ARABIC LETTER HAMZA
+        &#34;&gt;&#34;: &#34;\u0623&#34;,  # ARABIC LETTER ALEF WITH HAMZA ABOVE
+        &#34;&amp;&#34;: &#34;\u0624&#34;,  # ARABIC LETTER WAW WITH HAMZA ABOVE
+        &#34;&lt;&#34;: &#34;\u0625&#34;,  # ARABIC LETTER ALEF WITH HAMZA BELOW
+        &#34;}&#34;: &#34;\u0626&#34;,  # ARABIC LETTER YEH WITH HAMZA ABOVE
+        &#34;A&#34;: &#34;\u0627&#34;,  # ARABIC LETTER ALEF
+        &#34;b&#34;: &#34;\u0628&#34;,  # ARABIC LETTER BEH
+        &#34;p&#34;: &#34;\u0629&#34;,  # ARABIC LETTER TEH MARBUTA
+        &#34;t&#34;: &#34;\u062a&#34;,  # ARABIC LETTER TEH
+        &#34;v&#34;: &#34;\u062b&#34;,  # ARABIC LETTER THEH
+        &#34;j&#34;: &#34;\u062c&#34;,  # ARABIC LETTER JEEM
+        &#34;H&#34;: &#34;\u062d&#34;,  # ARABIC LETTER HAH
+        &#34;x&#34;: &#34;\u062e&#34;,  # ARABIC LETTER KHAH
+        &#34;d&#34;: &#34;\u062f&#34;,  # ARABIC LETTER DAL
+        &#34;*&#34;: &#34;\u0630&#34;,  # ARABIC LETTER THAL
+        &#34;r&#34;: &#34;\u0631&#34;,  # ARABIC LETTER REH
+        &#34;z&#34;: &#34;\u0632&#34;,  # ARABIC LETTER ZAIN
+        &#34;s&#34;: &#34;\u0633&#34;,  # ARABIC LETTER SEEN
+        &#34;$&#34;: &#34;\u0634&#34;,  # ARABIC LETTER SHEEN
+        &#34;S&#34;: &#34;\u0635&#34;,  # ARABIC LETTER SAD
+        &#34;D&#34;: &#34;\u0636&#34;,  # ARABIC LETTER DAD
+        &#34;T&#34;: &#34;\u0637&#34;,  # ARABIC LETTER TAH
+        &#34;Z&#34;: &#34;\u0638&#34;,  # ARABIC LETTER ZAH
+        &#34;E&#34;: &#34;\u0639&#34;,  # ARABIC LETTER AIN
+        &#34;g&#34;: &#34;\u063a&#34;,  # ARABIC LETTER GHAIN
+        &#34;_&#34;: &#34;\u0640&#34;,  # ARABIC TATWEEL
+        &#34;f&#34;: &#34;\u0641&#34;,  # ARABIC LETTER FEH
+        &#34;q&#34;: &#34;\u0642&#34;,  # ARABIC LETTER QAF
+        &#34;k&#34;: &#34;\u0643&#34;,  # ARABIC LETTER KAF
+        &#34;l&#34;: &#34;\u0644&#34;,  # ARABIC LETTER LAM
+        &#34;m&#34;: &#34;\u0645&#34;,  # ARABIC LETTER MEEM
+        &#34;n&#34;: &#34;\u0646&#34;,  # ARABIC LETTER NOON
+        &#34;h&#34;: &#34;\u0647&#34;,  # ARABIC LETTER HEH
+        &#34;w&#34;: &#34;\u0648&#34;,  # ARABIC LETTER WAW
+        &#34;Y&#34;: &#34;\u0649&#34;,  # ARABIC LETTER ALEF MAKSURA
+        &#34;y&#34;: &#34;\u064a&#34;,  # ARABIC LETTER YEH
+        &#34;F&#34;: &#34;\u064b&#34;,  # ARABIC FATHATAN
+        &#34;N&#34;: &#34;\u064c&#34;,  # ARABIC DAMMATAN
+        &#34;K&#34;: &#34;\u064d&#34;,  # ARABIC KASRATAN
+        &#34;a&#34;: &#34;\u064e&#34;,  # ARABIC FATHA
+        &#34;u&#34;: &#34;\u064f&#34;,  # ARABIC DAMMA
+        &#34;i&#34;: &#34;\u0650&#34;,  # ARABIC KASRA
+        &#34;~&#34;: &#34;\u0651&#34;,  # ARABIC SHADDA
+        &#34;o&#34;: &#34;\u0652&#34;,  # ARABIC SUKUN
+        &#34;^&#34;: &#34;\u0653&#34;,  # ARABIC MADDAH ABOVE
+        &#34;#&#34;: &#34;\u0654&#34;,  # ARABIC HAMZA ABOVE
+        &#34;`&#34;: &#34;\u0670&#34;,  # ARABIC LETTER SUPERSCRIPT ALEF
+        &#34;{&#34;: &#34;\u0671&#34;,  # ARABIC LETTER ALEF WASLA
+        &#34;:&#34;: &#34;\u06dc&#34;,  # ARABIC SMALL HIGH SEEN
+        &#34;@&#34;: &#34;\u06df&#34;,  # ARABIC SMALL HIGH ROUNDED ZERO
+        &#39;&#34;&#39;: &#34;\u06e0&#34;,  # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
+        &#34;[&#34;: &#34;\u06e2&#34;,  # ARABIC SMALL HIGH MEEM ISOLATED FORM
+        &#34;;&#34;: &#34;\u06e3&#34;,  # ARABIC SMALL LOW SEEN
+        &#34;,&#34;: &#34;\u06e5&#34;,  # ARABIC SMALL WAW
+        &#34;.&#34;: &#34;\u06e6&#34;,  # ARABIC SMALL YEH
+        &#34;!&#34;: &#34;\u06e8&#34;,  # ARABIC SMALL HIGH NOON
+        &#34;-&#34;: &#34;\u06ea&#34;,  # ARABIC EMPTY CENTRE LOW STOP
+        &#34;+&#34;: &#34;\u06eb&#34;,  # ARABIC EMPTY CENTRE HIGH STOP
+        &#34;%&#34;: &#34;\u06ec&#34;,  # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
+        &#34;]&#34;: &#34;\u06ed&#34;,  # ARABIC SMALL LOW MEEM
+    }
+
+    arabic_mappingi = dict((v, k) for (k, v) in arabic_mapping.items())
+
+    def __init__(self):
+        self.hebrew_consonants = {
+            Transcription.hebrew_mapping[x] for x in Transcription.hebrew_cons
+        }
+        self.hebrew_consonants.add(&#34;\u05E9&#34;)
+        self.hebrew_mappingi = dict(
+            (v, k) for (k, v) in Transcription.hebrew_mapping.items() if k != &#34;&#34;
+        )
+        self.syriac_mappingi = dict(
+            (v, k) for (k, v) in Transcription.syriac_mapping.items() if k != &#34;&#34;
+        )
+        # special treatment needed for nun hafukha,
+        # since it is consists of two characters
+        self.hebrew_mappingi[&#34;\u05C6&#34;] = &#34;ñ&#34;
+        self.hebrew_mappingi[&#34;\u0307&#34;] = &#34;&#34;
+        self.syriac_punctuation_trans = (
+            &#34;#\\&#34;,
+            &#34;=.&#34;,
+            &#34;=#&#34;,
+            &#34;=:&#34;,
+            &#34;=^&#34;,
+            &#34;=/&#34;,
+            &#34;=\\&#34;,
+            &#34;^:&#34;,
+            &#34;^\\&#34;,
+        )
+        self.syriac_punctuation_syc = tuple(
+            Transcription.syriac_mapping[c] for c in self.syriac_punctuation_trans
+        )
+
+    def sycSplitPunc(self):
+        pass
+
+    def _comp(s):
+        for (d, c) in Transcription.decomp.items():
+            s = s.replace(d, c)
+        return s
+
+    def _decomp(s):
+        for (d, c) in Transcription.decomp.items():
+            s = s.replace(c, d)
+        return s
+
+    def suffix_and_finales(word):
+        # first split the word proper from the suffix,
+        # and add a space if there is no other suffix
+        add_space = &#34;&#34;
+        suffix = &#34;&#34;
+        new_word = word
+        if not word:
+            return (new_word, suffix + add_space)
+        lastch = new_word[-1]
+        if lastch == &#34;-&#34; or lastch == &#34;&amp;&#34;:
+            new_word = new_word[0:-1]
+            suffix = lastch
+        else:
+            if len(new_word) &gt;= 2:
+                lastch = new_word[-1]
+                llastch = new_word[-2]
+                if llastch == &#34;_&#34; and (lastch == &#34;P&#34; or lastch == &#34;S&#34;):
+                    new_word = new_word[0:-2]
+                    suffix = &#34; &#34; + lastch + suffix + &#34; &#34;
+            if len(new_word) &gt;= 2:
+                lastch = new_word[-1]
+                llastch = new_word[-2]
+                if llastch == &#34;_&#34; and (lastch == &#34;N&#34;):
+                    new_word = new_word[0:-2]
+                    suffix = &#34; ñ&#34; + suffix + &#34; &#34;
+            if len(new_word) &gt;= 2:
+                lastch = new_word[-1]
+                llastch = new_word[-2]
+                if llastch == &#34;0&#34; and (lastch == &#34;0&#34; or lastch == &#34;5&#34;):
+                    new_word = new_word[0:-2]
+                    suffix = (&#34; &#34; if lastch == &#34;5&#34; else &#34;&#34;) + llastch + lastch + suffix
+                    add_space = &#34;\n&#34; if lastch == &#34;0&#34; else &#34; &#34;
+        if suffix == &#34;&#34;:
+            add_space = &#34; &#34;
+        elif suffix == &#34;-&#34;:
+            add_space = &#34;&#34;
+            suffix = &#34;&#34;
+        # second: replace consonants by their final forms when needed
+        new_word = Transcription.trans_final_pat.sub(Transcription._map_final, new_word)
+        return (new_word, suffix + add_space)
+
+    def _map_final(m):
+        return m.group(1) + m.group(2).lower() + m.group(3)
+
+    def _map_hebrew(m):
+        return Transcription.hebrew_mapping.get(m.group(1), m.group(1))
+
+    def _map_syriac(m):
+        return Transcription.syriac_mapping.get(m.group(1), m.group(1))
+
+    def _swap_accent(m):
+        return m.group(1) + m.group(3) + m.group(4) + m.group(2)
+
+    def _remove_accent(m):
+        return &#34;00&#34; if m.group(1) == &#34;00&#34; else &#34;05&#34; if m.group(1) == &#34;05&#34; else &#34;&#34;
+
+    def _remove_point(m):
+        return &#34;00&#34; if m.group(1) == &#34;00&#34; else &#34;05&#34; if m.group(1) == &#34;05&#34; else &#34;&#34;
+
+    def _ph_simple(m):
+        return &#34;å&#34; if m.group(1) in &#34;āo&#34; else &#34;&#34;
+
+    # unicode normalization is harmful
+    # if there is a combination of dagesh, vowel and accent.
+
+    def suppress_space(word):
+        return Transcription.noorigspace.search(word)
+
+    def to_etcbc_v(word):
+        return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)
+
+    def to_etcbc_c(word):
+        word = Transcription.remove_point_pat.sub(Transcription._remove_point, word)
+        word = Transcription.remove_psn_pat.sub(
+            &#34;00&#34;, word
+        )  # remove nun hafukha, setumah, petuhah at the end of a verse
+        word = Transcription.remove_psq_pat.sub(
+            &#34; &#34;, word
+        )  # replace paseq with attached spaces by single space
+        word = word.upper()  # no final forms of consonants
+        return Transcription.shin_pat.sub(&#34;#&#34;, word)
+
+    def to_hebrew(word):
+        word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
+        return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)
+
+    def to_hebrew_v(word):
+        return Transcription.trans_hebrew_pat.sub(
+            Transcription._map_hebrew, Transcription.to_etcbc_v(word)
+        )
+
+    def to_hebrew_c(word):
+        return Transcription.trans_hebrew_pat.sub(
+            Transcription._map_hebrew, Transcription.to_etcbc_c(word)
+        )
+
+    def to_hebrew_x(word):
+        return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)
+
+    def ph_simplify(pword):
+        return Transcription.ph_simple_pat.sub(Transcription._ph_simple, pword)
+
+    def from_hebrew(self, word):
+        return &#34;&#34;.join(
+            self.hebrew_mappingi.get(x, x) for x in Transcription._comp(word)
+        )
+
+    def to_syriac(self, word):
+        return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)
+
+    def from_syriac(self, word):
+        return &#34;&#34;.join(self.syriac_mappingi.get(x, x) for x in word)
+
+    def can_to_syriac(self, word):
+        return all(
+            candidate in Transcription.syriac_mapping
+            for candidate in Transcription.trans_syriac_pat.findall(word)
+            if candidate != &#34; &#34;
+        )
+
+    def can_from_syriac(self, word):
+        return all(c in self.syriac_mappingi for c in word if c != &#34; &#34;)
+
+    def to_arabic(word):
+        return &#34;&#34;.join(Transcription.arabic_mapping.get(x, x) for x in word)
+
+    def from_arabic(word):
+        return &#34;&#34;.join(Transcription.arabic_mappingi.get(x, x) for x in word)</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="tf.writing.transcription.Transcription.arabic_mapping"><code class="name">var <span class="ident">arabic_mapping</span></code></dt>
+<dd>
+<section class="desc"><p>dict() -&gt; new empty dictionary
+dict(mapping) -&gt; new dictionary initialized from a mapping object's
+(key, value) pairs
+dict(iterable) -&gt; new dictionary initialized as if via:
+d = {}
+for k, v in iterable:
+d[k] = v
+dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs
+in the keyword argument list.
+For example:
+dict(one=1, two=2)</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.arabic_mappingi"><code class="name">var <span class="ident">arabic_mappingi</span></code></dt>
+<dd>
+<section class="desc"><p>dict() -&gt; new empty dictionary
+dict(mapping) -&gt; new dictionary initialized from a mapping object's
+(key, value) pairs
+dict(iterable) -&gt; new dictionary initialized as if via:
+d = {}
+for k, v in iterable:
+d[k] = v
+dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs
+in the keyword argument list.
+For example:
+dict(one=1, two=2)</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.decomp"><code class="name">var <span class="ident">decomp</span></code></dt>
+<dd>
+<section class="desc"><p>dict() -&gt; new empty dictionary
+dict(mapping) -&gt; new dictionary initialized from a mapping object's
+(key, value) pairs
+dict(iterable) -&gt; new dictionary initialized as if via:
+d = {}
+for k, v in iterable:
+d[k] = v
+dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs
+in the keyword argument list.
+For example:
+dict(one=1, two=2)</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.hebrew_cons"><code class="name">var <span class="ident">hebrew_cons</span></code></dt>
+<dd>
+<section class="desc"><p>str(object='') -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.<strong>str</strong>() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to 'strict'.</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.hebrew_mapping"><code class="name">var <span class="ident">hebrew_mapping</span></code></dt>
+<dd>
+<section class="desc"><p>dict() -&gt; new empty dictionary
+dict(mapping) -&gt; new dictionary initialized from a mapping object's
+(key, value) pairs
+dict(iterable) -&gt; new dictionary initialized as if via:
+d = {}
+for k, v in iterable:
+d[k] = v
+dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs
+in the keyword argument list.
+For example:
+dict(one=1, two=2)</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.noorigspace"><code class="name">var <span class="ident">noorigspace</span></code></dt>
+<dd>
+<section class="desc"><p>Compiled regular expression object.</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.ph_simple_pat"><code class="name">var <span class="ident">ph_simple_pat</span></code></dt>
+<dd>
+<section class="desc"><p>Compiled regular expression object.</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.remove_accent_pat"><code class="name">var <span class="ident">remove_accent_pat</span></code></dt>
+<dd>
+<section class="desc"><p>Compiled regular expression object.</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.remove_point_pat"><code class="name">var <span class="ident">remove_point_pat</span></code></dt>
+<dd>
+<section class="desc"><p>Compiled regular expression object.</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.remove_psn_pat"><code class="name">var <span class="ident">remove_psn_pat</span></code></dt>
+<dd>
+<section class="desc"><p>Compiled regular expression object.</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.remove_psq_pat"><code class="name">var <span class="ident">remove_psq_pat</span></code></dt>
+<dd>
+<section class="desc"><p>Compiled regular expression object.</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.shin_pat"><code class="name">var <span class="ident">shin_pat</span></code></dt>
+<dd>
+<section class="desc"><p>Compiled regular expression object.</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.swap_accent_pat"><code class="name">var <span class="ident">swap_accent_pat</span></code></dt>
+<dd>
+<section class="desc"><p>Compiled regular expression object.</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.syriac_mapping"><code class="name">var <span class="ident">syriac_mapping</span></code></dt>
+<dd>
+<section class="desc"><p>dict() -&gt; new empty dictionary
+dict(mapping) -&gt; new dictionary initialized from a mapping object's
+(key, value) pairs
+dict(iterable) -&gt; new dictionary initialized as if via:
+d = {}
+for k, v in iterable:
+d[k] = v
+dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs
+in the keyword argument list.
+For example:
+dict(one=1, two=2)</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.syriac_mapping_pil"><code class="name">var <span class="ident">syriac_mapping_pil</span></code></dt>
+<dd>
+<section class="desc"><p>dict() -&gt; new empty dictionary
+dict(mapping) -&gt; new dictionary initialized from a mapping object's
+(key, value) pairs
+dict(iterable) -&gt; new dictionary initialized as if via:
+d = {}
+for k, v in iterable:
+d[k] = v
+dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs
+in the keyword argument list.
+For example:
+dict(one=1, two=2)</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.syriac_mapping_simple"><code class="name">var <span class="ident">syriac_mapping_simple</span></code></dt>
+<dd>
+<section class="desc"><p>dict() -&gt; new empty dictionary
+dict(mapping) -&gt; new dictionary initialized from a mapping object's
+(key, value) pairs
+dict(iterable) -&gt; new dictionary initialized as if via:
+d = {}
+for k, v in iterable:
+d[k] = v
+dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs
+in the keyword argument list.
+For example:
+dict(one=1, two=2)</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.trans_final_pat"><code class="name">var <span class="ident">trans_final_pat</span></code></dt>
+<dd>
+<section class="desc"><p>Compiled regular expression object.</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.trans_hebrew_pat"><code class="name">var <span class="ident">trans_hebrew_pat</span></code></dt>
+<dd>
+<section class="desc"><p>Compiled regular expression object.</p></section>
+</dd>
+<dt id="tf.writing.transcription.Transcription.trans_syriac_pat"><code class="name">var <span class="ident">trans_syriac_pat</span></code></dt>
+<dd>
+<section class="desc"><p>Compiled regular expression object.</p></section>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.writing.transcription.Transcription.can_from_syriac"><code class="name flex">
+<span>def <span class="ident">can_from_syriac</span></span>(<span>self, word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def can_from_syriac(self, word):
+    return all(c in self.syriac_mappingi for c in word if c != &#34; &#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.can_to_syriac"><code class="name flex">
+<span>def <span class="ident">can_to_syriac</span></span>(<span>self, word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def can_to_syriac(self, word):
+    return all(
+        candidate in Transcription.syriac_mapping
+        for candidate in Transcription.trans_syriac_pat.findall(word)
+        if candidate != &#34; &#34;
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.from_arabic"><code class="name flex">
+<span>def <span class="ident">from_arabic</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_arabic(word):
+    return &#34;&#34;.join(Transcription.arabic_mappingi.get(x, x) for x in word)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.from_hebrew"><code class="name flex">
+<span>def <span class="ident">from_hebrew</span></span>(<span>self, word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_hebrew(self, word):
+    return &#34;&#34;.join(
+        self.hebrew_mappingi.get(x, x) for x in Transcription._comp(word)
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.from_syriac"><code class="name flex">
+<span>def <span class="ident">from_syriac</span></span>(<span>self, word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_syriac(self, word):
+    return &#34;&#34;.join(self.syriac_mappingi.get(x, x) for x in word)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.ph_simplify"><code class="name flex">
+<span>def <span class="ident">ph_simplify</span></span>(<span>pword)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ph_simplify(pword):
+    return Transcription.ph_simple_pat.sub(Transcription._ph_simple, pword)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.suffix_and_finales"><code class="name flex">
+<span>def <span class="ident">suffix_and_finales</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def suffix_and_finales(word):
+    # first split the word proper from the suffix,
+    # and add a space if there is no other suffix
+    add_space = &#34;&#34;
+    suffix = &#34;&#34;
+    new_word = word
+    if not word:
+        return (new_word, suffix + add_space)
+    lastch = new_word[-1]
+    if lastch == &#34;-&#34; or lastch == &#34;&amp;&#34;:
+        new_word = new_word[0:-1]
+        suffix = lastch
+    else:
+        if len(new_word) &gt;= 2:
+            lastch = new_word[-1]
+            llastch = new_word[-2]
+            if llastch == &#34;_&#34; and (lastch == &#34;P&#34; or lastch == &#34;S&#34;):
+                new_word = new_word[0:-2]
+                suffix = &#34; &#34; + lastch + suffix + &#34; &#34;
+        if len(new_word) &gt;= 2:
+            lastch = new_word[-1]
+            llastch = new_word[-2]
+            if llastch == &#34;_&#34; and (lastch == &#34;N&#34;):
+                new_word = new_word[0:-2]
+                suffix = &#34; ñ&#34; + suffix + &#34; &#34;
+        if len(new_word) &gt;= 2:
+            lastch = new_word[-1]
+            llastch = new_word[-2]
+            if llastch == &#34;0&#34; and (lastch == &#34;0&#34; or lastch == &#34;5&#34;):
+                new_word = new_word[0:-2]
+                suffix = (&#34; &#34; if lastch == &#34;5&#34; else &#34;&#34;) + llastch + lastch + suffix
+                add_space = &#34;\n&#34; if lastch == &#34;0&#34; else &#34; &#34;
+    if suffix == &#34;&#34;:
+        add_space = &#34; &#34;
+    elif suffix == &#34;-&#34;:
+        add_space = &#34;&#34;
+        suffix = &#34;&#34;
+    # second: replace consonants by their final forms when needed
+    new_word = Transcription.trans_final_pat.sub(Transcription._map_final, new_word)
+    return (new_word, suffix + add_space)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.suppress_space"><code class="name flex">
+<span>def <span class="ident">suppress_space</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def suppress_space(word):
+    return Transcription.noorigspace.search(word)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.sycSplitPunc"><code class="name flex">
+<span>def <span class="ident">sycSplitPunc</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sycSplitPunc(self):
+    pass</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.to_arabic"><code class="name flex">
+<span>def <span class="ident">to_arabic</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_arabic(word):
+    return &#34;&#34;.join(Transcription.arabic_mapping.get(x, x) for x in word)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.to_etcbc_c"><code class="name flex">
+<span>def <span class="ident">to_etcbc_c</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_etcbc_c(word):
+    word = Transcription.remove_point_pat.sub(Transcription._remove_point, word)
+    word = Transcription.remove_psn_pat.sub(
+        &#34;00&#34;, word
+    )  # remove nun hafukha, setumah, petuhah at the end of a verse
+    word = Transcription.remove_psq_pat.sub(
+        &#34; &#34;, word
+    )  # replace paseq with attached spaces by single space
+    word = word.upper()  # no final forms of consonants
+    return Transcription.shin_pat.sub(&#34;#&#34;, word)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.to_etcbc_v"><code class="name flex">
+<span>def <span class="ident">to_etcbc_v</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_etcbc_v(word):
+    return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.to_hebrew"><code class="name flex">
+<span>def <span class="ident">to_hebrew</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_hebrew(word):
+    word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
+    return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.to_hebrew_c"><code class="name flex">
+<span>def <span class="ident">to_hebrew_c</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_hebrew_c(word):
+    return Transcription.trans_hebrew_pat.sub(
+        Transcription._map_hebrew, Transcription.to_etcbc_c(word)
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.to_hebrew_v"><code class="name flex">
+<span>def <span class="ident">to_hebrew_v</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_hebrew_v(word):
+    return Transcription.trans_hebrew_pat.sub(
+        Transcription._map_hebrew, Transcription.to_etcbc_v(word)
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.to_hebrew_x"><code class="name flex">
+<span>def <span class="ident">to_hebrew_x</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_hebrew_x(word):
+    return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.to_syriac"><code class="name flex">
+<span>def <span class="ident">to_syriac</span></span>(<span>self, word)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_syriac(self, word):
+    return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.writing" href="index.html">tf.writing</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.writing.transcription.Transcription" href="#tf.writing.transcription.Transcription">Transcription</a></code></h4>
+<ul class="">
+<li><code><a title="tf.writing.transcription.Transcription.arabic_mapping" href="#tf.writing.transcription.Transcription.arabic_mapping">arabic_mapping</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.arabic_mappingi" href="#tf.writing.transcription.Transcription.arabic_mappingi">arabic_mappingi</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.can_from_syriac" href="#tf.writing.transcription.Transcription.can_from_syriac">can_from_syriac</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.can_to_syriac" href="#tf.writing.transcription.Transcription.can_to_syriac">can_to_syriac</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.decomp" href="#tf.writing.transcription.Transcription.decomp">decomp</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.from_arabic" href="#tf.writing.transcription.Transcription.from_arabic">from_arabic</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.from_hebrew" href="#tf.writing.transcription.Transcription.from_hebrew">from_hebrew</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.from_syriac" href="#tf.writing.transcription.Transcription.from_syriac">from_syriac</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.hebrew_cons" href="#tf.writing.transcription.Transcription.hebrew_cons">hebrew_cons</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.hebrew_mapping" href="#tf.writing.transcription.Transcription.hebrew_mapping">hebrew_mapping</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.noorigspace" href="#tf.writing.transcription.Transcription.noorigspace">noorigspace</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.ph_simple_pat" href="#tf.writing.transcription.Transcription.ph_simple_pat">ph_simple_pat</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.ph_simplify" href="#tf.writing.transcription.Transcription.ph_simplify">ph_simplify</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.remove_accent_pat" href="#tf.writing.transcription.Transcription.remove_accent_pat">remove_accent_pat</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.remove_point_pat" href="#tf.writing.transcription.Transcription.remove_point_pat">remove_point_pat</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.remove_psn_pat" href="#tf.writing.transcription.Transcription.remove_psn_pat">remove_psn_pat</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.remove_psq_pat" href="#tf.writing.transcription.Transcription.remove_psq_pat">remove_psq_pat</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.shin_pat" href="#tf.writing.transcription.Transcription.shin_pat">shin_pat</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.suffix_and_finales" href="#tf.writing.transcription.Transcription.suffix_and_finales">suffix_and_finales</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.suppress_space" href="#tf.writing.transcription.Transcription.suppress_space">suppress_space</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.swap_accent_pat" href="#tf.writing.transcription.Transcription.swap_accent_pat">swap_accent_pat</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.sycSplitPunc" href="#tf.writing.transcription.Transcription.sycSplitPunc">sycSplitPunc</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.syriac_mapping" href="#tf.writing.transcription.Transcription.syriac_mapping">syriac_mapping</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.syriac_mapping_pil" href="#tf.writing.transcription.Transcription.syriac_mapping_pil">syriac_mapping_pil</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.syriac_mapping_simple" href="#tf.writing.transcription.Transcription.syriac_mapping_simple">syriac_mapping_simple</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.to_arabic" href="#tf.writing.transcription.Transcription.to_arabic">to_arabic</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.to_etcbc_c" href="#tf.writing.transcription.Transcription.to_etcbc_c">to_etcbc_c</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.to_etcbc_v" href="#tf.writing.transcription.Transcription.to_etcbc_v">to_etcbc_v</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.to_hebrew" href="#tf.writing.transcription.Transcription.to_hebrew">to_hebrew</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.to_hebrew_c" href="#tf.writing.transcription.Transcription.to_hebrew_c">to_hebrew_c</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.to_hebrew_v" href="#tf.writing.transcription.Transcription.to_hebrew_v">to_hebrew_v</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.to_hebrew_x" href="#tf.writing.transcription.Transcription.to_hebrew_x">to_hebrew_x</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.to_syriac" href="#tf.writing.transcription.Transcription.to_syriac">to_syriac</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.trans_final_pat" href="#tf.writing.transcription.Transcription.trans_final_pat">trans_final_pat</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.trans_hebrew_pat" href="#tf.writing.transcription.Transcription.trans_hebrew_pat">trans_hebrew_pat</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.trans_syriac_pat" href="#tf.writing.transcription.Transcription.trans_syriac_pat">trans_syriac_pat</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

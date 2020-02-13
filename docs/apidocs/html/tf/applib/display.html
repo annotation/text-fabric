@@ -1,0 +1,1554 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.2" />
+<title>tf.applib.display API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.applib.display</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import os
+import types
+
+from ..parameters import URL_TFDOC, DOWNLOADS
+from ..core.helpers import mdEsc, htmlEsc, flattenToSet
+from .app import findAppConfig
+from .helpers import configure, RESULT, dh
+from .links import outLink
+from .condense import condense, condenseSet
+from .highlight import getTupleHighlights, getHlAtt
+
+LIMIT_SHOW = 100
+LIMIT_TABLE = 2000
+
+FONT_BASE = (
+    &#34;https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts&#34;
+)
+
+CSS_FONT = &#34;&#34;&#34;
+    &lt;link rel=&#34;stylesheet&#34; href=&#34;/server/static/fonts.css&#34;/&gt;
+&#34;&#34;&#34;
+
+CSS_FONT_API = f&#34;&#34;&#34;
+@font-face {{{{
+  font-family: &#34;{{fontName}}&#34;;
+  src:
+    local(&#34;{{font}}&#34;),
+    url(&#34;{FONT_BASE}/{{fontw}}?raw=true&#34;);
+}}}}
+&#34;&#34;&#34;
+
+
+def displayApi(app, silent, hoist):
+    app.export = types.MethodType(export, app)
+    app.table = types.MethodType(table, app)
+    app.plainTuple = types.MethodType(plainTuple, app)
+    app.plain = types.MethodType(plain, app)
+    app.show = types.MethodType(show, app)
+    app.prettyTuple = types.MethodType(prettyTuple, app)
+    app.pretty = types.MethodType(pretty, app)
+    app.loadCss = types.MethodType(loadCss, app)
+
+    api = app.api
+
+    app.classNames = (
+        {nType[0]: nType[0] for nType in api.C.levels.data}
+        if app.classNames is None
+        else app.classNames
+    )
+
+    if not app._asApp:
+        app.loadCss()
+        if hoist:
+            docs = api.makeAvailableIn(hoist)
+            if not silent:
+                dh(
+                    &#34;&lt;details open&gt;&lt;summary&gt;&lt;b&gt;API members&lt;/b&gt;:&lt;/summary&gt;\n&#34;
+                    + &#34;&lt;br/&gt;\n&#34;.join(
+                        &#34;, &#34;.join(
+                            outLink(
+                                entry, f&#34;{URL_TFDOC}/Api/{head}/#{ref}&#34;, title=&#34;doc&#34;,
+                            )
+                            for entry in entries
+                        )
+                        for (head, ref, entries) in docs
+                    )
+                    + &#34;&lt;/details&gt;&#34;
+                )
+
+
+def export(
+    app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options,
+):
+    display = app.display
+    if not display.check(&#34;table&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    if toDir is None:
+        toDir = os.path.expanduser(DOWNLOADS)
+        if not os.path.exists(toDir):
+            os.makedirs(toDir, exist_ok=True)
+    toPath = f&#34;{toDir}/{toFile}&#34;
+
+    resultsX = getResultsX(
+        app,
+        tuples,
+        d.tupleFeatures,
+        d.condenseType or app.condenseType,
+        app.noDescendTypes,
+        fmt=d.fmt,
+    )
+
+    with open(toPath, &#34;w&#34;, encoding=&#34;utf_16_le&#34;) as fh:
+        fh.write(
+            &#34;\ufeff&#34;
+            + &#34;&#34;.join(
+                (&#34;\t&#34;.join(&#34;&#34; if t is None else str(t) for t in tup) + &#34;\n&#34;)
+                for tup in resultsX
+            )
+        )
+
+
+def table(
+    app, tuples, _asString=False, **options,
+):
+    display = app.display
+    if not display.check(&#34;table&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    api = app.api
+    F = api.F
+    fOtype = F.otype.v
+
+    item = d.condenseType if d.condensed else RESULT
+
+    if d.condensed:
+        tuples = condense(api, tuples, d.condenseType, multiple=True)
+
+    passageHead = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;p&#39; if d.withPassage else &#34;&#34;
+
+    html = []
+    one = True
+    for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_TABLE, item):
+        if one:
+            heads = &#34;&lt;/th&gt;&lt;th&gt;&#34;.join(fOtype(n) for n in tup)
+            html.append(
+                f&#34;&#34;&#34;
+&lt;tr class=&#34;tf&#34;&gt;
+  &lt;th class=&#34;tf&#34;&gt;n{passageHead}&lt;/th&gt;
+  &lt;th class=&#34;tf&#34;&gt;{heads}&lt;/th&gt;
+&lt;/tr&gt;
+&#34;&#34;&#34;
+            )
+            one = False
+        html.append(
+            plainTuple(
+                app,
+                tup,
+                i,
+                item=item,
+                position=None,
+                opened=False,
+                _asString=True,
+                **options,
+            )
+        )
+    html = &#34;&lt;table&gt;&#34; + &#34;\n&#34;.join(html) + &#34;&lt;/table&gt;&#34;
+    if _asString:
+        return html
+    dh(html)
+
+
+def plainTuple(
+    app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options,
+):
+    display = app.display
+    if not display.check(&#34;plainTuple&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    _asApp = app._asApp
+    api = app.api
+    F = api.F
+    T = api.T
+
+    fOtype = F.otype.v
+
+    if d.withPassage:
+        passageNode = _getRefMember(app, tup, d.linked, d.condensed)
+        passageRef = (
+            &#34;&#34;
+            if passageNode is None
+            else app._sectionLink(passageNode)
+            if _asApp
+            else app.webLink(passageNode, _asString=True)
+        )
+        if passageRef:
+            passageRef = f&#34; {passageRef}&#34;
+    else:
+        passageRef = &#34;&#34;
+
+    newOptions = display.consume(options, &#34;withPassage&#34;)
+    newOptionsH = display.consume(options, &#34;withPassage&#34;, &#34;highlights&#34;)
+
+    highlights = getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
+
+    if _asApp:
+        prettyRep = (
+            prettyTuple(app, tup, seq, withPassage=False, **newOptions,)
+            if opened
+            else &#34;&#34;
+        )
+
+        current = &#34; focus&#34; if seq == position else &#34;&#34;
+        attOpen = &#34; open &#34; if opened else &#34;&#34;
+        tupSeq = &#34;,&#34;.join(str(n) for n in tup)
+        if d.withPassage:
+            sParts = T.sectionFromNode(passageNode, fillup=True)
+            passageAtt = &#34; &#34;.join(
+                f&#39;sec{i}=&#34;{sParts[i] if i &lt; len(sParts) else &#34;&#34;}&#34;&#39; for i in range(3)
+            )
+        else:
+            passageAtt = &#34;&#34;
+
+        plainRep = &#34;&#34;.join(
+            f&#34;&#34;&#34;&lt;span&gt;{mdEsc(app.plain(
+                    n,
+                    isLinked=i == d.linked - 1,
+                    withPassage=False,
+                    highlights=highlights,
+                    **newOptionsH,
+                  ))
+                }
+            &lt;/span&gt;
+        &#34;&#34;&#34;
+            for (i, n) in enumerate(tup)
+        )
+        html = f&#34;&#34;&#34;
+  &lt;details
+    class=&#34;pretty dtrow{current}&#34;
+    seq=&#34;{seq}&#34;
+    {attOpen}
+  &gt;
+    &lt;summary&gt;
+      &lt;a href=&#34;#&#34; class=&#34;pq fa fa-solar-panel fa-xs&#34; title=&#34;show in context&#34; {passageAtt}&gt;&lt;/a&gt;
+      &lt;a href=&#34;#&#34; class=&#34;sq&#34; tup=&#34;{tupSeq}&#34;&gt;{seq}&lt;/a&gt;
+      {passageRef}
+      {plainRep}
+    &lt;/summary&gt;
+    &lt;div class=&#34;pretty&#34;&gt;{prettyRep}&lt;/div&gt;
+  &lt;/details&gt;
+&#34;&#34;&#34;
+        return html
+
+    html = [str(seq)]
+    if passageRef:
+        html.append(passageRef)
+    for (i, n) in enumerate(tup):
+        html.append(
+            app.plain(
+                n,
+                isLinked=i == d.linked - 1,
+                _asString=True,
+                withPassage=False,
+                highlights=highlights,
+                **newOptionsH,
+            )
+        )
+    html = (
+        &#39;&lt;tr class=&#34;tf&#34;&gt;&lt;td class=&#34;tf&#34;&gt;&#39;
+        + (&#39;&lt;/td&gt;&lt;td class=&#34;tf&#34;&gt;&#39;.join(html))
+        + &#34;&lt;/td&gt;&lt;/tr&gt;&#34;
+    )
+    if _asString:
+        return html
+    head = [
+        &#39;&lt;tr class=&#34;tf&#34;&gt;&lt;th class=&#34;tf&#34;&gt;n&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;
+        + (&#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;.join(fOtype(n) for n in tup))
+        + &#34;&lt;/th&gt;&lt;/tr&gt;&#34;
+    ]
+    head.append(html)
+
+    dh(&#34;\n&#34;.join(head))
+
+
+def plain(
+    app, n, isLinked=True, _asString=False, secLabel=True, **options,
+):
+    display = app.display
+    if not display.check(&#34;plain&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    api = app.api
+    F = api.F
+    T = api.T
+    sectionTypes = T.sectionTypes
+    fOtype = F.otype.v
+
+    nType = fOtype(n)
+    passage = &#34;&#34;
+
+    if d.withPassage:
+        if nType not in sectionTypes:
+            passage = app.webLink(n, _asString=True)
+
+    passage = f&#34;{passage}&amp;nbsp;&#34; if passage else &#34;&#34;
+
+    highlights = (
+        {m: &#34;&#34; for m in d.highlights} if type(d.highlights) is set else d.highlights
+    )
+
+    return app._plain(
+        n,
+        passage,
+        isLinked,
+        _asString,
+        secLabel,
+        highlights=highlights,
+        **display.consume(options, &#34;highlights&#34;),
+    )
+
+
+def show(
+    app, tuples, **options,
+):
+    display = app.display
+    if not display.check(&#34;show&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    api = app.api
+    F = api.F
+
+    item = d.condenseType if d.condensed else RESULT
+
+    if d.condensed:
+        rawHighlights = getTupleHighlights(
+            api, tuples, d.highlights, d.colorMap, d.condenseType, multiple=True
+        )
+        highlights = {}
+        colorMap = None
+        tuples = condense(api, tuples, d.condenseType, multiple=True)
+    else:
+        highlights = d.highlights
+        rawHighlights = None
+        colorMap = d.colorMap
+
+    for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_SHOW, item):
+        item = F.otype.v(tup[0]) if d.condensed and d.condenseType else RESULT
+        prettyTuple(
+            app,
+            tup,
+            i,
+            item=item,
+            highlights=highlights,
+            colorMap=colorMap,
+            rawHighlights=rawHighlights,
+            **display.consume(options, &#34;highlights&#34;, &#34;colorMap&#34;),
+        )
+
+
+def prettyTuple(
+    app, tup, seq, item=RESULT, rawHighlights=None, **options,
+):
+    display = app.display
+    if not display.check(&#34;prettyTuple&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    _asApp = app._asApp
+
+    if len(tup) == 0:
+        if _asApp:
+            return &#34;&#34;
+        else:
+            return
+
+    api = app.api
+    sortKey = api.sortKey
+
+    containers = {tup[0]} if d.condensed else condenseSet(api, tup, d.condenseType)
+    highlights = (
+        getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
+        if rawHighlights is None
+        else rawHighlights
+    )
+
+    if not _asApp:
+        dh(f&#34;&lt;p&gt;&lt;b&gt;{item}&lt;/b&gt; &lt;i&gt;{seq}&lt;/i&gt;&lt;/p&gt;&#34;)
+    if _asApp:
+        html = []
+    for t in sorted(containers, key=sortKey):
+        h = app.pretty(
+            t, highlights=highlights, **display.consume(options, &#34;highlights&#34;),
+        )
+        if _asApp:
+            html.append(h)
+    if _asApp:
+        return &#34;\n&#34;.join(html)
+
+
+def pretty(
+    app, n, **options,
+):
+    display = app.display
+    if not display.check(&#34;pretty&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    _asApp = app._asApp
+    api = app.api
+    F = api.F
+    L = api.L
+    T = api.T
+    fOtype = F.otype.v
+    otypeRank = api.otypeRank
+    sectionTypes = T.sectionTypes
+
+    containerN = None
+
+    nType = fOtype(n)
+    if d.condensed and d.condenseType:
+        if nType == d.condenseType:
+            containerN = n
+        elif otypeRank[nType] &lt; otypeRank[d.condenseType]:
+            ups = L.u(n, otype=d.condenseType)
+            if ups:
+                containerN = ups[0]
+
+    (firstSlot, lastSlot) = (
+        getBoundary(api, n)
+        if not d.condensed or not d.condenseType
+        else (None, None)
+        if containerN is None
+        else getBoundary(api, containerN)
+    )
+
+    html = []
+
+    if d.withPassage:
+        if nType not in sectionTypes:
+            html.append(app.webLink(n, _asString=True))
+
+    highlights = (
+        {m: &#34;&#34; for m in d.highlights} if type(d.highlights) is set else d.highlights
+    )
+
+    extraFeatures = sorted(
+        flattenToSet(d.extraFeatures) | flattenToSet(d.tupleFeatures)
+    )
+
+    app._pretty(
+        n,
+        True,
+        html,
+        firstSlot,
+        lastSlot,
+        extraFeatures=extraFeatures,
+        highlights=highlights,
+        **display.consume(options, &#34;extraFeatures&#34;, &#34;highlights&#34;),
+    )
+    htmlStr = &#34;\n&#34;.join(html)
+    if _asApp:
+        return htmlStr
+    dh(htmlStr)
+
+
+def prettyPre(
+    app, n, firstSlot, lastSlot, withNodes, highlights,
+):
+    api = app.api
+    F = api.F
+    fOtype = F.otype.v
+
+    slotType = F.otype.slotType
+    nType = fOtype(n)
+    boundaryClass = &#34;&#34;
+    myStart = None
+    myEnd = None
+
+    (myStart, myEnd) = getBoundary(api, n)
+
+    if firstSlot is not None:
+        if myEnd &lt; firstSlot:
+            return False
+        if myStart &lt; firstSlot:
+            boundaryClass += &#34; rno&#34;
+    if lastSlot is not None:
+        if myStart &gt; lastSlot:
+            return False
+        if myEnd &gt; lastSlot:
+            boundaryClass += &#34; lno&#34;
+
+    hlAtt = getHlAtt(app, n, highlights)
+
+    nodePart = f&#39;&lt;a href=&#34;#&#34; class=&#34;nd&#34;&gt;{n}&lt;/a&gt;&#39; if withNodes else &#34;&#34;
+    className = app.classNames.get(nType, None)
+
+    return (
+        slotType,
+        nType,
+        className.lower() if className else className,
+        boundaryClass.lower() if boundaryClass else boundaryClass,
+        hlAtt,
+        nodePart,
+        myStart,
+        myEnd,
+    )
+
+
+# COMPOSE TABLES FOR CSV EXPORT
+
+
+def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
+    api = app.api
+    F = api.F
+    Fs = api.Fs
+    T = api.T
+    fOtype = F.otype.v
+    otypeRank = api.otypeRank
+    sectionTypes = set(T.sectionTypes)
+    sectionDepth = len(sectionTypes)
+    if len(results) == 0:
+        return ()
+    firstResult = results[0]
+    nTuple = len(firstResult)
+    refColumns = [
+        i for (i, n) in enumerate(firstResult) if fOtype(n) not in sectionTypes
+    ]
+    refColumn = refColumns[0] if refColumns else nTuple - 1
+    header = [&#34;R&#34;] + [f&#34;S{i}&#34; for i in range(1, sectionDepth + 1)]
+    emptyA = []
+
+    featureDict = {i: tuple(f.split()) if type(f) is str else f for (i, f) in features}
+
+    def withText(nodeType):
+        return (
+            condenseType is None
+            and nodeType not in sectionTypes
+            or otypeRank[nodeType] &lt;= otypeRank[condenseType]
+        )
+
+    for j in range(nTuple):
+        i = j + 1
+        n = firstResult[j]
+        nType = fOtype(n)
+        header.extend([f&#34;NODE{i}&#34;, f&#34;TYPE{i}&#34;])
+        if withText(nType):
+            header.append(f&#34;TEXT{i}&#34;)
+        header.extend(f&#34;{feature}{i}&#34; for feature in featureDict.get(j, emptyA))
+    rows = [tuple(header)]
+    for (rm, r) in enumerate(results):
+        rn = rm + 1
+        row = [rn]
+        refN = r[refColumn]
+        sParts = T.sectionFromNode(refN)
+        nParts = len(sParts)
+        section = sParts + ((None,) * (sectionDepth - nParts))
+        row.extend(section)
+        for j in range(nTuple):
+            n = r[j]
+            nType = fOtype(n)
+            row.extend((n, nType))
+            if withText(nType):
+                text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
+                row.append(text)
+            row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
+        rows.append(tuple(row))
+    return tuple(rows)
+
+
+def getBoundary(api, n):
+    F = api.F
+    fOtype = F.otype.v
+    slotType = F.otype.slotType
+    if fOtype(n) == slotType:
+        return (n, n)
+    E = api.E
+    maxSlot = F.otype.maxSlot
+    slots = E.oslots.data[n - maxSlot - 1]
+    return (slots[0], slots[-1])
+
+
+def getFeatures(
+    app, n, features, withName=None, o=None, givenValue={}, plain=False, **options,
+):
+    display = app.display
+    d = display.get(options)
+
+    api = app.api
+    Fs = api.Fs
+
+    featurePartB = &#39;&lt;div class=&#34;features&#34;&gt;&#39;
+    featurePartE = &#34;&lt;/div&gt;&#34;
+
+    givenFeatureSet = set(features)
+    xFeatures = tuple(f for f in d.extraFeatures if f not in givenFeatureSet)
+    extraSet = set(xFeatures)
+    featureList = tuple(features) + xFeatures
+    nFeatures = len(features)
+
+    showWithName = extraSet
+
+    if not plain:
+        featurePart = featurePartB
+        hasB = True
+    else:
+        featurePart = &#34;&#34;
+        hasB = False
+    for (i, name) in enumerate(featureList):
+        if name not in d.suppress:
+            if name in givenValue:
+                value = givenValue[name]
+            else:
+                if Fs(name) is None:
+                    continue
+                value = Fs(name).v(n)
+                oValue = None if o is None else Fs(name).v(o)
+                valueRep = None if value in d.noneValues else htmlEsc(value)
+                oValueRep = (
+                    None if o is None or oValue in d.noneValues else htmlEsc(oValue)
+                )
+                if valueRep is None and oValueRep is None:
+                    value = None
+                else:
+                    sep = &#34;&#34; if valueRep is None or oValueRep is None else &#34;|&#34;
+                    valueRep = &#34;&#34; if valueRep is None else valueRep
+                    oValueRep = &#34;&#34; if oValueRep is None else oValueRep
+                    value = (
+                        valueRep
+                        if valueRep == oValueRep
+                        else f&#34;{valueRep}{sep}{oValueRep}&#34;
+                    )
+            if value is not None:
+                value = value.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
+                showName = withName or (withName is None and name in showWithName)
+                nameRep = f&#39;&lt;span class=&#34;f&#34;&gt;{name}=&lt;/span&gt;&#39; if showName else &#34;&#34;
+                xClass = &#34; xft&#34; if name in extraSet else &#34;&#34;
+                featureRep = (
+                    f&#39; &lt;span class=&#34;{name.lower()}{xClass}&#34;&gt;{nameRep}{value}&lt;/span&gt;&#39;
+                )
+
+                if i &gt;= nFeatures:
+                    if not hasB:
+                        featurePart += featurePartB
+                        hasB = True
+                featurePart += featureRep
+    if hasB:
+        featurePart += featurePartE
+    return featurePart
+
+
+def loadCss(app, reload=False):
+    &#34;&#34;&#34;
+  The CSS is looked up and then loaded into a notebook if we are not
+  running in the TF browser,
+  else the CSS is returned.
+
+  With reload=True, the app-specific display.css will be read again from disk
+  &#34;&#34;&#34;
+    _asApp = app._asApp
+    if _asApp:
+        return app.css
+
+    if reload:
+        config = findAppConfig(app.appName, app.appPath)
+        cfg = configure(config, app.version)
+        app.css = cfg[&#34;css&#34;]
+
+    hlCssFile = (
+        f&#34;{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}&#34;
+        &#34;/server/static/highlight.css&#34;
+    )
+    with open(hlCssFile) as fh:
+        hlCss = fh.read()
+
+    cssFont = (
+        &#34;&#34;
+        if app.fontName is None
+        else CSS_FONT_API.format(fontName=app.fontName, font=app.font, fontw=app.fontw,)
+    )
+    tableCss = &#34;&#34;&#34;
+tr.tf, td.tf, th.tf {
+  text-align: left;
+}
+
+&#34;&#34;&#34;
+    dh(f&#34;&lt;style&gt;{cssFont + app.css + tableCss + hlCss}&lt;/style&gt;&#34;)
+
+
+def _getRefMember(app, tup, linked, condensed):
+    api = app.api
+    T = api.T
+    sectionTypes = T.sectionTypes
+
+    ln = len(tup)
+    return (
+        None
+        if not tup or any(n in sectionTypes for n in tup)
+        else tup[0]
+        if condensed
+        else tup[min((linked, ln - 1))]
+        if linked
+        else tup[0]
+    )
+
+
+def _tupleEnum(tuples, start, end, limit, item):
+    if start is None:
+        start = 1
+    i = -1
+    if not hasattr(tuples, &#34;__len__&#34;):
+        if end is None or end - start + 1 &gt; limit:
+            end = start - 1 + limit
+        for tup in tuples:
+            i += 1
+            if i &lt; start - 1:
+                continue
+            if i &gt;= end:
+                break
+            yield (i + 1, tup)
+    else:
+        if end is None or end &gt; len(tuples):
+            end = len(tuples)
+        rest = 0
+        if end - (start - 1) &gt; limit:
+            rest = end - (start - 1) - limit
+            end = start - 1 + limit
+        for i in range(start - 1, end):
+            yield (i + 1, tuples[i])
+        if rest:
+            dh(
+                f&#34;&lt;b&gt;{rest} more {item}s skipped&lt;/b&gt; because we show a maximum of&#34;
+                f&#34; {limit} {item}s at a time&#34;
+            )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.applib.display.displayApi"><code class="name flex">
+<span>def <span class="ident">displayApi</span></span>(<span>app, silent, hoist)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def displayApi(app, silent, hoist):
+    app.export = types.MethodType(export, app)
+    app.table = types.MethodType(table, app)
+    app.plainTuple = types.MethodType(plainTuple, app)
+    app.plain = types.MethodType(plain, app)
+    app.show = types.MethodType(show, app)
+    app.prettyTuple = types.MethodType(prettyTuple, app)
+    app.pretty = types.MethodType(pretty, app)
+    app.loadCss = types.MethodType(loadCss, app)
+
+    api = app.api
+
+    app.classNames = (
+        {nType[0]: nType[0] for nType in api.C.levels.data}
+        if app.classNames is None
+        else app.classNames
+    )
+
+    if not app._asApp:
+        app.loadCss()
+        if hoist:
+            docs = api.makeAvailableIn(hoist)
+            if not silent:
+                dh(
+                    &#34;&lt;details open&gt;&lt;summary&gt;&lt;b&gt;API members&lt;/b&gt;:&lt;/summary&gt;\n&#34;
+                    + &#34;&lt;br/&gt;\n&#34;.join(
+                        &#34;, &#34;.join(
+                            outLink(
+                                entry, f&#34;{URL_TFDOC}/Api/{head}/#{ref}&#34;, title=&#34;doc&#34;,
+                            )
+                            for entry in entries
+                        )
+                        for (head, ref, entries) in docs
+                    )
+                    + &#34;&lt;/details&gt;&#34;
+                )</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.export"><code class="name flex">
+<span>def <span class="ident">export</span></span>(<span>app, tuples, toDir=None, toFile='results.tsv', **options)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export(
+    app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options,
+):
+    display = app.display
+    if not display.check(&#34;table&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    if toDir is None:
+        toDir = os.path.expanduser(DOWNLOADS)
+        if not os.path.exists(toDir):
+            os.makedirs(toDir, exist_ok=True)
+    toPath = f&#34;{toDir}/{toFile}&#34;
+
+    resultsX = getResultsX(
+        app,
+        tuples,
+        d.tupleFeatures,
+        d.condenseType or app.condenseType,
+        app.noDescendTypes,
+        fmt=d.fmt,
+    )
+
+    with open(toPath, &#34;w&#34;, encoding=&#34;utf_16_le&#34;) as fh:
+        fh.write(
+            &#34;\ufeff&#34;
+            + &#34;&#34;.join(
+                (&#34;\t&#34;.join(&#34;&#34; if t is None else str(t) for t in tup) + &#34;\n&#34;)
+                for tup in resultsX
+            )
+        )</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getBoundary"><code class="name flex">
+<span>def <span class="ident">getBoundary</span></span>(<span>api, n)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getBoundary(api, n):
+    F = api.F
+    fOtype = F.otype.v
+    slotType = F.otype.slotType
+    if fOtype(n) == slotType:
+        return (n, n)
+    E = api.E
+    maxSlot = F.otype.maxSlot
+    slots = E.oslots.data[n - maxSlot - 1]
+    return (slots[0], slots[-1])</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getFeatures"><code class="name flex">
+<span>def <span class="ident">getFeatures</span></span>(<span>app, n, features, withName=None, o=None, givenValue={}, plain=False, **options)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getFeatures(
+    app, n, features, withName=None, o=None, givenValue={}, plain=False, **options,
+):
+    display = app.display
+    d = display.get(options)
+
+    api = app.api
+    Fs = api.Fs
+
+    featurePartB = &#39;&lt;div class=&#34;features&#34;&gt;&#39;
+    featurePartE = &#34;&lt;/div&gt;&#34;
+
+    givenFeatureSet = set(features)
+    xFeatures = tuple(f for f in d.extraFeatures if f not in givenFeatureSet)
+    extraSet = set(xFeatures)
+    featureList = tuple(features) + xFeatures
+    nFeatures = len(features)
+
+    showWithName = extraSet
+
+    if not plain:
+        featurePart = featurePartB
+        hasB = True
+    else:
+        featurePart = &#34;&#34;
+        hasB = False
+    for (i, name) in enumerate(featureList):
+        if name not in d.suppress:
+            if name in givenValue:
+                value = givenValue[name]
+            else:
+                if Fs(name) is None:
+                    continue
+                value = Fs(name).v(n)
+                oValue = None if o is None else Fs(name).v(o)
+                valueRep = None if value in d.noneValues else htmlEsc(value)
+                oValueRep = (
+                    None if o is None or oValue in d.noneValues else htmlEsc(oValue)
+                )
+                if valueRep is None and oValueRep is None:
+                    value = None
+                else:
+                    sep = &#34;&#34; if valueRep is None or oValueRep is None else &#34;|&#34;
+                    valueRep = &#34;&#34; if valueRep is None else valueRep
+                    oValueRep = &#34;&#34; if oValueRep is None else oValueRep
+                    value = (
+                        valueRep
+                        if valueRep == oValueRep
+                        else f&#34;{valueRep}{sep}{oValueRep}&#34;
+                    )
+            if value is not None:
+                value = value.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
+                showName = withName or (withName is None and name in showWithName)
+                nameRep = f&#39;&lt;span class=&#34;f&#34;&gt;{name}=&lt;/span&gt;&#39; if showName else &#34;&#34;
+                xClass = &#34; xft&#34; if name in extraSet else &#34;&#34;
+                featureRep = (
+                    f&#39; &lt;span class=&#34;{name.lower()}{xClass}&#34;&gt;{nameRep}{value}&lt;/span&gt;&#39;
+                )
+
+                if i &gt;= nFeatures:
+                    if not hasB:
+                        featurePart += featurePartB
+                        hasB = True
+                featurePart += featureRep
+    if hasB:
+        featurePart += featurePartE
+    return featurePart</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getResultsX"><code class="name flex">
+<span>def <span class="ident">getResultsX</span></span>(<span>app, results, features, condenseType, noDescendTypes, fmt=None)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
+    api = app.api
+    F = api.F
+    Fs = api.Fs
+    T = api.T
+    fOtype = F.otype.v
+    otypeRank = api.otypeRank
+    sectionTypes = set(T.sectionTypes)
+    sectionDepth = len(sectionTypes)
+    if len(results) == 0:
+        return ()
+    firstResult = results[0]
+    nTuple = len(firstResult)
+    refColumns = [
+        i for (i, n) in enumerate(firstResult) if fOtype(n) not in sectionTypes
+    ]
+    refColumn = refColumns[0] if refColumns else nTuple - 1
+    header = [&#34;R&#34;] + [f&#34;S{i}&#34; for i in range(1, sectionDepth + 1)]
+    emptyA = []
+
+    featureDict = {i: tuple(f.split()) if type(f) is str else f for (i, f) in features}
+
+    def withText(nodeType):
+        return (
+            condenseType is None
+            and nodeType not in sectionTypes
+            or otypeRank[nodeType] &lt;= otypeRank[condenseType]
+        )
+
+    for j in range(nTuple):
+        i = j + 1
+        n = firstResult[j]
+        nType = fOtype(n)
+        header.extend([f&#34;NODE{i}&#34;, f&#34;TYPE{i}&#34;])
+        if withText(nType):
+            header.append(f&#34;TEXT{i}&#34;)
+        header.extend(f&#34;{feature}{i}&#34; for feature in featureDict.get(j, emptyA))
+    rows = [tuple(header)]
+    for (rm, r) in enumerate(results):
+        rn = rm + 1
+        row = [rn]
+        refN = r[refColumn]
+        sParts = T.sectionFromNode(refN)
+        nParts = len(sParts)
+        section = sParts + ((None,) * (sectionDepth - nParts))
+        row.extend(section)
+        for j in range(nTuple):
+            n = r[j]
+            nType = fOtype(n)
+            row.extend((n, nType))
+            if withText(nType):
+                text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
+                row.append(text)
+            row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
+        rows.append(tuple(row))
+    return tuple(rows)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.loadCss"><code class="name flex">
+<span>def <span class="ident">loadCss</span></span>(<span>app, reload=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>The CSS is looked up and then loaded into a notebook if we are not
+running in the TF browser,
+else the CSS is returned.</p>
+<p>With reload=True, the app-specific display.css will be read again from disk</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def loadCss(app, reload=False):
+    &#34;&#34;&#34;
+  The CSS is looked up and then loaded into a notebook if we are not
+  running in the TF browser,
+  else the CSS is returned.
+
+  With reload=True, the app-specific display.css will be read again from disk
+  &#34;&#34;&#34;
+    _asApp = app._asApp
+    if _asApp:
+        return app.css
+
+    if reload:
+        config = findAppConfig(app.appName, app.appPath)
+        cfg = configure(config, app.version)
+        app.css = cfg[&#34;css&#34;]
+
+    hlCssFile = (
+        f&#34;{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}&#34;
+        &#34;/server/static/highlight.css&#34;
+    )
+    with open(hlCssFile) as fh:
+        hlCss = fh.read()
+
+    cssFont = (
+        &#34;&#34;
+        if app.fontName is None
+        else CSS_FONT_API.format(fontName=app.fontName, font=app.font, fontw=app.fontw,)
+    )
+    tableCss = &#34;&#34;&#34;
+tr.tf, td.tf, th.tf {
+  text-align: left;
+}
+
+&#34;&#34;&#34;
+    dh(f&#34;&lt;style&gt;{cssFont + app.css + tableCss + hlCss}&lt;/style&gt;&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.plain"><code class="name flex">
+<span>def <span class="ident">plain</span></span>(<span>app, n, isLinked=True, secLabel=True, **options)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plain(
+    app, n, isLinked=True, _asString=False, secLabel=True, **options,
+):
+    display = app.display
+    if not display.check(&#34;plain&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    api = app.api
+    F = api.F
+    T = api.T
+    sectionTypes = T.sectionTypes
+    fOtype = F.otype.v
+
+    nType = fOtype(n)
+    passage = &#34;&#34;
+
+    if d.withPassage:
+        if nType not in sectionTypes:
+            passage = app.webLink(n, _asString=True)
+
+    passage = f&#34;{passage}&amp;nbsp;&#34; if passage else &#34;&#34;
+
+    highlights = (
+        {m: &#34;&#34; for m in d.highlights} if type(d.highlights) is set else d.highlights
+    )
+
+    return app._plain(
+        n,
+        passage,
+        isLinked,
+        _asString,
+        secLabel,
+        highlights=highlights,
+        **display.consume(options, &#34;highlights&#34;),
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.plainTuple"><code class="name flex">
+<span>def <span class="ident">plainTuple</span></span>(<span>app, tup, seq, item='result', position=None, opened=False, **options)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plainTuple(
+    app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options,
+):
+    display = app.display
+    if not display.check(&#34;plainTuple&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    _asApp = app._asApp
+    api = app.api
+    F = api.F
+    T = api.T
+
+    fOtype = F.otype.v
+
+    if d.withPassage:
+        passageNode = _getRefMember(app, tup, d.linked, d.condensed)
+        passageRef = (
+            &#34;&#34;
+            if passageNode is None
+            else app._sectionLink(passageNode)
+            if _asApp
+            else app.webLink(passageNode, _asString=True)
+        )
+        if passageRef:
+            passageRef = f&#34; {passageRef}&#34;
+    else:
+        passageRef = &#34;&#34;
+
+    newOptions = display.consume(options, &#34;withPassage&#34;)
+    newOptionsH = display.consume(options, &#34;withPassage&#34;, &#34;highlights&#34;)
+
+    highlights = getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
+
+    if _asApp:
+        prettyRep = (
+            prettyTuple(app, tup, seq, withPassage=False, **newOptions,)
+            if opened
+            else &#34;&#34;
+        )
+
+        current = &#34; focus&#34; if seq == position else &#34;&#34;
+        attOpen = &#34; open &#34; if opened else &#34;&#34;
+        tupSeq = &#34;,&#34;.join(str(n) for n in tup)
+        if d.withPassage:
+            sParts = T.sectionFromNode(passageNode, fillup=True)
+            passageAtt = &#34; &#34;.join(
+                f&#39;sec{i}=&#34;{sParts[i] if i &lt; len(sParts) else &#34;&#34;}&#34;&#39; for i in range(3)
+            )
+        else:
+            passageAtt = &#34;&#34;
+
+        plainRep = &#34;&#34;.join(
+            f&#34;&#34;&#34;&lt;span&gt;{mdEsc(app.plain(
+                    n,
+                    isLinked=i == d.linked - 1,
+                    withPassage=False,
+                    highlights=highlights,
+                    **newOptionsH,
+                  ))
+                }
+            &lt;/span&gt;
+        &#34;&#34;&#34;
+            for (i, n) in enumerate(tup)
+        )
+        html = f&#34;&#34;&#34;
+  &lt;details
+    class=&#34;pretty dtrow{current}&#34;
+    seq=&#34;{seq}&#34;
+    {attOpen}
+  &gt;
+    &lt;summary&gt;
+      &lt;a href=&#34;#&#34; class=&#34;pq fa fa-solar-panel fa-xs&#34; title=&#34;show in context&#34; {passageAtt}&gt;&lt;/a&gt;
+      &lt;a href=&#34;#&#34; class=&#34;sq&#34; tup=&#34;{tupSeq}&#34;&gt;{seq}&lt;/a&gt;
+      {passageRef}
+      {plainRep}
+    &lt;/summary&gt;
+    &lt;div class=&#34;pretty&#34;&gt;{prettyRep}&lt;/div&gt;
+  &lt;/details&gt;
+&#34;&#34;&#34;
+        return html
+
+    html = [str(seq)]
+    if passageRef:
+        html.append(passageRef)
+    for (i, n) in enumerate(tup):
+        html.append(
+            app.plain(
+                n,
+                isLinked=i == d.linked - 1,
+                _asString=True,
+                withPassage=False,
+                highlights=highlights,
+                **newOptionsH,
+            )
+        )
+    html = (
+        &#39;&lt;tr class=&#34;tf&#34;&gt;&lt;td class=&#34;tf&#34;&gt;&#39;
+        + (&#39;&lt;/td&gt;&lt;td class=&#34;tf&#34;&gt;&#39;.join(html))
+        + &#34;&lt;/td&gt;&lt;/tr&gt;&#34;
+    )
+    if _asString:
+        return html
+    head = [
+        &#39;&lt;tr class=&#34;tf&#34;&gt;&lt;th class=&#34;tf&#34;&gt;n&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;
+        + (&#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;.join(fOtype(n) for n in tup))
+        + &#34;&lt;/th&gt;&lt;/tr&gt;&#34;
+    ]
+    head.append(html)
+
+    dh(&#34;\n&#34;.join(head))</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.pretty"><code class="name flex">
+<span>def <span class="ident">pretty</span></span>(<span>app, n, **options)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def pretty(
+    app, n, **options,
+):
+    display = app.display
+    if not display.check(&#34;pretty&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    _asApp = app._asApp
+    api = app.api
+    F = api.F
+    L = api.L
+    T = api.T
+    fOtype = F.otype.v
+    otypeRank = api.otypeRank
+    sectionTypes = T.sectionTypes
+
+    containerN = None
+
+    nType = fOtype(n)
+    if d.condensed and d.condenseType:
+        if nType == d.condenseType:
+            containerN = n
+        elif otypeRank[nType] &lt; otypeRank[d.condenseType]:
+            ups = L.u(n, otype=d.condenseType)
+            if ups:
+                containerN = ups[0]
+
+    (firstSlot, lastSlot) = (
+        getBoundary(api, n)
+        if not d.condensed or not d.condenseType
+        else (None, None)
+        if containerN is None
+        else getBoundary(api, containerN)
+    )
+
+    html = []
+
+    if d.withPassage:
+        if nType not in sectionTypes:
+            html.append(app.webLink(n, _asString=True))
+
+    highlights = (
+        {m: &#34;&#34; for m in d.highlights} if type(d.highlights) is set else d.highlights
+    )
+
+    extraFeatures = sorted(
+        flattenToSet(d.extraFeatures) | flattenToSet(d.tupleFeatures)
+    )
+
+    app._pretty(
+        n,
+        True,
+        html,
+        firstSlot,
+        lastSlot,
+        extraFeatures=extraFeatures,
+        highlights=highlights,
+        **display.consume(options, &#34;extraFeatures&#34;, &#34;highlights&#34;),
+    )
+    htmlStr = &#34;\n&#34;.join(html)
+    if _asApp:
+        return htmlStr
+    dh(htmlStr)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.prettyPre"><code class="name flex">
+<span>def <span class="ident">prettyPre</span></span>(<span>app, n, firstSlot, lastSlot, withNodes, highlights)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def prettyPre(
+    app, n, firstSlot, lastSlot, withNodes, highlights,
+):
+    api = app.api
+    F = api.F
+    fOtype = F.otype.v
+
+    slotType = F.otype.slotType
+    nType = fOtype(n)
+    boundaryClass = &#34;&#34;
+    myStart = None
+    myEnd = None
+
+    (myStart, myEnd) = getBoundary(api, n)
+
+    if firstSlot is not None:
+        if myEnd &lt; firstSlot:
+            return False
+        if myStart &lt; firstSlot:
+            boundaryClass += &#34; rno&#34;
+    if lastSlot is not None:
+        if myStart &gt; lastSlot:
+            return False
+        if myEnd &gt; lastSlot:
+            boundaryClass += &#34; lno&#34;
+
+    hlAtt = getHlAtt(app, n, highlights)
+
+    nodePart = f&#39;&lt;a href=&#34;#&#34; class=&#34;nd&#34;&gt;{n}&lt;/a&gt;&#39; if withNodes else &#34;&#34;
+    className = app.classNames.get(nType, None)
+
+    return (
+        slotType,
+        nType,
+        className.lower() if className else className,
+        boundaryClass.lower() if boundaryClass else boundaryClass,
+        hlAtt,
+        nodePart,
+        myStart,
+        myEnd,
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.prettyTuple"><code class="name flex">
+<span>def <span class="ident">prettyTuple</span></span>(<span>app, tup, seq, item='result', rawHighlights=None, **options)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def prettyTuple(
+    app, tup, seq, item=RESULT, rawHighlights=None, **options,
+):
+    display = app.display
+    if not display.check(&#34;prettyTuple&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    _asApp = app._asApp
+
+    if len(tup) == 0:
+        if _asApp:
+            return &#34;&#34;
+        else:
+            return
+
+    api = app.api
+    sortKey = api.sortKey
+
+    containers = {tup[0]} if d.condensed else condenseSet(api, tup, d.condenseType)
+    highlights = (
+        getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
+        if rawHighlights is None
+        else rawHighlights
+    )
+
+    if not _asApp:
+        dh(f&#34;&lt;p&gt;&lt;b&gt;{item}&lt;/b&gt; &lt;i&gt;{seq}&lt;/i&gt;&lt;/p&gt;&#34;)
+    if _asApp:
+        html = []
+    for t in sorted(containers, key=sortKey):
+        h = app.pretty(
+            t, highlights=highlights, **display.consume(options, &#34;highlights&#34;),
+        )
+        if _asApp:
+            html.append(h)
+    if _asApp:
+        return &#34;\n&#34;.join(html)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.show"><code class="name flex">
+<span>def <span class="ident">show</span></span>(<span>app, tuples, **options)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show(
+    app, tuples, **options,
+):
+    display = app.display
+    if not display.check(&#34;show&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    api = app.api
+    F = api.F
+
+    item = d.condenseType if d.condensed else RESULT
+
+    if d.condensed:
+        rawHighlights = getTupleHighlights(
+            api, tuples, d.highlights, d.colorMap, d.condenseType, multiple=True
+        )
+        highlights = {}
+        colorMap = None
+        tuples = condense(api, tuples, d.condenseType, multiple=True)
+    else:
+        highlights = d.highlights
+        rawHighlights = None
+        colorMap = d.colorMap
+
+    for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_SHOW, item):
+        item = F.otype.v(tup[0]) if d.condensed and d.condenseType else RESULT
+        prettyTuple(
+            app,
+            tup,
+            i,
+            item=item,
+            highlights=highlights,
+            colorMap=colorMap,
+            rawHighlights=rawHighlights,
+            **display.consume(options, &#34;highlights&#34;, &#34;colorMap&#34;),
+        )</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.table"><code class="name flex">
+<span>def <span class="ident">table</span></span>(<span>app, tuples, **options)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def table(
+    app, tuples, _asString=False, **options,
+):
+    display = app.display
+    if not display.check(&#34;table&#34;, options):
+        return &#34;&#34;
+    d = display.get(options)
+
+    api = app.api
+    F = api.F
+    fOtype = F.otype.v
+
+    item = d.condenseType if d.condensed else RESULT
+
+    if d.condensed:
+        tuples = condense(api, tuples, d.condenseType, multiple=True)
+
+    passageHead = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;p&#39; if d.withPassage else &#34;&#34;
+
+    html = []
+    one = True
+    for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_TABLE, item):
+        if one:
+            heads = &#34;&lt;/th&gt;&lt;th&gt;&#34;.join(fOtype(n) for n in tup)
+            html.append(
+                f&#34;&#34;&#34;
+&lt;tr class=&#34;tf&#34;&gt;
+  &lt;th class=&#34;tf&#34;&gt;n{passageHead}&lt;/th&gt;
+  &lt;th class=&#34;tf&#34;&gt;{heads}&lt;/th&gt;
+&lt;/tr&gt;
+&#34;&#34;&#34;
+            )
+            one = False
+        html.append(
+            plainTuple(
+                app,
+                tup,
+                i,
+                item=item,
+                position=None,
+                opened=False,
+                _asString=True,
+                **options,
+            )
+        )
+    html = &#34;&lt;table&gt;&#34; + &#34;\n&#34;.join(html) + &#34;&lt;/table&gt;&#34;
+    if _asString:
+        return html
+    dh(html)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="tf.applib.display.displayApi" href="#tf.applib.display.displayApi">displayApi</a></code></li>
+<li><code><a title="tf.applib.display.export" href="#tf.applib.display.export">export</a></code></li>
+<li><code><a title="tf.applib.display.getBoundary" href="#tf.applib.display.getBoundary">getBoundary</a></code></li>
+<li><code><a title="tf.applib.display.getFeatures" href="#tf.applib.display.getFeatures">getFeatures</a></code></li>
+<li><code><a title="tf.applib.display.getResultsX" href="#tf.applib.display.getResultsX">getResultsX</a></code></li>
+<li><code><a title="tf.applib.display.loadCss" href="#tf.applib.display.loadCss">loadCss</a></code></li>
+<li><code><a title="tf.applib.display.plain" href="#tf.applib.display.plain">plain</a></code></li>
+<li><code><a title="tf.applib.display.plainTuple" href="#tf.applib.display.plainTuple">plainTuple</a></code></li>
+<li><code><a title="tf.applib.display.pretty" href="#tf.applib.display.pretty">pretty</a></code></li>
+<li><code><a title="tf.applib.display.prettyPre" href="#tf.applib.display.prettyPre">prettyPre</a></code></li>
+<li><code><a title="tf.applib.display.prettyTuple" href="#tf.applib.display.prettyTuple">prettyTuple</a></code></li>
+<li><code><a title="tf.applib.display.show" href="#tf.applib.display.show">show</a></code></li>
+<li><code><a title="tf.applib.display.table" href="#tf.applib.display.table">table</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

@@ -94,6 +94,7 @@ nav:
       - 'Helpers': 'Api/Helpers.md'
     - Compose:
       - 'Combining': 'Api/Compose.md'
+    - docstrings: 'apidocs/html/tf/index.html'
   - Writing:
     - Arabic: 'Writing/Arabic.md'
     - Hebrew: 'Writing/Hebrew.md'

@@ -59,6 +59,7 @@ command:
 --help
 help  : print help and exit
 
+adocs : build apidocs
 docs  : serve docs locally
 clean : clean local develop build
 l     : local develop build
@@ -90,6 +91,7 @@ def readArgs():
     if arg not in {
         "a",
         "t",
+        "adocs",
         "docs",
         "clean",
         "l",
@@ -206,6 +208,7 @@ def commitTut(msg):
 
 def shipDocs():
     codestats()
+    apidocs()
     run(["mkdocs", "gh-deploy"])
 
 
@@ -230,6 +233,7 @@ def shipData(app, remaining):
 
 def serveDocs():
     codestats()
+    apidocs()
     killProcesses()
     proc = Popen(["mkdocs", "serve"])
     sleep(3)
@@ -267,6 +271,17 @@ def filterProcess(proc):
             if parts[1] == "build.py" and parts[2] == "docs":
                 found = True
     return found
+
+
+def apidocs():
+    cmdLine = (
+        "pdoc3"
+        " --force"
+        " --html"
+        " --output-dir docs/apidocs/html"
+        " tf"
+    )
+    run(cmdLine, shell=True)
 
 
 def codestats():
@@ -346,6 +361,8 @@ def main():
         tfbrowse(msg, remaining)
     elif task == "t":
         tftest(msg, remaining)
+    elif task == "adocs":
+        apidocs()
     elif task == "docs":
         serveDocs()
     elif task == "clean":

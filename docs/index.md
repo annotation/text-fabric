@@ -8,6 +8,9 @@ Before diving head-on into Text-Fabric, you might want to read a bit more about
 what it is and where it came from. And after it, if you want to cite it, use this
 [DOI: 10.5281/zenodo.592193]({{tfdoi}}).
 
+On the other hand, if you do want to dive in, here are the 
+[docstrings](apidocs/html/tf/index.html).
+
 ??? abstract "Intro"
     Text-Fabric is several things:
 
