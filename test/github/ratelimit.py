@@ -8,7 +8,7 @@ ghClient = os.environ.get("GHCLIENT", None)
 ghSecret = os.environ.get("GHSECRET", None)
 ghConnAppToken = Github(client_id=ghClient, client_secret=ghSecret)
 
-personalAccessToken = "7dfbcef030055bd1d4c0bee6fe88e75692f29d58"
+personalAccessToken = "xxx"
 ghConnPersToken = Github(personalAccessToken)
 
 for gh in (ghConnUnauth, ghConnAppToken, ghConnPersToken):

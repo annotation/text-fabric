@@ -231,7 +231,7 @@ extra:
   fontlib: https://fontlibrary.org
   ghapi: https://developer.github.com/v3/
   ghappreg: https://github.com/settings/applications/new
-  ghappreg: https://github.com/settings/tokens
+  ghapppers: https://github.com/settings/tokens
   ghrate: https://developer.github.com/v3/#rate-limiting
   ghissues: https://github.com/annotation/text-fabric/issues
   git: https://git-scm.com/downloads 
