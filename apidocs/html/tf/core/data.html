@@ -1,0 +1,1439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.2" />
+<title>tf.core.data API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.core.data</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import os
+import pickle
+import gzip
+import collections
+from array import array
+import time
+from datetime import datetime
+from ..parameters import PACK_VERSION, PICKLE_PROTOCOL, GZIP_LEVEL
+from .helpers import (
+    setFromSpec,
+    valueFromTf,
+    tfFromValue,
+    specFromRanges,
+    rangesFromSet,
+    check32,
+    console,
+)
+
+ERROR_CUTOFF = 20
+
+WARP = (
+    &#34;otype&#34;,
+    &#34;oslots&#34;,
+    &#34;otext&#34;,
+)
+
+WARP2_DEFAULT = dict(sectionFeatures=&#34;&#34;, sectionTypes=&#34;&#34;,)
+
+DATA_TYPES = (&#34;str&#34;, &#34;int&#34;)
+
+MEM_MSG = (
+    &#34;TF is out of memory!\n&#34;
+    + &#34;If this happens and your computer has more than 3GB RAM on board:\n&#34;
+    + (&#34;* make sure that you run 64-bit Python and/or\n&#34; if check32()[0] else &#34;&#34;)
+    + &#34;* close all other programs and try again.\n&#34;
+)
+
+
+class Data(object):
+    def __init__(
+        self,
+        path,
+        tm,
+        edgeValues=False,
+        data=None,
+        isEdge=None,
+        isConfig=None,
+        metaData={},
+        method=None,
+        dependencies=None,
+    ):
+        (dirName, baseName) = os.path.split(path)
+        (fileName, extension) = os.path.splitext(baseName)
+        self.path = path
+        self.tm = tm
+        self.dirName = dirName
+        self.fileName = fileName
+        self.extension = extension
+        self.binDir = f&#34;{dirName}/.tf/{PACK_VERSION}&#34;
+        self.binPath = f&#34;{self.binDir}/{self.fileName}.tfx&#34;
+        self.edgeValues = edgeValues
+        self.isEdge = isEdge
+        self.isConfig = isConfig
+        self.metaData = metaData
+        self.method = method
+        self.dependencies = dependencies
+        self.data = data
+        self.dataLoaded = False
+        self.dataError = False
+        self.dataType = &#34;str&#34;
+
+    def load(self, metaOnly=False, silent=None):
+        if silent is not None:
+            wasSilent = self.tm.isSilent()
+            self.tm.setSilent(silent)
+        self.tm.indent(level=1, reset=True)
+        origTime = self._getModified()
+        binTime = self._getModified(bin=True)
+        sourceRep = (
+            &#34;, &#34;.join(dep.fileName for dep in self.dependencies)
+            if self.method
+            else self.dirName
+        )
+        msgFormat = &#34;{:&lt;1} {:&lt;20} from {}&#34;
+        actionRep = &#34;&#34;
+        good = True
+
+        if self.dataError:
+            # there has been an error in an earlier
+            # computation/compiling/loading of this feature
+            actionRep = &#34;E&#34;
+            good = False
+        elif self.dataLoaded and (
+            self.isConfig
+            or (
+                (not origTime or self.dataLoaded &gt;= origTime)
+                and (not binTime or self.dataLoaded &gt;= binTime)
+            )
+        ):
+            actionRep = &#34;=&#34;  # loaded and up to date
+        elif not origTime and not binTime:
+            actionRep = &#34;X&#34;  # no source and no binary present
+            good = False
+        else:
+            try:
+                if not origTime:
+                    actionRep = &#34;b&#34;
+                    good = self._readDataBin()
+                elif not binTime or origTime &gt; binTime:
+                    actionRep = &#34;C&#34; if self.method else &#34;T&#34;
+                    good = (
+                        self._compute(metaOnly=metaOnly)
+                        if self.method
+                        else self._readTf(metaOnly=metaOnly)
+                    )
+                    if good:
+                        if self.isConfig or metaOnly:
+                            actionRep = &#34;M&#34;
+                        else:
+                            self._writeDataBin()
+                else:
+                    actionRep = &#34;B&#34;
+                    good = True if self.method else self._readTf(metaOnly=True)
+                    if good:
+                        if self.isConfig or metaOnly:
+                            actionRep = &#34;M&#34;
+                        else:
+                            good = self._readDataBin()
+            except MemoryError:
+                console(MEM_MSG)
+                good = False
+        if self.isConfig:
+            self.cleanDataBin()
+        if good:
+            if actionRep != &#34;=&#34; and not (
+                actionRep == &#34;M&#34; or (actionRep == &#34;B&#34; and self.method)
+            ):
+                pass
+            self.tm.info(
+                msgFormat.format(actionRep, self.fileName, sourceRep),
+                cache=1 if actionRep in &#34;CT&#34; else -1,
+            )
+        else:
+            self.dataError = True
+            self.tm.error(msgFormat.format(actionRep, self.fileName, sourceRep))
+
+        if silent is not None:
+            self.tm.setSilent(wasSilent)
+        return good
+
+    def unload(self):
+        self.data = None
+        self.dataLoaded = False
+
+    def save(self, overwrite=False, nodeRanges=False, silent=None):
+        if silent is not None:
+            wasSilent = self.tm.isSilent()
+            self.tm.setSilent(silent)
+        result = self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
+        if silent is not None:
+            self.tm.setSilent(wasSilent)
+        return result
+
+    def _setDataType(self):
+        if self.isConfig:
+            return
+        dataTypesStr = &#34;, &#34;.join(DATA_TYPES)
+        if &#34;valueType&#34; in self.metaData:
+            dataType = self.metaData[&#34;valueType&#34;]
+            if dataType not in DATA_TYPES:
+                self.tm.error(
+                    f&#39;Unknown @valueType: &#34;{dataType}&#34;. Should be one of {dataTypesStr}&#39;
+                )
+                self.dataType = DATA_TYPES[0]
+            else:
+                self.dataType = dataType
+        else:
+            self.tm.error(f&#34;Missing @valueType. Should be one of {dataTypesStr}&#34;)
+            self.dataType = DATA_TYPES[0]
+
+    def _readTf(self, metaOnly=False):
+        path = self.path
+        if not os.path.exists(path):
+            self.tm.error(f&#39;TF reading: feature file &#34;{path}&#34; does not exist&#39;)
+            return False
+        fh = open(path, encoding=&#34;utf8&#34;)
+        i = 0
+        self.metaData = {}
+        self.isConfig = False
+        for line in fh:
+            i += 1
+            if i == 1:
+                text = line.rstrip()
+                if text == &#34;@edge&#34;:
+                    self.isEdge = True
+                elif text == &#34;@node&#34;:
+                    self.isEdge = False
+                elif text == &#34;@config&#34;:
+                    self.isConfig = True
+                else:
+                    self.tm.error(f&#34;Line {i}: missing @node/@edge/@config&#34;)
+                    fh.close()
+                    return False
+                continue
+            text = line.rstrip(&#34;\n&#34;)
+            if len(text) and text[0] == &#34;@&#34;:
+                if text == &#34;@edgeValues&#34;:
+                    self.edgeValues = True
+                    continue
+                fields = text[1:].split(&#34;=&#34;, 1)
+                self.metaData[fields[0]] = fields[1] if len(fields) == 2 else None
+                continue
+            else:
+                if text != &#34;&#34;:
+                    self.tm.error(f&#34;Line {i}: missing blank line after metadata&#34;)
+                    fh.close()
+                    return False
+                else:
+                    break
+        self._setDataType()
+        good = True
+        if not metaOnly and not self.isConfig:
+            good = self._readDataTf(fh, i)
+        fh.close()
+        return good
+
+    def _readDataTf(self, fh, firstI):
+        errors = collections.defaultdict(list)
+        i = firstI
+        implicit_node = 1
+        data = {}
+        isEdge = self.isEdge
+        edgeValues = self.edgeValues
+        normFields = 3 if isEdge and edgeValues else 2
+        isNum = self.dataType == &#34;int&#34;
+        for line in fh:
+            i += 1
+            fields = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+            lfields = len(fields)
+            if lfields &gt; normFields:
+                errors[&#34;wrongFields&#34;].append(i)
+                continue
+            if lfields == normFields:
+                nodes = setFromSpec(fields[0])
+                if isEdge:
+                    if fields[1] == &#34;&#34;:
+                        errors[&#34;emptyNode2Spec&#34;].append(i)
+                        continue
+                    nodes2 = setFromSpec(fields[1])
+                if not isEdge or edgeValues:
+                    valTf = fields[-1]
+            else:
+                if isEdge:
+                    if edgeValues:
+                        if lfields == normFields - 1:
+                            nodes = {implicit_node}
+                            nodes2 = setFromSpec(fields[0])
+                            valTf = fields[-1]
+                        elif lfields == normFields - 2:
+                            nodes = {implicit_node}
+                            if fields[0] == &#34;&#34;:
+                                errors[&#34;emptyNode2Spec&#34;].append(i)
+                                continue
+                            nodes2 = setFromSpec(fields[0])
+                            valTf = &#34;&#34;
+                        else:
+                            nodes = {implicit_node}
+                            valTf = &#34;&#34;
+                            errors[&#34;emptyNode2Spec&#34;].append(i)
+                            continue
+                    else:
+                        if lfields == normFields - 1:
+                            nodes = {implicit_node}
+                            if fields[0] == &#34;&#34;:
+                                errors[&#34;emptyNode2Spec&#34;].append(i)
+                                continue
+                            nodes2 = setFromSpec(fields[0])
+                        else:
+                            nodes = {implicit_node}
+                            errors[&#34;emptyNode2Spec&#34;].append(i)
+                            continue
+                else:
+                    nodes = {implicit_node}
+                    if lfields == 1:
+                        valTf = fields[0]
+                    else:
+                        valTf = &#34;&#34;
+            implicit_node = max(nodes) + 1
+            if not isEdge or edgeValues:
+                value = (
+                    int(valTf)
+                    if isNum and valTf != &#34;&#34;
+                    else None
+                    if isNum
+                    else &#34;&#34;
+                    if valTf == &#34;&#34;
+                    else valueFromTf(valTf)
+                )
+            if isEdge:
+                for n in nodes:
+                    for m in nodes2:
+                        if not edgeValues:
+                            data.setdefault(n, set()).add(m)
+                        else:
+                            data.setdefault(n, {})[
+                                m
+                            ] = value  # even if the value is None
+            else:
+                for n in nodes:
+                    if value is not None:
+                        data[n] = value
+        for kind in errors:
+            lnk = len(errors[kind])
+            self.tm.error(
+                &#34;{} in lines {}&#34;.format(
+                    kind, &#34;,&#34;.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF])
+                )
+            )
+            if lnk &gt; ERROR_CUTOFF:
+                self.tm.error(f&#34;\t and {lnk - ERROR_CUTOFF} more cases&#34;, tm=False)
+        self.data = data
+        if not errors:
+            if self.fileName == WARP[0]:
+                slotType = data[1]
+                otype = []
+                maxSlot = 1
+                for n in sorted(data):
+                    if data[n] == slotType:
+                        maxSlot = n
+                        continue
+                    otype.append(data[n])
+                maxNode = len(data)
+                self.data = (tuple(otype), maxSlot, maxNode, slotType)
+            elif self.fileName == WARP[1]:
+                nodeList = sorted(data)
+                maxSlot = (
+                    nodeList[0] - 1
+                )  # vital assumption: all non slot nodes are linked
+                maxNode = nodeList[-1]
+                nodeRange = maxNode - maxSlot
+                nodesMapped = len(nodeList)
+                if nodeRange &gt; nodesMapped:
+                    self.tm.error(
+                        f&#34;ERROR: {WARP[1]} fails to map {nodeRange - nodesMapped} nodes&#34;
+                    )
+                    errors = True
+                elif nodeRange &lt; nodesMapped:
+                    # cannot happen because nodeList is a list of distinct keys
+                    # so the min and max values of these keys must differ at least as much
+                    # is the number of those keys
+                    pass
+                oslots = []
+                for n in nodeList:
+                    oslots.append(array(&#34;I&#34;, sorted(data[n])))
+                self.data = (tuple(oslots), maxSlot, maxNode)
+            elif isEdge:
+                seen = {}
+                datax = {}
+                if edgeValues:
+                    for (n, ms) in data.items():
+                        msx = {}
+                        for (m, v) in ms.items():
+                            if v not in seen:
+                                seen[v] = v
+                            msx[m] = seen[v]
+                        datax[n] = msx
+                else:
+                    for (n, ms) in data.items():
+                        msx = frozenset(ms)
+                        if msx not in seen:
+                            seen[msx] = msx
+                        datax[n] = seen[msx]
+                self.data = datax
+            else:
+                seen = {}
+                datax = {}
+                for (n, ms) in data.items():
+                    if ms not in seen:
+                        seen[ms] = ms
+                    datax[n] = seen[ms]
+                self.data = datax
+
+        return not errors
+
+    def _compute(self, metaOnly=False):
+        if metaOnly:
+            return True
+
+        good = True
+        for feature in self.dependencies:
+            if not feature.load():
+                good = False
+        if not good:
+            return False
+
+        def info(msg, tm=True):
+            self.tm.info(cmpFormat.format(msg), tm=tm, cache=-1)
+
+        def error(msg, tm=True):
+            self.tm.error(cmpFormat.format(msg), tm=tm)
+
+        cmpFormat = f&#34;c {self.fileName:&lt;20} {{}}&#34;
+        self.tm.indent(level=2, reset=True)
+
+        self.data = self.method(
+            info,
+            error,
+            *[
+                dep.metaData if dep.fileName == WARP[2] else dep.data
+                for dep in self.dependencies
+            ],
+        )
+        good = self.data is not None
+        if good:
+            self.dataLoaded = time.time()
+        return good
+
+    def _writeTf(
+        self,
+        dirName=None,
+        fileName=None,
+        overwrite=True,
+        extension=None,
+        metaOnly=False,
+        nodeRanges=False,
+    ):
+        self.tm.indent(level=1, reset=True)
+        metaOnly = metaOnly or self.isConfig
+
+        dirName = dirName or self.dirName
+        fileName = fileName or self.fileName
+        extension = extension or self.extension
+        if not os.path.exists(dirName):
+            try:
+                os.makedirs(dirName, exist_ok=True)
+            except Exception:
+                self.tm.error(f&#39;Cannot create directory &#34;{dirName}&#34;&#39;)
+                return False
+        fpath = f&#34;{dirName}/{fileName}{extension}&#34;
+        if fpath == self.path:
+            if os.path.exists(fpath):
+                if not overwrite:
+                    self.tm.error(
+                        f&#39;Feature file &#34;{fpath}&#34; already exists, feature will not be written&#39;
+                    )
+                    return False
+        try:
+            fh = open(fpath, &#34;w&#34;, encoding=&#34;utf8&#34;)
+        except Exception:
+            self.tm.error(f&#39;Cannot write to feature file &#34;{fpath}&#34;&#39;)
+            return False
+        fh.write(
+            &#34;@{}\n&#34;.format(
+                &#34;config&#34; if self.isConfig else &#34;edge&#34; if self.isEdge else &#34;node&#34;
+            )
+        )
+        if self.edgeValues:
+            fh.write(&#34;@edgeValues\n&#34;)
+        for meta in sorted(self.metaData):
+            fh.write(f&#34;@{meta}={self.metaData[meta]}\n&#34;)
+        fh.write(&#34;@writtenBy=Text-Fabric\n&#34;)
+        fh.write(
+            &#34;@dateWritten={}\n&#34;.format(
+                datetime.utcnow().replace(microsecond=0).isoformat() + &#34;Z&#34;
+            )
+        )
+        fh.write(&#34;\n&#34;)
+        self._setDataType()
+        good = True
+        if not metaOnly:
+            good = self._writeDataTf(fh, nodeRanges=nodeRanges)
+        fh.close()
+        msgFormat = &#34;{:&lt;1} {:&lt;20} to {}&#34;
+        if good:
+            self.tm.info(msgFormat.format(&#34;M&#34; if metaOnly else &#34;T&#34;, fileName, dirName))
+        else:
+            self.tm.error(msgFormat.format(&#34;M&#34; if metaOnly else &#34;T&#34;, fileName, dirName))
+        return good
+
+    def _writeDataTf(self, fh, nodeRanges=False):
+        data = self.data
+        if type(data) is tuple:
+            # just in case the WARP data is present as a sequence and not a dict
+            # in case it has been loaded from a binary representation
+            fName = self.fileName
+            if fName not in {WARP[0], WARP[1]}:
+                self.tm.error(&#34;Data type tuple not suitable for non-WARP feature&#34;)
+                return False
+            maxSlot = data[2] if fName == WARP[0] else data[1]
+            slotType = data[1] if fName == WARP[0] else None
+            data = data[0]
+            if fName == WARP[0]:
+                data = dict(((k, slotType) for k in range(1, maxSlot + 1)))
+                data.update(
+                    dict(((k + 1 + maxSlot, data[k]) for k in range(len(data))))
+                )
+            elif self.fileName == WARP[1]:
+                data = dict(((k + 1 + maxSlot, data[k]) for k in range(len(data))))
+        edgeValues = self.edgeValues
+        if self.isEdge:
+            implicitNode = 1
+            for n in sorted(data):
+                thisData = data[n]
+                sets = {}
+                if edgeValues:
+                    for m in thisData:
+                        sets.setdefault(thisData[m], set()).add(m)
+                    for (value, mset) in sorted(sets.items()):
+                        nodeSpec2 = specFromRanges(rangesFromSet(mset))
+                        nodeSpec = &#34;&#34; if n == implicitNode else n
+                        implicitNode = n + 1
+                        tfValue = value if value is None else tfFromValue(value)
+                        if tfValue is None:
+                            fh.write(
+                                &#34;{}{}{}\n&#34;.format(
+                                    nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, nodeSpec2,
+                                )
+                            )
+                        else:
+                            fh.write(
+                                &#34;{}{}{}\t{}\n&#34;.format(
+                                    nodeSpec,
+                                    &#34;\t&#34; if nodeSpec else &#34;&#34;,
+                                    nodeSpec2,
+                                    tfValue,
+                                )
+                            )
+                else:
+                    nodeSpec2 = specFromRanges(rangesFromSet(thisData))
+                    nodeSpec = &#34;&#34; if n == implicitNode else n
+                    implicitNode = n + 1
+                    fh.write(
+                        &#34;{}{}{}\n&#34;.format(nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, nodeSpec2)
+                    )
+        else:
+            sets = {}
+            if nodeRanges:
+                for n in sorted(data):
+                    sets.setdefault(data[n], []).append(n)
+                implicitNode = 1
+                for (value, nset) in sorted(
+                    sets.items(), key=lambda x: (x[1][0], x[1][-1])
+                ):
+                    if len(nset) == 1 and nset[0] == implicitNode:
+                        nodeSpec = &#34;&#34;
+                    else:
+                        nodeSpec = specFromRanges(rangesFromSet(nset))
+                    implicitNode = nset[-1]
+                    tfValue = value if value is None else tfFromValue(value)
+                    if tfValue is not None:
+                        fh.write(
+                            &#34;{}{}{}\n&#34;.format(
+                                nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, tfValue,
+                            )
+                        )
+            else:
+                implicitNode = 1
+                for n in sorted(data):
+                    nodeSpec = &#34;&#34; if n == implicitNode else n
+                    implicitNode = n + 1
+                    value = data[n]
+                    tfValue = value if value is None else tfFromValue(value)
+                    if tfValue is not None:
+                        fh.write(
+                            &#34;{}{}{}\n&#34;.format(
+                                nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, tfValue,
+                            )
+                        )
+        return True
+
+    def _readDataBin(self):
+        if not os.path.exists(self.binPath):
+            self.tm.error(f&#39;TF reading: feature file &#34;{self.binPath}&#34; does not exist&#39;)
+            return False
+        with gzip.open(self.binPath, &#34;rb&#34;) as f:
+            self.data = pickle.load(f)
+        self.dataLoaded = time.time()
+        return True
+
+    def cleanDataBin(self):
+        if os.path.exists(self.binPath):
+            os.unlink(self.binPath)
+
+    def _writeDataBin(self):
+        good = True
+        if not os.path.exists(self.binDir):
+            try:
+                os.makedirs(self.binDir, exist_ok=True)
+            except Exception:
+                self.tm.error(f&#39;Cannot create directory &#34;{self.binDir}&#34;&#39;)
+                good = False
+        if not good:
+            return False
+        try:
+            with gzip.open(self.binPath, &#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
+                pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
+        except Exception as e:
+            self.tm.error(f&#39;Cannot write to file &#34;{self.binPath}&#34; because: {str(e)}&#39;)
+            self.cleanDataBin()
+            good = False
+        self.dataLoaded = time.time()
+        return True
+
+    def _getModified(self, bin=False):
+        if bin:
+            return (
+                os.path.getmtime(self.binPath) if os.path.exists(self.binPath) else None
+            )
+        else:
+            if self.method:
+                depsInfo = [dep._getModified() for dep in self.dependencies]
+                depsModifieds = [d for d in depsInfo if d is not None]
+                depsModified = None if len(depsModifieds) == 0 else max(depsModifieds)
+                if depsModified is not None:
+                    return depsModified
+                elif os.path.exists(self.binPath):
+                    return os.path.getmtime(self.binPath)
+                else:
+                    return None
+            else:
+                if os.path.exists(self.path):
+                    return os.path.getmtime(self.path)
+                elif os.path.exists(self.binPath):
+                    return os.path.getmtime(self.binPath)
+                else:
+                    return None</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.core.data.Data"><code class="flex name class">
+<span>class <span class="ident">Data</span></span>
+<span>(</span><span>path, tm, edgeValues=False, data=None, isEdge=None, isConfig=None, metaData={}, method=None, dependencies=None)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Data(object):
+    def __init__(
+        self,
+        path,
+        tm,
+        edgeValues=False,
+        data=None,
+        isEdge=None,
+        isConfig=None,
+        metaData={},
+        method=None,
+        dependencies=None,
+    ):
+        (dirName, baseName) = os.path.split(path)
+        (fileName, extension) = os.path.splitext(baseName)
+        self.path = path
+        self.tm = tm
+        self.dirName = dirName
+        self.fileName = fileName
+        self.extension = extension
+        self.binDir = f&#34;{dirName}/.tf/{PACK_VERSION}&#34;
+        self.binPath = f&#34;{self.binDir}/{self.fileName}.tfx&#34;
+        self.edgeValues = edgeValues
+        self.isEdge = isEdge
+        self.isConfig = isConfig
+        self.metaData = metaData
+        self.method = method
+        self.dependencies = dependencies
+        self.data = data
+        self.dataLoaded = False
+        self.dataError = False
+        self.dataType = &#34;str&#34;
+
+    def load(self, metaOnly=False, silent=None):
+        if silent is not None:
+            wasSilent = self.tm.isSilent()
+            self.tm.setSilent(silent)
+        self.tm.indent(level=1, reset=True)
+        origTime = self._getModified()
+        binTime = self._getModified(bin=True)
+        sourceRep = (
+            &#34;, &#34;.join(dep.fileName for dep in self.dependencies)
+            if self.method
+            else self.dirName
+        )
+        msgFormat = &#34;{:&lt;1} {:&lt;20} from {}&#34;
+        actionRep = &#34;&#34;
+        good = True
+
+        if self.dataError:
+            # there has been an error in an earlier
+            # computation/compiling/loading of this feature
+            actionRep = &#34;E&#34;
+            good = False
+        elif self.dataLoaded and (
+            self.isConfig
+            or (
+                (not origTime or self.dataLoaded &gt;= origTime)
+                and (not binTime or self.dataLoaded &gt;= binTime)
+            )
+        ):
+            actionRep = &#34;=&#34;  # loaded and up to date
+        elif not origTime and not binTime:
+            actionRep = &#34;X&#34;  # no source and no binary present
+            good = False
+        else:
+            try:
+                if not origTime:
+                    actionRep = &#34;b&#34;
+                    good = self._readDataBin()
+                elif not binTime or origTime &gt; binTime:
+                    actionRep = &#34;C&#34; if self.method else &#34;T&#34;
+                    good = (
+                        self._compute(metaOnly=metaOnly)
+                        if self.method
+                        else self._readTf(metaOnly=metaOnly)
+                    )
+                    if good:
+                        if self.isConfig or metaOnly:
+                            actionRep = &#34;M&#34;
+                        else:
+                            self._writeDataBin()
+                else:
+                    actionRep = &#34;B&#34;
+                    good = True if self.method else self._readTf(metaOnly=True)
+                    if good:
+                        if self.isConfig or metaOnly:
+                            actionRep = &#34;M&#34;
+                        else:
+                            good = self._readDataBin()
+            except MemoryError:
+                console(MEM_MSG)
+                good = False
+        if self.isConfig:
+            self.cleanDataBin()
+        if good:
+            if actionRep != &#34;=&#34; and not (
+                actionRep == &#34;M&#34; or (actionRep == &#34;B&#34; and self.method)
+            ):
+                pass
+            self.tm.info(
+                msgFormat.format(actionRep, self.fileName, sourceRep),
+                cache=1 if actionRep in &#34;CT&#34; else -1,
+            )
+        else:
+            self.dataError = True
+            self.tm.error(msgFormat.format(actionRep, self.fileName, sourceRep))
+
+        if silent is not None:
+            self.tm.setSilent(wasSilent)
+        return good
+
+    def unload(self):
+        self.data = None
+        self.dataLoaded = False
+
+    def save(self, overwrite=False, nodeRanges=False, silent=None):
+        if silent is not None:
+            wasSilent = self.tm.isSilent()
+            self.tm.setSilent(silent)
+        result = self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
+        if silent is not None:
+            self.tm.setSilent(wasSilent)
+        return result
+
+    def _setDataType(self):
+        if self.isConfig:
+            return
+        dataTypesStr = &#34;, &#34;.join(DATA_TYPES)
+        if &#34;valueType&#34; in self.metaData:
+            dataType = self.metaData[&#34;valueType&#34;]
+            if dataType not in DATA_TYPES:
+                self.tm.error(
+                    f&#39;Unknown @valueType: &#34;{dataType}&#34;. Should be one of {dataTypesStr}&#39;
+                )
+                self.dataType = DATA_TYPES[0]
+            else:
+                self.dataType = dataType
+        else:
+            self.tm.error(f&#34;Missing @valueType. Should be one of {dataTypesStr}&#34;)
+            self.dataType = DATA_TYPES[0]
+
+    def _readTf(self, metaOnly=False):
+        path = self.path
+        if not os.path.exists(path):
+            self.tm.error(f&#39;TF reading: feature file &#34;{path}&#34; does not exist&#39;)
+            return False
+        fh = open(path, encoding=&#34;utf8&#34;)
+        i = 0
+        self.metaData = {}
+        self.isConfig = False
+        for line in fh:
+            i += 1
+            if i == 1:
+                text = line.rstrip()
+                if text == &#34;@edge&#34;:
+                    self.isEdge = True
+                elif text == &#34;@node&#34;:
+                    self.isEdge = False
+                elif text == &#34;@config&#34;:
+                    self.isConfig = True
+                else:
+                    self.tm.error(f&#34;Line {i}: missing @node/@edge/@config&#34;)
+                    fh.close()
+                    return False
+                continue
+            text = line.rstrip(&#34;\n&#34;)
+            if len(text) and text[0] == &#34;@&#34;:
+                if text == &#34;@edgeValues&#34;:
+                    self.edgeValues = True
+                    continue
+                fields = text[1:].split(&#34;=&#34;, 1)
+                self.metaData[fields[0]] = fields[1] if len(fields) == 2 else None
+                continue
+            else:
+                if text != &#34;&#34;:
+                    self.tm.error(f&#34;Line {i}: missing blank line after metadata&#34;)
+                    fh.close()
+                    return False
+                else:
+                    break
+        self._setDataType()
+        good = True
+        if not metaOnly and not self.isConfig:
+            good = self._readDataTf(fh, i)
+        fh.close()
+        return good
+
+    def _readDataTf(self, fh, firstI):
+        errors = collections.defaultdict(list)
+        i = firstI
+        implicit_node = 1
+        data = {}
+        isEdge = self.isEdge
+        edgeValues = self.edgeValues
+        normFields = 3 if isEdge and edgeValues else 2
+        isNum = self.dataType == &#34;int&#34;
+        for line in fh:
+            i += 1
+            fields = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+            lfields = len(fields)
+            if lfields &gt; normFields:
+                errors[&#34;wrongFields&#34;].append(i)
+                continue
+            if lfields == normFields:
+                nodes = setFromSpec(fields[0])
+                if isEdge:
+                    if fields[1] == &#34;&#34;:
+                        errors[&#34;emptyNode2Spec&#34;].append(i)
+                        continue
+                    nodes2 = setFromSpec(fields[1])
+                if not isEdge or edgeValues:
+                    valTf = fields[-1]
+            else:
+                if isEdge:
+                    if edgeValues:
+                        if lfields == normFields - 1:
+                            nodes = {implicit_node}
+                            nodes2 = setFromSpec(fields[0])
+                            valTf = fields[-1]
+                        elif lfields == normFields - 2:
+                            nodes = {implicit_node}
+                            if fields[0] == &#34;&#34;:
+                                errors[&#34;emptyNode2Spec&#34;].append(i)
+                                continue
+                            nodes2 = setFromSpec(fields[0])
+                            valTf = &#34;&#34;
+                        else:
+                            nodes = {implicit_node}
+                            valTf = &#34;&#34;
+                            errors[&#34;emptyNode2Spec&#34;].append(i)
+                            continue
+                    else:
+                        if lfields == normFields - 1:
+                            nodes = {implicit_node}
+                            if fields[0] == &#34;&#34;:
+                                errors[&#34;emptyNode2Spec&#34;].append(i)
+                                continue
+                            nodes2 = setFromSpec(fields[0])
+                        else:
+                            nodes = {implicit_node}
+                            errors[&#34;emptyNode2Spec&#34;].append(i)
+                            continue
+                else:
+                    nodes = {implicit_node}
+                    if lfields == 1:
+                        valTf = fields[0]
+                    else:
+                        valTf = &#34;&#34;
+            implicit_node = max(nodes) + 1
+            if not isEdge or edgeValues:
+                value = (
+                    int(valTf)
+                    if isNum and valTf != &#34;&#34;
+                    else None
+                    if isNum
+                    else &#34;&#34;
+                    if valTf == &#34;&#34;
+                    else valueFromTf(valTf)
+                )
+            if isEdge:
+                for n in nodes:
+                    for m in nodes2:
+                        if not edgeValues:
+                            data.setdefault(n, set()).add(m)
+                        else:
+                            data.setdefault(n, {})[
+                                m
+                            ] = value  # even if the value is None
+            else:
+                for n in nodes:
+                    if value is not None:
+                        data[n] = value
+        for kind in errors:
+            lnk = len(errors[kind])
+            self.tm.error(
+                &#34;{} in lines {}&#34;.format(
+                    kind, &#34;,&#34;.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF])
+                )
+            )
+            if lnk &gt; ERROR_CUTOFF:
+                self.tm.error(f&#34;\t and {lnk - ERROR_CUTOFF} more cases&#34;, tm=False)
+        self.data = data
+        if not errors:
+            if self.fileName == WARP[0]:
+                slotType = data[1]
+                otype = []
+                maxSlot = 1
+                for n in sorted(data):
+                    if data[n] == slotType:
+                        maxSlot = n
+                        continue
+                    otype.append(data[n])
+                maxNode = len(data)
+                self.data = (tuple(otype), maxSlot, maxNode, slotType)
+            elif self.fileName == WARP[1]:
+                nodeList = sorted(data)
+                maxSlot = (
+                    nodeList[0] - 1
+                )  # vital assumption: all non slot nodes are linked
+                maxNode = nodeList[-1]
+                nodeRange = maxNode - maxSlot
+                nodesMapped = len(nodeList)
+                if nodeRange &gt; nodesMapped:
+                    self.tm.error(
+                        f&#34;ERROR: {WARP[1]} fails to map {nodeRange - nodesMapped} nodes&#34;
+                    )
+                    errors = True
+                elif nodeRange &lt; nodesMapped:
+                    # cannot happen because nodeList is a list of distinct keys
+                    # so the min and max values of these keys must differ at least as much
+                    # is the number of those keys
+                    pass
+                oslots = []
+                for n in nodeList:
+                    oslots.append(array(&#34;I&#34;, sorted(data[n])))
+                self.data = (tuple(oslots), maxSlot, maxNode)
+            elif isEdge:
+                seen = {}
+                datax = {}
+                if edgeValues:
+                    for (n, ms) in data.items():
+                        msx = {}
+                        for (m, v) in ms.items():
+                            if v not in seen:
+                                seen[v] = v
+                            msx[m] = seen[v]
+                        datax[n] = msx
+                else:
+                    for (n, ms) in data.items():
+                        msx = frozenset(ms)
+                        if msx not in seen:
+                            seen[msx] = msx
+                        datax[n] = seen[msx]
+                self.data = datax
+            else:
+                seen = {}
+                datax = {}
+                for (n, ms) in data.items():
+                    if ms not in seen:
+                        seen[ms] = ms
+                    datax[n] = seen[ms]
+                self.data = datax
+
+        return not errors
+
+    def _compute(self, metaOnly=False):
+        if metaOnly:
+            return True
+
+        good = True
+        for feature in self.dependencies:
+            if not feature.load():
+                good = False
+        if not good:
+            return False
+
+        def info(msg, tm=True):
+            self.tm.info(cmpFormat.format(msg), tm=tm, cache=-1)
+
+        def error(msg, tm=True):
+            self.tm.error(cmpFormat.format(msg), tm=tm)
+
+        cmpFormat = f&#34;c {self.fileName:&lt;20} {{}}&#34;
+        self.tm.indent(level=2, reset=True)
+
+        self.data = self.method(
+            info,
+            error,
+            *[
+                dep.metaData if dep.fileName == WARP[2] else dep.data
+                for dep in self.dependencies
+            ],
+        )
+        good = self.data is not None
+        if good:
+            self.dataLoaded = time.time()
+        return good
+
+    def _writeTf(
+        self,
+        dirName=None,
+        fileName=None,
+        overwrite=True,
+        extension=None,
+        metaOnly=False,
+        nodeRanges=False,
+    ):
+        self.tm.indent(level=1, reset=True)
+        metaOnly = metaOnly or self.isConfig
+
+        dirName = dirName or self.dirName
+        fileName = fileName or self.fileName
+        extension = extension or self.extension
+        if not os.path.exists(dirName):
+            try:
+                os.makedirs(dirName, exist_ok=True)
+            except Exception:
+                self.tm.error(f&#39;Cannot create directory &#34;{dirName}&#34;&#39;)
+                return False
+        fpath = f&#34;{dirName}/{fileName}{extension}&#34;
+        if fpath == self.path:
+            if os.path.exists(fpath):
+                if not overwrite:
+                    self.tm.error(
+                        f&#39;Feature file &#34;{fpath}&#34; already exists, feature will not be written&#39;
+                    )
+                    return False
+        try:
+            fh = open(fpath, &#34;w&#34;, encoding=&#34;utf8&#34;)
+        except Exception:
+            self.tm.error(f&#39;Cannot write to feature file &#34;{fpath}&#34;&#39;)
+            return False
+        fh.write(
+            &#34;@{}\n&#34;.format(
+                &#34;config&#34; if self.isConfig else &#34;edge&#34; if self.isEdge else &#34;node&#34;
+            )
+        )
+        if self.edgeValues:
+            fh.write(&#34;@edgeValues\n&#34;)
+        for meta in sorted(self.metaData):
+            fh.write(f&#34;@{meta}={self.metaData[meta]}\n&#34;)
+        fh.write(&#34;@writtenBy=Text-Fabric\n&#34;)
+        fh.write(
+            &#34;@dateWritten={}\n&#34;.format(
+                datetime.utcnow().replace(microsecond=0).isoformat() + &#34;Z&#34;
+            )
+        )
+        fh.write(&#34;\n&#34;)
+        self._setDataType()
+        good = True
+        if not metaOnly:
+            good = self._writeDataTf(fh, nodeRanges=nodeRanges)
+        fh.close()
+        msgFormat = &#34;{:&lt;1} {:&lt;20} to {}&#34;
+        if good:
+            self.tm.info(msgFormat.format(&#34;M&#34; if metaOnly else &#34;T&#34;, fileName, dirName))
+        else:
+            self.tm.error(msgFormat.format(&#34;M&#34; if metaOnly else &#34;T&#34;, fileName, dirName))
+        return good
+
+    def _writeDataTf(self, fh, nodeRanges=False):
+        data = self.data
+        if type(data) is tuple:
+            # just in case the WARP data is present as a sequence and not a dict
+            # in case it has been loaded from a binary representation
+            fName = self.fileName
+            if fName not in {WARP[0], WARP[1]}:
+                self.tm.error(&#34;Data type tuple not suitable for non-WARP feature&#34;)
+                return False
+            maxSlot = data[2] if fName == WARP[0] else data[1]
+            slotType = data[1] if fName == WARP[0] else None
+            data = data[0]
+            if fName == WARP[0]:
+                data = dict(((k, slotType) for k in range(1, maxSlot + 1)))
+                data.update(
+                    dict(((k + 1 + maxSlot, data[k]) for k in range(len(data))))
+                )
+            elif self.fileName == WARP[1]:
+                data = dict(((k + 1 + maxSlot, data[k]) for k in range(len(data))))
+        edgeValues = self.edgeValues
+        if self.isEdge:
+            implicitNode = 1
+            for n in sorted(data):
+                thisData = data[n]
+                sets = {}
+                if edgeValues:
+                    for m in thisData:
+                        sets.setdefault(thisData[m], set()).add(m)
+                    for (value, mset) in sorted(sets.items()):
+                        nodeSpec2 = specFromRanges(rangesFromSet(mset))
+                        nodeSpec = &#34;&#34; if n == implicitNode else n
+                        implicitNode = n + 1
+                        tfValue = value if value is None else tfFromValue(value)
+                        if tfValue is None:
+                            fh.write(
+                                &#34;{}{}{}\n&#34;.format(
+                                    nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, nodeSpec2,
+                                )
+                            )
+                        else:
+                            fh.write(
+                                &#34;{}{}{}\t{}\n&#34;.format(
+                                    nodeSpec,
+                                    &#34;\t&#34; if nodeSpec else &#34;&#34;,
+                                    nodeSpec2,
+                                    tfValue,
+                                )
+                            )
+                else:
+                    nodeSpec2 = specFromRanges(rangesFromSet(thisData))
+                    nodeSpec = &#34;&#34; if n == implicitNode else n
+                    implicitNode = n + 1
+                    fh.write(
+                        &#34;{}{}{}\n&#34;.format(nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, nodeSpec2)
+                    )
+        else:
+            sets = {}
+            if nodeRanges:
+                for n in sorted(data):
+                    sets.setdefault(data[n], []).append(n)
+                implicitNode = 1
+                for (value, nset) in sorted(
+                    sets.items(), key=lambda x: (x[1][0], x[1][-1])
+                ):
+                    if len(nset) == 1 and nset[0] == implicitNode:
+                        nodeSpec = &#34;&#34;
+                    else:
+                        nodeSpec = specFromRanges(rangesFromSet(nset))
+                    implicitNode = nset[-1]
+                    tfValue = value if value is None else tfFromValue(value)
+                    if tfValue is not None:
+                        fh.write(
+                            &#34;{}{}{}\n&#34;.format(
+                                nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, tfValue,
+                            )
+                        )
+            else:
+                implicitNode = 1
+                for n in sorted(data):
+                    nodeSpec = &#34;&#34; if n == implicitNode else n
+                    implicitNode = n + 1
+                    value = data[n]
+                    tfValue = value if value is None else tfFromValue(value)
+                    if tfValue is not None:
+                        fh.write(
+                            &#34;{}{}{}\n&#34;.format(
+                                nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, tfValue,
+                            )
+                        )
+        return True
+
+    def _readDataBin(self):
+        if not os.path.exists(self.binPath):
+            self.tm.error(f&#39;TF reading: feature file &#34;{self.binPath}&#34; does not exist&#39;)
+            return False
+        with gzip.open(self.binPath, &#34;rb&#34;) as f:
+            self.data = pickle.load(f)
+        self.dataLoaded = time.time()
+        return True
+
+    def cleanDataBin(self):
+        if os.path.exists(self.binPath):
+            os.unlink(self.binPath)
+
+    def _writeDataBin(self):
+        good = True
+        if not os.path.exists(self.binDir):
+            try:
+                os.makedirs(self.binDir, exist_ok=True)
+            except Exception:
+                self.tm.error(f&#39;Cannot create directory &#34;{self.binDir}&#34;&#39;)
+                good = False
+        if not good:
+            return False
+        try:
+            with gzip.open(self.binPath, &#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
+                pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
+        except Exception as e:
+            self.tm.error(f&#39;Cannot write to file &#34;{self.binPath}&#34; because: {str(e)}&#39;)
+            self.cleanDataBin()
+            good = False
+        self.dataLoaded = time.time()
+        return True
+
+    def _getModified(self, bin=False):
+        if bin:
+            return (
+                os.path.getmtime(self.binPath) if os.path.exists(self.binPath) else None
+            )
+        else:
+            if self.method:
+                depsInfo = [dep._getModified() for dep in self.dependencies]
+                depsModifieds = [d for d in depsInfo if d is not None]
+                depsModified = None if len(depsModifieds) == 0 else max(depsModifieds)
+                if depsModified is not None:
+                    return depsModified
+                elif os.path.exists(self.binPath):
+                    return os.path.getmtime(self.binPath)
+                else:
+                    return None
+            else:
+                if os.path.exists(self.path):
+                    return os.path.getmtime(self.path)
+                elif os.path.exists(self.binPath):
+                    return os.path.getmtime(self.binPath)
+                else:
+                    return None</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.core.data.Data.cleanDataBin"><code class="name flex">
+<span>def <span class="ident">cleanDataBin</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cleanDataBin(self):
+    if os.path.exists(self.binPath):
+        os.unlink(self.binPath)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.data.Data.load"><code class="name flex">
+<span>def <span class="ident">load</span></span>(<span>self, metaOnly=False, silent=None)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load(self, metaOnly=False, silent=None):
+    if silent is not None:
+        wasSilent = self.tm.isSilent()
+        self.tm.setSilent(silent)
+    self.tm.indent(level=1, reset=True)
+    origTime = self._getModified()
+    binTime = self._getModified(bin=True)
+    sourceRep = (
+        &#34;, &#34;.join(dep.fileName for dep in self.dependencies)
+        if self.method
+        else self.dirName
+    )
+    msgFormat = &#34;{:&lt;1} {:&lt;20} from {}&#34;
+    actionRep = &#34;&#34;
+    good = True
+
+    if self.dataError:
+        # there has been an error in an earlier
+        # computation/compiling/loading of this feature
+        actionRep = &#34;E&#34;
+        good = False
+    elif self.dataLoaded and (
+        self.isConfig
+        or (
+            (not origTime or self.dataLoaded &gt;= origTime)
+            and (not binTime or self.dataLoaded &gt;= binTime)
+        )
+    ):
+        actionRep = &#34;=&#34;  # loaded and up to date
+    elif not origTime and not binTime:
+        actionRep = &#34;X&#34;  # no source and no binary present
+        good = False
+    else:
+        try:
+            if not origTime:
+                actionRep = &#34;b&#34;
+                good = self._readDataBin()
+            elif not binTime or origTime &gt; binTime:
+                actionRep = &#34;C&#34; if self.method else &#34;T&#34;
+                good = (
+                    self._compute(metaOnly=metaOnly)
+                    if self.method
+                    else self._readTf(metaOnly=metaOnly)
+                )
+                if good:
+                    if self.isConfig or metaOnly:
+                        actionRep = &#34;M&#34;
+                    else:
+                        self._writeDataBin()
+            else:
+                actionRep = &#34;B&#34;
+                good = True if self.method else self._readTf(metaOnly=True)
+                if good:
+                    if self.isConfig or metaOnly:
+                        actionRep = &#34;M&#34;
+                    else:
+                        good = self._readDataBin()
+        except MemoryError:
+            console(MEM_MSG)
+            good = False
+    if self.isConfig:
+        self.cleanDataBin()
+    if good:
+        if actionRep != &#34;=&#34; and not (
+            actionRep == &#34;M&#34; or (actionRep == &#34;B&#34; and self.method)
+        ):
+            pass
+        self.tm.info(
+            msgFormat.format(actionRep, self.fileName, sourceRep),
+            cache=1 if actionRep in &#34;CT&#34; else -1,
+        )
+    else:
+        self.dataError = True
+        self.tm.error(msgFormat.format(actionRep, self.fileName, sourceRep))
+
+    if silent is not None:
+        self.tm.setSilent(wasSilent)
+    return good</code></pre>
+</details>
+</dd>
+<dt id="tf.core.data.Data.save"><code class="name flex">
+<span>def <span class="ident">save</span></span>(<span>self, overwrite=False, nodeRanges=False, silent=None)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=None):
+    if silent is not None:
+        wasSilent = self.tm.isSilent()
+        self.tm.setSilent(silent)
+    result = self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
+    if silent is not None:
+        self.tm.setSilent(wasSilent)
+    return result</code></pre>
+</details>
+</dd>
+<dt id="tf.core.data.Data.unload"><code class="name flex">
+<span>def <span class="ident">unload</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unload(self):
+    self.data = None
+    self.dataLoaded = False</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.core" href="index.html">tf.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.core.data.Data" href="#tf.core.data.Data">Data</a></code></h4>
+<ul class="">
+<li><code><a title="tf.core.data.Data.cleanDataBin" href="#tf.core.data.Data.cleanDataBin">cleanDataBin</a></code></li>
+<li><code><a title="tf.core.data.Data.load" href="#tf.core.data.Data.load">load</a></code></li>
+<li><code><a title="tf.core.data.Data.save" href="#tf.core.data.Data.save">save</a></code></li>
+<li><code><a title="tf.core.data.Data.unload" href="#tf.core.data.Data.unload">unload</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

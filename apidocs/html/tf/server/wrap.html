@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.2" />
+<title>tf.server.wrap API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.server.wrap</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import time
+import datetime
+
+from ..parameters import NAME, VERSION, DOI_TEXT, DOI_URL, APP_URL
+
+
+# NAVIGATION IN MULTIPLE ITEMS (PAGES, PASSAGES)
+
+
+def pageLinks(nResults, position, spread=10):
+    if spread &lt;= 1:
+        spread = 1
+    elif nResults == 0:
+        lines = []
+    elif nResults == 1:
+        lines = [(1,)]
+    elif nResults == 2:
+        lines = [(1, 2)]
+    else:
+        if position == 1 or position == nResults:
+            commonLine = (1, nResults)
+        else:
+            commonLine = (1, position, nResults)
+        lines = []
+
+        factor = 1
+        while factor &lt;= nResults:
+            curSpread = factor * spread
+            first = _coarsify(position - curSpread, curSpread)
+            last = _coarsify(position + curSpread, curSpread)
+
+            left = tuple(
+                n for n in range(first, last, factor) if n &gt; 0 and n &lt; position
+            )
+            right = tuple(
+                n for n in range(first, last, factor) if n &gt; position and n &lt;= nResults
+            )
+
+            both = tuple(
+                n for n in left + (position,) + right if n &gt; 0 and n &lt;= nResults
+            )
+
+            if len(both) &gt; 1:
+                lines.append(both)
+
+            factor *= spread
+
+        lines.append(commonLine)
+
+    html = &#34;\n&#34;.join(
+        &#39;&lt;div class=&#34;pline&#34;&gt;&#39;
+        + &#34; &#34;.join(
+            f&#39;&lt;a href=&#34;#&#34; class=&#34;pnav {&#34; focus&#34; if position == p else &#34;&#34;}&#34;&gt;{p}&lt;/a&gt;&#39;
+            for p in line
+        )
+        + &#34;&lt;/div&gt;&#34;
+        for line in reversed(lines)
+    )
+    return html
+
+
+def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
+    sec0s = []
+    sec1s = []
+    for s0 in passages[0]:
+        selected = str(s0) == str(sec0)
+        sec0s.append(
+            f&#39;&lt;a href=&#34;#&#34; class=&#34;s0nav {&#34; focus&#34; if selected else &#34;&#34;}&#34;&gt;{s0}&lt;/a&gt;&#39;
+        )
+    if sec0:
+        for s1 in passages[1]:
+            selected = str(s1) == str(sec1)
+            sec1s.append(
+                f&#39;&lt;a href=&#34;#&#34; class=&#34;s1nav {&#34; focus&#34; if selected else &#34;&#34;}&#34;&gt;{s1}&lt;/a&gt;&#39;
+            )
+    return f&#34;&#34;&#34;
+  &lt;div class=&#34;sline&#34;&gt;
+    &lt;span&gt;&lt;span id=&#34;s0total&#34;&gt;&lt;/span&gt; &lt;span class=&#34;s0total&#34;&gt;{sec0Type}s&lt;/span&gt;&lt;/span&gt;
+    {&#39;&#39;.join(sec0s)}
+  &lt;/div&gt;
+  &lt;div class=&#34;sline&#34;&gt;
+    {&#39;&#39;.join(sec1s)}
+  &lt;/div&gt;
+&#34;&#34;&#34;
+
+
+# OPTIONS
+
+
+def getValues(options, form):
+    values = {}
+    for (option, default, typ, acro, desc) in options:
+        value = form.get(option, None)
+        if typ == &#34;checkbox&#34;:
+            value = True if value else False
+        values[option] = value
+    return values
+
+
+def setValues(options, source, form, emptyRequest):
+    for (option, default, typ, acro, desc) in options:
+        # only apply the default value if the form is empty
+        # if the form is not empty, the absence of a checkbox value means
+        # that the checkbox is unchecked
+        # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox
+        value = source.get(option, default if emptyRequest else None)
+        if typ == &#34;checkbox&#34;:
+            value = True if value else False
+        form[option] = value
+
+
+def wrapOptions(options, values):
+    html = []
+    for (option, default, typ, acro, desc) in options:
+        value = values[option]
+        if typ == &#34;checkbox&#34;:
+            value = &#34;checked&#34; if value else &#34;&#34;
+        else:
+            value = f&#39;value=&#34;{value}&#34;&#39;
+        html.append(
+            f&#34;&#34;&#34;
+      &lt;div&gt;
+        &lt;input
+          class=&#34;r&#34; type=&#34;{typ}&#34; id=&#34;{acro}&#34; name=&#34;{option}&#34; {value}
+        /&gt; &lt;span class=&#34;ilab&#34;&gt;{desc}&lt;/span&gt;
+      &lt;/div&gt;&#34;&#34;&#34;
+        )
+    return &#34;\n&#34;.join(html)
+
+
+def wrapCondense(condenseTypes, value):
+    html = []
+    lastType = len(condenseTypes) - 1
+    for (i, (otype, av, b, e)) in enumerate(condenseTypes):
+        checked = &#34; checked &#34; if value == otype else &#34;&#34;
+        radio = (
+            &#39;&lt;span class=&#34;cradio&#34;&gt;&amp;nbsp;&lt;/span&gt;&#39;
+            if i == lastType
+            else f&#34;&#34;&#34;&lt;input class=&#34;r cradio&#34; type=&#34;radio&#34; id=&#34;ctp{i}&#34;
+              name=&#34;condenseTp&#34; value=&#34;{otype}&#34; {checked}
+            &#34;/&gt;&#34;&#34;&#34;
+        )
+        html.append(
+            f&#34;&#34;&#34;
+    &lt;div class=&#34;cline&#34;&gt;
+      {radio}
+      &lt;span class=&#34;ctype&#34;&gt;{otype}&lt;/span&gt;
+      &lt;span class=&#34;cinfo&#34;&gt;{e - b + 1: 8.6g} x av length {av: 4.2g}&lt;/span&gt;
+    &lt;/div&gt;
+  &#34;&#34;&#34;
+        )
+    return &#34;\n&#34;.join(html)
+
+
+def wrapFormats(textFormats, value):
+    html = []
+    for (i, fmt) in enumerate(textFormats):
+        checked = &#34; checked &#34; if value == fmt else &#34;&#34;
+        radio = f&#34;&#34;&#34;&lt;input class=&#34;r tradio&#34; type=&#34;radio&#34; id=&#34;ttp{i}&#34;
+              name=&#34;textformat&#34; value=&#34;{fmt}&#34; {checked}
+            &#34;/&gt;&#34;&#34;&#34;
+        html.append(
+            f&#34;&#34;&#34;
+    &lt;div class=&#34;tfline&#34;&gt;
+      {radio}
+      &lt;span class=&#34;ttext&#34;&gt;{fmt}&lt;/span&gt;
+    &lt;/div&gt;
+  &#34;&#34;&#34;
+        )
+    return &#34;\n&#34;.join(html)
+
+
+# PROVENANCE
+
+
+def wrapProvenance(form, provenance, setNames):
+    utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
+    utc_offset = datetime.timedelta(seconds=-utc_offset_sec)
+    now = (
+        datetime.datetime.now()
+        .replace(microsecond=0, tzinfo=datetime.timezone(offset=utc_offset))
+        .isoformat()
+    )
+    job = form[&#34;jobName&#34;]
+    author = form[&#34;author&#34;]
+
+    (appProvenance, dataProvenance) = provenance
+
+    appHtml = &#34;&#34;
+    appMd = &#34;&#34;
+    sep = &#34;&#34;
+
+    for d in appProvenance:
+        d = dict(d)
+        name = d[&#34;name&#34;]
+        commit = d[&#34;commit&#34;]
+        url = f&#34;{APP_URL}/app-{name}/tree/{commit}&#34;
+        liveHtml = f&#39;&lt;a href=&#34;{url}&#34;&gt;{commit}&lt;/a&gt;&#39;
+        liveMd = f&#34;[{commit}]({url})&#34;
+        appHtml += f&#34;&#34;&#34;
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;TF App:&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{name}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;commit&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{liveHtml}&lt;/div&gt;
+    &lt;/div&gt;
+&#34;&#34;&#34;
+        appMd += f&#34;&#34;&#34;{sep}TF app | {name}
+commit | {liveMd}&#34;&#34;&#34;
+        sep = &#34;\n&#34;
+
+    dataHtml = &#34;&#34;
+    dataMd = &#34;&#34;
+    sep = &#34;&#34;
+
+    for d in dataProvenance:
+        d = dict(d)
+        corpus = d[&#34;corpus&#34;]
+        version = d[&#34;version&#34;]
+        release = d[&#34;release&#34;]
+        (live, liveU) = d[&#34;live&#34;]
+        liveHtml = f&#39;&lt;a href=&#34;{liveU}&#34;&gt;{live}&lt;/a&gt;&#39;
+        liveMd = f&#34;[{live}]({liveU})&#34;
+        (doiText, doiUrl) = d[&#34;doi&#34;]
+        doiHtml = f&#39;&lt;a href=&#34;{doiUrl}&#34;&gt;{doiText}&lt;/a&gt;&#39;
+        doiMd = f&#34;[{doiText}]({doiUrl})&#34;
+        dataHtml += f&#34;&#34;&#34;
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Data:&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{corpus}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;version&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{version}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;release&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{release}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;download&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{liveHtml}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;DOI&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{doiHtml}&lt;/div&gt;
+    &lt;/div&gt;
+&#34;&#34;&#34;
+        dataMd += f&#34;&#34;&#34;{sep}Data source | {corpus}
+version | {version}
+release | {release}
+download   | {liveMd}
+DOI | {doiMd}&#34;&#34;&#34;
+        sep = &#34;\n&#34;
+
+    setHtml = &#34;&#34;
+    setMd = &#34;&#34;
+
+    if setNames:
+        setNamesRep = &#34;, &#34;.join(setNames)
+        setHtml += f&#34;&#34;&#34;
+    &lt;div class=&#34;psline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Sets:&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{setNamesRep} (&lt;b&gt;not exported&lt;/b&gt;)&lt;/div&gt;
+    &lt;/div&gt;
+&#34;&#34;&#34;
+        setMd += f&#34;&#34;&#34;Sets | {setNamesRep} (**not exported**)&#34;&#34;&#34;
+
+    tool = f&#34;{NAME} {VERSION}&#34;
+    toolDoiHtml = f&#39;&lt;a href=&#34;{DOI_URL}&#34;&gt;{DOI_TEXT}&lt;/a&gt;&#39;
+    toolDoiMd = f&#34;[{DOI_TEXT}]({DOI_URL})&#34;
+
+    html = f&#34;&#34;&#34;
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Job:&lt;/div&gt;&lt;div class=&#34;pval&#34;&gt;{job}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Author:&lt;/div&gt;&lt;div class=&#34;pval&#34;&gt;{author}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Created:&lt;/div&gt;&lt;div class=&#34;pval&#34;&gt;{now}&lt;/div&gt;
+    &lt;/div&gt;
+    {dataHtml}
+    {setHtml}
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Tool:&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{tool} {toolDoiHtml}&lt;/div&gt;
+    &lt;/div&gt;
+    {appHtml}
+  &#34;&#34;&#34;
+
+    md = f&#34;&#34;&#34;
+meta | data
+--- | ---
+Job | {job}
+Author | {author}
+Created | {now}
+{dataMd}
+{setMd}
+Tool | {tool} {toolDoiMd}
+{appMd}
+&#34;&#34;&#34;
+
+    return (html, md)
+
+
+# LOWER LEVEL
+
+
+def _coarsify(n, spread):
+    nAbs = int(round(abs(n) / spread)) * spread
+    return nAbs if n &gt;= 0 else -nAbs</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.server.wrap.getValues"><code class="name flex">
+<span>def <span class="ident">getValues</span></span>(<span>options, form)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getValues(options, form):
+    values = {}
+    for (option, default, typ, acro, desc) in options:
+        value = form.get(option, None)
+        if typ == &#34;checkbox&#34;:
+            value = True if value else False
+        values[option] = value
+    return values</code></pre>
+</details>
+</dd>
+<dt id="tf.server.wrap.pageLinks"><code class="name flex">
+<span>def <span class="ident">pageLinks</span></span>(<span>nResults, position, spread=10)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def pageLinks(nResults, position, spread=10):
+    if spread &lt;= 1:
+        spread = 1
+    elif nResults == 0:
+        lines = []
+    elif nResults == 1:
+        lines = [(1,)]
+    elif nResults == 2:
+        lines = [(1, 2)]
+    else:
+        if position == 1 or position == nResults:
+            commonLine = (1, nResults)
+        else:
+            commonLine = (1, position, nResults)
+        lines = []
+
+        factor = 1
+        while factor &lt;= nResults:
+            curSpread = factor * spread
+            first = _coarsify(position - curSpread, curSpread)
+            last = _coarsify(position + curSpread, curSpread)
+
+            left = tuple(
+                n for n in range(first, last, factor) if n &gt; 0 and n &lt; position
+            )
+            right = tuple(
+                n for n in range(first, last, factor) if n &gt; position and n &lt;= nResults
+            )
+
+            both = tuple(
+                n for n in left + (position,) + right if n &gt; 0 and n &lt;= nResults
+            )
+
+            if len(both) &gt; 1:
+                lines.append(both)
+
+            factor *= spread
+
+        lines.append(commonLine)
+
+    html = &#34;\n&#34;.join(
+        &#39;&lt;div class=&#34;pline&#34;&gt;&#39;
+        + &#34; &#34;.join(
+            f&#39;&lt;a href=&#34;#&#34; class=&#34;pnav {&#34; focus&#34; if position == p else &#34;&#34;}&#34;&gt;{p}&lt;/a&gt;&#39;
+            for p in line
+        )
+        + &#34;&lt;/div&gt;&#34;
+        for line in reversed(lines)
+    )
+    return html</code></pre>
+</details>
+</dd>
+<dt id="tf.server.wrap.passageLinks"><code class="name flex">
+<span>def <span class="ident">passageLinks</span></span>(<span>passages, sec0Type, sec0, sec1, tillLevel)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
+    sec0s = []
+    sec1s = []
+    for s0 in passages[0]:
+        selected = str(s0) == str(sec0)
+        sec0s.append(
+            f&#39;&lt;a href=&#34;#&#34; class=&#34;s0nav {&#34; focus&#34; if selected else &#34;&#34;}&#34;&gt;{s0}&lt;/a&gt;&#39;
+        )
+    if sec0:
+        for s1 in passages[1]:
+            selected = str(s1) == str(sec1)
+            sec1s.append(
+                f&#39;&lt;a href=&#34;#&#34; class=&#34;s1nav {&#34; focus&#34; if selected else &#34;&#34;}&#34;&gt;{s1}&lt;/a&gt;&#39;
+            )
+    return f&#34;&#34;&#34;
+  &lt;div class=&#34;sline&#34;&gt;
+    &lt;span&gt;&lt;span id=&#34;s0total&#34;&gt;&lt;/span&gt; &lt;span class=&#34;s0total&#34;&gt;{sec0Type}s&lt;/span&gt;&lt;/span&gt;
+    {&#39;&#39;.join(sec0s)}
+  &lt;/div&gt;
+  &lt;div class=&#34;sline&#34;&gt;
+    {&#39;&#39;.join(sec1s)}
+  &lt;/div&gt;
+&#34;&#34;&#34;</code></pre>
+</details>
+</dd>
+<dt id="tf.server.wrap.setValues"><code class="name flex">
+<span>def <span class="ident">setValues</span></span>(<span>options, source, form, emptyRequest)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setValues(options, source, form, emptyRequest):
+    for (option, default, typ, acro, desc) in options:
+        # only apply the default value if the form is empty
+        # if the form is not empty, the absence of a checkbox value means
+        # that the checkbox is unchecked
+        # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox
+        value = source.get(option, default if emptyRequest else None)
+        if typ == &#34;checkbox&#34;:
+            value = True if value else False
+        form[option] = value</code></pre>
+</details>
+</dd>
+<dt id="tf.server.wrap.wrapCondense"><code class="name flex">
+<span>def <span class="ident">wrapCondense</span></span>(<span>condenseTypes, value)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def wrapCondense(condenseTypes, value):
+    html = []
+    lastType = len(condenseTypes) - 1
+    for (i, (otype, av, b, e)) in enumerate(condenseTypes):
+        checked = &#34; checked &#34; if value == otype else &#34;&#34;
+        radio = (
+            &#39;&lt;span class=&#34;cradio&#34;&gt;&amp;nbsp;&lt;/span&gt;&#39;
+            if i == lastType
+            else f&#34;&#34;&#34;&lt;input class=&#34;r cradio&#34; type=&#34;radio&#34; id=&#34;ctp{i}&#34;
+              name=&#34;condenseTp&#34; value=&#34;{otype}&#34; {checked}
+            &#34;/&gt;&#34;&#34;&#34;
+        )
+        html.append(
+            f&#34;&#34;&#34;
+    &lt;div class=&#34;cline&#34;&gt;
+      {radio}
+      &lt;span class=&#34;ctype&#34;&gt;{otype}&lt;/span&gt;
+      &lt;span class=&#34;cinfo&#34;&gt;{e - b + 1: 8.6g} x av length {av: 4.2g}&lt;/span&gt;
+    &lt;/div&gt;
+  &#34;&#34;&#34;
+        )
+    return &#34;\n&#34;.join(html)</code></pre>
+</details>
+</dd>
+<dt id="tf.server.wrap.wrapFormats"><code class="name flex">
+<span>def <span class="ident">wrapFormats</span></span>(<span>textFormats, value)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def wrapFormats(textFormats, value):
+    html = []
+    for (i, fmt) in enumerate(textFormats):
+        checked = &#34; checked &#34; if value == fmt else &#34;&#34;
+        radio = f&#34;&#34;&#34;&lt;input class=&#34;r tradio&#34; type=&#34;radio&#34; id=&#34;ttp{i}&#34;
+              name=&#34;textformat&#34; value=&#34;{fmt}&#34; {checked}
+            &#34;/&gt;&#34;&#34;&#34;
+        html.append(
+            f&#34;&#34;&#34;
+    &lt;div class=&#34;tfline&#34;&gt;
+      {radio}
+      &lt;span class=&#34;ttext&#34;&gt;{fmt}&lt;/span&gt;
+    &lt;/div&gt;
+  &#34;&#34;&#34;
+        )
+    return &#34;\n&#34;.join(html)</code></pre>
+</details>
+</dd>
+<dt id="tf.server.wrap.wrapOptions"><code class="name flex">
+<span>def <span class="ident">wrapOptions</span></span>(<span>options, values)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def wrapOptions(options, values):
+    html = []
+    for (option, default, typ, acro, desc) in options:
+        value = values[option]
+        if typ == &#34;checkbox&#34;:
+            value = &#34;checked&#34; if value else &#34;&#34;
+        else:
+            value = f&#39;value=&#34;{value}&#34;&#39;
+        html.append(
+            f&#34;&#34;&#34;
+      &lt;div&gt;
+        &lt;input
+          class=&#34;r&#34; type=&#34;{typ}&#34; id=&#34;{acro}&#34; name=&#34;{option}&#34; {value}
+        /&gt; &lt;span class=&#34;ilab&#34;&gt;{desc}&lt;/span&gt;
+      &lt;/div&gt;&#34;&#34;&#34;
+        )
+    return &#34;\n&#34;.join(html)</code></pre>
+</details>
+</dd>
+<dt id="tf.server.wrap.wrapProvenance"><code class="name flex">
+<span>def <span class="ident">wrapProvenance</span></span>(<span>form, provenance, setNames)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def wrapProvenance(form, provenance, setNames):
+    utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
+    utc_offset = datetime.timedelta(seconds=-utc_offset_sec)
+    now = (
+        datetime.datetime.now()
+        .replace(microsecond=0, tzinfo=datetime.timezone(offset=utc_offset))
+        .isoformat()
+    )
+    job = form[&#34;jobName&#34;]
+    author = form[&#34;author&#34;]
+
+    (appProvenance, dataProvenance) = provenance
+
+    appHtml = &#34;&#34;
+    appMd = &#34;&#34;
+    sep = &#34;&#34;
+
+    for d in appProvenance:
+        d = dict(d)
+        name = d[&#34;name&#34;]
+        commit = d[&#34;commit&#34;]
+        url = f&#34;{APP_URL}/app-{name}/tree/{commit}&#34;
+        liveHtml = f&#39;&lt;a href=&#34;{url}&#34;&gt;{commit}&lt;/a&gt;&#39;
+        liveMd = f&#34;[{commit}]({url})&#34;
+        appHtml += f&#34;&#34;&#34;
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;TF App:&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{name}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;commit&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{liveHtml}&lt;/div&gt;
+    &lt;/div&gt;
+&#34;&#34;&#34;
+        appMd += f&#34;&#34;&#34;{sep}TF app | {name}
+commit | {liveMd}&#34;&#34;&#34;
+        sep = &#34;\n&#34;
+
+    dataHtml = &#34;&#34;
+    dataMd = &#34;&#34;
+    sep = &#34;&#34;
+
+    for d in dataProvenance:
+        d = dict(d)
+        corpus = d[&#34;corpus&#34;]
+        version = d[&#34;version&#34;]
+        release = d[&#34;release&#34;]
+        (live, liveU) = d[&#34;live&#34;]
+        liveHtml = f&#39;&lt;a href=&#34;{liveU}&#34;&gt;{live}&lt;/a&gt;&#39;
+        liveMd = f&#34;[{live}]({liveU})&#34;
+        (doiText, doiUrl) = d[&#34;doi&#34;]
+        doiHtml = f&#39;&lt;a href=&#34;{doiUrl}&#34;&gt;{doiText}&lt;/a&gt;&#39;
+        doiMd = f&#34;[{doiText}]({doiUrl})&#34;
+        dataHtml += f&#34;&#34;&#34;
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Data:&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{corpus}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;version&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{version}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;release&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{release}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;download&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{liveHtml}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;DOI&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{doiHtml}&lt;/div&gt;
+    &lt;/div&gt;
+&#34;&#34;&#34;
+        dataMd += f&#34;&#34;&#34;{sep}Data source | {corpus}
+version | {version}
+release | {release}
+download   | {liveMd}
+DOI | {doiMd}&#34;&#34;&#34;
+        sep = &#34;\n&#34;
+
+    setHtml = &#34;&#34;
+    setMd = &#34;&#34;
+
+    if setNames:
+        setNamesRep = &#34;, &#34;.join(setNames)
+        setHtml += f&#34;&#34;&#34;
+    &lt;div class=&#34;psline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Sets:&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{setNamesRep} (&lt;b&gt;not exported&lt;/b&gt;)&lt;/div&gt;
+    &lt;/div&gt;
+&#34;&#34;&#34;
+        setMd += f&#34;&#34;&#34;Sets | {setNamesRep} (**not exported**)&#34;&#34;&#34;
+
+    tool = f&#34;{NAME} {VERSION}&#34;
+    toolDoiHtml = f&#39;&lt;a href=&#34;{DOI_URL}&#34;&gt;{DOI_TEXT}&lt;/a&gt;&#39;
+    toolDoiMd = f&#34;[{DOI_TEXT}]({DOI_URL})&#34;
+
+    html = f&#34;&#34;&#34;
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Job:&lt;/div&gt;&lt;div class=&#34;pval&#34;&gt;{job}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Author:&lt;/div&gt;&lt;div class=&#34;pval&#34;&gt;{author}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Created:&lt;/div&gt;&lt;div class=&#34;pval&#34;&gt;{now}&lt;/div&gt;
+    &lt;/div&gt;
+    {dataHtml}
+    {setHtml}
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Tool:&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{tool} {toolDoiHtml}&lt;/div&gt;
+    &lt;/div&gt;
+    {appHtml}
+  &#34;&#34;&#34;
+
+    md = f&#34;&#34;&#34;
+meta | data
+--- | ---
+Job | {job}
+Author | {author}
+Created | {now}
+{dataMd}
+{setMd}
+Tool | {tool} {toolDoiMd}
+{appMd}
+&#34;&#34;&#34;
+
+    return (html, md)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.server" href="index.html">tf.server</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="tf.server.wrap.getValues" href="#tf.server.wrap.getValues">getValues</a></code></li>
+<li><code><a title="tf.server.wrap.pageLinks" href="#tf.server.wrap.pageLinks">pageLinks</a></code></li>
+<li><code><a title="tf.server.wrap.passageLinks" href="#tf.server.wrap.passageLinks">passageLinks</a></code></li>
+<li><code><a title="tf.server.wrap.setValues" href="#tf.server.wrap.setValues">setValues</a></code></li>
+<li><code><a title="tf.server.wrap.wrapCondense" href="#tf.server.wrap.wrapCondense">wrapCondense</a></code></li>
+<li><code><a title="tf.server.wrap.wrapFormats" href="#tf.server.wrap.wrapFormats">wrapFormats</a></code></li>
+<li><code><a title="tf.server.wrap.wrapOptions" href="#tf.server.wrap.wrapOptions">wrapOptions</a></code></li>
+<li><code><a title="tf.server.wrap.wrapProvenance" href="#tf.server.wrap.wrapProvenance">wrapProvenance</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
