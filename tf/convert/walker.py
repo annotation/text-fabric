@@ -466,7 +466,7 @@ class CV(object):
                     else:
                         intFeatures.discard(feat)
 
-        self.good = self._checkFeatMeta(feat, featMeta) and good
+        self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
 
     def linked(self, node):
         oslots = self.oslots

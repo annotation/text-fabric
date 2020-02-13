@@ -42,6 +42,30 @@
 
 ---
 
+# 7.10
+
+2020-02-13
+
+GitHub is deprecating its token system for authentication when using the GitHub API.
+Text-Fabric uses the GitHub API to fetch data from repositories.
+In order to increase the rate limit from 50 x per hour to 5000 x per hour, users
+were advised to create a pair of client-id and client-token strings.
+
+The advise is now: create a personal access token.
+
+See
+[Rate limiting](../Api/Repo.md)
+(scroll to the end).
+
+# 7.9.1-2
+
+2020-02-13
+
+Fixed a few bugs in the `cv.stop()` function in the
+[walker conversion](https://annotation.github.io/text-fabric/Create/Convert/)
+
+Thanks to Ernst Boogert for spotting them.
+
 # 7.9
 
 2019-12-16

@@ -573,9 +573,30 @@ class Checkout(object):
 
     def connect(self):
         if not self.ghConn:
-            ghClient = os.environ.get("GHCLIENT", None)
-            ghSecret = os.environ.get("GHSECRET", None)
-            self.ghConn = Github(client_id=ghClient, client_secret=ghSecret)
+            ghPerson = os.environ.get("GHPERS", None)
+            if ghPerson:
+                self.ghConn = Github(ghPerson)
+            else:
+                ghClient = os.environ.get("GHCLIENT", None)
+                ghSecret = os.environ.get("GHSECRET", None)
+                if ghClient and ghSecret:
+                    self.ghConn = Github(client_id=ghClient, client_secret=ghSecret)
+                else:
+                    self.ghConn = Github()
+            rate = self.ghConn.get_rate_limit().core
+            self.log(
+                f"rate limit is {rate.limit} requests per hour,"
+                f" with {rate.remaining} left for this hour"
+            )
+            if rate.limit < 100:
+                self.log(
+                    (
+                        f"To increase the rate,"
+                        f"see https://annotation.github.io/text-fabric/Api/Repo/"
+                    ),
+                    error=True,
+                )
+
         try:
             self.log(
                 f"\tconnecting to online GitHub repo {self.org}/{self.repo} ... ",

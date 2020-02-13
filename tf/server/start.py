@@ -212,10 +212,10 @@ def killProcesses(dataSource, checkoutApp, checkout, modules, sets, kill=False):
     for ((ds, (chkA, chk, mods, sets)), kinds) in tfProcs.items():
         if dataSource is None or (
             ds == dataSource
-            and chkA == checkoutApp
-            and chk == checkout
-            and mods == modules
-            and sts == sets
+            # and chkA == checkoutApp
+            # and chk == checkout
+            # and mods == modules
+            # and sts == sets
         ):
             checkKinds = ("data", "web", "tf")
             for kind in checkKinds:
@@ -339,17 +339,22 @@ def main(cargs=sys.argv):
             if line.rstrip() == TF_DONE:
                 break
         sleep(1)
+        stopped = pKernel.poll()
 
-        pWeb = Popen([pythonExe, "-m", f"tf.server.web", *ddataSource], bufsize=0,)
+        if not stopped:
 
-        if not noweb:
-            sleep(2)
-            console(f"Opening {dataSource} in browser")
-            webbrowser.open(
-                f'{config.PROTOCOL}{config.HOST}:{config.PORT["web"]}',
-                new=2,
-                autoraise=True,
-            )
+            pWeb = Popen([pythonExe, "-m", f"tf.server.web", *ddataSource], bufsize=0,)
+
+            if not noweb:
+                sleep(2)
+                stopped = pWeb.poll() or pKernel.poll()
+                if not stopped:
+                    console(f"Opening {dataSource} in browser")
+                    webbrowser.open(
+                        f'{config.PROTOCOL}{config.HOST}:{config.PORT["web"]}',
+                        new=2,
+                        autoraise=True,
+                    )
 
         if pWeb and pKernel:
             try:

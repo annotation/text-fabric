@@ -82,14 +82,47 @@
     GitHub has a rate limiting policy for its API of max 60 calls per hour.
 
     If you use this function in an application of yours that uses it very often,
-    you can increase the limits by making yourself known.
+    you can increase the limit to 5000 calls per hour by making yourself known.
 
     * [Read more about rate limiting on Github]({{ghrate}})
-    * [register your app with GitHub]({{ghappreg}})
-    * Obtain your client-id and client-secret and put them
-      in environment variables named `GHCLIENT` and `GHSECRET`
+    * [create a personal access token]({{ghapppers}})
+    * Copy your token and put it in an environment variable named `GHPERS`
       on the system where your app runs.
-    * If `checkRepo()` finds these variables, it will add the
-      credentials to every GitHub API call it makes, and that will
+      See below how to do that.
+    * If `checkRepo()` finds this variable, it will add the
+      token to every GitHub API call it makes, and that will
       increase the rate.
-    * Never pass your personal credentials on to your clients!
+    * Never pass your personal credentials on to others, let them obtain their own!
+
+    How to put your personal access token into an environment variable?
+
+    ??? hint "On Mac and Linux"
+        Open your `.zshrc` or `.bashrc` file in your home directory,
+        and put the following lines in it:
+
+        ``` sh
+        GHPERS="xxx"
+        export GHPERS
+        ```
+
+        where the `xxx` are replaced by your actual token.
+
+        Then restart your shell.
+
+    ??? hint "On Windows"
+        Click on the Start button and type in `environment variable` into the search box.
+
+        Click on `Edit the system environment variables`.
+
+        This will  open up the System Properties dialog to the Advanced tab.
+
+        Click on the `Environment Variables button` at the bottom.
+
+        Click on `New ...` under `User environment variables`.
+
+        Then fill in `GHPERS` under *name* and the token string under *value*.
+
+        Then quit the command prompt and start a new one.
+
+    With this done, you will automatically get the good rate limit,
+    whenever you fire up Text-Fabric in the future.

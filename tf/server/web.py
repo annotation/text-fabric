@@ -1,4 +1,5 @@
 import os
+import sys
 
 
 from flask import Flask, send_file
@@ -118,24 +119,30 @@ def factory(setup):
 def main():
     (dataSource, checkoutApp) = argParam(interactive=True)
     if dataSource is None:
-        return
+        return 1
 
     if dataSource is not None:
-        debug = argDebug()
-        setup = Setup(dataSource, checkoutApp)
-        config = setup.config
-        if config is not None:
-            onDocker = argDocker()
-            console(f"onDocker={onDocker}")
-            webapp = factory(setup)
-            run_simple(
-                "0.0.0.0" if onDocker else config.HOST,
-                config.PORT["web"],
-                webapp,
-                use_reloader=False,
-                use_debugger=debug,
-            )
+        try:
+            debug = argDebug()
+            setup = Setup(dataSource, checkoutApp)
+            config = setup.config
+            if config is not None:
+                onDocker = argDocker()
+                console(f"onDocker={onDocker}")
+                webapp = factory(setup)
+                run_simple(
+                    "0.0.0.0" if onDocker else config.HOST,
+                    config.PORT["web"],
+                    webapp,
+                    use_reloader=False,
+                    use_debugger=debug,
+                )
+        except OSError as e:
+            console(str(e))
+            return 1
+
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
