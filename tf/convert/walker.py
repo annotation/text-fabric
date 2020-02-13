@@ -54,6 +54,7 @@ class CV(object):
         error = self.TF.tm.error
         info = self.TF.tm.info
         indent = self.TF.tm.indent
+        forcedStop = self.forcedStop
 
         errors = self.errors
 
@@ -67,7 +68,9 @@ class CV(object):
             self.errors = {}
             self.good = False
 
-        if not errors:
+        if forcedStop:
+            error("STOPPED by the stop() instruction")
+        elif not errors:
             if self.good:
                 info("OK")
             else:
@@ -93,6 +96,7 @@ class CV(object):
 
         self.force = force
         self.good = True
+        self.forcedStop = False
         self.errors = collections.defaultdict(list)
         self.warnings = collections.defaultdict(list)
         self.warn = warn
@@ -343,6 +347,7 @@ class CV(object):
         error(f"Forced stop: {msg}")
         self.good = False
         self.force = False
+        self.forcedStop = True
 
     def slot(self):
         curSeq = self.curSeq

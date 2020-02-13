@@ -42,7 +42,7 @@
 
 ---
 
-# 7.10
+# 7.10, 7.10.1
 
 2020-02-13
 
@@ -56,6 +56,8 @@ The advise is now: create a personal access token.
 See
 [Rate limiting](../Api/Repo.md)
 (scroll to the end).
+
+Also: a bug fix to the walker conversion, again: thanks Ernst for spotting it.
 
 # 7.9.1-2
 
