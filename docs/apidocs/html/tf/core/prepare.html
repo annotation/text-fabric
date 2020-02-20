@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.2" />
 <title>tf.core.prepare API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Functions that precompute data …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,17 +20,66 @@
 <h1 class="title">Module <code>tf.core.prepare</code></h1>
 </header>
 <section id="section-intro">
+<p>Functions that precompute data.</p>
+<p>For Text-Fabric to work efficiently, some
+derived data needs to be precomputed.
+The precomputed data has a similar function as indexes in a database.</p>
+<p>Precomputation is triggered when <a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric"><code>Fabric</code></a> loads features, and
+the order and nature of the steps is configured in
+<a title="tf.fabric.PRECOMPUTE" href="../fabric.html#tf.fabric.PRECOMPUTE"><code>PRECOMPUTE</code></a>.</p>
+<p>The functions in this module implement those tasks.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from array import array
+<pre><code class="python">&#34;&#34;&#34;Functions that precompute data.
+
+For Text-Fabric to work efficiently, some  derived data needs to be precomputed.
+The precomputed data has a similar function as indexes in a database.
+
+Precomputation is triggered when `tf.fabric.Fabric` loads features, and
+the order and nature of the steps is configured in
+`tf.fabric.PRECOMPUTE`.
+
+The functions in this module implement those tasks.
+&#34;&#34;&#34;
+
+from array import array
 import collections
 import functools
 from .helpers import itemize
 
 
 def levels(info, error, otype, oslots, otext):
+    &#34;&#34;&#34;Computes level data.
+
+    For each node type, compute the average number of slots occupied by its nodes,
+    and order the node types on that.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    otext: iterable
+        The data of the *otext* feature.
+
+    Returns
+    -------
+    tuple
+        An ordered tuple, each member with the information of a node type:
+
+        *   node type name
+        *   average number of slots contained in the nodes of this type
+        *   first node of this type
+        *   last node of this type
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     levelOrder = otext.get(&#34;levels&#34;, None)
@@ -73,6 +122,36 @@ def levels(info, error, otype, oslots, otext):
 
 
 def order(info, error, otype, oslots, levels):
+    &#34;&#34;&#34;Computes order data.
+
+    The canonical ordering between nodes is defined in terms of the slots that
+    nodes contain.
+
+    A node *A*  comes before a node *B* if, *A* contains the smallest slot
+    that occurs in only one of *A* and *B*.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    levels: tuple
+        The data of the *levels* precompute step.
+
+    Returns
+    -------
+    array
+        All nodes, slot and nonslot, in canonical order.
+
+    We store the result in an array because it saves a lot of memory, and access
+    is still fast.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     info(&#34;assigning otype levels to nodes&#34;)
@@ -113,6 +192,31 @@ def order(info, error, otype, oslots, levels):
 
 
 def rank(info, error, otype, order):
+    &#34;&#34;&#34;Computes rank data.
+
+    The rank of a node is its place in among the other nodes in the
+    canonical ordering (see `order`).
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    order: array
+        The data of the *order* feature.
+
+    Returns
+    -------
+    array
+        The ranks of all nodes, slot and nonslot, with respect to the canonical order.
+
+    We store the result in an array because it saves a lot of memory, and access
+    is still fast.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     info(&#34;ranking nodes&#34;)
     nodesRank = dict(((n, i) for (i, n) in enumerate(order)))
@@ -120,6 +224,37 @@ def rank(info, error, otype, order):
 
 
 def levUp(info, error, otype, oslots, rank):
+    &#34;&#34;&#34;Computes level-up data.
+
+    Level-up data is used by the API function `tf.core.locality.Locality.u`.
+
+    This function computes the embedders of a node by looking them up from
+    the level-up data.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    rank: array
+        The data of the *rank* precompute step.
+
+    Returns
+    -------
+    tuple
+        The n-th member is an array of the embedder nodes of n.
+        Those arrays are sorted in canonical ordering.
+
+    !!! hint &#34;Memory efficiency&#34;
+        Many nodes have the same array of embedders.
+        Those embedder arrays will be reused for those nodes.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     info(&#34;making inverse of edge feature oslots&#34;)
@@ -165,6 +300,38 @@ def levUp(info, error, otype, oslots, rank):
 
 
 def levDown(info, error, otype, levUp, rank):
+    &#34;&#34;&#34;Computes level-down data.
+
+    Level-down data is used by the API function `tf.core.locality.Locality.d`.
+
+    This function computes the embedded nodes of a node by looking them up from
+    the level-down data.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    levUp: iterable
+        The data of the *levUp* precompute step.
+    rank: array
+        The data of the *rank* precompute step.
+
+    Returns
+    -------
+    tuple
+        The *n*-th member is an array of the embedded nodes of *n + maxSlot*.
+        Those arrays are sorted in canonical ordering.
+
+    !!! hint &#34;Memory efficiency&#34;
+        Slot nodes do not have embedded nodes, so they do not have to occupy
+        space in this tuple. Hence the first member are the embedded nodes
+        of node *maxSlot + 1*.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     info(&#34;inverting embedders&#34;)
     inverse = {}
@@ -181,6 +348,43 @@ def levDown(info, error, otype, levUp, rank):
 
 
 def boundary(info, error, otype, oslots, rank):
+    &#34;&#34;&#34;Computes boundary data.
+
+    For each slot, the nodes that start at that slot and the nodes that end
+    at that slot are collected.
+
+    Boundary data is used by the API functions
+    `tf.core.locality.Locality.l`.
+    and
+    `tf.core.locality.Locality.r`.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    rank: array
+        The data of the *rank* precompute step.
+
+    Returns
+    -------
+    tuple
+        *   first: tuple of array
+            The *n*-th member is the array of nodes that start at slot *n*,
+            ordered in *reversed* canonical ordering;
+        *   last: tuple of array
+            The *n*-th member is the array of nodes that end at slot *n*,
+            ordered in canonical ordering;
+
+    !!! hint &#34;why  reversed canonical ordering&#34;
+        Just for symmetry.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     firstSlotsD = {}
@@ -201,6 +405,51 @@ def boundary(info, error, otype, oslots, rank):
 
 
 def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
+    &#34;&#34;&#34;Computes section data.
+
+    Text-Fabric datasets may define up to three section levels, roughly corresponding
+    with a volume, a chapter, a paragraph.
+
+    If the corpus has a richer section structure, it is also possible
+    a different, more flexible and more extensive nest of structural sections.
+    See `structure`.
+
+    Text-Fabric must be able to go from sections at one level to the sections
+    at one level lower. It must also be able to map section headings
+    to nodes. For this, the section features are needed, since they
+    contain the section headings.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    otext: iterable
+        The data of the *otext* feature.
+    levUp: array
+        The data of the *levUp* precompute step.
+    levels: array
+        The data of the *levels* precompute step.
+    sFeats: iterable
+        The names of section features.
+
+    Returns
+    -------
+    tuple
+        *   sec1
+            Mapping from section-level-1 nodes to mappings from
+            section-level-2 headings to section-level2 nodes.
+        *   sec2
+            Mapping from section-level-1 nodes to mappings from
+            section-level-2 headings to mappings from
+            section-level3 headings to section-level-3 nodes.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     support = dict(((o[0], (o[2], o[3])) for o in levels))
@@ -269,6 +518,58 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
 
 
 def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
+    &#34;&#34;&#34;Computes structure data.
+
+    If the corpus has a rich section structure, it is possible to define
+    a flexible and extensive nest of structural sections.
+
+    Independent of this,
+    Text-Fabric datasets may also define up to three section levels,
+    roughly corresponding with a volume, a chapter, a paragraph.
+    See `sections`.
+
+    Text-Fabric must be able to go from sections at one level to the sections
+    at one level lower. It must also be able to map section headings
+    to nodes. For this, the section features are needed, since they
+    contain the section headings.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    otext: iterable
+        The data of the *otext* feature.
+    rank: array
+        The data of the *rank* precompute step.
+    levUp: array
+        The data of the *levUp* precompute step.
+    sFeats: iterable
+        The names of structural features.
+
+    Returns
+    -------
+    tuple
+        *   headingFromNode
+            Mapping from section keys to nodes
+        *   nodeFromHeading
+            Mapping from nodes to section keys
+        *   multiple
+        *   top
+        *   up
+        *   down
+
+    A section key of a structural node is obtained by going a level up from
+    that node, retrieving the heading of that structural node, then going up again,
+    and so on till a top node is reached. The tuple of headings obtained in this way
+    is the  section key.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     sTypeList = itemize(otext[&#34;structureTypes&#34;], &#34;,&#34;)
@@ -367,12 +668,87 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
 <span>def <span class="ident">boundary</span></span>(<span>info, error, otype, oslots, rank)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Computes boundary data.</p>
+<p>For each slot, the nodes that start at that slot and the nodes that end
+at that slot are collected.</p>
+<p>Boundary data is used by the API functions
+<code>tf.core.locality.Locality.l</code>.
+and
+<code>tf.core.locality.Locality.r</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write informational messages to the console.</dd>
+<dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write error messages to the console.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>otype</em> feature.</dd>
+<dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>oslots</em> feature.</dd>
+<dt><strong><a title="tf.core.prepare.rank" href="#tf.core.prepare.rank"><code>rank()</code></a></strong> :&ensp;<code>array</code></dt>
+<dd>The data of the <em>rank</em> precompute step.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>
+<ul>
+<li>first: tuple of array
+The <em>n</em>-th member is the array of nodes that start at slot <em>n</em>,
+ordered in <em>reversed</em> canonical ordering;</li>
+<li>last: tuple of array
+The <em>n</em>-th member is the array of nodes that end at slot <em>n</em>,
+ordered in canonical ordering;</li>
+</ul>
+</dd>
+</dl>
+<div class="admonition hint">
+<p class="admonition-title">why
+reversed canonical ordering</p>
+<p>Just for symmetry.</p>
+</div></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def boundary(info, error, otype, oslots, rank):
+    &#34;&#34;&#34;Computes boundary data.
+
+    For each slot, the nodes that start at that slot and the nodes that end
+    at that slot are collected.
+
+    Boundary data is used by the API functions
+    `tf.core.locality.Locality.l`.
+    and
+    `tf.core.locality.Locality.r`.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    rank: array
+        The data of the *rank* precompute step.
+
+    Returns
+    -------
+    tuple
+        *   first: tuple of array
+            The *n*-th member is the array of nodes that start at slot *n*,
+            ordered in *reversed* canonical ordering;
+        *   last: tuple of array
+            The *n*-th member is the array of nodes that end at slot *n*,
+            ordered in canonical ordering;
+
+    !!! hint &#34;why  reversed canonical ordering&#34;
+        Just for symmetry.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     firstSlotsD = {}
@@ -396,12 +772,72 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
 <span>def <span class="ident">levDown</span></span>(<span>info, error, otype, levUp, rank)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Computes level-down data.</p>
+<p>Level-down data is used by the API function <a title="tf.core.locality.Locality.d" href="locality.html#tf.core.locality.Locality.d"><code>Locality.d()</code></a>.</p>
+<p>This function computes the embedded nodes of a node by looking them up from
+the level-down data.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write informational messages to the console.</dd>
+<dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write error messages to the console.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>otype</em> feature.</dd>
+<dt><strong><a title="tf.core.prepare.levUp" href="#tf.core.prepare.levUp"><code>levUp()</code></a></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>levUp</em> precompute step.</dd>
+<dt><strong><a title="tf.core.prepare.rank" href="#tf.core.prepare.rank"><code>rank()</code></a></strong> :&ensp;<code>array</code></dt>
+<dd>The data of the <em>rank</em> precompute step.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>The <em>n</em>-th member is an array of the embedded nodes of <em>n + maxSlot</em>.
+Those arrays are sorted in canonical ordering.</dd>
+</dl>
+<div class="admonition hint">
+<p class="admonition-title">Memory efficiency</p>
+<p>Slot nodes do not have embedded nodes, so they do not have to occupy
+space in this tuple. Hence the first member are the embedded nodes
+of node <em>maxSlot + 1</em>.</p>
+</div></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def levDown(info, error, otype, levUp, rank):
+    &#34;&#34;&#34;Computes level-down data.
+
+    Level-down data is used by the API function `tf.core.locality.Locality.d`.
+
+    This function computes the embedded nodes of a node by looking them up from
+    the level-down data.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    levUp: iterable
+        The data of the *levUp* precompute step.
+    rank: array
+        The data of the *rank* precompute step.
+
+    Returns
+    -------
+    tuple
+        The *n*-th member is an array of the embedded nodes of *n + maxSlot*.
+        Those arrays are sorted in canonical ordering.
+
+    !!! hint &#34;Memory efficiency&#34;
+        Slot nodes do not have embedded nodes, so they do not have to occupy
+        space in this tuple. Hence the first member are the embedded nodes
+        of node *maxSlot + 1*.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     info(&#34;inverting embedders&#34;)
     inverse = {}
@@ -421,12 +857,70 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
 <span>def <span class="ident">levUp</span></span>(<span>info, error, otype, oslots, rank)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Computes level-up data.</p>
+<p>Level-up data is used by the API function <a title="tf.core.locality.Locality.u" href="locality.html#tf.core.locality.Locality.u"><code>Locality.u()</code></a>.</p>
+<p>This function computes the embedders of a node by looking them up from
+the level-up data.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write informational messages to the console.</dd>
+<dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write error messages to the console.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>otype</em> feature.</dd>
+<dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>oslots</em> feature.</dd>
+<dt><strong><a title="tf.core.prepare.rank" href="#tf.core.prepare.rank"><code>rank()</code></a></strong> :&ensp;<code>array</code></dt>
+<dd>The data of the <em>rank</em> precompute step.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>The n-th member is an array of the embedder nodes of n.
+Those arrays are sorted in canonical ordering.</dd>
+</dl>
+<div class="admonition hint">
+<p class="admonition-title">Memory efficiency</p>
+<p>Many nodes have the same array of embedders.
+Those embedder arrays will be reused for those nodes.</p>
+</div></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def levUp(info, error, otype, oslots, rank):
+    &#34;&#34;&#34;Computes level-up data.
+
+    Level-up data is used by the API function `tf.core.locality.Locality.u`.
+
+    This function computes the embedders of a node by looking them up from
+    the level-up data.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    rank: array
+        The data of the *rank* precompute step.
+
+    Returns
+    -------
+    tuple
+        The n-th member is an array of the embedder nodes of n.
+        Those arrays are sorted in canonical ordering.
+
+    !!! hint &#34;Memory efficiency&#34;
+        Many nodes have the same array of embedders.
+        Those embedder arrays will be reused for those nodes.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     info(&#34;making inverse of edge feature oslots&#34;)
@@ -475,12 +969,69 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
 <span>def <span class="ident">levels</span></span>(<span>info, error, otype, oslots, otext)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Computes level data.</p>
+<p>For each node type, compute the average number of slots occupied by its nodes,
+and order the node types on that.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write informational messages to the console.</dd>
+<dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write error messages to the console.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>otype</em> feature.</dd>
+<dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>oslots</em> feature.</dd>
+<dt><strong><code>otext</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>otext</em> feature.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>
+<p>An ordered tuple, each member with the information of a node type:</p>
+<ul>
+<li>node type name</li>
+<li>average number of slots contained in the nodes of this type</li>
+<li>first node of this type</li>
+<li>last node of this type</li>
+</ul>
+</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def levels(info, error, otype, oslots, otext):
+    &#34;&#34;&#34;Computes level data.
+
+    For each node type, compute the average number of slots occupied by its nodes,
+    and order the node types on that.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    otext: iterable
+        The data of the *otext* feature.
+
+    Returns
+    -------
+    tuple
+        An ordered tuple, each member with the information of a node type:
+
+        *   node type name
+        *   average number of slots contained in the nodes of this type
+        *   first node of this type
+        *   last node of this type
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     levelOrder = otext.get(&#34;levels&#34;, None)
@@ -526,12 +1077,68 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
 <span>def <span class="ident">order</span></span>(<span>info, error, otype, oslots, levels)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Computes order data.</p>
+<p>The canonical ordering between nodes is defined in terms of the slots that
+nodes contain.</p>
+<p>A node <em>A</em>
+comes before a node <em>B</em> if, <em>A</em> contains the smallest slot
+that occurs in only one of <em>A</em> and <em>B</em>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write informational messages to the console.</dd>
+<dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write error messages to the console.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>otype</em> feature.</dd>
+<dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>oslots</em> feature.</dd>
+<dt><strong><a title="tf.core.prepare.levels" href="#tf.core.prepare.levels"><code>levels()</code></a></strong> :&ensp;<code>tuple</code></dt>
+<dd>The data of the <em>levels</em> precompute step.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>array</code></dt>
+<dd>All nodes, slot and nonslot, in canonical order.</dd>
+<dt><code>We</code> <code>store</code> <code>the</code> <code>result</code> <code>in</code> <code>an</code> <code>array</code> <code>because</code> <code>it</code> <code>saves</code> <code>a</code> <code>lot</code> of <code>memory</code>, <code>and</code> <code>access</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>is still fast.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def order(info, error, otype, oslots, levels):
+    &#34;&#34;&#34;Computes order data.
+
+    The canonical ordering between nodes is defined in terms of the slots that
+    nodes contain.
+
+    A node *A*  comes before a node *B* if, *A* contains the smallest slot
+    that occurs in only one of *A* and *B*.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    levels: tuple
+        The data of the *levels* precompute step.
+
+    Returns
+    -------
+    array
+        All nodes, slot and nonslot, in canonical order.
+
+    We store the result in an array because it saves a lot of memory, and access
+    is still fast.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     info(&#34;assigning otype levels to nodes&#34;)
@@ -575,12 +1182,58 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
 <span>def <span class="ident">rank</span></span>(<span>info, error, otype, order)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Computes rank data.</p>
+<p>The rank of a node is its place in among the other nodes in the
+canonical ordering (see <a title="tf.core.prepare.order" href="#tf.core.prepare.order"><code>order()</code></a>).</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write informational messages to the console.</dd>
+<dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write error messages to the console.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>otype</em> feature.</dd>
+<dt><strong><a title="tf.core.prepare.order" href="#tf.core.prepare.order"><code>order()</code></a></strong> :&ensp;<code>array</code></dt>
+<dd>The data of the <em>order</em> feature.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>array</code></dt>
+<dd>The ranks of all nodes, slot and nonslot, with respect to the canonical order.</dd>
+<dt><code>We</code> <code>store</code> <code>the</code> <code>result</code> <code>in</code> <code>an</code> <code>array</code> <code>because</code> <code>it</code> <code>saves</code> <code>a</code> <code>lot</code> of <code>memory</code>, <code>and</code> <code>access</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>is still fast.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def rank(info, error, otype, order):
+    &#34;&#34;&#34;Computes rank data.
+
+    The rank of a node is its place in among the other nodes in the
+    canonical ordering (see `order`).
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    order: array
+        The data of the *order* feature.
+
+    Returns
+    -------
+    array
+        The ranks of all nodes, slot and nonslot, with respect to the canonical order.
+
+    We store the result in an array because it saves a lot of memory, and access
+    is still fast.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     info(&#34;ranking nodes&#34;)
     nodesRank = dict(((n, i) for (i, n) in enumerate(order)))
@@ -591,12 +1244,100 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
 <span>def <span class="ident">sections</span></span>(<span>info, error, otype, oslots, otext, levUp, levels, *sFeats)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Computes section data.</p>
+<p>Text-Fabric datasets may define up to three section levels, roughly corresponding
+with a volume, a chapter, a paragraph.</p>
+<p>If the corpus has a richer section structure, it is also possible
+a different, more flexible and more extensive nest of structural sections.
+See <a title="tf.core.prepare.structure" href="#tf.core.prepare.structure"><code>structure()</code></a>.</p>
+<p>Text-Fabric must be able to go from sections at one level to the sections
+at one level lower. It must also be able to map section headings
+to nodes. For this, the section features are needed, since they
+contain the section headings.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write informational messages to the console.</dd>
+<dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write error messages to the console.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>otype</em> feature.</dd>
+<dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>oslots</em> feature.</dd>
+<dt><strong><code>otext</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>otext</em> feature.</dd>
+<dt><strong><a title="tf.core.prepare.levUp" href="#tf.core.prepare.levUp"><code>levUp()</code></a></strong> :&ensp;<code>array</code></dt>
+<dd>The data of the <em>levUp</em> precompute step.</dd>
+<dt><strong><a title="tf.core.prepare.levels" href="#tf.core.prepare.levels"><code>levels()</code></a></strong> :&ensp;<code>array</code></dt>
+<dd>The data of the <em>levels</em> precompute step.</dd>
+<dt><strong><code>sFeats</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The names of section features.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>
+<ul>
+<li>sec1
+Mapping from section-level-1 nodes to mappings from
+section-level-2 headings to section-level2 nodes.</li>
+<li>sec2
+Mapping from section-level-1 nodes to mappings from
+section-level-2 headings to mappings from
+section-level3 headings to section-level-3 nodes.</li>
+</ul>
+</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
+    &#34;&#34;&#34;Computes section data.
+
+    Text-Fabric datasets may define up to three section levels, roughly corresponding
+    with a volume, a chapter, a paragraph.
+
+    If the corpus has a richer section structure, it is also possible
+    a different, more flexible and more extensive nest of structural sections.
+    See `structure`.
+
+    Text-Fabric must be able to go from sections at one level to the sections
+    at one level lower. It must also be able to map section headings
+    to nodes. For this, the section features are needed, since they
+    contain the section headings.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    otext: iterable
+        The data of the *otext* feature.
+    levUp: array
+        The data of the *levUp* precompute step.
+    levels: array
+        The data of the *levels* precompute step.
+    sFeats: iterable
+        The names of section features.
+
+    Returns
+    -------
+    tuple
+        *   sec1
+            Mapping from section-level-1 nodes to mappings from
+            section-level-2 headings to section-level2 nodes.
+        *   sec2
+            Mapping from section-level-1 nodes to mappings from
+            section-level-2 headings to mappings from
+            section-level3 headings to section-level-3 nodes.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     support = dict(((o[0], (o[2], o[3])) for o in levels))
@@ -668,12 +1409,117 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
 <span>def <span class="ident">structure</span></span>(<span>info, error, otype, oslots, otext, rank, levUp, *sFeats)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Computes structure data.</p>
+<p>If the corpus has a rich section structure, it is possible to define
+a flexible and extensive nest of structural sections.</p>
+<p>Independent of this,
+Text-Fabric datasets may also define up to three section levels,
+roughly corresponding with a volume, a chapter, a paragraph.
+See <a title="tf.core.prepare.sections" href="#tf.core.prepare.sections"><code>sections()</code></a>.</p>
+<p>Text-Fabric must be able to go from sections at one level to the sections
+at one level lower. It must also be able to map section headings
+to nodes. For this, the section features are needed, since they
+contain the section headings.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write informational messages to the console.</dd>
+<dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write error messages to the console.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>otype</em> feature.</dd>
+<dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>oslots</em> feature.</dd>
+<dt><strong><code>otext</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>otext</em> feature.</dd>
+<dt><strong><a title="tf.core.prepare.rank" href="#tf.core.prepare.rank"><code>rank()</code></a></strong> :&ensp;<code>array</code></dt>
+<dd>The data of the <em>rank</em> precompute step.</dd>
+<dt><strong><a title="tf.core.prepare.levUp" href="#tf.core.prepare.levUp"><code>levUp()</code></a></strong> :&ensp;<code>array</code></dt>
+<dd>The data of the <em>levUp</em> precompute step.</dd>
+<dt><strong><code>sFeats</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The names of structural features.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>
+<ul>
+<li>headingFromNode
+Mapping from section keys to nodes</li>
+<li>nodeFromHeading
+Mapping from nodes to section keys</li>
+<li>multiple</li>
+<li>top</li>
+<li>up</li>
+<li>down</li>
+</ul>
+</dd>
+<dt><code>A</code> <code>section</code> <code>key</code> of <code>a</code> <code>structural</code> <code>node</code> <code>is</code> <code>obtained</code> <code>by</code> <code>going</code> <code>a</code> <code>level</code> <code>up</code> <code>from</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>that</code> <code>node</code>, <code>retrieving</code> <code>the</code> <code>heading</code> of <code>that</code> <code>structural</code> <code>node</code>, <code>then</code> <code>going</code> <code>up</code> <code>again</code>,</dt>
+<dd>&nbsp;</dd>
+<dt><code>and</code> <code>so</code> <code>on</code> <code>till</code> <code>a</code> <code>top</code> <code>node</code> <code>is</code> <code>reached.</code> <code>The</code> <code>tuple</code> of <code>headings</code> <code>obtained</code> <code>in</code> <code>this</code> <code>way</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>is the
+section key.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
+    &#34;&#34;&#34;Computes structure data.
+
+    If the corpus has a rich section structure, it is possible to define
+    a flexible and extensive nest of structural sections.
+
+    Independent of this,
+    Text-Fabric datasets may also define up to three section levels,
+    roughly corresponding with a volume, a chapter, a paragraph.
+    See `sections`.
+
+    Text-Fabric must be able to go from sections at one level to the sections
+    at one level lower. It must also be able to map section headings
+    to nodes. For this, the section features are needed, since they
+    contain the section headings.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    otext: iterable
+        The data of the *otext* feature.
+    rank: array
+        The data of the *rank* precompute step.
+    levUp: array
+        The data of the *levUp* precompute step.
+    sFeats: iterable
+        The names of structural features.
+
+    Returns
+    -------
+    tuple
+        *   headingFromNode
+            Mapping from section keys to nodes
+        *   nodeFromHeading
+            Mapping from nodes to section keys
+        *   multiple
+        *   top
+        *   up
+        *   down
+
+    A section key of a structural node is obtained by going a level up from
+    that node, retrieving the heading of that structural node, then going up again,
+    and so on till a top node is reached. The tuple of headings obtained in this way
+    is the  section key.
+    &#34;&#34;&#34;
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     sTypeList = itemize(otext[&#34;structureTypes&#34;], &#34;,&#34;)

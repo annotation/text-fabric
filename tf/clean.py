@@ -15,16 +15,49 @@ binvRe = re.compile(r"/\.tf/([^/]+)$")
 
 
 def out(msg):
+    """Write to standard normal output immediately."""
     sys.stdout.write(msg)
     sys.stdout.flush()
 
 
 def err(msg):
+    """Write to standard error output immediately."""
     sys.stderr.write(msg)
     sys.stderr.flush()
 
 
 def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
+    """Clean up older compressed .tfx files.
+
+    Parameters
+    ----------
+
+    Removes all precomputed data resulting from other `PACK_VERSION`s
+    than the one currently used by Text-Fabric.
+
+    You find the current pack version in
+    `tf.parameters`
+
+    tfd: boolean,  optional `True`
+        By default, your `~/text-fabric-data` is traversed and cleaned,
+        but if you pass `tfd=False` it will be skipped.
+    gh: boolean, optional, `False`
+        By default, your `~/github` will be skipped,
+        but if you pass `gh=True` it will be
+        traversed and cleaned.
+    specific: string, optional, `None`
+        You can pass a specific directory here. The standard directories
+        `~/github` and `~/text-fabric-data` will not be used, only
+        the directory you pass here. `~` will be expanded to your home directory.
+    current: boolean, optional, `False`
+        If current=True, also the precomputed results of the current version will
+        be removed.
+    dry: boolean, optional, `False`
+        By default, nothing will be deleted, and you only get a list of
+        what will be deleted if it were not a dry run.
+        If you pass `dry=False` the delete actions will really be executed.
+    """
+
     if specific is not None:
         bases = [os.path.expanduser(specific)]
     else:

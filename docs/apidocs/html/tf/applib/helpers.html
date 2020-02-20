@@ -53,7 +53,7 @@ def configureNames(names, myDir):
   &#34;&#34;&#34;
     result = {camel(key): value for (key, value) in names.items() if key == key.upper()}
 
-    with open(f&#34;{myDir}/static/display.css&#34;) as fh:
+    with open(f&#34;{myDir}/static/display.css&#34;, encoding=&#34;utf8&#34;) as fh:
         result[&#34;css&#34;] = fh.read()
 
     return result
@@ -134,7 +134,7 @@ and put them in a dict in camel case.</p></section>
   &#34;&#34;&#34;
     result = {camel(key): value for (key, value) in names.items() if key == key.upper()}
 
-    with open(f&#34;{myDir}/static/display.css&#34;) as fh:
+    with open(f&#34;{myDir}/static/display.css&#34;, encoding=&#34;utf8&#34;) as fh:
         result[&#34;css&#34;] = fh.read()
 
     return result</code></pre>

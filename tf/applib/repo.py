@@ -553,7 +553,7 @@ class Checkout(object):
 
     def readInfo(self):
         if os.path.exists(self.filePathLocal):
-            with open(self.filePathLocal) as f:
+            with open(self.filePathLocal, encoding="utf8") as f:
                 for line in f:
                     string = line.strip()
                     (commit, release, local) = self.fromString(string)
@@ -565,7 +565,7 @@ class Checkout(object):
     def writeInfo(self):
         if not os.path.exists(self.dirPathLocal):
             os.makedirs(self.dirPathLocal, exist_ok=True)
-        with open(self.filePathLocal, "w") as f:
+        with open(self.filePathLocal, "w", encoding="utf8") as f:
             if self.releaseOff:
                 f.write(f"{self.releaseOff}\n")
             if self.commitOff:

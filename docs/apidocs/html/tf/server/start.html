@@ -237,7 +237,8 @@ def killProcesses(dataSource, checkoutApp, checkout, modules, sets, kill=False):
     myself = os.getpid()
     for ((ds, (chkA, chk, mods, sets)), kinds) in tfProcs.items():
         if dataSource is None or (
-            ds == dataSource
+            ds
+            == dataSource
             # and chkA == checkoutApp
             # and chk == checkout
             # and mods == modules
@@ -369,7 +370,11 @@ def main(cargs=sys.argv):
 
         if not stopped:
 
-            pWeb = Popen([pythonExe, &#34;-m&#34;, f&#34;tf.server.web&#34;, *ddataSource], bufsize=0,)
+            pWeb = Popen(
+                [pythonExe, &#34;-m&#34;, f&#34;tf.server.web&#34;, *ddataSource],
+                bufsize=0,
+                encoding=&#34;utf8&#34;,
+            )
 
             if not noweb:
                 sleep(2)
@@ -516,7 +521,8 @@ if __name__ == &#34;__main__&#34;:
     myself = os.getpid()
     for ((ds, (chkA, chk, mods, sets)), kinds) in tfProcs.items():
         if dataSource is None or (
-            ds == dataSource
+            ds
+            == dataSource
             # and chkA == checkoutApp
             # and chk == checkout
             # and mods == modules
@@ -650,7 +656,11 @@ if __name__ == &#34;__main__&#34;:
 
         if not stopped:
 
-            pWeb = Popen([pythonExe, &#34;-m&#34;, f&#34;tf.server.web&#34;, *ddataSource], bufsize=0,)
+            pWeb = Popen(
+                [pythonExe, &#34;-m&#34;, f&#34;tf.server.web&#34;, *ddataSource],
+                bufsize=0,
+                encoding=&#34;utf8&#34;,
+            )
 
             if not noweb:
                 sleep(2)

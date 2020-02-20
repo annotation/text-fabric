@@ -5,7 +5,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '7.10.1'
+VERSION = '7.10.2'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -30,35 +30,103 @@ Instead, TF will produce freshly compressed data files.
 
 The compressed data files are stored in a directory `.tf/{PVN}/` next
 to the original `tf`  files, where `{PVN}` is the package version number.
+
+See also `tf.clean`.
 """
 
+GZIP_LEVEL = 2
+"""Compression level when compressing tf files."""
+
+PICKLE_PROTOCOL = 4
+"""Pickle protocol level when pickling tf files."""
+
 ORG = "annotation"
+"""GitHub organization name.
+
+This is where the repo that contains Text-Fabric resides.
+"""
 REPO = "text-fabric"
+"""GitHub repo name.
+
+This is the name of the repo that contains Text-Fabric.
+"""
 
 URL_GH_API = "https://api.github.com/repos"
+"""Url of the GitHub API for repos.
+
+We can access GitHub repos by means of commands
+on top of this url.
+"""
+
 URL_GH = "https://github.com"
+"""Base url of GitHub."""
+
 URL_NB = "https://nbviewer.jupyter.org/github"
+"""Base url of NB-viewer for GitHub data."""
+
 DOWNLOADS = "~/Downloads"
+"""Local Downloads directory."""
+
 GH_BASE = "~/github"
+"""Local GitHub directory."""
+
 EXPRESS_BASE = "~/text-fabric-data"
+"""Local cache directory.
+
+This is the place where the TF apps and TF feature files are cached locally.
+"""
+
 EXPRESS_SYNC = "__checkout__.txt"
+"""Name of cache indicator file.
+
+When a dataset is stored in the cache,
+information about the GitHub release/commit is stored in a file
+with this name.
+"""
+
 EXPRESS_SYNC_LEGACY = [
     "__release.txt",
     "__commit.txt",
 ]
+"""Legacy names of cache indicator files."""
+
 URL_TFDOC = f"https://{ORG}.github.io/{REPO}"
+"""Base url of the online Text-Fabric documentation."""
 
 DOI_TEXT = "10.5281/zenodo.592193"
+"""Text of a DOI link pointing to an archived copy of this repo at Zenodo."""
+
 DOI_URL = "https://doi.org/10.5281/zenodo.592193"
+"""Url of an archived copy of this repo at Zenodo."""
 
 APIREF = f"https://{ORG}.github.io/{REPO}/Api/Fabric/"
+"""Link to the Api docs of Text-Fabric."""
 
 APP_URL = f"{URL_GH}/{ORG}"
+"""Url of the GitHub location that contains all the TF apps."""
+
 APP_NB_URL = f"{URL_NB}/{ORG}/tutorials/blob/master"
+"""Url of the NB-viewer location that contains all the TF tutorials."""
+
 APP_GITHUB = f"{GH_BASE}/annotation"
+"""Local GitHub location that contains all the TF apps."""
+
 APP_CODE = "code"
+"""Name of the top-level directory of a TF app."""
 
 TEMP_DIR = "_temp"
+"""Name of temporary directories.
+
+!!! hint ".gitignore"
+    Take care that these directories are ignored by git operations.
+    Put a line
+
+    ```
+    _temp/
+    ```
+
+    in the `.gitignore` file.
+"""
 
 LOCATIONS = [
     "~/Downloads/text-fabric-data",
@@ -67,14 +135,32 @@ LOCATIONS = [
     "~/Dropbox/text-fabric-data",
     "/mnt/shared/text-fabric-data",
 ]
+"""Default locations for tf data files.
 
-GZIP_LEVEL = 2
-PICKLE_PROTOCOL = 4
+If the `locations` parameter for the `tf.fabric.Fabric` call is omitted,
+this is the default.
+Text-Fabric will search all these directories as for `.tf` modules of files.
+"""
 
 ZIP_OPTIONS = dict(compression=ZIP_DEFLATED,)
+"""Options for zip when packing tf files.
+
+This is for packaging collections of plain tf files into zip files
+to be attached to releases on GitHub.
+
+!!! caution "Not for .tfx files"
+    This is not the zipping as done when .tf files are
+    pickled and compressed to .tfx files.
+"""
+
 if sys.version_info[1] >= 7:
     ZIP_OPTIONS["compresslevel"] = 6
 
 YARN_RATIO = 1.25
+"""Performance parameter in the `tf.search.search` module."""
+
 TRY_LIMIT_FROM = 40
+"""Performance parameter in the `tf.search.search` module."""
+
 TRY_LIMIT_TO = 40
+"""Performance parameter in the `tf.search.search` module."""

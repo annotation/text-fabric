@@ -42,6 +42,11 @@
 
 ---
 
+# 7.10.2
+
+Fix: in some `open()` statements, the encoding parameter `encoding="utf8"` was not passed.
+On some system that causes problems. The parameter has been added in all appropriate cases.
+
 # 7.10, 7.10.1
 
 2020-02-13

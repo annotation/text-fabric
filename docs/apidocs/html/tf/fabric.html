@@ -25,6 +25,11 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import os
+&#34;&#34;&#34;Defined the main class.
+
+Also lists the precomputation steps.
+&#34;&#34;&#34;
+
 import collections
 from .parameters import VERSION, NAME, APIREF, LOCATIONS
 from .core.data import Data, WARP, WARP2_DEFAULT, MEM_MSG
@@ -76,10 +81,46 @@ PRECOMPUTE = (
     (True, &#34;__sections__&#34;, sections, WARP + (&#34;__levUp__&#34;, &#34;__levels__&#34;)),
     (True, &#34;__structure__&#34;, structure, WARP + (&#34;__rank__&#34;, &#34;__levUp__&#34;,)),
 )
+&#34;&#34;&#34;Precomputation steps.
+
+Each step corresponds to a precomputation task.
+
+A task is specified by a tuple containing:
+
+Parameters
+----------
+dep: boolean
+    Whether the step is dependent on the presence of additional features.
+    Only relevant for the precomputation of section structure:
+    that should only happen if there are section features.
+name: string
+    The name of the result of a precomputed task.
+    The result is a blob of data that can be loaded and compressed just as ordinary features.
+function: function
+    The function that performs the precomputation task.
+    These functions are defined in `tf.core.prepare`.
+dependencies: strings
+    The remaining parts of the tuple are the names of precomputed features
+    that must be coomputed before and whose results are passed as argument
+    to the function that executes the precomputation.
+
+For a description of what the steps are for, see the functions
+in `tf.core.prepare`.
+&#34;&#34;&#34;
 KIND = dict(__sections__=&#34;section&#34;, __structure__=&#34;structure&#34;,)
 
 
 class Fabric(object):
+    &#34;&#34;&#34;Main class of the TF package.
+
+    Top level management of
+
+    *   locating tf feature files
+    *   loading and saving feature data
+    *   precomputing auxiliary data
+    *   caching precomputed and compressed data
+    &#34;&#34;&#34;
+
     def __init__(self, locations=None, modules=None, silent=False):
         self.silent = silent
         self.tm = Timestamp()
@@ -665,6 +706,34 @@ Api reference : {APIREF}
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="tf.fabric.PRECOMPUTE"><code class="name">var <span class="ident">PRECOMPUTE</span></code></dt>
+<dd>
+<section class="desc"><p>Precomputation steps.</p>
+<p>Each step corresponds to a precomputation task.</p>
+<p>A task is specified by a tuple containing:</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dep</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>Whether the step is dependent on the presence of additional features.
+Only relevant for the precomputation of section structure:
+that should only happen if there are section features.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the result of a precomputed task.
+The result is a blob of data that can be loaded and compressed just as ordinary features.</dd>
+<dt><strong><code>function</code></strong> :&ensp;<code>function</code></dt>
+<dd>The function that performs the precomputation task.
+These functions are defined in <a title="tf.core.prepare" href="core/prepare.html"><code>tf.core.prepare</code></a>.</dd>
+<dt><strong><code>dependencies</code></strong> :&ensp;<code>strings</code></dt>
+<dd>The remaining parts of the tuple are the names of precomputed features
+that must be coomputed before and whose results are passed as argument
+to the function that executes the precomputation.</dd>
+</dl>
+<p>For a description of what the steps are for, see the functions
+in <a title="tf.core.prepare" href="core/prepare.html"><code>tf.core.prepare</code></a>.</p></section>
+</dd>
+</dl>
 </section>
 <section>
 </section>
@@ -676,12 +745,29 @@ Api reference : {APIREF}
 <span>(</span><span>locations=None, modules=None, silent=False)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Main class of the TF package.</p>
+<p>Top level management of</p>
+<ul>
+<li>locating tf feature files</li>
+<li>loading and saving feature data</li>
+<li>precomputing auxiliary data</li>
+<li>caching precomputed and compressed data</li>
+</ul></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Fabric(object):
+    &#34;&#34;&#34;Main class of the TF package.
+
+    Top level management of
+
+    *   locating tf feature files
+    *   loading and saving feature data
+    *   precomputing auxiliary data
+    *   caching precomputed and compressed data
+    &#34;&#34;&#34;
+
     def __init__(self, locations=None, modules=None, silent=False):
         self.silent = silent
         self.tm = Timestamp()
@@ -1657,6 +1743,11 @@ Api reference : {APIREF}
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="tf" href="index.html">tf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="">
+<li><code><a title="tf.fabric.PRECOMPUTE" href="#tf.fabric.PRECOMPUTE">PRECOMPUTE</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>

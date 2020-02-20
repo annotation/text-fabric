@@ -1,4 +1,9 @@
 import os
+"""Defined the main class.
+
+Also lists the precomputation steps.
+"""
+
 import collections
 from .parameters import VERSION, NAME, APIREF, LOCATIONS
 from .core.data import Data, WARP, WARP2_DEFAULT, MEM_MSG
@@ -50,10 +55,46 @@ PRECOMPUTE = (
     (True, "__sections__", sections, WARP + ("__levUp__", "__levels__")),
     (True, "__structure__", structure, WARP + ("__rank__", "__levUp__",)),
 )
+"""Precomputation steps.
+
+Each step corresponds to a precomputation task.
+
+A task is specified by a tuple containing:
+
+Parameters
+----------
+dep: boolean
+    Whether the step is dependent on the presence of additional features.
+    Only relevant for the precomputation of section structure:
+    that should only happen if there are section features.
+name: string
+    The name of the result of a precomputed task.
+    The result is a blob of data that can be loaded and compressed just as ordinary features.
+function: function
+    The function that performs the precomputation task.
+    These functions are defined in `tf.core.prepare`.
+dependencies: strings
+    The remaining parts of the tuple are the names of precomputed features
+    that must be coomputed before and whose results are passed as argument
+    to the function that executes the precomputation.
+
+For a description of what the steps are for, see the functions
+in `tf.core.prepare`.
+"""
 KIND = dict(__sections__="section", __structure__="structure",)
 
 
 class Fabric(object):
+    """Main class of the TF package.
+
+    Top level management of
+
+    *   locating tf feature files
+    *   loading and saving feature data
+    *   precomputing auxiliary data
+    *   caching precomputed and compressed data
+    """
+
     def __init__(self, locations=None, modules=None, silent=False):
         self.silent = silent
         self.tm = Timestamp()

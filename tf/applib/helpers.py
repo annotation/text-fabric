@@ -27,7 +27,7 @@ def configureNames(names, myDir):
   """
     result = {camel(key): value for (key, value) in names.items() if key == key.upper()}
 
-    with open(f"{myDir}/static/display.css") as fh:
+    with open(f"{myDir}/static/display.css", encoding="utf8") as fh:
         result["css"] = fh.read()
 
     return result

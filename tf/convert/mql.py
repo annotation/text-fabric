@@ -387,7 +387,7 @@ def tfFromMql(mqlFile, tm, slotType=None, otext=None, meta=None):
 
 def parseMql(mqlFile, tm):
     tm.info("Parsing mql source ...")
-    fh = open(mqlFile)
+    fh = open(mqlFile, encoding="utf8")
 
     objectTypes = dict()
     tables = dict()

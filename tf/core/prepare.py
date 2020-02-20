@@ -1,3 +1,15 @@
+"""Functions that precompute data.
+
+For Text-Fabric to work efficiently, some  derived data needs to be precomputed.
+The precomputed data has a similar function as indexes in a database.
+
+Precomputation is triggered when `tf.fabric.Fabric` loads features, and
+the order and nature of the steps is configured in
+`tf.fabric.PRECOMPUTE`.
+
+The functions in this module implement those tasks.
+"""
+
 from array import array
 import collections
 import functools
@@ -5,6 +17,35 @@ from .helpers import itemize
 
 
 def levels(info, error, otype, oslots, otext):
+    """Computes level data.
+
+    For each node type, compute the average number of slots occupied by its nodes,
+    and order the node types on that.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    otext: iterable
+        The data of the *otext* feature.
+
+    Returns
+    -------
+    tuple
+        An ordered tuple, each member with the information of a node type:
+
+        *   node type name
+        *   average number of slots contained in the nodes of this type
+        *   first node of this type
+        *   last node of this type
+    """
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     levelOrder = otext.get("levels", None)
@@ -47,6 +88,36 @@ def levels(info, error, otype, oslots, otext):
 
 
 def order(info, error, otype, oslots, levels):
+    """Computes order data.
+
+    The canonical ordering between nodes is defined in terms of the slots that
+    nodes contain.
+
+    A node *A*  comes before a node *B* if, *A* contains the smallest slot
+    that occurs in only one of *A* and *B*.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    levels: tuple
+        The data of the *levels* precompute step.
+
+    Returns
+    -------
+    array
+        All nodes, slot and nonslot, in canonical order.
+
+    We store the result in an array because it saves a lot of memory, and access
+    is still fast.
+    """
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     info("assigning otype levels to nodes")
@@ -87,6 +158,31 @@ def order(info, error, otype, oslots, levels):
 
 
 def rank(info, error, otype, order):
+    """Computes rank data.
+
+    The rank of a node is its place in among the other nodes in the
+    canonical ordering (see `order`).
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    order: array
+        The data of the *order* feature.
+
+    Returns
+    -------
+    array
+        The ranks of all nodes, slot and nonslot, with respect to the canonical order.
+
+    We store the result in an array because it saves a lot of memory, and access
+    is still fast.
+    """
+
     (otype, maxSlot, maxNode, slotType) = otype
     info("ranking nodes")
     nodesRank = dict(((n, i) for (i, n) in enumerate(order)))
@@ -94,6 +190,37 @@ def rank(info, error, otype, order):
 
 
 def levUp(info, error, otype, oslots, rank):
+    """Computes level-up data.
+
+    Level-up data is used by the API function `tf.core.locality.Locality.u`.
+
+    This function computes the embedders of a node by looking them up from
+    the level-up data.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    rank: array
+        The data of the *rank* precompute step.
+
+    Returns
+    -------
+    tuple
+        The n-th member is an array of the embedder nodes of n.
+        Those arrays are sorted in canonical ordering.
+
+    !!! hint "Memory efficiency"
+        Many nodes have the same array of embedders.
+        Those embedder arrays will be reused for those nodes.
+    """
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     info("making inverse of edge feature oslots")
@@ -139,6 +266,38 @@ def levUp(info, error, otype, oslots, rank):
 
 
 def levDown(info, error, otype, levUp, rank):
+    """Computes level-down data.
+
+    Level-down data is used by the API function `tf.core.locality.Locality.d`.
+
+    This function computes the embedded nodes of a node by looking them up from
+    the level-down data.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    levUp: iterable
+        The data of the *levUp* precompute step.
+    rank: array
+        The data of the *rank* precompute step.
+
+    Returns
+    -------
+    tuple
+        The *n*-th member is an array of the embedded nodes of *n + maxSlot*.
+        Those arrays are sorted in canonical ordering.
+
+    !!! hint "Memory efficiency"
+        Slot nodes do not have embedded nodes, so they do not have to occupy
+        space in this tuple. Hence the first member are the embedded nodes
+        of node *maxSlot + 1*.
+    """
+
     (otype, maxSlot, maxNode, slotType) = otype
     info("inverting embedders")
     inverse = {}
@@ -155,6 +314,43 @@ def levDown(info, error, otype, levUp, rank):
 
 
 def boundary(info, error, otype, oslots, rank):
+    """Computes boundary data.
+
+    For each slot, the nodes that start at that slot and the nodes that end
+    at that slot are collected.
+
+    Boundary data is used by the API functions
+    `tf.core.locality.Locality.l`.
+    and
+    `tf.core.locality.Locality.r`.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    rank: array
+        The data of the *rank* precompute step.
+
+    Returns
+    -------
+    tuple
+        *   first: tuple of array
+            The *n*-th member is the array of nodes that start at slot *n*,
+            ordered in *reversed* canonical ordering;
+        *   last: tuple of array
+            The *n*-th member is the array of nodes that end at slot *n*,
+            ordered in canonical ordering;
+
+    !!! hint "why  reversed canonical ordering"
+        Just for symmetry.
+    """
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     firstSlotsD = {}
@@ -175,6 +371,51 @@ def boundary(info, error, otype, oslots, rank):
 
 
 def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
+    """Computes section data.
+
+    Text-Fabric datasets may define up to three section levels, roughly corresponding
+    with a volume, a chapter, a paragraph.
+
+    If the corpus has a richer section structure, it is also possible
+    a different, more flexible and more extensive nest of structural sections.
+    See `structure`.
+
+    Text-Fabric must be able to go from sections at one level to the sections
+    at one level lower. It must also be able to map section headings
+    to nodes. For this, the section features are needed, since they
+    contain the section headings.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    otext: iterable
+        The data of the *otext* feature.
+    levUp: array
+        The data of the *levUp* precompute step.
+    levels: array
+        The data of the *levels* precompute step.
+    sFeats: iterable
+        The names of section features.
+
+    Returns
+    -------
+    tuple
+        *   sec1
+            Mapping from section-level-1 nodes to mappings from
+            section-level-2 headings to section-level2 nodes.
+        *   sec2
+            Mapping from section-level-1 nodes to mappings from
+            section-level-2 headings to mappings from
+            section-level3 headings to section-level-3 nodes.
+    """
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     support = dict(((o[0], (o[2], o[3])) for o in levels))
@@ -243,6 +484,58 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
 
 
 def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
+    """Computes structure data.
+
+    If the corpus has a rich section structure, it is possible to define
+    a flexible and extensive nest of structural sections.
+
+    Independent of this,
+    Text-Fabric datasets may also define up to three section levels,
+    roughly corresponding with a volume, a chapter, a paragraph.
+    See `sections`.
+
+    Text-Fabric must be able to go from sections at one level to the sections
+    at one level lower. It must also be able to map section headings
+    to nodes. For this, the section features are needed, since they
+    contain the section headings.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    otext: iterable
+        The data of the *otext* feature.
+    rank: array
+        The data of the *rank* precompute step.
+    levUp: array
+        The data of the *levUp* precompute step.
+    sFeats: iterable
+        The names of structural features.
+
+    Returns
+    -------
+    tuple
+        *   headingFromNode
+            Mapping from section keys to nodes
+        *   nodeFromHeading
+            Mapping from nodes to section keys
+        *   multiple
+        *   top
+        *   up
+        *   down
+
+    A section key of a structural node is obtained by going a level up from
+    that node, retrieving the heading of that structural node, then going up again,
+    and so on till a top node is reached. The tuple of headings obtained in this way
+    is the  section key.
+    """
+
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     sTypeList = itemize(otext["structureTypes"], ",")

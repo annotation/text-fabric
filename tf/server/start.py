@@ -211,7 +211,8 @@ def killProcesses(dataSource, checkoutApp, checkout, modules, sets, kill=False):
     myself = os.getpid()
     for ((ds, (chkA, chk, mods, sets)), kinds) in tfProcs.items():
         if dataSource is None or (
-            ds == dataSource
+            ds
+            == dataSource
             # and chkA == checkoutApp
             # and chk == checkout
             # and mods == modules
@@ -343,7 +344,11 @@ def main(cargs=sys.argv):
 
         if not stopped:
 
-            pWeb = Popen([pythonExe, "-m", f"tf.server.web", *ddataSource], bufsize=0,)
+            pWeb = Popen(
+                [pythonExe, "-m", f"tf.server.web", *ddataSource],
+                bufsize=0,
+                encoding="utf8",
+            )
 
             if not noweb:
                 sleep(2)
