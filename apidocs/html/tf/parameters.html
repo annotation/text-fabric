@@ -32,7 +32,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = &#39;7.10.1&#39;
+VERSION = &#39;7.10.2&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -57,35 +57,103 @@ Instead, TF will produce freshly compressed data files.
 
 The compressed data files are stored in a directory `.tf/{PVN}/` next
 to the original `tf`  files, where `{PVN}` is the package version number.
+
+See also `tf.clean`.
 &#34;&#34;&#34;
 
+GZIP_LEVEL = 2
+&#34;&#34;&#34;Compression level when compressing tf files.&#34;&#34;&#34;
+
+PICKLE_PROTOCOL = 4
+&#34;&#34;&#34;Pickle protocol level when pickling tf files.&#34;&#34;&#34;
+
 ORG = &#34;annotation&#34;
+&#34;&#34;&#34;GitHub organization name.
+
+This is where the repo that contains Text-Fabric resides.
+&#34;&#34;&#34;
 REPO = &#34;text-fabric&#34;
+&#34;&#34;&#34;GitHub repo name.
+
+This is the name of the repo that contains Text-Fabric.
+&#34;&#34;&#34;
 
 URL_GH_API = &#34;https://api.github.com/repos&#34;
+&#34;&#34;&#34;Url of the GitHub API for repos.
+
+We can access GitHub repos by means of commands
+on top of this url.
+&#34;&#34;&#34;
+
 URL_GH = &#34;https://github.com&#34;
+&#34;&#34;&#34;Base url of GitHub.&#34;&#34;&#34;
+
 URL_NB = &#34;https://nbviewer.jupyter.org/github&#34;
+&#34;&#34;&#34;Base url of NB-viewer for GitHub data.&#34;&#34;&#34;
+
 DOWNLOADS = &#34;~/Downloads&#34;
+&#34;&#34;&#34;Local Downloads directory.&#34;&#34;&#34;
+
 GH_BASE = &#34;~/github&#34;
+&#34;&#34;&#34;Local GitHub directory.&#34;&#34;&#34;
+
 EXPRESS_BASE = &#34;~/text-fabric-data&#34;
+&#34;&#34;&#34;Local cache directory.
+
+This is the place where the TF apps and TF feature files are cached locally.
+&#34;&#34;&#34;
+
 EXPRESS_SYNC = &#34;__checkout__.txt&#34;
+&#34;&#34;&#34;Name of cache indicator file.
+
+When a dataset is stored in the cache,
+information about the GitHub release/commit is stored in a file
+with this name.
+&#34;&#34;&#34;
+
 EXPRESS_SYNC_LEGACY = [
     &#34;__release.txt&#34;,
     &#34;__commit.txt&#34;,
 ]
+&#34;&#34;&#34;Legacy names of cache indicator files.&#34;&#34;&#34;
+
 URL_TFDOC = f&#34;https://{ORG}.github.io/{REPO}&#34;
+&#34;&#34;&#34;Base url of the online Text-Fabric documentation.&#34;&#34;&#34;
 
 DOI_TEXT = &#34;10.5281/zenodo.592193&#34;
+&#34;&#34;&#34;Text of a DOI link pointing to an archived copy of this repo at Zenodo.&#34;&#34;&#34;
+
 DOI_URL = &#34;https://doi.org/10.5281/zenodo.592193&#34;
+&#34;&#34;&#34;Url of an archived copy of this repo at Zenodo.&#34;&#34;&#34;
 
 APIREF = f&#34;https://{ORG}.github.io/{REPO}/Api/Fabric/&#34;
+&#34;&#34;&#34;Link to the Api docs of Text-Fabric.&#34;&#34;&#34;
 
 APP_URL = f&#34;{URL_GH}/{ORG}&#34;
+&#34;&#34;&#34;Url of the GitHub location that contains all the TF apps.&#34;&#34;&#34;
+
 APP_NB_URL = f&#34;{URL_NB}/{ORG}/tutorials/blob/master&#34;
+&#34;&#34;&#34;Url of the NB-viewer location that contains all the TF tutorials.&#34;&#34;&#34;
+
 APP_GITHUB = f&#34;{GH_BASE}/annotation&#34;
+&#34;&#34;&#34;Local GitHub location that contains all the TF apps.&#34;&#34;&#34;
+
 APP_CODE = &#34;code&#34;
+&#34;&#34;&#34;Name of the top-level directory of a TF app.&#34;&#34;&#34;
 
 TEMP_DIR = &#34;_temp&#34;
+&#34;&#34;&#34;Name of temporary directories.
+
+!!! hint &#34;.gitignore&#34;
+    Take care that these directories are ignored by git operations.
+    Put a line
+
+    ```
+    _temp/
+    ```
+
+    in the `.gitignore` file.
+&#34;&#34;&#34;
 
 LOCATIONS = [
     &#34;~/Downloads/text-fabric-data&#34;,
@@ -94,17 +162,35 @@ LOCATIONS = [
     &#34;~/Dropbox/text-fabric-data&#34;,
     &#34;/mnt/shared/text-fabric-data&#34;,
 ]
+&#34;&#34;&#34;Default locations for tf data files.
 
-GZIP_LEVEL = 2
-PICKLE_PROTOCOL = 4
+If the `locations` parameter for the `tf.fabric.Fabric` call is omitted,
+this is the default.
+Text-Fabric will search all these directories as for `.tf` modules of files.
+&#34;&#34;&#34;
 
 ZIP_OPTIONS = dict(compression=ZIP_DEFLATED,)
+&#34;&#34;&#34;Options for zip when packing tf files.
+
+This is for packaging collections of plain tf files into zip files
+to be attached to releases on GitHub.
+
+!!! caution &#34;Not for .tfx files&#34;
+    This is not the zipping as done when .tf files are
+    pickled and compressed to .tfx files.
+&#34;&#34;&#34;
+
 if sys.version_info[1] &gt;= 7:
     ZIP_OPTIONS[&#34;compresslevel&#34;] = 6
 
 YARN_RATIO = 1.25
+&#34;&#34;&#34;Performance parameter in the `tf.search.search` module.&#34;&#34;&#34;
+
 TRY_LIMIT_FROM = 40
-TRY_LIMIT_TO = 40</code></pre>
+&#34;&#34;&#34;Performance parameter in the `tf.search.search` module.&#34;&#34;&#34;
+
+TRY_LIMIT_TO = 40
+&#34;&#34;&#34;Performance parameter in the `tf.search.search` module.&#34;&#34;&#34;</code></pre>
 </details>
 </section>
 <section>
@@ -112,9 +198,77 @@ TRY_LIMIT_TO = 40</code></pre>
 <section>
 <h2 class="section-title" id="header-variables">Global variables</h2>
 <dl>
+<dt id="tf.parameters.APIREF"><code class="name">var <span class="ident">APIREF</span></code></dt>
+<dd>
+<section class="desc"><p>Link to the Api docs of Text-Fabric.</p></section>
+</dd>
+<dt id="tf.parameters.APP_CODE"><code class="name">var <span class="ident">APP_CODE</span></code></dt>
+<dd>
+<section class="desc"><p>Name of the top-level directory of a TF app.</p></section>
+</dd>
+<dt id="tf.parameters.APP_GITHUB"><code class="name">var <span class="ident">APP_GITHUB</span></code></dt>
+<dd>
+<section class="desc"><p>Local GitHub location that contains all the TF apps.</p></section>
+</dd>
+<dt id="tf.parameters.APP_NB_URL"><code class="name">var <span class="ident">APP_NB_URL</span></code></dt>
+<dd>
+<section class="desc"><p>Url of the NB-viewer location that contains all the TF tutorials.</p></section>
+</dd>
+<dt id="tf.parameters.APP_URL"><code class="name">var <span class="ident">APP_URL</span></code></dt>
+<dd>
+<section class="desc"><p>Url of the GitHub location that contains all the TF apps.</p></section>
+</dd>
+<dt id="tf.parameters.DOI_TEXT"><code class="name">var <span class="ident">DOI_TEXT</span></code></dt>
+<dd>
+<section class="desc"><p>Text of a DOI link pointing to an archived copy of this repo at Zenodo.</p></section>
+</dd>
+<dt id="tf.parameters.DOI_URL"><code class="name">var <span class="ident">DOI_URL</span></code></dt>
+<dd>
+<section class="desc"><p>Url of an archived copy of this repo at Zenodo.</p></section>
+</dd>
+<dt id="tf.parameters.DOWNLOADS"><code class="name">var <span class="ident">DOWNLOADS</span></code></dt>
+<dd>
+<section class="desc"><p>Local Downloads directory.</p></section>
+</dd>
+<dt id="tf.parameters.EXPRESS_BASE"><code class="name">var <span class="ident">EXPRESS_BASE</span></code></dt>
+<dd>
+<section class="desc"><p>Local cache directory.</p>
+<p>This is the place where the TF apps and TF feature files are cached locally.</p></section>
+</dd>
+<dt id="tf.parameters.EXPRESS_SYNC"><code class="name">var <span class="ident">EXPRESS_SYNC</span></code></dt>
+<dd>
+<section class="desc"><p>Name of cache indicator file.</p>
+<p>When a dataset is stored in the cache,
+information about the GitHub release/commit is stored in a file
+with this name.</p></section>
+</dd>
+<dt id="tf.parameters.EXPRESS_SYNC_LEGACY"><code class="name">var <span class="ident">EXPRESS_SYNC_LEGACY</span></code></dt>
+<dd>
+<section class="desc"><p>Legacy names of cache indicator files.</p></section>
+</dd>
+<dt id="tf.parameters.GH_BASE"><code class="name">var <span class="ident">GH_BASE</span></code></dt>
+<dd>
+<section class="desc"><p>Local GitHub directory.</p></section>
+</dd>
+<dt id="tf.parameters.GZIP_LEVEL"><code class="name">var <span class="ident">GZIP_LEVEL</span></code></dt>
+<dd>
+<section class="desc"><p>Compression level when compressing tf files.</p></section>
+</dd>
+<dt id="tf.parameters.LOCATIONS"><code class="name">var <span class="ident">LOCATIONS</span></code></dt>
+<dd>
+<section class="desc"><p>Default locations for tf data files.</p>
+<p>If the <code>locations</code> parameter for the <a title="tf.fabric.Fabric" href="fabric.html#tf.fabric.Fabric"><code>Fabric</code></a> call is omitted,
+this is the default.
+Text-Fabric will search all these directories as for <code>.tf</code> modules of files.</p></section>
+</dd>
 <dt id="tf.parameters.NAME"><code class="name">var <span class="ident">NAME</span></code></dt>
 <dd>
 <section class="desc"><p>The name of the game: this program.</p></section>
+</dd>
+<dt id="tf.parameters.ORG"><code class="name">var <span class="ident">ORG</span></code></dt>
+<dd>
+<section class="desc"><p>GitHub organization name.</p>
+<p>This is where the repo that contains Text-Fabric resides.</p></section>
 </dd>
 <dt id="tf.parameters.PACK_VERSION"><code class="name">var <span class="ident">PACK_VERSION</span></code></dt>
 <dd>
@@ -128,13 +282,75 @@ older, incompatible methods.
 Instead, TF will produce freshly compressed data files.</p>
 <p>The compressed data files are stored in a directory <code>.tf/{PVN}/</code> next
 to the original <a title="tf" href="index.html"><code>tf</code></a>
-files, where <code>{PVN}</code> is the package version number.</p></section>
+files, where <code>{PVN}</code> is the package version number.</p>
+<p>See also <a title="tf.clean" href="clean.html"><code>tf.clean</code></a>.</p></section>
+</dd>
+<dt id="tf.parameters.PICKLE_PROTOCOL"><code class="name">var <span class="ident">PICKLE_PROTOCOL</span></code></dt>
+<dd>
+<section class="desc"><p>Pickle protocol level when pickling tf files.</p></section>
+</dd>
+<dt id="tf.parameters.REPO"><code class="name">var <span class="ident">REPO</span></code></dt>
+<dd>
+<section class="desc"><p>GitHub repo name.</p>
+<p>This is the name of the repo that contains Text-Fabric.</p></section>
+</dd>
+<dt id="tf.parameters.TEMP_DIR"><code class="name">var <span class="ident">TEMP_DIR</span></code></dt>
+<dd>
+<section class="desc"><p>Name of temporary directories.</p>
+<div class="admonition hint">
+<p class="admonition-title">.gitignore</p>
+<p>Take care that these directories are ignored by git operations.
+Put a line</p>
+<p><code>_temp/</code></p>
+<p>in the <code>.gitignore</code> file.</p>
+</div></section>
+</dd>
+<dt id="tf.parameters.TRY_LIMIT_FROM"><code class="name">var <span class="ident">TRY_LIMIT_FROM</span></code></dt>
+<dd>
+<section class="desc"><p>Performance parameter in the <a title="tf.search.search" href="search/search.html"><code>tf.search.search</code></a> module.</p></section>
+</dd>
+<dt id="tf.parameters.TRY_LIMIT_TO"><code class="name">var <span class="ident">TRY_LIMIT_TO</span></code></dt>
+<dd>
+<section class="desc"><p>Performance parameter in the <a title="tf.search.search" href="search/search.html"><code>tf.search.search</code></a> module.</p></section>
+</dd>
+<dt id="tf.parameters.URL_GH"><code class="name">var <span class="ident">URL_GH</span></code></dt>
+<dd>
+<section class="desc"><p>Base url of GitHub.</p></section>
+</dd>
+<dt id="tf.parameters.URL_GH_API"><code class="name">var <span class="ident">URL_GH_API</span></code></dt>
+<dd>
+<section class="desc"><p>Url of the GitHub API for repos.</p>
+<p>We can access GitHub repos by means of commands
+on top of this url.</p></section>
+</dd>
+<dt id="tf.parameters.URL_NB"><code class="name">var <span class="ident">URL_NB</span></code></dt>
+<dd>
+<section class="desc"><p>Base url of NB-viewer for GitHub data.</p></section>
+</dd>
+<dt id="tf.parameters.URL_TFDOC"><code class="name">var <span class="ident">URL_TFDOC</span></code></dt>
+<dd>
+<section class="desc"><p>Base url of the online Text-Fabric documentation.</p></section>
 </dd>
 <dt id="tf.parameters.VERSION"><code class="name">var <span class="ident">VERSION</span></code></dt>
 <dd>
 <section class="desc"><p>Program version.</p>
 <p>This value is under control of the update process, as run by
 <code>build.py</code> in the top-level directory of the repo.</p></section>
+</dd>
+<dt id="tf.parameters.YARN_RATIO"><code class="name">var <span class="ident">YARN_RATIO</span></code></dt>
+<dd>
+<section class="desc"><p>Performance parameter in the <a title="tf.search.search" href="search/search.html"><code>tf.search.search</code></a> module.</p></section>
+</dd>
+<dt id="tf.parameters.ZIP_OPTIONS"><code class="name">var <span class="ident">ZIP_OPTIONS</span></code></dt>
+<dd>
+<section class="desc"><p>Options for zip when packing tf files.</p>
+<p>This is for packaging collections of plain tf files into zip files
+to be attached to releases on GitHub.</p>
+<div class="admonition caution">
+<p class="admonition-title">Not for .tfx files</p>
+<p>This is not the zipping as done when .tf files are
+pickled and compressed to .tfx files.</p>
+</div></section>
 </dd>
 </dl>
 </section>
@@ -155,10 +371,36 @@ files, where <code>{PVN}</code> is the package version number.</p></section>
 </ul>
 </li>
 <li><h3><a href="#header-variables">Global variables</a></h3>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="tf.parameters.APIREF" href="#tf.parameters.APIREF">APIREF</a></code></li>
+<li><code><a title="tf.parameters.APP_CODE" href="#tf.parameters.APP_CODE">APP_CODE</a></code></li>
+<li><code><a title="tf.parameters.APP_GITHUB" href="#tf.parameters.APP_GITHUB">APP_GITHUB</a></code></li>
+<li><code><a title="tf.parameters.APP_NB_URL" href="#tf.parameters.APP_NB_URL">APP_NB_URL</a></code></li>
+<li><code><a title="tf.parameters.APP_URL" href="#tf.parameters.APP_URL">APP_URL</a></code></li>
+<li><code><a title="tf.parameters.DOI_TEXT" href="#tf.parameters.DOI_TEXT">DOI_TEXT</a></code></li>
+<li><code><a title="tf.parameters.DOI_URL" href="#tf.parameters.DOI_URL">DOI_URL</a></code></li>
+<li><code><a title="tf.parameters.DOWNLOADS" href="#tf.parameters.DOWNLOADS">DOWNLOADS</a></code></li>
+<li><code><a title="tf.parameters.EXPRESS_BASE" href="#tf.parameters.EXPRESS_BASE">EXPRESS_BASE</a></code></li>
+<li><code><a title="tf.parameters.EXPRESS_SYNC" href="#tf.parameters.EXPRESS_SYNC">EXPRESS_SYNC</a></code></li>
+<li><code><a title="tf.parameters.EXPRESS_SYNC_LEGACY" href="#tf.parameters.EXPRESS_SYNC_LEGACY">EXPRESS_SYNC_LEGACY</a></code></li>
+<li><code><a title="tf.parameters.GH_BASE" href="#tf.parameters.GH_BASE">GH_BASE</a></code></li>
+<li><code><a title="tf.parameters.GZIP_LEVEL" href="#tf.parameters.GZIP_LEVEL">GZIP_LEVEL</a></code></li>
+<li><code><a title="tf.parameters.LOCATIONS" href="#tf.parameters.LOCATIONS">LOCATIONS</a></code></li>
 <li><code><a title="tf.parameters.NAME" href="#tf.parameters.NAME">NAME</a></code></li>
+<li><code><a title="tf.parameters.ORG" href="#tf.parameters.ORG">ORG</a></code></li>
 <li><code><a title="tf.parameters.PACK_VERSION" href="#tf.parameters.PACK_VERSION">PACK_VERSION</a></code></li>
+<li><code><a title="tf.parameters.PICKLE_PROTOCOL" href="#tf.parameters.PICKLE_PROTOCOL">PICKLE_PROTOCOL</a></code></li>
+<li><code><a title="tf.parameters.REPO" href="#tf.parameters.REPO">REPO</a></code></li>
+<li><code><a title="tf.parameters.TEMP_DIR" href="#tf.parameters.TEMP_DIR">TEMP_DIR</a></code></li>
+<li><code><a title="tf.parameters.TRY_LIMIT_FROM" href="#tf.parameters.TRY_LIMIT_FROM">TRY_LIMIT_FROM</a></code></li>
+<li><code><a title="tf.parameters.TRY_LIMIT_TO" href="#tf.parameters.TRY_LIMIT_TO">TRY_LIMIT_TO</a></code></li>
+<li><code><a title="tf.parameters.URL_GH" href="#tf.parameters.URL_GH">URL_GH</a></code></li>
+<li><code><a title="tf.parameters.URL_GH_API" href="#tf.parameters.URL_GH_API">URL_GH_API</a></code></li>
+<li><code><a title="tf.parameters.URL_NB" href="#tf.parameters.URL_NB">URL_NB</a></code></li>
+<li><code><a title="tf.parameters.URL_TFDOC" href="#tf.parameters.URL_TFDOC">URL_TFDOC</a></code></li>
 <li><code><a title="tf.parameters.VERSION" href="#tf.parameters.VERSION">VERSION</a></code></li>
+<li><code><a title="tf.parameters.YARN_RATIO" href="#tf.parameters.YARN_RATIO">YARN_RATIO</a></code></li>
+<li><code><a title="tf.parameters.ZIP_OPTIONS" href="#tf.parameters.ZIP_OPTIONS">ZIP_OPTIONS</a></code></li>
 </ul>
 </li>
 </ul>

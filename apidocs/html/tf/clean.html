@@ -41,16 +41,49 @@ binvRe = re.compile(r&#34;/\.tf/([^/]+)$&#34;)
 
 
 def out(msg):
+    &#34;&#34;&#34;Write to standard normal output immediately.&#34;&#34;&#34;
     sys.stdout.write(msg)
     sys.stdout.flush()
 
 
 def err(msg):
+    &#34;&#34;&#34;Write to standard error output immediately.&#34;&#34;&#34;
     sys.stderr.write(msg)
     sys.stderr.flush()
 
 
 def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
+    &#34;&#34;&#34;Clean up older compressed .tfx files.
+
+    Parameters
+    ----------
+
+    Removes all precomputed data resulting from other `PACK_VERSION`s
+    than the one currently used by Text-Fabric.
+
+    You find the current pack version in
+    `tf.parameters`
+
+    tfd: boolean,  optional `True`
+        By default, your `~/text-fabric-data` is traversed and cleaned,
+        but if you pass `tfd=False` it will be skipped.
+    gh: boolean, optional, `False`
+        By default, your `~/github` will be skipped,
+        but if you pass `gh=True` it will be
+        traversed and cleaned.
+    specific: string, optional, `None`
+        You can pass a specific directory here. The standard directories
+        `~/github` and `~/text-fabric-data` will not be used, only
+        the directory you pass here. `~` will be expanded to your home directory.
+    current: boolean, optional, `False`
+        If current=True, also the precomputed results of the current version will
+        be removed.
+    dry: boolean, optional, `False`
+        By default, nothing will be deleted, and you only get a list of
+        what will be deleted if it were not a dry run.
+        If you pass `dry=False` the delete actions will really be executed.
+    &#34;&#34;&#34;
+
     if specific is not None:
         bases = [os.path.expanduser(specific)]
     else:
@@ -104,12 +137,69 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
 <span>def <span class="ident">clean</span></span>(<span>tfd=True, gh=False, dry=True, specific=None, current=False)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Clean up older compressed .tfx files.</p>
+<h2 id="parameters">Parameters</h2>
+<p>Removes all precomputed data resulting from other <code>PACK_VERSION</code>s
+than the one currently used by Text-Fabric.</p>
+<p>You find the current pack version in
+<a title="tf.parameters" href="parameters.html"><code>tf.parameters</code></a></p>
+<dl>
+<dt><strong><code>tfd</code></strong> :&ensp;<code>boolean</code>,
+optional <code>True</code></dt>
+<dd>By default, your <code>~/text-fabric-data</code> is traversed and cleaned,
+but if you pass <code>tfd=False</code> it will be skipped.</dd>
+<dt><strong><code>gh</code></strong> :&ensp;<code>boolean</code>, optional, <code>False</code></dt>
+<dd>By default, your <code>~/github</code> will be skipped,
+but if you pass <code>gh=True</code> it will be
+traversed and cleaned.</dd>
+<dt><strong><code>specific</code></strong> :&ensp;<code>string</code>, optional, <code>None</code></dt>
+<dd>You can pass a specific directory here. The standard directories
+<code>~/github</code> and <code>~/text-fabric-data</code> will not be used, only
+the directory you pass here. <code>~</code> will be expanded to your home directory.</dd>
+<dt><strong><code>current</code></strong> :&ensp;<code>boolean</code>, optional, <code>False</code></dt>
+<dd>If current=True, also the precomputed results of the current version will
+be removed.</dd>
+<dt><strong><code>dry</code></strong> :&ensp;<code>boolean</code>, optional, <code>False</code></dt>
+<dd>By default, nothing will be deleted, and you only get a list of
+what will be deleted if it were not a dry run.
+If you pass <code>dry=False</code> the delete actions will really be executed.</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
+    &#34;&#34;&#34;Clean up older compressed .tfx files.
+
+    Parameters
+    ----------
+
+    Removes all precomputed data resulting from other `PACK_VERSION`s
+    than the one currently used by Text-Fabric.
+
+    You find the current pack version in
+    `tf.parameters`
+
+    tfd: boolean,  optional `True`
+        By default, your `~/text-fabric-data` is traversed and cleaned,
+        but if you pass `tfd=False` it will be skipped.
+    gh: boolean, optional, `False`
+        By default, your `~/github` will be skipped,
+        but if you pass `gh=True` it will be
+        traversed and cleaned.
+    specific: string, optional, `None`
+        You can pass a specific directory here. The standard directories
+        `~/github` and `~/text-fabric-data` will not be used, only
+        the directory you pass here. `~` will be expanded to your home directory.
+    current: boolean, optional, `False`
+        If current=True, also the precomputed results of the current version will
+        be removed.
+    dry: boolean, optional, `False`
+        By default, nothing will be deleted, and you only get a list of
+        what will be deleted if it were not a dry run.
+        If you pass `dry=False` the delete actions will really be executed.
+    &#34;&#34;&#34;
+
     if specific is not None:
         bases = [os.path.expanduser(specific)]
     else:
@@ -156,12 +246,13 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
 <span>def <span class="ident">err</span></span>(<span>msg)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Write to standard error output immediately.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def err(msg):
+    &#34;&#34;&#34;Write to standard error output immediately.&#34;&#34;&#34;
     sys.stderr.write(msg)
     sys.stderr.flush()</code></pre>
 </details>
@@ -170,12 +261,13 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
 <span>def <span class="ident">out</span></span>(<span>msg)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Write to standard normal output immediately.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def out(msg):
+    &#34;&#34;&#34;Write to standard normal output immediately.&#34;&#34;&#34;
     sys.stdout.write(msg)
     sys.stdout.flush()</code></pre>
 </details>

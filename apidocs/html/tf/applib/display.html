@@ -680,7 +680,7 @@ def loadCss(app, reload=False):
         f&#34;{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}&#34;
         &#34;/server/static/highlight.css&#34;
     )
-    with open(hlCssFile) as fh:
+    with open(hlCssFile, encoding=&#34;utf8&#34;) as fh:
         hlCss = fh.read()
 
     cssFont = (
@@ -1039,7 +1039,7 @@ else the CSS is returned.</p>
         f&#34;{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}&#34;
         &#34;/server/static/highlight.css&#34;
     )
-    with open(hlCssFile) as fh:
+    with open(hlCssFile, encoding=&#34;utf8&#34;) as fh:
         hlCss = fh.read()
 
     cssFont = (

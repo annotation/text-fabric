@@ -579,7 +579,7 @@ class Checkout(object):
 
     def readInfo(self):
         if os.path.exists(self.filePathLocal):
-            with open(self.filePathLocal) as f:
+            with open(self.filePathLocal, encoding=&#34;utf8&#34;) as f:
                 for line in f:
                     string = line.strip()
                     (commit, release, local) = self.fromString(string)
@@ -591,7 +591,7 @@ class Checkout(object):
     def writeInfo(self):
         if not os.path.exists(self.dirPathLocal):
             os.makedirs(self.dirPathLocal, exist_ok=True)
-        with open(self.filePathLocal, &#34;w&#34;) as f:
+        with open(self.filePathLocal, &#34;w&#34;, encoding=&#34;utf8&#34;) as f:
             if self.releaseOff:
                 f.write(f&#34;{self.releaseOff}\n&#34;)
             if self.commitOff:
@@ -1283,7 +1283,7 @@ def checkoutRepo(
 
     def readInfo(self):
         if os.path.exists(self.filePathLocal):
-            with open(self.filePathLocal) as f:
+            with open(self.filePathLocal, encoding=&#34;utf8&#34;) as f:
                 for line in f:
                     string = line.strip()
                     (commit, release, local) = self.fromString(string)
@@ -1295,7 +1295,7 @@ def checkoutRepo(
     def writeInfo(self):
         if not os.path.exists(self.dirPathLocal):
             os.makedirs(self.dirPathLocal, exist_ok=True)
-        with open(self.filePathLocal, &#34;w&#34;) as f:
+        with open(self.filePathLocal, &#34;w&#34;, encoding=&#34;utf8&#34;) as f:
             if self.releaseOff:
                 f.write(f&#34;{self.releaseOff}\n&#34;)
             if self.commitOff:
@@ -2054,7 +2054,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 </summary>
 <pre><code class="python">def readInfo(self):
     if os.path.exists(self.filePathLocal):
-        with open(self.filePathLocal) as f:
+        with open(self.filePathLocal, encoding=&#34;utf8&#34;) as f:
             for line in f:
                 string = line.strip()
                 (commit, release, local) = self.fromString(string)
@@ -2076,7 +2076,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <pre><code class="python">def writeInfo(self):
     if not os.path.exists(self.dirPathLocal):
         os.makedirs(self.dirPathLocal, exist_ok=True)
-    with open(self.filePathLocal, &#34;w&#34;) as f:
+    with open(self.filePathLocal, &#34;w&#34;, encoding=&#34;utf8&#34;) as f:
         if self.releaseOff:
             f.write(f&#34;{self.releaseOff}\n&#34;)
         if self.commitOff:

@@ -413,7 +413,7 @@ def tfFromMql(mqlFile, tm, slotType=None, otext=None, meta=None):
 
 def parseMql(mqlFile, tm):
     tm.info(&#34;Parsing mql source ...&#34;)
-    fh = open(mqlFile)
+    fh = open(mqlFile, encoding=&#34;utf8&#34;)
 
     objectTypes = dict()
     tables = dict()
@@ -751,7 +751,7 @@ such as backslash xb6</p></section>
 </summary>
 <pre><code class="python">def parseMql(mqlFile, tm):
     tm.info(&#34;Parsing mql source ...&#34;)
-    fh = open(mqlFile)
+    fh = open(mqlFile, encoding=&#34;utf8&#34;)
 
     objectTypes = dict()
     tables = dict()
