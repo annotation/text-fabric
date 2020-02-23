@@ -59,7 +59,7 @@ were advised to create a pair of client-id and client-token strings.
 The advise is now: create a personal access token.
 
 See
-[Rate limiting](../Api/Repo.md)
+[Rate limiting](../Api/Github.md)
 (scroll to the end).
 
 Also: a bug fix to the walker conversion, again: thanks Ernst for spotting it.

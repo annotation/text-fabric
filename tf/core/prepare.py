@@ -320,9 +320,9 @@ def boundary(info, error, otype, oslots, rank):
     at that slot are collected.
 
     Boundary data is used by the API functions
-    `tf.core.locality.Locality.l`.
+    `tf.core.locality.Locality.p`.
     and
-    `tf.core.locality.Locality.r`.
+    `tf.core.locality.Locality.n`.
 
     Parameters
     ----------

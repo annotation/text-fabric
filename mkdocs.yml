@@ -75,12 +75,14 @@ nav:
     - Use: 'Use/Use.md'
     - Browser: 'Use/Browser.md'
     - Search: 'Use/Search.md'
+    - FAQ: 'Use/Faq.md'
     - Advanced: 'Use/UseX.md'
   - Api:
     - Apps: 'Api/App.md'
     - Data flow:
       - Data: 'Api/Data.md'
       - Repo: 'Api/Repo.md'
+      - GitHub: 'Api/Github.md'
     - Core:
       - 'TF': 'Api/Fabric.md'
       - 'E/F - (Edge-)Features': 'Api/Features.md'
