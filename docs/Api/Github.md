@@ -73,7 +73,11 @@ This can be too restrictive, and here are two ways to keep working nevertheless.
 
         where the `xxx` are replaced by your actual token.
 
-        Then restart your terminal.
+        Then restart your terminal or say in an existing terminal
+
+        ```  sh
+        source ~/.zshrc
+        ```
 
     ??? hint "On Windows"
         Click on the Start button and type in `environment variable` into the search box.
