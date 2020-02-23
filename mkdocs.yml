@@ -75,7 +75,6 @@ nav:
     - Use: 'Use/Use.md'
     - Browser: 'Use/Browser.md'
     - Search: 'Use/Search.md'
-    - FAQ: 'Use/Faq.md'
     - Advanced: 'Use/UseX.md'
   - Api:
     - Apps: 'Api/App.md'
