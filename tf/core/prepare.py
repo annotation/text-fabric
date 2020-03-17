@@ -44,6 +44,9 @@ def levels(info, error, otype, oslots, otext):
         *   average number of slots contained in the nodes of this type
         *   first node of this type
         *   last node of this type
+
+    The order of the tuple is descending by average number of slots per node of that
+    type.
     """
 
     (otype, maxSlot, maxNode, slotType) = otype

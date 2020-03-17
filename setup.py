@@ -60,7 +60,7 @@ setup(
         "Intended Audience :: Education",
         "Intended Audience :: Religion",
         "Intended Audience :: Science/Research",
-        "License :: Public Domain",
+        "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
         "Natural Language :: Hebrew",
         "Natural Language :: Greek",

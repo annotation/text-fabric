@@ -161,6 +161,33 @@ def composeT(
 # passages
 
 
+def composePstruct(
+    app, baseTypes, browseNavLevel, finalSecType, features, finalSec, **options,
+):
+    display = app.display
+
+    api = app.api
+
+    if features:
+        api.ensureLoaded(features)
+        features = features.split()
+    else:
+        features = []
+
+    if not finalSec:
+        return None
+
+    return _plainTextSFinalStruct(
+        app,
+        baseTypes,
+        browseNavLevel,
+        finalSecType,
+        finalSec,
+        extraFeatures=features,
+        **display.consume(options, "extraFeatures"),
+    )
+
+
 def composeP(
     app,
     browseNavLevel,
@@ -279,3 +306,40 @@ def _plainTextSFinal(
 </details>
 """
     return html
+
+
+def _plainTextSFinalStruct(
+    app, baseTypes, browseNavLevel, finalSecType, sNode, **options,
+):
+    display = app.display
+    d = display.get(options)
+
+    api = app.api
+    Fs = api.Fs
+    T = api.T
+    L = api.L
+
+    highlights = d.highlights
+
+    def getTextNodes(node, theseBaseTypes):
+        textNodes = []
+        (firstType, *remainingTypes) = theseBaseTypes
+        for n in L.d(node, otype=firstType):
+            text = T.text(n, fmt=d.fmt)
+            info = dict(node=n, text=text)
+            if highlights and n in d.highlights:
+                info["hl"] = highlights[n]
+            features = {}
+            for f in d.extraFeatures:
+                v = Fs(f).v(n)
+                if v is not None:
+                    features[f] = v
+            if features:
+                info["features"] = features
+            if remainingTypes:
+                info["content"] = getTextNodes(n, remainingTypes)
+            textNodes.append(info)
+
+        return textNodes
+
+    return getTextNodes(sNode, baseTypes)

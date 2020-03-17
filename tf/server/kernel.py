@@ -10,7 +10,7 @@ from ..applib.app import findApp, findAppConfig, findAppClass
 from ..applib.highlight import getPassageHighlights
 from ..applib.search import runSearch, runSearchCondensed
 from ..applib.display import getResultsX
-from ..applib.tables import compose, composeP, composeT
+from ..applib.tables import compose, composeP, composePstruct, composeT
 
 from .command import (
     argCheckout,
@@ -123,6 +123,8 @@ def makeTfKernel(
             sec2=None,
             opened=set(),
             getx=None,
+            asDict=False,
+            baseTypes=None,
             **options,
         ):
             app = self.app
@@ -130,6 +132,17 @@ def makeTfKernel(
             F = api.F
             L = api.L
             T = api.T
+
+            if asDict:
+                C = api.C
+                Cdata = C.levels.data
+                typeRank = {Cdata[i][0]: i for i in range(len(Cdata))}
+                slotType = F.otype.slotType
+
+                if baseTypes is None:
+                    baseTypes = {slotType}
+                baseTypes = sorted(baseTypes, key=lambda tp: typeRank[tp])
+
             sectionFeatureTypes = T.sectionFeatureTypes
             sec0Type = T.sectionTypes[0]
             sec1Type = T.sectionTypes[1]
@@ -149,6 +162,29 @@ def makeTfKernel(
 
             sec0Node = T.nodeFromSection((sec0,)) if sec0 else None
             sec1Node = T.nodeFromSection((sec0, sec1)) if sec0 and sec1 else None
+            sec2Node = (
+                T.nodeFromSection((sec0, sec1, sec2))
+                if sec0 and sec1 and sec2
+                else None
+            )
+            if asDict:
+                highlights = (
+                    getPassageHighlights(app, sec2Node, query, cache)
+                    if sec2Node
+                    else set()
+                )
+                passages = composePstruct(
+                    app,
+                    baseTypes,
+                    browseNavLevel,
+                    finalSecType,
+                    features,
+                    sec2Node,
+                    highlights=highlights,
+                    **options,
+                )
+                return pickle.dumps((tuple(baseTypes), passages))
+
             contentNode = (sec0Node, sec1Node)[browseNavLevel - 1]
 
             if getx is not None:
@@ -372,10 +408,14 @@ def makeTfKernel(
 def makeTfConnection(host, port, timeout):
     class TfConnection(object):
         def connect(self):
-            connection = rpyc.connect(
-                host, port, config=dict(sync_request_timeout=timeout)
-            )
-            self.connection = connection
+            try:
+                connection = rpyc.connect(
+                    host, port, config=dict(sync_request_timeout=timeout)
+                )
+                self.connection = connection
+            except ConnectionRefusedError as e:
+                self.connection = None
+                return str(e)
             return connection.root
 
     return TfConnection()
