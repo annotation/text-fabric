@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.2" />
+<meta name="generator" content="pdoc 0.7.5" />
 <title>tf.server.kernel API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
@@ -36,7 +36,7 @@ from ..applib.app import findApp, findAppConfig, findAppClass
 from ..applib.highlight import getPassageHighlights
 from ..applib.search import runSearch, runSearchCondensed
 from ..applib.display import getResultsX
-from ..applib.tables import compose, composeP, composeT
+from ..applib.tables import compose, composeP, composePstruct, composeT
 
 from .command import (
     argCheckout,
@@ -149,6 +149,8 @@ def makeTfKernel(
             sec2=None,
             opened=set(),
             getx=None,
+            asDict=False,
+            baseTypes=None,
             **options,
         ):
             app = self.app
@@ -156,6 +158,17 @@ def makeTfKernel(
             F = api.F
             L = api.L
             T = api.T
+
+            if asDict:
+                C = api.C
+                Cdata = C.levels.data
+                typeRank = {Cdata[i][0]: i for i in range(len(Cdata))}
+                slotType = F.otype.slotType
+
+                if baseTypes is None:
+                    baseTypes = {slotType}
+                baseTypes = sorted(baseTypes, key=lambda tp: typeRank[tp])
+
             sectionFeatureTypes = T.sectionFeatureTypes
             sec0Type = T.sectionTypes[0]
             sec1Type = T.sectionTypes[1]
@@ -175,10 +188,34 @@ def makeTfKernel(
 
             sec0Node = T.nodeFromSection((sec0,)) if sec0 else None
             sec1Node = T.nodeFromSection((sec0, sec1)) if sec0 and sec1 else None
+            sec2Node = (
+                T.nodeFromSection((sec0, sec1, sec2))
+                if sec0 and sec1 and sec2
+                else None
+            )
+            if asDict:
+                highlights = (
+                    getPassageHighlights(app, sec2Node, query, cache)
+                    if sec2Node
+                    else set()
+                )
+                passages = composePstruct(
+                    app,
+                    baseTypes,
+                    browseNavLevel,
+                    finalSecType,
+                    features,
+                    sec2Node,
+                    highlights=highlights,
+                    **options,
+                )
+                return pickle.dumps((tuple(baseTypes), passages))
+
             contentNode = (sec0Node, sec1Node)[browseNavLevel - 1]
 
             if getx is not None:
-                if sectionFeatureTypes[browseNavLevel - 1] == &#34;int&#34;:
+                # if sectionFeatureTypes[browseNavLevel - 1] == &#34;int&#34;:
+                if sectionFeatureTypes[browseNavLevel] == &#34;int&#34;:
                     getx = int(getx)
 
             sec0s = tuple(T.sectionFromNode(s)[0] for s in F.otype.s(sec0Type))
@@ -398,10 +435,14 @@ def makeTfKernel(
 def makeTfConnection(host, port, timeout):
     class TfConnection(object):
         def connect(self):
-            connection = rpyc.connect(
-                host, port, config=dict(sync_request_timeout=timeout)
-            )
-            self.connection = connection
+            try:
+                connection = rpyc.connect(
+                    host, port, config=dict(sync_request_timeout=timeout)
+                )
+                self.connection = connection
+            except ConnectionRefusedError as e:
+                self.connection = None
+                return str(e)
             return connection.root
 
     return TfConnection()
@@ -468,7 +509,7 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.server.kernel.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.8/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -519,10 +560,14 @@ if __name__ == &#34;__main__&#34;:
 <pre><code class="python">def makeTfConnection(host, port, timeout):
     class TfConnection(object):
         def connect(self):
-            connection = rpyc.connect(
-                host, port, config=dict(sync_request_timeout=timeout)
-            )
-            self.connection = connection
+            try:
+                connection = rpyc.connect(
+                    host, port, config=dict(sync_request_timeout=timeout)
+                )
+                self.connection = connection
+            except ConnectionRefusedError as e:
+                self.connection = None
+                return str(e)
             return connection.root
 
     return TfConnection()</code></pre>
@@ -634,6 +679,8 @@ if __name__ == &#34;__main__&#34;:
             sec2=None,
             opened=set(),
             getx=None,
+            asDict=False,
+            baseTypes=None,
             **options,
         ):
             app = self.app
@@ -641,6 +688,17 @@ if __name__ == &#34;__main__&#34;:
             F = api.F
             L = api.L
             T = api.T
+
+            if asDict:
+                C = api.C
+                Cdata = C.levels.data
+                typeRank = {Cdata[i][0]: i for i in range(len(Cdata))}
+                slotType = F.otype.slotType
+
+                if baseTypes is None:
+                    baseTypes = {slotType}
+                baseTypes = sorted(baseTypes, key=lambda tp: typeRank[tp])
+
             sectionFeatureTypes = T.sectionFeatureTypes
             sec0Type = T.sectionTypes[0]
             sec1Type = T.sectionTypes[1]
@@ -660,10 +718,34 @@ if __name__ == &#34;__main__&#34;:
 
             sec0Node = T.nodeFromSection((sec0,)) if sec0 else None
             sec1Node = T.nodeFromSection((sec0, sec1)) if sec0 and sec1 else None
+            sec2Node = (
+                T.nodeFromSection((sec0, sec1, sec2))
+                if sec0 and sec1 and sec2
+                else None
+            )
+            if asDict:
+                highlights = (
+                    getPassageHighlights(app, sec2Node, query, cache)
+                    if sec2Node
+                    else set()
+                )
+                passages = composePstruct(
+                    app,
+                    baseTypes,
+                    browseNavLevel,
+                    finalSecType,
+                    features,
+                    sec2Node,
+                    highlights=highlights,
+                    **options,
+                )
+                return pickle.dumps((tuple(baseTypes), passages))
+
             contentNode = (sec0Node, sec1Node)[browseNavLevel - 1]
 
             if getx is not None:
-                if sectionFeatureTypes[browseNavLevel - 1] == &#34;int&#34;:
+                # if sectionFeatureTypes[browseNavLevel - 1] == &#34;int&#34;:
+                if sectionFeatureTypes[browseNavLevel] == &#34;int&#34;:
                     getx = int(getx)
 
             sec0s = tuple(T.sectionFromNode(s)[0] for s in F.otype.s(sec0Type))
@@ -904,7 +986,7 @@ if __name__ == &#34;__main__&#34;:
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.2</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.5" />
-<title>tf.server.monitor API documentation</title>
+<title>tf.server.dblike API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,24 +17,26 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.server.monitor</code></h1>
+<h1 class="title">Module <code>tf.server.dblike</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from ..core.helpers import console
+<pre><code class="python">import pickle
+from ..core.helpers import console
 from ..applib.app import findApp, findAppConfig
 from ..server.kernel import makeTfConnection
+from .wrap import passageLinks
+
 from .command import argParam
 
 TIMEOUT = 180
+BATCH = 100
 
 
 def setup(dataSource, checkoutApp):
-    global TF
-
     (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
     if not appBase:
         return
@@ -47,6 +49,41 @@ def setup(dataSource, checkoutApp):
     return TF
 
 
+def servePassage(kernelApi, passage):
+    passages = &#34;&#34;
+
+    (sec0, sec1, sec2) = passage.split(&#39;,&#39;)
+
+    (table, sec0Type, passages, browseNavLevel,) = kernelApi.passage(
+        (),
+        &#39;&#39;,
+        sec0,
+        sec1=sec1,
+        sec2=sec2,
+    )
+    passages = pickle.loads(passages)
+    return passageLinks(passages, sec0Type, sec0, sec1, browseNavLevel)
+
+
+def serveQuery(kernelApi, query):
+
+    messages = &#34;&#34;
+    table = None
+    try:
+        (table, messages, features, start, total,) = kernelApi.search(
+            query,
+            BATCH,
+        )
+    except TimeoutError:
+        messages = (
+            f&#34;Aborted because query takes longer than {TIMEOUT} second&#34;
+            + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
+        )
+        console(f&#34;{query}\n{messages}&#34;, error=True)
+
+    return (table, total)
+
+
 def main():
     (dataSource, checkoutApp) = argParam(interactive=True)
     if dataSource is None:
@@ -57,17 +94,43 @@ def main():
         return
 
     commands = {
-        &#34;1&#34;: &#34;searchExe&#34;,
-        &#34;2&#34;: &#34;msgCache&#34;,
+        &#34;P&#34;: &#34;passage&#34;,
+        &#34;Q&#34;: &#34;query&#34;,
     }
     commandText = &#34;\n&#34;.join(f&#34;[{k:&gt;2}] {v}&#34; for (k, v) in commands.items())
     try:
         while True:
             kernelApi = TF.connect()
-            number = input(f&#34;{commandText}\nenter number: &#34;)
-            command = commands[number]
-            data = kernelApi.monitor()
-            console(f&#34;{command} = {data[command]}\n&#34;)
+            line = input(f&#34;{commandText}\nenter command: &#34;)
+            command = &#39;&#39;
+            kind = None
+            if line.startswith(&#39;Q&#39;):
+                while True:
+                    line = input(f&#34;Query line: &#34;)
+                    if line.strip():
+                        command += f&#34;{line}\n&#34;
+                    else:
+                        break
+                kind = &#34;query&#34;
+            elif line.startswith(&#39;P&#39;):
+                command = input(f&#34;Passage: &#34;)
+                kind = &#34;passage&#34;
+            else:
+                if line.strip():
+                    console(&#34;try again&#34;)
+                else:
+                    break
+
+            result = None
+
+            if kind == &#34;passage&#34;:
+                result = servePassage(kernelApi, command)
+                print(result)
+            elif kind == &#34;query&#34;:
+                (result, total) = serveQuery(kernelApi, command)
+                print(result)
+                print(f&#34;{total} results&#34;)
+
     except KeyboardInterrupt:
         console(&#34;\nquitting&#34;)
         return
@@ -84,7 +147,7 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.server.monitor.main"><code class="name flex">
+<dt id="tf.server.dblike.main"><code class="name flex">
 <span>def <span class="ident">main</span></span>(<span>)</span>
 </code></dt>
 <dd>
@@ -103,23 +166,102 @@ if __name__ == &#34;__main__&#34;:
         return
 
     commands = {
-        &#34;1&#34;: &#34;searchExe&#34;,
-        &#34;2&#34;: &#34;msgCache&#34;,
+        &#34;P&#34;: &#34;passage&#34;,
+        &#34;Q&#34;: &#34;query&#34;,
     }
     commandText = &#34;\n&#34;.join(f&#34;[{k:&gt;2}] {v}&#34; for (k, v) in commands.items())
     try:
         while True:
             kernelApi = TF.connect()
-            number = input(f&#34;{commandText}\nenter number: &#34;)
-            command = commands[number]
-            data = kernelApi.monitor()
-            console(f&#34;{command} = {data[command]}\n&#34;)
+            line = input(f&#34;{commandText}\nenter command: &#34;)
+            command = &#39;&#39;
+            kind = None
+            if line.startswith(&#39;Q&#39;):
+                while True:
+                    line = input(f&#34;Query line: &#34;)
+                    if line.strip():
+                        command += f&#34;{line}\n&#34;
+                    else:
+                        break
+                kind = &#34;query&#34;
+            elif line.startswith(&#39;P&#39;):
+                command = input(f&#34;Passage: &#34;)
+                kind = &#34;passage&#34;
+            else:
+                if line.strip():
+                    console(&#34;try again&#34;)
+                else:
+                    break
+
+            result = None
+
+            if kind == &#34;passage&#34;:
+                result = servePassage(kernelApi, command)
+                print(result)
+            elif kind == &#34;query&#34;:
+                (result, total) = serveQuery(kernelApi, command)
+                print(result)
+                print(f&#34;{total} results&#34;)
+
     except KeyboardInterrupt:
         console(&#34;\nquitting&#34;)
         return</code></pre>
 </details>
 </dd>
-<dt id="tf.server.monitor.setup"><code class="name flex">
+<dt id="tf.server.dblike.servePassage"><code class="name flex">
+<span>def <span class="ident">servePassage</span></span>(<span>kernelApi, passage)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def servePassage(kernelApi, passage):
+    passages = &#34;&#34;
+
+    (sec0, sec1, sec2) = passage.split(&#39;,&#39;)
+
+    (table, sec0Type, passages, browseNavLevel,) = kernelApi.passage(
+        (),
+        &#39;&#39;,
+        sec0,
+        sec1=sec1,
+        sec2=sec2,
+    )
+    passages = pickle.loads(passages)
+    return passageLinks(passages, sec0Type, sec0, sec1, browseNavLevel)</code></pre>
+</details>
+</dd>
+<dt id="tf.server.dblike.serveQuery"><code class="name flex">
+<span>def <span class="ident">serveQuery</span></span>(<span>kernelApi, query)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def serveQuery(kernelApi, query):
+
+    messages = &#34;&#34;
+    table = None
+    try:
+        (table, messages, features, start, total,) = kernelApi.search(
+            query,
+            BATCH,
+        )
+    except TimeoutError:
+        messages = (
+            f&#34;Aborted because query takes longer than {TIMEOUT} second&#34;
+            + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
+        )
+        console(f&#34;{query}\n{messages}&#34;, error=True)
+
+    return (table, total)</code></pre>
+</details>
+</dd>
+<dt id="tf.server.dblike.setup"><code class="name flex">
 <span>def <span class="ident">setup</span></span>(<span>dataSource, checkoutApp)</span>
 </code></dt>
 <dd>
@@ -129,8 +271,6 @@ if __name__ == &#34;__main__&#34;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setup(dataSource, checkoutApp):
-    global TF
-
     (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
     if not appBase:
         return
@@ -161,8 +301,10 @@ if __name__ == &#34;__main__&#34;:
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.server.monitor.main" href="#tf.server.monitor.main">main</a></code></li>
-<li><code><a title="tf.server.monitor.setup" href="#tf.server.monitor.setup">setup</a></code></li>
+<li><code><a title="tf.server.dblike.main" href="#tf.server.dblike.main">main</a></code></li>
+<li><code><a title="tf.server.dblike.servePassage" href="#tf.server.dblike.servePassage">servePassage</a></code></li>
+<li><code><a title="tf.server.dblike.serveQuery" href="#tf.server.dblike.serveQuery">serveQuery</a></code></li>
+<li><code><a title="tf.server.dblike.setup" href="#tf.server.dblike.setup">setup</a></code></li>
 </ul>
 </li>
 </ul>

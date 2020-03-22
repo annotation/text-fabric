@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.5" />
-<title>tf.lib API documentation</title>
-<meta name="description" content="" />
+<title>tf.server.provider API documentation</title>
+<meta name="description" content="Retrieves data from a TF kernel and provides it to an application." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,42 +17,55 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.lib</code></h1>
+<h1 class="title">Module <code>tf.server.provider</code></h1>
 </header>
 <section id="section-intro">
+<p>Retrieves data from a TF kernel and provides it to an application.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import os
+<pre><code class="python">&#34;&#34;&#34;Retrieves data from a TF kernel and provides it to an application.
+&#34;&#34;&#34;
+
+import sys
 import pickle
-import gzip
-from .parameters import PICKLE_PROTOCOL, GZIP_LEVEL
-from .core.helpers import console
+
+from ..applib.app import findApp, findAppConfig
+from ..server.kernel import makeTfConnection
+
+from .serve import TIMEOUT
 
 
-def writeSets(sets, dest):
-    destPath = os.path.expanduser(dest)
-    (baseDir, fileName) = os.path.split(destPath)
-    if not os.path.exists(baseDir):
-        try:
-            os.makedirs(baseDir, exist_ok=True)
-        except Exception:
-            console(f&#39;Cannot create directory &#34;{baseDir}&#34;&#39;, error=True)
-            return False
-    with gzip.open(destPath, &#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
-        pickle.dump(sets, f, protocol=PICKLE_PROTOCOL)
-    return True
+class TfProvider:
+    def __init__(self, appName, checkoutApp=&#34;&#34;):
+        (commit, release, local, appBase, appDir) = findApp(appName, checkoutApp)
+        if not appBase:
+            return
+        appPath = f&#34;{appBase}/{appDir}&#34;
+        config = findAppConfig(appName, appPath)
+        if config is None:
+            return None
 
+        self.TF = makeTfConnection(config.HOST, config.PORT[&#34;kernel&#34;], TIMEOUT)
+        self.appName = appName
 
-def readSets(source):
-    sourcePath = os.path.expanduser(source)
-    if not os.path.exists(sourcePath):
-        console(f&#39;Sets file &#34;{source}&#34; does not exist.&#39;)
-        return False
-    with gzip.open(sourcePath, &#34;rb&#34;) as f:
-        sets = pickle.load(f)
-    return sets</code></pre>
+    def passage(
+        self, sec0, sec1=None, sec2=None, baseTypes=None, features=None, query=None
+    ):
+        TF = self.TF
+        kernelApi = TF.connect()
+        if type(kernelApi) is str:
+            sys.stderr.write(
+                f&#34;&#34;&#34;{kernelApi}\n&#34;&#34;&#34;
+                f&#34;&#34;&#34;Make sure a kernel for TF app &#34;{self.appName}&#34; is running\n&#34;&#34;&#34;
+            )
+            return None
+
+        passages = kernelApi.passage(
+            features, query, sec0, sec1=sec1, sec2=sec2, baseTypes=baseTypes, asDict=True,
+        )
+        return pickle.loads(passages)</code></pre>
 </details>
 </section>
 <section>
@@ -60,10 +73,13 @@ def readSets(source):
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.lib.readSets"><code class="name flex">
-<span>def <span class="ident">readSets</span></span>(<span>source)</span>
+<dt id="tf.server.provider.TfProvider"><code class="flex name class">
+<span>class <span class="ident">TfProvider</span></span>
+<span>(</span><span>appName, checkoutApp='')</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -71,18 +87,40 @@ def readSets(source):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def readSets(source):
-    sourcePath = os.path.expanduser(source)
-    if not os.path.exists(sourcePath):
-        console(f&#39;Sets file &#34;{source}&#34; does not exist.&#39;)
-        return False
-    with gzip.open(sourcePath, &#34;rb&#34;) as f:
-        sets = pickle.load(f)
-    return sets</code></pre>
+<pre><code class="python">class TfProvider:
+    def __init__(self, appName, checkoutApp=&#34;&#34;):
+        (commit, release, local, appBase, appDir) = findApp(appName, checkoutApp)
+        if not appBase:
+            return
+        appPath = f&#34;{appBase}/{appDir}&#34;
+        config = findAppConfig(appName, appPath)
+        if config is None:
+            return None
+
+        self.TF = makeTfConnection(config.HOST, config.PORT[&#34;kernel&#34;], TIMEOUT)
+        self.appName = appName
+
+    def passage(
+        self, sec0, sec1=None, sec2=None, baseTypes=None, features=None, query=None
+    ):
+        TF = self.TF
+        kernelApi = TF.connect()
+        if type(kernelApi) is str:
+            sys.stderr.write(
+                f&#34;&#34;&#34;{kernelApi}\n&#34;&#34;&#34;
+                f&#34;&#34;&#34;Make sure a kernel for TF app &#34;{self.appName}&#34; is running\n&#34;&#34;&#34;
+            )
+            return None
+
+        passages = kernelApi.passage(
+            features, query, sec0, sec1=sec1, sec2=sec2, baseTypes=baseTypes, asDict=True,
+        )
+        return pickle.loads(passages)</code></pre>
 </details>
-</dd>
-<dt id="tf.lib.writeSets"><code class="name flex">
-<span>def <span class="ident">writeSets</span></span>(<span>sets, dest)</span>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.server.provider.TfProvider.passage"><code class="name flex">
+<span>def <span class="ident">passage</span></span>(<span>self, sec0, sec1=None, sec2=None, baseTypes=None, features=None, query=None)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -90,23 +128,27 @@ def readSets(source):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def writeSets(sets, dest):
-    destPath = os.path.expanduser(dest)
-    (baseDir, fileName) = os.path.split(destPath)
-    if not os.path.exists(baseDir):
-        try:
-            os.makedirs(baseDir, exist_ok=True)
-        except Exception:
-            console(f&#39;Cannot create directory &#34;{baseDir}&#34;&#39;, error=True)
-            return False
-    with gzip.open(destPath, &#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
-        pickle.dump(sets, f, protocol=PICKLE_PROTOCOL)
-    return True</code></pre>
+<pre><code class="python">def passage(
+    self, sec0, sec1=None, sec2=None, baseTypes=None, features=None, query=None
+):
+    TF = self.TF
+    kernelApi = TF.connect()
+    if type(kernelApi) is str:
+        sys.stderr.write(
+            f&#34;&#34;&#34;{kernelApi}\n&#34;&#34;&#34;
+            f&#34;&#34;&#34;Make sure a kernel for TF app &#34;{self.appName}&#34; is running\n&#34;&#34;&#34;
+        )
+        return None
+
+    passages = kernelApi.passage(
+        features, query, sec0, sec1=sec1, sec2=sec2, baseTypes=baseTypes, asDict=True,
+    )
+    return pickle.loads(passages)</code></pre>
 </details>
 </dd>
 </dl>
-</section>
-<section>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -117,13 +159,17 @@ def readSets(source):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf" href="index.html">tf</a></code></li>
+<li><code><a title="tf.server" href="index.html">tf.server</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.server.provider.TfProvider" href="#tf.server.provider.TfProvider">TfProvider</a></code></h4>
 <ul class="">
-<li><code><a title="tf.lib.readSets" href="#tf.lib.readSets">readSets</a></code></li>
-<li><code><a title="tf.lib.writeSets" href="#tf.lib.writeSets">writeSets</a></code></li>
+<li><code><a title="tf.server.provider.TfProvider.passage" href="#tf.server.provider.TfProvider.passage">passage</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
