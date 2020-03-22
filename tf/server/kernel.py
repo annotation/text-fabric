@@ -188,7 +188,8 @@ def makeTfKernel(
             contentNode = (sec0Node, sec1Node)[browseNavLevel - 1]
 
             if getx is not None:
-                if sectionFeatureTypes[browseNavLevel - 1] == "int":
+                # if sectionFeatureTypes[browseNavLevel - 1] == "int":
+                if sectionFeatureTypes[browseNavLevel] == "int":
                     getx = int(getx)
 
             sec0s = tuple(T.sectionFromNode(s)[0] for s in F.otype.s(sec0Type))

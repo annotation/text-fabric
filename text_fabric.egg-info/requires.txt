@@ -4,4 +4,4 @@ psutil
 markdown
 ipython
 requests
-pygithub
+pygithub>=1.47

@@ -663,7 +663,7 @@
 
 ??? abstract "A.plain()"
     ```python
-    A.plain(node, isLinked=False, **displayParameters)
+    A.plain(node, isLinked=True, **displayParameters)
     ```
 
     ???+ info "Description"

@@ -42,6 +42,30 @@
 
 ---
 
+# 7.11
+
+2020-03-22
+
+*   In TF browser: passages are not expanded if the user hits the expand icon,
+    for some corpora. It happened when the type of level 3 sections is not the
+    same as the type of level 2 sections (`int` vs `str`). TF looked at the
+    wrong level when determining the type. Fixed.
+*   When fetching data from GitHub, we got a deprecation warning from `pygithub`.
+    Replaced the call to a deprecated method by a call to a new method.
+*   Mismatch between docs and implementation of `A.plain()`: the `isLinked` parameter
+    is `False` according to the docs, but was coded as `True`. The docs have been
+    adapted.
+*   For tf-app developers: when defining `_pretty()`, it is no longer required
+    to compute whether the node type counts as big. It is done for you in the TF-generic
+    method `prettyPre()`. But you can still use another definition of `bigTyoe` if
+    your corpus requires is. See e.g. the Quran app.
+*   For tf-app developers: the `_plain()` function tended to add a link under the material
+    also in cases where there was already a hyperlinked passage indicator.
+    This is now suppressed.
+
+    **All known TF-apps (the ones in under the `annotation` org on GitHub) have been
+    adapted to this change.**
+
 # 7.10.2
 
 Fix: in some `open()` statements, the encoding parameter `encoding="utf8"` was not passed.

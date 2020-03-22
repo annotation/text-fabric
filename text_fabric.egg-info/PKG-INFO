@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: text-fabric
-Version: 7.10.2
+Version: 7.11.0
 Summary: Processor and browser for Text Fabric Data
 Home-page: https://github.com/annotation/text-fabric
 Author: Dirk Roorda
@@ -20,7 +20,7 @@ Classifier: Intended Audience :: Developers
 Classifier: Intended Audience :: Education
 Classifier: Intended Audience :: Religion
 Classifier: Intended Audience :: Science/Research
-Classifier: License :: Public Domain
+Classifier: License :: OSI Approved :: MIT License
 Classifier: Natural Language :: English
 Classifier: Natural Language :: Hebrew
 Classifier: Natural Language :: Greek

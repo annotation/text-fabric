@@ -19,7 +19,7 @@ setup(
         "markdown",
         "ipython",
         "requests",
-        "pygithub",
+        "pygithub>=1.47",
     ],
     python_requires=">=3.6.3",
     include_package_data=True,
@@ -31,7 +31,7 @@ setup(
             "text-fabric-zip = tf.applib.zipdata:main",
         ]
     },
-    version='7.10.2',
+    version='7.11.0',
     description="""Processor and browser for Text Fabric Data""",
     author="Dirk Roorda",
     author_email="info@annotation.nl",

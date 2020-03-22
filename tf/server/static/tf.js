@@ -58,8 +58,12 @@ const modes = () => {
   const mode = $('#mode')
   const m = mode.val()
 
-  $('#moderesults').off('click').click(modesEvent('results'))
-  $('#modepassage').off('click').click(modesEvent('passage'))
+  $('#moderesults')
+    .off('click')
+    .click(modesEvent('results'))
+  $('#modepassage')
+    .off('click')
+    .click(modesEvent('passage'))
   ensureLoaded('passage', 'passages', m)
   if (mode.val() == 'results') {
     ensureLoaded('sections', null, m)
@@ -86,7 +90,9 @@ const switchEvent = e => {
 }
 
 const switchPassage = () => {
-  $('.pq').off('click').click(switchEvent)
+  $('.pq')
+    .off('click')
+    .click(switchEvent)
 }
 
 /* tables: getting tabular data from the server
@@ -190,64 +196,71 @@ const activateTables = (kind, subkind) => {
 
 const subLinks = (kind, subkind) => {
   if (subkind == 'pages') {
-    $('.pnav').off('click').click(e => {
-      e.preventDefault()
-      const { currentTarget } = e
-      $('#pos').val($(currentTarget).html())
-      storeForm()
-      getTable(kind, subkind, 'results')
-    })
+    $('.pnav')
+      .off('click')
+      .click(e => {
+        e.preventDefault()
+        const { currentTarget } = e
+        $('#pos').val($(currentTarget).html())
+        storeForm()
+        getTable(kind, subkind, 'results')
+      })
   } else if (subkind == 'passages') {
     const opKey = `${kind}Op`
-    $('.s0nav').off('click').click(e => {
-      e.preventDefault()
-      const { currentTarget } = e
-      $('#sec0').val($(currentTarget).html())
-      $('#sec1').val('1')
-      $('#sec2').val('')
-      $(`#${opKey}`).val('')
-      storeForm()
-      getTable(kind, subkind, 'passages')
-    })
-    $('.s1nav').off('click').click(e => {
-      e.preventDefault()
-      const { currentTarget } = e
-      $('#sec1').val($(currentTarget).html())
-      $('#sec2').val('')
-      $(`#${opKey}`).val('')
-      storeForm()
-      getTable(kind, subkind, 'passages')
-    })
+    $('.s0nav')
+      .off('click')
+      .click(e => {
+        e.preventDefault()
+        const { currentTarget } = e
+        $('#sec0').val($(currentTarget).html())
+        $('#sec1').val('1')
+        $('#sec2').val('')
+        $(`#${opKey}`).val('')
+        storeForm()
+        getTable(kind, subkind, 'passages')
+      })
+    $('.s1nav')
+      .off('click')
+      .click(e => {
+        e.preventDefault()
+        const { currentTarget } = e
+        $('#sec1').val($(currentTarget).html())
+        $('#sec2').val('')
+        $(`#${opKey}`).val('')
+        storeForm()
+        getTable(kind, subkind, 'passages')
+      })
   }
 }
 
 // controlling the "open all" checkbox
 
 const detailc = kind => {
-  $(`#${kind}Expac`).off('click').click(e => {
-    e.preventDefault()
-    const expa = $(`#${kind}Expa`)
-    const xpa = expa.val()
-    const newXpa =
-      xpa == '1' ? '-1' : xpa == '-1' ? '1' : xpa == '0' ? '-1' : '-1'
-    detailSet(kind, newXpa)
-    const dPretty = $(`#${kind}Table details.pretty`)
-    if (newXpa == '-1') {
-      dPretty.each((i, elem) => {
-        const el = $(elem)
-        if (el.prop('open')) {
-          el.prop('open', false)
-        }
-      })
-    } else if (newXpa == '1') {
-      dPretty.each((i, elem) => {
-        const el = $(elem)
-        if (!el.prop('open')) {
-          el.prop('open', true)
-        }
-      })
-    }
-  })
+  $(`#${kind}Expac`)
+    .off('click')
+    .click(e => {
+      e.preventDefault()
+      const expa = $(`#${kind}Expa`)
+      const xpa = expa.val()
+      const newXpa = xpa == '1' ? '-1' : xpa == '-1' ? '1' : xpa == '0' ? '-1' : '-1'
+      detailSet(kind, newXpa)
+      const dPretty = $(`#${kind}Table details.pretty`)
+      if (newXpa == '-1') {
+        dPretty.each((i, elem) => {
+          const el = $(elem)
+          if (el.prop('open')) {
+            el.prop('open', false)
+          }
+        })
+      } else if (newXpa == '1') {
+        dPretty.each((i, elem) => {
+          const el = $(elem)
+          if (!el.prop('open')) {
+            el.prop('open', true)
+          }
+        })
+      }
+    })
 }
 
 const detailSet = (kind, xpa) => {
@@ -287,16 +300,11 @@ const adjustOpened = kind => {
   const dPretty = $(`#${kind}Table details.pretty`)
   const openedDetails = dPretty.filter((i, elem) => elem.open)
   const closedDetails = dPretty.filter((i, elem) => !elem.open)
-  const openedNumbers = openedDetails
-    .map((i, elem) => $(elem).attr('seq'))
-    .get()
-  const closedNumbers = closedDetails
-    .map((i, elem) => $(elem).attr('seq'))
-    .get()
+  const openedNumbers = openedDetails.map((i, elem) => $(elem).attr('seq')).get()
+  const closedNumbers = closedDetails.map((i, elem) => $(elem).attr('seq')).get()
 
   const currentOpenedStr = openedElem.val()
-  const currentOpened =
-    currentOpenedStr == '' ? [] : currentOpenedStr.split(',')
+  const currentOpened = currentOpenedStr == '' ? [] : currentOpenedStr.split(',')
   const reduceOpened = currentOpened.filter(
     n => closedNumbers.indexOf(n) < 0 && openedNumbers.indexOf(n) < 0
   )
@@ -373,7 +381,6 @@ const cradios = () => {
  *
  */
 
-
 const filterS0 = () => {
   const filterControl = $('#s0filter')
   const filterTotal = $('#s0total')
@@ -389,14 +396,11 @@ const filterS0 = () => {
       if (filterValue == '' || s0.indexOf(filterValue) >= 0) {
         el.show()
         s += 1
-      }
-      else {
+      } else {
         el.hide()
       }
     })
-    const totalRep = total == s
-    ? `${total}`
-    : `${s} of ${total}`
+    const totalRep = total == s ? `${total}` : `${s} of ${total}`
     filterTotal.html(totalRep)
   }
 
@@ -418,15 +422,18 @@ const sidebar = () => {
   const side = $('#side')
   const sideStr = side.val()
   const parts = new Set(sideStr ? sideStr.split(',') : [])
-  const headers = $('#sidebar div').filter((i, elem) => $(elem).attr('status') != 'about')
-  const bodies = $('#sidebarcont div').filter((i, elem) => $(elem).attr('status') != 'about')
+  const headers = $('#sidebar div').filter(
+    (i, elem) => $(elem).attr('status') != 'about'
+  )
+  const bodies = $('#sidebarcont div').filter(
+    (i, elem) => $(elem).attr('status') != 'about'
+  )
   headers.each((i, elem) => {
     const el = $(elem)
     const part = el.attr('status')
     if (parts.has(part)) {
       el.addClass('active')
-    }
-    else {
+    } else {
       el.removeClass('active')
     }
   })
@@ -435,34 +442,35 @@ const sidebar = () => {
     const part = el.attr('status')
     if (parts.has(part)) {
       el.addClass('active')
-    }
-    else {
+    } else {
       el.removeClass('active')
     }
   })
-  $('#sidebar a').off('click').click(e => {
-    e.preventDefault()
-    const { currentTarget } = e
-    const header = $(currentTarget).closest('div')
-    const part = header.attr('status')
-    const side = $('#side')
-    const sideStr = side.val()
-    const parts = new Set(sideStr ? sideStr.split(',') : [])
-    const body = $(`#sidebarcont div[status="${part}"]`)
-    const isActive = header.hasClass('active')
-    if (isActive) {
-      header.removeClass('active')
-      body.removeClass('active')
-      parts.delete(part)
-      side.val('')
-    } else {
-      header.addClass('active')
-      body.addClass('active')
-      parts.add(part)
-    }
-    side.val(Array.from(parts).join(','))
-    storeForm()
-  })
+  $('#sidebar a')
+    .off('click')
+    .click(e => {
+      e.preventDefault()
+      const { currentTarget } = e
+      const header = $(currentTarget).closest('div')
+      const part = header.attr('status')
+      const side = $('#side')
+      const sideStr = side.val()
+      const parts = new Set(sideStr ? sideStr.split(',') : [])
+      const body = $(`#sidebarcont div[status="${part}"]`)
+      const isActive = header.hasClass('active')
+      if (isActive) {
+        header.removeClass('active')
+        body.removeClass('active')
+        parts.delete(part)
+        side.val('')
+      } else {
+        header.addClass('active')
+        body.addClass('active')
+        parts.add(part)
+      }
+      side.val(Array.from(parts).join(','))
+      storeForm()
+    })
 }
 
 const help = () => {
@@ -507,7 +515,9 @@ const sectionsEvent = e => {
 }
 
 const sections = () => {
-  $('.rwh').off('click').click(sectionsEvent)
+  $('.rwh')
+    .off('click')
+    .click(sectionsEvent)
 }
 
 const tuplesEvent = e => {
@@ -521,7 +531,9 @@ const tuplesEvent = e => {
 }
 
 const tuples = () => {
-  $('.sq').off('click').click(tuplesEvent)
+  $('.sq')
+    .off('click')
+    .click(tuplesEvent)
 }
 
 const nodesEvent = e => {
@@ -535,7 +547,9 @@ const nodesEvent = e => {
 }
 
 const nodes = () => {
-  $('.nd').off('click').click(nodesEvent)
+  $('.nd')
+    .off('click')
+    .click(nodesEvent)
 }
 
 /* job control
@@ -563,20 +577,14 @@ const suggestName = jobName => {
     while (!resolved(newName)) {
       newName += 'N'
     }
-    const answer = prompt(
-      'New job name:',
-      newName
-    )
+    const answer = prompt('New job name:', newName)
     if (answer == null) {
       cancelled = true
-    }
-    else {
+    } else {
       newName = answer
     }
   }
-  return cancelled
-    ? null
-    : newName
+  return cancelled ? null : newName
 }
 
 const jobOptions = () => {
@@ -712,8 +720,7 @@ const readForm = jobContent => {
     const formKey = `tf/${appName}/${jobName}`
     const formStr = localStorage.getItem(formKey)
     formObj = JSON.parse(formStr)
-  }
-  else {
+  } else {
     formObj = jobContent
   }
   for (const [key, value] of Object.entries(formObj)) {
@@ -768,29 +775,23 @@ const getJobs = () => {
   const tfLength = tfPrefix.length
   return new Set(
     Object.keys(localStorage)
-    .filter(key => key.startsWith(tfPrefix))
-    .map(key => key.substring(tfLength))
+      .filter(key => key.startsWith(tfPrefix))
+      .map(key => key.substring(tfLength))
   )
 }
 
 const setLastJob = (appName, jobName) => {
   const lastJob = localStorage.getItem(lastJobKey)
-  const lastJobData = lastJob
-    ? JSON.parse(lastJob)
-    : {}
+  const lastJobData = lastJob ? JSON.parse(lastJob) : {}
   lastJobData[appName] = jobName
   localStorage.setItem(lastJobKey, JSON.stringify(lastJobData))
 }
 
 const getLastJob = appName => {
   const lastJob = localStorage.getItem(lastJobKey)
-  const lastJobData = lastJob
-    ? JSON.parse(lastJob)
-    : {}
+  const lastJobData = lastJob ? JSON.parse(lastJob) : {}
   const { [appName]: lastJobName } = lastJobData
-  return (lastJobName == null)
-    ? 'default'
-    : lastJobName
+  return lastJobName == null ? 'default' : lastJobName
 }
 
 const initForm = () => {
@@ -804,8 +805,7 @@ const initForm = () => {
       readForm(JSON.parse(jobContent))
       $('form').submit()
     }
-  }
-  else {
+  } else {
     storeForm()
   }
 }

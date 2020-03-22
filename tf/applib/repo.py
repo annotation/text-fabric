@@ -417,7 +417,7 @@ class Checkout(object):
                 return
             lead = "\t" * level
             try:
-                contents = g.get_dir_contents(subPath, ref=commit)
+                contents = g.get_contents(subPath, ref=commit)
             except UnknownObjectException:
                 self.log(
                     f"{lead}No directory {subPath} in {self.toString(commit, None, False)}",

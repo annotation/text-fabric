@@ -448,15 +448,19 @@ def pretty(
     dh(htmlStr)
 
 
-def prettyPre(
-    app, n, firstSlot, lastSlot, withNodes, highlights,
-):
+def prettyPre(app, n, firstSlot, lastSlot, d):
     api = app.api
     F = api.F
     fOtype = F.otype.v
+    otypeRank = api.otypeRank
 
     slotType = F.otype.slotType
     nType = fOtype(n)
+    isBigType = (
+        not d.full
+        and d.condenseType is not None
+        and otypeRank[nType] > otypeRank[d.condenseType]
+    )
     boundaryClass = ""
     myStart = None
     myEnd = None
@@ -474,14 +478,15 @@ def prettyPre(
         if myEnd > lastSlot:
             boundaryClass += " lno"
 
-    hlAtt = getHlAtt(app, n, highlights)
+    hlAtt = getHlAtt(app, n, d.highlights)
 
-    nodePart = f'<a href="#" class="nd">{n}</a>' if withNodes else ""
+    nodePart = f'<a href="#" class="nd">{n}</a>' if d.withNodes else ""
     className = app.classNames.get(nType, None)
 
     return (
         slotType,
         nType,
+        isBigType,
         className.lower() if className else className,
         boundaryClass.lower() if boundaryClass else boundaryClass,
         hlAtt,

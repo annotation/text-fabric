@@ -56,8 +56,10 @@ tf/search/stitch.py
 tf/search/syntax.py
 tf/server/__init__.py
 tf/server/command.py
+tf/server/dblike.py
 tf/server/kernel.py
 tf/server/monitor.py
+tf/server/provider.py
 tf/server/serve.py
 tf/server/servelib.py
 tf/server/start.py
