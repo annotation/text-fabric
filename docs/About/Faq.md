@@ -100,7 +100,7 @@ Here are some hints to recover from that.
     ??? caution "Error"
         If somewhere down the road you see `Error`, I offer you my apologies!
 
-        Copy and paste that error and send it to [me](mailto:info@annotation.nl),
+        Copy and paste that error and send it to [me](mailto:dirk.roorda@dans.knaw.nl),
         and I'll fix it as soon as I can, and I let you know on the
         [issue list]({{tfgh}}/issues).
 

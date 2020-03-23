@@ -4,7 +4,7 @@ Version: 7.11.0
 Summary: Processor and browser for Text Fabric Data
 Home-page: https://github.com/annotation/text-fabric
 Author: Dirk Roorda
-Author-email: info@annotation.nl
+Author-email: dirk.roorda@dans.knaw.nl
 License: UNKNOWN
 Description: Tools to read text corpora with (linguistic) annotations
         and process them efficiently.
