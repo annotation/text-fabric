@@ -91,7 +91,7 @@
         ZIP | list | data directories to be zipped for a release, given as either `(org, repo, relative)` or `repo` (with org and relative taken from main corpus); only used by `text-fabric-zip` when collecting data into zip files to be attached to a GitHub release
         CONDENSE_TYPE | string | the default node type to condense search results in, e.g. `verse` or `tablet`
         NONE_VALUES | set | feature values that are deemed uninformative, e.g. `None`, `'NA'`
-        STANDARD_FEATURES | set | features that are shown by default in all pretty displays
+        STANDARD_FEATURES | set | features that are shown by default in all pretty displays (**NOT IN USE CURRENTLY**)
         EXCLUDED_FEATURES | set | features that are present in the data source but will not be loaded for the TF browser
         NO_DESCEND_TYPES | set | when representing nodes as text in exports from the TF browser, node of type in this set will not be expanded to their slot occurrences; e.g. `lex`: we do not want represent lexeme nodes by their list of occurrences
         EXAMPLE_SECTION | html | what a passage reference looks like in this corpus; may have additional information in the form of a link; used in the Help of the TF browser
