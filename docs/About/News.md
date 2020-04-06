@@ -42,6 +42,18 @@
 
 ---
 
+# 7.11.1
+
+2020-04-06
+
+*   Performance imporovement in Text-Fabric browser: displaying passages
+    in the presence of a query with very many results took too long.
+    That has improved.
+*   It is now possible to pass the optional parameter `descend` to the highlight
+    function `hlText`.
+    That is needed by some TF apps when they want to use text formats for nodes
+    with a smaller node type than the node type for which the format has been designed. 
+
 # 7.11
 
 2020-03-22

@@ -1,3 +1,5 @@
+from itertools import chain
+
 from ..core.helpers import mathEsc, mdhtmlEsc
 from .search import runSearch
 
@@ -83,18 +85,19 @@ def hlRep(app, rep, n, highlights):
     return f"<span {att}>{rep}</span>" if att else rep
 
 
-def hlText(app, nodes, highlights, **options):
+def hlText(app, nodes, highlights, descend=None, **options):
     api = app.api
     T = api.T
     isHtml = hasattr(app, "textFormats") and options.get("fmt", None) in app.textFormats
+    descendOption = {} if descend is None else dict(descend=descend)
 
     if not highlights:
-        text = T.text(nodes, **options)
+        text = T.text(nodes, **descendOption, **options)
         return mathEsc(text) if isHtml else mdhtmlEsc(text)
 
     result = ""
     for node in nodes:
-        text = T.text([node], **options)
+        text = T.text([node], **descendOption, **options)
         result += hlRep(
             app, mathEsc(text) if isHtml else mdhtmlEsc(text), node, highlights,
         )
@@ -143,9 +146,6 @@ def getPassageHighlights(app, node, query, cache):
     L = api.L
     passageNodes = L.d(node)
 
-    highlights = set()
-    for tup in queryResults:
-        for t in tup:
-            if t in passageNodes:
-                highlights.add(t)
+    highlights = set(chain.from_iterable(queryResults))
+    highlights &= set(passageNodes)
     return highlights

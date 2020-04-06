@@ -210,6 +210,7 @@ def makeTfKernel(
                 if contentNode
                 else []
             )
+
             highlights = (
                 getPassageHighlights(app, contentNode, query, cache) if items else set()
             )
