@@ -236,6 +236,7 @@ def makeTfKernel(
                 if contentNode
                 else []
             )
+
             highlights = (
                 getPassageHighlights(app, contentNode, query, cache) if items else set()
             )
@@ -509,7 +510,7 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.server.kernel.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.8/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -766,6 +767,7 @@ if __name__ == &#34;__main__&#34;:
                 if contentNode
                 else []
             )
+
             highlights = (
                 getPassageHighlights(app, contentNode, query, cache) if items else set()
             )

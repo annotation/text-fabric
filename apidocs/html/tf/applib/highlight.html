@@ -24,7 +24,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from ..core.helpers import mathEsc, mdhtmlEsc
+<pre><code class="python">from itertools import chain
+
+from ..core.helpers import mathEsc, mdhtmlEsc
 from .search import runSearch
 
 
@@ -109,18 +111,19 @@ def hlRep(app, rep, n, highlights):
     return f&#34;&lt;span {att}&gt;{rep}&lt;/span&gt;&#34; if att else rep
 
 
-def hlText(app, nodes, highlights, **options):
+def hlText(app, nodes, highlights, descend=None, **options):
     api = app.api
     T = api.T
     isHtml = hasattr(app, &#34;textFormats&#34;) and options.get(&#34;fmt&#34;, None) in app.textFormats
+    descendOption = {} if descend is None else dict(descend=descend)
 
     if not highlights:
-        text = T.text(nodes, **options)
+        text = T.text(nodes, **descendOption, **options)
         return mathEsc(text) if isHtml else mdhtmlEsc(text)
 
     result = &#34;&#34;
     for node in nodes:
-        text = T.text([node], **options)
+        text = T.text([node], **descendOption, **options)
         result += hlRep(
             app, mathEsc(text) if isHtml else mdhtmlEsc(text), node, highlights,
         )
@@ -169,11 +172,8 @@ def getPassageHighlights(app, node, query, cache):
     L = api.L
     passageNodes = L.d(node)
 
-    highlights = set()
-    for tup in queryResults:
-        for t in tup:
-            if t in passageNodes:
-                highlights.add(t)
+    highlights = set(chain.from_iterable(queryResults))
+    highlights &amp;= set(passageNodes)
     return highlights</code></pre>
 </details>
 </section>
@@ -299,11 +299,8 @@ def getPassageHighlights(app, node, query, cache):
     L = api.L
     passageNodes = L.d(node)
 
-    highlights = set()
-    for tup in queryResults:
-        for t in tup:
-            if t in passageNodes:
-                highlights.add(t)
+    highlights = set(chain.from_iterable(queryResults))
+    highlights &amp;= set(passageNodes)
     return highlights</code></pre>
 </details>
 </dd>
@@ -361,7 +358,7 @@ def getPassageHighlights(app, node, query, cache):
 </details>
 </dd>
 <dt id="tf.applib.highlight.hlText"><code class="name flex">
-<span>def <span class="ident">hlText</span></span>(<span>app, nodes, highlights, **options)</span>
+<span>def <span class="ident">hlText</span></span>(<span>app, nodes, highlights, descend=None, **options)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -369,18 +366,19 @@ def getPassageHighlights(app, node, query, cache):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def hlText(app, nodes, highlights, **options):
+<pre><code class="python">def hlText(app, nodes, highlights, descend=None, **options):
     api = app.api
     T = api.T
     isHtml = hasattr(app, &#34;textFormats&#34;) and options.get(&#34;fmt&#34;, None) in app.textFormats
+    descendOption = {} if descend is None else dict(descend=descend)
 
     if not highlights:
-        text = T.text(nodes, **options)
+        text = T.text(nodes, **descendOption, **options)
         return mathEsc(text) if isHtml else mdhtmlEsc(text)
 
     result = &#34;&#34;
     for node in nodes:
-        text = T.text([node], **options)
+        text = T.text([node], **descendOption, **options)
         result += hlRep(
             app, mathEsc(text) if isHtml else mdhtmlEsc(text), node, highlights,
         )
