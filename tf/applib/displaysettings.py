@@ -1,6 +1,7 @@
 import types
 
 DISPLAY_OPTIONS = dict(
+    baseType=None,
     colorMap=None,
     condensed=False,
     condenseType=None,
@@ -37,10 +38,10 @@ class DisplaySettings(object):
 
         self._compileFormatClass()
 
-        self.displayDefaults = {k: v for (k, v) in DISPLAY_OPTIONS.items()}
         self.displayDefaults = {}
         for (k, v) in DISPLAY_OPTIONS.items():
-            self.displayDefaults[k] = v if v is not None else getattr(app, k, None)
+            fallBack = app.api.F.otype.slotType if k == "baseType" else None
+            self.displayDefaults[k] = v if v is not None else getattr(app, k, fallBack)
         self.displayDefaults.update({o[0]: o[1] for o in app.options})
         self.reset()
 
@@ -66,23 +67,29 @@ class DisplaySettings(object):
                 api.ensureLoaded(value)
                 if type(value) is str:
                     value = value.split() if value else []
+            if option in {"suppress"}:
+                if type(value) is str:
+                    value = set(value.split()) if value else set()
             self.displaySettings[option] = value
 
     def check(self, msg, options):
         api = self.app.api
+        sectionTypeSet = api.T.sectionTypeSet
         error = api.error
         good = True
         for (option, value) in options.items():
             if option not in self.displaySettings:
                 error(f'ERROR in {msg}(): unknown display option "{option}={value}"')
                 good = False
-            if option == "condenseType":
-                if value is not None:
-                    if value not in api.F.otype.all:
-                        error(
-                            f'ERROR in {msg}(): unknown node type in "{option}={value}"'
-                        )
-                        good = False
+            if option in {"baseType", "condenseType"}:
+                legalValues = set(api.F.otype.all)
+                if option == "baseType":
+                    legalValues -= sectionTypeSet
+                if value is not None and value not in legalValues:
+                    error(
+                        f'ERROR in {msg}(): unknown node type in "{option}={value}"'
+                    )
+                    good = False
         return good
 
     def get(self, options):

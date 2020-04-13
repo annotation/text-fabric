@@ -438,6 +438,20 @@
 ??? abstract "List of display parameters"
     These are the parameters and their default values:
 
+    ??? info "baseType=None"
+        The node type at the bottom of pretty displays.
+        It is also the node type that receives the primary highlights
+        (colored backgrounds), whereas the highlights for other node types
+        are colored boxes.
+
+        The app developer should program `_pretty()` in such a way that
+        for nodes of `baseType` the function `_plain()` is invoked instead
+        of `_pretty()`.
+
+        The default is app dependent, usually `word`.
+        If the app does not specifiy a default, the slot type of
+        the dataset will be chosen.
+
     ??? info "colorMap=None"
         Which nodes of a tuple (or list of tuples) will be highlighted.
         If `colorMap` is `None` or missing, all nodes will be highlighted with

@@ -179,12 +179,12 @@ Api reference : {APIREF}
                     self.sectionsOK = False
                 else:
                     self.textFeatures |= set(self.sectionFeats)
-                    self.sectionFeatsWithLanguage = {
+                    self.sectionFeatsWithLanguage = tuple(
                         f
                         for f in self.features
                         if f == self.sectionFeats[0]
                         or f.startswith(f"{self.sectionFeats[0]}@")
-                    }
+                    )
                     self.textFeatures |= set(self.sectionFeatsWithLanguage)
                 if not self.structureTypes or not self.structureFeats:
                     if not add:

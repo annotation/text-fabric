@@ -16,6 +16,8 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     S = api.S
     sortKeyTuple = api.sortKeyTuple
 
+    wasSilent = isSilent()
+
     results = S.search(query, sets=sets, shallow=shallow)
     if not shallow:
         if not sort:
@@ -49,7 +51,6 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
 
     nResults = len(results)
     plural = "" if nResults == 1 else "s"
-    wasSilent = isSilent
     setSilent(silent)
     info(f"{nResults} result{plural}")
     setSilent(wasSilent)

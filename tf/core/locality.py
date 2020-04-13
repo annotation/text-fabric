@@ -14,6 +14,8 @@ class Locality(object):
 
         if otype is None:
             return tuple(levUp[n - 1])
+        elif type(otype) is not str:
+            return tuple(m for m in levUp[n - 1] if fOtype(m) in otype)
         else:
             return tuple(m for m in levUp[n - 1] if fOtype(m) == otype)
 
@@ -39,6 +41,17 @@ class Locality(object):
             )
         elif otype == slotType:
             return tuple(sorted(Eoslots.s(n), key=lambda m: Crank[m - 1],))
+        elif type(otype) is not str:
+            return tuple(
+                sorted(
+                    (
+                        k
+                        for k in levDown[n - maxSlot - 1] + Eoslots.s(n)
+                        if fOtype(k) in otype
+                    ),
+                    key=lambda m: Crank[m - 1],
+                )
+            )
         else:
             return tuple(m for m in levDown[n - maxSlot - 1] if fOtype(m) == otype)
 
@@ -63,6 +76,8 @@ class Locality(object):
 
         if otype is None:
             return result
+        elif type(otype) is not str:
+            return tuple(m for m in result if fOtype(m) in otype)
         else:
             return tuple(m for m in result if fOtype(m) == otype)
 
@@ -89,5 +104,7 @@ class Locality(object):
 
         if otype is None:
             return result
+        elif type(otype) is not str:
+            return tuple(m for m in result if fOtype(m) in otype)
         else:
             return tuple(m for m in result if fOtype(m) == otype)

@@ -2,7 +2,7 @@
 
 ??? abstract "hlText()"
     ```python
-    A.hlText(nodes, highlights, **options)
+    A.hlText(nodes, highlights, descend=None, baseType=None, **options)
     ```
 
 		???+ info "Description"

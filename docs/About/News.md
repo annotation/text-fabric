@@ -42,6 +42,34 @@
 
 ---
 
+# 8.0.0
+
+2020-04-13
+
+*   Improvements in `plain()` and `pretty()`: they deliver better results and
+    they make it easier for tf-app developers.
+*   The `Locality` (`L`) functions `d()`, `u()`, `l()`, `r()` take an optional
+    parameter `otype` holding the node type of the related nodes that will be delivered.
+    This can now also be an iterable of types (preferably a set of frozenset).
+
+# 7.11.2
+
+2020-04-07
+
+Improvement in `plain()` display of nodes with highlights:
+
+*   if a parent node *contains* a highlighted child node
+    that is not separately displayed,
+    the parent node receives a secondary highlight.
+*   if a child node *is contained* in a highlighted parent node
+    that is not separately displayd,
+    the child node receives a secondary highlight.
+    (This was already the case)
+
+Secondary highlights are suppressed if either the parent or the child node
+is a section node.
+
+
 # 7.11.1
 
 2020-04-06

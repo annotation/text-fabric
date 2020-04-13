@@ -1,5 +1,6 @@
 import os
 import types
+from collections import namedtuple
 
 from ..parameters import URL_TFDOC, DOWNLOADS
 from ..core.helpers import mdEsc, htmlEsc, flattenToSet
@@ -29,12 +30,32 @@ CSS_FONT_API = f"""
 }}}}
 """
 
+Render = namedtuple(
+    "Render",
+    """
+    slotType
+    nType
+    isSlot
+    isSlotOrDescend
+    isBaseNonSlot
+    children
+    boundaryClass
+    hlClass
+    hlStyle
+    nodePart
+    className
+    myStart
+    myEnd
+""".strip().split(),
+)
+
 
 def displayApi(app, silent, hoist):
     app.export = types.MethodType(export, app)
     app.table = types.MethodType(table, app)
     app.plainTuple = types.MethodType(plainTuple, app)
     app.plain = types.MethodType(plain, app)
+    app.prepareDisplay = types.MethodType(prepareDisplay, app)
     app.show = types.MethodType(show, app)
     app.prettyTuple = types.MethodType(prettyTuple, app)
     app.pretty = types.MethodType(pretty, app)
@@ -101,6 +122,9 @@ def export(
         )
 
 
+# PLAIN and FRIENDS
+
+
 def table(
     app, tuples, _asString=False, **options,
 ):
@@ -122,6 +146,7 @@ def table(
 
     html = []
     one = True
+
     for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_TABLE, item):
         if one:
             heads = "</th><th>".join(fOtype(n) for n in tup)
@@ -160,12 +185,11 @@ def plainTuple(
         return ""
     d = display.get(options)
 
-    _asApp = app._asApp
     api = app.api
     F = api.F
     T = api.T
-
     fOtype = F.otype.v
+    _asApp = app._asApp
 
     if d.withPassage:
         passageNode = _getRefMember(app, tup, d.linked, d.condensed)
@@ -192,7 +216,6 @@ def plainTuple(
             if opened
             else ""
         )
-
         current = " focus" if seq == position else ""
         attOpen = " open " if opened else ""
         tupSeq = ",".join(str(n) for n in tup)
@@ -212,9 +235,7 @@ def plainTuple(
                     highlights=highlights,
                     **newOptionsH,
                   ))
-                }
-            </span>
-        """
+                }</span>"""
             for (i, n) in enumerate(tup)
         )
         html = f"""
@@ -241,9 +262,10 @@ def plainTuple(
         html.append(
             app.plain(
                 n,
-                isLinked=i == d.linked - 1,
+                isLinked=not passageRef and i == d.linked - 1,
                 _asString=True,
                 withPassage=False,
+                secLabel=n != tup[0],
                 highlights=highlights,
                 **newOptionsH,
             )
@@ -273,34 +295,47 @@ def plain(
         return ""
     d = display.get(options)
 
+    _asApp = app._asApp
     api = app.api
     F = api.F
     T = api.T
-    sectionTypes = T.sectionTypes
     fOtype = F.otype.v
+    sectionTypeSet = T.sectionTypeSet
 
     nType = fOtype(n)
-    passage = ""
 
-    if d.withPassage:
-        if nType not in sectionTypes:
-            passage = app.webLink(n, _asString=True)
-
-    passage = f"{passage}&nbsp;" if passage else ""
+    (firstSlot, lastSlot) = getBoundary(api, n)
 
     highlights = (
         {m: "" for m in d.highlights} if type(d.highlights) is set else d.highlights
     )
 
-    return app._plain(
+    passage = ""
+    if (secLabel and nType in sectionTypeSet) or (
+        d.withPassage and nType not in sectionTypeSet
+    ):
+        passage = app.webLink(n, _asString=True)
+
+    rep = app._plain(
         n,
         passage,
-        isLinked,
-        _asString,
-        secLabel,
+        True,
+        [],
+        firstSlot,
+        lastSlot,
         highlights=highlights,
         **display.consume(options, "highlights"),
     )
+
+    if isLinked and not passage:
+        rep = app.webLink(n, text=rep, _asString=True)
+
+    if _asApp or _asString:
+        return rep
+    dh(rep)
+
+
+# PRETTY and FRIENDS
 
 
 def show(
@@ -317,33 +352,17 @@ def show(
     item = d.condenseType if d.condensed else RESULT
 
     if d.condensed:
-        rawHighlights = getTupleHighlights(
-            api, tuples, d.highlights, d.colorMap, d.condenseType, multiple=True
-        )
-        highlights = {}
-        colorMap = None
         tuples = condense(api, tuples, d.condenseType, multiple=True)
-    else:
-        highlights = d.highlights
-        rawHighlights = None
-        colorMap = d.colorMap
 
     for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_SHOW, item):
         item = F.otype.v(tup[0]) if d.condensed and d.condenseType else RESULT
         prettyTuple(
-            app,
-            tup,
-            i,
-            item=item,
-            highlights=highlights,
-            colorMap=colorMap,
-            rawHighlights=rawHighlights,
-            **display.consume(options, "highlights", "colorMap"),
+            app, tup, i, item=item, **options,
         )
 
 
 def prettyTuple(
-    app, tup, seq, item=RESULT, rawHighlights=None, **options,
+    app, tup, seq, item=RESULT, **options,
 ):
     display = app.display
     if not display.check("prettyTuple", options):
@@ -362,11 +381,7 @@ def prettyTuple(
     sortKey = api.sortKey
 
     containers = {tup[0]} if d.condensed else condenseSet(api, tup, d.condenseType)
-    highlights = (
-        getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
-        if rawHighlights is None
-        else rawHighlights
-    )
+    highlights = getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
 
     if not _asApp:
         dh(f"<p><b>{item}</b> <i>{seq}</i></p>")
@@ -379,7 +394,7 @@ def prettyTuple(
         if _asApp:
             html.append(h)
     if _asApp:
-        return "\n".join(html)
+        return "".join(html)
 
 
 def pretty(
@@ -397,7 +412,7 @@ def pretty(
     T = api.T
     fOtype = F.otype.v
     otypeRank = api.otypeRank
-    sectionTypes = T.sectionTypes
+    sectionTypeSet = T.sectionTypeSet
 
     containerN = None
 
@@ -421,7 +436,7 @@ def pretty(
     html = []
 
     if d.withPassage:
-        if nType not in sectionTypes:
+        if nType not in sectionTypeSet:
             html.append(app.webLink(n, _asString=True))
 
     highlights = (
@@ -442,25 +457,98 @@ def pretty(
         highlights=highlights,
         **display.consume(options, "extraFeatures", "highlights"),
     )
-    htmlStr = "\n".join(html)
+    htmlStr = "".join(html)
     if _asApp:
         return htmlStr
     dh(htmlStr)
 
 
-def prettyPre(app, n, firstSlot, lastSlot, d):
+def prepareDisplay(
+    app,
+    isPretty,
+    n,
+    outer,
+    firstSlot,
+    lastSlot,
+    d,
+    verses,
+    childrenSpec,
+    descendType=None,
+    sectionTypes=None,
+    exceptions=None,
+):
     api = app.api
     F = api.F
     fOtype = F.otype.v
-    otypeRank = api.otypeRank
-
     slotType = F.otype.slotType
     nType = fOtype(n)
-    isBigType = (
-        not d.full
-        and d.condenseType is not None
-        and otypeRank[nType] > otypeRank[d.condenseType]
+
+    children = getChildren(
+        app,
+        n,
+        d,
+        verses,
+        childrenSpec,
+        d.baseType if isPretty else descendType,
+        sectionTypes=sectionTypes,
+        exceptions=exceptions,
     )
+
+    boundaryResult = getBoundaryResult(api, n, firstSlot, lastSlot)
+    if boundaryResult is None:
+        return False
+
+    (boundaryClass, myStart, myEnd) = boundaryResult
+
+    (hlClass, hlStyle) = getHlAtt(app, n, d.highlights, d.baseType, not isPretty)
+
+    isSlot = nType == slotType
+    isSlotOrDescend = isSlot or descendType is not None and nType == descendType
+    isBaseNonSlot = nType == d.baseType and not isSlot
+
+    nodePart = getNodePart(
+        app,
+        n,
+        nType,
+        slotType,
+        d.baseType,
+        d.withNodes,
+        None if isPretty else hlClass,
+        isPretty,
+    )
+    className = app.classNames.get(nType, nType).lower()
+
+    return Render(
+        slotType,
+        nType,
+        isSlot,
+        isSlotOrDescend,
+        isBaseNonSlot,
+        children,
+        boundaryClass,
+        hlClass,
+        hlStyle,
+        nodePart,
+        className,
+        myStart,
+        myEnd,
+    )
+
+
+def getBigType(nType, otypeRank, sectionTypes, d):
+    isBig = False
+    if not d.full:
+        if sectionTypes and nType in sectionTypes:
+            if d.condenseType is None or otypeRank[nType] > otypeRank[d.condenseType]:
+                isBig = True
+        elif (
+            d.condenseType is not None and otypeRank[nType] > otypeRank[d.condenseType]
+        ):
+            isBig = True
+    return isBig
+
+
+def getBoundaryResult(api, n, firstSlot, lastSlot):
     boundaryClass = ""
     myStart = None
     myEnd = None
@@ -469,30 +557,89 @@ def prettyPre(app, n, firstSlot, lastSlot, d):
 
     if firstSlot is not None:
         if myEnd < firstSlot:
-            return False
+            return None
         if myStart < firstSlot:
             boundaryClass += " rno"
     if lastSlot is not None:
         if myStart > lastSlot:
-            return False
+            return None
         if myEnd > lastSlot:
             boundaryClass += " lno"
+    return (boundaryClass, myStart, myEnd)
 
-    hlAtt = getHlAtt(app, n, d.highlights)
 
-    nodePart = f'<a href="#" class="nd">{n}</a>' if d.withNodes else ""
-    className = app.classNames.get(nType, None)
+def getChildren(
+    app, n, d, verses, childrenSpec, bottomType, sectionTypes=None, exceptions=None
+):
+    api = app.api
+    F = api.F
+    L = api.L
+    fOtype = F.otype.v
+    otypeRank = api.otypeRank
+    sortNodes = api.sortNodes
+
+    slotType = F.otype.slotType
+    nType = fOtype(n)
+    isBigType = getBigType(nType, otypeRank, sectionTypes, d)
+
+    if isBigType or bottomType and nType == bottomType:
+        children = ()
+    elif nType == slotType:
+        children = ()
+    elif nType in verses or nType in childrenSpec:
+        childType = childrenSpec[nType]
+        children = L.d(n, otype=childType)
+        if exceptions is not None and nType in exceptions:
+            (condition, method, add) = exceptions[nType]
+            if condition(n):
+                others = method(n)
+                if add:
+                    children += others
+                else:
+                    children = others
+
+        children = set(children)
+
+        if nType in verses:
+            (thisFirstSlot, thisLastSlot) = getBoundary(api, n)
+            boundaryChildren = set()
+            for boundary in (thisFirstSlot, thisLastSlot):
+                bchs = L.u(boundary, otype=childType)
+                if bchs:
+                    boundaryChildren.add(bchs[0])
+            children |= boundaryChildren
+
+        children = sortNodes(children)
+    elif nType in childrenSpec and (not isBigType or d.full):
+        children = sortNodes(children)
+    else:
+        children = L.d(n, otype=slotType)
+    return children
+
+
+def getNodePart(app, n, nType, slotType, baseType, withNodes, highlight, isPretty):
+    _asApp = app._asApp
 
     return (
-        slotType,
-        nType,
-        isBigType,
-        className.lower() if className else className,
-        boundaryClass.lower() if boundaryClass else boundaryClass,
-        hlAtt,
-        nodePart,
-        myStart,
-        myEnd,
+        (
+            (
+                f'<a href="#" class="nd">{n}</a>'
+                if _asApp
+                else f'<span class="nd">{n}</span>'
+            )
+            if withNodes
+            else ""
+        )
+        if isPretty
+        else (
+            (
+                f'<a href="#" class="nd">{n}</a>'
+                if _asApp
+                else f'<span class="plain nd">{n}</span>'
+            )
+            if withNodes and highlight
+            else ""
+        )
     )
 
 
@@ -506,14 +653,14 @@ def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
     T = api.T
     fOtype = F.otype.v
     otypeRank = api.otypeRank
-    sectionTypes = set(T.sectionTypes)
-    sectionDepth = len(sectionTypes)
+    sectionTypeSet = T.sectionTypeSet
+    sectionDepth = len(sectionTypeSet)
     if len(results) == 0:
         return ()
     firstResult = results[0]
     nTuple = len(firstResult)
     refColumns = [
-        i for (i, n) in enumerate(firstResult) if fOtype(n) not in sectionTypes
+        i for (i, n) in enumerate(firstResult) if fOtype(n) not in sectionTypeSet
     ]
     refColumn = refColumns[0] if refColumns else nTuple - 1
     header = ["R"] + [f"S{i}" for i in range(1, sectionDepth + 1)]
@@ -524,7 +671,7 @@ def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
     def withText(nodeType):
         return (
             condenseType is None
-            and nodeType not in sectionTypes
+            and nodeType not in sectionTypeSet
             or otypeRank[nodeType] <= otypeRank[condenseType]
         )
 
@@ -669,7 +816,7 @@ def loadCss(app, reload=False):
     )
     tableCss = """
 tr.tf, td.tf, th.tf {
-  text-align: left;
+  text-align: left ! important;
 }
 
 """
@@ -679,12 +826,12 @@ tr.tf, td.tf, th.tf {
 def _getRefMember(app, tup, linked, condensed):
     api = app.api
     T = api.T
-    sectionTypes = T.sectionTypes
+    sectionTypeSet = T.sectionTypeSet
 
     ln = len(tup)
     return (
         None
-        if not tup or any(n in sectionTypes for n in tup)
+        if not tup or any(n in sectionTypeSet for n in tup)
         else tup[0]
         if condensed
         else tup[min((linked, ln - 1))]

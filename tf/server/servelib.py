@@ -46,6 +46,7 @@ def getFormData(config):
     form["description"] = request.form.get("description", "").replace("\r", "")
     form["withNodes"] = request.form.get("withNodes", "")
     form["condensed"] = request.form.get("condensed", "")
+    form["baseTp"] = request.form.get("baseTp", "")
     form["condenseTp"] = request.form.get("condenseTp", "")
     form["textformat"] = request.form.get("textformat", "")
     form["sectionsExpandAll"] = request.form.get("sectionsExpandAll", "")

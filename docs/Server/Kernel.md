@@ -119,10 +119,11 @@
     which delivers the CSS code to be inserted
     on the browser page.
 
-??? abstract "condenseTypes()"
+??? abstract "configSettings()"
     Fetches several things from the app and the 
     generic TF api:
 
+    * `baseType`: the bottom level in pretty displays;
     * `condenseType`:
       the default node type that acts
       as a container for representing query results;

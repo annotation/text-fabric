@@ -172,9 +172,9 @@ def getPassageHighlights(app, node, query, cache):
     L = api.L
     passageNodes = L.d(node)
 
-    highlights = set(chain.from_iterable(queryResults))
-    highlights &amp;= set(passageNodes)
-    return highlights</code></pre>
+    resultSet = set(chain.from_iterable(queryResults))
+    passageSet = set(passageNodes)
+    return resultSet &amp; passageSet</code></pre>
 </details>
 </section>
 <section>
@@ -299,9 +299,9 @@ def getPassageHighlights(app, node, query, cache):
     L = api.L
     passageNodes = L.d(node)
 
-    highlights = set(chain.from_iterable(queryResults))
-    highlights &amp;= set(passageNodes)
-    return highlights</code></pre>
+    resultSet = set(chain.from_iterable(queryResults))
+    passageSet = set(passageNodes)
+    return resultSet &amp; passageSet</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.highlight.getTupleHighlights"><code class="name flex">

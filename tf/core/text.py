@@ -17,6 +17,7 @@ class Text(object):
         self.nodeFromName = {}
         config = api.TF.features[WARP[2]].metaData if WARP[2] in api.TF.features else {}
         self.sectionTypes = TF.sectionTypes
+        self.sectionTypeSet = set(TF.sectionTypes)
         self.sectionFeats = TF.sectionFeats
         self.sectionFeatsWithLanguage = getattr(TF, "sectionFeatsWithLanguage", set())
         self.sectionFeatures = []

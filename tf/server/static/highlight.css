@@ -15,12 +15,18 @@ span.hl {
 	border-style: solid;
 }
 
-span.hlup {
+span.hlbx {
 	border-color: var(--hl-dark);
-	border-width: 0.1rem;
+	border-width: 0.2rem;
 	border-style: solid;
-	border-radius: 0.2rem;
+	border-radius: 0.3rem;
   padding: 0.2rem;
+  margin: 0.2rem;
+}
+
+span.plain {
+  display: inline-block;
+  white-space: pre-wrap;
 }
 
 :root {

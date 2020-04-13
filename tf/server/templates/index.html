@@ -102,6 +102,14 @@
 						/> <span class="ilab">link column</span>
 					</div>
 					<div>
+						<details id="basetpd">
+							<summary>
+                <span class="ilab">base type</span>
+                <span class="ttext" id="basetp">{{baseTp}}</span>
+							</summary>
+							{{baseOpts|safe}}
+					</div>
+					<div>
 						<details id="condd" {{'open' if condensedAtt else ''}}>
 							<summary>
 								<input

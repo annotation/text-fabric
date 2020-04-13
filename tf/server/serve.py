@@ -9,6 +9,7 @@ from .wrap import (
     passageLinks,
     getValues,
     wrapOptions,
+    wrapBase,
     wrapCondense,
     wrapFormats,
     wrapProvenance,
@@ -43,6 +44,7 @@ def serveTable(setup, kind, getx=None, asDict=False):
             form["features"],
             opened=openedSet,
             fmt=textFormat,
+            baseType=form["baseTp"],
             withNodes=form["withNodes"],
             getx=int(getx) if getx else None,
             **options,
@@ -94,6 +96,7 @@ def serveQuery(setup, getx, asDict=False):
                     condensed=form["condensed"],
                     condenseType=condenseType,
                     fmt=textFormat,
+                    baseType=form["baseTp"],
                     withNodes=form["withNodes"],
                     linked=form["linked"],
                     getx=int(getx) if getx else None,
@@ -147,6 +150,7 @@ def servePassage(setup, getx):
         sec2=sec2,
         opened=openedSet,
         fmt=textFormat,
+        baseType=form["baseTp"],
         withNodes=form["withNodes"],
         getx=getx,
         **options,
@@ -300,13 +304,17 @@ def serveAll(setup, anything):
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
     (
+        defaultBaseType,
         defaultCondenseType,
         exampleSection,
         exampleSectionText,
+        baseTypes,
         condenseTypes,
         defaultTextFormat,
         textFormats,
-    ) = kernelApi.condenseTypes()
+    ) = kernelApi.configSettings()
+    baseType = form["baseTp"] or defaultBaseType
+    baseOpts = wrapBase(baseTypes, baseType)
     condenseType = form["condenseTp"] or defaultCondenseType
     condenseOpts = wrapCondense(condenseTypes, condenseType)
     textFormat = form["textformat"] or defaultTextFormat
@@ -320,6 +328,8 @@ def serveAll(setup, anything):
         setNames=setNameHtml,
         options=wrapOptions(optionSpecs, options),
         condensedAtt=condensedAtt,
+        baseOpts=baseOpts,
+        defaultBaseType=defaultBaseType,
         condenseOpts=condenseOpts,
         defaultCondenseType=defaultCondenseType,
         textFormatOpts=textFormatOpts,

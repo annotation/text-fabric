@@ -128,6 +128,26 @@ def wrapOptions(options, values):
     return "\n".join(html)
 
 
+def wrapBase(baseTypes, value):
+    html = []
+    for (i, otype) in enumerate(baseTypes):
+        checked = " checked " if value == otype else ""
+        radio = (
+            f"""<input class="r bradio" type="radio"
+              name="baseTp" value="{otype}" {checked}
+            />"""
+        )
+        html.append(
+            f"""
+    <div class="cline">
+      {radio}
+      <span class="ctype">{otype}</span>
+    </div>
+  """
+        )
+    return "\n".join(html)
+
+
 def wrapCondense(condenseTypes, value):
     html = []
     lastType = len(condenseTypes) - 1
@@ -136,9 +156,9 @@ def wrapCondense(condenseTypes, value):
         radio = (
             '<span class="cradio">&nbsp;</span>'
             if i == lastType
-            else f"""<input class="r cradio" type="radio" id="ctp{i}"
+            else f"""<input class="r cradio" type="radio"
               name="condenseTp" value="{otype}" {checked}
-            "/>"""
+            />"""
         )
         html.append(
             f"""

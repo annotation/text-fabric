@@ -24,7 +24,7 @@ class TfProvider:
         self.appName = appName
 
     def passage(
-        self, sec0, sec1=None, sec2=None, baseTypes=None, features=None, query=None
+        self, sec0, sec1=None, sec2=None, features=None, query=None
     ):
         TF = self.TF
         kernelApi = TF.connect()
@@ -36,6 +36,6 @@ class TfProvider:
             return None
 
         passages = kernelApi.passage(
-            features, query, sec0, sec1=sec1, sec2=sec2, baseTypes=baseTypes, asDict=True,
+            features, query, sec0, sec1=sec1, sec2=sec2, asDict=True,
         )
         return pickle.loads(passages)

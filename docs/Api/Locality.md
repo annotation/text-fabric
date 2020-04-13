@@ -10,6 +10,8 @@
 ??? hint "otype parameter"
     In all of the following `L`-functions, if the `otype` parameter is passed, the result is filtered and
     only nodes with `otype=nodeType` are retained.
+    
+    `otype` can also be a (frozen)set of types.
 
 ??? caution "Results of the `L.` functions are tuples, not single nodes"
       Even if an `L`-function returns a single node, it is packed in a *tuple*.
