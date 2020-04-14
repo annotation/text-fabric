@@ -1,12 +1,5 @@
-span.hldot {
-	background-color: var(--hl-strong);
-	border: 0.2rem solid var(--hl-rim);
-	border-radius: 0.4rem;
-	/*
-	display: inline-block;
-	width: 0.8rem;
-	height: 0.8rem;
-	*/
+.hl {
+  background-color: var(--hl-strong);
 }
 span.hl {
 	background-color: var(--hl-strong);
@@ -14,9 +7,12 @@ span.hl {
 	border-radius: 0.1rem;
 	border-style: solid;
 }
+.contnr.hl {
+    background-color: var(--hl-strong);
+}
 
 span.hlbx {
-	border-color: var(--hl-dark);
+	border-color: var(--hl-rim);
 	border-width: 0.2rem;
 	border-style: solid;
 	border-radius: 0.3rem;
@@ -31,6 +27,5 @@ span.plain {
 
 :root {
 	--hl-strong:        hsla( 60, 100%,  70%, 0.9  );
-	--hl-rim:           hsla( 55, 100%,  60%, 0.9  );
-	--hl-dark:          hsla( 55, 100%,  40%, 0.9  );
+	--hl-rim:           hsla( 55,  80%,  50%, 1.0  );
 }

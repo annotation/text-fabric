@@ -618,6 +618,9 @@
         indicates whether a passage label should be put next to a displayed node
         or tuple of nodes.
 
+    ??? info "showFeatures=True"
+        indicates whether pretty displays should show relevant features and their values.
+
 ??? abstract "A.displaySetup()"
     ```python
     A.displaySetup(parameter1=value1, parameter2=value2, ...)

@@ -6,6 +6,7 @@
 		<meta name="application-name" content="Text-Fabric Search Box"/>
 		<link rel="shortcut icon" href="/server/static/favicon.ico">
 		<link rel="stylesheet" href="/server/static/base.css"/>
+		<link rel="stylesheet" href="/server/static/display.css"/>
 		<link rel="stylesheet" href="/server/static/highlight.css"/>
     <link rel="stylesheet" href="/server/static/fonts.css"/>
 		<link rel="stylesheet" href="/server/static/index.css"/>
@@ -123,6 +124,11 @@
 						<input
 							class="r" type="checkbox" id="withn" name="withNodes" {{withNodesAtt}}
 						/> <span class="ilab">show nodes</span>
+					</div>
+					<div>
+						<input
+							class="r" type="checkbox" id="showf" name="showFeatures" {{showFeaturesAtt}}
+						/> <span class="ilab">show features</span>
 					</div>
 					{{options|safe}}
 				</div>
@@ -253,6 +259,10 @@
 						   of the corpus.</p>
 						<p><b>Text format</b> Show the results in a text format of your choice: original script,
 						   transcription, or phonetic representations may be offered.</p>
+						<p><b>Base type</b> This type of objects counts as the base type. The components
+               of base objects will not be broken down in pretty displays. Highlights of base objects
+               consist of coloured backgrounds, highlights of other objects consist of coloured boxes
+               around the objects.</p>
 						<p><b>Condense results</b> Show the results grouping all nodes in result tuples into
 						   containers, such as {{defaultCondenseType}}s.
 						   The containers are <i>pretty</i>-displayed, with the result nodes in it highlighted.
@@ -260,6 +270,8 @@
 						<p><b>Show nodes</b> Show the node number for every object in the results.
 						   The node number is your access to all information about that object.
 						   If you click on it, it will be copied to the <i>node pad</i>.</p>
+						<p><b>Show features</b> Show the relevant feature values for every
+               object in the results.</p>
 					</details>
 					<details id="helpExport" class="help">
 						<summary>Export</summary>

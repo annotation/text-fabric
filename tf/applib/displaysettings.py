@@ -17,6 +17,7 @@ DISPLAY_OPTIONS = dict(
     suppress=set(),
     withNodes=False,
     withPassage=True,
+    showFeatures=True,
 )
 
 

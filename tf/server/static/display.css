@@ -1,0 +1,183 @@
+.ltr {
+    direction: ltr ! important;
+}
+.rtl {
+    direction: rtl ! important;
+}
+span.plain {
+    display: inline-block;
+    white-space: pre-wrap;
+    text-align: start;
+}
+.features {
+    font-family: monospace;
+    font-size: medium;
+    font-weight: bold;
+    color: var(--features);
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+    padding: 0.1em;
+    margin: 0.1em;
+    direction: ltr;
+}
+.features div,.features span {
+    padding: 0;
+    margin: -0.1rem 0;
+}
+.features .f {
+    font-family: sans-serif;
+    font-size: x-small;
+    font-weight: normal;
+    color: #5555bb;
+}
+.features .xft {
+  color: #000000;
+  background-color: #eeeeee;
+  font-size: medium;
+  margin: 0.1em 0em;
+}
+.features .xft .f {
+  color: #000000;
+  background-color: #eeeeee;
+  font-style: italic;
+  font-size: small;
+  font-weight: normal;
+}
+.vrs {
+    font-family: sans-serif;
+    font-size: small;
+    font-weight: bold;
+    color: var(--verse);
+}
+.comments {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+    flex-flow: column nowrap;
+}
+.meta {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+    flex-flow: row nowrap;
+    border: var(--meta-width) solid var(--meta-color);
+    border-radius: var(--meta-width);
+}
+.nd {
+    font-family: monospace;
+    font-size: x-small;
+    color: var(--node);
+}
+.children {
+    display: flex;
+    border: 0;
+    background-color: #ffffff;
+}
+.children.ltr {
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+}
+.children.rtl {
+}
+.children.row.rtl {
+    justify-content: flex-end;
+    align-items: flex-start;
+    align-content: flex-start;
+}
+.children.col.rtl {
+    justify-content: flex-start;
+    align-items: flex-end;
+    align-content: flex-end;
+}
+.children.stretch {
+    align-items: stretch;
+}
+.children.row {
+    flex-flow: row nowrap;
+}
+.children.row.wrap {
+    flex-flow: row wrap;
+}
+.children.col {
+    flex-flow: column nowrap;
+}
+.children.col.wrap {
+    flex-flow: column wrap;
+}
+.contnr {
+    width: fit-content;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+    flex-flow: column nowrap;
+    background: #ffffff none repeat scroll 0 0;
+    padding:  0.5em 0.1em 0.1em 0.1em;
+    margin: 0.8em 0.1em 0.1em 0.1em;
+    border-style: solid;
+    font-size: small;
+}
+.contnr.c0,.lbl.c0 {
+    border-color: var(--border-color0);
+    border-width: var(--border-width0);
+    border-radius: var(--border-width0);
+}
+.contnr.c1,.lbl.c1 {
+    border-color: var(--border-color1);
+    border-width: var(--border-width1);
+    border-radius: var(--border-width1);
+}
+.contnr.c2,.lbl.c2 {
+    border-color: var(--border-color2);
+    border-width: var(--border-width2);
+    border-radius: var(--border-width2);
+}
+.contnr.c3,.lbl.c3 {
+    border-color: var(--border-color3);
+    border-width: var(--border-width3);
+    border-radius: var(--border-width3);
+}
+.lbl {
+    margin-top: -1.2em;
+    margin-left: 1em;
+    background: #ffffff none repeat scroll 0 0;
+    padding: 0 0.3em;
+    border-style: solid;
+    display: block;
+    color: var(--label)
+}
+.lbl.c0 {
+    font-size: small;
+}
+.lbl.c1 {
+    font-size: small;
+}
+.lbl.c2 {
+    font-size: normal;
+}
+.lbl.c3 {
+    font-size: normal;
+}
+
+:root {
+	--node:             hsla(  0, 100%,  30%, 1.0  );
+	--label:            hsla(  0, 100%,  20%, 1.0  );
+	--verse:            hsla(  0, 100%,  25%, 1.0  );
+	--features:         hsla(  0,   0%,  30%, 1.0  );
+  --meta-color:       hsla(  0,   0%,  90%, 0.7  );
+  --meta-width:       0.15rem;
+  --border-color0:    hsla(  0,   0%,  90%, 0.9  );
+  --border-color1:    hsla(  0,   0%,  80%, 0.9  );
+  --border-color2:    hsla(  0,   0%,  60%, 0.9  );
+  --border-color3:    hsla(  0,   0%,  40%, 0.9  );
+  --border-width0:    0.1rem;
+  --border-width1:    0.15rem;
+  --border-width2:    0.2rem;
+  --border-width2:    0.3rem;
+}

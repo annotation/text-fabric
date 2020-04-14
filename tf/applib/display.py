@@ -43,7 +43,9 @@ Render = namedtuple(
     hlClass
     hlStyle
     nodePart
-    className
+    containerCss
+    labelCss
+    childrenCss
     myStart
     myEnd
 """.strip().split(),
@@ -63,11 +65,18 @@ def displayApi(app, silent, hoist):
 
     api = app.api
 
-    app.classNames = (
-        {nType[0]: nType[0] for nType in api.C.levels.data}
-        if app.classNames is None
-        else app.classNames
-    )
+    levelClass = {}
+
+    for (nType, nTypeInfo) in getattr(app, "levels", {}).items():
+        level = nTypeInfo["level"]
+        flow = nTypeInfo["flow"]
+        wrap = nTypeInfo["wrap"]
+        containerCss = f"contnr c{level}"
+        labelCss = f"lbl c{level}"
+        childCss = f"children {flow} {'wrap' if wrap else ''}"
+        levelClass[nType] = (containerCss, labelCss, childCss)
+
+    app.levelClass = levelClass
 
     if not app._asApp:
         app.loadCss()
@@ -149,7 +158,7 @@ def table(
 
     for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_TABLE, item):
         if one:
-            heads = "</th><th>".join(fOtype(n) for n in tup)
+            heads = '</th><th class="tf">'.join(fOtype(n) for n in tup)
             html.append(
                 f"""
 <tr class="tf">
@@ -316,7 +325,8 @@ def plain(
     ):
         passage = app.webLink(n, _asString=True)
 
-    rep = app._plain(
+    rep = _doPlain(
+        app,
         n,
         passage,
         True,
@@ -333,6 +343,52 @@ def plain(
     if _asApp or _asString:
         return rep
     dh(rep)
+
+
+def _doPlain(app, n, passage, outer, html, firstSlot, lastSlot, **options):
+    display = app.display
+    d = display.get(options)
+
+    (descendType, descendOption) = app._descendType(d)
+
+    r = app.prepareDisplay(
+        False, n, outer, firstSlot, lastSlot, d, descendType=descendType,
+    )
+    if not r:
+        return
+
+    ltr = app._ltr(d)
+    outerClass = " outer " if outer else ""
+    html.append(
+        f'<span class="plain{outerClass}{ltr}{r.boundaryClass}'
+        f' {r.hlClass}" {r.hlStyle}>'
+    )
+
+    if r.nodePart:
+        html.append(r.nodePart)
+
+    verses = app.verses
+
+    if passage:
+        passage = (
+            f"""<span class="vrs {ltr}">{passage} </span>"""
+            if r.nType in verses
+            else passage + "&nbsp;"
+        )
+    else:
+        passage = ""
+
+    (opened, outerPart, contrib) = app._nodePlain(
+        n, r, d, display, outer, descendOption, **options
+    )
+    html.extend((passage, outerPart, contrib))
+
+    for ch in r.children:
+        _doPlain(app, ch, None, False, html, firstSlot, lastSlot, **options)
+    if opened:
+        html.append("""</span>""")
+    html.append("""</span>""")
+    return "".join(html) if outer else None
 
 
 # PRETTY and FRIENDS
@@ -447,7 +503,8 @@ def pretty(
         flattenToSet(d.extraFeatures) | flattenToSet(d.tupleFeatures)
     )
 
-    app._pretty(
+    _doPretty(
+        app,
         n,
         True,
         html,
@@ -463,6 +520,43 @@ def pretty(
     dh(htmlStr)
 
 
+def _doPretty(app, n, outer, html, firstSlot, lastSlot, **options):
+    display = app.display
+    isHtml = options.get("fmt", None) in app.textFormats
+    d = display.get(options)
+    ltr = " ltr " if d.fmt is not None and "-orig-" not in d.fmt else " rtl "
+
+    r = app.prepareDisplay(True, n, outer, firstSlot, lastSlot, d)
+    if not r:
+        return
+
+    nodePlain = None
+    if r.isBaseNonSlot:
+        nodePlain = _doPlain(app, n, None, True, [], firstSlot, lastSlot, **options)
+
+    (label, featurePart) = app._nodePretty(
+        n, r, d, display, outer, isHtml, nodePlain, **options
+    )
+
+    html.append(
+        f"""
+<div class="{r.containerCss}{ltr}{r.boundaryClass} {r.hlClass}" {r.hlStyle}>
+{label}{featurePart}
+"""
+    )
+
+    if r.children:
+        html.append(f"""<div class="{r.childrenCss}{ltr}">""")
+
+    for ch in r.children:
+        _doPretty(app, ch, False, html, firstSlot, lastSlot, **options)
+
+    if r.children:
+        html.append("""</div>""")
+    html.append("""</div>""")
+    return "".join(html) if outer else None
+
+
 def prepareDisplay(
     app,
     isPretty,
@@ -471,8 +565,6 @@ def prepareDisplay(
     firstSlot,
     lastSlot,
     d,
-    verses,
-    childrenSpec,
     descendType=None,
     sectionTypes=None,
     exceptions=None,
@@ -487,8 +579,6 @@ def prepareDisplay(
         app,
         n,
         d,
-        verses,
-        childrenSpec,
         d.baseType if isPretty else descendType,
         sectionTypes=sectionTypes,
         exceptions=exceptions,
@@ -516,7 +606,7 @@ def prepareDisplay(
         None if isPretty else hlClass,
         isPretty,
     )
-    className = app.classNames.get(nType, nType).lower()
+    (containerCss, labelCss, childrenCss) = app.levelClass.get(nType, ("", "", ""))
 
     return Render(
         slotType,
@@ -529,7 +619,9 @@ def prepareDisplay(
         hlClass,
         hlStyle,
         nodePart,
-        className,
+        containerCss,
+        labelCss,
+        childrenCss,
         myStart,
         myEnd,
     )
@@ -568,9 +660,9 @@ def getBoundaryResult(api, n, firstSlot, lastSlot):
     return (boundaryClass, myStart, myEnd)
 
 
-def getChildren(
-    app, n, d, verses, childrenSpec, bottomType, sectionTypes=None, exceptions=None
-):
+def getChildren(app, n, d, bottomType, sectionTypes=None, exceptions=None):
+    verses = app.verses
+    childType = app.childType
     api = app.api
     F = api.F
     L = api.L
@@ -582,12 +674,12 @@ def getChildren(
     nType = fOtype(n)
     isBigType = getBigType(nType, otypeRank, sectionTypes, d)
 
-    if isBigType or bottomType and nType == bottomType:
+    if (isBigType and not d.full) or bottomType and nType == bottomType:
         children = ()
     elif nType == slotType:
         children = ()
-    elif nType in verses or nType in childrenSpec:
-        childType = childrenSpec[nType]
+    elif nType in verses or nType in childType:
+        childType = childType[nType]
         children = L.d(n, otype=childType)
         if exceptions is not None and nType in exceptions:
             (condition, method, add) = exceptions[nType]
@@ -598,7 +690,7 @@ def getChildren(
                 else:
                     children = others
 
-        children = set(children)
+        children = set(children) - {n}
 
         if nType in verses:
             (thisFirstSlot, thisLastSlot) = getBoundary(api, n)
@@ -609,23 +701,25 @@ def getChildren(
                     boundaryChildren.add(bchs[0])
             children |= boundaryChildren
 
-        children = sortNodes(children)
-    elif nType in childrenSpec and (not isBigType or d.full):
-        children = sortNodes(children)
+        children = sortNodes(children - {n})
     else:
         children = L.d(n, otype=slotType)
     return children
 
 
-def getNodePart(app, n, nType, slotType, baseType, withNodes, highlight, isPretty):
+def getNodePart(
+    app, n, nType, slotType, baseType, withNodes, highlight, isPretty, extra=None
+):
     _asApp = app._asApp
+
+    text = f"{n}|{extra}" if extra else n
 
     return (
         (
             (
-                f'<a href="#" class="nd">{n}</a>'
+                f'<a href="#" class="nd">{text}</a>'
                 if _asApp
-                else f'<span class="nd">{n}</span>'
+                else f'<span class="nd">{text}</span>'
             )
             if withNodes
             else ""
@@ -633,9 +727,9 @@ def getNodePart(app, n, nType, slotType, baseType, withNodes, highlight, isPrett
         if isPretty
         else (
             (
-                f'<a href="#" class="nd">{n}</a>'
+                f'<a href="#" class="nd">{text}</a>'
                 if _asApp
-                else f'<span class="plain nd">{n}</span>'
+                else f'<span class="plain nd">{text}</span>'
             )
             if withNodes and highlight
             else ""
@@ -736,50 +830,56 @@ def getFeatures(
 
     showWithName = extraSet
 
-    if not plain:
-        featurePart = featurePartB
-        hasB = True
-    else:
-        featurePart = ""
-        hasB = False
-    for (i, name) in enumerate(featureList):
-        if name not in d.suppress:
-            if name in givenValue:
-                value = givenValue[name]
-            else:
-                if Fs(name) is None:
-                    continue
-                value = Fs(name).v(n)
-                oValue = None if o is None else Fs(name).v(o)
-                valueRep = None if value in d.noneValues else htmlEsc(value)
-                oValueRep = (
-                    None if o is None or oValue in d.noneValues else htmlEsc(oValue)
-                )
-                if valueRep is None and oValueRep is None:
-                    value = None
-                else:
-                    sep = "" if valueRep is None or oValueRep is None else "|"
-                    valueRep = "" if valueRep is None else valueRep
-                    oValueRep = "" if oValueRep is None else oValueRep
-                    value = (
-                        valueRep
-                        if valueRep == oValueRep
-                        else f"{valueRep}{sep}{oValueRep}"
-                    )
-            if value is not None:
-                value = value.replace("\n", "<br/>")
-                showName = withName or (withName is None and name in showWithName)
-                nameRep = f'<span class="f">{name}=</span>' if showName else ""
-                xClass = " xft" if name in extraSet else ""
-                featureRep = (
-                    f' <span class="{name.lower()}{xClass}">{nameRep}{value}</span>'
-                )
+    featurePart = ""
 
-                if i >= nFeatures:
-                    if not hasB:
-                        featurePart += featurePartB
-                        hasB = True
-                featurePart += featureRep
+    if plain:
+        hasB = False
+    else:
+        hasB = True
+    if d.showFeatures:
+        for (i, name) in enumerate(featureList):
+            if name not in d.suppress:
+                if name in givenValue:
+                    value = givenValue[name]
+                else:
+                    if Fs(name) is None:
+                        continue
+                    value = Fs(name).v(n)
+                    oValue = None if o is None else Fs(name).v(o)
+                    valueRep = None if value in d.noneValues else htmlEsc(value)
+                    oValueRep = (
+                        None if o is None or oValue in d.noneValues else htmlEsc(oValue)
+                    )
+                    if valueRep is None and oValueRep is None:
+                        value = None
+                    else:
+                        sep = "" if valueRep is None or oValueRep is None else "|"
+                        valueRep = "" if valueRep is None else valueRep
+                        oValueRep = "" if oValueRep is None else oValueRep
+                        value = (
+                            valueRep
+                            if valueRep == oValueRep
+                            else f"{valueRep}{sep}{oValueRep}"
+                        )
+                if value is not None:
+                    value = value.replace("\n", "<br/>")
+                    showName = withName or (withName is None and name in showWithName)
+                    nameRep = f'<span class="f">{name}=</span>' if showName else ""
+                    xClass = " xft" if name in extraSet else ""
+                    featureRep = (
+                        f' <span class="{name.lower()}{xClass}">{nameRep}{value}</span>'
+                    )
+
+                    if i >= nFeatures:
+                        if not hasB:
+                            featurePart += featurePartB
+                            hasB = True
+                    featurePart += featureRep
+    if not featurePart:
+        return ""
+
+    if not plain:
+        featurePart = f"{featurePartB}{featurePart}"
     if hasB:
         featurePart += featurePartE
     return featurePart
@@ -802,17 +902,20 @@ def loadCss(app, reload=False):
         cfg = configure(config, app.version)
         app.css = cfg["css"]
 
-    hlCssFile = (
+    cssPath = (
         f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}"
-        "/server/static/highlight.css"
+        "/server/static"
     )
-    with open(hlCssFile, encoding="utf8") as fh:
-        hlCss = fh.read()
+    cssFiles = ("display.css", "highlight.css")
+    genericCss = ""
+    for cssFile in cssFiles:
+        with open(f"{cssPath}/{cssFile}", encoding="utf8") as fh:
+            genericCss += fh.read()
 
     cssFont = (
         ""
         if app.fontName is None
-        else CSS_FONT_API.format(fontName=app.fontName, font=app.font, fontw=app.fontw,)
+        else CSS_FONT_API.format(fontName=app.fontName, font=app.font, fontw=app.fontw)
     )
     tableCss = """
 tr.tf, td.tf, th.tf {
@@ -820,7 +923,7 @@ tr.tf, td.tf, th.tf {
 }
 
 """
-    dh(f"<style>{cssFont + app.css + tableCss + hlCss}</style>")
+    dh(f"<style>{cssFont + tableCss + genericCss + app.css}</style>")
 
 
 def _getRefMember(app, tup, linked, condensed):

@@ -279,6 +279,7 @@ def serveAll(setup, anything):
     form = getFormData(setup.config)
     condensedAtt = " checked " if form["condensed"] else ""
     withNodesAtt = " checked " if form["withNodes"] else ""
+    showFeaturesAtt = " checked " if form["showFeatures"] else ""
 
     optionSpecs = setup.config.OPTIONS
     options = getValues(optionSpecs, form)
@@ -337,6 +338,7 @@ def serveAll(setup, anything):
         exampleSection=exampleSection,
         exampleSectionText=exampleSectionText,
         withNodesAtt=withNodesAtt,
+        showFeaturesAtt=showFeaturesAtt,
         pages=pages,
         passages=passages,
         **form,
