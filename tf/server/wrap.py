@@ -2,6 +2,8 @@ import time
 import datetime
 
 from ..parameters import NAME, VERSION, DOI_TEXT, DOI_URL, APP_URL
+from ..applib.displaySettings import INTERFACE_OPTIONS
+from tf.applib.helpers import NB
 
 
 # NAVIGATION IN MULTIPLE ITEMS (PAGES, PASSAGES)
@@ -87,36 +89,29 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
 # OPTIONS
 
 
-def getValues(options, form):
-    values = {}
-    for (option, default, typ, acro, desc) in options:
-        value = form.get(option, None)
-        if typ == "checkbox":
-            value = True if value else False
-        values[option] = value
-    return values
+def wrapOptions(config, form, defaults):
+    interfaceDefaults = config.INTERFACE_DEFAULTS
 
+    options = []
+    for o in INTERFACE_OPTIONS:
+        name = o[0]
+        default = interfaceDefaults[name]
+        if default is None:
+            continue
 
-def setValues(options, source, form, emptyRequest):
-    for (option, default, typ, acro, desc) in options:
-        # only apply the default value if the form is empty
-        # if the form is not empty, the absence of a checkbox value means
-        # that the checkbox is unchecked
-        # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox
-        value = source.get(option, default if emptyRequest else None)
-        if typ == "checkbox":
-            value = True if value else False
-        form[option] = value
+        if name == 'lineNumbers':
+            if not getattr(config, 'LINE_NUMBERS', None):
+                continue
+        if name == 'graphics':
+            if not getattr(config, 'GRAPHICS', None):
+                continue
 
+        options.append[o]
 
-def wrapOptions(options, values):
     html = []
     for (option, default, typ, acro, desc) in options:
-        value = values[option]
-        if typ == "checkbox":
-            value = "checked" if value else ""
-        else:
-            value = f'value="{value}"'
+        value = form[option]
+        value = "checked" if value else ""
         html.append(
             f"""
       <div>
@@ -154,7 +149,7 @@ def wrapCondense(condenseTypes, value):
     for (i, (otype, av, b, e)) in enumerate(condenseTypes):
         checked = " checked " if value == otype else ""
         radio = (
-            '<span class="cradio">&nbsp;</span>'
+            f'<span class="cradio">{NB}</span>'
             if i == lastType
             else f"""<input class="r cradio" type="radio"
               name="condenseTp" value="{otype}" {checked}

@@ -292,7 +292,7 @@ def _validation(searchExe):
         searchExe.badSemantics.append(
             (
                 None,
-                "Valid object types are: {}".format(", ".join(x[0] for x in levels),),
+                "Valid object types are: {}".format(", ".join(x[0] for x in levels)),
             )
         )
         if sets is not None:

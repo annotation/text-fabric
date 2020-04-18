@@ -46,30 +46,6 @@
         HOST | `localhost` | server address of the website
         PORT['kernel'] | `18981` | port through wich the TF kernel and the web server communicate
         PORT['web'] | `8101` | port at which the TF web server listens for requests
-        OPTIONS | tuple | names of extra options for searching and displaying query results
-
-        ??? explanation "OPTIONS"
-            Each option is itself a tuple of 5 elements, like
-
-            ```python
-            ('showLines', False, 'checkbox', 'linen', 'show line numbers')
-            ```
-
-            Such an option triggers the display of an HTML element in the TF browser
-            by which the user can specify a value for an option:
-
-            ```html
-            <input type="checkbox" id="linen" name="showLines">
-            <span>show line numbers</span>
-            ```
-
-            So the members of the tuple are:
-
-            *   name of the option, in HTML and in Python
-            *   default value
-            *   type of `<input>`, see [input]({{mozinput}}) 
-            *   id string for the input element in HTML
-            *   label by which the option is presented to the user
 
         The app itself is driven by the following settings
 
@@ -98,10 +74,6 @@
         EXAMPLE_SECTION_TEXT | string | what a passage reference looks like in this corpus; just the plain text; used in the Help of the TF browser
         SECTION_SEP1 | string | separator between main and secondary sections in a passage reference; e.g. the space in `Genesis 1:1`
         SECTION_SEP2 |string |  separator between secondary and tertiary sections in a passage reference; e.g. the `:` in `Genesis 1:1`
-        FORMAT_CSS | dict | mapping between TF text formats and CSS classes; not all text formats need to be mapped
-        DEFAULT_CLS | string | default CSS class for text in a specific TF text format, when no format-specific class is given in FORMAT_CSS
-        DEFAULT_CLS_ORIG | string | default CSS class for text in a specific TF text format, when no format-specific class is given in FORMAT_CSS; and when the TF text format contains the `-orig-` string; used to specify classes for text in non-latin scripts
-        CLASS_NAMES | dict | mapping between node types and CSS classes; used in pretty displays to format the representations of nodes of that type 
         FONT_NAME | string | font family name to be used in CSS for representing text in original script
         FONT | string | file name of the offline font specified in FONT_NAME
         FONTW | string | file name of the webfont specified in FONT_NAME
@@ -152,14 +124,14 @@
 
             class TfApp(object):
 
-              def __init__(app, *args, _asApp=False, silent=False, **kwargs):
+              def __init__(app, *args, _browse=False, silent=False, **kwargs):
 
                 atf = loadModule(*args[0:2], 'atf')
                 atf.atfApi(app)
 
                 app.image = loadModule(*args[0:2], 'image')
 
-                setupApi(app, *args, _asApp=_asApp, silent=silent, **kwargs)
+                setupApi(app, *args, _browse=_browse, silent=silent, **kwargs)
 
             ```
 
@@ -206,17 +178,17 @@
     whether it is constructed for the purposes of the Jupyter notebook,
     or for the purposes of the web app.
 
-    We pass this information by setting the attribute `_asApp` on the `app`. 
+    We pass this information by setting the attribute `_browse` on the `app`. 
     If it is set, we use the `app` in the web app context.
 
-    Most of the code in such functions is independent of `_asApp`.
+    Most of the code in such functions is independent of `_browse`.
     The main difference is how to output the result:
     by a call to an IPython display method, or by
     returning raw HTML.
 
-    ??? note "\_asApp"
+    ??? note "\_browse"
         The `app` contains several display functions. By default
         they suppose that there is a Jupyter notebook context in which
         results can be rendered with `IPython.display` methods.
         But if we operate in the context of a web-interface, we need to generate
-        straight HTML. We flag the web-interface case as `_asApp == True`.
+        straight HTML. We flag the web-interface case as `_browse == True`.

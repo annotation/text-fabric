@@ -85,40 +85,6 @@
 
     The following functions deal with option values.
 
-??? abstract "getValues(options, form)"
-    Given a tuple of option specifications and form data from a web request,
-    returns a dictionary of filled in values for those options.
-
-    The options are specified in the `config.py` of an app.
-
-    An option specification is a tuple of the following bits of information:
-
-    * name of the input element in the HTML form
-    * type of input (e.g. checkbox)
-    * value of html id attribute of the input element
-    * label for the input element
-
-    ??? example "Uruk options"
-        The options for the C, such as the `phono` transcriptions, you can sayunei app are:
-
-        ```python
-        options = (
-            ('lineart', 'checkbox', 'linea', 'show lineart'),
-            ('lineNumbers', 'checkbox', 'linen', 'show line numbers'),
-        )
-        ```
-
-    This function isolates the option values from the rest of the form values,
-    so that it can be passed as a whole (`**values`) to the app specific API.
-
-??? abstract "setValues(options, source, form)"
-    Fills in a *form* dictionary based on values in a *source* dictionary,
-    but only insofar the keys to be filled out occur in the `options` specs,
-    and with a cast of checkbox values to booleans. 
-
-    This function is used right after reading the form off a request.
-    Raw form data is turned into logical data for further processing by the web server.
-
 ## HTML formatting
 
 ??? abstract "HTML generation"

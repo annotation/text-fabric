@@ -102,11 +102,11 @@ def factory(setup):
 
     @app.route("/export", methods=["GET", "POST"])
     def serveExportX():
-        return serveExport(setup,)
+        return serveExport(setup)
 
     @app.route("/download", methods=["GET", "POST"])
     def serveDownloadX():
-        return serveDownload(setup,)
+        return serveDownload(setup)
 
     @app.route("/", methods=["GET", "POST"])
     @app.route("/<path:anything>", methods=["GET", "POST"])

@@ -377,7 +377,7 @@ def _tokenize(searchExe):
                 else:
                     if opFeatures:
                         op = (op, opFeatures)
-                    tokens.append(dict(ln=i, kind="atom", indent=len(indent), op=op,))
+                    tokens.append(dict(ln=i, kind="atom", indent=len(indent), op=op))
                     good = True
                 break
 
@@ -388,7 +388,7 @@ def _tokenize(searchExe):
                 else:
                     if opFeatures:
                         op = (op, opFeatures)
-                    tokens.append(dict(ln=i, kind="rel", f=f, op=op, t=t,))
+                    tokens.append(dict(ln=i, kind="rel", f=f, op=op, t=t))
                     good = True
                 break
 
@@ -432,7 +432,7 @@ def _tokenize(searchExe):
                 if features is None:
                     good = False
                 else:
-                    tokens.append(dict(ln=i, kind="feat", features=features,))
+                    tokens.append(dict(ln=i, kind="feat", features=features))
                     good = True
                 break
 

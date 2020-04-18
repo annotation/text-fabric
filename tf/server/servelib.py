@@ -5,7 +5,7 @@ from zipfile import ZipFile
 from flask import request
 
 from ..parameters import ZIP_OPTIONS
-from .wrap import setValues
+from ..applib.displaySettings import INTERFACE_OPTIONS
 
 
 DEFAULT_NAME = "default"
@@ -24,12 +24,10 @@ def getInt(x, default=1):
 def getFormData(config):
     form = {}
     jobName = request.form.get("jobName", "").strip()
-    emptyRequest = False
     if jobName:
         form["jobName"] = jobName
         form["loadJob"] = ""
     else:
-        emptyRequest = True
         form["jobName"] = DEFAULT_NAME
         form["loadJob"] = "1"
     form["query"] = request.form.get("query", "").replace("\r", "")
@@ -44,8 +42,6 @@ def getFormData(config):
     form["author"] = request.form.get("author", "").strip()
     form["title"] = request.form.get("title", "").strip()
     form["description"] = request.form.get("description", "").replace("\r", "")
-    form["withNodes"] = request.form.get("withNodes", "")
-    form["showFeatures"] = request.form.get("showFeatures", "")
     form["condensed"] = request.form.get("condensed", "")
     form["baseTp"] = request.form.get("baseTp", "")
     form["condenseTp"] = request.form.get("condenseTp", "")
@@ -65,7 +61,8 @@ def getFormData(config):
     form["sec1"] = request.form.get("sec1", "")
     form["sec2"] = request.form.get("sec2", "")
     form["s0filter"] = request.form.get("s0filter", "")
-    setValues(config.OPTIONS, request.form, form, emptyRequest)
+    for o in INTERFACE_OPTIONS:
+        form[o[0]] = request.form.get(o[0], None)
     return form
 
 
@@ -110,7 +107,7 @@ def zipData(csvs, resultsX, about, form):
     jobName = form["jobName"]
 
     zipBuffer = BytesIO()
-    with ZipFile(zipBuffer, "w", **ZIP_OPTIONS,) as zipFile:
+    with ZipFile(zipBuffer, "w", **ZIP_OPTIONS) as zipFile:
 
         zipFile.writestr("job.json", json.dumps(form).encode("utf8"))
         zipFile.writestr("about.md", about)

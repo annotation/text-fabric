@@ -3,11 +3,10 @@ import markdown
 from flask import jsonify, redirect, render_template, make_response
 
 from ..core.helpers import console, wrapMessages
-from ..applib.helpers import RESULT
+from ..applib.helpers import RESULT, INTERFACE_OPTIONS
 from .wrap import (
     pageLinks,
     passageLinks,
-    getValues,
     wrapOptions,
     wrapBase,
     wrapCondense,
@@ -28,9 +27,6 @@ def serveTable(setup, kind, getx=None, asDict=False):
         {int(n) for n in form[openedKey].split(",")} if form[openedKey] else set()
     )
 
-    optionSpecs = setup.config.OPTIONS
-    options = getValues(optionSpecs, form)
-
     method = dict if asDict else jsonify
 
     kernelApi = setup.TF.connect()
@@ -38,14 +34,14 @@ def serveTable(setup, kind, getx=None, asDict=False):
     messages = ""
     table = None
     if task:
-        (table, messages,) = kernelApi.table(
+        options = {o[0]: form.get(o[0], None) for o in INTERFACE_OPTIONS}
+        (table, messages) = kernelApi.table(
             kind,
             task,
             form["features"],
             opened=openedSet,
             fmt=textFormat,
             baseType=form["baseTp"],
-            withNodes=form["withNodes"],
             getx=int(getx) if getx else None,
             **options,
         )
@@ -53,7 +49,7 @@ def serveTable(setup, kind, getx=None, asDict=False):
         if messages:
             messages = wrapMessages(messages)
 
-    return method(table=table, messages=messages,)
+    return method(table=table, messages=messages)
 
 
 def serveQuery(setup, getx, asDict=False):
@@ -67,9 +63,6 @@ def serveQuery(setup, getx, asDict=False):
     openedSet = (
         {int(n) for n in form[openedKey].split(",")} if form[openedKey] else set()
     )
-
-    optionSpecs = setup.config.OPTIONS
-    options = getValues(optionSpecs, form)
 
     pages = ""
     features = ""
@@ -87,8 +80,9 @@ def serveQuery(setup, getx, asDict=False):
                 + ("" if TIMEOUT == 1 else "s")
             )
         else:
+            options = {o[0]: form.get(o[0], None) for o in INTERFACE_OPTIONS}
             try:
-                (table, messages, features, start, total,) = kernelApi.search(
+                (table, messages, features, start, total) = kernelApi.search(
                     task,
                     form["batch"],
                     position=form["position"],
@@ -97,7 +91,6 @@ def serveQuery(setup, getx, asDict=False):
                     condenseType=condenseType,
                     fmt=textFormat,
                     baseType=form["baseTp"],
-                    withNodes=form["withNodes"],
                     linked=form["linked"],
                     getx=int(getx) if getx else None,
                     **options,
@@ -129,9 +122,6 @@ def servePassage(setup, getx):
     form = getFormData(setup.config)
     textFormat = form["textformat"] or None
 
-    optionSpecs = setup.config.OPTIONS
-    options = getValues(optionSpecs, form)
-
     passages = ""
 
     kernelApi = setup.TF.connect()
@@ -142,7 +132,8 @@ def servePassage(setup, getx):
     sec0 = form["sec0"]
     sec1 = form["sec1"]
     sec2 = form["sec2"]
-    (table, sec0Type, passages, browseNavLevel,) = kernelApi.passage(
+    options = {o[0]: form.get(o[0], None) for o in INTERFACE_OPTIONS}
+    (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
         form["features"],
         form["query"],
         sec0,
@@ -151,13 +142,12 @@ def servePassage(setup, getx):
         opened=openedSet,
         fmt=textFormat,
         baseType=form["baseTp"],
-        withNodes=form["withNodes"],
         getx=getx,
         **options,
     )
     passages = pickle.loads(passages)
     passages = passageLinks(passages, sec0Type, sec0, sec1, browseNavLevel)
-    return jsonify(table=table, passages=passages,)
+    return jsonify(table=table, passages=passages)
 
 
 def serveExport(setup):
@@ -278,11 +268,6 @@ def serveDownload(setup):
 def serveAll(setup, anything):
     form = getFormData(setup.config)
     condensedAtt = " checked " if form["condensed"] else ""
-    withNodesAtt = " checked " if form["withNodes"] else ""
-    showFeaturesAtt = " checked " if form["showFeatures"] else ""
-
-    optionSpecs = setup.config.OPTIONS
-    options = getValues(optionSpecs, form)
 
     pages = ""
     passages = ""
@@ -327,7 +312,7 @@ def serveAll(setup, anything):
         css=css,
         header=f"{appLogo}{header}{tfLogo}",
         setNames=setNameHtml,
-        options=wrapOptions(optionSpecs, options),
+        options=wrapOptions(setup.config, form),
         condensedAtt=condensedAtt,
         baseOpts=baseOpts,
         defaultBaseType=defaultBaseType,
@@ -337,8 +322,6 @@ def serveAll(setup, anything):
         defaultTextFormat=defaultTextFormat,
         exampleSection=exampleSection,
         exampleSectionText=exampleSectionText,
-        withNodesAtt=withNodesAtt,
-        showFeaturesAtt=showFeaturesAtt,
         pages=pages,
         passages=passages,
         **form,

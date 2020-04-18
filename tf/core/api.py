@@ -189,9 +189,9 @@ class EdgeFeature(object):
             return ()
         Crank = self.api.C.rank.data
         if self.doValues:
-            return tuple(sorted(self.data[n].items(), key=lambda mv: Crank[mv[0] - 1],))
+            return tuple(sorted(self.data[n].items(), key=lambda mv: Crank[mv[0] - 1]))
         else:
-            return tuple(sorted(self.data[n], key=lambda m: Crank[m - 1],))
+            return tuple(sorted(self.data[n], key=lambda m: Crank[m - 1]))
 
     def t(self, n):
         if n not in self.dataInv:
@@ -199,10 +199,10 @@ class EdgeFeature(object):
         Crank = self.api.C.rank.data
         if self.doValues:
             return tuple(
-                sorted(self.dataInv[n].items(), key=lambda mv: Crank[mv[0] - 1],)
+                sorted(self.dataInv[n].items(), key=lambda mv: Crank[mv[0] - 1])
             )
         else:
-            return tuple(sorted(self.dataInv[n], key=lambda m: Crank[m - 1],))
+            return tuple(sorted(self.dataInv[n], key=lambda m: Crank[m - 1]))
 
     def b(self, n):
         if n not in self.data and n not in self.dataInv:
@@ -214,14 +214,14 @@ class EdgeFeature(object):
                 result.update(self.dataInv[n].items())
             if n in self.data:
                 result.update(self.data[n].items())
-            return tuple(sorted(result.items(), key=lambda mv: Crank[mv[0] - 1],))
+            return tuple(sorted(result.items(), key=lambda mv: Crank[mv[0] - 1]))
         else:
             result = set()
             if n in self.dataInv:
                 result |= self.dataInv[n]
             if n in self.data:
                 result |= self.data[n]
-            return tuple(sorted(result, key=lambda m: Crank[m - 1],))
+            return tuple(sorted(result, key=lambda m: Crank[m - 1]))
 
     def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
         if nodeTypesFrom is None and nodeTypesTo is None:

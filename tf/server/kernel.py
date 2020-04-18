@@ -43,7 +43,7 @@ def makeTfKernel(
         commit,
         release,
         local,
-        _asApp=True,
+        _browse=True,
         mod=moduleRefs,
         setFile=setFile,
         version=config.VERSION,
@@ -77,7 +77,7 @@ def makeTfKernel(
 
             msgCache = api.cache(_asString=True)
 
-            data = dict(searchExe=searchExe, msgCache=msgCache,)
+            data = dict(searchExe=searchExe, msgCache=msgCache)
             return data
 
         def exposed_header(self):
@@ -86,7 +86,7 @@ def makeTfKernel(
 
         def exposed_provenance(self):
             app = self.app
-            appProvenance = ((("name", dataSource), ("commit", commit),),)
+            appProvenance = ((("name", dataSource), ("commit", commit)),)
             return (appProvenance, app.provenance)
 
         def exposed_setNames(self):
@@ -248,7 +248,7 @@ def makeTfKernel(
                         messages = f"{e}"
 
             allResults = ((None, kind),) + results
-            table = composeT(app, features, allResults, opened, getx=getx, **options,)
+            table = composeT(app, features, allResults, opened, getx=getx, **options)
             return (table, messages)
 
         def exposed_search(
@@ -289,7 +289,7 @@ def makeTfKernel(
                 + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
                 + afterResults
             )
-            features = set(reduce(set.union, (x[1] for x in features), set(),))
+            features = set(reduce(set.union, (x[1] for x in features), set()))
             featureStr = " ".join(sorted(features))
             table = compose(
                 app,

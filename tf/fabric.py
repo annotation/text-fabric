@@ -1,4 +1,5 @@
 import os
+
 """Defined the main class.
 
 Also lists the precomputation steps.
@@ -81,7 +82,7 @@ dependencies: strings
 For a description of what the steps are for, see the functions
 in `tf.core.prepare`.
 """
-KIND = dict(__sections__="section", __structure__="structure",)
+KIND = dict(__sections__="section", __structure__="structure")
 
 
 class Fabric(object):
@@ -174,7 +175,8 @@ Api reference : {APIREF}
                 ):
                     if not add:
                         self.tm.warning(
-                            f"No section config in {WARP[2]}, the section part of the T-API cannot be used"
+                            f"Dataset without sections in {WARP[2]}:"
+                            f"no section functions in the T-API"
                         )
                     self.sectionsOK = False
                 else:
@@ -189,7 +191,8 @@ Api reference : {APIREF}
                 if not self.structureTypes or not self.structureFeats:
                     if not add:
                         self.tm.warning(
-                            f"No structure info in {WARP[2]}, the structure part of the T-API cannot be used"
+                            f"Dataset without structure sections in {WARP[2]}:"
+                            f"no structure functions in the T-API"
                         )
                     self.structureOK = False
                 else:
@@ -406,15 +409,16 @@ Api reference : {APIREF}
                 edgeValues=edgeValues,
             )
             tag = "config" if isConfig else "edge" if isEdge else "node"
-            if fObj.save(nodeRanges=fName == WARP[0], overwrite=True,):
+            if fObj.save(nodeRanges=fName == WARP[0], overwrite=True):
                 total[tag] += 1
             else:
                 failed[tag] += 1
         self.tm.indent(level=0)
         self.tm.info(
-            "Exported {} node features and {} edge features and {} config features to {}".format(
-                total["node"], total["edge"], total["config"], self.writeDir,
-            )
+            f"""Exported {total["node"]} node features"""
+            f""" and {total["edge"]} edge features"""
+            f""" and {total["config"]} config features"""
+            f""" to {self.writeDir}"""
         )
         if len(failed):
             for (tag, nf) in sorted(failed.items()):

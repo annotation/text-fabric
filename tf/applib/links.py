@@ -12,6 +12,8 @@ from .repo import Checkout
 from .helpers import dh
 
 
+UNSUPPORTED = "unsupported"
+
 pathRe = re.compile(
     r"^(.*/(?:github|text-fabric-data))/([^/]+)/([^/]+)/(.*)$", flags=re.I
 )
@@ -19,34 +21,65 @@ pathRe = re.compile(
 
 def linksApi(app, appName, silent):
     app.header = types.MethodType(header, app)
+    ok = app.isCompatible
 
     api = app.api
     tutUrl = f"{APP_NB_URL}/{appName}/start.ipynb"
     extraUrl = f"{APP_URL}/app-{appName}"
-    dataLink = outLink(app.repo.upper(), app.docUrl, f"provenance of {app.corpus}",)
+    dataLink = (
+        outLink(app.repo.upper(), app.docUrl, f"provenance of {app.corpus}")
+        if ok
+        else UNSUPPORTED
+    )
     charLink = (
-        outLink("Character table", app.charUrl.format(tfDoc=URL_TFDOC), app.charText,)
+        (
+            outLink(
+                "Character table", app.charUrl.format(tfDoc=URL_TFDOC), app.charText
+            )
+            if ok
+            else UNSUPPORTED
+        )
         if app.charUrl
         else ""
     )
-    featureLink = outLink(
-        "Feature docs",
-        app.featureUrl.format(version=app.version, feature=app.docIntro,),
-        f"{app.repo.upper()} feature documentation",
+    featureLink = (
+        (
+            outLink(
+                "Feature docs",
+                app.featureUrl.format(version=app.version, feature=app.docIntro),
+                f"{app.repo.upper()} feature documentation",
+            )
+            if ok
+            else UNSUPPORTED
+        )
+        if ok
+        else UNSUPPORTED
     )
     appLink = outLink(f"{appName} API", extraUrl, f"{appName} API documentation")
-    tfLink = outLink(
-        f"Text-Fabric API {api.TF.version}",
-        f"{URL_TFDOC}/Api/Fabric/",
-        "text-fabric-api",
+    tfLink = (
+        outLink(
+            f"Text-Fabric API {api.TF.version}",
+            f"{URL_TFDOC}/Api/Fabric/",
+            "text-fabric-api",
+        )
+        if ok
+        else UNSUPPORTED
     )
-    tfsLink = outLink(
-        "Search Reference",
-        f"{URL_TFDOC}/Use/Search/",
-        "Search Templates Introduction and Reference",
+    tfsLink = (
+        outLink(
+            "Search Reference",
+            f"{URL_TFDOC}/Use/Search/",
+            "Search Templates Introduction and Reference",
+        )
+        if ok
+        else UNSUPPORTED
     )
-    tutLink = outLink("App tutorial", tutUrl, "App tutorial in Jupyter Notebook")
-    if app._asApp:
+    tutLink = (
+        outLink("App tutorial", tutUrl, "App tutorial in Jupyter Notebook")
+        if ok
+        else UNSUPPORTED
+    )
+    if app._browse:
         app.dataLink = dataLink
         app.charLink = charLink
         app.featureLink = featureLink
@@ -88,6 +121,10 @@ def outLink(text, href, title=None, passage=None, className=None, target="_blank
 
 
 def _featuresPerModule(app):
+    ok = app.isCompatible
+    if not ok:
+        return UNSUPPORTED
+
     api = app.api
     features = api.Fall() + api.Eall()
 

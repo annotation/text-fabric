@@ -3,12 +3,11 @@ import sys
 from shutil import rmtree
 from zipfile import ZipFile
 
-from ..parameters import ZIP_OPTIONS
+from ..parameters import ZIP_OPTIONS, TEMP_DIR
 from ..core.helpers import console, splitModRef
 
 GH_BASE = os.path.expanduser(f"~/github")
 DW_BASE = os.path.expanduser(f"~/Downloads")
-TEMP = "_temp"
 RELATIVE = "tf"
 
 HELP = """
@@ -67,7 +66,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
             versionEntries.append((sourceDir, ""))
             console(f"Found unversioned features")
         for (versionDir, version) in versionEntries:
-            if version == TEMP:
+            if version == TEMP_DIR:
                 continue
             versionRep = f"/{version}" if version else ""
             versionRep2 = f"{version}/" if version else ""
@@ -97,7 +96,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
             console(
                 f"zipping {item:<25} {version:>4} with {len(features):>3} features ==> {target}"
             )
-            with ZipFile(f"{destDir}/{target}", "w", **ZIP_OPTIONS,) as zipFile:
+            with ZipFile(f"{destDir}/{target}", "w", **ZIP_OPTIONS) as zipFile:
                 for featureFile in sorted(features):
                     zipFile.write(
                         f"{sourceDir}{versionRep}/{featureFile}", arcname=featureFile,
@@ -125,7 +124,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
             relativeDest = "-"
         console(f"zipping {org}/{repo}/{relative} with {len(results)} files")
         console(f"zip file is {destDir}/{relativeDest}.zip")
-        with ZipFile(f"{destDir}/{relativeDest}.zip", "w", **ZIP_OPTIONS,) as zipFile:
+        with ZipFile(f"{destDir}/{relativeDest}.zip", "w", **ZIP_OPTIONS) as zipFile:
             for (internalPath, path) in sorted(results):
                 zipFile.write(
                     path, arcname=internalPath,

@@ -3,7 +3,7 @@ def textApi(app):
     error = api.error
     T = api.T
 
-    if hasattr(app, "textFormats"):
+    if app.isCompatible and hasattr(app, "textFormats"):
         formats = T.formats
         xFormats = T._xformats
         xdTypes = T._xdTypes

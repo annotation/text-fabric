@@ -641,7 +641,7 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
             otype[node] = t
 
     nodeFeatures["otype"] = otype
-    metaData["otype"] = dict(valueType="str",)
+    metaData["otype"] = dict(valueType="str")
 
     tm.info("oslots ...")
     oslots = dict()
@@ -651,7 +651,7 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
             monads = tables[t][idd]["monads"]
             oslots[node] = {slotFromMonad[m] for m in monads}
     edgeFeatures["oslots"] = oslots
-    metaData["oslots"] = dict(valueType="str",)
+    metaData["oslots"] = dict(valueType="str")
 
     tm.info("metadata ...")
     for t in nodeF:

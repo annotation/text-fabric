@@ -311,7 +311,7 @@ def levDown(info, error, otype, levUp, rank):
     embeddees = []
     for n in range(maxSlot + 1, maxNode + 1):
         embeddees.append(
-            array("I", sorted(inverse.get(n, []), key=lambda m: rank[m - 1],))
+            array("I", sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
         )
     return tuple(embeddees)
 
@@ -591,7 +591,7 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
         nodeFromHeading[sKey] = n
         headingFromNode[n] = sKey
     multiple = {
-        sKey: tuple(sorted(ns, key=lambda n: rank[n - 1],))
+        sKey: tuple(sorted(ns, key=lambda n: rank[n - 1]))
         for (sKey, ns) in multiple.items()
     }
 

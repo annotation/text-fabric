@@ -28,7 +28,7 @@ def servePassage(kernelApi, passage):
 
     (sec0, sec1, sec2) = passage.split(',')
 
-    (table, sec0Type, passages, browseNavLevel,) = kernelApi.passage(
+    (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
         (),
         '',
         sec0,
@@ -44,7 +44,7 @@ def serveQuery(kernelApi, query):
     messages = ""
     table = None
     try:
-        (table, messages, features, start, total,) = kernelApi.search(
+        (table, messages, features, start, total) = kernelApi.search(
             query,
             BATCH,
         )

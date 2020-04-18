@@ -2,11 +2,12 @@ import os
 
 from IPython.display import display, Markdown, HTML
 
-from ..parameters import EXPRESS_BASE, GH_BASE
+from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
 from ..core.helpers import camel
 
 
 RESULT = "result"
+NB = "\u00a0"
 
 
 def dm(md):
@@ -50,7 +51,7 @@ def getLocalDir(names, local, version):
     if not base:
         base = EXPRESS_BASE
 
-    return os.path.expanduser(f"{base}/{org}/{repo}/_temp")
+    return os.path.expanduser(f"{base}/{org}/{repo}/{TEMP_DIR}")
 
 
 def hasData(local, org, repo, version, relative):

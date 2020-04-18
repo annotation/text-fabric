@@ -570,7 +570,7 @@ class CV(object):
 
         self.stats = {
             actionType: 0
-            for actionType in (self.S, self.N, self.T, self.R, self.F, self.E,)
+            for actionType in (self.S, self.N, self.T, self.R, self.F, self.E)
         }
 
         director(self)

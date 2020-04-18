@@ -259,10 +259,6 @@
             not show up.
             But if you condense to books, they will show up.
 
-    ??? note "withNodes=False"
-        Whether to include the node numbers into the formatted
-        results.
-
     ??? note "linked=1"
         Which column in the results should be hyperlinked to
         online representations closest to the objects
@@ -270,14 +266,9 @@
 
         Counting columns starts at 1.
 
-    ??? note "**options**"
-        Additional keyword arguments are passed
-        as options to the underlying API.
+    ??? note "*interface options*"
+        You can also pass the defined interface options.
 
-        For example, the Uruk API accepts `linenumbers`
-        and `lineart`, which will ask to include line numbers
-        and lineart in the formatted results.
-        
 ??? abstract "csvs()"
     This is an other workhorse.
     It also asks for the things `search()` is asking

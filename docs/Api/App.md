@@ -605,6 +605,10 @@
 
         `features` may be given as an iterable or a space separated string of feature names.
 
+    ??? info "withTypes=False"
+        indicates whether node types should be displayed.
+        The node type of slot nodes is never displayed.
+
     ??? info "withNodes=False"
         indicates whether node numbers should be displayed.
 
@@ -614,12 +618,24 @@
             its node number, and you can use `L F T E` to look up all information
             about each node that the corpus has to offer.
 
+    ??? info "showFeatures=True"
+        indicates whether pretty displays should show relevant features and their values.
+
+    ??? info "lineNumbers=False"
+        indicates whether line numbers should be displayed.
+
+        ??? note "source data"
+            Line numbers are with respect to the source data file that is contains the
+            origin material of the node in question, if a datasource provides
+            a feature that contains line numbers.
+
+        ??? note "configuration"
+            Whether a corpus has line numbers, and in which feature they are stored
+            for which node types is configured in a corpus dependent app.
+
     ??? info "withPassage=True"
         indicates whether a passage label should be put next to a displayed node
         or tuple of nodes.
-
-    ??? info "showFeatures=True"
-        indicates whether pretty displays should show relevant features and their values.
 
 ??? abstract "A.displaySetup()"
     ```python

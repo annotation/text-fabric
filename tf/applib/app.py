@@ -41,7 +41,7 @@ def findAppClass(dataSource, appPath):
     moduleName = f"tf.apps.{dataSource}.app"
 
     try:
-        spec = util.spec_from_file_location(moduleName, f"{appPath}/app.py",)
+        spec = util.spec_from_file_location(moduleName, f"{appPath}/app.py")
         code = util.module_from_spec(spec)
         sys.path.insert(0, appPath)
         spec.loader.exec_module(code)

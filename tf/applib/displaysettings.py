@@ -1,5 +1,13 @@
 import types
 
+INTERFACE_OPTIONS = (
+    ("withTypes", False, 'witht', "show types"),
+    ("withNodes", False, 'withn', "show nodes"),
+    ("showFeatures", True, 'showf', "show features"),
+    ("lineNumbers", None, 'linen', "source lines"),
+    ("graphics", None, 'graphics', "graphic elements"),
+)
+
 DISPLAY_OPTIONS = dict(
     baseType=None,
     colorMap=None,
@@ -15,16 +23,18 @@ DISPLAY_OPTIONS = dict(
     noneValues=None,
     start=None,
     suppress=set(),
-    withNodes=False,
     withPassage=True,
-    showFeatures=True,
 )
+DISPLAY_OPTIONS.update({o[0]: o[1] for o in INTERFACE_OPTIONS})
+
+FORMAT_CSS = dict(orig="txtu", trans="textt", source="txto", phono="txtp")
 
 
 def displaySettingsApi(app):
-    app.display = DisplaySettings(app)
-    app.displaySetup = types.MethodType(displaySetup, app)
-    app.displayReset = types.MethodType(displayReset, app)
+    if app.isCompatible:
+        app.display = DisplaySettings(app)
+        app.displaySetup = types.MethodType(displaySetup, app)
+        app.displayReset = types.MethodType(displayReset, app)
 
 
 class DisplayCurrent(object):
@@ -37,13 +47,23 @@ class DisplaySettings(object):
     def __init__(self, app):
         self.app = app
 
+        extension = f".{app.writing}" if app.writing else ""
+        app.defaultCls = "txtn"
+        app.defaultClsSrc = "txto"
+        app.defaultClsOrig = f"txtu{extension}"
+        app.defaultClsTrans = "txtt"
+
         self._compileFormatClass()
 
         self.displayDefaults = {}
+        app.interfaceFlags = set()
         for (k, v) in DISPLAY_OPTIONS.items():
             fallBack = app.api.F.otype.slotType if k == "baseType" else None
             self.displayDefaults[k] = v if v is not None else getattr(app, k, fallBack)
-        self.displayDefaults.update({o[0]: o[1] for o in app.options})
+        for (k, v) in (app.interfaceDefaults or {}).items():
+            self.displayDefaults[k] = v
+            if v is not None:
+                app.interfaceFlags.add(k)
         self.reset()
 
     def reset(self, *options):
@@ -111,7 +131,7 @@ class DisplaySettings(object):
 
         result = {None: app.defaultClsOrig}
         for fmt in T.formats:
-            for (key, cls) in app.formatCss.items():
+            for (key, cls) in FORMAT_CSS.items():
                 if (
                     f"-{key}-" in fmt
                     or fmt.startswith(f"{key}-")

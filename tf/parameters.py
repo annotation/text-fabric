@@ -5,7 +5,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '7.11.1'
+VERSION = '8.0.0'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -32,6 +32,30 @@ The compressed data files are stored in a directory `.tf/{PVN}/` next
 to the original `tf`  files, where `{PVN}` is the package version number.
 
 See also `tf.clean`.
+"""
+
+API_VERSION = 1
+"""TF API version.
+
+Text-Fabric offers and API to TF apps.
+This is the version that the current Text-Fabric offers to its apps.
+
+Apps require a version. The provided version and the required version must
+match exactly in order to get a working system.
+
+We do not aim for backward compatibility, since it is very easy to obtain a new version
+of an app.
+
+When Text-Fabric loads a TF app, it will check the api version that the app requires
+against this version.
+
+App requirement higher than TF API version
+:   The user is advised to upgrade Text-Fabric, or, alternatively,
+    select an older version of the app
+
+App requirement lower than TF API version
+:   The user is advised to obtain a newer version of the app, or alternatively,
+    downgrade Text-Fabric
 """
 
 GZIP_LEVEL = 2
@@ -142,7 +166,7 @@ this is the default.
 Text-Fabric will search all these directories as for `.tf` modules of files.
 """
 
-ZIP_OPTIONS = dict(compression=ZIP_DEFLATED,)
+ZIP_OPTIONS = dict(compression=ZIP_DEFLATED)
 """Options for zip when packing tf files.
 
 This is for packaging collections of plain tf files into zip files

@@ -65,10 +65,11 @@ clean : clean local develop build
 l     : local develop build
 i     : local non-develop build
 g     : push to github, code and docs
-r     : build for shipping, leave version as is
-r1    : build for shipping, version becomes r1+1.0.0
-r2    : build for shipping, version becomes r1.r2+1.0
-r3    : build for shipping, version becomes r1.r2.r3+1
+v     : show currennt version
+r1    : version becomes r1+1.0.0
+r2    : version becomes r1.r2+1.0
+r3    : version becomes r1.r2.r3+1
+ship  : build for shipping
 apps  : commit and push all tf apps
 tut   : commit and push the tutorials repo
 a     : open text-fabric browser on specific dataset
@@ -76,7 +77,7 @@ a     : open text-fabric browser on specific dataset
 t     : run test suite (relations, qperf)
 data  : build data files for github release
 
-For g and the r-commands you need to pass a commit message as well.
+For g and ship you need to pass a commit message.
 For data you need to pass an app argument:
   {appStr}
 """
@@ -98,17 +99,18 @@ def readArgs():
         "lp",
         "i",
         "g",
+        "ship",
         "data",
         "apps",
         "tut",
-        "r",
+        "v",
         "r1",
         "r2",
         "r3",
     }:
         console(HELP)
         return (False, None, [])
-    if arg in {"g", "apps", "tut", "r", "r1", "r2", "r3"}:
+    if arg in {"g", "apps", "tut", "ship"}:
         if len(args) < 2:
             console("Provide a commit message")
             return (False, None, [])
@@ -150,12 +152,27 @@ def replaceVersion(task, mask):
     return subVersion
 
 
+def showVersion():
+    global currentVersion
+    versions = set()
+    for (key, c) in VERSION_CONFIG.items():
+        with open(c["file"]) as fh:
+            text = fh.read()
+        match = c["re"].search(text)
+        version = match.group(1)
+        console(f'{version} (according to {c["file"]})')
+        versions.add(text)
+    currentVersion = None
+    if len(versions) == 1:
+        currentVersion = list(versions)[0]
+
+
 def adjustVersion(task):
     for (key, c) in VERSION_CONFIG.items():
         console(f'Adjusting version in {c["file"]}')
         with open(c["file"]) as fh:
             text = fh.read()
-        text = c["re"].sub(replaceVersion(task, c["mask"]), text,)
+        text = c["re"].sub(replaceVersion(task, c["mask"]), text)
         with open(c["file"], "w") as fh:
             fh.write(text)
     if currentVersion == newVersion:
@@ -180,9 +197,9 @@ def commit(task, msg):
     run(["git", "add", "--all", "."])
     run(["git", "commit", "-m", msg])
     run(["git", "push", "origin", "master"])
-    if task in {"r1", "r2", "r3"}:
-        tagVersion = f"v{newVersion}"
-        commitMessage = f"Release {newVersion}: {msg}"
+    if task in {"ship"}:
+        tagVersion = f"v{currentVersion}"
+        commitMessage = f"Release {currentVersion}: {msg}"
         run(["git", "tag", "-a", tagVersion, "-m", commitMessage])
         run(["git", "push", "origin", "--tags"])
 
@@ -398,8 +415,19 @@ def main():
         commitApps(msg)
     elif task == "tut":
         commitTut(msg)
+    elif task == "v":
+        showVersion()
     elif task in {"r", "r1", "r2", "r3"}:
         adjustVersion(task)
+    elif task == "ship":
+        showVersion()
+        if not currentVersion:
+            print("No current version")
+            return
+
+        answer = input("right version ? [yn]")
+        if answer != 'y':
+            return
         shipDocs()
         makeDist()
         commit(task, msg)

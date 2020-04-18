@@ -46,11 +46,26 @@
 
 2020-04-13
 
+**NB: This is a backwards incompatible change. Strongly recommended:**
+
+```sh
+pip3 install --upgrade text-fabric
+```
+
+**All known TF-apps (the ones in under the `annotation` org on GitHub) have been
+adapted to this change.**
+
+**Text-Fabric auto-downloads the newest version of an app by default.
+As a consequence, if you have not upgraded Text-Fabric, it will fail.**
+
 *   Improvements in `plain()` and `pretty()`: they deliver better results and
     they make it easier for tf-app developers.
 *   The `Locality` (`L`) functions `d()`, `u()`, `l()`, `r()` take an optional
     parameter `otype` holding the node type of the related nodes that will be delivered.
     This can now also be an iterable of types (preferably a set of frozenset).
+*   Text-Fabric will detect when apps have a version mismatch with the general framework.
+    If so, it will issue warnings and it will gracefully fall back to the core API.
+
 
 # 7.11.2
 

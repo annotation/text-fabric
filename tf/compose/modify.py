@@ -587,7 +587,7 @@ def modify(
         indent(level=1, reset=True)
 
         curShift = 0
-        for (nType, (nF, nT)) in sorted(origNodeTypes.items(), key=lambda x: x[1][0],):
+        for (nType, (nF, nT)) in sorted(origNodeTypes.items(), key=lambda x: x[1][0]):
             if nType in deleteTypes:
                 curShift -= nT - nF + 1
                 deletedTypes.add(nType)
@@ -597,8 +597,8 @@ def modify(
                     shift[n] = n - curShift
 
         for (kind, upd) in (
-            (NODE, nodeFeatures,),
-            (EDGE, edgeFeatures,),
+            (NODE, nodeFeatures),
+            (EDGE, edgeFeatures),
         ):
             for (feat, uData) in upd.items():
                 upd[feat] = shiftFeature(kind, feat, uData)

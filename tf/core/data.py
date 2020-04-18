@@ -24,7 +24,7 @@ WARP = (
     "otext",
 )
 
-WARP2_DEFAULT = dict(sectionFeatures="", sectionTypes="",)
+WARP2_DEFAULT = dict(sectionFeatures="", sectionTypes="")
 
 DATA_TYPES = ("str", "int")
 

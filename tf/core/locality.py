@@ -40,7 +40,7 @@ class Locality(object):
                 )
             )
         elif otype == slotType:
-            return tuple(sorted(Eoslots.s(n), key=lambda m: Crank[m - 1],))
+            return tuple(sorted(Eoslots.s(n), key=lambda m: Crank[m - 1]))
         elif type(otype) is not str:
             return tuple(
                 sorted(
