@@ -160,7 +160,7 @@
 ??? abstract "App support"
     Apps turn out to have several things in common that we want to deal with generically.
     These functions are collected in the
-    [api]({{tfghb}}/{{c_apps}})
+    [api]({{tfghb}}/{{c_applib}})
     modules of TF.
 
 ??? abstract "Two contexts"

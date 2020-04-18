@@ -142,67 +142,17 @@ nav:
 
 extra:
   b_apps: tf/apps
-  b_convert: tf/convert
-  b_core: tf/core
-  b_search: tf/search
-  b_server: tf/server
   b_static: tf/server/static
   b_views: tf/server/views
-  b_writing: tf/writing
-  c_api: tf/core/api.py
-  c_app: tf/app.py
   c_applib: tf/applib
-  c_appapi: tf/applib/api.py
-  c_appcondense: tf/applib/condense.py
   c_appdata: tf/applib/data.py
   c_appdisplay: tf/applib/display.py
-  c_appdisplaysettings: tf/applib/displaysettings.py
-  c_apphelpers: tf/applib/helpers.py
-  c_apphighlight: tf/applib/highlight.py
-  c_applinks: tf/applib/links.py
-  c_appsearch: tf/applib/search.py
-  c_appsections: tf/applib/sections.py
-  c_apptables: tf/applib/tables.py
-  c_appmake: tf/applib/make.py
-  c_bhsa_app: tf/apps/bhsa/app.py
-  c_bhsa_config: tf/apps/bhsa/config.py
-  c_bhsa_css: tf/apps/bhsa/static/display.css
-  c_bhsa_logo: tf/apps/bhsa/static/logo.png
-  c_common: tf/server/common.py
-  c_data: tf/core/data.py
-  c_fabric: tf/fabric.py
-  c_graph: tf/search/graph.py
-  c_helpers: tf/core/helpers.py
   c_kernel: tf/server/kernel.py
-  c_locality: tf/core/locality.py
-  c_mql: tf/convert/mql.py
-  c_parameters: tf/parameters.py
-  c_peshitta_app: tf/apps/peshitta/app.py
-  c_peshitta_config: tf/apps/peshitta/config.py
-  c_peshitta_css: tf/apps/peshitta/static/display.css
-  c_peshitta_logo: tf/apps/peshitta/static/logo.png
-  c_prepare: tf/core/prepare.py
-  c_relations: tf/search/relations.py
   c_search: tf/search/search.py
-  c_searchexe: tf/search/searchexe.py
-  c_semantics: tf/search/semantics.py
-  c_spin: tf/search/spin.py
   c_start: tf/server/start.py
   c_stitch: tf/search/stitch.py
-  c_syntax: tf/search/syntax.py
-  c_syrnt_app: tf/apps/syrnt/app.py
-  c_syrnt_config: tf/apps/syrnt/config.py
-  c_syrnt_css: tf/apps/syrnt/static/display.css
-  c_syrnt_logo: tf/apps/syrnt/static/logo.png
-  c_text: tf/core/text.py
-  c_timestamp: tf/core/timestamp.py
   c_transcription: tf/writing/transcription.py
-  c_uruk_app: tf/apps/uruk/app.py
-  c_uruk_config: tf/apps/uruk/config.py
-  c_uruk_css: tf/apps/uruk/static/display.css
-  c_uruk_logo: tf/apps/uruk/static/logo.png
   c_web: tf/server/web.py
-  c_zipdata: tf/applib/zipdata.py
   an: https://github.com/annotation
   antut: https://github.com/annotation/tutorials
   anaconda: https://www.anaconda.com/download
@@ -252,7 +202,6 @@ extra:
   node: https://nodejs.org/en/
   oldbabylonianabout: https://github.com/Nino-cunei/oldbabylonian/blob/master/docs/about.md
   oldassyrianabout: https://github.com/Nino-cunei/oldassyrian/blob/master/docs/about.md
-  oracc: http://oracc.museum.upenn.edu/doc/help
   patristicsabout: https://github.com/pthu/patristics
   peshittaabout: https://github.com/ETCBC/peshitta/blob/master/docs/about.md
   python: https://docs.python.org/3
@@ -277,7 +226,6 @@ extra:
   tfnb: https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master
   tfbanks: https://nbviewer.jupyter.org/github/annotation/banks/blob/master
   tfpp: https://pypi.org/project/text-fabric/ 
-  tischtf: https://github.com/codykingham/tischendorf_tf
   tutnb: https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master
   tutnbt: https://nbviewer.jupyter.org/github/annotation/tutorials/tree/master
   ubiq1: https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/
