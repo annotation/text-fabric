@@ -1,21 +1,21 @@
 /* neutral text */
 .txtn,.txtn a:visited,.txtn a:link {
-    font-family: Gentium, sans-serif;
-    font-size: normal;
+    font-family: sans-serif;
+    font-size: medium;
     direction: ltr;
     text-decoration: none;
 }
 /* transcription text */
 .txtt,.txtt a:visited,.txtt a:link {
     font-family: monospace;
-    font-size: normal;
+    font-size: medium;
     direction: ltr;
     text-decoration: none;
 }
 /* source text */
 .txto,.txto a:visited,.txto a:link {
     font-family: serif;
-    font-size: large;
+    font-size: medium;
     direction: ltr;
     text-decoration: none;
 }
@@ -61,9 +61,16 @@
     unicode-bidi: embed;
 }
 /* cuneiform */
-.txtu.cun,.lex.cun,.txtu.und a:visited,.txtu.und a:link {
+.txtu.cun,.lex.cun,.txtu.cun a:visited,.txtu.cun a:link {
     font-family: Santakku, sans-serif;
     font-size: x-large;
+    direction: ltr;
+    unicode-bidi: embed;
+}
+/* greek */
+.txtu.grc,.lex.grc,.txtu.grc a:visited,.txtu.grc a:link {
+    font-family: Gentium, sans-serif;
+    font-size: medium;
     direction: ltr;
     unicode-bidi: embed;
 }
@@ -119,11 +126,11 @@ span.plain {
   font-size: small;
   font-weight: normal;
 }
-.vrs {
+.psg {
     font-family: sans-serif;
     font-size: small;
     font-weight: bold;
-    color: var(--verse);
+    color: var(--passage);
 }
 .comments {
     display: flex;
@@ -142,14 +149,10 @@ span.plain {
     border-radius: var(--meta-width);
 }
 .nd {
-    font-family: monospace;
+    font-family: sans-serif;
     font-size: x-small;
     color: var(--node);
-}
-.srcln {
-    font-family: monospace;
-    font-size: x-small;
-    color: var(--line);
+    vertical-align: super;
 }
 .verse {
     display: flex;
@@ -263,10 +266,9 @@ span.plain {
 }
 
 :root {
-	--node:             hsla(  0, 100%,  30%, 1.0  );
-	--line:             hsla(200,  90%,  30%, 1.0  );
+	--node:             hsla(120, 100%,  30%, 1.0  );
 	--label:            hsla(  0, 100%,  20%, 1.0  );
-	--verse:            hsla(  0, 100%,  25%, 1.0  );
+	--passage:          hsla(  0, 100%,  25%, 1.0  );
 	--features:         hsla(  0,   0%,  30%, 1.0  );
   --lex-color:        hsla(220,  90%,  60%, 1.0  );
   --meta-color:       hsla(  0,   0%,  90%, 0.7  );

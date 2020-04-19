@@ -2,6 +2,7 @@ import types
 
 INTERFACE_OPTIONS = (
     ("withTypes", False, 'witht', "show types"),
+    ("prettyTypes", True, 'withtp', "always show types when expanded"),
     ("withNodes", False, 'withn', "show nodes"),
     ("showFeatures", True, 'showf', "show features"),
     ("lineNumbers", None, 'linen', "source lines"),
@@ -47,7 +48,7 @@ class DisplaySettings(object):
     def __init__(self, app):
         self.app = app
 
-        extension = f".{app.writing}" if app.writing else ""
+        extension = f" {app.writing}" if app.writing else ""
         app.defaultCls = "txtn"
         app.defaultClsSrc = "txto"
         app.defaultClsOrig = f"txtu{extension}"

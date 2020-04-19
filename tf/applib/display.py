@@ -34,6 +34,18 @@ VAR_PATTERN = re.compile(r"\{([^}]+)\}")
 
 ORIG = "orig"
 
+GRender = namedtuple(
+    "GRender",
+    """
+    sectionTypeSet
+    ltr
+    textClass
+    firstSlot
+    lastSlot
+    inTuple
+""".strip().split(),
+)
+
 Render = namedtuple(
     "Render",
     """
@@ -71,7 +83,7 @@ def displayApi(app, silent):
     for (attr, default) in (
         ("writing", None),
         ("writingDir", "ltr"),
-        ("verses", None),
+        ("verseTypes", None),
         ("lex", None),
         ("transform", {}),
         ("childType", {}),
@@ -82,10 +94,10 @@ def displayApi(app, silent):
         ("interfaceDefaults", {}),
         ("lineNumbers", None),
         ("graphics", None),
-        ("writing", ""),
-        ("writingDir", ""),
     ):
         setattr(app, attr, getattr(app, attr, None) or default)
+
+    app.afterChild = {}
 
     levelClass = {}
 
@@ -105,8 +117,11 @@ def displayApi(app, silent):
     if not app._browse:
         app.loadCss()
 
-    if app.verses is None:
-        app.verses = {app.api.T.sectionTypes[-1]}
+    verseType = app.api.T.sectionTypes[-1]
+    if app.verseTypes is None:
+        app.verseTypes = {verseType}
+    else:
+        app.verseTypes |= {verseType}
 
     lexInfo = (
         None
@@ -139,28 +154,25 @@ def displayApi(app, silent):
                 (template, withChildren) = info
                 if template is None:
                     continue
-                templateFeatures = (
-                    VAR_PATTERN.findall(template) if type(template) is str else ()
-                )
-                templates[tp] = (template, templateFeatures)
                 if not withChildren:
                     noChildren.add(tp)
             else:
                 (template, featuresText, features) = info
-                templateFeatures = (
-                    VAR_PATTERN.findall(template) if type(template) is str else ()
-                )
-                templates[tp] = (template, templateFeatures)
-                dFeaturesText[nType] = featuresText
-                dFeatures[nType] = features
+                dFeaturesText[nType] = parseFeatures(featuresText)
+                dFeatures[nType] = parseFeatures(features)
+
+            templateFeatures = (
+                VAR_PATTERN.findall(template) if type(template) is str else ()
+            )
+            templates[tp] = (template, templateFeatures)
 
         setattr(app, f"{attr}Custom", {})
         setattr(app, f"{attr}Templates", templates)
         if attr == "plain":
             setattr(app, f"{attr}NoChildren", noChildren)
         else:
-            setattr(app, f"{attr}dFeaturesText", featuresText)
-            setattr(app, f"{attr}dFeatures", features)
+            setattr(app, f"{attr}dFeaturesText", dFeaturesText)
+            setattr(app, f"{attr}dFeatures", dFeatures)
             setattr(app, f"{attr}PreCustom", {})
             setattr(app, f"{attr}PostCustom", {})
 
@@ -169,9 +181,7 @@ def displayApi(app, silent):
     app.superTypes = None if app.superType is None else app.superType.values()
 
 
-def export(
-    app, tuples, toDir=None, toFile="results.tsv", **options,
-):
+def export(app, tuples, toDir=None, toFile="results.tsv", **options):
     display = app.display
     if not display.check("table", options):
         return ""
@@ -205,9 +215,7 @@ def export(
 # PLAIN and FRIENDS
 
 
-def table(
-    app, tuples, _asString=False, **options,
-):
+def table(app, tuples, _asString=False, **options):
     display = app.display
     if not display.check("table", options):
         return ""
@@ -258,7 +266,7 @@ def table(
 
 
 def plainTuple(
-    app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options,
+    app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options
 ):
     display = app.display
     if not display.check("plainTuple", options):
@@ -272,7 +280,7 @@ def plainTuple(
     _browse = app._browse
 
     if d.withPassage:
-        passageNode = _getRefMember(app, tup, d.linked, d.condensed)
+        passageNode = getRefMember(app, tup, d)
         passageRef = (
             ""
             if passageNode is None
@@ -280,8 +288,7 @@ def plainTuple(
             if _browse
             else app.webLink(passageNode, _asString=True)
         )
-        if passageRef:
-            passageRef = f" {passageRef}"
+        passageRef = f"""<span class="psg ltr">{passageRef}</span>"""
     else:
         passageRef = ""
 
@@ -296,8 +303,8 @@ def plainTuple(
             if opened
             else ""
         )
-        current = " focus" if seq == position else ""
-        attOpen = " open " if opened else ""
+        current = "focus" if seq == position else ""
+        attOpen = "open " if opened else ""
         tupSeq = ",".join(str(n) for n in tup)
         if d.withPassage:
             sParts = T.sectionFromNode(passageNode, fillup=True)
@@ -319,16 +326,12 @@ def plainTuple(
             for (i, n) in enumerate(tup)
         )
         html = f"""
-  <details
-    class="pretty dtrow{current}"
-    seq="{seq}"
-    {attOpen}
-  >
+  <details class="pretty dtrow {current}" seq="{seq}" {attOpen}>
     <summary>
-      <a href="#" class="pq fa fa-solar-panel fa-xs" title="show in context" {passageAtt}></a>
+      <a href="#" class="pq fa fa-solar-panel fa-xs"
+        title="show in context" {passageAtt}></a>
       <a href="#" class="sq" tup="{tupSeq}">{seq}</a>
-      {passageRef}
-      {plainRep}
+      {passageRef} {plainRep}
     </summary>
     <div class="pretty">{prettyRep}</div>
   </details>
@@ -336,99 +339,80 @@ def plainTuple(
         return html
 
     html = [str(seq)]
-    if passageRef:
+    if d.withPassage:
         html.append(passageRef)
     for (i, n) in enumerate(tup):
         html.append(
             app.plain(
                 n,
                 isLinked=not passageRef and i == d.linked - 1,
+                _inTuple=True,
                 _asString=True,
                 withPassage=False,
-                secLabel=n != tup[0],
                 highlights=highlights,
                 **newOptionsH,
             )
         )
     html = (
-        '<tr class="tf"><td class="tf">'
-        + ('</td><td class="tf">'.join(html))
-        + "</td></tr>"
+        f"""<tr class="tf"><td class="tf">"""
+        f"""{'</td><td class="tf">'.join(html)}"""
+        """</td></tr>"""
     )
     if _asString:
         return html
-    head = [
-        '<tr class="tf"><th class="tf">n</th><th class="tf">'
-        + ('</th><th class="tf">'.join(fOtype(n) for n in tup))
-        + "</th></tr>"
-    ]
-    head.append(html)
 
-    dh("\n".join(head))
+    passageHead = '</th><th class="tf">p' if d.withPassage else ""
+    head = (
+        f"""<tr class="tf"><th class="tf">n{passageHead}</th><th class="tf">"""
+        f"""{'</th><th class="tf">'.join(fOtype(n) for n in tup)}"""
+        f"""</th></tr>"""
+    )
+    html = f"""<table>{head}{"".join(html)}</table>"""
+
+    dh(html)
 
 
-def plain(
-    app, n, isLinked=True, _asString=False, secLabel=True, **options,
-):
+def plain(app, n, isLinked=True, _inTuple=False, _asString=False, **options):
     display = app.display
     if not display.check("plain", options):
         return ""
+
     d = display.get(options)
+    if type(d.highlights) is set:
+        d.highlights = {m: "" for m in d.highlights}
+    d.isHtml = d.fmt in app.textFormats
 
     _browse = app._browse
     api = app.api
-    F = api.F
     T = api.T
-    fOtype = F.otype.v
-    sectionTypeSet = T.sectionTypeSet
 
-    nType = fOtype(n)
-
+    ltr = getLtr(app.writingDir, d)
+    textClass = display.formatClass[d.fmt].lower()
     (firstSlot, lastSlot) = getBoundary(api, n)
 
-    highlights = (
-        {m: "" for m in d.highlights} if type(d.highlights) is set else d.highlights
-    )
-
-    passage = ""
-    if (secLabel and nType in sectionTypeSet) or (
-        d.withPassage and nType not in sectionTypeSet
-    ):
-        passage = app.webLink(n, _asString=True)
-
-    rep = _doPlain(
-        app,
-        n,
-        passage,
-        True,
-        [],
-        firstSlot,
-        lastSlot,
-        highlights=highlights,
-        **display.consume(options, "highlights"),
-    )
+    g = GRender(T.sectionTypeSet, ltr, textClass, firstSlot, lastSlot, _inTuple)
+    passage = getPassage(app, True, d, g, n)
+    rep = _doPlain(app, d, g, n, True, [])
 
     if isLinked and not passage:
         rep = app.webLink(n, text=rep, _asString=True)
 
     if _browse or _asString:
         return rep
-    dh(rep)
+    dh(passage + rep)
 
 
-def _doPlain(app, n, passage, outer, html, firstSlot, lastSlot, done=set(), **options):
+def _doPlain(app, d, g, n, outer, html, done=set()):
     done.add(n)
-    display = app.display
-    d = display.get(options)
 
-    r = _prepareDisplay(app, False, n, outer, firstSlot, lastSlot, d)
+    r = _prepareDisplay(app, False, d, g, n, outer)
     if not r:
         return
 
+    ltr = g.ltr
     nType = r.nType
-    ltr = getLtr(app.writingDir, d)
 
-    outerCls = "outer" if outer else ""
+    outerCls = f"outer {ltr}" if outer else ""
 
     isSuperType = False
     superType = app.superType
@@ -442,9 +426,10 @@ def _doPlain(app, n, passage, outer, html, firstSlot, lastSlot, done=set(), **op
             sType = superType.get(nType, None)
             if sType:
                 (sn, sStart, sEnd) = getSuper(app, n, sType)
-                sr = _prepareDisplay(app, False, n, False, r.myStart, r.myEnd, d)
-                if sr.hlClass:
-                    sClasses = f"plain {ltr} {sr.boundaryClass} {sr.hlClass}"
+                gr = getSuperBounds(g, r)
+                sr = _prepareDisplay(app, False, d, gr, n, False)
+                if sr and sr.hlClass:
+                    sClasses = f"plain {sr.boundaryClass} {sr.hlClass}"
                     html.append(f'<span class="{sClasses}" {sr.hlStyle}>')
                     if sr.nodePart:
                         html.append(sr.nodePart)
@@ -458,74 +443,63 @@ def _doPlain(app, n, passage, outer, html, firstSlot, lastSlot, done=set(), **op
     if r.nodePart:
         html.append(r.nodePart)
 
-    verses = app.verses
-
-    if passage:
-        passage = (
-            f"""<span class="vrs {ltr}">{passage} </span>"""
-            if r.nType in verses
-            else f"{passage}{NB}"
-        )
-    else:
-        passage = ""
-
-    (opened, contrib) = _doPlainNode(app, n, r, d, display, outer, ltr, **options)
-    html.extend((passage, contrib))
+    html.append(_doPlainNode(app, d, g, r, n, outer, done=done))
 
     for ch in r.children:
-        _doPlain(app, ch, None, False, html, firstSlot, lastSlot, done=done, **options)
-    if opened:
-        html.append("""</span>""")
+        _doPlain(app, d, g, ch, False, html, done=done)
     html.append("""</span>""")
     if didSuper:
         html.append("""</span>""")
     return "".join(html) if outer else None
 
 
-def _doPlainNode(app, n, r, d, display, outer, ltr, **options):
-    verses = app.verses
-
+def _doPlainNode(app, d, g, r, n, outer, done=set()):
     api = app.api
     Fs = api.Fs
     T = api.T
-    isHtml = options.get("fmt", None) in app.textFormats
 
-    opened = False
+    verseTypes = app.verseTypes
+    isHtml = d.isHtml
+    ltr = g.ltr
+    textClass = g.textClass
+    sectionTypeSet = g.sectionTypeSet
+    inTuple = g.inTuple
     nType = r.nType
+
     plainCustom = app.plainCustom
     if nType in plainCustom:
         method = plainCustom[nType]
-        contrib = method(app, nType, n, r, d, display, outer, **options)
-        return (opened, contrib)
+        contrib = method(app, d, g, r, n, outer, done=done)
+        return contrib
     if r.isSlotOrDescend:
         text = T.text(n, fmt=d.fmt, descend=r.descend)
         if not isHtml:
             text = htmlEsc(text)
-        tClass = display.formatClass[d.fmt].lower()
-        contrib = f'<span class="{tClass}">{text}</span>'
+        contrib = f'<span class="{textClass}">{text}</span>'
     elif nType in app.plainTemplates:
         (tpl, feats) = app.plainTemplates[nType]
         tplFilled = tpl.format(
             **{feat: getValue(app, n, nType, feat) for feat in feats}
         )
-        contrib = f"""<span class="plain {ltr}">{tplFilled}"""
-    elif nType in verses:
-        contrib = f"""<span class="plain {ltr}">"""
-        opened = True
+        contrib = f"""<span class="plain {ltr}">{tplFilled}</span>"""
     elif nType == app.lexType:
         lexeme = htmlEsc(Fs(app.lexFeature).v(n))
-        contrib = f'<span class="plain {ltr}{app.lexCls}">{lexeme}</span>'
+        contrib = f'<span class="plain {ltr} {app.lexCls}">{lexeme}</span>'
+    elif nType in verseTypes | sectionTypeSet:
+        if not inTuple and nType in verseTypes:
+            contrib = ""
+        else:
+            heading = app.webLink(n, _asString=True)
+            contrib = f'<span class="plain {ltr}">{heading}</span>'
     else:
         contrib = ""
-    return (opened, contrib)
+    return contrib
 
 
 # PRETTY and FRIENDS
 
 
-def show(
-    app, tuples, **options,
-):
+def show(app, tuples, **options):
     display = app.display
     if not display.check("show", options):
         return ""
@@ -546,9 +520,7 @@ def show(
         )
 
 
-def prettyTuple(
-    app, tup, seq, item=RESULT, **options,
-):
+def prettyTuple(app, tup, seq, item=RESULT, **options):
     display = app.display
     if not display.check("prettyTuple", options):
         return ""
@@ -582,26 +554,34 @@ def prettyTuple(
         return "".join(html)
 
 
-def pretty(
-    app, n, **options,
-):
+def pretty(app, n, **options):
     display = app.display
     if not display.check("pretty", options):
         return ""
+
     d = display.get(options)
+    if type(d.highlights) is set:
+        d.highlights = {m: "" for m in d.highlights}
+    d.isHtml = d.fmt in app.textFormats
+    d.features = sorted(flattenToSet(d.extraFeatures) | flattenToSet(d.tupleFeatures))
 
     _browse = app._browse
     api = app.api
     F = api.F
     L = api.L
     T = api.T
-    fOtype = F.otype.v
     otypeRank = api.otypeRank
-    sectionTypeSet = T.sectionTypeSet
+
+    ltr = getLtr(app.writingDir, d)
+    textClass = display.formatClass[d.fmt].lower()
+    (firstSlot, lastSlot) = getBoundary(api, n)
+
+    g = GRender(T.sectionTypeSet, ltr, textClass, firstSlot, lastSlot, True)
+    passage = getPassage(app, False, d, g, n)
 
     containerN = None
 
-    nType = fOtype(n)
+    nType = F.otype.v(n)
     if d.condensed and d.condenseType:
         if nType == d.condenseType:
             containerN = n
@@ -620,36 +600,15 @@ def pretty(
 
     html = []
 
-    if d.withPassage:
-        if nType not in sectionTypeSet:
-            html.append(app.webLink(n, _asString=True))
+    _doPretty(app, d, g, n, True, html)
 
-    highlights = (
-        {m: "" for m in d.highlights} if type(d.highlights) is set else d.highlights
-    )
-
-    extraFeatures = sorted(
-        flattenToSet(d.extraFeatures) | flattenToSet(d.tupleFeatures)
-    )
-
-    _doPretty(
-        app,
-        n,
-        True,
-        html,
-        firstSlot,
-        lastSlot,
-        extraFeatures=extraFeatures,
-        highlights=highlights,
-        **display.consume(options, "extraFeatures", "highlights"),
-    )
-    htmlStr = "".join(html)
+    htmlStr = passage + "".join(html)
     if _browse:
         return htmlStr
     dh(htmlStr)
 
 
-def _doPretty(app, n, outer, html, firstSlot, lastSlot, seen=set(), **options):
+def _doPretty(app, d, g, n, outer, html, seen=set()):
     if n in seen:
         return
 
@@ -658,23 +617,17 @@ def _doPretty(app, n, outer, html, firstSlot, lastSlot, seen=set(), **options):
 
     seen.add(n)
 
-    display = app.display
-    isHtml = options.get("fmt", None) in app.textFormats
-    d = display.get(options)
-
-    r = _prepareDisplay(app, True, n, outer, firstSlot, lastSlot, d)
+    r = _prepareDisplay(app, True, d, g, n, outer)
     if not r:
         return
 
+    ltr = g.ltr
     nType = r.nType
-    ltr = getLtr(app.writingDir, d)
 
     nodePlain = None
     if r.isBaseNonSlot:
         done = set()
-        nodePlain = _doPlain(
-            app, n, None, True, [], firstSlot, lastSlot, done=done, **options
-        )
+        nodePlain = _doPlain(app, d, g, n, True, [], done=done)
         seen |= done
 
     isSuperType = False
@@ -689,15 +642,14 @@ def _doPretty(app, n, outer, html, firstSlot, lastSlot, seen=set(), **options):
             sType = superType.get(nType, None)
             if sType:
                 (sn, sStart, sEnd) = getSuper(app, n, sType)
-                sr = _prepareDisplay(app, True, n, False, r.myStart, r.myEnd, d)
+                gr = getSuperBounds(g, r)
+                sr = _prepareDisplay(app, True, d, gr, sn, False)
                 if sr:
                     sNodePlain = None
                     if sr.isBaseNonSlot:
-                        sNodePlain = _doPlain(
-                            app, sn, None, True, [], r.myStart, r.myEnd, **options
-                        )
-                    (sLabel, sFeaturePart) = app._doPrettyNode(
-                        sn, sr, d, display, False, isHtml, sNodePlain, **options
+                        sNodePlain = _doPlain(app, d, gr, sn, True, [])
+                    (sLabel, sFeaturePart) = _doPrettyNode(
+                        app, d, gr, sr, sn, False, sNodePlain
                     )
                     html.append(
                         f"""
@@ -708,9 +660,7 @@ def _doPretty(app, n, outer, html, firstSlot, lastSlot, seen=set(), **options):
                     )
                     didSuper = True
 
-    (label, featurePart) = app._doPrettyNode(
-        n, r, d, display, outer, isHtml, nodePlain, **options
-    )
+    (label, featurePart) = _doPrettyNode(app, d, g, r, n, outer, nodePlain)
 
     containerB = f"""
 <div class="{r.cls['container']} {ltr} {r.boundaryClass} {r.hlClass}" {r.hlStyle}>
@@ -733,7 +683,7 @@ def _doPretty(app, n, outer, html, firstSlot, lastSlot, seen=set(), **options):
     for ch in r.children:
         if ch in seen:
             continue
-        _doPretty(app, ch, False, html, firstSlot, lastSlot, seen=seen, **options)
+        _doPretty(app, d, g, ch, False, html, seen=seen)
         after = afterChild.get(nType, None)
         if after:
             html.append(after(ch))
@@ -751,13 +701,16 @@ def _doPretty(app, n, outer, html, firstSlot, lastSlot, seen=set(), **options):
     return "".join(html) if outer else None
 
 
-def _doPrettyNode(app, n, r, d, display, outer, isHtml, nodePlain, **options):
+def _doPrettyNode(app, d, g, r, n, outer, nodePlain):
     nType = r.nType
 
     api = app.api
     Fs = api.Fs
     T = api.T
     L = api.L
+
+    isHtml = d.isHtml
+    textClass = g.textClass
 
     isText = False
 
@@ -775,12 +728,12 @@ def _doPrettyNode(app, n, r, d, display, outer, isHtml, nodePlain, **options):
 
     dFeaturesText = app.prettydFeaturesText
     dFeatures = app.prettydFeatures
-    featuresText = dFeaturesText.get(nType, "")
-    features = dFeatures.get(nType, "")
+    featuresText = dFeaturesText.get(nType, ((), {}))
+    features = dFeatures.get(nType, ((), {}))
 
-    fp = getFeatures(app, n, featuresText, withName=False, asText=True, **options)
+    fp = getFeatures(app, d, n, *featuresText, withName=False, asText=True)
     featurePPart = fp if isHtml else htmlEsc(fp)
-    featurePart = getFeatures(app, n, features, withName=True, asText=False, **options)
+    featurePart = getFeatures(app, d, n, *features, withName=True, asText=False)
 
     if nType == app.lexType:
         extremeOccs = getBoundary(api, n)
@@ -795,8 +748,8 @@ def _doPrettyNode(app, n, r, d, display, outer, isHtml, nodePlain, **options):
     if featurePart:
         featurePart = f"""<div class="meta">{featurePart}</div>"""
 
-    tClass = display.formatClass[d.fmt].lower() if isText else app.defaultCls
-    heading = f'<span class="{tClass}">{heading}</span>'
+    textClass = textClass if isText else app.defaultCls
+    heading = f'<span class="{textClass}">{heading}</span>'
 
     if outer:
         heading = app.webLink(n, text=f"{heading}", _asString=True)
@@ -815,13 +768,12 @@ def _doPrettyNode(app, n, r, d, display, outer, isHtml, nodePlain, **options):
     return (label, featurePart)
 
 
-def _prepareDisplay(app, isPretty, n, outer, firstSlot, lastSlot, d, sectionTypes=None):
+def _prepareDisplay(app, isPretty, d, g, n, outer):
     api = app.api
     F = api.F
     T = api.T
-    fOtype = F.otype.v
     slotType = F.otype.slotType
-    nType = fOtype(n)
+    nType = F.otype.v(n)
 
     descendType = T.formats.get(d.fmt, slotType)
     bottomType = d.baseType if isPretty else descendType
@@ -833,10 +785,10 @@ def _prepareDisplay(app, isPretty, n, outer, firstSlot, lastSlot, d, sectionType
         if isSlot
         or nType == bottomType
         or (not isPretty and nType in app.plainNoChildren)
-        else getChildren(app, n, d, sectionTypes=sectionTypes)
+        else getChildren(app, d, g, n, nType)
     )
 
-    boundaryResult = getBoundaryResult(api, n, firstSlot, lastSlot)
+    boundaryResult = getBoundaryResult(api, g, n)
     if boundaryResult is None:
         return False
 
@@ -848,10 +800,7 @@ def _prepareDisplay(app, isPretty, n, outer, firstSlot, lastSlot, d, sectionType
     descend = False if descendType == slotType else None
     isBaseNonSlot = nType == d.baseType and not isSlot
 
-    nTypeShow = "" if isSlot or not d.withTypes else nType
-    nodePart = getNodePart(
-        app, n, d, nType, nTypeShow, None if isPretty else hlClass, isPretty
-    )
+    nodePart = getNodePart(app, isPretty, d, n, nType, isSlot, outer, hlClass)
     cls = {}
     if isPretty:
         if nType in app.levelClass:
@@ -878,6 +827,37 @@ def _prepareDisplay(app, isPretty, n, outer, firstSlot, lastSlot, d, sectionType
     )
 
 
+def parseFeatures(features):
+    bare = []
+    indirect = {}
+    for feat in features.split(" "):
+        if not feat:
+            continue
+        parts = feat.split(":", 1)
+        bare.append(parts[0])
+        if len(parts) > 1:
+            indirect[parts[1]] = parts[0]
+    return (bare, indirect)
+
+
+def getPassage(app, isPretty, d, g, n):
+    verseTypes = app.verseTypes
+    sectionTypeSet = g.sectionTypeSet
+    nType = app.api.F.otype.v(n)
+
+    if not d.withPassage or nType in sectionTypeSet - verseTypes:
+        return ""
+
+    passage = app.webLink(n, _asString=True)
+    return f"""<span class="psg ltr">{passage}{NB}</span>"""
+
+
+def getSuperBounds(g, r):
+    return g._replace(
+        firstSlot=max((g.firstSlot, r.myStart)), lastSlot=min((g.lastSlot, r.myEnd)),
+    )
+
+
 def getValue(app, n, nType, feat):
     Fs = app.api.Fs
     val = Fs(feat).v(n)
@@ -893,10 +873,11 @@ def getLtr(direction, d):
     )
 
 
-def getBigType(nType, otypeRank, sectionTypes, d):
+def getBigType(nType, otypeRank, d, g):
+    sectionTypeSet = g.sectionTypeSet
     isBig = False
     if not d.full:
-        if sectionTypes and nType in sectionTypes:
+        if sectionTypeSet and nType in sectionTypeSet:
             if d.condenseType is None or otypeRank[nType] > otypeRank[d.condenseType]:
                 isBig = True
         elif (
@@ -906,10 +887,12 @@ def getBigType(nType, otypeRank, sectionTypes, d):
     return isBig
 
 
-def getBoundaryResult(api, n, firstSlot, lastSlot):
+def getBoundaryResult(api, g, n):
     boundaryClass = ""
     myStart = None
     myEnd = None
+    firstSlot = g.firstSlot
+    lastSlot = g.lastSlot
 
     (myStart, myEnd) = getBoundary(api, n)
 
@@ -933,19 +916,20 @@ def getSuper(app, n, tp):
     return (sn, *getBoundary(api, sn))
 
 
-def getChildren(app, n, d, sectionTypes=None):
-    verses = app.verses
+def getChildren(app, d, g, n, nType):
+    verseTypes = app.verseTypes
     childType = app.childType
     api = app.api
     F = api.F
     L = api.L
-    fOtype = F.otype.v
     otypeRank = api.otypeRank
     sortNodes = api.sortNodes
 
     slotType = F.otype.slotType
-    nType = fOtype(n)
-    isBigType = getBigType(nType, otypeRank, sectionTypes, d)
+
+    isBigType = (
+        g.inTuple if nType in app.verseTypes else getBigType(nType, otypeRank, d, g)
+    )
 
     if isBigType and not d.full:
         children = ()
@@ -964,7 +948,7 @@ def getChildren(app, n, d, sectionTypes=None):
 
         children = set(children) - {n}
 
-        if nType in verses:
+        if nType in verseTypes:
             (thisFirstSlot, thisLastSlot) = getBoundary(api, n)
             boundaryChildren = set()
             for boundary in (thisFirstSlot, thisLastSlot):
@@ -979,37 +963,33 @@ def getChildren(app, n, d, sectionTypes=None):
     return children
 
 
-def getNodePart(app, n, d, nType, nTypeShow, highlight, isPretty):
+def getNodePart(app, isPretty, d, n, nType, isSlot, outer, highlight):
     _browse = app._browse
 
+    allowInfo = isPretty or outer or highlight
+
     num = ""
-    if d.withNodes:
-        num = f"{n}"
-    if num:
-        num = f'<span class="nn">{num}</span>'
+    if d.withNodes and allowInfo:
+        num = n
 
     ntp = ""
-    if nTypeShow:
-        ntp = f'<span class="nt">{nTypeShow}</span>'
+    if (d.withTypes or isPretty and d.prettyTypes) and not isSlot and allowInfo:
+        ntp = nType
 
     line = ""
-    if d.lineNumbers:
+    if d.lineNumbers and allowInfo:
         feat = app.lineNumbers.get(nType, None)
         if feat:
             line = app.api.Fs(feat).v(n)
-            if line is None:
-                line = ""
-    if line:
-        line = f'<span class="ln">@{line}</span>'
+        if line:
+            line = f"@{line}" if line else ""
 
     elemb = 'a href="#"' if _browse else "span"
     eleme = "a" if _browse else "span"
-    extraCls = "plain " if not isPretty and not _browse else ""
-    sep1 = " " if ntp and (num or line) else ""
-    sep2 = " " if num and line else ""
+    sep = ":" if ntp and num else ""
 
     return (
-        f'<{elemb} class="{extraCls}nd">{ntp}{sep1}{num}{sep2}{line}</{eleme}>'
+        f'<{elemb} class="nd">{ntp}{sep}{num}{line}</{eleme}>'
         if ntp or num or line
         else ""
     )
@@ -1088,17 +1068,16 @@ def getBoundary(api, n):
     return (slots[0], slots[-1])
 
 
-def getFeatures(
-    app, n, features, withName=None, o=None, givenValue={}, asText=False, **options,
-):
-    display = app.display
-    d = display.get(options)
-
+def getFeatures(app, d, n, features, indirect, withName=None, asText=False):
     api = app.api
+    L = api.L
     Fs = api.Fs
 
     featurePartB = '<div class="features">'
     featurePartE = "</div>"
+
+    # a feature can be nType:feature
+    # do a L.u(n, otype=nType)[0] and take the feature from there
 
     givenFeatureSet = set(features)
     xFeatures = tuple(f for f in d.extraFeatures if f not in givenFeatureSet)
@@ -1117,35 +1096,24 @@ def getFeatures(
     if d.showFeatures:
         for (i, name) in enumerate(featureList):
             if name not in d.suppress:
-                if name in givenValue:
-                    value = givenValue[name]
-                else:
-                    if Fs(name) is None:
-                        continue
-                    value = Fs(name).v(n)
-                    oValue = None if o is None else Fs(name).v(o)
-                    valueRep = None if value in d.noneValues else htmlEsc(value)
-                    oValueRep = (
-                        None if o is None or oValue in d.noneValues else htmlEsc(oValue)
-                    )
-                    if valueRep is None and oValueRep is None:
-                        value = None
-                    else:
-                        sep = "" if valueRep is None or oValueRep is None else "|"
-                        valueRep = "" if valueRep is None else valueRep
-                        oValueRep = "" if oValueRep is None else oValueRep
-                        value = (
-                            valueRep
-                            if valueRep == oValueRep
-                            else f"{valueRep}{sep}{oValueRep}"
-                        )
+                fsName = Fs(name)
+                if fsName is None:
+                    continue
+                fsNamev = fsName.v
+                value = (
+                    fsNamev(L.u(n, otype=indirect[name])[0])
+                    if name in indirect
+                    else fsNamev(n)
+                )
+                value = None if value in d.noneValues else htmlEsc(value or "")
                 if value is not None:
                     value = value.replace("\n", "<br/>")
                     showName = withName or (withName is None and name in showWithName)
                     nameRep = f'<span class="f">{name}=</span>' if showName else ""
-                    xClass = " xft" if name in extraSet else ""
+                    xClass = "xft" if name in extraSet else ""
                     featureRep = (
-                        f' <span class="{name.lower()}{xClass}">{nameRep}{value}</span>'
+                        f' <span class="{name.lower()} {xClass}">'
+                        f"{nameRep}{value}</span>"
                     )
 
                     if i >= nFeatures:
@@ -1204,10 +1172,12 @@ tr.tf, td.tf, th.tf {
     dh(f"<style>{cssFont + tableCss + genericCss + app.css}</style>")
 
 
-def _getRefMember(app, tup, linked, condensed):
+def getRefMember(app, tup, d):
     api = app.api
     T = api.T
     sectionTypeSet = T.sectionTypeSet
+    linked = d.linked
+    condensed = d.condensed
 
     ln = len(tup)
     return (

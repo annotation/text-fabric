@@ -261,7 +261,6 @@ def _plainTextSFinal(
     textRep = plain(
         app,
         sNode,
-        secLabel=False,
         withPassage=False,
         **display.consume(options, "withPassage"),
     )

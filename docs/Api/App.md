@@ -609,6 +609,10 @@
         indicates whether node types should be displayed.
         The node type of slot nodes is never displayed.
 
+    ??? info "prettyTypes=False"
+        indicates whether node types should always be displayed in pretty displays.
+        The node type of slot nodes is never displayed.
+
     ??? info "withNodes=False"
         indicates whether node numbers should be displayed.
 

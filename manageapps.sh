@@ -4,6 +4,7 @@
 # and push the branch to GitHub.
 # Do this for all TF-apps.
 
+# branch v8dev
 
 annotationdir=~/github/annotation
 
@@ -27,7 +28,7 @@ for app in `ls -d app-*`
 do
     echo "o-o-o [$app] o-o-o"
     cd $annotationdir/$app
-    git checkout -b "$branch"
+    # git checkout -b "$branch"
     git add --all .
     git commit -m "$msg"
     git push origin "$branch" 
