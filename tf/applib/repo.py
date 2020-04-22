@@ -148,10 +148,26 @@ class Checkout(object):
             self.connect()
             self.fetchInfo()
 
-    def log(self, msg, error=False, newline=True):
+    def log(self, msg, newline=True):
         silent = self.silent
-        if not silent or error:
-            console(msg, error=error, newline=newline)
+        if not silent:
+            console(msg, newline=newline)
+
+    def warning(self, msg, newline=True):
+        silent = self.silent
+        if not silent == "deep":
+            console(msg, newline=newline)
+
+    def error(self, msg, newline=True):
+        console(msg, error=True, newline=newline)
+
+    def possibleError(self, msg, showErrors, again=False, indent="\t", newline=False):
+        if showErrors:
+            self.error(msg, newline=newline)
+        else:
+            self.warning(msg, newline=newline)
+            if again:
+                self.warning(f"{indent}Will try something else")
 
     def makeSureLocal(self):
         label = self.label
@@ -232,7 +248,7 @@ class Checkout(object):
                     else False
                 )
             if not self.localBase:
-                self.log(f"The requested {label} is not available offline", error=True)
+                self.error(f"The requested {label} is not available offline")
         else:
             if isLocal:
                 self.localBase = self.baseLocal
@@ -240,20 +256,17 @@ class Checkout(object):
                 if not canOnline:
                     if askLatest:
                         if mayLocal:
-                            self.log(f"The offline {label} may not be the latest")
+                            self.warning(f"The offline {label} may not be the latest")
                             self.localBase = self.baseLocal
                         else:
-                            self.log(
-                                f"The requested {label} is not available offline",
-                                error=True,
+                            self.error(
+                                f"The requested {label} is not available offline"
                             )
                     else:
-                        self.log(f"The requested {label} is not available offline")
-                        self.log(f"No online connection", error=True)
+                        self.warning(f"The requested {label} is not available offline")
+                        self.error(f"No online connection")
                 elif not isOnline:
-                    self.log(
-                        f"The requested {label} is not available online", error=True
-                    )
+                    self.error(f"The requested {label} is not available online")
                 else:
                     self.localBase = self.baseLocal if self.download() else False
 
@@ -349,20 +362,17 @@ class Checkout(object):
 
     def downloadZip(self, dataUrl, showErrors=True):
         label = self.label
-        silent = self.silent
         self.log(f"\tdownloading {dataUrl} ... ")
         try:
             r = requests.get(dataUrl, allow_redirects=True)
             self.log(f"\tunzipping ... ")
             zf = io.BytesIO(r.content)
         except Exception as e:
-            self.log(f"\t{str(e)}\n\tcould not download {dataUrl}", error=showErrors)
-            if not showErrors:
-                self.log(f"\tWill try something else")
+            msg = f"\t{str(e)}\n\tcould not download {dataUrl}"
+            self.possibleError(msg, showErrors, again=True)
             return False
 
-        if not silent:
-            self.log(f"\tsaving {label}")
+        self.log(f"\tsaving {label}")
 
         cwd = os.getcwd()
         destZip = self.dirPathLocal
@@ -386,9 +396,8 @@ class Checkout(object):
                     zInfo.filename = os.path.basename(zInfo.filename)
                     z.extract(zInfo)
         except Exception:
-            self.log(f"\tcould not save {label} to {destZip}", error=showErrors)
-            if not showErrors:
-                self.log(f"\tWill try something else")
+            msg = f"\tcould not save {label} to {destZip}"
+            self.possibleError(msg, showErrors, again=True)
             os.chdir(cwd)
             return False
         os.chdir(cwd)
@@ -407,7 +416,6 @@ class Checkout(object):
         os.makedirs(destDir, exist_ok=True)
 
         excludeRe = re.compile(exclude) if exclude else None
-        silent = self.silent
 
         good = True
 
@@ -419,18 +427,13 @@ class Checkout(object):
             try:
                 contents = g.get_contents(subPath, ref=commit)
             except UnknownObjectException:
-                self.log(
-                    f"{lead}No directory {subPath} in {self.toString(commit, None, False)}",
-                    error=showErrors,
-                )
-                if not showErrors:
-                    self.log(f"{lead}Will try something else")
+                msg = f"{lead}No directory {subPath} in {self.toString(commit, None, False)}"
+                self.possibleError(msg, showErrors, again=True, indent=lead)
                 good = False
                 return
             for content in contents:
                 thisPath = content.path
-                if not silent:
-                    console(f"\t{lead}{thisPath}...", newline=False)
+                self.log(f"\t{lead}{thisPath}...", newline=False)
                 if exclude and excludeRe.search(thisPath):
                     self.log("excluded")
                     continue
@@ -447,9 +450,8 @@ class Checkout(object):
                             fd.write(fileData)
                         self.log("downloaded")
                     except (GithubException, IOError):
-                        self.log("error")
-                        if not showErrors:
-                            self.log(f"{lead}Will try something else")
+                        msg = "error"
+                        self.possibleError(msg, showErrors, again=True, indent=lead)
                         good = False
 
         _downloadDir(self.dataDir, 0)
@@ -457,7 +459,8 @@ class Checkout(object):
         if good:
             self.log("\tOK")
         else:
-            self.log("\tFailed", error=showErrors)
+            msg = "\tFailed"
+            self.possibleError(msg, showErrors)
 
         return good
 
@@ -484,9 +487,9 @@ class Checkout(object):
         try:
             r = g.get_release(release) if release else g.get_latest_release()
         except UnknownObjectException:
-            self.log(f"\tno release{msg}", error=showErrors)
+            self.possibleError(f"\tno release{msg}", showErrors)
         except Exception:
-            self.log(f"\tcannot find release{msg}", error=showErrors)
+            self.possibleError(f"\tcannot find release{msg}", showErrors)
         return r
 
     def getCommitObj(self, commit):
@@ -502,9 +505,9 @@ class Checkout(object):
             if cs.totalCount:
                 c = cs[0]
             else:
-                self.log(f"\tno commit{msg}", error=True)
+                self.error(f"\tno commit{msg}")
         except Exception:
-            self.log(f"\tcannot find commit{msg}", error=True)
+            self.error(f"\tcannot find commit{msg}")
         return c
 
     def getReleaseFromObj(self, r):
@@ -589,12 +592,9 @@ class Checkout(object):
                 f" with {rate.remaining} left for this hour"
             )
             if rate.limit < 100:
-                self.log(
-                    (
-                        f"To increase the rate,"
-                        f"see https://annotation.github.io/text-fabric/Api/Repo/"
-                    ),
-                    error=True,
+                self.warning(
+                    f"To increase the rate,"
+                    f"see https://annotation.github.io/text-fabric/Api/Repo/"
                 )
 
         try:
@@ -605,10 +605,10 @@ class Checkout(object):
             self.repoOnline = self.ghConn.get_repo(f"{self.org}/{self.repo}")
             self.log(f"connected")
         except GithubException as why:
-            self.log(f"failed")
-            self.log(f"GitHub says: {why}")
+            self.warning(f"failed")
+            self.warning(f"GitHub says: {why}")
         except IOError:
-            self.log(f"no internet")
+            self.warning(f"no internet")
 
 
 def checkoutRepo(

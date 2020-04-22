@@ -259,13 +259,6 @@
             not show up.
             But if you condense to books, they will show up.
 
-    ??? note "linked=1"
-        Which column in the results should be hyperlinked to
-        online representations closest to the objects
-        in that column.
-
-        Counting columns starts at 1.
-
     ??? note "*interface options*"
         You can also pass the defined interface options.
 

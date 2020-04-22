@@ -3,12 +3,16 @@ def textApi(app):
     error = api.error
     T = api.T
 
-    if app.isCompatible and hasattr(app, "textFormats"):
+    if app.isCompatible:
         formats = T.formats
         xFormats = T._xformats
         xdTypes = T._xdTypes
         defaultFormat = T.defaultFormat
-        for (fmt, method) in app.textFormats.items():
+
+        ac = app.context
+        textFormats = ac.textFormats
+
+        for (fmt, method) in textFormats.items():
             (descendType, method) = T.splitFormat(method)
             formats[fmt] = descendType
             xdTypes[fmt] = descendType

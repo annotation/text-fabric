@@ -91,7 +91,6 @@ def serveQuery(setup, getx, asDict=False):
                     condenseType=condenseType,
                     fmt=textFormat,
                     baseType=form["baseTp"],
-                    linked=form["linked"],
                     getx=int(getx) if getx else None,
                     **options,
                 )

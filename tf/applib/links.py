@@ -112,12 +112,12 @@ def header(app):
     )
 
 
-def outLink(text, href, title=None, passage=None, className=None, target="_blank"):
+def outLink(text, href, title=None, passage=None, clsName=None, target="_blank"):
     titleAtt = "" if title is None else f' title="{title}"'
-    classAtt = f' class="{className.lower()}"' if className else ""
+    clsAtt = f' class="{clsName.lower()}"' if clsName else ""
     targetAtt = f' target="{target}"' if target else ""
     passageAtt = f' sec="{passage}"' if passage else ""
-    return f'<a{classAtt}{targetAtt} href="{htmlEsc(href)}"{titleAtt}{passageAtt}>{text}</a>'
+    return f'<a{clsAtt}{targetAtt} href="{htmlEsc(href)}"{titleAtt}{passageAtt}>{text}</a>'
 
 
 def _featuresPerModule(app):
@@ -126,6 +126,8 @@ def _featuresPerModule(app):
         return UNSUPPORTED
 
     api = app.api
+    TF = api.TF
+
     features = api.Fall() + api.Eall()
 
     fixedModuleIndex = {}
@@ -165,7 +167,7 @@ def _featuresPerModule(app):
 
     for feature in features:
         added = False
-        featureInfo = app.api.TF.features[feature]
+        featureInfo = TF.features[feature]
         featurePath = featureInfo.path
         match = pathRe.fullmatch(featurePath)
         if match:
@@ -231,7 +233,7 @@ def _featuresPerModule(app):
                 featureRep = dlFeature
             else:
                 featureRep = feature
-            featureInfo = app.api.TF.features[feature]
+            featureInfo = TF.features[feature]
             featurePath = featureInfo.path
             isEdge = featureInfo.isEdge
             pre = "<b><i>" if isEdge else ""

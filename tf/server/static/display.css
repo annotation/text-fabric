@@ -4,6 +4,7 @@
     font-size: medium;
     direction: ltr;
     text-decoration: none;
+    color: var(--text-color);
 }
 /* transcription text */
 .txtt,.txtt a:visited,.txtt a:link {
@@ -11,6 +12,7 @@
     font-size: medium;
     direction: ltr;
     text-decoration: none;
+    color: var(--text-color);
 }
 /* source text */
 .txto,.txto a:visited,.txto a:link {
@@ -18,6 +20,7 @@
     font-size: medium;
     direction: ltr;
     text-decoration: none;
+    color: var(--text-color);
 }
 /* phonetic text */
 .txtp,.txtp a:visited,.txtp a:link {
@@ -25,50 +28,52 @@
     font-size: large;
     direction: ltr;
     text-decoration: none;
+    color: var(--text-color);
 }
 /* original script text */
 .txtu,.txtu a:visited,.txtu a:link {
     font-family: Gentium, sans-serif;
     font-size: large;
     text-decoration: none;
+    color: var(--text-color);
 }
 /* hebrew */
-.txtu.hbo,.lex.hbo,.txtu.hbo a:visited,.txtu.hbo a:link {
+.txtu.hbo,.lex.hbo {
     font-family: "Ezra SIL", "SBL Hebrew", sans-serif;
     font-size: x-large;
     direction: rtl;
     unicode-bidi: embed;
 }
 /* syriac */
-.txtu.syc,.lex.syc,.txtu.syc a:visited,.txtu.syc a:link {
+.txtu.syc,.lex.syc {
     font-family: "Estrangelo Edessa", sans-serif;
     font-size: large;
     direction: rtl;
     unicode-bidi: embed;
 }
 /* neo aramaic */
-.txtu.cld,.lex.cld,.txtu.cld a:visited,.txtu.cld a:link {
+.txtu.cld,.lex.cld {
     font-family: "CharisSIL-R", sans-serif;
     font-size: medium;
     direction: rtl;
     unicode-bidi: embed;
 }
 /* standard arabic */
-.txtu.ara,.lex.ara,.txtu.ara a:visited,.txtu.ara a:link {
+.txtu.ara,.lex.ara {
     font-family: "AmiriQuran", sans-serif;
     font-size: large;
     direction: rtl;
     unicode-bidi: embed;
 }
 /* cuneiform */
-.txtu.cun,.lex.cun,.txtu.cun a:visited,.txtu.cun a:link {
+.txtu.cun,.lex.cun {
     font-family: Santakku, sans-serif;
     font-size: x-large;
     direction: ltr;
     unicode-bidi: embed;
 }
 /* greek */
-.txtu.grc,.lex.grc,.txtu.grc a:visited,.txtu.grc a:link {
+.txtu.grc,.lex.grc a:link {
     font-family: Gentium, sans-serif;
     font-size: medium;
     direction: ltr;
@@ -99,8 +104,8 @@ span.plain {
     justify-content: flex-start;
     align-items: flex-start;
     align-content: flex-start;
-    padding: 0.1em;
-    margin: 0.1em;
+    padding: 0.1rem;
+    margin: 0.1rem;
     direction: ltr;
 }
 .features div,.features span {
@@ -117,7 +122,7 @@ span.plain {
   color: #000000;
   background-color: #eeeeee;
   font-size: medium;
-  margin: 0.1em 0em;
+  margin: 0.1rem 0rem;
 }
 .features .xft .f {
   color: #000000;
@@ -144,7 +149,7 @@ span.plain {
     justify-content: flex-start;
     align-items: flex-start;
     align-content: flex-start;
-    flex-flow: row nowrap;
+    flex-flow: column nowrap;
     border: var(--meta-width) solid var(--meta-color);
     border-radius: var(--meta-width);
 }
@@ -169,7 +174,7 @@ span.plain {
 }
 .vn {
   font-size: small !important;
-  padding-right: 1em;
+  padding-right: 1rem;
 }
 .lex {
   color: var(--lex-color);;
@@ -215,10 +220,13 @@ span.plain {
     align-content: flex-start;
     flex-flow: column nowrap;
     background: #ffffff none repeat scroll 0 0;
-    padding:  0.5em 0.1em 0.1em 0.1em;
-    margin: 0.8em 0.1em 0.1em 0.1em;
+    padding:  0.5rem 0.1rem 0.1rem 0.1rem;
+    margin: 0.8rem 0.1rem 0.1rem 0.1rem;
     border-style: solid;
     font-size: small;
+}
+.contnr.trm {
+    background-attachment: local;
 }
 .contnr.c0,.lbl.c0 {
     border-color: var(--border-color0);
@@ -241,13 +249,20 @@ span.plain {
     border-radius: var(--border-width3);
 }
 .lbl {
-    margin-top: -1.2em;
-    margin-left: 1em;
+    margin-top: -1.2rem;
+    margin-left: 1rem;
     background: #ffffff none repeat scroll 0 0;
-    padding: 0 0.3em;
+    padding: 0 0.3rem;
     border-style: solid;
     display: block;
     color: var(--label)
+}
+.lbl.trm {
+    background-attachment: local;
+    margin-top: 0.1rem;
+    margin-left: 0.1rem;
+    padding: 0.1rem 0.1rem;
+    border-style: none;
 }
 .lbl.c0 {
     font-size: small;
@@ -270,6 +285,7 @@ span.plain {
 	--label:            hsla(  0, 100%,  20%, 1.0  );
 	--passage:          hsla(  0, 100%,  25%, 1.0  );
 	--features:         hsla(  0,   0%,  30%, 1.0  );
+  --text-color:       hsla( 60,  80%,  10%, 1.0  );
   --lex-color:        hsla(220,  90%,  60%, 1.0  );
   --meta-color:       hsla(  0,   0%,  90%, 0.7  );
   --meta-width:       0.15rem;

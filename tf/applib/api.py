@@ -8,13 +8,18 @@ from .helpers import getLocalDir, configure, dh
 from .links import linksApi, outLink
 from .text import textApi
 from .sections import sectionsApi
-from .displaysettings import displaySettingsApi
 from .display import displayApi
 from .search import searchApi
 from .data import getModulesData
 
 
 # SET UP A TF API FOR AN APP
+
+
+CONFIG_DEFAULTS = (
+    ("standardFeatures", None),
+    ("excludedFeatures", set()),
+)
 
 
 def setupApi(
@@ -110,6 +115,9 @@ but the core API will still work:
     for (key, value) in cfg.items():
         setattr(app, key, value)
 
+    for (attr, default) in CONFIG_DEFAULTS:
+        setattr(app, attr, getattr(app, attr, default))
+
     setDir(app)
 
     if app.api:
@@ -148,11 +156,10 @@ but the core API will still work:
     if app.api:
         app.reuse = types.MethodType(reuse, app)
         linksApi(app, appName, silent)
-        textApi(app)
         searchApi(app)
         sectionsApi(app)
-        displaySettingsApi(app)
         displayApi(app, silent)
+        textApi(app)
         if hoist:
             docs = app.api.makeAvailableIn(hoist)
             if not silent:
@@ -185,6 +192,7 @@ def reuse(app, hoist=False):
     appPath = app.appPath
     appName = app.appName
     version = app.version
+    api = app.api
 
     config = findAppConfig(appName, appPath)
     cfg = configure(config, version)
@@ -192,12 +200,11 @@ def reuse(app, hoist=False):
     for (key, value) in cfg.items():
         setattr(app, key, value)
 
-    if app.api:
+    if api:
         linksApi(app, appName, True)
         textApi(app)
         searchApi(app)
         sectionsApi(app)
-        displaySettingsApi(app)
         displayApi(app, True)
         if hoist:
-            app.api.makeAvailableIn(hoist)
+            api.makeAvailableIn(hoist)

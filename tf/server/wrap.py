@@ -99,13 +99,6 @@ def wrapOptions(config, form, defaults):
         if default is None:
             continue
 
-        if name == 'lineNumbers':
-            if not getattr(config, 'LINE_NUMBERS', None):
-                continue
-        if name == 'graphics':
-            if not getattr(config, 'GRAPHICS', None):
-                continue
-
         options.append[o]
 
     html = []

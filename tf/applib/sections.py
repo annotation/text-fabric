@@ -11,8 +11,12 @@ def sectionsApi(app):
 def nodeFromSectionStr(app, sectionStr, lang="en"):
     api = app.api
     T = api.T
-    sep1 = app.sectionSep1
-    sep2 = app.sectionSep2
+
+    ac = app.context
+
+    sep1 = ac.sectionSep1
+    sep2 = ac.sectionSep2
+
     msg = f'Not a valid passage: "{sectionStr}"'
     msgi = '{} "{}" is not a number'
     section = sectionStr.split(sep1)
@@ -49,7 +53,13 @@ def nodeFromSectionStr(app, sectionStr, lang="en"):
 def sectionStrFromNode(app, n, lang="en", lastSlot=False, fillup=False):
     api = app.api
     T = api.T
-    seps = ("", app.sectionSep1, app.sectionSep2)
+
+    ac = app.context
+
+    sep1 = ac.sectionSep1
+    sep2 = ac.sectionSep2
+
+    seps = ("", sep1, sep2)
 
     section = T.sectionFromNode(n, lang=lang, lastSlot=lastSlot, fillup=fillup)
     return "".join(
@@ -57,8 +67,8 @@ def sectionStrFromNode(app, n, lang="en", lastSlot=False, fillup=False):
     )
 
 
-def _sectionLink(app, n, text=None, className=None):
-    newClassName = f'rwh {className or ""}'
+def _sectionLink(app, n, text=None, clsName=None):
+    newClsName = f'rwh {clsName or ""}'
     return app.webLink(
-        n, className=newClassName, text=text, _asString=True, _noUrl=True
+        n, clsName=newClsName, text=text, _asString=True, _noUrl=True
     )

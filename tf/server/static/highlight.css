@@ -7,7 +7,7 @@ span.hl {
 	border-radius: 0.1rem;
 	border-style: solid;
 }
-.contnr.hl {
+div.contnr.hl,div.lbl.hl {
     background-color: var(--hl-strong);
 }
 

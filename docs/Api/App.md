@@ -555,11 +555,6 @@
             It does not harm performance if `highlights` maps
             lots of nodes outside the tuple as well.
 
-    ??? info "linked=1"
-        the number of the column whose cell contents is
-        web-linked to the relevant passage
-        (the first column is column 1).
-
     ??? info "noneValues=None"
         A set of values for which no display should be generated.
         The default set is `None` and the strings `NA`, `none`, `unknown`.
@@ -640,6 +635,10 @@
     ??? info "withPassage=True"
         indicates whether a passage label should be put next to a displayed node
         or tuple of nodes.
+        When passed with `table()`, or `plainTuple()`,
+        the value may also be a set of integers, indicating the columns whose
+        nodes will be linked with a web link
+        (the first column is column 1).
 
 ??? abstract "A.displaySetup()"
     ```python
@@ -700,7 +699,7 @@
 
 ??? abstract "A.plain()"
     ```python
-    A.plain(node, isLinked=True, **displayParameters)
+    A.plain(node, **displayParameters)
     ```
 
     ???+ info "Description"
@@ -710,10 +709,6 @@
 
     ??? info "node"
         a node of arbitrary type.
-
-    ??? info "isLinked"
-        indicates whether the result should be a web-link
-        to the appropriate passage.
 
 ??? abstract "A.plainTuple()"
     ```python

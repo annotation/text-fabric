@@ -23,11 +23,11 @@ def getHlAtt(app, n, highlights, baseType, isPlain):
 
     isBaseType = F.otype.v(n) == baseType
 
-    hlClass = ("hl" if isBaseType else "hlbx") if isPlain else "hl"
+    hlCls = ("hl" if isBaseType else "hlbx") if isPlain else "hl"
     hlObject = ("background" if isBaseType else "border") if isPlain else "background"
     hlStyle = f' style="{hlObject}-color: {color};" ' if color != "" else ""
 
-    return (hlClass, hlStyle)
+    return (hlCls, hlStyle)
 
 
 def getTupleHighlights(api, tup, highlights, colorMap, condenseType):

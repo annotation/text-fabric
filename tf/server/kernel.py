@@ -104,17 +104,20 @@ def makeTfKernel(
         def exposed_configSettings(self):
             app = self.app
             api = app.api
-            sectionTypeSet = api.T.sectionTypeSet
+            T = api.T
+            C = api.C
+            sectionTypeSet = T.sectionTypeSet
+
+            ac = app.context
             return (
-                app.baseType,
-                app.condenseType,
+                ac.baseType,
+                ac.condenseType,
                 app.exampleSection,
                 app.exampleSectionText,
                 tuple(e[0] for e in api.C.levels.data if e[0] not in sectionTypeSet),
-                api.C.levels.data,
-                app.api.T.defaultFormat,
-                app.api.T.formats,
-                # tuple(fmt for fmt in app.api.T.formats if fmt.startswith('text-')),
+                C.levels.data,
+                T.defaultFormat,
+                T.formats,
             )
 
         def exposed_passage(
@@ -134,15 +137,17 @@ def makeTfKernel(
             L = api.L
             T = api.T
 
+            ac = app.context
+
             sectionFeatureTypes = T.sectionFeatureTypes
             sec0Type = T.sectionTypes[0]
             sec1Type = T.sectionTypes[1]
             sectionDepth = len(T.sectionTypes)
-            browseNavLevel = app.browseNavLevel
+            browseNavLevel = ac.browseNavLevel
             browseNavLevel = min((sectionDepth, browseNavLevel))
             finalSecType = T.sectionTypes[browseNavLevel]
             finalSec = (sec0, sec1, sec2)[browseNavLevel]
-            browseContentPretty = app.browseContentPretty
+            browseContentPretty = ac.browseContentPretty
 
             if sec0:
                 if sectionFeatureTypes[0] == "int":
@@ -157,7 +162,6 @@ def makeTfKernel(
             contentNode = (sec0Node, sec1Node)[browseNavLevel - 1]
 
             if getx is not None:
-                # if sectionFeatureTypes[browseNavLevel - 1] == "int":
                 if sectionFeatureTypes[browseNavLevel] == "int":
                     getx = int(getx)
 
@@ -203,7 +207,8 @@ def makeTfKernel(
             return (passage, sec0Type, pickle.dumps((sec0s, sec1s)), browseNavLevel)
 
         def exposed_rawSearch(self, query):
-            rawSearch = self.app.api.S.search
+            app = self.app
+            rawSearch = app.api.S.search
 
             (results, messages) = rawSearch(query, msgCache=True)
             if messages:
@@ -256,7 +261,9 @@ def makeTfKernel(
         ):
             app = self.app
             display = app.display
-            d = display.get(options)
+            dContext = display.get(options)
+            condensed = dContext.condensed
+            condenseType = dContext.condenseType
 
             total = 0
 
@@ -264,8 +271,8 @@ def makeTfKernel(
             messages = ""
             if query:
                 (results, messages, features) = (
-                    runSearchCondensed(app, query, cache, d.condenseType)
-                    if d.condensed and d.condenseType
+                    runSearchCondensed(app, query, cache, condenseType)
+                    if condensed and condenseType
                     else runSearch(app, query, cache)
                 )
 
@@ -306,7 +313,10 @@ def makeTfKernel(
         def exposed_csvs(self, query, tuples, sections, **options):
             app = self.app
             display = app.display
-            d = display.get(options)
+            dContext = display.get(options)
+            fmt = dContext.fmt
+            condensed = dContext.condensed
+            condenseType = dContext.condenseType
 
             sectionResults = []
             if sections:
@@ -336,8 +346,8 @@ def makeTfKernel(
             if query:
                 (queryResults, queryMessages, features) = runSearch(app, query, cache)
                 (queryResultsC, queryMessagesC, featuresC) = (
-                    runSearchCondensed(app, query, cache, d.condenseType)
-                    if not queryMessages and d.condensed and d.condenseType
+                    runSearchCondensed(app, query, cache, condenseType)
+                    if not queryMessages and condensed and condenseType
                     else (None, None, None)
                 )
 
@@ -351,15 +361,14 @@ def makeTfKernel(
                 ("nodes", tupleResults),
                 ("results", queryResults),
             )
-            if d.condensed and d.condenseType:
-                csvs += ((f"resultsBy{d.condenseType}", queryResultsC),)
+            if condensed and condenseType:
+                csvs += ((f"resultsBy{condenseType}", queryResultsC),)
             resultsX = getResultsX(
                 app,
                 queryResults,
                 features,
-                d.condenseType or app.condenseType,
-                app.noDescendTypes,
-                fmt=d.fmt,
+                condenseType,
+                fmt=fmt,
             )
             return (queryMessages, pickle.dumps(csvs), pickle.dumps(resultsX))
 

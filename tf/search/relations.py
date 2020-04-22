@@ -838,7 +838,6 @@ def basicRelations(searchExe, api):
 
     def spinLeftFisRightG(f, g):
         def zz(fTp, tTp):
-            print("ZZZ", "spinning")
             if f not in Sindex:
                 Sindex[f] = makeIndex(Fs(f).data)
             if f != g:

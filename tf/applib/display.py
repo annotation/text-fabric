@@ -4,11 +4,13 @@ import types
 from collections import namedtuple
 
 from ..parameters import DOWNLOADS
+from ..core.text import DEFAULT_FORMAT
 from ..core.helpers import mdEsc, htmlEsc, flattenToSet
 from .app import findAppConfig
 from .helpers import configure, RESULT, dh, NB
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights, getHlAtt
+from .displaysettings import DisplaySettings
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
@@ -34,20 +36,87 @@ VAR_PATTERN = re.compile(r"\{([^}]+)\}")
 
 ORIG = "orig"
 
-GRender = namedtuple(
-    "GRender",
+LEX_CLS = "lex"
+
+FONT_NAME = "Gentium"
+FONT = "GentiumPlus-R.ttf"
+FONTW = "GentiumPlus-R.woff"
+
+DEFAULT_CLS = "txtn"
+DEFAULT_CLS_SRC = "txto"
+DEFAULT_CLS_ORIG = "txtu"
+DEFAULT_CLS_TRANS = "txtt"
+DEFAULT_CLS_PHONO = "txtp"
+
+FORMAT_CSS = dict(
+    orig=DEFAULT_CLS_ORIG,
+    trans=DEFAULT_CLS_TRANS,
+    source=DEFAULT_CLS_TRANS,
+    phono=DEFAULT_CLS_PHONO,
+)
+
+
+CONFIG_DEFAULTS = (("interfaceDefaults", ()),)
+
+DATA_DISPLAY_DEFAULTS = (
+    ("noneValues", {None}),
+    ("sectionSep1", " "),
+    ("sectionSep2", " "),
+    ("writing", ""),
+    ("writingDir", "ltr"),
+    ("fontName", FONT_NAME),
+    ("font", FONT),
+    ("fontw", FONTW),
+    ("textFormats", {}),
+    ("browseNavLevel", 2),
+    ("browseContentPretty", False),
+)
+
+AppContext = namedtuple(
+    "AppContext",
+    [df[0] for df in DATA_DISPLAY_DEFAULTS]
+    + """
+    defaultClsOrig
+    formatCls
+    templates
+    levelCls
+    featuresBare
+    features
+    lineNumberFeature
+    hasGraphics
+    childType
+    noChildren
+    hasSuper
+    superTypes
+    verseTypes
+    lexTypes
+    lexTarget
+    baseType
+    condenseType
+    plainCustom
+    prettyCustom
+    afterChild
+    childrenCustom
+    transform
+    noDescendTypes
+""".strip().split(),
+)
+"""Settings defined by the config file in the TF app .
+"""
+
+OuterContext = namedtuple(
+    "OuterContext",
     """
-    sectionTypeSet
     ltr
-    textClass
+    textCls
     firstSlot
     lastSlot
     inTuple
 """.strip().split(),
 )
 
-Render = namedtuple(
-    "Render",
+NodeContext = namedtuple(
+    "NodeContext",
     """
     slotType
     nType
@@ -56,8 +125,8 @@ Render = namedtuple(
     descend
     isBaseNonSlot
     children
-    boundaryClass
-    hlClass
+    boundaryCls
+    hlCls
     hlStyle
     nodePart
     cls
@@ -77,115 +146,181 @@ def displayApi(app, silent):
         app.prettyTuple = types.MethodType(prettyTuple, app)
         app.pretty = types.MethodType(pretty, app)
         app.loadCss = types.MethodType(loadCss, app)
+        app.displaySetup = types.MethodType(displaySetup, app)
+        app.displayReset = types.MethodType(displayReset, app)
     else:
         return
 
-    for (attr, default) in (
-        ("writing", None),
-        ("writingDir", "ltr"),
-        ("verseTypes", None),
-        ("lex", None),
-        ("transform", {}),
-        ("childType", {}),
-        ("superType", None),
-        ("plainTypes", {}),
-        ("prettyTypes", {}),
-        ("levels", {}),
-        ("interfaceDefaults", {}),
-        ("lineNumbers", None),
-        ("graphics", None),
-    ):
-        setattr(app, attr, getattr(app, attr, None) or default)
+    api = app.api
+    slotType = api.F.otype.slotType
+    sectionTypes = api.T.sectionTypes
 
-    app.afterChild = {}
+    defaultVerseType = sectionTypes[-1]
 
-    levelClass = {}
+    for (attr, default) in CONFIG_DEFAULTS:
+        setattr(app, attr, getattr(app, attr, default))
 
-    for (nType, nTypeInfo) in app.levels.items():
+    appContextValues = {}
+
+    for attr in """
+        dataDisplay
+        typeDisplay
+    """.strip().split():
+        appContextValues[attr] = getattr(app, attr, None) or {}
+
+    dataContextGiven = appContextValues["dataDisplay"]
+    dataContext = {}
+    dataContextValues = []
+    for (attr, default) in DATA_DISPLAY_DEFAULTS:
+        value = dataContextGiven.get(attr, default)
+        dataContext[attr] = value
+        dataContextValues.append(value)
+
+    writing = dataContext["writing"]
+    extension = f" {writing}" if writing else ""
+    defaultClsOrig = f"{DEFAULT_CLS_ORIG}{extension}"
+    formatCls = _compileFormatCls(app, defaultClsOrig)
+
+    templates = dict(plain={}, pretty={})
+    noChildren = set()
+    childType = {}
+    hasSuper = {}
+    verseTypes = {defaultVerseType}
+    lexTypes = {}
+    baseType = slotType
+    condenseType = None
+    featuresBare = {}
+    features = {}
+    lineNumberFeature = {}
+    hasGraphics = set()
+    givenLevels = {}
+    levelKeys = ({"level", "flow", "wrap", "stretch"},)
+
+    for (nType, info) in appContextValues["typeDisplay"].items():
+        template = info["template"]
+        templateFeatures = (
+            VAR_PATTERN.findall(template) if type(template) is str else ()
+        )
+        featsBare = info.get("featuresBare", "")
+        feats = info.get("features", "")
+        templates[nType] = (template, templateFeatures)
+        featuresBare[nType] = parseFeatures(featsBare)
+        features[nType] = parseFeatures(feats)
+
+        lineNumber = info.get("lineNumber", None)
+        if lineNumber is not None:
+            lineNumberFeature[nType] = lineNumber
+
+        graphics = info.get("graphics", False)
+        if graphics:
+            hasGraphics.add(nType)
+
+        if not info.get("childrenPlain", True):
+            noChildren.add(nType)
+
+        children = info.get("children", None)
+        if children is not None:
+            childType[nType] = children
+
+        supr = info.get("super", None)
+        if supr is not None:
+            hasSuper[nType] = supr
+
+        ltarget = info.get("lexTarget", None)
+        if ltarget is not None:
+            lexTypes[ltarget] = nType
+
+        if "baseType" in info:
+            baseType = info["baseType"]
+
+        if "condenseType" in info:
+            condenseType = info["condenseType"]
+
+        verselike = info.get("verselike", False)
+        if verselike:
+            verseTypes.add(nType)
+
+        transform = info.get("transform", None)
+        if transform is not None:
+            transform[nType] = transform
+
+        if "level" in info:
+            givenLevels[nType] = {k: v for (k, v) in info.items() if k in levelKeys}
+
+    lexTarget = set(lexTypes.values())
+
+    levels = getStandardLevels(app, givenLevels, lexTypes, verseTypes)
+    levelCls = {}
+
+    for (nType, nTypeInfo) in levels.items():
         level = nTypeInfo["level"]
         flow = nTypeInfo["flow"]
         wrap = nTypeInfo["wrap"]
-        containerCss = f"contnr c{level}"
-        labelCss = f"lbl c{level}"
-        childrenCss = f"children {flow} {'wrap' if wrap else ''}"
-        levelClass[nType] = dict(
-            container=containerCss, label=labelCss, children=childrenCss,
+
+        containerCls = f"contnr c{level}"
+        labelCls = f"lbl c{level}"
+        childrenCls = f"children {flow} {'wrap' if wrap else ''}"
+
+        levelCls[nType] = dict(
+            container=containerCls, label=labelCls, children=childrenCls,
         )
 
-    app.levelClass = levelClass
+    app.context = AppContext(
+        *dataContextValues,
+        defaultClsOrig,
+        formatCls,
+        templates,
+        levelCls,
+        featuresBare,
+        features,
+        lineNumberFeature,
+        hasGraphics,
+        childType,
+        noChildren,
+        hasSuper,
+        set(hasSuper.values()),
+        verseTypes,
+        lexTypes,
+        lexTarget,
+        baseType,
+        condenseType,
+        {},
+        {},
+        {},
+        {},
+        transform,
+        set(lexTarget),
+    )
 
+    app.display = DisplaySettings(app)
     if not app._browse:
         app.loadCss()
 
-    verseType = app.api.T.sectionTypes[-1]
-    if app.verseTypes is None:
-        app.verseTypes = {verseType}
-    else:
-        app.verseTypes |= {verseType}
 
-    lexInfo = (
-        None
-        if app.lex is None
-        else dict(
-            typ=app.lex, feat=app.lex, cls=app.lex, target=app.api.F.otype.slotType
-        )
-        if type(app.lex) is str
-        else app.lex
-    )
-    app.lexType = None
-    app.lexFeature = None
-    app.lexCls = None
-    app.lexTarget = None
+def displaySetup(app, **options):
+    display = app.display
 
-    if lexInfo is not None:
-        app.lexType = lexInfo.get("typ", None)
-        app.lexFeature = lexInfo.get("feat", None)
-        app.lexType = lexInfo.get("cls", None)
-        app.lexTarget = lexInfo.get("target", None)
+    display.setup(**options)
 
-    for attr in ("plain", "pretty"):
-        templates = {}
-        noChildren = set()
-        dFeaturesText = {}
-        dFeatures = {}
 
-        for (tp, info) in getattr(app, f"{attr}Types", {}).items():
-            if attr == "plain":
-                (template, withChildren) = info
-                if template is None:
-                    continue
-                if not withChildren:
-                    noChildren.add(tp)
-            else:
-                (template, featuresText, features) = info
-                dFeaturesText[nType] = parseFeatures(featuresText)
-                dFeatures[nType] = parseFeatures(features)
+def displayReset(app, *options):
+    display = app.display
 
-            templateFeatures = (
-                VAR_PATTERN.findall(template) if type(template) is str else ()
-            )
-            templates[tp] = (template, templateFeatures)
-
-        setattr(app, f"{attr}Custom", {})
-        setattr(app, f"{attr}Templates", templates)
-        if attr == "plain":
-            setattr(app, f"{attr}NoChildren", noChildren)
-        else:
-            setattr(app, f"{attr}dFeaturesText", dFeaturesText)
-            setattr(app, f"{attr}dFeatures", dFeatures)
-            setattr(app, f"{attr}PreCustom", {})
-            setattr(app, f"{attr}PostCustom", {})
-
-    app.childrenCustom = {}
-
-    app.superTypes = None if app.superType is None else app.superType.values()
+    display.reset(*options)
+    if not app._browse:
+        app.loadCss()
 
 
 def export(app, tuples, toDir=None, toFile="results.tsv", **options):
     display = app.display
+
     if not display.check("table", options):
         return ""
-    d = display.get(options)
+
+    dContext = display.get(options)
+    fmt = dContext.fmt
+    condenseType = dContext.condenseType
+    tupleFeatures = dContext.tupleFeatures
 
     if toDir is None:
         toDir = os.path.expanduser(DOWNLOADS)
@@ -193,14 +328,7 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
             os.makedirs(toDir, exist_ok=True)
     toPath = f"{toDir}/{toFile}"
 
-    resultsX = getResultsX(
-        app,
-        tuples,
-        d.tupleFeatures,
-        d.condenseType or app.condenseType,
-        app.noDescendTypes,
-        fmt=d.fmt,
-    )
+    resultsX = getResultsX(app, tuples, tupleFeatures, condenseType, fmt=fmt,)
 
     with open(toPath, "w", encoding="utf_16_le") as fh:
         fh.write(
@@ -217,25 +345,32 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
 
 def table(app, tuples, _asString=False, **options):
     display = app.display
+
     if not display.check("table", options):
         return ""
-    d = display.get(options)
 
     api = app.api
     F = api.F
     fOtype = F.otype.v
 
-    item = d.condenseType if d.condensed else RESULT
+    dContext = display.get(options)
+    end = dContext.end
+    start = dContext.start
+    withPassage = dContext.withPassage
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
 
-    if d.condensed:
-        tuples = condense(api, tuples, d.condenseType, multiple=True)
+    item = condenseType if condensed else RESULT
 
-    passageHead = '</th><th class="tf">p' if d.withPassage else ""
+    if condensed:
+        tuples = condense(api, tuples, condenseType, multiple=True)
+
+    passageHead = '</th><th class="tf">p' if withPassage is True else ""
 
     html = []
     one = True
 
-    for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_TABLE, item):
+    for (i, tup) in _tupleEnum(tuples, start, end, LIMIT_TABLE, item):
         if one:
             heads = '</th><th class="tf">'.join(fOtype(n) for n in tup)
             html.append(
@@ -269,9 +404,9 @@ def plainTuple(
     app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options
 ):
     display = app.display
+
     if not display.check("plainTuple", options):
         return ""
-    d = display.get(options)
 
     api = app.api
     F = api.F
@@ -279,8 +414,14 @@ def plainTuple(
     fOtype = F.otype.v
     _browse = app._browse
 
-    if d.withPassage:
-        passageNode = getRefMember(app, tup, d)
+    dContext = display.get(options)
+    condenseType = dContext.condenseType
+    colorMap = dContext.colorMap
+    highlights = dContext.highlights
+    withPassage = dContext.withPassage
+
+    if withPassage is True:
+        passageNode = getRefMember(app, tup, dContext)
         passageRef = (
             ""
             if passageNode is None
@@ -295,7 +436,7 @@ def plainTuple(
     newOptions = display.consume(options, "withPassage")
     newOptionsH = display.consume(options, "withPassage", "highlights")
 
-    highlights = getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
+    highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
 
     if _browse:
         prettyRep = (
@@ -306,7 +447,7 @@ def plainTuple(
         current = "focus" if seq == position else ""
         attOpen = "open " if opened else ""
         tupSeq = ",".join(str(n) for n in tup)
-        if d.withPassage:
+        if withPassage is True:
             sParts = T.sectionFromNode(passageNode, fillup=True)
             passageAtt = " ".join(
                 f'sec{i}="{sParts[i] if i < len(sParts) else ""}"' for i in range(3)
@@ -317,8 +458,8 @@ def plainTuple(
         plainRep = "".join(
             f"""<span>{mdEsc(app.plain(
                     n,
-                    isLinked=i == d.linked - 1,
-                    withPassage=False,
+                    _inTuple=True,
+                    withPassage=doPassage(dContext, i),
                     highlights=highlights,
                     **newOptionsH,
                   ))
@@ -339,16 +480,15 @@ def plainTuple(
         return html
 
     html = [str(seq)]
-    if d.withPassage:
+    if withPassage is True:
         html.append(passageRef)
     for (i, n) in enumerate(tup):
         html.append(
             app.plain(
                 n,
-                isLinked=not passageRef and i == d.linked - 1,
                 _inTuple=True,
                 _asString=True,
-                withPassage=False,
+                withPassage=doPassage(dContext, i),
                 highlights=highlights,
                 **newOptionsH,
             )
@@ -361,7 +501,7 @@ def plainTuple(
     if _asString:
         return html
 
-    passageHead = '</th><th class="tf">p' if d.withPassage else ""
+    passageHead = '</th><th class="tf">p' if withPassage is True else ""
     head = (
         f"""<tr class="tf"><th class="tf">n{passageHead}</th><th class="tf">"""
         f"""{'</th><th class="tf">'.join(fOtype(n) for n in tup)}"""
@@ -372,125 +512,121 @@ def plainTuple(
     dh(html)
 
 
-def plain(app, n, isLinked=True, _inTuple=False, _asString=False, **options):
+def plain(app, n, _inTuple=False, _asString=False, **options):
     display = app.display
+
     if not display.check("plain", options):
         return ""
 
-    d = display.get(options)
-    if type(d.highlights) is set:
-        d.highlights = {m: "" for m in d.highlights}
-    d.isHtml = d.fmt in app.textFormats
+    ac = app.context
+    textFormats = ac.textFormats
+    formatCls = ac.formatCls
+
+    dContext = display.get(options)
+    fmt = dContext.fmt
+
+    dContext.isHtml = fmt in textFormats
 
     _browse = app._browse
     api = app.api
-    T = api.T
 
-    ltr = getLtr(app.writingDir, d)
-    textClass = display.formatClass[d.fmt].lower()
+    ltr = getLtr(app, dContext)
+    textCls = formatCls[fmt].lower()
     (firstSlot, lastSlot) = getBoundary(api, n)
 
-    g = GRender(T.sectionTypeSet, ltr, textClass, firstSlot, lastSlot, _inTuple)
-    passage = getPassage(app, True, d, g, n)
-    rep = _doPlain(app, d, g, n, True, [])
-
-    if isLinked and not passage:
-        rep = app.webLink(n, text=rep, _asString=True)
+    oContext = OuterContext(ltr, textCls, firstSlot, lastSlot, _inTuple)
+    passage = getPassage(app, True, dContext, oContext, n)
+    rep = _doPlain(app, dContext, oContext, n, True, [])
 
     if _browse or _asString:
         return rep
     dh(passage + rep)
 
 
-def _doPlain(app, d, g, n, outer, html, done=set()):
+def _doPlain(app, dContext, oContext, n, outer, html, done=set()):
     done.add(n)
 
-    r = _prepareDisplay(app, False, d, g, n, outer)
-    if not r:
+    nContext = _prepareDisplay(app, False, dContext, oContext, n, outer)
+    if not nContext:
         return
 
-    ltr = g.ltr
-    nType = r.nType
+    ltr = oContext.ltr
 
-    outerCls = f"outer {ltr}" if outer else ""
+    hlCls = nContext.hlCls
+    hlStyle = nContext.hlStyle
+    boundaryCls = nContext.boundaryCls
+    nodePart = nContext.nodePart
+    children = nContext.children
 
-    isSuperType = False
-    superType = app.superType
+    outerCls = f"outer" if outer else ""
+
     didSuper = False
 
-    if not outer and superType is not None:
-        superTypes = app.superTypes
-        isSuperType = nType in superTypes
+    sNodeInfo = getSuper(app, oContext, nContext, n, outer)
+    if sNodeInfo:
+        (soContext, sn, sStart, sEnd) = sNodeInfo
+        snContext = _prepareDisplay(app, False, dContext, soContext, n, False)
+        shlCls = snContext.hlCls
+        shlStyle = snContext.hlStyle
+        snodePart = snContext.nodePart
+        sboundaryCls = snContext.boundaryCls
 
-        if not isSuperType:
-            sType = superType.get(nType, None)
-            if sType:
-                (sn, sStart, sEnd) = getSuper(app, n, sType)
-                gr = getSuperBounds(g, r)
-                sr = _prepareDisplay(app, False, d, gr, n, False)
-                if sr and sr.hlClass:
-                    sClasses = f"plain {sr.boundaryClass} {sr.hlClass}"
-                    html.append(f'<span class="{sClasses}" {sr.hlStyle}>')
-                    if sr.nodePart:
-                        html.append(sr.nodePart)
-                    didSuper = True
+        if snContext and shlCls:
+            sClses = f"plain {sboundaryCls} {shlCls}"
+            html.append(f'<span class="{sClses}" {shlStyle}>')
+            if snodePart:
+                html.append(snodePart)
+            didSuper = True
 
-    classes = (
-        f"plain {'' if didSuper else outerCls} {ltr} {r.boundaryClass} {r.hlClass}"
-    )
-    html.append(f'<span class="{classes}" {r.hlStyle}>')
+    clses = f"plain {'' if didSuper else outerCls} {ltr} {boundaryCls} {hlCls}"
+    html.append(f'<span class="{clses}" {hlStyle}>')
 
-    if r.nodePart:
-        html.append(r.nodePart)
+    if nodePart:
+        html.append(nodePart)
 
-    html.append(_doPlainNode(app, d, g, r, n, outer, done=done))
+    html.append(_doPlainNode(app, dContext, oContext, nContext, n, outer, done=done))
 
-    for ch in r.children:
-        _doPlain(app, d, g, ch, False, html, done=done)
+    for ch in children:
+        _doPlain(app, dContext, oContext, ch, False, html, done=done)
     html.append("""</span>""")
     if didSuper:
         html.append("""</span>""")
     return "".join(html) if outer else None
 
 
-def _doPlainNode(app, d, g, r, n, outer, done=set()):
+def _doPlainNode(app, dContext, oContext, nContext, n, outer, done=set()):
     api = app.api
-    Fs = api.Fs
     T = api.T
 
-    verseTypes = app.verseTypes
-    isHtml = d.isHtml
-    ltr = g.ltr
-    textClass = g.textClass
-    sectionTypeSet = g.sectionTypeSet
-    inTuple = g.inTuple
-    nType = r.nType
+    ac = app.context
+    templates = ac.templates
+    plainCustom = ac.plainCustom
 
-    plainCustom = app.plainCustom
+    isHtml = dContext.isHtml
+    fmt = dContext.fmt
+
+    ltr = oContext.ltr
+    textCls = oContext.textCls
+
+    nType = nContext.nType
+    isSlotOrDescend = nContext.isSlotOrDescend
+    descend = nContext.descend
+
     if nType in plainCustom:
         method = plainCustom[nType]
-        contrib = method(app, d, g, r, n, outer, done=done)
+        contrib = method(app, dContext, oContext, nContext, n, outer, done=done)
         return contrib
-    if r.isSlotOrDescend:
-        text = T.text(n, fmt=d.fmt, descend=r.descend)
+    if isSlotOrDescend:
+        text = T.text(n, fmt=fmt, descend=descend)
         if not isHtml:
             text = htmlEsc(text)
-        contrib = f'<span class="{textClass}">{text}</span>'
-    elif nType in app.plainTemplates:
-        (tpl, feats) = app.plainTemplates[nType]
+        contrib = f'<span class="{textCls}">{text}</span>'
+    elif nType in templates:
+        (tpl, feats) = templates[nType]
         tplFilled = tpl.format(
             **{feat: getValue(app, n, nType, feat) for feat in feats}
         )
         contrib = f"""<span class="plain {ltr}">{tplFilled}</span>"""
-    elif nType == app.lexType:
-        lexeme = htmlEsc(Fs(app.lexFeature).v(n))
-        contrib = f'<span class="plain {ltr} {app.lexCls}">{lexeme}</span>'
-    elif nType in verseTypes | sectionTypeSet:
-        if not inTuple and nType in verseTypes:
-            contrib = ""
-        else:
-            heading = app.webLink(n, _asString=True)
-            contrib = f'<span class="plain {ltr}">{heading}</span>'
     else:
         contrib = ""
     return contrib
@@ -501,20 +637,26 @@ def _doPlainNode(app, d, g, r, n, outer, done=set()):
 
 def show(app, tuples, **options):
     display = app.display
+
     if not display.check("show", options):
         return ""
-    d = display.get(options)
+
+    dContext = display.get(options)
+    end = dContext.end
+    start = dContext.start
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
 
     api = app.api
     F = api.F
 
-    item = d.condenseType if d.condensed else RESULT
+    item = condenseType if condensed else RESULT
 
-    if d.condensed:
-        tuples = condense(api, tuples, d.condenseType, multiple=True)
+    if condensed:
+        tuples = condense(api, tuples, condenseType, multiple=True)
 
-    for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_SHOW, item):
-        item = F.otype.v(tup[0]) if d.condensed and d.condenseType else RESULT
+    for (i, tup) in _tupleEnum(tuples, start, end, LIMIT_SHOW, item):
+        item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
         prettyTuple(
             app, tup, i, item=item, **options,
         )
@@ -522,9 +664,15 @@ def show(app, tuples, **options):
 
 def prettyTuple(app, tup, seq, item=RESULT, **options):
     display = app.display
+
     if not display.check("prettyTuple", options):
         return ""
-    d = display.get(options)
+
+    dContext = display.get(options)
+    colorMap = dContext.colorMap
+    highlights = dContext.highlights
+    condenseType = dContext.condenseType
+    condensed = dContext.condensed
 
     _browse = app._browse
 
@@ -537,8 +685,8 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
     api = app.api
     sortKey = api.sortKey
 
-    containers = {tup[0]} if d.condensed else condenseSet(api, tup, d.condenseType)
-    highlights = getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
+    containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
+    highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
 
     if not _browse:
         dh(f"<p><b>{item}</b> <i>{seq}</i></p>")
@@ -556,43 +704,54 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
 
 def pretty(app, n, **options):
     display = app.display
+
     if not display.check("pretty", options):
         return ""
 
-    d = display.get(options)
-    if type(d.highlights) is set:
-        d.highlights = {m: "" for m in d.highlights}
-    d.isHtml = d.fmt in app.textFormats
-    d.features = sorted(flattenToSet(d.extraFeatures) | flattenToSet(d.tupleFeatures))
-
     _browse = app._browse
+
+    ac = app.context
+    textFormats = ac.textFormats
+    formatCls = ac.formatCls
+
+    dContext = display.get(options)
+    condenseType = dContext.condenseType
+    condensed = dContext.condensed
+    tupleFeatures = dContext.tupleFeatures
+    extraFeatures = dContext.extraFeatures
+    fmt = dContext.fmt
+
+    dContext.isHtml = fmt in textFormats
+    dContext.features = sorted(
+        flattenToSet(extraFeatures) | flattenToSet(tupleFeatures)
+    )
+
     api = app.api
     F = api.F
     L = api.L
-    T = api.T
     otypeRank = api.otypeRank
 
-    ltr = getLtr(app.writingDir, d)
-    textClass = display.formatClass[d.fmt].lower()
+    ltr = getLtr(app, dContext)
+    textCls = formatCls[fmt].lower()
     (firstSlot, lastSlot) = getBoundary(api, n)
 
-    g = GRender(T.sectionTypeSet, ltr, textClass, firstSlot, lastSlot, True)
-    passage = getPassage(app, False, d, g, n)
+    oContext = OuterContext(ltr, textCls, firstSlot, lastSlot, False)
+    passage = getPassage(app, False, dContext, oContext, n)
 
     containerN = None
 
     nType = F.otype.v(n)
-    if d.condensed and d.condenseType:
-        if nType == d.condenseType:
+    if condensed and condenseType:
+        if nType == condenseType:
             containerN = n
-        elif otypeRank[nType] < otypeRank[d.condenseType]:
-            ups = L.u(n, otype=d.condenseType)
+        elif otypeRank[nType] < otypeRank[condenseType]:
+            ups = L.u(n, otype=condenseType)
             if ups:
                 containerN = ups[0]
 
     (firstSlot, lastSlot) = (
         getBoundary(api, n)
-        if not d.condensed or not d.condenseType
+        if not condensed or not condenseType
         else (None, None)
         if containerN is None
         else getBoundary(api, containerN)
@@ -600,7 +759,7 @@ def pretty(app, n, **options):
 
     html = []
 
-    _doPretty(app, d, g, n, True, html)
+    _doPretty(app, dContext, oContext, n, True, html)
 
     htmlStr = passage + "".join(html)
     if _browse:
@@ -608,7 +767,7 @@ def pretty(app, n, **options):
     dh(htmlStr)
 
 
-def _doPretty(app, d, g, n, outer, html, seen=set()):
+def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
     if n in seen:
         return
 
@@ -617,78 +776,94 @@ def _doPretty(app, d, g, n, outer, html, seen=set()):
 
     seen.add(n)
 
-    r = _prepareDisplay(app, True, d, g, n, outer)
-    if not r:
+    nContext = _prepareDisplay(app, True, dContext, oContext, n, outer)
+    if not nContext:
         return
 
-    ltr = g.ltr
-    nType = r.nType
+    ac = app.context
+    afterChild = ac.afterChild
+    hasGraphics = ac.hasGraphics
+
+    graphics = dContext.graphics
+
+    ltr = oContext.ltr
+
+    nType = nContext.nType
+    isBaseNonSlot = nContext.isBaseNonSlot
+    nType = nContext.nType
+    cls = nContext.cls
+    hlCls = nContext.hlCls
+    hlStyle = nContext.hlStyle
+    boundaryCls = nContext.boundaryCls
+    children = nContext.children
 
     nodePlain = None
-    if r.isBaseNonSlot:
+    if isBaseNonSlot:
         done = set()
-        nodePlain = _doPlain(app, d, g, n, True, [], done=done)
+        nodePlain = _doPlain(app, dContext, oContext, n, True, [], done=done)
         seen |= done
 
-    isSuperType = False
-    superType = app.superType
     didSuper = False
 
-    if not outer and superType is not None:
-        superTypes = app.superTypes
-        isSuperType = nType in superTypes
+    sNodeInfo = getSuper(app, oContext, nContext, n, outer)
+    if sNodeInfo:
+        (soContext, sn, sStart, sEnd) = sNodeInfo
+        snContext = _prepareDisplay(app, True, dContext, soContext, sn, False)
+        if snContext:
+            scls = snContext.cls
+            shlCls = snContext.hlCls
+            shlStyle = snContext.hlStyle
+            sboundaryCls = snContext.boundaryCls
+            sisBaseNonSlot = snContext.isBaseNonSlot
 
-        if not isSuperType:
-            sType = superType.get(nType, None)
-            if sType:
-                (sn, sStart, sEnd) = getSuper(app, n, sType)
-                gr = getSuperBounds(g, r)
-                sr = _prepareDisplay(app, True, d, gr, sn, False)
-                if sr:
-                    sNodePlain = None
-                    if sr.isBaseNonSlot:
-                        sNodePlain = _doPlain(app, d, gr, sn, True, [])
-                    (sLabel, sFeaturePart) = _doPrettyNode(
-                        app, d, gr, sr, sn, False, sNodePlain
-                    )
-                    html.append(
-                        f"""
-<div class="{sr.cls['container']} {ltr} {sr.boundaryClass} {sr.hlClass}" {sr.hlStyle}>
+            sNodePlain = None
+            if sisBaseNonSlot:
+                sNodePlain = _doPlain(app, dContext, soContext, sn, True, [])
+            (sLabel, sFeaturePart) = _doPrettyNode(
+                app, dContext, soContext, snContext, sn, False, sNodePlain
+            )
+            html.append(
+                f"""
+<div class="{scls['container']} {ltr} {sboundaryCls} {shlCls}" {shlStyle}>
 {sLabel}{sFeaturePart}
-<div class="{sr.cls['children']} {ltr}">
+<div class="{scls['children']} {ltr}">
 """
-                    )
-                    didSuper = True
+            )
+            didSuper = True
 
-    (label, featurePart) = _doPrettyNode(app, d, g, r, n, outer, nodePlain)
+    (label, featurePart) = _doPrettyNode(
+        app, dContext, oContext, nContext, n, outer, nodePlain
+    )
 
-    containerB = f"""
-<div class="{r.cls['container']} {ltr} {r.boundaryClass} {r.hlClass}" {r.hlStyle}>
-"""
+    containerB = (
+        f"""<div class="{cls['container']} {{}} {ltr}"""
+        f""" {boundaryCls} {hlCls}" {hlStyle}>"""
+    )
     containerE = f"""</div>"""
 
+    terminalCls = "trm"
     if "b" in label:
-        html.append(f"{containerB}{label['b']} {featurePart}{containerE}")
+        trm = terminalCls
+        html.append(f"{containerB.format(trm)}{label['b']} {featurePart}{containerE}")
     if "" in label:
-        html.append(f"{containerB}{label['']} {featurePart}")
+        trm = "" if children else terminalCls
+        html.append(f"{containerB.format(trm)}{label['']} {featurePart}")
 
-    if d.graphics and nType in app.graphics:
+    if graphics and nType in hasGraphics:
         html.append(app.getGraphics(n, nType, outer))
 
-    if r.children:
-        html.append(f"""<div class="{r.cls['children']} {ltr}">""")
+    if children:
+        html.append(f"""<div class="{cls['children']} {ltr}">""")
 
-    afterChild = app.afterChild
-
-    for ch in r.children:
+    for ch in children:
         if ch in seen:
             continue
-        _doPretty(app, d, g, ch, False, html, seen=seen)
+        _doPretty(app, dContext, oContext, ch, False, html, seen=seen)
         after = afterChild.get(nType, None)
         if after:
             html.append(after(ch))
 
-    if r.children:
+    if children:
         html.append("""</div>""")
 
     if "" in label:
@@ -701,115 +876,131 @@ def _doPretty(app, d, g, n, outer, html, seen=set()):
     return "".join(html) if outer else None
 
 
-def _doPrettyNode(app, d, g, r, n, outer, nodePlain):
-    nType = r.nType
-
+def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
     api = app.api
-    Fs = api.Fs
     T = api.T
     L = api.L
 
-    isHtml = d.isHtml
-    textClass = g.textClass
+    ac = app.context
+    templates = ac.templates
+    lexTypes = ac.lexTypes
+    lexTarget = ac.lexTarget
+
+    isHtml = dContext.isHtml
+    fmt = dContext.fmt
+
+    textCls = oContext.textCls
+
+    nType = nContext.nType
+    cls = nContext.cls
+    hlCls = nContext.hlCls
+    descend = nContext.descend
+    isBaseNonSlot = nContext.isBaseNonSlot
+    children = nContext.children
+    nodePart = nContext.nodePart
 
     isText = False
 
-    if r.isBaseNonSlot:
+    labelHlCls = ""
+
+    if isBaseNonSlot:
         heading = nodePlain
     else:
-        prettyTemplates = app.prettyTemplates
-        (tpl, feats) = prettyTemplates[nType] if nType in prettyTemplates else ("", {})
+        labelHlCls = hlCls
+        (tpl, feats) = templates[nType] if nType in templates else ("", {})
         if tpl is True:
             isText = True
-            text = T.text(n, fmt=d.fmt)
+            heading = T.text(n, fmt=fmt, descend=descend)
+            if isHtml:
+                heading = htmlEsc(heading)
         else:
-            text = tpl.format(**{feat: getValue(app, n, nType, feat) for feat in feats})
-        heading = text if isHtml else htmlEsc(text)
+            heading = tpl.format(
+                **{feat: getValue(app, n, nType, feat) for feat in feats}
+            )
 
-    dFeaturesText = app.prettydFeaturesText
-    dFeatures = app.prettydFeatures
-    featuresText = dFeaturesText.get(nType, ((), {}))
-    features = dFeatures.get(nType, ((), {}))
+    textCls = textCls if isText else DEFAULT_CLS
+    heading = f'<span class="{textCls}">{heading}</span>'
 
-    fp = getFeatures(app, d, n, *featuresText, withName=False, asText=True)
-    featurePPart = fp if isHtml else htmlEsc(fp)
-    featurePart = getFeatures(app, d, n, *features, withName=True, asText=False)
+    featurePart = getFeatures(app, dContext, n, nType)
 
-    if nType == app.lexType:
+    if nType in lexTarget:
         extremeOccs = getBoundary(api, n)
         linkOccs = " - ".join(app.webLink(lo, _asString=True) for lo in extremeOccs)
-        lexeme = htmlEsc(Fs(app.lexFeature).v(n))
-        heading = f'<div class="{app.lexCls}">{lexeme}</div>'
         featurePart += f'<div class="occs">{linkOccs}</div>'
-    elif nType == app.lexTarget:
-        lx = L.u(n, otype=app.lexType)[0]
-        heading = app.webLink(lx, heading, _asString=True)
+    if nType in lexTypes:
+        lx = L.u(n, otype=lexTypes[nType])
+        if lx:
+            heading = app.webLink(lx[0], heading, _asString=True)
 
     if featurePart:
         featurePart = f"""<div class="meta">{featurePart}</div>"""
 
-    textClass = textClass if isText else app.defaultCls
-    heading = f'<span class="{textClass}">{heading}</span>'
-
-    if outer:
-        heading = app.webLink(n, text=f"{heading}", _asString=True)
-
     label = {}
     for x in ("", "b", "e"):
         key = f"label{x}"
-        if key in r.cls:
-            val = r.cls[key]
+        if key in cls:
+            val = cls[key]
+            terminalCls = "trm" if x or not children else ""
             label[x] = (
-                f"""<div class="{val}">{r.nodePart} {heading} {featurePPart}</div>"""
-                if heading or r.nodePart or featurePPart
+                (
+                    f"""<div class="{val} {terminalCls} {labelHlCls}">"""
+                    f"""{nodePart} {heading}</div>"""
+                )
+                if heading or nodePart
                 else ""
             )
 
     return (label, featurePart)
 
 
-def _prepareDisplay(app, isPretty, d, g, n, outer):
+def _prepareDisplay(app, isPretty, dContext, oContext, n, outer):
     api = app.api
     F = api.F
     T = api.T
     slotType = F.otype.slotType
     nType = F.otype.v(n)
 
-    descendType = T.formats.get(d.fmt, slotType)
-    bottomType = d.baseType if isPretty else descendType
+    ac = app.context
+    levelCls = ac.levelCls
+    noChildren = ac.noChildren
+    prettyCustom = ac.prettyCustom
+
+    fmt = dContext.fmt
+    baseType = dContext.baseType
+    highlights = dContext.highlights
+
+    descendType = T.formats.get(fmt, slotType)
+    bottomType = baseType if isPretty else descendType
 
     isSlot = nType == slotType
 
     children = (
         ()
-        if isSlot
-        or nType == bottomType
-        or (not isPretty and nType in app.plainNoChildren)
-        else getChildren(app, d, g, n, nType)
+        if isSlot or nType == bottomType or (not isPretty and nType in noChildren)
+        else getChildren(app, isPretty, dContext, oContext, n, nType)
     )
 
-    boundaryResult = getBoundaryResult(api, g, n)
+    boundaryResult = getBoundaryResult(api, oContext, n)
     if boundaryResult is None:
         return False
 
-    (boundaryClass, myStart, myEnd) = boundaryResult
+    (boundaryCls, myStart, myEnd) = boundaryResult
 
-    (hlClass, hlStyle) = getHlAtt(app, n, d.highlights, d.baseType, not isPretty)
+    (hlCls, hlStyle) = getHlAtt(app, n, highlights, baseType, not isPretty)
 
     isSlotOrDescend = isSlot or nType == descendType
     descend = False if descendType == slotType else None
-    isBaseNonSlot = nType == d.baseType and not isSlot
+    isBaseNonSlot = nType == baseType and not isSlot
 
-    nodePart = getNodePart(app, isPretty, d, n, nType, isSlot, outer, hlClass)
+    nodePart = getNodePart(app, isPretty, dContext, n, nType, isSlot, outer, hlCls)
     cls = {}
     if isPretty:
-        if nType in app.levelClass:
-            cls.update(app.levelClass[nType])
-        prettyCustom = app.prettyCustom
+        if nType in levelCls:
+            cls.update(levelCls[nType])
         if nType in prettyCustom:
             prettyCustom[nType](app, n, nType, cls)
 
-    return Render(
+    return NodeContext(
         slotType,
         nType,
         isSlot,
@@ -817,14 +1008,33 @@ def _prepareDisplay(app, isPretty, d, g, n, outer):
         descend,
         isBaseNonSlot,
         children,
-        boundaryClass,
-        hlClass,
+        boundaryCls,
+        hlCls,
         hlStyle,
         nodePart,
         cls,
         myStart,
         myEnd,
     )
+
+
+def _compileFormatCls(app, defaultClsOrig):
+    api = app.api
+    T = api.T
+
+    result = {None: defaultClsOrig}
+    for fmt in T.formats:
+        for (key, cls) in FORMAT_CSS.items():
+            if (
+                f"-{key}-" in fmt
+                or fmt.startswith(f"{key}-")
+                or fmt.endswith(f"-{key}")
+            ):
+                result[fmt] = cls
+    for fmt in T.formats:
+        if fmt not in result:
+            result[fmt] = DEFAULT_CLS
+    return result
 
 
 def parseFeatures(features):
@@ -834,65 +1044,133 @@ def parseFeatures(features):
         if not feat:
             continue
         parts = feat.split(":", 1)
-        bare.append(parts[0])
+        feat = parts[-1]
+        bare.append(feat)
         if len(parts) > 1:
-            indirect[parts[1]] = parts[0]
+            indirect[feat] = parts[0]
     return (bare, indirect)
 
 
-def getPassage(app, isPretty, d, g, n):
-    verseTypes = app.verseTypes
-    sectionTypeSet = g.sectionTypeSet
-    nType = app.api.F.otype.v(n)
+def doPassage(dContext, i):
+    withPassage = dContext.withPassage
 
-    if not d.withPassage or nType in sectionTypeSet - verseTypes:
+    return withPassage is not True and withPassage and i + 1 in withPassage
+
+
+def getPassage(app, isPretty, dContext, oContext, n):
+    withPassage = dContext.withPassage
+
+    if not withPassage:
         return ""
 
     passage = app.webLink(n, _asString=True)
     return f"""<span class="psg ltr">{passage}{NB}</span>"""
 
 
-def getSuperBounds(g, r):
-    return g._replace(
-        firstSlot=max((g.firstSlot, r.myStart)), lastSlot=min((g.lastSlot, r.myEnd)),
+def getStandardLevels(app, givenLevels, lexTypes, verseTypes):
+    api = app.api
+    F = api.F
+    T = api.T
+    slotType = F.otype.slotType
+    nTypes = F.otype.all
+
+    level3Types = (T.structureTypeSet | T.sectionTypeSet) - verseTypes
+    level0Types = {slotType} | set(lexTypes)
+
+    remainingTypeSet = set(nTypes) - level3Types - level0Types
+    remainingTypes = tuple(x for x in nTypes if x in remainingTypeSet)
+    nRemaining = len(remainingTypes)
+    if nRemaining == 0:
+        level1Types = set()
+        level2Types = set()
+    elif nRemaining == 1:
+        level1Types = {remainingTypes[0]}
+        level2Types = set()
+    else:
+        mid = len(remainingTypes) // 2
+        level1Types = set(remainingTypes[0:mid])
+        level2Types = set(remainingTypes[mid:])
+
+    levels = {}
+    for nType in level3Types:
+        levels[nType] = dict(level=3, flow="col", wrap=False, stretch=False)
+    for nType in level2Types:
+        levels[nType] = dict(level=2, flow="row", wrap=True, stretch=True)
+    for nType in level1Types:
+        levels[nType] = dict(level=1, flow="row", wrap=True, stretch=True)
+    for nType in level0Types:
+        levels[nType] = dict(level=0, flow="col", wrap=False, stretch=False)
+
+    for (nType, info) in levels.items():
+        givenInfo = givenLevels.get(nType, None)
+        if givenInfo:
+            info.update(givenInfo)
+
+    return levels
+
+
+def getSuperBounds(oContext, nContext):
+    firstSlot = oContext.firstSlot
+    lastSlot = oContext.lastSlot
+
+    myStart = nContext.myStart
+    myEnd = nContext.myEnd
+
+    return oContext._replace(
+        firstSlot=max((firstSlot, myStart)), lastSlot=min((lastSlot, myEnd)),
     )
 
 
 def getValue(app, n, nType, feat):
     Fs = app.api.Fs
+
+    ac = app.context
+    transform = ac.transform
+
     val = Fs(feat).v(n)
-    modifier = app.transform.get(nType, {}).get(feat, None)
+    modifier = transform.get(nType, {}).get(feat, None)
     return modifier(val) if modifier else val
 
 
-def getLtr(direction, d):
+def getLtr(app, dContext):
+    ac = app.context
+    writingDir = ac.writingDir
+
+    fmt = dContext.fmt or DEFAULT_FORMAT
+
     return (
         "rtl"
-        if direction == "rtl" and (f"{ORIG}-" in d or f"-{ORIG}" in d)
-        else ("" if direction == "ltr" else "ltr")
+        if writingDir == "rtl" and (f"{ORIG}-" in fmt or f"-{ORIG}" in fmt)
+        else ("" if writingDir == "ltr" else "ltr")
     )
 
 
-def getBigType(nType, otypeRank, d, g):
-    sectionTypeSet = g.sectionTypeSet
+def getBigType(app, dContext, oContext, nType, otypeRank):
+    api = app.api
+    T = api.T
+
+    sectionTypeSet = T.sectionTypeSet
+    structureTypeSet = T.structureTypeSet
+
+    full = dContext.full
+    condenseType = dContext.condenseType
+
     isBig = False
-    if not d.full:
-        if sectionTypeSet and nType in sectionTypeSet:
-            if d.condenseType is None or otypeRank[nType] > otypeRank[d.condenseType]:
+    if not full:
+        if sectionTypeSet and nType in sectionTypeSet | structureTypeSet:
+            if condenseType is None or otypeRank[nType] > otypeRank[condenseType]:
                 isBig = True
-        elif (
-            d.condenseType is not None and otypeRank[nType] > otypeRank[d.condenseType]
-        ):
+        elif condenseType is not None and otypeRank[nType] > otypeRank[condenseType]:
             isBig = True
     return isBig
 
 
-def getBoundaryResult(api, g, n):
-    boundaryClass = ""
+def getBoundaryResult(api, oContext, n):
+    boundaryCls = ""
     myStart = None
     myEnd = None
-    firstSlot = g.firstSlot
-    lastSlot = g.lastSlot
+    firstSlot = oContext.firstSlot
+    lastSlot = oContext.lastSlot
 
     (myStart, myEnd) = getBoundary(api, n)
 
@@ -900,43 +1178,61 @@ def getBoundaryResult(api, g, n):
         if myEnd < firstSlot:
             return None
         if myStart < firstSlot:
-            boundaryClass += " rno"
+            boundaryCls += " rno"
     if lastSlot is not None:
         if myStart > lastSlot:
             return None
         if myEnd > lastSlot:
-            boundaryClass += " lno"
-    return (boundaryClass, myStart, myEnd)
+            boundaryCls += " lno"
+    return (boundaryCls, myStart, myEnd)
 
 
-def getSuper(app, n, tp):
+def getSuper(app, oContext, nContext, n, outer):
     api = app.api
     L = api.L
-    sn = L.u(n, otype=tp)[0]
-    return (sn, *getBoundary(api, sn))
+
+    ac = app.context
+    hasSuper = ac.hasSuper
+    superTypes = ac.superTypes
+
+    nType = nContext.nType
+
+    if not outer and nType not in superTypes and nType in hasSuper:
+        sn = L.u(n, otype=nType)[0]
+        soContext = getSuperBounds(oContext, nContext)
+        return (soContext, sn, *getBoundary(api, sn))
+
+    return None
 
 
-def getChildren(app, d, g, n, nType):
-    verseTypes = app.verseTypes
-    childType = app.childType
+def getChildren(app, isPretty, dContext, oContext, n, nType):
     api = app.api
     F = api.F
     L = api.L
     otypeRank = api.otypeRank
     sortNodes = api.sortNodes
-
     slotType = F.otype.slotType
 
+    ac = app.context
+    verseTypes = ac.verseTypes
+    childType = ac.childType
+    childrenCustom = ac.childrenCustom
+
+    inTuple = oContext.inTuple
+
+    full = dContext.full
+
     isBigType = (
-        g.inTuple if nType in app.verseTypes else getBigType(nType, otypeRank, d, g)
+        inTuple
+        if not isPretty and nType in verseTypes
+        else getBigType(app, dContext, oContext, nType, otypeRank)
     )
 
-    if isBigType and not d.full:
+    if isBigType and not full:
         children = ()
     elif nType in childType:
         childType = childType[nType]
         children = L.d(n, otype=childType)
-        childrenCustom = app.childrenCustom
         if nType in childrenCustom:
             (condition, method, add) = childrenCustom[nType]
             if condition(n):
@@ -963,24 +1259,33 @@ def getChildren(app, d, g, n, nType):
     return children
 
 
-def getNodePart(app, isPretty, d, n, nType, isSlot, outer, highlight):
+def getNodePart(app, isPretty, dContext, n, nType, isSlot, outer, highlight):
     _browse = app._browse
 
+    Fs = app.api.Fs
+
+    ac = app.context
+    lineNumberFeature = ac.lineNumberFeature
     allowInfo = isPretty or outer or highlight
 
+    withNodes = dContext.withNodes
+    withTypes = dContext.withTypes
+    prettyTypes = dContext.prettyTypes
+    lineNumbers = dContext.lineNumbers
+
     num = ""
-    if d.withNodes and allowInfo:
+    if withNodes and allowInfo:
         num = n
 
     ntp = ""
-    if (d.withTypes or isPretty and d.prettyTypes) and not isSlot and allowInfo:
+    if (withTypes or isPretty and prettyTypes) and not isSlot and allowInfo:
         ntp = nType
 
     line = ""
-    if d.lineNumbers and allowInfo:
-        feat = app.lineNumbers.get(nType, None)
+    if lineNumbers and allowInfo:
+        feat = lineNumberFeature.get(nType, None)
         if feat:
-            line = app.api.Fs(feat).v(n)
+            line = Fs(feat).v(n)
         if line:
             line = f"@{line}" if line else ""
 
@@ -998,7 +1303,7 @@ def getNodePart(app, isPretty, d, n, nType, isSlot, outer, highlight):
 # COMPOSE TABLES FOR CSV EXPORT
 
 
-def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
+def getResultsX(app, results, features, condenseType, fmt=None):
     api = app.api
     F = api.F
     Fs = api.Fs
@@ -1006,6 +1311,10 @@ def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
     fOtype = F.otype.v
     otypeRank = api.otypeRank
     sectionTypeSet = T.sectionTypeSet
+
+    ac = app.context
+    noDescendTypes = ac.descendTypes
+
     sectionDepth = len(sectionTypeSet)
     if len(results) == 0:
         return ()
@@ -1026,6 +1335,8 @@ def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
             and nodeType not in sectionTypeSet
             or otypeRank[nodeType] <= otypeRank[condenseType]
         )
+
+    noDescendTypes = noDescendTypes
 
     for j in range(nTuple):
         i = j + 1
@@ -1068,34 +1379,37 @@ def getBoundary(api, n):
     return (slots[0], slots[-1])
 
 
-def getFeatures(app, d, n, features, indirect, withName=None, asText=False):
+def getFeatures(app, dContext, n, nType):
     api = app.api
     L = api.L
     Fs = api.Fs
 
-    featurePartB = '<div class="features">'
-    featurePartE = "</div>"
+    ac = app.context
+    featuresBare = ac.featuresBare
+    features = ac.features
+
+    dFeatures = dContext.features
+    showFeatures = dContext.showFeatures
+    suppress = dContext.suppress
+    noneValues = dContext.noneValues
+
+    (theseFeatures, indirect) = features.get(nType, ((), {}))
+    (theseFeaturesBare, indirectBare) = featuresBare.get(nType, ((), {}))
 
     # a feature can be nType:feature
     # do a L.u(n, otype=nType)[0] and take the feature from there
 
-    givenFeatureSet = set(features)
-    xFeatures = tuple(f for f in d.extraFeatures if f not in givenFeatureSet)
-    extraSet = set(xFeatures)
-    featureList = tuple(features) + xFeatures
-    nFeatures = len(features)
-
-    showWithName = extraSet
+    givenFeatureSet = set(theseFeatures) | set(theseFeaturesBare)
+    xFeatures = tuple(f for f in dFeatures if f not in givenFeatureSet)
+    featureList = tuple(theseFeaturesBare + theseFeatures) + xFeatures
+    bFeatures = len(theseFeaturesBare)
+    nbFeatures = len(theseFeaturesBare) + len(theseFeatures)
 
     featurePart = ""
 
-    if asText:
-        hasB = False
-    else:
-        hasB = True
-    if d.showFeatures:
+    if showFeatures:
         for (i, name) in enumerate(featureList):
-            if name not in d.suppress:
+            if name not in suppress:
                 fsName = Fs(name)
                 if fsName is None:
                     continue
@@ -1105,30 +1419,20 @@ def getFeatures(app, d, n, features, indirect, withName=None, asText=False):
                     if name in indirect
                     else fsNamev(n)
                 )
-                value = None if value in d.noneValues else htmlEsc(value or "")
+                value = None if value in noneValues else htmlEsc(value or "")
                 if value is not None:
                     value = value.replace("\n", "<br/>")
-                    showName = withName or (withName is None and name in showWithName)
-                    nameRep = f'<span class="f">{name}=</span>' if showName else ""
-                    xClass = "xft" if name in extraSet else ""
-                    featureRep = (
-                        f' <span class="{name.lower()} {xClass}">'
-                        f"{nameRep}{value}</span>"
+                    isBare = i < bFeatures
+                    isExtra = i >= nbFeatures
+                    nameRep = "" if isBare else f'<span class="f">{name}=</span>'
+                    xCls = "xft" if isExtra else ""
+                    featurePart += (
+                        f'<span class="{name.lower()} {xCls}">{nameRep}{value}</span>'
                     )
-
-                    if i >= nFeatures:
-                        if not hasB:
-                            featurePart += featurePartB
-                            hasB = True
-                    featurePart += featureRep
     if not featurePart:
         return ""
 
-    if not asText:
-        featurePart = f"{featurePartB}{featurePart}"
-    if hasB:
-        featurePart += featurePartE
-    return featurePart
+    return f"<div class='features'>{featurePart}</div>"
 
 
 def loadCss(app, reload=False):
@@ -1140,12 +1444,23 @@ def loadCss(app, reload=False):
   With reload=True, the app-specific display.css will be read again from disk
   """
     _browse = app._browse
+    css = app.css
+
     if _browse:
-        return app.css
+        return css
+
+    appName = app.appName
+    appPath = app.appPath
+    version = app.version
+
+    ac = app.context
+    font = ac.font
+    fontw = ac.fontw
+    fontName = ac.fontName
 
     if reload:
-        config = findAppConfig(app.appName, app.appPath)
-        cfg = configure(config, app.version)
+        config = findAppConfig(appName, appPath)
+        cfg = configure(config, version)
         app.css = cfg["css"]
 
     cssPath = (
@@ -1160,8 +1475,8 @@ def loadCss(app, reload=False):
 
     cssFont = (
         ""
-        if app.fontName is None
-        else CSS_FONT_API.format(fontName=app.fontName, font=app.font, fontw=app.fontw)
+        if fontName is None
+        else CSS_FONT_API.format(fontName=fontName, font=font, fontw=fontw)
     )
     tableCss = """
 tr.tf, td.tf, th.tf {
@@ -1169,24 +1484,21 @@ tr.tf, td.tf, th.tf {
 }
 
 """
-    dh(f"<style>{cssFont + tableCss + genericCss + app.css}</style>")
+    dh(f"<style>{cssFont + tableCss + genericCss + css}</style>")
 
 
-def getRefMember(app, tup, d):
+def getRefMember(app, tup, dContext):
     api = app.api
     T = api.T
     sectionTypeSet = T.sectionTypeSet
-    linked = d.linked
-    condensed = d.condensed
 
-    ln = len(tup)
+    condensed = dContext.condensed
+
     return (
         None
         if not tup or any(n in sectionTypeSet for n in tup)
         else tup[0]
         if condensed
-        else tup[min((linked, ln - 1))]
-        if linked
         else tup[0]
     )
 

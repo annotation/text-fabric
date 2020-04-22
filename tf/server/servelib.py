@@ -49,7 +49,6 @@ def getFormData(config):
     form["sectionsExpandAll"] = request.form.get("sectionsExpandAll", "")
     form["tuplesExpandAll"] = request.form.get("tuplesExpandAll", "")
     form["queryExpandAll"] = request.form.get("queryExpandAll", "")
-    form["linked"] = getInt(request.form.get("linked", ""), default=1)
     form["passageOpened"] = request.form.get("passageOpened", "")
     form["sectionsOpened"] = request.form.get("sectionsOpened", "")
     form["tuplesOpened"] = request.form.get("tuplesOpened", "")

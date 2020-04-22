@@ -6,13 +6,15 @@ def compose(
     app, tuples, features, position, opened, getx=None, **options,
 ):
     display = app.display
-    d = display.get(options)
+    dContext = display.get(options)
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
 
     api = app.api
     F = api.F
     fOtype = F.otype.v
 
-    item = d.condenseType if d.condensed else RESULT
+    item = condenseType if condensed else RESULT
 
     if features:
         api.ensureLoaded(features)
@@ -235,13 +237,17 @@ def _plainTextSFinal(
     app, browseNavLevel, finalSecType, sNode, opened, secFinal, **options,
 ):
     display = app.display
-    d = display.get(options)
+    dContext = display.get(options)
+    fmt = dContext.fmt
 
     api = app.api
     T = api.T
+
+    ac = app.context
+
     secStr = str(T.sectionFromNode(sNode)[browseNavLevel])
     isOpened = secStr in opened
-    tClass = "" if d.fmt is None else display.formatClass[d.fmt].lower()
+    tCls = "" if fmt is None else ac.formatCls[fmt].lower()
 
     prettyRep = (
         prettyTuple(
@@ -270,7 +276,7 @@ def _plainTextSFinal(
   seq="{secStr}"
   {attOpen}
 >
-  <summary class="{tClass}">
+  <summary class="{tCls}">
     {app._sectionLink(sNode, text=secStr)}
     {textRep}
   </summary>
