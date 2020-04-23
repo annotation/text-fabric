@@ -14,12 +14,33 @@ in a model of nodes, edges, and features, there is need for some additions.
     There is also a phonetic transcription for Hebrew, designed in 
     [phono.ipynb]({{etcbcnb}}/phono/blob/master/programs/phono.ipynb)
 
-???+ abstract "Character tables"
-    [Hebrew](../Writing/Hebrew.md): full list of characters covered by the ETCBC and phonetic transcriptions
+???+ abstract "Character tables and fonts"
+    Text-Fabric has support for several writing systems, by means of 
+    transcription tables and fonts that will be invoked when displaying the main text.
 
-    [Syriac](../Writing/Syriac.md): full list of characters covered by the ETCBC transcriptions
+    ???+ note "`hbo` Hebrew"
+        [transcription](../Writing/Hebrew.md): full list of characters covered by the ETCBC and phonetic transcriptions
 
-    [Arabic](../Writing/Arabic.md): full list of characters covered by the transcription used for the Quran
+        Font `Ezra SIL`.
+
+    ???+ note "`syc` Syriac"
+        [transcription](../Writing/Syriac.md): full list of characters covered by the ETCBC transcriptions
+
+        Font `Estrangelo Edessa`.
+
+    ???+ note "`ara` Arabic"
+        [transcription](../Writing/Arabic.md): full list of characters covered by the transcription used for the Quran
+
+        Font `AmiriQuran`.
+
+    ???+ note "`grc` Greek"
+        Font `Gentium`.
+
+    ???+ note "`cun` Akkadian"
+        Font `Santakku`.
+
+    ???+ note "`cld` Neo Aramaic"
+        Font `CharisSIL-R`.
 
 ??? abstract "Usage"
     Invoke the transcription functionality as follows:
@@ -86,7 +107,7 @@ in a model of nodes, edges, and features, there is need for some additions.
     ب
     ```
 
-??? abstract "Transcription.arabic mappingi"
+??? abstract "Transcription.arabic mapping"
     Maps an Arabic letter in unicode to its transliteration
 
     Example: print the beh transliteration 

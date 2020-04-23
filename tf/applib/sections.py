@@ -67,6 +67,23 @@ def sectionStrFromNode(app, n, lang="en", lastSlot=False, fillup=False):
     )
 
 
+def structureStrFromNode(app, n):
+    api = app.api
+    T = api.T
+
+    struct = T.headingFromNode(n)
+
+    sep = ''
+    result = ''
+
+    for (i, part) in enumerate(struct):
+        if part is None:
+            continue
+        result += f"{sep}{' '.join(part)}"
+        sep = ", "
+    return result
+
+
 def _sectionLink(app, n, text=None, clsName=None):
     newClsName = f'rwh {clsName or ""}'
     return app.webLink(

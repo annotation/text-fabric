@@ -525,9 +525,9 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     -------
     tuple
         *   headingFromNode
-            Mapping from section keys to nodes
-        *   nodeFromHeading
             Mapping from nodes to section keys
+        *   nodeFromHeading
+            Mapping from section keys to nodes
         *   multiple
         *   top
         *   up

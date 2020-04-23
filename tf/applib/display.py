@@ -38,9 +38,39 @@ ORIG = "orig"
 
 LEX_CLS = "lex"
 
-FONT_NAME = "Gentium"
-FONT = "GentiumPlus-R.ttf"
-FONTW = "GentiumPlus-R.woff"
+WRITING_DEFAULTS = dict(
+    cun=dict(
+        fontName="Santakku", font="Santakk.ttf", fontw="Santakku.woff", direction="ltr",
+    ),
+    hbo=dict(
+        fontName="Ezra SIL", font="SILEOT.ttf", fontw="SILEOT.woff", direction="rtl",
+    ),
+    syc=dict(
+        fontName="Estrangelo Edessa",
+        font="SyrCOMEdessa.otf",
+        fontw="SyrCOMEdessa.woff",
+        direction="rtl",
+    ),
+    ara=dict(
+        fontName="AmiriQuran",
+        font="AmiriQuran.ttf",
+        fontw="AmiriQuran.woff2",
+        direction="rtl",
+    ),
+    grc=dict(
+        fontName="Gentium",
+        font="GentiumPlus-R.ttf",
+        fontw="GentiumPlus-R.woff",
+        direction="ltr",
+    ),
+    cld=dict(
+        fontName="CharisSIL-R",
+        font="CharisSIL-R.otf",
+        fontw="CharisSIL-R.woff",
+        direction="ltr",
+    ),
+)
+WRITING_DEFAULTS[""] = WRITING_DEFAULTS["grc"]
 
 DEFAULT_CLS = "txtn"
 DEFAULT_CLS_SRC = "txto"
@@ -55,54 +85,29 @@ FORMAT_CSS = dict(
     phono=DEFAULT_CLS_PHONO,
 )
 
+LEVEL_DEFAULTS = dict(
+    level={
+        3: dict(flow="col"),
+        2: dict(flow="row"),
+        1: dict(flow="row"),
+        0: dict(flow="col"),
+    },
+    flow=dict(col=dict(wrap=False, stretch=False), row=dict(wrap=True, stretch=True)),
+    wrap=None,
+    stretch=None,
+)
 
 CONFIG_DEFAULTS = (("interfaceDefaults", ()),)
 
 DATA_DISPLAY_DEFAULTS = (
     ("noneValues", {None}),
     ("sectionSep1", " "),
-    ("sectionSep2", " "),
+    ("sectionSep2", ":"),
     ("writing", ""),
-    ("writingDir", "ltr"),
-    ("fontName", FONT_NAME),
-    ("font", FONT),
-    ("fontw", FONTW),
     ("textFormats", {}),
-    ("browseNavLevel", 2),
+    ("browseNavLevel", None),
     ("browseContentPretty", False),
 )
-
-AppContext = namedtuple(
-    "AppContext",
-    [df[0] for df in DATA_DISPLAY_DEFAULTS]
-    + """
-    defaultClsOrig
-    formatCls
-    templates
-    levelCls
-    featuresBare
-    features
-    lineNumberFeature
-    hasGraphics
-    childType
-    noChildren
-    hasSuper
-    superTypes
-    verseTypes
-    lexTypes
-    lexTarget
-    baseType
-    condenseType
-    plainCustom
-    prettyCustom
-    afterChild
-    childrenCustom
-    transform
-    noDescendTypes
-""".strip().split(),
-)
-"""Settings defined by the config file in the TF app .
-"""
 
 OuterContext = namedtuple(
     "OuterContext",
@@ -151,12 +156,6 @@ def displayApi(app, silent):
     else:
         return
 
-    api = app.api
-    slotType = api.F.otype.slotType
-    sectionTypes = api.T.sectionTypes
-
-    defaultVerseType = sectionTypes[-1]
-
     for (attr, default) in CONFIG_DEFAULTS:
         setattr(app, attr, getattr(app, attr, default))
 
@@ -170,40 +169,42 @@ def displayApi(app, silent):
 
     dataContextGiven = appContextValues["dataDisplay"]
     dataContext = {}
-    dataContextValues = []
     for (attr, default) in DATA_DISPLAY_DEFAULTS:
+        if attr == "browseNavLevel":
+            default = getBrowseDefault()
         value = dataContextGiven.get(attr, default)
         dataContext[attr] = value
-        dataContextValues.append(value)
+        if attr == "writing":
+            dataContext.update(getWriting(value))
+            extension = f" {value}" if value else ""
+            defaultClsOrig = f"{DEFAULT_CLS_ORIG}{extension}"
+            formatCls = _compileFormatCls(app, defaultClsOrig)
+            dataContext.update(
+                extension=extension, defaultClsOrig=defaultClsOrig, formatCls=formatCls
+            )
 
-    writing = dataContext["writing"]
-    extension = f" {writing}" if writing else ""
-    defaultClsOrig = f"{DEFAULT_CLS_ORIG}{extension}"
-    formatCls = _compileFormatCls(app, defaultClsOrig)
-
-    templates = dict(plain={}, pretty={})
     noChildren = set()
-    childType = {}
     hasSuper = {}
-    verseTypes = {defaultVerseType}
-    lexTypes = {}
-    baseType = slotType
-    condenseType = None
     featuresBare = {}
     features = {}
     lineNumberFeature = {}
     hasGraphics = set()
     givenLevels = {}
-    levelKeys = ({"level", "flow", "wrap", "stretch"},)
+
+    (
+        levels,
+        children,
+        verseTypes,
+        lexTypes,
+        condenseType,
+        baseType,
+        templates,
+    ) = getTypeDefaults(app, givenLevels)
 
     for (nType, info) in appContextValues["typeDisplay"].items():
-        template = info["template"]
-        templateFeatures = (
-            VAR_PATTERN.findall(template) if type(template) is str else ()
-        )
+
         featsBare = info.get("featuresBare", "")
         feats = info.get("features", "")
-        templates[nType] = (template, templateFeatures)
         featuresBare[nType] = parseFeatures(featsBare)
         features[nType] = parseFeatures(feats)
 
@@ -218,23 +219,9 @@ def displayApi(app, silent):
         if not info.get("childrenPlain", True):
             noChildren.add(nType)
 
-        children = info.get("children", None)
-        if children is not None:
-            childType[nType] = children
-
         supr = info.get("super", None)
         if supr is not None:
             hasSuper[nType] = supr
-
-        ltarget = info.get("lexTarget", None)
-        if ltarget is not None:
-            lexTypes[ltarget] = nType
-
-        if "baseType" in info:
-            baseType = info["baseType"]
-
-        if "condenseType" in info:
-            condenseType = info["condenseType"]
 
         verselike = info.get("verselike", False)
         if verselike:
@@ -245,17 +232,20 @@ def displayApi(app, silent):
             transform[nType] = transform
 
         if "level" in info:
-            givenLevels[nType] = {k: v for (k, v) in info.items() if k in levelKeys}
+            givenLevels[nType] = {
+                k: v for (k, v) in info.items() if k in LEVEL_DEFAULTS
+            }
 
     lexTarget = set(lexTypes.values())
 
-    levels = getStandardLevels(app, givenLevels, lexTypes, verseTypes)
     levelCls = {}
+    childType = {}
 
     for (nType, nTypeInfo) in levels.items():
         level = nTypeInfo["level"]
         flow = nTypeInfo["flow"]
         wrap = nTypeInfo["wrap"]
+        children = nTypeInfo["children"]
 
         containerCls = f"contnr c{level}"
         labelCls = f"lbl c{level}"
@@ -264,33 +254,34 @@ def displayApi(app, silent):
         levelCls[nType] = dict(
             container=containerCls, label=labelCls, children=childrenCls,
         )
+        childType[nType] = children
 
-    app.context = AppContext(
-        *dataContextValues,
-        defaultClsOrig,
-        formatCls,
-        templates,
-        levelCls,
-        featuresBare,
-        features,
-        lineNumberFeature,
-        hasGraphics,
-        childType,
-        noChildren,
-        hasSuper,
-        set(hasSuper.values()),
-        verseTypes,
-        lexTypes,
-        lexTarget,
-        baseType,
-        condenseType,
-        {},
-        {},
-        {},
-        {},
-        transform,
-        set(lexTarget),
+    app.context = dict(
+        defaultClsOrig=defaultClsOrig,
+        formatCls=formatCls,
+        templates=templates,
+        levelCls=levelCls,
+        featuresBare=featuresBare,
+        features=features,
+        lineNumberFeature=lineNumberFeature,
+        hasGraphics=hasGraphics,
+        childType=childType,
+        noChildren=noChildren,
+        hasSuper=hasSuper,
+        superTypes=set(hasSuper.values()),
+        verseTypes=verseTypes,
+        lexTypes=lexTypes,
+        lexTarget=lexTarget,
+        baseType=baseType,
+        condenseType=condenseType,
+        plainCustom={},
+        prettyCustom={},
+        afterChild={},
+        childrenCustom={},
+        transform=transform,
+        noDescendTypes=set(lexTarget),
     )
+    app.conntext.update(dataContext)
 
     app.display = DisplaySettings(app)
     if not app._browse:
@@ -622,10 +613,9 @@ def _doPlainNode(app, dContext, oContext, nContext, n, outer, done=set()):
             text = htmlEsc(text)
         contrib = f'<span class="{textCls}">{text}</span>'
     elif nType in templates:
-        (tpl, feats) = templates[nType]
-        tplFilled = tpl.format(
-            **{feat: getValue(app, n, nType, feat) for feat in feats}
-        )
+        (isText, tplFilled) = getText(app, n, nType, *templates[nType], fmt, descend)
+        if isText and isHtml:
+            tplFilled = htmlEsc(tplFilled)
         contrib = f"""<span class="plain {ltr}">{tplFilled}</span>"""
     else:
         contrib = ""
@@ -878,7 +868,6 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
 
 def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
     api = app.api
-    T = api.T
     L = api.L
 
     ac = app.context
@@ -907,16 +896,9 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
         heading = nodePlain
     else:
         labelHlCls = hlCls
-        (tpl, feats) = templates[nType] if nType in templates else ("", {})
-        if tpl is True:
-            isText = True
-            heading = T.text(n, fmt=fmt, descend=descend)
-            if isHtml:
-                heading = htmlEsc(heading)
-        else:
-            heading = tpl.format(
-                **{feat: getValue(app, n, nType, feat) for feat in feats}
-            )
+        (isText, heading) = getText(app, n, nType, *templates[nType], fmt, descend)
+        if isText and isHtml:
+            heading = htmlEsc(heading)
 
     textCls = textCls if isText else DEFAULT_CLS
     heading = f'<span class="{textCls}">{heading}</span>'
@@ -1067,46 +1049,153 @@ def getPassage(app, isPretty, dContext, oContext, n):
     return f"""<span class="psg ltr">{passage}{NB}</span>"""
 
 
-def getStandardLevels(app, givenLevels, lexTypes, verseTypes):
+def getText(app, n, nType, tpl, feats, fmt, descend):
+    T = app.api.T
+    sectionTypeSet = T.sectionTypeSet
+    structureTypeSet = T.structureTypeSet
+
+    tplFilled = (
+        (
+            app.sectionStrFromNode(n)
+            if nType in sectionTypeSet
+            else T.structureStrFromNode(n)
+            if nType in structureTypeSet
+            else T.text(n, fmt=fmt, descend=descend)
+        )
+        if tpl is True
+        else tpl.format(**{feat: getValue(app, n, nType, feat) for feat in feats})
+    )
+    return (tpl is True, tplFilled)
+
+
+def getWriting(writing):
+    if writing not in WRITING_DEFAULTS:
+        writing = ""
+    info = {k: v for (k, v) in WRITING_DEFAULTS[writing].items()}
+    info[writing] = writing
+    return info
+
+
+def getLevel(defaultLevel, givenInfo, isVerse):
+    level = givenInfo.get("level", defaultLevel)
+    flow = givenInfo.get("flow", "row" if isVerse else LEVEL_DEFAULTS[level]["flow"])
+    wrap = givenInfo.get("wrap", LEVEL_DEFAULTS["flow"]["wrap"])
+    stretch = givenInfo.get("stretch", LEVEL_DEFAULTS["flow"]["stretch"])
+    return dict(level=level, flow=flow, wrap=wrap, stretch=stretch)
+
+
+def getBrowseDefault(app):
+    sectionTypes = app.api.T.sectionTypes
+    return len(sectionTypes) - 1 if sectionTypes else 1
+
+
+def getTypeDefaults(app, givenLevels, lexTypes):
     api = app.api
     F = api.F
     T = api.T
     slotType = F.otype.slotType
     nTypes = F.otype.all
+    structureTypes = T.structureTypes
+    structureTypeSet = T.structureTypeSet
+    sectionTypes = T.sectionTypes
+    sectionTypeSet = T.sectionTypeSet
 
-    level3Types = (T.structureTypeSet | T.sectionTypeSet) - verseTypes
-    level0Types = {slotType} | set(lexTypes)
+    sectionalTypeSet = sectionTypeSet | structureTypeSet
 
-    remainingTypeSet = set(nTypes) - level3Types - level0Types
+    verseTypes = {sectionTypes[-1]} if sectionTypes else set()
+    lexTypes = {}
+    baseType = slotType
+    condenseType = None
+    templates = dict(plain={}, pretty={})
+
+    for (nType, info) in givenLevels.items():
+        if info.get("verselike", False):
+            verseTypes.add(nType)
+
+        ltarget = info.get("lexTarget", None)
+        if ltarget is not None:
+            lexTypes[ltarget] = nType
+
+        if "base" in info:
+            baseType = info["base"]
+
+        if "condense" in info:
+            condenseType = info["condense"]
+
+        template = info.get(
+            "template", True if nType == slotType or nType in sectionalTypeSet else ""
+        )
+        templateFeatures = (
+            VAR_PATTERN.findall(template) if type(template) is str else ()
+        )
+        templates[nType] = (template, templateFeatures)
+
+    levelTypes = [set(), set(), set(), set()]
+    levelTypes[3] = sectionalTypeSet - verseTypes
+    levelTypes[0] = {slotType} | set(lexTypes)
+
+    remainingTypeSet = set(nTypes) - levelTypes[3] - levelTypes[0]
     remainingTypes = tuple(x for x in nTypes if x in remainingTypeSet)
     nRemaining = len(remainingTypes)
+
+    children = {
+        nType: nTypes[i + 1]
+        for (i, nType) in enumerate(nTypes)
+        if nType in levelTypes[2] | levelTypes[1]
+    }
+    children.update(
+        {
+            nType: nTypes[i + 1]
+            for (i, nType) in enumerate(structureTypes)
+            if i < len(structureTypes) - 1
+        }
+    )
+    children.update(
+        {
+            nType: nTypes[i + 1]
+            for (i, nType) in enumerate(sectionTypes)
+            if i < len(sectionTypes) - 1
+        }
+    )
+
+    lowestSectionalTypes = set()
+    if sectionTypes:
+        lowestSectionalTypes.add(sectionTypes[-1])
+    if structureTypes:
+        lowestSectionalTypes.add(structureTypes[-1])
+
+    biggestOtherType = remainingTypes[0] if remainingTypes else slotType
+    smallestOtherType = remainingTypes[-1] if remainingTypes else None
+
+    for lexType in lexTypes:
+        if lexType in children:
+            del children[lexType]
+
+    for lowestSectionalType in lowestSectionalTypes:
+        children[lowestSectionalType] = biggestOtherType
+
+    if smallestOtherType is not None:
+        children[smallestOtherType] = slotType
+
     if nRemaining == 0:
-        level1Types = set()
-        level2Types = set()
+        midType = slotType
     elif nRemaining == 1:
-        level1Types = {remainingTypes[0]}
-        level2Types = set()
+        midType = remainingTypes[0]
+        levelTypes[1] = {midType}
     else:
         mid = len(remainingTypes) // 2
-        level1Types = set(remainingTypes[0:mid])
-        level2Types = set(remainingTypes[mid:])
+        midType = remainingTypes[mid]
+        levelTypes[1] = set(remainingTypes[0:mid])
+        levelTypes[2] = set(remainingTypes[mid:])
 
-    levels = {}
-    for nType in level3Types:
-        levels[nType] = dict(level=3, flow="col", wrap=False, stretch=False)
-    for nType in level2Types:
-        levels[nType] = dict(level=2, flow="row", wrap=True, stretch=True)
-    for nType in level1Types:
-        levels[nType] = dict(level=1, flow="row", wrap=True, stretch=True)
-    for nType in level0Types:
-        levels[nType] = dict(level=0, flow="col", wrap=False, stretch=False)
+    if condenseType is None:
+        condenseType = sectionTypes[-1] if sectionTypes else midType
 
-    for (nType, info) in levels.items():
-        givenInfo = givenLevels.get(nType, None)
-        if givenInfo:
-            info.update(givenInfo)
-
-    return levels
+    levels = {
+        nType: getLevel(i, givenLevels.get(nType, {}), nType in verseTypes)
+        for (i, nType) in enumerate(levelTypes)
+    }
+    return (levels, children, verseTypes, lexTypes, condenseType, baseType, templates)
 
 
 def getSuperBounds(oContext, nContext):
