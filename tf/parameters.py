@@ -75,6 +75,10 @@ REPO = "text-fabric"
 This is the name of the repo that contains Text-Fabric.
 """
 
+RELATIVE = "tf"
+"""Default relative path with a repo to the directory with tf files.
+"""
+
 URL_GH_API = "https://api.github.com/repos"
 """Url of the GitHub API for repos.
 
@@ -113,6 +117,10 @@ EXPRESS_SYNC_LEGACY = [
     "__commit.txt",
 ]
 """Legacy names of cache indicator files."""
+
+PROTOCOL = "http://"
+HOST = "localhost"
+PORT_BASE = 8976
 
 URL_TFDOC = f"https://{ORG}.github.io/{REPO}"
 """Base url of the online Text-Fabric documentation."""

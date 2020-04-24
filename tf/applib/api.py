@@ -5,6 +5,7 @@ from ..lib import readSets
 from ..core.helpers import console, setDir
 from .app import findAppConfig
 from .helpers import getLocalDir, configure, dh
+from .settings import setAppSpecs
 from .links import linksApi, outLink
 from .text import textApi
 from .sections import sectionsApi
@@ -14,12 +15,6 @@ from .data import getModulesData
 
 
 # SET UP A TF API FOR AN APP
-
-
-CONFIG_DEFAULTS = (
-    ("standardFeatures", None),
-    ("excludedFeatures", set()),
-)
 
 
 def setupApi(
@@ -112,20 +107,14 @@ but the core API will still work:
 
     version = cfg["version"]
     cfg["localDir"] = getLocalDir(cfg, local, version)
-    for (key, value) in cfg.items():
-        setattr(app, key, value)
+    setAppSpecs(app, cfg)
 
-    for (attr, default) in CONFIG_DEFAULTS:
-        setattr(app, attr, getattr(app, attr, default))
+    dKey = "dataDisplay"
+    app.excludedFeatures = getattr(app, dKey, {}).get("excludedFeatures", set())
 
     setDir(app)
 
-    if app.api:
-        if app.standardFeatures is None:
-            allFeatures = app.api.TF.explore(silent=silent or True, show=True)
-            loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
-            app.standardFeatures = loadableFeatures
-    else:
+    if not app.api:
         app.sets = None
         if setFile:
             sets = readSets(setFile)
@@ -142,8 +131,6 @@ but the core API will still work:
                 app.api = api
                 allFeatures = TF.explore(silent=silent or True, show=True)
                 loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
-                if app.standardFeatures is None:
-                    app.standardFeatures = loadableFeatures
                 useFeatures = [
                     f for f in loadableFeatures if f not in app.excludedFeatures
                 ]
@@ -196,9 +183,7 @@ def reuse(app, hoist=False):
 
     config = findAppConfig(appName, appPath)
     cfg = configure(config, version)
-
-    for (key, value) in cfg.items():
-        setattr(app, key, value)
+    setAppSpecs(app, cfg)
 
     if api:
         linksApi(app, appName, True)

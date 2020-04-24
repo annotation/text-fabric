@@ -355,11 +355,13 @@ def main(cargs=sys.argv):
                 stopped = pWeb.poll() or pKernel.poll()
                 if not stopped:
                     console(f"Opening {dataSource} in browser")
-                    webbrowser.open(
-                        f'{config.PROTOCOL}{config.HOST}:{config.PORT["web"]}',
-                        new=2,
-                        autoraise=True,
-                    )
+                    browser = config.browser
+                    if browser is not None:
+                        webbrowser.open(
+                            f'{browser.protocol}{browser.host}:{browser.port["web"]}',
+                            new=2,
+                            autoraise=True,
+                        )
 
         if pWeb and pKernel:
             try:

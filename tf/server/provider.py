@@ -20,7 +20,9 @@ class TfProvider:
         if config is None:
             return None
 
-        self.TF = makeTfConnection(config.HOST, config.PORT["kernel"], TIMEOUT)
+        browser = config.browser
+        if browser is not None:
+            self.TF = makeTfConnection(browser.host, browser.port["kernel"], TIMEOUT)
         self.appName = appName
 
     def passage(

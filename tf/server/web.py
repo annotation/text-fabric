@@ -44,7 +44,10 @@ class Setup(object):
         if config is None:
             return
 
-        self.TF = makeTfConnection(config.HOST, config.PORT["kernel"], TIMEOUT)
+        browser = config.browser
+        if browser is None:
+            return
+        self.TF = makeTfConnection(browser.host, browser.port["kernel"], TIMEOUT)
         self.wildQueries = set()
 
         cfg = configure(config, None)
@@ -130,13 +133,15 @@ def main():
                 onDocker = argDocker()
                 console(f"onDocker={onDocker}")
                 webapp = factory(setup)
-                run_simple(
-                    "0.0.0.0" if onDocker else config.HOST,
-                    config.PORT["web"],
-                    webapp,
-                    use_reloader=False,
-                    use_debugger=debug,
-                )
+                browser = config.browser
+                if browser is not None:
+                    run_simple(
+                        "0.0.0.0" if onDocker else browser.host,
+                        browser.port["web"],
+                        webapp,
+                        use_reloader=False,
+                        use_debugger=debug,
+                    )
         except OSError as e:
             console(str(e))
             return 1

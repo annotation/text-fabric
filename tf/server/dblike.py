@@ -19,7 +19,10 @@ def setup(dataSource, checkoutApp):
     if config is None:
         return None
 
-    TF = makeTfConnection(config.HOST, config.PORT["kernel"], TIMEOUT)
+    browser = config.browser
+    if browser is None:
+        return None
+    TF = makeTfConnection(browser.host, browser.port["kernel"], TIMEOUT)
     return TF
 
 

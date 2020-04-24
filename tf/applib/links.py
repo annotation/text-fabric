@@ -10,6 +10,7 @@ from ..parameters import (
 from ..core.helpers import htmlEsc
 from .repo import Checkout
 from .helpers import dh
+from .display import getText
 
 
 UNSUPPORTED = "unsupported"
@@ -21,33 +22,46 @@ pathRe = re.compile(
 
 def linksApi(app, appName, silent):
     app.header = types.MethodType(header, app)
+    app.weblink = types.MethodType(webLink, app)
     ok = app.isCompatible
 
     api = app.api
+
+    ac = app.context
+    docUrl = ac.docUrl
+    repo = ac.repo
+    version = ac.version
+    corpus = ac.corpus
+    featureBase = ac.featureBase
+    featurePage = ac.featurePage
+    charUrl = ac.charUrl
+    charText = ac.charText
+
     tutUrl = f"{APP_NB_URL}/{appName}/start.ipynb"
     extraUrl = f"{APP_URL}/app-{appName}"
+
     dataLink = (
-        outLink(app.repo.upper(), app.docUrl, f"provenance of {app.corpus}")
+        outLink(repo.upper(), docUrl, f"provenance of {corpus}")
         if ok
         else UNSUPPORTED
     )
     charLink = (
         (
             outLink(
-                "Character table", app.charUrl.format(tfDoc=URL_TFDOC), app.charText
+                "Character table", charUrl.format(tfDoc=URL_TFDOC), charText
             )
             if ok
             else UNSUPPORTED
         )
-        if app.charUrl
+        if charUrl
         else ""
     )
     featureLink = (
         (
             outLink(
                 "Feature docs",
-                app.featureUrl.format(version=app.version, feature=app.docIntro),
-                f"{app.repo.upper()} feature documentation",
+                featureBase.format(version=version, feature=featurePage),
+                f"{repo.upper()} feature documentation",
             )
             if ok
             else UNSUPPORTED
@@ -112,12 +126,72 @@ def header(app):
     )
 
 
+def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
+    api = app.api
+    T = api.T
+    F = api.F
+    Fs = api.Fs
+
+    ac = app.context
+    version = ac.version
+    webBase = ac.webBase
+    webLang = ac.webUrl
+    webUrl = ac.webUrl
+    webUrlLex = ac.webUrlLex
+    webLexId = ac.webLexId
+    webHint = ac.webHint
+    lexTypes = ac.lexTypes
+
+    nType = F.otype.v(n)
+    passageText = None
+
+    if nType in lexTypes:
+        if text is None:
+            (isText, text) = getText(app, n, nType)
+        if webUrlLex and webLexId:
+            lid = (
+                app.getLexId(n)
+                if webLexId is True
+                else Fs(webLexId).v(n)
+                if webLexId
+                else None
+            )
+            theUrl = webUrlLex.format(base=webBase, lid=lid, version=version)
+        elif webBase:
+            theUrl = webBase
+        else:
+            theUrl = None
+    else:
+        if text is None:
+            text = app.sectionStrFromNode(n)
+            passageText = text
+        if webUrl:
+            theUrl = webUrl.format(baes=webBase, version=version)
+            headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
+            for (i, heading) in enumerate(headingTuple):
+                theUrl.replace(f"<{i}>", heading)
+        else:
+            theUrl = None
+
+    if theUrl is None:
+        result = text
+    else:
+        href = "#" if _noUrl else theUrl
+        atts = dict(target="") if _noUrl else dict(title=webHint)
+        result = outLink(text, href, clsName=clsName, passage=passageText, **atts,)
+    if _asString:
+        return result
+    dh(result)
+
+
 def outLink(text, href, title=None, passage=None, clsName=None, target="_blank"):
     titleAtt = "" if title is None else f' title="{title}"'
     clsAtt = f' class="{clsName.lower()}"' if clsName else ""
     targetAtt = f' target="{target}"' if target else ""
     passageAtt = f' sec="{passage}"' if passage else ""
-    return f'<a{clsAtt}{targetAtt} href="{htmlEsc(href)}"{titleAtt}{passageAtt}>{text}</a>'
+    return (
+        f'<a{clsAtt}{targetAtt} href="{htmlEsc(href)}"{titleAtt}{passageAtt}>{text}</a>'
+    )
 
 
 def _featuresPerModule(app):
@@ -128,10 +202,19 @@ def _featuresPerModule(app):
     api = app.api
     TF = api.TF
 
+    ac = app.context
+    mOrg = ac.org
+    mRepo = ac.repo
+    mRelative = ac.relative
+    version = ac.version
+    moduleSpecs = ac.moduleSpecs
+    corpus = ac.corpus
+    featureBase = ac.featureBase
+
     features = api.Fall() + api.Eall()
 
     fixedModuleIndex = {}
-    for m in app.moduleSpecs:
+    for m in moduleSpecs:
         fixedModuleIndex[(m["org"], m["repo"], m["relative"])] = (
             m["corpus"],
             m["docUrl"],
@@ -150,8 +233,8 @@ def _featuresPerModule(app):
             mId = (org, repo, relative)
             (corpus, docUrl) = (
                 (
-                    app.corpus,
-                    app.featureUrl.format(version=app.version, feature="{feature}"),
+                    corpus,
+                    featureBase.format(version=version, feature="{feature}"),
                 )
                 if mLoc == baseLoc
                 else fixedModuleIndex[mId]
@@ -196,7 +279,7 @@ def _featuresPerModule(app):
         if not added:
             featureCat.setdefault(mId, []).append(feature)
 
-    baseId = (app.org, app.repo, app.relative)
+    baseId = (mOrg, mRepo, mRelative)
     baseMods = {
         mId for mId in featureCat.keys() if type(mId) is tuple and mId == baseId
     }

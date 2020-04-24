@@ -239,9 +239,16 @@ def shipData(app, remaining):
         console("Data not shipped")
         return
     seen = set()
+    provenanceSpec = config.getattr("PROVENANCE_SPEC", {})
     for r in config.ZIP:
         (org, repo, relative) = (
-            r if type(r) is tuple else (config.ORG, r, config.RELATIVE)
+            r
+            if type(r) is tuple
+            else (
+                provenanceSpec.get("org", None),
+                r,
+                provenanceSpec.get("relative", "tf"),
+            )
         )
         keep = (org, repo) in seen
         zipData(org, repo, relative=relative, tf=relative.endswith("tf"), keep=keep)
@@ -291,13 +298,7 @@ def filterProcess(proc):
 
 
 def apidocs():
-    cmdLine = (
-        "pdoc3"
-        " --force"
-        " --html"
-        " --output-dir docs/apidocs/html"
-        " tf"
-    )
+    cmdLine = "pdoc3" " --force" " --html" " --output-dir docs/apidocs/html" " tf"
     run(cmdLine, shell=True)
 
 
@@ -426,7 +427,7 @@ def main():
             return
 
         answer = input("right version ? [yn]")
-        if answer != 'y':
+        if answer != "y":
             return
         shipDocs()
         makeDist()

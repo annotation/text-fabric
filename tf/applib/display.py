@@ -1,5 +1,4 @@
 import os
-import re
 import types
 from collections import namedtuple
 
@@ -7,10 +6,11 @@ from ..parameters import DOWNLOADS
 from ..core.text import DEFAULT_FORMAT
 from ..core.helpers import mdEsc, htmlEsc, flattenToSet
 from .app import findAppConfig
-from .helpers import configure, RESULT, dh, NB
+from .helpers import configure, tupleEnum, RESULT, dh, NB
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights, getHlAtt
 from .displaysettings import DisplaySettings
+from .settings import DEFAULT_CLS
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
@@ -18,10 +18,6 @@ LIMIT_TABLE = 2000
 FONT_BASE = (
     "https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts"
 )
-
-CSS_FONT = """
-    <link rel="stylesheet" href="/server/static/fonts.css"/>
-"""
 
 CSS_FONT_API = f"""
 @font-face {{{{
@@ -32,82 +28,7 @@ CSS_FONT_API = f"""
 }}}}
 """
 
-VAR_PATTERN = re.compile(r"\{([^}]+)\}")
-
 ORIG = "orig"
-
-LEX_CLS = "lex"
-
-WRITING_DEFAULTS = dict(
-    cun=dict(
-        fontName="Santakku", font="Santakk.ttf", fontw="Santakku.woff", direction="ltr",
-    ),
-    hbo=dict(
-        fontName="Ezra SIL", font="SILEOT.ttf", fontw="SILEOT.woff", direction="rtl",
-    ),
-    syc=dict(
-        fontName="Estrangelo Edessa",
-        font="SyrCOMEdessa.otf",
-        fontw="SyrCOMEdessa.woff",
-        direction="rtl",
-    ),
-    ara=dict(
-        fontName="AmiriQuran",
-        font="AmiriQuran.ttf",
-        fontw="AmiriQuran.woff2",
-        direction="rtl",
-    ),
-    grc=dict(
-        fontName="Gentium",
-        font="GentiumPlus-R.ttf",
-        fontw="GentiumPlus-R.woff",
-        direction="ltr",
-    ),
-    cld=dict(
-        fontName="CharisSIL-R",
-        font="CharisSIL-R.otf",
-        fontw="CharisSIL-R.woff",
-        direction="ltr",
-    ),
-)
-WRITING_DEFAULTS[""] = WRITING_DEFAULTS["grc"]
-
-DEFAULT_CLS = "txtn"
-DEFAULT_CLS_SRC = "txto"
-DEFAULT_CLS_ORIG = "txtu"
-DEFAULT_CLS_TRANS = "txtt"
-DEFAULT_CLS_PHONO = "txtp"
-
-FORMAT_CSS = dict(
-    orig=DEFAULT_CLS_ORIG,
-    trans=DEFAULT_CLS_TRANS,
-    source=DEFAULT_CLS_TRANS,
-    phono=DEFAULT_CLS_PHONO,
-)
-
-LEVEL_DEFAULTS = dict(
-    level={
-        3: dict(flow="col"),
-        2: dict(flow="row"),
-        1: dict(flow="row"),
-        0: dict(flow="col"),
-    },
-    flow=dict(col=dict(wrap=False, stretch=False), row=dict(wrap=True, stretch=True)),
-    wrap=None,
-    stretch=None,
-)
-
-CONFIG_DEFAULTS = (("interfaceDefaults", ()),)
-
-DATA_DISPLAY_DEFAULTS = (
-    ("noneValues", {None}),
-    ("sectionSep1", " "),
-    ("sectionSep2", ":"),
-    ("writing", ""),
-    ("textFormats", {}),
-    ("browseNavLevel", None),
-    ("browseContentPretty", False),
-)
 
 OuterContext = namedtuple(
     "OuterContext",
@@ -155,133 +76,6 @@ def displayApi(app, silent):
         app.displayReset = types.MethodType(displayReset, app)
     else:
         return
-
-    for (attr, default) in CONFIG_DEFAULTS:
-        setattr(app, attr, getattr(app, attr, default))
-
-    appContextValues = {}
-
-    for attr in """
-        dataDisplay
-        typeDisplay
-    """.strip().split():
-        appContextValues[attr] = getattr(app, attr, None) or {}
-
-    dataContextGiven = appContextValues["dataDisplay"]
-    dataContext = {}
-    for (attr, default) in DATA_DISPLAY_DEFAULTS:
-        if attr == "browseNavLevel":
-            default = getBrowseDefault()
-        value = dataContextGiven.get(attr, default)
-        dataContext[attr] = value
-        if attr == "writing":
-            dataContext.update(getWriting(value))
-            extension = f" {value}" if value else ""
-            defaultClsOrig = f"{DEFAULT_CLS_ORIG}{extension}"
-            formatCls = _compileFormatCls(app, defaultClsOrig)
-            dataContext.update(
-                extension=extension, defaultClsOrig=defaultClsOrig, formatCls=formatCls
-            )
-
-    noChildren = set()
-    hasSuper = {}
-    featuresBare = {}
-    features = {}
-    lineNumberFeature = {}
-    hasGraphics = set()
-    givenLevels = {}
-
-    (
-        levels,
-        children,
-        verseTypes,
-        lexTypes,
-        condenseType,
-        baseType,
-        templates,
-    ) = getTypeDefaults(app, givenLevels)
-
-    for (nType, info) in appContextValues["typeDisplay"].items():
-
-        featsBare = info.get("featuresBare", "")
-        feats = info.get("features", "")
-        featuresBare[nType] = parseFeatures(featsBare)
-        features[nType] = parseFeatures(feats)
-
-        lineNumber = info.get("lineNumber", None)
-        if lineNumber is not None:
-            lineNumberFeature[nType] = lineNumber
-
-        graphics = info.get("graphics", False)
-        if graphics:
-            hasGraphics.add(nType)
-
-        if not info.get("childrenPlain", True):
-            noChildren.add(nType)
-
-        supr = info.get("super", None)
-        if supr is not None:
-            hasSuper[nType] = supr
-
-        verselike = info.get("verselike", False)
-        if verselike:
-            verseTypes.add(nType)
-
-        transform = info.get("transform", None)
-        if transform is not None:
-            transform[nType] = transform
-
-        if "level" in info:
-            givenLevels[nType] = {
-                k: v for (k, v) in info.items() if k in LEVEL_DEFAULTS
-            }
-
-    lexTarget = set(lexTypes.values())
-
-    levelCls = {}
-    childType = {}
-
-    for (nType, nTypeInfo) in levels.items():
-        level = nTypeInfo["level"]
-        flow = nTypeInfo["flow"]
-        wrap = nTypeInfo["wrap"]
-        children = nTypeInfo["children"]
-
-        containerCls = f"contnr c{level}"
-        labelCls = f"lbl c{level}"
-        childrenCls = f"children {flow} {'wrap' if wrap else ''}"
-
-        levelCls[nType] = dict(
-            container=containerCls, label=labelCls, children=childrenCls,
-        )
-        childType[nType] = children
-
-    app.context = dict(
-        defaultClsOrig=defaultClsOrig,
-        formatCls=formatCls,
-        templates=templates,
-        levelCls=levelCls,
-        featuresBare=featuresBare,
-        features=features,
-        lineNumberFeature=lineNumberFeature,
-        hasGraphics=hasGraphics,
-        childType=childType,
-        noChildren=noChildren,
-        hasSuper=hasSuper,
-        superTypes=set(hasSuper.values()),
-        verseTypes=verseTypes,
-        lexTypes=lexTypes,
-        lexTarget=lexTarget,
-        baseType=baseType,
-        condenseType=condenseType,
-        plainCustom={},
-        prettyCustom={},
-        afterChild={},
-        childrenCustom={},
-        transform=transform,
-        noDescendTypes=set(lexTarget),
-    )
-    app.conntext.update(dataContext)
 
     app.display = DisplaySettings(app)
     if not app._browse:
@@ -361,7 +155,7 @@ def table(app, tuples, _asString=False, **options):
     html = []
     one = True
 
-    for (i, tup) in _tupleEnum(tuples, start, end, LIMIT_TABLE, item):
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item):
         if one:
             heads = '</th><th class="tf">'.join(fOtype(n) for n in tup)
             html.append(
@@ -590,7 +384,6 @@ def _doPlainNode(app, dContext, oContext, nContext, n, outer, done=set()):
     T = api.T
 
     ac = app.context
-    templates = ac.templates
     plainCustom = ac.plainCustom
 
     isHtml = dContext.isHtml
@@ -612,13 +405,12 @@ def _doPlainNode(app, dContext, oContext, nContext, n, outer, done=set()):
         if not isHtml:
             text = htmlEsc(text)
         contrib = f'<span class="{textCls}">{text}</span>'
-    elif nType in templates:
-        (isText, tplFilled) = getText(app, n, nType, *templates[nType], fmt, descend)
+    else:
+        (isText, tplFilled) = getText(app, n, nType, fmt=fmt, descend=descend)
         if isText and isHtml:
             tplFilled = htmlEsc(tplFilled)
-        contrib = f"""<span class="plain {ltr}">{tplFilled}</span>"""
-    else:
-        contrib = ""
+        if contrib:
+            contrib = f"""<span class="plain {ltr}">{tplFilled}</span>"""
     return contrib
 
 
@@ -645,7 +437,7 @@ def show(app, tuples, **options):
     if condensed:
         tuples = condense(api, tuples, condenseType, multiple=True)
 
-    for (i, tup) in _tupleEnum(tuples, start, end, LIMIT_SHOW, item):
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item):
         item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
         prettyTuple(
             app, tup, i, item=item, **options,
@@ -871,9 +663,8 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
     L = api.L
 
     ac = app.context
-    templates = ac.templates
     lexTypes = ac.lexTypes
-    lexTarget = ac.lexTarget
+    lexMap = ac.lexMap
 
     isHtml = dContext.isHtml
     fmt = dContext.fmt
@@ -896,7 +687,7 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
         heading = nodePlain
     else:
         labelHlCls = hlCls
-        (isText, heading) = getText(app, n, nType, *templates[nType], fmt, descend)
+        (isText, heading) = getText(app, n, nType, fmt=fmt, descend=descend)
         if isText and isHtml:
             heading = htmlEsc(heading)
 
@@ -905,12 +696,12 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
 
     featurePart = getFeatures(app, dContext, n, nType)
 
-    if nType in lexTarget:
+    if nType in lexTypes:
         extremeOccs = getBoundary(api, n)
         linkOccs = " - ".join(app.webLink(lo, _asString=True) for lo in extremeOccs)
         featurePart += f'<div class="occs">{linkOccs}</div>'
-    if nType in lexTypes:
-        lx = L.u(n, otype=lexTypes[nType])
+    if nType in lexMap:
+        lx = L.u(n, otype=lexMap[nType])
         if lx:
             heading = app.webLink(lx[0], heading, _asString=True)
 
@@ -1000,39 +791,6 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer):
     )
 
 
-def _compileFormatCls(app, defaultClsOrig):
-    api = app.api
-    T = api.T
-
-    result = {None: defaultClsOrig}
-    for fmt in T.formats:
-        for (key, cls) in FORMAT_CSS.items():
-            if (
-                f"-{key}-" in fmt
-                or fmt.startswith(f"{key}-")
-                or fmt.endswith(f"-{key}")
-            ):
-                result[fmt] = cls
-    for fmt in T.formats:
-        if fmt not in result:
-            result[fmt] = DEFAULT_CLS
-    return result
-
-
-def parseFeatures(features):
-    bare = []
-    indirect = {}
-    for feat in features.split(" "):
-        if not feat:
-            continue
-        parts = feat.split(":", 1)
-        feat = parts[-1]
-        bare.append(feat)
-        if len(parts) > 1:
-            indirect[feat] = parts[0]
-    return (bare, indirect)
-
-
 def doPassage(dContext, i):
     withPassage = dContext.withPassage
 
@@ -1049,10 +807,15 @@ def getPassage(app, isPretty, dContext, oContext, n):
     return f"""<span class="psg ltr">{passage}{NB}</span>"""
 
 
-def getText(app, n, nType, tpl, feats, fmt, descend):
+def getText(app, n, nType, tpl, feats, fmt=None, descend=None):
     T = app.api.T
     sectionTypeSet = T.sectionTypeSet
     structureTypeSet = T.structureTypeSet
+
+    ac = app.context
+    templates = ac.templates
+
+    tpl = templates.get(nType, "")
 
     tplFilled = (
         (
@@ -1066,136 +829,6 @@ def getText(app, n, nType, tpl, feats, fmt, descend):
         else tpl.format(**{feat: getValue(app, n, nType, feat) for feat in feats})
     )
     return (tpl is True, tplFilled)
-
-
-def getWriting(writing):
-    if writing not in WRITING_DEFAULTS:
-        writing = ""
-    info = {k: v for (k, v) in WRITING_DEFAULTS[writing].items()}
-    info[writing] = writing
-    return info
-
-
-def getLevel(defaultLevel, givenInfo, isVerse):
-    level = givenInfo.get("level", defaultLevel)
-    flow = givenInfo.get("flow", "row" if isVerse else LEVEL_DEFAULTS[level]["flow"])
-    wrap = givenInfo.get("wrap", LEVEL_DEFAULTS["flow"]["wrap"])
-    stretch = givenInfo.get("stretch", LEVEL_DEFAULTS["flow"]["stretch"])
-    return dict(level=level, flow=flow, wrap=wrap, stretch=stretch)
-
-
-def getBrowseDefault(app):
-    sectionTypes = app.api.T.sectionTypes
-    return len(sectionTypes) - 1 if sectionTypes else 1
-
-
-def getTypeDefaults(app, givenLevels, lexTypes):
-    api = app.api
-    F = api.F
-    T = api.T
-    slotType = F.otype.slotType
-    nTypes = F.otype.all
-    structureTypes = T.structureTypes
-    structureTypeSet = T.structureTypeSet
-    sectionTypes = T.sectionTypes
-    sectionTypeSet = T.sectionTypeSet
-
-    sectionalTypeSet = sectionTypeSet | structureTypeSet
-
-    verseTypes = {sectionTypes[-1]} if sectionTypes else set()
-    lexTypes = {}
-    baseType = slotType
-    condenseType = None
-    templates = dict(plain={}, pretty={})
-
-    for (nType, info) in givenLevels.items():
-        if info.get("verselike", False):
-            verseTypes.add(nType)
-
-        ltarget = info.get("lexTarget", None)
-        if ltarget is not None:
-            lexTypes[ltarget] = nType
-
-        if "base" in info:
-            baseType = info["base"]
-
-        if "condense" in info:
-            condenseType = info["condense"]
-
-        template = info.get(
-            "template", True if nType == slotType or nType in sectionalTypeSet else ""
-        )
-        templateFeatures = (
-            VAR_PATTERN.findall(template) if type(template) is str else ()
-        )
-        templates[nType] = (template, templateFeatures)
-
-    levelTypes = [set(), set(), set(), set()]
-    levelTypes[3] = sectionalTypeSet - verseTypes
-    levelTypes[0] = {slotType} | set(lexTypes)
-
-    remainingTypeSet = set(nTypes) - levelTypes[3] - levelTypes[0]
-    remainingTypes = tuple(x for x in nTypes if x in remainingTypeSet)
-    nRemaining = len(remainingTypes)
-
-    children = {
-        nType: nTypes[i + 1]
-        for (i, nType) in enumerate(nTypes)
-        if nType in levelTypes[2] | levelTypes[1]
-    }
-    children.update(
-        {
-            nType: nTypes[i + 1]
-            for (i, nType) in enumerate(structureTypes)
-            if i < len(structureTypes) - 1
-        }
-    )
-    children.update(
-        {
-            nType: nTypes[i + 1]
-            for (i, nType) in enumerate(sectionTypes)
-            if i < len(sectionTypes) - 1
-        }
-    )
-
-    lowestSectionalTypes = set()
-    if sectionTypes:
-        lowestSectionalTypes.add(sectionTypes[-1])
-    if structureTypes:
-        lowestSectionalTypes.add(structureTypes[-1])
-
-    biggestOtherType = remainingTypes[0] if remainingTypes else slotType
-    smallestOtherType = remainingTypes[-1] if remainingTypes else None
-
-    for lexType in lexTypes:
-        if lexType in children:
-            del children[lexType]
-
-    for lowestSectionalType in lowestSectionalTypes:
-        children[lowestSectionalType] = biggestOtherType
-
-    if smallestOtherType is not None:
-        children[smallestOtherType] = slotType
-
-    if nRemaining == 0:
-        midType = slotType
-    elif nRemaining == 1:
-        midType = remainingTypes[0]
-        levelTypes[1] = {midType}
-    else:
-        mid = len(remainingTypes) // 2
-        midType = remainingTypes[mid]
-        levelTypes[1] = set(remainingTypes[0:mid])
-        levelTypes[2] = set(remainingTypes[mid:])
-
-    if condenseType is None:
-        condenseType = sectionTypes[-1] if sectionTypes else midType
-
-    levels = {
-        nType: getLevel(i, givenLevels.get(nType, {}), nType in verseTypes)
-        for (i, nType) in enumerate(levelTypes)
-    }
-    return (levels, children, verseTypes, lexTypes, condenseType, baseType, templates)
 
 
 def getSuperBounds(oContext, nContext):
@@ -1590,33 +1223,3 @@ def getRefMember(app, tup, dContext):
         if condensed
         else tup[0]
     )
-
-
-def _tupleEnum(tuples, start, end, limit, item):
-    if start is None:
-        start = 1
-    i = -1
-    if not hasattr(tuples, "__len__"):
-        if end is None or end - start + 1 > limit:
-            end = start - 1 + limit
-        for tup in tuples:
-            i += 1
-            if i < start - 1:
-                continue
-            if i >= end:
-                break
-            yield (i + 1, tup)
-    else:
-        if end is None or end > len(tuples):
-            end = len(tuples)
-        rest = 0
-        if end - (start - 1) > limit:
-            rest = end - (start - 1) - limit
-            end = start - 1 + limit
-        for i in range(start - 1, end):
-            yield (i + 1, tuples[i])
-        if rest:
-            dh(
-                f"<b>{rest} more {item}s skipped</b> because we show a maximum of"
-                f" {limit} {item}s at a time"
-            )

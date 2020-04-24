@@ -1,10 +1,22 @@
 import sys
+from collections import namedtuple
 
 from importlib import util
 
-from ..parameters import ORG, APP_CODE
+from ..parameters import ORG, APP_CODE, PROTOCOL, HOST
 from ..core.helpers import console
 from .repo import checkoutRepo
+from .applib.helpers import getPorts
+
+
+Browser = namedtuple(
+    "Browser",
+    """
+    protocol
+    host
+    port
+""".strip().split(),
+)
 
 
 def findApp(dataSource, checkoutApp, silent=False):
@@ -33,6 +45,19 @@ def findAppConfig(dataSource, appPath):
         console(
             f'findAppConfig: Configuration for "{dataSource}" not found', error=True
         )
+
+    openPorts = getPorts(HOST)
+    config.browser = None
+    if len(openPorts) < 2:
+        console(
+            f'findAppConfig: Not enough open ports for "{dataSource}"', error=True
+        )
+        config.browser = Browser(
+            PROTOCOL,
+            HOST,
+            dict(kernel=openPorts[0], web=openPorts[1]),
+        )
+
     return config
 
 

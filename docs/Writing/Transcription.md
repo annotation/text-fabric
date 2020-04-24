@@ -36,7 +36,7 @@ in a model of nodes, edges, and features, there is need for some additions.
     ???+ note "`grc` Greek"
         Font `Gentium`.
 
-    ???+ note "`cun` Akkadian"
+    ???+ note "`akk` Akkadian"
         Font `Santakku`.
 
     ???+ note "`cld` Neo Aramaic"

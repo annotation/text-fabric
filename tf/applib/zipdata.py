@@ -3,12 +3,11 @@ import sys
 from shutil import rmtree
 from zipfile import ZipFile
 
-from ..parameters import ZIP_OPTIONS, TEMP_DIR
+from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE
 from ..core.helpers import console, splitModRef
 
 GH_BASE = os.path.expanduser(f"~/github")
 DW_BASE = os.path.expanduser(f"~/Downloads")
-RELATIVE = "tf"
 
 HELP = """
 USAGE

@@ -112,8 +112,8 @@ def makeTfKernel(
             return (
                 ac.baseType,
                 ac.condenseType,
-                app.exampleSection,
-                app.exampleSectionText,
+                ac.exampleSectionHtml,
+                ac.exampleSection,
                 tuple(e[0] for e in api.C.levels.data if e[0] not in sectionTypeSet),
                 C.levels.data,
                 T.defaultFormat,
@@ -420,19 +420,21 @@ def main(cargs=sys.argv):
             appPath = f"{appBase}/{appDir}"
             config = findAppConfig(dataSource, appPath)
             if config is not None:
-                kernel = makeTfKernel(
-                    dataSource,
-                    appPath,
-                    commit,
-                    release,
-                    local,
-                    moduleRefs,
-                    setFile,
-                    checkout,
-                    config.PORT["kernel"],
-                )
-                if kernel:
-                    kernel.start()
+                browser = config.browser
+                if browser is not None:
+                    kernel = makeTfKernel(
+                        dataSource,
+                        appPath,
+                        commit,
+                        release,
+                        local,
+                        moduleRefs,
+                        setFile,
+                        checkout,
+                        browser.port["kernel"],
+                    )
+                    if kernel:
+                        kernel.start()
 
 
 # LOWER LEVEL
