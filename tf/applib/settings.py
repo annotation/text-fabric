@@ -162,6 +162,18 @@ def setAppSpecs(app, cfg):
         else:
             source(app, dKey)
 
+    if specs["zip"] is None:
+        org = specs["org"]
+        repo = specs["repo"]
+        moduleSpecs = specs["moduleSpecs"]
+        graphics = specs["graphics"]
+        graphicsModule = [(org, repo, graphics)] if graphics else []
+        specs["zip"] = (
+            [repo]
+            + [(m["org"], m["repo"], m["relative"]) for m in moduleSpecs]
+            + graphicsModule
+        )
+
     app.context = AppCurrent(specs)
 
 
