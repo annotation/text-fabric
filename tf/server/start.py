@@ -9,7 +9,7 @@ from subprocess import PIPE, Popen
 
 from ..core.helpers import console
 from ..parameters import NAME, VERSION
-from ..applib.app import findApp, findAppConfig
+from ..applib.find import findApp, findAppConfig
 
 from .command import (
     argDebug,
@@ -136,6 +136,21 @@ FLAGS = set(
 )
 
 BANNER = f"This is {NAME} {VERSION}"
+
+
+"""
+    openPorts = getPorts(HOST)
+    config.browser = None
+    if len(openPorts) < 2:
+        console(
+            f'findAppConfig: Not enough open ports for "{dataSource}"', error=True
+        )
+        config.browser = Browser(
+            PROTOCOL,
+            HOST,
+            dict(kernel=openPorts[0], web=openPorts[1]),
+        )
+"""
 
 
 def filterProcess(proc):

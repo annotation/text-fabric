@@ -1,91 +1,143 @@
-import sys
-from collections import namedtuple
-
-from importlib import util
-
-from ..parameters import ORG, APP_CODE, PROTOCOL, HOST
-from ..core.helpers import console
-from .repo import checkoutRepo
-from .applib.helpers import getPorts
-
-
-Browser = namedtuple(
-    "Browser",
-    """
-    protocol
-    host
-    port
-""".strip().split(),
-)
+from ..fabric import Fabric
+from ..parameters import URL_TFDOC, TEMP_DIR
+from ..lib import readSets
+from ..core.helpers import console, setDir
+from .find import findAppConfig
+from .helpers import dh
+from .settings import setAppSpecs
+from .links import linksApi, outLink
+from .text import textApi
+from .sections import sectionsApi
+from .display import displayApi
+from .search import searchApi
+from .data import getModulesData
 
 
-def findApp(dataSource, checkoutApp, silent=False):
-    return checkoutRepo(
-        org=ORG,
-        repo=f"app-{dataSource}",
-        folder=APP_CODE,
-        checkout=checkoutApp,
-        withPaths=True,
-        keep=False,
-        silent=silent,
-        label="TF-app",
-    )
+# SET UP A TF API FOR AN APP
 
 
-def findAppConfig(dataSource, appPath):
-    config = None
-    appPath = f"{appPath}/config.py"
+class App:
+    def __init__(
+        self,
+        appName,
+        appPath,
+        commit,
+        release,
+        local,
+        hoist=False,
+        version=None,
+        checkout="",
+        mod=None,
+        locations=None,
+        modules=None,
+        api=None,
+        setFile="",
+        silent=False,
+        _browse=False,
+    ):
+        isRawTf = "/" in appName
 
-    try:
-        spec = util.spec_from_file_location(f"tf.apps.{dataSource}.config", appPath)
-        config = util.module_from_spec(spec)
-        spec.loader.exec_module(config)
-    except Exception as e:
-        console(f"findAppConfig: {str(e)}", error=True)
-        console(
-            f'findAppConfig: Configuration for "{dataSource}" not found', error=True
+        for (key, value) in dict(
+            appName=appName, api=api, version=version, silent=silent,
+        ).items():
+            setattr(self, key, value)
+
+        self.appPath = appPath
+        self.commit = commit
+
+        cfg = (
+            dict(isCompatible=True)
+            if isRawTf
+            else findAppConfig(appName, appPath, local, version=version)
         )
 
-    openPorts = getPorts(HOST)
-    config.browser = None
-    if len(openPorts) < 2:
-        console(
-            f'findAppConfig: Not enough open ports for "{dataSource}"', error=True
-        )
-        config.browser = Browser(
-            PROTOCOL,
-            HOST,
-            dict(kernel=openPorts[0], web=openPorts[1]),
-        )
+        version = cfg["version"]
+        self.isCompatible = cfg["isCompatible"]
+        setAppSpecs(self, cfg)
 
-    return config
+        dKey = "dataDisplay"
+        self.excludedFeatures = getattr(self, dKey, {}).get("excludedFeatures", set())
 
+        setDir(self)
 
-def findAppClass(dataSource, appPath):
-    appClass = None
-    moduleName = f"tf.apps.{dataSource}.app"
+        if not self.api:
+            self.sets = None
+            if setFile:
+                sets = readSets(setFile)
+                if sets:
+                    self.sets = sets
+                    console(f'Sets from {setFile}: {", ".join(sets)}')
+            specs = getModulesData(
+                self, mod, locations, modules, version, checkout, silent
+            )
+            if specs:
+                (locations, modules) = specs
+                self.tempDir = f"{self.repoLocation}/{TEMP_DIR}"
+                TF = Fabric(locations=locations, modules=modules, silent=silent or True)
+                api = TF.load("", silent=silent or True)
+                if api:
+                    self.api = api
+                    allFeatures = TF.explore(silent=silent or True, show=True)
+                    loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
+                    useFeatures = [
+                        f for f in loadableFeatures if f not in self.excludedFeatures
+                    ]
+                    result = TF.load(useFeatures, add=True, silent=silent or True)
+                    if result is False:
+                        self.api = None
+            else:
+                self.api = None
 
-    try:
-        spec = util.spec_from_file_location(moduleName, f"{appPath}/app.py")
-        code = util.module_from_spec(spec)
-        sys.path.insert(0, appPath)
-        spec.loader.exec_module(code)
-        sys.path.pop(0)
-        appClass = code.TfApp
-    except Exception as e:
-        console(f"findAppClass: {str(e)}", error=True)
-        console(f'findAppClass: Api for "{dataSource}" not found')
-    return appClass
+        if self.api:
+            linksApi(self, appName, silent)
+            searchApi(self)
+            sectionsApi(self)
+            displayApi(self, silent)
+            textApi(self)
+            if hoist:
+                docs = self.api.makeAvailableIn(hoist)
+                if not silent:
+                    dh(
+                        "<details open><summary><b>API members</b>:</summary>\n"
+                        + "<br/>\n".join(
+                            ", ".join(
+                                outLink(
+                                    entry,
+                                    f"{URL_TFDOC}/Api/{head}/#{ref}",
+                                    title="doc",
+                                )
+                                for entry in entries
+                            )
+                            for (head, ref, entries) in docs
+                        )
+                        + "</details>"
+                    )
+        else:
+            if not _browse:
+                console(
+                    f"""
+    There were problems with loading data.
+    The Text-Fabric API has not been loaded!
+    The app "{appName}" will not work!
+    """,
+                    error=True,
+                )
 
+    def reuse(self, hoist=False):
+        appPath = self.appPath
+        appName = self.appName
+        local = self.local
+        version = self.version
+        api = self.api
 
-def loadModule(dataSource, appPath, moduleName):
-    try:
-        spec = util.spec_from_file_location(
-            f"tf.apps.{dataSource}.{moduleName}", f"{appPath}/{moduleName}.py",
-        )
-        module = util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-    except Exception as e:
-        console(f"loadModule: {str(e)}", error=True)
-        console(f'loadModule: {moduleName} in "{dataSource}" not found')
-    return module
+        cfg = findAppConfig(appName, appPath, local, version=version)
+        setAppSpecs(self, cfg)
+
+        if api:
+            linksApi(self, appName, True)
+            textApi(self)
+            searchApi(self)
+            sectionsApi(self)
+            displayApi(self, True)
+            if hoist:
+                api.makeAvailableIn(hoist)

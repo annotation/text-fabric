@@ -1,9 +1,13 @@
-from .applib.app import findApp, findAppClass
+from .applib.find import findApp, findAppClass
+from .applib.app import App
 
 # START AN APP
 
 
 def use(appName, *args, **kwargs):
+    if '/' in appName:
+        return App(appName, None, None, None, None, *args, **kwargs)
+
     parts = appName.split(":", maxsplit=1)
     if len(parts) == 1:
         parts.append("")
@@ -15,8 +19,6 @@ def use(appName, *args, **kwargs):
         return None
 
     appPath = f"{appBase}/{appDir}"
-    appClass = findAppClass(appName, appPath)
-    if not appClass:
-        return None
+    appClass = findAppClass(appName, appPath) or App
 
     return appClass(appName, appPath, commit, release, local, *args, **kwargs)

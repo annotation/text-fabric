@@ -20,6 +20,7 @@ setup(
         "ipython",
         "requests",
         "pygithub>=1.47",
+        "pyyaml",
     ],
     python_requires=">=3.6.3",
     include_package_data=True,

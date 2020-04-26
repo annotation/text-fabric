@@ -5,7 +5,7 @@ from collections import namedtuple
 from ..parameters import DOWNLOADS
 from ..core.text import DEFAULT_FORMAT
 from ..core.helpers import mdEsc, htmlEsc, flattenToSet
-from .app import findAppConfig
+from .find import findAppConfig
 from .helpers import configure, tupleEnum, RESULT, dh, NB
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights, getHlAtt
@@ -1181,9 +1181,11 @@ def loadCss(app, reload=False):
     fontName = ac.fontName
 
     if reload:
-        config = findAppConfig(appName, appPath)
-        cfg = configure(config, version)
-        app.css = cfg["css"]
+
+        cfg = findAppConfig(appName, appPath)
+        if version is not None:
+            cfg.setdefault('provenanceSpec', {})['version'] = version
+        app.setAppSpecs(cfg)
 
     cssPath = (
         f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}"

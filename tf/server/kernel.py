@@ -6,7 +6,7 @@ import rpyc
 from rpyc.utils.server import ThreadedServer
 
 from ..core.helpers import console
-from ..applib.app import findApp, findAppConfig, findAppClass
+from ..applib.find import findApp, findAppConfig, findAppClass
 from ..applib.highlight import getPassageHighlights
 from ..applib.search import runSearch, runSearchCondensed
 from ..applib.display import getResultsX

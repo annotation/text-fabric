@@ -6,7 +6,7 @@ from flask import Flask, send_file
 from werkzeug.serving import run_simple
 
 from ..core.helpers import console
-from ..applib.app import findApp, findAppConfig
+from ..applib.find import findApp, findAppConfig
 from ..applib.helpers import getLocalDir, configure
 from ..server.kernel import makeTfConnection
 from .command import (

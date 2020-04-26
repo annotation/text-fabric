@@ -1,6 +1,6 @@
 import pickle
 from ..core.helpers import console
-from ..applib.app import findApp, findAppConfig
+from ..applib.find import findApp, findAppConfig
 from ..server.kernel import makeTfConnection
 from .wrap import passageLinks
 

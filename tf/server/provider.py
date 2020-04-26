@@ -4,7 +4,7 @@
 import sys
 import pickle
 
-from ..applib.app import findApp, findAppConfig
+from ..applib.find import findApp, findAppConfig
 from ..server.kernel import makeTfConnection
 
 from .serve import TIMEOUT

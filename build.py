@@ -10,7 +10,7 @@ from subprocess import run, Popen
 import psutil
 
 from tf.core.helpers import console
-from tf.applib.app import findApp, findAppConfig
+from tf.applib.find import findApp, findAppConfig
 from tf.applib.zipdata import zipData
 
 DIST = "dist"
