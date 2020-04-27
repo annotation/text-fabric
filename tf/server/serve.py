@@ -19,7 +19,9 @@ TIMEOUT = 180
 
 
 def serveTable(setup, kind, getx=None, asDict=False):
-    form = getFormData(setup.config)
+    kernelApi = setup.kernelApi
+
+    form = getFormData()
     textFormat = form["textformat"] or None
     task = form[kind].strip()
     openedKey = f"{kind}Opened"
@@ -28,8 +30,6 @@ def serveTable(setup, kind, getx=None, asDict=False):
     )
 
     method = dict if asDict else jsonify
-
-    kernelApi = setup.TF.connect()
 
     messages = ""
     table = None
@@ -53,8 +53,11 @@ def serveTable(setup, kind, getx=None, asDict=False):
 
 
 def serveQuery(setup, getx, asDict=False):
+    kernelApi = setup.kernelApi
+    wildQueries = setup.wildQueries
+
     kind = "query"
-    form = getFormData(setup.config)
+    form = getFormData()
     task = form[kind]
     condenseType = form["condenseTp"] or None
     resultKind = condenseType if form["condensed"] else RESULT
@@ -67,14 +70,13 @@ def serveQuery(setup, getx, asDict=False):
     pages = ""
     features = ""
 
-    kernelApi = setup.TF.connect()
     method = dict if asDict else jsonify
     total = 0
 
     if task:
         messages = ""
         table = None
-        if task in setup.wildQueries:
+        if task in wildQueries:
             messages = (
                 f"Aborted because query is known to take longer than {TIMEOUT} second"
                 + ("" if TIMEOUT == 1 else "s")
@@ -100,7 +102,7 @@ def serveQuery(setup, getx, asDict=False):
                     + ("" if TIMEOUT == 1 else "s")
                 )
                 console(f"{task}\n{messages}", error=True)
-                setup.wildQueries.add(task)
+                wildQueries.add(task)
                 total = 0
 
         if table is not None:
@@ -118,12 +120,12 @@ def serveQuery(setup, getx, asDict=False):
 
 
 def servePassage(setup, getx):
-    form = getFormData(setup.config)
+    kernelApi = setup.kernelApi
+
+    form = getFormData()
     textFormat = form["textformat"] or None
 
     passages = ""
-
-    kernelApi = setup.TF.connect()
 
     openedKey = "passageOpened"
     openedSet = set(form[openedKey].split(",")) if form[openedKey] else set()
@@ -150,13 +152,16 @@ def servePassage(setup, getx):
 
 
 def serveExport(setup):
+    aContext = setup.context
+    appName = aContext.appName
+    kernelApi = setup.kernelApi
+
     sectionsData = serveTable(setup, "sections", None, asDict=True)
     tuplesData = serveTable(setup, "tuples", None, asDict=True)
     queryData = serveQuery(setup, None, asDict=True)
 
-    form = getFormData(setup.config)
+    form = getFormData()
 
-    kernelApi = setup.TF.connect()
     (header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
@@ -186,7 +191,7 @@ def serveExport(setup):
 
     return render_template(
         "export.html",
-        dataSource=setup.dataSource,
+        appName=appName,
         css=css,
         descriptionMd=descriptionMd,
         sectionsTable=(
@@ -208,8 +213,9 @@ def serveExport(setup):
 
 
 def serveDownload(setup):
-    form = getFormData(setup.config)
-    kernelApi = setup.TF.connect()
+    form = getFormData()
+    kernelApi = setup.kernelApi
+    wildQueries = setup.wildQueries
 
     task = form["query"]
     condenseType = form["condenseTp"] or None
@@ -217,7 +223,7 @@ def serveDownload(setup):
     csvs = None
     resultsX = None
     messages = ""
-    if task in setup.wildQueries:
+    if task in wildQueries:
         messages = (
             f"Aborted because query is known to take longer than {TIMEOUT} second"
             + ("" if TIMEOUT == 1 else "s")
@@ -237,7 +243,7 @@ def serveDownload(setup):
                 "" if TIMEOUT == 1 else "s"
             )
             console(f"{task}\n{messages}", error=True)
-            setup.wildQueries.add(task)
+            wildQueries.add(task)
             return jsonify(messages=messages)
 
     if queryMessages:
@@ -265,13 +271,24 @@ def serveDownload(setup):
 
 
 def serveAll(setup, anything):
-    form = getFormData(setup.config)
+    aContext = setup.context
+    appName = aContext.appName
+    defaultBaseType = aContext.baseType
+    defaultCondenseType = aContext.condenseType
+    exampleSection = aContext.exampleSection
+    exampleSectionHtml = aContext.exampleSectionHtml
+    baseTypes = aContext.baseTypes
+    condenseTypes = aContext.condenseTypes
+    defaultFormat = aContext.defaultFormat
+    allFormats = aContext.allFormats
+
+    kernelApi = setup.kernelApi
+
+    form = getFormData()
     condensedAtt = " checked " if form["condensed"] else ""
 
     pages = ""
     passages = ""
-
-    kernelApi = setup.TF.connect()
 
     (header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
@@ -288,37 +305,27 @@ def serveAll(setup, anything):
     )
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    (
-        defaultBaseType,
-        defaultCondenseType,
-        exampleSectionHtml,
-        exampleSection,
-        baseTypes,
-        condenseTypes,
-        defaultTextFormat,
-        textFormats,
-    ) = kernelApi.configSettings()
     baseType = form["baseTp"] or defaultBaseType
     baseOpts = wrapBase(baseTypes, baseType)
     condenseType = form["condenseTp"] or defaultCondenseType
     condenseOpts = wrapCondense(condenseTypes, condenseType)
-    textFormat = form["textformat"] or defaultTextFormat
-    textFormatOpts = wrapFormats(textFormats, textFormat)
+    textFormat = form["textformat"] or defaultFormat
+    textFormatOpts = wrapFormats(allFormats, textFormat)
 
     return render_template(
         "index.html",
-        dataSource=setup.dataSource,
+        appName=appName,
         css=css,
         header=f"{appLogo}{header}{tfLogo}",
         setNames=setNameHtml,
-        options=wrapOptions(setup.config, form),
+        options=wrapOptions(aContext, form),
         condensedAtt=condensedAtt,
         baseOpts=baseOpts,
         defaultBaseType=defaultBaseType,
         condenseOpts=condenseOpts,
         defaultCondenseType=defaultCondenseType,
         textFormatOpts=textFormatOpts,
-        defaultTextFormat=defaultTextFormat,
+        defaultFormat=defaultFormat,
         exampleSectionHtml=exampleSectionHtml,
         exampleSection=exampleSection,
         pages=pages,

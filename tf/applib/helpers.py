@@ -1,10 +1,8 @@
 import os
-import socket
-import errno
 
 from IPython.display import display, Markdown, HTML
 
-from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR, PORT_BASE
+from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR, APP_DISPLAY
 from ..core.helpers import camel
 
 
@@ -30,16 +28,9 @@ def configureNames(names, myDir):
   """
     result = {camel(key): value for (key, value) in names.items() if key == key.upper()}
 
-    with open(f"{myDir}/static/display.css", encoding="utf8") as fh:
+    with open(f"{myDir}/{APP_DISPLAY}", encoding="utf8") as fh:
         result["css"] = fh.read()
 
-    return result
-
-
-def configure(config, version):
-    (names, path) = config.deliver()
-    result = configureNames(names, path)
-    result["version"] = config.VERSION if version is None else version
     return result
 
 
@@ -48,7 +39,7 @@ def getLocalDir(names, local, version):
     org = provenanceSpec.get("org", None)
     repo = provenanceSpec.get("repo", None)
     relative = provenanceSpec.get("relative", "tf")
-    version = provenanceSpec.get("version", "0.1") if version is None else version
+    version = provenanceSpec.get("version", None) if version is None else version
     base = hasData(local, org, repo, version, relative)
 
     if not base:
@@ -70,39 +61,6 @@ def hasData(local, org, repo, version, relative):
     if os.path.exists(expressTarget):
         return expressBase
     return False
-
-
-def portIsInUse(host, port):
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    try:
-        s.bind((host, port))
-        result = True
-    except OverflowError:
-        result = None
-    except socket.error as e:
-        if e.errno == errno.EADDRINUSE:
-            result = False
-        else:
-            result = False
-
-    s.close()
-    return result
-
-
-def getPorts(host):
-    ports = []
-    for port in range(PORT_BASE, PORT_BASE + 100):
-        status = portIsInUse(host, port)
-        if status is None:
-            break
-        if not status:
-            continue
-        ports.append(port)
-        if len(ports) > 1:
-            break
-
-    return ports
 
 
 def tupleEnum(tuples, start, end, limit, item):

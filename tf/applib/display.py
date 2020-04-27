@@ -2,11 +2,10 @@ import os
 import types
 from collections import namedtuple
 
-from ..parameters import DOWNLOADS
+from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
 from ..core.text import DEFAULT_FORMAT
 from ..core.helpers import mdEsc, htmlEsc, flattenToSet
-from .find import findAppConfig
-from .helpers import configure, tupleEnum, RESULT, dh, NB
+from .helpers import tupleEnum, RESULT, dh, NB
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights, getHlAtt
 from .displaysettings import DisplaySettings
@@ -303,9 +302,9 @@ def plain(app, n, _inTuple=False, _asString=False, **options):
     if not display.check("plain", options):
         return ""
 
-    ac = app.context
-    textFormats = ac.textFormats
-    formatCls = ac.formatCls
+    aContext = app.context
+    textFormats = aContext.textFormats
+    formatCls = aContext.formatCls
 
     dContext = display.get(options)
     fmt = dContext.fmt
@@ -383,8 +382,8 @@ def _doPlainNode(app, dContext, oContext, nContext, n, outer, done=set()):
     api = app.api
     T = api.T
 
-    ac = app.context
-    plainCustom = ac.plainCustom
+    aContext = app.context
+    plainCustom = aContext.plainCustom
 
     isHtml = dContext.isHtml
     fmt = dContext.fmt
@@ -492,9 +491,9 @@ def pretty(app, n, **options):
 
     _browse = app._browse
 
-    ac = app.context
-    textFormats = ac.textFormats
-    formatCls = ac.formatCls
+    aContext = app.context
+    textFormats = aContext.textFormats
+    formatCls = aContext.formatCls
 
     dContext = display.get(options)
     condenseType = dContext.condenseType
@@ -562,9 +561,9 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
     if not nContext:
         return
 
-    ac = app.context
-    afterChild = ac.afterChild
-    hasGraphics = ac.hasGraphics
+    aContext = app.context
+    afterChild = aContext.afterChild
+    hasGraphics = aContext.hasGraphics
 
     graphics = dContext.graphics
 
@@ -662,9 +661,9 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
     api = app.api
     L = api.L
 
-    ac = app.context
-    lexTypes = ac.lexTypes
-    lexMap = ac.lexMap
+    aContext = app.context
+    lexTypes = aContext.lexTypes
+    lexMap = aContext.lexMap
 
     isHtml = dContext.isHtml
     fmt = dContext.fmt
@@ -733,10 +732,10 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer):
     slotType = F.otype.slotType
     nType = F.otype.v(n)
 
-    ac = app.context
-    levelCls = ac.levelCls
-    noChildren = ac.noChildren
-    prettyCustom = ac.prettyCustom
+    aContext = app.context
+    levelCls = aContext.levelCls
+    noChildren = aContext.noChildren
+    prettyCustom = aContext.prettyCustom
 
     fmt = dContext.fmt
     baseType = dContext.baseType
@@ -812,8 +811,8 @@ def getText(app, n, nType, tpl, feats, fmt=None, descend=None):
     sectionTypeSet = T.sectionTypeSet
     structureTypeSet = T.structureTypeSet
 
-    ac = app.context
-    templates = ac.templates
+    aContext = app.context
+    templates = aContext.templates
 
     tpl = templates.get(nType, "")
 
@@ -846,8 +845,8 @@ def getSuperBounds(oContext, nContext):
 def getValue(app, n, nType, feat):
     Fs = app.api.Fs
 
-    ac = app.context
-    transform = ac.transform
+    aContext = app.context
+    transform = aContext.transform
 
     val = Fs(feat).v(n)
     modifier = transform.get(nType, {}).get(feat, None)
@@ -855,8 +854,8 @@ def getValue(app, n, nType, feat):
 
 
 def getLtr(app, dContext):
-    ac = app.context
-    writingDir = ac.writingDir
+    aContext = app.context
+    writingDir = aContext.writingDir
 
     fmt = dContext.fmt or DEFAULT_FORMAT
 
@@ -913,9 +912,9 @@ def getSuper(app, oContext, nContext, n, outer):
     api = app.api
     L = api.L
 
-    ac = app.context
-    hasSuper = ac.hasSuper
-    superTypes = ac.superTypes
+    aContext = app.context
+    hasSuper = aContext.hasSuper
+    superTypes = aContext.superTypes
 
     nType = nContext.nType
 
@@ -935,10 +934,10 @@ def getChildren(app, isPretty, dContext, oContext, n, nType):
     sortNodes = api.sortNodes
     slotType = F.otype.slotType
 
-    ac = app.context
-    verseTypes = ac.verseTypes
-    childType = ac.childType
-    childrenCustom = ac.childrenCustom
+    aContext = app.context
+    verseTypes = aContext.verseTypes
+    childType = aContext.childType
+    childrenCustom = aContext.childrenCustom
 
     inTuple = oContext.inTuple
 
@@ -986,8 +985,8 @@ def getNodePart(app, isPretty, dContext, n, nType, isSlot, outer, highlight):
 
     Fs = app.api.Fs
 
-    ac = app.context
-    lineNumberFeature = ac.lineNumberFeature
+    aContext = app.context
+    lineNumberFeature = aContext.lineNumberFeature
     allowInfo = isPretty or outer or highlight
 
     withNodes = dContext.withNodes
@@ -1034,8 +1033,8 @@ def getResultsX(app, results, features, condenseType, fmt=None):
     otypeRank = api.otypeRank
     sectionTypeSet = T.sectionTypeSet
 
-    ac = app.context
-    noDescendTypes = ac.descendTypes
+    aContext = app.context
+    noDescendTypes = aContext.descendTypes
 
     sectionDepth = len(sectionTypeSet)
     if len(results) == 0:
@@ -1106,9 +1105,9 @@ def getFeatures(app, dContext, n, nType):
     L = api.L
     Fs = api.Fs
 
-    ac = app.context
-    featuresBare = ac.featuresBare
-    features = ac.features
+    aContext = app.context
+    featuresBare = aContext.featuresBare
+    features = aContext.features
 
     dFeatures = dContext.features
     showFeatures = dContext.showFeatures
@@ -1157,13 +1156,11 @@ def getFeatures(app, dContext, n, nType):
     return f"<div class='features'>{featurePart}</div>"
 
 
-def loadCss(app, reload=False):
+def loadCss(app):
     """
   The CSS is looked up and then loaded into a notebook if we are not
   running in the TF browser,
   else the CSS is returned.
-
-  With reload=True, the app-specific display.css will be read again from disk
   """
     _browse = app._browse
     css = app.css
@@ -1171,29 +1168,17 @@ def loadCss(app, reload=False):
     if _browse:
         return css
 
-    appName = app.appName
-    appPath = app.appPath
-    version = app.version
-
-    ac = app.context
-    font = ac.font
-    fontw = ac.fontw
-    fontName = ac.fontName
-
-    if reload:
-
-        cfg = findAppConfig(appName, appPath)
-        if version is not None:
-            cfg.setdefault('provenanceSpec', {})['version'] = version
-        app.setAppSpecs(cfg)
+    aContext = app.context
+    font = aContext.font
+    fontw = aContext.fontw
+    fontName = aContext.fontName
 
     cssPath = (
         f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}"
-        "/server/static"
+        f"{SERVER_DISPLAY_BASE}"
     )
-    cssFiles = ("display.css", "highlight.css")
     genericCss = ""
-    for cssFile in cssFiles:
+    for cssFile in SERVER_DISPLAY:
         with open(f"{cssPath}/{cssFile}", encoding="utf8") as fh:
             genericCss += fh.read()
 

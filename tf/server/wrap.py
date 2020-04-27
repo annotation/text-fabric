@@ -89,8 +89,8 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
 # OPTIONS
 
 
-def wrapOptions(config, form, defaults):
-    interfaceDefaults = config.INTERFACE_DEFAULTS
+def wrapOptions(context, form, defaults):
+    interfaceDefaults = context.interfaceDefaults
 
     options = []
     for o in INTERFACE_OPTIONS:
@@ -160,9 +160,9 @@ def wrapCondense(condenseTypes, value):
     return "\n".join(html)
 
 
-def wrapFormats(textFormats, value):
+def wrapFormats(allFormats, value):
     html = []
-    for (i, fmt) in enumerate(textFormats):
+    for (i, fmt) in enumerate(allFormats):
         checked = " checked " if value == fmt else ""
         radio = f"""<input class="r tradio" type="radio" id="ttp{i}"
               name="textformat" value="{fmt}" {checked}

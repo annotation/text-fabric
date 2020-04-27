@@ -1,35 +1,20 @@
+import sys
 from ..core.helpers import console
-from ..applib.find import findApp, findAppConfig
 from ..server.kernel import makeTfConnection
-from .command import argParam
+from ..parameters import HOST
+from .command import argKernel
 
 TIMEOUT = 180
 
 
-def setup(dataSource, checkoutApp):
-    global TF
-
-    (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
-    if not appBase:
-        return
-    appPath = f"{appBase}/{appDir}"
-    config = findAppConfig(dataSource, appPath)
-    if config is None:
-        return None
-
-    browser = config.browser
-    if browser is None:
-        return None
-    TF = makeTfConnection(browser.host, browser.port["kernel"], TIMEOUT)
-    return TF
-
-
-def main():
-    (dataSource, checkoutApp) = argParam(interactive=True)
-    if dataSource is None:
+def main(cargs=sys.argv):
+    args = argKernel(cargs)
+    if not args:
         return
 
-    TF = setup(dataSource, checkoutApp)
+    (dataSource, portKernel) = args
+
+    TF = makeTfConnection(HOST, portKernel, TIMEOUT)
     if TF is None:
         return
 

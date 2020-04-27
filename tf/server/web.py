@@ -1,19 +1,14 @@
 import os
 import sys
-
+import pickle
 
 from flask import Flask, send_file
 from werkzeug.serving import run_simple
 
+from ..parameters import HOST
 from ..core.helpers import console
-from ..applib.find import findApp, findAppConfig
-from ..applib.helpers import getLocalDir, configure
 from ..server.kernel import makeTfConnection
-from .command import (
-    argDebug,
-    argDocker,
-    argParam,
-)
+from .command import argWeb
 from .serve import (
     TIMEOUT,
     serveTable,
@@ -25,51 +20,38 @@ from .serve import (
 )
 
 
-myDir = os.path.dirname(os.path.abspath(__file__))
+MY_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class Setup(object):
-    def __init__(self, dataSource, checkoutApp):
-        self.dataSource = dataSource
+    def __init__(self, portKernel):
+        TF = makeTfConnection(HOST, portKernel, TIMEOUT)
+        kernelApi = TF.connect()
+        self.kernelApi = kernelApi
 
-        (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
-        if not appBase:
-            return
-        appPath = f"{appBase}/{appDir}"
-        self.appPath = appPath
+        context = pickle.loads(kernelApi.context())
+        self.context = context
 
-        config = findAppConfig(dataSource, self.appPath)
-        self.config = config
-
-        if config is None:
-            return
-
-        browser = config.browser
-        if browser is None:
-            return
-        self.TF = makeTfConnection(browser.host, browser.port["kernel"], TIMEOUT)
         self.wildQueries = set()
-
-        cfg = configure(config, None)
-        version = cfg["version"]
-        cfg["localDir"] = getLocalDir(cfg, local, version)
-        self.localDir = cfg["localDir"]
 
 
 def factory(setup):
     app = Flask(__name__)
+    aContext = setup.context
+    appPath = aContext.appPath
+    localDir = aContext.localDir
 
     @app.route("/server/static/<path:filepath>")
     def serveStatic(filepath):
-        return send_file(f"{myDir}/static/{filepath}")
+        return send_file(f"{MY_DIR}/static/{filepath}")
 
     @app.route("/data/static/<path:filepath>")
     def serveData(filepath):
-        return send_file(f"{setup.appPath}/static/{filepath}")
+        return send_file(f"{appPath}/static/{filepath}")
 
     @app.route("/local/<path:filepath>")
     def serveLocal(filepath):
-        return send_file(f"{setup.localDir}/{filepath}")
+        return send_file(f"{localDir}/{filepath}")
 
     @app.route("/sections", methods=["GET", "POST"])
     def serveSectionsBare():
@@ -119,32 +101,22 @@ def factory(setup):
     return app
 
 
-def main():
-    (dataSource, checkoutApp) = argParam(interactive=True)
-    if dataSource is None:
-        return 1
+def main(cargs=sys.argv):
+    args = argWeb(cargs)
+    if not args:
+        return
 
-    if dataSource is not None:
-        try:
-            debug = argDebug()
-            setup = Setup(dataSource, checkoutApp)
-            config = setup.config
-            if config is not None:
-                onDocker = argDocker()
-                console(f"onDocker={onDocker}")
-                webapp = factory(setup)
-                browser = config.browser
-                if browser is not None:
-                    run_simple(
-                        "0.0.0.0" if onDocker else browser.host,
-                        browser.port["web"],
-                        webapp,
-                        use_reloader=False,
-                        use_debugger=debug,
-                    )
-        except OSError as e:
-            console(str(e))
-            return 1
+    (dataSource, portKernel, portWeb) = args
+
+    try:
+        setup = Setup(portKernel)
+        webapp = factory(setup)
+        run_simple(
+            HOST, portWeb, webapp, use_reloader=False, use_debugger=False,
+        )
+    except OSError as e:
+        console(str(e))
+        return 1
 
     return 0
 

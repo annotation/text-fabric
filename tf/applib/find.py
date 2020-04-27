@@ -5,7 +5,13 @@ from collections import namedtuple
 from importlib import util
 import yaml
 
-from ..parameters import ORG, APP_CODE, apiVersionProvided
+from ..parameters import (
+    ORG,
+    APP_CODE,
+    APP_CONFIG,
+    APP_DISPLAY,
+    API_VERSION as apiVersionProvided,
+)
 from ..core.helpers import console
 from .repo import checkoutRepo
 from .helpers import getLocalDir
@@ -21,40 +27,61 @@ Browser = namedtuple(
 )
 
 
-def findApp(dataSource, checkoutApp, silent=False):
-    return checkoutRepo(
-        org=ORG,
-        repo=f"app-{dataSource}",
-        folder=APP_CODE,
-        checkout=checkoutApp,
-        withPaths=True,
-        keep=False,
-        silent=silent,
-        label="TF-app",
-    )
+def findApp(appName, checkoutApp, silent=False):
+    if not appName or "/" in appName:
+        appPath = os.path.expanduser(appName) if appName else ""
+        absPath = os.path.abspath(appPath)
+        if os.path.isdir(absPath):
+            (appDir, appName) = os.path.split(absPath)
+            return (None, None, None, "", appDir, appName)
+        else:
+            console(f"{absPath} is not an existing directory", error=True)
+            return (None, None, None, False, None, None)
+    else:
+        return (
+            *checkoutRepo(
+                org=ORG,
+                repo=f"app-{appName}",
+                folder=APP_CODE,
+                checkout=checkoutApp,
+                withPaths=True,
+                keep=False,
+                silent=silent,
+                label="TF-app",
+            ),
+            appName,
+        )
 
 
-def findAppConfig(appName, appPath, local, version=None):
-    configPath = f"{appPath}/config.yaml"
-    cssPath = f"{appPath}/static/display.css"
+def findAppConfig(appName, appPath, commit, release, local, version=None):
+    configPath = f"{appPath}/{APP_CONFIG}"
+    cssPath = f"{appPath}/{APP_DISPLAY}"
 
-    cfg = {}
+    checkApiVersion = True
+
     if os.path.exists(configPath):
         with open(configPath) as fh:
             cfg = yaml.load(fh, Loader=yaml.FullLoader)
     else:
-        pass
-    if version is not None:
-        cfg.setdefault('provenanceSpec', {})['version'] = version
+        cfg = {}
+        checkApiVersion = False
+    cfg.update(
+        appName=appName, appPath=appPath, commit=commit, release=release, local=local
+    )
 
-    with open(cssPath, encoding="utf8") as fh:
-        cfg["css"] = fh.read()
+    cfg.setdefault("provenanceSpec", {})["version"] = version
+
+    if os.path.exists(cssPath):
+        with open(cssPath, encoding="utf8") as fh:
+            cfg["css"] = fh.read()
+    else:
+        cfg["css"] = ""
 
     cfg["local"] = local
     cfg["localDir"] = getLocalDir(cfg, local, version)
 
     apiVersionRequired = cfg.get("apiVersion", None)
-    isCompatible = (
+    isCompatible = not checkApiVersion or (
         apiVersionRequired is not None and apiVersionRequired == apiVersionProvided
     )
     if not isCompatible:
@@ -62,7 +89,7 @@ def findAppConfig(appName, appPath, local, version=None):
             console(
                 f"""
 Your copy of the TF app `{appName}` is outdated for this version of TF.
-Recommendation: obtain a newer version of `appName`.
+Recommendation: obtain a newer version of `{appName}`.
 Hint: load the app in one of the following ways:
 
     {appName}
@@ -112,7 +139,7 @@ but the core API will still work:
             error=True,
         )
 
-    cfg['isCompatible'] = isCompatible
+    cfg["isCompatible"] = isCompatible
     return cfg
 
 

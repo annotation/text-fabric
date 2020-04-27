@@ -84,12 +84,12 @@ LEVEL_DEFAULTS = dict(
 
 
 PROVENANCE_DEFAULTS = (
-    ("org", "annotation"),
-    ("repo", "default"),
+    ("org", None),
+    ("repo", None),
     ("relative", "tf"),
     ("graphics", None),
     ("version", "0.1"),
-    ("moduleSpecs", None),
+    ("moduleSpecs", ()),
     ("zip", None),
     ("corpus", "TF dataset (unspecified)"),
     ("doi", None),
@@ -132,40 +132,53 @@ DATA_DISPLAY_DEFAULTS = (
 
 
 class AppCurrent:
-    def update(self, options):
-        for (k, v) in options.items():
+    def __init__(self, specs):
+        self.update(specs)
+
+    def update(self, specs):
+        for (k, v) in specs.items():
             setattr(self, k, v)
 
 
 def setAppSpecs(app, cfg):
-    for (key, value) in cfg.items():
-        setattr(app, key, value)
-
-    dKey = "interfaceDefaults"
-    setattr(app, dKey, getattr(app, dKey, ()))
-
     specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
     app.specs = specs
+    specs.update(cfg)
 
-    for (dKey, defaults, source) in (
+    dKey = "interfaceDefaults"
+    specs[dKey] = cfg.get(dKey, ())
+
+    dKey = "writing"
+    value = cfg.get(dKey, "")
+    if value not in WRITING_DEFAULTS:
+        value = ""
+    specs[dKey] = value
+    for (k, v) in WRITING_DEFAULTS[value].items():
+        specs[k] = v
+    extension = f" {value}" if value else ""
+    defaultClsOrig = f"{DEFAULT_CLS_ORIG}{extension}"
+    specs.update(extension=extension, defaultClsOrig=defaultClsOrig)
+
+    for (dKey, defaults) in (
         ("provenanceSpecs", PROVENANCE_DEFAULTS),
-        ("dataDisplay", getDataDefaults),
-        ("typeDisplay", getTypeDefaults),
-        ("docs", DOC_DEFAULTS, None),
+        ("docs", DOC_DEFAULTS),
     ):
-        if type(source) is dict:
-            dSource = cfg.get(dKey, {})
-            for (k, v) in defaults:
-                val = dSource.get(k, v)
-                val = val.format(**specs)
-                specs[k] = val
-        else:
-            source(app, dKey)
+        dSource = cfg.get(dKey, {})
+        for (k, v) in defaults:
+            val = dSource.get(k, v)
+            val = (
+                None
+                if val is None
+                else val.format(**specs)
+                if type(val) is str
+                else val
+            )
+            specs[k] = val
 
     if specs["zip"] is None:
         org = specs["org"]
         repo = specs["repo"]
-        moduleSpecs = specs["moduleSpecs"]
+        moduleSpecs = specs["moduleSpecs"] or []
         graphics = specs["graphics"]
         graphicsModule = [(org, repo, graphics)] if graphics else []
         specs["zip"] = (
@@ -175,6 +188,31 @@ def setAppSpecs(app, cfg):
         )
 
     app.context = AppCurrent(specs)
+
+
+def setAppSpecsApi(app, cfg):
+    api = app.api
+    T = api.T
+    C = api.C
+    sectionTypeSet = T.sectionTypeSet
+
+    specs = app.specs
+
+    specs["formatCls"] = compileFormatCls(app, specs["defaultClsOrig"])
+
+    for (dKey, method) in (
+        ("dataDisplay", getDataDefaults),
+        ("typeDisplay", getTypeDefaults),
+    ):
+        method(app, dKey)
+
+    specs["baseTypes"] = (
+        tuple(e[0] for e in C.levels.data if e[0] not in sectionTypeSet),
+    )
+    specs["condenseTypes"] = C.levels.data
+    specs["defaultFormat"] = T.defaultFormat
+
+    app.context.update(specs)
 
 
 def getDataDefaults(app, dKey):
@@ -194,18 +232,6 @@ def getDataDefaults(app, dKey):
         value = givenInfo.get(attr, specs.get(attr, default))
         if attr in specs and attr not in givenInfo:
             continue
-
-        if attr == "writing":
-            if value not in WRITING_DEFAULTS:
-                value = ""
-            for (k, v) in WRITING_DEFAULTS[value].items():
-                specs[k] = v
-            extension = f" {value}" if value else ""
-            defaultClsOrig = f"{DEFAULT_CLS_ORIG}{extension}"
-            formatCls = compileFormatCls(app, defaultClsOrig)
-            specs.update(
-                extension=extension, defaultClsOrig=defaultClsOrig, formatCls=formatCls
-            )
         elif attr == "exampleSection":
             if not value:
                 if sectionTypes:
@@ -214,6 +240,7 @@ def getDataDefaults(app, dKey):
                     value = app.sectionStrFromNode(firstVerse)
                 else:
                     value = "passage"
+            specs["exampleSection"] = value
             specs["exampleSectionHtml"] = f"<code>{value}</code>"
         else:
             specs[attr] = value

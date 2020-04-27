@@ -21,7 +21,7 @@ def getInt(x, default=1):
     return int(x)
 
 
-def getFormData(config):
+def getFormData():
     form = {}
     jobName = request.form.get("jobName", "").strip()
     if jobName:

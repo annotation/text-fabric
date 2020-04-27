@@ -27,15 +27,15 @@ def linksApi(app, appName, silent):
 
     api = app.api
 
-    ac = app.context
-    docUrl = ac.docUrl
-    repo = ac.repo
-    version = ac.version
-    corpus = ac.corpus
-    featureBase = ac.featureBase
-    featurePage = ac.featurePage
-    charUrl = ac.charUrl
-    charText = ac.charText
+    aContext = app.context
+    docUrl = aContext.docUrl
+    repo = aContext.repo
+    version = aContext.version
+    corpus = aContext.corpus
+    featureBase = aContext.featureBase
+    featurePage = aContext.featurePage
+    charUrl = aContext.charUrl
+    charText = aContext.charText
 
     tutUrl = f"{APP_NB_URL}/{appName}/start.ipynb"
     extraUrl = f"{APP_URL}/app-{appName}"
@@ -132,15 +132,15 @@ def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
     F = api.F
     Fs = api.Fs
 
-    ac = app.context
-    version = ac.version
-    webBase = ac.webBase
-    webLang = ac.webUrl
-    webUrl = ac.webUrl
-    webUrlLex = ac.webUrlLex
-    webLexId = ac.webLexId
-    webHint = ac.webHint
-    lexTypes = ac.lexTypes
+    aContext = app.context
+    version = aContext.version
+    webBase = aContext.webBase
+    webLang = aContext.webUrl
+    webUrl = aContext.webUrl
+    webUrlLex = aContext.webUrlLex
+    webLexId = aContext.webLexId
+    webHint = aContext.webHint
+    lexTypes = aContext.lexTypes
 
     nType = F.otype.v(n)
     passageText = None
@@ -202,19 +202,19 @@ def _featuresPerModule(app):
     api = app.api
     TF = api.TF
 
-    ac = app.context
-    mOrg = ac.org
-    mRepo = ac.repo
-    mRelative = ac.relative
-    version = ac.version
-    moduleSpecs = ac.moduleSpecs
-    corpus = ac.corpus
-    featureBase = ac.featureBase
+    aContext = app.context
+    mOrg = aContext.org
+    mRepo = aContext.repo
+    mRelative = aContext.relative
+    version = aContext.version
+    moduleSpecs = aContext.moduleSpecs
+    corpus = aContext.corpus
+    featureBase = aContext.featureBase
 
     features = api.Fall() + api.Eall()
 
     fixedModuleIndex = {}
-    for m in moduleSpecs:
+    for m in moduleSpecs or []:
         fixedModuleIndex[(m["org"], m["repo"], m["relative"])] = (
             m["corpus"],
             m["docUrl"],

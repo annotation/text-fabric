@@ -8,17 +8,13 @@ from time import sleep
 from subprocess import PIPE, Popen
 
 from ..core.helpers import console
-from ..parameters import NAME, VERSION
-from ..applib.find import findApp, findAppConfig
+from ..parameters import NAME, VERSION, PROTOCOL, HOST
 
 from .command import (
-    argDebug,
+    argKill,
     argNoweb,
-    argDocker,
-    argCheckout,
-    argModules,
-    argSets,
-    argParam,
+    argApp,
+    getPort,
 )
 from .kernel import TF_DONE, TF_ERROR
 
@@ -27,38 +23,53 @@ USAGE
 
 text-fabric --help
 text-fabric --version
-text-fabric -k [datasource]
+text-fabric -k [app]
 
-text-fabric datasource[:specifier] args
+text-fabric ./path/to/app --locations=locations-string [--modules=modules-string] args
+text-fabric app[:specifier] args
 
 where all args are optional and args have one of these forms:
 
-  -d
   -noweb
-  -docker
   --checkout=specifier
   --mod=modules
   --set=file
+  --modules=modules-string
+  --locations=locations-string
 
 EFFECT
 
-If a datasource is given and the -k flag is not passed,
-a TF kernel for that data source is started.
+If an app is given and the -k flag is not passed,
+a TF kernel for that app is started.
 When the TF kernel is ready, a web server is started
 serving a website that exposes the data through
 a query interface.
 
-The website can be served or on the internet.
 The default browser will be opened, except when -noweb is passed.
 
-:specifier (after the datasource)
+Instead of a standard app that is available on https://github.com/annotation
+you can also specify an app you have locally, or no app at all.
+
+
+"" (empty string): no app
+path-to-directory: the directory in which your app resides. This argument
+must have a / inside (e.g. ./myapp).
+The directory may contain zero or more of these app.py, config.yaml, static/display.css
+If they are found, they will be used.
+
+If no app is specified, TF features will be loaded according to the
+--locations and --modules args.
+
+For standard apps, the following holds:
+
+:specifier (after the app)
 --checkout=specifier
 
 The TF app itself can be downloaded on the fly from GitHub.
 The main data can be downloaded on the fly from GitHub.
 The specifier indicates a point in the history from where the app should be retrieved.
-  ;specifier is for the TF app code.
-  --checkout=specifier is for the main data.
+  :specifier is used for the TF app code.
+  --checkout=specifier is used for the main data.
 
 Specifiers may be:
   local                 - get the data from your local text-fabric-data directory
@@ -105,13 +116,7 @@ github.
 
 MISCELLANEOUS
 
--d  Debug mode. For developers of Text-Fabric itself.
-    The web server reloads when its code changes.
-    The web server is a Flask instance, started with reload=True.
-
 -noweb Do not start the default browser
-
--docker Assume you are on docker. The local web server is passed 0.0.0.0 as host.
 
 
 CLEAN UP
@@ -129,28 +134,11 @@ stray processes.
 
 FLAGS = set(
     """
-    -d
     -noweb
-    -docker
 """.strip().split()
 )
 
 BANNER = f"This is {NAME} {VERSION}"
-
-
-"""
-    openPorts = getPorts(HOST)
-    config.browser = None
-    if len(openPorts) < 2:
-        console(
-            f'findAppConfig: Not enough open ports for "{dataSource}"', error=True
-        )
-        config.browser = Browser(
-            PROTOCOL,
-            HOST,
-            dict(kernel=openPorts[0], web=openPorts[1]),
-        )
-"""
 
 
 def filterProcess(proc):
@@ -158,84 +146,55 @@ def filterProcess(proc):
     commandName = "" if procName is None else procName.lower()
     # commandName = proc.info['name'].lower()
 
-    found = False
     kind = None
-    checkout = ""
-    modules = ""
-    sets = ""
-    dataSource = None
+    slug = None
 
     trigger = "python"
     if commandName.endswith(trigger) or commandName.endswith(f"{trigger}.exe"):
-        good = False
-        parts = proc.cmdline()
-        for part in parts:
-            part = part.lower()
-            if part in FLAGS:
-                continue
-            trigger = "text-fabric"
-            if part.endswith(trigger) or part.endswith(f"{trigger}.exe"):
-                kind = "tf"
-                continue
-            if part == "tf.server.kernel":
-                kind = "data"
-                good = True
-                continue
-            if part == "tf.server.web":
+        parts = [p for p in proc.cmdline() if p not in FLAGS]
+        (call, *args) = parts
+        trigger = "text-fabric"
+        if call.endswith(trigger) or call.endswith(f"{trigger}.exe"):
+            if all(arg != "-k" for arg in args):
+                return False
+            slug = argApp(args)
+            ports = ()
+            kind = "tf"
+        else:
+            if call == "tf.server.kernel":
+                kind = "kernel"
+            elif call == "tf.server.web":
                 kind = "web"
-                good = True
-                continue
-            if part.endswith("web.py"):
+            elif call.endswith("web.py"):
                 kind = "web"
-                good = True
-                continue
-            if kind in {"data", "web", "tf"}:
-                if kind == "tf" and part == "-k":
-                    break
-                if part.startswith("--checkout="):
-                    checkout = part[11:]
-                if part.startswith("--mod="):
-                    modules = part[7:]
-                elif part.startswith("--sets="):
-                    sets = part[6:]
-                else:
-                    dataSource = part
-                    subParts = part.split(":", maxsplit=1)
-                    if len(subParts) == 1:
-                        subParts.append("")
-                    (dataSource, checkoutApp) = subParts
-                good = True
-        if good:
-            found = True
-    if found:
-        return (kind, dataSource, checkoutApp, checkout, modules, sets)
-    return False
+            (slug, *ports) = args
+
+        if kind == "tf":
+            if any(arg == "-k" for arg in args):
+                return False
+    return (kind, slug, *ports)
 
 
-def killProcesses(dataSource, checkoutApp, checkout, modules, sets, kill=False):
-    tfProcs = {}
+def indexProcesses():
+    tfProcesses = {}
     for proc in psutil.process_iter(attrs=["pid", "name"]):
         test = filterProcess(proc)
         if test:
-            (kind, ds, chkA, chk, mods, sts) = test
-            tfProcs.setdefault((ds, (chkA, chk, mods, sts)), {}).setdefault(
+            (kind, pSlug, *ports) = test
+            tfProcesses.setdefault(pSlug, {}).setdefault(
                 kind, []
-            ).append(proc.info["pid"])
+            ).append((proc.info["pid"], *ports))
+    return tfProcesses
 
+
+def killProcesses(tfProcesses, slug, kill=False):
     item = "killed" if kill else "terminated"
     myself = os.getpid()
-    for ((ds, (chkA, chk, mods, sets)), kinds) in tfProcs.items():
-        if dataSource is None or (
-            ds
-            == dataSource
-            # and chkA == checkoutApp
-            # and chk == checkout
-            # and mods == modules
-            # and sts == sets
-        ):
+    for (pSlug, kinds) in tfProcesses.items():
+        if slug is None or (slug == pSlug):
             checkKinds = ("data", "web", "tf")
             for kind in checkKinds:
-                pids = kinds.get(kind, [])
+                pids = kinds.get(kind, [])[0]
                 for pid in pids:
                     if pid == myself:
                         continue
@@ -245,19 +204,19 @@ def killProcesses(dataSource, checkoutApp, checkout, modules, sets, kill=False):
                             proc.kill()
                         else:
                             proc.terminate()
-                        console(f"Process {kind} server for {ds}: {item}")
+                        console(f"Process {kind} server for {pSlug}: {item}")
                     except psutil.NoSuchProcess:
                         console(
-                            f"Process {kind} server for {ds}: already {item}",
+                            f"Process {kind} server for {pSlug}: already {item}",
                             error=True,
                         )
 
 
-def getKill(cargs=sys.argv):
-    for arg in cargs[1:]:
-        if arg == "-k":
-            return True
-    return False
+def connectPort(tfProcesses, kind, pos, slug):
+    port = tfProcesses.get(slug, {}).get(kind, None)
+    if port:
+        port = port[pos]
+    return port
 
 
 def main(cargs=sys.argv):
@@ -274,122 +233,83 @@ def main(cargs=sys.argv):
 
     isWin = system().lower().startswith("win")
 
-    kill = getKill(cargs=cargs)
-    (dataSource, checkoutApp) = argParam(cargs=cargs, interactive=not kill)
+    kill = argKill(cargs)
 
-    checkout = argCheckout(cargs=cargs)
-    modules = argModules(cargs=cargs)
-    sets = argSets(cargs=cargs)
+    (appName, slug) = argApp(cargs)
 
-    # This start script needs the app, so it downloads it.
-    # It cqlls the TF kernel and the TF webserver.
-    # Both kernel and webserver can be called stand alone,
-    # and both can find and download the app as well.
-    # Now, if this start script has found and downloaded the
-    # app, the kernel and web server can use the local app
-    # So we call them both with a datasource argument extended with
-    # a checkout value that is either 'local' or 'clone',
-    # depending on the original checkoutApp.
-    # Similarly, the kernel will download the data.
-    # The webserver does not have to do that.
+    if appName is None:
+        return
 
-    localCheckout = "clone" if checkout == "clone" else "local"
-    localCheckoutApp = "clone" if checkoutApp == "clone" else "local"
-    localDataSource = f"{dataSource}:{localCheckoutApp}"
+    noweb = argNoweb(cargs)
+
+    tfProcesses = indexProcesses()
 
     if kill:
-        if dataSource is False:
+        if appName is False:
             return
-        killProcesses(dataSource, checkoutApp, checkout, modules, sets)
+        killProcesses(tfProcesses, slug)
         return
 
-    if dataSource is None:
-        return
+    stopped = False
+    portKernel = connectPort(tfProcesses, "kernel", 1, slug)
 
-    noweb = argNoweb(cargs=cargs)
-
-    debug = argDebug(cargs=cargs)
-    docker = argDocker(cargs=cargs)
-
-    kdataSource = (localDataSource,)
-    kdataSource = (
-        kdataSource if checkout is None else (f"--checkout={checkout}", *kdataSource)
-    )
-    kdataSource = (f"--mod={modules}", *kdataSource) if modules else kdataSource
-    kdataSource = (f"--sets={sets}", *kdataSource) if sets else kdataSource
-
-    ddataSource = (localDataSource,)
-    ddataSource = ("-d", *ddataSource) if debug else ddataSource
-    ddataSource = ("-docker", *ddataSource) if docker else ddataSource
-    ddataSource = (f"--checkout={localCheckout}", *ddataSource)
-    ddataSource = (f"--mod={modules}", *ddataSource) if modules else ddataSource
-
-    if dataSource is not None:
-        (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
-        if not appBase:
-            return
-
-        appPath = f"{appBase}/{appDir}"
-        config = findAppConfig(dataSource, appPath)
-        pKernel = None
-        pWeb = None
-        if config is None:
-            return
-
-        console(f"Cleaning up remnant processes, if any ...")
-        killProcesses(dataSource, checkoutApp, checkout, modules, sets, kill=True)
+    if not portKernel:
+        portKernel = getPort()
         pythonExe = "python" if isWin else "python3"
 
-        pKernel = Popen(
-            [pythonExe, "-m", "tf.server.kernel", *kdataSource],
+        processKernel = Popen(
+            [pythonExe, "-m", "tf.server.kernel", slug, portKernel],
             stdout=PIPE,
             bufsize=1,
             encoding="utf-8",
         )
-
-        console(f"Loading data for {dataSource}. Please wait ...")
-        for line in pKernel.stdout:
+        console(f"Loading data for {appName}. Please wait ...")
+        for line in processKernel.stdout:
             sys.stdout.write(line)
             if line.rstrip() == TF_ERROR:
                 return
             if line.rstrip() == TF_DONE:
                 break
         sleep(1)
-        stopped = pKernel.poll()
+        stopped = processKernel.poll()
 
-        if not stopped:
-
-            pWeb = Popen(
-                [pythonExe, "-m", f"tf.server.web", *ddataSource],
+    if not stopped:
+        portWeb = connectPort(tfProcesses, "web", 2, slug)
+        if not portWeb:
+            processWeb = Popen(
+                [pythonExe, "-m", f"tf.server.web", slug, portKernel, portWeb],
                 bufsize=0,
                 encoding="utf8",
             )
 
-            if not noweb:
-                sleep(2)
-                stopped = pWeb.poll() or pKernel.poll()
-                if not stopped:
-                    console(f"Opening {dataSource} in browser")
-                    browser = config.browser
-                    if browser is not None:
-                        webbrowser.open(
-                            f'{browser.protocol}{browser.host}:{browser.port["web"]}',
-                            new=2,
-                            autoraise=True,
-                        )
+    if not noweb:
+        sleep(2)
+        stopped = processWeb.poll() or processKernel.poll()
+        if not stopped:
+            console(f"Opening {appName} in browser")
+            webbrowser.open(
+                f"{PROTOCOL}{HOST}:{portWeb}", new=2, autoraise=True,
+            )
 
-        if pWeb and pKernel:
-            try:
-                for line in pKernel.stdout:
-                    sys.stdout.write(line)
-            except KeyboardInterrupt:
-                console("")
-                if pWeb:
-                    pWeb.terminate()
-                    console("TF web server has stopped")
-                if pKernel:
-                    pKernel.terminate()
-                    for line in pKernel.stdout:
+    if processWeb and processKernel:
+        try:
+            for line in processKernel.stdout:
+                sys.stdout.write(line)
+        except KeyboardInterrupt:
+            console("")
+            if processWeb:
+                processWeb.terminate()
+                console("TF web server has stopped")
+            if processKernel:
+                input("Stop kernel as well? <Ctrl-C>")
+                try:
+                    console(
+                        f"TF kernel will be kept alive for future use"
+                        f"on port {portKernel}"
+                    )
+                except KeyboardInterrupt:
+                    processKernel.terminate()
+                    for line in processKernel.stdout:
                         sys.stdout.write(line)
                     console("TF kernel has stopped")
 

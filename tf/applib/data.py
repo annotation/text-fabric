@@ -20,14 +20,27 @@ class AppData(object):
 
     def getMain(self):
         app = self.app
-        if not self.getModule(
-            app.org, app.repo, app.relative, self.checkout, isBase=True,
-        ):
+        aContext = app.context
+        org = aContext.org
+        repo = aContext.repo
+        relative = aContext.relative
+        appPath = aContext.appPath
+        appName = aContext.appName
+
+        if org is None or repo is None:
+            appPathRep = f"{appPath}/" if appPath else ""
+            relative = f"{appPathRep}{appName}"
+            self.checkout = "local"
+
+        if not self.getModule(org, repo, relative, self.checkout, isBase=True):
             self.good = False
 
     def getStandard(self):
         app = self.app
-        for m in app.moduleSpecs or []:
+        aContext = app.context
+        moduleSpecs = aContext.moduleSpecs
+
+        for m in moduleSpecs or []:
             if not self.getModule(
                 m["org"],
                 m["repo"],
@@ -105,27 +118,33 @@ class AppData(object):
     def getModule(
         self, org, repo, relative, checkout, isBase=False, specs=None,
     ):
+        mLocations = self.mLocations
+
         moduleRef = f"{org}/{repo}/{relative}"
         if moduleRef in self.seen:
             return True
 
-        (commit, release, local, localBase, localDir) = checkoutRepo(
-            org=org,
-            repo=repo,
-            folder=relative,
-            version=self.version,
-            checkout=checkout,
-            withPaths=False,
-            keep=False,
-            silent=self.silent,
-        )
-        if not localBase:
-            return False
+        if org is None or repo is None:
+            repoLocation = relative
+            mLocations.append(relative)
+        else:
+            (commit, release, local, localBase, localDir) = checkoutRepo(
+                org=org,
+                repo=repo,
+                folder=relative,
+                version=self.version,
+                checkout=checkout,
+                withPaths=False,
+                keep=False,
+                silent=self.silent,
+            )
+            if not localBase:
+                return False
+
+            repoLocation = f"{localBase}/{org}/{repo}"
+            mLocations.append(f"{localBase}/{localDir}")
 
         self.seen.add(moduleRef)
-        repoLocation = f"{localBase}/{org}/{repo}"
-        # self.mLocations.append(f'{repoLocation}/{relative}')
-        self.mLocations.append(f"{localBase}/{localDir}")
         if isBase:
             self.app.repoLocation = repoLocation
 

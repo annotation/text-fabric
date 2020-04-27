@@ -143,8 +143,20 @@ APP_NB_URL = f"{URL_NB}/{ORG}/tutorials/blob/master"
 APP_GITHUB = f"{GH_BASE}/annotation"
 """Local GitHub location that contains all the TF apps."""
 
+APP_CONFIG = "config.yaml"
+"""Name of the config file of a TF app."""
+
 APP_CODE = "code"
 """Name of the top-level directory of a TF app."""
+
+APP_DISPLAY = "static/display.css"
+"""Relative path of the css file of a TF app."""
+
+SERVER_DISPLAY_BASE = "/server/static"
+"""Base of server css files."""
+
+SERVER_DISPLAY = ("display.css", "highlight.css")
+"""Bunch of TF-generic css files."""
 
 TEMP_DIR = "_temp"
 """Name of temporary directories.

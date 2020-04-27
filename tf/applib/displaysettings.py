@@ -36,16 +36,17 @@ class DisplaySettings:
     def __init__(self, app):
         self.app = app
 
-        interfaceDefaults = app.interfaceDefaults
+        aContext = app.context
+        interfaceDefaults = aContext.interfaceDefaults
 
-        ac = app.context._asdict()
+        aContext = aContext._asdict()
 
         self.displayDefaults = {}
         displayDefaults = self.displayDefaults
 
         for (k, v) in DISPLAY_OPTIONS.items():
             value = v
-            appDefault = ac.get(k, None)
+            appDefault = aContext.get(k, None)
             if appDefault is not None:
                 value = appDefault
             if k in interfaceDefaults:

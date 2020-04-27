@@ -9,8 +9,8 @@ def textApi(app):
         xdTypes = T._xdTypes
         defaultFormat = T.defaultFormat
 
-        ac = app.context
-        textFormats = ac.textFormats
+        aContext = app.context
+        textFormats = aContext.textFormats
 
         for (fmt, method) in textFormats.items():
             (descendType, method) = T.splitFormat(method)
@@ -25,3 +25,5 @@ def textApi(app):
             else:
                 func = getattr(app, func)
             xFormats[fmt] = func
+
+        aContext.allFormats = T.formats

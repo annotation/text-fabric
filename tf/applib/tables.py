@@ -243,11 +243,12 @@ def _plainTextSFinal(
     api = app.api
     T = api.T
 
-    ac = app.context
+    aContext = app.context
+    formatCls = aContext.formatCls
 
     secStr = str(T.sectionFromNode(sNode)[browseNavLevel])
     isOpened = secStr in opened
-    tCls = "" if fmt is None else ac.formatCls[fmt].lower()
+    tCls = "" if fmt is None else formatCls[fmt].lower()
 
     prettyRep = (
         prettyTuple(

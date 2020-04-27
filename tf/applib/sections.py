@@ -12,10 +12,9 @@ def nodeFromSectionStr(app, sectionStr, lang="en"):
     api = app.api
     T = api.T
 
-    ac = app.context
-
-    sep1 = ac.sectionSep1
-    sep2 = ac.sectionSep2
+    aContext = app.context
+    sep1 = aContext.sectionSep1
+    sep2 = aContext.sectionSep2
 
     msg = f'Not a valid passage: "{sectionStr}"'
     msgi = '{} "{}" is not a number'
@@ -54,10 +53,9 @@ def sectionStrFromNode(app, n, lang="en", lastSlot=False, fillup=False):
     api = app.api
     T = api.T
 
-    ac = app.context
-
-    sep1 = ac.sectionSep1
-    sep2 = ac.sectionSep2
+    aContext = app.context
+    sep1 = aContext.sectionSep1
+    sep2 = aContext.sectionSep2
 
     seps = ("", sep1, sep2)
 

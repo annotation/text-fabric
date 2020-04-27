@@ -231,7 +231,9 @@ def shipDocs():
 
 def shipData(app, remaining):
     result = findApp(app, "clone", silent=False)
-    appDir = f"{result[3]}/{result[4]}"
+    appBase = result[3]
+    appBaseRep = f"{appBase}/" if appBase else ""
+    appDir = f"{appBaseRep}/{result[4]}"
     if not appDir:
         console("Data not shipped")
     config = findAppConfig(app, appDir)

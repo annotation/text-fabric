@@ -2,7 +2,7 @@
 	<head>
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<title>TF {{dataSource}}-{{jobName}}</title>
+		<title>TF {{appName}}-{{jobName}}</title>
 		<meta name="application-name" content="Text-Fabric Search Box"/>
 		<link rel="shortcut icon" href="/server/static/favicon.ico">
 		<link rel="stylesheet" href="/server/static/base.css"/>
@@ -15,7 +15,7 @@
 	</head>
 	<body>
 		<form id="go" method="post" enctype="multipart/form-data">
-		<input type="hidden" id="appName" name="appName" value="{{dataSource}}"/>
+		<input type="hidden" id="appName" name="appName" value="{{appName}}"/>
 		<div class="page">
 			<div id="sidebar">
 				<div status="about">
@@ -161,7 +161,7 @@
 					</div>
 					<details id="helpTf" class="help">
 						<summary>Text-Fabric Browser</summary>
-						<p>Explore the {{dataSource}} corpus.</p>
+						<p>Explore the {{appName}} corpus.</p>
 						<p>Use the
 							<span class="sections">{{defaultCondenseType}}-</span>,
 							<span class="tuples">node-</span>, and
@@ -170,7 +170,7 @@
 						<p>Copy individual results to the <span class="tuples">node pad</span>
 						   to compare them to each other.</p>
 						<p>Describe your study and export your work as a PDF with links
-						   to archived copies of the {{dataSource}} corpus and this tool.</p>
+						   to archived copies of the {{appName}} corpus and this tool.</p>
 						<p>Open <b>multiple windows and tabs</b> with this url,
 						   they all communicate with one and the same TF kernel;
 						   the lengthy data loading only happens when the TF kernel starts up,
@@ -212,7 +212,7 @@
 					</details>
 					<details id="helpResults" class="help">
 						<summary>Result list</summary>
-						<p>Show the text in the {{defaultTextFormat}} text format:
+						<p>Show the text in the {{defaultFormat}} text format:
 						   see the <i>text format</i> option.</p>
 						<p>Group results by {{defaultCondenseType}}:
 						   see the <i>condense</i> option.</p>

@@ -4,7 +4,7 @@ from ..lib import readSets
 from ..core.helpers import console, setDir
 from .find import findAppConfig
 from .helpers import dh
-from .settings import setAppSpecs
+from .settings import setAppSpecs, setAppSpecsApi
 from .links import linksApi, outLink
 from .text import textApi
 from .sections import sectionsApi
@@ -35,28 +35,19 @@ class App:
         silent=False,
         _browse=False,
     ):
-        isRawTf = "/" in appName
-
         for (key, value) in dict(
             appName=appName, api=api, version=version, silent=silent,
         ).items():
             setattr(self, key, value)
 
-        self.appPath = appPath
-        self.commit = commit
-
-        cfg = (
-            dict(isCompatible=True)
-            if isRawTf
-            else findAppConfig(appName, appPath, local, version=version)
-        )
-
-        version = cfg["version"]
-        self.isCompatible = cfg["isCompatible"]
+        cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
         setAppSpecs(self, cfg)
+
+        self.isCompatible = cfg["isCompatible"]
 
         dKey = "dataDisplay"
         self.excludedFeatures = getattr(self, dKey, {}).get("excludedFeatures", set())
+        version = cfg["provenanceSpec"]["version"]
 
         setDir(self)
 
@@ -89,6 +80,7 @@ class App:
                 self.api = None
 
         if self.api:
+            setAppSpecsApi(self, cfg)
             linksApi(self, appName, silent)
             searchApi(self)
             sectionsApi(self)
@@ -116,22 +108,24 @@ class App:
             if not _browse:
                 console(
                     f"""
-    There were problems with loading data.
-    The Text-Fabric API has not been loaded!
-    The app "{appName}" will not work!
-    """,
+There were problems with loading data.
+The Text-Fabric API has not been loaded!
+The app "{appName}" will not work!
+""",
                     error=True,
                 )
 
     def reuse(self, hoist=False):
-        appPath = self.appPath
-        appName = self.appName
-        local = self.local
-        version = self.version
+        aContext = self.context
+        appPath = aContext.appPath
+        appName = aContext.appName
+        local = aContext.local
+        version = aContext.version
         api = self.api
 
         cfg = findAppConfig(appName, appPath, local, version=version)
         setAppSpecs(self, cfg)
+        setAppSpecsApi(self, cfg)
 
         if api:
             linksApi(self, appName, True)

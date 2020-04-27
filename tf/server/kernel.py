@@ -6,18 +6,14 @@ import rpyc
 from rpyc.utils.server import ThreadedServer
 
 from ..core.helpers import console
-from ..applib.find import findApp, findAppConfig, findAppClass
+from ..applib.app import App
+from ..applib.find import findApp, findAppClass
 from ..applib.highlight import getPassageHighlights
 from ..applib.search import runSearch, runSearchCondensed
 from ..applib.display import getResultsX
 from ..applib.tables import compose, composeP, composeT
 
-from .command import (
-    argCheckout,
-    argModules,
-    argSets,
-    argParam,
-)
+from .command import argKernel
 
 TF_DONE = "TF setup done."
 TF_ERROR = "Could not set up TF"
@@ -27,26 +23,32 @@ TF_ERROR = "Could not set up TF"
 
 
 def makeTfKernel(
-    dataSource, appPath, commit, release, local, moduleRefs, setFile, checkout, port,
+    appName,
+    appPath,
+    commit,
+    release,
+    local,
+    locations,
+    modules,
+    moduleRefs,
+    setFile,
+    checkout,
+    port,
 ):
-    config = findAppConfig(dataSource, appPath)
-    if config is None:
-        return None
-    appClass = findAppClass(dataSource, appPath)
-    if appClass is None:
-        return None
+    appClass = findAppClass(appName, appPath) or App
 
-    console(f"Setting up TF kernel for {dataSource} {moduleRefs} {setFile}")
+    console(f"Setting up TF kernel for {appName} {moduleRefs} {setFile}")
     app = appClass(
-        dataSource,
+        appName,
         appPath,
         commit,
         release,
         local,
         _browse=True,
+        locations=locations,
+        modules=modules,
         mod=moduleRefs,
         setFile=setFile,
-        version=config.VERSION,
         checkout=checkout,
     )
 
@@ -86,7 +88,7 @@ def makeTfKernel(
 
         def exposed_provenance(self):
             app = self.app
-            appProvenance = ((("name", dataSource), ("commit", commit)),)
+            appProvenance = ((("name", appName), ("commit", commit)),)
             return (appProvenance, app.provenance)
 
         def exposed_setNames(self):
@@ -101,24 +103,8 @@ def makeTfKernel(
             app = self.app
             return f'<style type="text/css">{app.loadCss()}</style>'
 
-        def exposed_configSettings(self):
-            app = self.app
-            api = app.api
-            T = api.T
-            C = api.C
-            sectionTypeSet = T.sectionTypeSet
-
-            ac = app.context
-            return (
-                ac.baseType,
-                ac.condenseType,
-                ac.exampleSectionHtml,
-                ac.exampleSection,
-                tuple(e[0] for e in api.C.levels.data if e[0] not in sectionTypeSet),
-                C.levels.data,
-                T.defaultFormat,
-                T.formats,
-            )
+        def exposed_context(self):
+            return pickle.dumps(app.context)
 
         def exposed_passage(
             self,
@@ -137,17 +123,17 @@ def makeTfKernel(
             L = api.L
             T = api.T
 
-            ac = app.context
+            aContext = app.context
+            browseNavLevel = aContext.browseNavLevel
+            browseContentPretty = aContext.browseContentPretty
 
             sectionFeatureTypes = T.sectionFeatureTypes
             sec0Type = T.sectionTypes[0]
             sec1Type = T.sectionTypes[1]
             sectionDepth = len(T.sectionTypes)
-            browseNavLevel = ac.browseNavLevel
             browseNavLevel = min((sectionDepth, browseNavLevel))
             finalSecType = T.sectionTypes[browseNavLevel]
             finalSec = (sec0, sec1, sec2)[browseNavLevel]
-            browseContentPretty = ac.browseContentPretty
 
             if sec0:
                 if sectionFeatureTypes[0] == "int":
@@ -363,13 +349,7 @@ def makeTfKernel(
             )
             if condensed and condenseType:
                 csvs += ((f"resultsBy{condenseType}", queryResultsC),)
-            resultsX = getResultsX(
-                app,
-                queryResults,
-                features,
-                condenseType,
-                fmt=fmt,
-            )
+            resultsX = getResultsX(app, queryResults, features, condenseType, fmt=fmt,)
             return (queryMessages, pickle.dumps(csvs), pickle.dumps(resultsX))
 
     return ThreadedServer(
@@ -405,36 +385,40 @@ def makeTfConnection(host, port, timeout):
 
 
 def main(cargs=sys.argv):
-    (dataSource, checkoutApp) = argParam(cargs=cargs, interactive=True)
-    if dataSource is None:
+    args = argKernel(cargs)
+    if not args:
         return
-    checkout = argCheckout(cargs=cargs)
+
+    (dataSource, portKernel) = args
+    appName = dataSource["appName"]
+    checkout = dataSource["checkout"]
+    checkoutApp = dataSource["checkoutApp"]
+    moduleRefs = dataSource["moduleRefs"]
+    locations = dataSource["locations"]
+    modules = dataSource["modules"]
+    setFile = dataSource["setFile"]
+
     if checkout is None:
         checkout = ""
-    moduleRefs = argModules(cargs=cargs)
-    setFile = argSets(cargs=cargs)
 
-    if dataSource is not None:
-        (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
-        if appBase:
-            appPath = f"{appBase}/{appDir}"
-            config = findAppConfig(dataSource, appPath)
-            if config is not None:
-                browser = config.browser
-                if browser is not None:
-                    kernel = makeTfKernel(
-                        dataSource,
-                        appPath,
-                        commit,
-                        release,
-                        local,
-                        moduleRefs,
-                        setFile,
-                        checkout,
-                        browser.port["kernel"],
-                    )
-                    if kernel:
-                        kernel.start()
+    (commit, release, local, appBase, appDir, appName) = findApp(appName, checkoutApp)
+    if appBase:
+        appPath = f"{appBase}/{appDir}"
+        kernel = makeTfKernel(
+            appName,
+            appPath,
+            commit,
+            release,
+            local,
+            locations,
+            modules,
+            moduleRefs,
+            setFile,
+            checkout,
+            portKernel,
+        )
+        if kernel:
+            kernel.start()
 
 
 # LOWER LEVEL
