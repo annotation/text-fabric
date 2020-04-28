@@ -2,8 +2,7 @@ import os
 
 from IPython.display import display, Markdown, HTML
 
-from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR, APP_DISPLAY
-from ..core.helpers import camel
+from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
 
 
 RESULT = "result"
@@ -21,21 +20,8 @@ def dh(html):
 # COLLECT CONFIG SETTINGS IN A DICT
 
 
-def configureNames(names, myDir):
-    """
-  Collect the all-uppercase globals from a config file
-  and put them in a dict in camel case.
-  """
-    result = {camel(key): value for (key, value) in names.items() if key == key.upper()}
-
-    with open(f"{myDir}/{APP_DISPLAY}", encoding="utf8") as fh:
-        result["css"] = fh.read()
-
-    return result
-
-
-def getLocalDir(names, local, version):
-    provenanceSpec = names.get("provenanceSpec", {})
+def getLocalDir(cfg, local, version):
+    provenanceSpec = cfg.get("provenanceSpec", {})
     org = provenanceSpec.get("org", None)
     repo = provenanceSpec.get("repo", None)
     relative = provenanceSpec.get("relative", "tf")

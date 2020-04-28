@@ -14,19 +14,6 @@ from .settings import DEFAULT_CLS
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
 
-FONT_BASE = (
-    "https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts"
-)
-
-CSS_FONT_API = f"""
-@font-face {{{{
-  font-family: "{{fontName}}";
-  src:
-    local("{{font}}"),
-    url("{FONT_BASE}/{{fontw}}?raw=true");
-}}}}
-"""
-
 ORIG = "orig"
 
 OuterContext = namedtuple(
@@ -158,11 +145,11 @@ def table(app, tuples, _asString=False, **options):
         if one:
             heads = '</th><th class="tf">'.join(fOtype(n) for n in tup)
             html.append(
-                f"""
+                f"""\
 <tr class="tf">
   <th class="tf">n{passageHead}</th>
   <th class="tf">{heads}</th>
-</tr>
+</tr>\
 """
             )
             one = False
@@ -250,7 +237,7 @@ def plainTuple(
                 }</span>"""
             for (i, n) in enumerate(tup)
         )
-        html = f"""
+        html = f"""\
   <details class="pretty dtrow {current}" seq="{seq}" {attOpen}>
     <summary>
       <a href="#" class="pq fa fa-solar-panel fa-xs"
@@ -259,7 +246,7 @@ def plainTuple(
       {passageRef} {plainRep}
     </summary>
     <div class="pretty">{prettyRep}</div>
-  </details>
+  </details>\
 """
         return html
 
@@ -327,8 +314,14 @@ def plain(app, n, _inTuple=False, _asString=False, **options):
     dh(passage + rep)
 
 
-def _doPlain(app, dContext, oContext, n, outer, html, done=set()):
-    done.add(n)
+def _doPlain(app, dContext, oContext, n, outer, html, seen=set()):
+    if n in seen:
+        return
+
+    if outer:
+        seen = set()
+
+    seen.add(n)
 
     nContext = _prepareDisplay(app, False, dContext, oContext, n, outer)
     if not nContext:
@@ -368,17 +361,17 @@ def _doPlain(app, dContext, oContext, n, outer, html, done=set()):
     if nodePart:
         html.append(nodePart)
 
-    html.append(_doPlainNode(app, dContext, oContext, nContext, n, outer, done=done))
+    html.append(_doPlainNode(app, dContext, oContext, nContext, n, outer, seen=seen))
 
     for ch in children:
-        _doPlain(app, dContext, oContext, ch, False, html, done=done)
+        _doPlain(app, dContext, oContext, ch, False, html, seen=seen)
     html.append("""</span>""")
     if didSuper:
         html.append("""</span>""")
     return "".join(html) if outer else None
 
 
-def _doPlainNode(app, dContext, oContext, nContext, n, outer, done=set()):
+def _doPlainNode(app, dContext, oContext, nContext, n, outer, seen=set()):
     api = app.api
     T = api.T
 
@@ -397,7 +390,7 @@ def _doPlainNode(app, dContext, oContext, nContext, n, outer, done=set()):
 
     if nType in plainCustom:
         method = plainCustom[nType]
-        contrib = method(app, dContext, oContext, nContext, n, outer, done=done)
+        contrib = method(app, dContext, oContext, nContext, n, outer, seen=seen)
         return contrib
     if isSlotOrDescend:
         text = T.text(n, fmt=fmt, descend=descend)
@@ -408,8 +401,7 @@ def _doPlainNode(app, dContext, oContext, nContext, n, outer, done=set()):
         (isText, tplFilled) = getText(app, n, nType, fmt=fmt, descend=descend)
         if isText and isHtml:
             tplFilled = htmlEsc(tplFilled)
-        if contrib:
-            contrib = f"""<span class="plain {ltr}">{tplFilled}</span>"""
+        contrib = f"""<span class="plain {ltr}">{tplFilled}</span>"""
     return contrib
 
 
@@ -581,7 +573,7 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
     nodePlain = None
     if isBaseNonSlot:
         done = set()
-        nodePlain = _doPlain(app, dContext, oContext, n, True, [], done=done)
+        nodePlain = _doPlain(app, dContext, oContext, n, True, [], seen=done)
         seen |= done
 
     didSuper = False
@@ -604,10 +596,10 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
                 app, dContext, soContext, snContext, sn, False, sNodePlain
             )
             html.append(
-                f"""
+                f"""\
 <div class="{scls['container']} {ltr} {sboundaryCls} {shlCls}" {shlStyle}>
 {sLabel}{sFeaturePart}
-<div class="{scls['children']} {ltr}">
+<div class="{scls['children']} {ltr}">\
 """
             )
             didSuper = True
@@ -806,7 +798,7 @@ def getPassage(app, isPretty, dContext, oContext, n):
     return f"""<span class="psg ltr">{passage}{NB}</span>"""
 
 
-def getText(app, n, nType, tpl, feats, fmt=None, descend=None):
+def getText(app, n, nType, fmt=None, descend=None):
     T = app.api.T
     sectionTypeSet = T.sectionTypeSet
     structureTypeSet = T.structureTypeSet
@@ -814,13 +806,13 @@ def getText(app, n, nType, tpl, feats, fmt=None, descend=None):
     aContext = app.context
     templates = aContext.templates
 
-    tpl = templates.get(nType, "")
+    (tpl, feats) = templates[nType]
 
     tplFilled = (
         (
             app.sectionStrFromNode(n)
             if nType in sectionTypeSet
-            else T.structureStrFromNode(n)
+            else app.structureStrFromNode(n)
             if nType in structureTypeSet
             else T.text(n, fmt=fmt, descend=descend)
         )
@@ -1157,21 +1149,17 @@ def getFeatures(app, dContext, n, nType):
 
 
 def loadCss(app):
+    """The CSS is looked up and then loaded into a notebook if we are not
+    running in the TF browser,
+    else the CSS is returned.
     """
-  The CSS is looked up and then loaded into a notebook if we are not
-  running in the TF browser,
-  else the CSS is returned.
-  """
+
     _browse = app._browse
-    css = app.css
+    aContext = app.context
+    css = aContext.css
 
     if _browse:
         return css
-
-    aContext = app.context
-    font = aContext.font
-    fontw = aContext.fontw
-    fontName = aContext.fontName
 
     cssPath = (
         f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}"
@@ -1182,18 +1170,13 @@ def loadCss(app):
         with open(f"{cssPath}/{cssFile}", encoding="utf8") as fh:
             genericCss += fh.read()
 
-    cssFont = (
-        ""
-        if fontName is None
-        else CSS_FONT_API.format(fontName=fontName, font=font, fontw=fontw)
-    )
     tableCss = """
 tr.tf, td.tf, th.tf {
   text-align: left ! important;
 }
 
 """
-    dh(f"<style>{cssFont + tableCss + genericCss + css}</style>")
+    dh(f"<style>{tableCss + genericCss + css}</style>")
 
 
 def getRefMember(app, tup, dContext):

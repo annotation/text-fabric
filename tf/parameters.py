@@ -125,11 +125,11 @@ PORT_BASE = 8976
 URL_TFDOC = f"https://{ORG}.github.io/{REPO}"
 """Base url of the online Text-Fabric documentation."""
 
-DOI_TEXT = "10.5281/zenodo.592193"
-"""Text of a DOI link pointing to an archived copy of this repo at Zenodo."""
+DOI_DEFAULT = "no DOI"
+DOI_URL_PREFIX = "https://doi.org"
 
-DOI_URL = "https://doi.org/10.5281/zenodo.592193"
-"""Url of an archived copy of this repo at Zenodo."""
+DOI_TF = "10.5281/zenodo.592193"
+"""DOI of an archived copy of this repo at Zenodo."""
 
 APIREF = f"https://{ORG}.github.io/{REPO}/Api/Fabric/"
 """Link to the Api docs of Text-Fabric."""
@@ -155,7 +155,7 @@ APP_DISPLAY = "static/display.css"
 SERVER_DISPLAY_BASE = "/server/static"
 """Base of server css files."""
 
-SERVER_DISPLAY = ("display.css", "highlight.css")
+SERVER_DISPLAY = ("fonts.css", "display.css", "highlight.css")
 """Bunch of TF-generic css files."""
 
 TEMP_DIR = "_temp"

@@ -48,21 +48,17 @@ def compose(
                 doHeader = True
             else:
                 tuplesHtml.append(
-                    f"""
-<div class="dtheadrow">
-  <span>n</span><span>{tup}</span>
-</div>
-"""
+                    f'<div class="dtheadrow"><span>n</span><span>{tup}</span></div>'
                 )
             continue
 
         if doHeader:
             doHeader = False
             tuplesHtml.append(
-                f"""
+                f"""\
 <div class="dtheadrow">
   <span>n</span><span>{"</span><span>".join(fOtype(n) for n in tup)}</span>
-</div>
+</div>\
 """
             )
         tuplesHtml.append(
@@ -127,22 +123,16 @@ def composeT(
                 doHeader = True
             else:
                 tuplesHtml.append(
-                    f"""
-<div class="dtheadrow">
-  <span>n</span><span>{tup}</span>
-</div>
-"""
+                    f'<div class="dtheadrow"><span>n</span><span>{tup}</span></div>'
                 )
             continue
 
         if doHeader:
             doHeader = False
             tuplesHtml.append(
-                f"""
-<div class="dtheadrow">
-  <span>n</span><span>{"</span><span>".join(fOtype(n) for n in tup)}</span>
-</div>
-"""
+                f'<div class="dtheadrow"><span>n</span><span>'
+                + "</span><span>".join(fOtype(n) for n in tup)
+                + "</span></div>"
             )
         tuplesHtml.append(
             plainTuple(
@@ -266,22 +256,16 @@ def _plainTextSFinal(
     attOpen = " open " if isOpened else ""
 
     textRep = plain(
-        app,
-        sNode,
-        withPassage=False,
-        **display.consume(options, "withPassage"),
+        app, sNode, withPassage=False, **display.consume(options, "withPassage"),
     )
-    html = f"""
+    html = f"""\
 <details
   class="pretty{current}"
   seq="{secStr}"
   {attOpen}
 >
-  <summary class="{tCls}">
-    {app._sectionLink(sNode, text=secStr)}
-    {textRep}
-  </summary>
+  <summary class="{tCls}">{app._sectionLink(sNode, text=secStr)} {textRep}</summary>
   <div class="pretty">{prettyRep}</div>
-</details>
+</details>\
 """
     return html

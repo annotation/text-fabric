@@ -1,7 +1,7 @@
 import time
 import datetime
 
-from ..parameters import NAME, VERSION, DOI_TEXT, DOI_URL, APP_URL
+from ..parameters import NAME, VERSION, DOI_URL_PREFIX, DOI_DEFAULT, DOI_TF, APP_URL
 from ..applib.displaySettings import INTERFACE_OPTIONS
 from tf.applib.helpers import NB
 
@@ -75,15 +75,14 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
             sec1s.append(
                 f'<a href="#" class="s1nav {" focus" if selected else ""}">{s1}</a>'
             )
-    return f"""
-  <div class="sline">
-    <span><span id="s0total"></span> <span class="s0total">{sec0Type}s</span></span>
-    {''.join(sec0s)}
-  </div>
-  <div class="sline">
-    {''.join(sec1s)}
-  </div>
-"""
+    return (
+        f'<div class="sline"><span><span id="s0total"></span>'
+        f' <span class="s0total">{sec0Type}s</span></span>'
+        + "".join(sec0s)
+        + '</div><div class="sline">'
+        + "".join(sec1s)
+        + "</div>"
+    )
 
 
 # OPTIONS
@@ -106,12 +105,8 @@ def wrapOptions(context, form, defaults):
         value = form[option]
         value = "checked" if value else ""
         html.append(
-            f"""
-      <div>
-        <input
-          class="r" type="{typ}" id="{acro}" name="{option}" {value}
-        /> <span class="ilab">{desc}</span>
-      </div>"""
+            f'<div><input class="r" type="{typ}" id="{acro}" name="{option}" {value}/>'
+            f' <span class="ilab">{desc}</span></div>'
         )
     return "\n".join(html)
 
@@ -121,17 +116,11 @@ def wrapBase(baseTypes, value):
     for (i, otype) in enumerate(baseTypes):
         checked = " checked " if value == otype else ""
         radio = (
-            f"""<input class="r bradio" type="radio"
-              name="baseTp" value="{otype}" {checked}
-            />"""
+            f'<input class="r bradio" type="radio" name="baseTp" value="{otype}"'
+            f" {checked}/>"
         )
         html.append(
-            f"""
-    <div class="cline">
-      {radio}
-      <span class="ctype">{otype}</span>
-    </div>
-  """
+            f'<div class="cline">{radio} <span class="ctype">{otype}</span></div>'
         )
     return "\n".join(html)
 
@@ -144,18 +133,15 @@ def wrapCondense(condenseTypes, value):
         radio = (
             f'<span class="cradio">{NB}</span>'
             if i == lastType
-            else f"""<input class="r cradio" type="radio"
-              name="condenseTp" value="{otype}" {checked}
-            />"""
+            else (
+                f'<input class="r cradio" type="radio" name="condenseTp"'
+                f' value="{otype}" {checked}/>'
+            )
         )
         html.append(
-            f"""
-    <div class="cline">
-      {radio}
-      <span class="ctype">{otype}</span>
-      <span class="cinfo">{e - b + 1: 8.6g} x av length {av: 4.2g}</span>
-    </div>
-  """
+            f'<div class="cline">{radio} <span class="ctype">{otype}</span>'
+            f' <span class="cinfo">{e - b + 1: 8.6g} x av length {av: 4.2g}</span>'
+            f"</div>"
         )
     return "\n".join(html)
 
@@ -164,16 +150,12 @@ def wrapFormats(allFormats, value):
     html = []
     for (i, fmt) in enumerate(allFormats):
         checked = " checked " if value == fmt else ""
-        radio = f"""<input class="r tradio" type="radio" id="ttp{i}"
-              name="textformat" value="{fmt}" {checked}
-            "/>"""
+        radio = (
+            f'<input class="r tradio" type="radio" id="ttp{i}"'
+            f' name="textformat" value="{fmt}" {checked} "/>'
+        )
         html.append(
-            f"""
-    <div class="tfline">
-      {radio}
-      <span class="ttext">{fmt}</span>
-    </div>
-  """
+            f'<div class="tfline">{radio} <span class="ttext">{fmt}</span></div>'
         )
     return "\n".join(html)
 
@@ -205,7 +187,7 @@ def wrapProvenance(form, provenance, setNames):
         url = f"{APP_URL}/app-{name}/tree/{commit}"
         liveHtml = f'<a href="{url}">{commit}</a>'
         liveMd = f"[{commit}]({url})"
-        appHtml += f"""
+        appHtml += f"""\
     <div class="pline">
       <div class="pname">TF App:</div>
       <div class="pval">{name}</div>
@@ -213,7 +195,7 @@ def wrapProvenance(form, provenance, setNames):
     <div class="p2line">
       <div class="pname">commit</div>
       <div class="pval">{liveHtml}</div>
-    </div>
+    </div>\
 """
         appMd += f"""{sep}TF app | {name}
 commit | {liveMd}"""
@@ -231,10 +213,11 @@ commit | {liveMd}"""
         (live, liveU) = d["live"]
         liveHtml = f'<a href="{liveU}">{live}</a>'
         liveMd = f"[{live}]({liveU})"
-        (doiText, doiUrl) = d["doi"]
-        doiHtml = f'<a href="{doiUrl}">{doiText}</a>'
-        doiMd = f"[{doiText}]({doiUrl})"
-        dataHtml += f"""
+        doi = d["doi"]
+        doiUrl = f"{DOI_URL_PREFIX}/{doi}"
+        doiHtml = f'<a href="{doiUrl}">{doi}</a>' if doi else DOI_DEFAULT
+        doiMd = f"[{doi}]({doiUrl})" if doi else DOI_DEFAULT
+        dataHtml += f"""\
     <div class="pline">
       <div class="pname">Data:</div>
       <div class="pval">{corpus}</div>
@@ -254,7 +237,7 @@ commit | {liveMd}"""
     <div class="p2line">
       <div class="pname">DOI</div>
       <div class="pval">{doiHtml}</div>
-    </div>
+    </div>\
 """
         dataMd += f"""{sep}Data source | {corpus}
 version | {version}
@@ -268,20 +251,21 @@ DOI | {doiMd}"""
 
     if setNames:
         setNamesRep = ", ".join(setNames)
-        setHtml += f"""
+        setHtml += f"""\
     <div class="psline">
       <div class="pname">Sets:</div>
       <div class="pval">{setNamesRep} (<b>not exported</b>)</div>
-    </div>
+    </div>\
 """
         setMd += f"""Sets | {setNamesRep} (**not exported**)"""
 
     tool = f"{NAME} {VERSION}"
-    toolDoiHtml = f'<a href="{DOI_URL}">{DOI_TEXT}</a>'
-    toolDoiMd = f"[{DOI_TEXT}]({DOI_URL})"
+    toolDoiUrl = f"{DOI_URL_PREFIX}/{DOI_TF}"
+    toolDoiHtml = f'<a href="{toolDoiUrl}">{DOI_TF}</a>'
+    toolDoiMd = f"[{DOI_TF}]({toolDoiUrl})"
 
     html = f"""
-    <div class="pline">
+    <div class="pline">\
       <div class="pname">Job:</div><div class="pval">{job}</div>
     </div>
     <div class="pline">
@@ -296,7 +280,7 @@ DOI | {doiMd}"""
       <div class="pname">Tool:</div>
       <div class="pval">{tool} {toolDoiHtml}</div>
     </div>
-    {appHtml}
+    {appHtml}\
   """
 
     md = f"""

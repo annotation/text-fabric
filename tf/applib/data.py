@@ -68,7 +68,9 @@ class AppData(object):
 
     def getModules(self):
         self.provenance = []
+        provenance = self.provenance
         self.mLocations = []
+        mLocations = self.mLocations
 
         self.locations = None
         self.modules = None
@@ -80,17 +82,19 @@ class AppData(object):
         self.getStandard()
         self.getRefs()
 
+        version = self.version
+        good = self.good
         app = self.app
 
-        if self.good:
-            app.mLocations = self.mLocations
-            app.provenance = self.provenance
+        if good:
+            app.mLocations = mLocations
+            app.provenance = provenance
         else:
             return
 
         mModules = []
-        if self.mLocations:
-            mModules.append(self.version)
+        if mLocations:
+            mModules.append(version or "")
 
         locations = self.locationsArg
         modules = self.modulesArg
@@ -110,7 +114,7 @@ class AppData(object):
             else modules
         )
 
-        self.locations = self.mLocations + givenLocations
+        self.locations = mLocations + givenLocations
         self.modules = mModules + givenModules
 
     # GET DATA FOR A SINGLE MODULE
@@ -118,7 +122,13 @@ class AppData(object):
     def getModule(
         self, org, repo, relative, checkout, isBase=False, specs=None,
     ):
+        version = self.version
+        silent = self.silent
         mLocations = self.mLocations
+        provenance = self.provenance
+        seen = self.seen
+        app = self.app
+        aContext = app.context
 
         moduleRef = f"{org}/{repo}/{relative}"
         if moduleRef in self.seen:
@@ -127,16 +137,17 @@ class AppData(object):
         if org is None or repo is None:
             repoLocation = relative
             mLocations.append(relative)
+            (commit, local, release) = (None, None, None)
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
                 org=org,
                 repo=repo,
                 folder=relative,
-                version=self.version,
+                version=version,
                 checkout=checkout,
                 withPaths=False,
                 keep=False,
-                silent=self.silent,
+                silent=silent,
             )
             if not localBase:
                 return False
@@ -144,40 +155,39 @@ class AppData(object):
             repoLocation = f"{localBase}/{org}/{repo}"
             mLocations.append(f"{localBase}/{localDir}")
 
-        self.seen.add(moduleRef)
+        seen.add(moduleRef)
         if isBase:
-            self.app.repoLocation = repoLocation
+            app.repoLocation = repoLocation
 
         info = {}
         for item in (
-            ("doiText", "unknown DOI"),
-            ("doiUrl", ""),
+            ("doi", None),
             ("corpus", f"{org}/{repo}/{relative}"),
         ):
             (key, default) = item
             info[key] = (
-                getattr(self.app, key)
+                getattr(aContext, key)
                 if isBase
                 else specs[key]
                 if specs and key in specs
                 else default
             )
-        self.provenance.append(
+        provenance.append(
             (
                 ("corpus", info["corpus"]),
-                ("version", self.version),
+                ("version", version),
                 ("commit", commit or "??"),
                 ("release", release or "none"),
                 (
                     "live",
                     (
-                        liveText(org, repo, self.version, commit, local, release),
+                        liveText(org, repo, version, commit, local, release, relative),
                         liveUrl(
-                            org, repo, self.version, commit, release, local, relative
+                            org, repo, version, commit, release, local, relative
                         ),
                     ),
                 ),
-                ("doi", (info["doiText"], info["doiUrl"])),
+                ("doi", info["doi"]),
             )
         )
         return True

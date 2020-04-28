@@ -36,18 +36,16 @@ class App:
         _browse=False,
     ):
         for (key, value) in dict(
-            appName=appName, api=api, version=version, silent=silent,
+            appName=appName, api=api, version=version, silent=silent, _browse=_browse
         ).items():
             setattr(self, key, value)
 
         cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
         setAppSpecs(self, cfg)
+        aContext = self.context
+        version = aContext.version
 
         self.isCompatible = cfg["isCompatible"]
-
-        dKey = "dataDisplay"
-        self.excludedFeatures = getattr(self, dKey, {}).get("excludedFeatures", set())
-        version = cfg["provenanceSpec"]["version"]
 
         setDir(self)
 
@@ -68,10 +66,11 @@ class App:
                 api = TF.load("", silent=silent or True)
                 if api:
                     self.api = api
+                    excludedFeatures = aContext.excludedFeatures
                     allFeatures = TF.explore(silent=silent or True, show=True)
                     loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
                     useFeatures = [
-                        f for f in loadableFeatures if f not in self.excludedFeatures
+                        f for f in loadableFeatures if f not in excludedFeatures
                     ]
                     result = TF.load(useFeatures, add=True, silent=silent or True)
                     if result is False:
@@ -80,10 +79,10 @@ class App:
                 self.api = None
 
         if self.api:
-            setAppSpecsApi(self, cfg)
             linksApi(self, appName, silent)
             searchApi(self)
             sectionsApi(self)
+            setAppSpecsApi(self, cfg)
             displayApi(self, silent)
             textApi(self)
             if hoist:
@@ -125,13 +124,13 @@ The app "{appName}" will not work!
 
         cfg = findAppConfig(appName, appPath, local, version=version)
         setAppSpecs(self, cfg)
-        setAppSpecsApi(self, cfg)
 
         if api:
             linksApi(self, appName, True)
-            textApi(self)
             searchApi(self)
             sectionsApi(self)
+            setAppSpecsApi(self, cfg)
             displayApi(self, True)
+            textApi(self)
             if hoist:
                 api.makeAvailableIn(hoist)

@@ -1,7 +1,5 @@
 import sys
 import os
-from collections import namedtuple
-
 from importlib import util
 import yaml
 
@@ -15,16 +13,6 @@ from ..parameters import (
 from ..core.helpers import console
 from .repo import checkoutRepo
 from .helpers import getLocalDir
-
-
-Browser = namedtuple(
-    "Browser",
-    """
-    protocol
-    host
-    port
-""".strip().split(),
-)
 
 
 def findApp(appName, checkoutApp, silent=False):
@@ -69,7 +57,8 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
         appName=appName, appPath=appPath, commit=commit, release=release, local=local
     )
 
-    cfg.setdefault("provenanceSpec", {})["version"] = version
+    if version is not None:
+        cfg.setdefault("provenanceSpec", {})["version"] = version
 
     if os.path.exists(cssPath):
         with open(cssPath, encoding="utf8") as fh:

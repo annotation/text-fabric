@@ -335,11 +335,7 @@ def wrapMessages(messages):
             match = msgLineRe.match(msg)
             clsName = "tline" if match else "eline"
             msg = msg.replace("\n", "<br/>")
-        html.append(
-            f"""
-      <span class="{clsName.lower()}">{msg}</span>
-    """
-        )
+        html.append(f'<span class="{clsName.lower()}">{msg}</span>')
     return "".join(html)
 
 

@@ -248,6 +248,11 @@ span.plain {
     border-width: var(--border-width3);
     border-radius: var(--border-width3);
 }
+.contnr.c4,.lbl.c4 {
+    border-color: var(--border-color4);
+    border-width: var(--border-width4);
+    border-radius: var(--border-width4);
+}
 .lbl {
     margin-top: -1.2rem;
     margin-left: 1rem;
@@ -271,10 +276,13 @@ span.plain {
     font-size: small;
 }
 .lbl.c2 {
-    font-size: normal;
+    font-size: medium;
 }
 .lbl.c3 {
-    font-size: normal;
+    font-size: medium;
+}
+.lbl.c4 {
+    font-size: large;
 }
 .occs {
     font-size: x-small;
@@ -293,8 +301,10 @@ span.plain {
   --border-color1:    hsla(  0,   0%,  80%, 0.9  );
   --border-color2:    hsla(  0,   0%,  60%, 0.9  );
   --border-color3:    hsla(  0,   0%,  40%, 0.9  );
+  --border-color4:    hsla(  0,   0%,  30%, 0.9  );
   --border-width0:    0.1rem;
   --border-width1:    0.15rem;
   --border-width2:    0.2rem;
-  --border-width2:    0.3rem;
+  --border-width3:    0.25rem;
+  --border-width4:    0.3rem;
 }

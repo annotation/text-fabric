@@ -27,6 +27,7 @@
     font-family: AmiriQuran;
     font-style: normal;
     font-weight: 400;
+    src: local('Amiri Quran');
     src: url('/server/static/fonts/AmiriQuran.woff2') format('woff2'),
          url('/server/static/fonts/AmiriQuran.woff') format('woff'),
 	       url('/server/static/fonts/AmiriQuran.ttf')  format('truetype'); /* Safari, Android, iOS */
@@ -36,6 +37,7 @@
     font-family: AmiriQuranColored;
     font-style: normal;
     font-weight: 400;
+    src: local('Amiri Quran Colored');
     src: url('/server/static/fonts/AmiriQuranColored.woff2') format('woff2'),
          url('/server/static/fonts/AmiriQuranColored.woff') format('woff'),
 	       url('/server/static/fonts/AmiriQuranColored.ttf')  format('truetype'); /* Safari, Android, iOS */

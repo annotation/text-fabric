@@ -22,7 +22,7 @@ pathRe = re.compile(
 
 def linksApi(app, appName, silent):
     app.header = types.MethodType(header, app)
-    app.weblink = types.MethodType(webLink, app)
+    app.webLink = types.MethodType(webLink, app)
     ok = app.isCompatible
 
     api = app.api
@@ -42,14 +42,12 @@ def linksApi(app, appName, silent):
 
     dataLink = (
         outLink(repo.upper(), docUrl, f"provenance of {corpus}")
-        if ok
+        if ok and repo is not None and docUrl
         else UNSUPPORTED
     )
     charLink = (
         (
-            outLink(
-                "Character table", charUrl.format(tfDoc=URL_TFDOC), charText
-            )
+            outLink("Character table", charUrl.format(tfDoc=URL_TFDOC), charText)
             if ok
             else UNSUPPORTED
         )
@@ -63,13 +61,17 @@ def linksApi(app, appName, silent):
                 featureBase.format(version=version, feature=featurePage),
                 f"{repo.upper()} feature documentation",
             )
-            if ok
+            if ok and repo is not None and featureBase
             else UNSUPPORTED
         )
         if ok
         else UNSUPPORTED
     )
-    appLink = outLink(f"{appName} API", extraUrl, f"{appName} API documentation")
+    appLink = outLink(
+        f"{appName} API",
+        extraUrl,
+        f"{appName} API documentation" if ok and repo is not None else UNSUPPORTED,
+    )
     tfLink = (
         outLink(
             f"Text-Fabric API {api.TF.version}",
@@ -90,7 +92,7 @@ def linksApi(app, appName, silent):
     )
     tutLink = (
         outLink("App tutorial", tutUrl, "App tutorial in Jupyter Notebook")
-        if ok
+        if ok and repo is not None
         else UNSUPPORTED
     )
     if app._browse:
@@ -112,14 +114,14 @@ def linksApi(app, appName, silent):
 
 def header(app):
     return (
-        f"""
+        f"""\
 <div class="hdlinks">
   {app.dataLink}
   {app.charLink}
   {app.featureLink}
   {app.tfsLink}
   {app.tutLink}
-</div>
+</div>\
 """,
         f'<img class="hdlogo" src="/data/static/logo.png"/>',
         f'<img class="hdlogo" src="/server/static/icon.png"/>',
@@ -232,9 +234,12 @@ def _featuresPerModule(app):
             (base, org, repo, relative) = match.groups()
             mId = (org, repo, relative)
             (corpus, docUrl) = (
-                (
-                    corpus,
-                    featureBase.format(version=version, feature="{feature}"),
+                (relative, None)
+                if org is None or repo is None
+                else (
+                    (corpus, featureBase.format(version=version, feature="{feature}"))
+                    if featureBase else
+                    (corpus, None)
                 )
                 if mLoc == baseLoc
                 else fixedModuleIndex[mId]
@@ -334,16 +339,25 @@ def _featuresPerModule(app):
     return html
 
 
-def liveText(org, repo, version, commit, release, local):
-    return f"{org}/{repo} v:{version} ({Checkout.toString(commit, release, local)})"
+def liveText(org, repo, version, commit, release, local, relative):
+    return (
+        f"data on local machine {relative}"
+        if org is None or repo is None
+        else f"{org}/{repo} v:{version} ({Checkout.toString(commit, release, local)})"
+    )
 
 
 def liveUrl(org, repo, version, commit, release, local, relative):
     relativeFlat = relative.replace("/", "-")
-    if local:
-        return f"{URL_GH}/{org}/{repo}/tree/master/{relative}"
     return (
-        f"{URL_GH}/{org}/{repo}/releases/download/{release}/{relativeFlat}-{version}.zip"
-        if release
-        else f"{URL_GH}/{org}/{repo}/tree/{commit}/{relative}"
+        None
+        if org is None or repo is None
+        else f"{URL_GH}/{org}/{repo}/tree/master/{relative}"
+        if local
+        else (
+            f"{URL_GH}/{org}/{repo}/releases/download/{release}"
+            f"/{relativeFlat}-{version}.zip"
+            if release
+            else f"{URL_GH}/{org}/{repo}/tree/{commit}/{relative}"
+        )
     )

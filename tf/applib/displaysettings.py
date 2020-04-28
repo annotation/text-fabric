@@ -39,8 +39,6 @@ class DisplaySettings:
         aContext = app.context
         interfaceDefaults = aContext.interfaceDefaults
 
-        aContext = aContext._asdict()
-
         self.displayDefaults = {}
         displayDefaults = self.displayDefaults
 

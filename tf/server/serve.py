@@ -168,10 +168,7 @@ def serveExport(setup):
     setNames = kernelApi.setNames()
     setNamesRep = ", ".join(setNames)
     setNameHtml = (
-        f"""
-<p class="setnames">Sets:
-<span class="setnames">{setNamesRep}</span>
-</p>"""
+        f'<p class="setnames">Sets: <span class="setnames">{setNamesRep}</span></p>'
         if setNames
         else ""
     )
@@ -296,10 +293,7 @@ def serveAll(setup, anything):
     setNames = kernelApi.setNames()
     setNamesRep = ", ".join(setNames)
     setNameHtml = (
-        f"""
-<p class="setnames">Sets:
-<span class="setnames">{setNamesRep}</span>
-</p>"""
+        f'<p class="setnames">Sets: <span class="setnames">{setNamesRep}</span></p>'
         if setNames
         else ""
     )

@@ -229,19 +229,21 @@ def shipDocs():
     run(["mkdocs", "gh-deploy"])
 
 
-def shipData(app, remaining):
-    result = findApp(app, "clone", silent=False)
+def shipData(appName, remaining):
+    result = findApp(appName, "clone", silent=False)
     appBase = result[3]
+    appDir = result[4]
+    appName = result[5]
     appBaseRep = f"{appBase}/" if appBase else ""
-    appDir = f"{appBaseRep}/{result[4]}"
+    appPath = f"{appBaseRep}{appDir}"
     if not appDir:
         console("Data not shipped")
-    config = findAppConfig(app, appDir)
+    config = findAppConfig(appName, appPath)
     if not config:
         console("Data not shipped")
         return
     seen = set()
-    provenanceSpec = config.getattr("PROVENANCE_SPEC", {})
+    provenanceSpec = config.getattr("provenanceSpec", {})
     for r in config.ZIP:
         (org, repo, relative) = (
             r

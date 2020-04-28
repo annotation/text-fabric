@@ -5,6 +5,7 @@ def sectionsApi(app):
     if app.isCompatible:
         app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
         app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
+        app.structureStrFromNode = types.MethodType(structureStrFromNode, app)
         app._sectionLink = types.MethodType(_sectionLink, app)
 
 
@@ -77,7 +78,8 @@ def structureStrFromNode(app, n):
     for (i, part) in enumerate(struct):
         if part is None:
             continue
-        result += f"{sep}{' '.join(part)}"
+        (nType, label) = part
+        result += f'{sep}<span class="nd">{nType}</span> {label}'
         sep = ", "
     return result
 
