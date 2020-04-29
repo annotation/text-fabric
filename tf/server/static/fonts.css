@@ -1,59 +1,52 @@
 @font-face {
-	font-family: "Ezra SIL";
-  src: local('Ezra SIL');
-	src: url('/server/static/fonts/SILEOT.eot'); /* IE9 Compat Modes */
-	src: url('/server/static/fonts/SILEOT.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-	     url('/server/static/fonts/SILEOT.woff') format('woff'), /* Modern Browsers */
-	     url('/server/static/fonts/SILEOT.ttf')  format('truetype'); /* Safari, Android, iOS */
+  font-family: "Ezra SIL";
+  src: local('Ezra SIL'), local('EzraSIL'),
+    url('/server/static/fonts/SILEOT.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/SILEOT.woff?raw=true') format('woff');
 }
 
 @font-face {
-	font-family: "SBL Hebrew";
-  src: local('SBL Hebrew');
-	src: url('/server/static/fonts/SBL_Hbrw.eot'); /* IE9 Compat Modes */
-	src: url('/server/static/fonts/SBL_Hbrw.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-	     url('/server/static/fonts/SBL_Hbrw.woff') format('woff'), /* Modern Browsers */
-	     url('/server/static/fonts/SBL_Hbrw.ttf')  format('truetype'); /* Safari, Android, iOS */
+  font-family: "SBL Hebrew";
+  src: local('SBL Hebrew'), local('SBLHebrew'),
+    url('/server/static/fonts/SBL_Hbrw.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/SBL_Hbrw.woff?raw=true') format('woff');
 }
 
 @font-face {
-	font-family: "Estrangelo Edessa";
-  src: local('Estrangelo Edessa');
-	src: url('/server/static/fonts/SyrCOMEdessa.otf');
-	src: url('/server/static/fonts/SyrCOMEdessa.woff') format('woff');
+  font-family: "Estrangelo Edessa";
+  src: local('Estrangelo Edessa'), local('EstrangeloEdessa');
+    url('/server/static/fonts/SyrCOMEdessa.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/SyrCOMEdessa.woff?raw=true') format('woff');
 }
 
 @font-face {
-    font-family: AmiriQuran;
-    font-style: normal;
-    font-weight: 400;
-    src: local('Amiri Quran');
-    src: url('/server/static/fonts/AmiriQuran.woff2') format('woff2'),
-         url('/server/static/fonts/AmiriQuran.woff') format('woff'),
-	       url('/server/static/fonts/AmiriQuran.ttf')  format('truetype'); /* Safari, Android, iOS */
+  font-family: AmiriQuran;
+  font-style: normal;
+  font-weight: 400;
+  src: local('Amiri Quran'), local('AmiriQuran'),
+    url('/server/static/fonts/AmiriQuran.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/AmiriQuran.woff?raw=true') format('woff');
 }
 
 @font-face {
-    font-family: AmiriQuranColored;
-    font-style: normal;
-    font-weight: 400;
-    src: local('Amiri Quran Colored');
-    src: url('/server/static/fonts/AmiriQuranColored.woff2') format('woff2'),
-         url('/server/static/fonts/AmiriQuranColored.woff') format('woff'),
-	       url('/server/static/fonts/AmiriQuranColored.ttf')  format('truetype'); /* Safari, Android, iOS */
+  font-family: AmiriQuranColored;
+  font-style: normal;
+  font-weight: 400;
+  src: local('Amiri Quran Colored'), local('AmiriQuranColored'),
+    url('/server/static/fonts/AmiriQuranColored.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/AmiriQuranColored.woff?raw=true') format('woff');
 }
 
 @font-face {
-	font-family: "Santakku";
-  src: local('Santakku');
-	src: url('/server/static/fonts/Santakku.woff') format('woff'), /* Modern Browsers */
-	     url('/server/static/fonts/Santakku.ttf')  format('truetype'); /* Safari, Android, iOS */
+  font-family: "Santakku";
+  src: local('Santakku'),
+    url('/server/static/fonts/Santakku.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/Santakku.woff?raw=true') format('woff');
 }
 
 @font-face {
-	font-family: "SantakkuM";
-  src: local('SantakkuM');
-	src: url('/server/static/fonts/SantakkuM.woff') format('woff'), /* Modern Browsers */
-	     url('/server/static/fonts/SantakkuM.ttf')  format('truetype'); /* Safari, Android, iOS */
+  font-family: "SantakkuM";
+  src: local('SantakkuM'),
+    url('/server/static/fonts/SantakkuM.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/SantakkuM.woff?raw=true') format('woff');
 }
-

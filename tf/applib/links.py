@@ -58,7 +58,7 @@ def linksApi(app, appName, silent):
         (
             outLink(
                 "Feature docs",
-                featureBase.format(version=version, feature=featurePage),
+                featureBase.replace('<feature>', featurePage).format(version=version),
                 f"{repo.upper()} feature documentation",
             )
             if ok and repo is not None and featureBase
@@ -135,7 +135,6 @@ def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
     Fs = api.Fs
 
     aContext = app.context
-    version = aContext.version
     webBase = aContext.webBase
     webLang = aContext.webUrl
     webUrl = aContext.webUrl
@@ -158,7 +157,7 @@ def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
                 if webLexId
                 else None
             )
-            theUrl = webUrlLex.format(base=webBase, lid=lid, version=version)
+            theUrl = webUrlLex.replace('<lid>', str(lid))
         elif webBase:
             theUrl = webBase
         else:
@@ -168,10 +167,10 @@ def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
             text = app.sectionStrFromNode(n)
             passageText = text
         if webUrl:
-            theUrl = webUrl.format(baes=webBase, version=version)
+            theUrl = webUrl
             headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
             for (i, heading) in enumerate(headingTuple):
-                theUrl.replace(f"<{i}>", heading)
+                theUrl.replace(f"<{i}>", str(heading))
         else:
             theUrl = None
 
@@ -237,9 +236,9 @@ def _featuresPerModule(app):
                 (relative, None)
                 if org is None or repo is None
                 else (
-                    (corpus, featureBase.format(version=version, feature="{feature}"))
-                    if featureBase else
-                    (corpus, None)
+                    (corpus, featureBase.format(version=version))
+                    if featureBase
+                    else (corpus, None)
                 )
                 if mLoc == baseLoc
                 else fixedModuleIndex[mId]
@@ -329,7 +328,7 @@ def _featuresPerModule(app):
             html += f" {pre}"
             html += (
                 outLink(
-                    featureRep, docUrl.format(feature=featureRep), title=featurePath
+                    featureRep, docUrl.replace('<feature>', featureRep), title=featurePath
                 )
                 if docUrl
                 else f'<span title="{featurePath}">{featureRep}</span>'

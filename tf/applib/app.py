@@ -119,10 +119,12 @@ The app "{appName}" will not work!
         appPath = aContext.appPath
         appName = aContext.appName
         local = aContext.local
+        commit = aContext.commit
+        release = aContext.release
         version = aContext.version
         api = self.api
 
-        cfg = findAppConfig(appName, appPath, local, version=version)
+        cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
         setAppSpecs(self, cfg)
 
         if api:

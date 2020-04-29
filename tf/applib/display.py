@@ -36,6 +36,7 @@ NodeContext = namedtuple(
     isSlotOrDescend
     descend
     isBaseNonSlot
+    isSuper
     children
     boundaryCls
     hlCls
@@ -44,6 +45,7 @@ NodeContext = namedtuple(
     cls
     myStart
     myEnd
+    hidden
 """.strip().split(),
 )
 
@@ -145,12 +147,10 @@ def table(app, tuples, _asString=False, **options):
         if one:
             heads = '</th><th class="tf">'.join(fOtype(n) for n in tup)
             html.append(
-                f"""\
-<tr class="tf">
-  <th class="tf">n{passageHead}</th>
-  <th class="tf">{heads}</th>
-</tr>\
-"""
+                f'<tr class="tf">'
+                f'<th class="tf">n{passageHead}</th>'
+                f'<th class="tf">{heads}</th>'
+                f"</tr>"
             )
             one = False
         html.append(
@@ -200,7 +200,7 @@ def plainTuple(
             if _browse
             else app.webLink(passageNode, _asString=True)
         )
-        passageRef = f"""<span class="psg ltr">{passageRef}</span>"""
+        passageRef = f'<span class="psg ltr">{passageRef}</span>'
     else:
         passageRef = ""
 
@@ -227,27 +227,30 @@ def plainTuple(
             passageAtt = ""
 
         plainRep = "".join(
-            f"""<span>{mdEsc(app.plain(
+            "<span>"
+            + mdEsc(
+                app.plain(
                     n,
                     _inTuple=True,
                     withPassage=doPassage(dContext, i),
                     highlights=highlights,
                     **newOptionsH,
-                  ))
-                }</span>"""
+                )
+            )
+            + "</span>"
             for (i, n) in enumerate(tup)
         )
-        html = f"""\
-  <details class="pretty dtrow {current}" seq="{seq}" {attOpen}>
-    <summary>
-      <a href="#" class="pq fa fa-solar-panel fa-xs"
-        title="show in context" {passageAtt}></a>
-      <a href="#" class="sq" tup="{tupSeq}">{seq}</a>
-      {passageRef} {plainRep}
-    </summary>
-    <div class="pretty">{prettyRep}</div>
-  </details>\
-"""
+        html = (
+            f'<details class="pretty dtrow {current}" seq="{seq}" {attOpen}>'
+            f"<summary>"
+            f'<a href="#" class="pq fa fa-solar-panel fa-xs"'
+            f' title="show in context" {passageAtt}></a>'
+            f'<a href="#" class="sq" tup="{tupSeq}">{seq}</a>'
+            f" {passageRef} {plainRep}"
+            f"</summary>"
+            f'<div class="pretty">{prettyRep}</div>'
+            f"</details>"
+        )
         return html
 
     html = [str(seq)]
@@ -265,20 +268,20 @@ def plainTuple(
             )
         )
     html = (
-        f"""<tr class="tf"><td class="tf">"""
-        f"""{'</td><td class="tf">'.join(html)}"""
-        """</td></tr>"""
+        f'<tr class="tf"><td class="tf">'
+        + '</td><td class="tf">'.join(html)
+        + "</td></tr>"
     )
     if _asString:
         return html
 
     passageHead = '</th><th class="tf">p' if withPassage is True else ""
     head = (
-        f"""<tr class="tf"><th class="tf">n{passageHead}</th><th class="tf">"""
-        f"""{'</th><th class="tf">'.join(fOtype(n) for n in tup)}"""
-        f"""</th></tr>"""
+        f'<tr class="tf"><th class="tf">n{passageHead}</th><th class="tf">'
+        + '</th><th class="tf">'.join(fOtype(n) for n in tup)
+        + f"</th></tr>"
     )
-    html = f"""<table>{head}{"".join(html)}</table>"""
+    html = f"<table>" + head + "".join(html) + "</table>"
 
     dh(html)
 
@@ -341,8 +344,10 @@ def _doPlain(app, dContext, oContext, n, outer, html, seen=set()):
 
     sNodeInfo = getSuper(app, oContext, nContext, n, outer)
     if sNodeInfo:
-        (soContext, sn, sStart, sEnd) = sNodeInfo
-        snContext = _prepareDisplay(app, False, dContext, soContext, n, False)
+        (sn, soContext) = sNodeInfo
+        snContext = _prepareDisplay(
+            app, False, dContext, soContext, n, False, asSuper=True
+        )
         shlCls = snContext.hlCls
         shlStyle = snContext.hlStyle
         snodePart = snContext.nodePart
@@ -365,9 +370,9 @@ def _doPlain(app, dContext, oContext, n, outer, html, seen=set()):
 
     for ch in children:
         _doPlain(app, dContext, oContext, ch, False, html, seen=seen)
-    html.append("""</span>""")
+    html.append("</span>")
     if didSuper:
-        html.append("""</span>""")
+        html.append("</span>")
     return "".join(html) if outer else None
 
 
@@ -398,10 +403,10 @@ def _doPlainNode(app, dContext, oContext, nContext, n, outer, seen=set()):
             text = htmlEsc(text)
         contrib = f'<span class="{textCls}">{text}</span>'
     else:
-        (isText, tplFilled) = getText(app, n, nType, fmt=fmt, descend=descend)
+        (isText, tplFilled) = getText(app, False, n, nType, fmt=fmt, descend=descend)
         if isText and isHtml:
             tplFilled = htmlEsc(tplFilled)
-        contrib = f"""<span class="plain {ltr}">{tplFilled}</span>"""
+        contrib = f'<span class="plain {ltr}">{tplFilled}</span>'
     return contrib
 
 
@@ -557,18 +562,16 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
     afterChild = aContext.afterChild
     hasGraphics = aContext.hasGraphics
 
-    graphics = dContext.graphics
+    showGraphics = dContext.showGraphics
 
     ltr = oContext.ltr
 
-    nType = nContext.nType
     isBaseNonSlot = nContext.isBaseNonSlot
     nType = nContext.nType
-    cls = nContext.cls
-    hlCls = nContext.hlCls
-    hlStyle = nContext.hlStyle
-    boundaryCls = nContext.boundaryCls
+    isSuper = nContext.isSuper
     children = nContext.children
+    cls = nContext.cls
+    childCls = cls["children"]
 
     nodePlain = None
     if isBaseNonSlot:
@@ -580,53 +583,56 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
 
     sNodeInfo = getSuper(app, oContext, nContext, n, outer)
     if sNodeInfo:
-        (soContext, sn, sStart, sEnd) = sNodeInfo
-        snContext = _prepareDisplay(app, True, dContext, soContext, sn, False)
+        (sn, soContext) = sNodeInfo
+        snContext = _prepareDisplay(
+            app, True, dContext, soContext, sn, False, asSuper=True
+        )
         if snContext:
-            scls = snContext.cls
-            shlCls = snContext.hlCls
-            shlStyle = snContext.hlStyle
-            sboundaryCls = snContext.boundaryCls
             sisBaseNonSlot = snContext.isBaseNonSlot
+            scls = snContext.cls
+            schildCls = scls["children"]
 
             sNodePlain = None
             if sisBaseNonSlot:
-                sNodePlain = _doPlain(app, dContext, soContext, sn, True, [])
+                sNodePlain = _doPlain(app, dContext, oContext, sn, True, [])
             (sLabel, sFeaturePart) = _doPrettyNode(
-                app, dContext, soContext, snContext, sn, False, sNodePlain
+                app, dContext, oContext, snContext, sn, False, sNodePlain
             )
-            html.append(
-                f"""\
-<div class="{scls['container']} {ltr} {sboundaryCls} {shlCls}" {shlStyle}>
-{sLabel}{sFeaturePart}
-<div class="{scls['children']} {ltr}">\
-"""
+            (scontainerB, scontainerE) = _doPrettyWrapPre(
+                app,
+                sn,
+                False,
+                sLabel,
+                sFeaturePart,
+                html,
+                snContext,
+                showGraphics,
+                hasGraphics,
+                ltr,
             )
+            html.append(f'<div class="{schildCls} {ltr}">')
+
             didSuper = True
 
-    (label, featurePart) = _doPrettyNode(
-        app, dContext, oContext, nContext, n, outer, nodePlain
-    )
-
-    containerB = (
-        f"""<div class="{cls['container']} {{}} {ltr}"""
-        f""" {boundaryCls} {hlCls}" {hlStyle}>"""
-    )
-    containerE = f"""</div>"""
-
-    terminalCls = "trm"
-    if "b" in label:
-        trm = terminalCls
-        html.append(f"{containerB.format(trm)}{label['b']} {featurePart}{containerE}")
-    if "" in label:
-        trm = "" if children else terminalCls
-        html.append(f"{containerB.format(trm)}{label['']} {featurePart}")
-
-    if graphics and nType in hasGraphics:
-        html.append(app.getGraphics(n, nType, outer))
+    if not isSuper:
+        (label, featurePart) = _doPrettyNode(
+            app, dContext, oContext, nContext, n, outer, nodePlain
+        )
+        (containerB, containerE) = _doPrettyWrapPre(
+            app,
+            n,
+            outer,
+            label,
+            featurePart,
+            html,
+            nContext,
+            showGraphics,
+            hasGraphics,
+            ltr,
+        )
 
     if children:
-        html.append(f"""<div class="{cls['children']} {ltr}">""")
+        html.append(f'<div class="{childCls} {ltr}">')
 
     for ch in children:
         if ch in seen:
@@ -637,16 +643,60 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
             html.append(after(ch))
 
     if children:
-        html.append("""</div>""")
+        html.append("</div>")
 
-    if "" in label:
-        html.append(f"{containerE}")
-    if "e" in label:
-        html.append(f"{containerB}{label['e']} {featurePart}{containerE}")
+    if not isSuper:
+        _doPrettyWrapPost(label, featurePart, html, containerB, containerE)
 
     if didSuper:
-        html.append("""</div></div>""")
+        _doPrettyWrapPost(sLabel, sFeaturePart, html, scontainerB, scontainerE)
+        html.append("</div>")
+
     return "".join(html) if outer else None
+
+
+def _doPrettyWrapPre(
+    app, n, outer, label, featurePart, html, nContext, showGraphics, hasGraphics, ltr,
+):
+    nType = nContext.nType
+    hidden = nContext.hidden
+    cls = nContext.cls
+    contCls = "contnr cnul" if hidden else cls["container"]
+    hlCls = nContext.hlCls
+    hlStyle = nContext.hlStyle
+    boundaryCls = nContext.boundaryCls
+    children = nContext.children
+    label0 = label.get("", None)
+    labelB = label.get("b", None)
+
+    containerB = f'<div class="{contCls} {{}} {ltr} {boundaryCls} {hlCls}" {hlStyle}>'
+    containerE = f"</div>"
+
+    terminalCls = "trm"
+    if hidden:
+        html.append(containerB.format(terminalCls))
+    else:
+        if labelB is not None:
+            trm = terminalCls
+            html.append(f"{containerB.format(trm)}{labelB} {featurePart}{containerE}")
+        if label0 is not None:
+            trm = "" if children else terminalCls
+            html.append(f"{containerB.format(trm)}{label0} {featurePart}")
+
+        if showGraphics and nType in hasGraphics:
+            html.append(app.getGraphics(n, nType, outer))
+
+    return (containerB, containerE)
+
+
+def _doPrettyWrapPost(label, featurePart, html, containerB, containerE):
+    label0 = label.get("", None)
+    labelE = label.get("e", None)
+
+    if label0 is not None:
+        html.append(containerE)
+    if labelE is not None:
+        html.append(f"{containerB}{labelE} {featurePart}{containerE}")
 
 
 def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
@@ -678,7 +728,7 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
         heading = nodePlain
     else:
         labelHlCls = hlCls
-        (isText, heading) = getText(app, n, nType, fmt=fmt, descend=descend)
+        (isText, heading) = getText(app, True, n, nType, fmt=fmt, descend=descend)
         if isText and isHtml:
             heading = htmlEsc(heading)
 
@@ -697,7 +747,7 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
             heading = app.webLink(lx[0], heading, _asString=True)
 
     if featurePart:
-        featurePart = f"""<div class="meta">{featurePart}</div>"""
+        featurePart = f'<div class="meta">{featurePart}</div>'
 
     label = {}
     for x in ("", "b", "e"):
@@ -707,8 +757,8 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
             terminalCls = "trm" if x or not children else ""
             label[x] = (
                 (
-                    f"""<div class="{val} {terminalCls} {labelHlCls}">"""
-                    f"""{nodePart} {heading}</div>"""
+                    f'<div class="{val} {terminalCls} {labelHlCls}">'
+                    f"{nodePart} {heading}</div>"
                 )
                 if heading or nodePart
                 else ""
@@ -717,7 +767,7 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
     return (label, featurePart)
 
 
-def _prepareDisplay(app, isPretty, dContext, oContext, n, outer):
+def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, asSuper=False):
     api = app.api
     F = api.F
     T = api.T
@@ -728,15 +778,20 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer):
     levelCls = aContext.levelCls
     noChildren = aContext.noChildren
     prettyCustom = aContext.prettyCustom
+    hasSuper = aContext.hasSuper
+    superTypes = aContext.superTypes
 
     fmt = dContext.fmt
     baseType = dContext.baseType
     highlights = dContext.highlights
+    subsuper = dContext.subsuper
 
     descendType = T.formats.get(fmt, slotType)
     bottomType = baseType if isPretty else descendType
 
     isSlot = nType == slotType
+    isSuper = nType in superTypes
+    isHidden = not subsuper and nType in hasSuper
 
     children = (
         ()
@@ -744,7 +799,7 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer):
         else getChildren(app, isPretty, dContext, oContext, n, nType)
     )
 
-    boundaryResult = getBoundaryResult(api, oContext, n)
+    boundaryResult = getBoundaryResult(api, oContext, n, asSuper=asSuper)
     if boundaryResult is None:
         return False
 
@@ -771,6 +826,7 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer):
         isSlotOrDescend,
         descend,
         isBaseNonSlot,
+        isSuper,
         children,
         boundaryCls,
         hlCls,
@@ -779,6 +835,7 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer):
         cls,
         myStart,
         myEnd,
+        isHidden,
     )
 
 
@@ -795,16 +852,16 @@ def getPassage(app, isPretty, dContext, oContext, n):
         return ""
 
     passage = app.webLink(n, _asString=True)
-    return f"""<span class="psg ltr">{passage}{NB}</span>"""
+    return f'<span class="psg ltr">{passage}{NB}</span>'
 
 
-def getText(app, n, nType, fmt=None, descend=None):
+def getText(app, isPretty, n, nType, fmt=None, descend=None):
     T = app.api.T
     sectionTypeSet = T.sectionTypeSet
     structureTypeSet = T.structureTypeSet
 
     aContext = app.context
-    templates = aContext.templates
+    templates = aContext.labels if isPretty else aContext.templates
 
     (tpl, feats) = templates[nType]
 
@@ -822,18 +879,6 @@ def getText(app, n, nType, fmt=None, descend=None):
     return (tpl is True, tplFilled)
 
 
-def getSuperBounds(oContext, nContext):
-    firstSlot = oContext.firstSlot
-    lastSlot = oContext.lastSlot
-
-    myStart = nContext.myStart
-    myEnd = nContext.myEnd
-
-    return oContext._replace(
-        firstSlot=max((firstSlot, myStart)), lastSlot=min((lastSlot, myEnd)),
-    )
-
-
 def getValue(app, n, nType, feat):
     Fs = app.api.Fs
 
@@ -847,14 +892,14 @@ def getValue(app, n, nType, feat):
 
 def getLtr(app, dContext):
     aContext = app.context
-    writingDir = aContext.writingDir
+    direction = aContext.direction
 
     fmt = dContext.fmt or DEFAULT_FORMAT
 
     return (
         "rtl"
-        if writingDir == "rtl" and (f"{ORIG}-" in fmt or f"-{ORIG}" in fmt)
-        else ("" if writingDir == "ltr" else "ltr")
+        if direction == "rtl" and (f"{ORIG}-" in fmt or f"-{ORIG}" in fmt)
+        else ("" if direction == "ltr" else "ltr")
     )
 
 
@@ -878,7 +923,12 @@ def getBigType(app, dContext, oContext, nType, otypeRank):
     return isBig
 
 
-def getBoundaryResult(api, oContext, n):
+def getBoundaryResult(api, oContext, n, asSuper=False):
+    ltr = oContext.ltr
+    start = "r" if ltr == "rtl" else "l"
+    end = "l" if ltr == "rtl" else "r"
+    kind = "" if asSuper else "no"
+
     boundaryCls = ""
     myStart = None
     myEnd = None
@@ -891,13 +941,25 @@ def getBoundaryResult(api, oContext, n):
         if myEnd < firstSlot:
             return None
         if myStart < firstSlot:
-            boundaryCls += " rno"
+            boundaryCls += f" {start}{kind}"
     if lastSlot is not None:
         if myStart > lastSlot:
             return None
         if myEnd > lastSlot:
-            boundaryCls += " lno"
+            boundaryCls += f" {end}{kind}"
     return (boundaryCls, myStart, myEnd)
+
+
+def getSuperBounds(oContext, nContext):
+    firstSlot = oContext.firstSlot
+    lastSlot = oContext.lastSlot
+
+    myStart = nContext.myStart
+    myEnd = nContext.myEnd
+
+    return oContext._replace(
+        firstSlot=max((firstSlot, myStart)), lastSlot=min((lastSlot, myEnd)),
+    )
 
 
 def getSuper(app, oContext, nContext, n, outer):
@@ -911,9 +973,11 @@ def getSuper(app, oContext, nContext, n, outer):
     nType = nContext.nType
 
     if not outer and nType not in superTypes and nType in hasSuper:
-        sn = L.u(n, otype=nType)[0]
-        soContext = getSuperBounds(oContext, nContext)
-        return (soContext, sn, *getBoundary(api, sn))
+        superType = hasSuper[nType]
+        sn = L.u(n, otype=superType)
+        if sn:
+            soContext = getSuperBounds(oContext, nContext)
+            return (sn[0], soContext)
 
     return None
 
@@ -1170,13 +1234,8 @@ def loadCss(app):
         with open(f"{cssPath}/{cssFile}", encoding="utf8") as fh:
             genericCss += fh.read()
 
-    tableCss = """
-tr.tf, td.tf, th.tf {
-  text-align: left ! important;
-}
-
-"""
-    dh(f"<style>{tableCss + genericCss + css}</style>")
+    tableCss = "tr.tf, td.tf, th.tf { text-align: left ! important;}"
+    dh(f"<style>" + tableCss + genericCss + css + "</style>")
 
 
 def getRefMember(app, tup, dContext):

@@ -4,7 +4,7 @@ INTERFACE_OPTIONS = (
     ("withNodes", False, "withn", "show nodes"),
     ("showFeatures", True, "showf", "show features"),
     ("lineNumbers", None, "linen", "source lines"),
-    ("graphics", None, "graphics", "graphic elements"),
+    ("showGraphics", None, "graphics", "graphic elements"),
 )
 
 DISPLAY_OPTIONS = dict(
@@ -20,6 +20,7 @@ DISPLAY_OPTIONS = dict(
     highlights={},
     noneValues={None},
     start=None,
+    subsuper=False,
     suppress=set(),
     withPassage=True,
 )
