@@ -36,7 +36,7 @@ NodeContext = namedtuple(
     isSlotOrDescend
     descend
     isBaseNonSlot
-    isSuper
+    hasChunks
     children
     boundaryCls
     hlCls
@@ -340,13 +340,13 @@ def _doPlain(app, dContext, oContext, n, outer, html, seen=set()):
 
     outerCls = f"outer" if outer else ""
 
-    didSuper = False
+    didChunkedType = False
 
-    sNodeInfo = getSuper(app, oContext, nContext, n, outer)
+    sNodeInfo = getChunkedType(app, oContext, nContext, n, outer)
     if sNodeInfo:
         (sn, soContext) = sNodeInfo
         snContext = _prepareDisplay(
-            app, False, dContext, soContext, n, False, asSuper=True
+            app, False, dContext, soContext, n, False, chunkedType=True
         )
         shlCls = snContext.hlCls
         shlStyle = snContext.hlStyle
@@ -358,9 +358,9 @@ def _doPlain(app, dContext, oContext, n, outer, html, seen=set()):
             html.append(f'<span class="{sClses}" {shlStyle}>')
             if snodePart:
                 html.append(snodePart)
-            didSuper = True
+            didChunkedType = True
 
-    clses = f"plain {'' if didSuper else outerCls} {ltr} {boundaryCls} {hlCls}"
+    clses = f"plain {'' if didChunkedType else outerCls} {ltr} {boundaryCls} {hlCls}"
     html.append(f'<span class="{clses}" {hlStyle}>')
 
     if nodePart:
@@ -371,7 +371,7 @@ def _doPlain(app, dContext, oContext, n, outer, html, seen=set()):
     for ch in children:
         _doPlain(app, dContext, oContext, ch, False, html, seen=seen)
     html.append("</span>")
-    if didSuper:
+    if didChunkedType:
         html.append("</span>")
     return "".join(html) if outer else None
 
@@ -568,7 +568,7 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
 
     isBaseNonSlot = nContext.isBaseNonSlot
     nType = nContext.nType
-    isSuper = nContext.isSuper
+    hasChunks = nContext.hasChunks
     children = nContext.children
     cls = nContext.cls
     childCls = cls["children"]
@@ -579,13 +579,13 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
         nodePlain = _doPlain(app, dContext, oContext, n, True, [], seen=done)
         seen |= done
 
-    didSuper = False
+    didChunkedType = False
 
-    sNodeInfo = getSuper(app, oContext, nContext, n, outer)
+    sNodeInfo = getChunkedType(app, oContext, nContext, n, outer)
     if sNodeInfo:
         (sn, soContext) = sNodeInfo
         snContext = _prepareDisplay(
-            app, True, dContext, soContext, sn, False, asSuper=True
+            app, True, dContext, soContext, sn, False, chunkedType=True
         )
         if snContext:
             sisBaseNonSlot = snContext.isBaseNonSlot
@@ -612,9 +612,9 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
             )
             html.append(f'<div class="{schildCls} {ltr}">')
 
-            didSuper = True
+            didChunkedType = True
 
-    if not isSuper:
+    if not hasChunks:
         (label, featurePart) = _doPrettyNode(
             app, dContext, oContext, nContext, n, outer, nodePlain
         )
@@ -645,10 +645,10 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
     if children:
         html.append("</div>")
 
-    if not isSuper:
+    if not hasChunks:
         _doPrettyWrapPost(label, featurePart, html, containerB, containerE)
 
-    if didSuper:
+    if didChunkedType:
         _doPrettyWrapPost(sLabel, sFeaturePart, html, scontainerB, scontainerE)
         html.append("</div>")
 
@@ -767,7 +767,7 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
     return (label, featurePart)
 
 
-def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, asSuper=False):
+def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, chunkedType=False):
     api = app.api
     F = api.F
     T = api.T
@@ -778,20 +778,20 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, asSuper=False):
     levelCls = aContext.levelCls
     noChildren = aContext.noChildren
     prettyCustom = aContext.prettyCustom
-    hasSuper = aContext.hasSuper
-    superTypes = aContext.superTypes
+    isChunkOf = aContext.isChunkOf
+    chunkedTypes = aContext.chunkedTypes
 
     fmt = dContext.fmt
     baseType = dContext.baseType
     highlights = dContext.highlights
-    subsuper = dContext.subsuper
+    showChunks = dContext.showChunks
 
     descendType = T.formats.get(fmt, slotType)
     bottomType = baseType if isPretty else descendType
 
     isSlot = nType == slotType
-    isSuper = nType in superTypes
-    isHidden = not subsuper and nType in hasSuper
+    hasChunks = nType in chunkedTypes
+    isHidden = not showChunks and nType in isChunkOf
 
     children = (
         ()
@@ -799,7 +799,7 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, asSuper=False):
         else getChildren(app, isPretty, dContext, oContext, n, nType)
     )
 
-    boundaryResult = getBoundaryResult(api, oContext, n, asSuper=asSuper)
+    boundaryResult = getBoundaryResult(api, oContext, n, chunkedType=chunkedType)
     if boundaryResult is None:
         return False
 
@@ -826,7 +826,7 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, asSuper=False):
         isSlotOrDescend,
         descend,
         isBaseNonSlot,
-        isSuper,
+        hasChunks,
         children,
         boundaryCls,
         hlCls,
@@ -923,11 +923,11 @@ def getBigType(app, dContext, oContext, nType, otypeRank):
     return isBig
 
 
-def getBoundaryResult(api, oContext, n, asSuper=False):
+def getBoundaryResult(api, oContext, n, chunkedType=False):
     ltr = oContext.ltr
     start = "r" if ltr == "rtl" else "l"
     end = "l" if ltr == "rtl" else "r"
-    kind = "" if asSuper else "no"
+    kind = "" if chunkedType else "no"
 
     boundaryCls = ""
     myStart = None
@@ -950,7 +950,7 @@ def getBoundaryResult(api, oContext, n, asSuper=False):
     return (boundaryCls, myStart, myEnd)
 
 
-def getSuperBounds(oContext, nContext):
+def getChunkedTypeBounds(oContext, nContext):
     firstSlot = oContext.firstSlot
     lastSlot = oContext.lastSlot
 
@@ -962,21 +962,21 @@ def getSuperBounds(oContext, nContext):
     )
 
 
-def getSuper(app, oContext, nContext, n, outer):
+def getChunkedType(app, oContext, nContext, n, outer):
     api = app.api
     L = api.L
 
     aContext = app.context
-    hasSuper = aContext.hasSuper
-    superTypes = aContext.superTypes
+    isChunkOf = aContext.isChunkOf
+    chunkedTypes = aContext.chunkedTypes
 
     nType = nContext.nType
 
-    if not outer and nType not in superTypes and nType in hasSuper:
-        superType = hasSuper[nType]
-        sn = L.u(n, otype=superType)
+    if not outer and nType not in chunkedTypes and nType in isChunkOf:
+        chunkedType = isChunkOf[nType]
+        sn = L.u(n, otype=chunkedType)
         if sn:
-            soContext = getSuperBounds(oContext, nContext)
+            soContext = getChunkedTypeBounds(oContext, nContext)
             return (sn[0], soContext)
 
     return None

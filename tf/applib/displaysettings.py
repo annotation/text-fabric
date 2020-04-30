@@ -3,8 +3,9 @@ INTERFACE_OPTIONS = (
     ("prettyTypes", True, "withtp", "always show types when expanded"),
     ("withNodes", False, "withn", "show nodes"),
     ("showFeatures", True, "showf", "show features"),
-    ("lineNumbers", None, "linen", "source lines"),
-    ("showGraphics", None, "graphics", "graphic elements"),
+    ("showChunks", False, "showc", "show chunks"),
+    ("lineNumbers", False, "linen", "source lines"),
+    ("showGraphics", True, "graphics", "graphic elements"),
 )
 
 DISPLAY_OPTIONS = dict(
@@ -20,7 +21,6 @@ DISPLAY_OPTIONS = dict(
     highlights={},
     noneValues={None},
     start=None,
-    subsuper=False,
     suppress=set(),
     withPassage=True,
 )

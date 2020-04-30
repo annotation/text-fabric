@@ -1,7 +1,10 @@
 import re
+import types
 
 from ..parameters import URL_GH, URL_NB, URL_TFDOC
-from ..core.helpers import console
+from ..core.helpers import console, mdEsc
+from .displaysettings import INTERFACE_OPTIONS
+from .helpers import dm
 
 
 VAR_PATTERN = re.compile(r"\{([^}]+)\}")
@@ -142,12 +145,6 @@ DATA_DISPLAY_DEFAULTS = (
     ("noneValues", {None}, False),
     ("sectionSep1", " ", False),
     ("sectionSep2", ":", False),
-    ("writing", "", False),
-    ("direction", None, False),
-    ("language", None, False),
-    ("fontName", None, False),
-    ("font", None, False),
-    ("fontw", None, False),
     ("textFormats", {}, False),
     ("browseNavLevel", None, True),
     ("browseContentPretty", False, False),
@@ -160,6 +157,7 @@ TYPE_KEYS = set(
     base
     children
     childrenPlain
+    chunkOf
     condense
     features
     featuresBare
@@ -171,7 +169,6 @@ TYPE_KEYS = set(
     lexOcc
     lineNumber
     stretch
-    super
     template
     transform
     verselike
@@ -192,18 +189,179 @@ class AppCurrent:
         return getattr(self, k, v)
 
 
+class Check:
+    def __init__(self, app, withApi):
+        self.app = app
+        self.withApi = withApi
+        self.errors = []
+
+    def checkSetting(self, k, v, extra=None):
+        app = self.app
+        withApi = self.withApi
+        errors = self.errors
+
+        if withApi:
+            api = app.api
+            F = api.F
+            T = api.T
+            Fall = api.Fall
+            allNodeFeatures = set(Fall())
+            nTypes = F.otype.all
+            sectionTypes = T.sectionTypes
+
+            if k in {"template", "label"}:
+                (template, feats) = extra
+                if template is not True and type(template) is not str:
+                    errors.append(f"{k} must be `true` or a string")
+                feats = extra[1]
+                for feat in feats:
+                    if feat not in allNodeFeatures:
+                        errors.append(f"{k}: feature {feat} not loaded")
+            elif k == {"featuresBare", "features"}:
+                feats = extra[0]
+                tps = extra[1].values()
+                for feat in feats:
+                    if feat not in allNodeFeatures:
+                        errors.append(f"{k}: feature {feat} not loaded")
+                for tp in tps:
+                    if tp not in nTypes:
+                        errors.append(f"{k}: node type {tp} not present")
+            elif k == "lineNumber":
+                if v not in allNodeFeatures:
+                    errors.append(f"{k}: feature {v} not loaded")
+            elif k == "textFormats":
+                if type(v) is not dict:
+                    errors.append(f"{k} must be a dictionary")
+            elif k == "browseNavLevel":
+                allowedValues = set(range(len(sectionTypes)))
+                if v not in allowedValues:
+                    allowed = ",".join(sorted(allowedValues))
+                    errors.append(f"{k} must be an integer in {allowed}")
+            elif k == "children":
+                if type(v) is not str and type(v) is not list:
+                    errors.append(f"{k} must be a (list of) node types")
+                else:
+                    v = {v} if type(v) is str else set(v)
+                    for tp in v:
+                        if tp not in nTypes:
+                            errors.append(f"{k}: node type {tp} not present")
+            elif k in {"lexOcc", "chunkOf"}:
+                if type(v) is not str or v not in nTypes:
+                    errors.append(f"{k}: node type {v} not present")
+            elif k == "transform":
+                for (feat, method) in extra.items():
+                    if type(method) is str:
+                        errors.append(
+                            f"\t{k}:{feat}: {method}() not implemented in app"
+                        )
+            elif k in {
+                "withTypes",
+                "prettyTypes",
+                "withNodes",
+                "showFeatures",
+                "lineNumbers",
+                "showChunks",
+                "showGraphics",
+            }:
+                allowed = self.extra[k]
+                if not allowed and v is not None:
+                    errors.append(
+                        f"{k}={v} is not useful (dataset lacks relevant features)"
+                    )
+        else:
+            if k in {"excludedFeatures", "noneValues"}:
+                if type(v) is not list:
+                    errors.append(f"{k} must be a list")
+            elif k in {
+                "sectionSep1",
+                "sectionSep2",
+                "exampleSection",
+                "exampleSectionHtml",
+            }:
+                if type(v) is not str:
+                    errors.append(f"{k} must be a string")
+            elif k == "writing":
+                allowedValues = set(WRITING_DEFAULTS)
+                if v not in allowedValues:
+                    allowed = ",".join(allowedValues - {""})
+                    errors.append(f"{k} must be the empty string or one of {allowed}")
+            elif k in {"direction", "language", "fontName", "font", "fontw"}:
+                allowedValues = {w[k] for w in WRITING_DEFAULTS}
+                if v not in allowedValues:
+                    allowed = ",".join(allowedValues)
+                    errors.append(f"{k} must be one of {allowed}")
+            elif k in {
+                "browseContentPretty",
+                "base",
+                "childrenPlain",
+                "condense",
+                "graphics",
+                "hide",
+                "stretch",
+                "verselike",
+                "wrap",
+            }:
+                allowedValues = {True, False}
+                if v not in allowedValues:
+                    allowed = "true,false"
+                    errors.append(f"{k} must be a boolean in {allowed}")
+            elif k == "flow":
+                allowedValues = {"row", "col"}
+                if v not in allowedValues:
+                    allowed = ",".join(allowedValues)
+                    errors.append(f"{k} must be a value in {allowed}")
+            elif k == "level":
+                allowedValues = set(range(len(4)))
+                if v not in allowedValues:
+                    allowed = ",".join(sorted(allowedValues))
+                    errors.append(f"{k} must be an integer in {allowed}")
+
+    def checkGroup(self, cfg, defaults, dKey, postpone=set(), extra=None):
+        self.cfg = cfg
+        self.defaults = defaults
+        self.dKey = dKey
+        self.extra = extra
+        errors = self.errors
+
+        errors.clear()
+        dSource = cfg.get(dKey, {})
+
+        for (k, v) in dSource.items():
+            if k in defaults:
+                if k not in postpone:
+                    self.checkSetting(k, v)
+            else:
+                errors.append(f"Illegal parameter `{k}` with value {v}")
+
+    def checkItem(self, cfg, dKey):
+        self.cfg = cfg
+        self.dKey = dKey
+        errors = self.errors
+
+        errors.clear()
+        if dKey in cfg:
+            self.checkSetting(dKey, cfg[dKey])
+
+    def report(self):
+        errors = self.errors
+        dKey = self.dKey
+
+        if errors:
+            console(f"App config error(s) in {dKey}:", error=True)
+            for msg in errors:
+                console(f"\t{msg}", error=True)
+
+
 def setAppSpecs(app, cfg):
     specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
-
-    dKey = "interfaceDefaults"
-    specs[dKey] = cfg.get(dKey, ())
+    checker = Check(app, False)
 
     dKey = "writing"
+    checker.checkItem(cfg, dKey)
+    checker.report()
     value = cfg.get(dKey, "")
-    if value not in WRITING_DEFAULTS:
-        value = ""
     specs[dKey] = value
     for (k, v) in WRITING_DEFAULTS[value].items():
         specs[k] = v
@@ -215,6 +373,8 @@ def setAppSpecs(app, cfg):
         ("provenanceSpec", PROVENANCE_DEFAULTS),
         ("docs", DOC_DEFAULTS),
     ):
+        checker.checkGroup(cfg, {d[0] for d in defaults}, dKey)
+        checker.report()
         dSource = cfg.get(dKey, {})
         for (k, v) in defaults:
             val = dSource.get(k, v)
@@ -226,15 +386,6 @@ def setAppSpecs(app, cfg):
                 else val
             )
             specs[k] = val
-        errors = []
-        allowedKeys = {d[0] for d in defaults}
-        for (k, v) in dSource.items():
-            if k not in allowedKeys:
-                errors.append((k, v))
-        if errors:
-            console(f"App config error(s) in {dKey}: unknown setting(s)", error=True)
-            for (k, v) in errors:
-                console(f"\t{k}: {v}", error=True)
 
     moduleSpecs = specs["moduleSpecs"] or []
     for moduleSpec in moduleSpecs:
@@ -268,8 +419,7 @@ def setAppSpecs(app, cfg):
         ("dataDisplay", getDataDefaults),
         ("typeDisplay", getTypeDefaults),
     ):
-        dSource = cfg.get(dKey, {})
-        method(app, dSource, False)
+        method(app, cfg, dKey, False)
 
     app.context = AppCurrent(specs)
 
@@ -288,121 +438,53 @@ def setAppSpecsApi(app, cfg):
         ("dataDisplay", getDataDefaults),
         ("typeDisplay", getTypeDefaults),
     ):
-        dSource = cfg.get(dKey, {})
-        method(app, dSource, True)
+        method(app, cfg, dKey, True)
 
-    specs["baseTypes"] = (
-        tuple(e[0] for e in C.levels.data if e[0] not in sectionTypeSet),
+    specs["baseTypes"] = tuple(
+        e[0] for e in C.levels.data if e[0] not in sectionTypeSet
     )
+
     specs["condenseTypes"] = C.levels.data
     specs["defaultFormat"] = T.defaultFormat
 
+    dKey = "interfaceDefaults"
+    interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
+    dSource = cfg.get(dKey, {})
+    specific = {"lineNumbers", "showChunks", "showGraphics"}
+
+    allowed = {}
+    for (k, v) in interfaceDefaults.items():
+        allow = (
+            (
+                k == "lineNumbers"
+                and specs["lineNumberFeature"]
+                or k == "showChunks"
+                and specs["isChunkOf"]
+                or k == "graphics"
+                and specs["hasGraphics"]
+            )
+            if k in specific
+            else True
+        )
+        if k in dSource:
+            val = dSource[k]
+            default = val if allow else None
+        else:
+            default = v if allow else None
+        interfaceDefaults[k] = default
+        allowed[k] = allow
+    checker = Check(app, True)
+    checker.checkGroup(cfg, interfaceDefaults, dKey, extra=allowed)
+    checker.report()
+    specs[dKey] = interfaceDefaults
+
     app.context.update(specs)
+    app.showContext = types.MethodType(showContext, app)
 
 
-def checkType(app, withApi, k, v, errors, extra=None):
-    if withApi:
-        api = app.api
-        F = api.F
-        T = api.T
-        Fall = api.Fall
-        allNodeFeatures = set(Fall())
-        nTypes = F.otype.all
-        sectionTypes = T.sectionTypes
+def getDataDefaults(app, cfg, dKey, withApi):
+    checker = Check(app, withApi)
 
-        if k in {"template", "label"}:
-            (template, feats) = extra
-            if template is not True and type(template) is not str:
-                errors.append(f"{k} must be `true` or a string")
-            feats = extra[1]
-            for feat in feats:
-                if feat not in allNodeFeatures:
-                    errors.append(f"{k}: feature {feat} not loaded")
-        elif k == {"featuresBare", "features"}:
-            feats = extra[0]
-            tps = extra[1].values()
-            for feat in feats:
-                if feat not in allNodeFeatures:
-                    errors.append(f"{k}: feature {feat} not loaded")
-            for tp in tps:
-                if tp not in nTypes:
-                    errors.append(f"{k}: node type {tp} not present")
-        elif k == "lineNumber":
-            if v not in allNodeFeatures:
-                errors.append(f"{k}: feature {v} not loaded")
-        elif k == "textFormats":
-            if type(v) is not dict:
-                errors.append(f"{k} must be a dictionary")
-        elif k == "browseNavLevel":
-            allowedValues = set(range(len(sectionTypes)))
-            if v not in allowedValues:
-                allowed = ",".join(sorted(allowedValues))
-                errors.append(f"{k} must be an integer in {allowed}")
-        elif k == "children":
-            if type(v) is not str and type(v) is not list:
-                errors.append(f"{k} must be a (list of) node types")
-            else:
-                v = {v} if type(v) is str else set(v)
-                for tp in v:
-                    if tp not in nTypes:
-                        errors.append(f"{k}: node type {tp} not present")
-        elif k in {"lexOcc", "super"}:
-            if type(v) is not str or v not in nTypes:
-                errors.append(f"{k}: node type {v} not present")
-        elif k == "transform":
-            for (feat, method) in extra.items():
-                if type(method) is str:
-                    errors.append(f"\t{k}:{feat}: {method}() not implemented in app")
-    else:
-        if k in {"excludedFeatures", "noneValues"}:
-            if type(v) is not list:
-                errors.append(f"{k} must be a list")
-        elif k in {
-            "sectionSep1",
-            "sectionSep2",
-            "exampleSection",
-            "exampleSectionHtml",
-        }:
-            if type(v) is not str:
-                errors.append(f"{k} must be a string")
-        elif k == "writing":
-            allowedValues = set(WRITING_DEFAULTS)
-            if v not in allowedValues:
-                allowed = ",".join(allowedValues - {""})
-                errors.append(f"{k} must be the empty string or one of {allowed}")
-        elif k in {"direction", "language", "fontName", "font", "fontw"}:
-            allowedValues = {w[k] for w in WRITING_DEFAULTS}
-            if v not in allowedValues:
-                allowed = ",".join(allowedValues)
-                errors.append(f"{k} must be one of {allowed}")
-        elif k in {
-            "browseContentPretty",
-            "base",
-            "childrenPlain",
-            "condense",
-            "graphics",
-            "hide",
-            "stretch",
-            "verselike",
-            "wrap",
-        }:
-            allowedValues = {True, False}
-            if v not in allowedValues:
-                allowed = "true,false"
-                errors.append(f"{k} must be a boolean in {allowed}")
-        elif k == "flow":
-            allowedValues = {"row", "col"}
-            if v not in allowedValues:
-                allowed = ",".join(allowedValues)
-                errors.append(f"{k} must be a value in {allowed}")
-        elif k == "level":
-            allowedValues = set(range(len(4)))
-            if v not in allowedValues:
-                allowed = ",".join(sorted(allowedValues))
-                errors.append(f"{k} must be an integer in {allowed}")
-
-
-def getDataDefaults(app, givenInfo, withApi):
     if withApi:
         api = app.api
         F = api.F
@@ -411,14 +493,11 @@ def getDataDefaults(app, givenInfo, withApi):
 
     specs = app.specs
 
-    errors = []
     allowedKeys = {d[0] for d in DATA_DISPLAY_DEFAULTS}
-    for (k, v) in givenInfo.items():
-        if k in allowedKeys:
-            checkType(app, withApi, k, v, errors)
-        else:
-            if not withApi:
-                errors.append(f"Illegal parameter `{k}` with value {v}")
+    checker.checkGroup(cfg, allowedKeys, dKey)
+    checker.report()
+
+    givenInfo = cfg.get(dKey, {})
 
     for (attr, default, needsApi) in DATA_DISPLAY_DEFAULTS:
         if needsApi and not withApi or not needsApi and withApi:
@@ -443,15 +522,13 @@ def getDataDefaults(app, givenInfo, withApi):
         else:
             specs[attr] = value
 
-    if errors:
-        console(f"App config error(s) in dataDisplay:", error=True)
-        for msg in errors:
-            console(f"\t{msg}", error=True)
 
-
-def getTypeDefaults(app, givenInfo, withApi):
+def getTypeDefaults(app, cfg, dKey, withApi):
     if not withApi:
         return
+
+    checker = Check(app, withApi)
+    givenInfo = cfg.get(dKey, {})
 
     api = app.api
     F = api.F
@@ -468,7 +545,7 @@ def getTypeDefaults(app, givenInfo, withApi):
     specs = app.specs
 
     noChildren = set()
-    hasSuper = {}
+    isChunkOf = {}
     featuresBare = {}
     features = {}
     lineNumberFeature = {}
@@ -492,26 +569,15 @@ def getTypeDefaults(app, givenInfo, withApi):
     unknownTypes = {nType for nType in givenInfo if nType not in nTypes}
     if unknownTypes:
         unknownTypesRep = ",".join(sorted(unknownTypes))
-        console(
-            f"App config error(s) in typeDisplay: {unknownTypesRep}", error=True
-        )
+        console(f"App config error(s) in typeDisplay: {unknownTypesRep}", error=True)
 
     for (nType, info) in givenInfo.items():
-        errors = []
-        for (k, v) in info.items():
-            if k in TYPE_KEYS:
-                if k in {"label", "template", "features", "featuresBare", "transform"}:
-                    continue
-                checkType(app, withApi, k, v, errors)
-            else:
-                errors.append(f"Illegal parameter `{k}` with value {v}")
-
-        if errors:
-            console(
-                f"App config error(s) in typeDisplay[{nType}]:", error=True,
-            )
-            for m in errors:
-                console(f"\t{m}", error=True)
+        checker.checkGroup(
+            givenInfo,
+            TYPE_KEYS,
+            nType,
+            postpone={"label", "template", "features", "featuresBare", "transform"},
+        )
 
     for (nType, info) in givenInfo.items():
         if info.get("verselike", False):
@@ -536,19 +602,14 @@ def getTypeDefaults(app, givenInfo, withApi):
                     VAR_PATTERN.findall(template) if type(template) is str else ()
                 )
                 dest[nType] = (template, templateFeatures)
-                checkType(
-                    app,
-                    withApi,
-                    k,
-                    template,
-                    errors,
-                    extra=(template, templateFeatures),
+                checker.checkSetting(
+                    k, template, extra=(template, templateFeatures),
                 )
 
         for k in ("featuresBare", "features"):
             v = info.get(k, "")
             parsedV = parseFeatures(v)
-            checkType(app, withApi, k, v, errors, extra=parsedV)
+            checker.checkSetting(k, v, extra=parsedV)
             if k == "features":
                 features[nType] = parsedV
             else:
@@ -565,9 +626,9 @@ def getTypeDefaults(app, givenInfo, withApi):
         if not info.get("childrenPlain", True):
             noChildren.add(nType)
 
-        supr = info.get("super", None)
-        if supr is not None:
-            hasSuper[nType] = supr
+        chunkOf = info.get("chunkOf", None)
+        if chunkOf is not None:
+            isChunkOf[nType] = chunkOf
 
         verselike = info.get("verselike", False)
         if verselike:
@@ -580,7 +641,7 @@ def getTypeDefaults(app, givenInfo, withApi):
                 methodName = f"transform_{func}"
                 resolvedTrans[feat] = getattr(app, methodName, methodName)
             v = resolvedTrans
-            checkType(app, withApi, "transform", trans, errors, extra=v)
+            checker.checkSetting("transform", trans, extra=v)
             transform[nType] = v
 
         if "level" in info or "flow" in info or "wrap" in info or "stretch" in info:
@@ -713,7 +774,7 @@ def getTypeDefaults(app, givenInfo, withApi):
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
-        hasSuper=hasSuper,
+        isChunkOf=isChunkOf,
         levelCls=levelCls,
         lexMap=lexMap,
         lexTypes=lexTypes,
@@ -722,11 +783,80 @@ def getTypeDefaults(app, givenInfo, withApi):
         noDescendTypes=lexTypes,
         plainCustom={},
         prettyCustom={},
-        superTypes=set(hasSuper.values()),
+        chunkedTypes=set(isChunkOf.values()),
         templates=templates,
         labels=labels,
         transform=transform,
         verseTypes=verseTypes,
+    )
+
+
+def showContext(app):
+    EM = "*empty*"
+    block = "    "
+
+    def eScalar(x, plain=True):
+        tick = "`" if plain else ""
+        return f"{tick}{mdEsc(str(x))}{tick}" if x else EM
+
+    def eEmpty(x):
+        tpv = type(x)
+        return (
+            "`[]`"
+            if tpv is list
+            else "`()`"
+            if tpv is tuple
+            else "`{}`"
+            if tpv is dict
+            else "`set()`"
+            if tpv is set
+            else EM
+            if tpv is str
+            else str(x)
+        )
+
+    def eList(x, level):
+        tpv = type(x)
+        indent = block * level
+        md = "\n"
+        for (i, v) in enumerate(sorted(x, key=lambda y: str(y)) if tpv is set else x):
+            item = f"{i + 1}." if level == 0 else "*"
+            md += f"{indent}{item:<4}{eData(v, level + 1)}"
+        return md
+
+    def eDict(x, level):
+        indent = block * level
+        md = "\n"
+        for (i, (k, v)) in enumerate(sorted(x.items(), key=lambda y: str(y))):
+            item = f"{i + 1:}." if level == 0 else "*"
+            md += (
+                f"{indent}{item:<4}**{eScalar(k, plain=level > 0)}**:"
+                f" {eData(v, level + 1)}"
+            )
+        return md
+
+    def eRest(x, level):
+        indent = block * level
+        return "\n" + indent + eScalar(x) + "\n"
+
+    def eData(x, level):
+        if not x:
+            return eEmpty(x) + "\n"
+        tpv = type(x)
+        if tpv is str or tpv is float or tpv is int or tpv is bool:
+            return eScalar(x) + "\n"
+        if tpv is list or tpv is tuple or tpv is set:
+            return eList(x, level)
+        if tpv is dict:
+            return eDict(x, level)
+        return eRest(x, level)
+
+    dm(
+        f"""\
+# {(app.appName)} settings
+
+{eData(app.specs, 0)}
+"""
     )
 
 
