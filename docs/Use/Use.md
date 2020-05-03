@@ -1,27 +1,44 @@
 # Usage
 
-## Apps
+Below `xxx` should be replaced by the name of an official
+[TF-app](https://annotation.github.io/text-fabric/About/Corpora/).
 
-Text-Fabric is a generic engine to process text corpora enriched with sets of annotations.
+You can work with the TF-browser or with the TF-API.
+In both cases, the data will be automatically downloaded.
 
-For a growing set of
-[corpora](../About/Corpora.md)
-additional functionality is available in the form of *apps*.
+## TF-browser
 
-## Text-Fabric browser
+The basic command to start the TF-browser [TF-browser](Browser.md) is:
 
-App-supported corpora can be explored in a
-[browser interface](Browser.md)
-that is usable without programming.
-Only familiarity with search templates is needed.
+``` sh
+text-fabric xxx
+```
+
+Then your browser will open and there you'll find links to further help.
 
 ![tfbrowser](../images/tfbrowser.png)
 
+**On Windows:**
+You can click the Start Menu, and type the command in the search box, and then Enter.
+
+**On Linux or Macos:**
+You can open a terminal, and type the command there.
+
+## In your own programs
+
+``` python
+from tf.app import use
+
+A = use("xxx")
+```
+
+This `A` is your handle to the 
+[advanced API functions](../Api/App.md).
+
 ## Search templates
 
-Text-Fabric has a powerful yet intuitive search engine that works with
-[templates](Search.md),
-which follow closely the features of the annotations to the corpus.
+Text-Fabric has a [templates](Search.md)-based search engine
+which follows closely the features of the annotations to the corpus.
 
 (Uruk)
 
@@ -58,19 +75,17 @@ aya\n",
 
 ## Text-Fabric API
 
-When mere search is not enough,
-analysis by means of programming is the next step.
-You can "talk" to your corpus through an
+Beyond searching, you can program your own analytical methods.
+You can "talk" to your corpus through a high-level
 [API](../Api/App.md)
 dedicated to your corpus which can download its data and display its material.
 
-You can use it together with the generic [TF API](../Api/Fabric.md) to
+You can use it together with the core [TF API](../Api/Fabric.md) to
 
 * search your corpus programmatically by means of the same templates,
 * prepare derived data for analysis in R, and
 * create new data and distribute it to others.
 
-## Advanced
-The [advanced guide](UseX.md)
+## Data sharing
+The [data sharing guide](UseX.md)
 tells more about data usage and data sharing.
-

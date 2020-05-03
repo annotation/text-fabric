@@ -26,20 +26,15 @@
 </summary>
 <pre><code class="python">import os
 import sys
-
+import pickle
 
 from flask import Flask, send_file
 from werkzeug.serving import run_simple
 
+from ..parameters import HOST
 from ..core.helpers import console
-from ..applib.app import findApp, findAppConfig
-from ..applib.helpers import getLocalDir, configure
 from ..server.kernel import makeTfConnection
-from .command import (
-    argDebug,
-    argDocker,
-    argParam,
-)
+from .command import argWeb
 from .serve import (
     TIMEOUT,
     serveTable,
@@ -51,121 +46,103 @@ from .serve import (
 )
 
 
-myDir = os.path.dirname(os.path.abspath(__file__))
+MY_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-class Setup(object):
-    def __init__(self, dataSource, checkoutApp):
-        self.dataSource = dataSource
+class Web(object):
+    def __init__(self, portKernel):
+        TF = makeTfConnection(HOST, portKernel, TIMEOUT)
+        kernelApi = TF.connect()
+        self.kernelApi = kernelApi
 
-        (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
-        if not appBase:
-            return
-        appPath = f&#34;{appBase}/{appDir}&#34;
-        self.appPath = appPath
+        context = pickle.loads(kernelApi.context())
+        self.context = context
 
-        config = findAppConfig(dataSource, self.appPath)
-        self.config = config
-
-        if config is None:
-            return
-
-        self.TF = makeTfConnection(config.HOST, config.PORT[&#34;kernel&#34;], TIMEOUT)
         self.wildQueries = set()
 
-        cfg = configure(config, None)
-        version = cfg[&#34;version&#34;]
-        cfg[&#34;localDir&#34;] = getLocalDir(cfg, local, version)
-        self.localDir = cfg[&#34;localDir&#34;]
 
-
-def factory(setup):
+def factory(web):
     app = Flask(__name__)
+    aContext = web.context
+    appPath = aContext.appPath
+    localDir = aContext.localDir
 
     @app.route(&#34;/server/static/&lt;path:filepath&gt;&#34;)
     def serveStatic(filepath):
-        return send_file(f&#34;{myDir}/static/{filepath}&#34;)
+        return send_file(f&#34;{MY_DIR}/static/{filepath}&#34;)
 
     @app.route(&#34;/data/static/&lt;path:filepath&gt;&#34;)
     def serveData(filepath):
-        return send_file(f&#34;{setup.appPath}/static/{filepath}&#34;)
+        return send_file(f&#34;{appPath}/static/{filepath}&#34;)
 
     @app.route(&#34;/local/&lt;path:filepath&gt;&#34;)
     def serveLocal(filepath):
-        return send_file(f&#34;{setup.localDir}/{filepath}&#34;)
+        return send_file(f&#34;{localDir}/{filepath}&#34;)
 
     @app.route(&#34;/sections&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveSectionsBare():
-        return serveTable(setup, &#34;sections&#34;, None)
+        return serveTable(web, &#34;sections&#34;, None)
 
     @app.route(&#34;/sections/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveSections(getx):
-        return serveTable(setup, &#34;sections&#34;, getx)
+        return serveTable(web, &#34;sections&#34;, getx)
 
     @app.route(&#34;/tuples&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveTuplesBare():
-        return serveTable(setup, &#34;tuples&#34;, None)
+        return serveTable(web, &#34;tuples&#34;, None)
 
     @app.route(&#34;/tuples/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveTuples(getx):
-        return serveTable(setup, &#34;tuples&#34;, getx)
+        return serveTable(web, &#34;tuples&#34;, getx)
 
     @app.route(&#34;/query&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveQueryBare():
-        return serveQuery(setup, None)
+        return serveQuery(web, None)
 
     @app.route(&#34;/query/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveQueryX(getx):
-        return serveQuery(setup, getx)
+        return serveQuery(web, getx)
 
     @app.route(&#34;/passage&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def servePassageBare():
-        return servePassage(setup, None)
+        return servePassage(web, None)
 
     @app.route(&#34;/passage/&lt;getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def servePassageX(getx):
-        return servePassage(setup, getx)
+        return servePassage(web, getx)
 
     @app.route(&#34;/export&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveExportX():
-        return serveExport(setup,)
+        return serveExport(web)
 
     @app.route(&#34;/download&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveDownloadX():
-        return serveDownload(setup,)
+        return serveDownload(web)
 
     @app.route(&#34;/&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveAllX(anything=None):
-        return serveAll(setup, anything)
+        return serveAll(web, anything)
 
     return app
 
 
-def main():
-    (dataSource, checkoutApp) = argParam(interactive=True)
-    if dataSource is None:
-        return 1
+def main(cargs=sys.argv):
+    args = argWeb(cargs)
+    if not args:
+        return
 
-    if dataSource is not None:
-        try:
-            debug = argDebug()
-            setup = Setup(dataSource, checkoutApp)
-            config = setup.config
-            if config is not None:
-                onDocker = argDocker()
-                console(f&#34;onDocker={onDocker}&#34;)
-                webapp = factory(setup)
-                run_simple(
-                    &#34;0.0.0.0&#34; if onDocker else config.HOST,
-                    config.PORT[&#34;web&#34;],
-                    webapp,
-                    use_reloader=False,
-                    use_debugger=debug,
-                )
-        except OSError as e:
-            console(str(e))
-            return 1
+    (dataSource, portKernel, portWeb) = args
+
+    try:
+        web = Web(portKernel)
+        webapp = factory(web)
+        run_simple(
+            HOST, portWeb, webapp, use_reloader=False, use_debugger=False,
+        )
+    except OSError as e:
+        console(str(e))
+        return 1
 
     return 0
 
@@ -182,7 +159,7 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.server.web.factory"><code class="name flex">
-<span>def <span class="ident">factory</span></span>(<span>setup)</span>
+<span>def <span class="ident">factory</span></span>(<span>web)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -190,71 +167,74 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def factory(setup):
+<pre><code class="python">def factory(web):
     app = Flask(__name__)
+    aContext = web.context
+    appPath = aContext.appPath
+    localDir = aContext.localDir
 
     @app.route(&#34;/server/static/&lt;path:filepath&gt;&#34;)
     def serveStatic(filepath):
-        return send_file(f&#34;{myDir}/static/{filepath}&#34;)
+        return send_file(f&#34;{MY_DIR}/static/{filepath}&#34;)
 
     @app.route(&#34;/data/static/&lt;path:filepath&gt;&#34;)
     def serveData(filepath):
-        return send_file(f&#34;{setup.appPath}/static/{filepath}&#34;)
+        return send_file(f&#34;{appPath}/static/{filepath}&#34;)
 
     @app.route(&#34;/local/&lt;path:filepath&gt;&#34;)
     def serveLocal(filepath):
-        return send_file(f&#34;{setup.localDir}/{filepath}&#34;)
+        return send_file(f&#34;{localDir}/{filepath}&#34;)
 
     @app.route(&#34;/sections&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveSectionsBare():
-        return serveTable(setup, &#34;sections&#34;, None)
+        return serveTable(web, &#34;sections&#34;, None)
 
     @app.route(&#34;/sections/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveSections(getx):
-        return serveTable(setup, &#34;sections&#34;, getx)
+        return serveTable(web, &#34;sections&#34;, getx)
 
     @app.route(&#34;/tuples&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveTuplesBare():
-        return serveTable(setup, &#34;tuples&#34;, None)
+        return serveTable(web, &#34;tuples&#34;, None)
 
     @app.route(&#34;/tuples/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveTuples(getx):
-        return serveTable(setup, &#34;tuples&#34;, getx)
+        return serveTable(web, &#34;tuples&#34;, getx)
 
     @app.route(&#34;/query&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveQueryBare():
-        return serveQuery(setup, None)
+        return serveQuery(web, None)
 
     @app.route(&#34;/query/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveQueryX(getx):
-        return serveQuery(setup, getx)
+        return serveQuery(web, getx)
 
     @app.route(&#34;/passage&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def servePassageBare():
-        return servePassage(setup, None)
+        return servePassage(web, None)
 
     @app.route(&#34;/passage/&lt;getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def servePassageX(getx):
-        return servePassage(setup, getx)
+        return servePassage(web, getx)
 
     @app.route(&#34;/export&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveExportX():
-        return serveExport(setup,)
+        return serveExport(web)
 
     @app.route(&#34;/download&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveDownloadX():
-        return serveDownload(setup,)
+        return serveDownload(web)
 
     @app.route(&#34;/&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveAllX(anything=None):
-        return serveAll(setup, anything)
+        return serveAll(web, anything)
 
     return app</code></pre>
 </details>
 </dd>
 <dt id="tf.server.web.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>)</span>
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -262,30 +242,22 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main():
-    (dataSource, checkoutApp) = argParam(interactive=True)
-    if dataSource is None:
-        return 1
+<pre><code class="python">def main(cargs=sys.argv):
+    args = argWeb(cargs)
+    if not args:
+        return
 
-    if dataSource is not None:
-        try:
-            debug = argDebug()
-            setup = Setup(dataSource, checkoutApp)
-            config = setup.config
-            if config is not None:
-                onDocker = argDocker()
-                console(f&#34;onDocker={onDocker}&#34;)
-                webapp = factory(setup)
-                run_simple(
-                    &#34;0.0.0.0&#34; if onDocker else config.HOST,
-                    config.PORT[&#34;web&#34;],
-                    webapp,
-                    use_reloader=False,
-                    use_debugger=debug,
-                )
-        except OSError as e:
-            console(str(e))
-            return 1
+    (dataSource, portKernel, portWeb) = args
+
+    try:
+        web = Web(portKernel)
+        webapp = factory(web)
+        run_simple(
+            HOST, portWeb, webapp, use_reloader=False, use_debugger=False,
+        )
+    except OSError as e:
+        console(str(e))
+        return 1
 
     return 0</code></pre>
 </details>
@@ -295,9 +267,9 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.server.web.Setup"><code class="flex name class">
-<span>class <span class="ident">Setup</span></span>
-<span>(</span><span>dataSource, checkoutApp)</span>
+<dt id="tf.server.web.Web"><code class="flex name class">
+<span>class <span class="ident">Web</span></span>
+<span>(</span><span>portKernel)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -305,29 +277,16 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Setup(object):
-    def __init__(self, dataSource, checkoutApp):
-        self.dataSource = dataSource
+<pre><code class="python">class Web(object):
+    def __init__(self, portKernel):
+        TF = makeTfConnection(HOST, portKernel, TIMEOUT)
+        kernelApi = TF.connect()
+        self.kernelApi = kernelApi
 
-        (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
-        if not appBase:
-            return
-        appPath = f&#34;{appBase}/{appDir}&#34;
-        self.appPath = appPath
+        context = pickle.loads(kernelApi.context())
+        self.context = context
 
-        config = findAppConfig(dataSource, self.appPath)
-        self.config = config
-
-        if config is None:
-            return
-
-        self.TF = makeTfConnection(config.HOST, config.PORT[&#34;kernel&#34;], TIMEOUT)
-        self.wildQueries = set()
-
-        cfg = configure(config, None)
-        version = cfg[&#34;version&#34;]
-        cfg[&#34;localDir&#34;] = getLocalDir(cfg, local, version)
-        self.localDir = cfg[&#34;localDir&#34;]</code></pre>
+        self.wildQueries = set()</code></pre>
 </details>
 </dd>
 </dl>
@@ -353,7 +312,7 @@ if __name__ == &#34;__main__&#34;:
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tf.server.web.Setup" href="#tf.server.web.Setup">Setup</a></code></h4>
+<h4><code><a title="tf.server.web.Web" href="#tf.server.web.Web">Web</a></code></h4>
 </li>
 </ul>
 </li>

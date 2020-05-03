@@ -29,12 +29,16 @@
     error = api.error
     T = api.T
 
-    if hasattr(app, &#34;textFormats&#34;):
+    if app.isCompatible:
         formats = T.formats
         xFormats = T._xformats
         xdTypes = T._xdTypes
         defaultFormat = T.defaultFormat
-        for (fmt, method) in app.textFormats.items():
+
+        aContext = app.context
+        textFormats = aContext.textFormats
+
+        for (fmt, method) in textFormats.items():
             (descendType, method) = T.splitFormat(method)
             formats[fmt] = descendType
             xdTypes[fmt] = descendType
@@ -46,7 +50,9 @@
                 func = xFormats[fmt] = xFormats[defaultFormat]
             else:
                 func = getattr(app, func)
-            xFormats[fmt] = func</code></pre>
+            xFormats[fmt] = func
+
+        aContext.allFormats = T.formats</code></pre>
 </details>
 </section>
 <section>
@@ -70,12 +76,16 @@
     error = api.error
     T = api.T
 
-    if hasattr(app, &#34;textFormats&#34;):
+    if app.isCompatible:
         formats = T.formats
         xFormats = T._xformats
         xdTypes = T._xdTypes
         defaultFormat = T.defaultFormat
-        for (fmt, method) in app.textFormats.items():
+
+        aContext = app.context
+        textFormats = aContext.textFormats
+
+        for (fmt, method) in textFormats.items():
             (descendType, method) = T.splitFormat(method)
             formats[fmt] = descendType
             xdTypes[fmt] = descendType
@@ -87,7 +97,9 @@
                 func = xFormats[fmt] = xFormats[defaultFormat]
             else:
                 func = getattr(app, func)
-            xFormats[fmt] = func</code></pre>
+            xFormats[fmt] = func
+
+        aContext.allFormats = T.formats</code></pre>
 </details>
 </dd>
 </dl>

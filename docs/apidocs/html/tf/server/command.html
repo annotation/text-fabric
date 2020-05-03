@@ -24,11 +24,13 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import sys
-import re
+<pre><code class="python">import re
+import pickle
+import socket
+import errno
+from base64 import b64encode, b64decode
 
-from ..parameters import APP_URL
-from ..core.helpers import console
+from ..parameters import HOST, PORT_BASE
 
 # COMMAND LINE ARGS
 
@@ -36,76 +38,123 @@ appPat = &#34;^([a-zA-Z0-9_-]+)$&#34;
 appRe = re.compile(appPat)
 
 
-def argDebug(cargs=sys.argv):
+def portIsInUse(host, port):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        s.bind((host, port))
+        result = True
+    except OverflowError:
+        result = None
+    except socket.error as e:
+        if e.errno == errno.EADDRINUSE:
+            result = False
+        else:
+            result = False
+
+    s.close()
+    return result
+
+
+def getPort(portBase=PORT_BASE):
+    result = None
+    for port in range(portBase, portBase + 100):
+        status = portIsInUse(HOST, port)
+        if status is None:
+            break
+        if not status:
+            continue
+        result = port
+        break
+
+    return result
+
+
+def enSlug(data):
+    return str(b64encode(pickle.dumps(data)), encoding=&#34;utf8&#34;)
+
+
+def deSlug(slug):
+    return pickle.loads(b64decode(bytes(slug, encoding=&#34;utf8&#34;)))
+
+
+def argApp(cargs):
+    (appName, checkoutApp) = argParam(cargs)
+    checkout = argCollect(&#39;checkout&#39;, cargs)
+    locations = argCollect(&#39;locations&#39;, cargs)
+    modules = argCollect(&#39;modules&#39;, cargs)
+    moduleRefs = argCollect(&#39;mod&#39;, cargs)
+    setFile = argCollect(&#39;sets&#39;, cargs)
+    slug = enSlug(
+        dict(
+            appName=appName,
+            checkoutApp=checkoutApp,
+            checkoutData=checkout,
+            locations=locations,
+            modules=modules,
+            moduleRefs=moduleRefs,
+            setFile=setFile,
+        )
+    )
+    return (appName, slug)
+
+
+def argKill(cargs):
     for arg in cargs[1:]:
-        if arg == &#34;-d&#34;:
+        if arg == &#34;-k&#34;:
             return True
     return False
 
 
-def argCheckout(cargs=sys.argv):
-    for arg in cargs[1:]:
-        if arg.startswith(&#34;--checkout=&#34;):
-            return arg[11:]
-    return None
-
-
-def argNoweb(cargs=sys.argv):
+def argNoweb(cargs):
     for arg in cargs[1:]:
         if arg == &#34;-noweb&#34;:
             return True
     return False
 
 
-def argDocker(cargs=sys.argv):
+def argCollect(prefix, cargs):
     for arg in cargs[1:]:
-        if arg == &#34;-docker&#34;:
-            return True
-    return False
+        if arg.startswith(f&#34;--{prefix}=&#34;):
+            return arg[len(prefix) + 3 :]
+    return None
 
 
-def argModules(cargs=sys.argv):
-    for arg in cargs[1:]:
-        if arg.startswith(&#34;--mod=&#34;):
-            return arg[6:]
-    return &#34;&#34;
+def argKernel(cargs):
+    if len(cargs) != 3:
+        return None
+    slug = cargs[1]
+    portKernel = cargs[2]
+    return (deSlug(slug), portKernel)
 
 
-def argSets(cargs=sys.argv):
-    for arg in cargs[1:]:
-        if arg.startswith(&#34;--sets=&#34;):
-            return arg[7:]
-    return &#34;&#34;
+def argWeb(cargs):
+    if len(cargs) != 4:
+        return None
+    slug = cargs[1]
+    portKernel = cargs[2]
+    portWeb = cargs[3]
+    return (deSlug(slug), portKernel, portWeb)
 
 
-def argParam(cargs=sys.argv, interactive=False):
-    dPrompt = f&#34;see {APP_URL} for app-xxxx choices. xxxx = ? &#34;
-    dataSource = None
+def argParam(cargs):
+    appName = None
     checkoutApp = None
 
     for arg in cargs[1:]:
         if arg.startswith(&#34;-&#34;):
             continue
-        dataSource = arg
+        appName = arg
         break
 
-    if interactive:
-        if dataSource is None:
-            dataSource = input(f&#34;specify data source[:checkout] [{dPrompt}] &gt; &#34;)
-        if dataSource is None:
-            console(
-                f&#34;Pass a data source[:checkout] [{dPrompt}] as first argument&#34;,
-                error=True,
-            )
-
-    if dataSource is None:
+    if appName is None:
         return (None, None)
 
-    parts = dataSource.split(&#34;:&#34;, maxsplit=1)
+    parts = appName.split(&#34;:&#34;, maxsplit=1)
     if len(parts) == 1:
         parts.append(&#34;&#34;)
-    (dataSource, checkoutApp) = parts
-    return (dataSource, checkoutApp)</code></pre>
+    (appName, checkoutApp) = parts
+    return (appName, checkoutApp)</code></pre>
 </details>
 </section>
 <section>
@@ -115,8 +164,8 @@ def argParam(cargs=sys.argv, interactive=False):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.server.command.argCheckout"><code class="name flex">
-<span>def <span class="ident">argCheckout</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
+<dt id="tf.server.command.argApp"><code class="name flex">
+<span>def <span class="ident">argApp</span></span>(<span>cargs)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -124,15 +173,45 @@ def argParam(cargs=sys.argv, interactive=False):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def argCheckout(cargs=sys.argv):
+<pre><code class="python">def argApp(cargs):
+    (appName, checkoutApp) = argParam(cargs)
+    checkout = argCollect(&#39;checkout&#39;, cargs)
+    locations = argCollect(&#39;locations&#39;, cargs)
+    modules = argCollect(&#39;modules&#39;, cargs)
+    moduleRefs = argCollect(&#39;mod&#39;, cargs)
+    setFile = argCollect(&#39;sets&#39;, cargs)
+    slug = enSlug(
+        dict(
+            appName=appName,
+            checkoutApp=checkoutApp,
+            checkoutData=checkout,
+            locations=locations,
+            modules=modules,
+            moduleRefs=moduleRefs,
+            setFile=setFile,
+        )
+    )
+    return (appName, slug)</code></pre>
+</details>
+</dd>
+<dt id="tf.server.command.argCollect"><code class="name flex">
+<span>def <span class="ident">argCollect</span></span>(<span>prefix, cargs)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def argCollect(prefix, cargs):
     for arg in cargs[1:]:
-        if arg.startswith(&#34;--checkout=&#34;):
-            return arg[11:]
+        if arg.startswith(f&#34;--{prefix}=&#34;):
+            return arg[len(prefix) + 3 :]
     return None</code></pre>
 </details>
 </dd>
-<dt id="tf.server.command.argDebug"><code class="name flex">
-<span>def <span class="ident">argDebug</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
+<dt id="tf.server.command.argKernel"><code class="name flex">
+<span>def <span class="ident">argKernel</span></span>(<span>cargs)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -140,15 +219,16 @@ def argParam(cargs=sys.argv, interactive=False):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def argDebug(cargs=sys.argv):
-    for arg in cargs[1:]:
-        if arg == &#34;-d&#34;:
-            return True
-    return False</code></pre>
+<pre><code class="python">def argKernel(cargs):
+    if len(cargs) != 3:
+        return None
+    slug = cargs[1]
+    portKernel = cargs[2]
+    return (deSlug(slug), portKernel)</code></pre>
 </details>
 </dd>
-<dt id="tf.server.command.argDocker"><code class="name flex">
-<span>def <span class="ident">argDocker</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
+<dt id="tf.server.command.argKill"><code class="name flex">
+<span>def <span class="ident">argKill</span></span>(<span>cargs)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -156,31 +236,15 @@ def argParam(cargs=sys.argv, interactive=False):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def argDocker(cargs=sys.argv):
+<pre><code class="python">def argKill(cargs):
     for arg in cargs[1:]:
-        if arg == &#34;-docker&#34;:
+        if arg == &#34;-k&#34;:
             return True
     return False</code></pre>
-</details>
-</dd>
-<dt id="tf.server.command.argModules"><code class="name flex">
-<span>def <span class="ident">argModules</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def argModules(cargs=sys.argv):
-    for arg in cargs[1:]:
-        if arg.startswith(&#34;--mod=&#34;):
-            return arg[6:]
-    return &#34;&#34;</code></pre>
 </details>
 </dd>
 <dt id="tf.server.command.argNoweb"><code class="name flex">
-<span>def <span class="ident">argNoweb</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
+<span>def <span class="ident">argNoweb</span></span>(<span>cargs)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -188,7 +252,7 @@ def argParam(cargs=sys.argv, interactive=False):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def argNoweb(cargs=sys.argv):
+<pre><code class="python">def argNoweb(cargs):
     for arg in cargs[1:]:
         if arg == &#34;-noweb&#34;:
             return True
@@ -196,7 +260,7 @@ def argParam(cargs=sys.argv, interactive=False):
 </details>
 </dd>
 <dt id="tf.server.command.argParam"><code class="name flex">
-<span>def <span class="ident">argParam</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'], interactive=False)</span>
+<span>def <span class="ident">argParam</span></span>(<span>cargs)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -204,38 +268,28 @@ def argParam(cargs=sys.argv, interactive=False):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def argParam(cargs=sys.argv, interactive=False):
-    dPrompt = f&#34;see {APP_URL} for app-xxxx choices. xxxx = ? &#34;
-    dataSource = None
+<pre><code class="python">def argParam(cargs):
+    appName = None
     checkoutApp = None
 
     for arg in cargs[1:]:
         if arg.startswith(&#34;-&#34;):
             continue
-        dataSource = arg
+        appName = arg
         break
 
-    if interactive:
-        if dataSource is None:
-            dataSource = input(f&#34;specify data source[:checkout] [{dPrompt}] &gt; &#34;)
-        if dataSource is None:
-            console(
-                f&#34;Pass a data source[:checkout] [{dPrompt}] as first argument&#34;,
-                error=True,
-            )
-
-    if dataSource is None:
+    if appName is None:
         return (None, None)
 
-    parts = dataSource.split(&#34;:&#34;, maxsplit=1)
+    parts = appName.split(&#34;:&#34;, maxsplit=1)
     if len(parts) == 1:
         parts.append(&#34;&#34;)
-    (dataSource, checkoutApp) = parts
-    return (dataSource, checkoutApp)</code></pre>
+    (appName, checkoutApp) = parts
+    return (appName, checkoutApp)</code></pre>
 </details>
 </dd>
-<dt id="tf.server.command.argSets"><code class="name flex">
-<span>def <span class="ident">argSets</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
+<dt id="tf.server.command.argWeb"><code class="name flex">
+<span>def <span class="ident">argWeb</span></span>(<span>cargs)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -243,11 +297,89 @@ def argParam(cargs=sys.argv, interactive=False):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def argSets(cargs=sys.argv):
-    for arg in cargs[1:]:
-        if arg.startswith(&#34;--sets=&#34;):
-            return arg[7:]
-    return &#34;&#34;</code></pre>
+<pre><code class="python">def argWeb(cargs):
+    if len(cargs) != 4:
+        return None
+    slug = cargs[1]
+    portKernel = cargs[2]
+    portWeb = cargs[3]
+    return (deSlug(slug), portKernel, portWeb)</code></pre>
+</details>
+</dd>
+<dt id="tf.server.command.deSlug"><code class="name flex">
+<span>def <span class="ident">deSlug</span></span>(<span>slug)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def deSlug(slug):
+    return pickle.loads(b64decode(bytes(slug, encoding=&#34;utf8&#34;)))</code></pre>
+</details>
+</dd>
+<dt id="tf.server.command.enSlug"><code class="name flex">
+<span>def <span class="ident">enSlug</span></span>(<span>data)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def enSlug(data):
+    return str(b64encode(pickle.dumps(data)), encoding=&#34;utf8&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.server.command.getPort"><code class="name flex">
+<span>def <span class="ident">getPort</span></span>(<span>portBase=8976)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getPort(portBase=PORT_BASE):
+    result = None
+    for port in range(portBase, portBase + 100):
+        status = portIsInUse(HOST, port)
+        if status is None:
+            break
+        if not status:
+            continue
+        result = port
+        break
+
+    return result</code></pre>
+</details>
+</dd>
+<dt id="tf.server.command.portIsInUse"><code class="name flex">
+<span>def <span class="ident">portIsInUse</span></span>(<span>host, port)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def portIsInUse(host, port):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        s.bind((host, port))
+        result = True
+    except OverflowError:
+        result = None
+    except socket.error as e:
+        if e.errno == errno.EADDRINUSE:
+            result = False
+        else:
+            result = False
+
+    s.close()
+    return result</code></pre>
 </details>
 </dd>
 </dl>
@@ -268,13 +400,17 @@ def argParam(cargs=sys.argv, interactive=False):
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
-<li><code><a title="tf.server.command.argCheckout" href="#tf.server.command.argCheckout">argCheckout</a></code></li>
-<li><code><a title="tf.server.command.argDebug" href="#tf.server.command.argDebug">argDebug</a></code></li>
-<li><code><a title="tf.server.command.argDocker" href="#tf.server.command.argDocker">argDocker</a></code></li>
-<li><code><a title="tf.server.command.argModules" href="#tf.server.command.argModules">argModules</a></code></li>
+<li><code><a title="tf.server.command.argApp" href="#tf.server.command.argApp">argApp</a></code></li>
+<li><code><a title="tf.server.command.argCollect" href="#tf.server.command.argCollect">argCollect</a></code></li>
+<li><code><a title="tf.server.command.argKernel" href="#tf.server.command.argKernel">argKernel</a></code></li>
+<li><code><a title="tf.server.command.argKill" href="#tf.server.command.argKill">argKill</a></code></li>
 <li><code><a title="tf.server.command.argNoweb" href="#tf.server.command.argNoweb">argNoweb</a></code></li>
 <li><code><a title="tf.server.command.argParam" href="#tf.server.command.argParam">argParam</a></code></li>
-<li><code><a title="tf.server.command.argSets" href="#tf.server.command.argSets">argSets</a></code></li>
+<li><code><a title="tf.server.command.argWeb" href="#tf.server.command.argWeb">argWeb</a></code></li>
+<li><code><a title="tf.server.command.deSlug" href="#tf.server.command.deSlug">deSlug</a></code></li>
+<li><code><a title="tf.server.command.enSlug" href="#tf.server.command.enSlug">enSlug</a></code></li>
+<li><code><a title="tf.server.command.getPort" href="#tf.server.command.getPort">getPort</a></code></li>
+<li><code><a title="tf.server.command.portIsInUse" href="#tf.server.command.portIsInUse">portIsInUse</a></code></li>
 </ul>
 </li>
 </ul>

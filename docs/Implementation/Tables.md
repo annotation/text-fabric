@@ -1,4 +1,3 @@
-
 # Tabular display for the TF-browser
 
 ## Constants

@@ -26,81 +26,162 @@
 </summary>
 <pre><code class="python">import os
 import types
+from collections import namedtuple
 
-from ..parameters import URL_TFDOC, DOWNLOADS
+from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
+from ..core.text import DEFAULT_FORMAT
 from ..core.helpers import mdEsc, htmlEsc, flattenToSet
-from .app import findAppConfig
-from .helpers import configure, RESULT, dh
-from .links import outLink
+from .helpers import tupleEnum, RESULT, dh, NB
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights, getHlAtt
+from .displaysettings import DisplaySettings
+from .settings import DEFAULT_CLS
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
 
-FONT_BASE = (
-    &#34;https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts&#34;
+ORIG = &#34;orig&#34;
+
+__pdoc__ = {}
+
+OuterContext = namedtuple(
+    &#34;OuterContext&#34;,
+    &#34;&#34;&#34;
+    ltr
+    textCls
+    firstSlot
+    lastSlot
+    inTuple
+&#34;&#34;&#34;.strip().split(),
+)
+OuterContext.__doc__ = (
+    &#34;Outer node properties during plain() and pretty(). &#34;
+    &#34;Only the properties of the node for which the outer call&#34;
+    &#34; plain() or pretty() has been made, not the nodes encountered&#34;
+    &#34; during recursion.&#34;
+)
+__pdoc__[&#39;OuterContext.ltr&#39;] = &#34;writing direction.&#34;
+__pdoc__[&#39;OuterContext.textCls&#39;] = &#34;Css class for full text.&#34;
+__pdoc__[&#39;OuterContext.firstSlot&#39;] = &#34;First slot under the outer node.&#34;
+__pdoc__[&#39;OuterContext.lastSlot&#39;] = &#34;Last slot under the outer node.&#34;
+__pdoc__[&#39;OuterContext.inTuple&#39;] = (
+    &#34;Whether the outer node is displayed as part of a tuple of nodes.&#34;
 )
 
-CSS_FONT = &#34;&#34;&#34;
-    &lt;link rel=&#34;stylesheet&#34; href=&#34;/server/static/fonts.css&#34;/&gt;
-&#34;&#34;&#34;
+NodeContext = namedtuple(
+    &#34;NodeContext&#34;,
+    &#34;&#34;&#34;
+    slotType
+    nType
+    isSlot
+    isSlotOrDescend
+    descend
+    isBaseNonSlot
+    hasChunks
+    children
+    boundaryCls
+    hlCls
+    hlStyle
+    nodePart
+    cls
+    myStart
+    myEnd
+    hidden
+&#34;&#34;&#34;.strip().split(),
+)
+NodeContext.__doc__ = (
+    &#34;Node properties during plain() or pretty().&#34;
+)
+__pdoc__[&#39;NodeContext.slotType&#39;] = &#34;The slot type of the data set.&#34;
+__pdoc__[&#39;NodeContext.nType&#39;] = &#34;The node type of the current node.&#34;
+__pdoc__[&#39;NodeContext.isSlot&#39;] = &#34;Whether the current node is a slot node.&#34;
+__pdoc__[&#39;NodeContext.isSlotOrDescend&#39;] = (
+    &#34;Whether the current node is a slot node or&#34;
+    &#34; has a type to which the current text format should descend.&#34;
+    &#34; This type is determined by the current text format.&#34;
+)
+__pdoc__[&#39;NodeContext.descend&#39;] = (
+    &#34;When calling T.text(n, descend=??) for this node, what should we&#34;
+    &#34; substitute for the ?? ?&#34;
+)
+__pdoc__[&#39;NodeContext.isBaseNonSlot&#39;] = (
+    &#34;Whether the current node has a type that is currently a baseType,&#34;
+    &#34; i.e. a type where a pretty display should stop unfolding.&#34;
+    &#34; Moreover, this type should not be the slot type.&#34;
+)
+__pdoc__[&#39;NodeContext.hasChunks&#39;] = (
+    &#34;Whether the current node has a type that has a related type that&#34;
+    &#34; corresponds to contiguous chunks that build it. &#34;
+    &#34; E.g. in the BHSA the type phrase has a chunk type phrase_atom.&#34;
+)
+__pdoc__[&#39;NodeContext.children&#39;] = &#34;The children of the current node.&#34;
+__pdoc__[&#39;NodeContext.boundaryCls&#39;] = (
+    &#34;Css class that represent the kinds of boundaries for this node.&#34;
+    &#34; Nodes can have a firm of dotted left/right boundary, or no boundary at all.&#34;
+)
+__pdoc__[&#39;NodeContext.hlCls&#39;] = &#34;The highlight Css class of the current node.&#34;
+__pdoc__[&#39;NodeContext.hlStyle&#39;] = &#34;The highlight style attribute of the current node.&#34;
+__pdoc__[&#39;NodeContext.nodePart&#39;] = (
+    &#34;The node type/number insofar it has to be displayed for the current node&#34;
+)
+__pdoc__[&#39;NodeContext.cls&#39;] = (
+    &#34;A dict of several classes for the display of the node:&#34;
+    &#34; for the container, the label, and the children of the node&#34;
+)
+__pdoc__[&#39;NodeContext.myStart&#39;] = &#34;The first slot of the current node&#34;
+__pdoc__[&#39;NodeContext.myEnd&#39;] = &#34;The last slot of the current node&#34;
+__pdoc__[&#39;NodeContext.hidden&#39;] = (
+    &#34;Whether the outer container and label of the current node&#34;
+    &#34; should be hidden.&#34;
+    &#34; This is used to reduce displays by hiding the chunk types of types&#34;
+    &#34; that have chunks. E.g. in the BHSA: the phrase_atoms can be hidden.&#34;
+)
 
-CSS_FONT_API = f&#34;&#34;&#34;
-@font-face {{{{
-  font-family: &#34;{{fontName}}&#34;;
-  src:
-    local(&#34;{{font}}&#34;),
-    url(&#34;{FONT_BASE}/{{fontw}}?raw=true&#34;);
-}}}}
-&#34;&#34;&#34;
 
+def displayApi(app, silent):
+    if app.isCompatible:
+        app.export = types.MethodType(export, app)
+        app.table = types.MethodType(table, app)
+        app.plainTuple = types.MethodType(plainTuple, app)
+        app.plain = types.MethodType(plain, app)
+        app.show = types.MethodType(show, app)
+        app.prettyTuple = types.MethodType(prettyTuple, app)
+        app.pretty = types.MethodType(pretty, app)
+        app.loadCss = types.MethodType(loadCss, app)
+        app.displaySetup = types.MethodType(displaySetup, app)
+        app.displayReset = types.MethodType(displayReset, app)
+    else:
+        return
 
-def displayApi(app, silent, hoist):
-    app.export = types.MethodType(export, app)
-    app.table = types.MethodType(table, app)
-    app.plainTuple = types.MethodType(plainTuple, app)
-    app.plain = types.MethodType(plain, app)
-    app.show = types.MethodType(show, app)
-    app.prettyTuple = types.MethodType(prettyTuple, app)
-    app.pretty = types.MethodType(pretty, app)
-    app.loadCss = types.MethodType(loadCss, app)
-
-    api = app.api
-
-    app.classNames = (
-        {nType[0]: nType[0] for nType in api.C.levels.data}
-        if app.classNames is None
-        else app.classNames
-    )
-
-    if not app._asApp:
+    app.display = DisplaySettings(app)
+    if not app._browse:
         app.loadCss()
-        if hoist:
-            docs = api.makeAvailableIn(hoist)
-            if not silent:
-                dh(
-                    &#34;&lt;details open&gt;&lt;summary&gt;&lt;b&gt;API members&lt;/b&gt;:&lt;/summary&gt;\n&#34;
-                    + &#34;&lt;br/&gt;\n&#34;.join(
-                        &#34;, &#34;.join(
-                            outLink(
-                                entry, f&#34;{URL_TFDOC}/Api/{head}/#{ref}&#34;, title=&#34;doc&#34;,
-                            )
-                            for entry in entries
-                        )
-                        for (head, ref, entries) in docs
-                    )
-                    + &#34;&lt;/details&gt;&#34;
-                )
 
 
-def export(
-    app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options,
-):
+def displaySetup(app, **options):
     display = app.display
+
+    display.setup(**options)
+
+
+def displayReset(app, *options):
+    display = app.display
+
+    display.reset(*options)
+    if not app._browse:
+        app.loadCss()
+
+
+def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
+    display = app.display
+
     if not display.check(&#34;table&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
+
+    dContext = display.get(options)
+    fmt = dContext.fmt
+    condenseType = dContext.condenseType
+    tupleFeatures = dContext.tupleFeatures
 
     if toDir is None:
         toDir = os.path.expanduser(DOWNLOADS)
@@ -108,14 +189,7 @@ def export(
             os.makedirs(toDir, exist_ok=True)
     toPath = f&#34;{toDir}/{toFile}&#34;
 
-    resultsX = getResultsX(
-        app,
-        tuples,
-        d.tupleFeatures,
-        d.condenseType or app.condenseType,
-        app.noDescendTypes,
-        fmt=d.fmt,
-    )
+    resultsX = getResultsX(app, tuples, tupleFeatures, condenseType, fmt=fmt,)
 
     with open(toPath, &#34;w&#34;, encoding=&#34;utf_16_le&#34;) as fh:
         fh.write(
@@ -127,37 +201,44 @@ def export(
         )
 
 
-def table(
-    app, tuples, _asString=False, **options,
-):
+# PLAIN and FRIENDS
+
+
+def table(app, tuples, _asString=False, **options):
     display = app.display
+
     if not display.check(&#34;table&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
 
     api = app.api
     F = api.F
     fOtype = F.otype.v
 
-    item = d.condenseType if d.condensed else RESULT
+    dContext = display.get(options)
+    end = dContext.end
+    start = dContext.start
+    withPassage = dContext.withPassage
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
 
-    if d.condensed:
-        tuples = condense(api, tuples, d.condenseType, multiple=True)
+    item = condenseType if condensed else RESULT
 
-    passageHead = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;p&#39; if d.withPassage else &#34;&#34;
+    if condensed:
+        tuples = condense(api, tuples, condenseType, multiple=True)
+
+    passageHead = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;p&#39; if withPassage is True else &#34;&#34;
 
     html = []
     one = True
-    for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_TABLE, item):
+
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item):
         if one:
-            heads = &#34;&lt;/th&gt;&lt;th&gt;&#34;.join(fOtype(n) for n in tup)
+            heads = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;.join(fOtype(n) for n in tup)
             html.append(
-                f&#34;&#34;&#34;
-&lt;tr class=&#34;tf&#34;&gt;
-  &lt;th class=&#34;tf&#34;&gt;n{passageHead}&lt;/th&gt;
-  &lt;th class=&#34;tf&#34;&gt;{heads}&lt;/th&gt;
-&lt;/tr&gt;
-&#34;&#34;&#34;
+                f&#39;&lt;tr class=&#34;tf&#34;&gt;&#39;
+                f&#39;&lt;th class=&#34;tf&#34;&gt;n{passageHead}&lt;/th&gt;&#39;
+                f&#39;&lt;th class=&#34;tf&#34;&gt;{heads}&lt;/th&gt;&#39;
+                f&#34;&lt;/tr&gt;&#34;
             )
             one = False
         html.append(
@@ -179,50 +260,53 @@ def table(
 
 
 def plainTuple(
-    app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options,
+    app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options
 ):
     display = app.display
+
     if not display.check(&#34;plainTuple&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
 
-    _asApp = app._asApp
     api = app.api
     F = api.F
     T = api.T
-
     fOtype = F.otype.v
+    _browse = app._browse
 
-    if d.withPassage:
-        passageNode = _getRefMember(app, tup, d.linked, d.condensed)
+    dContext = display.get(options)
+    condenseType = dContext.condenseType
+    colorMap = dContext.colorMap
+    highlights = dContext.highlights
+    withPassage = dContext.withPassage
+
+    if withPassage is True:
+        passageNode = getRefMember(app, tup, dContext)
         passageRef = (
             &#34;&#34;
             if passageNode is None
             else app._sectionLink(passageNode)
-            if _asApp
+            if _browse
             else app.webLink(passageNode, _asString=True)
         )
-        if passageRef:
-            passageRef = f&#34; {passageRef}&#34;
+        passageRef = f&#39;&lt;span class=&#34;psg ltr&#34;&gt;{passageRef}&lt;/span&gt;&#39;
     else:
         passageRef = &#34;&#34;
 
     newOptions = display.consume(options, &#34;withPassage&#34;)
     newOptionsH = display.consume(options, &#34;withPassage&#34;, &#34;highlights&#34;)
 
-    highlights = getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
+    highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
 
-    if _asApp:
+    if _browse:
         prettyRep = (
-            prettyTuple(app, tup, seq, withPassage=False, **newOptions,)
+            prettyTuple(app, tup, seq, withPassage=False, **newOptions)
             if opened
             else &#34;&#34;
         )
-
-        current = &#34; focus&#34; if seq == position else &#34;&#34;
-        attOpen = &#34; open &#34; if opened else &#34;&#34;
+        current = &#34;focus&#34; if seq == position else &#34;&#34;
+        attOpen = &#34;open &#34; if opened else &#34;&#34;
         tupSeq = &#34;,&#34;.join(str(n) for n in tup)
-        if d.withPassage:
+        if withPassage is True:
             sParts = T.sectionFromNode(passageNode, fillup=True)
             passageAtt = &#34; &#34;.join(
                 f&#39;sec{i}=&#34;{sParts[i] if i &lt; len(sParts) else &#34;&#34;}&#34;&#39; for i in range(3)
@@ -231,155 +315,235 @@ def plainTuple(
             passageAtt = &#34;&#34;
 
         plainRep = &#34;&#34;.join(
-            f&#34;&#34;&#34;&lt;span&gt;{mdEsc(app.plain(
+            &#34;&lt;span&gt;&#34;
+            + mdEsc(
+                app.plain(
                     n,
-                    isLinked=i == d.linked - 1,
-                    withPassage=False,
+                    _inTuple=True,
+                    withPassage=doPassage(dContext, i),
                     highlights=highlights,
                     **newOptionsH,
-                  ))
-                }
-            &lt;/span&gt;
-        &#34;&#34;&#34;
+                )
+            )
+            + &#34;&lt;/span&gt;&#34;
             for (i, n) in enumerate(tup)
         )
-        html = f&#34;&#34;&#34;
-  &lt;details
-    class=&#34;pretty dtrow{current}&#34;
-    seq=&#34;{seq}&#34;
-    {attOpen}
-  &gt;
-    &lt;summary&gt;
-      &lt;a href=&#34;#&#34; class=&#34;pq fa fa-solar-panel fa-xs&#34; title=&#34;show in context&#34; {passageAtt}&gt;&lt;/a&gt;
-      &lt;a href=&#34;#&#34; class=&#34;sq&#34; tup=&#34;{tupSeq}&#34;&gt;{seq}&lt;/a&gt;
-      {passageRef}
-      {plainRep}
-    &lt;/summary&gt;
-    &lt;div class=&#34;pretty&#34;&gt;{prettyRep}&lt;/div&gt;
-  &lt;/details&gt;
-&#34;&#34;&#34;
+        html = (
+            f&#39;&lt;details class=&#34;pretty dtrow {current}&#34; seq=&#34;{seq}&#34; {attOpen}&gt;&#39;
+            f&#34;&lt;summary&gt;&#34;
+            f&#39;&lt;a href=&#34;#&#34; class=&#34;pq fa fa-solar-panel fa-xs&#34;&#39;
+            f&#39; title=&#34;show in context&#34; {passageAtt}&gt;&lt;/a&gt;&#39;
+            f&#39;&lt;a href=&#34;#&#34; class=&#34;sq&#34; tup=&#34;{tupSeq}&#34;&gt;{seq}&lt;/a&gt;&#39;
+            f&#34; {passageRef} {plainRep}&#34;
+            f&#34;&lt;/summary&gt;&#34;
+            f&#39;&lt;div class=&#34;pretty&#34;&gt;{prettyRep}&lt;/div&gt;&#39;
+            f&#34;&lt;/details&gt;&#34;
+        )
         return html
 
     html = [str(seq)]
-    if passageRef:
+    if withPassage is True:
         html.append(passageRef)
     for (i, n) in enumerate(tup):
         html.append(
             app.plain(
                 n,
-                isLinked=i == d.linked - 1,
+                _inTuple=True,
                 _asString=True,
-                withPassage=False,
+                withPassage=doPassage(dContext, i),
                 highlights=highlights,
                 **newOptionsH,
             )
         )
     html = (
-        &#39;&lt;tr class=&#34;tf&#34;&gt;&lt;td class=&#34;tf&#34;&gt;&#39;
-        + (&#39;&lt;/td&gt;&lt;td class=&#34;tf&#34;&gt;&#39;.join(html))
+        f&#39;&lt;tr class=&#34;tf&#34;&gt;&lt;td class=&#34;tf&#34;&gt;&#39;
+        + &#39;&lt;/td&gt;&lt;td class=&#34;tf&#34;&gt;&#39;.join(html)
         + &#34;&lt;/td&gt;&lt;/tr&gt;&#34;
     )
     if _asString:
         return html
-    head = [
-        &#39;&lt;tr class=&#34;tf&#34;&gt;&lt;th class=&#34;tf&#34;&gt;n&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;
-        + (&#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;.join(fOtype(n) for n in tup))
-        + &#34;&lt;/th&gt;&lt;/tr&gt;&#34;
-    ]
-    head.append(html)
 
-    dh(&#34;\n&#34;.join(head))
+    passageHead = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;p&#39; if withPassage is True else &#34;&#34;
+    head = (
+        f&#39;&lt;tr class=&#34;tf&#34;&gt;&lt;th class=&#34;tf&#34;&gt;n{passageHead}&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;
+        + &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;.join(fOtype(n) for n in tup)
+        + f&#34;&lt;/th&gt;&lt;/tr&gt;&#34;
+    )
+    html = f&#34;&lt;table&gt;&#34; + head + &#34;&#34;.join(html) + &#34;&lt;/table&gt;&#34;
+
+    dh(html)
 
 
-def plain(
-    app, n, isLinked=True, _asString=False, secLabel=True, **options,
-):
+def plain(app, n, _inTuple=False, _asString=False, **options):
     display = app.display
+
     if not display.check(&#34;plain&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
 
+    aContext = app.context
+    textFormats = aContext.textFormats
+    formatCls = aContext.formatCls
+
+    dContext = display.get(options)
+    fmt = dContext.fmt
+
+    dContext.isHtml = fmt in textFormats
+
+    _browse = app._browse
     api = app.api
-    F = api.F
+
+    ltr = getLtr(app, dContext)
+    textCls = formatCls[fmt].lower()
+    (firstSlot, lastSlot) = getBoundary(api, n)
+
+    oContext = OuterContext(ltr, textCls, firstSlot, lastSlot, _inTuple)
+    passage = getPassage(app, True, dContext, oContext, n)
+    rep = _doPlain(app, dContext, oContext, n, True, [])
+
+    if _browse or _asString:
+        return rep
+    dh(passage + rep)
+
+
+def _doPlain(app, dContext, oContext, n, outer, html, seen=set()):
+    if n in seen:
+        return
+
+    if outer:
+        seen = set()
+
+    seen.add(n)
+
+    nContext = _prepareDisplay(app, False, dContext, oContext, n, outer)
+    if not nContext:
+        return
+
+    ltr = oContext.ltr
+
+    hlCls = nContext.hlCls
+    hlStyle = nContext.hlStyle
+    boundaryCls = nContext.boundaryCls
+    nodePart = nContext.nodePart
+    children = nContext.children
+
+    outerCls = f&#34;outer&#34; if outer else &#34;&#34;
+
+    didChunkedType = False
+
+    sNodeInfo = getChunkedType(app, oContext, nContext, n, outer)
+    if sNodeInfo:
+        (sn, soContext) = sNodeInfo
+        snContext = _prepareDisplay(
+            app, False, dContext, soContext, n, False, chunkedType=True
+        )
+        shlCls = snContext.hlCls
+        shlStyle = snContext.hlStyle
+        snodePart = snContext.nodePart
+        sboundaryCls = snContext.boundaryCls
+
+        if snContext and shlCls:
+            sClses = f&#34;plain {sboundaryCls} {shlCls}&#34;
+            html.append(f&#39;&lt;span class=&#34;{sClses}&#34; {shlStyle}&gt;&#39;)
+            if snodePart:
+                html.append(snodePart)
+            didChunkedType = True
+
+    clses = f&#34;plain {&#39;&#39; if didChunkedType else outerCls} {ltr} {boundaryCls} {hlCls}&#34;
+    html.append(f&#39;&lt;span class=&#34;{clses}&#34; {hlStyle}&gt;&#39;)
+
+    if nodePart:
+        html.append(nodePart)
+
+    html.append(_doPlainNode(app, dContext, oContext, nContext, n, outer, seen=seen))
+
+    for ch in children:
+        _doPlain(app, dContext, oContext, ch, False, html, seen=seen)
+    html.append(&#34;&lt;/span&gt;&#34;)
+    if didChunkedType:
+        html.append(&#34;&lt;/span&gt;&#34;)
+    return &#34;&#34;.join(html) if outer else None
+
+
+def _doPlainNode(app, dContext, oContext, nContext, n, outer, seen=set()):
+    api = app.api
     T = api.T
-    sectionTypes = T.sectionTypes
-    fOtype = F.otype.v
 
-    nType = fOtype(n)
-    passage = &#34;&#34;
+    aContext = app.context
+    plainCustom = aContext.plainCustom
 
-    if d.withPassage:
-        if nType not in sectionTypes:
-            passage = app.webLink(n, _asString=True)
+    isHtml = dContext.isHtml
+    fmt = dContext.fmt
 
-    passage = f&#34;{passage}&amp;nbsp;&#34; if passage else &#34;&#34;
+    ltr = oContext.ltr
+    textCls = oContext.textCls
 
-    highlights = (
-        {m: &#34;&#34; for m in d.highlights} if type(d.highlights) is set else d.highlights
-    )
+    nType = nContext.nType
+    isSlotOrDescend = nContext.isSlotOrDescend
+    descend = nContext.descend
 
-    return app._plain(
-        n,
-        passage,
-        isLinked,
-        _asString,
-        secLabel,
-        highlights=highlights,
-        **display.consume(options, &#34;highlights&#34;),
-    )
+    if nType in plainCustom:
+        method = plainCustom[nType]
+        contrib = method(app, dContext, oContext, nContext, n, outer, seen=seen)
+        return contrib
+    if isSlotOrDescend:
+        text = T.text(n, fmt=fmt, descend=descend)
+        if not isHtml:
+            text = htmlEsc(text)
+        contrib = f&#39;&lt;span class=&#34;{textCls}&#34;&gt;{text}&lt;/span&gt;&#39;
+    else:
+        (isText, tplFilled) = getText(app, False, n, nType, fmt=fmt, descend=descend)
+        if isText and isHtml:
+            tplFilled = htmlEsc(tplFilled)
+        contrib = f&#39;&lt;span class=&#34;plain {ltr}&#34;&gt;{tplFilled}&lt;/span&gt;&#39;
+    return contrib
 
 
-def show(
-    app, tuples, **options,
-):
+# PRETTY and FRIENDS
+
+
+def show(app, tuples, **options):
     display = app.display
+
     if not display.check(&#34;show&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
+
+    dContext = display.get(options)
+    end = dContext.end
+    start = dContext.start
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
 
     api = app.api
     F = api.F
 
-    item = d.condenseType if d.condensed else RESULT
+    item = condenseType if condensed else RESULT
 
-    if d.condensed:
-        rawHighlights = getTupleHighlights(
-            api, tuples, d.highlights, d.colorMap, d.condenseType, multiple=True
-        )
-        highlights = {}
-        colorMap = None
-        tuples = condense(api, tuples, d.condenseType, multiple=True)
-    else:
-        highlights = d.highlights
-        rawHighlights = None
-        colorMap = d.colorMap
+    if condensed:
+        tuples = condense(api, tuples, condenseType, multiple=True)
 
-    for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_SHOW, item):
-        item = F.otype.v(tup[0]) if d.condensed and d.condenseType else RESULT
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item):
+        item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
         prettyTuple(
-            app,
-            tup,
-            i,
-            item=item,
-            highlights=highlights,
-            colorMap=colorMap,
-            rawHighlights=rawHighlights,
-            **display.consume(options, &#34;highlights&#34;, &#34;colorMap&#34;),
+            app, tup, i, item=item, **options,
         )
 
 
-def prettyTuple(
-    app, tup, seq, item=RESULT, rawHighlights=None, **options,
-):
+def prettyTuple(app, tup, seq, item=RESULT, **options):
     display = app.display
+
     if not display.check(&#34;prettyTuple&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
 
-    _asApp = app._asApp
+    dContext = display.get(options)
+    colorMap = dContext.colorMap
+    highlights = dContext.highlights
+    condenseType = dContext.condenseType
+    condensed = dContext.condensed
+
+    _browse = app._browse
 
     if len(tup) == 0:
-        if _asApp:
+        if _browse:
             return &#34;&#34;
         else:
             return
@@ -387,58 +551,73 @@ def prettyTuple(
     api = app.api
     sortKey = api.sortKey
 
-    containers = {tup[0]} if d.condensed else condenseSet(api, tup, d.condenseType)
-    highlights = (
-        getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
-        if rawHighlights is None
-        else rawHighlights
-    )
+    containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
+    highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
 
-    if not _asApp:
+    if not _browse:
         dh(f&#34;&lt;p&gt;&lt;b&gt;{item}&lt;/b&gt; &lt;i&gt;{seq}&lt;/i&gt;&lt;/p&gt;&#34;)
-    if _asApp:
+    if _browse:
         html = []
     for t in sorted(containers, key=sortKey):
         h = app.pretty(
             t, highlights=highlights, **display.consume(options, &#34;highlights&#34;),
         )
-        if _asApp:
+        if _browse:
             html.append(h)
-    if _asApp:
-        return &#34;\n&#34;.join(html)
+    if _browse:
+        return &#34;&#34;.join(html)
 
 
-def pretty(
-    app, n, **options,
-):
+def pretty(app, n, **options):
     display = app.display
+
     if not display.check(&#34;pretty&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
 
-    _asApp = app._asApp
+    _browse = app._browse
+
+    aContext = app.context
+    textFormats = aContext.textFormats
+    formatCls = aContext.formatCls
+
+    dContext = display.get(options)
+    condenseType = dContext.condenseType
+    condensed = dContext.condensed
+    tupleFeatures = dContext.tupleFeatures
+    extraFeatures = dContext.extraFeatures
+    fmt = dContext.fmt
+
+    dContext.isHtml = fmt in textFormats
+    dContext.features = sorted(
+        flattenToSet(extraFeatures) | flattenToSet(tupleFeatures)
+    )
+
     api = app.api
     F = api.F
     L = api.L
-    T = api.T
-    fOtype = F.otype.v
     otypeRank = api.otypeRank
-    sectionTypes = T.sectionTypes
+
+    ltr = getLtr(app, dContext)
+    textCls = formatCls[fmt].lower()
+    (firstSlot, lastSlot) = getBoundary(api, n)
+
+    oContext = OuterContext(ltr, textCls, firstSlot, lastSlot, False)
+    passage = getPassage(app, False, dContext, oContext, n)
 
     containerN = None
 
-    nType = fOtype(n)
-    if d.condensed and d.condenseType:
-        if nType == d.condenseType:
+    nType = F.otype.v(n)
+    if condensed and condenseType:
+        if nType == condenseType:
             containerN = n
-        elif otypeRank[nType] &lt; otypeRank[d.condenseType]:
-            ups = L.u(n, otype=d.condenseType)
+        elif otypeRank[nType] &lt; otypeRank[condenseType]:
+            ups = L.u(n, otype=condenseType)
             if ups:
                 containerN = ups[0]
 
     (firstSlot, lastSlot) = (
         getBoundary(api, n)
-        if not d.condensed or not d.condenseType
+        if not condensed or not condenseType
         else (None, None)
         if containerN is None
         else getBoundary(api, containerN)
@@ -446,100 +625,568 @@ def pretty(
 
     html = []
 
-    if d.withPassage:
-        if nType not in sectionTypes:
-            html.append(app.webLink(n, _asString=True))
+    _doPretty(app, dContext, oContext, n, True, html)
 
-    highlights = (
-        {m: &#34;&#34; for m in d.highlights} if type(d.highlights) is set else d.highlights
-    )
-
-    extraFeatures = sorted(
-        flattenToSet(d.extraFeatures) | flattenToSet(d.tupleFeatures)
-    )
-
-    app._pretty(
-        n,
-        True,
-        html,
-        firstSlot,
-        lastSlot,
-        extraFeatures=extraFeatures,
-        highlights=highlights,
-        **display.consume(options, &#34;extraFeatures&#34;, &#34;highlights&#34;),
-    )
-    htmlStr = &#34;\n&#34;.join(html)
-    if _asApp:
+    htmlStr = passage + &#34;&#34;.join(html)
+    if _browse:
         return htmlStr
     dh(htmlStr)
 
 
-def prettyPre(app, n, firstSlot, lastSlot, d):
+def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
+    if n in seen:
+        return
+
+    if outer:
+        seen = set()
+
+    seen.add(n)
+
+    nContext = _prepareDisplay(app, True, dContext, oContext, n, outer)
+    if not nContext:
+        return
+
+    aContext = app.context
+    afterChild = aContext.afterChild
+    hasGraphics = aContext.hasGraphics
+
+    showGraphics = dContext.showGraphics
+
+    ltr = oContext.ltr
+
+    isBaseNonSlot = nContext.isBaseNonSlot
+    nType = nContext.nType
+    hasChunks = nContext.hasChunks
+    children = nContext.children
+    cls = nContext.cls
+    childCls = cls[&#34;children&#34;]
+
+    nodePlain = None
+    if isBaseNonSlot:
+        done = set()
+        nodePlain = _doPlain(app, dContext, oContext, n, True, [], seen=done)
+        seen |= done
+
+    didChunkedType = False
+
+    sNodeInfo = getChunkedType(app, oContext, nContext, n, outer)
+    if sNodeInfo:
+        (sn, soContext) = sNodeInfo
+        snContext = _prepareDisplay(
+            app, True, dContext, soContext, sn, False, chunkedType=True
+        )
+        if snContext:
+            sisBaseNonSlot = snContext.isBaseNonSlot
+            scls = snContext.cls
+            schildCls = scls[&#34;children&#34;]
+
+            sNodePlain = None
+            if sisBaseNonSlot:
+                sNodePlain = _doPlain(app, dContext, oContext, sn, True, [])
+            (sLabel, sFeaturePart) = _doPrettyNode(
+                app, dContext, oContext, snContext, sn, False, sNodePlain
+            )
+            (scontainerB, scontainerE) = _doPrettyWrapPre(
+                app,
+                sn,
+                False,
+                sLabel,
+                sFeaturePart,
+                html,
+                snContext,
+                showGraphics,
+                hasGraphics,
+                ltr,
+            )
+            html.append(f&#39;&lt;div class=&#34;{schildCls} {ltr}&#34;&gt;&#39;)
+
+            didChunkedType = True
+
+    if not hasChunks:
+        (label, featurePart) = _doPrettyNode(
+            app, dContext, oContext, nContext, n, outer, nodePlain
+        )
+        (containerB, containerE) = _doPrettyWrapPre(
+            app,
+            n,
+            outer,
+            label,
+            featurePart,
+            html,
+            nContext,
+            showGraphics,
+            hasGraphics,
+            ltr,
+        )
+
+    if children:
+        html.append(f&#39;&lt;div class=&#34;{childCls} {ltr}&#34;&gt;&#39;)
+
+    for ch in children:
+        if ch in seen:
+            continue
+        _doPretty(app, dContext, oContext, ch, False, html, seen=seen)
+        after = afterChild.get(nType, None)
+        if after:
+            html.append(after(ch))
+
+    if children:
+        html.append(&#34;&lt;/div&gt;&#34;)
+
+    if not hasChunks:
+        _doPrettyWrapPost(label, featurePart, html, containerB, containerE)
+
+    if didChunkedType:
+        _doPrettyWrapPost(sLabel, sFeaturePart, html, scontainerB, scontainerE)
+        html.append(&#34;&lt;/div&gt;&#34;)
+
+    return &#34;&#34;.join(html) if outer else None
+
+
+def _doPrettyWrapPre(
+    app, n, outer, label, featurePart, html, nContext, showGraphics, hasGraphics, ltr,
+):
+    nType = nContext.nType
+    hidden = nContext.hidden
+    cls = nContext.cls
+    contCls = &#34;contnr cnul&#34; if hidden else cls[&#34;container&#34;]
+    hlCls = nContext.hlCls
+    hlStyle = nContext.hlStyle
+    boundaryCls = nContext.boundaryCls
+    children = nContext.children
+    label0 = label.get(&#34;&#34;, None)
+    labelB = label.get(&#34;b&#34;, None)
+
+    containerB = f&#39;&lt;div class=&#34;{contCls} {{}} {ltr} {boundaryCls} {hlCls}&#34; {hlStyle}&gt;&#39;
+    containerE = f&#34;&lt;/div&gt;&#34;
+
+    terminalCls = &#34;trm&#34;
+    if hidden:
+        html.append(containerB.format(terminalCls))
+    else:
+        if labelB is not None:
+            trm = terminalCls
+            html.append(f&#34;{containerB.format(trm)}{labelB} {featurePart}{containerE}&#34;)
+        if label0 is not None:
+            trm = &#34;&#34; if children else terminalCls
+            html.append(f&#34;{containerB.format(trm)}{label0} {featurePart}&#34;)
+
+        if showGraphics and nType in hasGraphics:
+            html.append(app.getGraphics(n, nType, outer))
+
+    return (containerB, containerE)
+
+
+def _doPrettyWrapPost(label, featurePart, html, containerB, containerE):
+    label0 = label.get(&#34;&#34;, None)
+    labelE = label.get(&#34;e&#34;, None)
+
+    if label0 is not None:
+        html.append(containerE)
+    if labelE is not None:
+        html.append(f&#34;{containerB}{labelE} {featurePart}{containerE}&#34;)
+
+
+def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
+    api = app.api
+    L = api.L
+
+    aContext = app.context
+    lexTypes = aContext.lexTypes
+    lexMap = aContext.lexMap
+
+    isHtml = dContext.isHtml
+    fmt = dContext.fmt
+
+    textCls = oContext.textCls
+
+    nType = nContext.nType
+    cls = nContext.cls
+    hlCls = nContext.hlCls
+    descend = nContext.descend
+    isBaseNonSlot = nContext.isBaseNonSlot
+    children = nContext.children
+    nodePart = nContext.nodePart
+
+    isText = False
+
+    labelHlCls = &#34;&#34;
+
+    if isBaseNonSlot:
+        heading = nodePlain
+    else:
+        labelHlCls = hlCls
+        (isText, heading) = getText(app, True, n, nType, fmt=fmt, descend=descend)
+        if isText and isHtml:
+            heading = htmlEsc(heading)
+
+    textCls = textCls if isText else DEFAULT_CLS
+    heading = f&#39;&lt;span class=&#34;{textCls}&#34;&gt;{heading}&lt;/span&gt;&#39;
+
+    featurePart = getFeatures(app, dContext, n, nType)
+
+    if nType in lexTypes:
+        extremeOccs = getBoundary(api, n)
+        linkOccs = &#34; - &#34;.join(app.webLink(lo, _asString=True) for lo in extremeOccs)
+        featurePart += f&#39;&lt;div class=&#34;occs&#34;&gt;{linkOccs}&lt;/div&gt;&#39;
+    if nType in lexMap:
+        lx = L.u(n, otype=lexMap[nType])
+        if lx:
+            heading = app.webLink(lx[0], heading, _asString=True)
+
+    if featurePart:
+        featurePart = f&#39;&lt;div class=&#34;meta&#34;&gt;{featurePart}&lt;/div&gt;&#39;
+
+    label = {}
+    for x in (&#34;&#34;, &#34;b&#34;, &#34;e&#34;):
+        key = f&#34;label{x}&#34;
+        if key in cls:
+            val = cls[key]
+            terminalCls = &#34;trm&#34; if x or not children else &#34;&#34;
+            label[x] = (
+                (
+                    f&#39;&lt;div class=&#34;{val} {terminalCls} {labelHlCls}&#34;&gt;&#39;
+                    f&#34;{nodePart} {heading}&lt;/div&gt;&#34;
+                )
+                if heading or nodePart
+                else &#34;&#34;
+            )
+
+    return (label, featurePart)
+
+
+def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, chunkedType=False):
     api = app.api
     F = api.F
-    fOtype = F.otype.v
-    otypeRank = api.otypeRank
-
+    T = api.T
     slotType = F.otype.slotType
-    nType = fOtype(n)
-    isBigType = (
-        not d.full
-        and d.condenseType is not None
-        and otypeRank[nType] &gt; otypeRank[d.condenseType]
+    nType = F.otype.v(n)
+
+    aContext = app.context
+    levelCls = aContext.levelCls
+    noChildren = aContext.noChildren
+    prettyCustom = aContext.prettyCustom
+    isChunkOf = aContext.isChunkOf
+    chunkedTypes = aContext.chunkedTypes
+
+    fmt = dContext.fmt
+    baseType = dContext.baseType
+    highlights = dContext.highlights
+    showChunks = dContext.showChunks
+
+    descendType = T.formats.get(fmt, slotType)
+    bottomType = baseType if isPretty else descendType
+
+    isSlot = nType == slotType
+    hasChunks = nType in chunkedTypes
+    isHidden = not showChunks and nType in isChunkOf
+
+    children = (
+        ()
+        if isSlot or nType == bottomType or (not isPretty and nType in noChildren)
+        else getChildren(app, isPretty, dContext, oContext, n, nType)
     )
-    boundaryClass = &#34;&#34;
+
+    boundaryResult = getBoundaryResult(api, oContext, n, chunkedType=chunkedType)
+    if boundaryResult is None:
+        return False
+
+    (boundaryCls, myStart, myEnd) = boundaryResult
+
+    (hlCls, hlStyle) = getHlAtt(app, n, highlights, baseType, not isPretty)
+
+    isSlotOrDescend = isSlot or nType == descendType
+    descend = False if descendType == slotType else None
+    isBaseNonSlot = nType == baseType and not isSlot
+
+    nodePart = getNodePart(app, isPretty, dContext, n, nType, isSlot, outer, hlCls)
+    cls = {}
+    if isPretty:
+        if nType in levelCls:
+            cls.update(levelCls[nType])
+        if nType in prettyCustom:
+            prettyCustom[nType](app, n, nType, cls)
+
+    return NodeContext(
+        slotType,
+        nType,
+        isSlot,
+        isSlotOrDescend,
+        descend,
+        isBaseNonSlot,
+        hasChunks,
+        children,
+        boundaryCls,
+        hlCls,
+        hlStyle,
+        nodePart,
+        cls,
+        myStart,
+        myEnd,
+        isHidden,
+    )
+
+
+def doPassage(dContext, i):
+    withPassage = dContext.withPassage
+
+    return withPassage is not True and withPassage and i + 1 in withPassage
+
+
+def getPassage(app, isPretty, dContext, oContext, n):
+    withPassage = dContext.withPassage
+
+    if not withPassage:
+        return &#34;&#34;
+
+    passage = app.webLink(n, _asString=True)
+    return f&#39;&lt;span class=&#34;psg ltr&#34;&gt;{passage}{NB}&lt;/span&gt;&#39;
+
+
+def getText(app, isPretty, n, nType, fmt=None, descend=None):
+    T = app.api.T
+    sectionTypeSet = T.sectionTypeSet
+    structureTypeSet = T.structureTypeSet
+
+    aContext = app.context
+    templates = aContext.labels if isPretty else aContext.templates
+
+    (tpl, feats) = templates[nType]
+
+    tplFilled = (
+        (
+            app.sectionStrFromNode(n)
+            if nType in sectionTypeSet
+            else app.structureStrFromNode(n)
+            if nType in structureTypeSet
+            else T.text(n, fmt=fmt, descend=descend)
+        )
+        if tpl is True
+        else tpl.format(**{feat: getValue(app, n, nType, feat) for feat in feats})
+    )
+    return (tpl is True, tplFilled)
+
+
+def getValue(app, n, nType, feat):
+    Fs = app.api.Fs
+
+    aContext = app.context
+    transform = aContext.transform
+
+    val = Fs(feat).v(n)
+    modifier = transform.get(nType, {}).get(feat, None)
+    return modifier(val) if modifier else val
+
+
+def getLtr(app, dContext):
+    aContext = app.context
+    direction = aContext.direction
+
+    fmt = dContext.fmt or DEFAULT_FORMAT
+
+    return (
+        &#34;rtl&#34;
+        if direction == &#34;rtl&#34; and (f&#34;{ORIG}-&#34; in fmt or f&#34;-{ORIG}&#34; in fmt)
+        else (&#34;&#34; if direction == &#34;ltr&#34; else &#34;ltr&#34;)
+    )
+
+
+def getBigType(app, dContext, oContext, nType, otypeRank):
+    api = app.api
+    T = api.T
+
+    sectionTypeSet = T.sectionTypeSet
+    structureTypeSet = T.structureTypeSet
+
+    full = dContext.full
+    condenseType = dContext.condenseType
+
+    isBig = False
+    if not full:
+        if sectionTypeSet and nType in sectionTypeSet | structureTypeSet:
+            if condenseType is None or otypeRank[nType] &gt; otypeRank[condenseType]:
+                isBig = True
+        elif condenseType is not None and otypeRank[nType] &gt; otypeRank[condenseType]:
+            isBig = True
+    return isBig
+
+
+def getBoundaryResult(api, oContext, n, chunkedType=False):
+    ltr = oContext.ltr
+    start = &#34;r&#34; if ltr == &#34;rtl&#34; else &#34;l&#34;
+    end = &#34;l&#34; if ltr == &#34;rtl&#34; else &#34;r&#34;
+    kind = &#34;&#34; if chunkedType else &#34;no&#34;
+
+    boundaryCls = &#34;&#34;
     myStart = None
     myEnd = None
+    firstSlot = oContext.firstSlot
+    lastSlot = oContext.lastSlot
 
     (myStart, myEnd) = getBoundary(api, n)
 
     if firstSlot is not None:
         if myEnd &lt; firstSlot:
-            return False
+            return None
         if myStart &lt; firstSlot:
-            boundaryClass += &#34; rno&#34;
+            boundaryCls += f&#34; {start}{kind}&#34;
     if lastSlot is not None:
         if myStart &gt; lastSlot:
-            return False
+            return None
         if myEnd &gt; lastSlot:
-            boundaryClass += &#34; lno&#34;
+            boundaryCls += f&#34; {end}{kind}&#34;
+    return (boundaryCls, myStart, myEnd)
 
-    hlAtt = getHlAtt(app, n, d.highlights)
 
-    nodePart = f&#39;&lt;a href=&#34;#&#34; class=&#34;nd&#34;&gt;{n}&lt;/a&gt;&#39; if d.withNodes else &#34;&#34;
-    className = app.classNames.get(nType, None)
+def getChunkedTypeBounds(oContext, nContext):
+    firstSlot = oContext.firstSlot
+    lastSlot = oContext.lastSlot
+
+    myStart = nContext.myStart
+    myEnd = nContext.myEnd
+
+    return oContext._replace(
+        firstSlot=max((firstSlot, myStart)), lastSlot=min((lastSlot, myEnd)),
+    )
+
+
+def getChunkedType(app, oContext, nContext, n, outer):
+    api = app.api
+    L = api.L
+
+    aContext = app.context
+    isChunkOf = aContext.isChunkOf
+    chunkedTypes = aContext.chunkedTypes
+
+    nType = nContext.nType
+
+    if not outer and nType not in chunkedTypes and nType in isChunkOf:
+        chunkedType = isChunkOf[nType]
+        sn = L.u(n, otype=chunkedType)
+        if sn:
+            soContext = getChunkedTypeBounds(oContext, nContext)
+            return (sn[0], soContext)
+
+    return None
+
+
+def getChildren(app, isPretty, dContext, oContext, n, nType):
+    api = app.api
+    F = api.F
+    L = api.L
+    otypeRank = api.otypeRank
+    sortNodes = api.sortNodes
+    slotType = F.otype.slotType
+
+    aContext = app.context
+    verseTypes = aContext.verseTypes
+    childType = aContext.childType
+    childrenCustom = aContext.childrenCustom
+
+    inTuple = oContext.inTuple
+
+    full = dContext.full
+
+    isBigType = (
+        inTuple
+        if not isPretty and nType in verseTypes
+        else getBigType(app, dContext, oContext, nType, otypeRank)
+    )
+
+    if isBigType and not full:
+        children = ()
+    elif nType in childType:
+        childType = childType[nType]
+        children = L.d(n, otype=childType)
+        if nType in childrenCustom:
+            (condition, method, add) = childrenCustom[nType]
+            if condition(n):
+                others = method(n)
+                if add:
+                    children += others
+                else:
+                    children = others
+
+        children = set(children) - {n}
+
+        if nType in verseTypes:
+            (thisFirstSlot, thisLastSlot) = getBoundary(api, n)
+            boundaryChildren = set()
+            for boundary in (thisFirstSlot, thisLastSlot):
+                bchs = L.u(boundary, otype=childType)
+                if bchs:
+                    boundaryChildren.add(bchs[0])
+            children |= boundaryChildren
+
+        children = sortNodes(children - {n})
+    else:
+        children = L.d(n, otype=slotType)
+    return children
+
+
+def getNodePart(app, isPretty, dContext, n, nType, isSlot, outer, highlight):
+    _browse = app._browse
+
+    Fs = app.api.Fs
+
+    aContext = app.context
+    lineNumberFeature = aContext.lineNumberFeature
+    allowInfo = isPretty or outer or highlight
+
+    withNodes = dContext.withNodes
+    withTypes = dContext.withTypes
+    prettyTypes = dContext.prettyTypes
+    lineNumbers = dContext.lineNumbers
+
+    num = &#34;&#34;
+    if withNodes and allowInfo:
+        num = n
+
+    ntp = &#34;&#34;
+    if (withTypes or isPretty and prettyTypes) and not isSlot and allowInfo:
+        ntp = nType
+
+    line = &#34;&#34;
+    if lineNumbers and allowInfo:
+        feat = lineNumberFeature.get(nType, None)
+        if feat:
+            line = Fs(feat).v(n)
+        if line:
+            line = f&#34;@{line}&#34; if line else &#34;&#34;
+
+    elemb = &#39;a href=&#34;#&#34;&#39; if _browse else &#34;span&#34;
+    eleme = &#34;a&#34; if _browse else &#34;span&#34;
+    sep = &#34;:&#34; if ntp and num else &#34;&#34;
 
     return (
-        slotType,
-        nType,
-        isBigType,
-        className.lower() if className else className,
-        boundaryClass.lower() if boundaryClass else boundaryClass,
-        hlAtt,
-        nodePart,
-        myStart,
-        myEnd,
+        f&#39;&lt;{elemb} class=&#34;nd&#34;&gt;{ntp}{sep}{num}{line}&lt;/{eleme}&gt;&#39;
+        if ntp or num or line
+        else &#34;&#34;
     )
 
 
 # COMPOSE TABLES FOR CSV EXPORT
 
 
-def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
+def getResultsX(app, results, features, condenseType, fmt=None):
     api = app.api
     F = api.F
     Fs = api.Fs
     T = api.T
     fOtype = F.otype.v
     otypeRank = api.otypeRank
-    sectionTypes = set(T.sectionTypes)
-    sectionDepth = len(sectionTypes)
+    sectionTypeSet = T.sectionTypeSet
+
+    aContext = app.context
+    noDescendTypes = aContext.descendTypes
+
+    sectionDepth = len(sectionTypeSet)
     if len(results) == 0:
         return ()
     firstResult = results[0]
     nTuple = len(firstResult)
     refColumns = [
-        i for (i, n) in enumerate(firstResult) if fOtype(n) not in sectionTypes
+        i for (i, n) in enumerate(firstResult) if fOtype(n) not in sectionTypeSet
     ]
     refColumn = refColumns[0] if refColumns else nTuple - 1
     header = [&#34;R&#34;] + [f&#34;S{i}&#34; for i in range(1, sectionDepth + 1)]
@@ -550,9 +1197,11 @@ def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
     def withText(nodeType):
         return (
             condenseType is None
-            and nodeType not in sectionTypes
+            and nodeType not in sectionTypeSet
             or otypeRank[nodeType] &lt;= otypeRank[condenseType]
         )
+
+    noDescendTypes = noDescendTypes
 
     for j in range(nTuple):
         i = j + 1
@@ -595,158 +1244,102 @@ def getBoundary(api, n):
     return (slots[0], slots[-1])
 
 
-def getFeatures(
-    app, n, features, withName=None, o=None, givenValue={}, plain=False, **options,
-):
-    display = app.display
-    d = display.get(options)
-
+def getFeatures(app, dContext, n, nType):
     api = app.api
+    L = api.L
     Fs = api.Fs
 
-    featurePartB = &#39;&lt;div class=&#34;features&#34;&gt;&#39;
-    featurePartE = &#34;&lt;/div&gt;&#34;
+    aContext = app.context
+    featuresBare = aContext.featuresBare
+    features = aContext.features
 
-    givenFeatureSet = set(features)
-    xFeatures = tuple(f for f in d.extraFeatures if f not in givenFeatureSet)
-    extraSet = set(xFeatures)
-    featureList = tuple(features) + xFeatures
-    nFeatures = len(features)
+    dFeatures = dContext.features
+    showFeatures = dContext.showFeatures
+    suppress = dContext.suppress
+    noneValues = dContext.noneValues
 
-    showWithName = extraSet
+    (theseFeatures, indirect) = features.get(nType, ((), {}))
+    (theseFeaturesBare, indirectBare) = featuresBare.get(nType, ((), {}))
 
-    if not plain:
-        featurePart = featurePartB
-        hasB = True
-    else:
-        featurePart = &#34;&#34;
-        hasB = False
-    for (i, name) in enumerate(featureList):
-        if name not in d.suppress:
-            if name in givenValue:
-                value = givenValue[name]
-            else:
-                if Fs(name) is None:
+    # a feature can be nType:feature
+    # do a L.u(n, otype=nType)[0] and take the feature from there
+
+    givenFeatureSet = set(theseFeatures) | set(theseFeaturesBare)
+    xFeatures = tuple(f for f in dFeatures if f not in givenFeatureSet)
+    featureList = tuple(theseFeaturesBare + theseFeatures) + xFeatures
+    bFeatures = len(theseFeaturesBare)
+    nbFeatures = len(theseFeaturesBare) + len(theseFeatures)
+
+    featurePart = &#34;&#34;
+
+    if showFeatures:
+        for (i, name) in enumerate(featureList):
+            if name not in suppress:
+                fsName = Fs(name)
+                if fsName is None:
                     continue
-                value = Fs(name).v(n)
-                oValue = None if o is None else Fs(name).v(o)
-                valueRep = None if value in d.noneValues else htmlEsc(value)
-                oValueRep = (
-                    None if o is None or oValue in d.noneValues else htmlEsc(oValue)
+                fsNamev = fsName.v
+                value = (
+                    fsNamev(L.u(n, otype=indirect[name])[0])
+                    if name in indirect
+                    else fsNamev(n)
                 )
-                if valueRep is None and oValueRep is None:
-                    value = None
-                else:
-                    sep = &#34;&#34; if valueRep is None or oValueRep is None else &#34;|&#34;
-                    valueRep = &#34;&#34; if valueRep is None else valueRep
-                    oValueRep = &#34;&#34; if oValueRep is None else oValueRep
-                    value = (
-                        valueRep
-                        if valueRep == oValueRep
-                        else f&#34;{valueRep}{sep}{oValueRep}&#34;
+                value = None if value in noneValues else htmlEsc(value or &#34;&#34;)
+                if value is not None:
+                    value = value.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
+                    isBare = i &lt; bFeatures
+                    isExtra = i &gt;= nbFeatures
+                    nameRep = &#34;&#34; if isBare else f&#39;&lt;span class=&#34;f&#34;&gt;{name}=&lt;/span&gt;&#39;
+                    xCls = &#34;xft&#34; if isExtra else &#34;&#34;
+                    featurePart += (
+                        f&#39;&lt;span class=&#34;{name.lower()} {xCls}&#34;&gt;{nameRep}{value}&lt;/span&gt;&#39;
                     )
-            if value is not None:
-                value = value.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
-                showName = withName or (withName is None and name in showWithName)
-                nameRep = f&#39;&lt;span class=&#34;f&#34;&gt;{name}=&lt;/span&gt;&#39; if showName else &#34;&#34;
-                xClass = &#34; xft&#34; if name in extraSet else &#34;&#34;
-                featureRep = (
-                    f&#39; &lt;span class=&#34;{name.lower()}{xClass}&#34;&gt;{nameRep}{value}&lt;/span&gt;&#39;
-                )
+    if not featurePart:
+        return &#34;&#34;
 
-                if i &gt;= nFeatures:
-                    if not hasB:
-                        featurePart += featurePartB
-                        hasB = True
-                featurePart += featureRep
-    if hasB:
-        featurePart += featurePartE
-    return featurePart
+    return f&#34;&lt;div class=&#39;features&#39;&gt;{featurePart}&lt;/div&gt;&#34;
 
 
-def loadCss(app, reload=False):
+def loadCss(app):
+    &#34;&#34;&#34;The CSS is looked up and then loaded into a notebook if we are not
+    running in the TF browser,
+    else the CSS is returned.
     &#34;&#34;&#34;
-  The CSS is looked up and then loaded into a notebook if we are not
-  running in the TF browser,
-  else the CSS is returned.
 
-  With reload=True, the app-specific display.css will be read again from disk
-  &#34;&#34;&#34;
-    _asApp = app._asApp
-    if _asApp:
-        return app.css
+    _browse = app._browse
+    aContext = app.context
+    css = aContext.css
 
-    if reload:
-        config = findAppConfig(app.appName, app.appPath)
-        cfg = configure(config, app.version)
-        app.css = cfg[&#34;css&#34;]
+    if _browse:
+        return css
 
-    hlCssFile = (
+    cssPath = (
         f&#34;{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}&#34;
-        &#34;/server/static/highlight.css&#34;
+        f&#34;{SERVER_DISPLAY_BASE}&#34;
     )
-    with open(hlCssFile, encoding=&#34;utf8&#34;) as fh:
-        hlCss = fh.read()
+    genericCss = &#34;&#34;
+    for cssFile in SERVER_DISPLAY:
+        with open(f&#34;{cssPath}/{cssFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+            genericCss += fh.read()
 
-    cssFont = (
-        &#34;&#34;
-        if app.fontName is None
-        else CSS_FONT_API.format(fontName=app.fontName, font=app.font, fontw=app.fontw,)
-    )
-    tableCss = &#34;&#34;&#34;
-tr.tf, td.tf, th.tf {
-  text-align: left;
-}
-
-&#34;&#34;&#34;
-    dh(f&#34;&lt;style&gt;{cssFont + app.css + tableCss + hlCss}&lt;/style&gt;&#34;)
+    tableCss = &#34;tr.tf, td.tf, th.tf { text-align: left ! important;}&#34;
+    dh(f&#34;&lt;style&gt;&#34; + tableCss + genericCss + css + &#34;&lt;/style&gt;&#34;)
 
 
-def _getRefMember(app, tup, linked, condensed):
+def getRefMember(app, tup, dContext):
     api = app.api
     T = api.T
-    sectionTypes = T.sectionTypes
+    sectionTypeSet = T.sectionTypeSet
 
-    ln = len(tup)
+    condensed = dContext.condensed
+
     return (
         None
-        if not tup or any(n in sectionTypes for n in tup)
+        if not tup or any(n in sectionTypeSet for n in tup)
         else tup[0]
         if condensed
-        else tup[min((linked, ln - 1))]
-        if linked
         else tup[0]
-    )
-
-
-def _tupleEnum(tuples, start, end, limit, item):
-    if start is None:
-        start = 1
-    i = -1
-    if not hasattr(tuples, &#34;__len__&#34;):
-        if end is None or end - start + 1 &gt; limit:
-            end = start - 1 + limit
-        for tup in tuples:
-            i += 1
-            if i &lt; start - 1:
-                continue
-            if i &gt;= end:
-                break
-            yield (i + 1, tup)
-    else:
-        if end is None or end &gt; len(tuples):
-            end = len(tuples)
-        rest = 0
-        if end - (start - 1) &gt; limit:
-            rest = end - (start - 1) - limit
-            end = start - 1 + limit
-        for i in range(start - 1, end):
-            yield (i + 1, tuples[i])
-        if rest:
-            dh(
-                f&#34;&lt;b&gt;{rest} more {item}s skipped&lt;/b&gt; because we show a maximum of&#34;
-                f&#34; {limit} {item}s at a time&#34;
-            )</code></pre>
+    )</code></pre>
 </details>
 </section>
 <section>
@@ -757,7 +1350,7 @@ def _tupleEnum(tuples, start, end, limit, item):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.applib.display.displayApi"><code class="name flex">
-<span>def <span class="ident">displayApi</span></span>(<span>app, silent, hoist)</span>
+<span>def <span class="ident">displayApi</span></span>(<span>app, silent)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -765,42 +1358,71 @@ def _tupleEnum(tuples, start, end, limit, item):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def displayApi(app, silent, hoist):
-    app.export = types.MethodType(export, app)
-    app.table = types.MethodType(table, app)
-    app.plainTuple = types.MethodType(plainTuple, app)
-    app.plain = types.MethodType(plain, app)
-    app.show = types.MethodType(show, app)
-    app.prettyTuple = types.MethodType(prettyTuple, app)
-    app.pretty = types.MethodType(pretty, app)
-    app.loadCss = types.MethodType(loadCss, app)
+<pre><code class="python">def displayApi(app, silent):
+    if app.isCompatible:
+        app.export = types.MethodType(export, app)
+        app.table = types.MethodType(table, app)
+        app.plainTuple = types.MethodType(plainTuple, app)
+        app.plain = types.MethodType(plain, app)
+        app.show = types.MethodType(show, app)
+        app.prettyTuple = types.MethodType(prettyTuple, app)
+        app.pretty = types.MethodType(pretty, app)
+        app.loadCss = types.MethodType(loadCss, app)
+        app.displaySetup = types.MethodType(displaySetup, app)
+        app.displayReset = types.MethodType(displayReset, app)
+    else:
+        return
 
-    api = app.api
+    app.display = DisplaySettings(app)
+    if not app._browse:
+        app.loadCss()</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.displayReset"><code class="name flex">
+<span>def <span class="ident">displayReset</span></span>(<span>app, *options)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def displayReset(app, *options):
+    display = app.display
 
-    app.classNames = (
-        {nType[0]: nType[0] for nType in api.C.levels.data}
-        if app.classNames is None
-        else app.classNames
-    )
+    display.reset(*options)
+    if not app._browse:
+        app.loadCss()</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.displaySetup"><code class="name flex">
+<span>def <span class="ident">displaySetup</span></span>(<span>app, **options)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def displaySetup(app, **options):
+    display = app.display
 
-    if not app._asApp:
-        app.loadCss()
-        if hoist:
-            docs = api.makeAvailableIn(hoist)
-            if not silent:
-                dh(
-                    &#34;&lt;details open&gt;&lt;summary&gt;&lt;b&gt;API members&lt;/b&gt;:&lt;/summary&gt;\n&#34;
-                    + &#34;&lt;br/&gt;\n&#34;.join(
-                        &#34;, &#34;.join(
-                            outLink(
-                                entry, f&#34;{URL_TFDOC}/Api/{head}/#{ref}&#34;, title=&#34;doc&#34;,
-                            )
-                            for entry in entries
-                        )
-                        for (head, ref, entries) in docs
-                    )
-                    + &#34;&lt;/details&gt;&#34;
-                )</code></pre>
+    display.setup(**options)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.doPassage"><code class="name flex">
+<span>def <span class="ident">doPassage</span></span>(<span>dContext, i)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def doPassage(dContext, i):
+    withPassage = dContext.withPassage
+
+    return withPassage is not True and withPassage and i + 1 in withPassage</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.display.export"><code class="name flex">
@@ -812,13 +1434,16 @@ def _tupleEnum(tuples, start, end, limit, item):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def export(
-    app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options,
-):
+<pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     display = app.display
+
     if not display.check(&#34;table&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
+
+    dContext = display.get(options)
+    fmt = dContext.fmt
+    condenseType = dContext.condenseType
+    tupleFeatures = dContext.tupleFeatures
 
     if toDir is None:
         toDir = os.path.expanduser(DOWNLOADS)
@@ -826,14 +1451,7 @@ def _tupleEnum(tuples, start, end, limit, item):
             os.makedirs(toDir, exist_ok=True)
     toPath = f&#34;{toDir}/{toFile}&#34;
 
-    resultsX = getResultsX(
-        app,
-        tuples,
-        d.tupleFeatures,
-        d.condenseType or app.condenseType,
-        app.noDescendTypes,
-        fmt=d.fmt,
-    )
+    resultsX = getResultsX(app, tuples, tupleFeatures, condenseType, fmt=fmt,)
 
     with open(toPath, &#34;w&#34;, encoding=&#34;utf_16_le&#34;) as fh:
         fh.write(
@@ -843,6 +1461,35 @@ def _tupleEnum(tuples, start, end, limit, item):
                 for tup in resultsX
             )
         )</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getBigType"><code class="name flex">
+<span>def <span class="ident">getBigType</span></span>(<span>app, dContext, oContext, nType, otypeRank)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getBigType(app, dContext, oContext, nType, otypeRank):
+    api = app.api
+    T = api.T
+
+    sectionTypeSet = T.sectionTypeSet
+    structureTypeSet = T.structureTypeSet
+
+    full = dContext.full
+    condenseType = dContext.condenseType
+
+    isBig = False
+    if not full:
+        if sectionTypeSet and nType in sectionTypeSet | structureTypeSet:
+            if condenseType is None or otypeRank[nType] &gt; otypeRank[condenseType]:
+                isBig = True
+        elif condenseType is not None and otypeRank[nType] &gt; otypeRank[condenseType]:
+            isBig = True
+    return isBig</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.display.getBoundary"><code class="name flex">
@@ -866,8 +1513,8 @@ def _tupleEnum(tuples, start, end, limit, item):
     return (slots[0], slots[-1])</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.display.getFeatures"><code class="name flex">
-<span>def <span class="ident">getFeatures</span></span>(<span>app, n, features, withName=None, o=None, givenValue={}, plain=False, **options)</span>
+<dt id="tf.applib.display.getBoundaryResult"><code class="name flex">
+<span>def <span class="ident">getBoundaryResult</span></span>(<span>api, oContext, n, chunkedType=False)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -875,77 +1522,329 @@ def _tupleEnum(tuples, start, end, limit, item):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getFeatures(
-    app, n, features, withName=None, o=None, givenValue={}, plain=False, **options,
-):
-    display = app.display
-    d = display.get(options)
+<pre><code class="python">def getBoundaryResult(api, oContext, n, chunkedType=False):
+    ltr = oContext.ltr
+    start = &#34;r&#34; if ltr == &#34;rtl&#34; else &#34;l&#34;
+    end = &#34;l&#34; if ltr == &#34;rtl&#34; else &#34;r&#34;
+    kind = &#34;&#34; if chunkedType else &#34;no&#34;
 
+    boundaryCls = &#34;&#34;
+    myStart = None
+    myEnd = None
+    firstSlot = oContext.firstSlot
+    lastSlot = oContext.lastSlot
+
+    (myStart, myEnd) = getBoundary(api, n)
+
+    if firstSlot is not None:
+        if myEnd &lt; firstSlot:
+            return None
+        if myStart &lt; firstSlot:
+            boundaryCls += f&#34; {start}{kind}&#34;
+    if lastSlot is not None:
+        if myStart &gt; lastSlot:
+            return None
+        if myEnd &gt; lastSlot:
+            boundaryCls += f&#34; {end}{kind}&#34;
+    return (boundaryCls, myStart, myEnd)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getChildren"><code class="name flex">
+<span>def <span class="ident">getChildren</span></span>(<span>app, isPretty, dContext, oContext, n, nType)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getChildren(app, isPretty, dContext, oContext, n, nType):
     api = app.api
+    F = api.F
+    L = api.L
+    otypeRank = api.otypeRank
+    sortNodes = api.sortNodes
+    slotType = F.otype.slotType
+
+    aContext = app.context
+    verseTypes = aContext.verseTypes
+    childType = aContext.childType
+    childrenCustom = aContext.childrenCustom
+
+    inTuple = oContext.inTuple
+
+    full = dContext.full
+
+    isBigType = (
+        inTuple
+        if not isPretty and nType in verseTypes
+        else getBigType(app, dContext, oContext, nType, otypeRank)
+    )
+
+    if isBigType and not full:
+        children = ()
+    elif nType in childType:
+        childType = childType[nType]
+        children = L.d(n, otype=childType)
+        if nType in childrenCustom:
+            (condition, method, add) = childrenCustom[nType]
+            if condition(n):
+                others = method(n)
+                if add:
+                    children += others
+                else:
+                    children = others
+
+        children = set(children) - {n}
+
+        if nType in verseTypes:
+            (thisFirstSlot, thisLastSlot) = getBoundary(api, n)
+            boundaryChildren = set()
+            for boundary in (thisFirstSlot, thisLastSlot):
+                bchs = L.u(boundary, otype=childType)
+                if bchs:
+                    boundaryChildren.add(bchs[0])
+            children |= boundaryChildren
+
+        children = sortNodes(children - {n})
+    else:
+        children = L.d(n, otype=slotType)
+    return children</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getChunkedType"><code class="name flex">
+<span>def <span class="ident">getChunkedType</span></span>(<span>app, oContext, nContext, n, outer)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getChunkedType(app, oContext, nContext, n, outer):
+    api = app.api
+    L = api.L
+
+    aContext = app.context
+    isChunkOf = aContext.isChunkOf
+    chunkedTypes = aContext.chunkedTypes
+
+    nType = nContext.nType
+
+    if not outer and nType not in chunkedTypes and nType in isChunkOf:
+        chunkedType = isChunkOf[nType]
+        sn = L.u(n, otype=chunkedType)
+        if sn:
+            soContext = getChunkedTypeBounds(oContext, nContext)
+            return (sn[0], soContext)
+
+    return None</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getChunkedTypeBounds"><code class="name flex">
+<span>def <span class="ident">getChunkedTypeBounds</span></span>(<span>oContext, nContext)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getChunkedTypeBounds(oContext, nContext):
+    firstSlot = oContext.firstSlot
+    lastSlot = oContext.lastSlot
+
+    myStart = nContext.myStart
+    myEnd = nContext.myEnd
+
+    return oContext._replace(
+        firstSlot=max((firstSlot, myStart)), lastSlot=min((lastSlot, myEnd)),
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getFeatures"><code class="name flex">
+<span>def <span class="ident">getFeatures</span></span>(<span>app, dContext, n, nType)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getFeatures(app, dContext, n, nType):
+    api = app.api
+    L = api.L
     Fs = api.Fs
 
-    featurePartB = &#39;&lt;div class=&#34;features&#34;&gt;&#39;
-    featurePartE = &#34;&lt;/div&gt;&#34;
+    aContext = app.context
+    featuresBare = aContext.featuresBare
+    features = aContext.features
 
-    givenFeatureSet = set(features)
-    xFeatures = tuple(f for f in d.extraFeatures if f not in givenFeatureSet)
-    extraSet = set(xFeatures)
-    featureList = tuple(features) + xFeatures
-    nFeatures = len(features)
+    dFeatures = dContext.features
+    showFeatures = dContext.showFeatures
+    suppress = dContext.suppress
+    noneValues = dContext.noneValues
 
-    showWithName = extraSet
+    (theseFeatures, indirect) = features.get(nType, ((), {}))
+    (theseFeaturesBare, indirectBare) = featuresBare.get(nType, ((), {}))
 
-    if not plain:
-        featurePart = featurePartB
-        hasB = True
-    else:
-        featurePart = &#34;&#34;
-        hasB = False
-    for (i, name) in enumerate(featureList):
-        if name not in d.suppress:
-            if name in givenValue:
-                value = givenValue[name]
-            else:
-                if Fs(name) is None:
+    # a feature can be nType:feature
+    # do a L.u(n, otype=nType)[0] and take the feature from there
+
+    givenFeatureSet = set(theseFeatures) | set(theseFeaturesBare)
+    xFeatures = tuple(f for f in dFeatures if f not in givenFeatureSet)
+    featureList = tuple(theseFeaturesBare + theseFeatures) + xFeatures
+    bFeatures = len(theseFeaturesBare)
+    nbFeatures = len(theseFeaturesBare) + len(theseFeatures)
+
+    featurePart = &#34;&#34;
+
+    if showFeatures:
+        for (i, name) in enumerate(featureList):
+            if name not in suppress:
+                fsName = Fs(name)
+                if fsName is None:
                     continue
-                value = Fs(name).v(n)
-                oValue = None if o is None else Fs(name).v(o)
-                valueRep = None if value in d.noneValues else htmlEsc(value)
-                oValueRep = (
-                    None if o is None or oValue in d.noneValues else htmlEsc(oValue)
+                fsNamev = fsName.v
+                value = (
+                    fsNamev(L.u(n, otype=indirect[name])[0])
+                    if name in indirect
+                    else fsNamev(n)
                 )
-                if valueRep is None and oValueRep is None:
-                    value = None
-                else:
-                    sep = &#34;&#34; if valueRep is None or oValueRep is None else &#34;|&#34;
-                    valueRep = &#34;&#34; if valueRep is None else valueRep
-                    oValueRep = &#34;&#34; if oValueRep is None else oValueRep
-                    value = (
-                        valueRep
-                        if valueRep == oValueRep
-                        else f&#34;{valueRep}{sep}{oValueRep}&#34;
+                value = None if value in noneValues else htmlEsc(value or &#34;&#34;)
+                if value is not None:
+                    value = value.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
+                    isBare = i &lt; bFeatures
+                    isExtra = i &gt;= nbFeatures
+                    nameRep = &#34;&#34; if isBare else f&#39;&lt;span class=&#34;f&#34;&gt;{name}=&lt;/span&gt;&#39;
+                    xCls = &#34;xft&#34; if isExtra else &#34;&#34;
+                    featurePart += (
+                        f&#39;&lt;span class=&#34;{name.lower()} {xCls}&#34;&gt;{nameRep}{value}&lt;/span&gt;&#39;
                     )
-            if value is not None:
-                value = value.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
-                showName = withName or (withName is None and name in showWithName)
-                nameRep = f&#39;&lt;span class=&#34;f&#34;&gt;{name}=&lt;/span&gt;&#39; if showName else &#34;&#34;
-                xClass = &#34; xft&#34; if name in extraSet else &#34;&#34;
-                featureRep = (
-                    f&#39; &lt;span class=&#34;{name.lower()}{xClass}&#34;&gt;{nameRep}{value}&lt;/span&gt;&#39;
-                )
+    if not featurePart:
+        return &#34;&#34;
 
-                if i &gt;= nFeatures:
-                    if not hasB:
-                        featurePart += featurePartB
-                        hasB = True
-                featurePart += featureRep
-    if hasB:
-        featurePart += featurePartE
-    return featurePart</code></pre>
+    return f&#34;&lt;div class=&#39;features&#39;&gt;{featurePart}&lt;/div&gt;&#34;</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getLtr"><code class="name flex">
+<span>def <span class="ident">getLtr</span></span>(<span>app, dContext)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getLtr(app, dContext):
+    aContext = app.context
+    direction = aContext.direction
+
+    fmt = dContext.fmt or DEFAULT_FORMAT
+
+    return (
+        &#34;rtl&#34;
+        if direction == &#34;rtl&#34; and (f&#34;{ORIG}-&#34; in fmt or f&#34;-{ORIG}&#34; in fmt)
+        else (&#34;&#34; if direction == &#34;ltr&#34; else &#34;ltr&#34;)
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getNodePart"><code class="name flex">
+<span>def <span class="ident">getNodePart</span></span>(<span>app, isPretty, dContext, n, nType, isSlot, outer, highlight)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getNodePart(app, isPretty, dContext, n, nType, isSlot, outer, highlight):
+    _browse = app._browse
+
+    Fs = app.api.Fs
+
+    aContext = app.context
+    lineNumberFeature = aContext.lineNumberFeature
+    allowInfo = isPretty or outer or highlight
+
+    withNodes = dContext.withNodes
+    withTypes = dContext.withTypes
+    prettyTypes = dContext.prettyTypes
+    lineNumbers = dContext.lineNumbers
+
+    num = &#34;&#34;
+    if withNodes and allowInfo:
+        num = n
+
+    ntp = &#34;&#34;
+    if (withTypes or isPretty and prettyTypes) and not isSlot and allowInfo:
+        ntp = nType
+
+    line = &#34;&#34;
+    if lineNumbers and allowInfo:
+        feat = lineNumberFeature.get(nType, None)
+        if feat:
+            line = Fs(feat).v(n)
+        if line:
+            line = f&#34;@{line}&#34; if line else &#34;&#34;
+
+    elemb = &#39;a href=&#34;#&#34;&#39; if _browse else &#34;span&#34;
+    eleme = &#34;a&#34; if _browse else &#34;span&#34;
+    sep = &#34;:&#34; if ntp and num else &#34;&#34;
+
+    return (
+        f&#39;&lt;{elemb} class=&#34;nd&#34;&gt;{ntp}{sep}{num}{line}&lt;/{eleme}&gt;&#39;
+        if ntp or num or line
+        else &#34;&#34;
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getPassage"><code class="name flex">
+<span>def <span class="ident">getPassage</span></span>(<span>app, isPretty, dContext, oContext, n)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getPassage(app, isPretty, dContext, oContext, n):
+    withPassage = dContext.withPassage
+
+    if not withPassage:
+        return &#34;&#34;
+
+    passage = app.webLink(n, _asString=True)
+    return f&#39;&lt;span class=&#34;psg ltr&#34;&gt;{passage}{NB}&lt;/span&gt;&#39;</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getRefMember"><code class="name flex">
+<span>def <span class="ident">getRefMember</span></span>(<span>app, tup, dContext)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getRefMember(app, tup, dContext):
+    api = app.api
+    T = api.T
+    sectionTypeSet = T.sectionTypeSet
+
+    condensed = dContext.condensed
+
+    return (
+        None
+        if not tup or any(n in sectionTypeSet for n in tup)
+        else tup[0]
+        if condensed
+        else tup[0]
+    )</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.display.getResultsX"><code class="name flex">
-<span>def <span class="ident">getResultsX</span></span>(<span>app, results, features, condenseType, noDescendTypes, fmt=None)</span>
+<span>def <span class="ident">getResultsX</span></span>(<span>app, results, features, condenseType, fmt=None)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -953,21 +1852,25 @@ def _tupleEnum(tuples, start, end, limit, item):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getResultsX(app, results, features, condenseType, noDescendTypes, fmt=None):
+<pre><code class="python">def getResultsX(app, results, features, condenseType, fmt=None):
     api = app.api
     F = api.F
     Fs = api.Fs
     T = api.T
     fOtype = F.otype.v
     otypeRank = api.otypeRank
-    sectionTypes = set(T.sectionTypes)
-    sectionDepth = len(sectionTypes)
+    sectionTypeSet = T.sectionTypeSet
+
+    aContext = app.context
+    noDescendTypes = aContext.descendTypes
+
+    sectionDepth = len(sectionTypeSet)
     if len(results) == 0:
         return ()
     firstResult = results[0]
     nTuple = len(firstResult)
     refColumns = [
-        i for (i, n) in enumerate(firstResult) if fOtype(n) not in sectionTypes
+        i for (i, n) in enumerate(firstResult) if fOtype(n) not in sectionTypeSet
     ]
     refColumn = refColumns[0] if refColumns else nTuple - 1
     header = [&#34;R&#34;] + [f&#34;S{i}&#34; for i in range(1, sectionDepth + 1)]
@@ -978,9 +1881,11 @@ def _tupleEnum(tuples, start, end, limit, item):
     def withText(nodeType):
         return (
             condenseType is None
-            and nodeType not in sectionTypes
+            and nodeType not in sectionTypeSet
             or otypeRank[nodeType] &lt;= otypeRank[condenseType]
         )
+
+    noDescendTypes = noDescendTypes
 
     for j in range(nTuple):
         i = j + 1
@@ -1011,58 +1916,8 @@ def _tupleEnum(tuples, start, end, limit, item):
     return tuple(rows)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.display.loadCss"><code class="name flex">
-<span>def <span class="ident">loadCss</span></span>(<span>app, reload=False)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>The CSS is looked up and then loaded into a notebook if we are not
-running in the TF browser,
-else the CSS is returned.</p>
-<p>With reload=True, the app-specific display.css will be read again from disk</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def loadCss(app, reload=False):
-    &#34;&#34;&#34;
-  The CSS is looked up and then loaded into a notebook if we are not
-  running in the TF browser,
-  else the CSS is returned.
-
-  With reload=True, the app-specific display.css will be read again from disk
-  &#34;&#34;&#34;
-    _asApp = app._asApp
-    if _asApp:
-        return app.css
-
-    if reload:
-        config = findAppConfig(app.appName, app.appPath)
-        cfg = configure(config, app.version)
-        app.css = cfg[&#34;css&#34;]
-
-    hlCssFile = (
-        f&#34;{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}&#34;
-        &#34;/server/static/highlight.css&#34;
-    )
-    with open(hlCssFile, encoding=&#34;utf8&#34;) as fh:
-        hlCss = fh.read()
-
-    cssFont = (
-        &#34;&#34;
-        if app.fontName is None
-        else CSS_FONT_API.format(fontName=app.fontName, font=app.font, fontw=app.fontw,)
-    )
-    tableCss = &#34;&#34;&#34;
-tr.tf, td.tf, th.tf {
-  text-align: left;
-}
-
-&#34;&#34;&#34;
-    dh(f&#34;&lt;style&gt;{cssFont + app.css + tableCss + hlCss}&lt;/style&gt;&#34;)</code></pre>
-</details>
-</dd>
-<dt id="tf.applib.display.plain"><code class="name flex">
-<span>def <span class="ident">plain</span></span>(<span>app, n, isLinked=True, secLabel=True, **options)</span>
+<dt id="tf.applib.display.getText"><code class="name flex">
+<span>def <span class="ident">getText</span></span>(<span>app, isPretty, n, nType, fmt=None, descend=None)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -1070,42 +1925,125 @@ tr.tf, td.tf, th.tf {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def plain(
-    app, n, isLinked=True, _asString=False, secLabel=True, **options,
-):
+<pre><code class="python">def getText(app, isPretty, n, nType, fmt=None, descend=None):
+    T = app.api.T
+    sectionTypeSet = T.sectionTypeSet
+    structureTypeSet = T.structureTypeSet
+
+    aContext = app.context
+    templates = aContext.labels if isPretty else aContext.templates
+
+    (tpl, feats) = templates[nType]
+
+    tplFilled = (
+        (
+            app.sectionStrFromNode(n)
+            if nType in sectionTypeSet
+            else app.structureStrFromNode(n)
+            if nType in structureTypeSet
+            else T.text(n, fmt=fmt, descend=descend)
+        )
+        if tpl is True
+        else tpl.format(**{feat: getValue(app, n, nType, feat) for feat in feats})
+    )
+    return (tpl is True, tplFilled)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.getValue"><code class="name flex">
+<span>def <span class="ident">getValue</span></span>(<span>app, n, nType, feat)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getValue(app, n, nType, feat):
+    Fs = app.api.Fs
+
+    aContext = app.context
+    transform = aContext.transform
+
+    val = Fs(feat).v(n)
+    modifier = transform.get(nType, {}).get(feat, None)
+    return modifier(val) if modifier else val</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.loadCss"><code class="name flex">
+<span>def <span class="ident">loadCss</span></span>(<span>app)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>The CSS is looked up and then loaded into a notebook if we are not
+running in the TF browser,
+else the CSS is returned.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def loadCss(app):
+    &#34;&#34;&#34;The CSS is looked up and then loaded into a notebook if we are not
+    running in the TF browser,
+    else the CSS is returned.
+    &#34;&#34;&#34;
+
+    _browse = app._browse
+    aContext = app.context
+    css = aContext.css
+
+    if _browse:
+        return css
+
+    cssPath = (
+        f&#34;{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}&#34;
+        f&#34;{SERVER_DISPLAY_BASE}&#34;
+    )
+    genericCss = &#34;&#34;
+    for cssFile in SERVER_DISPLAY:
+        with open(f&#34;{cssPath}/{cssFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+            genericCss += fh.read()
+
+    tableCss = &#34;tr.tf, td.tf, th.tf { text-align: left ! important;}&#34;
+    dh(f&#34;&lt;style&gt;&#34; + tableCss + genericCss + css + &#34;&lt;/style&gt;&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.display.plain"><code class="name flex">
+<span>def <span class="ident">plain</span></span>(<span>app, n, **options)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, **options):
     display = app.display
+
     if not display.check(&#34;plain&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
 
+    aContext = app.context
+    textFormats = aContext.textFormats
+    formatCls = aContext.formatCls
+
+    dContext = display.get(options)
+    fmt = dContext.fmt
+
+    dContext.isHtml = fmt in textFormats
+
+    _browse = app._browse
     api = app.api
-    F = api.F
-    T = api.T
-    sectionTypes = T.sectionTypes
-    fOtype = F.otype.v
 
-    nType = fOtype(n)
-    passage = &#34;&#34;
+    ltr = getLtr(app, dContext)
+    textCls = formatCls[fmt].lower()
+    (firstSlot, lastSlot) = getBoundary(api, n)
 
-    if d.withPassage:
-        if nType not in sectionTypes:
-            passage = app.webLink(n, _asString=True)
+    oContext = OuterContext(ltr, textCls, firstSlot, lastSlot, _inTuple)
+    passage = getPassage(app, True, dContext, oContext, n)
+    rep = _doPlain(app, dContext, oContext, n, True, [])
 
-    passage = f&#34;{passage}&amp;nbsp;&#34; if passage else &#34;&#34;
-
-    highlights = (
-        {m: &#34;&#34; for m in d.highlights} if type(d.highlights) is set else d.highlights
-    )
-
-    return app._plain(
-        n,
-        passage,
-        isLinked,
-        _asString,
-        secLabel,
-        highlights=highlights,
-        **display.consume(options, &#34;highlights&#34;),
-    )</code></pre>
+    if _browse or _asString:
+        return rep
+    dh(passage + rep)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.display.plainTuple"><code class="name flex">
@@ -1118,50 +2056,53 @@ tr.tf, td.tf, th.tf {
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def plainTuple(
-    app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options,
+    app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options
 ):
     display = app.display
+
     if not display.check(&#34;plainTuple&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
 
-    _asApp = app._asApp
     api = app.api
     F = api.F
     T = api.T
-
     fOtype = F.otype.v
+    _browse = app._browse
 
-    if d.withPassage:
-        passageNode = _getRefMember(app, tup, d.linked, d.condensed)
+    dContext = display.get(options)
+    condenseType = dContext.condenseType
+    colorMap = dContext.colorMap
+    highlights = dContext.highlights
+    withPassage = dContext.withPassage
+
+    if withPassage is True:
+        passageNode = getRefMember(app, tup, dContext)
         passageRef = (
             &#34;&#34;
             if passageNode is None
             else app._sectionLink(passageNode)
-            if _asApp
+            if _browse
             else app.webLink(passageNode, _asString=True)
         )
-        if passageRef:
-            passageRef = f&#34; {passageRef}&#34;
+        passageRef = f&#39;&lt;span class=&#34;psg ltr&#34;&gt;{passageRef}&lt;/span&gt;&#39;
     else:
         passageRef = &#34;&#34;
 
     newOptions = display.consume(options, &#34;withPassage&#34;)
     newOptionsH = display.consume(options, &#34;withPassage&#34;, &#34;highlights&#34;)
 
-    highlights = getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
+    highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
 
-    if _asApp:
+    if _browse:
         prettyRep = (
-            prettyTuple(app, tup, seq, withPassage=False, **newOptions,)
+            prettyTuple(app, tup, seq, withPassage=False, **newOptions)
             if opened
             else &#34;&#34;
         )
-
-        current = &#34; focus&#34; if seq == position else &#34;&#34;
-        attOpen = &#34; open &#34; if opened else &#34;&#34;
+        current = &#34;focus&#34; if seq == position else &#34;&#34;
+        attOpen = &#34;open &#34; if opened else &#34;&#34;
         tupSeq = &#34;,&#34;.join(str(n) for n in tup)
-        if d.withPassage:
+        if withPassage is True:
             sParts = T.sectionFromNode(passageNode, fillup=True)
             passageAtt = &#34; &#34;.join(
                 f&#39;sec{i}=&#34;{sParts[i] if i &lt; len(sParts) else &#34;&#34;}&#34;&#39; for i in range(3)
@@ -1170,64 +2111,63 @@ tr.tf, td.tf, th.tf {
             passageAtt = &#34;&#34;
 
         plainRep = &#34;&#34;.join(
-            f&#34;&#34;&#34;&lt;span&gt;{mdEsc(app.plain(
+            &#34;&lt;span&gt;&#34;
+            + mdEsc(
+                app.plain(
                     n,
-                    isLinked=i == d.linked - 1,
-                    withPassage=False,
+                    _inTuple=True,
+                    withPassage=doPassage(dContext, i),
                     highlights=highlights,
                     **newOptionsH,
-                  ))
-                }
-            &lt;/span&gt;
-        &#34;&#34;&#34;
+                )
+            )
+            + &#34;&lt;/span&gt;&#34;
             for (i, n) in enumerate(tup)
         )
-        html = f&#34;&#34;&#34;
-  &lt;details
-    class=&#34;pretty dtrow{current}&#34;
-    seq=&#34;{seq}&#34;
-    {attOpen}
-  &gt;
-    &lt;summary&gt;
-      &lt;a href=&#34;#&#34; class=&#34;pq fa fa-solar-panel fa-xs&#34; title=&#34;show in context&#34; {passageAtt}&gt;&lt;/a&gt;
-      &lt;a href=&#34;#&#34; class=&#34;sq&#34; tup=&#34;{tupSeq}&#34;&gt;{seq}&lt;/a&gt;
-      {passageRef}
-      {plainRep}
-    &lt;/summary&gt;
-    &lt;div class=&#34;pretty&#34;&gt;{prettyRep}&lt;/div&gt;
-  &lt;/details&gt;
-&#34;&#34;&#34;
+        html = (
+            f&#39;&lt;details class=&#34;pretty dtrow {current}&#34; seq=&#34;{seq}&#34; {attOpen}&gt;&#39;
+            f&#34;&lt;summary&gt;&#34;
+            f&#39;&lt;a href=&#34;#&#34; class=&#34;pq fa fa-solar-panel fa-xs&#34;&#39;
+            f&#39; title=&#34;show in context&#34; {passageAtt}&gt;&lt;/a&gt;&#39;
+            f&#39;&lt;a href=&#34;#&#34; class=&#34;sq&#34; tup=&#34;{tupSeq}&#34;&gt;{seq}&lt;/a&gt;&#39;
+            f&#34; {passageRef} {plainRep}&#34;
+            f&#34;&lt;/summary&gt;&#34;
+            f&#39;&lt;div class=&#34;pretty&#34;&gt;{prettyRep}&lt;/div&gt;&#39;
+            f&#34;&lt;/details&gt;&#34;
+        )
         return html
 
     html = [str(seq)]
-    if passageRef:
+    if withPassage is True:
         html.append(passageRef)
     for (i, n) in enumerate(tup):
         html.append(
             app.plain(
                 n,
-                isLinked=i == d.linked - 1,
+                _inTuple=True,
                 _asString=True,
-                withPassage=False,
+                withPassage=doPassage(dContext, i),
                 highlights=highlights,
                 **newOptionsH,
             )
         )
     html = (
-        &#39;&lt;tr class=&#34;tf&#34;&gt;&lt;td class=&#34;tf&#34;&gt;&#39;
-        + (&#39;&lt;/td&gt;&lt;td class=&#34;tf&#34;&gt;&#39;.join(html))
+        f&#39;&lt;tr class=&#34;tf&#34;&gt;&lt;td class=&#34;tf&#34;&gt;&#39;
+        + &#39;&lt;/td&gt;&lt;td class=&#34;tf&#34;&gt;&#39;.join(html)
         + &#34;&lt;/td&gt;&lt;/tr&gt;&#34;
     )
     if _asString:
         return html
-    head = [
-        &#39;&lt;tr class=&#34;tf&#34;&gt;&lt;th class=&#34;tf&#34;&gt;n&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;
-        + (&#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;.join(fOtype(n) for n in tup))
-        + &#34;&lt;/th&gt;&lt;/tr&gt;&#34;
-    ]
-    head.append(html)
 
-    dh(&#34;\n&#34;.join(head))</code></pre>
+    passageHead = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;p&#39; if withPassage is True else &#34;&#34;
+    head = (
+        f&#39;&lt;tr class=&#34;tf&#34;&gt;&lt;th class=&#34;tf&#34;&gt;n{passageHead}&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;
+        + &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;.join(fOtype(n) for n in tup)
+        + f&#34;&lt;/th&gt;&lt;/tr&gt;&#34;
+    )
+    html = f&#34;&lt;table&gt;&#34; + head + &#34;&#34;.join(html) + &#34;&lt;/table&gt;&#34;
+
+    dh(html)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.display.pretty"><code class="name flex">
@@ -1239,37 +2179,56 @@ tr.tf, td.tf, th.tf {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def pretty(
-    app, n, **options,
-):
+<pre><code class="python">def pretty(app, n, **options):
     display = app.display
+
     if not display.check(&#34;pretty&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
 
-    _asApp = app._asApp
+    _browse = app._browse
+
+    aContext = app.context
+    textFormats = aContext.textFormats
+    formatCls = aContext.formatCls
+
+    dContext = display.get(options)
+    condenseType = dContext.condenseType
+    condensed = dContext.condensed
+    tupleFeatures = dContext.tupleFeatures
+    extraFeatures = dContext.extraFeatures
+    fmt = dContext.fmt
+
+    dContext.isHtml = fmt in textFormats
+    dContext.features = sorted(
+        flattenToSet(extraFeatures) | flattenToSet(tupleFeatures)
+    )
+
     api = app.api
     F = api.F
     L = api.L
-    T = api.T
-    fOtype = F.otype.v
     otypeRank = api.otypeRank
-    sectionTypes = T.sectionTypes
+
+    ltr = getLtr(app, dContext)
+    textCls = formatCls[fmt].lower()
+    (firstSlot, lastSlot) = getBoundary(api, n)
+
+    oContext = OuterContext(ltr, textCls, firstSlot, lastSlot, False)
+    passage = getPassage(app, False, dContext, oContext, n)
 
     containerN = None
 
-    nType = fOtype(n)
-    if d.condensed and d.condenseType:
-        if nType == d.condenseType:
+    nType = F.otype.v(n)
+    if condensed and condenseType:
+        if nType == condenseType:
             containerN = n
-        elif otypeRank[nType] &lt; otypeRank[d.condenseType]:
-            ups = L.u(n, otype=d.condenseType)
+        elif otypeRank[nType] &lt; otypeRank[condenseType]:
+            ups = L.u(n, otype=condenseType)
             if ups:
                 containerN = ups[0]
 
     (firstSlot, lastSlot) = (
         getBoundary(api, n)
-        if not d.condensed or not d.condenseType
+        if not condensed or not condenseType
         else (None, None)
         if containerN is None
         else getBoundary(api, containerN)
@@ -1277,93 +2236,16 @@ tr.tf, td.tf, th.tf {
 
     html = []
 
-    if d.withPassage:
-        if nType not in sectionTypes:
-            html.append(app.webLink(n, _asString=True))
+    _doPretty(app, dContext, oContext, n, True, html)
 
-    highlights = (
-        {m: &#34;&#34; for m in d.highlights} if type(d.highlights) is set else d.highlights
-    )
-
-    extraFeatures = sorted(
-        flattenToSet(d.extraFeatures) | flattenToSet(d.tupleFeatures)
-    )
-
-    app._pretty(
-        n,
-        True,
-        html,
-        firstSlot,
-        lastSlot,
-        extraFeatures=extraFeatures,
-        highlights=highlights,
-        **display.consume(options, &#34;extraFeatures&#34;, &#34;highlights&#34;),
-    )
-    htmlStr = &#34;\n&#34;.join(html)
-    if _asApp:
+    htmlStr = passage + &#34;&#34;.join(html)
+    if _browse:
         return htmlStr
     dh(htmlStr)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.display.prettyPre"><code class="name flex">
-<span>def <span class="ident">prettyPre</span></span>(<span>app, n, firstSlot, lastSlot, d)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def prettyPre(app, n, firstSlot, lastSlot, d):
-    api = app.api
-    F = api.F
-    fOtype = F.otype.v
-    otypeRank = api.otypeRank
-
-    slotType = F.otype.slotType
-    nType = fOtype(n)
-    isBigType = (
-        not d.full
-        and d.condenseType is not None
-        and otypeRank[nType] &gt; otypeRank[d.condenseType]
-    )
-    boundaryClass = &#34;&#34;
-    myStart = None
-    myEnd = None
-
-    (myStart, myEnd) = getBoundary(api, n)
-
-    if firstSlot is not None:
-        if myEnd &lt; firstSlot:
-            return False
-        if myStart &lt; firstSlot:
-            boundaryClass += &#34; rno&#34;
-    if lastSlot is not None:
-        if myStart &gt; lastSlot:
-            return False
-        if myEnd &gt; lastSlot:
-            boundaryClass += &#34; lno&#34;
-
-    hlAtt = getHlAtt(app, n, d.highlights)
-
-    nodePart = f&#39;&lt;a href=&#34;#&#34; class=&#34;nd&#34;&gt;{n}&lt;/a&gt;&#39; if d.withNodes else &#34;&#34;
-    className = app.classNames.get(nType, None)
-
-    return (
-        slotType,
-        nType,
-        isBigType,
-        className.lower() if className else className,
-        boundaryClass.lower() if boundaryClass else boundaryClass,
-        hlAtt,
-        nodePart,
-        myStart,
-        myEnd,
-    )</code></pre>
-</details>
-</dd>
 <dt id="tf.applib.display.prettyTuple"><code class="name flex">
-<span>def <span class="ident">prettyTuple</span></span>(<span>app, tup, seq, item='result', rawHighlights=None, **options)</span>
+<span>def <span class="ident">prettyTuple</span></span>(<span>app, tup, seq, item='result', **options)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -1371,18 +2253,22 @@ tr.tf, td.tf, th.tf {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def prettyTuple(
-    app, tup, seq, item=RESULT, rawHighlights=None, **options,
-):
+<pre><code class="python">def prettyTuple(app, tup, seq, item=RESULT, **options):
     display = app.display
+
     if not display.check(&#34;prettyTuple&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
 
-    _asApp = app._asApp
+    dContext = display.get(options)
+    colorMap = dContext.colorMap
+    highlights = dContext.highlights
+    condenseType = dContext.condenseType
+    condensed = dContext.condensed
+
+    _browse = app._browse
 
     if len(tup) == 0:
-        if _asApp:
+        if _browse:
             return &#34;&#34;
         else:
             return
@@ -1390,25 +2276,21 @@ tr.tf, td.tf, th.tf {
     api = app.api
     sortKey = api.sortKey
 
-    containers = {tup[0]} if d.condensed else condenseSet(api, tup, d.condenseType)
-    highlights = (
-        getTupleHighlights(api, tup, d.highlights, d.colorMap, d.condenseType)
-        if rawHighlights is None
-        else rawHighlights
-    )
+    containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
+    highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
 
-    if not _asApp:
+    if not _browse:
         dh(f&#34;&lt;p&gt;&lt;b&gt;{item}&lt;/b&gt; &lt;i&gt;{seq}&lt;/i&gt;&lt;/p&gt;&#34;)
-    if _asApp:
+    if _browse:
         html = []
     for t in sorted(containers, key=sortKey):
         h = app.pretty(
             t, highlights=highlights, **display.consume(options, &#34;highlights&#34;),
         )
-        if _asApp:
+        if _browse:
             html.append(h)
-    if _asApp:
-        return &#34;\n&#34;.join(html)</code></pre>
+    if _browse:
+        return &#34;&#34;.join(html)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.display.show"><code class="name flex">
@@ -1420,42 +2302,30 @@ tr.tf, td.tf, th.tf {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def show(
-    app, tuples, **options,
-):
+<pre><code class="python">def show(app, tuples, **options):
     display = app.display
+
     if not display.check(&#34;show&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
+
+    dContext = display.get(options)
+    end = dContext.end
+    start = dContext.start
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
 
     api = app.api
     F = api.F
 
-    item = d.condenseType if d.condensed else RESULT
+    item = condenseType if condensed else RESULT
 
-    if d.condensed:
-        rawHighlights = getTupleHighlights(
-            api, tuples, d.highlights, d.colorMap, d.condenseType, multiple=True
-        )
-        highlights = {}
-        colorMap = None
-        tuples = condense(api, tuples, d.condenseType, multiple=True)
-    else:
-        highlights = d.highlights
-        rawHighlights = None
-        colorMap = d.colorMap
+    if condensed:
+        tuples = condense(api, tuples, condenseType, multiple=True)
 
-    for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_SHOW, item):
-        item = F.otype.v(tup[0]) if d.condensed and d.condenseType else RESULT
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item):
+        item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
         prettyTuple(
-            app,
-            tup,
-            i,
-            item=item,
-            highlights=highlights,
-            colorMap=colorMap,
-            rawHighlights=rawHighlights,
-            **display.consume(options, &#34;highlights&#34;, &#34;colorMap&#34;),
+            app, tup, i, item=item, **options,
         )</code></pre>
 </details>
 </dd>
@@ -1468,37 +2338,41 @@ tr.tf, td.tf, th.tf {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def table(
-    app, tuples, _asString=False, **options,
-):
+<pre><code class="python">def table(app, tuples, _asString=False, **options):
     display = app.display
+
     if not display.check(&#34;table&#34;, options):
         return &#34;&#34;
-    d = display.get(options)
 
     api = app.api
     F = api.F
     fOtype = F.otype.v
 
-    item = d.condenseType if d.condensed else RESULT
+    dContext = display.get(options)
+    end = dContext.end
+    start = dContext.start
+    withPassage = dContext.withPassage
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
 
-    if d.condensed:
-        tuples = condense(api, tuples, d.condenseType, multiple=True)
+    item = condenseType if condensed else RESULT
 
-    passageHead = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;p&#39; if d.withPassage else &#34;&#34;
+    if condensed:
+        tuples = condense(api, tuples, condenseType, multiple=True)
+
+    passageHead = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;p&#39; if withPassage is True else &#34;&#34;
 
     html = []
     one = True
-    for (i, tup) in _tupleEnum(tuples, d.start, d.end, LIMIT_TABLE, item):
+
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item):
         if one:
-            heads = &#34;&lt;/th&gt;&lt;th&gt;&#34;.join(fOtype(n) for n in tup)
+            heads = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;.join(fOtype(n) for n in tup)
             html.append(
-                f&#34;&#34;&#34;
-&lt;tr class=&#34;tf&#34;&gt;
-  &lt;th class=&#34;tf&#34;&gt;n{passageHead}&lt;/th&gt;
-  &lt;th class=&#34;tf&#34;&gt;{heads}&lt;/th&gt;
-&lt;/tr&gt;
-&#34;&#34;&#34;
+                f&#39;&lt;tr class=&#34;tf&#34;&gt;&#39;
+                f&#39;&lt;th class=&#34;tf&#34;&gt;n{passageHead}&lt;/th&gt;&#39;
+                f&#39;&lt;th class=&#34;tf&#34;&gt;{heads}&lt;/th&gt;&#39;
+                f&#34;&lt;/tr&gt;&#34;
             )
             one = False
         html.append(
@@ -1522,6 +2396,122 @@ tr.tf, td.tf, th.tf {
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.applib.display.NodeContext"><code class="flex name class">
+<span>class <span class="ident">NodeContext</span></span>
+<span>(</span><span>slotType, nType, isSlot, isSlotOrDescend, descend, isBaseNonSlot, hasChunks, children, boundaryCls, hlCls, hlStyle, nodePart, cls, myStart, myEnd, hidden)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Node properties during plain() or pretty().</p></section>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.tuple</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.applib.display.NodeContext.boundaryCls"><code class="name">var <span class="ident">boundaryCls</span></code></dt>
+<dd>
+<section class="desc"><p>Css class that represent the kinds of boundaries for this node. Nodes can have a firm of dotted left/right boundary, or no boundary at all.</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.children"><code class="name">var <span class="ident">children</span></code></dt>
+<dd>
+<section class="desc"><p>The children of the current node.</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.cls"><code class="name">var <span class="ident">cls</span></code></dt>
+<dd>
+<section class="desc"><p>A dict of several classes for the display of the node: for the container, the label, and the children of the node</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.descend"><code class="name">var <span class="ident">descend</span></code></dt>
+<dd>
+<section class="desc"><p>When calling T.text(n, descend=??) for this node, what should we substitute for the ?? ?</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.hasChunks"><code class="name">var <span class="ident">hasChunks</span></code></dt>
+<dd>
+<section class="desc"><p>Whether the current node has a type that has a related type that corresponds to contiguous chunks that build it.
+E.g. in the BHSA the type phrase has a chunk type phrase_atom.</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.hidden"><code class="name">var <span class="ident">hidden</span></code></dt>
+<dd>
+<section class="desc"><p>Whether the outer container and label of the current node should be hidden. This is used to reduce displays by hiding the chunk types of types that have chunks. E.g. in the BHSA: the phrase_atoms can be hidden.</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.hlCls"><code class="name">var <span class="ident">hlCls</span></code></dt>
+<dd>
+<section class="desc"><p>The highlight Css class of the current node.</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.hlStyle"><code class="name">var <span class="ident">hlStyle</span></code></dt>
+<dd>
+<section class="desc"><p>The highlight style attribute of the current node.</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.isBaseNonSlot"><code class="name">var <span class="ident">isBaseNonSlot</span></code></dt>
+<dd>
+<section class="desc"><p>Whether the current node has a type that is currently a baseType, i.e. a type where a pretty display should stop unfolding. Moreover, this type should not be the slot type.</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.isSlot"><code class="name">var <span class="ident">isSlot</span></code></dt>
+<dd>
+<section class="desc"><p>Whether the current node is a slot node.</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.isSlotOrDescend"><code class="name">var <span class="ident">isSlotOrDescend</span></code></dt>
+<dd>
+<section class="desc"><p>Whether the current node is a slot node or has a type to which the current text format should descend. This type is determined by the current text format.</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.myEnd"><code class="name">var <span class="ident">myEnd</span></code></dt>
+<dd>
+<section class="desc"><p>The last slot of the current node</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.myStart"><code class="name">var <span class="ident">myStart</span></code></dt>
+<dd>
+<section class="desc"><p>The first slot of the current node</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.nType"><code class="name">var <span class="ident">nType</span></code></dt>
+<dd>
+<section class="desc"><p>The node type of the current node.</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.nodePart"><code class="name">var <span class="ident">nodePart</span></code></dt>
+<dd>
+<section class="desc"><p>The node type/number insofar it has to be displayed for the current node</p></section>
+</dd>
+<dt id="tf.applib.display.NodeContext.slotType"><code class="name">var <span class="ident">slotType</span></code></dt>
+<dd>
+<section class="desc"><p>The slot type of the data set.</p></section>
+</dd>
+</dl>
+</dd>
+<dt id="tf.applib.display.OuterContext"><code class="flex name class">
+<span>class <span class="ident">OuterContext</span></span>
+<span>(</span><span>ltr, textCls, firstSlot, lastSlot, inTuple)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Outer node properties during plain() and pretty(). Only the properties of the node for which the outer call plain() or pretty() has been made, not the nodes encountered during recursion.</p></section>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.tuple</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.applib.display.OuterContext.firstSlot"><code class="name">var <span class="ident">firstSlot</span></code></dt>
+<dd>
+<section class="desc"><p>First slot under the outer node.</p></section>
+</dd>
+<dt id="tf.applib.display.OuterContext.inTuple"><code class="name">var <span class="ident">inTuple</span></code></dt>
+<dd>
+<section class="desc"><p>Whether the outer node is displayed as part of a tuple of nodes.</p></section>
+</dd>
+<dt id="tf.applib.display.OuterContext.lastSlot"><code class="name">var <span class="ident">lastSlot</span></code></dt>
+<dd>
+<section class="desc"><p>Last slot under the outer node.</p></section>
+</dd>
+<dt id="tf.applib.display.OuterContext.ltr"><code class="name">var <span class="ident">ltr</span></code></dt>
+<dd>
+<section class="desc"><p>writing direction.</p></section>
+</dd>
+<dt id="tf.applib.display.OuterContext.textCls"><code class="name">var <span class="ident">textCls</span></code></dt>
+<dd>
+<section class="desc"><p>Css class for full text.</p></section>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -1536,20 +2526,68 @@ tr.tf, td.tf, th.tf {
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="tf.applib.display.displayApi" href="#tf.applib.display.displayApi">displayApi</a></code></li>
+<li><code><a title="tf.applib.display.displayReset" href="#tf.applib.display.displayReset">displayReset</a></code></li>
+<li><code><a title="tf.applib.display.displaySetup" href="#tf.applib.display.displaySetup">displaySetup</a></code></li>
+<li><code><a title="tf.applib.display.doPassage" href="#tf.applib.display.doPassage">doPassage</a></code></li>
 <li><code><a title="tf.applib.display.export" href="#tf.applib.display.export">export</a></code></li>
+<li><code><a title="tf.applib.display.getBigType" href="#tf.applib.display.getBigType">getBigType</a></code></li>
 <li><code><a title="tf.applib.display.getBoundary" href="#tf.applib.display.getBoundary">getBoundary</a></code></li>
+<li><code><a title="tf.applib.display.getBoundaryResult" href="#tf.applib.display.getBoundaryResult">getBoundaryResult</a></code></li>
+<li><code><a title="tf.applib.display.getChildren" href="#tf.applib.display.getChildren">getChildren</a></code></li>
+<li><code><a title="tf.applib.display.getChunkedType" href="#tf.applib.display.getChunkedType">getChunkedType</a></code></li>
+<li><code><a title="tf.applib.display.getChunkedTypeBounds" href="#tf.applib.display.getChunkedTypeBounds">getChunkedTypeBounds</a></code></li>
 <li><code><a title="tf.applib.display.getFeatures" href="#tf.applib.display.getFeatures">getFeatures</a></code></li>
+<li><code><a title="tf.applib.display.getLtr" href="#tf.applib.display.getLtr">getLtr</a></code></li>
+<li><code><a title="tf.applib.display.getNodePart" href="#tf.applib.display.getNodePart">getNodePart</a></code></li>
+<li><code><a title="tf.applib.display.getPassage" href="#tf.applib.display.getPassage">getPassage</a></code></li>
+<li><code><a title="tf.applib.display.getRefMember" href="#tf.applib.display.getRefMember">getRefMember</a></code></li>
 <li><code><a title="tf.applib.display.getResultsX" href="#tf.applib.display.getResultsX">getResultsX</a></code></li>
+<li><code><a title="tf.applib.display.getText" href="#tf.applib.display.getText">getText</a></code></li>
+<li><code><a title="tf.applib.display.getValue" href="#tf.applib.display.getValue">getValue</a></code></li>
 <li><code><a title="tf.applib.display.loadCss" href="#tf.applib.display.loadCss">loadCss</a></code></li>
 <li><code><a title="tf.applib.display.plain" href="#tf.applib.display.plain">plain</a></code></li>
 <li><code><a title="tf.applib.display.plainTuple" href="#tf.applib.display.plainTuple">plainTuple</a></code></li>
 <li><code><a title="tf.applib.display.pretty" href="#tf.applib.display.pretty">pretty</a></code></li>
-<li><code><a title="tf.applib.display.prettyPre" href="#tf.applib.display.prettyPre">prettyPre</a></code></li>
 <li><code><a title="tf.applib.display.prettyTuple" href="#tf.applib.display.prettyTuple">prettyTuple</a></code></li>
 <li><code><a title="tf.applib.display.show" href="#tf.applib.display.show">show</a></code></li>
 <li><code><a title="tf.applib.display.table" href="#tf.applib.display.table">table</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.applib.display.NodeContext" href="#tf.applib.display.NodeContext">NodeContext</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.applib.display.NodeContext.boundaryCls" href="#tf.applib.display.NodeContext.boundaryCls">boundaryCls</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.children" href="#tf.applib.display.NodeContext.children">children</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.cls" href="#tf.applib.display.NodeContext.cls">cls</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.descend" href="#tf.applib.display.NodeContext.descend">descend</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.hasChunks" href="#tf.applib.display.NodeContext.hasChunks">hasChunks</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.hidden" href="#tf.applib.display.NodeContext.hidden">hidden</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.hlCls" href="#tf.applib.display.NodeContext.hlCls">hlCls</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.hlStyle" href="#tf.applib.display.NodeContext.hlStyle">hlStyle</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.isBaseNonSlot" href="#tf.applib.display.NodeContext.isBaseNonSlot">isBaseNonSlot</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.isSlot" href="#tf.applib.display.NodeContext.isSlot">isSlot</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.isSlotOrDescend" href="#tf.applib.display.NodeContext.isSlotOrDescend">isSlotOrDescend</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.myEnd" href="#tf.applib.display.NodeContext.myEnd">myEnd</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.myStart" href="#tf.applib.display.NodeContext.myStart">myStart</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.nType" href="#tf.applib.display.NodeContext.nType">nType</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.nodePart" href="#tf.applib.display.NodeContext.nodePart">nodePart</a></code></li>
+<li><code><a title="tf.applib.display.NodeContext.slotType" href="#tf.applib.display.NodeContext.slotType">slotType</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tf.applib.display.OuterContext" href="#tf.applib.display.OuterContext">OuterContext</a></code></h4>
+<ul class="">
+<li><code><a title="tf.applib.display.OuterContext.firstSlot" href="#tf.applib.display.OuterContext.firstSlot">firstSlot</a></code></li>
+<li><code><a title="tf.applib.display.OuterContext.inTuple" href="#tf.applib.display.OuterContext.inTuple">inTuple</a></code></li>
+<li><code><a title="tf.applib.display.OuterContext.lastSlot" href="#tf.applib.display.OuterContext.lastSlot">lastSlot</a></code></li>
+<li><code><a title="tf.applib.display.OuterContext.ltr" href="#tf.applib.display.OuterContext.ltr">ltr</a></code></li>
+<li><code><a title="tf.applib.display.OuterContext.textCls" href="#tf.applib.display.OuterContext.textCls">textCls</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -1,5 +1,7 @@
 # Links
 
+See the [docstrings](../apidocs/html/tf/applib/highlight.html)
+
 ??? abstract "attributes of the app"
 
     name | type | description

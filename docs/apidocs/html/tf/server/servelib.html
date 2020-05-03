@@ -31,7 +31,6 @@ from zipfile import ZipFile
 from flask import request
 
 from ..parameters import ZIP_OPTIONS
-from .wrap import setValues
 
 
 DEFAULT_NAME = &#34;default&#34;
@@ -47,15 +46,13 @@ def getInt(x, default=1):
     return int(x)
 
 
-def getFormData(config):
+def getFormData(interfaceDefaults):
     form = {}
     jobName = request.form.get(&#34;jobName&#34;, &#34;&#34;).strip()
-    emptyRequest = False
     if jobName:
         form[&#34;jobName&#34;] = jobName
         form[&#34;loadJob&#34;] = &#34;&#34;
     else:
-        emptyRequest = True
         form[&#34;jobName&#34;] = DEFAULT_NAME
         form[&#34;loadJob&#34;] = &#34;1&#34;
     form[&#34;query&#34;] = request.form.get(&#34;query&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
@@ -70,14 +67,13 @@ def getFormData(config):
     form[&#34;author&#34;] = request.form.get(&#34;author&#34;, &#34;&#34;).strip()
     form[&#34;title&#34;] = request.form.get(&#34;title&#34;, &#34;&#34;).strip()
     form[&#34;description&#34;] = request.form.get(&#34;description&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
-    form[&#34;withNodes&#34;] = request.form.get(&#34;withNodes&#34;, &#34;&#34;)
     form[&#34;condensed&#34;] = request.form.get(&#34;condensed&#34;, &#34;&#34;)
+    form[&#34;baseTp&#34;] = request.form.get(&#34;baseTp&#34;, &#34;&#34;)
     form[&#34;condenseTp&#34;] = request.form.get(&#34;condenseTp&#34;, &#34;&#34;)
     form[&#34;textformat&#34;] = request.form.get(&#34;textformat&#34;, &#34;&#34;)
     form[&#34;sectionsExpandAll&#34;] = request.form.get(&#34;sectionsExpandAll&#34;, &#34;&#34;)
     form[&#34;tuplesExpandAll&#34;] = request.form.get(&#34;tuplesExpandAll&#34;, &#34;&#34;)
     form[&#34;queryExpandAll&#34;] = request.form.get(&#34;queryExpandAll&#34;, &#34;&#34;)
-    form[&#34;linked&#34;] = getInt(request.form.get(&#34;linked&#34;, &#34;&#34;), default=1)
     form[&#34;passageOpened&#34;] = request.form.get(&#34;passageOpened&#34;, &#34;&#34;)
     form[&#34;sectionsOpened&#34;] = request.form.get(&#34;sectionsOpened&#34;, &#34;&#34;)
     form[&#34;tuplesOpened&#34;] = request.form.get(&#34;tuplesOpened&#34;, &#34;&#34;)
@@ -89,7 +85,10 @@ def getFormData(config):
     form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
     form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
     form[&#34;s0filter&#34;] = request.form.get(&#34;s0filter&#34;, &#34;&#34;)
-    setValues(config.OPTIONS, request.form, form, emptyRequest)
+    for (k, v) in interfaceDefaults:
+        if v is None:
+            continue
+        form[k] = request.form.get(k, v)
     return form
 
 
@@ -134,7 +133,7 @@ def zipData(csvs, resultsX, about, form):
     jobName = form[&#34;jobName&#34;]
 
     zipBuffer = BytesIO()
-    with ZipFile(zipBuffer, &#34;w&#34;, **ZIP_OPTIONS,) as zipFile:
+    with ZipFile(zipBuffer, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
 
         zipFile.writestr(&#34;job.json&#34;, json.dumps(form).encode(&#34;utf8&#34;))
         zipFile.writestr(&#34;about.md&#34;, about)
@@ -207,7 +206,7 @@ Job: {form[&#39;jobName&#39;]}
 </details>
 </dd>
 <dt id="tf.server.servelib.getFormData"><code class="name flex">
-<span>def <span class="ident">getFormData</span></span>(<span>config)</span>
+<span>def <span class="ident">getFormData</span></span>(<span>interfaceDefaults)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -215,15 +214,13 @@ Job: {form[&#39;jobName&#39;]}
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getFormData(config):
+<pre><code class="python">def getFormData(interfaceDefaults):
     form = {}
     jobName = request.form.get(&#34;jobName&#34;, &#34;&#34;).strip()
-    emptyRequest = False
     if jobName:
         form[&#34;jobName&#34;] = jobName
         form[&#34;loadJob&#34;] = &#34;&#34;
     else:
-        emptyRequest = True
         form[&#34;jobName&#34;] = DEFAULT_NAME
         form[&#34;loadJob&#34;] = &#34;1&#34;
     form[&#34;query&#34;] = request.form.get(&#34;query&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
@@ -238,14 +235,13 @@ Job: {form[&#39;jobName&#39;]}
     form[&#34;author&#34;] = request.form.get(&#34;author&#34;, &#34;&#34;).strip()
     form[&#34;title&#34;] = request.form.get(&#34;title&#34;, &#34;&#34;).strip()
     form[&#34;description&#34;] = request.form.get(&#34;description&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
-    form[&#34;withNodes&#34;] = request.form.get(&#34;withNodes&#34;, &#34;&#34;)
     form[&#34;condensed&#34;] = request.form.get(&#34;condensed&#34;, &#34;&#34;)
+    form[&#34;baseTp&#34;] = request.form.get(&#34;baseTp&#34;, &#34;&#34;)
     form[&#34;condenseTp&#34;] = request.form.get(&#34;condenseTp&#34;, &#34;&#34;)
     form[&#34;textformat&#34;] = request.form.get(&#34;textformat&#34;, &#34;&#34;)
     form[&#34;sectionsExpandAll&#34;] = request.form.get(&#34;sectionsExpandAll&#34;, &#34;&#34;)
     form[&#34;tuplesExpandAll&#34;] = request.form.get(&#34;tuplesExpandAll&#34;, &#34;&#34;)
     form[&#34;queryExpandAll&#34;] = request.form.get(&#34;queryExpandAll&#34;, &#34;&#34;)
-    form[&#34;linked&#34;] = getInt(request.form.get(&#34;linked&#34;, &#34;&#34;), default=1)
     form[&#34;passageOpened&#34;] = request.form.get(&#34;passageOpened&#34;, &#34;&#34;)
     form[&#34;sectionsOpened&#34;] = request.form.get(&#34;sectionsOpened&#34;, &#34;&#34;)
     form[&#34;tuplesOpened&#34;] = request.form.get(&#34;tuplesOpened&#34;, &#34;&#34;)
@@ -257,7 +253,10 @@ Job: {form[&#39;jobName&#39;]}
     form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
     form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
     form[&#34;s0filter&#34;] = request.form.get(&#34;s0filter&#34;, &#34;&#34;)
-    setValues(config.OPTIONS, request.form, form, emptyRequest)
+    for (k, v) in interfaceDefaults:
+        if v is None:
+            continue
+        form[k] = request.form.get(k, v)
     return form</code></pre>
 </details>
 </dd>
@@ -292,7 +291,7 @@ Job: {form[&#39;jobName&#39;]}
     jobName = form[&#34;jobName&#34;]
 
     zipBuffer = BytesIO()
-    with ZipFile(zipBuffer, &#34;w&#34;, **ZIP_OPTIONS,) as zipFile:
+    with ZipFile(zipBuffer, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
 
         zipFile.writestr(&#34;job.json&#34;, json.dumps(form).encode(&#34;utf8&#34;))
         zipFile.writestr(&#34;about.md&#34;, about)

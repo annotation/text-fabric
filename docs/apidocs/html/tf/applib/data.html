@@ -46,14 +46,27 @@ class AppData(object):
 
     def getMain(self):
         app = self.app
-        if not self.getModule(
-            app.org, app.repo, app.relative, self.checkout, isBase=True,
-        ):
+        aContext = app.context
+        org = aContext.org
+        repo = aContext.repo
+        relative = aContext.relative
+        appPath = aContext.appPath
+        appName = aContext.appName
+
+        if org is None or repo is None:
+            appPathRep = f&#34;{appPath}/&#34; if appPath else &#34;&#34;
+            relative = f&#34;{appPathRep}{appName}&#34;
+            self.checkout = &#34;local&#34;
+
+        if not self.getModule(org, repo, relative, self.checkout, isBase=True):
             self.good = False
 
     def getStandard(self):
         app = self.app
-        for m in app.moduleSpecs or []:
+        aContext = app.context
+        moduleSpecs = aContext.moduleSpecs
+
+        for m in moduleSpecs or []:
             if not self.getModule(
                 m[&#34;org&#34;],
                 m[&#34;repo&#34;],
@@ -81,7 +94,9 @@ class AppData(object):
 
     def getModules(self):
         self.provenance = []
+        provenance = self.provenance
         self.mLocations = []
+        mLocations = self.mLocations
 
         self.locations = None
         self.modules = None
@@ -93,17 +108,19 @@ class AppData(object):
         self.getStandard()
         self.getRefs()
 
+        version = self.version
+        good = self.good
         app = self.app
 
-        if self.good:
-            app.mLocations = self.mLocations
-            app.provenance = self.provenance
+        if good:
+            app.mLocations = mLocations
+            app.provenance = provenance
         else:
             return
 
         mModules = []
-        if self.mLocations:
-            mModules.append(self.version)
+        if mLocations:
+            mModules.append(version or &#34;&#34;)
 
         locations = self.locationsArg
         modules = self.modulesArg
@@ -123,7 +140,7 @@ class AppData(object):
             else modules
         )
 
-        self.locations = self.mLocations + givenLocations
+        self.locations = mLocations + givenLocations
         self.modules = mModules + givenModules
 
     # GET DATA FOR A SINGLE MODULE
@@ -131,60 +148,72 @@ class AppData(object):
     def getModule(
         self, org, repo, relative, checkout, isBase=False, specs=None,
     ):
+        version = self.version
+        silent = self.silent
+        mLocations = self.mLocations
+        provenance = self.provenance
+        seen = self.seen
+        app = self.app
+        aContext = app.context
+
         moduleRef = f&#34;{org}/{repo}/{relative}&#34;
         if moduleRef in self.seen:
             return True
 
-        (commit, release, local, localBase, localDir) = checkoutRepo(
-            org=org,
-            repo=repo,
-            folder=relative,
-            version=self.version,
-            checkout=checkout,
-            withPaths=False,
-            keep=False,
-            silent=self.silent,
-        )
-        if not localBase:
-            return False
+        if org is None or repo is None:
+            repoLocation = relative
+            mLocations.append(relative)
+            (commit, local, release) = (None, None, None)
+        else:
+            (commit, release, local, localBase, localDir) = checkoutRepo(
+                org=org,
+                repo=repo,
+                folder=relative,
+                version=version,
+                checkout=checkout,
+                withPaths=False,
+                keep=False,
+                silent=silent,
+            )
+            if not localBase:
+                return False
 
-        self.seen.add(moduleRef)
-        repoLocation = f&#34;{localBase}/{org}/{repo}&#34;
-        # self.mLocations.append(f&#39;{repoLocation}/{relative}&#39;)
-        self.mLocations.append(f&#34;{localBase}/{localDir}&#34;)
+            repoLocation = f&#34;{localBase}/{org}/{repo}&#34;
+            mLocations.append(f&#34;{localBase}/{localDir}&#34;)
+
+        seen.add(moduleRef)
         if isBase:
-            self.app.repoLocation = repoLocation
+            app.repoLocation = repoLocation
 
         info = {}
         for item in (
-            (&#34;doiText&#34;, &#34;unknown DOI&#34;),
-            (&#34;doiUrl&#34;, &#34;&#34;),
+            (&#34;doi&#34;, None),
             (&#34;corpus&#34;, f&#34;{org}/{repo}/{relative}&#34;),
         ):
             (key, default) = item
             info[key] = (
-                getattr(self.app, key)
+                getattr(aContext, key)
                 if isBase
                 else specs[key]
                 if specs and key in specs
                 else default
             )
-        self.provenance.append(
+        provenance.append(
             (
                 (&#34;corpus&#34;, info[&#34;corpus&#34;]),
-                (&#34;version&#34;, self.version),
+                (&#34;version&#34;, version),
                 (&#34;commit&#34;, commit or &#34;??&#34;),
                 (&#34;release&#34;, release or &#34;none&#34;),
                 (
                     &#34;live&#34;,
                     (
-                        liveText(org, repo, self.version, commit, local, release),
+                        liveText(org, repo, version, commit, local, release, relative),
                         liveUrl(
-                            org, repo, self.version, commit, release, local, relative
+                            org, repo, version, commit, release, local, relative
                         ),
                     ),
                 ),
-                (&#34;doi&#34;, (info[&#34;doiText&#34;], info[&#34;doiUrl&#34;])),
+                (&#34;doi&#34;, info[&#34;doi&#34;]),
             )
         )
         return True
@@ -251,14 +280,27 @@ def getModulesData(*args):
 
     def getMain(self):
         app = self.app
-        if not self.getModule(
-            app.org, app.repo, app.relative, self.checkout, isBase=True,
-        ):
+        aContext = app.context
+        org = aContext.org
+        repo = aContext.repo
+        relative = aContext.relative
+        appPath = aContext.appPath
+        appName = aContext.appName
+
+        if org is None or repo is None:
+            appPathRep = f&#34;{appPath}/&#34; if appPath else &#34;&#34;
+            relative = f&#34;{appPathRep}{appName}&#34;
+            self.checkout = &#34;local&#34;
+
+        if not self.getModule(org, repo, relative, self.checkout, isBase=True):
             self.good = False
 
     def getStandard(self):
         app = self.app
-        for m in app.moduleSpecs or []:
+        aContext = app.context
+        moduleSpecs = aContext.moduleSpecs
+
+        for m in moduleSpecs or []:
             if not self.getModule(
                 m[&#34;org&#34;],
                 m[&#34;repo&#34;],
@@ -286,7 +328,9 @@ def getModulesData(*args):
 
     def getModules(self):
         self.provenance = []
+        provenance = self.provenance
         self.mLocations = []
+        mLocations = self.mLocations
 
         self.locations = None
         self.modules = None
@@ -298,17 +342,19 @@ def getModulesData(*args):
         self.getStandard()
         self.getRefs()
 
+        version = self.version
+        good = self.good
         app = self.app
 
-        if self.good:
-            app.mLocations = self.mLocations
-            app.provenance = self.provenance
+        if good:
+            app.mLocations = mLocations
+            app.provenance = provenance
         else:
             return
 
         mModules = []
-        if self.mLocations:
-            mModules.append(self.version)
+        if mLocations:
+            mModules.append(version or &#34;&#34;)
 
         locations = self.locationsArg
         modules = self.modulesArg
@@ -328,7 +374,7 @@ def getModulesData(*args):
             else modules
         )
 
-        self.locations = self.mLocations + givenLocations
+        self.locations = mLocations + givenLocations
         self.modules = mModules + givenModules
 
     # GET DATA FOR A SINGLE MODULE
@@ -336,60 +382,72 @@ def getModulesData(*args):
     def getModule(
         self, org, repo, relative, checkout, isBase=False, specs=None,
     ):
+        version = self.version
+        silent = self.silent
+        mLocations = self.mLocations
+        provenance = self.provenance
+        seen = self.seen
+        app = self.app
+        aContext = app.context
+
         moduleRef = f&#34;{org}/{repo}/{relative}&#34;
         if moduleRef in self.seen:
             return True
 
-        (commit, release, local, localBase, localDir) = checkoutRepo(
-            org=org,
-            repo=repo,
-            folder=relative,
-            version=self.version,
-            checkout=checkout,
-            withPaths=False,
-            keep=False,
-            silent=self.silent,
-        )
-        if not localBase:
-            return False
+        if org is None or repo is None:
+            repoLocation = relative
+            mLocations.append(relative)
+            (commit, local, release) = (None, None, None)
+        else:
+            (commit, release, local, localBase, localDir) = checkoutRepo(
+                org=org,
+                repo=repo,
+                folder=relative,
+                version=version,
+                checkout=checkout,
+                withPaths=False,
+                keep=False,
+                silent=silent,
+            )
+            if not localBase:
+                return False
 
-        self.seen.add(moduleRef)
-        repoLocation = f&#34;{localBase}/{org}/{repo}&#34;
-        # self.mLocations.append(f&#39;{repoLocation}/{relative}&#39;)
-        self.mLocations.append(f&#34;{localBase}/{localDir}&#34;)
+            repoLocation = f&#34;{localBase}/{org}/{repo}&#34;
+            mLocations.append(f&#34;{localBase}/{localDir}&#34;)
+
+        seen.add(moduleRef)
         if isBase:
-            self.app.repoLocation = repoLocation
+            app.repoLocation = repoLocation
 
         info = {}
         for item in (
-            (&#34;doiText&#34;, &#34;unknown DOI&#34;),
-            (&#34;doiUrl&#34;, &#34;&#34;),
+            (&#34;doi&#34;, None),
             (&#34;corpus&#34;, f&#34;{org}/{repo}/{relative}&#34;),
         ):
             (key, default) = item
             info[key] = (
-                getattr(self.app, key)
+                getattr(aContext, key)
                 if isBase
                 else specs[key]
                 if specs and key in specs
                 else default
             )
-        self.provenance.append(
+        provenance.append(
             (
                 (&#34;corpus&#34;, info[&#34;corpus&#34;]),
-                (&#34;version&#34;, self.version),
+                (&#34;version&#34;, version),
                 (&#34;commit&#34;, commit or &#34;??&#34;),
                 (&#34;release&#34;, release or &#34;none&#34;),
                 (
                     &#34;live&#34;,
                     (
-                        liveText(org, repo, self.version, commit, local, release),
+                        liveText(org, repo, version, commit, local, release, relative),
                         liveUrl(
-                            org, repo, self.version, commit, release, local, relative
+                            org, repo, version, commit, release, local, relative
                         ),
                     ),
                 ),
-                (&#34;doi&#34;, (info[&#34;doiText&#34;], info[&#34;doiUrl&#34;])),
+                (&#34;doi&#34;, info[&#34;doi&#34;]),
             )
         )
         return True</code></pre>
@@ -407,9 +465,19 @@ def getModulesData(*args):
 </summary>
 <pre><code class="python">def getMain(self):
     app = self.app
-    if not self.getModule(
-        app.org, app.repo, app.relative, self.checkout, isBase=True,
-    ):
+    aContext = app.context
+    org = aContext.org
+    repo = aContext.repo
+    relative = aContext.relative
+    appPath = aContext.appPath
+    appName = aContext.appName
+
+    if org is None or repo is None:
+        appPathRep = f&#34;{appPath}/&#34; if appPath else &#34;&#34;
+        relative = f&#34;{appPathRep}{appName}&#34;
+        self.checkout = &#34;local&#34;
+
+    if not self.getModule(org, repo, relative, self.checkout, isBase=True):
         self.good = False</code></pre>
 </details>
 </dd>
@@ -425,60 +493,72 @@ def getModulesData(*args):
 <pre><code class="python">def getModule(
     self, org, repo, relative, checkout, isBase=False, specs=None,
 ):
+    version = self.version
+    silent = self.silent
+    mLocations = self.mLocations
+    provenance = self.provenance
+    seen = self.seen
+    app = self.app
+    aContext = app.context
+
     moduleRef = f&#34;{org}/{repo}/{relative}&#34;
     if moduleRef in self.seen:
         return True
 
-    (commit, release, local, localBase, localDir) = checkoutRepo(
-        org=org,
-        repo=repo,
-        folder=relative,
-        version=self.version,
-        checkout=checkout,
-        withPaths=False,
-        keep=False,
-        silent=self.silent,
-    )
-    if not localBase:
-        return False
+    if org is None or repo is None:
+        repoLocation = relative
+        mLocations.append(relative)
+        (commit, local, release) = (None, None, None)
+    else:
+        (commit, release, local, localBase, localDir) = checkoutRepo(
+            org=org,
+            repo=repo,
+            folder=relative,
+            version=version,
+            checkout=checkout,
+            withPaths=False,
+            keep=False,
+            silent=silent,
+        )
+        if not localBase:
+            return False
 
-    self.seen.add(moduleRef)
-    repoLocation = f&#34;{localBase}/{org}/{repo}&#34;
-    # self.mLocations.append(f&#39;{repoLocation}/{relative}&#39;)
-    self.mLocations.append(f&#34;{localBase}/{localDir}&#34;)
+        repoLocation = f&#34;{localBase}/{org}/{repo}&#34;
+        mLocations.append(f&#34;{localBase}/{localDir}&#34;)
+
+    seen.add(moduleRef)
     if isBase:
-        self.app.repoLocation = repoLocation
+        app.repoLocation = repoLocation
 
     info = {}
     for item in (
-        (&#34;doiText&#34;, &#34;unknown DOI&#34;),
-        (&#34;doiUrl&#34;, &#34;&#34;),
+        (&#34;doi&#34;, None),
         (&#34;corpus&#34;, f&#34;{org}/{repo}/{relative}&#34;),
     ):
         (key, default) = item
         info[key] = (
-            getattr(self.app, key)
+            getattr(aContext, key)
             if isBase
             else specs[key]
             if specs and key in specs
             else default
         )
-    self.provenance.append(
+    provenance.append(
         (
             (&#34;corpus&#34;, info[&#34;corpus&#34;]),
-            (&#34;version&#34;, self.version),
+            (&#34;version&#34;, version),
             (&#34;commit&#34;, commit or &#34;??&#34;),
             (&#34;release&#34;, release or &#34;none&#34;),
             (
                 &#34;live&#34;,
                 (
-                    liveText(org, repo, self.version, commit, local, release),
+                    liveText(org, repo, version, commit, local, release, relative),
                     liveUrl(
-                        org, repo, self.version, commit, release, local, relative
+                        org, repo, version, commit, release, local, relative
                     ),
                 ),
             ),
-            (&#34;doi&#34;, (info[&#34;doiText&#34;], info[&#34;doiUrl&#34;])),
+            (&#34;doi&#34;, info[&#34;doi&#34;]),
         )
     )
     return True</code></pre>
@@ -495,7 +575,9 @@ def getModulesData(*args):
 </summary>
 <pre><code class="python">def getModules(self):
     self.provenance = []
+    provenance = self.provenance
     self.mLocations = []
+    mLocations = self.mLocations
 
     self.locations = None
     self.modules = None
@@ -507,17 +589,19 @@ def getModulesData(*args):
     self.getStandard()
     self.getRefs()
 
+    version = self.version
+    good = self.good
     app = self.app
 
-    if self.good:
-        app.mLocations = self.mLocations
-        app.provenance = self.provenance
+    if good:
+        app.mLocations = mLocations
+        app.provenance = provenance
     else:
         return
 
     mModules = []
-    if self.mLocations:
-        mModules.append(self.version)
+    if mLocations:
+        mModules.append(version or &#34;&#34;)
 
     locations = self.locationsArg
     modules = self.modulesArg
@@ -537,7 +621,7 @@ def getModulesData(*args):
         else modules
     )
 
-    self.locations = self.mLocations + givenLocations
+    self.locations = mLocations + givenLocations
     self.modules = mModules + givenModules</code></pre>
 </details>
 </dd>
@@ -578,7 +662,10 @@ def getModulesData(*args):
 </summary>
 <pre><code class="python">def getStandard(self):
     app = self.app
-    for m in app.moduleSpecs or []:
+    aContext = app.context
+    moduleSpecs = aContext.moduleSpecs
+
+    for m in moduleSpecs or []:
         if not self.getModule(
             m[&#34;org&#34;],
             m[&#34;repo&#34;],

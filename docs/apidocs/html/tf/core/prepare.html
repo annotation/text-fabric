@@ -345,7 +345,7 @@ def levDown(info, error, otype, levUp, rank):
     embeddees = []
     for n in range(maxSlot + 1, maxNode + 1):
         embeddees.append(
-            array(&#34;I&#34;, sorted(inverse.get(n, []), key=lambda m: rank[m - 1],))
+            array(&#34;I&#34;, sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
         )
     return tuple(embeddees)
 
@@ -559,9 +559,9 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     -------
     tuple
         *   headingFromNode
-            Mapping from section keys to nodes
-        *   nodeFromHeading
             Mapping from nodes to section keys
+        *   nodeFromHeading
+            Mapping from section keys to nodes
         *   multiple
         *   top
         *   up
@@ -625,7 +625,7 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
         nodeFromHeading[sKey] = n
         headingFromNode[n] = sKey
     multiple = {
-        sKey: tuple(sorted(ns, key=lambda n: rank[n - 1],))
+        sKey: tuple(sorted(ns, key=lambda n: rank[n - 1]))
         for (sKey, ns) in multiple.items()
     }
 
@@ -851,7 +851,7 @@ of node <em>maxSlot + 1</em>.</p>
     embeddees = []
     for n in range(maxSlot + 1, maxNode + 1):
         embeddees.append(
-            array(&#34;I&#34;, sorted(inverse.get(n, []), key=lambda m: rank[m - 1],))
+            array(&#34;I&#34;, sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
         )
     return tuple(embeddees)</code></pre>
 </details>
@@ -1454,9 +1454,9 @@ contain the section headings.</p>
 <dd>
 <ul>
 <li>headingFromNode
-Mapping from section keys to nodes</li>
-<li>nodeFromHeading
 Mapping from nodes to section keys</li>
+<li>nodeFromHeading
+Mapping from section keys to nodes</li>
 <li>multiple</li>
 <li>top</li>
 <li>up</li>
@@ -1515,9 +1515,9 @@ section key.</p></section>
     -------
     tuple
         *   headingFromNode
-            Mapping from section keys to nodes
-        *   nodeFromHeading
             Mapping from nodes to section keys
+        *   nodeFromHeading
+            Mapping from section keys to nodes
         *   multiple
         *   top
         *   up
@@ -1581,7 +1581,7 @@ section key.</p></section>
         nodeFromHeading[sKey] = n
         headingFromNode[n] = sKey
     multiple = {
-        sKey: tuple(sorted(ns, key=lambda n: rank[n - 1],))
+        sKey: tuple(sorted(ns, key=lambda n: rank[n - 1]))
         for (sKey, ns) in multiple.items()
     }
 

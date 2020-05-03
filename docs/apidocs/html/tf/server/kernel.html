@@ -32,18 +32,14 @@ import rpyc
 from rpyc.utils.server import ThreadedServer
 
 from ..core.helpers import console
-from ..applib.app import findApp, findAppConfig, findAppClass
+from ..applib.app import App
+from ..applib.find import findApp, findAppClass
 from ..applib.highlight import getPassageHighlights
 from ..applib.search import runSearch, runSearchCondensed
 from ..applib.display import getResultsX
-from ..applib.tables import compose, composeP, composePstruct, composeT
+from ..applib.tables import compose, composeP, composeT
 
-from .command import (
-    argCheckout,
-    argModules,
-    argSets,
-    argParam,
-)
+from .command import argKernel
 
 TF_DONE = &#34;TF setup done.&#34;
 TF_ERROR = &#34;Could not set up TF&#34;
@@ -53,26 +49,32 @@ TF_ERROR = &#34;Could not set up TF&#34;
 
 
 def makeTfKernel(
-    dataSource, appPath, commit, release, local, moduleRefs, setFile, checkout, port,
+    appName,
+    appPath,
+    commit,
+    release,
+    local,
+    locations,
+    modules,
+    moduleRefs,
+    setFile,
+    checkout,
+    port,
 ):
-    config = findAppConfig(dataSource, appPath)
-    if config is None:
-        return None
-    appClass = findAppClass(dataSource, appPath)
-    if appClass is None:
-        return None
+    appClass = findAppClass(appName, appPath) or App
 
-    console(f&#34;Setting up TF kernel for {dataSource} {moduleRefs} {setFile}&#34;)
+    console(f&#34;Setting up TF kernel for {appName} {moduleRefs} {setFile}&#34;)
     app = appClass(
-        dataSource,
+        appName,
         appPath,
         commit,
         release,
         local,
-        _asApp=True,
+        _browse=True,
+        locations=locations,
+        modules=modules,
         mod=moduleRefs,
         setFile=setFile,
-        version=config.VERSION,
         checkout=checkout,
     )
 
@@ -103,7 +105,7 @@ def makeTfKernel(
 
             msgCache = api.cache(_asString=True)
 
-            data = dict(searchExe=searchExe, msgCache=msgCache,)
+            data = dict(searchExe=searchExe, msgCache=msgCache)
             return data
 
         def exposed_header(self):
@@ -112,7 +114,7 @@ def makeTfKernel(
 
         def exposed_provenance(self):
             app = self.app
-            appProvenance = (((&#34;name&#34;, dataSource), (&#34;commit&#34;, commit),),)
+            appProvenance = (((&#34;name&#34;, appName), (&#34;commit&#34;, commit)),)
             return (appProvenance, app.provenance)
 
         def exposed_setNames(self):
@@ -127,18 +129,8 @@ def makeTfKernel(
             app = self.app
             return f&#39;&lt;style type=&#34;text/css&#34;&gt;{app.loadCss()}&lt;/style&gt;&#39;
 
-        def exposed_condenseTypes(self):
-            app = self.app
-            api = app.api
-            return (
-                app.condenseType,
-                app.exampleSection,
-                app.exampleSectionText,
-                api.C.levels.data,
-                app.api.T.defaultFormat,
-                app.api.T.formats,
-                # tuple(fmt for fmt in app.api.T.formats if fmt.startswith(&#39;text-&#39;)),
-            )
+        def exposed_context(self):
+            return pickle.dumps(app.context)
 
         def exposed_passage(
             self,
@@ -149,8 +141,6 @@ def makeTfKernel(
             sec2=None,
             opened=set(),
             getx=None,
-            asDict=False,
-            baseTypes=None,
             **options,
         ):
             app = self.app
@@ -159,25 +149,17 @@ def makeTfKernel(
             L = api.L
             T = api.T
 
-            if asDict:
-                C = api.C
-                Cdata = C.levels.data
-                typeRank = {Cdata[i][0]: i for i in range(len(Cdata))}
-                slotType = F.otype.slotType
-
-                if baseTypes is None:
-                    baseTypes = {slotType}
-                baseTypes = sorted(baseTypes, key=lambda tp: typeRank[tp])
+            aContext = app.context
+            browseNavLevel = aContext.browseNavLevel
+            browseContentPretty = aContext.browseContentPretty
 
             sectionFeatureTypes = T.sectionFeatureTypes
             sec0Type = T.sectionTypes[0]
             sec1Type = T.sectionTypes[1]
             sectionDepth = len(T.sectionTypes)
-            browseNavLevel = app.browseNavLevel
             browseNavLevel = min((sectionDepth, browseNavLevel))
             finalSecType = T.sectionTypes[browseNavLevel]
             finalSec = (sec0, sec1, sec2)[browseNavLevel]
-            browseContentPretty = app.browseContentPretty
 
             if sec0:
                 if sectionFeatureTypes[0] == &#34;int&#34;:
@@ -188,33 +170,10 @@ def makeTfKernel(
 
             sec0Node = T.nodeFromSection((sec0,)) if sec0 else None
             sec1Node = T.nodeFromSection((sec0, sec1)) if sec0 and sec1 else None
-            sec2Node = (
-                T.nodeFromSection((sec0, sec1, sec2))
-                if sec0 and sec1 and sec2
-                else None
-            )
-            if asDict:
-                highlights = (
-                    getPassageHighlights(app, sec2Node, query, cache)
-                    if sec2Node
-                    else set()
-                )
-                passages = composePstruct(
-                    app,
-                    baseTypes,
-                    browseNavLevel,
-                    finalSecType,
-                    features,
-                    sec2Node,
-                    highlights=highlights,
-                    **options,
-                )
-                return pickle.dumps((tuple(baseTypes), passages))
 
             contentNode = (sec0Node, sec1Node)[browseNavLevel - 1]
 
             if getx is not None:
-                # if sectionFeatureTypes[browseNavLevel - 1] == &#34;int&#34;:
                 if sectionFeatureTypes[browseNavLevel] == &#34;int&#34;:
                     getx = int(getx)
 
@@ -260,7 +219,8 @@ def makeTfKernel(
             return (passage, sec0Type, pickle.dumps((sec0s, sec1s)), browseNavLevel)
 
         def exposed_rawSearch(self, query):
-            rawSearch = self.app.api.S.search
+            app = self.app
+            rawSearch = app.api.S.search
 
             (results, messages) = rawSearch(query, msgCache=True)
             if messages:
@@ -305,7 +265,7 @@ def makeTfKernel(
                         messages = f&#34;{e}&#34;
 
             allResults = ((None, kind),) + results
-            table = composeT(app, features, allResults, opened, getx=getx, **options,)
+            table = composeT(app, features, allResults, opened, getx=getx, **options)
             return (table, messages)
 
         def exposed_search(
@@ -313,7 +273,9 @@ def makeTfKernel(
         ):
             app = self.app
             display = app.display
-            d = display.get(options)
+            dContext = display.get(options)
+            condensed = dContext.condensed
+            condenseType = dContext.condenseType
 
             total = 0
 
@@ -321,8 +283,8 @@ def makeTfKernel(
             messages = &#34;&#34;
             if query:
                 (results, messages, features) = (
-                    runSearchCondensed(app, query, cache, d.condenseType)
-                    if d.condensed and d.condenseType
+                    runSearchCondensed(app, query, cache, condenseType)
+                    if condensed and condenseType
                     else runSearch(app, query, cache)
                 )
 
@@ -346,7 +308,7 @@ def makeTfKernel(
                 + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
                 + afterResults
             )
-            features = set(reduce(set.union, (x[1] for x in features), set(),))
+            features = set(reduce(set.union, (x[1] for x in features), set()))
             featureStr = &#34; &#34;.join(sorted(features))
             table = compose(
                 app,
@@ -363,7 +325,10 @@ def makeTfKernel(
         def exposed_csvs(self, query, tuples, sections, **options):
             app = self.app
             display = app.display
-            d = display.get(options)
+            dContext = display.get(options)
+            fmt = dContext.fmt
+            condensed = dContext.condensed
+            condenseType = dContext.condenseType
 
             sectionResults = []
             if sections:
@@ -393,8 +358,8 @@ def makeTfKernel(
             if query:
                 (queryResults, queryMessages, features) = runSearch(app, query, cache)
                 (queryResultsC, queryMessagesC, featuresC) = (
-                    runSearchCondensed(app, query, cache, d.condenseType)
-                    if not queryMessages and d.condensed and d.condenseType
+                    runSearchCondensed(app, query, cache, condenseType)
+                    if not queryMessages and condensed and condenseType
                     else (None, None, None)
                 )
 
@@ -408,16 +373,9 @@ def makeTfKernel(
                 (&#34;nodes&#34;, tupleResults),
                 (&#34;results&#34;, queryResults),
             )
-            if d.condensed and d.condenseType:
-                csvs += ((f&#34;resultsBy{d.condenseType}&#34;, queryResultsC),)
-            resultsX = getResultsX(
-                app,
-                queryResults,
-                features,
-                d.condenseType or app.condenseType,
-                app.noDescendTypes,
-                fmt=d.fmt,
-            )
+            if condensed and condenseType:
+                csvs += ((f&#34;resultsBy{condenseType}&#34;, queryResultsC),)
+            resultsX = getResultsX(app, queryResults, features, condenseType, fmt=fmt,)
             return (queryMessages, pickle.dumps(csvs), pickle.dumps(resultsX))
 
     return ThreadedServer(
@@ -453,34 +411,40 @@ def makeTfConnection(host, port, timeout):
 
 
 def main(cargs=sys.argv):
-    (dataSource, checkoutApp) = argParam(cargs=cargs, interactive=True)
-    if dataSource is None:
+    args = argKernel(cargs)
+    if not args:
         return
-    checkout = argCheckout(cargs=cargs)
+
+    (dataSource, portKernel) = args
+    appName = dataSource[&#34;appName&#34;]
+    checkout = dataSource[&#34;checkout&#34;]
+    checkoutApp = dataSource[&#34;checkoutApp&#34;]
+    moduleRefs = dataSource[&#34;moduleRefs&#34;]
+    locations = dataSource[&#34;locations&#34;]
+    modules = dataSource[&#34;modules&#34;]
+    setFile = dataSource[&#34;setFile&#34;]
+
     if checkout is None:
         checkout = &#34;&#34;
-    moduleRefs = argModules(cargs=cargs)
-    setFile = argSets(cargs=cargs)
 
-    if dataSource is not None:
-        (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
-        if appBase:
-            appPath = f&#34;{appBase}/{appDir}&#34;
-            config = findAppConfig(dataSource, appPath)
-            if config is not None:
-                kernel = makeTfKernel(
-                    dataSource,
-                    appPath,
-                    commit,
-                    release,
-                    local,
-                    moduleRefs,
-                    setFile,
-                    checkout,
-                    config.PORT[&#34;kernel&#34;],
-                )
-                if kernel:
-                    kernel.start()
+    (commit, release, local, appBase, appDir, appName) = findApp(appName, checkoutApp)
+    if appBase:
+        appPath = f&#34;{appBase}/{appDir}&#34;
+        kernel = makeTfKernel(
+            appName,
+            appPath,
+            commit,
+            release,
+            local,
+            locations,
+            modules,
+            moduleRefs,
+            setFile,
+            checkout,
+            portKernel,
+        )
+        if kernel:
+            kernel.start()
 
 
 # LOWER LEVEL
@@ -519,34 +483,40 @@ if __name__ == &#34;__main__&#34;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
-    (dataSource, checkoutApp) = argParam(cargs=cargs, interactive=True)
-    if dataSource is None:
+    args = argKernel(cargs)
+    if not args:
         return
-    checkout = argCheckout(cargs=cargs)
+
+    (dataSource, portKernel) = args
+    appName = dataSource[&#34;appName&#34;]
+    checkout = dataSource[&#34;checkout&#34;]
+    checkoutApp = dataSource[&#34;checkoutApp&#34;]
+    moduleRefs = dataSource[&#34;moduleRefs&#34;]
+    locations = dataSource[&#34;locations&#34;]
+    modules = dataSource[&#34;modules&#34;]
+    setFile = dataSource[&#34;setFile&#34;]
+
     if checkout is None:
         checkout = &#34;&#34;
-    moduleRefs = argModules(cargs=cargs)
-    setFile = argSets(cargs=cargs)
 
-    if dataSource is not None:
-        (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
-        if appBase:
-            appPath = f&#34;{appBase}/{appDir}&#34;
-            config = findAppConfig(dataSource, appPath)
-            if config is not None:
-                kernel = makeTfKernel(
-                    dataSource,
-                    appPath,
-                    commit,
-                    release,
-                    local,
-                    moduleRefs,
-                    setFile,
-                    checkout,
-                    config.PORT[&#34;kernel&#34;],
-                )
-                if kernel:
-                    kernel.start()</code></pre>
+    (commit, release, local, appBase, appDir, appName) = findApp(appName, checkoutApp)
+    if appBase:
+        appPath = f&#34;{appBase}/{appDir}&#34;
+        kernel = makeTfKernel(
+            appName,
+            appPath,
+            commit,
+            release,
+            local,
+            locations,
+            modules,
+            moduleRefs,
+            setFile,
+            checkout,
+            portKernel,
+        )
+        if kernel:
+            kernel.start()</code></pre>
 </details>
 </dd>
 <dt id="tf.server.kernel.makeTfConnection"><code class="name flex">
@@ -575,7 +545,7 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="tf.server.kernel.makeTfKernel"><code class="name flex">
-<span>def <span class="ident">makeTfKernel</span></span>(<span>dataSource, appPath, commit, release, local, moduleRefs, setFile, checkout, port)</span>
+<span>def <span class="ident">makeTfKernel</span></span>(<span>appName, appPath, commit, release, local, locations, modules, moduleRefs, setFile, checkout, port)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -584,26 +554,32 @@ if __name__ == &#34;__main__&#34;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def makeTfKernel(
-    dataSource, appPath, commit, release, local, moduleRefs, setFile, checkout, port,
+    appName,
+    appPath,
+    commit,
+    release,
+    local,
+    locations,
+    modules,
+    moduleRefs,
+    setFile,
+    checkout,
+    port,
 ):
-    config = findAppConfig(dataSource, appPath)
-    if config is None:
-        return None
-    appClass = findAppClass(dataSource, appPath)
-    if appClass is None:
-        return None
+    appClass = findAppClass(appName, appPath) or App
 
-    console(f&#34;Setting up TF kernel for {dataSource} {moduleRefs} {setFile}&#34;)
+    console(f&#34;Setting up TF kernel for {appName} {moduleRefs} {setFile}&#34;)
     app = appClass(
-        dataSource,
+        appName,
         appPath,
         commit,
         release,
         local,
-        _asApp=True,
+        _browse=True,
+        locations=locations,
+        modules=modules,
         mod=moduleRefs,
         setFile=setFile,
-        version=config.VERSION,
         checkout=checkout,
     )
 
@@ -634,7 +610,7 @@ if __name__ == &#34;__main__&#34;:
 
             msgCache = api.cache(_asString=True)
 
-            data = dict(searchExe=searchExe, msgCache=msgCache,)
+            data = dict(searchExe=searchExe, msgCache=msgCache)
             return data
 
         def exposed_header(self):
@@ -643,7 +619,7 @@ if __name__ == &#34;__main__&#34;:
 
         def exposed_provenance(self):
             app = self.app
-            appProvenance = (((&#34;name&#34;, dataSource), (&#34;commit&#34;, commit),),)
+            appProvenance = (((&#34;name&#34;, appName), (&#34;commit&#34;, commit)),)
             return (appProvenance, app.provenance)
 
         def exposed_setNames(self):
@@ -658,18 +634,8 @@ if __name__ == &#34;__main__&#34;:
             app = self.app
             return f&#39;&lt;style type=&#34;text/css&#34;&gt;{app.loadCss()}&lt;/style&gt;&#39;
 
-        def exposed_condenseTypes(self):
-            app = self.app
-            api = app.api
-            return (
-                app.condenseType,
-                app.exampleSection,
-                app.exampleSectionText,
-                api.C.levels.data,
-                app.api.T.defaultFormat,
-                app.api.T.formats,
-                # tuple(fmt for fmt in app.api.T.formats if fmt.startswith(&#39;text-&#39;)),
-            )
+        def exposed_context(self):
+            return pickle.dumps(app.context)
 
         def exposed_passage(
             self,
@@ -680,8 +646,6 @@ if __name__ == &#34;__main__&#34;:
             sec2=None,
             opened=set(),
             getx=None,
-            asDict=False,
-            baseTypes=None,
             **options,
         ):
             app = self.app
@@ -690,25 +654,17 @@ if __name__ == &#34;__main__&#34;:
             L = api.L
             T = api.T
 
-            if asDict:
-                C = api.C
-                Cdata = C.levels.data
-                typeRank = {Cdata[i][0]: i for i in range(len(Cdata))}
-                slotType = F.otype.slotType
-
-                if baseTypes is None:
-                    baseTypes = {slotType}
-                baseTypes = sorted(baseTypes, key=lambda tp: typeRank[tp])
+            aContext = app.context
+            browseNavLevel = aContext.browseNavLevel
+            browseContentPretty = aContext.browseContentPretty
 
             sectionFeatureTypes = T.sectionFeatureTypes
             sec0Type = T.sectionTypes[0]
             sec1Type = T.sectionTypes[1]
             sectionDepth = len(T.sectionTypes)
-            browseNavLevel = app.browseNavLevel
             browseNavLevel = min((sectionDepth, browseNavLevel))
             finalSecType = T.sectionTypes[browseNavLevel]
             finalSec = (sec0, sec1, sec2)[browseNavLevel]
-            browseContentPretty = app.browseContentPretty
 
             if sec0:
                 if sectionFeatureTypes[0] == &#34;int&#34;:
@@ -719,33 +675,10 @@ if __name__ == &#34;__main__&#34;:
 
             sec0Node = T.nodeFromSection((sec0,)) if sec0 else None
             sec1Node = T.nodeFromSection((sec0, sec1)) if sec0 and sec1 else None
-            sec2Node = (
-                T.nodeFromSection((sec0, sec1, sec2))
-                if sec0 and sec1 and sec2
-                else None
-            )
-            if asDict:
-                highlights = (
-                    getPassageHighlights(app, sec2Node, query, cache)
-                    if sec2Node
-                    else set()
-                )
-                passages = composePstruct(
-                    app,
-                    baseTypes,
-                    browseNavLevel,
-                    finalSecType,
-                    features,
-                    sec2Node,
-                    highlights=highlights,
-                    **options,
-                )
-                return pickle.dumps((tuple(baseTypes), passages))
 
             contentNode = (sec0Node, sec1Node)[browseNavLevel - 1]
 
             if getx is not None:
-                # if sectionFeatureTypes[browseNavLevel - 1] == &#34;int&#34;:
                 if sectionFeatureTypes[browseNavLevel] == &#34;int&#34;:
                     getx = int(getx)
 
@@ -791,7 +724,8 @@ if __name__ == &#34;__main__&#34;:
             return (passage, sec0Type, pickle.dumps((sec0s, sec1s)), browseNavLevel)
 
         def exposed_rawSearch(self, query):
-            rawSearch = self.app.api.S.search
+            app = self.app
+            rawSearch = app.api.S.search
 
             (results, messages) = rawSearch(query, msgCache=True)
             if messages:
@@ -836,7 +770,7 @@ if __name__ == &#34;__main__&#34;:
                         messages = f&#34;{e}&#34;
 
             allResults = ((None, kind),) + results
-            table = composeT(app, features, allResults, opened, getx=getx, **options,)
+            table = composeT(app, features, allResults, opened, getx=getx, **options)
             return (table, messages)
 
         def exposed_search(
@@ -844,7 +778,9 @@ if __name__ == &#34;__main__&#34;:
         ):
             app = self.app
             display = app.display
-            d = display.get(options)
+            dContext = display.get(options)
+            condensed = dContext.condensed
+            condenseType = dContext.condenseType
 
             total = 0
 
@@ -852,8 +788,8 @@ if __name__ == &#34;__main__&#34;:
             messages = &#34;&#34;
             if query:
                 (results, messages, features) = (
-                    runSearchCondensed(app, query, cache, d.condenseType)
-                    if d.condensed and d.condenseType
+                    runSearchCondensed(app, query, cache, condenseType)
+                    if condensed and condenseType
                     else runSearch(app, query, cache)
                 )
 
@@ -877,7 +813,7 @@ if __name__ == &#34;__main__&#34;:
                 + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
                 + afterResults
             )
-            features = set(reduce(set.union, (x[1] for x in features), set(),))
+            features = set(reduce(set.union, (x[1] for x in features), set()))
             featureStr = &#34; &#34;.join(sorted(features))
             table = compose(
                 app,
@@ -894,7 +830,10 @@ if __name__ == &#34;__main__&#34;:
         def exposed_csvs(self, query, tuples, sections, **options):
             app = self.app
             display = app.display
-            d = display.get(options)
+            dContext = display.get(options)
+            fmt = dContext.fmt
+            condensed = dContext.condensed
+            condenseType = dContext.condenseType
 
             sectionResults = []
             if sections:
@@ -924,8 +863,8 @@ if __name__ == &#34;__main__&#34;:
             if query:
                 (queryResults, queryMessages, features) = runSearch(app, query, cache)
                 (queryResultsC, queryMessagesC, featuresC) = (
-                    runSearchCondensed(app, query, cache, d.condenseType)
-                    if not queryMessages and d.condensed and d.condenseType
+                    runSearchCondensed(app, query, cache, condenseType)
+                    if not queryMessages and condensed and condenseType
                     else (None, None, None)
                 )
 
@@ -939,16 +878,9 @@ if __name__ == &#34;__main__&#34;:
                 (&#34;nodes&#34;, tupleResults),
                 (&#34;results&#34;, queryResults),
             )
-            if d.condensed and d.condenseType:
-                csvs += ((f&#34;resultsBy{d.condenseType}&#34;, queryResultsC),)
-            resultsX = getResultsX(
-                app,
-                queryResults,
-                features,
-                d.condenseType or app.condenseType,
-                app.noDescendTypes,
-                fmt=d.fmt,
-            )
+            if condensed and condenseType:
+                csvs += ((f&#34;resultsBy{condenseType}&#34;, queryResultsC),)
+            resultsX = getResultsX(app, queryResults, features, condenseType, fmt=fmt,)
             return (queryMessages, pickle.dumps(csvs), pickle.dumps(resultsX))
 
     return ThreadedServer(

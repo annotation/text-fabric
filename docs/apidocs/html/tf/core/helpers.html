@@ -356,16 +356,12 @@ def wrapMessages(messages):
             (error, nl, msgRep) = msg
             match = msgLineRe.match(msgRep)
             msg = msgRep + (&#34;&lt;br/&gt;&#34; if nl else &#34;&#34;)
-            className = &#34;eline&#34; if error and not match else &#34;tline&#34;
+            clsName = &#34;eline&#34; if error and not match else &#34;tline&#34;
         else:
             match = msgLineRe.match(msg)
-            className = &#34;tline&#34; if match else &#34;eline&#34;
+            clsName = &#34;tline&#34; if match else &#34;eline&#34;
             msg = msg.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
-        html.append(
-            f&#34;&#34;&#34;
-      &lt;span class=&#34;{className.lower()}&#34;&gt;{msg}&lt;/span&gt;
-    &#34;&#34;&#34;
-        )
+        html.append(f&#39;&lt;span class=&#34;{clsName.lower()}&#34;&gt;{msg}&lt;/span&gt;&#39;)
     return &#34;&#34;.join(html)
 
 
@@ -981,16 +977,12 @@ Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
             (error, nl, msgRep) = msg
             match = msgLineRe.match(msgRep)
             msg = msgRep + (&#34;&lt;br/&gt;&#34; if nl else &#34;&#34;)
-            className = &#34;eline&#34; if error and not match else &#34;tline&#34;
+            clsName = &#34;eline&#34; if error and not match else &#34;tline&#34;
         else:
             match = msgLineRe.match(msg)
-            className = &#34;tline&#34; if match else &#34;eline&#34;
+            clsName = &#34;tline&#34; if match else &#34;eline&#34;
             msg = msg.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
-        html.append(
-            f&#34;&#34;&#34;
-      &lt;span class=&#34;{className.lower()}&#34;&gt;{msg}&lt;/span&gt;
-    &#34;&#34;&#34;
-        )
+        html.append(f&#39;&lt;span class=&#34;{clsName.lower()}&#34;&gt;{msg}&lt;/span&gt;&#39;)
     return &#34;&#34;.join(html)</code></pre>
 </details>
 </dd>

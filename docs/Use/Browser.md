@@ -7,15 +7,6 @@
     Then you can view and search the corpus without programming and without
     internet connection.
 
-    For some corpora an internet website has been set up. You can then work
-    with that corpus without installing anything on your computer,
-    but you do need an internet connection.
-
-    In both cases the interface is the same.
-
-    However, if your work locally, you can easily import extra data, made by yourself
-    or by other people.
-
 ## Start up
 
 ???+ note "apps"
@@ -111,13 +102,12 @@
 ??? abstract "About"
     You can close the TF kernel and web server by pressing Ctrl-C in the terminal
     or command prompt where you have started `text-fabric`.
+    It will prompt you to ask if you really want to shut down the kernel.
+    If you leave it on, a next TF browser session will connect to it, which is quicker
+    than to start up a fresh kernel.
 
 ??? abstract "Clean up"
-    Before starting up, the TF browser will check if there are no running processes
-    left from an earlier run.
-    If so, it will kill them.
-
-    You can also manually clean up yourself:
+    You can also manually clean up TF related processes:
 
     `text-fabric app -k`
     

@@ -1,24 +1,4 @@
-# Advanced Guide
-
-Here are hints to help you to get the most out of Text-Fabric apps.
-
-**For the full reference, start with [Use](Use.md).**
-
-## Incantation 
-
-Start an app like this: 
-
-```python
-from tf.app import use
-A = use('bhsa', hoist=globals())
-```
-
-```python
-from tf.app import use
-A = use('uruk', hoist=globals())
-```
-
-Read more in the [App API](../Api/App.md#incantation)
+# Data sharing Guide
 
 ## Zipping your new data
 
@@ -78,8 +58,3 @@ text-fabric appname --sets=filePath
 ```
 
 Read more in [Browser](Browser.md#custom-sets).
-
-## Display
-
-The way you control the display parameters for the functions `pretty()` and `plain()`
-and friends has changed. See [Display](../Api/App.md#display).

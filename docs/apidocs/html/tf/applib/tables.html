@@ -32,13 +32,15 @@ def compose(
     app, tuples, features, position, opened, getx=None, **options,
 ):
     display = app.display
-    d = display.get(options)
+    dContext = display.get(options)
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
 
     api = app.api
     F = api.F
     fOtype = F.otype.v
 
-    item = d.condenseType if d.condensed else RESULT
+    item = condenseType if condensed else RESULT
 
     if features:
         api.ensureLoaded(features)
@@ -72,21 +74,17 @@ def compose(
                 doHeader = True
             else:
                 tuplesHtml.append(
-                    f&#34;&#34;&#34;
-&lt;div class=&#34;dtheadrow&#34;&gt;
-  &lt;span&gt;n&lt;/span&gt;&lt;span&gt;{tup}&lt;/span&gt;
-&lt;/div&gt;
-&#34;&#34;&#34;
+                    f&#39;&lt;div class=&#34;dtheadrow&#34;&gt;&lt;span&gt;n&lt;/span&gt;&lt;span&gt;{tup}&lt;/span&gt;&lt;/div&gt;&#39;
                 )
             continue
 
         if doHeader:
             doHeader = False
             tuplesHtml.append(
-                f&#34;&#34;&#34;
+                f&#34;&#34;&#34;\
 &lt;div class=&#34;dtheadrow&#34;&gt;
   &lt;span&gt;n&lt;/span&gt;&lt;span&gt;{&#34;&lt;/span&gt;&lt;span&gt;&#34;.join(fOtype(n) for n in tup)}&lt;/span&gt;
-&lt;/div&gt;
+&lt;/div&gt;\
 &#34;&#34;&#34;
             )
         tuplesHtml.append(
@@ -151,22 +149,16 @@ def composeT(
                 doHeader = True
             else:
                 tuplesHtml.append(
-                    f&#34;&#34;&#34;
-&lt;div class=&#34;dtheadrow&#34;&gt;
-  &lt;span&gt;n&lt;/span&gt;&lt;span&gt;{tup}&lt;/span&gt;
-&lt;/div&gt;
-&#34;&#34;&#34;
+                    f&#39;&lt;div class=&#34;dtheadrow&#34;&gt;&lt;span&gt;n&lt;/span&gt;&lt;span&gt;{tup}&lt;/span&gt;&lt;/div&gt;&#39;
                 )
             continue
 
         if doHeader:
             doHeader = False
             tuplesHtml.append(
-                f&#34;&#34;&#34;
-&lt;div class=&#34;dtheadrow&#34;&gt;
-  &lt;span&gt;n&lt;/span&gt;&lt;span&gt;{&#34;&lt;/span&gt;&lt;span&gt;&#34;.join(fOtype(n) for n in tup)}&lt;/span&gt;
-&lt;/div&gt;
-&#34;&#34;&#34;
+                f&#39;&lt;div class=&#34;dtheadrow&#34;&gt;&lt;span&gt;n&lt;/span&gt;&lt;span&gt;&#39;
+                + &#34;&lt;/span&gt;&lt;span&gt;&#34;.join(fOtype(n) for n in tup)
+                + &#34;&lt;/span&gt;&lt;/div&gt;&#34;
             )
         tuplesHtml.append(
             plainTuple(
@@ -185,33 +177,6 @@ def composeT(
 
 
 # passages
-
-
-def composePstruct(
-    app, baseTypes, browseNavLevel, finalSecType, features, finalSec, **options,
-):
-    display = app.display
-
-    api = app.api
-
-    if features:
-        api.ensureLoaded(features)
-        features = features.split()
-    else:
-        features = []
-
-    if not finalSec:
-        return None
-
-    return _plainTextSFinalStruct(
-        app,
-        baseTypes,
-        browseNavLevel,
-        finalSecType,
-        finalSec,
-        extraFeatures=features,
-        **display.consume(options, &#34;extraFeatures&#34;),
-    )
 
 
 def composeP(
@@ -288,13 +253,18 @@ def _plainTextSFinal(
     app, browseNavLevel, finalSecType, sNode, opened, secFinal, **options,
 ):
     display = app.display
-    d = display.get(options)
+    dContext = display.get(options)
+    fmt = dContext.fmt
 
     api = app.api
     T = api.T
+
+    aContext = app.context
+    formatCls = aContext.formatCls
+
     secStr = str(T.sectionFromNode(sNode)[browseNavLevel])
     isOpened = secStr in opened
-    tClass = &#34;&#34; if d.fmt is None else display.formatClass[d.fmt].lower()
+    tCls = &#34;&#34; if fmt is None else formatCls[fmt].lower()
 
     prettyRep = (
         prettyTuple(
@@ -312,63 +282,19 @@ def _plainTextSFinal(
     attOpen = &#34; open &#34; if isOpened else &#34;&#34;
 
     textRep = plain(
-        app,
-        sNode,
-        secLabel=False,
-        withPassage=False,
-        **display.consume(options, &#34;withPassage&#34;),
+        app, sNode, withPassage=False, **display.consume(options, &#34;withPassage&#34;),
     )
-    html = f&#34;&#34;&#34;
+    html = f&#34;&#34;&#34;\
 &lt;details
   class=&#34;pretty{current}&#34;
   seq=&#34;{secStr}&#34;
   {attOpen}
 &gt;
-  &lt;summary class=&#34;{tClass}&#34;&gt;
-    {app._sectionLink(sNode, text=secStr)}
-    {textRep}
-  &lt;/summary&gt;
+  &lt;summary class=&#34;{tCls}&#34;&gt;{app._sectionLink(sNode, text=secStr)} {textRep}&lt;/summary&gt;
   &lt;div class=&#34;pretty&#34;&gt;{prettyRep}&lt;/div&gt;
-&lt;/details&gt;
+&lt;/details&gt;\
 &#34;&#34;&#34;
-    return html
-
-
-def _plainTextSFinalStruct(
-    app, baseTypes, browseNavLevel, finalSecType, sNode, **options,
-):
-    display = app.display
-    d = display.get(options)
-
-    api = app.api
-    Fs = api.Fs
-    T = api.T
-    L = api.L
-
-    highlights = d.highlights
-
-    def getTextNodes(node, theseBaseTypes):
-        textNodes = []
-        (firstType, *remainingTypes) = theseBaseTypes
-        for n in L.d(node, otype=firstType):
-            text = T.text(n, fmt=d.fmt)
-            info = dict(node=n, text=text)
-            if highlights and n in d.highlights:
-                info[&#34;hl&#34;] = highlights[n]
-            features = {}
-            for f in d.extraFeatures:
-                v = Fs(f).v(n)
-                if v is not None:
-                    features[f] = v
-            if features:
-                info[&#34;features&#34;] = features
-            if remainingTypes:
-                info[&#34;content&#34;] = getTextNodes(n, remainingTypes)
-            textNodes.append(info)
-
-        return textNodes
-
-    return getTextNodes(sNode, baseTypes)</code></pre>
+    return html</code></pre>
 </details>
 </section>
 <section>
@@ -391,13 +317,15 @@ def _plainTextSFinalStruct(
     app, tuples, features, position, opened, getx=None, **options,
 ):
     display = app.display
-    d = display.get(options)
+    dContext = display.get(options)
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
 
     api = app.api
     F = api.F
     fOtype = F.otype.v
 
-    item = d.condenseType if d.condensed else RESULT
+    item = condenseType if condensed else RESULT
 
     if features:
         api.ensureLoaded(features)
@@ -431,21 +359,17 @@ def _plainTextSFinalStruct(
                 doHeader = True
             else:
                 tuplesHtml.append(
-                    f&#34;&#34;&#34;
-&lt;div class=&#34;dtheadrow&#34;&gt;
-  &lt;span&gt;n&lt;/span&gt;&lt;span&gt;{tup}&lt;/span&gt;
-&lt;/div&gt;
-&#34;&#34;&#34;
+                    f&#39;&lt;div class=&#34;dtheadrow&#34;&gt;&lt;span&gt;n&lt;/span&gt;&lt;span&gt;{tup}&lt;/span&gt;&lt;/div&gt;&#39;
                 )
             continue
 
         if doHeader:
             doHeader = False
             tuplesHtml.append(
-                f&#34;&#34;&#34;
+                f&#34;&#34;&#34;\
 &lt;div class=&#34;dtheadrow&#34;&gt;
   &lt;span&gt;n&lt;/span&gt;&lt;span&gt;{&#34;&lt;/span&gt;&lt;span&gt;&#34;.join(fOtype(n) for n in tup)}&lt;/span&gt;
-&lt;/div&gt;
+&lt;/div&gt;\
 &#34;&#34;&#34;
             )
         tuplesHtml.append(
@@ -544,42 +468,6 @@ def _plainTextSFinalStruct(
     return &#34;\n&#34;.join(passageHtml)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.tables.composePstruct"><code class="name flex">
-<span>def <span class="ident">composePstruct</span></span>(<span>app, baseTypes, browseNavLevel, finalSecType, features, finalSec, **options)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def composePstruct(
-    app, baseTypes, browseNavLevel, finalSecType, features, finalSec, **options,
-):
-    display = app.display
-
-    api = app.api
-
-    if features:
-        api.ensureLoaded(features)
-        features = features.split()
-    else:
-        features = []
-
-    if not finalSec:
-        return None
-
-    return _plainTextSFinalStruct(
-        app,
-        baseTypes,
-        browseNavLevel,
-        finalSecType,
-        finalSec,
-        extraFeatures=features,
-        **display.consume(options, &#34;extraFeatures&#34;),
-    )</code></pre>
-</details>
-</dd>
 <dt id="tf.applib.tables.composeT"><code class="name flex">
 <span>def <span class="ident">composeT</span></span>(<span>app, features, tuples, opened, getx=None, **options)</span>
 </code></dt>
@@ -631,22 +519,16 @@ def _plainTextSFinalStruct(
                 doHeader = True
             else:
                 tuplesHtml.append(
-                    f&#34;&#34;&#34;
-&lt;div class=&#34;dtheadrow&#34;&gt;
-  &lt;span&gt;n&lt;/span&gt;&lt;span&gt;{tup}&lt;/span&gt;
-&lt;/div&gt;
-&#34;&#34;&#34;
+                    f&#39;&lt;div class=&#34;dtheadrow&#34;&gt;&lt;span&gt;n&lt;/span&gt;&lt;span&gt;{tup}&lt;/span&gt;&lt;/div&gt;&#39;
                 )
             continue
 
         if doHeader:
             doHeader = False
             tuplesHtml.append(
-                f&#34;&#34;&#34;
-&lt;div class=&#34;dtheadrow&#34;&gt;
-  &lt;span&gt;n&lt;/span&gt;&lt;span&gt;{&#34;&lt;/span&gt;&lt;span&gt;&#34;.join(fOtype(n) for n in tup)}&lt;/span&gt;
-&lt;/div&gt;
-&#34;&#34;&#34;
+                f&#39;&lt;div class=&#34;dtheadrow&#34;&gt;&lt;span&gt;n&lt;/span&gt;&lt;span&gt;&#39;
+                + &#34;&lt;/span&gt;&lt;span&gt;&#34;.join(fOtype(n) for n in tup)
+                + &#34;&lt;/span&gt;&lt;/div&gt;&#34;
             )
         tuplesHtml.append(
             plainTuple(
@@ -684,7 +566,6 @@ def _plainTextSFinalStruct(
 <ul class="">
 <li><code><a title="tf.applib.tables.compose" href="#tf.applib.tables.compose">compose</a></code></li>
 <li><code><a title="tf.applib.tables.composeP" href="#tf.applib.tables.composeP">composeP</a></code></li>
-<li><code><a title="tf.applib.tables.composePstruct" href="#tf.applib.tables.composePstruct">composePstruct</a></code></li>
 <li><code><a title="tf.applib.tables.composeT" href="#tf.applib.tables.composeT">composeT</a></code></li>
 </ul>
 </li>

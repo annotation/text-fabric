@@ -29,13 +29,11 @@ import sys
 from shutil import rmtree
 from zipfile import ZipFile
 
-from ..parameters import ZIP_OPTIONS
+from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE
 from ..core.helpers import console, splitModRef
 
 GH_BASE = os.path.expanduser(f&#34;~/github&#34;)
 DW_BASE = os.path.expanduser(f&#34;~/Downloads&#34;)
-TEMP = &#34;_temp&#34;
-RELATIVE = &#34;tf&#34;
 
 HELP = &#34;&#34;&#34;
 USAGE
@@ -93,7 +91,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
             versionEntries.append((sourceDir, &#34;&#34;))
             console(f&#34;Found unversioned features&#34;)
         for (versionDir, version) in versionEntries:
-            if version == TEMP:
+            if version == TEMP_DIR:
                 continue
             versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
             versionRep2 = f&#34;{version}/&#34; if version else &#34;&#34;
@@ -123,7 +121,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
             console(
                 f&#34;zipping {item:&lt;25} {version:&gt;4} with {len(features):&gt;3} features ==&gt; {target}&#34;
             )
-            with ZipFile(f&#34;{destDir}/{target}&#34;, &#34;w&#34;, **ZIP_OPTIONS,) as zipFile:
+            with ZipFile(f&#34;{destDir}/{target}&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
                 for featureFile in sorted(features):
                     zipFile.write(
                         f&#34;{sourceDir}{versionRep}/{featureFile}&#34;, arcname=featureFile,
@@ -151,7 +149,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
             relativeDest = &#34;-&#34;
         console(f&#34;zipping {org}/{repo}/{relative} with {len(results)} files&#34;)
         console(f&#34;zip file is {destDir}/{relativeDest}.zip&#34;)
-        with ZipFile(f&#34;{destDir}/{relativeDest}.zip&#34;, &#34;w&#34;, **ZIP_OPTIONS,) as zipFile:
+        with ZipFile(f&#34;{destDir}/{relativeDest}.zip&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
             for (internalPath, path) in sorted(results):
                 zipFile.write(
                     path, arcname=internalPath,
@@ -256,7 +254,7 @@ if __name__ == &#34;__main__&#34;:
             versionEntries.append((sourceDir, &#34;&#34;))
             console(f&#34;Found unversioned features&#34;)
         for (versionDir, version) in versionEntries:
-            if version == TEMP:
+            if version == TEMP_DIR:
                 continue
             versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
             versionRep2 = f&#34;{version}/&#34; if version else &#34;&#34;
@@ -286,7 +284,7 @@ if __name__ == &#34;__main__&#34;:
             console(
                 f&#34;zipping {item:&lt;25} {version:&gt;4} with {len(features):&gt;3} features ==&gt; {target}&#34;
             )
-            with ZipFile(f&#34;{destDir}/{target}&#34;, &#34;w&#34;, **ZIP_OPTIONS,) as zipFile:
+            with ZipFile(f&#34;{destDir}/{target}&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
                 for featureFile in sorted(features):
                     zipFile.write(
                         f&#34;{sourceDir}{versionRep}/{featureFile}&#34;, arcname=featureFile,
@@ -314,7 +312,7 @@ if __name__ == &#34;__main__&#34;:
             relativeDest = &#34;-&#34;
         console(f&#34;zipping {org}/{repo}/{relative} with {len(results)} files&#34;)
         console(f&#34;zip file is {destDir}/{relativeDest}.zip&#34;)
-        with ZipFile(f&#34;{destDir}/{relativeDest}.zip&#34;, &#34;w&#34;, **ZIP_OPTIONS,) as zipFile:
+        with ZipFile(f&#34;{destDir}/{relativeDest}.zip&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
             for (internalPath, path) in sorted(results):
                 zipFile.write(
                     path, arcname=internalPath,

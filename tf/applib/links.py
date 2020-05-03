@@ -13,7 +13,7 @@ from .helpers import dh
 from .display import getText
 
 
-UNSUPPORTED = "unsupported"
+UNSUPPORTED = "not online"
 
 pathRe = re.compile(
     r"^(.*/(?:github|text-fabric-data))/([^/]+)/([^/]+)/(.*)$", flags=re.I
@@ -21,6 +21,23 @@ pathRe = re.compile(
 
 
 def linksApi(app, appName, silent):
+    """Produce the link API.
+
+    The link API provides methods to maps nodes to urls of web resources.
+    It also computes several provenance and documentation links from the
+    configuration settings of the corpus.
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    appName: string
+        The name of the corpus as TF-app name
+    silent:
+        The verbosity mode to perform this operation in.
+        Normally it is the same as for the app, but when we do an `A.reuse()`
+        we force `silent=True`.
+    """
     app.header = types.MethodType(header, app)
     app.webLink = types.MethodType(webLink, app)
     ok = app.isCompatible
@@ -113,6 +130,12 @@ def linksApi(app, appName, silent):
 
 
 def header(app):
+    """Generate a colofon of the TF-app.
+
+    This colofon will be displayed after initializing the advanced API,
+    and it is packed with provenance and documentation links.
+    """
+
     return (
         f"""\
 <div class="hdlinks">
@@ -129,6 +152,40 @@ def header(app):
 
 
 def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
+    """Maps a node to a web resource.
+
+    Usually called as `A.weblink(...)`
+
+    The mapping is quite sophisticated. It will do sensible things for
+    section nodes and lexeme nodes, dependent on how they are configured in
+    the app's `config.yaml`.
+
+    !!! hint "Customizable"
+        You can customize the behaviour of `webLink()` to the needs of your corpus
+        by providing appropriate values in its `config.yaml`, especially for
+        `webBase`, `webLang`, `webUrl`, `webUrlLex`, and `webHint`.
+
+    Parameters
+    ----------
+    app: object
+        The `A`.
+    n: int
+        A node
+    text: string/HTML, optional default `None`
+        The text of the link. If left out, a suitable text will be derived from
+        the node.
+    clsName: string, optional default `None`
+        A CSS class name to add to the resulting link element
+    _asString: boolean, optional `False`
+        Whether to deliver the result as a piece of HTML or to display the link
+        on the (Jupyter) interface.
+    _noUrl: boolean, optional `False`
+        Whether to put the generated url in the `href` attribute.
+        It can be inhibited. This is useful for the TF-browser, which may want
+        to attach an action to the link and navigate to a location based on
+        other attributes.
+    """
+
     api = app.api
     T = api.T
     F = api.F

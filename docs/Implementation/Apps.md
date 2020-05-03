@@ -1,4 +1,4 @@
-# Apps
+# Advanced API
 
 ??? abstract "About"
     Text-Fabric is a generic engine to process text and annotations.
@@ -8,58 +8,54 @@
     We need extra power on top of the core TF engine.
 
     The way we have chosen to do it is via *apps*.
-    An app is a bunch of extra functions that *know* the structure of a specific corpus.
+    An app is a bunch of extra settings and/or functions and/or styles
+    that feed the advance API.
 
-    In particular, an app knows how to produce plain representations
-    and pretty displays of nodes of each type in the corpus.
+    The advanced API will do its best to generate sensible default settings from
+    the corpus data, but a bit of nudging will usually improve the results of displaying
+    structures of the corpus.
 
-    For a list of current apps, see [Corpora](../About/Corpora.md)
+    For a list of current TF-apps, see [Corpora](../About/Corpora.md)
 
 ## Components
 
 ??? abstract "App components"
-    The apps themselves are those repos inside 
+    The *official* apps are those repos inside 
     [annotation]({{an}})
     whose names start with `app-`.
     The part after the `app-` is the name of the app.
 
-    For each *app*, you find there a subfolder `code` with:
+    But you can also create apps on your system and work with them.
+
+    Each TF-*app* consists of a folder `code` with:
 
     ??? abstract "static"
         A folder with styles, fonts and logos, to be used by web servers such as the the
         [text-fabric browser](../Server/Web.md).
 
-        In particular, `display.css` contains the styles used for pretty displays.
+        In particular, `display.css` contains additional styles used for pretty displays.
         These styles will be programmatically combined with other styles,
         to deliver them to the TF browser on the one hand, and to Jupyter notebooks
         on the other hand.
 
-    ??? abstract "config.py"
-        Settings to set up a browsing experience and to feed the specific AP
-        for this app.
+    ??? abstract "config.yaml"
+        Settings to feed the advanced API for this app.
 
         The app is driven by the settings as specified in the 
-        [config file of the default TF app]({{anapp}}default/blob/master/code/config.py).
+        [config file of the default TF app]({{anapp}}default/blob/master/code/config.yaml).
 
     ??? abstract "app.py"
-        The functionality specific to the corpus in question, organized as an extended
-        TF api. In the code you see this stored in variables with name `app`.
-
-        In order to be an app that TF can use, `app` should provide the following attributes:
-
-        attribute | kind | description
-        --- | --- | ---
-        webLink | method | given a node, produces a link to an online description of the corresponding object (to [shebanq]({{shebanq}}) or [cdli]({{cdli}})) 
+        Corpus dependent helpers for the advanced API.
 
     ??? abstract "other modules"
-        If you organize bits of the functionality of the app in modules to be imported by `app.py`,
-        you can put them in this same directory.
+        If you organize bits of the functionality of a TF-app into modules
+        to be imported by `app.py`, you can put them in this same directory.
 
         ???+ caution "Do not `import` app-dependent modules"
             If you import these other modules by means of the Python import system using 
             `import module` or `from module import name` then everything works fine until you
             load two apps in the same program, that in turn load their other modules.
-            As long as different apps load modules with different names, there is no problem/
+            As long as different apps load modules with different names, there is no problem.
             But if two apps both have a module with the same name, then the first of them
             will be loaded, and both apps use the same code.
 
@@ -94,18 +90,18 @@
             ```
 
             The place to put the `loadModule()` calls is in the `__init()__` method of the
-            `TfApp` object, before the call to `setupApi()`.
+            `TfApp` object, before the call to `super().__init()`.
             Here the name of the app and the path to the code directory of the
             app are known.
-            They are provided by the first two arguments by which the `__init__()` method is called.
 
-            `loadModule()` needs the app name and the path to the code, to we pass it `*args[0:2]`,
-            the first two arguments received by `__init__()`.
+            `loadModule()` needs the app name and the path to the code,
+            so we pass it `*args[0:2]`, the first two arguments received by `__init__()`.
 
-            The third argument for `loadModule()` is the file name of the module, without the `.py`.
+            The third argument for `loadModule()` is the file name of the module,
+            without the `.py`.
 
-            The result of loading the module is a code object, from which you can get all the names
-            defined by the module and their semantics.
+            The result of loading the module is a code object,
+            from which you can get all the names defined by the module and their semantics.
 
             In the `atf` case, we use the `atfApi()` function of the module to add 
             a bunch of functions defined in that module as methods to the TfApp object.
@@ -116,8 +112,7 @@
 ## Implementation
 
 ??? abstract "App support"
-    Apps turn out to have several things in common that we want to deal with generically.
-    These functions are collected in the
+    Most parts of the advanced API are implemented in the
     [api]({{tfghb}}/{{c_applib}})
     modules of TF.
 
@@ -126,8 +121,7 @@
     in two contexts:
 
     * when called in a Jupyter notebook they deliver output meant
-      for a notebook output cell,
-      using methods provided by the `ipython` package.
+      for a notebook output cell, using methods provided by the `ipython` package.
     * when called by the web app they deliver output meant for the TF browser website,
       generating raw HTML.
 
@@ -136,8 +130,8 @@
     whether it is constructed for the purposes of the Jupyter notebook,
     or for the purposes of the web app.
 
-    We pass this information by setting the attribute `_browse` on the `app`. 
-    If it is set, we use the `app` in the web app context.
+    We pass this information by setting the attribute `_browse` on the `app` object. 
+    If it is set, we use the `app` in the web app context, otherwise in a programming context.
 
     Most of the code in such functions is independent of `_browse`.
     The main difference is how to output the result:

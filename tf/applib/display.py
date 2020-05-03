@@ -16,6 +16,8 @@ LIMIT_TABLE = 2000
 
 ORIG = "orig"
 
+__pdoc__ = {}
+
 OuterContext = namedtuple(
     "OuterContext",
     """
@@ -25,6 +27,19 @@ OuterContext = namedtuple(
     lastSlot
     inTuple
 """.strip().split(),
+)
+OuterContext.__doc__ = (
+    "Outer node properties during plain() and pretty(). "
+    "Only the properties of the node for which the outer call"
+    " plain() or pretty() has been made, not the nodes encountered"
+    " during recursion."
+)
+__pdoc__['OuterContext.ltr'] = "writing direction."
+__pdoc__['OuterContext.textCls'] = "Css class for full text."
+__pdoc__['OuterContext.firstSlot'] = "First slot under the outer node."
+__pdoc__['OuterContext.lastSlot'] = "Last slot under the outer node."
+__pdoc__['OuterContext.inTuple'] = (
+    "Whether the outer node is displayed as part of a tuple of nodes."
 )
 
 NodeContext = namedtuple(
@@ -47,6 +62,53 @@ NodeContext = namedtuple(
     myEnd
     hidden
 """.strip().split(),
+)
+NodeContext.__doc__ = (
+    "Node properties during plain() or pretty()."
+)
+__pdoc__['NodeContext.slotType'] = "The slot type of the data set."
+__pdoc__['NodeContext.nType'] = "The node type of the current node."
+__pdoc__['NodeContext.isSlot'] = "Whether the current node is a slot node."
+__pdoc__['NodeContext.isSlotOrDescend'] = (
+    "Whether the current node is a slot node or"
+    " has a type to which the current text format should descend."
+    " This type is determined by the current text format."
+)
+__pdoc__['NodeContext.descend'] = (
+    "When calling T.text(n, descend=??) for this node, what should we"
+    " substitute for the ?? ?"
+)
+__pdoc__['NodeContext.isBaseNonSlot'] = (
+    "Whether the current node has a type that is currently a baseType,"
+    " i.e. a type where a pretty display should stop unfolding."
+    " Moreover, this type should not be the slot type."
+)
+__pdoc__['NodeContext.hasChunks'] = (
+    "Whether the current node has a type that has a related type that"
+    " corresponds to contiguous chunks that build it. "
+    " E.g. in the BHSA the type phrase has a chunk type phrase_atom."
+)
+__pdoc__['NodeContext.children'] = "The children of the current node."
+__pdoc__['NodeContext.boundaryCls'] = (
+    "Css class that represent the kinds of boundaries for this node."
+    " Nodes can have a firm of dotted left/right boundary, or no boundary at all."
+)
+__pdoc__['NodeContext.hlCls'] = "The highlight Css class of the current node."
+__pdoc__['NodeContext.hlStyle'] = "The highlight style attribute of the current node."
+__pdoc__['NodeContext.nodePart'] = (
+    "The node type/number insofar it has to be displayed for the current node"
+)
+__pdoc__['NodeContext.cls'] = (
+    "A dict of several classes for the display of the node:"
+    " for the container, the label, and the children of the node"
+)
+__pdoc__['NodeContext.myStart'] = "The first slot of the current node"
+__pdoc__['NodeContext.myEnd'] = "The last slot of the current node"
+__pdoc__['NodeContext.hidden'] = (
+    "Whether the outer container and label of the current node"
+    " should be hidden."
+    " This is used to reduce displays by hiding the chunk types of types"
+    " that have chunks. E.g. in the BHSA: the phrase_atoms can be hidden."
 )
 
 

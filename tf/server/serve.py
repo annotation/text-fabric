@@ -3,7 +3,7 @@ import markdown
 from flask import jsonify, redirect, render_template, make_response
 
 from ..core.helpers import console, wrapMessages
-from ..applib.helpers import RESULT, INTERFACE_OPTIONS
+from ..applib.helpers import RESULT
 from .wrap import (
     pageLinks,
     passageLinks,
@@ -18,10 +18,12 @@ from .servelib import getAbout, getFormData, zipData
 TIMEOUT = 180
 
 
-def serveTable(setup, kind, getx=None, asDict=False):
-    kernelApi = setup.kernelApi
+def serveTable(web, kind, getx=None, asDict=False):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
 
-    form = getFormData()
+    form = getFormData(interfaceDefaults)
     textFormat = form["textformat"] or None
     task = form[kind].strip()
     openedKey = f"{kind}Opened"
@@ -34,7 +36,9 @@ def serveTable(setup, kind, getx=None, asDict=False):
     messages = ""
     table = None
     if task:
-        options = {o[0]: form.get(o[0], None) for o in INTERFACE_OPTIONS}
+        options = {
+            k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
+        }
         (table, messages) = kernelApi.table(
             kind,
             task,
@@ -52,9 +56,11 @@ def serveTable(setup, kind, getx=None, asDict=False):
     return method(table=table, messages=messages)
 
 
-def serveQuery(setup, getx, asDict=False):
-    kernelApi = setup.kernelApi
-    wildQueries = setup.wildQueries
+def serveQuery(web, getx, asDict=False):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    wildQueries = web.wildQueries
 
     kind = "query"
     form = getFormData()
@@ -82,7 +88,11 @@ def serveQuery(setup, getx, asDict=False):
                 + ("" if TIMEOUT == 1 else "s")
             )
         else:
-            options = {o[0]: form.get(o[0], None) for o in INTERFACE_OPTIONS}
+            options = {
+                k: form.get(k, v)
+                for (k, v) in interfaceDefaults.items()
+                if v is not None
+            }
             try:
                 (table, messages, features, start, total) = kernelApi.search(
                     task,
@@ -119,8 +129,10 @@ def serveQuery(setup, getx, asDict=False):
     )
 
 
-def servePassage(setup, getx):
-    kernelApi = setup.kernelApi
+def servePassage(web, getx):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
 
     form = getFormData()
     textFormat = form["textformat"] or None
@@ -133,7 +145,9 @@ def servePassage(setup, getx):
     sec0 = form["sec0"]
     sec1 = form["sec1"]
     sec2 = form["sec2"]
-    options = {o[0]: form.get(o[0], None) for o in INTERFACE_OPTIONS}
+    options = {
+        k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
+    }
     (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
         form["features"],
         form["query"],
@@ -151,14 +165,14 @@ def servePassage(setup, getx):
     return jsonify(table=table, passages=passages)
 
 
-def serveExport(setup):
-    aContext = setup.context
+def serveExport(web):
+    aContext = web.context
     appName = aContext.appName
-    kernelApi = setup.kernelApi
+    kernelApi = web.kernelApi
 
-    sectionsData = serveTable(setup, "sections", None, asDict=True)
-    tuplesData = serveTable(setup, "tuples", None, asDict=True)
-    queryData = serveQuery(setup, None, asDict=True)
+    sectionsData = serveTable(web, "sections", None, asDict=True)
+    tuplesData = serveTable(web, "tuples", None, asDict=True)
+    queryData = serveQuery(web, None, asDict=True)
 
     form = getFormData()
 
@@ -209,10 +223,10 @@ def serveExport(setup):
     )
 
 
-def serveDownload(setup):
+def serveDownload(web):
     form = getFormData()
-    kernelApi = setup.kernelApi
-    wildQueries = setup.wildQueries
+    kernelApi = web.kernelApi
+    wildQueries = web.wildQueries
 
     task = form["query"]
     condenseType = form["condenseTp"] or None
@@ -267,8 +281,8 @@ def serveDownload(setup):
     return make_response(zipBuffer, headers)
 
 
-def serveAll(setup, anything):
-    aContext = setup.context
+def serveAll(web, anything):
+    aContext = web.context
     appName = aContext.appName
     defaultBaseType = aContext.baseType
     defaultCondenseType = aContext.condenseType
@@ -279,7 +293,7 @@ def serveAll(setup, anything):
     defaultFormat = aContext.defaultFormat
     allFormats = aContext.allFormats
 
-    kernelApi = setup.kernelApi
+    kernelApi = web.kernelApi
 
     form = getFormData()
     condensedAtt = " checked " if form["condensed"] else ""

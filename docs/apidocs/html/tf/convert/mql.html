@@ -667,7 +667,7 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
             otype[node] = t
 
     nodeFeatures[&#34;otype&#34;] = otype
-    metaData[&#34;otype&#34;] = dict(valueType=&#34;str&#34;,)
+    metaData[&#34;otype&#34;] = dict(valueType=&#34;str&#34;)
 
     tm.info(&#34;oslots ...&#34;)
     oslots = dict()
@@ -677,7 +677,7 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
             monads = tables[t][idd][&#34;monads&#34;]
             oslots[node] = {slotFromMonad[m] for m in monads}
     edgeFeatures[&#34;oslots&#34;] = oslots
-    metaData[&#34;oslots&#34;] = dict(valueType=&#34;str&#34;,)
+    metaData[&#34;oslots&#34;] = dict(valueType=&#34;str&#34;)
 
     tm.info(&#34;metadata ...&#34;)
     for t in nodeF:
@@ -1014,7 +1014,7 @@ such as backslash xb6</p></section>
             otype[node] = t
 
     nodeFeatures[&#34;otype&#34;] = otype
-    metaData[&#34;otype&#34;] = dict(valueType=&#34;str&#34;,)
+    metaData[&#34;otype&#34;] = dict(valueType=&#34;str&#34;)
 
     tm.info(&#34;oslots ...&#34;)
     oslots = dict()
@@ -1024,7 +1024,7 @@ such as backslash xb6</p></section>
             monads = tables[t][idd][&#34;monads&#34;]
             oslots[node] = {slotFromMonad[m] for m in monads}
     edgeFeatures[&#34;oslots&#34;] = oslots
-    metaData[&#34;oslots&#34;] = dict(valueType=&#34;str&#34;,)
+    metaData[&#34;oslots&#34;] = dict(valueType=&#34;str&#34;)
 
     tm.info(&#34;metadata ...&#34;)
     for t in nodeF:

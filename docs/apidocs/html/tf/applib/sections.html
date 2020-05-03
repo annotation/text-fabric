@@ -28,16 +28,21 @@
 
 
 def sectionsApi(app):
-    app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
-    app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
-    app._sectionLink = types.MethodType(_sectionLink, app)
+    if app.isCompatible:
+        app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
+        app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
+        app.structureStrFromNode = types.MethodType(structureStrFromNode, app)
+        app._sectionLink = types.MethodType(_sectionLink, app)
 
 
 def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
     api = app.api
     T = api.T
-    sep1 = app.sectionSep1
-    sep2 = app.sectionSep2
+
+    aContext = app.context
+    sep1 = aContext.sectionSep1
+    sep2 = aContext.sectionSep2
+
     msg = f&#39;Not a valid passage: &#34;{sectionStr}&#34;&#39;
     msgi = &#39;{} &#34;{}&#34; is not a number&#39;
     section = sectionStr.split(sep1)
@@ -74,7 +79,12 @@ def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
 def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
     api = app.api
     T = api.T
-    seps = (&#34;&#34;, app.sectionSep1, app.sectionSep2)
+
+    aContext = app.context
+    sep1 = aContext.sectionSep1
+    sep2 = aContext.sectionSep2
+
+    seps = (&#34;&#34;, sep1, sep2)
 
     section = T.sectionFromNode(n, lang=lang, lastSlot=lastSlot, fillup=fillup)
     return &#34;&#34;.join(
@@ -82,10 +92,28 @@ def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
     )
 
 
-def _sectionLink(app, n, text=None, className=None):
-    newClassName = f&#39;rwh {className or &#34;&#34;}&#39;
+def structureStrFromNode(app, n):
+    api = app.api
+    T = api.T
+
+    struct = T.headingFromNode(n)
+
+    sep = &#39;&#39;
+    result = &#39;&#39;
+
+    for (i, part) in enumerate(struct):
+        if part is None:
+            continue
+        (nType, label) = part
+        result += f&#39;{sep}&lt;span class=&#34;nd&#34;&gt;{nType}&lt;/span&gt; {label}&#39;
+        sep = &#34;, &#34;
+    return result
+
+
+def _sectionLink(app, n, text=None, clsName=None):
+    newClsName = f&#39;rwh {clsName or &#34;&#34;}&#39;
     return app.webLink(
-        n, className=newClassName, text=text, _asString=True, _noUrl=True
+        n, clsName=newClsName, text=text, _asString=True, _noUrl=True
     )</code></pre>
 </details>
 </section>
@@ -108,8 +136,11 @@ def _sectionLink(app, n, text=None, className=None):
 <pre><code class="python">def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
     api = app.api
     T = api.T
-    sep1 = app.sectionSep1
-    sep2 = app.sectionSep2
+
+    aContext = app.context
+    sep1 = aContext.sectionSep1
+    sep2 = aContext.sectionSep2
+
     msg = f&#39;Not a valid passage: &#34;{sectionStr}&#34;&#39;
     msgi = &#39;{} &#34;{}&#34; is not a number&#39;
     section = sectionStr.split(sep1)
@@ -155,7 +186,12 @@ def _sectionLink(app, n, text=None, className=None):
 <pre><code class="python">def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
     api = app.api
     T = api.T
-    seps = (&#34;&#34;, app.sectionSep1, app.sectionSep2)
+
+    aContext = app.context
+    sep1 = aContext.sectionSep1
+    sep2 = aContext.sectionSep2
+
+    seps = (&#34;&#34;, sep1, sep2)
 
     section = T.sectionFromNode(n, lang=lang, lastSlot=lastSlot, fillup=fillup)
     return &#34;&#34;.join(
@@ -173,9 +209,38 @@ def _sectionLink(app, n, text=None, className=None):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def sectionsApi(app):
-    app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
-    app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
-    app._sectionLink = types.MethodType(_sectionLink, app)</code></pre>
+    if app.isCompatible:
+        app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
+        app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
+        app.structureStrFromNode = types.MethodType(structureStrFromNode, app)
+        app._sectionLink = types.MethodType(_sectionLink, app)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.sections.structureStrFromNode"><code class="name flex">
+<span>def <span class="ident">structureStrFromNode</span></span>(<span>app, n)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def structureStrFromNode(app, n):
+    api = app.api
+    T = api.T
+
+    struct = T.headingFromNode(n)
+
+    sep = &#39;&#39;
+    result = &#39;&#39;
+
+    for (i, part) in enumerate(struct):
+        if part is None:
+            continue
+        (nType, label) = part
+        result += f&#39;{sep}&lt;span class=&#34;nd&#34;&gt;{nType}&lt;/span&gt; {label}&#39;
+        sep = &#34;, &#34;
+    return result</code></pre>
 </details>
 </dd>
 </dl>
@@ -199,6 +264,7 @@ def _sectionLink(app, n, text=None, className=None):
 <li><code><a title="tf.applib.sections.nodeFromSectionStr" href="#tf.applib.sections.nodeFromSectionStr">nodeFromSectionStr</a></code></li>
 <li><code><a title="tf.applib.sections.sectionStrFromNode" href="#tf.applib.sections.sectionStrFromNode">sectionStrFromNode</a></code></li>
 <li><code><a title="tf.applib.sections.sectionsApi" href="#tf.applib.sections.sectionsApi">sectionsApi</a></code></li>
+<li><code><a title="tf.applib.sections.structureStrFromNode" href="#tf.applib.sections.structureStrFromNode">structureStrFromNode</a></code></li>
 </ul>
 </li>
 </ul>

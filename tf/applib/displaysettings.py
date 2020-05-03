@@ -16,12 +16,12 @@ DISPLAY_OPTIONS = dict(
     end=None,
     extraFeatures=(),
     full=False,
-    tupleFeatures=(),
     fmt=None,
     highlights={},
     noneValues={None},
     start=None,
     suppress=set(),
+    tupleFeatures=(),
     withPassage=True,
 )
 DISPLAY_OPTIONS.update({o[0]: o[1] for o in INTERFACE_OPTIONS})

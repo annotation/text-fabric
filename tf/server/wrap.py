@@ -2,8 +2,7 @@ import time
 import datetime
 
 from ..parameters import NAME, VERSION, DOI_URL_PREFIX, DOI_DEFAULT, DOI_TF, APP_URL
-from ..applib.displaySettings import INTERFACE_OPTIONS
-from tf.applib.helpers import NB
+from ..applib.helpers import NB
 
 
 # NAVIGATION IN MULTIPLE ITEMS (PAGES, PASSAGES)
@@ -92,13 +91,11 @@ def wrapOptions(context, form, defaults):
     interfaceDefaults = context.interfaceDefaults
 
     options = []
-    for o in INTERFACE_OPTIONS:
-        name = o[0]
-        default = interfaceDefaults[name]
-        if default is None:
+    for (k, v) in interfaceDefaults.items():
+        if v is None:
             continue
 
-        options.append[o]
+        options.append[k]
 
     html = []
     for (option, default, typ, acro, desc) in options:

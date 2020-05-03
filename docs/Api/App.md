@@ -1,12 +1,15 @@
-# App API
+# Advanced API
 
 ??? abstract "About"
-    The app-API provides extra functionality of top of the core of TF.
+    The advanced-API provides extra functionality of top of the core of TF.
     The most notable thing is display.
     The functions `plain()` and `pretty()` are able to display nodes using extra
     information about what those nodes typically represent in a specific corpus.
 
-    The app-API further knows how to download the data,
+    The real power of the advanced API is unleashed when there are well-tuned configuration
+    settings for a corpus, and possibly some supporting application code and CSS styling.
+
+    Depending on the settings, the advanced-API knows how to download the data,
     and can be invoked by a simple incantation.
 
 ## Incantation
@@ -17,12 +20,10 @@
     A = use(appName)
     ```
 
-    See [Corpora](../About/Corpora.md) for what you can use. 
-
     Hint: think of the `use {database}` statements in MySQL and MongoDb.
 
     Without further arguments, this will set up an TF core API with most features loaded,
-    wrapped in an app-specific API.
+    wrapped in an corpus-specific advanced API.
 
     ??? abstract "Start up sequence"
         During start-up the following happens:
@@ -33,30 +34,52 @@
         (2) if your data has been freshly downloaded,
         a series of optimizations is executed;
 
-        (3) most features of the corpus are loaded.
+        (3) most features of the corpus are loaded into memory.
 
-    There are many scenarios in which you can work with a TF app:
-    in a Python script or in a notebook.
-    If you start the TF browser, a TF app is started in a *kernel*,
-    a process that can communicate with other processes, such as web servers,
-    much like how a database communicates with programs that need data.
+        (4) the data is inspected to derive configuration information for the
+        advanced API; if present, additional settings, code and styling is loaded;
 
-    Sometimes you want to load all features without thinking,
-    at other times you want to be selective.
-    You may want to load downloadable features from the internet,
-    or you want to experiment with
-    features you are developing. 
+    There are many scenarios in which you can work with the advanced API:
+    in a Python script or in a notebook or in the TF-browser.
+    If you start the TF browser, a *kernel* process is started or reused that holds the
+    TF data.
+    Then a webserver is started or reused that communicates with the kernel,
+    much like how webserver communicates with a database.
 
-    A TF app can be invoked for all these scenarios
-    by supplying additional arguments to the incantation.
+    The advanced API supports all these scenarios
+    by means of additional arguments to the incantation.
 
-    ??? hint "appName:specifier, checkData=specifier"
+    ???+ info "appName"
+        The appname  can be as simple as the name of an existing TF-app.
+        The app should exist as a repository `app-`*appName* under 
+        [github.com/annotation]({{an}}), see also
+        [Corpora](../About/Corpora.md). 
+
+        If there is a `/` in the appName argument, it is interpreted as a location
+        on your  system.
+
+        If it points to a directory with a `config.yaml` in it,
+        this `config.yaml` will be read and interpreted as settings for the advanced API.
+        If there is also a `app.py`, it will be imported as custom application code.
+        And if there is a `static/display.css` there, it will be used for styling the
+        display of corpus material.
+
+        If there is no `config.yaml` there, it will be assumed that there are `.tf` data
+        files in that location, and they will be loaded. The advanced API will work with
+        default settings, based on the `.tf` data found.
+
+    ???+ hint "appName:specifier, checkData=specifier"
+        Sometimes you want to load all features without thinking,
+        at other times you want to be selective.
+        You may want to load downloadable features from the internet,
+        or you want to experiment with
+        features you are developing. 
         The specifiers let you use a specific point in the
         history of the app and data.
 
-        *appName:specifier* is for the TF-app application code.
+        *appName:specifier* is used for retrieving a TF-app (*code*).
 
-        *checkoutData=specifier* is for the main data of the TF-app.
+        *checkoutData=specifier* is for retrieving the corpus itself  (*data*).
 
         *   `''` (empty string or absent) (**default**):
             use the latest release;
@@ -85,9 +108,12 @@
         And if you are in a Jupyter notebook,
         these names are linked to their documentation.
 
+
     Without further arguments, TF thinks you are a user
     that wants to work with as much data possible without hassle.
-    It makes some standard choices for you, and it will auto-download data.
+    It makes some standard choices for you, and it will auto-download data, if there
+    are settings specified in a `config.yaml` that indicate where the data can be
+    downloaded from.
 
     The following options are for people who want increasingly finer control
     over the features that are being loaded.
@@ -161,8 +187,14 @@
             default selection of features.
             You cannot use these arguments to prevent features from being loaded.
 
+        ??? note "appName with `/`"
+            If you use the *appName* argument with a `/` in it, and it does not point
+            to a TF app you have locally, it will be interpreted as a *locations*
+            search path to find `.tf` files. It acts as the main `locations` argument,
+            and will be combined with the `modules` argument.
+
     ??? info "api=None"
-        So far, the TF app will construct a generic TF API
+        So far, the TF app will construct an advanced API
         with a more or less standard set of features
         loaded, and make that API avaible to you, under `A.api`.
 
@@ -400,10 +432,40 @@
         Same as for [`T.sectionTuple()`](../Api/Text.md#sections)
 
 
+??? abstract "A.structureStrFromNode()"
+    ```python
+    A.structureStrFromNode(node)
+    ```
+
+    ???+ info "Description"
+        Returns the structure label (a string) that correspond to the reference
+        node,
+        which is the first or last slot belonging to `node`,
+        dependent on `lastSlot`.
+        The result is a string,
+        built from the labels of the individual structure levels.
+
+        Compare [`T.headingFromNode`](../Api/Text.md#structure).
+
+    ??? info "node"
+        The node from which we obtain a section specification.
+
+    ??? info "lastSlot"
+        Whether the reference node will be the last slot contained by the
+        `node` argument or the first node.
+
+    ??? info "lang"
+        The language to be used for the section parts,
+        as far as they are language dependent.
+
+    ??? info "fillup"
+        Same as for [`T.sectionTuple()`](../Api/Text.md#sections)
+
+
 ## Display
 
 ??? abstract "About"
-    Where a TF app really shines is in displaying nodes.
+    Where the advanced API really shines is in displaying nodes.
     There are basically two ways of displaying a node:
     
     *plain*: just the associated text of a node, or if that would be too much,
@@ -422,6 +484,10 @@
     pretty() prettyTuple() show()
     ``` 
 
+    In plain and pretty displays, certain parts can be *highlighted*, which is
+    good for displaying query results where the parts that correspond directly to the
+    search template are highlighted.
+
 ??? abstract "Setting up display parameters"
     There is a bunch of parameters that govern how the display functions arrive at their
     results. You can pass them as optional arguments to these functions,
@@ -433,7 +499,7 @@
     
     * optional parameters passed directly to the function,
     * values as set up by previous calls to `displaySetup()`,
-    * default values configured by the app.
+    * corpus dependent default values configured by the advanced API.
 
 ??? abstract "List of display parameters"
     These are the parameters and their default values:
@@ -555,6 +621,18 @@
             It does not harm performance if `highlights` maps
             lots of nodes outside the tuple as well.
 
+    ??? info "lineNumbers=False"
+        indicates whether line numbers should be displayed.
+
+        ??? note "source data"
+            Line numbers are with respect to the source data file that is contains the
+            origin material of the node in question, if a datasource provides
+            a feature that contains line numbers.
+
+        ??? note "configuration"
+            Whether a corpus has line numbers, and in which feature they are stored
+            for which node types is configured in a corpus dependent app.
+
     ??? info "noneValues=None"
         A set of values for which no display should be generated.
         The default set is `None` and the strings `NA`, `none`, `unknown`.
@@ -576,6 +654,28 @@
             Beware of putting to much in `noneValues`.
             The contents of `noneValues` affect the display of
             all features, not only the custom features.
+
+    ??? info "prettyTypes=False"
+        indicates whether node types should always be displayed in pretty displays.
+        The node type of slot nodes is never displayed.
+
+    ??? info "showChunks=False"
+        The corpus data may contain nodes that represent discontinuous pieces of text.
+        Some corpora also offer node types that represent all continuous chunks of those
+        nodes.
+        By default, the advanced API, will
+        show those chunks with the original nodes wrapped around them, with dotted borders
+        indicating the discontinuities..
+        When pretty-displaying such structures, the display of the chunks themselves can be
+        reduced, because they tend to make displays unwieldy.
+
+    ??? info "showFeatures=True"
+        indicates whether pretty displays should show relevant features and their values.
+
+    ??? info "showGraphics=True"
+        indicates whether plain and pretty displays should include associated graphic elements,
+        provided the corpus offers those elements, and the advanced API has found a way to
+        locate those elements.
 
     ??? info "start=None"
         `start` is the starting point for displaying the iterable of results.
@@ -600,14 +700,6 @@
 
         `features` may be given as an iterable or a space separated string of feature names.
 
-    ??? info "withTypes=False"
-        indicates whether node types should be displayed.
-        The node type of slot nodes is never displayed.
-
-    ??? info "prettyTypes=False"
-        indicates whether node types should always be displayed in pretty displays.
-        The node type of slot nodes is never displayed.
-
     ??? info "withNodes=False"
         indicates whether node numbers should be displayed.
 
@@ -617,21 +709,6 @@
             its node number, and you can use `L F T E` to look up all information
             about each node that the corpus has to offer.
 
-    ??? info "showFeatures=True"
-        indicates whether pretty displays should show relevant features and their values.
-
-    ??? info "lineNumbers=False"
-        indicates whether line numbers should be displayed.
-
-        ??? note "source data"
-            Line numbers are with respect to the source data file that is contains the
-            origin material of the node in question, if a datasource provides
-            a feature that contains line numbers.
-
-        ??? note "configuration"
-            Whether a corpus has line numbers, and in which feature they are stored
-            for which node types is configured in a corpus dependent app.
-
     ??? info "withPassage=True"
         indicates whether a passage label should be put next to a displayed node
         or tuple of nodes.
@@ -639,6 +716,10 @@
         the value may also be a set of integers, indicating the columns whose
         nodes will be linked with a web link
         (the first column is column 1).
+
+    ??? info "withTypes=False"
+        indicates whether node types should be displayed.
+        The node type of slot nodes is never displayed.
 
 ??? abstract "A.displaySetup()"
     ```python

@@ -174,10 +174,26 @@ class Checkout(object):
             self.connect()
             self.fetchInfo()
 
-    def log(self, msg, error=False, newline=True):
+    def log(self, msg, newline=True):
         silent = self.silent
-        if not silent or error:
-            console(msg, error=error, newline=newline)
+        if not silent:
+            console(msg, newline=newline)
+
+    def warning(self, msg, newline=True):
+        silent = self.silent
+        if not silent == &#34;deep&#34;:
+            console(msg, newline=newline)
+
+    def error(self, msg, newline=True):
+        console(msg, error=True, newline=newline)
+
+    def possibleError(self, msg, showErrors, again=False, indent=&#34;\t&#34;, newline=False):
+        if showErrors:
+            self.error(msg, newline=newline)
+        else:
+            self.warning(msg, newline=newline)
+            if again:
+                self.warning(f&#34;{indent}Will try something else&#34;)
 
     def makeSureLocal(self):
         label = self.label
@@ -258,7 +274,7 @@ class Checkout(object):
                     else False
                 )
             if not self.localBase:
-                self.log(f&#34;The requested {label} is not available offline&#34;, error=True)
+                self.error(f&#34;The requested {label} is not available offline&#34;)
         else:
             if isLocal:
                 self.localBase = self.baseLocal
@@ -266,20 +282,17 @@ class Checkout(object):
                 if not canOnline:
                     if askLatest:
                         if mayLocal:
-                            self.log(f&#34;The offline {label} may not be the latest&#34;)
+                            self.warning(f&#34;The offline {label} may not be the latest&#34;)
                             self.localBase = self.baseLocal
                         else:
-                            self.log(
-                                f&#34;The requested {label} is not available offline&#34;,
-                                error=True,
+                            self.error(
+                                f&#34;The requested {label} is not available offline&#34;
                             )
                     else:
-                        self.log(f&#34;The requested {label} is not available offline&#34;)
-                        self.log(f&#34;No online connection&#34;, error=True)
+                        self.warning(f&#34;The requested {label} is not available offline&#34;)
+                        self.error(f&#34;No online connection&#34;)
                 elif not isOnline:
-                    self.log(
-                        f&#34;The requested {label} is not available online&#34;, error=True
-                    )
+                    self.error(f&#34;The requested {label} is not available online&#34;)
                 else:
                     self.localBase = self.baseLocal if self.download() else False
 
@@ -375,20 +388,17 @@ class Checkout(object):
 
     def downloadZip(self, dataUrl, showErrors=True):
         label = self.label
-        silent = self.silent
         self.log(f&#34;\tdownloading {dataUrl} ... &#34;)
         try:
             r = requests.get(dataUrl, allow_redirects=True)
             self.log(f&#34;\tunzipping ... &#34;)
             zf = io.BytesIO(r.content)
         except Exception as e:
-            self.log(f&#34;\t{str(e)}\n\tcould not download {dataUrl}&#34;, error=showErrors)
-            if not showErrors:
-                self.log(f&#34;\tWill try something else&#34;)
+            msg = f&#34;\t{str(e)}\n\tcould not download {dataUrl}&#34;
+            self.possibleError(msg, showErrors, again=True)
             return False
 
-        if not silent:
-            self.log(f&#34;\tsaving {label}&#34;)
+        self.log(f&#34;\tsaving {label}&#34;)
 
         cwd = os.getcwd()
         destZip = self.dirPathLocal
@@ -412,9 +422,8 @@ class Checkout(object):
                     zInfo.filename = os.path.basename(zInfo.filename)
                     z.extract(zInfo)
         except Exception:
-            self.log(f&#34;\tcould not save {label} to {destZip}&#34;, error=showErrors)
-            if not showErrors:
-                self.log(f&#34;\tWill try something else&#34;)
+            msg = f&#34;\tcould not save {label} to {destZip}&#34;
+            self.possibleError(msg, showErrors, again=True)
             os.chdir(cwd)
             return False
         os.chdir(cwd)
@@ -433,7 +442,6 @@ class Checkout(object):
         os.makedirs(destDir, exist_ok=True)
 
         excludeRe = re.compile(exclude) if exclude else None
-        silent = self.silent
 
         good = True
 
@@ -445,18 +453,13 @@ class Checkout(object):
             try:
                 contents = g.get_contents(subPath, ref=commit)
             except UnknownObjectException:
-                self.log(
-                    f&#34;{lead}No directory {subPath} in {self.toString(commit, None, False)}&#34;,
-                    error=showErrors,
-                )
-                if not showErrors:
-                    self.log(f&#34;{lead}Will try something else&#34;)
+                msg = f&#34;{lead}No directory {subPath} in {self.toString(commit, None, False)}&#34;
+                self.possibleError(msg, showErrors, again=True, indent=lead)
                 good = False
                 return
             for content in contents:
                 thisPath = content.path
-                if not silent:
-                    console(f&#34;\t{lead}{thisPath}...&#34;, newline=False)
+                self.log(f&#34;\t{lead}{thisPath}...&#34;, newline=False)
                 if exclude and excludeRe.search(thisPath):
                     self.log(&#34;excluded&#34;)
                     continue
@@ -473,9 +476,8 @@ class Checkout(object):
                             fd.write(fileData)
                         self.log(&#34;downloaded&#34;)
                     except (GithubException, IOError):
-                        self.log(&#34;error&#34;)
-                        if not showErrors:
-                            self.log(f&#34;{lead}Will try something else&#34;)
+                        msg = &#34;error&#34;
+                        self.possibleError(msg, showErrors, again=True, indent=lead)
                         good = False
 
         _downloadDir(self.dataDir, 0)
@@ -483,7 +485,8 @@ class Checkout(object):
         if good:
             self.log(&#34;\tOK&#34;)
         else:
-            self.log(&#34;\tFailed&#34;, error=showErrors)
+            msg = &#34;\tFailed&#34;
+            self.possibleError(msg, showErrors)
 
         return good
 
@@ -510,9 +513,9 @@ class Checkout(object):
         try:
             r = g.get_release(release) if release else g.get_latest_release()
         except UnknownObjectException:
-            self.log(f&#34;\tno release{msg}&#34;, error=showErrors)
+            self.possibleError(f&#34;\tno release{msg}&#34;, showErrors)
         except Exception:
-            self.log(f&#34;\tcannot find release{msg}&#34;, error=showErrors)
+            self.possibleError(f&#34;\tcannot find release{msg}&#34;, showErrors)
         return r
 
     def getCommitObj(self, commit):
@@ -528,9 +531,9 @@ class Checkout(object):
             if cs.totalCount:
                 c = cs[0]
             else:
-                self.log(f&#34;\tno commit{msg}&#34;, error=True)
+                self.error(f&#34;\tno commit{msg}&#34;)
         except Exception:
-            self.log(f&#34;\tcannot find commit{msg}&#34;, error=True)
+            self.error(f&#34;\tcannot find commit{msg}&#34;)
         return c
 
     def getReleaseFromObj(self, r):
@@ -615,12 +618,9 @@ class Checkout(object):
                 f&#34; with {rate.remaining} left for this hour&#34;
             )
             if rate.limit &lt; 100:
-                self.log(
-                    (
-                        f&#34;To increase the rate,&#34;
-                        f&#34;see https://annotation.github.io/text-fabric/Api/Repo/&#34;
-                    ),
-                    error=True,
+                self.warning(
+                    f&#34;To increase the rate,&#34;
+                    f&#34;see https://annotation.github.io/text-fabric/Api/Repo/&#34;
                 )
 
         try:
@@ -631,10 +631,10 @@ class Checkout(object):
             self.repoOnline = self.ghConn.get_repo(f&#34;{self.org}/{self.repo}&#34;)
             self.log(f&#34;connected&#34;)
         except GithubException as why:
-            self.log(f&#34;failed&#34;)
-            self.log(f&#34;GitHub says: {why}&#34;)
+            self.warning(f&#34;failed&#34;)
+            self.warning(f&#34;GitHub says: {why}&#34;)
         except IOError:
-            self.log(f&#34;no internet&#34;)
+            self.warning(f&#34;no internet&#34;)
 
 
 def checkoutRepo(
@@ -878,10 +878,26 @@ def checkoutRepo(
             self.connect()
             self.fetchInfo()
 
-    def log(self, msg, error=False, newline=True):
+    def log(self, msg, newline=True):
         silent = self.silent
-        if not silent or error:
-            console(msg, error=error, newline=newline)
+        if not silent:
+            console(msg, newline=newline)
+
+    def warning(self, msg, newline=True):
+        silent = self.silent
+        if not silent == &#34;deep&#34;:
+            console(msg, newline=newline)
+
+    def error(self, msg, newline=True):
+        console(msg, error=True, newline=newline)
+
+    def possibleError(self, msg, showErrors, again=False, indent=&#34;\t&#34;, newline=False):
+        if showErrors:
+            self.error(msg, newline=newline)
+        else:
+            self.warning(msg, newline=newline)
+            if again:
+                self.warning(f&#34;{indent}Will try something else&#34;)
 
     def makeSureLocal(self):
         label = self.label
@@ -962,7 +978,7 @@ def checkoutRepo(
                     else False
                 )
             if not self.localBase:
-                self.log(f&#34;The requested {label} is not available offline&#34;, error=True)
+                self.error(f&#34;The requested {label} is not available offline&#34;)
         else:
             if isLocal:
                 self.localBase = self.baseLocal
@@ -970,20 +986,17 @@ def checkoutRepo(
                 if not canOnline:
                     if askLatest:
                         if mayLocal:
-                            self.log(f&#34;The offline {label} may not be the latest&#34;)
+                            self.warning(f&#34;The offline {label} may not be the latest&#34;)
                             self.localBase = self.baseLocal
                         else:
-                            self.log(
-                                f&#34;The requested {label} is not available offline&#34;,
-                                error=True,
+                            self.error(
+                                f&#34;The requested {label} is not available offline&#34;
                             )
                     else:
-                        self.log(f&#34;The requested {label} is not available offline&#34;)
-                        self.log(f&#34;No online connection&#34;, error=True)
+                        self.warning(f&#34;The requested {label} is not available offline&#34;)
+                        self.error(f&#34;No online connection&#34;)
                 elif not isOnline:
-                    self.log(
-                        f&#34;The requested {label} is not available online&#34;, error=True
-                    )
+                    self.error(f&#34;The requested {label} is not available online&#34;)
                 else:
                     self.localBase = self.baseLocal if self.download() else False
 
@@ -1079,20 +1092,17 @@ def checkoutRepo(
 
     def downloadZip(self, dataUrl, showErrors=True):
         label = self.label
-        silent = self.silent
         self.log(f&#34;\tdownloading {dataUrl} ... &#34;)
         try:
             r = requests.get(dataUrl, allow_redirects=True)
             self.log(f&#34;\tunzipping ... &#34;)
             zf = io.BytesIO(r.content)
         except Exception as e:
-            self.log(f&#34;\t{str(e)}\n\tcould not download {dataUrl}&#34;, error=showErrors)
-            if not showErrors:
-                self.log(f&#34;\tWill try something else&#34;)
+            msg = f&#34;\t{str(e)}\n\tcould not download {dataUrl}&#34;
+            self.possibleError(msg, showErrors, again=True)
             return False
 
-        if not silent:
-            self.log(f&#34;\tsaving {label}&#34;)
+        self.log(f&#34;\tsaving {label}&#34;)
 
         cwd = os.getcwd()
         destZip = self.dirPathLocal
@@ -1116,9 +1126,8 @@ def checkoutRepo(
                     zInfo.filename = os.path.basename(zInfo.filename)
                     z.extract(zInfo)
         except Exception:
-            self.log(f&#34;\tcould not save {label} to {destZip}&#34;, error=showErrors)
-            if not showErrors:
-                self.log(f&#34;\tWill try something else&#34;)
+            msg = f&#34;\tcould not save {label} to {destZip}&#34;
+            self.possibleError(msg, showErrors, again=True)
             os.chdir(cwd)
             return False
         os.chdir(cwd)
@@ -1137,7 +1146,6 @@ def checkoutRepo(
         os.makedirs(destDir, exist_ok=True)
 
         excludeRe = re.compile(exclude) if exclude else None
-        silent = self.silent
 
         good = True
 
@@ -1149,18 +1157,13 @@ def checkoutRepo(
             try:
                 contents = g.get_contents(subPath, ref=commit)
             except UnknownObjectException:
-                self.log(
-                    f&#34;{lead}No directory {subPath} in {self.toString(commit, None, False)}&#34;,
-                    error=showErrors,
-                )
-                if not showErrors:
-                    self.log(f&#34;{lead}Will try something else&#34;)
+                msg = f&#34;{lead}No directory {subPath} in {self.toString(commit, None, False)}&#34;
+                self.possibleError(msg, showErrors, again=True, indent=lead)
                 good = False
                 return
             for content in contents:
                 thisPath = content.path
-                if not silent:
-                    console(f&#34;\t{lead}{thisPath}...&#34;, newline=False)
+                self.log(f&#34;\t{lead}{thisPath}...&#34;, newline=False)
                 if exclude and excludeRe.search(thisPath):
                     self.log(&#34;excluded&#34;)
                     continue
@@ -1177,9 +1180,8 @@ def checkoutRepo(
                             fd.write(fileData)
                         self.log(&#34;downloaded&#34;)
                     except (GithubException, IOError):
-                        self.log(&#34;error&#34;)
-                        if not showErrors:
-                            self.log(f&#34;{lead}Will try something else&#34;)
+                        msg = &#34;error&#34;
+                        self.possibleError(msg, showErrors, again=True, indent=lead)
                         good = False
 
         _downloadDir(self.dataDir, 0)
@@ -1187,7 +1189,8 @@ def checkoutRepo(
         if good:
             self.log(&#34;\tOK&#34;)
         else:
-            self.log(&#34;\tFailed&#34;, error=showErrors)
+            msg = &#34;\tFailed&#34;
+            self.possibleError(msg, showErrors)
 
         return good
 
@@ -1214,9 +1217,9 @@ def checkoutRepo(
         try:
             r = g.get_release(release) if release else g.get_latest_release()
         except UnknownObjectException:
-            self.log(f&#34;\tno release{msg}&#34;, error=showErrors)
+            self.possibleError(f&#34;\tno release{msg}&#34;, showErrors)
         except Exception:
-            self.log(f&#34;\tcannot find release{msg}&#34;, error=showErrors)
+            self.possibleError(f&#34;\tcannot find release{msg}&#34;, showErrors)
         return r
 
     def getCommitObj(self, commit):
@@ -1232,9 +1235,9 @@ def checkoutRepo(
             if cs.totalCount:
                 c = cs[0]
             else:
-                self.log(f&#34;\tno commit{msg}&#34;, error=True)
+                self.error(f&#34;\tno commit{msg}&#34;)
         except Exception:
-            self.log(f&#34;\tcannot find commit{msg}&#34;, error=True)
+            self.error(f&#34;\tcannot find commit{msg}&#34;)
         return c
 
     def getReleaseFromObj(self, r):
@@ -1319,12 +1322,9 @@ def checkoutRepo(
                 f&#34; with {rate.remaining} left for this hour&#34;
             )
             if rate.limit &lt; 100:
-                self.log(
-                    (
-                        f&#34;To increase the rate,&#34;
-                        f&#34;see https://annotation.github.io/text-fabric/Api/Repo/&#34;
-                    ),
-                    error=True,
+                self.warning(
+                    f&#34;To increase the rate,&#34;
+                    f&#34;see https://annotation.github.io/text-fabric/Api/Repo/&#34;
                 )
 
         try:
@@ -1335,10 +1335,10 @@ def checkoutRepo(
             self.repoOnline = self.ghConn.get_repo(f&#34;{self.org}/{self.repo}&#34;)
             self.log(f&#34;connected&#34;)
         except GithubException as why:
-            self.log(f&#34;failed&#34;)
-            self.log(f&#34;GitHub says: {why}&#34;)
+            self.warning(f&#34;failed&#34;)
+            self.warning(f&#34;GitHub says: {why}&#34;)
         except IOError:
-            self.log(f&#34;no internet&#34;)</code></pre>
+            self.warning(f&#34;no internet&#34;)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -1442,12 +1442,9 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
             f&#34; with {rate.remaining} left for this hour&#34;
         )
         if rate.limit &lt; 100:
-            self.log(
-                (
-                    f&#34;To increase the rate,&#34;
-                    f&#34;see https://annotation.github.io/text-fabric/Api/Repo/&#34;
-                ),
-                error=True,
+            self.warning(
+                f&#34;To increase the rate,&#34;
+                f&#34;see https://annotation.github.io/text-fabric/Api/Repo/&#34;
             )
 
     try:
@@ -1458,10 +1455,10 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
         self.repoOnline = self.ghConn.get_repo(f&#34;{self.org}/{self.repo}&#34;)
         self.log(f&#34;connected&#34;)
     except GithubException as why:
-        self.log(f&#34;failed&#34;)
-        self.log(f&#34;GitHub says: {why}&#34;)
+        self.warning(f&#34;failed&#34;)
+        self.warning(f&#34;GitHub says: {why}&#34;)
     except IOError:
-        self.log(f&#34;no internet&#34;)</code></pre>
+        self.warning(f&#34;no internet&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.repo.Checkout.download"><code class="name flex">
@@ -1531,7 +1528,6 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     os.makedirs(destDir, exist_ok=True)
 
     excludeRe = re.compile(exclude) if exclude else None
-    silent = self.silent
 
     good = True
 
@@ -1543,18 +1539,13 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
         try:
             contents = g.get_contents(subPath, ref=commit)
         except UnknownObjectException:
-            self.log(
-                f&#34;{lead}No directory {subPath} in {self.toString(commit, None, False)}&#34;,
-                error=showErrors,
-            )
-            if not showErrors:
-                self.log(f&#34;{lead}Will try something else&#34;)
+            msg = f&#34;{lead}No directory {subPath} in {self.toString(commit, None, False)}&#34;
+            self.possibleError(msg, showErrors, again=True, indent=lead)
             good = False
             return
         for content in contents:
             thisPath = content.path
-            if not silent:
-                console(f&#34;\t{lead}{thisPath}...&#34;, newline=False)
+            self.log(f&#34;\t{lead}{thisPath}...&#34;, newline=False)
             if exclude and excludeRe.search(thisPath):
                 self.log(&#34;excluded&#34;)
                 continue
@@ -1571,9 +1562,8 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
                         fd.write(fileData)
                     self.log(&#34;downloaded&#34;)
                 except (GithubException, IOError):
-                    self.log(&#34;error&#34;)
-                    if not showErrors:
-                        self.log(f&#34;{lead}Will try something else&#34;)
+                    msg = &#34;error&#34;
+                    self.possibleError(msg, showErrors, again=True, indent=lead)
                     good = False
 
     _downloadDir(self.dataDir, 0)
@@ -1581,7 +1571,8 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     if good:
         self.log(&#34;\tOK&#34;)
     else:
-        self.log(&#34;\tFailed&#34;, error=showErrors)
+        msg = &#34;\tFailed&#34;
+        self.possibleError(msg, showErrors)
 
     return good</code></pre>
 </details>
@@ -1639,20 +1630,17 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 </summary>
 <pre><code class="python">def downloadZip(self, dataUrl, showErrors=True):
     label = self.label
-    silent = self.silent
     self.log(f&#34;\tdownloading {dataUrl} ... &#34;)
     try:
         r = requests.get(dataUrl, allow_redirects=True)
         self.log(f&#34;\tunzipping ... &#34;)
         zf = io.BytesIO(r.content)
     except Exception as e:
-        self.log(f&#34;\t{str(e)}\n\tcould not download {dataUrl}&#34;, error=showErrors)
-        if not showErrors:
-            self.log(f&#34;\tWill try something else&#34;)
+        msg = f&#34;\t{str(e)}\n\tcould not download {dataUrl}&#34;
+        self.possibleError(msg, showErrors, again=True)
         return False
 
-    if not silent:
-        self.log(f&#34;\tsaving {label}&#34;)
+    self.log(f&#34;\tsaving {label}&#34;)
 
     cwd = os.getcwd()
     destZip = self.dirPathLocal
@@ -1676,13 +1664,25 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
                 zInfo.filename = os.path.basename(zInfo.filename)
                 z.extract(zInfo)
     except Exception:
-        self.log(f&#34;\tcould not save {label} to {destZip}&#34;, error=showErrors)
-        if not showErrors:
-            self.log(f&#34;\tWill try something else&#34;)
+        msg = f&#34;\tcould not save {label} to {destZip}&#34;
+        self.possibleError(msg, showErrors, again=True)
         os.chdir(cwd)
         return False
     os.chdir(cwd)
     return True</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.error"><code class="name flex">
+<span>def <span class="ident">error</span></span>(<span>self, msg, newline=True)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def error(self, msg, newline=True):
+    console(msg, error=True, newline=newline)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.repo.Checkout.fetchInfo"><code class="name flex">
@@ -1788,9 +1788,9 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
         if cs.totalCount:
             c = cs[0]
         else:
-            self.log(f&#34;\tno commit{msg}&#34;, error=True)
+            self.error(f&#34;\tno commit{msg}&#34;)
     except Exception:
-        self.log(f&#34;\tcannot find commit{msg}&#34;, error=True)
+        self.error(f&#34;\tcannot find commit{msg}&#34;)
     return c</code></pre>
 </details>
 </dd>
@@ -1849,9 +1849,9 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     try:
         r = g.get_release(release) if release else g.get_latest_release()
     except UnknownObjectException:
-        self.log(f&#34;\tno release{msg}&#34;, error=showErrors)
+        self.possibleError(f&#34;\tno release{msg}&#34;, showErrors)
     except Exception:
-        self.log(f&#34;\tcannot find release{msg}&#34;, error=showErrors)
+        self.possibleError(f&#34;\tcannot find release{msg}&#34;, showErrors)
     return r</code></pre>
 </details>
 </dd>
@@ -1882,7 +1882,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 </details>
 </dd>
 <dt id="tf.applib.repo.Checkout.log"><code class="name flex">
-<span>def <span class="ident">log</span></span>(<span>self, msg, error=False, newline=True)</span>
+<span>def <span class="ident">log</span></span>(<span>self, msg, newline=True)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -1890,10 +1890,10 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def log(self, msg, error=False, newline=True):
+<pre><code class="python">def log(self, msg, newline=True):
     silent = self.silent
-    if not silent or error:
-        console(msg, error=error, newline=newline)</code></pre>
+    if not silent:
+        console(msg, newline=newline)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.repo.Checkout.makeSureLocal"><code class="name flex">
@@ -1984,7 +1984,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
                 else False
             )
         if not self.localBase:
-            self.log(f&#34;The requested {label} is not available offline&#34;, error=True)
+            self.error(f&#34;The requested {label} is not available offline&#34;)
     else:
         if isLocal:
             self.localBase = self.baseLocal
@@ -1992,20 +1992,17 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
             if not canOnline:
                 if askLatest:
                     if mayLocal:
-                        self.log(f&#34;The offline {label} may not be the latest&#34;)
+                        self.warning(f&#34;The offline {label} may not be the latest&#34;)
                         self.localBase = self.baseLocal
                     else:
-                        self.log(
-                            f&#34;The requested {label} is not available offline&#34;,
-                            error=True,
+                        self.error(
+                            f&#34;The requested {label} is not available offline&#34;
                         )
                 else:
-                    self.log(f&#34;The requested {label} is not available offline&#34;)
-                    self.log(f&#34;No online connection&#34;, error=True)
+                    self.warning(f&#34;The requested {label} is not available offline&#34;)
+                    self.error(f&#34;No online connection&#34;)
             elif not isOnline:
-                self.log(
-                    f&#34;The requested {label} is not available online&#34;, error=True
-                )
+                self.error(f&#34;The requested {label} is not available online&#34;)
             else:
                 self.localBase = self.baseLocal if self.download() else False
 
@@ -2043,6 +2040,24 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
         self.log(f&#34;\t{offString} ({state})&#34;)</code></pre>
 </details>
 </dd>
+<dt id="tf.applib.repo.Checkout.possibleError"><code class="name flex">
+<span>def <span class="ident">possibleError</span></span>(<span>self, msg, showErrors, again=False, indent='\t', newline=False)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def possibleError(self, msg, showErrors, again=False, indent=&#34;\t&#34;, newline=False):
+    if showErrors:
+        self.error(msg, newline=newline)
+    else:
+        self.warning(msg, newline=newline)
+        if again:
+            self.warning(f&#34;{indent}Will try something else&#34;)</code></pre>
+</details>
+</dd>
 <dt id="tf.applib.repo.Checkout.readInfo"><code class="name flex">
 <span>def <span class="ident">readInfo</span></span>(<span>self)</span>
 </code></dt>
@@ -2062,6 +2077,21 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
                     self.commitOff = commit
                 if release:
                     self.releaseOff = release</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.warning"><code class="name flex">
+<span>def <span class="ident">warning</span></span>(<span>self, msg, newline=True)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def warning(self, msg, newline=True):
+    silent = self.silent
+    if not silent == &#34;deep&#34;:
+        console(msg, newline=newline)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.repo.Checkout.writeInfo"><code class="name flex">
@@ -2115,6 +2145,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <li><code><a title="tf.applib.repo.Checkout.downloadDir" href="#tf.applib.repo.Checkout.downloadDir">downloadDir</a></code></li>
 <li><code><a title="tf.applib.repo.Checkout.downloadRelease" href="#tf.applib.repo.Checkout.downloadRelease">downloadRelease</a></code></li>
 <li><code><a title="tf.applib.repo.Checkout.downloadZip" href="#tf.applib.repo.Checkout.downloadZip">downloadZip</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.error" href="#tf.applib.repo.Checkout.error">error</a></code></li>
 <li><code><a title="tf.applib.repo.Checkout.fetchInfo" href="#tf.applib.repo.Checkout.fetchInfo">fetchInfo</a></code></li>
 <li><code><a title="tf.applib.repo.Checkout.fixInfo" href="#tf.applib.repo.Checkout.fixInfo">fixInfo</a></code></li>
 <li><code><a title="tf.applib.repo.Checkout.fromString" href="#tf.applib.repo.Checkout.fromString">fromString</a></code></li>
@@ -2128,8 +2159,10 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <li><code><a title="tf.applib.repo.Checkout.isOffline" href="#tf.applib.repo.Checkout.isOffline">isOffline</a></code></li>
 <li><code><a title="tf.applib.repo.Checkout.log" href="#tf.applib.repo.Checkout.log">log</a></code></li>
 <li><code><a title="tf.applib.repo.Checkout.makeSureLocal" href="#tf.applib.repo.Checkout.makeSureLocal">makeSureLocal</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.possibleError" href="#tf.applib.repo.Checkout.possibleError">possibleError</a></code></li>
 <li><code><a title="tf.applib.repo.Checkout.readInfo" href="#tf.applib.repo.Checkout.readInfo">readInfo</a></code></li>
 <li><code><a title="tf.applib.repo.Checkout.toString" href="#tf.applib.repo.Checkout.toString">toString</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.warning" href="#tf.applib.repo.Checkout.warning">warning</a></code></li>
 <li><code><a title="tf.applib.repo.Checkout.writeInfo" href="#tf.applib.repo.Checkout.writeInfo">writeInfo</a></code></li>
 </ul>
 </li>

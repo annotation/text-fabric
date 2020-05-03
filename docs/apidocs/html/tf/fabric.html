@@ -25,6 +25,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import os
+
 &#34;&#34;&#34;Defined the main class.
 
 Also lists the precomputation steps.
@@ -107,7 +108,7 @@ dependencies: strings
 For a description of what the steps are for, see the functions
 in `tf.core.prepare`.
 &#34;&#34;&#34;
-KIND = dict(__sections__=&#34;section&#34;, __structure__=&#34;structure&#34;,)
+KIND = dict(__sections__=&#34;section&#34;, __structure__=&#34;structure&#34;)
 
 
 class Fabric(object):
@@ -200,22 +201,24 @@ Api reference : {APIREF}
                 ):
                     if not add:
                         self.tm.warning(
-                            f&#34;No section config in {WARP[2]}, the section part of the T-API cannot be used&#34;
+                            f&#34;Dataset without sections in {WARP[2]}:&#34;
+                            f&#34;no section functions in the T-API&#34;
                         )
                     self.sectionsOK = False
                 else:
                     self.textFeatures |= set(self.sectionFeats)
-                    self.sectionFeatsWithLanguage = {
+                    self.sectionFeatsWithLanguage = tuple(
                         f
                         for f in self.features
                         if f == self.sectionFeats[0]
                         or f.startswith(f&#34;{self.sectionFeats[0]}@&#34;)
-                    }
+                    )
                     self.textFeatures |= set(self.sectionFeatsWithLanguage)
                 if not self.structureTypes or not self.structureFeats:
                     if not add:
                         self.tm.warning(
-                            f&#34;No structure info in {WARP[2]}, the structure part of the T-API cannot be used&#34;
+                            f&#34;Dataset without structure sections in {WARP[2]}:&#34;
+                            f&#34;no structure functions in the T-API&#34;
                         )
                     self.structureOK = False
                 else:
@@ -432,15 +435,16 @@ Api reference : {APIREF}
                 edgeValues=edgeValues,
             )
             tag = &#34;config&#34; if isConfig else &#34;edge&#34; if isEdge else &#34;node&#34;
-            if fObj.save(nodeRanges=fName == WARP[0], overwrite=True,):
+            if fObj.save(nodeRanges=fName == WARP[0], overwrite=True):
                 total[tag] += 1
             else:
                 failed[tag] += 1
         self.tm.indent(level=0)
         self.tm.info(
-            &#34;Exported {} node features and {} edge features and {} config features to {}&#34;.format(
-                total[&#34;node&#34;], total[&#34;edge&#34;], total[&#34;config&#34;], self.writeDir,
-            )
+            f&#34;&#34;&#34;Exported {total[&#34;node&#34;]} node features&#34;&#34;&#34;
+            f&#34;&#34;&#34; and {total[&#34;edge&#34;]} edge features&#34;&#34;&#34;
+            f&#34;&#34;&#34; and {total[&#34;config&#34;]} config features&#34;&#34;&#34;
+            f&#34;&#34;&#34; to {self.writeDir}&#34;&#34;&#34;
         )
         if len(failed):
             for (tag, nf) in sorted(failed.items()):
@@ -847,22 +851,24 @@ Api reference : {APIREF}
                 ):
                     if not add:
                         self.tm.warning(
-                            f&#34;No section config in {WARP[2]}, the section part of the T-API cannot be used&#34;
+                            f&#34;Dataset without sections in {WARP[2]}:&#34;
+                            f&#34;no section functions in the T-API&#34;
                         )
                     self.sectionsOK = False
                 else:
                     self.textFeatures |= set(self.sectionFeats)
-                    self.sectionFeatsWithLanguage = {
+                    self.sectionFeatsWithLanguage = tuple(
                         f
                         for f in self.features
                         if f == self.sectionFeats[0]
                         or f.startswith(f&#34;{self.sectionFeats[0]}@&#34;)
-                    }
+                    )
                     self.textFeatures |= set(self.sectionFeatsWithLanguage)
                 if not self.structureTypes or not self.structureFeats:
                     if not add:
                         self.tm.warning(
-                            f&#34;No structure info in {WARP[2]}, the structure part of the T-API cannot be used&#34;
+                            f&#34;Dataset without structure sections in {WARP[2]}:&#34;
+                            f&#34;no structure functions in the T-API&#34;
                         )
                     self.structureOK = False
                 else:
@@ -1079,15 +1085,16 @@ Api reference : {APIREF}
                 edgeValues=edgeValues,
             )
             tag = &#34;config&#34; if isConfig else &#34;edge&#34; if isEdge else &#34;node&#34;
-            if fObj.save(nodeRanges=fName == WARP[0], overwrite=True,):
+            if fObj.save(nodeRanges=fName == WARP[0], overwrite=True):
                 total[tag] += 1
             else:
                 failed[tag] += 1
         self.tm.indent(level=0)
         self.tm.info(
-            &#34;Exported {} node features and {} edge features and {} config features to {}&#34;.format(
-                total[&#34;node&#34;], total[&#34;edge&#34;], total[&#34;config&#34;], self.writeDir,
-            )
+            f&#34;&#34;&#34;Exported {total[&#34;node&#34;]} node features&#34;&#34;&#34;
+            f&#34;&#34;&#34; and {total[&#34;edge&#34;]} edge features&#34;&#34;&#34;
+            f&#34;&#34;&#34; and {total[&#34;config&#34;]} config features&#34;&#34;&#34;
+            f&#34;&#34;&#34; to {self.writeDir}&#34;&#34;&#34;
         )
         if len(failed):
             for (tag, nf) in sorted(failed.items()):
@@ -1499,22 +1506,24 @@ Api reference : {APIREF}
             ):
                 if not add:
                     self.tm.warning(
-                        f&#34;No section config in {WARP[2]}, the section part of the T-API cannot be used&#34;
+                        f&#34;Dataset without sections in {WARP[2]}:&#34;
+                        f&#34;no section functions in the T-API&#34;
                     )
                 self.sectionsOK = False
             else:
                 self.textFeatures |= set(self.sectionFeats)
-                self.sectionFeatsWithLanguage = {
+                self.sectionFeatsWithLanguage = tuple(
                     f
                     for f in self.features
                     if f == self.sectionFeats[0]
                     or f.startswith(f&#34;{self.sectionFeats[0]}@&#34;)
-                }
+                )
                 self.textFeatures |= set(self.sectionFeatsWithLanguage)
             if not self.structureTypes or not self.structureFeats:
                 if not add:
                     self.tm.warning(
-                        f&#34;No structure info in {WARP[2]}, the structure part of the T-API cannot be used&#34;
+                        f&#34;Dataset without structure sections in {WARP[2]}:&#34;
+                        f&#34;no structure functions in the T-API&#34;
                     )
                 self.structureOK = False
             else:
@@ -1709,15 +1718,16 @@ Api reference : {APIREF}
             edgeValues=edgeValues,
         )
         tag = &#34;config&#34; if isConfig else &#34;edge&#34; if isEdge else &#34;node&#34;
-        if fObj.save(nodeRanges=fName == WARP[0], overwrite=True,):
+        if fObj.save(nodeRanges=fName == WARP[0], overwrite=True):
             total[tag] += 1
         else:
             failed[tag] += 1
     self.tm.indent(level=0)
     self.tm.info(
-        &#34;Exported {} node features and {} edge features and {} config features to {}&#34;.format(
-            total[&#34;node&#34;], total[&#34;edge&#34;], total[&#34;config&#34;], self.writeDir,
-        )
+        f&#34;&#34;&#34;Exported {total[&#34;node&#34;]} node features&#34;&#34;&#34;
+        f&#34;&#34;&#34; and {total[&#34;edge&#34;]} edge features&#34;&#34;&#34;
+        f&#34;&#34;&#34; and {total[&#34;config&#34;]} config features&#34;&#34;&#34;
+        f&#34;&#34;&#34; to {self.writeDir}&#34;&#34;&#34;
     )
     if len(failed):
         for (tag, nf) in sorted(failed.items()):

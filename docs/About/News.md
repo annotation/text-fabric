@@ -44,7 +44,7 @@
 
 # 8.0.0
 
-2020-04-13
+2020-05-06
 
 **NB: This is a backwards incompatible change. Strongly recommended:**
 
@@ -58,13 +58,29 @@ adapted to this change.**
 **Text-Fabric auto-downloads the newest version of an app by default.
 As a consequence, if you have not upgraded Text-Fabric, it will fail.**
 
+*   The functionality offered by TF-apps is now called the *Advanced API*, as opposed to the
+    *core API*. Everything under `A` is the advanced API. The things under `F`, `E`, `L`, `T`,
+    etc. are the core API.
+*   `A` will work also for TF datasets without an app. The advanced API will compute
+    reasonable defaults based on what it finds in the TF data. It is still possible to
+    write full-fledged TF apps that extend the capabilities of the advanced API.
+*   Several special effects of individual TF apps are now supported by the advanced API.
+    The most intricate it support for displaying discontinuous types piece by piece, as
+    in the BHSA. The other one is support for graphics inclusion as in the Uruk corpus.
 *   Improvements in `plain()` and `pretty()`: they deliver better results and
     they make it easier for tf-app developers.
-*   The `Locality` (`L`) functions `d()`, `u()`, `l()`, `r()` take an optional
+    *   Pretty displays can be tamed by cutting of the unfolding of structure at some level
+        and replacing it by plain displays (`baseType` display option).
+    *   Highlights in plain display will be done, also for nodes deeply buried in the top node.
+        This is also steered by `baseType`: a node of type `baseType` will get full 
+        highlighting, all other nodes will get highlighting by boxes around the material.
+*   Core API imporvement:
+    The `Locality` (`L`) functions `d()`, `u()`, `l()`, `r()` take an optional
     parameter `otype` holding the node type of the related nodes that will be delivered.
     This can now also be an iterable of types (preferably a set of frozenset).
 *   Text-Fabric will detect when apps have a version mismatch with the general framework.
     If so, it will issue warnings and it will gracefully fall back to the core API.
+    Note that if you use Text-Fabric prior version 8, there will be no graceful fallback.
 
 
 # 7.11.2

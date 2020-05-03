@@ -23,7 +23,7 @@ from .serve import (
 MY_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-class Setup(object):
+class Web(object):
     def __init__(self, portKernel):
         TF = makeTfConnection(HOST, portKernel, TIMEOUT)
         kernelApi = TF.connect()
@@ -35,9 +35,9 @@ class Setup(object):
         self.wildQueries = set()
 
 
-def factory(setup):
+def factory(web):
     app = Flask(__name__)
-    aContext = setup.context
+    aContext = web.context
     appPath = aContext.appPath
     localDir = aContext.localDir
 
@@ -55,48 +55,48 @@ def factory(setup):
 
     @app.route("/sections", methods=["GET", "POST"])
     def serveSectionsBare():
-        return serveTable(setup, "sections", None)
+        return serveTable(web, "sections", None)
 
     @app.route("/sections/<int:getx>", methods=["GET", "POST"])
     def serveSections(getx):
-        return serveTable(setup, "sections", getx)
+        return serveTable(web, "sections", getx)
 
     @app.route("/tuples", methods=["GET", "POST"])
     def serveTuplesBare():
-        return serveTable(setup, "tuples", None)
+        return serveTable(web, "tuples", None)
 
     @app.route("/tuples/<int:getx>", methods=["GET", "POST"])
     def serveTuples(getx):
-        return serveTable(setup, "tuples", getx)
+        return serveTable(web, "tuples", getx)
 
     @app.route("/query", methods=["GET", "POST"])
     def serveQueryBare():
-        return serveQuery(setup, None)
+        return serveQuery(web, None)
 
     @app.route("/query/<int:getx>", methods=["GET", "POST"])
     def serveQueryX(getx):
-        return serveQuery(setup, getx)
+        return serveQuery(web, getx)
 
     @app.route("/passage", methods=["GET", "POST"])
     def servePassageBare():
-        return servePassage(setup, None)
+        return servePassage(web, None)
 
     @app.route("/passage/<getx>", methods=["GET", "POST"])
     def servePassageX(getx):
-        return servePassage(setup, getx)
+        return servePassage(web, getx)
 
     @app.route("/export", methods=["GET", "POST"])
     def serveExportX():
-        return serveExport(setup)
+        return serveExport(web)
 
     @app.route("/download", methods=["GET", "POST"])
     def serveDownloadX():
-        return serveDownload(setup)
+        return serveDownload(web)
 
     @app.route("/", methods=["GET", "POST"])
     @app.route("/<path:anything>", methods=["GET", "POST"])
     def serveAllX(anything=None):
-        return serveAll(setup, anything)
+        return serveAll(web, anything)
 
     return app
 
@@ -109,8 +109,8 @@ def main(cargs=sys.argv):
     (dataSource, portKernel, portWeb) = args
 
     try:
-        setup = Setup(portKernel)
-        webapp = factory(setup)
+        web = Web(portKernel)
+        webapp = factory(web)
         run_simple(
             HOST, portWeb, webapp, use_reloader=False, use_debugger=False,
         )

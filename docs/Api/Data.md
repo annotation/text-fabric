@@ -7,8 +7,9 @@ packaging it, distributing it, and importing in apps.
 
 The data sharing workflow is built around the following assumptions:
 
-??? note "main corpus app"
-    You work with a main corpus for which a text-fabric app is available.
+??? note "main corpus"
+    You work with a main corpus for which a `config.yaml` is available
+    that holds settings for the location of the data repository on GitHub.
     See [Corpora](../About/Corpora.md)
 
 ??? note "versioned tf data"
@@ -249,9 +250,7 @@ it much less often than you modify it.
     will get your cutting edge latest commit.
 
 ## Use data
-Now we are just reading data,
-so the following steps
-you can perform literally,
+Now we are just reading data, so the following steps you can perform literally,
 without fear of overwriting data.
 
 ??? abstract "Check it out!"

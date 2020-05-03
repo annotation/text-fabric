@@ -28,11 +28,11 @@
 
 from IPython.display import display, Markdown, HTML
 
-from ..parameters import EXPRESS_BASE, GH_BASE
-from ..core.helpers import camel
+from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
 
 
 RESULT = &#34;result&#34;
+NB = &#34;\u00a0&#34;
 
 
 def dm(md):
@@ -46,37 +46,18 @@ def dh(html):
 # COLLECT CONFIG SETTINGS IN A DICT
 
 
-def configureNames(names, myDir):
-    &#34;&#34;&#34;
-  Collect the all-uppercase globals from a config file
-  and put them in a dict in camel case.
-  &#34;&#34;&#34;
-    result = {camel(key): value for (key, value) in names.items() if key == key.upper()}
-
-    with open(f&#34;{myDir}/static/display.css&#34;, encoding=&#34;utf8&#34;) as fh:
-        result[&#34;css&#34;] = fh.read()
-
-    return result
-
-
-def configure(config, version):
-    (names, path) = config.deliver()
-    result = configureNames(names, path)
-    result[&#34;version&#34;] = config.VERSION if version is None else version
-    return result
-
-
-def getLocalDir(names, local, version):
-    org = names[&#34;org&#34;]
-    repo = names[&#34;repo&#34;]
-    relative = names[&#34;relative&#34;]
-    version = names[&#34;version&#34;] if version is None else version
+def getLocalDir(cfg, local, version):
+    provenanceSpec = cfg.get(&#34;provenanceSpec&#34;, {})
+    org = provenanceSpec.get(&#34;org&#34;, None)
+    repo = provenanceSpec.get(&#34;repo&#34;, None)
+    relative = provenanceSpec.get(&#34;relative&#34;, &#34;tf&#34;)
+    version = provenanceSpec.get(&#34;version&#34;, None) if version is None else version
     base = hasData(local, org, repo, version, relative)
 
     if not base:
         base = EXPRESS_BASE
 
-    return os.path.expanduser(f&#34;{base}/{org}/{repo}/_temp&#34;)
+    return os.path.expanduser(f&#34;{base}/{org}/{repo}/{TEMP_DIR}&#34;)
 
 
 def hasData(local, org, repo, version, relative):
@@ -91,7 +72,37 @@ def hasData(local, org, repo, version, relative):
     expressTarget = f&#34;{expressBase}/{org}/{repo}/{relative}{versionRep}&#34;
     if os.path.exists(expressTarget):
         return expressBase
-    return False</code></pre>
+    return False
+
+
+def tupleEnum(tuples, start, end, limit, item):
+    if start is None:
+        start = 1
+    i = -1
+    if not hasattr(tuples, &#34;__len__&#34;):
+        if end is None or end - start + 1 &gt; limit:
+            end = start - 1 + limit
+        for tup in tuples:
+            i += 1
+            if i &lt; start - 1:
+                continue
+            if i &gt;= end:
+                break
+            yield (i + 1, tup)
+    else:
+        if end is None or end &gt; len(tuples):
+            end = len(tuples)
+        rest = 0
+        if end - (start - 1) &gt; limit:
+            rest = end - (start - 1) - limit
+            end = start - 1 + limit
+        for i in range(start - 1, end):
+            yield (i + 1, tuples[i])
+        if rest:
+            dh(
+                f&#34;&lt;b&gt;{rest} more {item}s skipped&lt;/b&gt; because we show a maximum of&#34;
+                f&#34; {limit} {item}s at a time&#34;
+            )</code></pre>
 </details>
 </section>
 <section>
@@ -101,45 +112,6 @@ def hasData(local, org, repo, version, relative):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.applib.helpers.configure"><code class="name flex">
-<span>def <span class="ident">configure</span></span>(<span>config, version)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def configure(config, version):
-    (names, path) = config.deliver()
-    result = configureNames(names, path)
-    result[&#34;version&#34;] = config.VERSION if version is None else version
-    return result</code></pre>
-</details>
-</dd>
-<dt id="tf.applib.helpers.configureNames"><code class="name flex">
-<span>def <span class="ident">configureNames</span></span>(<span>names, myDir)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Collect the all-uppercase globals from a config file
-and put them in a dict in camel case.</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def configureNames(names, myDir):
-    &#34;&#34;&#34;
-  Collect the all-uppercase globals from a config file
-  and put them in a dict in camel case.
-  &#34;&#34;&#34;
-    result = {camel(key): value for (key, value) in names.items() if key == key.upper()}
-
-    with open(f&#34;{myDir}/static/display.css&#34;, encoding=&#34;utf8&#34;) as fh:
-        result[&#34;css&#34;] = fh.read()
-
-    return result</code></pre>
-</details>
-</dd>
 <dt id="tf.applib.helpers.dh"><code class="name flex">
 <span>def <span class="ident">dh</span></span>(<span>html)</span>
 </code></dt>
@@ -167,7 +139,7 @@ and put them in a dict in camel case.</p></section>
 </details>
 </dd>
 <dt id="tf.applib.helpers.getLocalDir"><code class="name flex">
-<span>def <span class="ident">getLocalDir</span></span>(<span>names, local, version)</span>
+<span>def <span class="ident">getLocalDir</span></span>(<span>cfg, local, version)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -175,17 +147,18 @@ and put them in a dict in camel case.</p></section>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getLocalDir(names, local, version):
-    org = names[&#34;org&#34;]
-    repo = names[&#34;repo&#34;]
-    relative = names[&#34;relative&#34;]
-    version = names[&#34;version&#34;] if version is None else version
+<pre><code class="python">def getLocalDir(cfg, local, version):
+    provenanceSpec = cfg.get(&#34;provenanceSpec&#34;, {})
+    org = provenanceSpec.get(&#34;org&#34;, None)
+    repo = provenanceSpec.get(&#34;repo&#34;, None)
+    relative = provenanceSpec.get(&#34;relative&#34;, &#34;tf&#34;)
+    version = provenanceSpec.get(&#34;version&#34;, None) if version is None else version
     base = hasData(local, org, repo, version, relative)
 
     if not base:
         base = EXPRESS_BASE
 
-    return os.path.expanduser(f&#34;{base}/{org}/{repo}/_temp&#34;)</code></pre>
+    return os.path.expanduser(f&#34;{base}/{org}/{repo}/{TEMP_DIR}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.helpers.hasData"><code class="name flex">
@@ -212,6 +185,45 @@ and put them in a dict in camel case.</p></section>
     return False</code></pre>
 </details>
 </dd>
+<dt id="tf.applib.helpers.tupleEnum"><code class="name flex">
+<span>def <span class="ident">tupleEnum</span></span>(<span>tuples, start, end, limit, item)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def tupleEnum(tuples, start, end, limit, item):
+    if start is None:
+        start = 1
+    i = -1
+    if not hasattr(tuples, &#34;__len__&#34;):
+        if end is None or end - start + 1 &gt; limit:
+            end = start - 1 + limit
+        for tup in tuples:
+            i += 1
+            if i &lt; start - 1:
+                continue
+            if i &gt;= end:
+                break
+            yield (i + 1, tup)
+    else:
+        if end is None or end &gt; len(tuples):
+            end = len(tuples)
+        rest = 0
+        if end - (start - 1) &gt; limit:
+            rest = end - (start - 1) - limit
+            end = start - 1 + limit
+        for i in range(start - 1, end):
+            yield (i + 1, tuples[i])
+        if rest:
+            dh(
+                f&#34;&lt;b&gt;{rest} more {item}s skipped&lt;/b&gt; because we show a maximum of&#34;
+                f&#34; {limit} {item}s at a time&#34;
+            )</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -229,13 +241,12 @@ and put them in a dict in camel case.</p></section>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="two-column">
-<li><code><a title="tf.applib.helpers.configure" href="#tf.applib.helpers.configure">configure</a></code></li>
-<li><code><a title="tf.applib.helpers.configureNames" href="#tf.applib.helpers.configureNames">configureNames</a></code></li>
+<ul class="">
 <li><code><a title="tf.applib.helpers.dh" href="#tf.applib.helpers.dh">dh</a></code></li>
 <li><code><a title="tf.applib.helpers.dm" href="#tf.applib.helpers.dm">dm</a></code></li>
 <li><code><a title="tf.applib.helpers.getLocalDir" href="#tf.applib.helpers.getLocalDir">getLocalDir</a></code></li>
 <li><code><a title="tf.applib.helpers.hasData" href="#tf.applib.helpers.hasData">hasData</a></code></li>
+<li><code><a title="tf.applib.helpers.tupleEnum" href="#tf.applib.helpers.tupleEnum">tupleEnum</a></code></li>
 </ul>
 </li>
 </ul>

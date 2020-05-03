@@ -5,7 +5,6 @@ from zipfile import ZipFile
 from flask import request
 
 from ..parameters import ZIP_OPTIONS
-from ..applib.displaySettings import INTERFACE_OPTIONS
 
 
 DEFAULT_NAME = "default"
@@ -21,7 +20,7 @@ def getInt(x, default=1):
     return int(x)
 
 
-def getFormData():
+def getFormData(interfaceDefaults):
     form = {}
     jobName = request.form.get("jobName", "").strip()
     if jobName:
@@ -60,8 +59,10 @@ def getFormData():
     form["sec1"] = request.form.get("sec1", "")
     form["sec2"] = request.form.get("sec2", "")
     form["s0filter"] = request.form.get("s0filter", "")
-    for o in INTERFACE_OPTIONS:
-        form[o[0]] = request.form.get(o[0], None)
+    for (k, v) in interfaceDefaults:
+        if v is None:
+            continue
+        form[k] = request.form.get(k, v)
     return form
 
 
