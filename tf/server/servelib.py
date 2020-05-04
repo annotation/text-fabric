@@ -42,7 +42,7 @@ def getFormData(interfaceDefaults):
     form["title"] = request.form.get("title", "").strip()
     form["description"] = request.form.get("description", "").replace("\r", "")
     form["condensed"] = request.form.get("condensed", "")
-    form["baseTp"] = request.form.get("baseTp", "")
+    form["baseTps"] = request.form.getlist("baseTps")
     form["condenseTp"] = request.form.get("condenseTp", "")
     form["textformat"] = request.form.get("textformat", "")
     form["sectionsExpandAll"] = request.form.get("sectionsExpandAll", "")
@@ -59,7 +59,7 @@ def getFormData(interfaceDefaults):
     form["sec1"] = request.form.get("sec1", "")
     form["sec2"] = request.form.get("sec2", "")
     form["s0filter"] = request.form.get("s0filter", "")
-    for (k, v) in interfaceDefaults:
+    for (k, v) in interfaceDefaults.items():
         if v is None:
             continue
         form[k] = request.form.get(k, v)

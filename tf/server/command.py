@@ -63,7 +63,7 @@ def argApp(cargs):
         dict(
             appName=appName,
             checkoutApp=checkoutApp,
-            checkoutData=checkout,
+            checkout=checkout,
             locations=locations,
             modules=modules,
             moduleRefs=moduleRefs,

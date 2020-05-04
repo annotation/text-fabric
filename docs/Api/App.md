@@ -41,9 +41,9 @@
 
     There are many scenarios in which you can work with the advanced API:
     in a Python script or in a notebook or in the TF-browser.
-    If you start the TF browser, a *kernel* process is started or reused that holds the
+    If you start the TF browser, a *kernel* process is started that holds the
     TF data.
-    Then a webserver is started or reused that communicates with the kernel,
+    Then a webserver is started that communicates with the kernel,
     much like how webserver communicates with a database.
 
     The advanced API supports all these scenarios
@@ -68,7 +68,7 @@
         files in that location, and they will be loaded. The advanced API will work with
         default settings, based on the `.tf` data found.
 
-    ???+ hint "appName:specifier, checkData=specifier"
+    ???+ hint "appName:specifier, checkout=specifier"
         Sometimes you want to load all features without thinking,
         at other times you want to be selective.
         You may want to load downloadable features from the internet,
@@ -79,7 +79,7 @@
 
         *appName:specifier* is used for retrieving a TF-app (*code*).
 
-        *checkoutData=specifier* is for retrieving the corpus itself  (*data*).
+        *checkout=specifier* is for retrieving the corpus itself  (*data*).
 
         *   `''` (empty string or absent) (**default**):
             use the latest release;
@@ -504,19 +504,14 @@
 ??? abstract "List of display parameters"
     These are the parameters and their default values:
 
-    ??? info "baseType=None"
-        The node type at the bottom of pretty displays.
-        It is also the node type that receives the primary highlights
+    ??? info "baseTypes=None"
+        Node types at the bottom of pretty displays.
+        They are also the node type that receive the primary highlights
         (colored backgrounds), whereas the highlights for other node types
         are colored boxes.
 
-        The app developer should program `_pretty()` in such a way that
-        for nodes of `baseType` the function `_plain()` is invoked instead
-        of `_pretty()`.
-
-        The default is app dependent, usually `word`.
-        If the app does not specifiy a default, the slot type of
-        the dataset will be chosen.
+        The default is app dependent, usually `None`.
+        The slot type does not need to be included in the set of base types.
 
     ??? info "colorMap=None"
         Which nodes of a tuple (or list of tuples) will be highlighted.

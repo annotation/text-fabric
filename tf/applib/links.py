@@ -20,7 +20,7 @@ pathRe = re.compile(
 )
 
 
-def linksApi(app, appName, silent):
+def linksApi(app, silent):
     """Produce the link API.
 
     The link API provides methods to maps nodes to urls of web resources.
@@ -31,8 +31,6 @@ def linksApi(app, appName, silent):
     ----------
     app: obj
         The high-level API object
-    appName: string
-        The name of the corpus as TF-app name
     silent:
         The verbosity mode to perform this operation in.
         Normally it is the same as for the app, but when we do an `A.reuse()`
@@ -45,6 +43,7 @@ def linksApi(app, appName, silent):
     api = app.api
 
     aContext = app.context
+    appName = aContext.appName
     docUrl = aContext.docUrl
     repo = aContext.repo
     version = aContext.version
@@ -243,6 +242,25 @@ def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
 
 
 def outLink(text, href, title=None, passage=None, clsName=None, target="_blank"):
+    """Produce a formatted link.
+
+    Parameters
+    ----------
+    text: string/HTML
+        The text of the link.
+    href: string/URL
+        The url of the link.
+    title: string, optional `None`
+        The hint of the link.
+    target: string, optional `_blank`
+        The target window/tab of the link.
+    clsName: string, optional default `None`
+        A CSS class name to add to the resulting link element
+    passage: string, optional `None`
+        A passage indicator, which will end up in the `sec` attribute of the
+        link element. Used by the TF-browser.
+    """
+
     titleAtt = "" if title is None else f' title="{title}"'
     clsAtt = f' class="{clsName.lower()}"' if clsName else ""
     targetAtt = f' target="{target}"' if target else ""
@@ -253,6 +271,9 @@ def outLink(text, href, title=None, passage=None, clsName=None, target="_blank")
 
 
 def _featuresPerModule(app):
+    """Generate a formatted list of loaded TF features, per module.
+    """
+
     ok = app.isCompatible
     if not ok:
         return UNSUPPORTED
@@ -395,17 +416,32 @@ def _featuresPerModule(app):
     return html
 
 
-def liveText(org, repo, version, commit, release, local, relative):
-    return (
+def provenanceLink(org, repo, version, commit, release, local, relative):
+    """Generate a provenance link for a data source.
+
+    We assume the data source resides somewhere inside a GitHub repo.
+
+    Parameters
+    ----------
+    org: string
+        Organization on GitHub
+    repo: string
+        Repository on Github
+    version: string
+        Version of the data source.
+        This is not the release or commit of a repo, but the subdirectory
+        corresponding with a data version under a `tf` directory with feature files.
+    commit: string
+        The commit hash of the repository on GitHub.
+    """
+
+    text = (
         f"data on local machine {relative}"
         if org is None or repo is None
         else f"{org}/{repo} v:{version} ({Checkout.toString(commit, release, local)})"
     )
-
-
-def liveUrl(org, repo, version, commit, release, local, relative):
     relativeFlat = relative.replace("/", "-")
-    return (
+    url = (
         None
         if org is None or repo is None
         else f"{URL_GH}/{org}/{repo}/tree/master/{relative}"
@@ -417,3 +453,4 @@ def liveUrl(org, repo, version, commit, release, local, relative):
             else f"{URL_GH}/{org}/{repo}/tree/{commit}/{relative}"
         )
     )
+    return (text, url)

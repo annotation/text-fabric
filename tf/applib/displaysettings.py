@@ -9,7 +9,7 @@ INTERFACE_OPTIONS = (
 )
 
 DISPLAY_OPTIONS = dict(
-    baseType=None,
+    baseTypes=None,
     colorMap=None,
     condensed=False,
     condenseType=None,
@@ -95,6 +95,8 @@ class DisplaySettings:
 
     def check(self, msg, options):
         api = self.app.api
+        Fotype = api.F.otype
+        slotType = Fotype.slotType
         sectionTypeSet = api.T.sectionTypeSet
         error = api.error
 
@@ -103,11 +105,15 @@ class DisplaySettings:
             if option not in self.displaySettings:
                 error(f'ERROR in {msg}(): unknown display option "{option}={value}"')
                 good = False
-            if option in {"baseType", "condenseType"}:
-                legalValues = set(api.F.otype.all)
-                if option == "baseType":
+            if option in {"baseTypes", "condenseType"}:
+                legalValues = set(Fotype.all)
+                if option == "baseTypes":
                     legalValues -= sectionTypeSet
-                if value is not None and value not in legalValues:
+                    legalValues -= {slotType}
+                    isLegal = all(v in legalValues for v in value)
+                else:
+                    isLegal = value in legalValues
+                if value is not None and not isLegal:
                     error(f'ERROR in {msg}(): unknown node type in "{option}={value}"')
                     good = False
         return good

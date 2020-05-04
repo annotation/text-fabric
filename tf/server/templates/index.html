@@ -94,13 +94,17 @@
 				</div>
 				<div status="options">
 					<div>
-						{{textFormatOpts|safe}}
+            <details open>
+              <summary>
+                <span class="ilab">text formats</span>
+							</summary>
+              {{textFormatOpts|safe}}
+            </details>
 					</div>
 					<div>
-						<details id="basetpd">
+						<details id="basetpd" open>
 							<summary>
-                <span class="ilab">base type</span>
-                <span class="ttext" id="basetp">{{baseTp}}</span>
+                <span class="ilab">base types</span>
 							</summary>
 							{{baseOpts|safe}}
 					</div>
@@ -218,7 +222,7 @@
 						   see the <i>condense</i> option.</p>
 						<p>Click the triangle to expand a result into a pretty view.</p>
 						<p>If nothing happens, check the <i>condense</i> option:
-						   objects that are bigger than the condense object type,
+						   nodes that are bigger than the condense node type,
 						   will not be expanded into pretty view. Either uncheck the 
 						   <i>condense</i> option or select a bigger condense type.</p>
 						<p>Click the <i>expand all</i> checkbox to collapse and open all results.</p>
@@ -239,23 +243,26 @@
 					</details>
 					<details id="helpOptions" class="help">
 						<summary>Options</summary>
-						<p><b>Link column</b> The column number whose contents will be hyperlinked to the online version
-						   of the corpus.</p>
 						<p><b>Text format</b> Show the results in a text format of your choice: original script,
 						   transcription, or phonetic representations may be offered.</p>
-						<p><b>Base type</b> This type of objects counts as the base type. The components
-               of base objects will not be broken down in pretty displays. Highlights of base objects
-               consist of coloured backgrounds, highlights of other objects consist of coloured boxes
-               around the objects.</p>
+						<p><b>Base types</b> Thes types of nodes count as base types. The components
+               of base nodes will not be broken down in pretty displays. Highlights of base nodes
+               consist of coloured backgrounds, highlights of other nodes consist of coloured boxes
+               around the nodes.</p>
 						<p><b>Condense results</b> Show the results grouping all nodes in result tuples into
 						   containers, such as {{defaultCondenseType}}s.
 						   The containers are <i>pretty</i>-displayed, with the result nodes in it highlighted.
 						   Choose the container type as you wish.</p>
-						<p><b>Show nodes</b> Show the node number for every object in the results.
-						   The node number is your access to all information about that object.
+						<p><b>Show types</b> Show the node type for every node in the results.</p>
+						<p><b>Always show types when expanded</b> Show the node type for every node in the expanded
+               view, even if <b>show types</b> is off.</p>
+						<p><b>Show nodes</b> Show the node number for every node in the results.
+						   The node number is your access to all information about that node.
 						   If you click on it, it will be copied to the <i>node pad</i>.</p>
 						<p><b>Show features</b> Show the relevant feature values for every
-               object in the results.</p>
+               node in the results.</p>
+						<p><b>Show chunks</b> Show chunk types fully.</p>
+						<p><b>Show graphics</b> Show graphical companion elements with the nodes.</p>
 					</details>
 					<details id="helpExport" class="help">
 						<summary>Export</summary>

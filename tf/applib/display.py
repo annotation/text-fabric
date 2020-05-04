@@ -81,7 +81,7 @@ __pdoc__['NodeContext.descend'] = (
 __pdoc__['NodeContext.isBaseNonSlot'] = (
     "Whether the current node has a type that is currently a baseType,"
     " i.e. a type where a pretty display should stop unfolding."
-    " Moreover, this type should not be the slot type."
+    " No need to put the slot type in this set."
 )
 __pdoc__['NodeContext.hasChunks'] = (
     "Whether the current node has a type that has a related type that"
@@ -100,7 +100,8 @@ __pdoc__['NodeContext.nodePart'] = (
 )
 __pdoc__['NodeContext.cls'] = (
     "A dict of several classes for the display of the node:"
-    " for the container, the label, and the children of the node"
+    " for the container, the label, and the children of the node;"
+    " might be set by prettyCustom"
 )
 __pdoc__['NodeContext.myStart'] = "The first slot of the current node"
 __pdoc__['NodeContext.myEnd'] = "The last slot of the current node"
@@ -113,6 +114,30 @@ __pdoc__['NodeContext.hidden'] = (
 
 
 def displayApi(app, silent):
+    """Produce the display API.
+
+    The display API provides methods to generate styled representations
+    of pieces of corpus texts in their relevant structures.
+    The main end-user functions are `plain(node)` and `pretty(node)`.
+
+    `plain()` focuses on the plain text, `pretty()` focuses on structure
+    and feature display.
+
+    Related are `plainTuple()` and `prettyTuple()` that work for tuples
+    instead of nodes.
+
+    And further there are `show()` and `table()`, that work
+    with iterables of tuples of nodes (e.g. query results).
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    silent:
+        The verbosity mode to perform this operation in.
+        Normally it is the same as for the app, but when we do an `A.reuse()`
+        we force `silent=True`.
+    """
     if app.isCompatible:
         app.export = types.MethodType(export, app)
         app.table = types.MethodType(table, app)
@@ -133,12 +158,35 @@ def displayApi(app, silent):
 
 
 def displaySetup(app, **options):
+    """Set up all display parameters.
+
+    The display parameters are given default values, unless they are overriden
+    by `options`.
+
+    !!! hint "corpus settings"
+        The defaults themselves come from the corpus settings, which are influenced
+        by the `config.yaml` file, if it exists.
+
+    Parameters
+    ----------
+    options: dict
+        Explicit values for selected options that act as overrides of the defaults.
+    """
+
     display = app.display
 
     display.setup(**options)
 
 
 def displayReset(app, *options):
+    """Restore display parameters to their defaults.
+
+    Parameters
+    ----------
+    options: list, optional `[]`
+        If present, only restore these options to their defaults.
+    """
+
     display = app.display
 
     display.reset(*options)
@@ -844,12 +892,14 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, chunkedType=Fal
     chunkedTypes = aContext.chunkedTypes
 
     fmt = dContext.fmt
-    baseType = dContext.baseType
+    baseTypes = dContext.baseTypes
+    baseTypesX = baseTypes - {slotType}
+    baseTypesP = baseTypes | {slotType}
     highlights = dContext.highlights
     showChunks = dContext.showChunks
 
     descendType = T.formats.get(fmt, slotType)
-    bottomType = baseType if isPretty else descendType
+    bottomTypes = baseTypesP if isPretty else {descendType}
 
     isSlot = nType == slotType
     hasChunks = nType in chunkedTypes
@@ -857,7 +907,7 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, chunkedType=Fal
 
     children = (
         ()
-        if isSlot or nType == bottomType or (not isPretty and nType in noChildren)
+        if isSlot or nType in bottomTypes or (not isPretty and nType in noChildren)
         else getChildren(app, isPretty, dContext, oContext, n, nType)
     )
 
@@ -867,11 +917,11 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, chunkedType=Fal
 
     (boundaryCls, myStart, myEnd) = boundaryResult
 
-    (hlCls, hlStyle) = getHlAtt(app, n, highlights, baseType, not isPretty)
+    (hlCls, hlStyle) = getHlAtt(app, n, highlights, baseTypesP, not isPretty)
 
     isSlotOrDescend = isSlot or nType == descendType
     descend = False if descendType == slotType else None
-    isBaseNonSlot = nType == baseType and not isSlot
+    isBaseNonSlot = nType in baseTypesX
 
     nodePart = getNodePart(app, isPretty, dContext, n, nType, isSlot, outer, hlCls)
     cls = {}
@@ -942,14 +992,15 @@ def getText(app, isPretty, n, nType, fmt=None, descend=None):
 
 
 def getValue(app, n, nType, feat):
+    F = app.api.F
     Fs = app.api.Fs
 
     aContext = app.context
     transform = aContext.transform
-
-    val = Fs(feat).v(n)
+    featObj = Fs(feat) if hasattr(F, feat) else None
+    val = featObj.v(n) if featObj else None
     modifier = transform.get(nType, {}).get(feat, None)
-    return modifier(val) if modifier else val
+    return modifier(n, val) if modifier else val
 
 
 def getLtr(app, dContext):

@@ -3,6 +3,7 @@ import datetime
 
 from ..parameters import NAME, VERSION, DOI_URL_PREFIX, DOI_DEFAULT, DOI_TF, APP_URL
 from ..applib.helpers import NB
+from ..applib.displaysettings import INTERFACE_OPTIONS
 
 
 # NAVIGATION IN MULTIPLE ITEMS (PAGES, PASSAGES)
@@ -87,37 +88,34 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
 # OPTIONS
 
 
-def wrapOptions(context, form, defaults):
+def wrapOptions(context, form):
     interfaceDefaults = context.interfaceDefaults
 
-    options = []
-    for (k, v) in interfaceDefaults.items():
-        if v is None:
-            continue
-
-        options.append[k]
+    options = {k for (k, v) in interfaceDefaults.items() if v is not None}
 
     html = []
-    for (option, default, typ, acro, desc) in options:
+    for (option, default, acro, desc) in INTERFACE_OPTIONS:
+        if option not in options:
+            continue
         value = form[option]
         value = "checked" if value else ""
         html.append(
-            f'<div><input class="r" type="{typ}" id="{acro}" name="{option}" {value}/>'
+            f'<div><input class="r" type="checkbox" id="{acro}" name="{option}" {value}/>'
             f' <span class="ilab">{desc}</span></div>'
         )
     return "\n".join(html)
 
 
-def wrapBase(baseTypes, value):
+def wrapBase(allowedBaseTypes, value):
     html = []
-    for (i, otype) in enumerate(baseTypes):
-        checked = " checked " if value == otype else ""
-        radio = (
-            f'<input class="r bradio" type="radio" name="baseTp" value="{otype}"'
+    for (i, otype) in enumerate(allowedBaseTypes):
+        checked = " checked " if otype in value else ""
+        checkButton = (
+            f'<input class="r bcheck" type="checkbox" name="baseTps" value="{otype}"'
             f" {checked}/>"
         )
         html.append(
-            f'<div class="cline">{radio} <span class="ctype">{otype}</span></div>'
+            f'<div class="cline">{checkButton} <span class="ctype">{otype}</span></div>'
         )
     return "\n".join(html)
 
@@ -127,7 +125,7 @@ def wrapCondense(condenseTypes, value):
     lastType = len(condenseTypes) - 1
     for (i, (otype, av, b, e)) in enumerate(condenseTypes):
         checked = " checked " if value == otype else ""
-        radio = (
+        radioButton = (
             f'<span class="cradio">{NB}</span>'
             if i == lastType
             else (
@@ -136,7 +134,7 @@ def wrapCondense(condenseTypes, value):
             )
         )
         html.append(
-            f'<div class="cline">{radio} <span class="ctype">{otype}</span>'
+            f'<div class="cline">{radioButton} <span class="ctype">{otype}</span>'
             f' <span class="cinfo">{e - b + 1: 8.6g} x av length {av: 4.2g}</span>'
             f"</div>"
         )
@@ -147,12 +145,12 @@ def wrapFormats(allFormats, value):
     html = []
     for (i, fmt) in enumerate(allFormats):
         checked = " checked " if value == fmt else ""
-        radio = (
+        radioButton = (
             f'<input class="r tradio" type="radio" id="ttp{i}"'
             f' name="textformat" value="{fmt}" {checked} "/>'
         )
         html.append(
-            f'<div class="tfline">{radio} <span class="ttext">{fmt}</span></div>'
+            f'<div class="tfline">{radioButton} <span class="ttext">{fmt}</span></div>'
         )
     return "\n".join(html)
 
@@ -207,9 +205,9 @@ commit | {liveMd}"""
         corpus = d["corpus"]
         version = d["version"]
         release = d["release"]
-        (live, liveU) = d["live"]
-        liveHtml = f'<a href="{liveU}">{live}</a>'
-        liveMd = f"[{live}]({liveU})"
+        (liveText, liveUrl) = d["live"]
+        liveHtml = f'<a href="{liveUrl}">{liveText}</a>'
+        liveMd = f"[{liveText}]({liveUrl})"
         doi = d["doi"]
         doiUrl = f"{DOI_URL_PREFIX}/{doi}"
         doiHtml = f'<a href="{doiUrl}">{doi}</a>' if doi else DOI_DEFAULT

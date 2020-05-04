@@ -21,6 +21,9 @@ def findApp(appName, checkoutApp, silent=False):
         absPath = os.path.abspath(appPath)
         if os.path.isdir(absPath):
             (appDir, appName) = os.path.split(absPath)
+            codePath = f"{absPath}/{APP_CODE}"
+            if os.path.isdir(codePath):
+                appDir = codePath
             return (None, None, None, "", appDir, appName)
         else:
             console(f"{absPath} is not an existing directory", error=True)

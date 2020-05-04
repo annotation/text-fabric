@@ -45,7 +45,7 @@ def serveTable(web, kind, getx=None, asDict=False):
             form["features"],
             opened=openedSet,
             fmt=textFormat,
-            baseType=form["baseTp"],
+            baseTypes=form["baseTps"],
             getx=int(getx) if getx else None,
             **options,
         )
@@ -63,7 +63,7 @@ def serveQuery(web, getx, asDict=False):
     wildQueries = web.wildQueries
 
     kind = "query"
-    form = getFormData()
+    form = getFormData(interfaceDefaults)
     task = form[kind]
     condenseType = form["condenseTp"] or None
     resultKind = condenseType if form["condensed"] else RESULT
@@ -102,7 +102,7 @@ def serveQuery(web, getx, asDict=False):
                     condensed=form["condensed"],
                     condenseType=condenseType,
                     fmt=textFormat,
-                    baseType=form["baseTp"],
+                    baseTypes=form["baseTps"],
                     getx=int(getx) if getx else None,
                     **options,
                 )
@@ -134,7 +134,7 @@ def servePassage(web, getx):
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
 
-    form = getFormData()
+    form = getFormData(interfaceDefaults)
     textFormat = form["textformat"] or None
 
     passages = ""
@@ -156,7 +156,7 @@ def servePassage(web, getx):
         sec2=sec2,
         opened=openedSet,
         fmt=textFormat,
-        baseType=form["baseTp"],
+        baseTypes=form["baseTps"],
         getx=getx,
         **options,
     )
@@ -167,6 +167,7 @@ def servePassage(web, getx):
 
 def serveExport(web):
     aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
     kernelApi = web.kernelApi
 
@@ -174,7 +175,7 @@ def serveExport(web):
     tuplesData = serveTable(web, "tuples", None, asDict=True)
     queryData = serveQuery(web, None, asDict=True)
 
-    form = getFormData()
+    form = getFormData(interfaceDefaults)
 
     (header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
@@ -224,7 +225,9 @@ def serveExport(web):
 
 
 def serveDownload(web):
-    form = getFormData()
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    form = getFormData(interfaceDefaults)
     kernelApi = web.kernelApi
     wildQueries = web.wildQueries
 
@@ -283,19 +286,20 @@ def serveDownload(web):
 
 def serveAll(web, anything):
     aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
-    defaultBaseType = aContext.baseType
+    defaultBaseTypes = aContext.baseTypes
     defaultCondenseType = aContext.condenseType
     exampleSection = aContext.exampleSection
     exampleSectionHtml = aContext.exampleSectionHtml
-    baseTypes = aContext.baseTypes
+    allowedBaseTypes = aContext.allowedBaseTypes
     condenseTypes = aContext.condenseTypes
     defaultFormat = aContext.defaultFormat
     allFormats = aContext.allFormats
 
     kernelApi = web.kernelApi
 
-    form = getFormData()
+    form = getFormData(interfaceDefaults)
     condensedAtt = " checked " if form["condensed"] else ""
 
     pages = ""
@@ -313,15 +317,14 @@ def serveAll(web, anything):
     )
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    baseType = form["baseTp"] or defaultBaseType
-    baseOpts = wrapBase(baseTypes, baseType)
+    baseTypes = form["baseTps"] if form["baseTps"] is not None else defaultBaseTypes
+    baseOpts = wrapBase(allowedBaseTypes, baseTypes)
     condenseType = form["condenseTp"] or defaultCondenseType
     condenseOpts = wrapCondense(condenseTypes, condenseType)
     textFormat = form["textformat"] or defaultFormat
     textFormatOpts = wrapFormats(allFormats, textFormat)
 
-    return render_template(
-        "index.html",
+    templateData = dict(
         appName=appName,
         css=css,
         header=f"{appLogo}{header}{tfLogo}",
@@ -329,7 +332,7 @@ def serveAll(web, anything):
         options=wrapOptions(aContext, form),
         condensedAtt=condensedAtt,
         baseOpts=baseOpts,
-        defaultBaseType=defaultBaseType,
+        defaultBaseTypes=defaultBaseTypes,
         condenseOpts=condenseOpts,
         defaultCondenseType=defaultCondenseType,
         textFormatOpts=textFormatOpts,
@@ -338,5 +341,9 @@ def serveAll(web, anything):
         exampleSection=exampleSection,
         pages=pages,
         passages=passages,
-        **form,
+    )
+    templateData.update(form)
+    return render_template(
+        "index.html",
+        **templateData,
     )

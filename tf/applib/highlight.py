@@ -3,7 +3,7 @@ from itertools import chain
 from .search import runSearch
 
 
-def getHlAtt(app, n, highlights, baseType, isPlain):
+def getHlAtt(app, n, highlights, baseTypes, isPlain):
     """Get the highlight attribute for a node.
 
     Parameters
@@ -19,6 +19,10 @@ def getHlAtt(app, n, highlights, baseType, isPlain):
         and if so, what the value is (in case of a dict).
         If given as set: use the default highlight color.
         If given as dict: use the value as color.
+    baseTypes: set
+        Which node types acts as a base type, the slotType is included.
+    isPlain:
+        Whether we are highlighting for plain() or for pretty().
     """
 
     if highlights is None:
@@ -38,7 +42,7 @@ def getHlAtt(app, n, highlights, baseType, isPlain):
     api = app.api
     F = api.F
 
-    isBaseType = F.otype.v(n) == baseType
+    isBaseType = F.otype.v(n) in baseTypes
 
     hlCls = ("hl" if isBaseType else "hlbx") if isPlain else "hl"
     hlObject = ("background" if isBaseType else "border") if isPlain else "background"
@@ -82,7 +86,9 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     otypeRank = api.otypeRank
 
     condenseRank = otypeRank[condenseType]
-    if type(highlights) is set:
+    if highlights is None:
+        highlights = {}
+    elif type(highlights) is set:
         highlights = {m: "" for m in highlights}
     newHighlights = {n: h for (n, h) in highlights.items()}
 

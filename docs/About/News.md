@@ -70,9 +70,9 @@ As a consequence, if you have not upgraded Text-Fabric, it will fail.**
 *   Improvements in `plain()` and `pretty()`: they deliver better results and
     they make it easier for tf-app developers.
     *   Pretty displays can be tamed by cutting of the unfolding of structure at some level
-        and replacing it by plain displays (`baseType` display option).
+        and replacing it by plain displays (`baseTypes` display option).
     *   Highlights in plain display will be done, also for nodes deeply buried in the top node.
-        This is also steered by `baseType`: a node of type `baseType` will get full 
+        This is also steered by `baseTypes`: a node of type in `baseTypes` will get full 
         highlighting, all other nodes will get highlighting by boxes around the material.
 *   Core API imporvement:
     The `Locality` (`L`) functions `d()`, `u()`, `l()`, `r()` take an optional

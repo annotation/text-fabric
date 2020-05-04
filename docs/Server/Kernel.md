@@ -123,7 +123,7 @@
     Fetches several things from the app and the 
     generic TF api:
 
-    * `baseType`: the bottom level in pretty displays;
+    * `baseTypes`: the bottom levels in pretty displays;
     * `condenseType`:
       the default node type that acts
       as a container for representing query results;

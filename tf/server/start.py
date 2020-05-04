@@ -172,7 +172,8 @@ def filterProcess(proc):
         if kind == "tf":
             if any(arg == "-k" for arg in args):
                 return False
-    return (kind, slug, *ports)
+        return (kind, slug, *ports)
+    return False
 
 
 def indexProcesses():
@@ -181,9 +182,9 @@ def indexProcesses():
         test = filterProcess(proc)
         if test:
             (kind, pSlug, *ports) = test
-            tfProcesses.setdefault(pSlug, {}).setdefault(
-                kind, []
-            ).append((proc.info["pid"], *ports))
+            tfProcesses.setdefault(pSlug, {}).setdefault(kind, []).append(
+                (proc.info["pid"], *ports)
+            )
     return tfProcesses
 
 
@@ -258,7 +259,7 @@ def main(cargs=sys.argv):
         pythonExe = "python" if isWin else "python3"
 
         processKernel = Popen(
-            [pythonExe, "-m", "tf.server.kernel", slug, portKernel],
+            [pythonExe, "-m", "tf.server.kernel", slug, str(portKernel)],
             stdout=PIPE,
             bufsize=1,
             encoding="utf-8",
@@ -276,8 +277,16 @@ def main(cargs=sys.argv):
     if not stopped:
         portWeb = connectPort(tfProcesses, "web", 2, slug)
         if not portWeb:
+            portWeb = getPort(portBase=portKernel + 1)
             processWeb = Popen(
-                [pythonExe, "-m", f"tf.server.web", slug, portKernel, portWeb],
+                [
+                    pythonExe,
+                    "-m",
+                    f"tf.server.web",
+                    slug,
+                    str(portKernel),
+                    str(portWeb),
+                ],
                 bufsize=0,
                 encoding="utf8",
             )
@@ -301,17 +310,10 @@ def main(cargs=sys.argv):
                 processWeb.terminate()
                 console("TF web server has stopped")
             if processKernel:
-                input("Stop kernel as well? <Ctrl-C>")
-                try:
-                    console(
-                        f"TF kernel will be kept alive for future use"
-                        f"on port {portKernel}"
-                    )
-                except KeyboardInterrupt:
-                    processKernel.terminate()
-                    for line in processKernel.stdout:
-                        sys.stdout.write(line)
-                    console("TF kernel has stopped")
+                processKernel.terminate()
+                for line in processKernel.stdout:
+                    sys.stdout.write(line)
+                console("TF kernel has stopped")
 
 
 if __name__ == "__main__":

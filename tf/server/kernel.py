@@ -354,7 +354,7 @@ def makeTfKernel(
 
     return ThreadedServer(
         TfKernel,
-        port=port,
+        port=int(port),
         protocol_config={
             # 'allow_pickle': True,
             # 'allow_public_attrs': True,

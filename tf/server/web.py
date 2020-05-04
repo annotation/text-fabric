@@ -25,7 +25,7 @@ MY_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class Web(object):
     def __init__(self, portKernel):
-        TF = makeTfConnection(HOST, portKernel, TIMEOUT)
+        TF = makeTfConnection(HOST, int(portKernel), TIMEOUT)
         kernelApi = TF.connect()
         self.kernelApi = kernelApi
 
@@ -112,7 +112,7 @@ def main(cargs=sys.argv):
         web = Web(portKernel)
         webapp = factory(web)
         run_simple(
-            HOST, portWeb, webapp, use_reloader=False, use_debugger=False,
+            HOST, int(portWeb), webapp, use_reloader=False, use_debugger=False,
         )
     except OSError as e:
         console(str(e))

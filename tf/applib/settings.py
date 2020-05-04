@@ -108,7 +108,7 @@ PROVENANCE_DEFAULTS = (
     ("org", None),
     ("repo", None),
     ("relative", RELATIVE_DEFAULT),
-    ("graphics", None),
+    ("graphicsRelative", None),
     ("version", None),
     ("moduleSpecs", ()),
     ("zip", None),
@@ -176,6 +176,13 @@ TYPE_KEYS = set(
 """.strip().split()
 )
 
+HOOKS = """
+    afterChild
+    childrenCustom
+    plainCustom
+    prettyCustom
+""".strip().split()
+
 
 class AppCurrent:
     def __init__(self, specs):
@@ -199,6 +206,8 @@ class Check:
         app = self.app
         withApi = self.withApi
         errors = self.errors
+        dKey = self.dKey
+        specs = app.specs
 
         if withApi:
             api = app.api
@@ -207,17 +216,18 @@ class Check:
             Fall = api.Fall
             allNodeFeatures = set(Fall())
             nTypes = F.otype.all
+            slotType = F.otype.slotType
             sectionTypes = T.sectionTypes
 
             if k in {"template", "label"}:
                 (template, feats) = extra
                 if template is not True and type(template) is not str:
                     errors.append(f"{k} must be `true` or a string")
-                feats = extra[1]
                 for feat in feats:
                     if feat not in allNodeFeatures:
-                        errors.append(f"{k}: feature {feat} not loaded")
-            elif k == {"featuresBare", "features"}:
+                        if feat not in specs["transform"].get(dKey, {}):
+                            errors.append(f"{k}: feature {feat} not loaded")
+            elif k in {"featuresBare", "features"}:
                 feats = extra[0]
                 tps = extra[1].values()
                 for feat in feats:
@@ -226,6 +236,11 @@ class Check:
                 for tp in tps:
                     if tp not in nTypes:
                         errors.append(f"{k}: node type {tp} not present")
+            elif k == "base":
+                if v and dKey == slotType:
+                    errors.append(
+                        f"{k}: No need to declare slot type {dKey} as base type"
+                    )
             elif k == "lineNumber":
                 if v not in allNodeFeatures:
                     errors.append(f"{k}: feature {v} not loaded")
@@ -321,7 +336,7 @@ class Check:
         self.defaults = defaults
         self.dKey = dKey
         self.extra = extra
-        errors = self.errors
+        errors = []
 
         errors.clear()
         dSource = cfg.get(dKey, {})
@@ -351,8 +366,10 @@ class Check:
             for msg in errors:
                 console(f"\t{msg}", error=True)
 
+        self.errors = []
 
-def setAppSpecs(app, cfg):
+
+def setAppSpecs(app, cfg, reset=False):
     specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
@@ -407,8 +424,8 @@ def setAppSpecs(app, cfg):
     if specs["zip"] is None:
         org = specs["org"]
         repo = specs["repo"]
-        graphics = specs["graphics"]
-        graphicsModule = [(org, repo, graphics)] if graphics else []
+        graphicsRelative = specs["graphicsRelative"]
+        graphicsModule = [(org, repo, graphicsRelative)] if graphicsRelative else []
         specs["zip"] = (
             [repo]
             + [(m["org"], m["repo"], m["relative"],) for m in moduleSpecs]
@@ -421,6 +438,14 @@ def setAppSpecs(app, cfg):
     ):
         method(app, cfg, dKey, False)
 
+    if reset:
+        aContext = getattr(app, "context", None)
+        if aContext:
+            for key in HOOKS:
+                specs[key] = aContext.get(key, {})
+    else:
+        for key in HOOKS:
+            specs[key] = {}
     app.context = AppCurrent(specs)
 
 
@@ -440,7 +465,7 @@ def setAppSpecsApi(app, cfg):
     ):
         method(app, cfg, dKey, True)
 
-    specs["baseTypes"] = tuple(
+    specs["allowedBaseTypes"] = tuple(
         e[0] for e in C.levels.data if e[0] not in sectionTypeSet
     )
 
@@ -460,7 +485,7 @@ def setAppSpecsApi(app, cfg):
                 and specs["lineNumberFeature"]
                 or k == "showChunks"
                 and specs["isChunkOf"]
-                or k == "graphics"
+                or k == "showGraphics"
                 and specs["hasGraphics"]
             )
             if k in specific
@@ -552,7 +577,8 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     hasGraphics = set()
     verseTypes = {sectionTypes[-1]} if sectionTypes else set()
     lexMap = {}
-    baseType = slotType
+    allowedBaseTypes = {slotType}
+    baseTypes = set()
     condenseType = None
     templates = {}
     labels = {}
@@ -560,6 +586,8 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     levels = {}
     childType = {}
     transform = {}
+
+    specs["transform"] = transform
 
     for nType in nTypes:
         template = True if nType == slotType or nType in sectionalTypeSet else ""
@@ -576,10 +604,17 @@ def getTypeDefaults(app, cfg, dKey, withApi):
             givenInfo,
             TYPE_KEYS,
             nType,
-            postpone={"label", "template", "features", "featuresBare", "transform"},
+            postpone={
+                "base",
+                "label",
+                "template",
+                "features",
+                "featuresBare",
+                "transform",
+            },
         )
+        checker.report()
 
-    for (nType, info) in givenInfo.items():
         if info.get("verselike", False):
             verseTypes.add(nType)
 
@@ -588,13 +623,23 @@ def getTypeDefaults(app, cfg, dKey, withApi):
             lexMap[lOcc] = nType
 
         if "base" in info:
-            baseType = info["base"]
+            base = info.get("base", None)
+            checker.checkSetting("base", base)
+            baseTypes.add(nType)
 
         if "condense" in info:
-            condenseType = info["condense"]
+            condenseType = nType
 
-    for (nType, info) in givenInfo.items():
-        errors = []
+        trans = info.get("transform", None)
+        if trans is not None:
+            resolvedTrans = {}
+            for (feat, func) in trans.items():
+                methodName = f"transform_{func}"
+                resolvedTrans[feat] = getattr(app, methodName, methodName)
+            v = resolvedTrans
+            checker.checkSetting("transform", trans, extra=v)
+            transform[nType] = v
+
         for (k, dest) in (("template", templates), ("label", labels)):
             if k in info:
                 template = info[k]
@@ -634,16 +679,6 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         if verselike:
             verseTypes.add(nType)
 
-        trans = info.get("transform", None)
-        if trans is not None:
-            resolvedTrans = {}
-            for (feat, func) in trans.items():
-                methodName = f"transform_{func}"
-                resolvedTrans[feat] = getattr(app, methodName, methodName)
-            v = resolvedTrans
-            checker.checkSetting("transform", trans, extra=v)
-            transform[nType] = v
-
         if "level" in info or "flow" in info or "wrap" in info or "stretch" in info:
             givenLevels[nType] = {
                 k: v for (k, v) in info.items() if k in LEVEL_DEFAULTS
@@ -657,12 +692,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
                 childs = set(childs)
             childType[nType] = set(childs or ())
 
-        if errors:
-            console(
-                f"App config error(s) in typeDisplay[{nType}]:", error=True,
-            )
-            for m in errors:
-                console(f"\t{m}", error=True)
+        checker.report()
 
     lexTypes = set(lexMap.values())
 
@@ -765,27 +795,28 @@ def getTypeDefaults(app, cfg, dKey, withApi):
             container=containerCls, label=labelCls, children=childrenCls,
         )
 
+    if not baseTypes:
+        baseTypes = None
+
     specs.update(
-        afterChild={},
-        baseType=baseType,
+        allowedBaseTypes=allowedBaseTypes,
+        baseTypes=baseTypes,
         childType=childType,
-        childrenCustom={},
+        chunkedTypes=set(isChunkOf.values()),
         condenseType=condenseType,
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
         isChunkOf=isChunkOf,
+        labels=labels,
+        levels=levels,
         levelCls=levelCls,
         lexMap=lexMap,
         lexTypes=lexTypes,
         lineNumberFeature=lineNumberFeature,
         noChildren=noChildren,
         noDescendTypes=lexTypes,
-        plainCustom={},
-        prettyCustom={},
-        chunkedTypes=set(isChunkOf.values()),
         templates=templates,
-        labels=labels,
         transform=transform,
         verseTypes=verseTypes,
     )

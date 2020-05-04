@@ -79,7 +79,7 @@ class App:
                 self.api = None
 
         if self.api:
-            linksApi(self, appName, silent)
+            linksApi(self, silent)
             searchApi(self)
             sectionsApi(self)
             setAppSpecsApi(self, cfg)
@@ -114,6 +114,9 @@ The app "{appName}" will not work!
                     error=True,
                 )
 
+    def reinit(self):
+        pass
+
     def reuse(self, hoist=False):
         aContext = self.context
         appPath = aContext.appPath
@@ -125,10 +128,12 @@ The app "{appName}" will not work!
         api = self.api
 
         cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
-        setAppSpecs(self, cfg)
+        self.reinit()
+
+        setAppSpecs(self, cfg, reset=True)
 
         if api:
-            linksApi(self, appName, True)
+            linksApi(self, True)
             searchApi(self)
             sectionsApi(self)
             setAppSpecsApi(self, cfg)
