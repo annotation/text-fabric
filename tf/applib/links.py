@@ -204,7 +204,7 @@ def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
 
     if nType in lexTypes:
         if text is None:
-            (isText, text) = getText(app, n, nType)
+            (isText, text) = getText(app, False, n, nType)
         if webUrlLex and webLexId:
             lid = (
                 app.getLexId(n)

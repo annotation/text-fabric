@@ -94,16 +94,20 @@ def wrapOptions(context, form):
     options = {k for (k, v) in interfaceDefaults.items() if v is not None}
 
     html = []
-    for (option, default, acro, desc) in INTERFACE_OPTIONS:
+    helpHtml = []
+    for (option, default, acro, desc, long) in INTERFACE_OPTIONS:
         if option not in options:
             continue
         value = form[option]
         value = "checked" if value else ""
         html.append(
             f'<div><input class="r" type="checkbox" id="{acro}" name="{option}" {value}/>'
-            f' <span class="ilab">{desc}</span></div>'
+            f' <span class="ilab" title="{option}">{desc}</span></div>'
         )
-    return "\n".join(html)
+        helpHtml.append(
+            f'<p><b title="{option}">{desc}</b> {long}</p>'
+        )
+    return ("\n".join(html), "\n".join(helpHtml))
 
 
 def wrapBase(allowedBaseTypes, value):

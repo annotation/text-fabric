@@ -52,6 +52,19 @@ def deSlug(slug):
     return pickle.loads(b64decode(bytes(slug, encoding="utf8")))
 
 
+def repSlug(slug):
+    info = deSlug(slug)
+    appName = info['appName']
+    checkoutApp = info['checkoutApp']
+    if checkoutApp:
+        checkoutApp = f':{checkoutApp}'
+    rep = f"{appName}{checkoutApp}"
+    args = " ".join(f"--{k}={v}" for (k, v) in sorted(info.items()) if k not in {'appName', 'checkoutApp'})
+    if args:
+        args = f" {args}"
+    return f"{rep}{args}"
+
+
 def argApp(cargs):
     (appName, checkoutApp) = argParam(cargs)
     checkout = argCollect('checkout', cargs)
@@ -76,6 +89,13 @@ def argApp(cargs):
 def argKill(cargs):
     for arg in cargs[1:]:
         if arg == "-k":
+            return True
+    return False
+
+
+def argShow(cargs):
+    for arg in cargs[1:]:
+        if arg == "-p":
             return True
     return False
 

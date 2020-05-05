@@ -27,12 +27,16 @@ class Web(object):
     def __init__(self, portKernel):
         TF = makeTfConnection(HOST, int(portKernel), TIMEOUT)
         kernelApi = TF.connect()
-        self.kernelApi = kernelApi
+        if type(kernelApi) is str:
+            console(f"Could not connect to {HOST}:{portKernel}")
+            console(kernelApi)
+        else:
+            self.kernelApi = kernelApi
 
-        context = pickle.loads(kernelApi.context())
-        self.context = context
+            context = pickle.loads(kernelApi.context())
+            self.context = context
 
-        self.wildQueries = set()
+            self.wildQueries = set()
 
 
 def factory(web):
@@ -110,6 +114,9 @@ def main(cargs=sys.argv):
 
     try:
         web = Web(portKernel)
+        if not hasattr(web, "kernelApi"):
+            return 1
+
         webapp = factory(web)
         run_simple(
             HOST, int(portWeb), webapp, use_reloader=False, use_debugger=False,

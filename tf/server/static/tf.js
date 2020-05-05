@@ -473,22 +473,22 @@ const sidebar = () => {
     })
 }
 
-const help = () => {
-  const help = $('#help')
-  const expandedStr = help.val()
-  const helpOpened = expandedStr == '' ? [] : expandedStr.split(',')
-  for (const helpId of helpOpened) {
-    const helpDetails = $(`#${helpId}`)
-    helpDetails.prop('open', true)
+const doDstate = () => {
+  const dstate = $('#dstate')
+  const expandedStr = dstate.val()
+  const dOpened = expandedStr == '' ? [] : expandedStr.split(',')
+  for (const dId of dOpened) {
+    const details = $(`#${dId}`)
+    details.prop('open', true)
   }
-  $('details.help').on('toggle', e => {
+  $('details.dstate').on('toggle', e => {
     const { currentTarget } = e
-    const dHelp = $('details.help')
-    const op = $('#help')
-    const thisHelp = $(currentTarget)
-    const thisId = thisHelp.attr('id')
-    const thisOpen = thisHelp.prop('open')
-    const expandedDetails = dHelp
+    const dStates = $('details.dstate')
+    const op = $('#dstate')
+    const thisState = $(currentTarget)
+    const thisId = thisState.attr('id')
+    const thisOpen = thisState.prop('open')
+    const expandedDetails = dStates
       .filter((i, elem) => $(elem).prop('open') && $(elem).attr('id') != thisId)
       .map((i, elem) => $(elem).attr('id'))
       .get()
@@ -822,7 +822,7 @@ $(() => {
   activateTables('tuples', null)
   activateTables('query', 'pages')
   cradios()
-  help()
+  doDstate()
   reactive()
   jobOptions()
   jobControls()

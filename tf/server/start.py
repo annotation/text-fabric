@@ -12,9 +12,11 @@ from ..parameters import NAME, VERSION, PROTOCOL, HOST
 
 from .command import (
     argKill,
+    argShow,
     argNoweb,
     argApp,
     getPort,
+    repSlug,
 )
 from .kernel import TF_DONE, TF_ERROR
 
@@ -24,6 +26,7 @@ USAGE
 text-fabric --help
 text-fabric --version
 text-fabric -k [app]
+text-fabric -p [app]
 
 text-fabric ./path/to/app --locations=locations-string [--modules=modules-string] args
 text-fabric app[:specifier] args
@@ -39,7 +42,7 @@ where all args are optional and args have one of these forms:
 
 EFFECT
 
-If an app is given and the -k flag is not passed,
+If an app is given and the -k and -p flags are not passed,
 a TF kernel for that app is started.
 When the TF kernel is ready, a web server is started
 serving a website that exposes the data through
@@ -127,6 +130,9 @@ Normally, you do not have to do any clean up.
 But if the termination is done in an irregular way, you may end up with
 stray processes.
 
+-p  Show mode. If a data source is given, the TF kernel and web server for that
+    data source are shown.
+    Without a data source, all local webinterface related processes are shown.
 -k  Kill mode. If a data source is given, the TF kernel and web server for that
     data source are killed.
     Without a data source, all local webinterface related processes are killed.
@@ -144,7 +150,6 @@ BANNER = f"This is {NAME} {VERSION}"
 def filterProcess(proc):
     procName = proc.info["name"]
     commandName = "" if procName is None else procName.lower()
-    # commandName = proc.info['name'].lower()
 
     kind = None
     slug = None
@@ -152,10 +157,14 @@ def filterProcess(proc):
     trigger = "python"
     if commandName.endswith(trigger) or commandName.endswith(f"{trigger}.exe"):
         parts = [p for p in proc.cmdline() if p not in FLAGS]
+        if parts:
+            parts = parts[1:]
+        if parts and parts[0] == "-m":
+            parts = parts[1:]
         (call, *args) = parts
         trigger = "text-fabric"
         if call.endswith(trigger) or call.endswith(f"{trigger}.exe"):
-            if all(arg != "-k" for arg in args):
+            if all(arg not in {"-k", "-p"} for arg in args):
                 return False
             slug = argApp(args)
             ports = ()
@@ -167,12 +176,15 @@ def filterProcess(proc):
                 kind = "web"
             elif call.endswith("web.py"):
                 kind = "web"
+            else:
+                return False
             (slug, *ports) = args
 
         if kind == "tf":
-            if any(arg == "-k" for arg in args):
+            if any(arg in {"-k", "-p"} for arg in args):
                 return False
-        return (kind, slug, *ports)
+        else:
+            return (kind, slug, *ports)
     return False
 
 
@@ -188,36 +200,39 @@ def indexProcesses():
     return tfProcesses
 
 
-def killProcesses(tfProcesses, slug, kill=False):
-    item = "killed" if kill else "terminated"
+def showProcesses(tfProcesses, slug, term=False, kill=False):
+    item = ("killed" if kill else "terminated") if term else ""
+    if item:
+        item = f": {item}"
     myself = os.getpid()
     for (pSlug, kinds) in tfProcesses.items():
         if slug is None or (slug == pSlug):
-            checkKinds = ("data", "web", "tf")
+            checkKinds = ("kernel", "web", "tf")
+            rSlug = repSlug(pSlug)
             for kind in checkKinds:
-                pids = kinds.get(kind, [])[0]
-                for pid in pids:
+                pidPorts = kinds.get(kind, [])
+                for pidPort in pidPorts:
+                    pid = pidPort[0]
                     if pid == myself:
                         continue
                     try:
                         proc = psutil.Process(pid=pid)
-                        if kill:
-                            proc.kill()
-                        else:
-                            proc.terminate()
-                        console(f"Process {kind} server for {pSlug}: {item}")
+                        if term:
+                            if kill:
+                                proc.kill()
+                            else:
+                                proc.terminate()
+                        console(f"{kind} {rSlug}{item}")
                     except psutil.NoSuchProcess:
-                        console(
-                            f"Process {kind} server for {pSlug}: already {item}",
-                            error=True,
-                        )
+                        if term:
+                            console(
+                                f"{kind} {rSlug}: already {item}", error=True,
+                            )
 
 
 def connectPort(tfProcesses, kind, pos, slug):
-    port = tfProcesses.get(slug, {}).get(kind, None)
-    if port:
-        port = port[pos]
-    return port
+    pInfo = tfProcesses.get(slug, {}).get(kind, None)
+    return pInfo[0][pos] if pInfo else None
 
 
 def main(cargs=sys.argv):
@@ -235,24 +250,29 @@ def main(cargs=sys.argv):
     isWin = system().lower().startswith("win")
 
     kill = argKill(cargs)
+    show = argShow(cargs)
 
     (appName, slug) = argApp(cargs)
 
-    if appName is None:
+    if appName is None and not kill and not show:
         return
 
     noweb = argNoweb(cargs)
 
     tfProcesses = indexProcesses()
 
-    if kill:
+    if kill or show:
         if appName is False:
             return
-        killProcesses(tfProcesses, slug)
+        showProcesses(tfProcesses, None if appName is None else slug, term=kill)
         return
 
     stopped = False
+    console(slug)
     portKernel = connectPort(tfProcesses, "kernel", 1, slug)
+
+    processKernel = None
+    processWeb = None
 
     if not portKernel:
         portKernel = getPort()
@@ -293,17 +313,24 @@ def main(cargs=sys.argv):
 
     if not noweb:
         sleep(2)
-        stopped = processWeb.poll() or processKernel.poll()
+        stopped = (not portWeb or (processWeb and processWeb.poll())) or (
+            not portKernel or (processKernel and processKernel.poll())
+        )
         if not stopped:
             console(f"Opening {appName} in browser")
             webbrowser.open(
                 f"{PROTOCOL}{HOST}:{portWeb}", new=2, autoraise=True,
             )
 
-    if processWeb and processKernel:
+    stopped = (not portWeb or (processWeb and processWeb.poll())) or (
+        not portKernel or (processKernel and processKernel.poll())
+    )
+    if not stopped:
         try:
-            for line in processKernel.stdout:
-                sys.stdout.write(line)
+            console("Press <Ctrl+C> to stop the TF browser")
+            if processKernel:
+                for line in processKernel.stdout:
+                    sys.stdout.write(line)
         except KeyboardInterrupt:
             console("")
             if processWeb:
@@ -311,8 +338,6 @@ def main(cargs=sys.argv):
                 console("TF web server has stopped")
             if processKernel:
                 processKernel.terminate()
-                for line in processKernel.stdout:
-                    sys.stdout.write(line)
                 console("TF kernel has stopped")
 
 

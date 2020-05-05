@@ -317,19 +317,21 @@ def serveAll(web, anything):
     )
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    baseTypes = form["baseTps"] if form["baseTps"] is not None else defaultBaseTypes
+    baseTypes = form["baseTps"]
     baseOpts = wrapBase(allowedBaseTypes, baseTypes)
     condenseType = form["condenseTp"] or defaultCondenseType
     condenseOpts = wrapCondense(condenseTypes, condenseType)
     textFormat = form["textformat"] or defaultFormat
     textFormatOpts = wrapFormats(allFormats, textFormat)
+    (options, optionsHelp) = wrapOptions(aContext, form)
 
     templateData = dict(
         appName=appName,
         css=css,
         header=f"{appLogo}{header}{tfLogo}",
         setNames=setNameHtml,
-        options=wrapOptions(aContext, form),
+        options=options,
+        optionsHelp=optionsHelp,
         condensedAtt=condensedAtt,
         baseOpts=baseOpts,
         defaultBaseTypes=defaultBaseTypes,

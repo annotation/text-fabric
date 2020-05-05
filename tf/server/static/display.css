@@ -107,6 +107,8 @@ span.plain {
     padding: 0.1rem;
     margin: 0.1rem;
     direction: ltr;
+    border: var(--meta-width) solid var(--meta-color);
+    border-radius: var(--meta-width);
 }
 .features div,.features span {
     padding: 0;
@@ -143,15 +145,6 @@ span.plain {
     align-items: flex-start;
     align-content: flex-start;
     flex-flow: column nowrap;
-}
-.meta {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    align-content: flex-start;
-    flex-flow: column nowrap;
-    border: var(--meta-width) solid var(--meta-color);
-    border-radius: var(--meta-width);
 }
 .nd {
     font-family: sans-serif;

@@ -1,12 +1,59 @@
 INTERFACE_OPTIONS = (
-    ("withTypes", False, "witht", "show types"),
-    ("prettyTypes", True, "withtp", "always show types when expanded"),
-    ("withNodes", False, "withn", "show nodes"),
-    ("showFeatures", True, "showf", "show features"),
-    ("showChunks", False, "showc", "show chunks"),
-    ("lineNumbers", False, "linen", "source lines"),
-    ("showGraphics", True, "graphics", "graphic elements"),
+    (
+        "withTypes",
+        False,
+        "witht",
+        "show types",
+        "Show the node type for every node in the results",
+    ),
+    (
+        "prettyTypes",
+        True,
+        "withtp",
+        "always show types when expanded",
+        "Show the node type for every node in the expanded view, even if <b>show types</b> is off",
+    ),
+    (
+        "withNodes",
+        False,
+        "withn",
+        "show nodes",
+        "Show the node number for every node in the results."
+        " The node number is your access to all information about that node."
+        " If you click on it, it will be copied to the <i>node pad</i>",
+    ),
+    (
+        "showFeatures",
+        True,
+        "showf",
+        "show features",
+        "Show the relevant feature values for every node in the results",
+    ),
+    (
+        "showChunks",
+        False,
+        "showc",
+        "show chunks",
+        "Show chunk types fully. Only if the TF data has node types and companion chunked node types",
+    ),
+    (
+        "lineNumbers",
+        False,
+        "linen",
+        "source lines",
+        "Show source line numbers with the nodes. Only if the TF data has a feature for line numbers.",
+    ),
+    (
+        "showGraphics",
+        True,
+        "graphics",
+        "graphic elements",
+        "Show graphical companion elements with the nodes."
+        " Only if the data set implements the logic for it",
+    ),
 )
+
+# <p><b title="withTypes">Show types</b>{longDesc}</p>
 
 DISPLAY_OPTIONS = dict(
     baseTypes=None,
@@ -44,13 +91,9 @@ class DisplaySettings:
         displayDefaults = self.displayDefaults
 
         for (k, v) in DISPLAY_OPTIONS.items():
-            value = v
-            appDefault = aContext.get(k, None)
-            if appDefault is not None:
-                value = appDefault
-            if k in interfaceDefaults:
-                value = interfaceDefaults[k]
-
+            value = (
+                interfaceDefaults[k] if k in interfaceDefaults else aContext.get(k, v)
+            )
             displayDefaults[k] = value
 
         self.reset()
@@ -77,6 +120,7 @@ class DisplaySettings:
     def normalize(self, option, value):
         api = self.app.api
         error = api.error
+        slotType = api.F.otype.slotType
 
         if option not in self.displayDefaults:
             error(f'WARNING: unknown display option "{option}" will be ignored')
@@ -91,6 +135,17 @@ class DisplaySettings:
         elif option == "highlights":
             if value is not None and type(value) is not dict:
                 value = {m: "" for m in value}
+        elif option == "baseTypes":
+            value = (
+                set()
+                if value is None
+                else value
+                if type(value) is set
+                else {value}
+                if type(value) is str
+                else set(value)
+            )
+            value.discard(slotType)
         return (True, value)
 
     def check(self, msg, options):
@@ -106,16 +161,19 @@ class DisplaySettings:
                 error(f'ERROR in {msg}(): unknown display option "{option}={value}"')
                 good = False
             if option in {"baseTypes", "condenseType"}:
-                legalValues = set(Fotype.all)
-                if option == "baseTypes":
-                    legalValues -= sectionTypeSet
-                    legalValues -= {slotType}
-                    isLegal = all(v in legalValues for v in value)
-                else:
-                    isLegal = value in legalValues
-                if value is not None and not isLegal:
-                    error(f'ERROR in {msg}(): unknown node type in "{option}={value}"')
-                    good = False
+                if value is not None:
+                    legalValues = set(Fotype.all)
+                    if option == "baseTypes":
+                        legalValues -= sectionTypeSet
+                        legalValues -= {slotType}
+                        isLegal = all(v in legalValues for v in value)
+                    else:
+                        isLegal = value in legalValues
+                    if not isLegal:
+                        error(
+                            f'ERROR in {msg}(): illegal node type in "{option}={value}"'
+                        )
+                        good = False
         return good
 
     def get(self, options):
@@ -124,11 +182,9 @@ class DisplaySettings:
         normOptions = {}
 
         for option in displayDefaults:
-            value = (
-                options[option]
-                if option in options
-                else self.displayDefaults.get(option, None)
-            )
+            value = options.get(option, None)
+            if value is None:
+                value = self.displayDefaults.get(option, None)
             normValue = self.normalize(option, value)
             if normValue:
                 normOptions[option] = normValue[1]

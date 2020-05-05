@@ -57,7 +57,7 @@ def makeTfKernel(
         return False
     app.api.reset()
     cache = {}
-    console(f"{TF_DONE}\nListening at port {port}")
+    console(f"{TF_DONE}\nKernel listening at port {port}")
 
     class TfKernel(rpyc.Service):
         def on_connect(self, conn):
@@ -352,8 +352,9 @@ def makeTfKernel(
             resultsX = getResultsX(app, queryResults, features, condenseType, fmt=fmt,)
             return (queryMessages, pickle.dumps(csvs), pickle.dumps(resultsX))
 
+    return TfKernel()
     return ThreadedServer(
-        TfKernel,
+        TfKernel(),
         port=int(port),
         protocol_config={
             # 'allow_pickle': True,
@@ -386,6 +387,7 @@ def makeTfConnection(host, port, timeout):
 
 def main(cargs=sys.argv):
     args = argKernel(cargs)
+    print("AAA", args)
     if not args:
         return
 
@@ -402,7 +404,8 @@ def main(cargs=sys.argv):
         checkout = ""
 
     (commit, release, local, appBase, appDir, appName) = findApp(appName, checkoutApp)
-    if appBase:
+    print("BB", appBase)
+    if appBase or appBase == "":
         appPath = f"{appBase}/{appDir}"
         kernel = makeTfKernel(
             appName,
@@ -418,7 +421,15 @@ def main(cargs=sys.argv):
             portKernel,
         )
         if kernel:
-            kernel.start()
+            server = ThreadedServer(
+                kernel,
+                port=int(portKernel),
+                protocol_config={
+                    # 'allow_pickle': True,
+                    # 'allow_public_attrs': True,
+                },
+            )
+            server.start()
 
 
 # LOWER LEVEL

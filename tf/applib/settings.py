@@ -145,7 +145,7 @@ DATA_DISPLAY_DEFAULTS = (
     ("noneValues", {None}, False),
     ("sectionSep1", " ", False),
     ("sectionSep2", ":", False),
-    ("textFormats", {}, False),
+    ("textFormats", {}, True),
     ("browseNavLevel", None, True),
     ("browseContentPretty", False, False),
     ("exampleSection", None, True),
@@ -244,9 +244,6 @@ class Check:
             elif k == "lineNumber":
                 if v not in allNodeFeatures:
                     errors.append(f"{k}: feature {v} not loaded")
-            elif k == "textFormats":
-                if type(v) is not dict:
-                    errors.append(f"{k} must be a dictionary")
             elif k == "browseNavLevel":
                 allowedValues = set(range(len(sectionTypes)))
                 if v not in allowedValues:
@@ -283,6 +280,13 @@ class Check:
                     errors.append(
                         f"{k}={v} is not useful (dataset lacks relevant features)"
                     )
+            elif k == "textFormats":
+                if type(v) is not dict:
+                    errors.append(f"{k} must be a dictionary")
+                for (fmt, methodName) in v.items():
+                    func = f"fmt_{methodName}"
+                    if not hasattr(app, func):
+                        errors.append(f"{k}: {fmt} needs unimplemented method {func}")
         else:
             if k in {"excludedFeatures", "noneValues"}:
                 if type(v) is not list:
@@ -457,8 +461,6 @@ def setAppSpecsApi(app, cfg):
 
     specs = app.specs
 
-    specs["formatCls"] = compileFormatCls(app, specs["defaultClsOrig"])
-
     for (dKey, method) in (
         ("dataDisplay", getDataDefaults),
         ("typeDisplay", getTypeDefaults),
@@ -466,7 +468,7 @@ def setAppSpecsApi(app, cfg):
         method(app, cfg, dKey, True)
 
     specs["allowedBaseTypes"] = tuple(
-        e[0] for e in C.levels.data if e[0] not in sectionTypeSet
+        e[0] for e in C.levels.data[0:-1] if e[0] not in sectionTypeSet
     )
 
     specs["condenseTypes"] = C.levels.data
@@ -544,6 +546,11 @@ def getDataDefaults(app, cfg, dKey, withApi):
                     value = "passage"
             specs["exampleSection"] = value
             specs["exampleSectionHtml"] = f"<code>{value}</code>"
+        if attr == "textFormats":
+            specs[attr] = value
+            sAttr = "formatCls"
+            specs[sAttr] = compileFormatCls(app, value, specs["defaultClsOrig"])
+
         else:
             specs[attr] = value
 
@@ -558,6 +565,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     api = app.api
     F = api.F
     T = api.T
+    otypeRank = api.otypeRank
     slotType = F.otype.slotType
     nTypes = F.otype.all
     structureTypes = T.structureTypes
@@ -576,8 +584,8 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     lineNumberFeature = {}
     hasGraphics = set()
     verseTypes = {sectionTypes[-1]} if sectionTypes else set()
+    verseRank = otypeRank[sectionTypes[-1]] if sectionTypes else None
     lexMap = {}
-    allowedBaseTypes = {slotType}
     baseTypes = set()
     condenseType = None
     templates = {}
@@ -625,7 +633,8 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         if "base" in info:
             base = info.get("base", None)
             checker.checkSetting("base", base)
-            baseTypes.add(nType)
+            if nType != slotType:
+                baseTypes.add(nType)
 
         if "condense" in info:
             condenseType = nType
@@ -695,6 +704,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         checker.report()
 
     lexTypes = set(lexMap.values())
+    nTypesNoLex = [n for n in nTypes if n not in lexTypes]
 
     levelTypes = [set(), set(), set(), set(), set()]
     levelTypes[4] = sectionalTypeSet - verseTypes
@@ -704,55 +714,6 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     remainingTypeSet = set(nTypes) - levelTypes[4] - levelTypes[3] - levelTypes[0]
     remainingTypes = tuple(x for x in nTypes if x in remainingTypeSet)
     nRemaining = len(remainingTypes)
-
-    children = {
-        nType: {nTypes[i + 1]}
-        for (i, nType) in enumerate(nTypes)
-        if nType in levelTypes[2] | levelTypes[1]
-    }
-    children.update(
-        {
-            nType: {nTypes[i + 1]}
-            for (i, nType) in enumerate(structureTypes)
-            if i < len(structureTypes) - 1
-        }
-    )
-    children.update(
-        {
-            nType: {nTypes[i + 1]}
-            for (i, nType) in enumerate(sectionTypes)
-            if i < len(sectionTypes) - 1
-        }
-    )
-
-    lowestSectionalTypes = set() | verseTypes
-    if sectionTypes:
-        lowestSectionalTypes.add(sectionTypes[-1])
-    if structureTypes:
-        lowestSectionalTypes.add(structureTypes[-1])
-
-    biggestOtherType = remainingTypes[0] if remainingTypes else slotType
-    smallestOtherType = remainingTypes[-1] if remainingTypes else None
-
-    for lexType in lexTypes:
-        if lexType in children:
-            del children[lexType]
-
-    for lowestSectionalType in lowestSectionalTypes:
-        if lowestSectionalType not in children:
-            children[lowestSectionalType] = {slotType}
-        else:
-            children[lowestSectionalType].add(slotType)
-
-        if lowestSectionalType == biggestOtherType:
-            continue
-        children[lowestSectionalType].add(biggestOtherType)
-
-    if smallestOtherType is not None and smallestOtherType != slotType:
-        if smallestOtherType not in children:
-            children[smallestOtherType] = {slotType}
-        else:
-            children[smallestOtherType].add(slotType)
 
     if nRemaining == 0:
         midType = slotType
@@ -764,6 +725,55 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         midType = remainingTypes[mid]
         levelTypes[2] = set(remainingTypes[0:mid])
         levelTypes[1] = set(remainingTypes[mid:])
+
+    children = {
+        nType: {nTypesNoLex[i + 1]}
+        for (i, nType) in enumerate(nTypesNoLex)
+        if nType in levelTypes[2] | levelTypes[1]
+    }
+    children.update(
+        {
+            nType: {nTypesNoLex[i + 1]}
+            for (i, nType) in enumerate(structureTypes)
+            if i < len(structureTypes) - 1
+        }
+    )
+    children.update(
+        {
+            nType: {nTypesNoLex[i + 1]}
+            for (i, nType) in enumerate(sectionTypes)
+            if i < len(sectionTypes) - 1
+        }
+    )
+
+    lowestSectionalTypes = set() | verseTypes
+    if sectionTypes:
+        lowestSectionalTypes.add(sectionTypes[-1])
+    if structureTypes:
+        lowestSectionalTypes.add(structureTypes[-1])
+
+    biggestOtherType = slotType
+    for rt in remainingTypes:
+        if verseRank is None or otypeRank[rt] < verseRank:
+            biggestOtherType = rt
+            break
+    smallestOtherType = remainingTypes[-1] if remainingTypes else None
+
+    for lexType in lexTypes:
+        if lexType in children:
+            del children[lexType]
+
+    for lowestSectionalType in lowestSectionalTypes:
+        if lowestSectionalType not in children:
+            children[lowestSectionalType] = {biggestOtherType}
+        else:
+            children[lowestSectionalType].add(biggestOtherType)
+
+    if smallestOtherType is not None and smallestOtherType != slotType:
+        if smallestOtherType not in children:
+            children[smallestOtherType] = {slotType}
+        else:
+            children[smallestOtherType].add(slotType)
 
     if condenseType is None:
         condenseType = sectionTypes[-1] if sectionTypes else midType
@@ -795,11 +805,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
             container=containerCls, label=labelCls, children=childrenCls,
         )
 
-    if not baseTypes:
-        baseTypes = None
-
     specs.update(
-        allowedBaseTypes=allowedBaseTypes,
         baseTypes=baseTypes,
         childType=childType,
         chunkedTypes=set(isChunkOf.values()),
@@ -826,25 +832,19 @@ def showContext(app):
     EM = "*empty*"
     block = "    "
 
-    def eScalar(x, plain=True):
-        tick = "`" if plain else ""
+    def eScalar(x, level):
+        tick = "`" if level > 0 else ""
+        if type(x) is str and "\n" in x:
+            indent = block * level
+            return (
+                f"\n{indent}```\n{indent}"
+                + f"\n{indent}".join(x.split("\n"))
+                + f"\n{indent}```\n"
+            )
         return f"{tick}{mdEsc(str(x))}{tick}" if x else EM
 
     def eEmpty(x):
-        tpv = type(x)
-        return (
-            "`[]`"
-            if tpv is list
-            else "`()`"
-            if tpv is tuple
-            else "`{}`"
-            if tpv is dict
-            else "`set()`"
-            if tpv is set
-            else EM
-            if tpv is str
-            else str(x)
-        )
+        return EM if type(x) is str else str(x)
 
     def eList(x, level):
         tpv = type(x)
@@ -858,37 +858,30 @@ def showContext(app):
     def eDict(x, level):
         indent = block * level
         md = "\n"
-        for (i, (k, v)) in enumerate(sorted(x.items(), key=lambda y: str(y))):
-            item = f"{i + 1:}." if level == 0 else "*"
-            md += (
-                f"{indent}{item:<4}**{eScalar(k, plain=level > 0)}**:"
-                f" {eData(v, level + 1)}"
-            )
+        for (k, v) in sorted(x.items(), key=lambda y: str(y)):
+            item = "*"
+            md += f"{indent}{item:<4}**{eScalar(k, level)}**:" f" {eData(v, level + 1)}"
         return md
 
     def eRest(x, level):
         indent = block * level
-        return "\n" + indent + eScalar(x) + "\n"
+        return "\n" + indent + eScalar(x, level) + "\n"
 
     def eData(x, level):
         if not x:
             return eEmpty(x) + "\n"
         tpv = type(x)
         if tpv is str or tpv is float or tpv is int or tpv is bool:
-            return eScalar(x) + "\n"
+            return eScalar(x, level) + "\n"
         if tpv is list or tpv is tuple or tpv is set:
             return eList(x, level)
         if tpv is dict:
             return eDict(x, level)
         return eRest(x, level)
 
-    dm(
-        f"""\
-# {(app.appName)} settings
-
-{eData(app.specs, 0)}
-"""
-    )
+    dm(f"# {(app.appName)} app context\n\n")
+    for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
+        dm(f"<details><summary>{i + 1}. {k}</summary>\n{eData(v, 0)}\n</details>\n")
 
 
 def getLevel(defaultLevel, givenInfo, isVerse):
@@ -901,22 +894,25 @@ def getLevel(defaultLevel, givenInfo, isVerse):
     return dict(level=level, flow=flow, wrap=wrap, stretch=stretch)
 
 
-def compileFormatCls(app, defaultClsOrig):
+def compileFormatCls(app, extraFormats, defaultClsOrig):
     api = app.api
     T = api.T
 
     result = {None: defaultClsOrig}
-    for fmt in T.formats:
+    for fmt in set(T.formats) | set(extraFormats.keys()):
         for (key, cls) in FORMAT_CSS.items():
-            if (
-                f"-{key}-" in fmt
-                or fmt.startswith(f"{key}-")
-                or fmt.endswith(f"-{key}")
-            ):
-                result[fmt] = cls
-    for fmt in T.formats:
-        if fmt not in result:
-            result[fmt] = DEFAULT_CLS
+            result[fmt] = (
+                cls
+                if (
+                    f"-{key}-" in fmt
+                    or fmt.startswith(f"{key}-")
+                    or fmt.endswith(f"-{key}")
+                )
+                else DEFAULT_CLS
+            )
+
+    for (k, v) in result.items():
+        print(k, "=", v)
     return result
 
 

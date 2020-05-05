@@ -16,6 +16,7 @@
 	<body>
 		<form id="go" method="post" enctype="multipart/form-data">
 		<input type="hidden" id="appName" name="appName" value="{{appName}}"/>
+    <input type="hidden" id="dstate" name="dstate" value="{{dstate}}"/>
 		<div class="page">
 			<div id="sidebar">
 				<div status="about">
@@ -94,7 +95,7 @@
 				</div>
 				<div status="options">
 					<div>
-            <details open>
+            <details id="options" class="dstate">
               <summary>
                 <span class="ilab">text formats</span>
 							</summary>
@@ -102,14 +103,14 @@
             </details>
 					</div>
 					<div>
-						<details id="basetpd" open>
+						<details id="basetpd"  class="dstate">
 							<summary>
                 <span class="ilab">base types</span>
 							</summary>
 							{{baseOpts|safe}}
 					</div>
 					<div>
-						<details id="condd" {{'open' if condensedAtt else ''}}>
+						<details id="condd" class="dstate">
 							<summary>
 								<input
 									class="r" type="checkbox" id="cond" name="condensed" {{condensedAtt}}
@@ -159,11 +160,10 @@
 					</div>
 				</div>
 				<div status="help">
-					<input type="hidden" id="help" name="help" value="{{help}}"/>
 					<div class="header">
 						{{header|safe}}
 					</div>
-					<details id="helpTf" class="help">
+					<details id="helpTf" class="help dstate">
 						<summary>Text-Fabric Browser</summary>
 						<p>Explore the {{appName}} corpus.</p>
 						<p>Use the
@@ -183,7 +183,7 @@
 						<p>When you terminate <code>text-fabric</code> on the command line,
 						   the TF kernel will also be terminated.</p>
 					</details>
-					<details id="helpSections" class="help sections">
+					<details id="helpSections" class="help dstate sections">
 						<summary>{{defaultCondenseType.capitalize()}} pad</summary>
 						<p>Enter a reference here,
 						   such as {{exampleSectionHtml|safe}}.</p>
@@ -193,7 +193,7 @@
 						<p>The results of the references appear in the result list,
 						   with a negative sequence number.</p>
 					</details>
-					<details id="helpTuples" class="help tuples">
+					<details id="helpTuples" class="help dstate tuples">
 						<summary>Node Pad</summary>
 						<p>Enter a node or list of nodes here,
 						   such as <code>123</code> or
@@ -206,7 +206,7 @@
 						<p>The results of the nodes appear in the result list,
 						   with a negative sequence number.</p>
 					</details>
-					<details id="helpTemplate" class="help query">
+					<details id="helpTemplate" class="help dstate query">
 						<summary>Search Pad</summary>
 						<p>Enter a search template here.
 						   See the buttons on top for the docs.</p>
@@ -214,7 +214,7 @@
 						<p>The results of the search appear in the result list,
 						   with a positive sequence number.</p>
 					</details>
-					<details id="helpResults" class="help">
+					<details id="helpResults" class="help dstate">
 						<summary>Result list</summary>
 						<p>Show the text in the {{defaultFormat}} text format:
 						   see the <i>text format</i> option.</p>
@@ -231,7 +231,7 @@
 						<p>Use the navigation button to walk through the results.<p>
 						<p>Results that you have expanded remain in view.</p>
 					</details>
-					<details id="helpJobs" class="help">
+					<details id="helpJobs" class="help dstate">
 						<summary>Jobs</summary>
 						<p>Your job will be saved in your browser</p>
 						<p>Rename or duplicate your job, by typing a new name in the name field.</p>
@@ -241,30 +241,24 @@
 						   So you can work with multiple jobs in multiple tabs with only one running
 						   <code>text-fabric</code> instance.</p>
 					</details>
-					<details id="helpOptions" class="help">
+					<details id="helpOptions" class="help dstate">
 						<summary>Options</summary>
-						<p><b>Text format</b> Show the results in a text format of your choice: original script,
+						<p><b title="fmt='text-orig-full'">Text format</b>
+               Show the results in a text format of your choice: original script,
 						   transcription, or phonetic representations may be offered.</p>
-						<p><b>Base types</b> Thes types of nodes count as base types. The components
+            <p><b title="baseTypes={nodeType1, nodeType2}">Base types</b>
+               These types of nodes count as base types. The components
                of base nodes will not be broken down in pretty displays. Highlights of base nodes
                consist of coloured backgrounds, highlights of other nodes consist of coloured boxes
                around the nodes.</p>
-						<p><b>Condense results</b> Show the results grouping all nodes in result tuples into
+						<p><b title="condensed=True, condenseType='nodeType'">Condense results</b>
+               Show the results grouping all nodes in result tuples into
 						   containers, such as {{defaultCondenseType}}s.
 						   The containers are <i>pretty</i>-displayed, with the result nodes in it highlighted.
 						   Choose the container type as you wish.</p>
-						<p><b>Show types</b> Show the node type for every node in the results.</p>
-						<p><b>Always show types when expanded</b> Show the node type for every node in the expanded
-               view, even if <b>show types</b> is off.</p>
-						<p><b>Show nodes</b> Show the node number for every node in the results.
-						   The node number is your access to all information about that node.
-						   If you click on it, it will be copied to the <i>node pad</i>.</p>
-						<p><b>Show features</b> Show the relevant feature values for every
-               node in the results.</p>
-						<p><b>Show chunks</b> Show chunk types fully.</p>
-						<p><b>Show graphics</b> Show graphical companion elements with the nodes.</p>
+            {{optionsHelp|safe}}
 					</details>
-					<details id="helpExport" class="help">
+					<details id="helpExport" class="help dstate">
 						<summary>Export</summary>
 						<p>Export your results. Provide your name, title, and description (markdown is supported).</p>
 						<p>Click <button type="button" class="fa fa-box-open"></button>.
