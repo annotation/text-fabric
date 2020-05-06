@@ -12,52 +12,31 @@ VAR_PATTERN = re.compile(r"\{([^}]+)\}")
 WRITING_DEFAULTS = dict(
     akk=dict(
         language="Akkadian",
-        fontName="Santakku",
-        font="Santakk.ttf",
-        fontw="Santakku.woff",
         direction="ltr",
     ),
     hbo=dict(
         language="Hebrew",
-        fontName="Ezra SIL",
-        font="SILEOT.ttf",
-        fontw="SILEOT.woff",
         direction="rtl",
     ),
     syc=dict(
         language="Syriac",
-        fontName="Estrangelo Edessa",
-        font="SyrCOMEdessa.otf",
-        fontw="SyrCOMEdessa.woff",
         direction="rtl",
     ),
     ara=dict(
         language="Arabic",
-        fontName="AmiriQuran",
-        font="AmiriQuran.ttf",
-        fontw="AmiriQuran.woff2",
         direction="rtl",
     ),
     grc=dict(
         language="Greek",
-        fontName="Gentium",
-        font="GentiumPlus-R.ttf",
-        fontw="GentiumPlus-R.woff",
         direction="ltr",
     ),
     cld=dict(
         language="Aramaic",
-        fontName="CharisSIL-R",
-        font="CharisSIL-R.otf",
-        fontw="CharisSIL-R.woff",
         direction="ltr",
     ),
 )
 WRITING_DEFAULTS[""] = dict(
     language="",
-    fontName="Gentium",
-    font="GentiumPlus-R.ttf",
-    fontw="GentiumPlus-R.woff",
     direction="ltr",
 )
 
@@ -65,18 +44,29 @@ FONT_BASE = (
     "https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts"
 )
 
+METHOD = "method"
+STYLE = "style"
+DESCEND = "descend"
+
+FMT_KEYS = {METHOD, STYLE}
+
 DEFAULT_CLS = "txtn"
 DEFAULT_CLS_SRC = "txto"
 DEFAULT_CLS_ORIG = "txtu"
 DEFAULT_CLS_TRANS = "txtt"
 DEFAULT_CLS_PHONO = "txtp"
 
-FORMAT_CSS = dict(
-    orig=DEFAULT_CLS_ORIG,
-    trans=DEFAULT_CLS_TRANS,
-    source=DEFAULT_CLS_SRC,
-    phono=DEFAULT_CLS_PHONO,
+NORMAL = "normal"
+ORIG = "orig"
+
+FORMAT_CLS = (
+    (NORMAL, DEFAULT_CLS),
+    (ORIG, DEFAULT_CLS_ORIG),
+    ("trans", DEFAULT_CLS_TRANS),
+    ("source", DEFAULT_CLS_SRC),
+    ("phono", DEFAULT_CLS_PHONO),
 )
+FORMAT_STYLES = {f[0]: f[1] for f in FORMAT_CLS}
 
 LEVEL_DEFAULTS = dict(
     level={
@@ -120,6 +110,8 @@ PROVENANCE_DEFAULTS = (
     ("webLexId", None),
     ("webUrl", None),
     ("webUrlLex", None),
+    ("webLexId", None),
+    ("webHint", None),
 )
 
 DOC_DEFAULTS = (
@@ -132,12 +124,6 @@ DOC_DEFAULTS = (
     ("featurePage", "home"),
     ("charUrl", "{tfDoc}/Writing/Transcription/{language}"),
     ("charText", "How TF features represent text"),
-    ("webBase", None),
-    ("webLang", None),
-    ("webUrl", None),
-    ("webUrlLex", None),
-    ("webLexId", None),
-    ("webHint", None),
 )
 
 DATA_DISPLAY_DEFAULTS = (
@@ -263,9 +249,10 @@ class Check:
             elif k == "transform":
                 for (feat, method) in extra.items():
                     if type(method) is str:
-                        errors.append(
-                            f"\t{k}:{feat}: {method}() not implemented in app"
-                        )
+                        errors.append(f"{k}:{feat}: {method}() not implemented in app")
+            elif k == "style":
+                if type(v) is not str or v.lower() != v:
+                    errors.append(f"{k} must be an all lowercase string")
             elif k in {
                 "withTypes",
                 "prettyTypes",
@@ -283,10 +270,24 @@ class Check:
             elif k == "textFormats":
                 if type(v) is not dict:
                     errors.append(f"{k} must be a dictionary")
-                for (fmt, methodName) in v.items():
-                    func = f"fmt_{methodName}"
-                    if not hasattr(app, func):
-                        errors.append(f"{k}: {fmt} needs unimplemented method {func}")
+                for (fmt, fmtInfo) in v.items():
+                    for (fk, fv) in fmtInfo.items():
+                        if fk not in FMT_KEYS:
+                            errors.append(f"{k}: {fmt}: illegal key {fk}")
+                            continue
+                        if fk == METHOD:
+                            (descendType, func) = T.splitFormat(fv)
+                            func = f"fmt_{func}"
+                            if not hasattr(app, func):
+                                errors.append(
+                                    f"{k}: {fmt} needs unimplemented method {func}"
+                                )
+                        elif fk == STYLE:
+                            if fv not in FORMAT_STYLES:
+                                if fv.lower() != fv:
+                                    errors.append(
+                                        f"{k}: {fmt}: style {fv} must be all lowercase"
+                                    )
         else:
             if k in {"excludedFeatures", "noneValues"}:
                 if type(v) is not list:
@@ -304,7 +305,7 @@ class Check:
                 if v not in allowedValues:
                     allowed = ",".join(allowedValues - {""})
                     errors.append(f"{k} must be the empty string or one of {allowed}")
-            elif k in {"direction", "language", "fontName", "font", "fontw"}:
+            elif k in {"direction", "language"}:
                 allowedValues = {w[k] for w in WRITING_DEFAULTS}
                 if v not in allowedValues:
                     allowed = ",".join(allowedValues)
@@ -547,9 +548,11 @@ def getDataDefaults(app, cfg, dKey, withApi):
             specs["exampleSection"] = value
             specs["exampleSectionHtml"] = f"<code>{value}</code>"
         if attr == "textFormats":
-            specs[attr] = value
-            sAttr = "formatCls"
-            specs[sAttr] = compileFormatCls(app, value, specs["defaultClsOrig"])
+            methods = {fmt: v[METHOD] for (fmt, v) in value.items() if METHOD in v}
+            styles = {fmt: v.get(STYLE, None) for (fmt, v) in value.items()}
+            specs["formatMethod"] = methods
+            specs["formatHtml"] = {T.splitFormat(fmt)[1] for fmt in methods}
+            specs["formatCls"] = compileFormatCls(app, styles, specs["defaultClsOrig"])
 
         else:
             specs[attr] = value
@@ -590,6 +593,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     condenseType = None
     templates = {}
     labels = {}
+    styles = {}
     givenLevels = {}
     levels = {}
     childType = {}
@@ -598,7 +602,9 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     specs["transform"] = transform
 
     for nType in nTypes:
-        template = True if nType == slotType or nType in sectionalTypeSet else ""
+        template = (
+            True if nType == slotType or nType in sectionalTypeSet - verseTypes else ""
+        )
         for dest in (templates, labels):
             dest[nType] = (template, ())
 
@@ -631,7 +637,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
             lexMap[lOcc] = nType
 
         if "base" in info:
-            base = info.get("base", None)
+            base = info["base"]
             checker.checkSetting("base", base)
             if nType != slotType:
                 baseTypes.add(nType)
@@ -659,6 +665,10 @@ def getTypeDefaults(app, cfg, dKey, withApi):
                 checker.checkSetting(
                     k, template, extra=(template, templateFeatures),
                 )
+
+        if "style" in info:
+            style = info["style"]
+            styles[nType] = FORMAT_STYLES.get(style, style)
 
         for k in ("featuresBare", "features"):
             v = info.get(k, "")
@@ -822,6 +832,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         lineNumberFeature=lineNumberFeature,
         noChildren=noChildren,
         noDescendTypes=lexTypes,
+        styles=styles,
         templates=templates,
         transform=transform,
         verseTypes=verseTypes,
@@ -894,25 +905,35 @@ def getLevel(defaultLevel, givenInfo, isVerse):
     return dict(level=level, flow=flow, wrap=wrap, stretch=stretch)
 
 
-def compileFormatCls(app, extraFormats, defaultClsOrig):
+def compileFormatCls(app, givenStyles, defaultClsOrig):
     api = app.api
     T = api.T
 
-    result = {None: defaultClsOrig}
-    for fmt in set(T.formats) | set(extraFormats.keys()):
-        for (key, cls) in FORMAT_CSS.items():
-            result[fmt] = (
-                cls
+    result = {}
+    extraFormats = set()
+    for fmt in givenStyles:
+        fmt = T.splitFormat(fmt)[1]
+        extraFormats.add(fmt)
+
+    for fmt in set(T.formats) | set(extraFormats):
+        style = givenStyles.get(fmt, None)
+        if style is None:
+            textCls = None
+            for (key, cls) in FORMAT_CLS:
                 if (
                     f"-{key}-" in fmt
                     or fmt.startswith(f"{key}-")
                     or fmt.endswith(f"-{key}")
-                )
-                else DEFAULT_CLS
+                ):
+                    textCls = defaultClsOrig if key == ORIG else cls
+            if textCls is None:
+                textCls = DEFAULT_CLS
+        else:
+            textCls = (
+                defaultClsOrig if style == ORIG else FORMAT_STYLES.get(style, style)
             )
+        result[fmt] = textCls
 
-    for (k, v) in result.items():
-        print(k, "=", v)
     return result
 
 

@@ -427,7 +427,7 @@ def main():
     elif task == "ship":
         showVersion()
         if not currentVersion:
-            print("No current version")
+            console("No current version")
             return
 
         answer = input("right version ? [yn]")

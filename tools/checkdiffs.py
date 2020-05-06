@@ -2,6 +2,7 @@ import sys
 import os
 from itertools import zip_longest
 from glob import glob
+from tf.core.helpers import console
 
 
 def checkDiffs(path1, path2):
@@ -27,23 +28,23 @@ def checkDiffs(path1, path2):
             i += 1
             if e != n:
                 if nUnequal == 0:
-                    print(
+                    console(
                         "differences{}".format(
                             "" if f == "otext" else " after the metadata"
                         )
                     )
                 shortE = e[0:cutOff] + (" ..." if len(e) > cutOff else "")
                 shortN = n[0:cutOff] + (" ..." if len(n) > cutOff else "")
-                print("\tline {:>6} OLD -->{}<--".format(i, shortE.rstrip("\n")))
-                print("\tline {:>6} NEW -->{}<--".format(i, shortN.rstrip("\n")))
+                console("\tline {:>6} OLD -->{}<--".format(i, shortE.rstrip("\n")))
+                console("\tline {:>6} NEW -->{}<--".format(i, shortN.rstrip("\n")))
                 equal = False
                 nUnequal += 1
                 if nUnequal >= limit:
                     break
 
-        print("no changes" if equal else "")
+        console("no changes" if equal else "")
 
-    print(f"Check differences between TF files in {path1} and {path2}")
+    console(f"Check differences between TF files in {path1} and {path2}")
     files1 = glob(f"{path1}/*.tf")
     files2 = glob(f"{path2}/*.tf")
     features1 = {os.path.basename(os.path.splitext(f)[0]) for f in files1}
@@ -54,23 +55,23 @@ def checkDiffs(path1, path2):
     commonOnes = features2 & features1
 
     if addedOnes:
-        print(f"\t{len(addedOnes)} features to add")
+        console(f"\t{len(addedOnes)} features to add")
         for f in sorted(addedOnes):
-            print(f"\t\t{f}")
+            console(f"\t\t{f}")
     else:
-        print(f"\tno features to add")
+        console(f"\tno features to add")
     if deletedOnes:
-        print(f"\t{len(deletedOnes)} features to delete")
+        console(f"\t{len(deletedOnes)} features to delete")
         for f in sorted(deletedOnes):
-            print(f"\t\t{f}")
+            console(f"\t\t{f}")
     else:
-        print(f"\tno features to delete")
+        console(f"\tno features to delete")
 
-    print(f"\t{len(commonOnes)} features in common")
+    console(f"\t{len(commonOnes)} features in common")
     for f in sorted(commonOnes):
-        print(f"{f}")
+        console(f"{f}")
         diffFeature(f)
-    print("Done")
+    console("Done")
 
 
 checkDiffs(*sys.argv[1:3])

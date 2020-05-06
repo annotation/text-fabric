@@ -349,7 +349,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
             error(f"no structure node with heading {head}", tm=False)
         return n
 
-    def text(self, nodes, fmt=None, descend=None, func=None, explain=False):
+    def text(self, nodes, fmt=None, descend=None, func=None, explain=False, **kwargs):
         api = self.api
         E = api.E
         F = api.F
@@ -369,7 +369,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
             error(f'Undefined format "{fmt}"', tm=False)
             return ""
 
-        def rescue(n):
+        def rescue(n, **kwargs):
             return f"{fOtype(n)}{n}"
 
         single = type(nodes) is int
@@ -389,10 +389,10 @@ There are {len(hdFromNd)} structural elements in the dataset.
             descendRep = (
                 "implicit" if descend is None else "True" if descend else "False"
             )
-            funcRep = f'{"" if func else "no "} custom format implementation'
+            funcRep = f'{"" if func else "no "}custom format implementation'
             error(
                 f"""
-EXPLANATION: T.text) called with parameters:
+EXPLANATION: T.text() called with parameters:
 \tnodes  : {nRep}
 \tfmt    : {fmtRep}
 \tdescend: {descendRep}
@@ -412,13 +412,13 @@ EXPLANATION: T.text) called with parameters:
                     repf = xformats[fmt]
                     downType = xdTypes[fmt]
                     if explain:
-                        fmtRep = f"explicit {fmt}"
+                        fmtRep = f"explicit {fmt} does {repf}"
                         expandRep = f"{downType} {{}} (descend=True) ({downRep})"
                 else:
                     repf = xformats[DEFAULT_FORMAT]
                     downType = xdTypes[DEFAULT_FORMAT]
                     if explain:
-                        fmtRep = f"implicit {DEFAULT_FORMAT}"
+                        fmtRep = f"implicit {DEFAULT_FORMAT} does {repf}"
                         expandRep = f"{downType} {{}} (descend=True) ({downRep})"
             else:
                 downType = nType
@@ -431,7 +431,7 @@ EXPLANATION: T.text) called with parameters:
                         if explain:
                             downRep = fmttStr
                     if explain:
-                        fmtRep = f"explicit {fmt}"
+                        fmtRep = f"explicit {fmt} does {repf}"
                         expandRep = f"{downType} {{}} (descend=None) ({downRep})"
                 elif nType in defaultFormats:
                     dfmt = defaultFormats[nType]
@@ -441,7 +441,7 @@ EXPLANATION: T.text) called with parameters:
                         if explain:
                             downRep = fmttStr
                     if explain:
-                        fmtRep = f"implicit {dfmt}"
+                        fmtRep = f"implicit {dfmt} does {repf}"
                         expandRep = f"{downType} {{}} (descend=None) ({downRep})"
                 else:
                     repf = xformats[DEFAULT_FORMAT]
@@ -450,7 +450,7 @@ EXPLANATION: T.text) called with parameters:
                         if explain:
                             downRep = fmttStr
                     if explain:
-                        fmtRep = f"implicit {DEFAULT_FORMAT}"
+                        fmtRep = f"implicit {DEFAULT_FORMAT} does {repf}"
                         expandRep = f"{downType} {{}} (descend=None) ({downRep})"
 
             if explain:
@@ -480,18 +480,20 @@ EXPLANATION: T.text) called with parameters:
             if func:
                 repf = func
                 if explain:
-                    fmtRep += f" (overridden with the explicit func argument)"
+                    fmtRep += f" (overridden with the explicit func argument {repf})"
             if not repf:
                 repf = rescue
                 good = False
                 if explain:
-                    fmtRep += "\n\t\t\twhich is not defined: formatting as node types and numbers"
+                    fmtRep += (
+                        "\n\t\t\twhich is not defined: formatting as node types and numbers"
+                    )
 
             if explain:
                 error(f"\t\tFORMATTING: {fmtRep}", tm=False)
                 error(f"\t\tMATERIAL:", tm=False)
             for n in xnodes:
-                rep = repf(n)
+                rep = repf(n, **kwargs)
                 material.append(rep)
                 if explain:
                     error(f'\t\t\t{fOtype(n)} {n} ADDS "{rep}"', tm=False)
@@ -548,7 +550,7 @@ EXPLANATION: T.text) called with parameters:
             (feat, default) = feat
             replaceFuncs.append(self._makeFunc(feat, default))
 
-        def g(n):
+        def g(n, **kwargs):
             values = tuple(replaceFunc(n) for replaceFunc in replaceFuncs)
             return rtpl.format(*values)
 

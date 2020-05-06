@@ -2,7 +2,7 @@ from ..fabric import Fabric
 from ..parameters import URL_TFDOC, TEMP_DIR
 from ..lib import readSets
 from ..core.helpers import console, setDir
-from .find import findAppConfig
+from .find import findAppConfig, findAppClass
 from .helpers import dh
 from .settings import setAppSpecs, setAppSpecsApi
 from .links import linksApi, outLink
@@ -121,6 +121,7 @@ The app "{appName}" will not work!
         aContext = self.context
         appPath = aContext.appPath
         appName = aContext.appName
+        findAppClass(appName, appPath)
         local = aContext.local
         commit = aContext.commit
         release = aContext.release

@@ -204,7 +204,7 @@ def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
 
     if nType in lexTypes:
         if text is None:
-            (isText, text) = getText(app, False, n, nType)
+            text = getText(app, False, n, nType, False, "")
         if webUrlLex and webLexId:
             lid = (
                 app.getLexId(n)
@@ -226,7 +226,7 @@ def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
             theUrl = webUrl
             headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
             for (i, heading) in enumerate(headingTuple):
-                theUrl.replace(f"<{i}>", str(heading))
+                theUrl = theUrl.replace(f"<{i + 1}>", str(heading))
         else:
             theUrl = None
 

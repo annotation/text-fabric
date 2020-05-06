@@ -9,12 +9,10 @@ from .helpers import tupleEnum, RESULT, dh, NB
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights, getHlAtt
 from .displaysettings import DisplaySettings
-from .settings import DEFAULT_CLS
+from .settings import DEFAULT_CLS, ORIG
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
-
-ORIG = "orig"
 
 __pdoc__ = {}
 
@@ -54,6 +52,7 @@ NodeContext = namedtuple(
     hasChunks
     children
     boundaryCls
+    textCls
     hlCls
     hlStyle
     nodePart
@@ -91,6 +90,7 @@ __pdoc__["NodeContext.boundaryCls"] = (
     "Css class that represent the kinds of boundaries for this node."
     " Nodes can have a firm of dotted left/right boundary, or no boundary at all."
 )
+__pdoc__["NodeContext.textCls"] = "The text Css class of the current node."
 __pdoc__["NodeContext.hlCls"] = "The highlight Css class of the current node."
 __pdoc__["NodeContext.hlStyle"] = "The highlight style attribute of the current node."
 __pdoc__[
@@ -308,7 +308,7 @@ def plainTuple(
             if _browse
             else app.webLink(passageNode, _asString=True)
         )
-        passageRef = f'<span class="psg ltr">{passageRef}</span>'
+        passageRef = f'<span class="section ltr">{passageRef}</span>'
     else:
         passageRef = ""
 
@@ -401,31 +401,33 @@ def plain(app, n, _inTuple=False, _asString=False, **options):
         return ""
 
     aContext = app.context
-    textFormats = aContext.textFormats
-    formatCls = aContext.formatCls
+    formatHtml = aContext.formatHtml
 
     dContext = display.get(options)
     fmt = dContext.fmt
 
-    dContext.isHtml = fmt in textFormats
+    dContext.isHtml = fmt in formatHtml
 
     _browse = app._browse
     api = app.api
 
     ltr = getLtr(app, dContext)
-    textCls = formatCls[fmt].lower()
+    textCls = getTextCls(app, fmt)
     (firstSlot, lastSlot) = getBoundary(api, n)
 
     oContext = OuterContext(ltr, textCls, firstSlot, lastSlot, _inTuple)
     passage = getPassage(app, True, dContext, oContext, n)
-    rep = _doPlain(app, dContext, oContext, n, True, [])
+    rep = _doPlain(app, dContext, oContext, n, True, True, True, passage, [])
+    sep = " " if passage and rep else ""
+
+    result = passage + sep + rep
 
     if _browse or _asString:
-        return rep
-    dh(passage + rep)
+        return result
+    dh(result)
 
 
-def _doPlain(app, dContext, oContext, n, outer, html, seen=set()):
+def _doPlain(app, dContext, oContext, n, outer, first, last, passage, html, seen=set()):
     if n in seen:
         return
 
@@ -477,17 +479,28 @@ def _doPlain(app, dContext, oContext, n, outer, html, seen=set()):
     if nodePart:
         html.append(nodePart)
 
-    html.append(_doPlainNode(app, dContext, oContext, nContext, n, outer, seen=seen))
+    html.append(
+        _doPlainNode(
+            app, dContext, oContext, nContext, n, outer, first, last, passage, seen=seen
+        )
+    )
 
-    for ch in children:
-        _doPlain(app, dContext, oContext, ch, False, html, seen=seen)
+    lastCh = len(children) - 1
+    for (i, ch) in enumerate(children):
+        thisFirst = first and i == 0
+        thisLast = last and i == lastCh
+        _doPlain(
+            app, dContext, oContext, ch, False, thisFirst, thisLast, "", html, seen=seen
+        )
     html.append("</span>")
     if didChunkedType:
         html.append("</span>")
     return "".join(html) if outer else None
 
 
-def _doPlainNode(app, dContext, oContext, nContext, n, outer, seen=set()):
+def _doPlainNode(
+    app, dContext, oContext, nContext, n, outer, first, last, passage, seen=set()
+):
     api = app.api
     T = api.T
 
@@ -498,9 +511,10 @@ def _doPlainNode(app, dContext, oContext, nContext, n, outer, seen=set()):
     fmt = dContext.fmt
 
     ltr = oContext.ltr
-    textCls = oContext.textCls
+    textCls = nContext.textCls
 
     nType = nContext.nType
+
     isSlotOrDescend = nContext.isSlotOrDescend
     descend = nContext.descend
 
@@ -509,15 +523,26 @@ def _doPlainNode(app, dContext, oContext, nContext, n, outer, seen=set()):
         contrib = method(app, dContext, oContext, nContext, n, outer, seen=seen)
         return contrib
     if isSlotOrDescend:
-        text = T.text(n, fmt=fmt, descend=descend)
+        text = T.text(n, fmt=fmt, descend=descend, outer=outer, first=first, last=last)
         if not isHtml:
             text = htmlEsc(text)
         contrib = f'<span class="{textCls}">{text}</span>'
     else:
-        (isText, tplFilled) = getText(app, False, n, nType, fmt=fmt, descend=descend)
-        if not isText and not isHtml:
-            tplFilled = htmlEsc(tplFilled)
-        contrib = f'<span class="plain {ltr}">{tplFilled}</span>'
+        tplFilled = getText(
+            app,
+            False,
+            n,
+            nType,
+            outer,
+            first,
+            last,
+            isHtml,
+            passage if outer else "",
+            fmt=fmt,
+            descend=descend,
+        )
+        contrib = f'<span class="plain {textCls} {ltr}">{tplFilled}</span>'
+
     return contrib
 
 
@@ -600,8 +625,7 @@ def pretty(app, n, **options):
     _browse = app._browse
 
     aContext = app.context
-    textFormats = aContext.textFormats
-    formatCls = aContext.formatCls
+    formatHtml = aContext.formatHtml
 
     dContext = display.get(options)
     condenseType = dContext.condenseType
@@ -610,7 +634,7 @@ def pretty(app, n, **options):
     extraFeatures = dContext.extraFeatures
     fmt = dContext.fmt
 
-    dContext.isHtml = fmt in textFormats
+    dContext.isHtml = fmt in formatHtml
     dContext.features = sorted(
         flattenToSet(extraFeatures) | flattenToSet(tupleFeatures)
     )
@@ -621,7 +645,7 @@ def pretty(app, n, **options):
     otypeRank = api.otypeRank
 
     ltr = getLtr(app, dContext)
-    textCls = formatCls[fmt].lower()
+    textCls = getTextCls(app, fmt)
     (firstSlot, lastSlot) = getBoundary(api, n)
 
     oContext = OuterContext(ltr, textCls, firstSlot, lastSlot, False)
@@ -648,7 +672,7 @@ def pretty(app, n, **options):
 
     html = []
 
-    _doPretty(app, dContext, oContext, n, True, html)
+    _doPretty(app, dContext, oContext, n, True, True, True, html)
 
     htmlStr = passage + "".join(html)
     if _browse:
@@ -656,7 +680,7 @@ def pretty(app, n, **options):
     dh(htmlStr)
 
 
-def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
+def _doPretty(app, dContext, oContext, n, outer, first, last, html, seen=set()):
     if n in seen:
         return
 
@@ -687,7 +711,9 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
     nodePlain = None
     if isBaseNonSlot:
         done = set()
-        nodePlain = _doPlain(app, dContext, oContext, n, None, [], seen=done)
+        nodePlain = _doPlain(
+            app, dContext, oContext, n, None, first, last, "", [], seen=done
+        )
         seen |= done
 
     didChunkedType = False
@@ -705,9 +731,11 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
 
             sNodePlain = None
             if sisBaseNonSlot:
-                sNodePlain = _doPlain(app, dContext, oContext, sn, True, [])
+                sNodePlain = _doPlain(
+                    app, dContext, oContext, sn, True, first, last, "", []
+                )
             (sLabel, sFeaturePart) = _doPrettyNode(
-                app, dContext, oContext, snContext, sn, False, sNodePlain
+                app, dContext, oContext, snContext, sn, False, first, last, sNodePlain
             )
             (scontainerB, scontainerE) = _doPrettyWrapPre(
                 app,
@@ -727,7 +755,7 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
 
     if not hasChunks:
         (label, featurePart) = _doPrettyNode(
-            app, dContext, oContext, nContext, n, outer, nodePlain
+            app, dContext, oContext, nContext, n, outer, first, last, nodePlain
         )
         (containerB, containerE) = _doPrettyWrapPre(
             app,
@@ -745,10 +773,13 @@ def _doPretty(app, dContext, oContext, n, outer, html, seen=set()):
     if children:
         html.append(f'<div class="{childCls} {ltr}">')
 
-    for ch in children:
+    lastCh = len(children) - 1
+    for (i, ch) in enumerate(children):
         if ch in seen:
             continue
-        _doPretty(app, dContext, oContext, ch, False, html, seen=seen)
+        thisFirst = first and i == 0
+        thisLast = last and i == lastCh
+        _doPretty(app, dContext, oContext, ch, False, thisFirst, thisLast, html, seen=seen)
         after = afterChild.get(nType, None)
         if after:
             html.append(after(ch))
@@ -810,7 +841,7 @@ def _doPrettyWrapPost(label, featurePart, html, containerB, containerE):
         html.append(f"{containerB}{labelE} {featurePart}{containerE}")
 
 
-def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
+def _doPrettyNode(app, dContext, oContext, nContext, n, outer, first, last, nodePlain):
     api = app.api
     L = api.L
 
@@ -821,7 +852,7 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
     isHtml = dContext.isHtml
     fmt = dContext.fmt
 
-    textCls = oContext.textCls
+    textCls = nContext.textCls
 
     nType = nContext.nType
     cls = nContext.cls
@@ -831,19 +862,26 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
     children = nContext.children
     nodePart = nContext.nodePart
 
-    isText = False
-
     labelHlCls = ""
 
     if isBaseNonSlot:
         heading = nodePlain
     else:
         labelHlCls = hlCls
-        (isText, heading) = getText(app, True, n, nType, fmt=fmt, descend=descend)
-        if not isText and not isHtml:
-            heading = htmlEsc(heading)
+        heading = getText(
+            app,
+            True,
+            n,
+            nType,
+            outer,
+            first,
+            last,
+            isHtml,
+            "",
+            fmt=fmt,
+            descend=descend,
+        )
 
-    textCls = textCls if isText else DEFAULT_CLS
     heading = f'<span class="{textCls}">{heading}</span>' if heading else ""
 
     featurePart = getFeatures(app, dContext, n, nType)
@@ -856,9 +894,6 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, nodePlain):
         lx = L.u(n, otype=lexMap[nType])
         if lx:
             heading = app.webLink(lx[0], heading, _asString=True)
-
-    # if featurePart:
-    #    featurePart = f'<div class="meta">{featurePart}</div>'
 
     label = {}
     for x in ("", "b", "e"):
@@ -892,6 +927,7 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, chunkedType=Fal
     isChunkOf = aContext.isChunkOf
     chunkedTypes = aContext.chunkedTypes
     lexTypes = aContext.lexTypes
+    styles = aContext.styles
 
     fmt = dContext.fmt
     baseTypes = dContext.baseTypes
@@ -936,6 +972,8 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, chunkedType=Fal
         if nType in prettyCustom:
             prettyCustom[nType](app, n, nType, cls)
 
+    textCls = styles.get(nType, oContext.textCls)
+
     return NodeContext(
         slotType,
         nType,
@@ -946,6 +984,7 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, chunkedType=Fal
         hasChunks,
         children,
         boundaryCls,
+        textCls,
         hlCls,
         hlStyle,
         nodePart,
@@ -958,7 +997,6 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, chunkedType=Fal
 
 def doPassage(dContext, i):
     withPassage = dContext.withPassage
-
     return withPassage is not True and withPassage and i + 1 in withPassage
 
 
@@ -969,10 +1007,12 @@ def getPassage(app, isPretty, dContext, oContext, n):
         return ""
 
     passage = app.webLink(n, _asString=True)
-    return f'<span class="psg ltr">{passage}{NB}</span>'
+    return f'<span class="section ltr">{passage}{NB}</span>'
 
 
-def getText(app, isPretty, n, nType, fmt=None, descend=None):
+def getText(
+    app, isPretty, n, nType, outer, first, last, isHtml, passage, fmt=None, descend=None
+):
     T = app.api.T
     sectionTypeSet = T.sectionTypeSet
     structureTypeSet = T.structureTypeSet
@@ -984,16 +1024,32 @@ def getText(app, isPretty, n, nType, fmt=None, descend=None):
 
     tplFilled = (
         (
-            app.sectionStrFromNode(n)
+            f'<span class="section">{(NB if passage else app.sectionStrFromNode(n))}</span>'
             if nType in sectionTypeSet
-            else app.structureStrFromNode(n)
+            else f'<span class="structure">{app.structureStrFromNode(n)}</span>'
             if nType in structureTypeSet
-            else T.text(n, fmt=fmt, descend=descend)
+            else T.text(
+                n, fmt=fmt, descend=descend, outer=outer, first=first, last=last
+            )
         )
         if tpl is True
         else tpl.format(**{feat: getValue(app, n, nType, feat) for feat in feats})
     )
-    return (tpl is True, tplFilled)
+    if not (
+        nType in sectionTypeSet or nType in structureTypeSet or (tpl is True and isHtml)
+    ):
+        tplFilled = htmlEsc(tplFilled)
+    return tplFilled
+
+
+def getTextCls(app, fmt):
+    aContext = app.context
+    formatCls = aContext.formatCls
+    defaultClsOrig = aContext.defaultClsOrig
+
+    if fmt is None:
+        return defaultClsOrig
+    return formatCls.get(fmt, DEFAULT_CLS)
 
 
 def getValue(app, n, nType, feat):

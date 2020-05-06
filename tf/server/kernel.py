@@ -387,7 +387,6 @@ def makeTfConnection(host, port, timeout):
 
 def main(cargs=sys.argv):
     args = argKernel(cargs)
-    print("AAA", args)
     if not args:
         return
 
@@ -404,7 +403,6 @@ def main(cargs=sys.argv):
         checkout = ""
 
     (commit, release, local, appBase, appDir, appName) = findApp(appName, checkoutApp)
-    print("BB", appBase)
     if appBase or appBase == "":
         appPath = f"{appBase}/{appDir}"
         kernel = makeTfKernel(
