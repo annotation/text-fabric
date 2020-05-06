@@ -120,7 +120,7 @@ DOC_DEFAULTS = (
     ("docBase", "{docRoot}/{org}/{repo}/blob/master/docs"),
     ("docPage", "home"),
     ("docUrl", "{docBase}/{docPage}{docExt}"),
-    ("featureBase", None),
+    ("featureBase", "{docBase}/features/<feature>{docExt}"),
     ("featurePage", "home"),
     ("charUrl", "{tfDoc}/Writing/Transcription/{language}"),
     ("charText", "How TF features represent text"),

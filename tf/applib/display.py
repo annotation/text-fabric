@@ -779,7 +779,9 @@ def _doPretty(app, dContext, oContext, n, outer, first, last, html, seen=set()):
             continue
         thisFirst = first and i == 0
         thisLast = last and i == lastCh
-        _doPretty(app, dContext, oContext, ch, False, thisFirst, thisLast, html, seen=seen)
+        _doPretty(
+            app, dContext, oContext, ch, False, thisFirst, thisLast, html, seen=seen
+        )
         after = afterChild.get(nType, None)
         if after:
             html.append(after(ch))
@@ -798,7 +800,16 @@ def _doPretty(app, dContext, oContext, n, outer, first, last, html, seen=set()):
 
 
 def _doPrettyWrapPre(
-    app, n, outer, label, featurePart, html, nContext, showGraphics, hasGraphics, ltr,
+    app,
+    n,
+    outer,
+    label,
+    featurePart,
+    html,
+    nContext,
+    showGraphics,
+    hasGraphics,
+    ltr,
 ):
     nType = nContext.nType
     hidden = nContext.hidden
@@ -815,18 +826,19 @@ def _doPrettyWrapPre(
     containerE = f"</div>"
 
     terminalCls = "trm"
-    if hidden:
-        html.append(containerB.format(terminalCls))
-    else:
-        if labelB is not None:
-            trm = terminalCls
-            html.append(f"{containerB.format(trm)}{labelB} {featurePart}{containerE}")
-        if label0 is not None:
-            trm = "" if children else terminalCls
-            html.append(f"{containerB.format(trm)}{label0} {featurePart}")
+    # if hidden:
+    #    html.append(containerB.format(terminalCls))
+    # else:
+    material = "" if hidden else f" {featurePart}"
+    if labelB is not None:
+        trm = terminalCls
+        html.append(f"{containerB.format(trm)}{labelB}{material}{containerE}")
+    if label0 is not None:
+        trm = "" if children and not hidden else terminalCls
+        html.append(f"{containerB.format(trm)}{label0}{material}")
 
-        if showGraphics and nType in hasGraphics:
-            html.append(app.getGraphics(n, nType, outer))
+    if showGraphics and nType in hasGraphics:
+        html.append(app.getGraphics(n, nType, outer))
 
     return (containerB, containerE)
 
@@ -853,6 +865,7 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, first, last, node
     fmt = dContext.fmt
 
     textCls = nContext.textCls
+    hidden = nContext.hidden
 
     nType = nContext.nType
     cls = nContext.cls
@@ -901,12 +914,15 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, first, last, node
         if key in cls:
             val = cls[key]
             terminalCls = "trm" if x or not children else ""
+            material = (
+                (heading if nodePlain else "") if hidden else f"{nodePart} {heading}"
+            )
             label[x] = (
                 (
                     f'<div class="{val} {terminalCls} {labelHlCls}">'
-                    f"{nodePart} {heading}</div>"
+                    f"{material}</div>"
                 )
-                if heading or nodePart
+                if material
                 else ""
             )
 

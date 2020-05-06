@@ -24,7 +24,7 @@ else
 fi
 cd $annotationdir
 echo "All apps: commit changes to branch '$branch' and push to GitHub"
-for app in `ls -d app-*`
+for app in `ls -d app-*` tutorials
 do
     echo "o-o-o [$app] o-o-o"
     cd $annotationdir/$app
