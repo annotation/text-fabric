@@ -351,3 +351,15 @@ def makeExamples(nodeList):
             + " ... "
             + (", ".join(str(n) for n in nodeList[-5:]))
         )
+
+
+def setFromValue(x, asInt=False):
+    return (
+        set()
+        if x is None
+        else x
+        if type(x) in {set, frozenset}
+        else {int(x) if asInt else x}
+        if type(x) is str
+        else ({int(v) for v in x} if asInt else set(x))
+    )

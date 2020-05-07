@@ -5,8 +5,7 @@ from .condense import condense
 
 
 def searchApi(app):
-    if app.isCompatible:
-        app.search = types.MethodType(search, app)
+    app.search = types.MethodType(search, app)
 
 
 def search(app, query, silent=False, sets=None, shallow=False, sort=True):

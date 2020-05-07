@@ -159,7 +159,7 @@ GO
             self.tm.info(f"Written {len(self.enums)} enumerations")
 
     def _writeEnumsAsOne(self):
-        fValues = chain.from_iterable((set(fV) for fV in self.enums.values()))
+        fValues = list(chain.from_iterable((set(fV) for fV in self.enums.values())))
         if len(fValues):
             self.tm.info(f"Writing an all-in-one enum with {len(fValues):>4} values")
             fValuesEnumerated = ",\n\t".join(

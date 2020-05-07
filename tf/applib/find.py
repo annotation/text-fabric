@@ -4,44 +4,12 @@ from importlib import util
 import yaml
 
 from ..parameters import (
-    ORG,
-    APP_CODE,
     APP_CONFIG,
     APP_DISPLAY,
     API_VERSION as apiVersionProvided,
 )
 from ..core.helpers import console
-from .repo import checkoutRepo
 from .helpers import getLocalDir
-
-
-def findApp(appName, checkoutApp, silent=False):
-    if not appName or "/" in appName:
-        appPath = os.path.expanduser(appName) if appName else ""
-        absPath = os.path.abspath(appPath)
-        if os.path.isdir(absPath):
-            (appDir, appName) = os.path.split(absPath)
-            codePath = f"{absPath}/{APP_CODE}"
-            if os.path.isdir(codePath):
-                appDir = codePath
-            return (None, None, None, "", appDir, appName)
-        else:
-            console(f"{absPath} is not an existing directory", error=True)
-            return (None, None, None, False, None, None)
-    else:
-        return (
-            *checkoutRepo(
-                org=ORG,
-                repo=f"app-{appName}",
-                folder=APP_CODE,
-                checkout=checkoutApp,
-                withPaths=True,
-                keep=False,
-                silent=silent,
-                label="TF-app",
-            ),
-            appName,
-        )
 
 
 def findAppConfig(appName, appPath, commit, release, local, version=None):
@@ -73,11 +41,17 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
     cfg["localDir"] = getLocalDir(cfg, local, version)
 
     apiVersionRequired = cfg.get("apiVersion", None)
-    isCompatible = not checkApiVersion or (
-        apiVersionRequired is not None and apiVersionRequired == apiVersionProvided
+    isCompatible = (
+        None
+        if not checkApiVersion
+        else (
+            apiVersionRequired is not None and apiVersionRequired == apiVersionProvided
+        )
     )
     if not isCompatible:
-        if apiVersionRequired is None or apiVersionRequired < apiVersionProvided:
+        if isCompatible is None:
+            console("No app configuration found.")
+        elif apiVersionRequired is None or apiVersionRequired < apiVersionProvided:
             console(
                 f"""
 Your copy of the TF app `{appName}` is outdated for this version of TF.
@@ -115,20 +89,10 @@ Hint:
             )
         console(
             f"""
-Text-Fabric will be loaded, but all app specific functionality will not be available.
-That means that the following will not work:
-
-    A.search(query)
-    A.plain(node)
-    A.pretty(node)
-
-but the core API will still work:
-    F.feature.v(node)
-    T.text(node)
-    S.search(query)
-
-""",
-            error=True,
+Text-Fabric will be loaded, but no app specific code will be loaded
+and app config may not be optimal.
+The corpus data may not be found.
+"""
         )
 
     cfg["isCompatible"] = isCompatible
@@ -151,7 +115,7 @@ def findAppClass(appName, appPath):
         appClass = code.TfApp
     except Exception as e:
         console(f"findAppClass: {str(e)}", error=True)
-        console(f'findAppClass: Api for "{appName}" not found')
+        console(f'findAppClass: Api for "{appName}" not loaded')
         appClass = None
     return appClass
 

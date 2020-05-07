@@ -654,6 +654,10 @@
         indicates whether node types should always be displayed in pretty displays.
         The node type of slot nodes is never displayed.
 
+    ??? info "queryFeatures=True"
+        indicates whether pretty displays should show the features
+        mentioned in the last query and their values.
+
     ??? info "showChunks=False"
         The corpus data may contain nodes that represent discontinuous pieces of text.
         Some corpora also offer node types that represent all continuous chunks of those
@@ -664,13 +668,18 @@
         When pretty-displaying such structures, the display of the chunks themselves can be
         reduced, because they tend to make displays unwieldy.
 
-    ??? info "showFeatures=True"
-        indicates whether pretty displays should show relevant features and their values.
+    ??? info "standardFeatures=True"
+        indicates whether pretty displays should show standard features and their values.
 
     ??? info "showGraphics=True"
         indicates whether plain and pretty displays should include associated graphic elements,
         provided the corpus offers those elements, and the advanced API has found a way to
         locate those elements.
+
+    ??? info "skipCols=set()"
+        indicates columns to skip in `show()`, `table()`, `prettyTuple()` and `plainTuple()`.
+        Maybe a space-separated string of numbers, or an iterable of integers.
+        Columns start at 1.
 
     ??? info "start=None"
         `start` is the starting point for displaying the iterable of results.

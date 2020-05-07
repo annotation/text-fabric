@@ -570,7 +570,7 @@ EXPLANATION: T.text() called with parameters:
             return lambda n: (f1.get(n, f2.get(n, default)))
         else:
 
-            def getValue(n):
+            def _getVal(n):
                 v = None
                 for ft in feat:
                     v = Fs(ft).data.get(n, None)
@@ -578,4 +578,4 @@ EXPLANATION: T.text() called with parameters:
                         break
                 return v or default
 
-            return getValue
+            return _getVal

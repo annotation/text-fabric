@@ -8,7 +8,11 @@ span.hl {
 	border-style: solid;
 }
 div.contnr.hl,div.lbl.hl {
-    background-color: var(--hl-strong);
+  background-color: var(--hl-strong);
+}
+div.contnr.hl {
+  border-color: var(--hl-rim) ! important;
+	border-width: 0.2rem ! important;
 }
 
 span.hlbx {

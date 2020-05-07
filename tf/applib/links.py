@@ -38,7 +38,7 @@ def linksApi(app, silent):
     """
     app.header = types.MethodType(header, app)
     app.webLink = types.MethodType(webLink, app)
-    ok = app.isCompatible
+    isCompatible = app.isCompatible
 
     api = app.api
 
@@ -58,13 +58,13 @@ def linksApi(app, silent):
 
     dataLink = (
         outLink(repo.upper(), docUrl, f"provenance of {corpus}")
-        if ok and repo is not None and docUrl
+        if isCompatible and repo is not None and docUrl
         else UNSUPPORTED
     )
     charLink = (
         (
             outLink("Character table", charUrl.format(tfDoc=URL_TFDOC), charText)
-            if ok
+            if isCompatible
             else UNSUPPORTED
         )
         if charUrl
@@ -74,19 +74,21 @@ def linksApi(app, silent):
         (
             outLink(
                 "Feature docs",
-                featureBase.replace('<feature>', featurePage).format(version=version),
+                featureBase.replace("<feature>", featurePage).format(version=version),
                 f"{repo.upper()} feature documentation",
             )
-            if ok and repo is not None and featureBase
+            if isCompatible and repo is not None and featureBase
             else UNSUPPORTED
         )
-        if ok
+        if isCompatible
         else UNSUPPORTED
     )
     appLink = outLink(
         f"{appName} API",
         extraUrl,
-        f"{appName} API documentation" if ok and repo is not None else UNSUPPORTED,
+        f"{appName} API documentation"
+        if isCompatible and repo is not None
+        else UNSUPPORTED,
     )
     tfLink = (
         outLink(
@@ -94,7 +96,7 @@ def linksApi(app, silent):
             f"{URL_TFDOC}/Api/Fabric/",
             "text-fabric-api",
         )
-        if ok
+        if isCompatible
         else UNSUPPORTED
     )
     tfsLink = (
@@ -103,12 +105,12 @@ def linksApi(app, silent):
             f"{URL_TFDOC}/Use/Search/",
             "Search Templates Introduction and Reference",
         )
-        if ok
+        if isCompatible
         else UNSUPPORTED
     )
     tutLink = (
         outLink("App tutorial", tutUrl, "App tutorial in Jupyter Notebook")
-        if ok and repo is not None
+        if isCompatible and repo is not None
         else UNSUPPORTED
     )
     if app._browse:
@@ -150,7 +152,9 @@ def header(app):
     )
 
 
-def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
+def webLink(
+    app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False
+):
     """Maps a node to a web resource.
 
     Usually called as `A.weblink(...)`
@@ -175,6 +179,8 @@ def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
         the node.
     clsName: string, optional default `None`
         A CSS class name to add to the resulting link element
+    urlOnly: boolean, optional `False`
+        If True, only the url will be returned.
     _asString: boolean, optional `False`
         Whether to deliver the result as a piece of HTML or to display the link
         on the (Jupyter) interface.
@@ -198,13 +204,14 @@ def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
     webLexId = aContext.webLexId
     webHint = aContext.webHint
     lexTypes = aContext.lexTypes
+    styles = aContext.styles
 
     nType = F.otype.v(n)
     passageText = None
 
     if nType in lexTypes:
         if text is None:
-            text = getText(app, False, n, nType, False, True, True, False, "")
+            text = getText(app, False, n, nType, False, True, True, "", None)
         if webUrlLex and webLexId:
             lid = (
                 app.getLexId(n)
@@ -213,7 +220,7 @@ def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
                 if webLexId
                 else None
             )
-            theUrl = webUrlLex.replace('<lid>', str(lid))
+            theUrl = webUrlLex.replace("<lid>", str(lid))
         elif webBase:
             theUrl = webBase
         else:
@@ -230,13 +237,18 @@ def webLink(app, n, text=None, clsName=None, _asString=False, _noUrl=False):
         else:
             theUrl = None
 
+    style = styles.get(nType, None)
+    if style:
+        clsName = f"{clsName or ''} {style}"
     if theUrl is None:
-        result = text
+        fullResult = text
+        href = None
     else:
         href = "#" if _noUrl else theUrl
         atts = dict(target="") if _noUrl else dict(title=webHint)
-        result = outLink(text, href, clsName=clsName, passage=passageText, **atts,)
-    if _asString:
+        fullResult = outLink(text, href, clsName=clsName, passage=passageText, **atts,)
+    result = href if urlOnly else fullResult
+    if _asString or urlOnly:
         return result
     dh(result)
 
@@ -266,7 +278,8 @@ def outLink(text, href, title=None, passage=None, clsName=None, target="_blank")
     targetAtt = f' target="{target}"' if target else ""
     passageAtt = f' sec="{passage}"' if passage else ""
     return (
-        f'<a{clsAtt}{targetAtt} href="{htmlEsc(href)}"{titleAtt}{passageAtt}>{text}</a>'
+        f'<a{clsAtt}{targetAtt} href="{htmlEsc(href)}"{titleAtt}{passageAtt}>'
+        f"{text}</a>"
     )
 
 
@@ -274,8 +287,8 @@ def _featuresPerModule(app):
     """Generate a formatted list of loaded TF features, per module.
     """
 
-    ok = app.isCompatible
-    if not ok:
+    isCompatible = app.isCompatible
+    if not isCompatible:
         return UNSUPPORTED
 
     api = app.api
@@ -406,7 +419,9 @@ def _featuresPerModule(app):
             html += f" {pre}"
             html += (
                 outLink(
-                    featureRep, docUrl.replace('<feature>', featureRep), title=featurePath
+                    featureRep,
+                    docUrl.replace("<feature>", featureRep),
+                    title=featurePath,
                 )
                 if docUrl
                 else f'<span title="{featurePath}">{featureRep}</span>'

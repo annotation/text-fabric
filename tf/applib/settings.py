@@ -10,35 +10,14 @@ from .helpers import dm
 VAR_PATTERN = re.compile(r"\{([^}]+)\}")
 
 WRITING_DEFAULTS = dict(
-    akk=dict(
-        language="Akkadian",
-        direction="ltr",
-    ),
-    hbo=dict(
-        language="Hebrew",
-        direction="rtl",
-    ),
-    syc=dict(
-        language="Syriac",
-        direction="rtl",
-    ),
-    ara=dict(
-        language="Arabic",
-        direction="rtl",
-    ),
-    grc=dict(
-        language="Greek",
-        direction="ltr",
-    ),
-    cld=dict(
-        language="Aramaic",
-        direction="ltr",
-    ),
+    akk=dict(language="Akkadian", direction="ltr",),
+    hbo=dict(language="Hebrew", direction="rtl",),
+    syc=dict(language="Syriac", direction="rtl",),
+    ara=dict(language="Arabic", direction="rtl",),
+    grc=dict(language="Greek", direction="ltr",),
+    cld=dict(language="Aramaic", direction="ltr",),
 )
-WRITING_DEFAULTS[""] = dict(
-    language="",
-    direction="ltr",
-)
+WRITING_DEFAULTS[""] = dict(language="", direction="ltr",)
 
 FONT_BASE = (
     "https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts"
@@ -66,7 +45,6 @@ FORMAT_CLS = (
     ("source", DEFAULT_CLS_SRC),
     ("phono", DEFAULT_CLS_PHONO),
 )
-FORMAT_STYLES = {f[0]: f[1] for f in FORMAT_CLS}
 
 LEVEL_DEFAULTS = dict(
     level={
@@ -254,13 +232,14 @@ class Check:
                 if type(v) is not str or v.lower() != v:
                     errors.append(f"{k} must be an all lowercase string")
             elif k in {
-                "withTypes",
-                "prettyTypes",
-                "withNodes",
-                "showFeatures",
                 "lineNumbers",
+                "prettyTypes",
+                "queryFeatures",
                 "showChunks",
                 "showGraphics",
+                "standardFeatures",
+                "withNodes",
+                "withTypes",
             }:
                 allowed = self.extra[k]
                 if not allowed and v is not None:
@@ -268,26 +247,29 @@ class Check:
                         f"{k}={v} is not useful (dataset lacks relevant features)"
                     )
             elif k == "textFormats":
-                if type(v) is not dict:
-                    errors.append(f"{k} must be a dictionary")
-                for (fmt, fmtInfo) in v.items():
-                    for (fk, fv) in fmtInfo.items():
-                        if fk not in FMT_KEYS:
-                            errors.append(f"{k}: {fmt}: illegal key {fk}")
-                            continue
-                        if fk == METHOD:
-                            (descendType, func) = T.splitFormat(fv)
-                            func = f"fmt_{func}"
-                            if not hasattr(app, func):
-                                errors.append(
-                                    f"{k}: {fmt} needs unimplemented method {func}"
-                                )
-                        elif fk == STYLE:
-                            if fv not in FORMAT_STYLES:
-                                if fv.lower() != fv:
+                formatStyle = specs["formatStyle"]
+                if type(v) is dict:
+                    for (fmt, fmtInfo) in v.items():
+                        for (fk, fv) in fmtInfo.items():
+                            if fk not in FMT_KEYS:
+                                errors.append(f"{k}: {fmt}: illegal key {fk}")
+                                continue
+                            if fk == METHOD:
+                                (descendType, func) = T.splitFormat(fv)
+                                func = f"fmt_{func}"
+                                if not hasattr(app, func):
                                     errors.append(
-                                        f"{k}: {fmt}: style {fv} must be all lowercase"
+                                        f"{k}: {fmt} needs unimplemented method {func}"
                                     )
+                            elif fk == STYLE:
+                                if fv not in formatStyle:
+                                    if fv.lower() != fv:
+                                        errors.append(
+                                            f"{k}: {fmt}: style {fv}"
+                                            f" must be all lowercase"
+                                        )
+                else:
+                    errors.append(f"{k} must be a dictionary")
         else:
             if k in {"excludedFeatures", "noneValues"}:
                 if type(v) is not list:
@@ -527,6 +509,10 @@ def getDataDefaults(app, cfg, dKey, withApi):
 
     givenInfo = cfg.get(dKey, {})
 
+    formatStyle = {f[0]: f[1] for f in FORMAT_CLS}
+    formatStyle[ORIG] = specs["defaultClsOrig"]
+    specs["formatStyle"] = formatStyle
+
     for (attr, default, needsApi) in DATA_DISPLAY_DEFAULTS:
         if needsApi and not withApi or not needsApi and withApi:
             continue
@@ -552,7 +538,7 @@ def getDataDefaults(app, cfg, dKey, withApi):
             styles = {fmt: v.get(STYLE, None) for (fmt, v) in value.items()}
             specs["formatMethod"] = methods
             specs["formatHtml"] = {T.splitFormat(fmt)[1] for fmt in methods}
-            specs["formatCls"] = compileFormatCls(app, styles, specs["defaultClsOrig"])
+            compileFormatCls(app, specs, styles)
 
         else:
             specs[attr] = value
@@ -600,6 +586,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     transform = {}
 
     specs["transform"] = transform
+    formatStyle = specs["formatStyle"]
 
     for nType in nTypes:
         template = (
@@ -668,7 +655,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
         if "style" in info:
             style = info["style"]
-            styles[nType] = FORMAT_STYLES.get(style, style)
+            styles[nType] = formatStyle.get(style, style)
 
         for k in ("featuresBare", "features"):
             v = info.get(k, "")
@@ -844,7 +831,6 @@ def showContext(app):
     block = "    "
 
     def eScalar(x, level):
-        tick = "`" if level > 0 else ""
         if type(x) is str and "\n" in x:
             indent = block * level
             return (
@@ -852,7 +838,7 @@ def showContext(app):
                 + f"\n{indent}".join(x.split("\n"))
                 + f"\n{indent}```\n"
             )
-        return f"{tick}{mdEsc(str(x))}{tick}" if x else EM
+        return f"`{mdEsc(str(x))}`" if x else EM
 
     def eEmpty(x):
         return EM if type(x) is str else str(x)
@@ -890,9 +876,13 @@ def showContext(app):
             return eDict(x, level)
         return eRest(x, level)
 
-    dm(f"# {(app.appName)} app context\n\n")
+    md = [f"<details><summary><b>{(app.appName)}</b> <i>app context</i></summary>\n"]
     for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
-        dm(f"<details><summary>{i + 1}. {k}</summary>\n{eData(v, 0)}\n</details>\n")
+        md.append(
+            f"<details><summary>{i + 1}. {k}</summary>\n{eData(v, 0)}\n</details>\n"
+        )
+    md.append("</details>\n")
+    dm("".join(md))
 
 
 def getLevel(defaultLevel, givenInfo, isVerse):
@@ -905,12 +895,16 @@ def getLevel(defaultLevel, givenInfo, isVerse):
     return dict(level=level, flow=flow, wrap=wrap, stretch=stretch)
 
 
-def compileFormatCls(app, givenStyles, defaultClsOrig):
+def compileFormatCls(app, specs, givenStyles):
     api = app.api
     T = api.T
 
     result = {}
     extraFormats = set()
+
+    defaultClsOrig = specs["defaultClsOrig"]
+    formatStyle = specs["formatStyle"]
+
     for fmt in givenStyles:
         fmt = T.splitFormat(fmt)[1]
         extraFormats.add(fmt)
@@ -930,11 +924,11 @@ def compileFormatCls(app, givenStyles, defaultClsOrig):
                 textCls = DEFAULT_CLS
         else:
             textCls = (
-                defaultClsOrig if style == ORIG else FORMAT_STYLES.get(style, style)
+                defaultClsOrig if style == ORIG else formatStyle.get(style, style)
             )
         result[fmt] = textCls
 
-    return result
+    specs["formatCls"] = result
 
 
 def parseFeatures(features):

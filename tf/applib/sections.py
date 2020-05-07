@@ -2,11 +2,10 @@ import types
 
 
 def sectionsApi(app):
-    if app.isCompatible:
-        app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
-        app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
-        app.structureStrFromNode = types.MethodType(structureStrFromNode, app)
-        app._sectionLink = types.MethodType(_sectionLink, app)
+    app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
+    app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
+    app.structureStrFromNode = types.MethodType(structureStrFromNode, app)
+    app._sectionLink = types.MethodType(_sectionLink, app)
 
 
 def nodeFromSectionStr(app, sectionStr, lang="en"):

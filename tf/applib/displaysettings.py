@@ -1,3 +1,6 @@
+from ..core.helpers import setFromValue
+
+
 INTERFACE_OPTIONS = (
     (
         "withTypes",
@@ -23,11 +26,18 @@ INTERFACE_OPTIONS = (
         " If you click on it, it will be copied to the <i>node pad</i>",
     ),
     (
-        "showFeatures",
+        "standardFeatures",
+        False,
+        "showf",
+        "show features",
+        "Show the standard feature values for every node in the results",
+    ),
+    (
+        "queryFeatures",
         True,
         "showf",
         "show features",
-        "Show the relevant feature values for every node in the results",
+        "Show the features mentioned in the last query for every node in the results",
     ),
     (
         "showChunks",
@@ -66,6 +76,7 @@ DISPLAY_OPTIONS = dict(
     fmt=None,
     highlights={},
     noneValues={None},
+    skipCols=set(),
     start=None,
     suppress=set(),
     tupleFeatures=(),
@@ -132,19 +143,27 @@ class DisplaySettings:
         elif option in {"suppress"}:
             if type(value) is str:
                 value = set(value.split()) if value else set()
+        elif option in {"skipCols"}:
+            if not value:
+                value = set()
+            elif type(value) is str:
+                value = set(int(v) for v in value.split()) if value else set()
+            elif type(value) not in {set, frozenset}:
+                value = set(value)
+        elif option in {"withPassage"}:
+            if not value:
+                value = False
+            elif type(value) is str:
+                value = set(int(v) for v in value.split()) if value else set()
+            elif type(value) in {list, tuple, dict}:
+                value = set(value)
+            else:
+                value = True
         elif option == "highlights":
             if value is not None and type(value) is not dict:
                 value = {m: "" for m in value}
         elif option == "baseTypes":
-            value = (
-                set()
-                if value is None
-                else value
-                if type(value) is set
-                else {value}
-                if type(value) is str
-                else set(value)
-            )
+            value = setFromValue(value)
             value.discard(slotType)
         return (True, value)
 
@@ -166,7 +185,8 @@ class DisplaySettings:
                     if option == "baseTypes":
                         legalValues -= sectionTypeSet
                         legalValues -= {slotType}
-                        isLegal = all(v in legalValues for v in value)
+                        testVal = setFromValue(value)
+                        isLegal = all(v in legalValues for v in testVal)
                     else:
                         isLegal = value in legalValues
                     if not isLegal:
@@ -178,13 +198,14 @@ class DisplaySettings:
 
     def get(self, options):
         displayDefaults = self.displayDefaults
+        displaySettings = self.displaySettings
 
         normOptions = {}
 
         for option in displayDefaults:
-            value = options.get(option, None)
-            if value is None:
-                value = self.displayDefaults.get(option, None)
+            value = options.get(
+                option, displaySettings.get(option, displayDefaults[option])
+            )
             normValue = self.normalize(option, value)
             if normValue:
                 normOptions[option] = normValue[1]

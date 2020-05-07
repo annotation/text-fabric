@@ -6,8 +6,7 @@ import rpyc
 from rpyc.utils.server import ThreadedServer
 
 from ..core.helpers import console
-from ..applib.app import App
-from ..applib.find import findApp, findAppClass
+from ..applib.app import findApp
 from ..applib.highlight import getPassageHighlights
 from ..applib.search import runSearch, runSearchCondensed
 from ..applib.display import getResultsX
@@ -22,36 +21,7 @@ TF_ERROR = "Could not set up TF"
 # KERNEL CREATION
 
 
-def makeTfKernel(
-    appName,
-    appPath,
-    commit,
-    release,
-    local,
-    locations,
-    modules,
-    moduleRefs,
-    setFile,
-    checkout,
-    port,
-):
-    appClass = findAppClass(appName, appPath) or App
-
-    console(f"Setting up TF kernel for {appName} {moduleRefs} {setFile}")
-    app = appClass(
-        appName,
-        appPath,
-        commit,
-        release,
-        local,
-        _browse=True,
-        locations=locations,
-        modules=modules,
-        mod=moduleRefs,
-        setFile=setFile,
-        checkout=checkout,
-    )
-
+def makeTfKernel(app, appName, port):
     if not app.api:
         console(f"{TF_ERROR}")
         return False
@@ -88,6 +58,8 @@ def makeTfKernel(
 
         def exposed_provenance(self):
             app = self.app
+            aContext = app.context
+            commit = aContext.commit
             appProvenance = ((("name", appName), ("commit", commit)),)
             return (appProvenance, app.provenance)
 
@@ -402,32 +374,31 @@ def main(cargs=sys.argv):
     if checkout is None:
         checkout = ""
 
-    (commit, release, local, appBase, appDir, appName) = findApp(appName, checkoutApp)
-    if appBase or appBase == "":
-        appPath = f"{appBase}/{appDir}"
-        kernel = makeTfKernel(
-            appName,
-            appPath,
-            commit,
-            release,
-            local,
-            locations,
-            modules,
-            moduleRefs,
-            setFile,
-            checkout,
-            portKernel,
+    console(f"Setting up TF kernel for {appName} {moduleRefs} {setFile}")
+    app = findApp(
+        appName,
+        checkoutApp,
+        checkout=checkout,
+        mod=moduleRefs,
+        locations=locations,
+        modules=modules,
+        setFile=setFile,
+        _browse=True,
+    )
+    if app is None:
+        return
+
+    kernel = makeTfKernel(app, appName, portKernel)
+    if kernel:
+        server = ThreadedServer(
+            kernel,
+            port=int(portKernel),
+            protocol_config={
+                # 'allow_pickle': True,
+                # 'allow_public_attrs': True,
+            },
         )
-        if kernel:
-            server = ThreadedServer(
-                kernel,
-                port=int(portKernel),
-                protocol_config={
-                    # 'allow_pickle': True,
-                    # 'allow_public_attrs': True,
-                },
-            )
-            server.start()
+        server.start()
 
 
 # LOWER LEVEL
