@@ -26,33 +26,28 @@
 </summary>
 <pre><code class="python">def textApi(app):
     api = app.api
-    error = api.error
     T = api.T
+    F = api.F
+    fOtype = F.otype.v
 
-    if app.isCompatible:
-        formats = T.formats
-        xFormats = T._xformats
-        xdTypes = T._xdTypes
-        defaultFormat = T.defaultFormat
+    def rescue(n, **kwargs):
+        return f&#34;{fOtype(n)}{n}&#34;
 
-        aContext = app.context
-        textFormats = aContext.textFormats
+    formats = T.formats
+    xFormats = T._xformats
+    xdTypes = T._xdTypes
 
-        for (fmt, method) in textFormats.items():
-            (descendType, method) = T.splitFormat(method)
-            formats[fmt] = descendType
-            xdTypes[fmt] = descendType
-            func = f&#34;fmt_{method}&#34;
-            if not hasattr(app, func):
-                error(
-                    f&#39;WARNING: custom text format &#34;{fmt}&#34; is not implemented by method &#34;{func}&#34;&#39;
-                )
-                func = xFormats[fmt] = xFormats[defaultFormat]
-            else:
-                func = getattr(app, func)
-            xFormats[fmt] = func
+    aContext = app.context
+    formatMethod = aContext.formatMethod
 
-        aContext.allFormats = T.formats</code></pre>
+    for (fmt, method) in formatMethod.items():
+        (descendType, fmt) = T.splitFormat(fmt)
+        formats[fmt] = descendType
+        xdTypes[fmt] = descendType
+        func = getattr(app, f&#34;fmt_{method}&#34;, rescue)
+        xFormats[fmt] = func
+
+    aContext.allFormats = T.formats</code></pre>
 </details>
 </section>
 <section>
@@ -73,33 +68,28 @@
 </summary>
 <pre><code class="python">def textApi(app):
     api = app.api
-    error = api.error
     T = api.T
+    F = api.F
+    fOtype = F.otype.v
 
-    if app.isCompatible:
-        formats = T.formats
-        xFormats = T._xformats
-        xdTypes = T._xdTypes
-        defaultFormat = T.defaultFormat
+    def rescue(n, **kwargs):
+        return f&#34;{fOtype(n)}{n}&#34;
 
-        aContext = app.context
-        textFormats = aContext.textFormats
+    formats = T.formats
+    xFormats = T._xformats
+    xdTypes = T._xdTypes
 
-        for (fmt, method) in textFormats.items():
-            (descendType, method) = T.splitFormat(method)
-            formats[fmt] = descendType
-            xdTypes[fmt] = descendType
-            func = f&#34;fmt_{method}&#34;
-            if not hasattr(app, func):
-                error(
-                    f&#39;WARNING: custom text format &#34;{fmt}&#34; is not implemented by method &#34;{func}&#34;&#39;
-                )
-                func = xFormats[fmt] = xFormats[defaultFormat]
-            else:
-                func = getattr(app, func)
-            xFormats[fmt] = func
+    aContext = app.context
+    formatMethod = aContext.formatMethod
 
-        aContext.allFormats = T.formats</code></pre>
+    for (fmt, method) in formatMethod.items():
+        (descendType, fmt) = T.splitFormat(fmt)
+        formats[fmt] = descendType
+        xdTypes[fmt] = descendType
+        func = getattr(app, f&#34;fmt_{method}&#34;, rescue)
+        xFormats[fmt] = func
+
+    aContext.allFormats = T.formats</code></pre>
 </details>
 </dd>
 </dl>

@@ -44,7 +44,7 @@
 
 # 8.0.0
 
-2020-05-06
+2020-05-08
 
 **NB: This is a backwards incompatible change. Strongly recommended:**
 
@@ -74,7 +74,7 @@ As a consequence, if you have not upgraded Text-Fabric, it will fail.**
     *   Highlights in plain display will be done, also for nodes deeply buried in the top node.
         This is also steered by `baseTypes`: a node of type in `baseTypes` will get full 
         highlighting, all other nodes will get highlighting by boxes around the material.
-*   Core API imporvement:
+*   Core API improvement:
     The `Locality` (`L`) functions `d()`, `u()`, `l()`, `r()` take an optional
     parameter `otype` holding the node type of the related nodes that will be delivered.
     This can now also be an iterable of types (preferably a set of frozenset).

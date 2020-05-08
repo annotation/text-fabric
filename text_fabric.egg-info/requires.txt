@@ -5,3 +5,4 @@ markdown
 ipython
 requests
 pygithub>=1.47
+pyyaml

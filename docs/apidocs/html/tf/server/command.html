@@ -78,6 +78,19 @@ def deSlug(slug):
     return pickle.loads(b64decode(bytes(slug, encoding=&#34;utf8&#34;)))
 
 
+def repSlug(slug):
+    info = deSlug(slug)
+    appName = info[&#39;appName&#39;]
+    checkoutApp = info[&#39;checkoutApp&#39;]
+    if checkoutApp:
+        checkoutApp = f&#39;:{checkoutApp}&#39;
+    rep = f&#34;{appName}{checkoutApp}&#34;
+    args = &#34; &#34;.join(f&#34;--{k}={v}&#34; for (k, v) in sorted(info.items()) if k not in {&#39;appName&#39;, &#39;checkoutApp&#39;})
+    if args:
+        args = f&#34; {args}&#34;
+    return f&#34;{rep}{args}&#34;
+
+
 def argApp(cargs):
     (appName, checkoutApp) = argParam(cargs)
     checkout = argCollect(&#39;checkout&#39;, cargs)
@@ -89,7 +102,7 @@ def argApp(cargs):
         dict(
             appName=appName,
             checkoutApp=checkoutApp,
-            checkoutData=checkout,
+            checkout=checkout,
             locations=locations,
             modules=modules,
             moduleRefs=moduleRefs,
@@ -102,6 +115,13 @@ def argApp(cargs):
 def argKill(cargs):
     for arg in cargs[1:]:
         if arg == &#34;-k&#34;:
+            return True
+    return False
+
+
+def argShow(cargs):
+    for arg in cargs[1:]:
+        if arg == &#34;-p&#34;:
             return True
     return False
 
@@ -184,7 +204,7 @@ def argParam(cargs):
         dict(
             appName=appName,
             checkoutApp=checkoutApp,
-            checkoutData=checkout,
+            checkout=checkout,
             locations=locations,
             modules=modules,
             moduleRefs=moduleRefs,
@@ -288,6 +308,22 @@ def argParam(cargs):
     return (appName, checkoutApp)</code></pre>
 </details>
 </dd>
+<dt id="tf.server.command.argShow"><code class="name flex">
+<span>def <span class="ident">argShow</span></span>(<span>cargs)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def argShow(cargs):
+    for arg in cargs[1:]:
+        if arg == &#34;-p&#34;:
+            return True
+    return False</code></pre>
+</details>
+</dd>
 <dt id="tf.server.command.argWeb"><code class="name flex">
 <span>def <span class="ident">argWeb</span></span>(<span>cargs)</span>
 </code></dt>
@@ -382,6 +418,28 @@ def argParam(cargs):
     return result</code></pre>
 </details>
 </dd>
+<dt id="tf.server.command.repSlug"><code class="name flex">
+<span>def <span class="ident">repSlug</span></span>(<span>slug)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def repSlug(slug):
+    info = deSlug(slug)
+    appName = info[&#39;appName&#39;]
+    checkoutApp = info[&#39;checkoutApp&#39;]
+    if checkoutApp:
+        checkoutApp = f&#39;:{checkoutApp}&#39;
+    rep = f&#34;{appName}{checkoutApp}&#34;
+    args = &#34; &#34;.join(f&#34;--{k}={v}&#34; for (k, v) in sorted(info.items()) if k not in {&#39;appName&#39;, &#39;checkoutApp&#39;})
+    if args:
+        args = f&#34; {args}&#34;
+    return f&#34;{rep}{args}&#34;</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -406,11 +464,13 @@ def argParam(cargs):
 <li><code><a title="tf.server.command.argKill" href="#tf.server.command.argKill">argKill</a></code></li>
 <li><code><a title="tf.server.command.argNoweb" href="#tf.server.command.argNoweb">argNoweb</a></code></li>
 <li><code><a title="tf.server.command.argParam" href="#tf.server.command.argParam">argParam</a></code></li>
+<li><code><a title="tf.server.command.argShow" href="#tf.server.command.argShow">argShow</a></code></li>
 <li><code><a title="tf.server.command.argWeb" href="#tf.server.command.argWeb">argWeb</a></code></li>
 <li><code><a title="tf.server.command.deSlug" href="#tf.server.command.deSlug">deSlug</a></code></li>
 <li><code><a title="tf.server.command.enSlug" href="#tf.server.command.enSlug">enSlug</a></code></li>
 <li><code><a title="tf.server.command.getPort" href="#tf.server.command.getPort">getPort</a></code></li>
 <li><code><a title="tf.server.command.portIsInUse" href="#tf.server.command.portIsInUse">portIsInUse</a></code></li>
+<li><code><a title="tf.server.command.repSlug" href="#tf.server.command.repSlug">repSlug</a></code></li>
 </ul>
 </li>
 </ul>

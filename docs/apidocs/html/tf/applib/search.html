@@ -31,8 +31,7 @@ from .condense import condense
 
 
 def searchApi(app):
-    if app.isCompatible:
-        app.search = types.MethodType(search, app)
+    app.search = types.MethodType(search, app)
 
 
 def search(app, query, silent=False, sets=None, shallow=False, sort=True):
@@ -249,8 +248,7 @@ def runSearchCondensed(app, query, cache, condenseType):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def searchApi(app):
-    if app.isCompatible:
-        app.search = types.MethodType(search, app)</code></pre>
+    app.search = types.MethodType(search, app)</code></pre>
 </details>
 </dd>
 </dl>

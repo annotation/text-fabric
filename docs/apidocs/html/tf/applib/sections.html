@@ -28,11 +28,10 @@
 
 
 def sectionsApi(app):
-    if app.isCompatible:
-        app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
-        app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
-        app.structureStrFromNode = types.MethodType(structureStrFromNode, app)
-        app._sectionLink = types.MethodType(_sectionLink, app)
+    app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
+    app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
+    app.structureStrFromNode = types.MethodType(structureStrFromNode, app)
+    app._sectionLink = types.MethodType(_sectionLink, app)
 
 
 def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
@@ -209,11 +208,10 @@ def _sectionLink(app, n, text=None, clsName=None):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def sectionsApi(app):
-    if app.isCompatible:
-        app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
-        app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
-        app.structureStrFromNode = types.MethodType(structureStrFromNode, app)
-        app._sectionLink = types.MethodType(_sectionLink, app)</code></pre>
+    app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
+    app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
+    app.structureStrFromNode = types.MethodType(structureStrFromNode, app)
+    app._sectionLink = types.MethodType(_sectionLink, app)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.sections.structureStrFromNode"><code class="name flex">

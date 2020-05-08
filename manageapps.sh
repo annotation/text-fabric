@@ -25,13 +25,17 @@ fi
 cd $annotationdir
 echo "All apps: commit changes to branch '$branch' and push to GitHub"
 for app in `ls -d app-*` tutorials
+# for app in `ls -d app-*`
 do
     echo "o-o-o [$app] o-o-o"
     cd $annotationdir/$app
+    git push origin master
+    # git checkout master
+    # git merge "$branch"
     # git checkout -b "$branch"
-    git add --all .
-    git commit -m "$msg"
-    git push origin "$branch" 
+    # git add --all .
+    # git commit -m "$msg"
+    # git push origin "$branch" 
 done
 echo "done"
 

@@ -26,16 +26,42 @@
 </summary>
 <pre><code class="python">from ..core.helpers import itemize, splitModRef, expandDir
 from .repo import checkoutRepo
-from .links import liveText, liveUrl
+from .links import provenanceLink
 
 
 # GET DATA FOR MAIN SOURCE AND ALL MODULES
 
 
 class AppData(object):
-    def __init__(
-        self, app, moduleRefs, locations, modules, version, checkout, silent,
-    ):
+    def __init__(self, app, moduleRefs, locations, modules, version, checkout, silent):
+        &#34;&#34;&#34;Collects TF data according to specifications.
+
+        The specifications are passed as arguments when the object is initialized.
+
+        Parameters
+        ----------
+        app: obj
+            The high-level API object
+        moduleRefs: tuple
+            Each member consists of a module ref, which is a tuple of information
+            that defines a module.
+        locations: string|tuple
+            One or more directory paths. They will be combined with the `modules`
+            argument and used as locations to search for TF data files.
+        modules: string|tuple
+            One or more directory path segments. They will be appended to the
+            paths given by the `locations` argument to form search locations
+            for TF data files.
+        version: string
+            The version of TF data that should be retrievend. Version is a directory
+            level just below the search locations.
+        checkout: string
+            A specifier to use a specific release or commit of a data repository.
+        silent:
+            The desired verbosity when reporting on the progress and result of the
+            data fetching.
+
+        &#34;&#34;&#34;
         self.app = app
         self.moduleRefs = moduleRefs
         self.locationsArg = locations
@@ -45,6 +71,12 @@ class AppData(object):
         self.silent = silent
 
     def getMain(self):
+        &#34;&#34;&#34;Get the main data of the corpus.
+
+        This is specified by the `org`, `repo` and `relative` settings under
+        `provenanceSpec` in `config.yaml`.
+        &#34;&#34;&#34;
+
         app = self.app
         aContext = app.context
         org = aContext.org
@@ -62,6 +94,12 @@ class AppData(object):
             self.good = False
 
     def getStandard(self):
+        &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
+
+        These are specified in the `moduleSpecs` setting under
+        `provenanceSpecs` in `config.yaml`.
+        &#34;&#34;&#34;
+
         app = self.app
         aContext = app.context
         moduleSpecs = aContext.moduleSpecs
@@ -77,6 +115,11 @@ class AppData(object):
                 self.good = False
 
     def getRefs(self):
+        &#34;&#34;&#34;Get data from additional modules.
+
+        These are specified in the `moduleRefs` parameter of `AppData`.
+        &#34;&#34;&#34;
+
         refs = self.moduleRefs
         for ref in refs.split(&#34;,&#34;) if refs else []:
             if ref in self.seen:
@@ -93,6 +136,11 @@ class AppData(object):
                 self.good = False
 
     def getModules(self):
+        &#34;&#34;&#34;Get data from additional local directories.
+
+        These are specified in the `locations` and `modules` parameters of `AppData`.
+        &#34;&#34;&#34;
+
         self.provenance = []
         provenance = self.provenance
         self.mLocations = []
@@ -143,11 +191,31 @@ class AppData(object):
         self.locations = mLocations + givenLocations
         self.modules = mModules + givenModules
 
-    # GET DATA FOR A SINGLE MODULE
+    def getModule(self, org, repo, relative, checkout, isBase=False, specs=None):
+        &#34;&#34;&#34;Prepare to load a single module.
 
-    def getModule(
-        self, org, repo, relative, checkout, isBase=False, specs=None,
-    ):
+        Eventually, all TF data will be downloaded from local directories, bases
+        on a list of location paths and module paths.
+
+        This function computes the contribution of a single module to both the
+        location paths and the module paths.
+
+        Parameters
+        ----------
+        org: string
+            GitHub organization of the module
+        repo: string:
+            GitHub repository of the module
+        relative: string
+            Path within the repository of the module
+        checkout: string
+            A specifier to use a specific release or commit of a data repository.
+        isBase: boolean, optional `False`
+            Whether this module is the main data of the corpus.
+        specs: dict, optional `False`
+            Additional informational attributes of the module, e.g. a DOI
+        &#34;&#34;&#34;
+
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -206,12 +274,7 @@ class AppData(object):
                 (&#34;release&#34;, release or &#34;none&#34;),
                 (
                     &#34;live&#34;,
-                    (
-                        liveText(org, repo, version, commit, local, release, relative),
-                        liveUrl(
-                            org, repo, version, commit, release, local, relative
-                        ),
-                    ),
+                    provenanceLink(org, repo, version, commit, local, release, relative),
                 ),
                 (&#34;doi&#34;, info[&#34;doi&#34;]),
             )
@@ -220,6 +283,15 @@ class AppData(object):
 
 
 def getModulesData(*args):
+    &#34;&#34;&#34;Retrieve all data for a corpus.
+
+    Parameters
+    ----------
+    args: list
+        All parameters needed to retrieve all associated data.
+        They are the same as are needed to construct an `AppData` object.
+    &#34;&#34;&#34;
+
     mData = AppData(*args)
     mData.getModules()
     if mData.locations is None:
@@ -238,12 +310,27 @@ def getModulesData(*args):
 <span>def <span class="ident">getModulesData</span></span>(<span>*args)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Retrieve all data for a corpus.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>args</code></strong> :&ensp;<code>list</code></dt>
+<dd>All parameters needed to retrieve all associated data.
+They are the same as are needed to construct an <a title="tf.applib.data.AppData" href="#tf.applib.data.AppData"><code>AppData</code></a> object.</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getModulesData(*args):
+    &#34;&#34;&#34;Retrieve all data for a corpus.
+
+    Parameters
+    ----------
+    args: list
+        All parameters needed to retrieve all associated data.
+        They are the same as are needed to construct an `AppData` object.
+    &#34;&#34;&#34;
+
     mData = AppData(*args)
     mData.getModules()
     if mData.locations is None:
@@ -261,15 +348,65 @@ def getModulesData(*args):
 <span>(</span><span>app, moduleRefs, locations, modules, version, checkout, silent)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Collects TF data according to specifications.</p>
+<p>The specifications are passed as arguments when the object is initialized.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
+<dd>The high-level API object</dd>
+<dt><strong><code>moduleRefs</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>Each member consists of a module ref, which is a tuple of information
+that defines a module.</dd>
+<dt><strong><code>locations</code></strong> :&ensp;<code>string</code>|<code>tuple</code></dt>
+<dd>One or more directory paths. They will be combined with the <code>modules</code>
+argument and used as locations to search for TF data files.</dd>
+<dt><strong><code>modules</code></strong> :&ensp;<code>string</code>|<code>tuple</code></dt>
+<dd>One or more directory path segments. They will be appended to the
+paths given by the <code>locations</code> argument to form search locations
+for TF data files.</dd>
+<dt><strong><code>version</code></strong> :&ensp;<code>string</code></dt>
+<dd>The version of TF data that should be retrievend. Version is a directory
+level just below the search locations.</dd>
+<dt><strong><code>checkout</code></strong> :&ensp;<code>string</code></dt>
+<dd>A specifier to use a specific release or commit of a data repository.</dd>
+</dl>
+<p>silent:
+The desired verbosity when reporting on the progress and result of the
+data fetching.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class AppData(object):
-    def __init__(
-        self, app, moduleRefs, locations, modules, version, checkout, silent,
-    ):
+    def __init__(self, app, moduleRefs, locations, modules, version, checkout, silent):
+        &#34;&#34;&#34;Collects TF data according to specifications.
+
+        The specifications are passed as arguments when the object is initialized.
+
+        Parameters
+        ----------
+        app: obj
+            The high-level API object
+        moduleRefs: tuple
+            Each member consists of a module ref, which is a tuple of information
+            that defines a module.
+        locations: string|tuple
+            One or more directory paths. They will be combined with the `modules`
+            argument and used as locations to search for TF data files.
+        modules: string|tuple
+            One or more directory path segments. They will be appended to the
+            paths given by the `locations` argument to form search locations
+            for TF data files.
+        version: string
+            The version of TF data that should be retrievend. Version is a directory
+            level just below the search locations.
+        checkout: string
+            A specifier to use a specific release or commit of a data repository.
+        silent:
+            The desired verbosity when reporting on the progress and result of the
+            data fetching.
+
+        &#34;&#34;&#34;
         self.app = app
         self.moduleRefs = moduleRefs
         self.locationsArg = locations
@@ -279,6 +416,12 @@ def getModulesData(*args):
         self.silent = silent
 
     def getMain(self):
+        &#34;&#34;&#34;Get the main data of the corpus.
+
+        This is specified by the `org`, `repo` and `relative` settings under
+        `provenanceSpec` in `config.yaml`.
+        &#34;&#34;&#34;
+
         app = self.app
         aContext = app.context
         org = aContext.org
@@ -296,6 +439,12 @@ def getModulesData(*args):
             self.good = False
 
     def getStandard(self):
+        &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
+
+        These are specified in the `moduleSpecs` setting under
+        `provenanceSpecs` in `config.yaml`.
+        &#34;&#34;&#34;
+
         app = self.app
         aContext = app.context
         moduleSpecs = aContext.moduleSpecs
@@ -311,6 +460,11 @@ def getModulesData(*args):
                 self.good = False
 
     def getRefs(self):
+        &#34;&#34;&#34;Get data from additional modules.
+
+        These are specified in the `moduleRefs` parameter of `AppData`.
+        &#34;&#34;&#34;
+
         refs = self.moduleRefs
         for ref in refs.split(&#34;,&#34;) if refs else []:
             if ref in self.seen:
@@ -327,6 +481,11 @@ def getModulesData(*args):
                 self.good = False
 
     def getModules(self):
+        &#34;&#34;&#34;Get data from additional local directories.
+
+        These are specified in the `locations` and `modules` parameters of `AppData`.
+        &#34;&#34;&#34;
+
         self.provenance = []
         provenance = self.provenance
         self.mLocations = []
@@ -377,11 +536,31 @@ def getModulesData(*args):
         self.locations = mLocations + givenLocations
         self.modules = mModules + givenModules
 
-    # GET DATA FOR A SINGLE MODULE
+    def getModule(self, org, repo, relative, checkout, isBase=False, specs=None):
+        &#34;&#34;&#34;Prepare to load a single module.
 
-    def getModule(
-        self, org, repo, relative, checkout, isBase=False, specs=None,
-    ):
+        Eventually, all TF data will be downloaded from local directories, bases
+        on a list of location paths and module paths.
+
+        This function computes the contribution of a single module to both the
+        location paths and the module paths.
+
+        Parameters
+        ----------
+        org: string
+            GitHub organization of the module
+        repo: string:
+            GitHub repository of the module
+        relative: string
+            Path within the repository of the module
+        checkout: string
+            A specifier to use a specific release or commit of a data repository.
+        isBase: boolean, optional `False`
+            Whether this module is the main data of the corpus.
+        specs: dict, optional `False`
+            Additional informational attributes of the module, e.g. a DOI
+        &#34;&#34;&#34;
+
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -440,12 +619,7 @@ def getModulesData(*args):
                 (&#34;release&#34;, release or &#34;none&#34;),
                 (
                     &#34;live&#34;,
-                    (
-                        liveText(org, repo, version, commit, local, release, relative),
-                        liveUrl(
-                            org, repo, version, commit, release, local, relative
-                        ),
-                    ),
+                    provenanceLink(org, repo, version, commit, local, release, relative),
                 ),
                 (&#34;doi&#34;, info[&#34;doi&#34;]),
             )
@@ -458,12 +632,20 @@ def getModulesData(*args):
 <span>def <span class="ident">getMain</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Get the main data of the corpus.</p>
+<p>This is specified by the <code>org</code>, <code>repo</code> and <code>relative</code> settings under
+<code>provenanceSpec</code> in <code>config.yaml</code>.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getMain(self):
+    &#34;&#34;&#34;Get the main data of the corpus.
+
+    This is specified by the `org`, `repo` and `relative` settings under
+    `provenanceSpec` in `config.yaml`.
+    &#34;&#34;&#34;
+
     app = self.app
     aContext = app.context
     org = aContext.org
@@ -485,14 +667,55 @@ def getModulesData(*args):
 <span>def <span class="ident">getModule</span></span>(<span>self, org, repo, relative, checkout, isBase=False, specs=None)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Prepare to load a single module.</p>
+<p>Eventually, all TF data will be downloaded from local directories, bases
+on a list of location paths and module paths.</p>
+<p>This function computes the contribution of a single module to both the
+location paths and the module paths.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>org</code></strong> :&ensp;<code>string</code></dt>
+<dd>GitHub organization of the module</dd>
+<dt><strong><code>repo</code></strong> :&ensp;<code>string</code>:</dt>
+<dd>GitHub repository of the module</dd>
+<dt><strong><code>relative</code></strong> :&ensp;<code>string</code></dt>
+<dd>Path within the repository of the module</dd>
+<dt><strong><code>checkout</code></strong> :&ensp;<code>string</code></dt>
+<dd>A specifier to use a specific release or commit of a data repository.</dd>
+<dt><strong><code>isBase</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether this module is the main data of the corpus.</dd>
+<dt><strong><code>specs</code></strong> :&ensp;<code>dict</code>, optional <code>False</code></dt>
+<dd>Additional informational attributes of the module, e.g. a DOI</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getModule(
-    self, org, repo, relative, checkout, isBase=False, specs=None,
-):
+<pre><code class="python">def getModule(self, org, repo, relative, checkout, isBase=False, specs=None):
+    &#34;&#34;&#34;Prepare to load a single module.
+
+    Eventually, all TF data will be downloaded from local directories, bases
+    on a list of location paths and module paths.
+
+    This function computes the contribution of a single module to both the
+    location paths and the module paths.
+
+    Parameters
+    ----------
+    org: string
+        GitHub organization of the module
+    repo: string:
+        GitHub repository of the module
+    relative: string
+        Path within the repository of the module
+    checkout: string
+        A specifier to use a specific release or commit of a data repository.
+    isBase: boolean, optional `False`
+        Whether this module is the main data of the corpus.
+    specs: dict, optional `False`
+        Additional informational attributes of the module, e.g. a DOI
+    &#34;&#34;&#34;
+
     version = self.version
     silent = self.silent
     mLocations = self.mLocations
@@ -551,12 +774,7 @@ def getModulesData(*args):
             (&#34;release&#34;, release or &#34;none&#34;),
             (
                 &#34;live&#34;,
-                (
-                    liveText(org, repo, version, commit, local, release, relative),
-                    liveUrl(
-                        org, repo, version, commit, release, local, relative
-                    ),
-                ),
+                provenanceLink(org, repo, version, commit, local, release, relative),
             ),
             (&#34;doi&#34;, info[&#34;doi&#34;]),
         )
@@ -568,12 +786,18 @@ def getModulesData(*args):
 <span>def <span class="ident">getModules</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Get data from additional local directories.</p>
+<p>These are specified in the <code>locations</code> and <code>modules</code> parameters of <a title="tf.applib.data.AppData" href="#tf.applib.data.AppData"><code>AppData</code></a>.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getModules(self):
+    &#34;&#34;&#34;Get data from additional local directories.
+
+    These are specified in the `locations` and `modules` parameters of `AppData`.
+    &#34;&#34;&#34;
+
     self.provenance = []
     provenance = self.provenance
     self.mLocations = []
@@ -629,12 +853,18 @@ def getModulesData(*args):
 <span>def <span class="ident">getRefs</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Get data from additional modules.</p>
+<p>These are specified in the <code>moduleRefs</code> parameter of <a title="tf.applib.data.AppData" href="#tf.applib.data.AppData"><code>AppData</code></a>.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getRefs(self):
+    &#34;&#34;&#34;Get data from additional modules.
+
+    These are specified in the `moduleRefs` parameter of `AppData`.
+    &#34;&#34;&#34;
+
     refs = self.moduleRefs
     for ref in refs.split(&#34;,&#34;) if refs else []:
         if ref in self.seen:
@@ -655,12 +885,20 @@ def getModulesData(*args):
 <span>def <span class="ident">getStandard</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Get the data of the standard modules specified by the settings of the corpus.</p>
+<p>These are specified in the <code>moduleSpecs</code> setting under
+<code>provenanceSpecs</code> in <code>config.yaml</code>.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getStandard(self):
+    &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
+
+    These are specified in the `moduleSpecs` setting under
+    `provenanceSpecs` in `config.yaml`.
+    &#34;&#34;&#34;
+
     app = self.app
     aContext = app.context
     moduleSpecs = aContext.moduleSpecs

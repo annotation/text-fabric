@@ -29,7 +29,7 @@
 from .search import runSearch
 
 
-def getHlAtt(app, n, highlights, baseType, isPlain):
+def getHlAtt(app, n, highlights, baseTypes, isPlain):
     &#34;&#34;&#34;Get the highlight attribute for a node.
 
     Parameters
@@ -45,6 +45,10 @@ def getHlAtt(app, n, highlights, baseType, isPlain):
         and if so, what the value is (in case of a dict).
         If given as set: use the default highlight color.
         If given as dict: use the value as color.
+    baseTypes: set
+        Which node types acts as a base type.
+    isPlain:
+        Whether we are highlighting for plain() or for pretty().
     &#34;&#34;&#34;
 
     if highlights is None:
@@ -64,7 +68,7 @@ def getHlAtt(app, n, highlights, baseType, isPlain):
     api = app.api
     F = api.F
 
-    isBaseType = F.otype.v(n) == baseType
+    isBaseType = F.otype.v(n) in baseTypes
 
     hlCls = (&#34;hl&#34; if isBaseType else &#34;hlbx&#34;) if isPlain else &#34;hl&#34;
     hlObject = (&#34;background&#34; if isBaseType else &#34;border&#34;) if isPlain else &#34;background&#34;
@@ -90,7 +94,7 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     colorMap: dict
         A mapping of tuple positions to colors.
         Member `i` of `tup` should be highlighted with color `colorMap[i]`.
-    condenseType:
+    condenseType: string
         The type of node that acts as the basis of a pretty display.
         The nodes in the given `tup` will be distributed over as many nodes of
         `condenseType` as they occur in.
@@ -108,7 +112,9 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     otypeRank = api.otypeRank
 
     condenseRank = otypeRank[condenseType]
-    if type(highlights) is set:
+    if highlights is None:
+        highlights = {}
+    elif type(highlights) is set:
         highlights = {m: &#34;&#34; for m in highlights}
     newHighlights = {n: h for (n, h) in highlights.items()}
 
@@ -170,7 +176,7 @@ def getPassageHighlights(app, node, query, cache):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.applib.highlight.getHlAtt"><code class="name flex">
-<span>def <span class="ident">getHlAtt</span></span>(<span>app, n, highlights, baseType, isPlain)</span>
+<span>def <span class="ident">getHlAtt</span></span>(<span>app, n, highlights, baseTypes, isPlain)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Get the highlight attribute for a node.</p>
@@ -187,12 +193,16 @@ This function is only interested in whether <code>n</code> is in it,
 and if so, what the value is (in case of a dict).
 If given as set: use the default highlight color.
 If given as dict: use the value as color.</dd>
-</dl></section>
+<dt><strong><code>baseTypes</code></strong> :&ensp;<code>set</code></dt>
+<dd>Which node types acts as a base type.</dd>
+</dl>
+<p>isPlain:
+Whether we are highlighting for plain() or for pretty().</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getHlAtt(app, n, highlights, baseType, isPlain):
+<pre><code class="python">def getHlAtt(app, n, highlights, baseTypes, isPlain):
     &#34;&#34;&#34;Get the highlight attribute for a node.
 
     Parameters
@@ -208,6 +218,10 @@ If given as dict: use the value as color.</dd>
         and if so, what the value is (in case of a dict).
         If given as set: use the default highlight color.
         If given as dict: use the value as color.
+    baseTypes: set
+        Which node types acts as a base type.
+    isPlain:
+        Whether we are highlighting for plain() or for pretty().
     &#34;&#34;&#34;
 
     if highlights is None:
@@ -227,7 +241,7 @@ If given as dict: use the value as color.</dd>
     api = app.api
     F = api.F
 
-    isBaseType = F.otype.v(n) == baseType
+    isBaseType = F.otype.v(n) in baseTypes
 
     hlCls = (&#34;hl&#34; if isBaseType else &#34;hlbx&#34;) if isPlain else &#34;hl&#34;
     hlObject = (&#34;background&#34; if isBaseType else &#34;border&#34;) if isPlain else &#34;background&#34;
@@ -314,10 +328,10 @@ a color map.</p>
 <dt><strong><code>colorMap</code></strong> :&ensp;<code>dict</code></dt>
 <dd>A mapping of tuple positions to colors.
 Member <code>i</code> of <code>tup</code> should be highlighted with color <code>colorMap[i]</code>.</dd>
-<dt>condenseType:</dt>
-<dt>The type of node that acts as the basis of a pretty display.</dt>
-<dt>The nodes in the given <code>tup</code> will be distributed over as many nodes of</dt>
-<dt><code>condenseType</code> as they occur in.</dt>
+<dt><strong><code>condenseType</code></strong> :&ensp;<code>string</code></dt>
+<dd>The type of node that acts as the basis of a pretty display.
+The nodes in the given <code>tup</code> will be distributed over as many nodes of
+<code>condenseType</code> as they occur in.</dd>
 <dt><strong><code>highlights</code></strong> :&ensp;<code>set</code>|<code>dict</code></dt>
 <dd>The nodes to be highlighted.
 Keys/elements are the nodes to be highlighted.
@@ -347,7 +361,7 @@ If given as dict: use the value as color.</dd>
     colorMap: dict
         A mapping of tuple positions to colors.
         Member `i` of `tup` should be highlighted with color `colorMap[i]`.
-    condenseType:
+    condenseType: string
         The type of node that acts as the basis of a pretty display.
         The nodes in the given `tup` will be distributed over as many nodes of
         `condenseType` as they occur in.
@@ -365,7 +379,9 @@ If given as dict: use the value as color.</dd>
     otypeRank = api.otypeRank
 
     condenseRank = otypeRank[condenseType]
-    if type(highlights) is set:
+    if highlights is None:
+        highlights = {}
+    elif type(highlights) is set:
         highlights = {m: &#34;&#34; for m in highlights}
     newHighlights = {n: h for (n, h) in highlights.items()}
 

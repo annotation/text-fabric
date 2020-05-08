@@ -51,14 +51,18 @@ MY_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class Web(object):
     def __init__(self, portKernel):
-        TF = makeTfConnection(HOST, portKernel, TIMEOUT)
+        TF = makeTfConnection(HOST, int(portKernel), TIMEOUT)
         kernelApi = TF.connect()
-        self.kernelApi = kernelApi
+        if type(kernelApi) is str:
+            console(f&#34;Could not connect to {HOST}:{portKernel}&#34;)
+            console(kernelApi)
+        else:
+            self.kernelApi = kernelApi
 
-        context = pickle.loads(kernelApi.context())
-        self.context = context
+            context = pickle.loads(kernelApi.context())
+            self.context = context
 
-        self.wildQueries = set()
+            self.wildQueries = set()
 
 
 def factory(web):
@@ -136,9 +140,12 @@ def main(cargs=sys.argv):
 
     try:
         web = Web(portKernel)
+        if not hasattr(web, &#34;kernelApi&#34;):
+            return 1
+
         webapp = factory(web)
         run_simple(
-            HOST, portWeb, webapp, use_reloader=False, use_debugger=False,
+            HOST, int(portWeb), webapp, use_reloader=False, use_debugger=False,
         )
     except OSError as e:
         console(str(e))
@@ -251,9 +258,12 @@ if __name__ == &#34;__main__&#34;:
 
     try:
         web = Web(portKernel)
+        if not hasattr(web, &#34;kernelApi&#34;):
+            return 1
+
         webapp = factory(web)
         run_simple(
-            HOST, portWeb, webapp, use_reloader=False, use_debugger=False,
+            HOST, int(portWeb), webapp, use_reloader=False, use_debugger=False,
         )
     except OSError as e:
         console(str(e))
@@ -279,14 +289,18 @@ if __name__ == &#34;__main__&#34;:
 </summary>
 <pre><code class="python">class Web(object):
     def __init__(self, portKernel):
-        TF = makeTfConnection(HOST, portKernel, TIMEOUT)
+        TF = makeTfConnection(HOST, int(portKernel), TIMEOUT)
         kernelApi = TF.connect()
-        self.kernelApi = kernelApi
+        if type(kernelApi) is str:
+            console(f&#34;Could not connect to {HOST}:{portKernel}&#34;)
+            console(kernelApi)
+        else:
+            self.kernelApi = kernelApi
 
-        context = pickle.loads(kernelApi.context())
-        self.context = context
+            context = pickle.loads(kernelApi.context())
+            self.context = context
 
-        self.wildQueries = set()</code></pre>
+            self.wildQueries = set()</code></pre>
 </details>
 </dd>
 </dl>

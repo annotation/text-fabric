@@ -130,7 +130,8 @@ def check32():
     return (on32, warn, msg)
 
 
-def console(msg, error=False, newline=True):
+def console(*msg, error=False, newline=True):
+    msg = &#34; &#34;.join(m if type(m) is str else repr(m) for m in msg)
     msg = msg[1:] if msg.startswith(&#34;\n&#34;) else msg
     msg = msg[0:-1] if msg.endswith(&#34;\n&#34;) else msg
     target = sys.stderr if error else sys.stdout
@@ -375,7 +376,19 @@ def makeExamples(nodeList):
             + (&#34;, &#34;.join(str(n) for n in nodeList[0:5]))
             + &#34; ... &#34;
             + (&#34;, &#34;.join(str(n) for n in nodeList[-5:]))
-        )</code></pre>
+        )
+
+
+def setFromValue(x, asInt=False):
+    return (
+        set()
+        if x is None
+        else x
+        if type(x) in {set, frozenset}
+        else {int(x) if asInt else x}
+        if type(x) is str
+        else ({int(v) for v in x} if asInt else set(x))
+    )</code></pre>
 </details>
 </section>
 <section>
@@ -475,7 +488,7 @@ def makeExamples(nodeList):
 </details>
 </dd>
 <dt id="tf.core.helpers.console"><code class="name flex">
-<span>def <span class="ident">console</span></span>(<span>msg, error=False, newline=True)</span>
+<span>def <span class="ident">console</span></span>(<span>*msg, error=False, newline=True)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -483,7 +496,8 @@ def makeExamples(nodeList):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def console(msg, error=False, newline=True):
+<pre><code class="python">def console(*msg, error=False, newline=True):
+    msg = &#34; &#34;.join(m if type(m) is str else repr(m) for m in msg)
     msg = msg[1:] if msg.startswith(&#34;\n&#34;) else msg
     msg = msg[0:-1] if msg.endswith(&#34;\n&#34;) else msg
     target = sys.stderr if error else sys.stdout
@@ -875,6 +889,27 @@ def makeExamples(nodeList):
     return covered</code></pre>
 </details>
 </dd>
+<dt id="tf.core.helpers.setFromValue"><code class="name flex">
+<span>def <span class="ident">setFromValue</span></span>(<span>x, asInt=False)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setFromValue(x, asInt=False):
+    return (
+        set()
+        if x is None
+        else x
+        if type(x) in {set, frozenset}
+        else {int(x) if asInt else x}
+        if type(x) is str
+        else ({int(v) for v in x} if asInt else set(x))
+    )</code></pre>
+</details>
+</dd>
 <dt id="tf.core.helpers.specFromRanges"><code class="name flex">
 <span>def <span class="ident">specFromRanges</span></span>(<span>ranges)</span>
 </code></dt>
@@ -1029,6 +1064,7 @@ Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
 <li><code><a title="tf.core.helpers.rangesFromSet" href="#tf.core.helpers.rangesFromSet">rangesFromSet</a></code></li>
 <li><code><a title="tf.core.helpers.setDir" href="#tf.core.helpers.setDir">setDir</a></code></li>
 <li><code><a title="tf.core.helpers.setFromSpec" href="#tf.core.helpers.setFromSpec">setFromSpec</a></code></li>
+<li><code><a title="tf.core.helpers.setFromValue" href="#tf.core.helpers.setFromValue">setFromValue</a></code></li>
 <li><code><a title="tf.core.helpers.specFromRanges" href="#tf.core.helpers.specFromRanges">specFromRanges</a></code></li>
 <li><code><a title="tf.core.helpers.splitModRef" href="#tf.core.helpers.splitModRef">splitModRef</a></code></li>
 <li><code><a title="tf.core.helpers.tfFromValue" href="#tf.core.helpers.tfFromValue">tfFromValue</a></code></li>

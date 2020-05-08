@@ -24,11 +24,14 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from ..fabric import Fabric
+<pre><code class="python">import os
+
+from ..parameters import ORG, APP_CODE
+from ..fabric import Fabric
 from ..parameters import URL_TFDOC, TEMP_DIR
 from ..lib import readSets
 from ..core.helpers import console, setDir
-from .find import findAppConfig
+from .find import findAppConfig, findAppClass
 from .helpers import dh
 from .settings import setAppSpecs, setAppSpecsApi
 from .links import linksApi, outLink
@@ -37,6 +40,7 @@ from .sections import sectionsApi
 from .display import displayApi
 from .search import searchApi
 from .data import getModulesData
+from .repo import checkoutRepo
 
 
 # SET UP A TF API FOR AN APP
@@ -45,6 +49,7 @@ from .data import getModulesData
 class App:
     def __init__(
         self,
+        cfg,
         appName,
         appPath,
         commit,
@@ -62,16 +67,18 @@ class App:
         _browse=False,
     ):
         for (key, value) in dict(
-            appName=appName, api=api, version=version, silent=silent, _browse=_browse
+            isCompatible=cfg.get(&#34;isCompatible&#34;, None),
+            appName=appName,
+            api=api,
+            version=version,
+            silent=silent,
+            _browse=_browse,
         ).items():
             setattr(self, key, value)
 
-        cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
         setAppSpecs(self, cfg)
         aContext = self.context
         version = aContext.version
-
-        self.isCompatible = cfg[&#34;isCompatible&#34;]
 
         setDir(self)
 
@@ -105,7 +112,7 @@ class App:
                 self.api = None
 
         if self.api:
-            linksApi(self, appName, silent)
+            linksApi(self, silent)
             searchApi(self)
             sectionsApi(self)
             setAppSpecsApi(self, cfg)
@@ -140,6 +147,9 @@ The app &#34;{appName}&#34; will not work!
                     error=True,
                 )
 
+    def reinit(self):
+        pass
+
     def reuse(self, hoist=False):
         aContext = self.context
         appPath = aContext.appPath
@@ -151,17 +161,78 @@ The app &#34;{appName}&#34; will not work!
         api = self.api
 
         cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
-        setAppSpecs(self, cfg)
+        findAppClass(appName, appPath)
+        self.reinit()
+
+        setAppSpecs(self, cfg, reset=True)
 
         if api:
-            linksApi(self, appName, True)
+            linksApi(self, True)
             searchApi(self)
             sectionsApi(self)
             setAppSpecsApi(self, cfg)
             displayApi(self, True)
             textApi(self)
             if hoist:
-                api.makeAvailableIn(hoist)</code></pre>
+                api.makeAvailableIn(hoist)
+
+
+def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
+    if not appName or &#34;/&#34; in appName:
+        appPath = os.path.expanduser(appName) if appName else &#34;&#34;
+        absPath = os.path.abspath(appPath)
+        (commit, release, local) = (None, None, None)
+
+        if os.path.isdir(absPath):
+            (appDir, appName) = os.path.split(absPath)
+            codePath = f&#34;{absPath}/{APP_CODE}&#34;
+            if os.path.isdir(codePath):
+                appDir = codePath
+            appBase = &#34;&#34;
+        else:
+            console(f&#34;{absPath} is not an existing directory&#34;, error=True)
+            appBase = False
+        appPath = appDir
+    else:
+        (commit, release, local, appBase, appDir) = checkoutRepo(
+            org=ORG,
+            repo=f&#34;app-{appName}&#34;,
+            folder=APP_CODE,
+            checkout=checkoutApp,
+            withPaths=True,
+            keep=False,
+            silent=silent,
+            label=&#34;TF-app&#34;,
+        )
+        appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
+        appPath = f&#34;{appBaseRep}{appDir}&#34;
+    cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
+    version = cfg[&#34;provenanceSpec&#34;].get(&#34;version&#34;, None)
+    if not appBase and appBase != &#34;&#34;:
+        return None
+
+    isCompatible = cfg[&#34;isCompatible&#34;]
+    if isCompatible is None:
+        appClass = App
+    elif not isCompatible:
+        return None
+    else:
+        appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
+        appPath = f&#34;{appBaseRep}{appDir}&#34;
+
+        appClass = findAppClass(appName, appPath) or App
+    return appClass(
+        cfg,
+        appName,
+        appPath,
+        commit,
+        release,
+        local,
+        *args,
+        version=version,
+        silent=silent,
+        **kwargs,
+    )</code></pre>
 </details>
 </section>
 <section>
@@ -169,13 +240,83 @@ The app &#34;{appName}&#34; will not work!
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.applib.app.findApp"><code class="name flex">
+<span>def <span class="ident">findApp</span></span>(<span>appName, checkoutApp, *args, silent=False, version=None, **kwargs)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
+    if not appName or &#34;/&#34; in appName:
+        appPath = os.path.expanduser(appName) if appName else &#34;&#34;
+        absPath = os.path.abspath(appPath)
+        (commit, release, local) = (None, None, None)
+
+        if os.path.isdir(absPath):
+            (appDir, appName) = os.path.split(absPath)
+            codePath = f&#34;{absPath}/{APP_CODE}&#34;
+            if os.path.isdir(codePath):
+                appDir = codePath
+            appBase = &#34;&#34;
+        else:
+            console(f&#34;{absPath} is not an existing directory&#34;, error=True)
+            appBase = False
+        appPath = appDir
+    else:
+        (commit, release, local, appBase, appDir) = checkoutRepo(
+            org=ORG,
+            repo=f&#34;app-{appName}&#34;,
+            folder=APP_CODE,
+            checkout=checkoutApp,
+            withPaths=True,
+            keep=False,
+            silent=silent,
+            label=&#34;TF-app&#34;,
+        )
+        appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
+        appPath = f&#34;{appBaseRep}{appDir}&#34;
+    cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
+    version = cfg[&#34;provenanceSpec&#34;].get(&#34;version&#34;, None)
+    if not appBase and appBase != &#34;&#34;:
+        return None
+
+    isCompatible = cfg[&#34;isCompatible&#34;]
+    if isCompatible is None:
+        appClass = App
+    elif not isCompatible:
+        return None
+    else:
+        appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
+        appPath = f&#34;{appBaseRep}{appDir}&#34;
+
+        appClass = findAppClass(appName, appPath) or App
+    return appClass(
+        cfg,
+        appName,
+        appPath,
+        commit,
+        release,
+        local,
+        *args,
+        version=version,
+        silent=silent,
+        **kwargs,
+    )</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
 <dt id="tf.applib.app.App"><code class="flex name class">
 <span>class <span class="ident">App</span></span>
-<span>(</span><span>appName, appPath, commit, release, local, hoist=False, version=None, checkout='', mod=None, locations=None, modules=None, api=None, setFile='', silent=False)</span>
+<span>(</span><span>cfg, appName, appPath, commit, release, local, hoist=False, version=None, checkout='', mod=None, locations=None, modules=None, api=None, setFile='', silent=False)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -186,6 +327,7 @@ The app &#34;{appName}&#34; will not work!
 <pre><code class="python">class App:
     def __init__(
         self,
+        cfg,
         appName,
         appPath,
         commit,
@@ -203,16 +345,18 @@ The app &#34;{appName}&#34; will not work!
         _browse=False,
     ):
         for (key, value) in dict(
-            appName=appName, api=api, version=version, silent=silent, _browse=_browse
+            isCompatible=cfg.get(&#34;isCompatible&#34;, None),
+            appName=appName,
+            api=api,
+            version=version,
+            silent=silent,
+            _browse=_browse,
         ).items():
             setattr(self, key, value)
 
-        cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
         setAppSpecs(self, cfg)
         aContext = self.context
         version = aContext.version
-
-        self.isCompatible = cfg[&#34;isCompatible&#34;]
 
         setDir(self)
 
@@ -246,7 +390,7 @@ The app &#34;{appName}&#34; will not work!
                 self.api = None
 
         if self.api:
-            linksApi(self, appName, silent)
+            linksApi(self, silent)
             searchApi(self)
             sectionsApi(self)
             setAppSpecsApi(self, cfg)
@@ -281,6 +425,9 @@ The app &#34;{appName}&#34; will not work!
                     error=True,
                 )
 
+    def reinit(self):
+        pass
+
     def reuse(self, hoist=False):
         aContext = self.context
         appPath = aContext.appPath
@@ -292,10 +439,13 @@ The app &#34;{appName}&#34; will not work!
         api = self.api
 
         cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
-        setAppSpecs(self, cfg)
+        findAppClass(appName, appPath)
+        self.reinit()
+
+        setAppSpecs(self, cfg, reset=True)
 
         if api:
-            linksApi(self, appName, True)
+            linksApi(self, True)
             searchApi(self)
             sectionsApi(self)
             setAppSpecsApi(self, cfg)
@@ -306,6 +456,19 @@ The app &#34;{appName}&#34; will not work!
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="tf.applib.app.App.reinit"><code class="name flex">
+<span>def <span class="ident">reinit</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reinit(self):
+    pass</code></pre>
+</details>
+</dd>
 <dt id="tf.applib.app.App.reuse"><code class="name flex">
 <span>def <span class="ident">reuse</span></span>(<span>self, hoist=False)</span>
 </code></dt>
@@ -326,10 +489,13 @@ The app &#34;{appName}&#34; will not work!
     api = self.api
 
     cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
-    setAppSpecs(self, cfg)
+    findAppClass(appName, appPath)
+    self.reinit()
+
+    setAppSpecs(self, cfg, reset=True)
 
     if api:
-        linksApi(self, appName, True)
+        linksApi(self, True)
         searchApi(self)
         sectionsApi(self)
         setAppSpecsApi(self, cfg)
@@ -355,11 +521,17 @@ The app &#34;{appName}&#34; will not work!
 <li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
 </ul>
 </li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.applib.app.findApp" href="#tf.applib.app.findApp">findApp</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
 <h4><code><a title="tf.applib.app.App" href="#tf.applib.app.App">App</a></code></h4>
 <ul class="">
+<li><code><a title="tf.applib.app.App.reinit" href="#tf.applib.app.App.reinit">reinit</a></code></li>
 <li><code><a title="tf.applib.app.App.reuse" href="#tf.applib.app.App.reuse">reuse</a></code></li>
 </ul>
 </li>

@@ -29,6 +29,7 @@ import datetime
 
 from ..parameters import NAME, VERSION, DOI_URL_PREFIX, DOI_DEFAULT, DOI_TF, APP_URL
 from ..applib.helpers import NB
+from ..applib.displaysettings import INTERFACE_OPTIONS
 
 
 # NAVIGATION IN MULTIPLE ITEMS (PAGES, PASSAGES)
@@ -113,37 +114,38 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
 # OPTIONS
 
 
-def wrapOptions(context, form, defaults):
+def wrapOptions(context, form):
     interfaceDefaults = context.interfaceDefaults
 
-    options = []
-    for (k, v) in interfaceDefaults.items():
-        if v is None:
-            continue
-
-        options.append[k]
+    options = {k for (k, v) in interfaceDefaults.items() if v is not None}
 
     html = []
-    for (option, default, typ, acro, desc) in options:
+    helpHtml = []
+    for (option, default, acro, desc, long) in INTERFACE_OPTIONS:
+        if option not in options:
+            continue
         value = form[option]
         value = &#34;checked&#34; if value else &#34;&#34;
         html.append(
-            f&#39;&lt;div&gt;&lt;input class=&#34;r&#34; type=&#34;{typ}&#34; id=&#34;{acro}&#34; name=&#34;{option}&#34; {value}/&gt;&#39;
-            f&#39; &lt;span class=&#34;ilab&#34;&gt;{desc}&lt;/span&gt;&lt;/div&gt;&#39;
+            f&#39;&lt;div&gt;&lt;input class=&#34;r&#34; type=&#34;checkbox&#34; id=&#34;{acro}&#34; name=&#34;{option}&#34; {value}/&gt;&#39;
+            f&#39; &lt;span class=&#34;ilab&#34; title=&#34;{option}&#34;&gt;{desc}&lt;/span&gt;&lt;/div&gt;&#39;
         )
-    return &#34;\n&#34;.join(html)
+        helpHtml.append(
+            f&#39;&lt;p&gt;&lt;b title=&#34;{option}&#34;&gt;{desc}&lt;/b&gt; {long}&lt;/p&gt;&#39;
+        )
+    return (&#34;\n&#34;.join(html), &#34;\n&#34;.join(helpHtml))
 
 
-def wrapBase(baseTypes, value):
+def wrapBase(allowedBaseTypes, value):
     html = []
-    for (i, otype) in enumerate(baseTypes):
-        checked = &#34; checked &#34; if value == otype else &#34;&#34;
-        radio = (
-            f&#39;&lt;input class=&#34;r bradio&#34; type=&#34;radio&#34; name=&#34;baseTp&#34; value=&#34;{otype}&#34;&#39;
+    for (i, otype) in enumerate(allowedBaseTypes):
+        checked = &#34; checked &#34; if otype in value else &#34;&#34;
+        checkButton = (
+            f&#39;&lt;input class=&#34;r bcheck&#34; type=&#34;checkbox&#34; name=&#34;baseTps&#34; value=&#34;{otype}&#34;&#39;
             f&#34; {checked}/&gt;&#34;
         )
         html.append(
-            f&#39;&lt;div class=&#34;cline&#34;&gt;{radio} &lt;span class=&#34;ctype&#34;&gt;{otype}&lt;/span&gt;&lt;/div&gt;&#39;
+            f&#39;&lt;div class=&#34;cline&#34;&gt;{checkButton} &lt;span class=&#34;ctype&#34;&gt;{otype}&lt;/span&gt;&lt;/div&gt;&#39;
         )
     return &#34;\n&#34;.join(html)
 
@@ -153,7 +155,7 @@ def wrapCondense(condenseTypes, value):
     lastType = len(condenseTypes) - 1
     for (i, (otype, av, b, e)) in enumerate(condenseTypes):
         checked = &#34; checked &#34; if value == otype else &#34;&#34;
-        radio = (
+        radioButton = (
             f&#39;&lt;span class=&#34;cradio&#34;&gt;{NB}&lt;/span&gt;&#39;
             if i == lastType
             else (
@@ -162,7 +164,7 @@ def wrapCondense(condenseTypes, value):
             )
         )
         html.append(
-            f&#39;&lt;div class=&#34;cline&#34;&gt;{radio} &lt;span class=&#34;ctype&#34;&gt;{otype}&lt;/span&gt;&#39;
+            f&#39;&lt;div class=&#34;cline&#34;&gt;{radioButton} &lt;span class=&#34;ctype&#34;&gt;{otype}&lt;/span&gt;&#39;
             f&#39; &lt;span class=&#34;cinfo&#34;&gt;{e - b + 1: 8.6g} x av length {av: 4.2g}&lt;/span&gt;&#39;
             f&#34;&lt;/div&gt;&#34;
         )
@@ -173,12 +175,12 @@ def wrapFormats(allFormats, value):
     html = []
     for (i, fmt) in enumerate(allFormats):
         checked = &#34; checked &#34; if value == fmt else &#34;&#34;
-        radio = (
+        radioButton = (
             f&#39;&lt;input class=&#34;r tradio&#34; type=&#34;radio&#34; id=&#34;ttp{i}&#34;&#39;
             f&#39; name=&#34;textformat&#34; value=&#34;{fmt}&#34; {checked} &#34;/&gt;&#39;
         )
         html.append(
-            f&#39;&lt;div class=&#34;tfline&#34;&gt;{radio} &lt;span class=&#34;ttext&#34;&gt;{fmt}&lt;/span&gt;&lt;/div&gt;&#39;
+            f&#39;&lt;div class=&#34;tfline&#34;&gt;{radioButton} &lt;span class=&#34;ttext&#34;&gt;{fmt}&lt;/span&gt;&lt;/div&gt;&#39;
         )
     return &#34;\n&#34;.join(html)
 
@@ -233,9 +235,9 @@ commit | {liveMd}&#34;&#34;&#34;
         corpus = d[&#34;corpus&#34;]
         version = d[&#34;version&#34;]
         release = d[&#34;release&#34;]
-        (live, liveU) = d[&#34;live&#34;]
-        liveHtml = f&#39;&lt;a href=&#34;{liveU}&#34;&gt;{live}&lt;/a&gt;&#39;
-        liveMd = f&#34;[{live}]({liveU})&#34;
+        (liveText, liveUrl) = d[&#34;live&#34;]
+        liveHtml = f&#39;&lt;a href=&#34;{liveUrl}&#34;&gt;{liveText}&lt;/a&gt;&#39;
+        liveMd = f&#34;[{liveText}]({liveUrl})&#34;
         doi = d[&#34;doi&#34;]
         doiUrl = f&#34;{DOI_URL_PREFIX}/{doi}&#34;
         doiHtml = f&#39;&lt;a href=&#34;{doiUrl}&#34;&gt;{doi}&lt;/a&gt;&#39; if doi else DOI_DEFAULT
@@ -431,7 +433,7 @@ def _coarsify(n, spread):
 </details>
 </dd>
 <dt id="tf.server.wrap.wrapBase"><code class="name flex">
-<span>def <span class="ident">wrapBase</span></span>(<span>baseTypes, value)</span>
+<span>def <span class="ident">wrapBase</span></span>(<span>allowedBaseTypes, value)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -439,16 +441,16 @@ def _coarsify(n, spread):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def wrapBase(baseTypes, value):
+<pre><code class="python">def wrapBase(allowedBaseTypes, value):
     html = []
-    for (i, otype) in enumerate(baseTypes):
-        checked = &#34; checked &#34; if value == otype else &#34;&#34;
-        radio = (
-            f&#39;&lt;input class=&#34;r bradio&#34; type=&#34;radio&#34; name=&#34;baseTp&#34; value=&#34;{otype}&#34;&#39;
+    for (i, otype) in enumerate(allowedBaseTypes):
+        checked = &#34; checked &#34; if otype in value else &#34;&#34;
+        checkButton = (
+            f&#39;&lt;input class=&#34;r bcheck&#34; type=&#34;checkbox&#34; name=&#34;baseTps&#34; value=&#34;{otype}&#34;&#39;
             f&#34; {checked}/&gt;&#34;
         )
         html.append(
-            f&#39;&lt;div class=&#34;cline&#34;&gt;{radio} &lt;span class=&#34;ctype&#34;&gt;{otype}&lt;/span&gt;&lt;/div&gt;&#39;
+            f&#39;&lt;div class=&#34;cline&#34;&gt;{checkButton} &lt;span class=&#34;ctype&#34;&gt;{otype}&lt;/span&gt;&lt;/div&gt;&#39;
         )
     return &#34;\n&#34;.join(html)</code></pre>
 </details>
@@ -467,7 +469,7 @@ def _coarsify(n, spread):
     lastType = len(condenseTypes) - 1
     for (i, (otype, av, b, e)) in enumerate(condenseTypes):
         checked = &#34; checked &#34; if value == otype else &#34;&#34;
-        radio = (
+        radioButton = (
             f&#39;&lt;span class=&#34;cradio&#34;&gt;{NB}&lt;/span&gt;&#39;
             if i == lastType
             else (
@@ -476,7 +478,7 @@ def _coarsify(n, spread):
             )
         )
         html.append(
-            f&#39;&lt;div class=&#34;cline&#34;&gt;{radio} &lt;span class=&#34;ctype&#34;&gt;{otype}&lt;/span&gt;&#39;
+            f&#39;&lt;div class=&#34;cline&#34;&gt;{radioButton} &lt;span class=&#34;ctype&#34;&gt;{otype}&lt;/span&gt;&#39;
             f&#39; &lt;span class=&#34;cinfo&#34;&gt;{e - b + 1: 8.6g} x av length {av: 4.2g}&lt;/span&gt;&#39;
             f&#34;&lt;/div&gt;&#34;
         )
@@ -496,18 +498,18 @@ def _coarsify(n, spread):
     html = []
     for (i, fmt) in enumerate(allFormats):
         checked = &#34; checked &#34; if value == fmt else &#34;&#34;
-        radio = (
+        radioButton = (
             f&#39;&lt;input class=&#34;r tradio&#34; type=&#34;radio&#34; id=&#34;ttp{i}&#34;&#39;
             f&#39; name=&#34;textformat&#34; value=&#34;{fmt}&#34; {checked} &#34;/&gt;&#39;
         )
         html.append(
-            f&#39;&lt;div class=&#34;tfline&#34;&gt;{radio} &lt;span class=&#34;ttext&#34;&gt;{fmt}&lt;/span&gt;&lt;/div&gt;&#39;
+            f&#39;&lt;div class=&#34;tfline&#34;&gt;{radioButton} &lt;span class=&#34;ttext&#34;&gt;{fmt}&lt;/span&gt;&lt;/div&gt;&#39;
         )
     return &#34;\n&#34;.join(html)</code></pre>
 </details>
 </dd>
 <dt id="tf.server.wrap.wrapOptions"><code class="name flex">
-<span>def <span class="ident">wrapOptions</span></span>(<span>context, form, defaults)</span>
+<span>def <span class="ident">wrapOptions</span></span>(<span>context, form)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -515,25 +517,26 @@ def _coarsify(n, spread):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def wrapOptions(context, form, defaults):
+<pre><code class="python">def wrapOptions(context, form):
     interfaceDefaults = context.interfaceDefaults
 
-    options = []
-    for (k, v) in interfaceDefaults.items():
-        if v is None:
-            continue
-
-        options.append[k]
+    options = {k for (k, v) in interfaceDefaults.items() if v is not None}
 
     html = []
-    for (option, default, typ, acro, desc) in options:
+    helpHtml = []
+    for (option, default, acro, desc, long) in INTERFACE_OPTIONS:
+        if option not in options:
+            continue
         value = form[option]
         value = &#34;checked&#34; if value else &#34;&#34;
         html.append(
-            f&#39;&lt;div&gt;&lt;input class=&#34;r&#34; type=&#34;{typ}&#34; id=&#34;{acro}&#34; name=&#34;{option}&#34; {value}/&gt;&#39;
-            f&#39; &lt;span class=&#34;ilab&#34;&gt;{desc}&lt;/span&gt;&lt;/div&gt;&#39;
+            f&#39;&lt;div&gt;&lt;input class=&#34;r&#34; type=&#34;checkbox&#34; id=&#34;{acro}&#34; name=&#34;{option}&#34; {value}/&gt;&#39;
+            f&#39; &lt;span class=&#34;ilab&#34; title=&#34;{option}&#34;&gt;{desc}&lt;/span&gt;&lt;/div&gt;&#39;
         )
-    return &#34;\n&#34;.join(html)</code></pre>
+        helpHtml.append(
+            f&#39;&lt;p&gt;&lt;b title=&#34;{option}&#34;&gt;{desc}&lt;/b&gt; {long}&lt;/p&gt;&#39;
+        )
+    return (&#34;\n&#34;.join(html), &#34;\n&#34;.join(helpHtml))</code></pre>
 </details>
 </dd>
 <dt id="tf.server.wrap.wrapProvenance"><code class="name flex">
@@ -592,9 +595,9 @@ commit | {liveMd}&#34;&#34;&#34;
         corpus = d[&#34;corpus&#34;]
         version = d[&#34;version&#34;]
         release = d[&#34;release&#34;]
-        (live, liveU) = d[&#34;live&#34;]
-        liveHtml = f&#39;&lt;a href=&#34;{liveU}&#34;&gt;{live}&lt;/a&gt;&#39;
-        liveMd = f&#34;[{live}]({liveU})&#34;
+        (liveText, liveUrl) = d[&#34;live&#34;]
+        liveHtml = f&#39;&lt;a href=&#34;{liveUrl}&#34;&gt;{liveText}&lt;/a&gt;&#39;
+        liveMd = f&#34;[{liveText}]({liveUrl})&#34;
         doi = d[&#34;doi&#34;]
         doiUrl = f&#34;{DOI_URL_PREFIX}/{doi}&#34;
         doiHtml = f&#39;&lt;a href=&#34;{doiUrl}&#34;&gt;{doi}&lt;/a&gt;&#39; if doi else DOI_DEFAULT

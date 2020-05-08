@@ -63,12 +63,12 @@ def getFormData(interfaceDefaults):
     form[&#34;appName&#34;] = request.form.get(&#34;appName&#34;, &#34;&#34;)
     form[&#34;jobName&#34;] = request.form.get(&#34;jobName&#34;, &#34;&#34;).strip() or DEFAULT_NAME
     form[&#34;side&#34;] = request.form.get(&#34;side&#34;, &#34;&#34;)
-    form[&#34;help&#34;] = request.form.get(&#34;help&#34;, &#34;&#34;)
+    form[&#34;dstate&#34;] = request.form.get(&#34;dstate&#34;, &#34;&#34;)
     form[&#34;author&#34;] = request.form.get(&#34;author&#34;, &#34;&#34;).strip()
     form[&#34;title&#34;] = request.form.get(&#34;title&#34;, &#34;&#34;).strip()
     form[&#34;description&#34;] = request.form.get(&#34;description&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
     form[&#34;condensed&#34;] = request.form.get(&#34;condensed&#34;, &#34;&#34;)
-    form[&#34;baseTp&#34;] = request.form.get(&#34;baseTp&#34;, &#34;&#34;)
+    form[&#34;baseTps&#34;] = tuple(request.form.getlist(&#34;baseTps&#34;))
     form[&#34;condenseTp&#34;] = request.form.get(&#34;condenseTp&#34;, &#34;&#34;)
     form[&#34;textformat&#34;] = request.form.get(&#34;textformat&#34;, &#34;&#34;)
     form[&#34;sectionsExpandAll&#34;] = request.form.get(&#34;sectionsExpandAll&#34;, &#34;&#34;)
@@ -85,10 +85,10 @@ def getFormData(interfaceDefaults):
     form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
     form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
     form[&#34;s0filter&#34;] = request.form.get(&#34;s0filter&#34;, &#34;&#34;)
-    for (k, v) in interfaceDefaults:
+    for (k, v) in interfaceDefaults.items():
         if v is None:
             continue
-        form[k] = request.form.get(k, v)
+        form[k] = request.form.get(k, None)
     return form
 
 
@@ -231,12 +231,12 @@ Job: {form[&#39;jobName&#39;]}
     form[&#34;appName&#34;] = request.form.get(&#34;appName&#34;, &#34;&#34;)
     form[&#34;jobName&#34;] = request.form.get(&#34;jobName&#34;, &#34;&#34;).strip() or DEFAULT_NAME
     form[&#34;side&#34;] = request.form.get(&#34;side&#34;, &#34;&#34;)
-    form[&#34;help&#34;] = request.form.get(&#34;help&#34;, &#34;&#34;)
+    form[&#34;dstate&#34;] = request.form.get(&#34;dstate&#34;, &#34;&#34;)
     form[&#34;author&#34;] = request.form.get(&#34;author&#34;, &#34;&#34;).strip()
     form[&#34;title&#34;] = request.form.get(&#34;title&#34;, &#34;&#34;).strip()
     form[&#34;description&#34;] = request.form.get(&#34;description&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
     form[&#34;condensed&#34;] = request.form.get(&#34;condensed&#34;, &#34;&#34;)
-    form[&#34;baseTp&#34;] = request.form.get(&#34;baseTp&#34;, &#34;&#34;)
+    form[&#34;baseTps&#34;] = tuple(request.form.getlist(&#34;baseTps&#34;))
     form[&#34;condenseTp&#34;] = request.form.get(&#34;condenseTp&#34;, &#34;&#34;)
     form[&#34;textformat&#34;] = request.form.get(&#34;textformat&#34;, &#34;&#34;)
     form[&#34;sectionsExpandAll&#34;] = request.form.get(&#34;sectionsExpandAll&#34;, &#34;&#34;)
@@ -253,10 +253,10 @@ Job: {form[&#39;jobName&#39;]}
     form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
     form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
     form[&#34;s0filter&#34;] = request.form.get(&#34;s0filter&#34;, &#34;&#34;)
-    for (k, v) in interfaceDefaults:
+    for (k, v) in interfaceDefaults.items():
         if v is None:
             continue
-        form[k] = request.form.get(k, v)
+        form[k] = request.form.get(k, None)
     return form</code></pre>
 </details>
 </dd>

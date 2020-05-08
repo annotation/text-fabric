@@ -36,60 +36,24 @@ from .helpers import dm
 VAR_PATTERN = re.compile(r&#34;\{([^}]+)\}&#34;)
 
 WRITING_DEFAULTS = dict(
-    akk=dict(
-        language=&#34;Akkadian&#34;,
-        fontName=&#34;Santakku&#34;,
-        font=&#34;Santakk.ttf&#34;,
-        fontw=&#34;Santakku.woff&#34;,
-        direction=&#34;ltr&#34;,
-    ),
-    hbo=dict(
-        language=&#34;Hebrew&#34;,
-        fontName=&#34;Ezra SIL&#34;,
-        font=&#34;SILEOT.ttf&#34;,
-        fontw=&#34;SILEOT.woff&#34;,
-        direction=&#34;rtl&#34;,
-    ),
-    syc=dict(
-        language=&#34;Syriac&#34;,
-        fontName=&#34;Estrangelo Edessa&#34;,
-        font=&#34;SyrCOMEdessa.otf&#34;,
-        fontw=&#34;SyrCOMEdessa.woff&#34;,
-        direction=&#34;rtl&#34;,
-    ),
-    ara=dict(
-        language=&#34;Arabic&#34;,
-        fontName=&#34;AmiriQuran&#34;,
-        font=&#34;AmiriQuran.ttf&#34;,
-        fontw=&#34;AmiriQuran.woff2&#34;,
-        direction=&#34;rtl&#34;,
-    ),
-    grc=dict(
-        language=&#34;Greek&#34;,
-        fontName=&#34;Gentium&#34;,
-        font=&#34;GentiumPlus-R.ttf&#34;,
-        fontw=&#34;GentiumPlus-R.woff&#34;,
-        direction=&#34;ltr&#34;,
-    ),
-    cld=dict(
-        language=&#34;Aramaic&#34;,
-        fontName=&#34;CharisSIL-R&#34;,
-        font=&#34;CharisSIL-R.otf&#34;,
-        fontw=&#34;CharisSIL-R.woff&#34;,
-        direction=&#34;ltr&#34;,
-    ),
+    akk=dict(language=&#34;Akkadian&#34;, direction=&#34;ltr&#34;,),
+    hbo=dict(language=&#34;Hebrew&#34;, direction=&#34;rtl&#34;,),
+    syc=dict(language=&#34;Syriac&#34;, direction=&#34;rtl&#34;,),
+    ara=dict(language=&#34;Arabic&#34;, direction=&#34;rtl&#34;,),
+    grc=dict(language=&#34;Greek&#34;, direction=&#34;ltr&#34;,),
+    cld=dict(language=&#34;Aramaic&#34;, direction=&#34;ltr&#34;,),
 )
-WRITING_DEFAULTS[&#34;&#34;] = dict(
-    language=&#34;&#34;,
-    fontName=&#34;Gentium&#34;,
-    font=&#34;GentiumPlus-R.ttf&#34;,
-    fontw=&#34;GentiumPlus-R.woff&#34;,
-    direction=&#34;ltr&#34;,
-)
+WRITING_DEFAULTS[&#34;&#34;] = dict(language=&#34;&#34;, direction=&#34;ltr&#34;,)
 
 FONT_BASE = (
     &#34;https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts&#34;
 )
+
+METHOD = &#34;method&#34;
+STYLE = &#34;style&#34;
+DESCEND = &#34;descend&#34;
+
+FMT_KEYS = {METHOD, STYLE}
 
 DEFAULT_CLS = &#34;txtn&#34;
 DEFAULT_CLS_SRC = &#34;txto&#34;
@@ -97,11 +61,15 @@ DEFAULT_CLS_ORIG = &#34;txtu&#34;
 DEFAULT_CLS_TRANS = &#34;txtt&#34;
 DEFAULT_CLS_PHONO = &#34;txtp&#34;
 
-FORMAT_CSS = dict(
-    orig=DEFAULT_CLS_ORIG,
-    trans=DEFAULT_CLS_TRANS,
-    source=DEFAULT_CLS_SRC,
-    phono=DEFAULT_CLS_PHONO,
+NORMAL = &#34;normal&#34;
+ORIG = &#34;orig&#34;
+
+FORMAT_CLS = (
+    (NORMAL, DEFAULT_CLS),
+    (ORIG, DEFAULT_CLS_ORIG),
+    (&#34;trans&#34;, DEFAULT_CLS_TRANS),
+    (&#34;source&#34;, DEFAULT_CLS_SRC),
+    (&#34;phono&#34;, DEFAULT_CLS_PHONO),
 )
 
 LEVEL_DEFAULTS = dict(
@@ -134,7 +102,7 @@ PROVENANCE_DEFAULTS = (
     (&#34;org&#34;, None),
     (&#34;repo&#34;, None),
     (&#34;relative&#34;, RELATIVE_DEFAULT),
-    (&#34;graphics&#34;, None),
+    (&#34;graphicsRelative&#34;, None),
     (&#34;version&#34;, None),
     (&#34;moduleSpecs&#34;, ()),
     (&#34;zip&#34;, None),
@@ -146,6 +114,8 @@ PROVENANCE_DEFAULTS = (
     (&#34;webLexId&#34;, None),
     (&#34;webUrl&#34;, None),
     (&#34;webUrlLex&#34;, None),
+    (&#34;webLexId&#34;, None),
+    (&#34;webHint&#34;, None),
 )
 
 DOC_DEFAULTS = (
@@ -154,16 +124,10 @@ DOC_DEFAULTS = (
     (&#34;docBase&#34;, &#34;{docRoot}/{org}/{repo}/blob/master/docs&#34;),
     (&#34;docPage&#34;, &#34;home&#34;),
     (&#34;docUrl&#34;, &#34;{docBase}/{docPage}{docExt}&#34;),
-    (&#34;featureBase&#34;, None),
+    (&#34;featureBase&#34;, &#34;{docBase}/features/&lt;feature&gt;{docExt}&#34;),
     (&#34;featurePage&#34;, &#34;home&#34;),
     (&#34;charUrl&#34;, &#34;{tfDoc}/Writing/Transcription/{language}&#34;),
     (&#34;charText&#34;, &#34;How TF features represent text&#34;),
-    (&#34;webBase&#34;, None),
-    (&#34;webLang&#34;, None),
-    (&#34;webUrl&#34;, None),
-    (&#34;webUrlLex&#34;, None),
-    (&#34;webLexId&#34;, None),
-    (&#34;webHint&#34;, None),
 )
 
 DATA_DISPLAY_DEFAULTS = (
@@ -171,9 +135,10 @@ DATA_DISPLAY_DEFAULTS = (
     (&#34;noneValues&#34;, {None}, False),
     (&#34;sectionSep1&#34;, &#34; &#34;, False),
     (&#34;sectionSep2&#34;, &#34;:&#34;, False),
-    (&#34;textFormats&#34;, {}, False),
+    (&#34;textFormats&#34;, {}, True),
     (&#34;browseNavLevel&#34;, None, True),
     (&#34;browseContentPretty&#34;, False, False),
+    (&#34;showVerseInTuple&#34;, False, False),
     (&#34;exampleSection&#34;, None, True),
     (&#34;exampleSectionHtml&#34;, None, True),
 )
@@ -202,6 +167,13 @@ TYPE_KEYS = set(
 &#34;&#34;&#34;.strip().split()
 )
 
+HOOKS = &#34;&#34;&#34;
+    afterChild
+    childrenCustom
+    plainCustom
+    prettyCustom
+&#34;&#34;&#34;.strip().split()
+
 
 class AppCurrent:
     def __init__(self, specs):
@@ -225,6 +197,8 @@ class Check:
         app = self.app
         withApi = self.withApi
         errors = self.errors
+        dKey = self.dKey
+        specs = app.specs
 
         if withApi:
             api = app.api
@@ -239,11 +213,11 @@ class Check:
                 (template, feats) = extra
                 if template is not True and type(template) is not str:
                     errors.append(f&#34;{k} must be `true` or a string&#34;)
-                feats = extra[1]
                 for feat in feats:
                     if feat not in allNodeFeatures:
-                        errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
-            elif k == {&#34;featuresBare&#34;, &#34;features&#34;}:
+                        if feat not in specs[&#34;transform&#34;].get(dKey, {}):
+                            errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
+            elif k in {&#34;featuresBare&#34;, &#34;features&#34;}:
                 feats = extra[0]
                 tps = extra[1].values()
                 for feat in feats:
@@ -252,12 +226,11 @@ class Check:
                 for tp in tps:
                     if tp not in nTypes:
                         errors.append(f&#34;{k}: node type {tp} not present&#34;)
+            elif k == &#34;base&#34;:
+                pass
             elif k == &#34;lineNumber&#34;:
                 if v not in allNodeFeatures:
                     errors.append(f&#34;{k}: feature {v} not loaded&#34;)
-            elif k == &#34;textFormats&#34;:
-                if type(v) is not dict:
-                    errors.append(f&#34;{k} must be a dictionary&#34;)
             elif k == &#34;browseNavLevel&#34;:
                 allowedValues = set(range(len(sectionTypes)))
                 if v not in allowedValues:
@@ -277,23 +250,49 @@ class Check:
             elif k == &#34;transform&#34;:
                 for (feat, method) in extra.items():
                     if type(method) is str:
-                        errors.append(
-                            f&#34;\t{k}:{feat}: {method}() not implemented in app&#34;
-                        )
+                        errors.append(f&#34;{k}:{feat}: {method}() not implemented in app&#34;)
+            elif k == &#34;style&#34;:
+                if type(v) is not str or v.lower() != v:
+                    errors.append(f&#34;{k} must be an all lowercase string&#34;)
             elif k in {
-                &#34;withTypes&#34;,
-                &#34;prettyTypes&#34;,
-                &#34;withNodes&#34;,
-                &#34;showFeatures&#34;,
                 &#34;lineNumbers&#34;,
+                &#34;prettyTypes&#34;,
+                &#34;queryFeatures&#34;,
                 &#34;showChunks&#34;,
                 &#34;showGraphics&#34;,
+                &#34;standardFeatures&#34;,
+                &#34;withNodes&#34;,
+                &#34;withTypes&#34;,
             }:
                 allowed = self.extra[k]
                 if not allowed and v is not None:
                     errors.append(
                         f&#34;{k}={v} is not useful (dataset lacks relevant features)&#34;
                     )
+            elif k == &#34;textFormats&#34;:
+                formatStyle = specs[&#34;formatStyle&#34;]
+                if type(v) is dict:
+                    for (fmt, fmtInfo) in v.items():
+                        for (fk, fv) in fmtInfo.items():
+                            if fk not in FMT_KEYS:
+                                errors.append(f&#34;{k}: {fmt}: illegal key {fk}&#34;)
+                                continue
+                            if fk == METHOD:
+                                (descendType, func) = T.splitFormat(fv)
+                                func = f&#34;fmt_{func}&#34;
+                                if not hasattr(app, func):
+                                    errors.append(
+                                        f&#34;{k}: {fmt} needs unimplemented method {func}&#34;
+                                    )
+                            elif fk == STYLE:
+                                if fv not in formatStyle:
+                                    if fv.lower() != fv:
+                                        errors.append(
+                                            f&#34;{k}: {fmt}: style {fv}&#34;
+                                            f&#34; must be all lowercase&#34;
+                                        )
+                else:
+                    errors.append(f&#34;{k} must be a dictionary&#34;)
         else:
             if k in {&#34;excludedFeatures&#34;, &#34;noneValues&#34;}:
                 if type(v) is not list:
@@ -311,7 +310,7 @@ class Check:
                 if v not in allowedValues:
                     allowed = &#34;,&#34;.join(allowedValues - {&#34;&#34;})
                     errors.append(f&#34;{k} must be the empty string or one of {allowed}&#34;)
-            elif k in {&#34;direction&#34;, &#34;language&#34;, &#34;fontName&#34;, &#34;font&#34;, &#34;fontw&#34;}:
+            elif k in {&#34;direction&#34;, &#34;language&#34;}:
                 allowedValues = {w[k] for w in WRITING_DEFAULTS}
                 if v not in allowedValues:
                     allowed = &#34;,&#34;.join(allowedValues)
@@ -323,6 +322,7 @@ class Check:
                 &#34;condense&#34;,
                 &#34;graphics&#34;,
                 &#34;hide&#34;,
+                &#34;showVerseInTuple&#34;,
                 &#34;stretch&#34;,
                 &#34;verselike&#34;,
                 &#34;wrap&#34;,
@@ -347,7 +347,7 @@ class Check:
         self.defaults = defaults
         self.dKey = dKey
         self.extra = extra
-        errors = self.errors
+        errors = []
 
         errors.clear()
         dSource = cfg.get(dKey, {})
@@ -377,8 +377,10 @@ class Check:
             for msg in errors:
                 console(f&#34;\t{msg}&#34;, error=True)
 
+        self.errors = []
 
-def setAppSpecs(app, cfg):
+
+def setAppSpecs(app, cfg, reset=False):
     specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
@@ -433,8 +435,8 @@ def setAppSpecs(app, cfg):
     if specs[&#34;zip&#34;] is None:
         org = specs[&#34;org&#34;]
         repo = specs[&#34;repo&#34;]
-        graphics = specs[&#34;graphics&#34;]
-        graphicsModule = [(org, repo, graphics)] if graphics else []
+        graphicsRelative = specs[&#34;graphicsRelative&#34;]
+        graphicsModule = [(org, repo, graphicsRelative)] if graphicsRelative else []
         specs[&#34;zip&#34;] = (
             [repo]
             + [(m[&#34;org&#34;], m[&#34;repo&#34;], m[&#34;relative&#34;],) for m in moduleSpecs]
@@ -447,6 +449,14 @@ def setAppSpecs(app, cfg):
     ):
         method(app, cfg, dKey, False)
 
+    if reset:
+        aContext = getattr(app, &#34;context&#34;, None)
+        if aContext:
+            for key in HOOKS:
+                specs[key] = aContext.get(key, {})
+    else:
+        for key in HOOKS:
+            specs[key] = {}
     app.context = AppCurrent(specs)
 
 
@@ -458,16 +468,14 @@ def setAppSpecsApi(app, cfg):
 
     specs = app.specs
 
-    specs[&#34;formatCls&#34;] = compileFormatCls(app, specs[&#34;defaultClsOrig&#34;])
-
     for (dKey, method) in (
         (&#34;dataDisplay&#34;, getDataDefaults),
         (&#34;typeDisplay&#34;, getTypeDefaults),
     ):
         method(app, cfg, dKey, True)
 
-    specs[&#34;baseTypes&#34;] = tuple(
-        e[0] for e in C.levels.data if e[0] not in sectionTypeSet
+    specs[&#34;allowedBaseTypes&#34;] = tuple(
+        e[0] for e in C.levels.data[0:-1] if e[0] not in sectionTypeSet
     )
 
     specs[&#34;condenseTypes&#34;] = C.levels.data
@@ -486,7 +494,7 @@ def setAppSpecsApi(app, cfg):
                 and specs[&#34;lineNumberFeature&#34;]
                 or k == &#34;showChunks&#34;
                 and specs[&#34;isChunkOf&#34;]
-                or k == &#34;graphics&#34;
+                or k == &#34;showGraphics&#34;
                 and specs[&#34;hasGraphics&#34;]
             )
             if k in specific
@@ -519,11 +527,16 @@ def getDataDefaults(app, cfg, dKey, withApi):
 
     specs = app.specs
 
+    givenInfo = cfg.get(dKey, {})
+
+    if withApi:
+        formatStyle = {f[0]: f[1] for f in FORMAT_CLS}
+        formatStyle[ORIG] = specs[&#34;defaultClsOrig&#34;]
+        specs[&#34;formatStyle&#34;] = formatStyle
+
     allowedKeys = {d[0] for d in DATA_DISPLAY_DEFAULTS}
     checker.checkGroup(cfg, allowedKeys, dKey)
     checker.report()
-
-    givenInfo = cfg.get(dKey, {})
 
     for (attr, default, needsApi) in DATA_DISPLAY_DEFAULTS:
         if needsApi and not withApi or not needsApi and withApi:
@@ -545,6 +558,13 @@ def getDataDefaults(app, cfg, dKey, withApi):
                     value = &#34;passage&#34;
             specs[&#34;exampleSection&#34;] = value
             specs[&#34;exampleSectionHtml&#34;] = f&#34;&lt;code&gt;{value}&lt;/code&gt;&#34;
+        if attr == &#34;textFormats&#34;:
+            methods = {fmt: v[METHOD] for (fmt, v) in value.items() if METHOD in v}
+            styles = {fmt: v.get(STYLE, None) for (fmt, v) in value.items()}
+            specs[&#34;formatMethod&#34;] = methods
+            specs[&#34;formatHtml&#34;] = {T.splitFormat(fmt)[1] for fmt in methods}
+            compileFormatCls(app, specs, styles)
+
         else:
             specs[attr] = value
 
@@ -559,6 +579,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     api = app.api
     F = api.F
     T = api.T
+    otypeRank = api.otypeRank
     slotType = F.otype.slotType
     nTypes = F.otype.all
     structureTypes = T.structureTypes
@@ -577,18 +598,25 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     lineNumberFeature = {}
     hasGraphics = set()
     verseTypes = {sectionTypes[-1]} if sectionTypes else set()
+    verseRank = otypeRank[sectionTypes[-1]] if sectionTypes else None
     lexMap = {}
-    baseType = slotType
+    baseTypes = set()
     condenseType = None
     templates = {}
     labels = {}
+    styles = {}
     givenLevels = {}
     levels = {}
     childType = {}
     transform = {}
 
+    specs[&#34;transform&#34;] = transform
+    formatStyle = specs[&#34;formatStyle&#34;]
+
     for nType in nTypes:
-        template = True if nType == slotType or nType in sectionalTypeSet else &#34;&#34;
+        template = (
+            True if nType == slotType or nType in sectionalTypeSet - verseTypes else &#34;&#34;
+        )
         for dest in (templates, labels):
             dest[nType] = (template, ())
 
@@ -602,10 +630,17 @@ def getTypeDefaults(app, cfg, dKey, withApi):
             givenInfo,
             TYPE_KEYS,
             nType,
-            postpone={&#34;label&#34;, &#34;template&#34;, &#34;features&#34;, &#34;featuresBare&#34;, &#34;transform&#34;},
+            postpone={
+                &#34;base&#34;,
+                &#34;label&#34;,
+                &#34;template&#34;,
+                &#34;features&#34;,
+                &#34;featuresBare&#34;,
+                &#34;transform&#34;,
+            },
         )
+        checker.report()
 
-    for (nType, info) in givenInfo.items():
         if info.get(&#34;verselike&#34;, False):
             verseTypes.add(nType)
 
@@ -614,13 +649,23 @@ def getTypeDefaults(app, cfg, dKey, withApi):
             lexMap[lOcc] = nType
 
         if &#34;base&#34; in info:
-            baseType = info[&#34;base&#34;]
+            base = info[&#34;base&#34;]
+            checker.checkSetting(&#34;base&#34;, base)
+            baseTypes.add(nType)
 
         if &#34;condense&#34; in info:
-            condenseType = info[&#34;condense&#34;]
+            condenseType = nType
 
-    for (nType, info) in givenInfo.items():
-        errors = []
+        trans = info.get(&#34;transform&#34;, None)
+        if trans is not None:
+            resolvedTrans = {}
+            for (feat, func) in trans.items():
+                methodName = f&#34;transform_{func}&#34;
+                resolvedTrans[feat] = getattr(app, methodName, methodName)
+            v = resolvedTrans
+            checker.checkSetting(&#34;transform&#34;, trans, extra=v)
+            transform[nType] = v
+
         for (k, dest) in ((&#34;template&#34;, templates), (&#34;label&#34;, labels)):
             if k in info:
                 template = info[k]
@@ -631,6 +676,10 @@ def getTypeDefaults(app, cfg, dKey, withApi):
                 checker.checkSetting(
                     k, template, extra=(template, templateFeatures),
                 )
+
+        if &#34;style&#34; in info:
+            style = info[&#34;style&#34;]
+            styles[nType] = formatStyle.get(style, style)
 
         for k in (&#34;featuresBare&#34;, &#34;features&#34;):
             v = info.get(k, &#34;&#34;)
@@ -660,16 +709,6 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         if verselike:
             verseTypes.add(nType)
 
-        trans = info.get(&#34;transform&#34;, None)
-        if trans is not None:
-            resolvedTrans = {}
-            for (feat, func) in trans.items():
-                methodName = f&#34;transform_{func}&#34;
-                resolvedTrans[feat] = getattr(app, methodName, methodName)
-            v = resolvedTrans
-            checker.checkSetting(&#34;transform&#34;, trans, extra=v)
-            transform[nType] = v
-
         if &#34;level&#34; in info or &#34;flow&#34; in info or &#34;wrap&#34; in info or &#34;stretch&#34; in info:
             givenLevels[nType] = {
                 k: v for (k, v) in info.items() if k in LEVEL_DEFAULTS
@@ -683,14 +722,10 @@ def getTypeDefaults(app, cfg, dKey, withApi):
                 childs = set(childs)
             childType[nType] = set(childs or ())
 
-        if errors:
-            console(
-                f&#34;App config error(s) in typeDisplay[{nType}]:&#34;, error=True,
-            )
-            for m in errors:
-                console(f&#34;\t{m}&#34;, error=True)
+        checker.report()
 
     lexTypes = set(lexMap.values())
+    nTypesNoLex = [n for n in nTypes if n not in lexTypes]
 
     levelTypes = [set(), set(), set(), set(), set()]
     levelTypes[4] = sectionalTypeSet - verseTypes
@@ -700,55 +735,6 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     remainingTypeSet = set(nTypes) - levelTypes[4] - levelTypes[3] - levelTypes[0]
     remainingTypes = tuple(x for x in nTypes if x in remainingTypeSet)
     nRemaining = len(remainingTypes)
-
-    children = {
-        nType: {nTypes[i + 1]}
-        for (i, nType) in enumerate(nTypes)
-        if nType in levelTypes[2] | levelTypes[1]
-    }
-    children.update(
-        {
-            nType: {nTypes[i + 1]}
-            for (i, nType) in enumerate(structureTypes)
-            if i &lt; len(structureTypes) - 1
-        }
-    )
-    children.update(
-        {
-            nType: {nTypes[i + 1]}
-            for (i, nType) in enumerate(sectionTypes)
-            if i &lt; len(sectionTypes) - 1
-        }
-    )
-
-    lowestSectionalTypes = set() | verseTypes
-    if sectionTypes:
-        lowestSectionalTypes.add(sectionTypes[-1])
-    if structureTypes:
-        lowestSectionalTypes.add(structureTypes[-1])
-
-    biggestOtherType = remainingTypes[0] if remainingTypes else slotType
-    smallestOtherType = remainingTypes[-1] if remainingTypes else None
-
-    for lexType in lexTypes:
-        if lexType in children:
-            del children[lexType]
-
-    for lowestSectionalType in lowestSectionalTypes:
-        if lowestSectionalType not in children:
-            children[lowestSectionalType] = {slotType}
-        else:
-            children[lowestSectionalType].add(slotType)
-
-        if lowestSectionalType == biggestOtherType:
-            continue
-        children[lowestSectionalType].add(biggestOtherType)
-
-    if smallestOtherType is not None and smallestOtherType != slotType:
-        if smallestOtherType not in children:
-            children[smallestOtherType] = {slotType}
-        else:
-            children[smallestOtherType].add(slotType)
 
     if nRemaining == 0:
         midType = slotType
@@ -760,6 +746,55 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         midType = remainingTypes[mid]
         levelTypes[2] = set(remainingTypes[0:mid])
         levelTypes[1] = set(remainingTypes[mid:])
+
+    children = {
+        nType: {nTypesNoLex[i + 1]}
+        for (i, nType) in enumerate(nTypesNoLex)
+        if nType in levelTypes[2] | levelTypes[1]
+    }
+    children.update(
+        {
+            nType: {nTypesNoLex[i + 1]}
+            for (i, nType) in enumerate(structureTypes)
+            if i &lt; len(structureTypes) - 1
+        }
+    )
+    children.update(
+        {
+            nType: {nTypesNoLex[i + 1]}
+            for (i, nType) in enumerate(sectionTypes)
+            if i &lt; len(sectionTypes) - 1
+        }
+    )
+
+    lowestSectionalTypes = set() | verseTypes
+    if sectionTypes:
+        lowestSectionalTypes.add(sectionTypes[-1])
+    if structureTypes:
+        lowestSectionalTypes.add(structureTypes[-1])
+
+    biggestOtherType = slotType
+    for rt in remainingTypes:
+        if verseRank is None or otypeRank[rt] &lt; verseRank:
+            biggestOtherType = rt
+            break
+    smallestOtherType = remainingTypes[-1] if remainingTypes else None
+
+    for lexType in lexTypes:
+        if lexType in children:
+            del children[lexType]
+
+    for lowestSectionalType in lowestSectionalTypes:
+        if lowestSectionalType not in children:
+            children[lowestSectionalType] = {biggestOtherType}
+        else:
+            children[lowestSectionalType].add(biggestOtherType)
+
+    if smallestOtherType is not None and smallestOtherType != slotType:
+        if smallestOtherType not in children:
+            children[smallestOtherType] = {slotType}
+        else:
+            children[smallestOtherType].add(slotType)
 
     if condenseType is None:
         condenseType = sectionTypes[-1] if sectionTypes else midType
@@ -792,26 +827,24 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         )
 
     specs.update(
-        afterChild={},
-        baseType=baseType,
+        baseTypes=baseTypes if baseTypes else {slotType},
         childType=childType,
-        childrenCustom={},
+        chunkedTypes=set(isChunkOf.values()),
         condenseType=condenseType,
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
         isChunkOf=isChunkOf,
+        labels=labels,
+        levels=levels,
         levelCls=levelCls,
         lexMap=lexMap,
         lexTypes=lexTypes,
         lineNumberFeature=lineNumberFeature,
         noChildren=noChildren,
         noDescendTypes=lexTypes,
-        plainCustom={},
-        prettyCustom={},
-        chunkedTypes=set(isChunkOf.values()),
+        styles=styles,
         templates=templates,
-        labels=labels,
         transform=transform,
         verseTypes=verseTypes,
     )
@@ -821,25 +854,18 @@ def showContext(app):
     EM = &#34;*empty*&#34;
     block = &#34;    &#34;
 
-    def eScalar(x, plain=True):
-        tick = &#34;`&#34; if plain else &#34;&#34;
-        return f&#34;{tick}{mdEsc(str(x))}{tick}&#34; if x else EM
+    def eScalar(x, level):
+        if type(x) is str and &#34;\n&#34; in x:
+            indent = block * level
+            return (
+                f&#34;\n{indent}```\n{indent}&#34;
+                + f&#34;\n{indent}&#34;.join(x.split(&#34;\n&#34;))
+                + f&#34;\n{indent}```\n&#34;
+            )
+        return f&#34;`{mdEsc(str(x))}`&#34; if x else EM
 
     def eEmpty(x):
-        tpv = type(x)
-        return (
-            &#34;`[]`&#34;
-            if tpv is list
-            else &#34;`()`&#34;
-            if tpv is tuple
-            else &#34;`{}`&#34;
-            if tpv is dict
-            else &#34;`set()`&#34;
-            if tpv is set
-            else EM
-            if tpv is str
-            else str(x)
-        )
+        return EM if type(x) is str else str(x)
 
     def eList(x, level):
         tpv = type(x)
@@ -853,37 +879,34 @@ def showContext(app):
     def eDict(x, level):
         indent = block * level
         md = &#34;\n&#34;
-        for (i, (k, v)) in enumerate(sorted(x.items(), key=lambda y: str(y))):
-            item = f&#34;{i + 1:}.&#34; if level == 0 else &#34;*&#34;
-            md += (
-                f&#34;{indent}{item:&lt;4}**{eScalar(k, plain=level &gt; 0)}**:&#34;
-                f&#34; {eData(v, level + 1)}&#34;
-            )
+        for (k, v) in sorted(x.items(), key=lambda y: str(y)):
+            item = &#34;*&#34;
+            md += f&#34;{indent}{item:&lt;4}**{eScalar(k, level)}**:&#34; f&#34; {eData(v, level + 1)}&#34;
         return md
 
     def eRest(x, level):
         indent = block * level
-        return &#34;\n&#34; + indent + eScalar(x) + &#34;\n&#34;
+        return &#34;\n&#34; + indent + eScalar(x, level) + &#34;\n&#34;
 
     def eData(x, level):
         if not x:
             return eEmpty(x) + &#34;\n&#34;
         tpv = type(x)
         if tpv is str or tpv is float or tpv is int or tpv is bool:
-            return eScalar(x) + &#34;\n&#34;
+            return eScalar(x, level) + &#34;\n&#34;
         if tpv is list or tpv is tuple or tpv is set:
             return eList(x, level)
         if tpv is dict:
             return eDict(x, level)
         return eRest(x, level)
 
-    dm(
-        f&#34;&#34;&#34;\
-# {(app.appName)} settings
-
-{eData(app.specs, 0)}
-&#34;&#34;&#34;
-    )
+    md = [f&#34;&lt;details&gt;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n&#34;]
+    for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
+        md.append(
+            f&#34;&lt;details&gt;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
+        )
+    md.append(&#34;&lt;/details&gt;\n&#34;)
+    dm(&#34;&#34;.join(md))
 
 
 def getLevel(defaultLevel, givenInfo, isVerse):
@@ -896,23 +919,40 @@ def getLevel(defaultLevel, givenInfo, isVerse):
     return dict(level=level, flow=flow, wrap=wrap, stretch=stretch)
 
 
-def compileFormatCls(app, defaultClsOrig):
+def compileFormatCls(app, specs, givenStyles):
     api = app.api
     T = api.T
 
-    result = {None: defaultClsOrig}
-    for fmt in T.formats:
-        for (key, cls) in FORMAT_CSS.items():
-            if (
-                f&#34;-{key}-&#34; in fmt
-                or fmt.startswith(f&#34;{key}-&#34;)
-                or fmt.endswith(f&#34;-{key}&#34;)
-            ):
-                result[fmt] = cls
-    for fmt in T.formats:
-        if fmt not in result:
-            result[fmt] = DEFAULT_CLS
-    return result
+    result = {}
+    extraFormats = set()
+
+    formatStyle = specs[&#34;formatStyle&#34;]
+    defaultClsOrig = specs[&#34;defaultClsOrig&#34;]
+
+    for fmt in givenStyles:
+        fmt = T.splitFormat(fmt)[1]
+        extraFormats.add(fmt)
+
+    for fmt in set(T.formats) | set(extraFormats):
+        style = givenStyles.get(fmt, None)
+        if style is None:
+            textCls = None
+            for (key, cls) in FORMAT_CLS:
+                if (
+                    f&#34;-{key}-&#34; in fmt
+                    or fmt.startswith(f&#34;{key}-&#34;)
+                    or fmt.endswith(f&#34;-{key}&#34;)
+                ):
+                    textCls = defaultClsOrig if key == ORIG else cls
+            if textCls is None:
+                textCls = DEFAULT_CLS
+        else:
+            textCls = (
+                defaultClsOrig if style == ORIG else formatStyle.get(style, style)
+            )
+        result[fmt] = textCls
+
+    specs[&#34;formatCls&#34;] = result
 
 
 def parseFeatures(features):
@@ -937,7 +977,7 @@ def parseFeatures(features):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.applib.settings.compileFormatCls"><code class="name flex">
-<span>def <span class="ident">compileFormatCls</span></span>(<span>app, defaultClsOrig)</span>
+<span>def <span class="ident">compileFormatCls</span></span>(<span>app, specs, givenStyles)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -945,23 +985,40 @@ def parseFeatures(features):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def compileFormatCls(app, defaultClsOrig):
+<pre><code class="python">def compileFormatCls(app, specs, givenStyles):
     api = app.api
     T = api.T
 
-    result = {None: defaultClsOrig}
-    for fmt in T.formats:
-        for (key, cls) in FORMAT_CSS.items():
-            if (
-                f&#34;-{key}-&#34; in fmt
-                or fmt.startswith(f&#34;{key}-&#34;)
-                or fmt.endswith(f&#34;-{key}&#34;)
-            ):
-                result[fmt] = cls
-    for fmt in T.formats:
-        if fmt not in result:
-            result[fmt] = DEFAULT_CLS
-    return result</code></pre>
+    result = {}
+    extraFormats = set()
+
+    formatStyle = specs[&#34;formatStyle&#34;]
+    defaultClsOrig = specs[&#34;defaultClsOrig&#34;]
+
+    for fmt in givenStyles:
+        fmt = T.splitFormat(fmt)[1]
+        extraFormats.add(fmt)
+
+    for fmt in set(T.formats) | set(extraFormats):
+        style = givenStyles.get(fmt, None)
+        if style is None:
+            textCls = None
+            for (key, cls) in FORMAT_CLS:
+                if (
+                    f&#34;-{key}-&#34; in fmt
+                    or fmt.startswith(f&#34;{key}-&#34;)
+                    or fmt.endswith(f&#34;-{key}&#34;)
+                ):
+                    textCls = defaultClsOrig if key == ORIG else cls
+            if textCls is None:
+                textCls = DEFAULT_CLS
+        else:
+            textCls = (
+                defaultClsOrig if style == ORIG else formatStyle.get(style, style)
+            )
+        result[fmt] = textCls
+
+    specs[&#34;formatCls&#34;] = result</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.settings.getDataDefaults"><code class="name flex">
@@ -984,11 +1041,16 @@ def parseFeatures(features):
 
     specs = app.specs
 
+    givenInfo = cfg.get(dKey, {})
+
+    if withApi:
+        formatStyle = {f[0]: f[1] for f in FORMAT_CLS}
+        formatStyle[ORIG] = specs[&#34;defaultClsOrig&#34;]
+        specs[&#34;formatStyle&#34;] = formatStyle
+
     allowedKeys = {d[0] for d in DATA_DISPLAY_DEFAULTS}
     checker.checkGroup(cfg, allowedKeys, dKey)
     checker.report()
-
-    givenInfo = cfg.get(dKey, {})
 
     for (attr, default, needsApi) in DATA_DISPLAY_DEFAULTS:
         if needsApi and not withApi or not needsApi and withApi:
@@ -1010,6 +1072,13 @@ def parseFeatures(features):
                     value = &#34;passage&#34;
             specs[&#34;exampleSection&#34;] = value
             specs[&#34;exampleSectionHtml&#34;] = f&#34;&lt;code&gt;{value}&lt;/code&gt;&#34;
+        if attr == &#34;textFormats&#34;:
+            methods = {fmt: v[METHOD] for (fmt, v) in value.items() if METHOD in v}
+            styles = {fmt: v.get(STYLE, None) for (fmt, v) in value.items()}
+            specs[&#34;formatMethod&#34;] = methods
+            specs[&#34;formatHtml&#34;] = {T.splitFormat(fmt)[1] for fmt in methods}
+            compileFormatCls(app, specs, styles)
+
         else:
             specs[attr] = value</code></pre>
 </details>
@@ -1052,6 +1121,7 @@ def parseFeatures(features):
     api = app.api
     F = api.F
     T = api.T
+    otypeRank = api.otypeRank
     slotType = F.otype.slotType
     nTypes = F.otype.all
     structureTypes = T.structureTypes
@@ -1070,18 +1140,25 @@ def parseFeatures(features):
     lineNumberFeature = {}
     hasGraphics = set()
     verseTypes = {sectionTypes[-1]} if sectionTypes else set()
+    verseRank = otypeRank[sectionTypes[-1]] if sectionTypes else None
     lexMap = {}
-    baseType = slotType
+    baseTypes = set()
     condenseType = None
     templates = {}
     labels = {}
+    styles = {}
     givenLevels = {}
     levels = {}
     childType = {}
     transform = {}
 
+    specs[&#34;transform&#34;] = transform
+    formatStyle = specs[&#34;formatStyle&#34;]
+
     for nType in nTypes:
-        template = True if nType == slotType or nType in sectionalTypeSet else &#34;&#34;
+        template = (
+            True if nType == slotType or nType in sectionalTypeSet - verseTypes else &#34;&#34;
+        )
         for dest in (templates, labels):
             dest[nType] = (template, ())
 
@@ -1095,10 +1172,17 @@ def parseFeatures(features):
             givenInfo,
             TYPE_KEYS,
             nType,
-            postpone={&#34;label&#34;, &#34;template&#34;, &#34;features&#34;, &#34;featuresBare&#34;, &#34;transform&#34;},
+            postpone={
+                &#34;base&#34;,
+                &#34;label&#34;,
+                &#34;template&#34;,
+                &#34;features&#34;,
+                &#34;featuresBare&#34;,
+                &#34;transform&#34;,
+            },
         )
+        checker.report()
 
-    for (nType, info) in givenInfo.items():
         if info.get(&#34;verselike&#34;, False):
             verseTypes.add(nType)
 
@@ -1107,13 +1191,23 @@ def parseFeatures(features):
             lexMap[lOcc] = nType
 
         if &#34;base&#34; in info:
-            baseType = info[&#34;base&#34;]
+            base = info[&#34;base&#34;]
+            checker.checkSetting(&#34;base&#34;, base)
+            baseTypes.add(nType)
 
         if &#34;condense&#34; in info:
-            condenseType = info[&#34;condense&#34;]
+            condenseType = nType
 
-    for (nType, info) in givenInfo.items():
-        errors = []
+        trans = info.get(&#34;transform&#34;, None)
+        if trans is not None:
+            resolvedTrans = {}
+            for (feat, func) in trans.items():
+                methodName = f&#34;transform_{func}&#34;
+                resolvedTrans[feat] = getattr(app, methodName, methodName)
+            v = resolvedTrans
+            checker.checkSetting(&#34;transform&#34;, trans, extra=v)
+            transform[nType] = v
+
         for (k, dest) in ((&#34;template&#34;, templates), (&#34;label&#34;, labels)):
             if k in info:
                 template = info[k]
@@ -1124,6 +1218,10 @@ def parseFeatures(features):
                 checker.checkSetting(
                     k, template, extra=(template, templateFeatures),
                 )
+
+        if &#34;style&#34; in info:
+            style = info[&#34;style&#34;]
+            styles[nType] = formatStyle.get(style, style)
 
         for k in (&#34;featuresBare&#34;, &#34;features&#34;):
             v = info.get(k, &#34;&#34;)
@@ -1153,16 +1251,6 @@ def parseFeatures(features):
         if verselike:
             verseTypes.add(nType)
 
-        trans = info.get(&#34;transform&#34;, None)
-        if trans is not None:
-            resolvedTrans = {}
-            for (feat, func) in trans.items():
-                methodName = f&#34;transform_{func}&#34;
-                resolvedTrans[feat] = getattr(app, methodName, methodName)
-            v = resolvedTrans
-            checker.checkSetting(&#34;transform&#34;, trans, extra=v)
-            transform[nType] = v
-
         if &#34;level&#34; in info or &#34;flow&#34; in info or &#34;wrap&#34; in info or &#34;stretch&#34; in info:
             givenLevels[nType] = {
                 k: v for (k, v) in info.items() if k in LEVEL_DEFAULTS
@@ -1176,14 +1264,10 @@ def parseFeatures(features):
                 childs = set(childs)
             childType[nType] = set(childs or ())
 
-        if errors:
-            console(
-                f&#34;App config error(s) in typeDisplay[{nType}]:&#34;, error=True,
-            )
-            for m in errors:
-                console(f&#34;\t{m}&#34;, error=True)
+        checker.report()
 
     lexTypes = set(lexMap.values())
+    nTypesNoLex = [n for n in nTypes if n not in lexTypes]
 
     levelTypes = [set(), set(), set(), set(), set()]
     levelTypes[4] = sectionalTypeSet - verseTypes
@@ -1193,55 +1277,6 @@ def parseFeatures(features):
     remainingTypeSet = set(nTypes) - levelTypes[4] - levelTypes[3] - levelTypes[0]
     remainingTypes = tuple(x for x in nTypes if x in remainingTypeSet)
     nRemaining = len(remainingTypes)
-
-    children = {
-        nType: {nTypes[i + 1]}
-        for (i, nType) in enumerate(nTypes)
-        if nType in levelTypes[2] | levelTypes[1]
-    }
-    children.update(
-        {
-            nType: {nTypes[i + 1]}
-            for (i, nType) in enumerate(structureTypes)
-            if i &lt; len(structureTypes) - 1
-        }
-    )
-    children.update(
-        {
-            nType: {nTypes[i + 1]}
-            for (i, nType) in enumerate(sectionTypes)
-            if i &lt; len(sectionTypes) - 1
-        }
-    )
-
-    lowestSectionalTypes = set() | verseTypes
-    if sectionTypes:
-        lowestSectionalTypes.add(sectionTypes[-1])
-    if structureTypes:
-        lowestSectionalTypes.add(structureTypes[-1])
-
-    biggestOtherType = remainingTypes[0] if remainingTypes else slotType
-    smallestOtherType = remainingTypes[-1] if remainingTypes else None
-
-    for lexType in lexTypes:
-        if lexType in children:
-            del children[lexType]
-
-    for lowestSectionalType in lowestSectionalTypes:
-        if lowestSectionalType not in children:
-            children[lowestSectionalType] = {slotType}
-        else:
-            children[lowestSectionalType].add(slotType)
-
-        if lowestSectionalType == biggestOtherType:
-            continue
-        children[lowestSectionalType].add(biggestOtherType)
-
-    if smallestOtherType is not None and smallestOtherType != slotType:
-        if smallestOtherType not in children:
-            children[smallestOtherType] = {slotType}
-        else:
-            children[smallestOtherType].add(slotType)
 
     if nRemaining == 0:
         midType = slotType
@@ -1253,6 +1288,55 @@ def parseFeatures(features):
         midType = remainingTypes[mid]
         levelTypes[2] = set(remainingTypes[0:mid])
         levelTypes[1] = set(remainingTypes[mid:])
+
+    children = {
+        nType: {nTypesNoLex[i + 1]}
+        for (i, nType) in enumerate(nTypesNoLex)
+        if nType in levelTypes[2] | levelTypes[1]
+    }
+    children.update(
+        {
+            nType: {nTypesNoLex[i + 1]}
+            for (i, nType) in enumerate(structureTypes)
+            if i &lt; len(structureTypes) - 1
+        }
+    )
+    children.update(
+        {
+            nType: {nTypesNoLex[i + 1]}
+            for (i, nType) in enumerate(sectionTypes)
+            if i &lt; len(sectionTypes) - 1
+        }
+    )
+
+    lowestSectionalTypes = set() | verseTypes
+    if sectionTypes:
+        lowestSectionalTypes.add(sectionTypes[-1])
+    if structureTypes:
+        lowestSectionalTypes.add(structureTypes[-1])
+
+    biggestOtherType = slotType
+    for rt in remainingTypes:
+        if verseRank is None or otypeRank[rt] &lt; verseRank:
+            biggestOtherType = rt
+            break
+    smallestOtherType = remainingTypes[-1] if remainingTypes else None
+
+    for lexType in lexTypes:
+        if lexType in children:
+            del children[lexType]
+
+    for lowestSectionalType in lowestSectionalTypes:
+        if lowestSectionalType not in children:
+            children[lowestSectionalType] = {biggestOtherType}
+        else:
+            children[lowestSectionalType].add(biggestOtherType)
+
+    if smallestOtherType is not None and smallestOtherType != slotType:
+        if smallestOtherType not in children:
+            children[smallestOtherType] = {slotType}
+        else:
+            children[smallestOtherType].add(slotType)
 
     if condenseType is None:
         condenseType = sectionTypes[-1] if sectionTypes else midType
@@ -1285,26 +1369,24 @@ def parseFeatures(features):
         )
 
     specs.update(
-        afterChild={},
-        baseType=baseType,
+        baseTypes=baseTypes if baseTypes else {slotType},
         childType=childType,
-        childrenCustom={},
+        chunkedTypes=set(isChunkOf.values()),
         condenseType=condenseType,
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
         isChunkOf=isChunkOf,
+        labels=labels,
+        levels=levels,
         levelCls=levelCls,
         lexMap=lexMap,
         lexTypes=lexTypes,
         lineNumberFeature=lineNumberFeature,
         noChildren=noChildren,
         noDescendTypes=lexTypes,
-        plainCustom={},
-        prettyCustom={},
-        chunkedTypes=set(isChunkOf.values()),
+        styles=styles,
         templates=templates,
-        labels=labels,
         transform=transform,
         verseTypes=verseTypes,
     )</code></pre>
@@ -1334,7 +1416,7 @@ def parseFeatures(features):
 </details>
 </dd>
 <dt id="tf.applib.settings.setAppSpecs"><code class="name flex">
-<span>def <span class="ident">setAppSpecs</span></span>(<span>app, cfg)</span>
+<span>def <span class="ident">setAppSpecs</span></span>(<span>app, cfg, reset=False)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -1342,7 +1424,7 @@ def parseFeatures(features):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def setAppSpecs(app, cfg):
+<pre><code class="python">def setAppSpecs(app, cfg, reset=False):
     specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
@@ -1397,8 +1479,8 @@ def parseFeatures(features):
     if specs[&#34;zip&#34;] is None:
         org = specs[&#34;org&#34;]
         repo = specs[&#34;repo&#34;]
-        graphics = specs[&#34;graphics&#34;]
-        graphicsModule = [(org, repo, graphics)] if graphics else []
+        graphicsRelative = specs[&#34;graphicsRelative&#34;]
+        graphicsModule = [(org, repo, graphicsRelative)] if graphicsRelative else []
         specs[&#34;zip&#34;] = (
             [repo]
             + [(m[&#34;org&#34;], m[&#34;repo&#34;], m[&#34;relative&#34;],) for m in moduleSpecs]
@@ -1411,6 +1493,14 @@ def parseFeatures(features):
     ):
         method(app, cfg, dKey, False)
 
+    if reset:
+        aContext = getattr(app, &#34;context&#34;, None)
+        if aContext:
+            for key in HOOKS:
+                specs[key] = aContext.get(key, {})
+    else:
+        for key in HOOKS:
+            specs[key] = {}
     app.context = AppCurrent(specs)</code></pre>
 </details>
 </dd>
@@ -1431,16 +1521,14 @@ def parseFeatures(features):
 
     specs = app.specs
 
-    specs[&#34;formatCls&#34;] = compileFormatCls(app, specs[&#34;defaultClsOrig&#34;])
-
     for (dKey, method) in (
         (&#34;dataDisplay&#34;, getDataDefaults),
         (&#34;typeDisplay&#34;, getTypeDefaults),
     ):
         method(app, cfg, dKey, True)
 
-    specs[&#34;baseTypes&#34;] = tuple(
-        e[0] for e in C.levels.data if e[0] not in sectionTypeSet
+    specs[&#34;allowedBaseTypes&#34;] = tuple(
+        e[0] for e in C.levels.data[0:-1] if e[0] not in sectionTypeSet
     )
 
     specs[&#34;condenseTypes&#34;] = C.levels.data
@@ -1459,7 +1547,7 @@ def parseFeatures(features):
                 and specs[&#34;lineNumberFeature&#34;]
                 or k == &#34;showChunks&#34;
                 and specs[&#34;isChunkOf&#34;]
-                or k == &#34;graphics&#34;
+                or k == &#34;showGraphics&#34;
                 and specs[&#34;hasGraphics&#34;]
             )
             if k in specific
@@ -1494,25 +1582,18 @@ def parseFeatures(features):
     EM = &#34;*empty*&#34;
     block = &#34;    &#34;
 
-    def eScalar(x, plain=True):
-        tick = &#34;`&#34; if plain else &#34;&#34;
-        return f&#34;{tick}{mdEsc(str(x))}{tick}&#34; if x else EM
+    def eScalar(x, level):
+        if type(x) is str and &#34;\n&#34; in x:
+            indent = block * level
+            return (
+                f&#34;\n{indent}```\n{indent}&#34;
+                + f&#34;\n{indent}&#34;.join(x.split(&#34;\n&#34;))
+                + f&#34;\n{indent}```\n&#34;
+            )
+        return f&#34;`{mdEsc(str(x))}`&#34; if x else EM
 
     def eEmpty(x):
-        tpv = type(x)
-        return (
-            &#34;`[]`&#34;
-            if tpv is list
-            else &#34;`()`&#34;
-            if tpv is tuple
-            else &#34;`{}`&#34;
-            if tpv is dict
-            else &#34;`set()`&#34;
-            if tpv is set
-            else EM
-            if tpv is str
-            else str(x)
-        )
+        return EM if type(x) is str else str(x)
 
     def eList(x, level):
         tpv = type(x)
@@ -1526,37 +1607,34 @@ def parseFeatures(features):
     def eDict(x, level):
         indent = block * level
         md = &#34;\n&#34;
-        for (i, (k, v)) in enumerate(sorted(x.items(), key=lambda y: str(y))):
-            item = f&#34;{i + 1:}.&#34; if level == 0 else &#34;*&#34;
-            md += (
-                f&#34;{indent}{item:&lt;4}**{eScalar(k, plain=level &gt; 0)}**:&#34;
-                f&#34; {eData(v, level + 1)}&#34;
-            )
+        for (k, v) in sorted(x.items(), key=lambda y: str(y)):
+            item = &#34;*&#34;
+            md += f&#34;{indent}{item:&lt;4}**{eScalar(k, level)}**:&#34; f&#34; {eData(v, level + 1)}&#34;
         return md
 
     def eRest(x, level):
         indent = block * level
-        return &#34;\n&#34; + indent + eScalar(x) + &#34;\n&#34;
+        return &#34;\n&#34; + indent + eScalar(x, level) + &#34;\n&#34;
 
     def eData(x, level):
         if not x:
             return eEmpty(x) + &#34;\n&#34;
         tpv = type(x)
         if tpv is str or tpv is float or tpv is int or tpv is bool:
-            return eScalar(x) + &#34;\n&#34;
+            return eScalar(x, level) + &#34;\n&#34;
         if tpv is list or tpv is tuple or tpv is set:
             return eList(x, level)
         if tpv is dict:
             return eDict(x, level)
         return eRest(x, level)
 
-    dm(
-        f&#34;&#34;&#34;\
-# {(app.appName)} settings
-
-{eData(app.specs, 0)}
-&#34;&#34;&#34;
-    )</code></pre>
+    md = [f&#34;&lt;details&gt;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n&#34;]
+    for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
+        md.append(
+            f&#34;&lt;details&gt;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
+        )
+    md.append(&#34;&lt;/details&gt;\n&#34;)
+    dm(&#34;&#34;.join(md))</code></pre>
 </details>
 </dd>
 </dl>
@@ -1636,6 +1714,8 @@ def parseFeatures(features):
         app = self.app
         withApi = self.withApi
         errors = self.errors
+        dKey = self.dKey
+        specs = app.specs
 
         if withApi:
             api = app.api
@@ -1650,11 +1730,11 @@ def parseFeatures(features):
                 (template, feats) = extra
                 if template is not True and type(template) is not str:
                     errors.append(f&#34;{k} must be `true` or a string&#34;)
-                feats = extra[1]
                 for feat in feats:
                     if feat not in allNodeFeatures:
-                        errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
-            elif k == {&#34;featuresBare&#34;, &#34;features&#34;}:
+                        if feat not in specs[&#34;transform&#34;].get(dKey, {}):
+                            errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
+            elif k in {&#34;featuresBare&#34;, &#34;features&#34;}:
                 feats = extra[0]
                 tps = extra[1].values()
                 for feat in feats:
@@ -1663,12 +1743,11 @@ def parseFeatures(features):
                 for tp in tps:
                     if tp not in nTypes:
                         errors.append(f&#34;{k}: node type {tp} not present&#34;)
+            elif k == &#34;base&#34;:
+                pass
             elif k == &#34;lineNumber&#34;:
                 if v not in allNodeFeatures:
                     errors.append(f&#34;{k}: feature {v} not loaded&#34;)
-            elif k == &#34;textFormats&#34;:
-                if type(v) is not dict:
-                    errors.append(f&#34;{k} must be a dictionary&#34;)
             elif k == &#34;browseNavLevel&#34;:
                 allowedValues = set(range(len(sectionTypes)))
                 if v not in allowedValues:
@@ -1688,23 +1767,49 @@ def parseFeatures(features):
             elif k == &#34;transform&#34;:
                 for (feat, method) in extra.items():
                     if type(method) is str:
-                        errors.append(
-                            f&#34;\t{k}:{feat}: {method}() not implemented in app&#34;
-                        )
+                        errors.append(f&#34;{k}:{feat}: {method}() not implemented in app&#34;)
+            elif k == &#34;style&#34;:
+                if type(v) is not str or v.lower() != v:
+                    errors.append(f&#34;{k} must be an all lowercase string&#34;)
             elif k in {
-                &#34;withTypes&#34;,
-                &#34;prettyTypes&#34;,
-                &#34;withNodes&#34;,
-                &#34;showFeatures&#34;,
                 &#34;lineNumbers&#34;,
+                &#34;prettyTypes&#34;,
+                &#34;queryFeatures&#34;,
                 &#34;showChunks&#34;,
                 &#34;showGraphics&#34;,
+                &#34;standardFeatures&#34;,
+                &#34;withNodes&#34;,
+                &#34;withTypes&#34;,
             }:
                 allowed = self.extra[k]
                 if not allowed and v is not None:
                     errors.append(
                         f&#34;{k}={v} is not useful (dataset lacks relevant features)&#34;
                     )
+            elif k == &#34;textFormats&#34;:
+                formatStyle = specs[&#34;formatStyle&#34;]
+                if type(v) is dict:
+                    for (fmt, fmtInfo) in v.items():
+                        for (fk, fv) in fmtInfo.items():
+                            if fk not in FMT_KEYS:
+                                errors.append(f&#34;{k}: {fmt}: illegal key {fk}&#34;)
+                                continue
+                            if fk == METHOD:
+                                (descendType, func) = T.splitFormat(fv)
+                                func = f&#34;fmt_{func}&#34;
+                                if not hasattr(app, func):
+                                    errors.append(
+                                        f&#34;{k}: {fmt} needs unimplemented method {func}&#34;
+                                    )
+                            elif fk == STYLE:
+                                if fv not in formatStyle:
+                                    if fv.lower() != fv:
+                                        errors.append(
+                                            f&#34;{k}: {fmt}: style {fv}&#34;
+                                            f&#34; must be all lowercase&#34;
+                                        )
+                else:
+                    errors.append(f&#34;{k} must be a dictionary&#34;)
         else:
             if k in {&#34;excludedFeatures&#34;, &#34;noneValues&#34;}:
                 if type(v) is not list:
@@ -1722,7 +1827,7 @@ def parseFeatures(features):
                 if v not in allowedValues:
                     allowed = &#34;,&#34;.join(allowedValues - {&#34;&#34;})
                     errors.append(f&#34;{k} must be the empty string or one of {allowed}&#34;)
-            elif k in {&#34;direction&#34;, &#34;language&#34;, &#34;fontName&#34;, &#34;font&#34;, &#34;fontw&#34;}:
+            elif k in {&#34;direction&#34;, &#34;language&#34;}:
                 allowedValues = {w[k] for w in WRITING_DEFAULTS}
                 if v not in allowedValues:
                     allowed = &#34;,&#34;.join(allowedValues)
@@ -1734,6 +1839,7 @@ def parseFeatures(features):
                 &#34;condense&#34;,
                 &#34;graphics&#34;,
                 &#34;hide&#34;,
+                &#34;showVerseInTuple&#34;,
                 &#34;stretch&#34;,
                 &#34;verselike&#34;,
                 &#34;wrap&#34;,
@@ -1758,7 +1864,7 @@ def parseFeatures(features):
         self.defaults = defaults
         self.dKey = dKey
         self.extra = extra
-        errors = self.errors
+        errors = []
 
         errors.clear()
         dSource = cfg.get(dKey, {})
@@ -1786,7 +1892,9 @@ def parseFeatures(features):
         if errors:
             console(f&#34;App config error(s) in {dKey}:&#34;, error=True)
             for msg in errors:
-                console(f&#34;\t{msg}&#34;, error=True)</code></pre>
+                console(f&#34;\t{msg}&#34;, error=True)
+
+        self.errors = []</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -1804,7 +1912,7 @@ def parseFeatures(features):
     self.defaults = defaults
     self.dKey = dKey
     self.extra = extra
-    errors = self.errors
+    errors = []
 
     errors.clear()
     dSource = cfg.get(dKey, {})
@@ -1849,6 +1957,8 @@ def parseFeatures(features):
     app = self.app
     withApi = self.withApi
     errors = self.errors
+    dKey = self.dKey
+    specs = app.specs
 
     if withApi:
         api = app.api
@@ -1863,11 +1973,11 @@ def parseFeatures(features):
             (template, feats) = extra
             if template is not True and type(template) is not str:
                 errors.append(f&#34;{k} must be `true` or a string&#34;)
-            feats = extra[1]
             for feat in feats:
                 if feat not in allNodeFeatures:
-                    errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
-        elif k == {&#34;featuresBare&#34;, &#34;features&#34;}:
+                    if feat not in specs[&#34;transform&#34;].get(dKey, {}):
+                        errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
+        elif k in {&#34;featuresBare&#34;, &#34;features&#34;}:
             feats = extra[0]
             tps = extra[1].values()
             for feat in feats:
@@ -1876,12 +1986,11 @@ def parseFeatures(features):
             for tp in tps:
                 if tp not in nTypes:
                     errors.append(f&#34;{k}: node type {tp} not present&#34;)
+        elif k == &#34;base&#34;:
+            pass
         elif k == &#34;lineNumber&#34;:
             if v not in allNodeFeatures:
                 errors.append(f&#34;{k}: feature {v} not loaded&#34;)
-        elif k == &#34;textFormats&#34;:
-            if type(v) is not dict:
-                errors.append(f&#34;{k} must be a dictionary&#34;)
         elif k == &#34;browseNavLevel&#34;:
             allowedValues = set(range(len(sectionTypes)))
             if v not in allowedValues:
@@ -1901,23 +2010,49 @@ def parseFeatures(features):
         elif k == &#34;transform&#34;:
             for (feat, method) in extra.items():
                 if type(method) is str:
-                    errors.append(
-                        f&#34;\t{k}:{feat}: {method}() not implemented in app&#34;
-                    )
+                    errors.append(f&#34;{k}:{feat}: {method}() not implemented in app&#34;)
+        elif k == &#34;style&#34;:
+            if type(v) is not str or v.lower() != v:
+                errors.append(f&#34;{k} must be an all lowercase string&#34;)
         elif k in {
-            &#34;withTypes&#34;,
-            &#34;prettyTypes&#34;,
-            &#34;withNodes&#34;,
-            &#34;showFeatures&#34;,
             &#34;lineNumbers&#34;,
+            &#34;prettyTypes&#34;,
+            &#34;queryFeatures&#34;,
             &#34;showChunks&#34;,
             &#34;showGraphics&#34;,
+            &#34;standardFeatures&#34;,
+            &#34;withNodes&#34;,
+            &#34;withTypes&#34;,
         }:
             allowed = self.extra[k]
             if not allowed and v is not None:
                 errors.append(
                     f&#34;{k}={v} is not useful (dataset lacks relevant features)&#34;
                 )
+        elif k == &#34;textFormats&#34;:
+            formatStyle = specs[&#34;formatStyle&#34;]
+            if type(v) is dict:
+                for (fmt, fmtInfo) in v.items():
+                    for (fk, fv) in fmtInfo.items():
+                        if fk not in FMT_KEYS:
+                            errors.append(f&#34;{k}: {fmt}: illegal key {fk}&#34;)
+                            continue
+                        if fk == METHOD:
+                            (descendType, func) = T.splitFormat(fv)
+                            func = f&#34;fmt_{func}&#34;
+                            if not hasattr(app, func):
+                                errors.append(
+                                    f&#34;{k}: {fmt} needs unimplemented method {func}&#34;
+                                )
+                        elif fk == STYLE:
+                            if fv not in formatStyle:
+                                if fv.lower() != fv:
+                                    errors.append(
+                                        f&#34;{k}: {fmt}: style {fv}&#34;
+                                        f&#34; must be all lowercase&#34;
+                                    )
+            else:
+                errors.append(f&#34;{k} must be a dictionary&#34;)
     else:
         if k in {&#34;excludedFeatures&#34;, &#34;noneValues&#34;}:
             if type(v) is not list:
@@ -1935,7 +2070,7 @@ def parseFeatures(features):
             if v not in allowedValues:
                 allowed = &#34;,&#34;.join(allowedValues - {&#34;&#34;})
                 errors.append(f&#34;{k} must be the empty string or one of {allowed}&#34;)
-        elif k in {&#34;direction&#34;, &#34;language&#34;, &#34;fontName&#34;, &#34;font&#34;, &#34;fontw&#34;}:
+        elif k in {&#34;direction&#34;, &#34;language&#34;}:
             allowedValues = {w[k] for w in WRITING_DEFAULTS}
             if v not in allowedValues:
                 allowed = &#34;,&#34;.join(allowedValues)
@@ -1947,6 +2082,7 @@ def parseFeatures(features):
             &#34;condense&#34;,
             &#34;graphics&#34;,
             &#34;hide&#34;,
+            &#34;showVerseInTuple&#34;,
             &#34;stretch&#34;,
             &#34;verselike&#34;,
             &#34;wrap&#34;,
@@ -1983,7 +2119,9 @@ def parseFeatures(features):
     if errors:
         console(f&#34;App config error(s) in {dKey}:&#34;, error=True)
         for msg in errors:
-            console(f&#34;\t{msg}&#34;, error=True)</code></pre>
+            console(f&#34;\t{msg}&#34;, error=True)
+
+    self.errors = []</code></pre>
 </details>
 </dd>
 </dl>

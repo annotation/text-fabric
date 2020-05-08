@@ -10,7 +10,7 @@ from subprocess import run, Popen
 import psutil
 
 from tf.core.helpers import console
-from tf.applib.find import findApp, findAppConfig
+# from tf.applib.find import findApp, findAppConfig
 from tf.applib.zipdata import zipData
 
 DIST = "dist"
@@ -65,7 +65,7 @@ clean : clean local develop build
 l     : local develop build
 i     : local non-develop build
 g     : push to github, code and docs
-v     : show currennt version
+v     : show current version
 r1    : version becomes r1+1.0.0
 r2    : version becomes r1.r2+1.0
 r3    : version becomes r1.r2.r3+1
@@ -161,7 +161,7 @@ def showVersion():
         match = c["re"].search(text)
         version = match.group(1)
         console(f'{version} (according to {c["file"]})')
-        versions.add(text)
+        versions.add(version)
     currentVersion = None
     if len(versions) == 1:
         currentVersion = list(versions)[0]
