@@ -1,3 +1,4 @@
+from ..core.text import DEFAULT_FORMAT
 from .helpers import RESULT
 from .display import plain, plainTuple, pretty, prettyTuple
 
@@ -238,7 +239,7 @@ def _plainTextSFinal(
 
     secStr = str(T.sectionFromNode(sNode)[browseNavLevel])
     isOpened = secStr in opened
-    tCls = "" if fmt is None else formatCls[fmt].lower()
+    tCls = "" if fmt is None else formatCls[fmt or DEFAULT_FORMAT].lower()
 
     prettyRep = (
         prettyTuple(

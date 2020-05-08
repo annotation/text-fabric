@@ -76,16 +76,22 @@
             ```python
             from tf.applib.app import loadModule
 
-            class TfApp(object):
+            class TfApp(App):
+                def __init__(app, *args, silent=False, **kwargs):
+                    app.transform_ctype = types.MethodType(transform_ctype, app)
+                    app.transform_prime = types.MethodType(transform_prime, app)
+                    app.transform_atf = types.MethodType(transform_atf, app)
 
-              def __init__(app, *args, _browse=False, silent=False, **kwargs):
+                    atf = loadModule("atf", *args)
+                    atf.atfApi(app)
+                    app.atf = atf
+                    super().__init__(*args, silent=silent, **kwargs)
+                    app.image = loadModule("image", *args)
 
-                atf = loadModule(*args[0:2], 'atf')
-                atf.atfApi(app)
+                    app.image.getImagery(app, silent, checkout=kwargs.get("checkout", ""))
 
-                app.image = loadModule(*args[0:2], 'image')
+                    app.reinit()
 
-                setupApi(app, *args, _browse=_browse, silent=silent, **kwargs)
 
             ```
 
@@ -94,11 +100,11 @@
             Here the name of the app and the path to the code directory of the
             app are known.
 
-            `loadModule()` needs the app name and the path to the code,
-            so we pass it `*args[0:2]`, the first two arguments received by `__init__()`.
-
-            The third argument for `loadModule()` is the file name of the module,
+            The first argument for `loadModule()` is the file name of the module,
             without the `.py`.
+
+            `loadModule()` needs the app name and the path to the code,
+            but we pass it all `*args`, received by `__init__()`.
 
             The result of loading the module is a code object,
             from which you can get all the names defined by the module and their semantics.

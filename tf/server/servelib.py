@@ -62,7 +62,7 @@ def getFormData(interfaceDefaults):
     for (k, v) in interfaceDefaults.items():
         if v is None:
             continue
-        form[k] = request.form.get(k, v)
+        form[k] = request.form.get(k, None)
     return form
 
 

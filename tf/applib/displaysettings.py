@@ -131,7 +131,6 @@ class DisplaySettings:
     def normalize(self, option, value):
         api = self.app.api
         error = api.error
-        slotType = api.F.otype.slotType
 
         if option not in self.displayDefaults:
             error(f'WARNING: unknown display option "{option}" will be ignored')
@@ -164,13 +163,11 @@ class DisplaySettings:
                 value = {m: "" for m in value}
         elif option == "baseTypes":
             value = setFromValue(value)
-            value.discard(slotType)
         return (True, value)
 
     def check(self, msg, options):
         api = self.app.api
         Fotype = api.F.otype
-        slotType = Fotype.slotType
         sectionTypeSet = api.T.sectionTypeSet
         error = api.error
 
@@ -184,7 +181,6 @@ class DisplaySettings:
                     legalValues = set(Fotype.all)
                     if option == "baseTypes":
                         legalValues -= sectionTypeSet
-                        legalValues -= {slotType}
                         testVal = setFromValue(value)
                         isLegal = all(v in legalValues for v in testVal)
                     else:

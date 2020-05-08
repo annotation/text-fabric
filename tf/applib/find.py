@@ -28,7 +28,9 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
         appName=appName, appPath=appPath, commit=commit, release=release, local=local
     )
 
-    if version is not None:
+    if version is None:
+        version = cfg.setdefault("provenanceSpec", {}).get("version", None)
+    else:
         cfg.setdefault("provenanceSpec", {})["version"] = version
 
     if os.path.exists(cssPath):
@@ -120,7 +122,8 @@ def findAppClass(appName, appPath):
     return appClass
 
 
-def loadModule(dataSource, appPath, moduleName):
+def loadModule(moduleName, *args):
+    (dataSource, appPath) = args[1:3]
     try:
         spec = util.spec_from_file_location(
             f"tf.apps.{dataSource}.{moduleName}", f"{appPath}/{moduleName}.py",

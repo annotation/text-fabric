@@ -20,7 +20,7 @@ def getHlAtt(app, n, highlights, baseTypes, isPlain):
         If given as set: use the default highlight color.
         If given as dict: use the value as color.
     baseTypes: set
-        Which node types acts as a base type, the slotType is included.
+        Which node types acts as a base type.
     isPlain:
         Whether we are highlighting for plain() or for pretty().
     """

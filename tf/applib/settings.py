@@ -112,6 +112,7 @@ DATA_DISPLAY_DEFAULTS = (
     ("textFormats", {}, True),
     ("browseNavLevel", None, True),
     ("browseContentPretty", False, False),
+    ("showVerseInTuple", False, False),
     ("exampleSection", None, True),
     ("exampleSectionHtml", None, True),
 )
@@ -180,7 +181,6 @@ class Check:
             Fall = api.Fall
             allNodeFeatures = set(Fall())
             nTypes = F.otype.all
-            slotType = F.otype.slotType
             sectionTypes = T.sectionTypes
 
             if k in {"template", "label"}:
@@ -201,10 +201,7 @@ class Check:
                     if tp not in nTypes:
                         errors.append(f"{k}: node type {tp} not present")
             elif k == "base":
-                if v and dKey == slotType:
-                    errors.append(
-                        f"{k}: No need to declare slot type {dKey} as base type"
-                    )
+                pass
             elif k == "lineNumber":
                 if v not in allNodeFeatures:
                     errors.append(f"{k}: feature {v} not loaded")
@@ -299,6 +296,7 @@ class Check:
                 "condense",
                 "graphics",
                 "hide",
+                "showVerseInTuple",
                 "stretch",
                 "verselike",
                 "wrap",
@@ -503,15 +501,16 @@ def getDataDefaults(app, cfg, dKey, withApi):
 
     specs = app.specs
 
+    givenInfo = cfg.get(dKey, {})
+
+    if withApi:
+        formatStyle = {f[0]: f[1] for f in FORMAT_CLS}
+        formatStyle[ORIG] = specs["defaultClsOrig"]
+        specs["formatStyle"] = formatStyle
+
     allowedKeys = {d[0] for d in DATA_DISPLAY_DEFAULTS}
     checker.checkGroup(cfg, allowedKeys, dKey)
     checker.report()
-
-    givenInfo = cfg.get(dKey, {})
-
-    formatStyle = {f[0]: f[1] for f in FORMAT_CLS}
-    formatStyle[ORIG] = specs["defaultClsOrig"]
-    specs["formatStyle"] = formatStyle
 
     for (attr, default, needsApi) in DATA_DISPLAY_DEFAULTS:
         if needsApi and not withApi or not needsApi and withApi:
@@ -626,8 +625,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         if "base" in info:
             base = info["base"]
             checker.checkSetting("base", base)
-            if nType != slotType:
-                baseTypes.add(nType)
+            baseTypes.add(nType)
 
         if "condense" in info:
             condenseType = nType
@@ -803,7 +801,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         )
 
     specs.update(
-        baseTypes=baseTypes,
+        baseTypes=baseTypes if baseTypes else {slotType},
         childType=childType,
         chunkedTypes=set(isChunkOf.values()),
         condenseType=condenseType,
@@ -902,8 +900,8 @@ def compileFormatCls(app, specs, givenStyles):
     result = {}
     extraFormats = set()
 
-    defaultClsOrig = specs["defaultClsOrig"]
     formatStyle = specs["formatStyle"]
+    defaultClsOrig = specs["defaultClsOrig"]
 
     for fmt in givenStyles:
         fmt = T.splitFormat(fmt)[1]

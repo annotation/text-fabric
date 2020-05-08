@@ -181,6 +181,7 @@ def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
         appBaseRep = f"{appBase}/" if appBase else ""
         appPath = f"{appBaseRep}{appDir}"
     cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
+    version = cfg["provenanceSpec"].get("version", None)
     if not appBase and appBase != "":
         return None
 

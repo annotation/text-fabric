@@ -9,7 +9,7 @@ from .helpers import tupleEnum, RESULT, dh, NB
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights, getHlAtt
 from .displaysettings import DisplaySettings
-from .settings import DEFAULT_CLS, ORIG
+from .settings import ORIG
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
@@ -969,14 +969,11 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, chunk=None):
 
     fmt = dContext.fmt
     baseTypes = dContext.baseTypes
-    baseTypesX = baseTypes - {slotType}
-    baseTypesP = baseTypes | {slotType}
-    baseTypesC = baseTypes if baseTypes else {slotType}
     highlights = dContext.highlights
     showChunks = dContext.showChunks
 
     descendType = T.formats.get(fmt, slotType)
-    bottomTypes = baseTypesP if isPretty else {descendType}
+    bottomTypes = baseTypes if isPretty else {descendType}
 
     isSlot = nType == slotType
     hasChunks = nType in chunkedTypes
@@ -998,11 +995,11 @@ def _prepareDisplay(app, isPretty, dContext, oContext, n, outer, chunk=None):
 
     (boundaryCls, myStart, myEnd) = boundaryResult
 
-    (hlCls, hlStyle) = getHlAtt(app, n, highlights, baseTypesC, not isPretty)
+    (hlCls, hlStyle) = getHlAtt(app, n, highlights, baseTypes, not isPretty)
 
     isSlotOrDescend = isSlot or nType == descendType
     descend = False if descendType == slotType else None
-    isBaseNonSlot = nType in baseTypesX
+    isBaseNonSlot = nType != slotType and nType in baseTypes
 
     nodePart = getNodePart(
         app, isPretty, dContext, n, nType, isSlot, outer, hlCls != ""
@@ -1099,7 +1096,7 @@ def getText(
 
 
 def htmlSafe(text, isHtml):
-    return htmlEsc(text) if isHtml else text
+    return text if isHtml else htmlEsc(text)
 
 
 def getTextCls(app, fmt):
@@ -1107,9 +1104,7 @@ def getTextCls(app, fmt):
     formatCls = aContext.formatCls
     defaultClsOrig = aContext.defaultClsOrig
 
-    if fmt is None:
-        return defaultClsOrig
-    return formatCls.get(fmt, DEFAULT_CLS)
+    return formatCls.get(fmt or DEFAULT_FORMAT, defaultClsOrig)
 
 
 def getValue(app, n, nType, feat, suppress):
@@ -1236,6 +1231,7 @@ def getChildren(app, isPretty, dContext, oContext, n, nType):
     verseTypes = aContext.verseTypes
     childType = aContext.childType
     childrenCustom = aContext.childrenCustom
+    showVerseInTuple = aContext.showVerseInTuple
 
     inTuple = oContext.inTuple
 
@@ -1243,7 +1239,7 @@ def getChildren(app, isPretty, dContext, oContext, n, nType):
 
     isBigType = (
         inTuple
-        if not isPretty and nType in verseTypes
+        if not isPretty and nType in verseTypes and not showVerseInTuple
         else getBigType(app, dContext, oContext, nType, otypeRank)
     )
 
