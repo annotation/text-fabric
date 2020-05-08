@@ -419,7 +419,7 @@ def _by_yarn_size(searchExe):
     for e in range(len(qedges)):
         remainingEdges.add((e, 1))
         remainingEdges.add((e, -1))
-    remainingEdgesO = sorted(remainingEdges, key=lambda e: eKey(*e),)
+    remainingEdgesO = sorted(remainingEdges, key=lambda e: eKey(*e))
 
     while 1:
         added = False

@@ -42,6 +42,8 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     S = api.S
     sortKeyTuple = api.sortKeyTuple
 
+    wasSilent = isSilent()
+
     results = S.search(query, sets=sets, shallow=shallow)
     if not shallow:
         if not sort:
@@ -75,7 +77,6 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
 
     nResults = len(results)
     plural = &#34;&#34; if nResults == 1 else &#34;s&#34;
-    wasSilent = isSilent
     setSilent(silent)
     info(f&#34;{nResults} result{plural}&#34;)
     setSilent(wasSilent)
@@ -196,6 +197,8 @@ def runSearchCondensed(app, query, cache, condenseType):
     S = api.S
     sortKeyTuple = api.sortKeyTuple
 
+    wasSilent = isSilent()
+
     results = S.search(query, sets=sets, shallow=shallow)
     if not shallow:
         if not sort:
@@ -229,7 +232,6 @@ def runSearchCondensed(app, query, cache, condenseType):
 
     nResults = len(results)
     plural = &#34;&#34; if nResults == 1 else &#34;s&#34;
-    wasSilent = isSilent
     setSilent(silent)
     info(f&#34;{nResults} result{plural}&#34;)
     setSilent(wasSilent)

@@ -24,35 +24,23 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from ..core.helpers import console
-from ..applib.app import findApp, findAppConfig
+<pre><code class="python">import sys
+from ..core.helpers import console
 from ..server.kernel import makeTfConnection
-from .command import argParam
+from ..parameters import HOST
+from .command import argKernel
 
 TIMEOUT = 180
 
 
-def setup(dataSource, checkoutApp):
-    global TF
-
-    (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
-    if not appBase:
-        return
-    appPath = f&#34;{appBase}/{appDir}&#34;
-    config = findAppConfig(dataSource, appPath)
-    if config is None:
-        return None
-
-    TF = makeTfConnection(config.HOST, config.PORT[&#34;kernel&#34;], TIMEOUT)
-    return TF
-
-
-def main():
-    (dataSource, checkoutApp) = argParam(interactive=True)
-    if dataSource is None:
+def main(cargs=sys.argv):
+    args = argKernel(cargs)
+    if not args:
         return
 
-    TF = setup(dataSource, checkoutApp)
+    (dataSource, portKernel) = args
+
+    TF = makeTfConnection(HOST, portKernel, TIMEOUT)
     if TF is None:
         return
 
@@ -85,7 +73,7 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.server.monitor.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>)</span>
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.7/bin/pdoc3', '--force', '--html', '--output-dir', 'docs/apidocs/html', 'tf'])</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -93,12 +81,14 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main():
-    (dataSource, checkoutApp) = argParam(interactive=True)
-    if dataSource is None:
+<pre><code class="python">def main(cargs=sys.argv):
+    args = argKernel(cargs)
+    if not args:
         return
 
-    TF = setup(dataSource, checkoutApp)
+    (dataSource, portKernel) = args
+
+    TF = makeTfConnection(HOST, portKernel, TIMEOUT)
     if TF is None:
         return
 
@@ -117,30 +107,6 @@ if __name__ == &#34;__main__&#34;:
     except KeyboardInterrupt:
         console(&#34;\nquitting&#34;)
         return</code></pre>
-</details>
-</dd>
-<dt id="tf.server.monitor.setup"><code class="name flex">
-<span>def <span class="ident">setup</span></span>(<span>dataSource, checkoutApp)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setup(dataSource, checkoutApp):
-    global TF
-
-    (commit, release, local, appBase, appDir) = findApp(dataSource, checkoutApp)
-    if not appBase:
-        return
-    appPath = f&#34;{appBase}/{appDir}&#34;
-    config = findAppConfig(dataSource, appPath)
-    if config is None:
-        return None
-
-    TF = makeTfConnection(config.HOST, config.PORT[&#34;kernel&#34;], TIMEOUT)
-    return TF</code></pre>
 </details>
 </dd>
 </dl>
@@ -162,7 +128,6 @@ if __name__ == &#34;__main__&#34;:
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="tf.server.monitor.main" href="#tf.server.monitor.main">main</a></code></li>
-<li><code><a title="tf.server.monitor.setup" href="#tf.server.monitor.setup">setup</a></code></li>
 </ul>
 </li>
 </ul>

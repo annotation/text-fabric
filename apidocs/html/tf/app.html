@@ -24,7 +24,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from .applib.app import findApp, findAppClass
+<pre><code class="python">from .applib.app import findApp
 
 # START AN APP
 
@@ -34,18 +34,8 @@ def use(appName, *args, **kwargs):
     if len(parts) == 1:
         parts.append(&#34;&#34;)
     (appName, checkoutApp) = parts
-    (commit, release, local, appBase, appDir) = findApp(
-        appName, checkoutApp, silent=kwargs.get(&#34;silent&#34;, False)
-    )
-    if not appBase:
-        return None
 
-    appPath = f&#34;{appBase}/{appDir}&#34;
-    appClass = findAppClass(appName, appPath)
-    if not appClass:
-        return None
-
-    return appClass(appName, appPath, commit, release, local, *args, **kwargs)</code></pre>
+    return findApp(appName, checkoutApp, *args, **kwargs)</code></pre>
 </details>
 </section>
 <section>
@@ -69,18 +59,8 @@ def use(appName, *args, **kwargs):
     if len(parts) == 1:
         parts.append(&#34;&#34;)
     (appName, checkoutApp) = parts
-    (commit, release, local, appBase, appDir) = findApp(
-        appName, checkoutApp, silent=kwargs.get(&#34;silent&#34;, False)
-    )
-    if not appBase:
-        return None
 
-    appPath = f&#34;{appBase}/{appDir}&#34;
-    appClass = findAppClass(appName, appPath)
-    if not appClass:
-        return None
-
-    return appClass(appName, appPath, commit, release, local, *args, **kwargs)</code></pre>
+    return findApp(appName, checkoutApp, *args, **kwargs)</code></pre>
 </details>
 </dd>
 </dl>

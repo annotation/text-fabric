@@ -24,55 +24,121 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import types
+<pre><code class="python">from ..core.helpers import setFromValue
+
+
+INTERFACE_OPTIONS = (
+    (
+        &#34;withTypes&#34;,
+        False,
+        &#34;witht&#34;,
+        &#34;show types&#34;,
+        &#34;Show the node type for every node in the results&#34;,
+    ),
+    (
+        &#34;prettyTypes&#34;,
+        True,
+        &#34;withtp&#34;,
+        &#34;always show types when expanded&#34;,
+        &#34;Show the node type for every node in the expanded view, even if &lt;b&gt;show types&lt;/b&gt; is off&#34;,
+    ),
+    (
+        &#34;withNodes&#34;,
+        False,
+        &#34;withn&#34;,
+        &#34;show nodes&#34;,
+        &#34;Show the node number for every node in the results.&#34;
+        &#34; The node number is your access to all information about that node.&#34;
+        &#34; If you click on it, it will be copied to the &lt;i&gt;node pad&lt;/i&gt;&#34;,
+    ),
+    (
+        &#34;standardFeatures&#34;,
+        False,
+        &#34;showf&#34;,
+        &#34;show features&#34;,
+        &#34;Show the standard feature values for every node in the results&#34;,
+    ),
+    (
+        &#34;queryFeatures&#34;,
+        True,
+        &#34;showf&#34;,
+        &#34;show features&#34;,
+        &#34;Show the features mentioned in the last query for every node in the results&#34;,
+    ),
+    (
+        &#34;showChunks&#34;,
+        False,
+        &#34;showc&#34;,
+        &#34;show chunks&#34;,
+        &#34;Show chunk types fully. Only if the TF data has node types and companion chunked node types&#34;,
+    ),
+    (
+        &#34;lineNumbers&#34;,
+        False,
+        &#34;linen&#34;,
+        &#34;source lines&#34;,
+        &#34;Show source line numbers with the nodes. Only if the TF data has a feature for line numbers.&#34;,
+    ),
+    (
+        &#34;showGraphics&#34;,
+        True,
+        &#34;graphics&#34;,
+        &#34;graphic elements&#34;,
+        &#34;Show graphical companion elements with the nodes.&#34;
+        &#34; Only if the data set implements the logic for it&#34;,
+    ),
+)
+
+# &lt;p&gt;&lt;b title=&#34;withTypes&#34;&gt;Show types&lt;/b&gt;{longDesc}&lt;/p&gt;
 
 DISPLAY_OPTIONS = dict(
+    baseTypes=None,
     colorMap=None,
     condensed=False,
     condenseType=None,
     end=None,
     extraFeatures=(),
     full=False,
-    tupleFeatures=(),
     fmt=None,
     highlights={},
-    linked=1,
-    noneValues=None,
+    noneValues={None},
+    skipCols=set(),
     start=None,
     suppress=set(),
-    withNodes=False,
+    tupleFeatures=(),
     withPassage=True,
 )
+DISPLAY_OPTIONS.update({o[0]: o[1] for o in INTERFACE_OPTIONS})
 
 
-def displaySettingsApi(app):
-    app.display = DisplaySettings(app)
-    app.displaySetup = types.MethodType(displaySetup, app)
-    app.displayReset = types.MethodType(displayReset, app)
-
-
-class DisplayCurrent(object):
+class DisplayCurrent:
     def __init__(self, options):
         for (k, v) in options.items():
             setattr(self, k, v)
 
 
-class DisplaySettings(object):
+class DisplaySettings:
     def __init__(self, app):
         self.app = app
 
-        self._compileFormatClass()
+        aContext = app.context
+        interfaceDefaults = aContext.interfaceDefaults
 
-        self.displayDefaults = {k: v for (k, v) in DISPLAY_OPTIONS.items()}
         self.displayDefaults = {}
+        displayDefaults = self.displayDefaults
+
         for (k, v) in DISPLAY_OPTIONS.items():
-            self.displayDefaults[k] = v if v is not None else getattr(app, k, None)
-        self.displayDefaults.update({o[0]: o[1] for o in app.options})
+            value = (
+                interfaceDefaults[k] if k in interfaceDefaults else aContext.get(k, v)
+            )
+            displayDefaults[k] = value
+
         self.reset()
 
     def reset(self, *options):
         api = self.app.api
         error = api.error
+
         for option in options:
             if option not in self.displayDefaults:
                 error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
@@ -82,72 +148,94 @@ class DisplaySettings(object):
             self.displaySettings = {k: v for (k, v) in self.displayDefaults.items()}
 
     def setup(self, **options):
+        for (option, value) in options.items():
+            normValue = self.normalize(option, value)
+            if not normValue:
+                continue
+            self.displaySettings[option] = normValue[1]
+
+    def normalize(self, option, value):
         api = self.app.api
         error = api.error
-        for (option, value) in options.items():
-            if option not in self.displayDefaults:
-                error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
-                continue
-            if option in {&#34;extraFeatures&#34;, &#34;tupleFeatures&#34;}:
-                api.ensureLoaded(value)
-                if type(value) is str:
-                    value = value.split() if value else []
-            self.displaySettings[option] = value
+
+        if option not in self.displayDefaults:
+            error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
+            return None
+        if option in {&#34;extraFeatures&#34;, &#34;tupleFeatures&#34;}:
+            api.ensureLoaded(value)
+            if type(value) is str:
+                value = value.split() if value else []
+        elif option in {&#34;suppress&#34;}:
+            if type(value) is str:
+                value = set(value.split()) if value else set()
+        elif option in {&#34;skipCols&#34;}:
+            if not value:
+                value = set()
+            elif type(value) is str:
+                value = set(int(v) for v in value.split()) if value else set()
+            elif type(value) not in {set, frozenset}:
+                value = set(value)
+        elif option in {&#34;withPassage&#34;}:
+            if not value:
+                value = False
+            elif type(value) is str:
+                value = set(int(v) for v in value.split()) if value else set()
+            elif type(value) in {list, tuple, dict}:
+                value = set(value)
+            else:
+                value = True
+        elif option == &#34;highlights&#34;:
+            if value is not None and type(value) is not dict:
+                value = {m: &#34;&#34; for m in value}
+        elif option == &#34;baseTypes&#34;:
+            value = setFromValue(value)
+        return (True, value)
 
     def check(self, msg, options):
         api = self.app.api
+        Fotype = api.F.otype
+        sectionTypeSet = api.T.sectionTypeSet
         error = api.error
+
         good = True
         for (option, value) in options.items():
             if option not in self.displaySettings:
                 error(f&#39;ERROR in {msg}(): unknown display option &#34;{option}={value}&#34;&#39;)
                 good = False
-            if option == &#34;condenseType&#34;:
+            if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;}:
                 if value is not None:
-                    if value not in api.F.otype.all:
+                    legalValues = set(Fotype.all)
+                    if option == &#34;baseTypes&#34;:
+                        legalValues -= sectionTypeSet
+                        testVal = setFromValue(value)
+                        isLegal = all(v in legalValues for v in testVal)
+                    else:
+                        isLegal = value in legalValues
+                    if not isLegal:
                         error(
-                            f&#39;ERROR in {msg}(): unknown node type in &#34;{option}={value}&#34;&#39;
+                            f&#39;ERROR in {msg}(): illegal node type in &#34;{option}={value}&#34;&#39;
                         )
                         good = False
         return good
 
     def get(self, options):
-        return DisplayCurrent(
-            {
-                o: options[o] if o in options else self.displaySettings.get(o, None)
-                for o in self.displaySettings
-            }
-        )
+        displayDefaults = self.displayDefaults
+        displaySettings = self.displaySettings
+
+        normOptions = {}
+
+        for option in displayDefaults:
+            value = options.get(
+                option, displaySettings.get(option, displayDefaults[option])
+            )
+            normValue = self.normalize(option, value)
+            if normValue:
+                normOptions[option] = normValue[1]
+
+        return DisplayCurrent(normOptions)
 
     def consume(self, options, *remove):
-        return {o: options[o] for o in options if o not in remove}
-
-    def _compileFormatClass(self):
-        app = self.app
-        api = app.api
-        T = api.T
-
-        result = {None: app.defaultClsOrig}
-        for fmt in T.formats:
-            for (key, cls) in app.formatCss.items():
-                if (
-                    f&#34;-{key}-&#34; in fmt
-                    or fmt.startswith(f&#34;{key}-&#34;)
-                    or fmt.endswith(f&#34;-{key}&#34;)
-                ):
-                    result[fmt] = cls
-        for fmt in T.formats:
-            if fmt not in result:
-                result[fmt] = app.defaultCls
-        self.formatClass = result
-
-
-def displaySetup(app, **options):
-    app.display.setup(**options)
-
-
-def displayReset(app, *options):
-    app.display.reset(*options)</code></pre>
+        return {o: options[o] for o in options if o not in remove}</code></pre>
 </details>
 </section>
 <section>
@@ -155,50 +243,6 @@ def displayReset(app, *options):
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="tf.applib.displaysettings.displayReset"><code class="name flex">
-<span>def <span class="ident">displayReset</span></span>(<span>app, *options)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def displayReset(app, *options):
-    app.display.reset(*options)</code></pre>
-</details>
-</dd>
-<dt id="tf.applib.displaysettings.displaySettingsApi"><code class="name flex">
-<span>def <span class="ident">displaySettingsApi</span></span>(<span>app)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def displaySettingsApi(app):
-    app.display = DisplaySettings(app)
-    app.displaySetup = types.MethodType(displaySetup, app)
-    app.displayReset = types.MethodType(displayReset, app)</code></pre>
-</details>
-</dd>
-<dt id="tf.applib.displaysettings.displaySetup"><code class="name flex">
-<span>def <span class="ident">displaySetup</span></span>(<span>app, **options)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def displaySetup(app, **options):
-    app.display.setup(**options)</code></pre>
-</details>
-</dd>
-</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -213,7 +257,7 @@ def displayReset(app, *options):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class DisplayCurrent(object):
+<pre><code class="python">class DisplayCurrent:
     def __init__(self, options):
         for (k, v) in options.items():
             setattr(self, k, v)</code></pre>
@@ -229,22 +273,28 @@ def displayReset(app, *options):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class DisplaySettings(object):
+<pre><code class="python">class DisplaySettings:
     def __init__(self, app):
         self.app = app
 
-        self._compileFormatClass()
+        aContext = app.context
+        interfaceDefaults = aContext.interfaceDefaults
 
-        self.displayDefaults = {k: v for (k, v) in DISPLAY_OPTIONS.items()}
         self.displayDefaults = {}
+        displayDefaults = self.displayDefaults
+
         for (k, v) in DISPLAY_OPTIONS.items():
-            self.displayDefaults[k] = v if v is not None else getattr(app, k, None)
-        self.displayDefaults.update({o[0]: o[1] for o in app.options})
+            value = (
+                interfaceDefaults[k] if k in interfaceDefaults else aContext.get(k, v)
+            )
+            displayDefaults[k] = value
+
         self.reset()
 
     def reset(self, *options):
         api = self.app.api
         error = api.error
+
         for option in options:
             if option not in self.displayDefaults:
                 error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
@@ -254,64 +304,94 @@ def displayReset(app, *options):
             self.displaySettings = {k: v for (k, v) in self.displayDefaults.items()}
 
     def setup(self, **options):
+        for (option, value) in options.items():
+            normValue = self.normalize(option, value)
+            if not normValue:
+                continue
+            self.displaySettings[option] = normValue[1]
+
+    def normalize(self, option, value):
         api = self.app.api
         error = api.error
-        for (option, value) in options.items():
-            if option not in self.displayDefaults:
-                error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
-                continue
-            if option in {&#34;extraFeatures&#34;, &#34;tupleFeatures&#34;}:
-                api.ensureLoaded(value)
-                if type(value) is str:
-                    value = value.split() if value else []
-            self.displaySettings[option] = value
+
+        if option not in self.displayDefaults:
+            error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
+            return None
+        if option in {&#34;extraFeatures&#34;, &#34;tupleFeatures&#34;}:
+            api.ensureLoaded(value)
+            if type(value) is str:
+                value = value.split() if value else []
+        elif option in {&#34;suppress&#34;}:
+            if type(value) is str:
+                value = set(value.split()) if value else set()
+        elif option in {&#34;skipCols&#34;}:
+            if not value:
+                value = set()
+            elif type(value) is str:
+                value = set(int(v) for v in value.split()) if value else set()
+            elif type(value) not in {set, frozenset}:
+                value = set(value)
+        elif option in {&#34;withPassage&#34;}:
+            if not value:
+                value = False
+            elif type(value) is str:
+                value = set(int(v) for v in value.split()) if value else set()
+            elif type(value) in {list, tuple, dict}:
+                value = set(value)
+            else:
+                value = True
+        elif option == &#34;highlights&#34;:
+            if value is not None and type(value) is not dict:
+                value = {m: &#34;&#34; for m in value}
+        elif option == &#34;baseTypes&#34;:
+            value = setFromValue(value)
+        return (True, value)
 
     def check(self, msg, options):
         api = self.app.api
+        Fotype = api.F.otype
+        sectionTypeSet = api.T.sectionTypeSet
         error = api.error
+
         good = True
         for (option, value) in options.items():
             if option not in self.displaySettings:
                 error(f&#39;ERROR in {msg}(): unknown display option &#34;{option}={value}&#34;&#39;)
                 good = False
-            if option == &#34;condenseType&#34;:
+            if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;}:
                 if value is not None:
-                    if value not in api.F.otype.all:
+                    legalValues = set(Fotype.all)
+                    if option == &#34;baseTypes&#34;:
+                        legalValues -= sectionTypeSet
+                        testVal = setFromValue(value)
+                        isLegal = all(v in legalValues for v in testVal)
+                    else:
+                        isLegal = value in legalValues
+                    if not isLegal:
                         error(
-                            f&#39;ERROR in {msg}(): unknown node type in &#34;{option}={value}&#34;&#39;
+                            f&#39;ERROR in {msg}(): illegal node type in &#34;{option}={value}&#34;&#39;
                         )
                         good = False
         return good
 
     def get(self, options):
-        return DisplayCurrent(
-            {
-                o: options[o] if o in options else self.displaySettings.get(o, None)
-                for o in self.displaySettings
-            }
-        )
+        displayDefaults = self.displayDefaults
+        displaySettings = self.displaySettings
+
+        normOptions = {}
+
+        for option in displayDefaults:
+            value = options.get(
+                option, displaySettings.get(option, displayDefaults[option])
+            )
+            normValue = self.normalize(option, value)
+            if normValue:
+                normOptions[option] = normValue[1]
+
+        return DisplayCurrent(normOptions)
 
     def consume(self, options, *remove):
-        return {o: options[o] for o in options if o not in remove}
-
-    def _compileFormatClass(self):
-        app = self.app
-        api = app.api
-        T = api.T
-
-        result = {None: app.defaultClsOrig}
-        for fmt in T.formats:
-            for (key, cls) in app.formatCss.items():
-                if (
-                    f&#34;-{key}-&#34; in fmt
-                    or fmt.startswith(f&#34;{key}-&#34;)
-                    or fmt.endswith(f&#34;-{key}&#34;)
-                ):
-                    result[fmt] = cls
-        for fmt in T.formats:
-            if fmt not in result:
-                result[fmt] = app.defaultCls
-        self.formatClass = result</code></pre>
+        return {o: options[o] for o in options if o not in remove}</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -326,17 +406,27 @@ def displayReset(app, *options):
 </summary>
 <pre><code class="python">def check(self, msg, options):
     api = self.app.api
+    Fotype = api.F.otype
+    sectionTypeSet = api.T.sectionTypeSet
     error = api.error
+
     good = True
     for (option, value) in options.items():
         if option not in self.displaySettings:
             error(f&#39;ERROR in {msg}(): unknown display option &#34;{option}={value}&#34;&#39;)
             good = False
-        if option == &#34;condenseType&#34;:
+        if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;}:
             if value is not None:
-                if value not in api.F.otype.all:
+                legalValues = set(Fotype.all)
+                if option == &#34;baseTypes&#34;:
+                    legalValues -= sectionTypeSet
+                    testVal = setFromValue(value)
+                    isLegal = all(v in legalValues for v in testVal)
+                else:
+                    isLegal = value in legalValues
+                if not isLegal:
                     error(
-                        f&#39;ERROR in {msg}(): unknown node type in &#34;{option}={value}&#34;&#39;
+                        f&#39;ERROR in {msg}(): illegal node type in &#34;{option}={value}&#34;&#39;
                     )
                     good = False
     return good</code></pre>
@@ -365,12 +455,67 @@ def displayReset(app, *options):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get(self, options):
-    return DisplayCurrent(
-        {
-            o: options[o] if o in options else self.displaySettings.get(o, None)
-            for o in self.displaySettings
-        }
-    )</code></pre>
+    displayDefaults = self.displayDefaults
+    displaySettings = self.displaySettings
+
+    normOptions = {}
+
+    for option in displayDefaults:
+        value = options.get(
+            option, displaySettings.get(option, displayDefaults[option])
+        )
+        normValue = self.normalize(option, value)
+        if normValue:
+            normOptions[option] = normValue[1]
+
+    return DisplayCurrent(normOptions)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.displaysettings.DisplaySettings.normalize"><code class="name flex">
+<span>def <span class="ident">normalize</span></span>(<span>self, option, value)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize(self, option, value):
+    api = self.app.api
+    error = api.error
+
+    if option not in self.displayDefaults:
+        error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
+        return None
+    if option in {&#34;extraFeatures&#34;, &#34;tupleFeatures&#34;}:
+        api.ensureLoaded(value)
+        if type(value) is str:
+            value = value.split() if value else []
+    elif option in {&#34;suppress&#34;}:
+        if type(value) is str:
+            value = set(value.split()) if value else set()
+    elif option in {&#34;skipCols&#34;}:
+        if not value:
+            value = set()
+        elif type(value) is str:
+            value = set(int(v) for v in value.split()) if value else set()
+        elif type(value) not in {set, frozenset}:
+            value = set(value)
+    elif option in {&#34;withPassage&#34;}:
+        if not value:
+            value = False
+        elif type(value) is str:
+            value = set(int(v) for v in value.split()) if value else set()
+        elif type(value) in {list, tuple, dict}:
+            value = set(value)
+        else:
+            value = True
+    elif option == &#34;highlights&#34;:
+        if value is not None and type(value) is not dict:
+            value = {m: &#34;&#34; for m in value}
+    elif option == &#34;baseTypes&#34;:
+        value = setFromValue(value)
+    return (True, value)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.displaysettings.DisplaySettings.reset"><code class="name flex">
@@ -385,6 +530,7 @@ def displayReset(app, *options):
 <pre><code class="python">def reset(self, *options):
     api = self.app.api
     error = api.error
+
     for option in options:
         if option not in self.displayDefaults:
             error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
@@ -404,17 +550,11 @@ def displayReset(app, *options):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setup(self, **options):
-    api = self.app.api
-    error = api.error
     for (option, value) in options.items():
-        if option not in self.displayDefaults:
-            error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
+        normValue = self.normalize(option, value)
+        if not normValue:
             continue
-        if option in {&#34;extraFeatures&#34;, &#34;tupleFeatures&#34;}:
-            api.ensureLoaded(value)
-            if type(value) is str:
-                value = value.split() if value else []
-        self.displaySettings[option] = value</code></pre>
+        self.displaySettings[option] = normValue[1]</code></pre>
 </details>
 </dd>
 </dl>
@@ -433,13 +573,6 @@ def displayReset(app, *options):
 <li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="tf.applib.displaysettings.displayReset" href="#tf.applib.displaysettings.displayReset">displayReset</a></code></li>
-<li><code><a title="tf.applib.displaysettings.displaySettingsApi" href="#tf.applib.displaysettings.displaySettingsApi">displaySettingsApi</a></code></li>
-<li><code><a title="tf.applib.displaysettings.displaySetup" href="#tf.applib.displaysettings.displaySetup">displaySetup</a></code></li>
-</ul>
-</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
@@ -447,10 +580,11 @@ def displayReset(app, *options):
 </li>
 <li>
 <h4><code><a title="tf.applib.displaysettings.DisplaySettings" href="#tf.applib.displaysettings.DisplaySettings">DisplaySettings</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="tf.applib.displaysettings.DisplaySettings.check" href="#tf.applib.displaysettings.DisplaySettings.check">check</a></code></li>
 <li><code><a title="tf.applib.displaysettings.DisplaySettings.consume" href="#tf.applib.displaysettings.DisplaySettings.consume">consume</a></code></li>
 <li><code><a title="tf.applib.displaysettings.DisplaySettings.get" href="#tf.applib.displaysettings.DisplaySettings.get">get</a></code></li>
+<li><code><a title="tf.applib.displaysettings.DisplaySettings.normalize" href="#tf.applib.displaysettings.DisplaySettings.normalize">normalize</a></code></li>
 <li><code><a title="tf.applib.displaysettings.DisplaySettings.reset" href="#tf.applib.displaysettings.DisplaySettings.reset">reset</a></code></li>
 <li><code><a title="tf.applib.displaysettings.DisplaySettings.setup" href="#tf.applib.displaysettings.DisplaySettings.setup">setup</a></code></li>
 </ul>

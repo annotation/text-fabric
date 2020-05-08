@@ -33,8 +33,8 @@ from ..applib.helpers import RESULT
 from .wrap import (
     pageLinks,
     passageLinks,
-    getValues,
     wrapOptions,
+    wrapBase,
     wrapCondense,
     wrapFormats,
     wrapProvenance,
@@ -44,8 +44,12 @@ from .servelib import getAbout, getFormData, zipData
 TIMEOUT = 180
 
 
-def serveTable(setup, kind, getx=None, asDict=False):
-    form = getFormData(setup.config)
+def serveTable(web, kind, getx=None, asDict=False):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+
+    form = getFormData(interfaceDefaults)
     textFormat = form[&#34;textformat&#34;] or None
     task = form[kind].strip()
     openedKey = f&#34;{kind}Opened&#34;
@@ -53,23 +57,21 @@ def serveTable(setup, kind, getx=None, asDict=False):
         {int(n) for n in form[openedKey].split(&#34;,&#34;)} if form[openedKey] else set()
     )
 
-    optionSpecs = setup.config.OPTIONS
-    options = getValues(optionSpecs, form)
-
     method = dict if asDict else jsonify
-
-    kernelApi = setup.TF.connect()
 
     messages = &#34;&#34;
     table = None
     if task:
-        (table, messages,) = kernelApi.table(
+        options = {
+            k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
+        }
+        (table, messages) = kernelApi.table(
             kind,
             task,
             form[&#34;features&#34;],
             opened=openedSet,
             fmt=textFormat,
-            withNodes=form[&#34;withNodes&#34;],
+            baseTypes=form[&#34;baseTps&#34;],
             getx=int(getx) if getx else None,
             **options,
         )
@@ -77,12 +79,17 @@ def serveTable(setup, kind, getx=None, asDict=False):
         if messages:
             messages = wrapMessages(messages)
 
-    return method(table=table, messages=messages,)
+    return method(table=table, messages=messages)
 
 
-def serveQuery(setup, getx, asDict=False):
+def serveQuery(web, getx, asDict=False):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    wildQueries = web.wildQueries
+
     kind = &#34;query&#34;
-    form = getFormData(setup.config)
+    form = getFormData(interfaceDefaults)
     task = form[kind]
     condenseType = form[&#34;condenseTp&#34;] or None
     resultKind = condenseType if form[&#34;condensed&#34;] else RESULT
@@ -92,27 +99,28 @@ def serveQuery(setup, getx, asDict=False):
         {int(n) for n in form[openedKey].split(&#34;,&#34;)} if form[openedKey] else set()
     )
 
-    optionSpecs = setup.config.OPTIONS
-    options = getValues(optionSpecs, form)
-
     pages = &#34;&#34;
     features = &#34;&#34;
 
-    kernelApi = setup.TF.connect()
     method = dict if asDict else jsonify
     total = 0
 
     if task:
         messages = &#34;&#34;
         table = None
-        if task in setup.wildQueries:
+        if task in wildQueries:
             messages = (
                 f&#34;Aborted because query is known to take longer than {TIMEOUT} second&#34;
                 + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
             )
         else:
+            options = {
+                k: form.get(k, v)
+                for (k, v) in interfaceDefaults.items()
+                if v is not None
+            }
             try:
-                (table, messages, features, start, total,) = kernelApi.search(
+                (table, messages, features, start, total) = kernelApi.search(
                     task,
                     form[&#34;batch&#34;],
                     position=form[&#34;position&#34;],
@@ -120,8 +128,7 @@ def serveQuery(setup, getx, asDict=False):
                     condensed=form[&#34;condensed&#34;],
                     condenseType=condenseType,
                     fmt=textFormat,
-                    withNodes=form[&#34;withNodes&#34;],
-                    linked=form[&#34;linked&#34;],
+                    baseTypes=form[&#34;baseTps&#34;],
                     getx=int(getx) if getx else None,
                     **options,
                 )
@@ -131,7 +138,7 @@ def serveQuery(setup, getx, asDict=False):
                     + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
                 )
                 console(f&#34;{task}\n{messages}&#34;, error=True)
-                setup.wildQueries.add(task)
+                wildQueries.add(task)
                 total = 0
 
         if table is not None:
@@ -148,16 +155,15 @@ def serveQuery(setup, getx, asDict=False):
     )
 
 
-def servePassage(setup, getx):
-    form = getFormData(setup.config)
+def servePassage(web, getx):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+
+    form = getFormData(interfaceDefaults)
     textFormat = form[&#34;textformat&#34;] or None
 
-    optionSpecs = setup.config.OPTIONS
-    options = getValues(optionSpecs, form)
-
     passages = &#34;&#34;
-
-    kernelApi = setup.TF.connect()
 
     openedKey = &#34;passageOpened&#34;
     openedSet = set(form[openedKey].split(&#34;,&#34;)) if form[openedKey] else set()
@@ -165,7 +171,10 @@ def servePassage(setup, getx):
     sec0 = form[&#34;sec0&#34;]
     sec1 = form[&#34;sec1&#34;]
     sec2 = form[&#34;sec2&#34;]
-    (table, sec0Type, passages, browseNavLevel,) = kernelApi.passage(
+    options = {
+        k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
+    }
+    (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
         form[&#34;features&#34;],
         form[&#34;query&#34;],
         sec0,
@@ -173,33 +182,34 @@ def servePassage(setup, getx):
         sec2=sec2,
         opened=openedSet,
         fmt=textFormat,
-        withNodes=form[&#34;withNodes&#34;],
+        baseTypes=form[&#34;baseTps&#34;],
         getx=getx,
         **options,
     )
     passages = pickle.loads(passages)
     passages = passageLinks(passages, sec0Type, sec0, sec1, browseNavLevel)
-    return jsonify(table=table, passages=passages,)
+    return jsonify(table=table, passages=passages)
 
 
-def serveExport(setup):
-    sectionsData = serveTable(setup, &#34;sections&#34;, None, asDict=True)
-    tuplesData = serveTable(setup, &#34;tuples&#34;, None, asDict=True)
-    queryData = serveQuery(setup, None, asDict=True)
+def serveExport(web):
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    appName = aContext.appName
+    kernelApi = web.kernelApi
 
-    form = getFormData(setup.config)
+    sectionsData = serveTable(web, &#34;sections&#34;, None, asDict=True)
+    tuplesData = serveTable(web, &#34;tuples&#34;, None, asDict=True)
+    queryData = serveQuery(web, None, asDict=True)
 
-    kernelApi = setup.TF.connect()
+    form = getFormData(interfaceDefaults)
+
     (header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     setNamesRep = &#34;, &#34;.join(setNames)
     setNameHtml = (
-        f&#34;&#34;&#34;
-&lt;p class=&#34;setnames&#34;&gt;Sets:
-&lt;span class=&#34;setnames&#34;&gt;{setNamesRep}&lt;/span&gt;
-&lt;/p&gt;&#34;&#34;&#34;
+        f&#39;&lt;p class=&#34;setnames&#34;&gt;Sets: &lt;span class=&#34;setnames&#34;&gt;{setNamesRep}&lt;/span&gt;&lt;/p&gt;&#39;
         if setNames
         else &#34;&#34;
     )
@@ -219,7 +229,7 @@ def serveExport(setup):
 
     return render_template(
         &#34;export.html&#34;,
-        dataSource=setup.dataSource,
+        appName=appName,
         css=css,
         descriptionMd=descriptionMd,
         sectionsTable=(
@@ -240,9 +250,12 @@ def serveExport(setup):
     )
 
 
-def serveDownload(setup):
-    form = getFormData(setup.config)
-    kernelApi = setup.TF.connect()
+def serveDownload(web):
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    form = getFormData(interfaceDefaults)
+    kernelApi = web.kernelApi
+    wildQueries = web.wildQueries
 
     task = form[&#34;query&#34;]
     condenseType = form[&#34;condenseTp&#34;] or None
@@ -250,7 +263,7 @@ def serveDownload(setup):
     csvs = None
     resultsX = None
     messages = &#34;&#34;
-    if task in setup.wildQueries:
+    if task in wildQueries:
         messages = (
             f&#34;Aborted because query is known to take longer than {TIMEOUT} second&#34;
             + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
@@ -270,7 +283,7 @@ def serveDownload(setup):
                 &#34;&#34; if TIMEOUT == 1 else &#34;s&#34;
             )
             console(f&#34;{task}\n{messages}&#34;, error=True)
-            setup.wildQueries.add(task)
+            wildQueries.add(task)
             return jsonify(messages=messages)
 
     if queryMessages:
@@ -297,18 +310,26 @@ def serveDownload(setup):
     return make_response(zipBuffer, headers)
 
 
-def serveAll(setup, anything):
-    form = getFormData(setup.config)
-    condensedAtt = &#34; checked &#34; if form[&#34;condensed&#34;] else &#34;&#34;
-    withNodesAtt = &#34; checked &#34; if form[&#34;withNodes&#34;] else &#34;&#34;
+def serveAll(web, anything):
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    appName = aContext.appName
+    defaultBaseTypes = aContext.baseTypes
+    defaultCondenseType = aContext.condenseType
+    exampleSection = aContext.exampleSection
+    exampleSectionHtml = aContext.exampleSectionHtml
+    allowedBaseTypes = aContext.allowedBaseTypes
+    condenseTypes = aContext.condenseTypes
+    defaultFormat = aContext.defaultFormat
+    allFormats = aContext.allFormats
 
-    optionSpecs = setup.config.OPTIONS
-    options = getValues(optionSpecs, form)
+    kernelApi = web.kernelApi
+
+    form = getFormData(interfaceDefaults)
+    condensedAtt = &#34; checked &#34; if form[&#34;condensed&#34;] else &#34;&#34;
 
     pages = &#34;&#34;
     passages = &#34;&#34;
-
-    kernelApi = setup.TF.connect()
 
     (header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
@@ -316,46 +337,43 @@ def serveAll(setup, anything):
     setNames = kernelApi.setNames()
     setNamesRep = &#34;, &#34;.join(setNames)
     setNameHtml = (
-        f&#34;&#34;&#34;
-&lt;p class=&#34;setnames&#34;&gt;Sets:
-&lt;span class=&#34;setnames&#34;&gt;{setNamesRep}&lt;/span&gt;
-&lt;/p&gt;&#34;&#34;&#34;
+        f&#39;&lt;p class=&#34;setnames&#34;&gt;Sets: &lt;span class=&#34;setnames&#34;&gt;{setNamesRep}&lt;/span&gt;&lt;/p&gt;&#39;
         if setNames
         else &#34;&#34;
     )
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    (
-        defaultCondenseType,
-        exampleSection,
-        exampleSectionText,
-        condenseTypes,
-        defaultTextFormat,
-        textFormats,
-    ) = kernelApi.condenseTypes()
+    baseTypes = form[&#34;baseTps&#34;]
+    baseOpts = wrapBase(allowedBaseTypes, baseTypes)
     condenseType = form[&#34;condenseTp&#34;] or defaultCondenseType
     condenseOpts = wrapCondense(condenseTypes, condenseType)
-    textFormat = form[&#34;textformat&#34;] or defaultTextFormat
-    textFormatOpts = wrapFormats(textFormats, textFormat)
+    textFormat = form[&#34;textformat&#34;] or defaultFormat
+    textFormatOpts = wrapFormats(allFormats, textFormat)
+    (options, optionsHelp) = wrapOptions(aContext, form)
 
-    return render_template(
-        &#34;index.html&#34;,
-        dataSource=setup.dataSource,
+    templateData = dict(
+        appName=appName,
         css=css,
         header=f&#34;{appLogo}{header}{tfLogo}&#34;,
         setNames=setNameHtml,
-        options=wrapOptions(optionSpecs, options),
+        options=options,
+        optionsHelp=optionsHelp,
         condensedAtt=condensedAtt,
+        baseOpts=baseOpts,
+        defaultBaseTypes=defaultBaseTypes,
         condenseOpts=condenseOpts,
         defaultCondenseType=defaultCondenseType,
         textFormatOpts=textFormatOpts,
-        defaultTextFormat=defaultTextFormat,
+        defaultFormat=defaultFormat,
+        exampleSectionHtml=exampleSectionHtml,
         exampleSection=exampleSection,
-        exampleSectionText=exampleSectionText,
-        withNodesAtt=withNodesAtt,
         pages=pages,
         passages=passages,
-        **form,
+    )
+    templateData.update(form)
+    return render_template(
+        &#34;index.html&#34;,
+        **templateData,
     )</code></pre>
 </details>
 </section>
@@ -367,7 +385,7 @@ def serveAll(setup, anything):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.server.serve.serveAll"><code class="name flex">
-<span>def <span class="ident">serveAll</span></span>(<span>setup, anything)</span>
+<span>def <span class="ident">serveAll</span></span>(<span>web, anything)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -375,18 +393,26 @@ def serveAll(setup, anything):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def serveAll(setup, anything):
-    form = getFormData(setup.config)
-    condensedAtt = &#34; checked &#34; if form[&#34;condensed&#34;] else &#34;&#34;
-    withNodesAtt = &#34; checked &#34; if form[&#34;withNodes&#34;] else &#34;&#34;
+<pre><code class="python">def serveAll(web, anything):
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    appName = aContext.appName
+    defaultBaseTypes = aContext.baseTypes
+    defaultCondenseType = aContext.condenseType
+    exampleSection = aContext.exampleSection
+    exampleSectionHtml = aContext.exampleSectionHtml
+    allowedBaseTypes = aContext.allowedBaseTypes
+    condenseTypes = aContext.condenseTypes
+    defaultFormat = aContext.defaultFormat
+    allFormats = aContext.allFormats
 
-    optionSpecs = setup.config.OPTIONS
-    options = getValues(optionSpecs, form)
+    kernelApi = web.kernelApi
+
+    form = getFormData(interfaceDefaults)
+    condensedAtt = &#34; checked &#34; if form[&#34;condensed&#34;] else &#34;&#34;
 
     pages = &#34;&#34;
     passages = &#34;&#34;
-
-    kernelApi = setup.TF.connect()
 
     (header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
@@ -394,51 +420,48 @@ def serveAll(setup, anything):
     setNames = kernelApi.setNames()
     setNamesRep = &#34;, &#34;.join(setNames)
     setNameHtml = (
-        f&#34;&#34;&#34;
-&lt;p class=&#34;setnames&#34;&gt;Sets:
-&lt;span class=&#34;setnames&#34;&gt;{setNamesRep}&lt;/span&gt;
-&lt;/p&gt;&#34;&#34;&#34;
+        f&#39;&lt;p class=&#34;setnames&#34;&gt;Sets: &lt;span class=&#34;setnames&#34;&gt;{setNamesRep}&lt;/span&gt;&lt;/p&gt;&#39;
         if setNames
         else &#34;&#34;
     )
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    (
-        defaultCondenseType,
-        exampleSection,
-        exampleSectionText,
-        condenseTypes,
-        defaultTextFormat,
-        textFormats,
-    ) = kernelApi.condenseTypes()
+    baseTypes = form[&#34;baseTps&#34;]
+    baseOpts = wrapBase(allowedBaseTypes, baseTypes)
     condenseType = form[&#34;condenseTp&#34;] or defaultCondenseType
     condenseOpts = wrapCondense(condenseTypes, condenseType)
-    textFormat = form[&#34;textformat&#34;] or defaultTextFormat
-    textFormatOpts = wrapFormats(textFormats, textFormat)
+    textFormat = form[&#34;textformat&#34;] or defaultFormat
+    textFormatOpts = wrapFormats(allFormats, textFormat)
+    (options, optionsHelp) = wrapOptions(aContext, form)
 
-    return render_template(
-        &#34;index.html&#34;,
-        dataSource=setup.dataSource,
+    templateData = dict(
+        appName=appName,
         css=css,
         header=f&#34;{appLogo}{header}{tfLogo}&#34;,
         setNames=setNameHtml,
-        options=wrapOptions(optionSpecs, options),
+        options=options,
+        optionsHelp=optionsHelp,
         condensedAtt=condensedAtt,
+        baseOpts=baseOpts,
+        defaultBaseTypes=defaultBaseTypes,
         condenseOpts=condenseOpts,
         defaultCondenseType=defaultCondenseType,
         textFormatOpts=textFormatOpts,
-        defaultTextFormat=defaultTextFormat,
+        defaultFormat=defaultFormat,
+        exampleSectionHtml=exampleSectionHtml,
         exampleSection=exampleSection,
-        exampleSectionText=exampleSectionText,
-        withNodesAtt=withNodesAtt,
         pages=pages,
         passages=passages,
-        **form,
+    )
+    templateData.update(form)
+    return render_template(
+        &#34;index.html&#34;,
+        **templateData,
     )</code></pre>
 </details>
 </dd>
 <dt id="tf.server.serve.serveDownload"><code class="name flex">
-<span>def <span class="ident">serveDownload</span></span>(<span>setup)</span>
+<span>def <span class="ident">serveDownload</span></span>(<span>web)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -446,9 +469,12 @@ def serveAll(setup, anything):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def serveDownload(setup):
-    form = getFormData(setup.config)
-    kernelApi = setup.TF.connect()
+<pre><code class="python">def serveDownload(web):
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    form = getFormData(interfaceDefaults)
+    kernelApi = web.kernelApi
+    wildQueries = web.wildQueries
 
     task = form[&#34;query&#34;]
     condenseType = form[&#34;condenseTp&#34;] or None
@@ -456,7 +482,7 @@ def serveAll(setup, anything):
     csvs = None
     resultsX = None
     messages = &#34;&#34;
-    if task in setup.wildQueries:
+    if task in wildQueries:
         messages = (
             f&#34;Aborted because query is known to take longer than {TIMEOUT} second&#34;
             + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
@@ -476,7 +502,7 @@ def serveAll(setup, anything):
                 &#34;&#34; if TIMEOUT == 1 else &#34;s&#34;
             )
             console(f&#34;{task}\n{messages}&#34;, error=True)
-            setup.wildQueries.add(task)
+            wildQueries.add(task)
             return jsonify(messages=messages)
 
     if queryMessages:
@@ -504,7 +530,7 @@ def serveAll(setup, anything):
 </details>
 </dd>
 <dt id="tf.server.serve.serveExport"><code class="name flex">
-<span>def <span class="ident">serveExport</span></span>(<span>setup)</span>
+<span>def <span class="ident">serveExport</span></span>(<span>web)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -512,24 +538,25 @@ def serveAll(setup, anything):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def serveExport(setup):
-    sectionsData = serveTable(setup, &#34;sections&#34;, None, asDict=True)
-    tuplesData = serveTable(setup, &#34;tuples&#34;, None, asDict=True)
-    queryData = serveQuery(setup, None, asDict=True)
+<pre><code class="python">def serveExport(web):
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    appName = aContext.appName
+    kernelApi = web.kernelApi
 
-    form = getFormData(setup.config)
+    sectionsData = serveTable(web, &#34;sections&#34;, None, asDict=True)
+    tuplesData = serveTable(web, &#34;tuples&#34;, None, asDict=True)
+    queryData = serveQuery(web, None, asDict=True)
 
-    kernelApi = setup.TF.connect()
+    form = getFormData(interfaceDefaults)
+
     (header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     setNamesRep = &#34;, &#34;.join(setNames)
     setNameHtml = (
-        f&#34;&#34;&#34;
-&lt;p class=&#34;setnames&#34;&gt;Sets:
-&lt;span class=&#34;setnames&#34;&gt;{setNamesRep}&lt;/span&gt;
-&lt;/p&gt;&#34;&#34;&#34;
+        f&#39;&lt;p class=&#34;setnames&#34;&gt;Sets: &lt;span class=&#34;setnames&#34;&gt;{setNamesRep}&lt;/span&gt;&lt;/p&gt;&#39;
         if setNames
         else &#34;&#34;
     )
@@ -549,7 +576,7 @@ def serveAll(setup, anything):
 
     return render_template(
         &#34;export.html&#34;,
-        dataSource=setup.dataSource,
+        appName=appName,
         css=css,
         descriptionMd=descriptionMd,
         sectionsTable=(
@@ -571,7 +598,7 @@ def serveAll(setup, anything):
 </details>
 </dd>
 <dt id="tf.server.serve.servePassage"><code class="name flex">
-<span>def <span class="ident">servePassage</span></span>(<span>setup, getx)</span>
+<span>def <span class="ident">servePassage</span></span>(<span>web, getx)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -579,16 +606,15 @@ def serveAll(setup, anything):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def servePassage(setup, getx):
-    form = getFormData(setup.config)
+<pre><code class="python">def servePassage(web, getx):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+
+    form = getFormData(interfaceDefaults)
     textFormat = form[&#34;textformat&#34;] or None
 
-    optionSpecs = setup.config.OPTIONS
-    options = getValues(optionSpecs, form)
-
     passages = &#34;&#34;
-
-    kernelApi = setup.TF.connect()
 
     openedKey = &#34;passageOpened&#34;
     openedSet = set(form[openedKey].split(&#34;,&#34;)) if form[openedKey] else set()
@@ -596,7 +622,10 @@ def serveAll(setup, anything):
     sec0 = form[&#34;sec0&#34;]
     sec1 = form[&#34;sec1&#34;]
     sec2 = form[&#34;sec2&#34;]
-    (table, sec0Type, passages, browseNavLevel,) = kernelApi.passage(
+    options = {
+        k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
+    }
+    (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
         form[&#34;features&#34;],
         form[&#34;query&#34;],
         sec0,
@@ -604,17 +633,17 @@ def serveAll(setup, anything):
         sec2=sec2,
         opened=openedSet,
         fmt=textFormat,
-        withNodes=form[&#34;withNodes&#34;],
+        baseTypes=form[&#34;baseTps&#34;],
         getx=getx,
         **options,
     )
     passages = pickle.loads(passages)
     passages = passageLinks(passages, sec0Type, sec0, sec1, browseNavLevel)
-    return jsonify(table=table, passages=passages,)</code></pre>
+    return jsonify(table=table, passages=passages)</code></pre>
 </details>
 </dd>
 <dt id="tf.server.serve.serveQuery"><code class="name flex">
-<span>def <span class="ident">serveQuery</span></span>(<span>setup, getx, asDict=False)</span>
+<span>def <span class="ident">serveQuery</span></span>(<span>web, getx, asDict=False)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -622,9 +651,14 @@ def serveAll(setup, anything):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def serveQuery(setup, getx, asDict=False):
+<pre><code class="python">def serveQuery(web, getx, asDict=False):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    wildQueries = web.wildQueries
+
     kind = &#34;query&#34;
-    form = getFormData(setup.config)
+    form = getFormData(interfaceDefaults)
     task = form[kind]
     condenseType = form[&#34;condenseTp&#34;] or None
     resultKind = condenseType if form[&#34;condensed&#34;] else RESULT
@@ -634,27 +668,28 @@ def serveAll(setup, anything):
         {int(n) for n in form[openedKey].split(&#34;,&#34;)} if form[openedKey] else set()
     )
 
-    optionSpecs = setup.config.OPTIONS
-    options = getValues(optionSpecs, form)
-
     pages = &#34;&#34;
     features = &#34;&#34;
 
-    kernelApi = setup.TF.connect()
     method = dict if asDict else jsonify
     total = 0
 
     if task:
         messages = &#34;&#34;
         table = None
-        if task in setup.wildQueries:
+        if task in wildQueries:
             messages = (
                 f&#34;Aborted because query is known to take longer than {TIMEOUT} second&#34;
                 + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
             )
         else:
+            options = {
+                k: form.get(k, v)
+                for (k, v) in interfaceDefaults.items()
+                if v is not None
+            }
             try:
-                (table, messages, features, start, total,) = kernelApi.search(
+                (table, messages, features, start, total) = kernelApi.search(
                     task,
                     form[&#34;batch&#34;],
                     position=form[&#34;position&#34;],
@@ -662,8 +697,7 @@ def serveAll(setup, anything):
                     condensed=form[&#34;condensed&#34;],
                     condenseType=condenseType,
                     fmt=textFormat,
-                    withNodes=form[&#34;withNodes&#34;],
-                    linked=form[&#34;linked&#34;],
+                    baseTypes=form[&#34;baseTps&#34;],
                     getx=int(getx) if getx else None,
                     **options,
                 )
@@ -673,7 +707,7 @@ def serveAll(setup, anything):
                     + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
                 )
                 console(f&#34;{task}\n{messages}&#34;, error=True)
-                setup.wildQueries.add(task)
+                wildQueries.add(task)
                 total = 0
 
         if table is not None:
@@ -691,7 +725,7 @@ def serveAll(setup, anything):
 </details>
 </dd>
 <dt id="tf.server.serve.serveTable"><code class="name flex">
-<span>def <span class="ident">serveTable</span></span>(<span>setup, kind, getx=None, asDict=False)</span>
+<span>def <span class="ident">serveTable</span></span>(<span>web, kind, getx=None, asDict=False)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -699,8 +733,12 @@ def serveAll(setup, anything):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def serveTable(setup, kind, getx=None, asDict=False):
-    form = getFormData(setup.config)
+<pre><code class="python">def serveTable(web, kind, getx=None, asDict=False):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+
+    form = getFormData(interfaceDefaults)
     textFormat = form[&#34;textformat&#34;] or None
     task = form[kind].strip()
     openedKey = f&#34;{kind}Opened&#34;
@@ -708,23 +746,21 @@ def serveAll(setup, anything):
         {int(n) for n in form[openedKey].split(&#34;,&#34;)} if form[openedKey] else set()
     )
 
-    optionSpecs = setup.config.OPTIONS
-    options = getValues(optionSpecs, form)
-
     method = dict if asDict else jsonify
-
-    kernelApi = setup.TF.connect()
 
     messages = &#34;&#34;
     table = None
     if task:
-        (table, messages,) = kernelApi.table(
+        options = {
+            k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
+        }
+        (table, messages) = kernelApi.table(
             kind,
             task,
             form[&#34;features&#34;],
             opened=openedSet,
             fmt=textFormat,
-            withNodes=form[&#34;withNodes&#34;],
+            baseTypes=form[&#34;baseTps&#34;],
             getx=int(getx) if getx else None,
             **options,
         )
@@ -732,7 +768,7 @@ def serveAll(setup, anything):
         if messages:
             messages = wrapMessages(messages)
 
-    return method(table=table, messages=messages,)</code></pre>
+    return method(table=table, messages=messages)</code></pre>
 </details>
 </dd>
 </dl>

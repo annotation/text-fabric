@@ -32,7 +32,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = &#39;7.11.1&#39;
+VERSION = &#39;8.0.0&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -61,6 +61,30 @@ to the original `tf`  files, where `{PVN}` is the package version number.
 See also `tf.clean`.
 &#34;&#34;&#34;
 
+API_VERSION = 1
+&#34;&#34;&#34;TF API version.
+
+Text-Fabric offers and API to TF apps.
+This is the version that the current Text-Fabric offers to its apps.
+
+Apps require a version. The provided version and the required version must
+match exactly in order to get a working system.
+
+We do not aim for backward compatibility, since it is very easy to obtain a new version
+of an app.
+
+When Text-Fabric loads a TF app, it will check the api version that the app requires
+against this version.
+
+App requirement higher than TF API version
+:   The user is advised to upgrade Text-Fabric, or, alternatively,
+    select an older version of the app
+
+App requirement lower than TF API version
+:   The user is advised to obtain a newer version of the app, or alternatively,
+    downgrade Text-Fabric
+&#34;&#34;&#34;
+
 GZIP_LEVEL = 2
 &#34;&#34;&#34;Compression level when compressing tf files.&#34;&#34;&#34;
 
@@ -76,6 +100,10 @@ REPO = &#34;text-fabric&#34;
 &#34;&#34;&#34;GitHub repo name.
 
 This is the name of the repo that contains Text-Fabric.
+&#34;&#34;&#34;
+
+RELATIVE = &#34;tf&#34;
+&#34;&#34;&#34;Default relative path with a repo to the directory with tf files.
 &#34;&#34;&#34;
 
 URL_GH_API = &#34;https://api.github.com/repos&#34;
@@ -117,14 +145,18 @@ EXPRESS_SYNC_LEGACY = [
 ]
 &#34;&#34;&#34;Legacy names of cache indicator files.&#34;&#34;&#34;
 
+PROTOCOL = &#34;http://&#34;
+HOST = &#34;localhost&#34;
+PORT_BASE = 8976
+
 URL_TFDOC = f&#34;https://{ORG}.github.io/{REPO}&#34;
 &#34;&#34;&#34;Base url of the online Text-Fabric documentation.&#34;&#34;&#34;
 
-DOI_TEXT = &#34;10.5281/zenodo.592193&#34;
-&#34;&#34;&#34;Text of a DOI link pointing to an archived copy of this repo at Zenodo.&#34;&#34;&#34;
+DOI_DEFAULT = &#34;no DOI&#34;
+DOI_URL_PREFIX = &#34;https://doi.org&#34;
 
-DOI_URL = &#34;https://doi.org/10.5281/zenodo.592193&#34;
-&#34;&#34;&#34;Url of an archived copy of this repo at Zenodo.&#34;&#34;&#34;
+DOI_TF = &#34;10.5281/zenodo.592193&#34;
+&#34;&#34;&#34;DOI of an archived copy of this repo at Zenodo.&#34;&#34;&#34;
 
 APIREF = f&#34;https://{ORG}.github.io/{REPO}/Api/Fabric/&#34;
 &#34;&#34;&#34;Link to the Api docs of Text-Fabric.&#34;&#34;&#34;
@@ -138,8 +170,20 @@ APP_NB_URL = f&#34;{URL_NB}/{ORG}/tutorials/blob/master&#34;
 APP_GITHUB = f&#34;{GH_BASE}/annotation&#34;
 &#34;&#34;&#34;Local GitHub location that contains all the TF apps.&#34;&#34;&#34;
 
+APP_CONFIG = &#34;config.yaml&#34;
+&#34;&#34;&#34;Name of the config file of a TF app.&#34;&#34;&#34;
+
 APP_CODE = &#34;code&#34;
 &#34;&#34;&#34;Name of the top-level directory of a TF app.&#34;&#34;&#34;
+
+APP_DISPLAY = &#34;static/display.css&#34;
+&#34;&#34;&#34;Relative path of the css file of a TF app.&#34;&#34;&#34;
+
+SERVER_DISPLAY_BASE = &#34;/server/static&#34;
+&#34;&#34;&#34;Base of server css files.&#34;&#34;&#34;
+
+SERVER_DISPLAY = (&#34;fonts.css&#34;, &#34;display.css&#34;, &#34;highlight.css&#34;)
+&#34;&#34;&#34;Bunch of TF-generic css files.&#34;&#34;&#34;
 
 TEMP_DIR = &#34;_temp&#34;
 &#34;&#34;&#34;Name of temporary directories.
@@ -169,7 +213,7 @@ this is the default.
 Text-Fabric will search all these directories as for `.tf` modules of files.
 &#34;&#34;&#34;
 
-ZIP_OPTIONS = dict(compression=ZIP_DEFLATED,)
+ZIP_OPTIONS = dict(compression=ZIP_DEFLATED)
 &#34;&#34;&#34;Options for zip when packing tf files.
 
 This is for packaging collections of plain tf files into zip files
@@ -202,9 +246,37 @@ TRY_LIMIT_TO = 40
 <dd>
 <section class="desc"><p>Link to the Api docs of Text-Fabric.</p></section>
 </dd>
+<dt id="tf.parameters.API_VERSION"><code class="name">var <span class="ident">API_VERSION</span></code></dt>
+<dd>
+<section class="desc"><p>TF API version.</p>
+<p>Text-Fabric offers and API to TF apps.
+This is the version that the current Text-Fabric offers to its apps.</p>
+<p>Apps require a version. The provided version and the required version must
+match exactly in order to get a working system.</p>
+<p>We do not aim for backward compatibility, since it is very easy to obtain a new version
+of an app.</p>
+<p>When Text-Fabric loads a TF app, it will check the api version that the app requires
+against this version.</p>
+<dl>
+<dt>App requirement higher than TF API version</dt>
+<dd>The user is advised to upgrade Text-Fabric, or, alternatively,
+select an older version of the app</dd>
+<dt>App requirement lower than TF API version</dt>
+<dd>The user is advised to obtain a newer version of the app, or alternatively,
+downgrade Text-Fabric</dd>
+</dl></section>
+</dd>
 <dt id="tf.parameters.APP_CODE"><code class="name">var <span class="ident">APP_CODE</span></code></dt>
 <dd>
 <section class="desc"><p>Name of the top-level directory of a TF app.</p></section>
+</dd>
+<dt id="tf.parameters.APP_CONFIG"><code class="name">var <span class="ident">APP_CONFIG</span></code></dt>
+<dd>
+<section class="desc"><p>Name of the config file of a TF app.</p></section>
+</dd>
+<dt id="tf.parameters.APP_DISPLAY"><code class="name">var <span class="ident">APP_DISPLAY</span></code></dt>
+<dd>
+<section class="desc"><p>Relative path of the css file of a TF app.</p></section>
 </dd>
 <dt id="tf.parameters.APP_GITHUB"><code class="name">var <span class="ident">APP_GITHUB</span></code></dt>
 <dd>
@@ -218,13 +290,9 @@ TRY_LIMIT_TO = 40
 <dd>
 <section class="desc"><p>Url of the GitHub location that contains all the TF apps.</p></section>
 </dd>
-<dt id="tf.parameters.DOI_TEXT"><code class="name">var <span class="ident">DOI_TEXT</span></code></dt>
+<dt id="tf.parameters.DOI_TF"><code class="name">var <span class="ident">DOI_TF</span></code></dt>
 <dd>
-<section class="desc"><p>Text of a DOI link pointing to an archived copy of this repo at Zenodo.</p></section>
-</dd>
-<dt id="tf.parameters.DOI_URL"><code class="name">var <span class="ident">DOI_URL</span></code></dt>
-<dd>
-<section class="desc"><p>Url of an archived copy of this repo at Zenodo.</p></section>
+<section class="desc"><p>DOI of an archived copy of this repo at Zenodo.</p></section>
 </dd>
 <dt id="tf.parameters.DOWNLOADS"><code class="name">var <span class="ident">DOWNLOADS</span></code></dt>
 <dd>
@@ -289,10 +357,22 @@ files, where <code>{PVN}</code> is the package version number.</p>
 <dd>
 <section class="desc"><p>Pickle protocol level when pickling tf files.</p></section>
 </dd>
+<dt id="tf.parameters.RELATIVE"><code class="name">var <span class="ident">RELATIVE</span></code></dt>
+<dd>
+<section class="desc"><p>Default relative path with a repo to the directory with tf files.</p></section>
+</dd>
 <dt id="tf.parameters.REPO"><code class="name">var <span class="ident">REPO</span></code></dt>
 <dd>
 <section class="desc"><p>GitHub repo name.</p>
 <p>This is the name of the repo that contains Text-Fabric.</p></section>
+</dd>
+<dt id="tf.parameters.SERVER_DISPLAY"><code class="name">var <span class="ident">SERVER_DISPLAY</span></code></dt>
+<dd>
+<section class="desc"><p>Bunch of TF-generic css files.</p></section>
+</dd>
+<dt id="tf.parameters.SERVER_DISPLAY_BASE"><code class="name">var <span class="ident">SERVER_DISPLAY_BASE</span></code></dt>
+<dd>
+<section class="desc"><p>Base of server css files.</p></section>
 </dd>
 <dt id="tf.parameters.TEMP_DIR"><code class="name">var <span class="ident">TEMP_DIR</span></code></dt>
 <dd>
@@ -373,12 +453,14 @@ pickled and compressed to .tfx files.</p>
 <li><h3><a href="#header-variables">Global variables</a></h3>
 <ul class="two-column">
 <li><code><a title="tf.parameters.APIREF" href="#tf.parameters.APIREF">APIREF</a></code></li>
+<li><code><a title="tf.parameters.API_VERSION" href="#tf.parameters.API_VERSION">API_VERSION</a></code></li>
 <li><code><a title="tf.parameters.APP_CODE" href="#tf.parameters.APP_CODE">APP_CODE</a></code></li>
+<li><code><a title="tf.parameters.APP_CONFIG" href="#tf.parameters.APP_CONFIG">APP_CONFIG</a></code></li>
+<li><code><a title="tf.parameters.APP_DISPLAY" href="#tf.parameters.APP_DISPLAY">APP_DISPLAY</a></code></li>
 <li><code><a title="tf.parameters.APP_GITHUB" href="#tf.parameters.APP_GITHUB">APP_GITHUB</a></code></li>
 <li><code><a title="tf.parameters.APP_NB_URL" href="#tf.parameters.APP_NB_URL">APP_NB_URL</a></code></li>
 <li><code><a title="tf.parameters.APP_URL" href="#tf.parameters.APP_URL">APP_URL</a></code></li>
-<li><code><a title="tf.parameters.DOI_TEXT" href="#tf.parameters.DOI_TEXT">DOI_TEXT</a></code></li>
-<li><code><a title="tf.parameters.DOI_URL" href="#tf.parameters.DOI_URL">DOI_URL</a></code></li>
+<li><code><a title="tf.parameters.DOI_TF" href="#tf.parameters.DOI_TF">DOI_TF</a></code></li>
 <li><code><a title="tf.parameters.DOWNLOADS" href="#tf.parameters.DOWNLOADS">DOWNLOADS</a></code></li>
 <li><code><a title="tf.parameters.EXPRESS_BASE" href="#tf.parameters.EXPRESS_BASE">EXPRESS_BASE</a></code></li>
 <li><code><a title="tf.parameters.EXPRESS_SYNC" href="#tf.parameters.EXPRESS_SYNC">EXPRESS_SYNC</a></code></li>
@@ -390,7 +472,10 @@ pickled and compressed to .tfx files.</p>
 <li><code><a title="tf.parameters.ORG" href="#tf.parameters.ORG">ORG</a></code></li>
 <li><code><a title="tf.parameters.PACK_VERSION" href="#tf.parameters.PACK_VERSION">PACK_VERSION</a></code></li>
 <li><code><a title="tf.parameters.PICKLE_PROTOCOL" href="#tf.parameters.PICKLE_PROTOCOL">PICKLE_PROTOCOL</a></code></li>
+<li><code><a title="tf.parameters.RELATIVE" href="#tf.parameters.RELATIVE">RELATIVE</a></code></li>
 <li><code><a title="tf.parameters.REPO" href="#tf.parameters.REPO">REPO</a></code></li>
+<li><code><a title="tf.parameters.SERVER_DISPLAY" href="#tf.parameters.SERVER_DISPLAY">SERVER_DISPLAY</a></code></li>
+<li><code><a title="tf.parameters.SERVER_DISPLAY_BASE" href="#tf.parameters.SERVER_DISPLAY_BASE">SERVER_DISPLAY_BASE</a></code></li>
 <li><code><a title="tf.parameters.TEMP_DIR" href="#tf.parameters.TEMP_DIR">TEMP_DIR</a></code></li>
 <li><code><a title="tf.parameters.TRY_LIMIT_FROM" href="#tf.parameters.TRY_LIMIT_FROM">TRY_LIMIT_FROM</a></code></li>
 <li><code><a title="tf.parameters.TRY_LIMIT_TO" href="#tf.parameters.TRY_LIMIT_TO">TRY_LIMIT_TO</a></code></li>

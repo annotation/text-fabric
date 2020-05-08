@@ -26,11 +26,30 @@
 </summary>
 <pre><code class="python">from itertools import chain
 
-from ..core.helpers import mathEsc, mdhtmlEsc
 from .search import runSearch
 
 
-def getHlAtt(app, n, highlights):
+def getHlAtt(app, n, highlights, baseTypes, isPlain):
+    &#34;&#34;&#34;Get the highlight attribute for a node.
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    n: int
+        The node to be highlighted
+    highlights: set|dict
+        The nodes to be highlighted.
+        Keys/elements are the nodes to be highlighted.
+        This function is only interested in whether `n` is in it,
+        and if so, what the value is (in case of a dict).
+        If given as set: use the default highlight color.
+        If given as dict: use the value as color.
+    baseTypes: set
+        Which node types acts as a base type.
+    isPlain:
+        Whether we are highlighting for plain() or for pretty().
+    &#34;&#34;&#34;
 
     if highlights is None:
         return (&#34;&#34;, &#34;&#34;)
@@ -46,121 +65,93 @@ def getHlAtt(app, n, highlights):
     if color is None:
         return (&#34;&#34;, &#34;&#34;)
 
-    hlClass = &#34;hl&#34;
-    hlStyle = f&#39; style=&#34;background-color: {color};&#34; &#39; if color != &#34;&#34; else &#34;&#34;
-
-    return (hlClass, hlStyle)
-
-
-def getHlAttPlain(app, n, highlights):
     api = app.api
     F = api.F
-    L = api.L
-    T = api.T
-    fOtype = F.otype.v
-    sectionTypes = T.sectionTypes
 
-    if highlights is None:
-        return &#34;&#34;
+    isBaseType = F.otype.v(n) in baseTypes
 
-    color = (
-        highlights.get(n, None)
-        if type(highlights) is dict
-        else &#34;&#34;
-        if n in highlights
-        else None
-    )
-    upColors = tuple(
-        highlights[u]
-        for u in L.u(n)
-        if u in highlights and fOtype(u) not in sectionTypes
-    )
-    upColor = upColors[0] if upColors else None
+    hlCls = (&#34;hl&#34; if isBaseType else &#34;hlbx&#34;) if isPlain else &#34;hl&#34;
+    hlObject = (&#34;background&#34; if isBaseType else &#34;border&#34;) if isPlain else &#34;background&#34;
+    hlStyle = f&#39; style=&#34;{hlObject}-color: {color};&#34; &#39; if color != &#34;&#34; else &#34;&#34;
 
-    if color is None and upColor is None:
-        return &#34;&#34;
-
-    isSection = fOtype(n) in sectionTypes
-    hlClass = []
-    hlStyle = []
-
-    if color is not None:
-        hlClass.append(&#34;hldot&#34; if isSection else &#34;hl&#34;)
-        if color != &#34;&#34;:
-            hlStyle.append(f&#34;background-color: {color};&#34;)
-            if isSection:
-                hlStyle.append(f&#34;border-color: {color};&#34;)
-
-    if upColor is not None:
-        hlClass.append(&#34;hlup&#34;)
-        if upColor != &#34;&#34;:
-            hlStyle.append(f&#34;border-color: {upColor};&#34;)
-
-    hlClassAtt = &#34; &#34;.join(hlClass)
-    if hlClassAtt:
-        hlClassAtt = f&#39; class=&#34;{hlClassAtt}&#34; &#39;
-    hlStyleAtt = &#34;&#34;.join(hlStyle)
-    if hlStyleAtt:
-        hlStyleAtt = f&#39; style=&#34;{hlStyleAtt}&#34; &#39;
-
-    return f&#34;{hlClassAtt}{hlStyleAtt}&#34;
+    return (hlCls, hlStyle)
 
 
-def hlRep(app, rep, n, highlights):
-    att = getHlAttPlain(app, n, highlights)
-    return f&#34;&lt;span {att}&gt;{rep}&lt;/span&gt;&#34; if att else rep
+def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
+    &#34;&#34;&#34;Get the highlights for a tuple of nodes.
 
+    The idea is to mark the elements of a tuple of nodes with highlights,
+    respecting a given  set or dict of highlights and  a color map.
 
-def hlText(app, nodes, highlights, descend=None, **options):
-    api = app.api
-    T = api.T
-    isHtml = hasattr(app, &#34;textFormats&#34;) and options.get(&#34;fmt&#34;, None) in app.textFormats
-    descendOption = {} if descend is None else dict(descend=descend)
+    This is a bit of an intricate merging operation.
 
-    if not highlights:
-        text = T.text(nodes, **descendOption, **options)
-        return mathEsc(text) if isHtml else mdhtmlEsc(text)
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    tup: tuple of int
+        The tuple of nodes to be highlighted
+    colorMap: dict
+        A mapping of tuple positions to colors.
+        Member `i` of `tup` should be highlighted with color `colorMap[i]`.
+    condenseType: string
+        The type of node that acts as the basis of a pretty display.
+        The nodes in the given `tup` will be distributed over as many nodes of
+        `condenseType` as they occur in.
+    highlights: set|dict
+        The nodes to be highlighted.
+        Keys/elements are the nodes to be highlighted.
+        This function is only interested in whether the members of `tup` are in it,
+        and if so, what the values are (in case of a dict).
+        If given as set: use the default highlight color.
+        If given as dict: use the value as color.
+    &#34;&#34;&#34;
 
-    result = &#34;&#34;
-    for node in nodes:
-        text = T.text([node], **descendOption, **options)
-        result += hlRep(
-            app, mathEsc(text) if isHtml else mdhtmlEsc(text), node, highlights,
-        )
-    return result
-
-
-def getTupleHighlights(api, tuples, highlights, colorMap, condenseType, multiple=False):
     F = api.F
     fOtype = F.otype.v
     otypeRank = api.otypeRank
 
     condenseRank = otypeRank[condenseType]
-    if type(highlights) is set:
+    if highlights is None:
+        highlights = {}
+    elif type(highlights) is set:
         highlights = {m: &#34;&#34; for m in highlights}
-    newHighlights = {}
-    if highlights:
-        newHighlights.update(highlights)
+    newHighlights = {n: h for (n, h) in highlights.items()}
 
-    if not multiple:
-        tuples = (tuples,)
-    for tup in tuples:
-        for (i, n) in enumerate(tup):
-            nType = fOtype(n)
-            if otypeRank[nType] &lt; condenseRank:
-                thisHighlight = None
-                if highlights:
-                    thisHighlight = highlights.get(n, None)
-                elif colorMap is not None:
-                    thisHighlight = colorMap.get(i + 1, None)
-                else:
-                    thisHighlight = &#34;&#34;
-                if thisHighlight is not None:
-                    newHighlights[n] = thisHighlight
+    for (i, n) in enumerate(tup):
+        nType = fOtype(n)
+        if newHighlights.get(n, None):
+            continue
+        if otypeRank[nType] &lt; condenseRank:
+            newHighlights[n] = (
+                highlights[n]
+                if n in highlights
+                else colorMap[i + 1]
+                if colorMap is not None and i + 1 in colorMap
+                else &#34;&#34;
+            )
     return newHighlights
 
 
 def getPassageHighlights(app, node, query, cache):
+    &#34;&#34;&#34;Get the highlights for a whole passage.
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    node: int
+        The node of a passage (typically a chapter, or something that is occupies a
+        page in the browser)
+    query: string
+        A query to run, and whose results will be highlighted (as far they occur
+        in the passage)
+    cache:  dict
+        A cache that holds run queries and their results.
+        Useful when we browse many chapters and want to show the highlights of
+        the same query.
+    &#34;&#34;&#34;
+
     if not query:
         return None
 
@@ -172,9 +163,9 @@ def getPassageHighlights(app, node, query, cache):
     L = api.L
     passageNodes = L.d(node)
 
-    highlights = set(chain.from_iterable(queryResults))
-    highlights &amp;= set(passageNodes)
-    return highlights</code></pre>
+    resultSet = set(chain.from_iterable(queryResults))
+    passageSet = set(passageNodes)
+    return resultSet &amp; passageSet</code></pre>
 </details>
 </section>
 <section>
@@ -185,15 +176,53 @@ def getPassageHighlights(app, node, query, cache):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.applib.highlight.getHlAtt"><code class="name flex">
-<span>def <span class="ident">getHlAtt</span></span>(<span>app, n, highlights)</span>
+<span>def <span class="ident">getHlAtt</span></span>(<span>app, n, highlights, baseTypes, isPlain)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Get the highlight attribute for a node.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
+<dd>The high-level API object</dd>
+<dt><strong><code>n</code></strong> :&ensp;<code>int</code></dt>
+<dd>The node to be highlighted</dd>
+<dt><strong><code>highlights</code></strong> :&ensp;<code>set</code>|<code>dict</code></dt>
+<dd>The nodes to be highlighted.
+Keys/elements are the nodes to be highlighted.
+This function is only interested in whether <code>n</code> is in it,
+and if so, what the value is (in case of a dict).
+If given as set: use the default highlight color.
+If given as dict: use the value as color.</dd>
+<dt><strong><code>baseTypes</code></strong> :&ensp;<code>set</code></dt>
+<dd>Which node types acts as a base type.</dd>
+</dl>
+<p>isPlain:
+Whether we are highlighting for plain() or for pretty().</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getHlAtt(app, n, highlights):
+<pre><code class="python">def getHlAtt(app, n, highlights, baseTypes, isPlain):
+    &#34;&#34;&#34;Get the highlight attribute for a node.
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    n: int
+        The node to be highlighted
+    highlights: set|dict
+        The nodes to be highlighted.
+        Keys/elements are the nodes to be highlighted.
+        This function is only interested in whether `n` is in it,
+        and if so, what the value is (in case of a dict).
+        If given as set: use the default highlight color.
+        If given as dict: use the value as color.
+    baseTypes: set
+        Which node types acts as a base type.
+    isPlain:
+        Whether we are highlighting for plain() or for pretty().
+    &#34;&#34;&#34;
 
     if highlights is None:
         return (&#34;&#34;, &#34;&#34;)
@@ -209,85 +238,61 @@ def getPassageHighlights(app, node, query, cache):
     if color is None:
         return (&#34;&#34;, &#34;&#34;)
 
-    hlClass = &#34;hl&#34;
-    hlStyle = f&#39; style=&#34;background-color: {color};&#34; &#39; if color != &#34;&#34; else &#34;&#34;
-
-    return (hlClass, hlStyle)</code></pre>
-</details>
-</dd>
-<dt id="tf.applib.highlight.getHlAttPlain"><code class="name flex">
-<span>def <span class="ident">getHlAttPlain</span></span>(<span>app, n, highlights)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def getHlAttPlain(app, n, highlights):
     api = app.api
     F = api.F
-    L = api.L
-    T = api.T
-    fOtype = F.otype.v
-    sectionTypes = T.sectionTypes
 
-    if highlights is None:
-        return &#34;&#34;
+    isBaseType = F.otype.v(n) in baseTypes
 
-    color = (
-        highlights.get(n, None)
-        if type(highlights) is dict
-        else &#34;&#34;
-        if n in highlights
-        else None
-    )
-    upColors = tuple(
-        highlights[u]
-        for u in L.u(n)
-        if u in highlights and fOtype(u) not in sectionTypes
-    )
-    upColor = upColors[0] if upColors else None
+    hlCls = (&#34;hl&#34; if isBaseType else &#34;hlbx&#34;) if isPlain else &#34;hl&#34;
+    hlObject = (&#34;background&#34; if isBaseType else &#34;border&#34;) if isPlain else &#34;background&#34;
+    hlStyle = f&#39; style=&#34;{hlObject}-color: {color};&#34; &#39; if color != &#34;&#34; else &#34;&#34;
 
-    if color is None and upColor is None:
-        return &#34;&#34;
-
-    isSection = fOtype(n) in sectionTypes
-    hlClass = []
-    hlStyle = []
-
-    if color is not None:
-        hlClass.append(&#34;hldot&#34; if isSection else &#34;hl&#34;)
-        if color != &#34;&#34;:
-            hlStyle.append(f&#34;background-color: {color};&#34;)
-            if isSection:
-                hlStyle.append(f&#34;border-color: {color};&#34;)
-
-    if upColor is not None:
-        hlClass.append(&#34;hlup&#34;)
-        if upColor != &#34;&#34;:
-            hlStyle.append(f&#34;border-color: {upColor};&#34;)
-
-    hlClassAtt = &#34; &#34;.join(hlClass)
-    if hlClassAtt:
-        hlClassAtt = f&#39; class=&#34;{hlClassAtt}&#34; &#39;
-    hlStyleAtt = &#34;&#34;.join(hlStyle)
-    if hlStyleAtt:
-        hlStyleAtt = f&#39; style=&#34;{hlStyleAtt}&#34; &#39;
-
-    return f&#34;{hlClassAtt}{hlStyleAtt}&#34;</code></pre>
+    return (hlCls, hlStyle)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.highlight.getPassageHighlights"><code class="name flex">
 <span>def <span class="ident">getPassageHighlights</span></span>(<span>app, node, query, cache)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Get the highlights for a whole passage.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
+<dd>The high-level API object</dd>
+<dt><strong><code>node</code></strong> :&ensp;<code>int</code></dt>
+<dd>The node of a passage (typically a chapter, or something that is occupies a
+page in the browser)</dd>
+<dt><strong><code>query</code></strong> :&ensp;<code>string</code></dt>
+<dd>A query to run, and whose results will be highlighted (as far they occur
+in the passage)</dd>
+<dt><strong><code>cache</code></strong> :&ensp; <code>dict</code></dt>
+<dd>A cache that holds run queries and their results.
+Useful when we browse many chapters and want to show the highlights of
+the same query.</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getPassageHighlights(app, node, query, cache):
+    &#34;&#34;&#34;Get the highlights for a whole passage.
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    node: int
+        The node of a passage (typically a chapter, or something that is occupies a
+        page in the browser)
+    query: string
+        A query to run, and whose results will be highlighted (as far they occur
+        in the passage)
+    cache:  dict
+        A cache that holds run queries and their results.
+        Useful when we browse many chapters and want to show the highlights of
+        the same query.
+    &#34;&#34;&#34;
+
     if not query:
         return None
 
@@ -299,90 +304,100 @@ def getPassageHighlights(app, node, query, cache):
     L = api.L
     passageNodes = L.d(node)
 
-    highlights = set(chain.from_iterable(queryResults))
-    highlights &amp;= set(passageNodes)
-    return highlights</code></pre>
+    resultSet = set(chain.from_iterable(queryResults))
+    passageSet = set(passageNodes)
+    return resultSet &amp; passageSet</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.highlight.getTupleHighlights"><code class="name flex">
-<span>def <span class="ident">getTupleHighlights</span></span>(<span>api, tuples, highlights, colorMap, condenseType, multiple=False)</span>
+<span>def <span class="ident">getTupleHighlights</span></span>(<span>api, tup, highlights, colorMap, condenseType)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Get the highlights for a tuple of nodes.</p>
+<p>The idea is to mark the elements of a tuple of nodes with highlights,
+respecting a given
+set or dict of highlights and
+a color map.</p>
+<p>This is a bit of an intricate merging operation.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
+<dd>The high-level API object</dd>
+<dt><strong><code>tup</code></strong> :&ensp;<code>tuple</code> of <code>int</code></dt>
+<dd>The tuple of nodes to be highlighted</dd>
+<dt><strong><code>colorMap</code></strong> :&ensp;<code>dict</code></dt>
+<dd>A mapping of tuple positions to colors.
+Member <code>i</code> of <code>tup</code> should be highlighted with color <code>colorMap[i]</code>.</dd>
+<dt><strong><code>condenseType</code></strong> :&ensp;<code>string</code></dt>
+<dd>The type of node that acts as the basis of a pretty display.
+The nodes in the given <code>tup</code> will be distributed over as many nodes of
+<code>condenseType</code> as they occur in.</dd>
+<dt><strong><code>highlights</code></strong> :&ensp;<code>set</code>|<code>dict</code></dt>
+<dd>The nodes to be highlighted.
+Keys/elements are the nodes to be highlighted.
+This function is only interested in whether the members of <code>tup</code> are in it,
+and if so, what the values are (in case of a dict).
+If given as set: use the default highlight color.
+If given as dict: use the value as color.</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getTupleHighlights(api, tuples, highlights, colorMap, condenseType, multiple=False):
+<pre><code class="python">def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
+    &#34;&#34;&#34;Get the highlights for a tuple of nodes.
+
+    The idea is to mark the elements of a tuple of nodes with highlights,
+    respecting a given  set or dict of highlights and  a color map.
+
+    This is a bit of an intricate merging operation.
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    tup: tuple of int
+        The tuple of nodes to be highlighted
+    colorMap: dict
+        A mapping of tuple positions to colors.
+        Member `i` of `tup` should be highlighted with color `colorMap[i]`.
+    condenseType: string
+        The type of node that acts as the basis of a pretty display.
+        The nodes in the given `tup` will be distributed over as many nodes of
+        `condenseType` as they occur in.
+    highlights: set|dict
+        The nodes to be highlighted.
+        Keys/elements are the nodes to be highlighted.
+        This function is only interested in whether the members of `tup` are in it,
+        and if so, what the values are (in case of a dict).
+        If given as set: use the default highlight color.
+        If given as dict: use the value as color.
+    &#34;&#34;&#34;
+
     F = api.F
     fOtype = F.otype.v
     otypeRank = api.otypeRank
 
     condenseRank = otypeRank[condenseType]
-    if type(highlights) is set:
+    if highlights is None:
+        highlights = {}
+    elif type(highlights) is set:
         highlights = {m: &#34;&#34; for m in highlights}
-    newHighlights = {}
-    if highlights:
-        newHighlights.update(highlights)
+    newHighlights = {n: h for (n, h) in highlights.items()}
 
-    if not multiple:
-        tuples = (tuples,)
-    for tup in tuples:
-        for (i, n) in enumerate(tup):
-            nType = fOtype(n)
-            if otypeRank[nType] &lt; condenseRank:
-                thisHighlight = None
-                if highlights:
-                    thisHighlight = highlights.get(n, None)
-                elif colorMap is not None:
-                    thisHighlight = colorMap.get(i + 1, None)
-                else:
-                    thisHighlight = &#34;&#34;
-                if thisHighlight is not None:
-                    newHighlights[n] = thisHighlight
+    for (i, n) in enumerate(tup):
+        nType = fOtype(n)
+        if newHighlights.get(n, None):
+            continue
+        if otypeRank[nType] &lt; condenseRank:
+            newHighlights[n] = (
+                highlights[n]
+                if n in highlights
+                else colorMap[i + 1]
+                if colorMap is not None and i + 1 in colorMap
+                else &#34;&#34;
+            )
     return newHighlights</code></pre>
-</details>
-</dd>
-<dt id="tf.applib.highlight.hlRep"><code class="name flex">
-<span>def <span class="ident">hlRep</span></span>(<span>app, rep, n, highlights)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def hlRep(app, rep, n, highlights):
-    att = getHlAttPlain(app, n, highlights)
-    return f&#34;&lt;span {att}&gt;{rep}&lt;/span&gt;&#34; if att else rep</code></pre>
-</details>
-</dd>
-<dt id="tf.applib.highlight.hlText"><code class="name flex">
-<span>def <span class="ident">hlText</span></span>(<span>app, nodes, highlights, descend=None, **options)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def hlText(app, nodes, highlights, descend=None, **options):
-    api = app.api
-    T = api.T
-    isHtml = hasattr(app, &#34;textFormats&#34;) and options.get(&#34;fmt&#34;, None) in app.textFormats
-    descendOption = {} if descend is None else dict(descend=descend)
-
-    if not highlights:
-        text = T.text(nodes, **descendOption, **options)
-        return mathEsc(text) if isHtml else mdhtmlEsc(text)
-
-    result = &#34;&#34;
-    for node in nodes:
-        text = T.text([node], **descendOption, **options)
-        result += hlRep(
-            app, mathEsc(text) if isHtml else mdhtmlEsc(text), node, highlights,
-        )
-    return result</code></pre>
 </details>
 </dd>
 </dl>
@@ -404,11 +419,8 @@ def getPassageHighlights(app, node, query, cache):
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="tf.applib.highlight.getHlAtt" href="#tf.applib.highlight.getHlAtt">getHlAtt</a></code></li>
-<li><code><a title="tf.applib.highlight.getHlAttPlain" href="#tf.applib.highlight.getHlAttPlain">getHlAttPlain</a></code></li>
 <li><code><a title="tf.applib.highlight.getPassageHighlights" href="#tf.applib.highlight.getPassageHighlights">getPassageHighlights</a></code></li>
 <li><code><a title="tf.applib.highlight.getTupleHighlights" href="#tf.applib.highlight.getTupleHighlights">getTupleHighlights</a></code></li>
-<li><code><a title="tf.applib.highlight.hlRep" href="#tf.applib.highlight.hlRep">hlRep</a></code></li>
-<li><code><a title="tf.applib.highlight.hlText" href="#tf.applib.highlight.hlText">hlText</a></code></li>
 </ul>
 </li>
 </ul>
