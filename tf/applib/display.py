@@ -827,7 +827,7 @@ def _doPretty(app, dContext, oContext, n, outer, first, last, html, seen=set()):
     if children:
         html.append("</div>")
 
-    if not hasChunks:
+    if not hasChunks or isBaseNonSlot:
         _doPrettyWrapPost(label, featurePart, html, containerB, containerE)
 
     if didChunkedType:

@@ -48,13 +48,13 @@ FORMAT_CLS = (
 
 LEVEL_DEFAULTS = dict(
     level={
-        4: dict(flow="row"),
-        3: dict(flow="row"),
-        2: dict(flow="row"),
-        1: dict(flow="row"),
-        0: dict(flow="col"),
+        4: dict(flow="hor"),
+        3: dict(flow="hor"),
+        2: dict(flow="hor"),
+        1: dict(flow="hor"),
+        0: dict(flow="ver"),
     },
-    flow=dict(col=dict(wrap=False, stretch=False), row=dict(wrap=True, stretch=True)),
+    flow=dict(ver=dict(wrap=False, stretch=False), hor=dict(wrap=True, stretch=True)),
     wrap=None,
     stretch=None,
 )
@@ -306,7 +306,7 @@ class Check:
                     allowed = "true,false"
                     errors.append(f"{k} must be a boolean in {allowed}")
             elif k == "flow":
-                allowedValues = {"row", "col"}
+                allowedValues = {"hor", "ver"}
                 if v not in allowedValues:
                     allowed = ",".join(allowedValues)
                     errors.append(f"{k} must be a value in {allowed}")
@@ -886,7 +886,7 @@ def showContext(app):
 def getLevel(defaultLevel, givenInfo, isVerse):
     level = givenInfo.get("level", defaultLevel)
     defaultsFromLevel = LEVEL_DEFAULTS["level"][level]
-    flow = givenInfo.get("flow", "row" if isVerse else defaultsFromLevel["flow"])
+    flow = givenInfo.get("flow", "hor" if isVerse else defaultsFromLevel["flow"])
     defaultsFromFlow = LEVEL_DEFAULTS["flow"][flow]
     wrap = givenInfo.get("wrap", defaultsFromFlow["wrap"])
     stretch = givenInfo.get("stretch", defaultsFromFlow["stretch"])

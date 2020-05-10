@@ -42,6 +42,20 @@
 
 ---
 
+# 8.0.1
+
+2020-05-10
+
+Small fixes in order to accomodate NBviewer.
+
+There were two problems
+
+* the online nbviewer clipped many boxes in the display
+  (cause: name conflict between CSS class names in Text-Fabric and in NBviewer)
+* the lineheight in the classic Jupyter notebook is fixed on a value that is too low,
+  in Jupyter lab it is ok. Fix: we add CSS code that unsets the line height that
+  the classic notebook sets.
+
 # 8.0.0
 
 2020-05-08

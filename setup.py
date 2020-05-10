@@ -20,7 +20,7 @@ setup(
         "ipython",
         "requests",
         "pygithub>=1.47",
-        "pyyaml",
+        "pyyaml>=5.3",
     ],
     python_requires=">=3.6.3",
     include_package_data=True,
@@ -32,7 +32,7 @@ setup(
             "text-fabric-zip = tf.applib.zipdata:main",
         ]
     },
-    version='8.0.0',
+    version='8.0.1',
     description="""Processor and browser for Text Fabric Data""",
     author="Dirk Roorda",
     author_email="dirk.roorda@dans.knaw.nl",

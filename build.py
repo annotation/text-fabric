@@ -10,8 +10,8 @@ from subprocess import run, Popen
 import psutil
 
 from tf.core.helpers import console
+
 # from tf.applib.find import findApp, findAppConfig
-from tf.applib.zipdata import zipData
 
 DIST = "dist"
 
@@ -182,9 +182,10 @@ def adjustVersion(task):
 
 
 def makeDist(pypi=True):
-    distFile = "{}-{}".format(PACKAGE, newVersion)
+    distFile = "{}-{}".format(PACKAGE, currentVersion)
     distFileCompressed = f"{distFile}.tar.gz"
     distPath = f"{DIST}/{distFileCompressed}"
+    print(distPath)
     rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)
     run(["python3", "setup.py", "sdist"])
@@ -227,36 +228,6 @@ def shipDocs():
     codestats()
     apidocs()
     run(["mkdocs", "gh-deploy"])
-
-
-def shipData(appName, remaining):
-    result = findApp(appName, "clone", silent=False)
-    appBase = result[3]
-    appDir = result[4]
-    appName = result[5]
-    appBaseRep = f"{appBase}/" if appBase else ""
-    appPath = f"{appBaseRep}{appDir}"
-    if not appDir:
-        console("Data not shipped")
-    config = findAppConfig(appName, appPath)
-    if not config:
-        console("Data not shipped")
-        return
-    seen = set()
-    provenanceSpec = config.getattr("provenanceSpec", {})
-    for r in config.ZIP:
-        (org, repo, relative) = (
-            r
-            if type(r) is tuple
-            else (
-                provenanceSpec.get("org", None),
-                r,
-                provenanceSpec.get("relative", "tf"),
-            )
-        )
-        keep = (org, repo) in seen
-        zipData(org, repo, relative=relative, tf=relative.endswith("tf"), keep=keep)
-        seen.add((org, repo))
 
 
 def serveDocs():
@@ -414,8 +385,6 @@ def main():
     elif task == "g":
         shipDocs()
         commit(task, msg)
-    elif task == "data":
-        shipData(msg, remaining)
     elif task == "apps":
         commitApps(msg)
     elif task == "tut":

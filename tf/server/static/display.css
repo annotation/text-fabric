@@ -1,3 +1,7 @@
+/* bypassing some classical notebook settings */
+div#notebook {
+  line-height: unset;
+}
 /* neutral text */
 .txtn,.txtn a:visited,.txtn a:link {
     font-family: sans-serif;
@@ -171,16 +175,16 @@ span.plain {
 .children.stretch {
     align-items: stretch;
 }
-.children.row {
+.children.hor {
     flex-flow: row nowrap;
 }
-.children.row.wrap {
+.children.hor.wrap {
     flex-flow: row wrap;
 }
-.children.col {
+.children.ver {
     flex-flow: column nowrap;
 }
-.children.col.wrap {
+.children.ver.wrap {
     flex-flow: column wrap;
 }
 .contnr {
