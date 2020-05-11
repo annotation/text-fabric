@@ -29,6 +29,8 @@ for app in `ls -d app-*` tutorials
 do
     echo "o-o-o [$app] o-o-o"
     cd $annotationdir/$app
+    git add --all .
+    git commit -m "$msg"
     git push origin master
     # git checkout master
     # git merge "$branch"

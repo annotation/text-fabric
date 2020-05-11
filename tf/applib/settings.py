@@ -874,10 +874,10 @@ def showContext(app):
             return eDict(x, level)
         return eRest(x, level)
 
-    md = [f"<details><summary><b>{(app.appName)}</b> <i>app context</i></summary>\n"]
+    md = [f"<details><summary><b>{(app.appName)}</b> <i>app context</i></summary>\n\n"]
     for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
         md.append(
-            f"<details><summary>{i + 1}. {k}</summary>\n{eData(v, 0)}\n</details>\n"
+            f"<details><summary>{i + 1}. {k}</summary>\n\n{eData(v, 0)}\n</details>\n"
         )
     md.append("</details>\n")
     dm("".join(md))

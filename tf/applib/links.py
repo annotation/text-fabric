@@ -198,7 +198,7 @@ def webLink(
 
     aContext = app.context
     webBase = aContext.webBase
-    webLang = aContext.webUrl
+    webLang = aContext.webLang
     webUrl = aContext.webUrl
     webUrlLex = aContext.webUrlLex
     webLexId = aContext.webLexId
