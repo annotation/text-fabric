@@ -900,10 +900,10 @@ def showContext(app):
             return eDict(x, level)
         return eRest(x, level)
 
-    md = [f&#34;&lt;details&gt;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n&#34;]
+    md = [f&#34;&lt;details&gt;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n\n&#34;]
     for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
         md.append(
-            f&#34;&lt;details&gt;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
+            f&#34;&lt;details&gt;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
         )
     md.append(&#34;&lt;/details&gt;\n&#34;)
     dm(&#34;&#34;.join(md))
@@ -1628,10 +1628,10 @@ def parseFeatures(features):
             return eDict(x, level)
         return eRest(x, level)
 
-    md = [f&#34;&lt;details&gt;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n&#34;]
+    md = [f&#34;&lt;details&gt;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n\n&#34;]
     for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
         md.append(
-            f&#34;&lt;details&gt;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
+            f&#34;&lt;details&gt;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
         )
     md.append(&#34;&lt;/details&gt;\n&#34;)
     dm(&#34;&#34;.join(md))</code></pre>
