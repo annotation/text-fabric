@@ -37,6 +37,7 @@ from ..core.helpers import htmlEsc
 from .repo import Checkout
 from .helpers import dh
 from .display import getText
+from ..server.wrap import wrapProvenance
 
 
 UNSUPPORTED = &#34;not online&#34;
@@ -62,6 +63,7 @@ def linksApi(app, silent):
         Normally it is the same as for the app, but when we do an `A.reuse()`
         we force `silent=True`.
     &#34;&#34;&#34;
+    app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
     app.webLink = types.MethodType(webLink, app)
     isCompatible = app.isCompatible
@@ -139,21 +141,18 @@ def linksApi(app, silent):
         if isCompatible and repo is not None
         else UNSUPPORTED
     )
-    if app._browse:
-        app.dataLink = dataLink
-        app.charLink = charLink
-        app.featureLink = featureLink
-        app.tfsLink = tfsLink
-        app.tutLink = tutLink
-    else:
+
+    app.appLink = appLink
+    app.dataLink = dataLink
+    app.charLink = charLink
+    app.featureLink = featureLink
+    app.tfLink = tfLink
+    app.tfsLink = tfsLink
+    app.tutLink = tutLink
+
+    if not app._browse:
         if not silent:
-            dh(
-                &#34;&lt;b&gt;Documentation:&lt;/b&gt;&#34;
-                f&#34; {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}&#34;
-                &#34;&lt;details open&gt;&lt;summary&gt;&lt;b&gt;Loaded features&lt;/b&gt;:&lt;/summary&gt;\n&#34;
-                + _featuresPerModule(app)
-                + &#34;&lt;/details&gt;&#34;
-            )
+            header(app)
 
 
 def header(app):
@@ -163,19 +162,36 @@ def header(app):
     and it is packed with provenance and documentation links.
     &#34;&#34;&#34;
 
-    return (
-        f&#34;&#34;&#34;\
+    appLink = app.appLink
+    dataLink = app.dataLink
+    charLink = app.charLink
+    featureLink = app.featureLink
+    tfsLink = app.tfsLink
+    tfLink = app.tfLink
+    tutLink = app.tutLink
+
+    if app._browse:
+        return (
+            f&#34;&#34;&#34;\
 &lt;div class=&#34;hdlinks&#34;&gt;
-  {app.dataLink}
-  {app.charLink}
-  {app.featureLink}
-  {app.tfsLink}
-  {app.tutLink}
+  {dataLink}
+  {charLink}
+  {featureLink}
+  {tfsLink}
+  {tutLink}
 &lt;/div&gt;\
 &#34;&#34;&#34;,
-        f&#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
-        f&#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
-    )
+            f&#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
+            f&#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
+        )
+    else:
+        dh(
+            &#34;&lt;b&gt;Documentation:&lt;/b&gt;&#34;
+            f&#34; {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}&#34;
+            &#34;&lt;details open&gt;&lt;summary&gt;&lt;b&gt;Loaded features&lt;/b&gt;:&lt;/summary&gt;\n&#34;
+            + _featuresPerModule(app)
+            + &#34;&lt;/details&gt;&#34;
+        )
 
 
 def webLink(
@@ -277,6 +293,21 @@ def webLink(
     if _asString or urlOnly:
         return result
     dh(result)
+
+
+def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
+    aContext = app.context
+    appName = aContext.appName
+    commit = aContext.commit
+    appProvenance = (((&#34;name&#34;, appName), (&#34;commit&#34;, commit)),)
+    provenance = (appProvenance, app.provenance)
+    setNames = (
+        tuple(sorted(app.sets.keys()))
+        if hasattr(app, &#34;sets&#34;) and type(app.sets) is dict
+        else ()
+    )
+    form = dict(jobName=jobName, author=author)
+    dh(wrapProvenance(form, provenance, setNames)[0])
 
 
 def outLink(text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;):
@@ -522,19 +553,36 @@ and it is packed with provenance and documentation links.</p></section>
     and it is packed with provenance and documentation links.
     &#34;&#34;&#34;
 
-    return (
-        f&#34;&#34;&#34;\
+    appLink = app.appLink
+    dataLink = app.dataLink
+    charLink = app.charLink
+    featureLink = app.featureLink
+    tfsLink = app.tfsLink
+    tfLink = app.tfLink
+    tutLink = app.tutLink
+
+    if app._browse:
+        return (
+            f&#34;&#34;&#34;\
 &lt;div class=&#34;hdlinks&#34;&gt;
-  {app.dataLink}
-  {app.charLink}
-  {app.featureLink}
-  {app.tfsLink}
-  {app.tutLink}
+  {dataLink}
+  {charLink}
+  {featureLink}
+  {tfsLink}
+  {tutLink}
 &lt;/div&gt;\
 &#34;&#34;&#34;,
-        f&#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
-        f&#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
-    )</code></pre>
+            f&#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
+            f&#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
+        )
+    else:
+        dh(
+            &#34;&lt;b&gt;Documentation:&lt;/b&gt;&#34;
+            f&#34; {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}&#34;
+            &#34;&lt;details open&gt;&lt;summary&gt;&lt;b&gt;Loaded features&lt;/b&gt;:&lt;/summary&gt;\n&#34;
+            + _featuresPerModule(app)
+            + &#34;&lt;/details&gt;&#34;
+        )</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.links.linksApi"><code class="name flex">
@@ -574,6 +622,7 @@ we force <code>silent=True</code>.</p></section>
         Normally it is the same as for the app, but when we do an `A.reuse()`
         we force `silent=True`.
     &#34;&#34;&#34;
+    app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
     app.webLink = types.MethodType(webLink, app)
     isCompatible = app.isCompatible
@@ -651,21 +700,18 @@ we force <code>silent=True</code>.</p></section>
         if isCompatible and repo is not None
         else UNSUPPORTED
     )
-    if app._browse:
-        app.dataLink = dataLink
-        app.charLink = charLink
-        app.featureLink = featureLink
-        app.tfsLink = tfsLink
-        app.tutLink = tutLink
-    else:
+
+    app.appLink = appLink
+    app.dataLink = dataLink
+    app.charLink = charLink
+    app.featureLink = featureLink
+    app.tfLink = tfLink
+    app.tfsLink = tfsLink
+    app.tutLink = tutLink
+
+    if not app._browse:
         if not silent:
-            dh(
-                &#34;&lt;b&gt;Documentation:&lt;/b&gt;&#34;
-                f&#34; {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}&#34;
-                &#34;&lt;details open&gt;&lt;summary&gt;&lt;b&gt;Loaded features&lt;/b&gt;:&lt;/summary&gt;\n&#34;
-                + _featuresPerModule(app)
-                + &#34;&lt;/details&gt;&#34;
-            )</code></pre>
+            header(app)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.links.outLink"><code class="name flex">
@@ -784,6 +830,30 @@ corresponding with a data version under a <a title="tf" href="../index.html"><co
         )
     )
     return (text, url)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.links.showProvenance"><code class="name flex">
+<span>def <span class="ident">showProvenance</span></span>(<span>app, jobName='program code', author='program author')</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
+    aContext = app.context
+    appName = aContext.appName
+    commit = aContext.commit
+    appProvenance = (((&#34;name&#34;, appName), (&#34;commit&#34;, commit)),)
+    provenance = (appProvenance, app.provenance)
+    setNames = (
+        tuple(sorted(app.sets.keys()))
+        if hasattr(app, &#34;sets&#34;) and type(app.sets) is dict
+        else ()
+    )
+    form = dict(jobName=jobName, author=author)
+    dh(wrapProvenance(form, provenance, setNames)[0])</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.links.webLink"><code class="name flex">
@@ -945,11 +1015,12 @@ other attributes.</dd>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="tf.applib.links.header" href="#tf.applib.links.header">header</a></code></li>
 <li><code><a title="tf.applib.links.linksApi" href="#tf.applib.links.linksApi">linksApi</a></code></li>
 <li><code><a title="tf.applib.links.outLink" href="#tf.applib.links.outLink">outLink</a></code></li>
 <li><code><a title="tf.applib.links.provenanceLink" href="#tf.applib.links.provenanceLink">provenanceLink</a></code></li>
+<li><code><a title="tf.applib.links.showProvenance" href="#tf.applib.links.showProvenance">showProvenance</a></code></li>
 <li><code><a title="tf.applib.links.webLink" href="#tf.applib.links.webLink">webLink</a></code></li>
 </ul>
 </li>

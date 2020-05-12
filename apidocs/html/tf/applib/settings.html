@@ -415,22 +415,25 @@ def setAppSpecs(app, cfg, reset=False):
             )
             specs[k] = val
 
-    moduleSpecs = specs[&#34;moduleSpecs&#34;] or []
-    for moduleSpec in moduleSpecs:
-        for k in MSPEC_KEYS:
-            if k in moduleSpec:
-                v = moduleSpec[k]
-                if k == &#34;docUrl&#34; and v is not None:
-                    v = v.format(**specs)
-                    moduleSpec[k] = v
-            else:
-                moduleSpec[k] = (
-                    specs.get(k, None)
-                    if k in {&#34;org&#34;, &#34;repo&#34;}
-                    else RELATIVE_DEFAULT
-                    if k == &#34;relative&#34;
-                    else None
-                )
+        if dKey == &#34;provenanceSpec&#34;:
+            moduleSpecs = specs[&#34;moduleSpecs&#34;] or []
+            for moduleSpec in moduleSpecs:
+                for k in MSPEC_KEYS:
+                    if k in moduleSpec:
+                        v = moduleSpec[k]
+                        if k == &#34;docUrl&#34; and v is not None:
+                            v = v.format(**specs)
+                            moduleSpec[k] = v
+                    else:
+                        moduleSpec[k] = (
+                            specs.get(k, None)
+                            if k in {&#34;org&#34;, &#34;repo&#34;}
+                            else RELATIVE_DEFAULT
+                            if k == &#34;relative&#34;
+                            else None
+                        )
+
+        specs[dKey] = {k[0]: specs[k[0]] for k in defaults}
 
     if specs[&#34;zip&#34;] is None:
         org = specs[&#34;org&#34;]
@@ -1459,22 +1462,25 @@ def parseFeatures(features):
             )
             specs[k] = val
 
-    moduleSpecs = specs[&#34;moduleSpecs&#34;] or []
-    for moduleSpec in moduleSpecs:
-        for k in MSPEC_KEYS:
-            if k in moduleSpec:
-                v = moduleSpec[k]
-                if k == &#34;docUrl&#34; and v is not None:
-                    v = v.format(**specs)
-                    moduleSpec[k] = v
-            else:
-                moduleSpec[k] = (
-                    specs.get(k, None)
-                    if k in {&#34;org&#34;, &#34;repo&#34;}
-                    else RELATIVE_DEFAULT
-                    if k == &#34;relative&#34;
-                    else None
-                )
+        if dKey == &#34;provenanceSpec&#34;:
+            moduleSpecs = specs[&#34;moduleSpecs&#34;] or []
+            for moduleSpec in moduleSpecs:
+                for k in MSPEC_KEYS:
+                    if k in moduleSpec:
+                        v = moduleSpec[k]
+                        if k == &#34;docUrl&#34; and v is not None:
+                            v = v.format(**specs)
+                            moduleSpec[k] = v
+                    else:
+                        moduleSpec[k] = (
+                            specs.get(k, None)
+                            if k in {&#34;org&#34;, &#34;repo&#34;}
+                            else RELATIVE_DEFAULT
+                            if k == &#34;relative&#34;
+                            else None
+                        )
+
+        specs[dKey] = {k[0]: specs[k[0]] for k in defaults}
 
     if specs[&#34;zip&#34;] is None:
         org = specs[&#34;org&#34;]
