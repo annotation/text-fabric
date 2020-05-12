@@ -14,7 +14,7 @@
 
 ## Incantation
 
-??? abstract "A.use()"
+??? abstract "use()"
     ```python
     from tf.app import use
     A = use(appName)
@@ -82,8 +82,9 @@
         *checkout=specifier* is for retrieving the corpus itself  (*data*).
 
         *   `''` (empty string or absent) (**default**):
-            use the latest release;
-            if there are no releases, use the latest commit.
+            use local data if it is present under `~/text-fabric-data`,
+            otherwise use the latest release if there are releases online,
+            otherwise, use the latest commit.
         *   `latest`: use the latest release. If there are commits after the commit
             that has been tagged with the latest release, these will **not** be used.
         *   `hot`: use the latest commit, even if it comes after the
@@ -96,6 +97,9 @@
             otherwise fail.
         *   `clone`: use local data from your `~/github` directory if it is present,
             otherwise fail.
+
+        For a demo, see
+        [banks/repo]({{tutnb}}/banks/repo.ipynb)
 
     ??? info "hoist=globals()"
         This makes the API elements directly available as global names
@@ -242,6 +246,21 @@
         data, features, and the API methods.
         Error messages will still come through.
 
+??? abstract "A.reuse()"
+    ```python
+    A.reuse()
+    ```
+
+    ???+ "Description"
+        Re-initialize the app. The app's settings are read again, the app's code
+        is re-imported, the app's stylesheets are applied again.
+        But the data is left untouched, and no time-consuming reloading of data
+        takes place.
+
+        Handy when you are developing a new app and want to experiment with it
+        without the costly re-loading of the data in every cycle.
+
+
 ## Search
 
 ??? abstract "A.search()" 
@@ -357,6 +376,31 @@
         with this result:
         [Ezra 3:4](https://shebanq.ancient-data.org/hebrew/text?book=Esra&chapter=3&verse=4&version=c&mr=m&qw=q&tp=txt_p&tr=hb&wget=v&qget=v&nget=vt)
 
+??? abstract "A.header()"
+    ```python
+    A.header()
+    ```
+
+    ???+ Description"
+        Shows the header with feature links that is normally displayed after the incantation.
+        This comes in handy if you have started with `use(xxx, silence='deep')` and still
+        need to show the header.
+
+
+??? abstract "A.showProvenance()"
+    ```python
+    A.showProvenance(jobName="program", author="program author")
+    ```
+
+    ???+ Description"
+        Shows the provenance that is normally displayed during data loading.
+        This comes in handy if you have started with `use(xxx, silence='deep')` and still
+        need to show the provenance.
+        Moreover, the provenance is shown in a formatted way.
+        
+        You can pass the name of the program and your own name as parameters, and they
+        will be displayed together with the rest of the provenance.
+        
 ### Sections
 
 ??? abstract "A.nodeFromSectionStr()"

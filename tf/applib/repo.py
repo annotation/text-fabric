@@ -169,7 +169,7 @@ class Checkout(object):
             if again:
                 self.warning(f"{indent}Will try something else")
 
-    def makeSureLocal(self):
+    def makeSureLocal(self, attempt=False):
         label = self.label
         offline = self.isOffline()
         clone = self.isClone()
@@ -248,7 +248,8 @@ class Checkout(object):
                     else False
                 )
             if not self.localBase:
-                self.error(f"The requested {label} is not available offline")
+                method = self.warning if attempt else self.error
+                method(f"The requested {label} is not available offline")
         else:
             if isLocal:
                 self.localBase = self.baseLocal
@@ -586,6 +587,7 @@ class Checkout(object):
                     self.ghConn = Github(client_id=ghClient, client_secret=ghSecret)
                 else:
                     self.ghConn = Github()
+        try:
             rate = self.ghConn.get_rate_limit().core
             self.log(
                 f"rate limit is {rate.limit} requests per hour,"
@@ -597,7 +599,6 @@ class Checkout(object):
                     f"see https://annotation.github.io/text-fabric/Api/Repo/"
                 )
 
-        try:
             self.log(
                 f"\tconnecting to online GitHub repo {self.org}/{self.repo} ... ",
                 newline=False,
@@ -624,28 +625,35 @@ def checkoutRepo(
     silent=False,
     label="data",
 ):
-    rData = Checkout(
-        org,
-        repo,
-        folder,
-        checkout,
-        source,
-        dest,
-        keep,
-        withPaths,
-        silent,
-        version=version,
-        label=label,
-    )
-    rData.makeSureLocal()
-    return (
-        (
-            rData.commitOff,
-            rData.releaseOff,
-            rData.local,
-            rData.localBase,
-            rData.localDir,
+    def resolve(chkout, attempt=False):
+        rData = Checkout(
+            org,
+            repo,
+            folder,
+            chkout,
+            source,
+            dest,
+            keep,
+            withPaths,
+            silent,
+            version=version,
+            label=label,
         )
-        if rData.localBase
-        else (None, None, False, False, None)
-    )
+        rData.makeSureLocal(attempt=attempt)
+        return (
+            (
+                rData.commitOff,
+                rData.releaseOff,
+                rData.local,
+                rData.localBase,
+                rData.localDir,
+            )
+            if rData.localBase
+            else (None, None, False, False, None)
+        )
+
+    if checkout == "":
+        rData = resolve("local", attempt=True)
+        if rData[3]:
+            return rData
+    return resolve(checkout)

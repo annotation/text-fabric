@@ -26,41 +26,6 @@ div.authorline {
 	padding: 1rem;
 }
 
-/* PROVENANCE */
-
-div.prov {
-	margin: 2rem;
-	padding: 1rem;
-	border: 0.1rem solid var(--fog-rim);
-}
-div.pline {
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: stretch;
-	align-items: baseline;
-}
-div.p2line {
-	margin-left: 2em;
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: stretch;
-	align-items: baseline;
-}
-div.psline {
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: stretch;
-	align-items: baseline;
-	background-color: var(--gold-mist-back);
-}
-div.pname {
-	flex: 0 0 5rem;
-	font-weight: bold;
-}
-div.pval {
-    flex: 1 1 auto;
-}
-
 /* INPUT PADS */
 
 pre.sections {

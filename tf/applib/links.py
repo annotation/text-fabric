@@ -11,6 +11,7 @@ from ..core.helpers import htmlEsc
 from .repo import Checkout
 from .helpers import dh
 from .display import getText
+from ..server.wrap import wrapProvenance
 
 
 UNSUPPORTED = "not online"
@@ -36,6 +37,7 @@ def linksApi(app, silent):
         Normally it is the same as for the app, but when we do an `A.reuse()`
         we force `silent=True`.
     """
+    app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
     app.webLink = types.MethodType(webLink, app)
     isCompatible = app.isCompatible
@@ -113,21 +115,18 @@ def linksApi(app, silent):
         if isCompatible and repo is not None
         else UNSUPPORTED
     )
-    if app._browse:
-        app.dataLink = dataLink
-        app.charLink = charLink
-        app.featureLink = featureLink
-        app.tfsLink = tfsLink
-        app.tutLink = tutLink
-    else:
+
+    app.appLink = appLink
+    app.dataLink = dataLink
+    app.charLink = charLink
+    app.featureLink = featureLink
+    app.tfLink = tfLink
+    app.tfsLink = tfsLink
+    app.tutLink = tutLink
+
+    if not app._browse:
         if not silent:
-            dh(
-                "<b>Documentation:</b>"
-                f" {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}"
-                "<details open><summary><b>Loaded features</b>:</summary>\n"
-                + _featuresPerModule(app)
-                + "</details>"
-            )
+            header(app)
 
 
 def header(app):
@@ -137,19 +136,36 @@ def header(app):
     and it is packed with provenance and documentation links.
     """
 
-    return (
-        f"""\
+    appLink = app.appLink
+    dataLink = app.dataLink
+    charLink = app.charLink
+    featureLink = app.featureLink
+    tfsLink = app.tfsLink
+    tfLink = app.tfLink
+    tutLink = app.tutLink
+
+    if app._browse:
+        return (
+            f"""\
 <div class="hdlinks">
-  {app.dataLink}
-  {app.charLink}
-  {app.featureLink}
-  {app.tfsLink}
-  {app.tutLink}
+  {dataLink}
+  {charLink}
+  {featureLink}
+  {tfsLink}
+  {tutLink}
 </div>\
 """,
-        f'<img class="hdlogo" src="/data/static/logo.png"/>',
-        f'<img class="hdlogo" src="/server/static/icon.png"/>',
-    )
+            f'<img class="hdlogo" src="/data/static/logo.png"/>',
+            f'<img class="hdlogo" src="/server/static/icon.png"/>',
+        )
+    else:
+        dh(
+            "<b>Documentation:</b>"
+            f" {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}"
+            "<details open><summary><b>Loaded features</b>:</summary>\n"
+            + _featuresPerModule(app)
+            + "</details>"
+        )
 
 
 def webLink(
@@ -251,6 +267,21 @@ def webLink(
     if _asString or urlOnly:
         return result
     dh(result)
+
+
+def showProvenance(app, jobName="program code", author="program author"):
+    aContext = app.context
+    appName = aContext.appName
+    commit = aContext.commit
+    appProvenance = ((("name", appName), ("commit", commit)),)
+    provenance = (appProvenance, app.provenance)
+    setNames = (
+        tuple(sorted(app.sets.keys()))
+        if hasattr(app, "sets") and type(app.sets) is dict
+        else ()
+    )
+    form = dict(jobName=jobName, author=author)
+    dh(wrapProvenance(form, provenance, setNames)[0])
 
 
 def outLink(text, href, title=None, passage=None, clsName=None, target="_blank"):

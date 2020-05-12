@@ -42,6 +42,24 @@
 
 ---
 
+# 8.0.3
+
+2020-05-12
+
+* `A.header()` was used by the TF-browser to produce a colofon.
+  Now it can be used in a Jupyter Notebook to produce the overview of features used,
+  normally displayed after the incantantation.
+* There is a new `A.showProvenance()` that can be used to show detailed provenance of
+  the corpus data and all its modules. When you exported from the TF-browser, this data was
+  included (and still is), but now you can invoke it from a program as well (typically in
+  a Jupter notebook)
+* **Provenance** When exporting data from the TF-browser, a provenance sheet is generated
+  with entries for the data modules. Now you can generate this sheet in a Jupyter notebook
+  as well, by means of `A.showProvenance()`.
+* Online data fetching/checking does not happen by default anymore if there is already
+  local data. This reduces the number of GitHub API requests greatly, and users are less prone
+  to hit the limit.
+
 # 8.0.2
 
 2020-05-11

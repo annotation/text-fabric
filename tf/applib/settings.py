@@ -389,22 +389,25 @@ def setAppSpecs(app, cfg, reset=False):
             )
             specs[k] = val
 
-    moduleSpecs = specs["moduleSpecs"] or []
-    for moduleSpec in moduleSpecs:
-        for k in MSPEC_KEYS:
-            if k in moduleSpec:
-                v = moduleSpec[k]
-                if k == "docUrl" and v is not None:
-                    v = v.format(**specs)
-                    moduleSpec[k] = v
-            else:
-                moduleSpec[k] = (
-                    specs.get(k, None)
-                    if k in {"org", "repo"}
-                    else RELATIVE_DEFAULT
-                    if k == "relative"
-                    else None
-                )
+        if dKey == "provenanceSpec":
+            moduleSpecs = specs["moduleSpecs"] or []
+            for moduleSpec in moduleSpecs:
+                for k in MSPEC_KEYS:
+                    if k in moduleSpec:
+                        v = moduleSpec[k]
+                        if k == "docUrl" and v is not None:
+                            v = v.format(**specs)
+                            moduleSpec[k] = v
+                    else:
+                        moduleSpec[k] = (
+                            specs.get(k, None)
+                            if k in {"org", "repo"}
+                            else RELATIVE_DEFAULT
+                            if k == "relative"
+                            else None
+                        )
+
+        specs[dKey] = {k[0]: specs[k[0]] for k in defaults}
 
     if specs["zip"] is None:
         org = specs["org"]
