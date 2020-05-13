@@ -42,6 +42,17 @@
 
 ---
 
+# 8.0.4
+
+2020-05-13
+
+Fixed a subtle bug in the `A.pretty()` which manifested itself in the Old Babylonian corpus.
+A line with clusters in it displayed the clusters twice if `baseTypes` has a non slot type.
+When doing a `plain` within a `pretty`,
+the displayer "forgot" the nodes encountered in `plain`, so they could not be skipped by the
+rest of `pretty`.
+
+
 # 8.0.3
 
 2020-05-12

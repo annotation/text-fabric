@@ -469,11 +469,11 @@ def _doPlain(app, dContext, oContext, n, outer, first, last, passage, html, seen
     if n in seen:
         return
 
+    if outer:
+        seen = set()
     origOuter = outer
     if outer is None:
         outer = True
-    if outer:
-        seen = set()
 
     seen.add(n)
 
@@ -784,6 +784,7 @@ def _doPretty(app, dContext, oContext, n, outer, first, last, html, seen=set()):
 
     didChunkedType = False
 
+    sseen = set()
     snodeInfo = getChunkedType(app, oContext, nContext, n, outer)
     if snodeInfo:
         (sn, soContext) = snodeInfo
@@ -795,9 +796,11 @@ def _doPretty(app, dContext, oContext, n, outer, first, last, html, seen=set()):
 
             snodePlain = None
             if sisBaseNonSlot:
+                sdone = set()
                 snodePlain = _doPlain(
-                    app, dContext, soContext, sn, True, first, last, &#34;&#34;, []
+                    app, dContext, soContext, sn, None, first, last, &#34;&#34;, [], seen=sdone
                 )
+                sseen |= sdone
             (slabel, sfeaturePart) = _doPrettyNode(
                 app, dContext, oContext, snContext, sn, False, first, last, snodePlain
             )
@@ -838,6 +841,7 @@ def _doPretty(app, dContext, oContext, n, outer, first, last, html, seen=set()):
         html.append(f&#39;&lt;div class=&#34;{childCls} {ltr}&#34;&gt;&#39;)
 
     lastCh = len(children) - 1
+    seen |= sseen
     for (i, ch) in enumerate(children):
         if ch in seen:
             continue

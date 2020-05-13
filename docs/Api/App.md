@@ -246,6 +246,22 @@
         data, features, and the API methods.
         Error messages will still come through.
 
+??? abstract "A.showContext()"
+    ```python
+    A.showContext(key=None)
+    ```
+
+    ???+ Description"
+        Shows the *context* of the app (`A.context`) in a pretty way.
+
+        The context is the result of computing sensible defaults for the corpus
+        combined with configuration settings in the app's `config.yaml`.
+
+        ???+ hint "reuse after change"
+            If you are developing an app and change the configuration settings,
+            they will be applied if you do `A.reuse()`.
+            See below.
+        
 ??? abstract "A.reuse()"
     ```python
     A.reuse()

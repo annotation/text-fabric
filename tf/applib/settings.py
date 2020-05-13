@@ -827,7 +827,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     )
 
 
-def showContext(app):
+def showContext(app, key=None):
     EM = "*empty*"
     block = "    "
 
@@ -877,10 +877,17 @@ def showContext(app):
             return eDict(x, level)
         return eRest(x, level)
 
-    md = [f"<details><summary><b>{(app.appName)}</b> <i>app context</i></summary>\n\n"]
+    openRep = "open" if key is not None else ""
+    md = [
+        f"<details {openRep}>"
+        f"<summary><b>{(app.appName)}</b> <i>app context</i></summary>\n\n"
+    ]
     for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
+        if key is not None and key != k:
+            continue
         md.append(
-            f"<details><summary>{i + 1}. {k}</summary>\n\n{eData(v, 0)}\n</details>\n"
+            f"<details {openRep}>"
+            f"<summary>{i + 1}. {k}</summary>\n\n{eData(v, 0)}\n</details>\n"
         )
     md.append("</details>\n")
     dm("".join(md))
@@ -924,9 +931,7 @@ def compileFormatCls(app, specs, givenStyles):
             if textCls is None:
                 textCls = DEFAULT_CLS
         else:
-            textCls = (
-                defaultClsOrig if style == ORIG else formatStyle.get(style, style)
-            )
+            textCls = defaultClsOrig if style == ORIG else formatStyle.get(style, style)
         result[fmt] = textCls
 
     specs["formatCls"] = result
