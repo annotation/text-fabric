@@ -853,7 +853,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     )
 
 
-def showContext(app):
+def showContext(app, key=None):
     EM = &#34;*empty*&#34;
     block = &#34;    &#34;
 
@@ -903,10 +903,17 @@ def showContext(app):
             return eDict(x, level)
         return eRest(x, level)
 
-    md = [f&#34;&lt;details&gt;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n\n&#34;]
+    openRep = &#34;open&#34; if key is not None else &#34;&#34;
+    md = [
+        f&#34;&lt;details {openRep}&gt;&#34;
+        f&#34;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n\n&#34;
+    ]
     for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
+        if key is not None and key != k:
+            continue
         md.append(
-            f&#34;&lt;details&gt;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
+            f&#34;&lt;details {openRep}&gt;&#34;
+            f&#34;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
         )
     md.append(&#34;&lt;/details&gt;\n&#34;)
     dm(&#34;&#34;.join(md))
@@ -950,9 +957,7 @@ def compileFormatCls(app, specs, givenStyles):
             if textCls is None:
                 textCls = DEFAULT_CLS
         else:
-            textCls = (
-                defaultClsOrig if style == ORIG else formatStyle.get(style, style)
-            )
+            textCls = defaultClsOrig if style == ORIG else formatStyle.get(style, style)
         result[fmt] = textCls
 
     specs[&#34;formatCls&#34;] = result
@@ -1016,9 +1021,7 @@ def parseFeatures(features):
             if textCls is None:
                 textCls = DEFAULT_CLS
         else:
-            textCls = (
-                defaultClsOrig if style == ORIG else formatStyle.get(style, style)
-            )
+            textCls = defaultClsOrig if style == ORIG else formatStyle.get(style, style)
         result[fmt] = textCls
 
     specs[&#34;formatCls&#34;] = result</code></pre>
@@ -1576,7 +1579,7 @@ def parseFeatures(features):
 </details>
 </dd>
 <dt id="tf.applib.settings.showContext"><code class="name flex">
-<span>def <span class="ident">showContext</span></span>(<span>app)</span>
+<span>def <span class="ident">showContext</span></span>(<span>app, key=None)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -1584,7 +1587,7 @@ def parseFeatures(features):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def showContext(app):
+<pre><code class="python">def showContext(app, key=None):
     EM = &#34;*empty*&#34;
     block = &#34;    &#34;
 
@@ -1634,10 +1637,17 @@ def parseFeatures(features):
             return eDict(x, level)
         return eRest(x, level)
 
-    md = [f&#34;&lt;details&gt;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n\n&#34;]
+    openRep = &#34;open&#34; if key is not None else &#34;&#34;
+    md = [
+        f&#34;&lt;details {openRep}&gt;&#34;
+        f&#34;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n\n&#34;
+    ]
     for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
+        if key is not None and key != k:
+            continue
         md.append(
-            f&#34;&lt;details&gt;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
+            f&#34;&lt;details {openRep}&gt;&#34;
+            f&#34;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
         )
     md.append(&#34;&lt;/details&gt;\n&#34;)
     dm(&#34;&#34;.join(md))</code></pre>
