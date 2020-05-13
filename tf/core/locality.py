@@ -2,14 +2,37 @@ class Locality(object):
     def __init__(self, api):
         self.api = api
 
+    def i(self, n, otype=None):
+        api = self.api
+        Fotype = api.F.otype
+        maxSlot = Fotype.maxSlot
+        if n <= maxSlot:
+            return tuple()
+        maxNode = Fotype.maxNode
+        if n > maxNode:
+            return tuple()
+        sortNodes = api.sortNodes
+        if not otype:
+            otype = set(Fotype.all)
+
+        fOtype = Fotype.v
+        levUp = api.C.levUp.data
+        Eoslots = api.E.oslots
+
+        slots = Eoslots.s(n)
+        result = set()
+        for slot in slots:
+            result |= {m for m in levUp[slot - 1] if fOtype(m) in otype}
+        return sortNodes((result | set(slots)) - {n})
+
     def u(self, n, otype=None):
         if n <= 0:
             return tuple()
         Fotype = self.api.F.otype
-        fOtype = Fotype.v
         maxNode = Fotype.maxNode
         if n > maxNode:
             return tuple()
+        fOtype = Fotype.v
         levUp = self.api.C.levUp.data
 
         if otype is None:

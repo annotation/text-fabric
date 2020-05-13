@@ -8,10 +8,11 @@
     The Locality API is exposed as `L` or `Locality`.
 
 ??? hint "otype parameter"
-    In all of the following `L`-functions, if the `otype` parameter is passed, the result is filtered and
-    only nodes with `otype=nodeType` are retained.
+    In all of the following `L`-functions, if the `otype` parameter is passed,
+    the result is filtered and
+    only nodes with `otype=nodeType` or `otype in nodeTypes` are retained.
     
-    `otype` can also be a (frozen)set of types.
+    `otype` can be a string (a single node type)  or a (frozen)set of node types.
 
 ??? caution "Results of the `L.` functions are tuples, not single nodes"
       Even if an `L`-function returns a single node, it is packed in a *tuple*.
@@ -21,9 +22,24 @@
       L.u(node)[0]
       ```
 
+??? abstract "L.i()"
+    ```python
+    L.u(node, otype=nodeType(s))
+    ```
+
+    ???+ info "Description"
+        Produces an ordered tuple of **intersecting** nodes, i.e. nodes that have slots in
+        common with `node`.
+
+    ??? info "node"
+        The node whose intersectors will be delivered.
+        The result never includes `node` itself.
+        But other nodes linked to the same set of slots as `node` may count as intersector nodes. 
+        Slots themselves can be intersectors.
+
 ??? abstract "L.u()"
     ```python
-    L.u(node, otype=nodeType)
+    L.u(node, otype=nodeType(s))
     ```
 
     ???+ info "Description"
@@ -37,7 +53,7 @@
 
 ??? abstract "L.d()"
     ```python
-    L.d(node, otype=nodeType)
+    L.d(node, otype=nodeType(s))
     ```
 
     ???+ info "Description"
@@ -51,7 +67,7 @@
 
 ??? abstract "L.n()"
     ```python
-    L.n(node, otype=nodeType)
+    L.n(node, otype=nodeType(s))
     ```
 
     ???+ info "Description"
@@ -65,7 +81,7 @@
 
 ??? abstract "L.p()"
     ```python
-    L.p(node, otype=nodeType)
+    L.p(node, otype=nodeType(s))
     ```
 
     ???+ info "Description"

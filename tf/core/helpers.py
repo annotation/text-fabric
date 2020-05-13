@@ -363,3 +363,11 @@ def setFromValue(x, asInt=False):
         if type(x) is str
         else ({int(v) for v in x} if asInt else set(x))
     )
+
+
+def mergeDictOfSets(d1, d2):
+    for (n, ms) in d2.items():
+        if n in d1:
+            d1[n] |= ms
+        else:
+            d1[n] = ms
