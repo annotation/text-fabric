@@ -632,6 +632,14 @@
             These features will load automatically, no explicit loading is
             necessary.
 
+        ???+ hint "values from other nodes"
+            Suppose you want to display a value from a related node, e.g. a `gloss`
+            that is available on `lex` nodes but not on `word` nodes, and you
+            want to show it on the word nodes.
+            Then you may specifiy `lex:gloss`, meaning that Text-Fabric will
+            look up a `lex` node from the current node (by means of `L.u(w, otype='lex')`,
+            and if it finds one, it will read the `gloss` feature from it.
+
     ??? info "full=False"
         For pretty displays: indicates that the whole object should be
         displayed, even if it is big.

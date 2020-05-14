@@ -1,4 +1,5 @@
 from ..core.helpers import setFromValue
+from .helpers import parseFeatures
 
 
 INTERFACE_OPTIONS = (
@@ -71,7 +72,7 @@ DISPLAY_OPTIONS = dict(
     condensed=False,
     condenseType=None,
     end=None,
-    extraFeatures=(),
+    extraFeatures=((), {}),
     full=False,
     fmt=None,
     highlights={},
@@ -135,7 +136,12 @@ class DisplaySettings:
         if option not in self.displayDefaults:
             error(f'WARNING: unknown display option "{option}" will be ignored')
             return None
-        if option in {"extraFeatures", "tupleFeatures"}:
+
+        if option == "extraFeatures":
+            (bare, indirect) = parseFeatures(value)
+            api.ensureLoaded(bare)
+            value = (bare, indirect)
+        elif option == "tupleFeatures":
             api.ensureLoaded(value)
             if type(value) is str:
                 value = value.split() if value else []
@@ -188,6 +194,17 @@ class DisplaySettings:
                     if not isLegal:
                         error(
                             f'ERROR in {msg}(): illegal node type in "{option}={value}"'
+                        )
+                        good = False
+            elif option == "extraFeatures":
+                if value is not None:
+                    indirect = value[1]
+                    legalValues = set(Fotype.all)
+                    isLegal = all(v in legalValues for v in indirect)
+                    if not isLegal:
+                        error(
+                            f'ERROR in {msg}(): illegal node type in'
+                            f' "{option}={value}"'
                         )
                         good = False
         return good

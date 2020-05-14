@@ -77,3 +77,29 @@ def tupleEnum(tuples, start, end, limit, item):
                 f"<b>{rest} more {item}s skipped</b> because we show a maximum of"
                 f" {limit} {item}s at a time"
             )
+
+
+def parseFeatures(features):
+    seqTypes = {tuple, list}
+    if (
+        type(features) in seqTypes
+        and len(features) == 2
+        and type(features[0]) in seqTypes
+        and type(features[1]) is dict
+    ):
+        return features
+
+    bare = []
+    indirect = {}
+    feats = (
+        () if not features else features.split() if type(features) is str else features
+    )
+    for feat in feats:
+        if not feat:
+            continue
+        parts = feat.split(":", 1)
+        feat = parts[-1]
+        bare.append(feat)
+        if len(parts) > 1:
+            indirect[feat] = parts[0]
+    return (bare, indirect)

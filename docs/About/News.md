@@ -44,7 +44,7 @@
 
 # 8.1.0
 
-2020-05-13
+2020-05-14
 
 * New method in the
   [`L`-API](../Api/Locality.md): `L.i(node, otype=nodeTypes)`.
@@ -55,6 +55,9 @@
   When doing a `plain` within a `pretty`,
   the displayer "forgot" the nodes encountered in `plain`, so they could not be skipped by the
   rest of `pretty`.
+* More improvements in the display logic where things refuse to be hierarchical.
+* To the display option `extraFeatures` you may also pass values like `type:feature`,
+  see [displaysettings](../Api/App.md#display) under list of display parameters.
 
 
 # 8.0.3

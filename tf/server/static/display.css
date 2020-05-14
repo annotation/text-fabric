@@ -239,16 +239,16 @@ span.plain {
     border-width: var(--border-width4);
     border-radius: var(--border-width4);
 }
-.contnr.l {
+.contnr.l,.contnr.l>.lbl {
     border-left-style: dotted
 }
-.contnr.r {
+.contnr.r,.contnr.r>.lbl {
     border-right-style: dotted
 }
-.contnr.lno {
+.contnr.lno,.contnr.lno>.lbl {
     border-left-style: none
 }
-.contnr.rno {
+.contnr.rno,.contnr.rno>.lbl {
     border-right-style: none
 }
 .lbl {

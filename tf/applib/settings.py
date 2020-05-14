@@ -4,7 +4,7 @@ import types
 from ..parameters import URL_GH, URL_NB, URL_TFDOC
 from ..core.helpers import console, mdEsc
 from .displaysettings import INTERFACE_OPTIONS
-from .helpers import dm
+from .helpers import dm, parseFeatures
 
 
 VAR_PATTERN = re.compile(r"\{([^}]+)\}")
@@ -935,17 +935,3 @@ def compileFormatCls(app, specs, givenStyles):
         result[fmt] = textCls
 
     specs["formatCls"] = result
-
-
-def parseFeatures(features):
-    bare = []
-    indirect = {}
-    for feat in features.split(" "):
-        if not feat:
-            continue
-        parts = feat.split(":", 1)
-        feat = parts[-1]
-        bare.append(feat)
-        if len(parts) > 1:
-            indirect[feat] = parts[0]
-    return (bare, indirect)

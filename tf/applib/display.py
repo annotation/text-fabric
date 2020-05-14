@@ -4,7 +4,7 @@ from collections import namedtuple
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
 from ..core.text import DEFAULT_FORMAT
-from ..core.helpers import mdEsc, htmlEsc, flattenToSet, mergeDictOfSets
+from ..core.helpers import mdEsc, htmlEsc, flattenToSet, console
 from .helpers import tupleEnum, RESULT, dh, NB
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights, getHlAtt
@@ -13,6 +13,9 @@ from .settings import ORIG
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
+LIMIT_DISPLAY_DEPTH = 100
+
+QUAD = "  "
 
 __pdoc__ = {}
 
@@ -23,6 +26,7 @@ OuterContext = namedtuple(
     textCls
     slots
     inTuple
+    explain
 """.strip().split(),
 )
 OuterContext.__doc__ = (
@@ -55,8 +59,7 @@ NodeContext = namedtuple(
     hlStyle
     nodePart
     cls
-    ownSlots
-    todoSlots
+    slots
     hidden
 """.strip().split(),
 )
@@ -99,8 +102,7 @@ __pdoc__["NodeContext.cls"] = (
     " for the container, the label, and the children of the node;"
     " might be set by prettyCustom"
 )
-__pdoc__["NodeContext.ownSlots"] = "Set of slots of the current node"
-__pdoc__["NodeContext.todoSlots"] = "Set of slots that may be displayed"
+__pdoc__["NodeContext.slots"] = "Set of slots that must be displayed for this node"
 __pdoc__["NodeContext.hidden"] = (
     "Whether the outer container and label of the current node"
     " should be hidden."
@@ -404,7 +406,7 @@ def plainTuple(
     dh(html)
 
 
-def plain(app, n, _inTuple=False, _asString=False, **options):
+def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     display = app.display
 
     if not display.check("plain", options):
@@ -425,9 +427,11 @@ def plain(app, n, _inTuple=False, _asString=False, **options):
     textCls = getTextCls(app, fmt)
     slots = getSlots(api, n)
 
-    oContext = OuterContext(ltr, textCls, slots, _inTuple)
+    oContext = OuterContext(ltr, textCls, slots, _inTuple, not not explain)
     passage = getPassage(app, True, dContext, oContext, n)
-    rep = _doPlain(app, dContext, oContext, None, n, True, True, True, passage, [])
+    rep = _doPlain(
+        app, dContext, oContext, None, n, True, True, True, 0, passage, [], {}, {}
+    )
     sep = " " if passage and rep else ""
 
     result = passage + sep + rep
@@ -435,6 +439,24 @@ def plain(app, n, _inTuple=False, _asString=False, **options):
     if _browse or _asString:
         return result
     dh(result)
+
+
+def note(isPretty, oContext, n, nType, first, last, level, *labels, **info):
+    if not oContext.explain:
+        return
+    block = QUAD * level
+    kindRep = "pretty" if isPretty else "plain"
+    labelRep = " ".join(str(lab) for lab in labels)
+    console(f"{block}<{level}>{kindRep}({nType} {n}): {labelRep}", error=True)
+    for (k, v) in info.items():
+        console(f"{block}<{level}>      {k:<10} = {repr(v)}", error=True)
+
+
+def depthExceeded(level):
+    if level > LIMIT_DISPLAY_DEPTH:
+        console("DISPLAY: maximal depth exceeded: {LIMIT_DISPLAY_DEPTH}", error=True)
+        return True
+    return False
 
 
 def _doPlain(
@@ -446,35 +468,50 @@ def _doPlain(
     outer,
     first,
     last,
+    level,
     passage,
     html,
-    done={},
-    todo={},
+    done,
+    called,
 ):
+    if depthExceeded(level):
+        return
+
     origOuter = outer
     if outer is None:
         outer = True
 
     nContext = _prepareDisplay(
-        app, False, dContext, oContext, pContext, n, origOuter, done=done
+        app, False, dContext, oContext, pContext, n, origOuter, done=done,
     )
-    if not nContext:
+    if type(nContext) is str:
+        note(False, oContext, n, nContext, first, last, level, "nothing to do")
         return "".join(html) if outer else None
-
-    if outer:
-        done = {}
-        todo = {}
 
     nDone = done.setdefault(n, set())
-    nTodo = todo.setdefault(n, set())
+    nCalled = called.setdefault(n, set())
 
-    # ownSlots = nContext.ownSlots
-    todoSlots = nContext.todoSlots
+    slots = nContext.slots
 
-    if (todoSlots <= nDone) or (todoSlots <= nTodo):
+    finished = slots <= nDone
+    calledBefore = slots <= nCalled
+    if finished or calledBefore:
+        note(
+            False,
+            oContext,
+            n,
+            nContext.nType,
+            first,
+            last,
+            level,
+            "already " + ("finished" if finished else "called"),
+            task=slots,
+            done=nDone,
+            called=nCalled,
+        )
         return "".join(html) if outer else None
 
-    nTodo.add(nContext.todoSlots)
+    nCalled.update(nContext.slots)
 
     aContext = app.context
     chunkedTypes = aContext.chunkedTypes
@@ -513,7 +550,7 @@ def _doPlain(
             snodePart = snContext.nodePart
             sboundaryCls = snContext.boundaryCls
 
-            if snContext and shlCls:
+            if (type(snContext) is not str) and shlCls:
                 sclses = f"plain {sboundaryCls} {shlCls}"
                 html.append(f'<span class="{sclses}" {shlStyle}>')
                 if snodePart:
@@ -538,14 +575,28 @@ def _doPlain(
                 outer,
                 first,
                 last,
+                level,
                 passage,
                 done=done,
             )
         )
-        nDone = done.setdefault(n, set())
-        nDone |= todoSlots
 
     lastCh = len(children) - 1
+
+    note(
+        False,
+        oContext,
+        n,
+        nContext.nType,
+        first,
+        last,
+        level,
+        "start children" if children else "bottom node",
+        children=children,
+        task=slots,
+        done=nDone,
+        called=nCalled,
+    )
 
     for (i, ch) in enumerate(children):
         thisFirst = first and i == 0
@@ -559,20 +610,38 @@ def _doPlain(
             False,
             thisFirst,
             thisLast,
+            level + 1,
             "",
             html,
-            done=done,
-            todo=todo,
+            done,
+            called,
         )
     if not (outer and nType in chunkedTypes):
         html.append("</span>")
         if didChunkedType:
             html.append("</span>")
+
+    nDone = done.setdefault(n, set())
+    nDone |= slots
+
+    if children:
+        note(
+            False,
+            oContext,
+            n,
+            nContext.nType,
+            first,
+            last,
+            level,
+            "end children",
+            done=nDone,
+        )
+
     return "".join(html) if outer else None
 
 
 def _doPlainNode(
-    app, dContext, oContext, nContext, n, outer, first, last, passage, done={}
+    app, dContext, oContext, nContext, n, outer, first, last, level, passage, done={}
 ):
     api = app.api
     T = api.T
@@ -597,7 +666,15 @@ def _doPlainNode(
         return contrib
     if isSlotOrDescend:
         text = htmlSafe(
-            T.text(n, fmt=fmt, descend=descend, outer=outer, first=first, last=last),
+            T.text(
+                n,
+                fmt=fmt,
+                descend=descend,
+                outer=outer,
+                first=first,
+                last=last,
+                level=level,
+            ),
             isHtml,
         )
         contrib = f'<span class="{textCls}">{text}</span>'
@@ -610,6 +687,7 @@ def _doPlainNode(
             outer,
             first,
             last,
+            level,
             passage if outer else "",
             descend,
             dContext=dContext,
@@ -700,7 +778,7 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
         return "".join(html)
 
 
-def pretty(app, n, **options):
+def pretty(app, n, explain=False, **options):
     display = app.display
 
     if not display.check("pretty", options):
@@ -720,8 +798,9 @@ def pretty(app, n, **options):
 
     dContext.isHtml = fmt in formatHtml
     dContext.features = sorted(
-        flattenToSet(extraFeatures) | flattenToSet(tupleFeatures)
+        flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)
     )
+    dContext.featuresIndirect = extraFeatures[1]
 
     api = app.api
     F = api.F
@@ -748,12 +827,12 @@ def pretty(app, n, **options):
         else getSlots(api, containerN)
     )
 
-    oContext = OuterContext(ltr, textCls, slots, False)
+    oContext = OuterContext(ltr, textCls, slots, False, not not explain)
     passage = getPassage(app, False, dContext, oContext, n)
 
     html = []
 
-    _doPretty(app, dContext, oContext, None, n, True, True, True, html)
+    _doPretty(app, dContext, oContext, None, n, True, True, True, 0, html, {}, {})
 
     htmlStr = passage + "".join(html)
     if _browse:
@@ -762,28 +841,40 @@ def pretty(app, n, **options):
 
 
 def _doPretty(
-    app, dContext, oContext, pContext, n, outer, first, last, html, done={}, todo={}
+    app, dContext, oContext, pContext, n, outer, first, last, level, html, done, called,
 ):
+    if depthExceeded(level):
+        return
+
     nContext = _prepareDisplay(
         app, True, dContext, oContext, pContext, n, outer, done=done
     )
-    if not nContext:
+    if type(nContext) is str:
+        note(True, oContext, n, nContext, first, last, level, "nothing to do")
         return "".join(html) if outer else None
-
-    if outer:
-        done = {}
-        todo = {}
 
     nDone = done.setdefault(n, set())
-    nTodo = todo.get(n, set())
+    nCalled = called.setdefault(n, set())
 
-    # ownSlots = nContext.ownSlots
-    todoSlots = nContext.todoSlots
+    slots = nContext.slots
 
-    if todoSlots <= nDone or todoSlots <= nTodo:
+    finished = slots <= nDone
+    calledBefore = slots <= nCalled
+    if finished or calledBefore:
+        note(
+            True,
+            oContext,
+            n,
+            nContext.nType,
+            first,
+            last,
+            level,
+            "already " + ("finished" if finished else "called"),
+            task=slots,
+            done=nDone,
+            called=nCalled,
+        )
         return "".join(html) if outer else None
-
-    nTodo.add(nContext.todoSlots)
 
     aContext = app.context
     afterChild = aContext.afterChild
@@ -802,7 +893,6 @@ def _doPretty(
 
     nodePlain = None
     if isBaseNonSlot:
-        thisDone = {}
         nodePlain = _doPlain(
             app,
             dContext,
@@ -812,46 +902,57 @@ def _doPretty(
             None,
             first,
             last,
+            level,
             "",
             [],
-            done=thisDone,
+            done,
+            called,
         )
-        mergeDictOfSets(done, thisDone)
+
+    nCalled.update(nContext.slots)
 
     didChunkedType = False
 
-    sdone = {}
     snodeInfo = getChunkedType(app, nContext, n, outer)
     if snodeInfo:
         (sn, spContext) = snodeInfo
         snContext = _prepareDisplay(
-            app, True, dContext, oContext, spContext, sn, False, chunk=n, done=sdone
+            app, True, dContext, oContext, spContext, sn, False, chunk=n, done=done,
         )
-        if snContext:
+        if type(snContext) is not str:
             sisBaseNonSlot = snContext.isBaseNonSlot
             scls = snContext.cls
             schildCls = scls["children"]
-            stodoSlots = snContext.todoSlots
+            sslots = snContext.slots
 
             snodePlain = None
             if sisBaseNonSlot:
-                sdone = {}
                 snodePlain = _doPlain(
                     app,
                     dContext,
+                    oContext,
                     spContext,
-                    snContext,
                     sn,
                     None,
                     first,
                     last,
+                    level,
                     "",
                     [],
-                    done=sdone,
+                    done,
+                    called,
                 )
-                mergeDictOfSets(sdone, sdone)
             (slabel, sfeaturePart) = _doPrettyNode(
-                app, dContext, oContext, snContext, sn, False, first, last, snodePlain
+                app,
+                dContext,
+                oContext,
+                snContext,
+                sn,
+                False,
+                first,
+                last,
+                level,
+                snodePlain,
             )
             (scontainerB, scontainerE) = _doPrettyWrapPre(
                 app,
@@ -865,16 +966,16 @@ def _doPretty(
                 hasGraphics,
                 ltr,
             )
-            done.setdefault(sn, set()).add(stodoSlots)
+            done.setdefault(sn, set()).add(sslots)
             nDone = done.setdefault(sn, set())
-            nDone |= stodoSlots
+            nDone |= sslots
             html.append(f'<div class="{schildCls} {ltr}">')
 
             didChunkedType = True
 
     if not hasChunks or isBaseNonSlot:
         (label, featurePart) = _doPrettyNode(
-            app, dContext, oContext, nContext, n, outer, first, last, nodePlain
+            app, dContext, oContext, nContext, n, outer, first, last, level, nodePlain
         )
         (containerB, containerE) = _doPrettyWrapPre(
             app,
@@ -888,14 +989,26 @@ def _doPretty(
             hasGraphics,
             ltr,
         )
-        nDone = done.setdefault(n, set())
-        nDone |= todoSlots
 
     if children:
         html.append(f'<div class="{childCls} {ltr}">')
 
     lastCh = len(children) - 1
-    mergeDictOfSets(done, sdone)
+
+    note(
+        True,
+        oContext,
+        n,
+        nContext.nType,
+        first,
+        last,
+        level,
+        "start children" if children else "bottom node",
+        children=children,
+        task=slots,
+        done=nDone,
+        called=nCalled,
+    )
 
     for (i, ch) in enumerate(children):
         thisFirst = first and i == 0
@@ -909,13 +1022,30 @@ def _doPretty(
             False,
             thisFirst,
             thisLast,
+            level + 1,
             html,
-            done=done,
-            todo=todo,
+            done,
+            called,
         )
         after = afterChild.get(nType, None)
         if after:
             html.append(after(ch))
+
+    nDone = done.setdefault(n, set())
+    nDone |= slots
+
+    if children:
+        note(
+            True,
+            oContext,
+            n,
+            nContext.nType,
+            first,
+            last,
+            level,
+            "end children",
+            task=slots,
+        )
 
     if children:
         html.append("</div>")
@@ -975,7 +1105,9 @@ def _doPrettyWrapPost(label, featurePart, html, containerB, containerE):
         html.append(f"{containerB}{labelE} {featurePart}{containerE}")
 
 
-def _doPrettyNode(app, dContext, oContext, nContext, n, outer, first, last, nodePlain):
+def _doPrettyNode(
+    app, dContext, oContext, nContext, n, outer, first, last, level, nodePlain
+):
     api = app.api
     L = api.L
 
@@ -1004,7 +1136,17 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, first, last, node
         labelHlCls = hlCls
         labelHlStyle = hlStyle
         heading = getText(
-            app, True, n, nType, outer, first, last, "", descend, dContext=dContext
+            app,
+            True,
+            n,
+            nType,
+            outer,
+            first,
+            last,
+            level,
+            "",
+            descend,
+            dContext=dContext,
         )
 
     heading = f'<span class="{textCls}">{heading}</span>' if heading else ""
@@ -1046,7 +1188,7 @@ def _doPrettyNode(app, dContext, oContext, nContext, n, outer, first, last, node
 
 
 def _prepareDisplay(
-    app, isPretty, dContext, oContext, pContext, n, outer, chunk=None, done=set()
+    app, isPretty, dContext, oContext, pContext, n, outer, chunk=None, done=set(),
 ):
     api = app.api
     F = api.F
@@ -1075,9 +1217,17 @@ def _prepareDisplay(
     hasChunks = nType in chunkedTypes
     isHidden = not showChunks and nType in isChunkOf
 
-    todoSlots = oContext.slots if pContext is None else pContext.todoSlots
+    slots = (
+        oContext.slots
+        if pContext is None
+        else frozenset()
+        if type(pContext) is str
+        else pContext.slots
+    )
     nDone = done.get(n, set())
-    todoSlots -= nDone
+    slots -= nDone
+
+    isBaseNonSlot = nType != slotType and nType in baseTypes
 
     children = (
         ()
@@ -1089,19 +1239,20 @@ def _prepareDisplay(
         else getChildren(app, isPretty, dContext, oContext, n, nType)
     )
 
-    boundaryResult = getBoundaryResult(api, oContext, todoSlots, n, chunk=chunk)
+    boundaryResult = getBoundaryResult(
+        isPretty, api, oContext, slots, n, nType, chunk=chunk
+    )
     if boundaryResult is None:
-        return False
+        return nType
 
-    (boundaryCls, ownSlots, todoSlots) = boundaryResult
-    if not todoSlots:
-        return False
+    (boundaryCls, slots) = boundaryResult
+    if not slots:
+        return nType
 
     (hlCls, hlStyle) = getHlAtt(app, n, highlights, baseTypes, not isPretty)
 
     isSlotOrDescend = isSlot or nType == descendType
     descend = False if descendType == slotType else None
-    isBaseNonSlot = nType != slotType and nType in baseTypes
 
     nodePart = getNodePart(
         app, isPretty, dContext, n, nType, isSlot, outer, hlCls != ""
@@ -1130,8 +1281,7 @@ def _prepareDisplay(
         hlStyle,
         nodePart,
         cls,
-        ownSlots,
-        todoSlots,
+        slots,
         isHidden,
     )
 
@@ -1152,7 +1302,7 @@ def getPassage(app, isPretty, dContext, oContext, n):
 
 
 def getText(
-    app, isPretty, n, nType, outer, first, last, passage, descend, dContext=None
+    app, isPretty, n, nType, outer, first, last, level, passage, descend, dContext=None
 ):
     T = app.api.T
     sectionTypeSet = T.sectionTypeSet
@@ -1180,7 +1330,13 @@ def getText(
             if nType in structureTypeSet
             else htmlSafe(
                 T.text(
-                    n, fmt=fmt, descend=descend, outer=outer, first=first, last=last
+                    n,
+                    fmt=fmt,
+                    descend=descend,
+                    outer=outer,
+                    first=first,
+                    last=last,
+                    level=level,
                 ),
                 isHtml,
             )
@@ -1259,7 +1415,7 @@ def getBigType(app, dContext, nType, otypeRank):
     return isBig
 
 
-def getBoundaryResult(api, oContext, todoSlots, n, chunk=None):
+def getBoundaryResult(isPretty, api, oContext, inSlots, n, nType, chunk=None):
     ltr = oContext.ltr
     startCls = "r" if ltr == "rtl" else "l"
     endCls = "l" if ltr == "rtl" else "r"
@@ -1270,15 +1426,15 @@ def getBoundaryResult(api, oContext, todoSlots, n, chunk=None):
 
     chunkSlots = getSlots(api, chunk) & nSlots if chunk else None
 
-    todoSlots &= chunkSlots if chunk else nSlots
+    slots = inSlots & (chunkSlots if chunk else nSlots)
 
-    if not todoSlots:
+    if not slots:
         return None
 
     nStart = min(nSlots)
     nEnd = max(nSlots)
-    tStart = min(todoSlots)
-    tEnd = max(todoSlots)
+    tStart = min(slots)
+    tEnd = max(slots)
 
     boundaryCls = ""
 
@@ -1298,7 +1454,7 @@ def getBoundaryResult(api, oContext, todoSlots, n, chunk=None):
         kind = "" if ((tEnd + 1 not in nSlots) or (chunk and chEnd == tEnd)) else "no"
         boundaryCls += f" {endCls}{kind}"
 
-    return (boundaryCls, nSlots, todoSlots)
+    return (boundaryCls, slots)
 
 
 def getChunkedType(app, nContext, n, outer):
@@ -1316,11 +1472,11 @@ def getChunkedType(app, nContext, n, outer):
         sn = L.u(n, otype=chunkedType)
         if sn:
             E = api.E
-            nSlots = nContext.todoSlots
-            sownSlots = frozenset(E.oslots.s(sn))
+            nSlots = nContext.slots
+            sownSlots = frozenset(E.oslots.s(sn[0]))
             return (
                 sn[0],
-                nContext._replace(todoSlots=nSlots & sownSlots),
+                nContext._replace(slots=nSlots & sownSlots),
             )
 
     return None
@@ -1329,12 +1485,15 @@ def getChunkedType(app, nContext, n, outer):
 def getChildren(app, isPretty, dContext, oContext, n, nType):
     api = app.api
     L = api.L
+    F = api.F
     otypeRank = api.otypeRank
     sortNodes = api.sortNodes
+    slotType = F.otype.slotType
 
     aContext = app.context
     verseTypes = aContext.verseTypes
     childType = aContext.childType
+    baseTypes = dContext.baseTypes
     childrenCustom = aContext.childrenCustom
     showVerseInTuple = aContext.showVerseInTuple
 
@@ -1365,6 +1524,11 @@ def getChildren(app, isPretty, dContext, oContext, n, nType):
             children = sortNodes(set(children) - {n})
     else:
         children = L.i(n)
+    if isPretty and baseTypes and baseTypes != {slotType}:
+        refSet = set(children)
+        children = tuple(
+            ch for ch in children if not (set(L.u(ch, otype=baseTypes)) & refSet)
+        )
     return children
 
 
@@ -1497,6 +1661,7 @@ def getFeatures(app, dContext, n, nType):
     features = aContext.features
 
     dFeatures = dContext.features
+    dFeaturesIndirect = dContext.featuresIndirect
     queryFeatures = dContext.queryFeatures
     standardFeatures = dContext.standardFeatures
     suppress = dContext.suppress
@@ -1525,11 +1690,22 @@ def getFeatures(app, dContext, n, nType):
                 if fsName is None:
                     continue
                 fsNamev = fsName.v
-                value = (
-                    fsNamev(L.u(n, otype=indirect[name])[0])
-                    if name in indirect
-                    else fsNamev(n)
-                )
+
+                value = None
+                if name in dFeaturesIndirect or name in indirectBare or name in indirect:
+                    refType = (
+                        dFeaturesIndirect[name]
+                        if name in dFeaturesIndirect
+                        else indirectBare[name] if name in indirectBare
+                        else indirect[name]
+                    )
+                    refNode = L.u(n, otype=refType)
+                    refNode = refNode[0] if refNode else None
+                else:
+                    refNode = n
+                if refNode is not None:
+                    value = fsNamev(refNode)
+
                 value = None if value in noneValues else htmlEsc(value or "")
                 if value is not None:
                     value = value.replace("\n", "<br/>")

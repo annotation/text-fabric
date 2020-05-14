@@ -34,7 +34,7 @@ def compose(
                 app,
                 tup,
                 getx,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(options, "extraFeatures"),
             )
             if tup is not None
@@ -71,7 +71,7 @@ def compose(
                 position=position,
                 opened=i in opened,
                 _asString=True,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(options, "extraFeatures"),
             )
         )
@@ -109,7 +109,7 @@ def composeT(
                 tup,
                 getx,
                 condensed=False,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(options, "condensed", "extraFeatures"),
             )
             if tup is not None
@@ -141,7 +141,7 @@ def composeT(
                 tup,
                 i,
                 condensed=False,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 opened=i in opened,
                 _asString=True,
                 **display.consume(options, "condensed", "extraFeatures"),
@@ -196,7 +196,7 @@ def composeP(
                 getx,
                 condensed=False,
                 condenseType=finalSecType,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(
                     options, "condensed", "condenseType", "extraFeatures"
                 ),
@@ -216,7 +216,7 @@ def composeP(
                 item,
                 opened,
                 secFinal,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(options, "extraFeatures"),
             )
         )
