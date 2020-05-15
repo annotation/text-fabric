@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5" />
+<meta name="generator" content="pdoc 0.8.1" />
 <title>tf.applib.links API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 </head>
 <body>
@@ -539,9 +539,9 @@ def provenanceLink(org, repo, version, commit, release, local, relative):
 <span>def <span class="ident">header</span></span>(<span>app)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Generate a colofon of the TF-app.</p>
+<div class="desc"><p>Generate a colofon of the TF-app.</p>
 <p>This colofon will be displayed after initializing the advanced API,
-and it is packed with provenance and documentation links.</p></section>
+and it is packed with provenance and documentation links.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -589,7 +589,7 @@ and it is packed with provenance and documentation links.</p></section>
 <span>def <span class="ident">linksApi</span></span>(<span>app, silent)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Produce the link API.</p>
+<div class="desc"><p>Produce the link API.</p>
 <p>The link API provides methods to maps nodes to urls of web resources.
 It also computes several provenance and documentation links from the
 configuration settings of the corpus.</p>
@@ -601,7 +601,7 @@ configuration settings of the corpus.</p>
 <p>silent:
 The verbosity mode to perform this operation in.
 Normally it is the same as for the app, but when we do an <code>A.reuse()</code>
-we force <code>silent=True</code>.</p></section>
+we force <code>silent=True</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -718,23 +718,23 @@ we force <code>silent=True</code>.</p></section>
 <span>def <span class="ident">outLink</span></span>(<span>text, href, title=None, passage=None, clsName=None, target='_blank')</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Produce a formatted link.</p>
+<div class="desc"><p>Produce a formatted link.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>text</code></strong> :&ensp;<code>string</code>/<code>HTML</code></dt>
+<dt><strong><code>text</code></strong> :&ensp;<code>string/HTML</code></dt>
 <dd>The text of the link.</dd>
-<dt><strong><code>href</code></strong> :&ensp;<code>string</code>/<code>URL</code></dt>
+<dt><strong><code>href</code></strong> :&ensp;<code>string/URL</code></dt>
 <dd>The url of the link.</dd>
 <dt><strong><code>title</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>The hint of the link.</dd>
 <dt><strong><code>target</code></strong> :&ensp;<code>string</code>, optional <code>_blank</code></dt>
 <dd>The target window/tab of the link.</dd>
-<dt><strong><code>clsName</code></strong> :&ensp;<code>string</code>, optional default <code>None</code></dt>
+<dt><strong><code>clsName</code></strong> :&ensp;<code>string</code>, optional <code>default </code>None``</dt>
 <dd>A CSS class name to add to the resulting link element</dd>
 <dt><strong><code>passage</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>A passage indicator, which will end up in the <code>sec</code> attribute of the
 link element. Used by the TF-browser.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -773,7 +773,7 @@ link element. Used by the TF-browser.</dd>
 <span>def <span class="ident">provenanceLink</span></span>(<span>org, repo, version, commit, release, local, relative)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Generate a provenance link for a data source.</p>
+<div class="desc"><p>Generate a provenance link for a data source.</p>
 <p>We assume the data source resides somewhere inside a GitHub repo.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -784,10 +784,10 @@ link element. Used by the TF-browser.</dd>
 <dt><strong><code>version</code></strong> :&ensp;<code>string</code></dt>
 <dd>Version of the data source.
 This is not the release or commit of a repo, but the subdirectory
-corresponding with a data version under a <a title="tf" href="../index.html"><code>tf</code></a> directory with feature files.</dd>
+corresponding with a data version under a <code><a title="tf" href="../index.html">tf</a></code> directory with feature files.</dd>
 <dt><strong><code>commit</code></strong> :&ensp;<code>string</code></dt>
 <dd>The commit hash of the repository on GitHub.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -836,7 +836,7 @@ corresponding with a data version under a <a title="tf" href="../index.html"><co
 <span>def <span class="ident">showProvenance</span></span>(<span>app, jobName='program code', author='program author')</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -860,14 +860,14 @@ corresponding with a data version under a <a title="tf" href="../index.html"><co
 <span>def <span class="ident">webLink</span></span>(<span>app, n, text=None, clsName=None, urlOnly=False)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Maps a node to a web resource.</p>
-<p>Usually called as <code>A.weblink(...)</code></p>
+<div class="desc"><p>Maps a node to a web resource.</p>
+<p>Usually called as <code>A.weblink(&hellip;)</code></p>
 <p>The mapping is quite sophisticated. It will do sensible things for
 section nodes and lexeme nodes, dependent on how they are configured in
 the app's <code>config.yaml</code>.</p>
 <div class="admonition hint">
 <p class="admonition-title">Customizable</p>
-<p>You can customize the behaviour of <a title="tf.applib.links.webLink" href="#tf.applib.links.webLink"><code>webLink()</code></a> to the needs of your corpus
+<p>You can customize the behaviour of <code><a title="tf.applib.links.webLink" href="#tf.applib.links.webLink">webLink()</a></code> to the needs of your corpus
 by providing appropriate values in its <code>config.yaml</code>, especially for
 <code>webBase</code>, <code>webLang</code>, <code>webUrl</code>, <code>webUrlLex</code>, and <code>webHint</code>.</p>
 </div>
@@ -877,10 +877,10 @@ by providing appropriate values in its <code>config.yaml</code>, especially for
 <dd>The <code>A</code>.</dd>
 <dt><strong><code>n</code></strong> :&ensp;<code>int</code></dt>
 <dd>A node</dd>
-<dt><strong><code>text</code></strong> :&ensp;<code>string</code>/<code>HTML</code>, optional default <code>None</code></dt>
+<dt><strong><code>text</code></strong> :&ensp;<code>string/HTML</code>, optional <code>default </code>None``</dt>
 <dd>The text of the link. If left out, a suitable text will be derived from
 the node.</dd>
-<dt><strong><code>clsName</code></strong> :&ensp;<code>string</code>, optional default <code>None</code></dt>
+<dt><strong><code>clsName</code></strong> :&ensp;<code>string</code>, optional <code>default </code>None``</dt>
 <dd>A CSS class name to add to the resulting link element</dd>
 <dt><strong><code>urlOnly</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>If True, only the url will be returned.</dd>
@@ -892,7 +892,7 @@ on the (Jupyter) interface.</dd>
 It can be inhibited. This is useful for the TF-browser, which may want
 to attach an action to the link and navigate to a location based on
 other attributes.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1028,7 +1028,7 @@ other attributes.</dd>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>

@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5" />
+<meta name="generator" content="pdoc 0.8.1" />
 <title>tf.core.prepare API documentation</title>
 <meta name="description" content="Functions that precompute data …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 </head>
 <body>
@@ -24,9 +24,9 @@
 <p>For Text-Fabric to work efficiently, some
 derived data needs to be precomputed.
 The precomputed data has a similar function as indexes in a database.</p>
-<p>Precomputation is triggered when <a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric"><code>Fabric</code></a> loads features, and
+<p>Precomputation is triggered when <code><a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric">Fabric</a></code> loads features, and
 the order and nature of the steps is configured in
-<a title="tf.fabric.PRECOMPUTE" href="../fabric.html#tf.fabric.PRECOMPUTE"><code>PRECOMPUTE</code></a>.</p>
+<code><a title="tf.fabric.PRECOMPUTE" href="../fabric.html#tf.fabric.PRECOMPUTE">PRECOMPUTE</a></code>.</p>
 <p>The functions in this module implement those tasks.</p>
 <details class="source">
 <summary>
@@ -671,13 +671,13 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
 <span>def <span class="ident">boundary</span></span>(<span>info, error, otype, oslots, rank)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Computes boundary data.</p>
+<div class="desc"><p>Computes boundary data.</p>
 <p>For each slot, the nodes that start at that slot and the nodes that end
 at that slot are collected.</p>
 <p>Boundary data is used by the API functions
-<a title="tf.core.locality.Locality.p" href="locality.html#tf.core.locality.Locality.p"><code>Locality.p()</code></a>.
+<code><a title="tf.core.locality.Locality.p" href="locality.html#tf.core.locality.Locality.p">Locality.p()</a></code>.
 and
-<a title="tf.core.locality.Locality.n" href="locality.html#tf.core.locality.Locality.n"><code>Locality.n()</code></a>.</p>
+<code><a title="tf.core.locality.Locality.n" href="locality.html#tf.core.locality.Locality.n">Locality.n()</a></code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
@@ -688,7 +688,7 @@ and
 <dd>The data of the <em>otype</em> feature.</dd>
 <dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>oslots</em> feature.</dd>
-<dt><strong><a title="tf.core.prepare.rank" href="#tf.core.prepare.rank"><code>rank()</code></a></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>rank</code></strong> :&ensp;<code>array</code></dt>
 <dd>The data of the <em>rank</em> precompute step.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -709,7 +709,7 @@ ordered in canonical ordering;</li>
 <p class="admonition-title">why
 reversed canonical ordering</p>
 <p>Just for symmetry.</p>
-</div></section>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -775,8 +775,8 @@ reversed canonical ordering</p>
 <span>def <span class="ident">levDown</span></span>(<span>info, error, otype, levUp, rank)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Computes level-down data.</p>
-<p>Level-down data is used by the API function <a title="tf.core.locality.Locality.d" href="locality.html#tf.core.locality.Locality.d"><code>Locality.d()</code></a>.</p>
+<div class="desc"><p>Computes level-down data.</p>
+<p>Level-down data is used by the API function <code><a title="tf.core.locality.Locality.d" href="locality.html#tf.core.locality.Locality.d">Locality.d()</a></code>.</p>
 <p>This function computes the embedded nodes of a node by looking them up from
 the level-down data.</p>
 <h2 id="parameters">Parameters</h2>
@@ -787,9 +787,9 @@ the level-down data.</p>
 <dd>Method to write error messages to the console.</dd>
 <dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>otype</em> feature.</dd>
-<dt><strong><a title="tf.core.prepare.levUp" href="#tf.core.prepare.levUp"><code>levUp()</code></a></strong> :&ensp;<code>iterable</code></dt>
+<dt><strong><code>levUp</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>levUp</em> precompute step.</dd>
-<dt><strong><a title="tf.core.prepare.rank" href="#tf.core.prepare.rank"><code>rank()</code></a></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>rank</code></strong> :&ensp;<code>array</code></dt>
 <dd>The data of the <em>rank</em> precompute step.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -803,7 +803,7 @@ Those arrays are sorted in canonical ordering.</dd>
 <p>Slot nodes do not have embedded nodes, so they do not have to occupy
 space in this tuple. Hence the first member are the embedded nodes
 of node <em>maxSlot + 1</em>.</p>
-</div></section>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -860,8 +860,8 @@ of node <em>maxSlot + 1</em>.</p>
 <span>def <span class="ident">levUp</span></span>(<span>info, error, otype, oslots, rank)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Computes level-up data.</p>
-<p>Level-up data is used by the API function <a title="tf.core.locality.Locality.u" href="locality.html#tf.core.locality.Locality.u"><code>Locality.u()</code></a>.</p>
+<div class="desc"><p>Computes level-up data.</p>
+<p>Level-up data is used by the API function <code><a title="tf.core.locality.Locality.u" href="locality.html#tf.core.locality.Locality.u">Locality.u()</a></code>.</p>
 <p>This function computes the embedders of a node by looking them up from
 the level-up data.</p>
 <h2 id="parameters">Parameters</h2>
@@ -874,7 +874,7 @@ the level-up data.</p>
 <dd>The data of the <em>otype</em> feature.</dd>
 <dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>oslots</em> feature.</dd>
-<dt><strong><a title="tf.core.prepare.rank" href="#tf.core.prepare.rank"><code>rank()</code></a></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>rank</code></strong> :&ensp;<code>array</code></dt>
 <dd>The data of the <em>rank</em> precompute step.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -887,7 +887,7 @@ Those arrays are sorted in canonical ordering.</dd>
 <p class="admonition-title">Memory efficiency</p>
 <p>Many nodes have the same array of embedders.
 Those embedder arrays will be reused for those nodes.</p>
-</div></section>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -972,7 +972,7 @@ Those embedder arrays will be reused for those nodes.</p>
 <span>def <span class="ident">levels</span></span>(<span>info, error, otype, oslots, otext)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Computes level data.</p>
+<div class="desc"><p>Computes level data.</p>
 <p>For each node type, compute the average number of slots occupied by its nodes,
 and order the node types on that.</p>
 <h2 id="parameters">Parameters</h2>
@@ -1000,10 +1000,10 @@ and order the node types on that.</p>
 <li>last node of this type</li>
 </ul>
 </dd>
-<dt><code>The</code> <a title="tf.core.prepare.order" href="#tf.core.prepare.order"><code>order()</code></a> of <code>the</code> <code>tuple</code> <code>is</code> <code>descending</code> <code>by</code> <code>average</code> <code>number</code> of <code>slots</code> <code>per</code> <code>node</code> of <code>that</code></dt>
+<dt><code>The <a title="tf.core.prepare.order" href="#tf.core.prepare.order">order()</a></code> of <code>the tuple is descending by average number</code> of <code>slots per node</code> of <code>that</code></dt>
 <dd>&nbsp;</dd>
 </dl>
-<p>type.</p></section>
+<p>type.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1086,7 +1086,7 @@ and order the node types on that.</p>
 <span>def <span class="ident">order</span></span>(<span>info, error, otype, oslots, levels)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Computes order data.</p>
+<div class="desc"><p>Computes order data.</p>
 <p>The canonical ordering between nodes is defined in terms of the slots that
 nodes contain.</p>
 <p>A node <em>A</em>
@@ -1102,17 +1102,17 @@ that occurs in only one of <em>A</em> and <em>B</em>.</p>
 <dd>The data of the <em>otype</em> feature.</dd>
 <dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>oslots</em> feature.</dd>
-<dt><strong><a title="tf.core.prepare.levels" href="#tf.core.prepare.levels"><code>levels()</code></a></strong> :&ensp;<code>tuple</code></dt>
+<dt><strong><code>levels</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The data of the <em>levels</em> precompute step.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>array</code></dt>
 <dd>All nodes, slot and nonslot, in canonical order.</dd>
-<dt><code>We</code> <code>store</code> <code>the</code> <code>result</code> <code>in</code> <code>an</code> <code>array</code> <code>because</code> <code>it</code> <code>saves</code> <code>a</code> <code>lot</code> of <code>memory</code>, <code>and</code> <code>access</code></dt>
+<dt><code>We store the result in an array because it saves a lot</code> of <code>memory, and access</code></dt>
 <dd>&nbsp;</dd>
 </dl>
-<p>is still fast.</p></section>
+<p>is still fast.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1191,9 +1191,9 @@ that occurs in only one of <em>A</em> and <em>B</em>.</p>
 <span>def <span class="ident">rank</span></span>(<span>info, error, otype, order)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Computes rank data.</p>
+<div class="desc"><p>Computes rank data.</p>
 <p>The rank of a node is its place in among the other nodes in the
-canonical ordering (see <a title="tf.core.prepare.order" href="#tf.core.prepare.order"><code>order()</code></a>).</p>
+canonical ordering (see <code><a title="tf.core.prepare.order" href="#tf.core.prepare.order">order()</a></code>).</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
@@ -1202,17 +1202,17 @@ canonical ordering (see <a title="tf.core.prepare.order" href="#tf.core.prepare.
 <dd>Method to write error messages to the console.</dd>
 <dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>otype</em> feature.</dd>
-<dt><strong><a title="tf.core.prepare.order" href="#tf.core.prepare.order"><code>order()</code></a></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>order</code></strong> :&ensp;<code>array</code></dt>
 <dd>The data of the <em>order</em> feature.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>array</code></dt>
 <dd>The ranks of all nodes, slot and nonslot, with respect to the canonical order.</dd>
-<dt><code>We</code> <code>store</code> <code>the</code> <code>result</code> <code>in</code> <code>an</code> <code>array</code> <code>because</code> <code>it</code> <code>saves</code> <code>a</code> <code>lot</code> of <code>memory</code>, <code>and</code> <code>access</code></dt>
+<dt><code>We store the result in an array because it saves a lot</code> of <code>memory, and access</code></dt>
 <dd>&nbsp;</dd>
 </dl>
-<p>is still fast.</p></section>
+<p>is still fast.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1253,12 +1253,12 @@ canonical ordering (see <a title="tf.core.prepare.order" href="#tf.core.prepare.
 <span>def <span class="ident">sections</span></span>(<span>info, error, otype, oslots, otext, levUp, levels, *sFeats)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Computes section data.</p>
+<div class="desc"><p>Computes section data.</p>
 <p>Text-Fabric datasets may define up to three section levels, roughly corresponding
 with a volume, a chapter, a paragraph.</p>
 <p>If the corpus has a richer section structure, it is also possible
 a different, more flexible and more extensive nest of structural sections.
-See <a title="tf.core.prepare.structure" href="#tf.core.prepare.structure"><code>structure()</code></a>.</p>
+See <code><a title="tf.core.prepare.structure" href="#tf.core.prepare.structure">structure()</a></code>.</p>
 <p>Text-Fabric must be able to go from sections at one level to the sections
 at one level lower. It must also be able to map section headings
 to nodes. For this, the section features are needed, since they
@@ -1275,9 +1275,9 @@ contain the section headings.</p>
 <dd>The data of the <em>oslots</em> feature.</dd>
 <dt><strong><code>otext</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>otext</em> feature.</dd>
-<dt><strong><a title="tf.core.prepare.levUp" href="#tf.core.prepare.levUp"><code>levUp()</code></a></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>levUp</code></strong> :&ensp;<code>array</code></dt>
 <dd>The data of the <em>levUp</em> precompute step.</dd>
-<dt><strong><a title="tf.core.prepare.levels" href="#tf.core.prepare.levels"><code>levels()</code></a></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>levels</code></strong> :&ensp;<code>array</code></dt>
 <dd>The data of the <em>levels</em> precompute step.</dd>
 <dt><strong><code>sFeats</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The names of section features.</dd>
@@ -1296,7 +1296,7 @@ section-level-2 headings to mappings from
 section-level3 headings to section-level-3 nodes.</li>
 </ul>
 </dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1418,13 +1418,13 @@ section-level3 headings to section-level-3 nodes.</li>
 <span>def <span class="ident">structure</span></span>(<span>info, error, otype, oslots, otext, rank, levUp, *sFeats)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Computes structure data.</p>
+<div class="desc"><p>Computes structure data.</p>
 <p>If the corpus has a rich section structure, it is possible to define
 a flexible and extensive nest of structural sections.</p>
 <p>Independent of this,
 Text-Fabric datasets may also define up to three section levels,
 roughly corresponding with a volume, a chapter, a paragraph.
-See <a title="tf.core.prepare.sections" href="#tf.core.prepare.sections"><code>sections()</code></a>.</p>
+See <code><a title="tf.core.prepare.sections" href="#tf.core.prepare.sections">sections()</a></code>.</p>
 <p>Text-Fabric must be able to go from sections at one level to the sections
 at one level lower. It must also be able to map section headings
 to nodes. For this, the section features are needed, since they
@@ -1441,9 +1441,9 @@ contain the section headings.</p>
 <dd>The data of the <em>oslots</em> feature.</dd>
 <dt><strong><code>otext</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>otext</em> feature.</dd>
-<dt><strong><a title="tf.core.prepare.rank" href="#tf.core.prepare.rank"><code>rank()</code></a></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>rank</code></strong> :&ensp;<code>array</code></dt>
 <dd>The data of the <em>rank</em> precompute step.</dd>
-<dt><strong><a title="tf.core.prepare.levUp" href="#tf.core.prepare.levUp"><code>levUp()</code></a></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>levUp</code></strong> :&ensp;<code>array</code></dt>
 <dd>The data of the <em>levUp</em> precompute step.</dd>
 <dt><strong><code>sFeats</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The names of structural features.</dd>
@@ -1463,15 +1463,15 @@ Mapping from section keys to nodes</li>
 <li>down</li>
 </ul>
 </dd>
-<dt><code>A</code> <code>section</code> <code>key</code> of <code>a</code> <code>structural</code> <code>node</code> <code>is</code> <code>obtained</code> <code>by</code> <code>going</code> <code>a</code> <code>level</code> <code>up</code> <code>from</code></dt>
+<dt><code>A section key</code> of <code>a structural node is obtained by going a level up from</code></dt>
 <dd>&nbsp;</dd>
-<dt><code>that</code> <code>node</code>, <code>retrieving</code> <code>the</code> <code>heading</code> of <code>that</code> <code>structural</code> <code>node</code>, <code>then</code> <code>going</code> <code>up</code> <code>again</code>,</dt>
+<dt><code>that node, retrieving the heading</code> of <code>that structural node, then going up again,</code></dt>
 <dd>&nbsp;</dd>
-<dt><code>and</code> <code>so</code> <code>on</code> <code>till</code> <code>a</code> <code>top</code> <code>node</code> <code>is</code> <code>reached.</code> <code>The</code> <code>tuple</code> of <code>headings</code> <code>obtained</code> <code>in</code> <code>this</code> <code>way</code></dt>
+<dt><code>and so on till a top node is reached. The tuple</code> of <code>headings obtained in this way</code></dt>
 <dd>&nbsp;</dd>
 </dl>
 <p>is the
-section key.</p></section>
+section key.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1648,7 +1648,7 @@ section key.</p></section>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>

@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5" />
+<meta name="generator" content="pdoc 0.8.1" />
 <title>tf.parameters API documentation</title>
 <meta name="description" content="Fixed values for the whole program." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 </head>
 <body>
@@ -32,7 +32,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = &#39;8.1.0&#39;
+VERSION = &#39;8.1.1&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -244,11 +244,11 @@ TRY_LIMIT_TO = 40
 <dl>
 <dt id="tf.parameters.APIREF"><code class="name">var <span class="ident">APIREF</span></code></dt>
 <dd>
-<section class="desc"><p>Link to the Api docs of Text-Fabric.</p></section>
+<div class="desc"><p>Link to the Api docs of Text-Fabric.</p></div>
 </dd>
 <dt id="tf.parameters.API_VERSION"><code class="name">var <span class="ident">API_VERSION</span></code></dt>
 <dd>
-<section class="desc"><p>TF API version.</p>
+<div class="desc"><p>TF API version.</p>
 <p>Text-Fabric offers and API to TF apps.
 This is the version that the current Text-Fabric offers to its apps.</p>
 <p>Apps require a version. The provided version and the required version must
@@ -264,83 +264,83 @@ select an older version of the app</dd>
 <dt>App requirement lower than TF API version</dt>
 <dd>The user is advised to obtain a newer version of the app, or alternatively,
 downgrade Text-Fabric</dd>
-</dl></section>
+</dl></div>
 </dd>
 <dt id="tf.parameters.APP_CODE"><code class="name">var <span class="ident">APP_CODE</span></code></dt>
 <dd>
-<section class="desc"><p>Name of the top-level directory of a TF app.</p></section>
+<div class="desc"><p>Name of the top-level directory of a TF app.</p></div>
 </dd>
 <dt id="tf.parameters.APP_CONFIG"><code class="name">var <span class="ident">APP_CONFIG</span></code></dt>
 <dd>
-<section class="desc"><p>Name of the config file of a TF app.</p></section>
+<div class="desc"><p>Name of the config file of a TF app.</p></div>
 </dd>
 <dt id="tf.parameters.APP_DISPLAY"><code class="name">var <span class="ident">APP_DISPLAY</span></code></dt>
 <dd>
-<section class="desc"><p>Relative path of the css file of a TF app.</p></section>
+<div class="desc"><p>Relative path of the css file of a TF app.</p></div>
 </dd>
 <dt id="tf.parameters.APP_GITHUB"><code class="name">var <span class="ident">APP_GITHUB</span></code></dt>
 <dd>
-<section class="desc"><p>Local GitHub location that contains all the TF apps.</p></section>
+<div class="desc"><p>Local GitHub location that contains all the TF apps.</p></div>
 </dd>
 <dt id="tf.parameters.APP_NB_URL"><code class="name">var <span class="ident">APP_NB_URL</span></code></dt>
 <dd>
-<section class="desc"><p>Url of the NB-viewer location that contains all the TF tutorials.</p></section>
+<div class="desc"><p>Url of the NB-viewer location that contains all the TF tutorials.</p></div>
 </dd>
 <dt id="tf.parameters.APP_URL"><code class="name">var <span class="ident">APP_URL</span></code></dt>
 <dd>
-<section class="desc"><p>Url of the GitHub location that contains all the TF apps.</p></section>
+<div class="desc"><p>Url of the GitHub location that contains all the TF apps.</p></div>
 </dd>
 <dt id="tf.parameters.DOI_TF"><code class="name">var <span class="ident">DOI_TF</span></code></dt>
 <dd>
-<section class="desc"><p>DOI of an archived copy of this repo at Zenodo.</p></section>
+<div class="desc"><p>DOI of an archived copy of this repo at Zenodo.</p></div>
 </dd>
 <dt id="tf.parameters.DOWNLOADS"><code class="name">var <span class="ident">DOWNLOADS</span></code></dt>
 <dd>
-<section class="desc"><p>Local Downloads directory.</p></section>
+<div class="desc"><p>Local Downloads directory.</p></div>
 </dd>
 <dt id="tf.parameters.EXPRESS_BASE"><code class="name">var <span class="ident">EXPRESS_BASE</span></code></dt>
 <dd>
-<section class="desc"><p>Local cache directory.</p>
-<p>This is the place where the TF apps and TF feature files are cached locally.</p></section>
+<div class="desc"><p>Local cache directory.</p>
+<p>This is the place where the TF apps and TF feature files are cached locally.</p></div>
 </dd>
 <dt id="tf.parameters.EXPRESS_SYNC"><code class="name">var <span class="ident">EXPRESS_SYNC</span></code></dt>
 <dd>
-<section class="desc"><p>Name of cache indicator file.</p>
+<div class="desc"><p>Name of cache indicator file.</p>
 <p>When a dataset is stored in the cache,
 information about the GitHub release/commit is stored in a file
-with this name.</p></section>
+with this name.</p></div>
 </dd>
 <dt id="tf.parameters.EXPRESS_SYNC_LEGACY"><code class="name">var <span class="ident">EXPRESS_SYNC_LEGACY</span></code></dt>
 <dd>
-<section class="desc"><p>Legacy names of cache indicator files.</p></section>
+<div class="desc"><p>Legacy names of cache indicator files.</p></div>
 </dd>
 <dt id="tf.parameters.GH_BASE"><code class="name">var <span class="ident">GH_BASE</span></code></dt>
 <dd>
-<section class="desc"><p>Local GitHub directory.</p></section>
+<div class="desc"><p>Local GitHub directory.</p></div>
 </dd>
 <dt id="tf.parameters.GZIP_LEVEL"><code class="name">var <span class="ident">GZIP_LEVEL</span></code></dt>
 <dd>
-<section class="desc"><p>Compression level when compressing tf files.</p></section>
+<div class="desc"><p>Compression level when compressing tf files.</p></div>
 </dd>
 <dt id="tf.parameters.LOCATIONS"><code class="name">var <span class="ident">LOCATIONS</span></code></dt>
 <dd>
-<section class="desc"><p>Default locations for tf data files.</p>
-<p>If the <code>locations</code> parameter for the <a title="tf.fabric.Fabric" href="fabric.html#tf.fabric.Fabric"><code>Fabric</code></a> call is omitted,
+<div class="desc"><p>Default locations for tf data files.</p>
+<p>If the <code>locations</code> parameter for the <code><a title="tf.fabric.Fabric" href="fabric.html#tf.fabric.Fabric">Fabric</a></code> call is omitted,
 this is the default.
-Text-Fabric will search all these directories as for <code>.tf</code> modules of files.</p></section>
+Text-Fabric will search all these directories as for <code>.<a title="tf" href="index.html">tf</a></code> modules of files.</p></div>
 </dd>
 <dt id="tf.parameters.NAME"><code class="name">var <span class="ident">NAME</span></code></dt>
 <dd>
-<section class="desc"><p>The name of the game: this program.</p></section>
+<div class="desc"><p>The name of the game: this program.</p></div>
 </dd>
 <dt id="tf.parameters.ORG"><code class="name">var <span class="ident">ORG</span></code></dt>
 <dd>
-<section class="desc"><p>GitHub organization name.</p>
-<p>This is where the repo that contains Text-Fabric resides.</p></section>
+<div class="desc"><p>GitHub organization name.</p>
+<p>This is where the repo that contains Text-Fabric resides.</p></div>
 </dd>
 <dt id="tf.parameters.PACK_VERSION"><code class="name">var <span class="ident">PACK_VERSION</span></code></dt>
 <dd>
-<section class="desc"><p>Data serialization version.</p>
+<div class="desc"><p>Data serialization version.</p>
 <p>Plain text feature files will be compressed to zipped, pickled datastructures
 that load must faster.</p>
 <p>These methods evolve, sometimes in incompatible ways.
@@ -349,88 +349,88 @@ That will cause TF not to use compressed files that have been compressed by
 older, incompatible methods.
 Instead, TF will produce freshly compressed data files.</p>
 <p>The compressed data files are stored in a directory <code>.tf/{PVN}/</code> next
-to the original <a title="tf" href="index.html"><code>tf</code></a>
+to the original <code><a title="tf" href="index.html">tf</a></code>
 files, where <code>{PVN}</code> is the package version number.</p>
-<p>See also <a title="tf.clean" href="clean.html"><code>tf.clean</code></a>.</p></section>
+<p>See also <code><a title="tf.clean" href="clean.html">tf.clean</a></code>.</p></div>
 </dd>
 <dt id="tf.parameters.PICKLE_PROTOCOL"><code class="name">var <span class="ident">PICKLE_PROTOCOL</span></code></dt>
 <dd>
-<section class="desc"><p>Pickle protocol level when pickling tf files.</p></section>
+<div class="desc"><p>Pickle protocol level when pickling tf files.</p></div>
 </dd>
 <dt id="tf.parameters.RELATIVE"><code class="name">var <span class="ident">RELATIVE</span></code></dt>
 <dd>
-<section class="desc"><p>Default relative path with a repo to the directory with tf files.</p></section>
+<div class="desc"><p>Default relative path with a repo to the directory with tf files.</p></div>
 </dd>
 <dt id="tf.parameters.REPO"><code class="name">var <span class="ident">REPO</span></code></dt>
 <dd>
-<section class="desc"><p>GitHub repo name.</p>
-<p>This is the name of the repo that contains Text-Fabric.</p></section>
+<div class="desc"><p>GitHub repo name.</p>
+<p>This is the name of the repo that contains Text-Fabric.</p></div>
 </dd>
 <dt id="tf.parameters.SERVER_DISPLAY"><code class="name">var <span class="ident">SERVER_DISPLAY</span></code></dt>
 <dd>
-<section class="desc"><p>Bunch of TF-generic css files.</p></section>
+<div class="desc"><p>Bunch of TF-generic css files.</p></div>
 </dd>
 <dt id="tf.parameters.SERVER_DISPLAY_BASE"><code class="name">var <span class="ident">SERVER_DISPLAY_BASE</span></code></dt>
 <dd>
-<section class="desc"><p>Base of server css files.</p></section>
+<div class="desc"><p>Base of server css files.</p></div>
 </dd>
 <dt id="tf.parameters.TEMP_DIR"><code class="name">var <span class="ident">TEMP_DIR</span></code></dt>
 <dd>
-<section class="desc"><p>Name of temporary directories.</p>
+<div class="desc"><p>Name of temporary directories.</p>
 <div class="admonition hint">
 <p class="admonition-title">.gitignore</p>
 <p>Take care that these directories are ignored by git operations.
 Put a line</p>
 <p><code>_temp/</code></p>
 <p>in the <code>.gitignore</code> file.</p>
-</div></section>
+</div></div>
 </dd>
 <dt id="tf.parameters.TRY_LIMIT_FROM"><code class="name">var <span class="ident">TRY_LIMIT_FROM</span></code></dt>
 <dd>
-<section class="desc"><p>Performance parameter in the <a title="tf.search.search" href="search/search.html"><code>tf.search.search</code></a> module.</p></section>
+<div class="desc"><p>Performance parameter in the <code><a title="tf.search.search" href="search/search.html">tf.search.search</a></code> module.</p></div>
 </dd>
 <dt id="tf.parameters.TRY_LIMIT_TO"><code class="name">var <span class="ident">TRY_LIMIT_TO</span></code></dt>
 <dd>
-<section class="desc"><p>Performance parameter in the <a title="tf.search.search" href="search/search.html"><code>tf.search.search</code></a> module.</p></section>
+<div class="desc"><p>Performance parameter in the <code><a title="tf.search.search" href="search/search.html">tf.search.search</a></code> module.</p></div>
 </dd>
 <dt id="tf.parameters.URL_GH"><code class="name">var <span class="ident">URL_GH</span></code></dt>
 <dd>
-<section class="desc"><p>Base url of GitHub.</p></section>
+<div class="desc"><p>Base url of GitHub.</p></div>
 </dd>
 <dt id="tf.parameters.URL_GH_API"><code class="name">var <span class="ident">URL_GH_API</span></code></dt>
 <dd>
-<section class="desc"><p>Url of the GitHub API for repos.</p>
+<div class="desc"><p>Url of the GitHub API for repos.</p>
 <p>We can access GitHub repos by means of commands
-on top of this url.</p></section>
+on top of this url.</p></div>
 </dd>
 <dt id="tf.parameters.URL_NB"><code class="name">var <span class="ident">URL_NB</span></code></dt>
 <dd>
-<section class="desc"><p>Base url of NB-viewer for GitHub data.</p></section>
+<div class="desc"><p>Base url of NB-viewer for GitHub data.</p></div>
 </dd>
 <dt id="tf.parameters.URL_TFDOC"><code class="name">var <span class="ident">URL_TFDOC</span></code></dt>
 <dd>
-<section class="desc"><p>Base url of the online Text-Fabric documentation.</p></section>
+<div class="desc"><p>Base url of the online Text-Fabric documentation.</p></div>
 </dd>
 <dt id="tf.parameters.VERSION"><code class="name">var <span class="ident">VERSION</span></code></dt>
 <dd>
-<section class="desc"><p>Program version.</p>
+<div class="desc"><p>Program version.</p>
 <p>This value is under control of the update process, as run by
-<code>build.py</code> in the top-level directory of the repo.</p></section>
+<code>build.py</code> in the top-level directory of the repo.</p></div>
 </dd>
 <dt id="tf.parameters.YARN_RATIO"><code class="name">var <span class="ident">YARN_RATIO</span></code></dt>
 <dd>
-<section class="desc"><p>Performance parameter in the <a title="tf.search.search" href="search/search.html"><code>tf.search.search</code></a> module.</p></section>
+<div class="desc"><p>Performance parameter in the <code><a title="tf.search.search" href="search/search.html">tf.search.search</a></code> module.</p></div>
 </dd>
 <dt id="tf.parameters.ZIP_OPTIONS"><code class="name">var <span class="ident">ZIP_OPTIONS</span></code></dt>
 <dd>
-<section class="desc"><p>Options for zip when packing tf files.</p>
+<div class="desc"><p>Options for zip when packing tf files.</p>
 <p>This is for packaging collections of plain tf files into zip files
 to be attached to releases on GitHub.</p>
 <div class="admonition caution">
 <p class="admonition-title">Not for .tfx files</p>
 <p>This is not the zipping as done when .tf files are
 pickled and compressed to .tfx files.</p>
-</div></section>
+</div></div>
 </dd>
 </dl>
 </section>
@@ -492,7 +492,7 @@ pickled and compressed to .tfx files.</p>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>
