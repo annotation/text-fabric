@@ -511,8 +511,6 @@ def _doPlain(
         )
         return "".join(html) if outer else None
 
-    nCalled.update(nContext.slots)
-
     aContext = app.context
     chunkedTypes = aContext.chunkedTypes
 
@@ -580,6 +578,8 @@ def _doPlain(
                 done=done,
             )
         )
+
+    nCalled.update(nContext.slots)
 
     lastCh = len(children) - 1
 
@@ -909,8 +909,6 @@ def _doPretty(
             called,
         )
 
-    nCalled.update(nContext.slots)
-
     didChunkedType = False
 
     snodeInfo = getChunkedType(app, nContext, n, outer)
@@ -989,6 +987,8 @@ def _doPretty(
             hasGraphics,
             ltr,
         )
+
+    nCalled.update(nContext.slots)
 
     if children:
         html.append(f'<div class="{childCls} {ltr}">')
@@ -1207,6 +1207,8 @@ def _prepareDisplay(
 
     fmt = dContext.fmt
     baseTypes = dContext.baseTypes
+    setSubBaseTypes(aContext, dContext, slotType)
+
     highlights = dContext.highlights
     showChunks = dContext.showChunks
 
@@ -1284,6 +1286,21 @@ def _prepareDisplay(
         slots,
         isHidden,
     )
+
+
+def setSubBaseTypes(aContext, dContext, slotType):
+    descendantType = aContext.descendantType
+    isChunkOf = aContext.isChunkOf
+    baseTypes = dContext.baseTypes
+
+    chunkBaseTypes = {ct for (ct, t) in isChunkOf.items() if t in baseTypes}
+    subBaseTypes = set()
+
+    if baseTypes and baseTypes != {slotType}:
+        for bt in baseTypes:
+            if bt in descendantType:
+                subBaseTypes |= descendantType[bt]
+    dContext.subBaseTypes = subBaseTypes - baseTypes - chunkBaseTypes
 
 
 def doPassage(dContext, i):
@@ -1489,11 +1506,13 @@ def getChildren(app, isPretty, dContext, oContext, n, nType):
     otypeRank = api.otypeRank
     sortNodes = api.sortNodes
     slotType = F.otype.slotType
+    fOtypev = F.otype.v
 
     aContext = app.context
     verseTypes = aContext.verseTypes
     childType = aContext.childType
     baseTypes = dContext.baseTypes
+    subBaseTypes = dContext.subBaseTypes
     childrenCustom = aContext.childrenCustom
     showVerseInTuple = aContext.showVerseInTuple
 
@@ -1527,7 +1546,10 @@ def getChildren(app, isPretty, dContext, oContext, n, nType):
     if isPretty and baseTypes and baseTypes != {slotType}:
         refSet = set(children)
         children = tuple(
-            ch for ch in children if not (set(L.u(ch, otype=baseTypes)) & refSet)
+            ch
+            for ch in children
+            if (fOtypev(ch) not in subBaseTypes)
+            and not (set(L.u(ch, otype=baseTypes)) & refSet)
         )
     return children
 
@@ -1692,11 +1714,16 @@ def getFeatures(app, dContext, n, nType):
                 fsNamev = fsName.v
 
                 value = None
-                if name in dFeaturesIndirect or name in indirectBare or name in indirect:
+                if (
+                    name in dFeaturesIndirect
+                    or name in indirectBare
+                    or name in indirect
+                ):
                     refType = (
                         dFeaturesIndirect[name]
                         if name in dFeaturesIndirect
-                        else indirectBare[name] if name in indirectBare
+                        else indirectBare[name]
+                        if name in indirectBare
                         else indirect[name]
                     )
                     refNode = L.u(n, otype=refType)

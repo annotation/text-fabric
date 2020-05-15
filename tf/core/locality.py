@@ -1,3 +1,6 @@
+SET_TYPES = {set, frozenset}
+
+
 class Locality(object):
     def __init__(self, api):
         self.api = api
@@ -14,7 +17,12 @@ class Locality(object):
         sortNodes = api.sortNodes
         if not otype:
             otype = set(Fotype.all)
+        elif type(otype) is str:
+            otype = {otype}
+        elif type(otype) not in SET_TYPES:
+            otype = set(otype)
 
+        slotType = Fotype.slotType
         fOtype = Fotype.v
         levUp = api.C.levUp.data
         Eoslots = api.E.oslots
@@ -23,7 +31,9 @@ class Locality(object):
         result = set()
         for slot in slots:
             result |= {m for m in levUp[slot - 1] if fOtype(m) in otype}
-        return sortNodes((result | set(slots)) - {n})
+            if slotType in otype:
+                result.add(slot)
+        return sortNodes(result - {n})
 
     def u(self, n, otype=None):
         if n <= 0:
@@ -37,10 +47,12 @@ class Locality(object):
 
         if otype is None:
             return tuple(levUp[n - 1])
-        elif type(otype) is not str:
-            return tuple(m for m in levUp[n - 1] if fOtype(m) in otype)
-        else:
+        elif type(otype) is str:
             return tuple(m for m in levUp[n - 1] if fOtype(m) == otype)
+        else:
+            if type(otype) not in SET_TYPES:
+                otype = set(otype)
+            return tuple(m for m in levUp[n - 1] if fOtype(m) in otype)
 
     def d(self, n, otype=None):
         Fotype = self.api.F.otype
@@ -64,7 +76,11 @@ class Locality(object):
             )
         elif otype == slotType:
             return tuple(sorted(Eoslots.s(n), key=lambda m: Crank[m - 1]))
-        elif type(otype) is not str:
+        elif type(otype) is str:
+            return tuple(m for m in levDown[n - maxSlot - 1] if fOtype(m) == otype)
+        else:
+            if type(otype) not in SET_TYPES:
+                otype = set(otype)
             return tuple(
                 sorted(
                     (
@@ -75,8 +91,6 @@ class Locality(object):
                     key=lambda m: Crank[m - 1],
                 )
             )
-        else:
-            return tuple(m for m in levDown[n - maxSlot - 1] if fOtype(m) == otype)
 
     def p(self, n, otype=None):
         if n <= 1:
@@ -99,10 +113,12 @@ class Locality(object):
 
         if otype is None:
             return result
-        elif type(otype) is not str:
-            return tuple(m for m in result if fOtype(m) in otype)
-        else:
+        elif type(otype) is str:
             return tuple(m for m in result if fOtype(m) == otype)
+        else:
+            if type(otype) not in SET_TYPES:
+                otype = set(otype)
+            return tuple(m for m in result if fOtype(m) in otype)
 
     def n(self, n, otype=None):
         if n <= 0:
@@ -127,7 +143,9 @@ class Locality(object):
 
         if otype is None:
             return result
-        elif type(otype) is not str:
-            return tuple(m for m in result if fOtype(m) in otype)
-        else:
+        elif type(otype) is str:
             return tuple(m for m in result if fOtype(m) == otype)
+        else:
+            if type(otype) not in SET_TYPES:
+                otype = set(otype)
+            return tuple(m for m in result if fOtype(m) in otype)

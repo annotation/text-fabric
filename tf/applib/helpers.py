@@ -8,6 +8,9 @@ from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
 RESULT = "result"
 NB = "\u00a0"
 
+SEQ_TYPES1 = {tuple, list}
+SEQ_TYPES2 = {tuple, list, set, frozenset}
+
 
 def dm(md):
     display(Markdown(md))
@@ -80,11 +83,10 @@ def tupleEnum(tuples, start, end, limit, item):
 
 
 def parseFeatures(features):
-    seqTypes = {tuple, list}
     if (
-        type(features) in seqTypes
+        type(features) in SEQ_TYPES1
         and len(features) == 2
-        and type(features[0]) in seqTypes
+        and type(features[0]) in SEQ_TYPES2
         and type(features[1]) is dict
     ):
         return features
@@ -92,7 +94,11 @@ def parseFeatures(features):
     bare = []
     indirect = {}
     feats = (
-        () if not features else features.split() if type(features) is str else features
+        ()
+        if not features
+        else features.split()
+        if type(features) is str
+        else tuple(features)
     )
     for feat in feats:
         if not feat:
@@ -103,3 +109,21 @@ def parseFeatures(features):
         if len(parts) > 1:
             indirect[feat] = parts[0]
     return (bare, indirect)
+
+
+def transitiveClosure(relation):
+    descendants = {}
+    for (parent, children) in relation.items():
+        descendants[parent] = set(children)
+
+    changed = True
+    while changed:
+        changed = False
+        for (parent, children) in relation.items():
+            for child in children:
+                if child in descendants:
+                    for grandChild in descendants[child]:
+                        if grandChild not in descendants[parent]:
+                            descendants[parent].add(grandChild)
+                            changed = True
+    return descendants

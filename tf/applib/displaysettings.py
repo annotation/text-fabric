@@ -1,5 +1,5 @@
 from ..core.helpers import setFromValue
-from .helpers import parseFeatures
+from .helpers import parseFeatures, SEQ_TYPES1, SEQ_TYPES2
 
 
 INTERFACE_OPTIONS = (
@@ -198,15 +198,21 @@ class DisplaySettings:
                         good = False
             elif option == "extraFeatures":
                 if value is not None:
-                    indirect = value[1]
-                    legalValues = set(Fotype.all)
-                    isLegal = all(v in legalValues for v in indirect)
-                    if not isLegal:
-                        error(
-                            f'ERROR in {msg}(): illegal node type in'
-                            f' "{option}={value}"'
-                        )
-                        good = False
+                    if (
+                        type(value) in SEQ_TYPES1
+                        and len(value) == 2
+                        and type(value[0]) in SEQ_TYPES2
+                        and type(value[1]) is dict
+                    ):
+                        indirect = value[1]
+                        legalValues = set(Fotype.all)
+                        isLegal = all(v in legalValues for v in indirect)
+                        if not isLegal:
+                            error(
+                                f'ERROR in {msg}(): illegal node type in'
+                                f' "{option}={value}"'
+                            )
+                            good = False
         return good
 
     def get(self, options):

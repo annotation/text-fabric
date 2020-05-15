@@ -248,7 +248,7 @@
 
 ??? abstract "A.showContext()"
     ```python
-    A.showContext(key=None)
+    A.showContext(*keys)
     ```
 
     ???+ Description"
@@ -256,6 +256,9 @@
 
         The context is the result of computing sensible defaults for the corpus
         combined with configuration settings in the app's `config.yaml`.
+
+        For each `key` passed to this function, the information for that key will be displayed.
+        If no keys are passed, all keys will be displayed.
 
         ???+ hint "reuse after change"
             If you are developing an app and change the configuration settings,

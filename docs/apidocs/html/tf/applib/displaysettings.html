@@ -25,6 +25,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from ..core.helpers import setFromValue
+from .helpers import parseFeatures, SEQ_TYPES1, SEQ_TYPES2
 
 
 INTERFACE_OPTIONS = (
@@ -97,7 +98,7 @@ DISPLAY_OPTIONS = dict(
     condensed=False,
     condenseType=None,
     end=None,
-    extraFeatures=(),
+    extraFeatures=((), {}),
     full=False,
     fmt=None,
     highlights={},
@@ -161,7 +162,12 @@ class DisplaySettings:
         if option not in self.displayDefaults:
             error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
             return None
-        if option in {&#34;extraFeatures&#34;, &#34;tupleFeatures&#34;}:
+
+        if option == &#34;extraFeatures&#34;:
+            (bare, indirect) = parseFeatures(value)
+            api.ensureLoaded(bare)
+            value = (bare, indirect)
+        elif option == &#34;tupleFeatures&#34;:
             api.ensureLoaded(value)
             if type(value) is str:
                 value = value.split() if value else []
@@ -216,6 +222,23 @@ class DisplaySettings:
                             f&#39;ERROR in {msg}(): illegal node type in &#34;{option}={value}&#34;&#39;
                         )
                         good = False
+            elif option == &#34;extraFeatures&#34;:
+                if value is not None:
+                    if (
+                        type(value) in SEQ_TYPES1
+                        and len(value) == 2
+                        and type(value[0]) in SEQ_TYPES2
+                        and type(value[1]) is dict
+                    ):
+                        indirect = value[1]
+                        legalValues = set(Fotype.all)
+                        isLegal = all(v in legalValues for v in indirect)
+                        if not isLegal:
+                            error(
+                                f&#39;ERROR in {msg}(): illegal node type in&#39;
+                                f&#39; &#34;{option}={value}&#34;&#39;
+                            )
+                            good = False
         return good
 
     def get(self, options):
@@ -317,7 +340,12 @@ class DisplaySettings:
         if option not in self.displayDefaults:
             error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
             return None
-        if option in {&#34;extraFeatures&#34;, &#34;tupleFeatures&#34;}:
+
+        if option == &#34;extraFeatures&#34;:
+            (bare, indirect) = parseFeatures(value)
+            api.ensureLoaded(bare)
+            value = (bare, indirect)
+        elif option == &#34;tupleFeatures&#34;:
             api.ensureLoaded(value)
             if type(value) is str:
                 value = value.split() if value else []
@@ -372,6 +400,23 @@ class DisplaySettings:
                             f&#39;ERROR in {msg}(): illegal node type in &#34;{option}={value}&#34;&#39;
                         )
                         good = False
+            elif option == &#34;extraFeatures&#34;:
+                if value is not None:
+                    if (
+                        type(value) in SEQ_TYPES1
+                        and len(value) == 2
+                        and type(value[0]) in SEQ_TYPES2
+                        and type(value[1]) is dict
+                    ):
+                        indirect = value[1]
+                        legalValues = set(Fotype.all)
+                        isLegal = all(v in legalValues for v in indirect)
+                        if not isLegal:
+                            error(
+                                f&#39;ERROR in {msg}(): illegal node type in&#39;
+                                f&#39; &#34;{option}={value}&#34;&#39;
+                            )
+                            good = False
         return good
 
     def get(self, options):
@@ -429,6 +474,23 @@ class DisplaySettings:
                         f&#39;ERROR in {msg}(): illegal node type in &#34;{option}={value}&#34;&#39;
                     )
                     good = False
+        elif option == &#34;extraFeatures&#34;:
+            if value is not None:
+                if (
+                    type(value) in SEQ_TYPES1
+                    and len(value) == 2
+                    and type(value[0]) in SEQ_TYPES2
+                    and type(value[1]) is dict
+                ):
+                    indirect = value[1]
+                    legalValues = set(Fotype.all)
+                    isLegal = all(v in legalValues for v in indirect)
+                    if not isLegal:
+                        error(
+                            f&#39;ERROR in {msg}(): illegal node type in&#39;
+                            f&#39; &#34;{option}={value}&#34;&#39;
+                        )
+                        good = False
     return good</code></pre>
 </details>
 </dd>
@@ -487,7 +549,12 @@ class DisplaySettings:
     if option not in self.displayDefaults:
         error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
         return None
-    if option in {&#34;extraFeatures&#34;, &#34;tupleFeatures&#34;}:
+
+    if option == &#34;extraFeatures&#34;:
+        (bare, indirect) = parseFeatures(value)
+        api.ensureLoaded(bare)
+        value = (bare, indirect)
+    elif option == &#34;tupleFeatures&#34;:
         api.ensureLoaded(value)
         if type(value) is str:
             value = value.split() if value else []

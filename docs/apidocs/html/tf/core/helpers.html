@@ -388,7 +388,15 @@ def setFromValue(x, asInt=False):
         else {int(x) if asInt else x}
         if type(x) is str
         else ({int(v) for v in x} if asInt else set(x))
-    )</code></pre>
+    )
+
+
+def mergeDictOfSets(d1, d2):
+    for (n, ms) in d2.items():
+        if n in d1:
+            d1[n] |= ms
+        else:
+            d1[n] = ms</code></pre>
 </details>
 </section>
 <section>
@@ -760,6 +768,23 @@ def setFromValue(x, asInt=False):
     )</code></pre>
 </details>
 </dd>
+<dt id="tf.core.helpers.mergeDictOfSets"><code class="name flex">
+<span>def <span class="ident">mergeDictOfSets</span></span>(<span>d1, d2)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mergeDictOfSets(d1, d2):
+    for (n, ms) in d2.items():
+        if n in d1:
+            d1[n] |= ms
+        else:
+            d1[n] = ms</code></pre>
+</details>
+</dd>
 <dt id="tf.core.helpers.nbytes"><code class="name flex">
 <span>def <span class="ident">nbytes</span></span>(<span>by)</span>
 </code></dt>
@@ -1058,6 +1083,7 @@ Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
 <li><code><a title="tf.core.helpers.mathEsc" href="#tf.core.helpers.mathEsc">mathEsc</a></code></li>
 <li><code><a title="tf.core.helpers.mdEsc" href="#tf.core.helpers.mdEsc">mdEsc</a></code></li>
 <li><code><a title="tf.core.helpers.mdhtmlEsc" href="#tf.core.helpers.mdhtmlEsc">mdhtmlEsc</a></code></li>
+<li><code><a title="tf.core.helpers.mergeDictOfSets" href="#tf.core.helpers.mergeDictOfSets">mergeDictOfSets</a></code></li>
 <li><code><a title="tf.core.helpers.nbytes" href="#tf.core.helpers.nbytes">nbytes</a></code></li>
 <li><code><a title="tf.core.helpers.project" href="#tf.core.helpers.project">project</a></code></li>
 <li><code><a title="tf.core.helpers.rangesFromList" href="#tf.core.helpers.rangesFromList">rangesFromList</a></code></li>

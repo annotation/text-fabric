@@ -4,7 +4,7 @@ import types
 from ..parameters import URL_GH, URL_NB, URL_TFDOC
 from ..core.helpers import console, mdEsc
 from .displaysettings import INTERFACE_OPTIONS
-from .helpers import dm, parseFeatures
+from .helpers import dm, parseFeatures, transitiveClosure
 
 
 VAR_PATTERN = re.compile(r"\{([^}]+)\}")
@@ -803,11 +803,14 @@ def getTypeDefaults(app, cfg, dKey, withApi):
             container=containerCls, label=labelCls, children=childrenCls,
         )
 
+    descendantType = transitiveClosure(childType)
+
     specs.update(
         baseTypes=baseTypes if baseTypes else {slotType},
         childType=childType,
         chunkedTypes=set(isChunkOf.values()),
         condenseType=condenseType,
+        descendantType=descendantType,
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
@@ -827,9 +830,10 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     )
 
 
-def showContext(app, key=None):
+def showContext(app, *keys):
     EM = "*empty*"
     block = "    "
+    keys = set(keys)
 
     def eScalar(x, level):
         if type(x) is str and "\n" in x:
@@ -877,16 +881,17 @@ def showContext(app, key=None):
             return eDict(x, level)
         return eRest(x, level)
 
-    openRep = "open" if key is not None else ""
+    openRep1 = "open" if len(keys) else ""
+    openRep2 = "open" if len(keys) == 1 else ""
     md = [
-        f"<details {openRep}>"
+        f"<details {openRep1}>"
         f"<summary><b>{(app.appName)}</b> <i>app context</i></summary>\n\n"
     ]
     for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
-        if key is not None and key != k:
+        if len(keys) and k not in keys:
             continue
         md.append(
-            f"<details {openRep}>"
+            f"<details {openRep2}>"
             f"<summary>{i + 1}. {k}</summary>\n\n{eData(v, 0)}\n</details>\n"
         )
     md.append("</details>\n")

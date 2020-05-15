@@ -34,6 +34,9 @@ from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
 RESULT = &#34;result&#34;
 NB = &#34;\u00a0&#34;
 
+SEQ_TYPES1 = {tuple, list}
+SEQ_TYPES2 = {tuple, list, set, frozenset}
+
 
 def dm(md):
     display(Markdown(md))
@@ -102,7 +105,54 @@ def tupleEnum(tuples, start, end, limit, item):
             dh(
                 f&#34;&lt;b&gt;{rest} more {item}s skipped&lt;/b&gt; because we show a maximum of&#34;
                 f&#34; {limit} {item}s at a time&#34;
-            )</code></pre>
+            )
+
+
+def parseFeatures(features):
+    if (
+        type(features) in SEQ_TYPES1
+        and len(features) == 2
+        and type(features[0]) in SEQ_TYPES2
+        and type(features[1]) is dict
+    ):
+        return features
+
+    bare = []
+    indirect = {}
+    feats = (
+        ()
+        if not features
+        else features.split()
+        if type(features) is str
+        else tuple(features)
+    )
+    for feat in feats:
+        if not feat:
+            continue
+        parts = feat.split(&#34;:&#34;, 1)
+        feat = parts[-1]
+        bare.append(feat)
+        if len(parts) &gt; 1:
+            indirect[feat] = parts[0]
+    return (bare, indirect)
+
+
+def transitiveClosure(relation):
+    descendants = {}
+    for (parent, children) in relation.items():
+        descendants[parent] = set(children)
+
+    changed = True
+    while changed:
+        changed = False
+        for (parent, children) in relation.items():
+            for child in children:
+                if child in descendants:
+                    for grandChild in descendants[child]:
+                        if grandChild not in descendants[parent]:
+                            descendants[parent].add(grandChild)
+                            changed = True
+    return descendants</code></pre>
 </details>
 </section>
 <section>
@@ -185,6 +235,71 @@ def tupleEnum(tuples, start, end, limit, item):
     return False</code></pre>
 </details>
 </dd>
+<dt id="tf.applib.helpers.parseFeatures"><code class="name flex">
+<span>def <span class="ident">parseFeatures</span></span>(<span>features)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def parseFeatures(features):
+    if (
+        type(features) in SEQ_TYPES1
+        and len(features) == 2
+        and type(features[0]) in SEQ_TYPES2
+        and type(features[1]) is dict
+    ):
+        return features
+
+    bare = []
+    indirect = {}
+    feats = (
+        ()
+        if not features
+        else features.split()
+        if type(features) is str
+        else tuple(features)
+    )
+    for feat in feats:
+        if not feat:
+            continue
+        parts = feat.split(&#34;:&#34;, 1)
+        feat = parts[-1]
+        bare.append(feat)
+        if len(parts) &gt; 1:
+            indirect[feat] = parts[0]
+    return (bare, indirect)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.helpers.transitiveClosure"><code class="name flex">
+<span>def <span class="ident">transitiveClosure</span></span>(<span>relation)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transitiveClosure(relation):
+    descendants = {}
+    for (parent, children) in relation.items():
+        descendants[parent] = set(children)
+
+    changed = True
+    while changed:
+        changed = False
+        for (parent, children) in relation.items():
+            for child in children:
+                if child in descendants:
+                    for grandChild in descendants[child]:
+                        if grandChild not in descendants[parent]:
+                            descendants[parent].add(grandChild)
+                            changed = True
+    return descendants</code></pre>
+</details>
+</dd>
 <dt id="tf.applib.helpers.tupleEnum"><code class="name flex">
 <span>def <span class="ident">tupleEnum</span></span>(<span>tuples, start, end, limit, item)</span>
 </code></dt>
@@ -241,11 +356,13 @@ def tupleEnum(tuples, start, end, limit, item):
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="tf.applib.helpers.dh" href="#tf.applib.helpers.dh">dh</a></code></li>
 <li><code><a title="tf.applib.helpers.dm" href="#tf.applib.helpers.dm">dm</a></code></li>
 <li><code><a title="tf.applib.helpers.getLocalDir" href="#tf.applib.helpers.getLocalDir">getLocalDir</a></code></li>
 <li><code><a title="tf.applib.helpers.hasData" href="#tf.applib.helpers.hasData">hasData</a></code></li>
+<li><code><a title="tf.applib.helpers.parseFeatures" href="#tf.applib.helpers.parseFeatures">parseFeatures</a></code></li>
+<li><code><a title="tf.applib.helpers.transitiveClosure" href="#tf.applib.helpers.transitiveClosure">transitiveClosure</a></code></li>
 <li><code><a title="tf.applib.helpers.tupleEnum" href="#tf.applib.helpers.tupleEnum">tupleEnum</a></code></li>
 </ul>
 </li>

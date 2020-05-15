@@ -60,7 +60,7 @@ def compose(
                 app,
                 tup,
                 getx,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(options, &#34;extraFeatures&#34;),
             )
             if tup is not None
@@ -97,7 +97,7 @@ def compose(
                 position=position,
                 opened=i in opened,
                 _asString=True,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(options, &#34;extraFeatures&#34;),
             )
         )
@@ -135,7 +135,7 @@ def composeT(
                 tup,
                 getx,
                 condensed=False,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(options, &#34;condensed&#34;, &#34;extraFeatures&#34;),
             )
             if tup is not None
@@ -167,7 +167,7 @@ def composeT(
                 tup,
                 i,
                 condensed=False,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 opened=i in opened,
                 _asString=True,
                 **display.consume(options, &#34;condensed&#34;, &#34;extraFeatures&#34;),
@@ -222,7 +222,7 @@ def composeP(
                 getx,
                 condensed=False,
                 condenseType=finalSecType,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(
                     options, &#34;condensed&#34;, &#34;condenseType&#34;, &#34;extraFeatures&#34;
                 ),
@@ -242,7 +242,7 @@ def composeP(
                 item,
                 opened,
                 secFinal,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(options, &#34;extraFeatures&#34;),
             )
         )
@@ -345,7 +345,7 @@ def _plainTextSFinal(
                 app,
                 tup,
                 getx,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(options, &#34;extraFeatures&#34;),
             )
             if tup is not None
@@ -382,7 +382,7 @@ def _plainTextSFinal(
                 position=position,
                 opened=i in opened,
                 _asString=True,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(options, &#34;extraFeatures&#34;),
             )
         )
@@ -441,7 +441,7 @@ def _plainTextSFinal(
                 getx,
                 condensed=False,
                 condenseType=finalSecType,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(
                     options, &#34;condensed&#34;, &#34;condenseType&#34;, &#34;extraFeatures&#34;
                 ),
@@ -461,7 +461,7 @@ def _plainTextSFinal(
                 item,
                 opened,
                 secFinal,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(options, &#34;extraFeatures&#34;),
             )
         )
@@ -505,7 +505,7 @@ def _plainTextSFinal(
                 tup,
                 getx,
                 condensed=False,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 **display.consume(options, &#34;condensed&#34;, &#34;extraFeatures&#34;),
             )
             if tup is not None
@@ -537,7 +537,7 @@ def _plainTextSFinal(
                 tup,
                 i,
                 condensed=False,
-                extraFeatures=features,
+                extraFeatures=(features, {}),
                 opened=i in opened,
                 _asString=True,
                 **display.consume(options, &#34;condensed&#34;, &#34;extraFeatures&#34;),

@@ -30,7 +30,7 @@ import types
 from ..parameters import URL_GH, URL_NB, URL_TFDOC
 from ..core.helpers import console, mdEsc
 from .displaysettings import INTERFACE_OPTIONS
-from .helpers import dm
+from .helpers import dm, parseFeatures, transitiveClosure
 
 
 VAR_PATTERN = re.compile(r&#34;\{([^}]+)\}&#34;)
@@ -829,11 +829,14 @@ def getTypeDefaults(app, cfg, dKey, withApi):
             container=containerCls, label=labelCls, children=childrenCls,
         )
 
+    descendantType = transitiveClosure(childType)
+
     specs.update(
         baseTypes=baseTypes if baseTypes else {slotType},
         childType=childType,
         chunkedTypes=set(isChunkOf.values()),
         condenseType=condenseType,
+        descendantType=descendantType,
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
@@ -853,9 +856,10 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     )
 
 
-def showContext(app, key=None):
+def showContext(app, *keys):
     EM = &#34;*empty*&#34;
     block = &#34;    &#34;
+    keys = set(keys)
 
     def eScalar(x, level):
         if type(x) is str and &#34;\n&#34; in x:
@@ -903,16 +907,17 @@ def showContext(app, key=None):
             return eDict(x, level)
         return eRest(x, level)
 
-    openRep = &#34;open&#34; if key is not None else &#34;&#34;
+    openRep1 = &#34;open&#34; if len(keys) else &#34;&#34;
+    openRep2 = &#34;open&#34; if len(keys) == 1 else &#34;&#34;
     md = [
-        f&#34;&lt;details {openRep}&gt;&#34;
+        f&#34;&lt;details {openRep1}&gt;&#34;
         f&#34;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n\n&#34;
     ]
     for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
-        if key is not None and key != k:
+        if len(keys) and k not in keys:
             continue
         md.append(
-            f&#34;&lt;details {openRep}&gt;&#34;
+            f&#34;&lt;details {openRep2}&gt;&#34;
             f&#34;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
         )
     md.append(&#34;&lt;/details&gt;\n&#34;)
@@ -960,21 +965,7 @@ def compileFormatCls(app, specs, givenStyles):
             textCls = defaultClsOrig if style == ORIG else formatStyle.get(style, style)
         result[fmt] = textCls
 
-    specs[&#34;formatCls&#34;] = result
-
-
-def parseFeatures(features):
-    bare = []
-    indirect = {}
-    for feat in features.split(&#34; &#34;):
-        if not feat:
-            continue
-        parts = feat.split(&#34;:&#34;, 1)
-        feat = parts[-1]
-        bare.append(feat)
-        if len(parts) &gt; 1:
-            indirect[feat] = parts[0]
-    return (bare, indirect)</code></pre>
+    specs[&#34;formatCls&#34;] = result</code></pre>
 </details>
 </section>
 <section>
@@ -1374,11 +1365,14 @@ def parseFeatures(features):
             container=containerCls, label=labelCls, children=childrenCls,
         )
 
+    descendantType = transitiveClosure(childType)
+
     specs.update(
         baseTypes=baseTypes if baseTypes else {slotType},
         childType=childType,
         chunkedTypes=set(isChunkOf.values()),
         condenseType=condenseType,
+        descendantType=descendantType,
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
@@ -1396,29 +1390,6 @@ def parseFeatures(features):
         transform=transform,
         verseTypes=verseTypes,
     )</code></pre>
-</details>
-</dd>
-<dt id="tf.applib.settings.parseFeatures"><code class="name flex">
-<span>def <span class="ident">parseFeatures</span></span>(<span>features)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def parseFeatures(features):
-    bare = []
-    indirect = {}
-    for feat in features.split(&#34; &#34;):
-        if not feat:
-            continue
-        parts = feat.split(&#34;:&#34;, 1)
-        feat = parts[-1]
-        bare.append(feat)
-        if len(parts) &gt; 1:
-            indirect[feat] = parts[0]
-    return (bare, indirect)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.settings.setAppSpecs"><code class="name flex">
@@ -1579,7 +1550,7 @@ def parseFeatures(features):
 </details>
 </dd>
 <dt id="tf.applib.settings.showContext"><code class="name flex">
-<span>def <span class="ident">showContext</span></span>(<span>app, key=None)</span>
+<span>def <span class="ident">showContext</span></span>(<span>app, *keys)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -1587,9 +1558,10 @@ def parseFeatures(features):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def showContext(app, key=None):
+<pre><code class="python">def showContext(app, *keys):
     EM = &#34;*empty*&#34;
     block = &#34;    &#34;
+    keys = set(keys)
 
     def eScalar(x, level):
         if type(x) is str and &#34;\n&#34; in x:
@@ -1637,16 +1609,17 @@ def parseFeatures(features):
             return eDict(x, level)
         return eRest(x, level)
 
-    openRep = &#34;open&#34; if key is not None else &#34;&#34;
+    openRep1 = &#34;open&#34; if len(keys) else &#34;&#34;
+    openRep2 = &#34;open&#34; if len(keys) == 1 else &#34;&#34;
     md = [
-        f&#34;&lt;details {openRep}&gt;&#34;
+        f&#34;&lt;details {openRep1}&gt;&#34;
         f&#34;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n\n&#34;
     ]
     for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
-        if key is not None and key != k:
+        if len(keys) and k not in keys:
             continue
         md.append(
-            f&#34;&lt;details {openRep}&gt;&#34;
+            f&#34;&lt;details {openRep2}&gt;&#34;
             f&#34;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
         )
     md.append(&#34;&lt;/details&gt;\n&#34;)
@@ -2162,7 +2135,6 @@ def parseFeatures(features):
 <li><code><a title="tf.applib.settings.getDataDefaults" href="#tf.applib.settings.getDataDefaults">getDataDefaults</a></code></li>
 <li><code><a title="tf.applib.settings.getLevel" href="#tf.applib.settings.getLevel">getLevel</a></code></li>
 <li><code><a title="tf.applib.settings.getTypeDefaults" href="#tf.applib.settings.getTypeDefaults">getTypeDefaults</a></code></li>
-<li><code><a title="tf.applib.settings.parseFeatures" href="#tf.applib.settings.parseFeatures">parseFeatures</a></code></li>
 <li><code><a title="tf.applib.settings.setAppSpecs" href="#tf.applib.settings.setAppSpecs">setAppSpecs</a></code></li>
 <li><code><a title="tf.applib.settings.setAppSpecsApi" href="#tf.applib.settings.setAppSpecsApi">setAppSpecsApi</a></code></li>
 <li><code><a title="tf.applib.settings.showContext" href="#tf.applib.settings.showContext">showContext</a></code></li>
