@@ -3,6 +3,7 @@ import os
 from IPython.display import display, Markdown, HTML
 
 from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
+from ..core.helpers import htmlEsc
 
 
 RESULT = "result"
@@ -127,3 +128,143 @@ def transitiveClosure(relation):
                             descendants[parent].add(grandChild)
                             changed = True
     return descendants
+
+
+def htmlSafe(text, isHtml):
+    return text if isHtml else htmlEsc(text)
+
+
+def getText(
+    app, isPretty, n, nType, outer, first, last, level, passage, descend, dContext=None
+):
+    T = app.api.T
+    sectionTypeSet = T.sectionTypeSet
+    structureTypeSet = T.structureTypeSet
+
+    aContext = app.context
+    templates = aContext.labels if isPretty else aContext.templates
+
+    fmt = None if dContext is None else dContext.fmt
+    standardFeatures = True if dContext is None else dContext.standardFeatures
+    isHtml = False if dContext is None else dContext.isHtml
+    suppress = set() if dContext is None else dContext.suppress
+
+    (tpl, feats) = templates[nType]
+
+    tplFilled = (
+        (
+            (
+                '<span class="section">'
+                + (NB if passage else app.sectionStrFromNode(n))
+                + "</span>"
+            )
+            if nType in sectionTypeSet
+            else f'<span class="structure">{app.structureStrFromNode(n)}</span>'
+            if nType in structureTypeSet
+            else htmlSafe(
+                T.text(
+                    n,
+                    fmt=fmt,
+                    descend=descend,
+                    outer=outer,
+                    first=first,
+                    last=last,
+                    level=level,
+                ),
+                isHtml,
+            )
+        )
+        if tpl is True
+        else (
+            tpl.format(
+                **{feat: getValue(app, n, nType, feat, suppress) for feat in feats}
+            )
+            if standardFeatures
+            else ""
+        )
+    )
+    return tplFilled
+
+
+def getValue(app, n, nType, feat, suppress):
+    F = app.api.F
+    Fs = app.api.Fs
+
+    aContext = app.context
+    transform = aContext.transform
+    if feat in suppress:
+        val = ""
+    else:
+        featObj = Fs(feat) if hasattr(F, feat) else None
+        val = htmlEsc(featObj.v(n)) if featObj else None
+        modifier = transform.get(nType, {}).get(feat, None)
+        if modifier:
+            val = modifier(n, val)
+    return f'<span title="{feat}">{val}</span>'
+
+
+# COMPOSE TABLES FOR CSV EXPORT
+
+
+def getResultsX(app, results, features, condenseType, fmt=None):
+    api = app.api
+    F = api.F
+    Fs = api.Fs
+    T = api.T
+    fOtype = F.otype.v
+    otypeRank = api.otypeRank
+    sectionTypeSet = T.sectionTypeSet
+
+    aContext = app.context
+    noDescendTypes = aContext.noDescendTypes
+
+    sectionDepth = len(sectionTypeSet)
+    if len(results) == 0:
+        return ()
+    firstResult = results[0]
+    nTuple = len(firstResult)
+    refColumns = [
+        i for (i, n) in enumerate(firstResult) if fOtype(n) not in sectionTypeSet
+    ]
+    refColumn = refColumns[0] if refColumns else nTuple - 1
+    header = ["R"] + [f"S{i}" for i in range(1, sectionDepth + 1)]
+    emptyA = []
+
+    featureDict = {i: tuple(f.split()) if type(f) is str else f for (i, f) in features}
+
+    def withText(nodeType):
+        return (
+            condenseType is None
+            and nodeType not in sectionTypeSet
+            or otypeRank[nodeType] <= otypeRank[condenseType]
+        )
+
+    noDescendTypes = noDescendTypes
+
+    for j in range(nTuple):
+        i = j + 1
+        n = firstResult[j]
+        nType = fOtype(n)
+        header.extend([f"NODE{i}", f"TYPE{i}"])
+        if withText(nType):
+            header.append(f"TEXT{i}")
+        header.extend(f"{feature}{i}" for feature in featureDict.get(j, emptyA))
+    rows = [tuple(header)]
+    for (rm, r) in enumerate(results):
+        rn = rm + 1
+        row = [rn]
+        refN = r[refColumn]
+        sparts = T.sectionFromNode(refN)
+        nParts = len(sparts)
+        section = sparts + ((None,) * (sectionDepth - nParts))
+        row.extend(section)
+        for j in range(nTuple):
+            n = r[j]
+            nType = fOtype(n)
+            row.extend((n, nType))
+            if withText(nType):
+                text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
+                row.append(text)
+            row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
+        rows.append(tuple(row))
+    return tuple(rows)

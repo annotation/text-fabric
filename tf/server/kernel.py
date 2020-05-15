@@ -9,7 +9,7 @@ from ..core.helpers import console
 from ..applib.app import findApp
 from ..applib.highlight import getPassageHighlights
 from ..applib.search import runSearch, runSearchCondensed
-from ..applib.display import getResultsX
+from ..applib.helpers import getResultsX
 from ..applib.tables import compose, composeP, composeT
 
 from .command import argKernel

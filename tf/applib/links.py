@@ -9,8 +9,7 @@ from ..parameters import (
 )
 from ..core.helpers import htmlEsc
 from .repo import Checkout
-from .helpers import dh
-from .display import getText
+from .helpers import getText, dh
 from ..server.wrap import wrapProvenance
 
 
