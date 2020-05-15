@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5" />
+<meta name="generator" content="pdoc 0.8.1" />
 <title>tf.applib.display API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 </head>
 <body>
@@ -193,6 +193,9 @@ def displaySetup(app, **options):
     ----------
     options: dict
         Explicit values for selected options that act as overrides of the defaults.
+        A list of all available options is in
+        `tf.applib.displaysettings.DisplaySettings`
+        .
     &#34;&#34;&#34;
 
     display = app.display
@@ -433,6 +436,38 @@ def plainTuple(
 
 
 def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
+    &#34;&#34;&#34;Display the plain text of a node.
+
+    *Plain* is oppsed to *pretty*; `pretty` shows the underlying structure of the
+    text material associated with a node, plain just shows the linear text.
+
+    The result of plain is formatted text, the text is styled depending on
+    the chosen text format. Text corresponding to sub nodes can be selectively
+    highlighted.
+
+    Parameters
+    ----------
+    app: object
+        The application object, it is normally referenced by the variable `A`.
+    n: integer
+        Node
+    options: dict
+        Display options, see
+        `tf.applib.displaysettings.DISPLAY_OPTIONS` and
+        `tf.applib.displaysettings.INTERFACE_OPTIONS`.
+    _inTuple: boolean, optional `False`
+        Whether the result is meant too end up in a table cell produced by
+        `plainTuple`. In that case some extra node types count as big and will
+        not be displayed in full.
+    _asString: boolean, optional `False`
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+    explain: boolean, optional `False`
+        Whether to print a trace of which nodes have been visited and how these
+        calls have contributed to the end result.
+    &#34;&#34;&#34;
+
     display = app.display
 
     if not display.check(&#34;plain&#34;, options):
@@ -805,6 +840,28 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
 
 
 def pretty(app, n, explain=False, **options):
+    &#34;&#34;&#34;Display the structure associated with a node.
+
+    *Plain* is oppsed to *pretty*; `pretty` shows the underlying structure of the
+    text material associated with a node, plain just shows the linear text.
+
+    The result of pretty is a formatted display of pieces of text together with
+    extra features and their values
+    Text corresponding to sub nodes can be selectively highlighted.
+
+    Parameters
+    ----------
+    app: object
+        The application object, it is normally referenced by the variable `A`.
+    n: integer
+        Node
+    options: dict
+        Display options, see `tf.applib.displaysettings.DisplaySettings`
+    explain: boolean, optional `False`
+        Whether to print a trace of which nodes have been visited and how these
+        calls have contributed to the end result.
+    &#34;&#34;&#34;
+
     display = app.display
 
     if not display.check(&#34;pretty&#34;, options):
@@ -1840,7 +1897,7 @@ def getRefMember(app, tup, dContext):
 <span>def <span class="ident">depthExceeded</span></span>(<span>level)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1856,15 +1913,15 @@ def getRefMember(app, tup, dContext):
 <span>def <span class="ident">displayApi</span></span>(<span>app, silent)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Produce the display API.</p>
+<div class="desc"><p>Produce the display API.</p>
 <p>The display API provides methods to generate styled representations
 of pieces of corpus texts in their relevant structures.
-The main end-user functions are <code>plain(node)</code> and <code>pretty(node)</code>.</p>
-<p><a title="tf.applib.display.plain" href="#tf.applib.display.plain"><code>plain()</code></a> focuses on the plain text, <a title="tf.applib.display.pretty" href="#tf.applib.display.pretty"><code>pretty()</code></a> focuses on structure
+The main end-user functions are <code><a title="tf.applib.display.plain" href="#tf.applib.display.plain">plain()</a>(node)</code> and <code><a title="tf.applib.display.pretty" href="#tf.applib.display.pretty">pretty()</a>(node)</code>.</p>
+<p><code><a title="tf.applib.display.plain" href="#tf.applib.display.plain">plain()</a></code> focuses on the plain text, <code><a title="tf.applib.display.pretty" href="#tf.applib.display.pretty">pretty()</a></code> focuses on structure
 and feature display.</p>
-<p>Related are <a title="tf.applib.display.plainTuple" href="#tf.applib.display.plainTuple"><code>plainTuple()</code></a> and <a title="tf.applib.display.prettyTuple" href="#tf.applib.display.prettyTuple"><code>prettyTuple()</code></a> that work for tuples
+<p>Related are <code><a title="tf.applib.display.plainTuple" href="#tf.applib.display.plainTuple">plainTuple()</a></code> and <code><a title="tf.applib.display.prettyTuple" href="#tf.applib.display.prettyTuple">prettyTuple()</a></code> that work for tuples
 instead of nodes.</p>
-<p>And further there are <a title="tf.applib.display.show" href="#tf.applib.display.show"><code>show()</code></a> and <a title="tf.applib.display.table" href="#tf.applib.display.table"><code>table()</code></a>, that work
+<p>And further there are <code><a title="tf.applib.display.show" href="#tf.applib.display.show">show()</a></code> and <code><a title="tf.applib.display.table" href="#tf.applib.display.table">table()</a></code>, that work
 with iterables of tuples of nodes (e.g. query results).</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -1874,7 +1931,7 @@ with iterables of tuples of nodes (e.g. query results).</p>
 <p>silent:
 The verbosity mode to perform this operation in.
 Normally it is the same as for the app, but when we do an <code>A.reuse()</code>
-we force <code>silent=True</code>.</p></section>
+we force <code>silent=True</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1925,12 +1982,12 @@ we force <code>silent=True</code>.</p></section>
 <span>def <span class="ident">displayReset</span></span>(<span>app, *options)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Restore display parameters to their defaults.</p>
+<div class="desc"><p>Restore display parameters to their defaults.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>options</code></strong> :&ensp;<code>list</code>, optional <code>[]</code></dt>
 <dd>If present, only restore these options to their defaults.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1953,7 +2010,7 @@ we force <code>silent=True</code>.</p></section>
 <span>def <span class="ident">displaySetup</span></span>(<span>app, **options)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Set up all display parameters.</p>
+<div class="desc"><p>Set up all display parameters.</p>
 <p>The display parameters are given default values, unless they are overriden
 by <code>options</code>.</p>
 <div class="admonition hint">
@@ -1964,8 +2021,11 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Explicit values for selected options that act as overrides of the defaults.</dd>
-</dl></section>
+<dd>Explicit values for selected options that act as overrides of the defaults.
+A list of all available options is in
+<code><a title="tf.applib.displaysettings.DisplaySettings" href="displaysettings.html#tf.applib.displaysettings.DisplaySettings">DisplaySettings</a></code>
+.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1984,6 +2044,9 @@ by the <code>config.yaml</code> file, if it exists.</p>
     ----------
     options: dict
         Explicit values for selected options that act as overrides of the defaults.
+        A list of all available options is in
+        `tf.applib.displaysettings.DisplaySettings`
+        .
     &#34;&#34;&#34;
 
     display = app.display
@@ -1995,7 +2058,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">doPassage</span></span>(<span>dContext, i)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2009,7 +2072,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">export</span></span>(<span>app, tuples, toDir=None, toFile='results.tsv', **options)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2047,7 +2110,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getBigType</span></span>(<span>app, dContext, nType, otypeRank)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2076,7 +2139,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getBoundaryResult</span></span>(<span>isPretty, api, oContext, inSlots, n, nType, chunk=None)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2127,7 +2190,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getChildren</span></span>(<span>app, isPretty, dContext, oContext, n, nType)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2191,7 +2254,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getChunkedType</span></span>(<span>app, nContext, n, outer)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2225,7 +2288,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getFeatures</span></span>(<span>app, dContext, n, nType)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2319,7 +2382,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getLtr</span></span>(<span>app, dContext)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2341,7 +2404,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getNodePart</span></span>(<span>app, isPretty, dContext, n, nType, isSlot, outer, isHl)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2391,7 +2454,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getPassage</span></span>(<span>app, isPretty, dContext, oContext, n)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2410,7 +2473,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getRefMember</span></span>(<span>app, tup, dContext)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2438,7 +2501,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getResultsX</span></span>(<span>app, results, features, condenseType, fmt=None)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2511,7 +2574,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getSlots</span></span>(<span>api, n)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2531,7 +2594,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getText</span></span>(<span>app, isPretty, n, nType, outer, first, last, level, passage, descend, dContext=None)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2592,7 +2655,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getTextCls</span></span>(<span>app, fmt)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2609,7 +2672,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">getValue</span></span>(<span>app, n, nType, feat, suppress)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2635,7 +2698,7 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">htmlSafe</span></span>(<span>text, isHtml)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2648,9 +2711,9 @@ by the <code>config.yaml</code> file, if it exists.</p>
 <span>def <span class="ident">loadCss</span></span>(<span>app)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>The CSS is looked up and then loaded into a notebook if we are not
+<div class="desc"><p>The CSS is looked up and then loaded into a notebook if we are not
 running in the TF browser,
-else the CSS is returned.</p></section>
+else the CSS is returned.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2685,7 +2748,7 @@ else the CSS is returned.</p></section>
 <span>def <span class="ident">note</span></span>(<span>isPretty, oContext, n, nType, first, last, level, *labels, **info)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2705,12 +2768,71 @@ else the CSS is returned.</p></section>
 <span>def <span class="ident">plain</span></span>(<span>app, n, explain=False, **options)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"><p>Display the plain text of a node.</p>
+<p><em>Plain</em> is oppsed to <em>pretty</em>; <code><a title="tf.applib.display.pretty" href="#tf.applib.display.pretty">pretty()</a></code> shows the underlying structure of the
+text material associated with a node, plain just shows the linear text.</p>
+<p>The result of plain is formatted text, the text is styled depending on
+the chosen text format. Text corresponding to sub nodes can be selectively
+highlighted.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>The application object, it is normally referenced by the variable <code>A</code>.</dd>
+<dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
+<dd>Node</dd>
+<dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Display options, see
+<code>tf.applib.displaysettings.DISPLAY_OPTIONS</code> and
+<code>tf.applib.displaysettings.INTERFACE_OPTIONS</code>.</dd>
+<dt><strong><code>_inTuple</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether the result is meant too end up in a table cell produced by
+<code><a title="tf.applib.display.plainTuple" href="#tf.applib.display.plainTuple">plainTuple()</a></code>. In that case some extra node types count as big and will
+not be displayed in full.</dd>
+<dt><strong><code>_asString</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to deliver the result as a HTML string or to display it directly
+inside a notebook. When the TF-browser uses this function it needs the
+HTML string.</dd>
+<dt><strong><code>explain</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to print a trace of which nodes have been visited and how these
+calls have contributed to the end result.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
+    &#34;&#34;&#34;Display the plain text of a node.
+
+    *Plain* is oppsed to *pretty*; `pretty` shows the underlying structure of the
+    text material associated with a node, plain just shows the linear text.
+
+    The result of plain is formatted text, the text is styled depending on
+    the chosen text format. Text corresponding to sub nodes can be selectively
+    highlighted.
+
+    Parameters
+    ----------
+    app: object
+        The application object, it is normally referenced by the variable `A`.
+    n: integer
+        Node
+    options: dict
+        Display options, see
+        `tf.applib.displaysettings.DISPLAY_OPTIONS` and
+        `tf.applib.displaysettings.INTERFACE_OPTIONS`.
+    _inTuple: boolean, optional `False`
+        Whether the result is meant too end up in a table cell produced by
+        `plainTuple`. In that case some extra node types count as big and will
+        not be displayed in full.
+    _asString: boolean, optional `False`
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+    explain: boolean, optional `False`
+        Whether to print a trace of which nodes have been visited and how these
+        calls have contributed to the end result.
+    &#34;&#34;&#34;
+
     display = app.display
 
     if not display.check(&#34;plain&#34;, options):
@@ -2749,7 +2871,7 @@ else the CSS is returned.</p></section>
 <span>def <span class="ident">plainTuple</span></span>(<span>app, tup, seq, item='result', position=None, opened=False, **options)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2877,12 +2999,51 @@ else the CSS is returned.</p></section>
 <span>def <span class="ident">pretty</span></span>(<span>app, n, explain=False, **options)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"><p>Display the structure associated with a node.</p>
+<p><em>Plain</em> is oppsed to <em>pretty</em>; <code><a title="tf.applib.display.pretty" href="#tf.applib.display.pretty">pretty()</a></code> shows the underlying structure of the
+text material associated with a node, plain just shows the linear text.</p>
+<p>The result of pretty is a formatted display of pieces of text together with
+extra features and their values
+Text corresponding to sub nodes can be selectively highlighted.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>The application object, it is normally referenced by the variable <code>A</code>.</dd>
+<dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
+<dd>Node</dd>
+<dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Display options, see <code><a title="tf.applib.displaysettings.DisplaySettings" href="displaysettings.html#tf.applib.displaysettings.DisplaySettings">DisplaySettings</a></code></dd>
+<dt><strong><code>explain</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to print a trace of which nodes have been visited and how these
+calls have contributed to the end result.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def pretty(app, n, explain=False, **options):
+    &#34;&#34;&#34;Display the structure associated with a node.
+
+    *Plain* is oppsed to *pretty*; `pretty` shows the underlying structure of the
+    text material associated with a node, plain just shows the linear text.
+
+    The result of pretty is a formatted display of pieces of text together with
+    extra features and their values
+    Text corresponding to sub nodes can be selectively highlighted.
+
+    Parameters
+    ----------
+    app: object
+        The application object, it is normally referenced by the variable `A`.
+    n: integer
+        Node
+    options: dict
+        Display options, see `tf.applib.displaysettings.DisplaySettings`
+    explain: boolean, optional `False`
+        Whether to print a trace of which nodes have been visited and how these
+        calls have contributed to the end result.
+    &#34;&#34;&#34;
+
     display = app.display
 
     if not display.check(&#34;pretty&#34;, options):
@@ -2948,7 +3109,7 @@ else the CSS is returned.</p></section>
 <span>def <span class="ident">prettyTuple</span></span>(<span>app, tup, seq, item='result', **options)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -3001,7 +3162,7 @@ else the CSS is returned.</p></section>
 <span>def <span class="ident">setSubBaseTypes</span></span>(<span>aContext, dContext, slotType)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -3025,7 +3186,7 @@ else the CSS is returned.</p></section>
 <span>def <span class="ident">show</span></span>(<span>app, tuples, **options)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -3068,7 +3229,7 @@ else the CSS is returned.</p></section>
 <span>def <span class="ident">table</span></span>(<span>app, tuples, **options)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -3148,7 +3309,7 @@ else the CSS is returned.</p></section>
 <span>(</span><span>slotType, nType, isSlot, isSlotOrDescend, descend, isBaseNonSlot, hasChunks, children, boundaryCls, textCls, hlCls, hlStyle, nodePart, cls, slots, hidden)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Node properties during plain() or pretty().</p></section>
+<div class="desc"><p>Node properties during plain() or pretty().</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.tuple</li>
@@ -3157,68 +3318,68 @@ else the CSS is returned.</p></section>
 <dl>
 <dt id="tf.applib.display.NodeContext.boundaryCls"><code class="name">var <span class="ident">boundaryCls</span></code></dt>
 <dd>
-<section class="desc"><p>Css class that represent the kinds of boundaries for this node. Nodes can have a firm of dotted left/right boundary, or no boundary at all.</p></section>
+<div class="desc"><p>Css class that represent the kinds of boundaries for this node. Nodes can have a firm of dotted left/right boundary, or no boundary at all.</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.children"><code class="name">var <span class="ident">children</span></code></dt>
 <dd>
-<section class="desc"><p>The children of the current node.</p></section>
+<div class="desc"><p>The children of the current node.</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.cls"><code class="name">var <span class="ident">cls</span></code></dt>
 <dd>
-<section class="desc"><p>A dict of several classes for the display of the node: for the container, the label, and the children of the node; might be set by prettyCustom</p></section>
+<div class="desc"><p>A dict of several classes for the display of the node: for the container, the label, and the children of the node; might be set by prettyCustom</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.descend"><code class="name">var <span class="ident">descend</span></code></dt>
 <dd>
-<section class="desc"><p>When calling T.text(n, descend=??) for this node, what should we substitute for the ?? ?</p></section>
+<div class="desc"><p>When calling T.text(n, descend=??) for this node, what should we substitute for the ?? ?</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.hasChunks"><code class="name">var <span class="ident">hasChunks</span></code></dt>
 <dd>
-<section class="desc"><p>Whether the current node has a type that has a related type that corresponds to contiguous chunks that build it.
-E.g. in the BHSA the type phrase has a chunk type phrase_atom.</p></section>
+<div class="desc"><p>Whether the current node has a type that has a related type that corresponds to contiguous chunks that build it.
+E.g. in the BHSA the type phrase has a chunk type phrase_atom.</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.hidden"><code class="name">var <span class="ident">hidden</span></code></dt>
 <dd>
-<section class="desc"><p>Whether the outer container and label of the current node should be hidden. This is used to reduce displays by hiding the chunk types of types that have chunks. E.g. in the BHSA: the phrase_atoms can be hidden.</p></section>
+<div class="desc"><p>Whether the outer container and label of the current node should be hidden. This is used to reduce displays by hiding the chunk types of types that have chunks. E.g. in the BHSA: the phrase_atoms can be hidden.</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.hlCls"><code class="name">var <span class="ident">hlCls</span></code></dt>
 <dd>
-<section class="desc"><p>The highlight Css class of the current node.</p></section>
+<div class="desc"><p>The highlight Css class of the current node.</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.hlStyle"><code class="name">var <span class="ident">hlStyle</span></code></dt>
 <dd>
-<section class="desc"><p>The highlight style attribute of the current node.</p></section>
+<div class="desc"><p>The highlight style attribute of the current node.</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.isBaseNonSlot"><code class="name">var <span class="ident">isBaseNonSlot</span></code></dt>
 <dd>
-<section class="desc"><p>Whether the current node has a type that is currently a baseType, i.e. a type where a pretty display should stop unfolding. No need to put the slot type in this set.</p></section>
+<div class="desc"><p>Whether the current node has a type that is currently a baseType, i.e. a type where a pretty display should stop unfolding. No need to put the slot type in this set.</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.isSlot"><code class="name">var <span class="ident">isSlot</span></code></dt>
 <dd>
-<section class="desc"><p>Whether the current node is a slot node.</p></section>
+<div class="desc"><p>Whether the current node is a slot node.</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.isSlotOrDescend"><code class="name">var <span class="ident">isSlotOrDescend</span></code></dt>
 <dd>
-<section class="desc"><p>Whether the current node is a slot node or has a type to which the current text format should descend. This type is determined by the current text format.</p></section>
+<div class="desc"><p>Whether the current node is a slot node or has a type to which the current text format should descend. This type is determined by the current text format.</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.nType"><code class="name">var <span class="ident">nType</span></code></dt>
 <dd>
-<section class="desc"><p>The node type of the current node.</p></section>
+<div class="desc"><p>The node type of the current node.</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.nodePart"><code class="name">var <span class="ident">nodePart</span></code></dt>
 <dd>
-<section class="desc"><p>The node type/number insofar it has to be displayed for the current node</p></section>
+<div class="desc"><p>The node type/number insofar it has to be displayed for the current node</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.slotType"><code class="name">var <span class="ident">slotType</span></code></dt>
 <dd>
-<section class="desc"><p>The slot type of the data set.</p></section>
+<div class="desc"><p>The slot type of the data set.</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.slots"><code class="name">var <span class="ident">slots</span></code></dt>
 <dd>
-<section class="desc"><p>Set of slots that must be displayed for this node</p></section>
+<div class="desc"><p>Set of slots that must be displayed for this node</p></div>
 </dd>
 <dt id="tf.applib.display.NodeContext.textCls"><code class="name">var <span class="ident">textCls</span></code></dt>
 <dd>
-<section class="desc"><p>The text Css class of the current node.</p></section>
+<div class="desc"><p>The text Css class of the current node.</p></div>
 </dd>
 </dl>
 </dd>
@@ -3227,7 +3388,7 @@ E.g. in the BHSA the type phrase has a chunk type phrase_atom.</p></section>
 <span>(</span><span>ltr, textCls, slots, inTuple, explain)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Outer node properties during plain() and pretty(). Only the properties of the node for which the outer call plain() or pretty() has been made, not the nodes encountered during recursion.</p></section>
+<div class="desc"><p>Outer node properties during plain() and pretty(). Only the properties of the node for which the outer call plain() or pretty() has been made, not the nodes encountered during recursion.</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.tuple</li>
@@ -3236,23 +3397,23 @@ E.g. in the BHSA the type phrase has a chunk type phrase_atom.</p></section>
 <dl>
 <dt id="tf.applib.display.OuterContext.explain"><code class="name">var <span class="ident">explain</span></code></dt>
 <dd>
-<section class="desc"><p>Alias for field number 4</p></section>
+<div class="desc"><p>Alias for field number 4</p></div>
 </dd>
 <dt id="tf.applib.display.OuterContext.inTuple"><code class="name">var <span class="ident">inTuple</span></code></dt>
 <dd>
-<section class="desc"><p>Whether the outer node is displayed as part of a tuple of nodes.</p></section>
+<div class="desc"><p>Whether the outer node is displayed as part of a tuple of nodes.</p></div>
 </dd>
 <dt id="tf.applib.display.OuterContext.ltr"><code class="name">var <span class="ident">ltr</span></code></dt>
 <dd>
-<section class="desc"><p>writing direction.</p></section>
+<div class="desc"><p>writing direction.</p></div>
 </dd>
 <dt id="tf.applib.display.OuterContext.slots"><code class="name">var <span class="ident">slots</span></code></dt>
 <dd>
-<section class="desc"><p>Set of slots under the outer node.</p></section>
+<div class="desc"><p>Set of slots under the outer node.</p></div>
 </dd>
 <dt id="tf.applib.display.OuterContext.textCls"><code class="name">var <span class="ident">textCls</span></code></dt>
 <dd>
-<section class="desc"><p>Css class for full text.</p></section>
+<div class="desc"><p>Css class for full text.</p></div>
 </dd>
 </dl>
 </dd>
@@ -3343,7 +3504,7 @@ E.g. in the BHSA the type phrase has a chunk type phrase_atom.</p></section>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>

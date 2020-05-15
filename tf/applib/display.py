@@ -167,6 +167,9 @@ def displaySetup(app, **options):
     ----------
     options: dict
         Explicit values for selected options that act as overrides of the defaults.
+        A list of all available options is in
+        `tf.applib.displaysettings.DisplaySettings`
+        .
     """
 
     display = app.display
@@ -407,6 +410,38 @@ def plainTuple(
 
 
 def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
+    """Display the plain text of a node.
+
+    *Plain* is oppsed to *pretty*; `pretty` shows the underlying structure of the
+    text material associated with a node, plain just shows the linear text.
+
+    The result of plain is formatted text, the text is styled depending on
+    the chosen text format. Text corresponding to sub nodes can be selectively
+    highlighted.
+
+    Parameters
+    ----------
+    app: object
+        The application object, it is normally referenced by the variable `A`.
+    n: integer
+        Node
+    options: dict
+        Display options, see
+        `tf.applib.displaysettings.DISPLAY_OPTIONS` and
+        `tf.applib.displaysettings.INTERFACE_OPTIONS`.
+    _inTuple: boolean, optional `False`
+        Whether the result is meant too end up in a table cell produced by
+        `plainTuple`. In that case some extra node types count as big and will
+        not be displayed in full.
+    _asString: boolean, optional `False`
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+    explain: boolean, optional `False`
+        Whether to print a trace of which nodes have been visited and how these
+        calls have contributed to the end result.
+    """
+
     display = app.display
 
     if not display.check("plain", options):
@@ -779,6 +814,28 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
 
 
 def pretty(app, n, explain=False, **options):
+    """Display the structure associated with a node.
+
+    *Plain* is oppsed to *pretty*; `pretty` shows the underlying structure of the
+    text material associated with a node, plain just shows the linear text.
+
+    The result of pretty is a formatted display of pieces of text together with
+    extra features and their values
+    Text corresponding to sub nodes can be selectively highlighted.
+
+    Parameters
+    ----------
+    app: object
+        The application object, it is normally referenced by the variable `A`.
+    n: integer
+        Node
+    options: dict
+        Display options, see `tf.applib.displaysettings.DisplaySettings`
+    explain: boolean, optional `False`
+        Whether to print a trace of which nodes have been visited and how these
+        calls have contributed to the end result.
+    """
+
     display = app.display
 
     if not display.check("pretty", options):

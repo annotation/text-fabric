@@ -53,6 +53,9 @@ API_REFS = dict(
 
 
 class OtypeFeature(object):
+    """Provides access to *otype* feature data.
+    """
+
     def __init__(self, api, metaData, data):
         self.api = api
         self.meta = metaData
@@ -103,6 +106,9 @@ class OtypeFeature(object):
 
 
 class OslotsFeature(object):
+    """Provides access to *oslots* feature data.
+    """
+
     def __init__(self, api, metaData, data):
         self.api = api
         self.meta = metaData
@@ -132,6 +138,9 @@ class OslotsFeature(object):
 
 
 class NodeFeature(object):
+    """Provides access to (node) feature data.
+    """
+
     def __init__(self, api, metaData, data):
         self.api = api
         self.meta = metaData
@@ -168,6 +177,9 @@ class NodeFeature(object):
 
 
 class EdgeFeature(object):
+    """Provides access to (edge) feature data.
+    """
+
     def __init__(self, api, metaData, data, doValues):
         self.api = api
         self.meta = metaData
@@ -257,6 +269,9 @@ class EdgeFeature(object):
 
 
 class Computed(object):
+    """Provides access to precomputed data.
+    """
+
     def __init__(self, api, data):
         self.api = api
         self.data = data
