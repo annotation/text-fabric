@@ -59,7 +59,8 @@ command:
 --help
 help  : print help and exit
 
-adocs : build apidocs
+adocs : serve apidocs locally
+bdocs : build apidocs
 docs  : serve docs locally
 clean : clean local develop build
 l     : local develop build
@@ -93,6 +94,7 @@ def readArgs():
         "a",
         "t",
         "adocs",
+        "bdocs",
         "docs",
         "clean",
         "l",
@@ -230,6 +232,17 @@ def shipDocs():
     run(["mkdocs", "gh-deploy"])
 
 
+def serveApidocs():
+    proc = Popen(["pdoc3", "--http", ":", "tf"])
+    sleep(1)
+    run("open http://localhost:8080/tf", shell=True)
+    try:
+        proc.wait()
+    except KeyboardInterrupt:
+        pass
+    proc.terminate()
+
+
 def serveDocs():
     codestats()
     apidocs()
@@ -355,6 +368,8 @@ def main():
     elif task == "t":
         tftest(msg, remaining)
     elif task == "adocs":
+        serveApidocs()
+    elif task == "bdocs":
         apidocs()
     elif task == "docs":
         serveDocs()

@@ -1,3 +1,6 @@
+"""
+"""
+
 from .data import WARP
 
 DEFAULT_FORMAT = "text-orig-full"
@@ -7,12 +10,36 @@ TYPE_FMT_SEP = "#"
 
 
 class Text(object):
+    """Low level text representation, including section headings.
+
+    In addition to the methods that are directly defined, there are also
+    methods `xxxName()` and `xxxNode()` where `xxx` is whatever the node type of
+    level 1 sections is.
+
+    !!! note "level 1 node types"
+        In the BHSA the `xxx` is `book`, in the DSS it is `scroll`,
+        in Old Babylonian it is `document`, and in Uruk it is `tablet`.
+
+        Here we take the BHSA as example: `bookName()` and `bookNode()`
+
+    ``` python
+    T.bookName(node, lang='en')
+    T.bookNode(name, lang='en')
+    ```
+
+    with node:int the node in question, name:str the name in question,
+    and `lang='en'` the language of the book name.
+    """
+
     def __init__(self, api):
         self.api = api
         C = api.C
         Fs = api.Fs
         TF = api.TF
         self.languages = {}
+        """A dictionary of the languages that are available for book names.
+        """
+
         self.nameFromNode = {}
         self.nodeFromName = {}
         config = api.TF.features[WARP[2]].metaData if WARP[2] in api.TF.features else {}
@@ -70,23 +97,52 @@ class Text(object):
             setattr(self, f"{sec0}Name", self._sec0Name)
             setattr(self, f"{sec0}Node", self._sec0Node)
 
+        self.formats = {}
+        """The text representation formats that have been defined in your dataset.
+        """
+
         self._compileFormats()
         self.good = good
 
-    def _sec0Name(self, n, lang="en"):
-        sec0T = self.sectionTypes[0]
-        fOtype = self.api.F.otype.v
-        refNode = n if fOtype(n) == sec0T else self.api.L.u(n, sec0T)[0]
-        lookup = self.nameFromNode["" if lang not in self.languages else lang]
-        return lookup.get(refNode, f"not a {sec0T} node")
-
-    def _sec0Node(self, name, lang="en"):
-        sec0T = self.sectionTypes[0]
-        return self.nodeFromName["" if lang not in self.languages else lang].get(
-            (sec0T, name), None
-        )
-
     def sectionTuple(self, n, lastSlot=False, fillup=False):
+        """Gives a tuple of nodes that correspond to a sections
+
+        More precisely, we retrieve the sections that contain a
+        reference node, which is either the first slot or the last slot of the node
+        in question.
+
+        Parameters
+        ----------
+        n: integer
+            The node whose containing section to retrieve.
+        lastSlot: boolean, optional `False`
+            Whether the reference node will be the last slot contained by *n*
+            or the first slot.
+        fillup: boolean, optional `False`
+            Whether to fill up the tuple with missing section elements.
+        Returns
+        -------
+        section: tuple of int
+            If *n* is not a section node, a reference node *r* will be taken
+            according to the *lastSlot* parameter.
+
+            If `fillup == False`:
+
+            If *r* is a level 0 section node,
+            *section* is the 1-element tuple `(r,)`.
+
+            If *r* is a level 1 section node,
+            *section* is a 2-element tuple, i.e.
+            the enclosing level 0 section node and *r* itself.
+
+            If *r* is a level 2 section node,
+            *section* is a 3-element tuple, i.e.
+            the enclosing level 0 and  1 section nodes and *r* itself.
+
+            If `fillup == True`, always a complete 3-tuple of a level 0, 1, and 2
+            section nodes is returned.
+        """
+
         sTypes = self.sectionTypes
         lsTypes = len(sTypes)
         if lsTypes == 0:
@@ -143,6 +199,42 @@ class Text(object):
         return (r0, r1, r2)
 
     def sectionFromNode(self, n, lastSlot=False, lang="en", fillup=False):
+        """Gives the full heading of a section node.
+
+        Parameters
+        ----------
+        n: integer
+            The node whose heading to retrieve.
+        lastSlot: boolean, optional `False`
+            Whether the reference node will be the last slot contained by *n*
+            or the first slot.
+        lang: string, optional `en`
+            The language assumed for the section parts,
+            as far as they are language dependent.
+            Must be a 2-letter language code.
+        fillup: boolean, optional `False`
+            Whether to fill up the tuple with missing section elements.
+
+        Returns
+        -------
+        heading: tuple of pairs
+            If *n* is not a section node, a reference node *r* will be taken
+            according to the *lastSlot* parameter.
+
+            It is the tuple of integer/string values for section ancestors
+            of *r* and *r* itself,
+            where the *fillup* parameter plays the same role as in
+            `Text.sectionTuple`.
+
+        !!! hint "crossing verse boundaries"
+            Sometimes a sentence or clause in a verse continue into the next verse.
+            In those cases, this function will return different results for
+            `lastSlot=False` and `lastSlot=True`.
+
+        !!! caution "nodes outside sections"
+            Nodes that lie outside any book, chapter, or verse
+            will get a `None` in the corresponding members of the returned tuple.
+        """
         sTuple = self.sectionTuple(n, lastSlot=lastSlot, fillup=fillup)
         if len(sTuple) == 0:
             return ()
@@ -159,6 +251,30 @@ class Text(object):
         )
 
     def nodeFromSection(self, section, lang="en"):
+        """Given a section tuple, return the node of it.
+
+        Parameters
+        ----------
+        section: string
+            `section` consists of a book name (in language `lang`),
+            and a chapter number and a verse number
+            (both as strings or number depending on the value type of the
+            corresponding feature).
+        lang: string, optional `en`
+            The language assumed for the section parts,
+            as far as they are language dependent.
+            Must be a 2-letter language code.
+
+        Returns
+        -------
+        section node: integer
+            If section labels for all three levels is present,
+            the result is a level 3 node.
+            If the level 3 label has been left out, the result is a level 2 node.
+            If both level 1 and level 2 labels have been left out,
+            the result is a level 1 node.
+        """
+
         sTypes = self.sectionTypes
         if len(sTypes) == 0:
             return None
@@ -172,6 +288,15 @@ class Text(object):
             return sec2.get(sec0node, {}).get(section[1], {}).get(section[2], None)
 
     def structureInfo(self):
+        """Gives a summary of how structure has been configured in the dataset.
+
+        If there are headings that are the same for multiple structural nodes,
+        you'll get a warning here, and you are told how you can get all of those.
+
+        It also shows a short description of all structure-related methods
+        of the `T` API.
+        """
+
         api = self.api
         info = api.info
         error = api.error
@@ -230,6 +355,20 @@ There are {len(hdFromNd)} structural elements in the dataset.
                 error(f"\tand {nMultiple - 10} headings more")
 
     def structure(self, node=None):
+        """Gives the structure of node and everything below it as a tuple.
+
+        Parameters
+        ----------
+        node: integer, optional `None`
+            The node whose structure is asked for.
+            If *node* is None, the complete structure of the whole dataset is returned.
+
+        Returns
+        -------
+        structure: tuple
+            Nested tuple of nodes involved in the structure below a node.
+        """
+
         api = self.api
         error = api.error
         F = api.F
@@ -253,6 +392,25 @@ There are {len(hdFromNd)} structural elements in the dataset.
         return (node, tuple(self.structure(node=d) for d in self.down(node)))
 
     def structurePretty(self, node=None, fullHeading=False):
+        """Gives the structure of node and everything below it as a string.
+
+        Parameters
+        ----------
+        node: integer, optional `None`
+            The node whose structure is asked for.
+            If *node* is None, the complete structure of the whole dataset is returned.
+        fullHeading: boolean, optional `False`
+            Normally, for each structural element, only its own subheading is added.
+            But if you want to see the full heading, consisting of the headings of a
+            node and all of its parents, pass `True` for this parameter.
+
+        Returns
+        -------
+        structure: string
+            Pretty representation as string with indentations of the structure
+            below a node.
+        """
+
         structure = self.structure(node=node)
         if structure is None:
             return
@@ -274,6 +432,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
         return "\n".join(material)
 
     def top(self):
+        """Gives all top-level structural nodes in the dataset.
+        These are the nodes that are not embedded in a structural node of the same
+        or a higher level.
+        """
+
         api = self.api
         error = api.error
         hdTop = self.hdTop
@@ -284,6 +447,24 @@ There are {len(hdFromNd)} structural elements in the dataset.
         return hdTop
 
     def up(self, n):
+        """Gives the parent of a structural node.
+
+        Parameters
+        ----------
+        n: integer
+            The node whose parent to retrieve.
+
+        Returns
+        -------
+        parent: integer
+            The parent is that structural node that whose heading you get from
+            the heading of *n* minus its last element.
+
+            !!!hint "Example"
+                The parent of `((book, Genesis), (chapter, 3), (verse, 16))`
+                is the node that has heading `((book, Genesis), (chapter, 3))`.
+        """
+
         api = self.api
         F = api.F
         error = api.error
@@ -303,6 +484,24 @@ There are {len(hdFromNd)} structural elements in the dataset.
         return hdUp.get(n, None)
 
     def down(self, n):
+        """Gives the children of a structural node.
+
+        Parameters
+        ----------
+        n: integer
+            The node whose children to retrieve.
+
+        Returns
+        -------
+        children: tuple of integers
+            The children are those structural nodes whose headings are one
+            longer than the one from *n*.
+
+            !!!hint "Example"
+                The children of `((book, Genesis), (chapter, 3))` are the nodes
+                with heading `((book, Genesis), (chapter, 3), (verse, 1))`, etc.
+        """
+
         api = self.api
         F = api.F
         fOtype = F.otype.v
@@ -321,6 +520,28 @@ There are {len(hdFromNd)} structural elements in the dataset.
         return hdDown.get(n, ())
 
     def headingFromNode(self, n):
+        """Gives the full heading of a structural node.
+
+        Parameters
+        ----------
+        n: integer
+            The node whose heading to retrieve.
+
+        Returns
+        -------
+        heading: tuple of pairs
+            It is the tuple of pairs (node type, feature value)
+            for all ancestors of *n*.
+
+            !!!hint "Example"
+                E.g., the heading of the verse node corresponding to Genesis 3:16
+                is `((book, Genesis), (chapter, 3), (verse, 16))`.
+
+            !!!hint "Power tip"
+                If you are interested in the complete mapping: it is stored in
+                the dictionary `Text.hdFromNd`.
+        """
+
         api = self.api
         F = api.F
         error = api.error
@@ -339,6 +560,25 @@ There are {len(hdFromNd)} structural elements in the dataset.
         return hdFromNd.get(n, None)
 
     def nodeFromHeading(self, head):
+        """Gives the node corresponding to a heading, provided it exists.
+
+        Parameters
+        ----------
+        head: tuple of pairs
+            See the result of `Text.headingFromNode`.
+
+        Returns
+        -------
+        node: int
+            If there is more than one node that corresponds to the heading,
+            only the last one in the corpus will be returned.
+            `Text.hdMult` contains all such cases.
+
+            !!!hint "Power tip"
+                If you are interested in the complete mapping: it is stored in
+                the dictionary `Text.ndFromHd`.
+        """
+
         api = self.api
         error = api.error
         ndFromHd = self.ndFromHd
@@ -350,6 +590,154 @@ There are {len(hdFromNd)} structural elements in the dataset.
         return n
 
     def text(self, nodes, fmt=None, descend=None, func=None, explain=False, **kwargs):
+        """Gives the text that corresponds to a bunch of nodes.
+
+        The
+        [banks]({{tfbanks}}/programs/formats.ipynb)
+        example corpus shows examples.
+
+        nodes: dict
+            *nodes* can be a single node or an arbitrary iterable of nodes
+            of arbitrary types.
+            No attempt will be made to sort the nodes.
+            If you need order, it is better to sort the nodes first.
+        fmt: boolean, optional `None`
+            The text-format of the text representation.
+
+            If it is not specified or `None`, each node will be formatted with
+            a node type specific format, defined as *nodeType*`-default`, if it
+            exists.
+
+            If there is no node specific format, the default format
+            `text-orig-full` will be used.
+
+            If `text-orig-full` is not defined, an error message will be issued,
+            and the nodes will be represented by their types and numbers.
+
+            If a value for *fmt* is passed, but it is not a format defined in the
+            *otext.tf* feature, there will be an error message and `None` is returned.
+        descend: boolean, optional `None`
+            Whether to descend to constituent nodes.
+
+            If `True`, nodes will be replaced by a sequence of their consituent nodes,
+            which have a type specified by the format chosen, or, if the format does
+            not specify such a type, the node will be replaced
+            by the slots contained in it.
+
+            If `False`, nodes will not be replaced.
+
+            If *descend* is not specified or None,
+            a node will be replaced by its constituent nodes,
+            unless its type is associated with the given format or,
+            if no format is given, by the default format of its type, or,
+            if there is no such format, by its slots.
+
+            !!! caution "no nodes to descend to"
+                If you call `T.text(n, fmt=myfmt)`
+                and `myfmt` is targeted to a node type that is
+                bigger than the node type of `n`,
+                then the so-called descending leads to an empty
+                sequence of nodes and hence to an empty string.
+
+        explain: boolean, optional `False`
+            The logic of this function is subtle.
+            If you call it and the results baffles you, pass `explain=True`
+            and it will explain what it is doing.
+
+        !!! hint "The default is sensible"
+            Consider the simplest call to this function: `T.text(node)`.
+            This will apply the default format to `node`.
+            If `node` is non-slot, then in most cases
+            the default format will be applied to the slots contained in `node`.
+
+            But for special node types, where the best representation
+            is not obtained by descending down
+            to the contained slot nodes, the dataset may define
+            special default types that use other
+            features to furnish a decent representation.
+
+            !!! example "lexemes"
+                In some corpora case this happens for the type of lexemes: `lex`.
+                Lexemes contain their occurrences
+                as slots, but the representation of a lexeme
+                is not the string of its occurrences, but
+                resides in a feature such as `voc_lex_utf8`
+                (vocalized lexeme in Unicode).
+
+                If the dataset defines the format `lex-default={lex} `,
+                this is the only thing needed to regulate
+                the representation of a lexeme.
+
+                Hence, `T.text(lx)` results in the lexeme representation of `lx`.
+
+                But if you really want to print out all occurrences of lexeme `lx`,
+                you can say `T.text(lx, descend=True)`.
+
+            !!! example "words and signs"
+                In some corpora the characters or signs are the slot level, and there is
+                a non slot level of words.
+                Some text formats are best defined on signs, others best on words.
+
+                For example, if words are associated with lexemes, stored in a word
+                feature `lex`, we can define a text format
+
+                ```lex-orig-full=word#{lex} ```
+
+                When you call `T.text(n)` for a non-slot, non-word node,
+                normally the node will be replaced by the slot nodes it contains,
+                before applying the template in the format.
+                But if you pass a format that specifies a different node type,
+                nodes will be replaced by contained nodes of that type. So
+
+                ```T.text(n, fmt='lex-orig-full')```
+
+                will lookup all word nodes under *n* and apply the template `{lex}`
+                to them.
+
+        !!! caution "same and different behaviours"
+            The consequences of the rules might be unexpected in some cases.
+            Here are a few observations:
+
+            * formats like `phrase-default` can be implicitly invoked for phrase nodes,
+              but `descend=True` prevents that;
+            * when a format targeted at phrases is invoked for phrase nodes,
+              `descend=True` will not cause the expansion of those nodes to slot nodes,
+              because the phrase node is already expanded
+              to the target type of the format;
+
+
+        !!! hint "memory aid"
+            *   If *fmt* is explicitly passed, it will be the format used
+                no matter what, and it determines the level of the nodes to descend to;
+            *   Descending is the norm, it can only be prevented
+                by setting default formats for node types or
+                by passing `descend=False` to `T.text()`;
+            *   `descend=True` is stronger than type-specific default formats,
+                but weaker than explicitly passed formats;
+            *   **Pass `explain=True` for a dynamic explanation.**
+
+        ??? note "Non slot nodes allowed"
+            In most cases, the nodes fed to `T.text()` are slots, and the formats are
+            templates that use features that are defined for slots.
+
+            But nothing prevents you to define a format
+            for non-slot nodes, and use features
+            defined for a non-slot node type.
+
+            If, for example, your slot type is *glyph*,
+            and you want a format that renders
+            lexemes, which are not defined for glyphs but for words,
+            you can just define a format in terms of word features.
+
+            It is your responsibility to take care to use the formats
+            for node types for which they make sense.
+
+        !!! caution "Escape whitespace in formats"
+            When defining formats in `otext.tf`,
+            if you need a newline or tab in the format,
+            specify it as `\n` and `\t`.
+        """
+
         api = self.api
         E = api.E
         F = api.F
@@ -501,6 +889,19 @@ EXPLANATION: T.text() called with parameters:
         if not good:
             error('Text format "{DEFAULT_FORMAT}" not defined in otext.tf', tm=False)
         return "".join(material)
+
+    def _sec0Name(self, n, lang="en"):
+        sec0T = self.sectionTypes[0]
+        fOtype = self.api.F.otype.v
+        refNode = n if fOtype(n) == sec0T else self.api.L.u(n, sec0T)[0]
+        lookup = self.nameFromNode["" if lang not in self.languages else lang]
+        return lookup.get(refNode, f"not a {sec0T} node")
+
+    def _sec0Node(self, name, lang="en"):
+        sec0T = self.sectionTypes[0]
+        return self.nodeFromName["" if lang not in self.languages else lang].get(
+            (sec0T, name), None
+        )
 
     def _compileFormats(self):
         api = self.api

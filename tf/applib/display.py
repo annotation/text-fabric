@@ -270,6 +270,89 @@ def loadCss(app):
 
 
 def export(app, tuples, toDir=None, toFile="results.tsv", **options):
+    """Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
+
+    !!! hint "Examples"
+        See for detailed examples the
+        [exportExcel]({{tutnb}}/bhsa/exportExcel.ipynb)
+        and
+        [exportExcel]({{tutnb}}/oldbabylonian/exportExcel.ipynb)
+        notebooks.
+
+    Parameters
+    ----------
+    tuples: iterable of tuples of integer
+        The integers are the nodes, together they form a table.
+    toDir: string, optional `None`
+        The destination directory for the exported file.
+        By default it is your Downloads folder.
+
+        If the directory does not exist, it will be created.
+    toFile: boolean, optional `results.tsv`
+        The name of the exported file.
+    options: dict
+        Display options, see
+        `tf.applib.displaysettings.DisplaySettings`.
+
+        !!! note "details"
+            * `condensed`
+              Has no effect. Exports to Excel will not be condensed, because the
+              number of columns is variable per row in that case.
+              Excel itself has nice possibilities for grouping rows.
+              You can also filter your tuples by means of hand-coding
+              before exporting them.
+            * `condenseType`
+              The condense type influences for which nodes
+              the full text will be exported.
+              Only nodes that are "smaller" than the condense type will have
+              their full text exported.
+            * `fmt`
+              This display parameter specifies the text format for any nodes
+              that trigger a text value to be exported.
+            * `tupleFeatures`
+              This is a display parameter that steers which features are exported
+              with each member of the tuples in the list.
+
+              If the iterable of tuples are the results of a query you have just
+              run, then an appropriate call to `displaySetup(tupleFeatures=...)`
+              has already been issued, so you can just say:
+
+              ```python
+              results = A.search(query)
+              A.export(results)
+              ```
+
+    Results
+    -------
+    A file *toFile* in directory *toDir* with the following content:
+
+    There will be a row for each tuple.
+    The columns are:
+
+    * **R** the sequence number of the result tuple in the result list
+    * **S1 S2 S3** the section as book, chapter, verse, in separate columns;
+      the section is the section of the first non book/chapter node in the tuple
+    * **NODEi TYPEi** the node and its type,
+      for each node **i** in the result tuple
+    * **TEXTi** the full text of node **i**,
+      if the node type admits a concise text representation;
+      the criterion is whether the node type has a type not bigger than the
+      default condense type, which is app specific.
+      If you pass an explicit `condenseType=`*xxx* as display parameter,
+      then this is the reference condenseType on which the decision is based.
+    * **XFi** the value of extra feature **XF** for node **i**,
+      where these features have been declared by a previous
+      displaySetup(tupleFeatures=...)`
+
+    !!! caution "Encoding"
+        The exported file is written in the `utf_16_le` encoding.
+        This ensures that Excel can open it without hassle, even if there
+        are non-latin characters inside.
+
+        When you want to read the exported file programmatically,
+        open it with `encoding=utf_16`.
+    """
+
     display = app.display
 
     if not display.check("table", options):
@@ -320,8 +403,7 @@ def table(app, tuples, _asString=False, **options):
         The integers are the nodes, together they form a table.
     options: dict
         Display options, see
-        `tf.applib.displaysettings.DISPLAY_OPTIONS` and
-        `tf.applib.displaysettings.INTERFACE_OPTIONS`.
+        `tf.applib.displaysettings.DisplaySettings`.
     _asString: boolean, optional `False`
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
@@ -431,8 +513,7 @@ def plainTuple(
             This option has only effect when used in the TF browser.
     options: dict
         Display options, see
-        `tf.applib.displaysettings.DISPLAY_OPTIONS` and
-        `tf.applib.displaysettings.INTERFACE_OPTIONS`.
+        `tf.applib.displaysettings.DisplaySettings`.
     _asString: boolean, optional `False`
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
@@ -573,8 +654,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
         Node
     options: dict
         Display options, see
-        `tf.applib.displaysettings.DISPLAY_OPTIONS` and
-        `tf.applib.displaysettings.INTERFACE_OPTIONS`.
+        `tf.applib.displaysettings.DisplaySettings`.
     _inTuple: boolean, optional `False`
         Whether the result is meant too end up in a table cell produced by
         `plainTuple`. In that case some extra node types count as big and will
@@ -626,6 +706,235 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
         return result
     dh(result)
 
+
+# PRETTY and FRIENDS
+
+
+def show(app, tuples, **options):
+    """Displays an iterable of tuples of nodes.
+
+        The elements of the list are displayed by `A.prettyTuple()`.
+
+    !!! hint "condense, condenseType"
+        You can condense the list first to containers of `condenseType`,
+        before displaying the list.
+        Pass the display parameters `condense` and `condenseType`.
+        See `tf.applib.displaysettings.DisplaySettings`.
+
+    Parameters
+    ----------
+    tuples: iterable of tuples of integer
+        The integers are the nodes, together they form a table.
+    options: dict
+        Display options, see
+        `tf.applib.displaysettings.DisplaySettings`.
+
+    Result
+    ------
+    html string or `None`
+        When used for the TF browser (`app._browse` is true), the result is returned
+        as HTML. Otherwise the result is directly displayed in a notebook.
+    """
+
+    display = app.display
+
+    if not display.check("show", options):
+        return ""
+
+    dContext = display.get(options)
+    end = dContext.end
+    start = dContext.start
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
+    skipCols = dContext.skipCols
+
+    if skipCols:
+        tuples = tuple(
+            tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
+            for tup in tuples
+        )
+
+    api = app.api
+    F = api.F
+
+    item = condenseType if condensed else RESULT
+
+    if condensed:
+        tuples = condense(api, tuples, condenseType, multiple=True)
+
+    newOptions = display.consume(options, "skipCols")
+
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item):
+        item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
+        prettyTuple(app, tup, i, item=item, skipCols=set(), **newOptions)
+
+
+def prettyTuple(app, tup, seq, item=RESULT, **options):
+    """Displays the material that corresponds to a tuple of nodes in a graphical way.
+
+    The member nodes of the tuple will be collected into containers, which
+    will be displayed with `pretty()`, and the nodes of the tuple
+    will be highlighted in the containers.
+
+    Parameters
+    ----------
+    tup: iterable of integer
+        The members of the tuple can be arbitrary nodes.
+    seq: integer
+        an arbitrary number which will be displayed in the heading.
+        This prepares the way for displaying query results, which come as
+        a sequence of tuples of nodes.
+    item: string, optional `result`
+        A name for the tuple: it could be a result, or a chapter, or a line.
+    options: dict
+        Display options, see
+        `tf.applib.displaysettings.DisplaySettings`.
+
+    Result
+    ------
+    html string or `None`
+        When used for the TF browser (`app._browse` is true), the result is returned
+        as HTML. Otherwise the result is directly displayed in a notebook.
+    """
+
+    display = app.display
+
+    if not display.check("prettyTuple", options):
+        return ""
+
+    dContext = display.get(options)
+    colorMap = dContext.colorMap
+    highlights = dContext.highlights
+    condenseType = dContext.condenseType
+    condensed = dContext.condensed
+    skipCols = dContext.skipCols
+
+    _browse = app._browse
+
+    if skipCols:
+        tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
+
+    if len(tup) == 0:
+        if _browse:
+            return ""
+        else:
+            return
+
+    api = app.api
+    sortKey = api.sortKey
+
+    containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
+    highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
+
+    if not _browse:
+        dh(f"<p><b>{item}</b> <i>{seq}</i></p>")
+    if _browse:
+        html = []
+    for t in sorted(containers, key=sortKey):
+        h = app.pretty(
+            t, highlights=highlights, **display.consume(options, "highlights"),
+        )
+        if _browse:
+            html.append(h)
+    if _browse:
+        return "".join(html)
+
+
+def pretty(app, n, explain=False, **options):
+    """Displays the material that corresponds to a node in a graphical way.
+
+    The internal structure of the nodes that are involved is also revealed.
+    In addition, extra features and their values are displayed with the nodes.
+
+    !!!  hint "Controlling pretty displays"
+        The following
+        `tf.applib.displaysettings.DisplaySettings`
+        are particularly relevant to pretty displays:
+
+        * `condenseType`: the standard container to display nodes in;
+        * `full`: whether to display a reference to the material or the material itself;
+        * `extraFeatures`: additional features to  display
+        * `tupleFeatures`: additional features to  display (primarily for `export`.
+
+    Parameters
+    ----------
+    n: integer
+        Node
+    options: dict
+        Display options, see `tf.applib.displaysettings.DisplaySettings`
+    explain: boolean, optional `False`
+        Whether to print a trace of which nodes have been visited and how these
+        calls have contributed to the end result.
+
+    Result
+    ------
+    html string or `None`
+        When used for the TF browser (`app._browse` is true), the result is returned
+        as HTML. Otherwise the result is directly displayed in a notebook.
+    """
+
+    display = app.display
+
+    if not display.check("pretty", options):
+        return ""
+
+    _browse = app._browse
+
+    aContext = app.context
+    formatHtml = aContext.formatHtml
+
+    dContext = display.get(options)
+    condenseType = dContext.condenseType
+    condensed = dContext.condensed
+    tupleFeatures = dContext.tupleFeatures
+    extraFeatures = dContext.extraFeatures
+    fmt = dContext.fmt
+
+    dContext.isHtml = fmt in formatHtml
+    dContext.features = sorted(
+        flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)
+    )
+    dContext.featuresIndirect = extraFeatures[1]
+
+    api = app.api
+    F = api.F
+    L = api.L
+    otypeRank = api.otypeRank
+
+    ltr = _getLtr(app, dContext)
+    textCls = _getTextCls(app, fmt)
+
+    containerN = None
+
+    nType = F.otype.v(n)
+    if condensed and condenseType:
+        if nType == condenseType:
+            containerN = n
+        elif otypeRank[nType] < otypeRank[condenseType]:
+            ups = L.u(n, otype=condenseType)
+            if ups:
+                containerN = ups[0]
+
+    slots = (
+        _getSlots(api, n)
+        if not condensed or not condenseType or containerN is None
+        else _getSlots(api, containerN)
+    )
+
+    oContext = OuterContext(ltr, textCls, slots, False, not not explain)
+    passage = _getPassage(app, False, dContext, oContext, n)
+
+    html = []
+
+    _doPretty(app, dContext, oContext, None, n, True, True, True, 0, html, {}, {})
+
+    htmlStr = passage + "".join(html)
+    if _browse:
+        return htmlStr
+    dh(htmlStr)
+
+
+# PLAIN LOW-LEVEL
 
 def _doPlain(
     app,
@@ -865,174 +1174,7 @@ def _doPlainNode(
     return contrib
 
 
-# PRETTY and FRIENDS
-
-
-def show(app, tuples, **options):
-    display = app.display
-
-    if not display.check("show", options):
-        return ""
-
-    dContext = display.get(options)
-    end = dContext.end
-    start = dContext.start
-    condensed = dContext.condensed
-    condenseType = dContext.condenseType
-    skipCols = dContext.skipCols
-
-    if skipCols:
-        tuples = tuple(
-            tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
-            for tup in tuples
-        )
-
-    api = app.api
-    F = api.F
-
-    item = condenseType if condensed else RESULT
-
-    if condensed:
-        tuples = condense(api, tuples, condenseType, multiple=True)
-
-    newOptions = display.consume(options, "skipCols")
-
-    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item):
-        item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
-        prettyTuple(app, tup, i, item=item, skipCols=set(), **newOptions)
-
-
-def prettyTuple(app, tup, seq, item=RESULT, **options):
-    display = app.display
-
-    if not display.check("prettyTuple", options):
-        return ""
-
-    dContext = display.get(options)
-    colorMap = dContext.colorMap
-    highlights = dContext.highlights
-    condenseType = dContext.condenseType
-    condensed = dContext.condensed
-    skipCols = dContext.skipCols
-
-    _browse = app._browse
-
-    if skipCols:
-        tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
-
-    if len(tup) == 0:
-        if _browse:
-            return ""
-        else:
-            return
-
-    api = app.api
-    sortKey = api.sortKey
-
-    containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
-    highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
-
-    if not _browse:
-        dh(f"<p><b>{item}</b> <i>{seq}</i></p>")
-    if _browse:
-        html = []
-    for t in sorted(containers, key=sortKey):
-        h = app.pretty(
-            t, highlights=highlights, **display.consume(options, "highlights"),
-        )
-        if _browse:
-            html.append(h)
-    if _browse:
-        return "".join(html)
-
-
-def pretty(app, n, explain=False, **options):
-    """Display the structure associated with a node.
-
-    *Plain* is oppsed to *pretty*; `pretty` shows the underlying structure of the
-    text material associated with a node, plain just shows the linear text.
-
-    The result of pretty is a formatted display of pieces of text together with
-    extra features and their values
-    Text corresponding to sub nodes can be selectively highlighted.
-
-    Parameters
-    ----------
-    n: integer
-        Node
-    options: dict
-        Display options, see `tf.applib.displaysettings.DisplaySettings`
-    explain: boolean, optional `False`
-        Whether to print a trace of which nodes have been visited and how these
-        calls have contributed to the end result.
-
-    Result
-    ------
-    html string or `None`
-        When used for the TF browser (`app._browse` is true), the result is returned
-        as HTML. Otherwise the result is directly displayed in a notebook.
-    """
-
-    display = app.display
-
-    if not display.check("pretty", options):
-        return ""
-
-    _browse = app._browse
-
-    aContext = app.context
-    formatHtml = aContext.formatHtml
-
-    dContext = display.get(options)
-    condenseType = dContext.condenseType
-    condensed = dContext.condensed
-    tupleFeatures = dContext.tupleFeatures
-    extraFeatures = dContext.extraFeatures
-    fmt = dContext.fmt
-
-    dContext.isHtml = fmt in formatHtml
-    dContext.features = sorted(
-        flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)
-    )
-    dContext.featuresIndirect = extraFeatures[1]
-
-    api = app.api
-    F = api.F
-    L = api.L
-    otypeRank = api.otypeRank
-
-    ltr = _getLtr(app, dContext)
-    textCls = _getTextCls(app, fmt)
-
-    containerN = None
-
-    nType = F.otype.v(n)
-    if condensed and condenseType:
-        if nType == condenseType:
-            containerN = n
-        elif otypeRank[nType] < otypeRank[condenseType]:
-            ups = L.u(n, otype=condenseType)
-            if ups:
-                containerN = ups[0]
-
-    slots = (
-        _getSlots(api, n)
-        if not condensed or not condenseType or containerN is None
-        else _getSlots(api, containerN)
-    )
-
-    oContext = OuterContext(ltr, textCls, slots, False, not not explain)
-    passage = _getPassage(app, False, dContext, oContext, n)
-
-    html = []
-
-    _doPretty(app, dContext, oContext, None, n, True, True, True, 0, html, {}, {})
-
-    htmlStr = passage + "".join(html)
-    if _browse:
-        return htmlStr
-    dh(htmlStr)
-
+# PRETTY LOW-LEVEL
 
 def _doPretty(
     app, dContext, oContext, pContext, n, outer, first, last, level, html, done, called,
