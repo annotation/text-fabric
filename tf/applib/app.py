@@ -241,6 +241,12 @@ class App:
             Error messages will still come through.
         """
 
+        self.context = None
+        """Result of interpreting all configuration options in `config.yaml`.
+
+        See also `tf.applib.settings.showContext`.
+        """
+
         for (key, value) in dict(
             isCompatible=cfg.get("isCompatible", None),
             appName=appName,

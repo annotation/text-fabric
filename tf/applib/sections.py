@@ -133,7 +133,7 @@ def sectionStrFromNode(app, n, lang="en", lastSlot=False, fillup=False):
         as far as they are language dependent.
         Must be a 2-letter language code.
     fillup: boolean, optional `False`
-        Same as for `tf.core.Text.text.sectionTuple`.
+        Same as for `tf.core.text.Text.sectionTuple`.
 
     Returns
     -------

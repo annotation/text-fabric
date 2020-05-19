@@ -561,7 +561,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
 
             !!!hint "Power tip"
                 If you are interested in the complete mapping: it is stored in
-                the dictionary `Text.hdFromNd`.
+                the dictionary `hdFromNd`.
         """
 
         api = self.api
@@ -587,18 +587,18 @@ There are {len(hdFromNd)} structural elements in the dataset.
         Parameters
         ----------
         head: tuple of pairs
-            See the result of `Text.headingFromNode`.
+            See the result of `headingFromNode`.
 
         Returns
         -------
         node: int
             If there is more than one node that corresponds to the heading,
             only the last one in the corpus will be returned.
-            `Text.hdMult` contains all such cases.
+            `hdMult` contains all such cases.
 
             !!!hint "Power tip"
                 If you are interested in the complete mapping: it is stored in
-                the dictionary `Text.ndFromHd`.
+                the dictionary `ndFromHd`.
         """
 
         api = self.api

@@ -831,7 +831,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
 
 def showContext(app, *keys):
-    """Shows the *context* of the app `tf.app.App.context` in a pretty way.
+    """Shows the *context* of the app `tf.applib.app.App.context` in a pretty way.
 
         The context is the result of computing sensible defaults for the corpus
         combined with configuration settings in the app's `config.yaml`.
