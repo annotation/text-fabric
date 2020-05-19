@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.core.locality API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="[About the Locality API](https://annotation.github.io/text-fabric/Api/Locality/) …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,18 +20,91 @@
 <h1 class="title">Module <code>tf.core.locality</code></h1>
 </header>
 <section id="section-intro">
+<p><a href="https://annotation.github.io/text-fabric/Api/Locality/">About the Locality API</a></p>
+<p>Local navigation between nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">SET_TYPES = {set, frozenset}
+<pre><code class="python">&#34;&#34;&#34;
+[About the Locality API](https://annotation.github.io/text-fabric/Api/Locality/)
+
+Local navigation between nodes.
+&#34;&#34;&#34;
+
+SET_TYPES = {set, frozenset}
 
 
 class Locality(object):
+    &#34;&#34;&#34;Methods by which you can navigate from a node to its neighborhood.
+
+    Neighbours are: nodes that have slots in common, embedders and embeddees,
+    previous and next siblings.
+
+    !!! note &#34;L&#34;
+        The Locality API is exposed as `L` or `Locality`.
+
+    !!! note &#34;otype parameter&#34;
+        In all of the following `L`-functions, if the `otype` parameter is passed,
+        the result is filtered and only nodes with
+        `otype=nodeType` or `otype in nodeTypes` are retained.
+
+        `otype` can be a string (a single node type)  or a (frozen)set of node types.
+
+    !!! caution &#34;Results of the `L.` functions are tuples, not single nodes&#34;
+          Even if an `L`-function returns a single node, it is packed in a *tuple*.
+          So to get the node itself, you have to dereference the tuple:
+
+          ```python
+          L.u(node)[0]
+          ```
+
+    !!! caution &#34;Locality and node types&#34;
+        When using `sortNodes` and the `L` methods,
+        note the following.
+
+        Suppose you have node types `verse` and `sentence`, and usually a
+        verse has multiple sentences, but not vice versa. Then you expect that
+
+        *   `L.d(verseNode)` will contain sentence nodes,
+        *   `L.d(sentenceNode)` will **not** contain verse nodes.
+
+        But if there is a verse with exactly one sentence, and both have exactly the
+        same words, then that is a case where:
+
+        *   `L.d(verseNode)` will contain `sentenceNode`,
+        *   `L.d(sentenceNode)` will contain `verseNode`.
+      &#34;&#34;&#34;
+
     def __init__(self, api):
         self.api = api
 
     def i(self, n, otype=None):
+        &#34;&#34;&#34;Produces an ordered tuple of *intersecting* nodes
+
+        Intersecting nodes of a node have slots in common with that node.
+
+        Parameters
+        ----------
+
+        node: dict
+            The node whose intersectors will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes).
+
+            The result never includes *n* itself.
+            But other nodes linked to the same set of slots as *n*
+            may count as intersector nodes.
+
+            Slots themselves can be intersectors.
+        &#34;&#34;&#34;
+
         api = self.api
         Fotype = api.F.otype
         maxSlot = Fotype.maxSlot
@@ -62,6 +135,31 @@ class Locality(object):
         return sortNodes(result - {n})
 
     def u(self, n, otype=None):
+        &#34;&#34;&#34;Produces an ordered tuple of *upward* nodes.
+
+        Upward nodes of a node are embedders of that node.
+        One node embeds an other if all slots of the latter are contained in the slots
+        of the former.
+
+        node: integer
+            The node whose embedders will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes),
+            but *reversed: right and small embedders before left and big embedders.
+
+            The result never includes *n* itself.
+            But other nodes linked to the same set of slots as *n*
+            may count as embedder nodes.
+
+            Slots themselves are never embedders.
+        &#34;&#34;&#34;
+
         if n &lt;= 0:
             return tuple()
         Fotype = self.api.F.otype
@@ -81,6 +179,29 @@ class Locality(object):
             return tuple(m for m in levUp[n - 1] if fOtype(m) in otype)
 
     def d(self, n, otype=None):
+        &#34;&#34;&#34;Produces an ordered tuple of *downward* nodes.
+
+        Downward nodes of a node are embedded nodes in that node.
+        One node is embedded in an other if all slots of the former are contained
+        in the slots of the latter.
+
+        node: integer
+            The node whose embeddees will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes):
+            left and big embeddees before right and small embeddees.
+
+            The result never includes *n* itself.
+            But other nodes linked to the same set of slots as *n*
+            may count as embeddee nodes.
+        &#34;&#34;&#34;
+
         Fotype = self.api.F.otype
         fOtype = Fotype.v
         maxSlot = Fotype.maxSlot
@@ -119,6 +240,24 @@ class Locality(object):
             )
 
     def p(self, n, otype=None):
+        &#34;&#34;&#34;Produces an ordered tuple of *previous* nodes.
+
+        One node is previous to an other if the last slot of the former just preceeds
+        the first slots of the latter.
+
+        node: integer
+            The node whose previous nodes will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes),
+            but *reversed: right and small embedders before left and big embedders.
+        &#34;&#34;&#34;
+
         if n &lt;= 1:
             return tuple()
         Fotype = self.api.F.otype
@@ -147,6 +286,24 @@ class Locality(object):
             return tuple(m for m in result if fOtype(m) in otype)
 
     def n(self, n, otype=None):
+        &#34;&#34;&#34;Produces an ordered tuple of *next* nodes.
+
+        One node is next to an other if the first slot of the former just follows
+        the last slot of the latter.
+
+        node: integer
+            The node whose next nodes will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes):
+            left and big embeddees before right and small embeddees.
+        &#34;&#34;&#34;
+
         if n &lt;= 0:
             return tuple()
         Fotype = self.api.F.otype
@@ -191,16 +348,119 @@ class Locality(object):
 <span>(</span><span>api)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Methods by which you can navigate from a node to its neighborhood.</p>
+<p>Neighbours are: nodes that have slots in common, embedders and embeddees,
+previous and next siblings.</p>
+<div class="admonition note">
+<p class="admonition-title">L</p>
+<p>The Locality API is exposed as <code>L</code> or <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">otype parameter</p>
+<p>In all of the following <code>L</code>-functions, if the <code>otype</code> parameter is passed,
+the result is filtered and only nodes with
+<code>otype=nodeType</code> or <code>otype in nodeTypes</code> are retained.</p>
+<p><code>otype</code> can be a string (a single node type)
+or a (frozen)set of node types.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Results of the <code>L.</code> functions are tuples, not single nodes</p>
+<p>Even if an <code>L</code>-function returns a single node, it is packed in a <em>tuple</em>.
+So to get the node itself, you have to dereference the tuple:</p>
+<p><code>python
+L.u(node)[0]</code></p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Locality and node types</p>
+<p>When using <code>sortNodes</code> and the <code>L</code> methods,
+note the following.</p>
+<p>Suppose you have node types <code>verse</code> and <code>sentence</code>, and usually a
+verse has multiple sentences, but not vice versa. Then you expect that</p>
+<ul>
+<li><code>L.d(verseNode)</code> will contain sentence nodes,</li>
+<li><code>L.d(sentenceNode)</code> will <strong>not</strong> contain verse nodes.</li>
+</ul>
+<p>But if there is a verse with exactly one sentence, and both have exactly the
+same words, then that is a case where:</p>
+<ul>
+<li><code>L.d(verseNode)</code> will contain <code>sentenceNode</code>,</li>
+<li><code>L.d(sentenceNode)</code> will contain <code>verseNode</code>.</li>
+</ul>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Locality(object):
+    &#34;&#34;&#34;Methods by which you can navigate from a node to its neighborhood.
+
+    Neighbours are: nodes that have slots in common, embedders and embeddees,
+    previous and next siblings.
+
+    !!! note &#34;L&#34;
+        The Locality API is exposed as `L` or `Locality`.
+
+    !!! note &#34;otype parameter&#34;
+        In all of the following `L`-functions, if the `otype` parameter is passed,
+        the result is filtered and only nodes with
+        `otype=nodeType` or `otype in nodeTypes` are retained.
+
+        `otype` can be a string (a single node type)  or a (frozen)set of node types.
+
+    !!! caution &#34;Results of the `L.` functions are tuples, not single nodes&#34;
+          Even if an `L`-function returns a single node, it is packed in a *tuple*.
+          So to get the node itself, you have to dereference the tuple:
+
+          ```python
+          L.u(node)[0]
+          ```
+
+    !!! caution &#34;Locality and node types&#34;
+        When using `sortNodes` and the `L` methods,
+        note the following.
+
+        Suppose you have node types `verse` and `sentence`, and usually a
+        verse has multiple sentences, but not vice versa. Then you expect that
+
+        *   `L.d(verseNode)` will contain sentence nodes,
+        *   `L.d(sentenceNode)` will **not** contain verse nodes.
+
+        But if there is a verse with exactly one sentence, and both have exactly the
+        same words, then that is a case where:
+
+        *   `L.d(verseNode)` will contain `sentenceNode`,
+        *   `L.d(sentenceNode)` will contain `verseNode`.
+      &#34;&#34;&#34;
+
     def __init__(self, api):
         self.api = api
 
     def i(self, n, otype=None):
+        &#34;&#34;&#34;Produces an ordered tuple of *intersecting* nodes
+
+        Intersecting nodes of a node have slots in common with that node.
+
+        Parameters
+        ----------
+
+        node: dict
+            The node whose intersectors will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes).
+
+            The result never includes *n* itself.
+            But other nodes linked to the same set of slots as *n*
+            may count as intersector nodes.
+
+            Slots themselves can be intersectors.
+        &#34;&#34;&#34;
+
         api = self.api
         Fotype = api.F.otype
         maxSlot = Fotype.maxSlot
@@ -231,6 +491,31 @@ class Locality(object):
         return sortNodes(result - {n})
 
     def u(self, n, otype=None):
+        &#34;&#34;&#34;Produces an ordered tuple of *upward* nodes.
+
+        Upward nodes of a node are embedders of that node.
+        One node embeds an other if all slots of the latter are contained in the slots
+        of the former.
+
+        node: integer
+            The node whose embedders will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes),
+            but *reversed: right and small embedders before left and big embedders.
+
+            The result never includes *n* itself.
+            But other nodes linked to the same set of slots as *n*
+            may count as embedder nodes.
+
+            Slots themselves are never embedders.
+        &#34;&#34;&#34;
+
         if n &lt;= 0:
             return tuple()
         Fotype = self.api.F.otype
@@ -250,6 +535,29 @@ class Locality(object):
             return tuple(m for m in levUp[n - 1] if fOtype(m) in otype)
 
     def d(self, n, otype=None):
+        &#34;&#34;&#34;Produces an ordered tuple of *downward* nodes.
+
+        Downward nodes of a node are embedded nodes in that node.
+        One node is embedded in an other if all slots of the former are contained
+        in the slots of the latter.
+
+        node: integer
+            The node whose embeddees will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes):
+            left and big embeddees before right and small embeddees.
+
+            The result never includes *n* itself.
+            But other nodes linked to the same set of slots as *n*
+            may count as embeddee nodes.
+        &#34;&#34;&#34;
+
         Fotype = self.api.F.otype
         fOtype = Fotype.v
         maxSlot = Fotype.maxSlot
@@ -288,6 +596,24 @@ class Locality(object):
             )
 
     def p(self, n, otype=None):
+        &#34;&#34;&#34;Produces an ordered tuple of *previous* nodes.
+
+        One node is previous to an other if the last slot of the former just preceeds
+        the first slots of the latter.
+
+        node: integer
+            The node whose previous nodes will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes),
+            but *reversed: right and small embedders before left and big embedders.
+        &#34;&#34;&#34;
+
         if n &lt;= 1:
             return tuple()
         Fotype = self.api.F.otype
@@ -316,6 +642,24 @@ class Locality(object):
             return tuple(m for m in result if fOtype(m) in otype)
 
     def n(self, n, otype=None):
+        &#34;&#34;&#34;Produces an ordered tuple of *next* nodes.
+
+        One node is next to an other if the first slot of the former just follows
+        the last slot of the latter.
+
+        node: integer
+            The node whose next nodes will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes):
+            left and big embeddees before right and small embeddees.
+        &#34;&#34;&#34;
+
         if n &lt;= 0:
             return tuple()
         Fotype = self.api.F.otype
@@ -351,12 +695,54 @@ class Locality(object):
 <span>def <span class="ident">d</span></span>(<span>self, n, otype=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Produces an ordered tuple of <em>downward</em> nodes.</p>
+<p>Downward nodes of a node are embedded nodes in that node.
+One node is embedded in an other if all slots of the former are contained
+in the slots of the latter.</p>
+<p>node: integer
+The node whose embeddees will be delivered.
+otype: string or set of strings
+See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>int</code></dt>
+<dd>
+<p>The tuple nodes is sorted in the
+<a href="https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes">canonical ordering</a>:
+left and big embeddees before right and small embeddees.</p>
+<p>The result never includes <em>n</em> itself.
+But other nodes linked to the same set of slots as <em>n</em>
+may count as embeddee nodes.</p>
+</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def d(self, n, otype=None):
+    &#34;&#34;&#34;Produces an ordered tuple of *downward* nodes.
+
+    Downward nodes of a node are embedded nodes in that node.
+    One node is embedded in an other if all slots of the former are contained
+    in the slots of the latter.
+
+    node: integer
+        The node whose embeddees will be delivered.
+    otype: string or set of strings
+        See `Locality`.
+
+    Returns
+    -------
+    tuple of int
+        The tuple nodes is sorted in the
+        [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes):
+        left and big embeddees before right and small embeddees.
+
+        The result never includes *n* itself.
+        But other nodes linked to the same set of slots as *n*
+        may count as embeddee nodes.
+    &#34;&#34;&#34;
+
     Fotype = self.api.F.otype
     fOtype = Fotype.v
     maxSlot = Fotype.maxSlot
@@ -399,12 +785,57 @@ class Locality(object):
 <span>def <span class="ident">i</span></span>(<span>self, n, otype=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Produces an ordered tuple of <em>intersecting</em> nodes</p>
+<p>Intersecting nodes of a node have slots in common with that node.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The node whose intersectors will be delivered.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>string</code> or <code>set</code> of <code>strings</code></dt>
+<dd>See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>int</code></dt>
+<dd>
+<p>The tuple nodes is sorted in the
+<a href="https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes">canonical ordering</a>.</p>
+<p>The result never includes <em>n</em> itself.
+But other nodes linked to the same set of slots as <em>n</em>
+may count as intersector nodes.</p>
+<p>Slots themselves can be intersectors.</p>
+</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def i(self, n, otype=None):
+    &#34;&#34;&#34;Produces an ordered tuple of *intersecting* nodes
+
+    Intersecting nodes of a node have slots in common with that node.
+
+    Parameters
+    ----------
+
+    node: dict
+        The node whose intersectors will be delivered.
+    otype: string or set of strings
+        See `Locality`.
+
+    Returns
+    -------
+    tuple of int
+        The tuple nodes is sorted in the
+        [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes).
+
+        The result never includes *n* itself.
+        But other nodes linked to the same set of slots as *n*
+        may count as intersector nodes.
+
+        Slots themselves can be intersectors.
+    &#34;&#34;&#34;
+
     api = self.api
     Fotype = api.F.otype
     maxSlot = Fotype.maxSlot
@@ -439,12 +870,43 @@ class Locality(object):
 <span>def <span class="ident">n</span></span>(<span>self, n, otype=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Produces an ordered tuple of <em>next</em> nodes.</p>
+<p>One node is next to an other if the first slot of the former just follows
+the last slot of the latter.</p>
+<p>node: integer
+The node whose next nodes will be delivered.
+otype: string or set of strings
+See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>int</code></dt>
+<dd>The tuple nodes is sorted in the
+<a href="https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes">canonical ordering</a>:
+left and big embeddees before right and small embeddees.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def n(self, n, otype=None):
+    &#34;&#34;&#34;Produces an ordered tuple of *next* nodes.
+
+    One node is next to an other if the first slot of the former just follows
+    the last slot of the latter.
+
+    node: integer
+        The node whose next nodes will be delivered.
+    otype: string or set of strings
+        See `Locality`.
+
+    Returns
+    -------
+    tuple of int
+        The tuple nodes is sorted in the
+        [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes):
+        left and big embeddees before right and small embeddees.
+    &#34;&#34;&#34;
+
     if n &lt;= 0:
         return tuple()
     Fotype = self.api.F.otype
@@ -479,12 +941,43 @@ class Locality(object):
 <span>def <span class="ident">p</span></span>(<span>self, n, otype=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Produces an ordered tuple of <em>previous</em> nodes.</p>
+<p>One node is previous to an other if the last slot of the former just preceeds
+the first slots of the latter.</p>
+<p>node: integer
+The node whose previous nodes will be delivered.
+otype: string or set of strings
+See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>int</code></dt>
+<dd>The tuple nodes is sorted in the
+<a href="https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes">canonical ordering</a>,
+but *reversed: right and small embedders before left and big embedders.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def p(self, n, otype=None):
+    &#34;&#34;&#34;Produces an ordered tuple of *previous* nodes.
+
+    One node is previous to an other if the last slot of the former just preceeds
+    the first slots of the latter.
+
+    node: integer
+        The node whose previous nodes will be delivered.
+    otype: string or set of strings
+        See `Locality`.
+
+    Returns
+    -------
+    tuple of int
+        The tuple nodes is sorted in the
+        [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes),
+        but *reversed: right and small embedders before left and big embedders.
+    &#34;&#34;&#34;
+
     if n &lt;= 1:
         return tuple()
     Fotype = self.api.F.otype
@@ -517,12 +1010,57 @@ class Locality(object):
 <span>def <span class="ident">u</span></span>(<span>self, n, otype=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Produces an ordered tuple of <em>upward</em> nodes.</p>
+<p>Upward nodes of a node are embedders of that node.
+One node embeds an other if all slots of the latter are contained in the slots
+of the former.</p>
+<p>node: integer
+The node whose embedders will be delivered.
+otype: string or set of strings
+See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>int</code></dt>
+<dd>
+<p>The tuple nodes is sorted in the
+<a href="https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes">canonical ordering</a>,
+but *reversed: right and small embedders before left and big embedders.</p>
+<p>The result never includes <em>n</em> itself.
+But other nodes linked to the same set of slots as <em>n</em>
+may count as embedder nodes.</p>
+<p>Slots themselves are never embedders.</p>
+</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def u(self, n, otype=None):
+    &#34;&#34;&#34;Produces an ordered tuple of *upward* nodes.
+
+    Upward nodes of a node are embedders of that node.
+    One node embeds an other if all slots of the latter are contained in the slots
+    of the former.
+
+    node: integer
+        The node whose embedders will be delivered.
+    otype: string or set of strings
+        See `Locality`.
+
+    Returns
+    -------
+    tuple of int
+        The tuple nodes is sorted in the
+        [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes),
+        but *reversed: right and small embedders before left and big embedders.
+
+        The result never includes *n* itself.
+        But other nodes linked to the same set of slots as *n*
+        may count as embedder nodes.
+
+        Slots themselves are never embedders.
+    &#34;&#34;&#34;
+
     if n &lt;= 0:
         return tuple()
     Fotype = self.api.F.otype

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.applib.sections API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Section …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,55 @@
 <h1 class="title">Module <code>tf.applib.sections</code></h1>
 </header>
 <section id="section-intro">
+<p>Section</p>
+<p>There is support for section headings.</p>
+<p>Text-Fabric datasets may specify two kinds of sections in their
+<code>otext.tf</code> configuration feature:</p>
+<h3 id="sections">Sections</h3>
+<p>At most three levels:</p>
+<ul>
+<li>level 1 is for big things, like books</li>
+<li>level 2 is for intermediate things, like chapters, that fit on one page or just
+a few pages</li>
+<li>level 3 is for small things, such as lines.</li>
+</ul>
+<p>Text-Fabric uses these levels in the Text-Fabric browser, to divide your corpus
+into chunks that can conveniently be displayed to you in the browser.</p>
+<h3 id="structure">Structure</h3>
+<p>Any number of levels.
+You can use them to divide your corpus into units that follow the logic of your corpus,
+without regard for how they are to be displayed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import types
+<pre><code class="python">&#34;&#34;&#34;Section
+
+There is support for section headings.
+
+Text-Fabric datasets may specify two kinds of sections in their
+`otext.tf` configuration feature:
+
+### Sections
+
+At most three levels:
+
+* level 1 is for big things, like books
+* level 2 is for intermediate things, like chapters, that fit on one page or just
+  a few pages
+* level 3 is for small things, such as lines.
+
+Text-Fabric uses these levels in the Text-Fabric browser, to divide your corpus
+into chunks that can conveniently be displayed to you in the browser.
+
+### Structure
+
+Any number of levels.
+You can use them to divide your corpus into units that follow the logic of your corpus,
+without regard for how they are to be displayed.
+&#34;&#34;&#34;
+
+import types
 
 
 def sectionsApi(app):
@@ -35,6 +79,48 @@ def sectionsApi(app):
 
 
 def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
+    &#34;&#34;&#34;Find the node of a section string.
+
+    Compare `tf.core.text.Text.nodeFromSection`.
+
+    Parameters
+    ----------
+    sectionStr: string
+        Must be a valid section specficiation in the
+        language specified in *lang*.
+
+        The string may specify a section 0 level only (book/tablet), or
+        section 0 and 1 levels (book/tablet chapter/column),
+        or all levels
+        (book/tablet chapter/column verse/line).
+
+        !!! hint &#34;examples&#34;
+            ```
+            Genesis
+            Genesis 1
+            Genesis 1:1
+            ```
+
+            ```
+            P005381
+            P005381 1
+            P005381 1:1
+            ```
+
+    lang: string, optional `en`
+        The language assumed for the section parts,
+        as far as they are language dependent.
+        Must be a 2-letter language code.
+
+    Returns
+    -------
+    node | error: integer | string
+        Depending on what is passed, the result is a node of section level
+        0, 1, or 2.
+
+        If there is no such section heading, an error string is returned.
+    &#34;&#34;&#34;
+
     api = app.api
     T = api.T
 
@@ -76,6 +162,31 @@ def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
 
 
 def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
+    &#34;&#34;&#34;The heading of a section to which a node belongs.
+
+    Compare `tf.core.text.Text.nodeFromSection`.
+
+    node: integer
+        The node from which we obtain a section specification.
+    lastSlot: boolean, optional `False`
+        Whether the reference node will be the last slot contained by the
+        `node` argument or the first node.
+        Otherwise it will be the first slot.
+    lang: string, optional `en`
+        The language assumed for the section parts,
+        as far as they are language dependent.
+        Must be a 2-letter language code.
+    fillup: boolean, optional `False`
+        Same as for `tf.core.Text.text.sectionTuple`.
+
+    Returns
+    -------
+    section heading:string
+        Corresponds to the reference node.
+        The result is built from the labels of the individual section levels,
+        with dummies for missing parts if *fillup* is true.
+    &#34;&#34;&#34;
+
     api = app.api
     T = api.T
 
@@ -92,6 +203,21 @@ def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
 
 
 def structureStrFromNode(app, n):
+    &#34;&#34;&#34;The heading of a structure to which a node belongs.
+
+    Compare `tf.core.text.Text.headingFromNode`.
+
+
+    node: integer
+        The node from which we obtain a structure specification.
+
+    Returns
+    -------
+    structure heading:string
+        Corresponds to the first structure node containing the first slot of `n`.
+        The result is built from the labels of the individual section levels.
+    &#34;&#34;&#34;
+
     api = app.api
     T = api.T
 
@@ -127,12 +253,89 @@ def _sectionLink(app, n, text=None, clsName=None):
 <span>def <span class="ident">nodeFromSectionStr</span></span>(<span>app, sectionStr, lang='en')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Find the node of a section string.</p>
+<p>Compare <code><a title="tf.core.text.Text.nodeFromSection" href="../core/text.html#tf.core.text.Text.nodeFromSection">Text.nodeFromSection()</a></code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>sectionStr</code></strong> :&ensp;<code>string</code></dt>
+<dd>
+<p>Must be a valid section specficiation in the
+language specified in <em>lang</em>.</p>
+<p>The string may specify a section 0 level only (book/tablet), or
+section 0 and 1 levels (book/tablet chapter/column),
+or all levels
+(book/tablet chapter/column verse/line).</p>
+<div class="admonition hint">
+<p class="admonition-title">examples</p>
+<p><code>Genesis
+Genesis 1
+Genesis 1:1</code></p>
+<p><code>P005381
+P005381 1
+P005381 1:1</code></p>
+</div>
+</dd>
+<dt><strong><code>lang</code></strong> :&ensp;<code>string</code>, optional <code>en</code></dt>
+<dd>The language assumed for the section parts,
+as far as they are language dependent.
+Must be a 2-letter language code.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>node | error: integer | string</code></dt>
+<dd>
+<p>Depending on what is passed, the result is a node of section level
+0, 1, or 2.</p>
+<p>If there is no such section heading, an error string is returned.</p>
+</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
+    &#34;&#34;&#34;Find the node of a section string.
+
+    Compare `tf.core.text.Text.nodeFromSection`.
+
+    Parameters
+    ----------
+    sectionStr: string
+        Must be a valid section specficiation in the
+        language specified in *lang*.
+
+        The string may specify a section 0 level only (book/tablet), or
+        section 0 and 1 levels (book/tablet chapter/column),
+        or all levels
+        (book/tablet chapter/column verse/line).
+
+        !!! hint &#34;examples&#34;
+            ```
+            Genesis
+            Genesis 1
+            Genesis 1:1
+            ```
+
+            ```
+            P005381
+            P005381 1
+            P005381 1:1
+            ```
+
+    lang: string, optional `en`
+        The language assumed for the section parts,
+        as far as they are language dependent.
+        Must be a 2-letter language code.
+
+    Returns
+    -------
+    node | error: integer | string
+        Depending on what is passed, the result is a node of section level
+        0, 1, or 2.
+
+        If there is no such section heading, an error string is returned.
+    &#34;&#34;&#34;
+
     api = app.api
     T = api.T
 
@@ -177,12 +380,57 @@ def _sectionLink(app, n, text=None, clsName=None):
 <span>def <span class="ident">sectionStrFromNode</span></span>(<span>app, n, lang='en', lastSlot=False, fillup=False)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>The heading of a section to which a node belongs.</p>
+<p>Compare <code><a title="tf.core.text.Text.nodeFromSection" href="../core/text.html#tf.core.text.Text.nodeFromSection">Text.nodeFromSection()</a></code>.</p>
+<p>node: integer
+The node from which we obtain a section specification.
+lastSlot: boolean, optional <code>False</code>
+Whether the reference node will be the last slot contained by the
+<code>node</code> argument or the first node.
+Otherwise it will be the first slot.
+lang: string, optional <code>en</code>
+The language assumed for the section parts,
+as far as they are language dependent.
+Must be a 2-letter language code.
+fillup: boolean, optional <code>False</code>
+Same as for <code>tf.core.Text.text.sectionTuple</code>.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>section heading:string</code></dt>
+<dd>Corresponds to the reference node.
+The result is built from the labels of the individual section levels,
+with dummies for missing parts if <em>fillup</em> is true.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
+    &#34;&#34;&#34;The heading of a section to which a node belongs.
+
+    Compare `tf.core.text.Text.nodeFromSection`.
+
+    node: integer
+        The node from which we obtain a section specification.
+    lastSlot: boolean, optional `False`
+        Whether the reference node will be the last slot contained by the
+        `node` argument or the first node.
+        Otherwise it will be the first slot.
+    lang: string, optional `en`
+        The language assumed for the section parts,
+        as far as they are language dependent.
+        Must be a 2-letter language code.
+    fillup: boolean, optional `False`
+        Same as for `tf.core.Text.text.sectionTuple`.
+
+    Returns
+    -------
+    section heading:string
+        Corresponds to the reference node.
+        The result is built from the labels of the individual section levels,
+        with dummies for missing parts if *fillup* is true.
+    &#34;&#34;&#34;
+
     api = app.api
     T = api.T
 
@@ -218,12 +466,36 @@ def _sectionLink(app, n, text=None, clsName=None):
 <span>def <span class="ident">structureStrFromNode</span></span>(<span>app, n)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>The heading of a structure to which a node belongs.</p>
+<p>Compare <code><a title="tf.core.text.Text.headingFromNode" href="../core/text.html#tf.core.text.Text.headingFromNode">Text.headingFromNode()</a></code>.</p>
+<p>node: integer
+The node from which we obtain a structure specification.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>structure heading:string</code></dt>
+<dd>Corresponds to the first structure node containing the first slot of <code>n</code>.
+The result is built from the labels of the individual section levels.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def structureStrFromNode(app, n):
+    &#34;&#34;&#34;The heading of a structure to which a node belongs.
+
+    Compare `tf.core.text.Text.headingFromNode`.
+
+
+    node: integer
+        The node from which we obtain a structure specification.
+
+    Returns
+    -------
+    structure heading:string
+        Corresponds to the first structure node containing the first slot of `n`.
+        The result is built from the labels of the individual section levels.
+    &#34;&#34;&#34;
+
     api = app.api
     T = api.T
 
@@ -249,7 +521,10 @@ def _sectionLink(app, n, text=None, clsName=None):
 <nav id="sidebar">
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#sections">Sections</a></li>
+<li><a href="#structure">Structure</a></li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>

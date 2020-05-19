@@ -316,6 +316,57 @@ class Computeds(object):
 
 
 class Api(object):
+    &#34;&#34;&#34;The core API of TF.
+
+    It provides methods to navigate nodes and edges and lookup features.
+
+    Nodes are linked to subsets of slots, and there is a canonical ordering
+    on subsets of integers that is inherited by the nodes.
+
+    The canonical order is a way to sort the nodes in your corpus in such a way
+    that you can enumerate all nodes in the order you encounter them if you
+    walk through your corpus.
+
+    Briefly this means:
+
+    *   embedder nodes come before the nodes that lie embedded in them;
+    *   earlier stuff comes before later stuff,
+    *   if a verse coincides with a sentence, the verse comes before the sentence,
+        because verses generally contain sentences and not the other way round;
+    *   if two objects are intersecting, but none embeds the other, the one with the
+        smallest slot that does not occur in the other, comes first.
+
+    !!! note &#34;first things first, big things first&#34;
+        That means, roughly, that you start with a
+        book node (Genesis), then a chapter node (Genesis 1), then a verse node, Genesis
+        1:1, then a sentence node, then a clause node, a phrase node, and the first word
+        node. Then follow all word nodes in the first phrase, then the phrase node of
+        the second phrase, followed by the word nodes in that phrase. When ever you
+        enter a higher structure, you will first get the node corresponding to that
+        structure, and after that the nodes corresponding to the building blocks of that
+        structure.
+
+    This concept follows the intuition that slot sets with smaller elements come
+    before slot set with bigger elements, and embedding slot sets come before
+    embedded slot sets. Hence, if you enumerate a set of nodes that happens to
+    constitute a tree hierarchy based on slot set embedding, and you enumerate those
+    nodes in the slot set order, you will walk the tree in pre-order.
+
+    This order is a modification of the one as described in (Doedens 1994, 3.6.3).
+
+    ![fabric](../images/DoedensLO.png)
+
+    &gt; Doedens, Crist-Jan (1994), *Text Databases. One Database Model and Several
+    &gt; Retrieval Languages*, number 14 in Language and Computers, Editions Rodopi,
+    &gt; Amsterdam, Netherlands and Atlanta, USA. ISBN: 90-5183-729-1,
+    &gt; &lt;{{doedens}}&gt;. The order as defined by
+    &gt; Doedens corresponds to walking trees in post-order.
+
+    For a lot of processing, it is handy to have a the stack of embedding elements
+    available when working with an element. That is the advantage of pre-order over
+    post-order. It is very much like SAX parsing in the XML world.
+    &#34;&#34;&#34;
+
     def __init__(self, TF):
         self.TF = TF
         self.ignored = tuple(sorted(TF.featuresIgnored))
@@ -337,6 +388,42 @@ class Api(object):
         self.reset = tm.reset
         self.indent = tm.indent
         self.loadLog = tm.cache
+        self.sortKey = None
+        &#34;&#34;&#34;Sort key function for the canonical ordering between nodes.
+
+        See `tf.core.api.Api` and `sortNodes`.
+
+        !!! hint &#34;usage&#34;
+            The following two pieces of code do the same thing:
+            `sortNodes(nodeSet)` and `sorted(nodeSet, key=sortKey)`.
+        &#34;&#34;&#34;
+
+        self.sortKeyTuple = None
+        &#34;&#34;&#34;Sort key function for the canonical ordering between tuples of nodes.
+        It applies `sortKey` to each member of the tuple.
+        Handy to sort search results. We can sort them in canonical order like this:
+
+        ```python
+        sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
+        ```
+
+        This is exactly what `sortKeyTuple` does, but then a bit more efficient:
+
+        ```python
+        sorted(results, key=sortKeyTuple)
+        ```
+        &#34;&#34;&#34;
+
+        self.otypeRank = None
+        &#34;&#34;&#34;Dictionary that provides a ranking of the node types.
+
+        The node types are ordered in `C.levels.data`, and if you reverse that list,
+        you get the rank of a type by looking at the position in which that type occurs.
+
+        The *slotType* has rank 0 (`otypeRank[F.otype.slotType] == 0`),
+        and the more comprehensive a type is, the higher its rank.
+        &#34;&#34;&#34;
+
         setattr(self, &#34;FeatureString&#34;, self.Fs)
         setattr(self, &#34;EdgeString&#34;, self.Es)
         setattr(self, &#34;ComputedString&#34;, self.Cs)
@@ -364,10 +451,33 @@ class Api(object):
         return getattr(self.C, fName)
 
     def N(self):
+        &#34;&#34;&#34;Generates all nodes in the *canonical order*.
+
+        Iterating over `N()` delivers you all nodes of your corpus
+        in a very natural order. See `tf.core.api.Api`.
+
+        !!! hint &#34;More ways of walking&#34;
+            Under `tf.core.api.NodeFeatures` there is another convenient way
+            to walk through subsets of nodes.
+
+        Returns
+        -------
+        nodes: int
+            One at a time.
+        &#34;&#34;&#34;
+
         for n in self.C.order.data:
             yield n
 
     def sortNodes(self, nodeSet):
+        &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
+
+        See `tf.core.api.Api`.
+
+        nodeSet: iterable
+            An iterable of nodes to be sorted.
+        &#34;&#34;&#34;
+
         Crank = self.C.rank.data
         return sorted(nodeSet, key=lambda n: Crank[n - 1])
 
@@ -571,12 +681,106 @@ def addSearch(api, silent):
 <span>(</span><span>TF)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>The core API of TF.</p>
+<p>It provides methods to navigate nodes and edges and lookup features.</p>
+<p>Nodes are linked to subsets of slots, and there is a canonical ordering
+on subsets of integers that is inherited by the nodes.</p>
+<p>The canonical order is a way to sort the nodes in your corpus in such a way
+that you can enumerate all nodes in the order you encounter them if you
+walk through your corpus.</p>
+<p>Briefly this means:</p>
+<ul>
+<li>embedder nodes come before the nodes that lie embedded in them;</li>
+<li>earlier stuff comes before later stuff,</li>
+<li>if a verse coincides with a sentence, the verse comes before the sentence,
+because verses generally contain sentences and not the other way round;</li>
+<li>if two objects are intersecting, but none embeds the other, the one with the
+smallest slot that does not occur in the other, comes first.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">first things first, big things first</p>
+<p>That means, roughly, that you start with a
+book node (Genesis), then a chapter node (Genesis 1), then a verse node, Genesis
+1:1, then a sentence node, then a clause node, a phrase node, and the first word
+node. Then follow all word nodes in the first phrase, then the phrase node of
+the second phrase, followed by the word nodes in that phrase. When ever you
+enter a higher structure, you will first get the node corresponding to that
+structure, and after that the nodes corresponding to the building blocks of that
+structure.</p>
+</div>
+<p>This concept follows the intuition that slot sets with smaller elements come
+before slot set with bigger elements, and embedding slot sets come before
+embedded slot sets. Hence, if you enumerate a set of nodes that happens to
+constitute a tree hierarchy based on slot set embedding, and you enumerate those
+nodes in the slot set order, you will walk the tree in pre-order.</p>
+<p>This order is a modification of the one as described in (Doedens 1994, 3.6.3).</p>
+<p><img alt="fabric" src="../images/DoedensLO.png"></p>
+<blockquote>
+<p>Doedens, Crist-Jan (1994), <em>Text Databases. One Database Model and Several
+Retrieval Languages</em>, number 14 in Language and Computers, Editions Rodopi,
+Amsterdam, Netherlands and Atlanta, USA. ISBN: 90-5183-729-1,
+&lt;{{doedens}}&gt;. The order as defined by
+Doedens corresponds to walking trees in post-order.</p>
+</blockquote>
+<p>For a lot of processing, it is handy to have a the stack of embedding elements
+available when working with an element. That is the advantage of pre-order over
+post-order. It is very much like SAX parsing in the XML world.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Api(object):
+    &#34;&#34;&#34;The core API of TF.
+
+    It provides methods to navigate nodes and edges and lookup features.
+
+    Nodes are linked to subsets of slots, and there is a canonical ordering
+    on subsets of integers that is inherited by the nodes.
+
+    The canonical order is a way to sort the nodes in your corpus in such a way
+    that you can enumerate all nodes in the order you encounter them if you
+    walk through your corpus.
+
+    Briefly this means:
+
+    *   embedder nodes come before the nodes that lie embedded in them;
+    *   earlier stuff comes before later stuff,
+    *   if a verse coincides with a sentence, the verse comes before the sentence,
+        because verses generally contain sentences and not the other way round;
+    *   if two objects are intersecting, but none embeds the other, the one with the
+        smallest slot that does not occur in the other, comes first.
+
+    !!! note &#34;first things first, big things first&#34;
+        That means, roughly, that you start with a
+        book node (Genesis), then a chapter node (Genesis 1), then a verse node, Genesis
+        1:1, then a sentence node, then a clause node, a phrase node, and the first word
+        node. Then follow all word nodes in the first phrase, then the phrase node of
+        the second phrase, followed by the word nodes in that phrase. When ever you
+        enter a higher structure, you will first get the node corresponding to that
+        structure, and after that the nodes corresponding to the building blocks of that
+        structure.
+
+    This concept follows the intuition that slot sets with smaller elements come
+    before slot set with bigger elements, and embedding slot sets come before
+    embedded slot sets. Hence, if you enumerate a set of nodes that happens to
+    constitute a tree hierarchy based on slot set embedding, and you enumerate those
+    nodes in the slot set order, you will walk the tree in pre-order.
+
+    This order is a modification of the one as described in (Doedens 1994, 3.6.3).
+
+    ![fabric](../images/DoedensLO.png)
+
+    &gt; Doedens, Crist-Jan (1994), *Text Databases. One Database Model and Several
+    &gt; Retrieval Languages*, number 14 in Language and Computers, Editions Rodopi,
+    &gt; Amsterdam, Netherlands and Atlanta, USA. ISBN: 90-5183-729-1,
+    &gt; &lt;{{doedens}}&gt;. The order as defined by
+    &gt; Doedens corresponds to walking trees in post-order.
+
+    For a lot of processing, it is handy to have a the stack of embedding elements
+    available when working with an element. That is the advantage of pre-order over
+    post-order. It is very much like SAX parsing in the XML world.
+    &#34;&#34;&#34;
+
     def __init__(self, TF):
         self.TF = TF
         self.ignored = tuple(sorted(TF.featuresIgnored))
@@ -598,6 +802,42 @@ def addSearch(api, silent):
         self.reset = tm.reset
         self.indent = tm.indent
         self.loadLog = tm.cache
+        self.sortKey = None
+        &#34;&#34;&#34;Sort key function for the canonical ordering between nodes.
+
+        See `tf.core.api.Api` and `sortNodes`.
+
+        !!! hint &#34;usage&#34;
+            The following two pieces of code do the same thing:
+            `sortNodes(nodeSet)` and `sorted(nodeSet, key=sortKey)`.
+        &#34;&#34;&#34;
+
+        self.sortKeyTuple = None
+        &#34;&#34;&#34;Sort key function for the canonical ordering between tuples of nodes.
+        It applies `sortKey` to each member of the tuple.
+        Handy to sort search results. We can sort them in canonical order like this:
+
+        ```python
+        sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
+        ```
+
+        This is exactly what `sortKeyTuple` does, but then a bit more efficient:
+
+        ```python
+        sorted(results, key=sortKeyTuple)
+        ```
+        &#34;&#34;&#34;
+
+        self.otypeRank = None
+        &#34;&#34;&#34;Dictionary that provides a ranking of the node types.
+
+        The node types are ordered in `C.levels.data`, and if you reverse that list,
+        you get the rank of a type by looking at the position in which that type occurs.
+
+        The *slotType* has rank 0 (`otypeRank[F.otype.slotType] == 0`),
+        and the more comprehensive a type is, the higher its rank.
+        &#34;&#34;&#34;
+
         setattr(self, &#34;FeatureString&#34;, self.Fs)
         setattr(self, &#34;EdgeString&#34;, self.Es)
         setattr(self, &#34;ComputedString&#34;, self.Cs)
@@ -625,10 +865,33 @@ def addSearch(api, silent):
         return getattr(self.C, fName)
 
     def N(self):
+        &#34;&#34;&#34;Generates all nodes in the *canonical order*.
+
+        Iterating over `N()` delivers you all nodes of your corpus
+        in a very natural order. See `tf.core.api.Api`.
+
+        !!! hint &#34;More ways of walking&#34;
+            Under `tf.core.api.NodeFeatures` there is another convenient way
+            to walk through subsets of nodes.
+
+        Returns
+        -------
+        nodes: int
+            One at a time.
+        &#34;&#34;&#34;
+
         for n in self.C.order.data:
             yield n
 
     def sortNodes(self, nodeSet):
+        &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
+
+        See `tf.core.api.Api`.
+
+        nodeSet: iterable
+            An iterable of nodes to be sorted.
+        &#34;&#34;&#34;
+
         Crank = self.C.rank.data
         return sorted(nodeSet, key=lambda n: Crank[n - 1])
 
@@ -694,6 +957,38 @@ def addSearch(api, silent):
             loadedFeatures |= needToLoad
         return loadedFeatures</code></pre>
 </details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.core.api.Api.otypeRank"><code class="name">var <span class="ident">otypeRank</span></code></dt>
+<dd>
+<div class="desc"><p>Dictionary that provides a ranking of the node types.</p>
+<p>The node types are ordered in <code>C.levels.data</code>, and if you reverse that list,
+you get the rank of a type by looking at the position in which that type occurs.</p>
+<p>The <em>slotType</em> has rank 0 (<code>otypeRank[F.otype.slotType] == 0</code>),
+and the more comprehensive a type is, the higher its rank.</p></div>
+</dd>
+<dt id="tf.core.api.Api.sortKey"><code class="name">var <span class="ident">sortKey</span></code></dt>
+<dd>
+<div class="desc"><p>Sort key function for the canonical ordering between nodes.</p>
+<p>See <code><a title="tf.core.api.Api" href="#tf.core.api.Api">Api</a></code> and <code>sortNodes</code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">usage</p>
+<p>The following two pieces of code do the same thing:
+<code>sortNodes(nodeSet)</code> and <code>sorted(nodeSet, key=sortKey)</code>.</p>
+</div></div>
+</dd>
+<dt id="tf.core.api.Api.sortKeyTuple"><code class="name">var <span class="ident">sortKeyTuple</span></code></dt>
+<dd>
+<div class="desc"><p>Sort key function for the canonical ordering between tuples of nodes.
+It applies <code>sortKey</code> to each member of the tuple.
+Handy to sort search results. We can sort them in canonical order like this:</p>
+<pre><code class="python">sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
+</code></pre>
+<p>This is exactly what <code>sortKeyTuple</code> does, but then a bit more efficient:</p>
+<pre><code class="python">sorted(results, key=sortKeyTuple)
+</code></pre></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="tf.core.api.Api.Call"><code class="name flex">
@@ -787,12 +1082,39 @@ def addSearch(api, silent):
 <span>def <span class="ident">N</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Generates all nodes in the <em>canonical order</em>.</p>
+<p>Iterating over <code>N()</code> delivers you all nodes of your corpus
+in a very natural order. See <code><a title="tf.core.api.Api" href="#tf.core.api.Api">Api</a></code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">More ways of walking</p>
+<p>Under <code><a title="tf.core.api.NodeFeatures" href="#tf.core.api.NodeFeatures">NodeFeatures</a></code> there is another convenient way
+to walk through subsets of nodes.</p>
+</div>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>nodes</code></strong> :&ensp;<code>int</code></dt>
+<dd>One at a time.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def N(self):
+    &#34;&#34;&#34;Generates all nodes in the *canonical order*.
+
+    Iterating over `N()` delivers you all nodes of your corpus
+    in a very natural order. See `tf.core.api.Api`.
+
+    !!! hint &#34;More ways of walking&#34;
+        Under `tf.core.api.NodeFeatures` there is another convenient way
+        to walk through subsets of nodes.
+
+    Returns
+    -------
+    nodes: int
+        One at a time.
+    &#34;&#34;&#34;
+
     for n in self.C.order.data:
         yield n</code></pre>
 </details>
@@ -868,12 +1190,23 @@ def addSearch(api, silent):
 <span>def <span class="ident">sortNodes</span></span>(<span>self, nodeSet)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Delivers a tuple of nodes sorted by the <em>canonical ordering</em>.</p>
+<p>See <code><a title="tf.core.api.Api" href="#tf.core.api.Api">Api</a></code>.</p>
+<p>nodeSet: iterable
+An iterable of nodes to be sorted.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def sortNodes(self, nodeSet):
+    &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
+
+    See `tf.core.api.Api`.
+
+    nodeSet: iterable
+        An iterable of nodes to be sorted.
+    &#34;&#34;&#34;
+
     Crank = self.C.rank.data
     return sorted(nodeSet, key=lambda n: Crank[n - 1])</code></pre>
 </details>
@@ -1557,6 +1890,9 @@ def addSearch(api, silent):
 <li><code><a title="tf.core.api.Api.N" href="#tf.core.api.Api.N">N</a></code></li>
 <li><code><a title="tf.core.api.Api.ensureLoaded" href="#tf.core.api.Api.ensureLoaded">ensureLoaded</a></code></li>
 <li><code><a title="tf.core.api.Api.makeAvailableIn" href="#tf.core.api.Api.makeAvailableIn">makeAvailableIn</a></code></li>
+<li><code><a title="tf.core.api.Api.otypeRank" href="#tf.core.api.Api.otypeRank">otypeRank</a></code></li>
+<li><code><a title="tf.core.api.Api.sortKey" href="#tf.core.api.Api.sortKey">sortKey</a></code></li>
+<li><code><a title="tf.core.api.Api.sortKeyTuple" href="#tf.core.api.Api.sortKeyTuple">sortKeyTuple</a></code></li>
 <li><code><a title="tf.core.api.Api.sortNodes" href="#tf.core.api.Api.sortNodes">sortNodes</a></code></li>
 </ul>
 </li>

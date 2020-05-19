@@ -29,6 +29,7 @@
 from IPython.display import display, Markdown, HTML
 
 from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
+from ..core.helpers import htmlEsc
 
 
 RESULT = &#34;result&#34;
@@ -152,7 +153,147 @@ def transitiveClosure(relation):
                         if grandChild not in descendants[parent]:
                             descendants[parent].add(grandChild)
                             changed = True
-    return descendants</code></pre>
+    return descendants
+
+
+def htmlSafe(text, isHtml):
+    return text if isHtml else htmlEsc(text)
+
+
+def getText(
+    app, isPretty, n, nType, outer, first, last, level, passage, descend, dContext=None
+):
+    T = app.api.T
+    sectionTypeSet = T.sectionTypeSet
+    structureTypeSet = T.structureTypeSet
+
+    aContext = app.context
+    templates = aContext.labels if isPretty else aContext.templates
+
+    fmt = None if dContext is None else dContext.fmt
+    standardFeatures = True if dContext is None else dContext.standardFeatures
+    isHtml = False if dContext is None else dContext.isHtml
+    suppress = set() if dContext is None else dContext.suppress
+
+    (tpl, feats) = templates[nType]
+
+    tplFilled = (
+        (
+            (
+                &#39;&lt;span class=&#34;section&#34;&gt;&#39;
+                + (NB if passage else app.sectionStrFromNode(n))
+                + &#34;&lt;/span&gt;&#34;
+            )
+            if nType in sectionTypeSet
+            else f&#39;&lt;span class=&#34;structure&#34;&gt;{app.structureStrFromNode(n)}&lt;/span&gt;&#39;
+            if nType in structureTypeSet
+            else htmlSafe(
+                T.text(
+                    n,
+                    fmt=fmt,
+                    descend=descend,
+                    outer=outer,
+                    first=first,
+                    last=last,
+                    level=level,
+                ),
+                isHtml,
+            )
+        )
+        if tpl is True
+        else (
+            tpl.format(
+                **{feat: getValue(app, n, nType, feat, suppress) for feat in feats}
+            )
+            if standardFeatures
+            else &#34;&#34;
+        )
+    )
+    return tplFilled
+
+
+def getValue(app, n, nType, feat, suppress):
+    F = app.api.F
+    Fs = app.api.Fs
+
+    aContext = app.context
+    transform = aContext.transform
+    if feat in suppress:
+        val = &#34;&#34;
+    else:
+        featObj = Fs(feat) if hasattr(F, feat) else None
+        val = htmlEsc(featObj.v(n)) if featObj else None
+        modifier = transform.get(nType, {}).get(feat, None)
+        if modifier:
+            val = modifier(n, val)
+    return f&#39;&lt;span title=&#34;{feat}&#34;&gt;{val}&lt;/span&gt;&#39;
+
+
+# COMPOSE TABLES FOR CSV EXPORT
+
+
+def getResultsX(app, results, features, condenseType, fmt=None):
+    api = app.api
+    F = api.F
+    Fs = api.Fs
+    T = api.T
+    fOtype = F.otype.v
+    otypeRank = api.otypeRank
+    sectionTypeSet = T.sectionTypeSet
+
+    aContext = app.context
+    noDescendTypes = aContext.noDescendTypes
+
+    sectionDepth = len(sectionTypeSet)
+    if len(results) == 0:
+        return ()
+    firstResult = results[0]
+    nTuple = len(firstResult)
+    refColumns = [
+        i for (i, n) in enumerate(firstResult) if fOtype(n) not in sectionTypeSet
+    ]
+    refColumn = refColumns[0] if refColumns else nTuple - 1
+    header = [&#34;R&#34;] + [f&#34;S{i}&#34; for i in range(1, sectionDepth + 1)]
+    emptyA = []
+
+    featureDict = {i: tuple(f.split()) if type(f) is str else f for (i, f) in features}
+
+    def withText(nodeType):
+        return (
+            condenseType is None
+            and nodeType not in sectionTypeSet
+            or otypeRank[nodeType] &lt;= otypeRank[condenseType]
+        )
+
+    noDescendTypes = noDescendTypes
+
+    for j in range(nTuple):
+        i = j + 1
+        n = firstResult[j]
+        nType = fOtype(n)
+        header.extend([f&#34;NODE{i}&#34;, f&#34;TYPE{i}&#34;])
+        if withText(nType):
+            header.append(f&#34;TEXT{i}&#34;)
+        header.extend(f&#34;{feature}{i}&#34; for feature in featureDict.get(j, emptyA))
+    rows = [tuple(header)]
+    for (rm, r) in enumerate(results):
+        rn = rm + 1
+        row = [rn]
+        refN = r[refColumn]
+        sparts = T.sectionFromNode(refN)
+        nParts = len(sparts)
+        section = sparts + ((None,) * (sectionDepth - nParts))
+        row.extend(section)
+        for j in range(nTuple):
+            n = r[j]
+            nType = fOtype(n)
+            row.extend((n, nType))
+            if withText(nType):
+                text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
+                row.append(text)
+            row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
+        rows.append(tuple(row))
+    return tuple(rows)</code></pre>
 </details>
 </section>
 <section>
@@ -211,6 +352,166 @@ def transitiveClosure(relation):
     return os.path.expanduser(f&#34;{base}/{org}/{repo}/{TEMP_DIR}&#34;)</code></pre>
 </details>
 </dd>
+<dt id="tf.applib.helpers.getResultsX"><code class="name flex">
+<span>def <span class="ident">getResultsX</span></span>(<span>app, results, features, condenseType, fmt=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getResultsX(app, results, features, condenseType, fmt=None):
+    api = app.api
+    F = api.F
+    Fs = api.Fs
+    T = api.T
+    fOtype = F.otype.v
+    otypeRank = api.otypeRank
+    sectionTypeSet = T.sectionTypeSet
+
+    aContext = app.context
+    noDescendTypes = aContext.noDescendTypes
+
+    sectionDepth = len(sectionTypeSet)
+    if len(results) == 0:
+        return ()
+    firstResult = results[0]
+    nTuple = len(firstResult)
+    refColumns = [
+        i for (i, n) in enumerate(firstResult) if fOtype(n) not in sectionTypeSet
+    ]
+    refColumn = refColumns[0] if refColumns else nTuple - 1
+    header = [&#34;R&#34;] + [f&#34;S{i}&#34; for i in range(1, sectionDepth + 1)]
+    emptyA = []
+
+    featureDict = {i: tuple(f.split()) if type(f) is str else f for (i, f) in features}
+
+    def withText(nodeType):
+        return (
+            condenseType is None
+            and nodeType not in sectionTypeSet
+            or otypeRank[nodeType] &lt;= otypeRank[condenseType]
+        )
+
+    noDescendTypes = noDescendTypes
+
+    for j in range(nTuple):
+        i = j + 1
+        n = firstResult[j]
+        nType = fOtype(n)
+        header.extend([f&#34;NODE{i}&#34;, f&#34;TYPE{i}&#34;])
+        if withText(nType):
+            header.append(f&#34;TEXT{i}&#34;)
+        header.extend(f&#34;{feature}{i}&#34; for feature in featureDict.get(j, emptyA))
+    rows = [tuple(header)]
+    for (rm, r) in enumerate(results):
+        rn = rm + 1
+        row = [rn]
+        refN = r[refColumn]
+        sparts = T.sectionFromNode(refN)
+        nParts = len(sparts)
+        section = sparts + ((None,) * (sectionDepth - nParts))
+        row.extend(section)
+        for j in range(nTuple):
+            n = r[j]
+            nType = fOtype(n)
+            row.extend((n, nType))
+            if withText(nType):
+                text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
+                row.append(text)
+            row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
+        rows.append(tuple(row))
+    return tuple(rows)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.helpers.getText"><code class="name flex">
+<span>def <span class="ident">getText</span></span>(<span>app, isPretty, n, nType, outer, first, last, level, passage, descend, dContext=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getText(
+    app, isPretty, n, nType, outer, first, last, level, passage, descend, dContext=None
+):
+    T = app.api.T
+    sectionTypeSet = T.sectionTypeSet
+    structureTypeSet = T.structureTypeSet
+
+    aContext = app.context
+    templates = aContext.labels if isPretty else aContext.templates
+
+    fmt = None if dContext is None else dContext.fmt
+    standardFeatures = True if dContext is None else dContext.standardFeatures
+    isHtml = False if dContext is None else dContext.isHtml
+    suppress = set() if dContext is None else dContext.suppress
+
+    (tpl, feats) = templates[nType]
+
+    tplFilled = (
+        (
+            (
+                &#39;&lt;span class=&#34;section&#34;&gt;&#39;
+                + (NB if passage else app.sectionStrFromNode(n))
+                + &#34;&lt;/span&gt;&#34;
+            )
+            if nType in sectionTypeSet
+            else f&#39;&lt;span class=&#34;structure&#34;&gt;{app.structureStrFromNode(n)}&lt;/span&gt;&#39;
+            if nType in structureTypeSet
+            else htmlSafe(
+                T.text(
+                    n,
+                    fmt=fmt,
+                    descend=descend,
+                    outer=outer,
+                    first=first,
+                    last=last,
+                    level=level,
+                ),
+                isHtml,
+            )
+        )
+        if tpl is True
+        else (
+            tpl.format(
+                **{feat: getValue(app, n, nType, feat, suppress) for feat in feats}
+            )
+            if standardFeatures
+            else &#34;&#34;
+        )
+    )
+    return tplFilled</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.helpers.getValue"><code class="name flex">
+<span>def <span class="ident">getValue</span></span>(<span>app, n, nType, feat, suppress)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getValue(app, n, nType, feat, suppress):
+    F = app.api.F
+    Fs = app.api.Fs
+
+    aContext = app.context
+    transform = aContext.transform
+    if feat in suppress:
+        val = &#34;&#34;
+    else:
+        featObj = Fs(feat) if hasattr(F, feat) else None
+        val = htmlEsc(featObj.v(n)) if featObj else None
+        modifier = transform.get(nType, {}).get(feat, None)
+        if modifier:
+            val = modifier(n, val)
+    return f&#39;&lt;span title=&#34;{feat}&#34;&gt;{val}&lt;/span&gt;&#39;</code></pre>
+</details>
+</dd>
 <dt id="tf.applib.helpers.hasData"><code class="name flex">
 <span>def <span class="ident">hasData</span></span>(<span>local, org, repo, version, relative)</span>
 </code></dt>
@@ -233,6 +534,19 @@ def transitiveClosure(relation):
     if os.path.exists(expressTarget):
         return expressBase
     return False</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.helpers.htmlSafe"><code class="name flex">
+<span>def <span class="ident">htmlSafe</span></span>(<span>text, isHtml)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def htmlSafe(text, isHtml):
+    return text if isHtml else htmlEsc(text)</code></pre>
 </details>
 </dd>
 <dt id="tf.applib.helpers.parseFeatures"><code class="name flex">
@@ -360,7 +674,11 @@ def transitiveClosure(relation):
 <li><code><a title="tf.applib.helpers.dh" href="#tf.applib.helpers.dh">dh</a></code></li>
 <li><code><a title="tf.applib.helpers.dm" href="#tf.applib.helpers.dm">dm</a></code></li>
 <li><code><a title="tf.applib.helpers.getLocalDir" href="#tf.applib.helpers.getLocalDir">getLocalDir</a></code></li>
+<li><code><a title="tf.applib.helpers.getResultsX" href="#tf.applib.helpers.getResultsX">getResultsX</a></code></li>
+<li><code><a title="tf.applib.helpers.getText" href="#tf.applib.helpers.getText">getText</a></code></li>
+<li><code><a title="tf.applib.helpers.getValue" href="#tf.applib.helpers.getValue">getValue</a></code></li>
 <li><code><a title="tf.applib.helpers.hasData" href="#tf.applib.helpers.hasData">hasData</a></code></li>
+<li><code><a title="tf.applib.helpers.htmlSafe" href="#tf.applib.helpers.htmlSafe">htmlSafe</a></code></li>
 <li><code><a title="tf.applib.helpers.parseFeatures" href="#tf.applib.helpers.parseFeatures">parseFeatures</a></code></li>
 <li><code><a title="tf.applib.helpers.transitiveClosure" href="#tf.applib.helpers.transitiveClosure">transitiveClosure</a></code></li>
 <li><code><a title="tf.applib.helpers.tupleEnum" href="#tf.applib.helpers.tupleEnum">tupleEnum</a></code></li>

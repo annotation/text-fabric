@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.app API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="[About the Advanced API](https://annotation.github.io/text-fabric/Api/App/) …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,16 +20,76 @@
 <h1 class="title">Module <code>tf.app</code></h1>
 </header>
 <section id="section-intro">
+<p><a href="https://annotation.github.io/text-fabric/Api/App/">About the Advanced API</a></p>
+<p>The advanced-API provides extra functionality of top of the core of TF.
+The most notable things are donwloading corpus data and methods for (pretty)
+display corpus material.</p>
+<p>The real power of the advanced API is unleashed when there are well-tuned configuration
+settings for a corpus, and possibly some supporting application code and CSS styling.</p>
+<p>Depending on the settings, the advanced-API knows how to download the data,
+and can be invoked by a simple incantation: <code><a title="tf.app.use" href="#tf.app.use">use()</a></code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from .applib.app import findApp
+<pre><code class="python">&#34;&#34;&#34;
+[About the Advanced API](https://annotation.github.io/text-fabric/Api/App/)
+
+The advanced-API provides extra functionality of top of the core of TF.
+The most notable things are donwloading corpus data and methods for (pretty)
+display corpus material.
+
+The real power of the advanced API is unleashed when there are well-tuned configuration
+settings for a corpus, and possibly some supporting application code and CSS styling.
+
+Depending on the settings, the advanced-API knows how to download the data,
+and can be invoked by a simple incantation: `use`.
+&#34;&#34;&#34;
+
+from .applib.app import findApp
 
 # START AN APP
 
 
 def use(appName, *args, **kwargs):
+    &#34;&#34;&#34;Make use of a corpus by offering the advanced API to access it.
+
+    Hint: think of the `use {database}` statements in MySQL and MongoDb.
+
+    Without further arguments, this will set up an TF core API
+    with most features loaded, wrapped in an corpus-specific advanced API.
+
+    !!! note &#34;Start up sequence&#34;
+        During start-up the following happens:
+
+        1.  the corpus data is downloaded to your `~/text-fabric-data` directory,
+            if not already present there;
+        2.  if your data has been freshly downloaded,
+            a series of optimizations is executed;
+        3.  most features of the corpus are loaded into memory.
+        4.  the data is inspected to derive configuration information for the
+            advanced API; if present, additional settings, code and styling is loaded.
+
+    Parameters
+    ----------
+    appName: string
+        Name of the corpus, or a local directory.
+        Used to find the appropriate TF app, if there is one.
+        Anyway, on object of class `tf.applib.app.App` or a corpus-specific
+        derived class `TfAPP` of it is initialized with the remaining parameters.
+        Head over to there for a discription of those parameters, including more
+        about *appName*.
+
+    Returns
+    -------
+    A: object
+        The object whose attributes and methods constitute the advanced API.
+
+    !!! hint &#34;reuse&#34;
+        See also `tf.applib.app.reuse` which reconfigures all settings
+        without the costly step of reloading the data.
+    &#34;&#34;&#34;
+
     parts = appName.split(&#34;:&#34;, maxsplit=1)
     if len(parts) == 1:
         parts.append(&#34;&#34;)
@@ -49,12 +109,86 @@ def use(appName, *args, **kwargs):
 <span>def <span class="ident">use</span></span>(<span>appName, *args, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Make use of a corpus by offering the advanced API to access it.</p>
+<p>Hint: think of the <code>use {database}</code> statements in MySQL and MongoDb.</p>
+<p>Without further arguments, this will set up an TF core API
+with most features loaded, wrapped in an corpus-specific advanced API.</p>
+<div class="admonition note">
+<p class="admonition-title">Start up sequence</p>
+<p>During start-up the following happens:</p>
+<ol>
+<li>the corpus data is downloaded to your <code>~/text-fabric-data</code> directory,
+if not already present there;</li>
+<li>if your data has been freshly downloaded,
+a series of optimizations is executed;</li>
+<li>most features of the corpus are loaded into memory.</li>
+<li>the data is inspected to derive configuration information for the
+advanced API; if present, additional settings, code and styling is loaded.</li>
+</ol>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>appName</code></strong> :&ensp;<code>string</code></dt>
+<dd>Name of the corpus, or a local directory.
+Used to find the appropriate TF app, if there is one.
+Anyway, on object of class <code><a title="tf.applib.app.App" href="applib/app.html#tf.applib.app.App">App</a></code> or a corpus-specific
+derived class <code>TfAPP</code> of it is initialized with the remaining parameters.
+Head over to there for a discription of those parameters, including more
+about <em>appName</em>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>A</code></strong> :&ensp;<code>object</code></dt>
+<dd>The object whose attributes and methods constitute the advanced API.</dd>
+</dl>
+<div class="admonition hint">
+<p class="admonition-title">reuse</p>
+<p>See also <code>tf.applib.app.reuse</code> which reconfigures all settings
+without the costly step of reloading the data.</p>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def use(appName, *args, **kwargs):
+    &#34;&#34;&#34;Make use of a corpus by offering the advanced API to access it.
+
+    Hint: think of the `use {database}` statements in MySQL and MongoDb.
+
+    Without further arguments, this will set up an TF core API
+    with most features loaded, wrapped in an corpus-specific advanced API.
+
+    !!! note &#34;Start up sequence&#34;
+        During start-up the following happens:
+
+        1.  the corpus data is downloaded to your `~/text-fabric-data` directory,
+            if not already present there;
+        2.  if your data has been freshly downloaded,
+            a series of optimizations is executed;
+        3.  most features of the corpus are loaded into memory.
+        4.  the data is inspected to derive configuration information for the
+            advanced API; if present, additional settings, code and styling is loaded.
+
+    Parameters
+    ----------
+    appName: string
+        Name of the corpus, or a local directory.
+        Used to find the appropriate TF app, if there is one.
+        Anyway, on object of class `tf.applib.app.App` or a corpus-specific
+        derived class `TfAPP` of it is initialized with the remaining parameters.
+        Head over to there for a discription of those parameters, including more
+        about *appName*.
+
+    Returns
+    -------
+    A: object
+        The object whose attributes and methods constitute the advanced API.
+
+    !!! hint &#34;reuse&#34;
+        See also `tf.applib.app.reuse` which reconfigures all settings
+        without the costly step of reloading the data.
+    &#34;&#34;&#34;
+
     parts = appName.split(&#34;:&#34;, maxsplit=1)
     if len(parts) == 1:
         parts.append(&#34;&#34;)
