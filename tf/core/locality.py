@@ -30,6 +30,22 @@ class Locality(object):
           ```python
           L.u(node)[0]
           ```
+
+    !!! caution "Locality and node types"
+        When using `sortNodes` and the `L` methods,
+        note the following.
+
+        Suppose you have node types `verse` and `sentence`, and usually a
+        verse has multiple sentences, but not vice versa. Then you expect that
+
+        *   `L.d(verseNode)` will contain sentence nodes,
+        *   `L.d(sentenceNode)` will **not** contain verse nodes.
+
+        But if there is a verse with exactly one sentence, and both have exactly the
+        same words, then that is a case where:
+
+        *   `L.d(verseNode)` will contain `sentenceNode`,
+        *   `L.d(sentenceNode)` will contain `verseNode`.
       """
 
     def __init__(self, api):
