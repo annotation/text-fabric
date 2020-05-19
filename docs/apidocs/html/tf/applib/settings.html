@@ -857,6 +857,28 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
 
 def showContext(app, *keys):
+    &#34;&#34;&#34;Shows the *context* of the app `tf.app.App.context` in a pretty way.
+
+        The context is the result of computing sensible defaults for the corpus
+        combined with configuration settings in the app&#39;s `config.yaml`.
+
+        Parameters
+        ----------
+        keys: iterable of string
+            For each key passed to this function, the information for that key
+            will be displayed. If no keys are passed, all keys will be displayed.
+
+        Returns
+        -------
+        displayed HTML
+            An expandable list of the key-value pair for the requested keys.
+
+        !!! hint &#34;reuse after change&#34;
+            If you are developing an app and change the configuration settings,
+            they will be applied if you do `tf.applib.app.App.reuse()`.
+            See below.
+    &#34;&#34;&#34;
+
     EM = &#34;*empty*&#34;
     block = &#34;    &#34;
     keys = set(keys)
@@ -1553,12 +1575,53 @@ def compileFormatCls(app, specs, givenStyles):
 <span>def <span class="ident">showContext</span></span>(<span>app, *keys)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Shows the <em>context</em> of the app <code>tf.app.App.context</code> in a pretty way.</p>
+<p>The context is the result of computing sensible defaults for the corpus
+combined with configuration settings in the app's <code>config.yaml</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>keys</code></strong> :&ensp;<code>iterable</code> of <code>string</code></dt>
+<dd>For each key passed to this function, the information for that key
+will be displayed. If no keys are passed, all keys will be displayed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>displayed HTML</code></dt>
+<dd>An expandable list of the key-value pair for the requested keys.</dd>
+</dl>
+<div class="admonition hint">
+<p class="admonition-title">reuse after change</p>
+<p>If you are developing an app and change the configuration settings,
+they will be applied if you do <code><a title="tf.applib.app.App.reuse" href="app.html#tf.applib.app.App.reuse">App.reuse()</a></code>.
+See below.</p>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def showContext(app, *keys):
+    &#34;&#34;&#34;Shows the *context* of the app `tf.app.App.context` in a pretty way.
+
+        The context is the result of computing sensible defaults for the corpus
+        combined with configuration settings in the app&#39;s `config.yaml`.
+
+        Parameters
+        ----------
+        keys: iterable of string
+            For each key passed to this function, the information for that key
+            will be displayed. If no keys are passed, all keys will be displayed.
+
+        Returns
+        -------
+        displayed HTML
+            An expandable list of the key-value pair for the requested keys.
+
+        !!! hint &#34;reuse after change&#34;
+            If you are developing an app and change the configuration settings,
+            they will be applied if you do `tf.applib.app.App.reuse()`.
+            See below.
+    &#34;&#34;&#34;
+
     EM = &#34;*empty*&#34;
     block = &#34;    &#34;
     keys = set(keys)

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.applib.links API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Produce links to Text-Fabric data and links from nodes to web resources." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,16 @@
 <h1 class="title">Module <code>tf.applib.links</code></h1>
 </header>
 <section id="section-intro">
+<p>Produce links to Text-Fabric data and links from nodes to web resources.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import re
+<pre><code class="python">&#34;&#34;&#34;
+Produce links to Text-Fabric data and links from nodes to web resources.
+&#34;&#34;&#34;
+
+import re
 import types
 
 from ..parameters import (
@@ -211,8 +216,6 @@ def webLink(
 
     Parameters
     ----------
-    app: object
-        The `A`.
     n: int
         A node
     text: string/HTML, optional default `None`
@@ -295,6 +298,24 @@ def webLink(
 
 
 def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
+    &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
+
+    This comes in handy if you have started with `use(xxx, silence=&#39;deep&#39;)` and still
+    need to show the provenance.
+    Moreover, the provenance is shown in a formatted way.
+
+    Parameters
+    ----------
+    jobName: string, optional `program code`
+        E.g. the name of program in which you call this function.
+        In the Text-Fabric browser the name of the job will be entered here.
+        This item will be displayed together with the rest of the provenance.
+
+    author: string, optional `program author`
+        E.g. your own name.
+        This item will be displayed together with the rest of the provenance.
+    &#34;&#34;&#34;
+
     aContext = app.context
     appName = aContext.appName
     commit = aContext.commit
@@ -835,12 +856,43 @@ corresponding with a data version under a <code><a title="tf" href="../index.htm
 <span>def <span class="ident">showProvenance</span></span>(<span>app, jobName='program code', author='program author')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Shows the provenance that is normally displayed during data loading.</p>
+<p>This comes in handy if you have started with <code>use(xxx, silence='deep')</code> and still
+need to show the provenance.
+Moreover, the provenance is shown in a formatted way.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>jobName</code></strong> :&ensp;<code>string</code>, optional <code>program code</code></dt>
+<dd>E.g. the name of program in which you call this function.
+In the Text-Fabric browser the name of the job will be entered here.
+This item will be displayed together with the rest of the provenance.</dd>
+<dt><strong><code>author</code></strong> :&ensp;<code>string</code>, optional <code>program author</code></dt>
+<dd>E.g. your own name.
+This item will be displayed together with the rest of the provenance.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
+    &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
+
+    This comes in handy if you have started with `use(xxx, silence=&#39;deep&#39;)` and still
+    need to show the provenance.
+    Moreover, the provenance is shown in a formatted way.
+
+    Parameters
+    ----------
+    jobName: string, optional `program code`
+        E.g. the name of program in which you call this function.
+        In the Text-Fabric browser the name of the job will be entered here.
+        This item will be displayed together with the rest of the provenance.
+
+    author: string, optional `program author`
+        E.g. your own name.
+        This item will be displayed together with the rest of the provenance.
+    &#34;&#34;&#34;
+
     aContext = app.context
     appName = aContext.appName
     commit = aContext.commit
@@ -872,8 +924,6 @@ by providing appropriate values in its <code>config.yaml</code>, especially for
 </div>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
-<dd>The <code>A</code>.</dd>
 <dt><strong><code>n</code></strong> :&ensp;<code>int</code></dt>
 <dd>A node</dd>
 <dt><strong><code>text</code></strong> :&ensp;<code>string/HTML</code>, optional <code>default </code>None``</dt>
@@ -914,8 +964,6 @@ other attributes.</dd>
 
     Parameters
     ----------
-    app: object
-        The `A`.
     n: int
         A node
     text: string/HTML, optional default `None`

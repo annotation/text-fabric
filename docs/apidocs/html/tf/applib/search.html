@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.applib.search API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Calls from the advanced API to the Search API." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,16 @@
 <h1 class="title">Module <code>tf.applib.search</code></h1>
 </header>
 <section id="section-intro">
+<p>Calls from the advanced API to the Search API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import types
+<pre><code class="python">&#34;&#34;&#34;
+Calls from the advanced API to the Search API.
+&#34;&#34;&#34;
+
+import types
 
 from ..core.helpers import console
 from .condense import condense
@@ -35,6 +40,74 @@ def searchApi(app):
 
 
 def search(app, query, silent=False, sets=None, shallow=False, sort=True):
+    &#34;&#34;&#34;Search with some high-level features.
+
+    This function calls the lower level `tf.search.search.Search` facility aka `S`.
+    But whereas the `S` version returns a generator which yields the results
+    one by one, the `A` version collects all results and sorts them in the
+    [canonical order](../Api/Nodes.md#navigating-nodes).
+    (but you can change the sorting, see the `sort` parameter).
+    It then reports the number of results.
+
+    It will also set the display parameter `tupleFeatures` (see below)
+    in such a way that subsequent calls to `tf.applib.display.export` emit
+    the features that have been used in the query.
+
+    query: dict
+        the [search template](../Use/Search.md#search-template-reference)
+        that has to be searched for.
+
+    silent: boolean, optional `False`
+        if `True` it will suppress the reporting of the number of results.
+
+    shallow: boolean, optional `False`
+        If `True` or `1`, the result is a set of things that match the top-level element
+        of the `query`.
+
+        If `2` or a bigger number *n*, return the set of truncated result tuples: only
+        the first *n* members of each tuple are retained.
+
+        If `False` or `0`, a list of all result tuples will be returned.
+
+    sets: dict, optional `None`
+        If not `None`, it should be a dictionary of sets, keyed by a names.
+        In `query` you can refer to those names to invoke those sets.
+
+        For example, if you have a set `gappedPhrases` of all phrase nodes
+        that have a gap, you can pass `sets=dict(gphrase=gappedPhrases)`,
+        and then in your query you can say
+
+        ```
+        gphrase function=Pred
+          word sp=verb
+        ```
+
+        etc.
+
+        This is handy when you need node sets that cannot be conveniently queried.
+        You can produce them by hand-coding.
+        Once you got them, you can use them over and over again in queries.
+        Or you can save them with [writeSets](Lib.md#sets)
+        and use them in the TF browser.
+
+    sort: boolean, optional `True`
+        If `True` (default), search results will be returned in
+        [canonical order](../Api/Nodes.md#navigating-nodes).
+
+        !!! note &#34;canonical sort key for tuples&#34;
+            This sort is achieved by using the function
+            [sortKeyTuple](../Api/Nodes.md#navigating-nodes)
+            as sort key.
+
+        If it is a *sort key*, i.e. function that can be applied to tuples of nodes
+        returning values, then this key will be used to sort the results.
+
+        If it is a `False` value, no sorting will be applied.
+
+    !!! hint &#34;search template reference&#34;
+        See the [search template reference](../Use/Search.md#search-templates)
+    &#34;&#34;&#34;
+
     api = app.api
     info = api.info
     isSilent = api.isSilent
@@ -184,12 +257,139 @@ def runSearchCondensed(app, query, cache, condenseType):
 <span>def <span class="ident">search</span></span>(<span>app, query, silent=False, sets=None, shallow=False, sort=True)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Search with some high-level features.</p>
+<p>This function calls the lower level <code><a title="tf.search.search.Search" href="../search/search.html#tf.search.search.Search">Search</a></code> facility aka <code>S</code>.
+But whereas the <code>S</code> version returns a generator which yields the results
+one by one, the <code>A</code> version collects all results and sorts them in the
+<a href="../Api/Nodes.md#navigating-nodes">canonical order</a>.
+(but you can change the sorting, see the <code>sort</code> parameter).
+It then reports the number of results.</p>
+<p>It will also set the display parameter <code>tupleFeatures</code> (see below)
+in such a way that subsequent calls to <code><a title="tf.applib.display.export" href="display.html#tf.applib.display.export">export()</a></code> emit
+the features that have been used in the query.</p>
+<p>query: dict
+the <a href="../Use/Search.md#search-template-reference">search template</a>
+that has to be searched for.</p>
+<p>silent: boolean, optional <code>False</code>
+if <code>True</code> it will suppress the reporting of the number of results.</p>
+<p>shallow: boolean, optional <code>False</code>
+If <code>True</code> or <code>1</code>, the result is a set of things that match the top-level element
+of the <code>query</code>.</p>
+<pre><code>If &lt;code&gt;2&lt;/code&gt; or a bigger number *n*, return the set of truncated result tuples: only
+the first *n* members of each tuple are retained.
+
+If &lt;code&gt;False&lt;/code&gt; or &lt;code&gt;0&lt;/code&gt;, a list of all result tuples will be returned.
+</code></pre>
+<p>sets: dict, optional <code>None</code>
+If not <code>None</code>, it should be a dictionary of sets, keyed by a names.
+In <code>query</code> you can refer to those names to invoke those sets.</p>
+<pre><code>For example, if you have a set &lt;code&gt;gappedPhrases&lt;/code&gt; of all phrase nodes
+that have a gap, you can pass `sets=dict(gphrase=gappedPhrases)`,
+and then in your query you can say
+
+```
+gphrase function=Pred
+  word sp=verb
+```
+
+etc.
+
+This is handy when you need node sets that cannot be conveniently queried.
+You can produce them by hand-coding.
+Once you got them, you can use them over and over again in queries.
+Or you can save them with [writeSets](Lib.md#sets)
+and use them in the TF browser.
+</code></pre>
+<p>sort: boolean, optional <code>True</code>
+If <code>True</code> (default), search results will be returned in
+<a href="../Api/Nodes.md#navigating-nodes">canonical order</a>.</p>
+<pre><code>!!! note "canonical sort key for tuples"
+    This sort is achieved by using the function
+    [sortKeyTuple](../Api/Nodes.md#navigating-nodes)
+    as sort key.
+
+If it is a *sort key*, i.e. function that can be applied to tuples of nodes
+returning values, then this key will be used to sort the results.
+
+If it is a &lt;code&gt;False&lt;/code&gt; value, no sorting will be applied.
+</code></pre>
+<div class="admonition hint">
+<p class="admonition-title">search template reference</p>
+<p>See the <a href="../Use/Search.md#search-templates">search template reference</a></p>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def search(app, query, silent=False, sets=None, shallow=False, sort=True):
+    &#34;&#34;&#34;Search with some high-level features.
+
+    This function calls the lower level `tf.search.search.Search` facility aka `S`.
+    But whereas the `S` version returns a generator which yields the results
+    one by one, the `A` version collects all results and sorts them in the
+    [canonical order](../Api/Nodes.md#navigating-nodes).
+    (but you can change the sorting, see the `sort` parameter).
+    It then reports the number of results.
+
+    It will also set the display parameter `tupleFeatures` (see below)
+    in such a way that subsequent calls to `tf.applib.display.export` emit
+    the features that have been used in the query.
+
+    query: dict
+        the [search template](../Use/Search.md#search-template-reference)
+        that has to be searched for.
+
+    silent: boolean, optional `False`
+        if `True` it will suppress the reporting of the number of results.
+
+    shallow: boolean, optional `False`
+        If `True` or `1`, the result is a set of things that match the top-level element
+        of the `query`.
+
+        If `2` or a bigger number *n*, return the set of truncated result tuples: only
+        the first *n* members of each tuple are retained.
+
+        If `False` or `0`, a list of all result tuples will be returned.
+
+    sets: dict, optional `None`
+        If not `None`, it should be a dictionary of sets, keyed by a names.
+        In `query` you can refer to those names to invoke those sets.
+
+        For example, if you have a set `gappedPhrases` of all phrase nodes
+        that have a gap, you can pass `sets=dict(gphrase=gappedPhrases)`,
+        and then in your query you can say
+
+        ```
+        gphrase function=Pred
+          word sp=verb
+        ```
+
+        etc.
+
+        This is handy when you need node sets that cannot be conveniently queried.
+        You can produce them by hand-coding.
+        Once you got them, you can use them over and over again in queries.
+        Or you can save them with [writeSets](Lib.md#sets)
+        and use them in the TF browser.
+
+    sort: boolean, optional `True`
+        If `True` (default), search results will be returned in
+        [canonical order](../Api/Nodes.md#navigating-nodes).
+
+        !!! note &#34;canonical sort key for tuples&#34;
+            This sort is achieved by using the function
+            [sortKeyTuple](../Api/Nodes.md#navigating-nodes)
+            as sort key.
+
+        If it is a *sort key*, i.e. function that can be applied to tuples of nodes
+        returning values, then this key will be used to sort the results.
+
+        If it is a `False` value, no sorting will be applied.
+
+    !!! hint &#34;search template reference&#34;
+        See the [search template reference](../Use/Search.md#search-templates)
+    &#34;&#34;&#34;
+
     api = app.api
     info = api.info
     isSilent = api.isSilent

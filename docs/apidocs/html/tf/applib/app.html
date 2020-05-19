@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.applib.app API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Advanced API …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,21 @@
 <h1 class="title">Module <code>tf.applib.app</code></h1>
 </header>
 <section id="section-intro">
+<p>Advanced API</p>
+<p>A higher level API so that users can get the corpus data in a simple way
+and can display materials of their corpus in an intuitive way.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import os
+<pre><code class="python">&#34;&#34;&#34;
+Advanced API
+
+A higher level API so that users can get the corpus data in a simple way
+and can display materials of their corpus in an intuitive way.
+&#34;&#34;&#34;
+
+import os
 
 from ..parameters import ORG, APP_CODE
 from ..fabric import Fabric
@@ -47,6 +57,18 @@ from .repo import checkoutRepo
 
 
 class App:
+    &#34;&#34;&#34;Advanced TF API.
+
+    There are many scenarios in which you can work with the advanced API:
+    in a Python script or in a notebook or in the TF-browser.
+    If you `tf.server.start` the TF browser, a `tf.server.kernel` process is started
+    that holds the TF data.
+    Then a `tf.server.web` server is started that communicates with the kernel,
+    much like how webserver communicates with a database.
+
+    The advanced API supports all these scenarios.
+    &#34;&#34;&#34;
+
     def __init__(
         self,
         cfg,
@@ -66,6 +88,188 @@ class App:
         silent=False,
         _browse=False,
     ):
+        &#34;&#34;&#34;Set up the advanced TF API.
+
+        Parameters
+        ----------
+        appName: string
+            The appname  can be as simple as the name of an existing TF-app.
+            The app should exist as a repository `app-`*appName* under
+            [github.com/annotation]({{an}}), see also
+            [Corpora](https://annotation.github.io/text-fabric/About/Corpora/).
+
+            If there is a `/` in the *appName argument*,
+            it is interpreted as a location on your  system.
+
+            If it points to a directory with a *config.yaml* in it,
+            this config file will be read and interpreted as settings
+            for the advanced API.
+            If there is also a *app.py*, it will be imported as custom application code.
+            And if there is a *static/display.css* there, it will be used
+            for styling the display of corpus material.
+
+            If there is no `config.yaml` there, it will be assumed that there are
+            `.tf` data files in that location, and they will be loaded.
+            The advanced API will work with default settings,
+            based on the `.tf` data found.
+
+            !!! hint &#34;appName:specifier, checkout=specifier&#34;
+                You may want to load downloadable features from the internet,
+                or you want to experiment with features you are developing.
+                The specifiers let you use a specific point in the
+                history of the app and data.
+
+                *appName:specifier* is used for retrieving a TF-app (*code*).
+
+                *checkout=specifier* is for retrieving the corpus itself  (*data*).
+
+                *   `&#39;&#39;` (empty string or absent) (**default**):
+                    use local data if it is present under `~/text-fabric-data`,
+                    otherwise use the latest release if there are releases online,
+                    otherwise, use the latest commit.
+                *   `latest`: use the latest release.
+                    If there are commits after the commit that has been tagged
+                    with the latest release, these will **not** be used.
+                *   `hot`: use the latest commit, even if it comes after the
+                    latest commit of the latest release.
+                *   *release tag*, e.g. `v1.3`: use exactly this release.
+                    More precisely, this is the commit that has been tagged
+                    with that release tag.
+                *   *commit hash*, e.g. `2d0ca1f593805af0c13c4a62ed7405b94d870045`:
+                    use exactly this commit.
+                *   `local`: use local data from your `~/text-fabric-data` directory
+                    if it is present, otherwise fail.
+                *   `clone`: use local data from your `~/github` directory
+                    if it is present, otherwise fail.
+
+                For a demo, see
+                [banks/repo](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb)
+
+        hoist: dict, optional `False`
+            If you pass `globals()`, the core API elements are made directly available
+            as global names in your script or notebook:
+
+            * `tf.core.api.NodeFeature` as `F` instead of `A.api.F`
+            * `tf.core.locality.Locality` as `L` instead of `A.api.L`
+            * `tf.core.text.Text` as `T` instead of `A.api.T`
+            * and a few others (listed after executing the incantation)
+
+        version: string, optional `None`
+            If you do not want to work with the default version of your main corpus,
+            you can specify a different version here.
+
+            !!! caution &#34;Modules&#34;
+                If you also ask for extra data modules by means of the `mod` argument,
+                then the corresponding version of those modules will be chosen.
+                Every properly designed data module must refer to a specific
+                version of the main source!
+
+        mod: string, optional `None`
+            A comma-separated list of modules in one of the forms
+
+            ```
+            {org}/{repo}/{path}
+            {org}/{repo}/{path}:specifier
+            ```
+
+            All features of all those modules will be loaded.
+            If they are not yet present, they will be downloaded from GitHub first.
+
+            For example, there is an easter egg module on GitHub,
+            and you can obtain it by
+
+            ```
+            mod=&#39;etcbc/lingo/easter/tf&#39;
+            ```
+
+            Here the `{org}` is `etcbc`, the `{repo}` is `lingo`,
+            and the `{path}` is `easter/tf` under which
+            version `c` of the feature `egg`
+            is available in TF format.
+
+            You can point to any such directory om the entire GitHub
+            if you know that it contains relevant features.
+
+            The specifier is as in `appName:specifier` and `checkData=specifier`.
+            It is used to get data from a different point in the history.
+
+            Your TF app might be configured to download specific modules.
+            See `moduleSpecs` in the app&#39;s `config.yaml` file.
+
+            !!! caution &#34;Let TF manage your text-fabric-data directory&#34;
+                It is better not to fiddle with your `~/text-fabric-data` directory
+                manually. Let it be filled with auto-downloaded data.
+                You can then delete data sources and modules when needed,
+                and have them redownloaded at your wish,
+                without any hassle or data loss.
+
+        locations, modules: string, optional `None`
+            If you want to add other search locations for TF features manually,
+            you can pass optional `locations` and `modules` parameters,
+            which will be passed to the `tf.fabric.Fabric` call to the core of TF.
+
+            !!! note &#34;More, not less&#34;
+                Using these arguments will load features on top of the
+                default selection of features.
+                You cannot use these arguments to prevent features from being loaded.
+
+            !!! note &#34;appName with `/`&#34;
+                If you use the *appName* argument with a `/` in it,
+                and it does not point to a TF app you have locally,
+                it will be interpreted as a *locations* search path to find `.tf` files.
+                It acts as the main `locations` argument,
+                and will be combined with the `modules` argument.
+
+        api: object, optional, `None`
+            So far, the TF app will construct an advanced API
+            with a more or less standard set of features
+            loaded, and make that API avaible to you, under `A.api`.
+
+            But you can also setup a core API yourself by using
+            `tf.fabric.Fabric` with your choice of locations and modules:
+
+            ```python
+            from tf.fabric import Fabric
+            TF = Fabric(locations=..., modules=...)
+            api = TF.load(features)
+            ```
+
+            Here you have full control over what you load and what not.
+
+            If you want the extra power of the TF app, you can wrap this `api`:
+
+            ```python
+            A = use(&#39;xxxx&#39;, api=api)
+            ```
+
+            !!! hint &#34;Unloaded features&#34;
+                Some apps do not load all available features of the corpus by default.
+
+                This happens when a corpus contains quite a number of features
+                that most people never need.
+                Loading them cost time and takes a lot of RAM.
+
+                In the case where you need an available feature
+                that has not been loaded, you can load it by demanding
+
+                ```python
+                TF.load(&#39;feature1 feature2&#39;, add=True)
+                ```
+
+                provided you have used the `hoist=globals()` parameter earlier.
+                If not, you have to say
+
+                ```python
+                A.api.TF.load(&#39;feature1 feature2&#39;, add=True)
+                ```
+
+        silent: boolean, optional `False`
+            If `True`, nearly all output of this call will be suppressed,
+            including the links to the loaded
+            data, features, and the API methods.
+            Error messages will still come through.
+        &#34;&#34;&#34;
+
         for (key, value) in dict(
             isCompatible=cfg.get(&#34;isCompatible&#34;, None),
             appName=appName,
@@ -151,6 +355,27 @@ The app &#34;{appName}&#34; will not work!
         pass
 
     def reuse(self, hoist=False):
+        &#34;&#34;&#34;Re-initialize the app.
+
+        The app&#39;s settings are read again, the app&#39;s code is re-imported,
+        the app&#39;s stylesheets are applied again.
+        But the data is left untouched, and no time-consuming reloading of data
+        takes place.
+
+        Handy when you are developing a new app and want to experiment with it
+        without the costly re-loading of the data in every cycle.
+
+        Parameters
+        ----------
+        hoist: boolean, optional `False`
+            Same as in `App`.
+
+        !!! hint &#34;the effect of the config settings&#34;
+            If you are developing a TF app and need to see the effects of
+            the configuration settings in detail, you can conveniently
+            call `reuse` and `tf.applib.settings.showContext` in tandem.
+        &#34;&#34;&#34;
+
         aContext = self.context
         appPath = aContext.appPath
         appName = aContext.appName
@@ -319,12 +544,196 @@ def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
 <span>(</span><span>cfg, appName, appPath, commit, release, local, hoist=False, version=None, checkout='', mod=None, locations=None, modules=None, api=None, setFile='', silent=False)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Advanced TF API.</p>
+<p>There are many scenarios in which you can work with the advanced API:
+in a Python script or in a notebook or in the TF-browser.
+If you <code><a title="tf.server.start" href="../server/start.html">tf.server.start</a></code> the TF browser, a <code><a title="tf.server.kernel" href="../server/kernel.html">tf.server.kernel</a></code> process is started
+that holds the TF data.
+Then a <code><a title="tf.server.web" href="../server/web.html">tf.server.web</a></code> server is started that communicates with the kernel,
+much like how webserver communicates with a database.</p>
+<p>The advanced API supports all these scenarios.</p>
+<p>Set up the advanced TF API.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>appName</code></strong> :&ensp;<code>string</code></dt>
+<dd>
+<p>The appname
+can be as simple as the name of an existing TF-app.
+The app should exist as a repository <code>app-</code><em>appName</em> under
+<a href="{{an}}">github.com/annotation</a>, see also
+<a href="https://annotation.github.io/text-fabric/About/Corpora/">Corpora</a>.</p>
+<p>If there is a <code>/</code> in the <em>appName argument</em>,
+it is interpreted as a location on your
+system.</p>
+<p>If it points to a directory with a <em>config.yaml</em> in it,
+this config file will be read and interpreted as settings
+for the advanced API.
+If there is also a <em>app.py</em>, it will be imported as custom application code.
+And if there is a <em>static/display.css</em> there, it will be used
+for styling the display of corpus material.</p>
+<p>If there is no <code>config.yaml</code> there, it will be assumed that there are
+<code>.<a title="tf" href="../index.html">tf</a></code> data files in that location, and they will be loaded.
+The advanced API will work with default settings,
+based on the <code>.<a title="tf" href="../index.html">tf</a></code> data found.</p>
+<div class="admonition hint">
+<p class="admonition-title">appName:specifier, checkout=specifier</p>
+<p>You may want to load downloadable features from the internet,
+or you want to experiment with features you are developing.
+The specifiers let you use a specific point in the
+history of the app and data.</p>
+<p><em>appName:specifier</em> is used for retrieving a TF-app (<em>code</em>).</p>
+<p><em>checkout=specifier</em> is for retrieving the corpus itself
+(<em>data</em>).</p>
+<ul>
+<li><code>''</code> (empty string or absent) (<strong>default</strong>):
+use local data if it is present under <code>~/text-fabric-data</code>,
+otherwise use the latest release if there are releases online,
+otherwise, use the latest commit.</li>
+<li><code>latest</code>: use the latest release.
+If there are commits after the commit that has been tagged
+with the latest release, these will <strong>not</strong> be used.</li>
+<li><code>hot</code>: use the latest commit, even if it comes after the
+latest commit of the latest release.</li>
+<li><em>release tag</em>, e.g. <code>v1.3</code>: use exactly this release.
+More precisely, this is the commit that has been tagged
+with that release tag.</li>
+<li><em>commit hash</em>, e.g. <code>2d0ca1f593805af0c13c4a62ed7405b94d870045</code>:
+use exactly this commit.</li>
+<li><code>local</code>: use local data from your <code>~/text-fabric-data</code> directory
+if it is present, otherwise fail.</li>
+<li><code>clone</code>: use local data from your <code>~/github</code> directory
+if it is present, otherwise fail.</li>
+</ul>
+<p>For a demo, see
+<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb">banks/repo</a></p>
+</div>
+</dd>
+<dt><strong><code>hoist</code></strong> :&ensp;<code>dict</code>, optional <code>False</code></dt>
+<dd>
+<p>If you pass <code>globals()</code>, the core API elements are made directly available
+as global names in your script or notebook:</p>
+<ul>
+<li><code><a title="tf.core.api.NodeFeature" href="../core/api.html#tf.core.api.NodeFeature">NodeFeature</a></code> as <code>F</code> instead of <code>A.api.F</code></li>
+<li><code><a title="tf.core.locality.Locality" href="../core/locality.html#tf.core.locality.Locality">Locality</a></code> as <code>L</code> instead of <code>A.api.L</code></li>
+<li><code><a title="tf.core.text.Text" href="../core/text.html#tf.core.text.Text">Text</a></code> as <code>T</code> instead of <code>A.api.T</code></li>
+<li>and a few others (listed after executing the incantation)</li>
+</ul>
+</dd>
+<dt><strong><code>version</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>
+<p>If you do not want to work with the default version of your main corpus,
+you can specify a different version here.</p>
+<div class="admonition caution">
+<p class="admonition-title">Modules</p>
+<p>If you also ask for extra data modules by means of the <code>mod</code> argument,
+then the corresponding version of those modules will be chosen.
+Every properly designed data module must refer to a specific
+version of the main source!</p>
+</div>
+</dd>
+<dt><strong><code>mod</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>
+<p>A comma-separated list of modules in one of the forms</p>
+<p><code>{org}/{repo}/{path}
+{org}/{repo}/{path}:specifier</code></p>
+<p>All features of all those modules will be loaded.
+If they are not yet present, they will be downloaded from GitHub first.</p>
+<p>For example, there is an easter egg module on GitHub,
+and you can obtain it by</p>
+<p><code>mod='etcbc/lingo/easter/tf'</code></p>
+<p>Here the <code>{org}</code> is <code>etcbc</code>, the <code>{repo}</code> is <code>lingo</code>,
+and the <code>{path}</code> is <code>easter/tf</code> under which
+version <code>c</code> of the feature <code>egg</code>
+is available in TF format.</p>
+<p>You can point to any such directory om the entire GitHub
+if you know that it contains relevant features.</p>
+<p>The specifier is as in <code>appName:specifier</code> and <code>checkData=specifier</code>.
+It is used to get data from a different point in the history.</p>
+<p>Your TF app might be configured to download specific modules.
+See <code>moduleSpecs</code> in the app's <code>config.yaml</code> file.</p>
+<div class="admonition caution">
+<p class="admonition-title">Let TF manage your text-fabric-data directory</p>
+<p>It is better not to fiddle with your <code>~/text-fabric-data</code> directory
+manually. Let it be filled with auto-downloaded data.
+You can then delete data sources and modules when needed,
+and have them redownloaded at your wish,
+without any hassle or data loss.</p>
+</div>
+</dd>
+<dt><strong><code>locations</code></strong>, <strong><code>modules</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>
+<p>If you want to add other search locations for TF features manually,
+you can pass optional <code>locations</code> and <code>modules</code> parameters,
+which will be passed to the <code><a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric">Fabric</a></code> call to the core of TF.</p>
+<div class="admonition note">
+<p class="admonition-title">More, not less</p>
+<p>Using these arguments will load features on top of the
+default selection of features.
+You cannot use these arguments to prevent features from being loaded.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">appName with <code>/</code></p>
+<p>If you use the <em>appName</em> argument with a <code>/</code> in it,
+and it does not point to a TF app you have locally,
+it will be interpreted as a <em>locations</em> search path to find <code>.<a title="tf" href="../index.html">tf</a></code> files.
+It acts as the main <code>locations</code> argument,
+and will be combined with the <code>modules</code> argument.</p>
+</div>
+</dd>
+<dt><strong><code>api</code></strong> :&ensp;<code>object</code>, optional<code>, </code>None``</dt>
+<dd>
+<p>So far, the TF app will construct an advanced API
+with a more or less standard set of features
+loaded, and make that API avaible to you, under <code>A.api</code>.</p>
+<p>But you can also setup a core API yourself by using
+<code><a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric">Fabric</a></code> with your choice of locations and modules:</p>
+<p><code>python
+from tf.fabric import Fabric
+TF = Fabric(locations=..., modules=...)
+api = TF.load(features)</code></p>
+<p>Here you have full control over what you load and what not.</p>
+<p>If you want the extra power of the TF app, you can wrap this <code>api</code>:</p>
+<p><code>python
+A = use('xxxx', api=api)</code></p>
+<div class="admonition hint">
+<p class="admonition-title">Unloaded features</p>
+<p>Some apps do not load all available features of the corpus by default.</p>
+<p>This happens when a corpus contains quite a number of features
+that most people never need.
+Loading them cost time and takes a lot of RAM.</p>
+<p>In the case where you need an available feature
+that has not been loaded, you can load it by demanding</p>
+<p><code>python
+TF.load('feature1 feature2', add=True)</code></p>
+<p>provided you have used the <code>hoist=globals()</code> parameter earlier.
+If not, you have to say</p>
+<p><code>python
+A.api.TF.load('feature1 feature2', add=True)</code></p>
+</div>
+</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If <code>True</code>, nearly all output of this call will be suppressed,
+including the links to the loaded
+data, features, and the API methods.
+Error messages will still come through.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class App:
+    &#34;&#34;&#34;Advanced TF API.
+
+    There are many scenarios in which you can work with the advanced API:
+    in a Python script or in a notebook or in the TF-browser.
+    If you `tf.server.start` the TF browser, a `tf.server.kernel` process is started
+    that holds the TF data.
+    Then a `tf.server.web` server is started that communicates with the kernel,
+    much like how webserver communicates with a database.
+
+    The advanced API supports all these scenarios.
+    &#34;&#34;&#34;
+
     def __init__(
         self,
         cfg,
@@ -344,6 +753,188 @@ def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
         silent=False,
         _browse=False,
     ):
+        &#34;&#34;&#34;Set up the advanced TF API.
+
+        Parameters
+        ----------
+        appName: string
+            The appname  can be as simple as the name of an existing TF-app.
+            The app should exist as a repository `app-`*appName* under
+            [github.com/annotation]({{an}}), see also
+            [Corpora](https://annotation.github.io/text-fabric/About/Corpora/).
+
+            If there is a `/` in the *appName argument*,
+            it is interpreted as a location on your  system.
+
+            If it points to a directory with a *config.yaml* in it,
+            this config file will be read and interpreted as settings
+            for the advanced API.
+            If there is also a *app.py*, it will be imported as custom application code.
+            And if there is a *static/display.css* there, it will be used
+            for styling the display of corpus material.
+
+            If there is no `config.yaml` there, it will be assumed that there are
+            `.tf` data files in that location, and they will be loaded.
+            The advanced API will work with default settings,
+            based on the `.tf` data found.
+
+            !!! hint &#34;appName:specifier, checkout=specifier&#34;
+                You may want to load downloadable features from the internet,
+                or you want to experiment with features you are developing.
+                The specifiers let you use a specific point in the
+                history of the app and data.
+
+                *appName:specifier* is used for retrieving a TF-app (*code*).
+
+                *checkout=specifier* is for retrieving the corpus itself  (*data*).
+
+                *   `&#39;&#39;` (empty string or absent) (**default**):
+                    use local data if it is present under `~/text-fabric-data`,
+                    otherwise use the latest release if there are releases online,
+                    otherwise, use the latest commit.
+                *   `latest`: use the latest release.
+                    If there are commits after the commit that has been tagged
+                    with the latest release, these will **not** be used.
+                *   `hot`: use the latest commit, even if it comes after the
+                    latest commit of the latest release.
+                *   *release tag*, e.g. `v1.3`: use exactly this release.
+                    More precisely, this is the commit that has been tagged
+                    with that release tag.
+                *   *commit hash*, e.g. `2d0ca1f593805af0c13c4a62ed7405b94d870045`:
+                    use exactly this commit.
+                *   `local`: use local data from your `~/text-fabric-data` directory
+                    if it is present, otherwise fail.
+                *   `clone`: use local data from your `~/github` directory
+                    if it is present, otherwise fail.
+
+                For a demo, see
+                [banks/repo](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb)
+
+        hoist: dict, optional `False`
+            If you pass `globals()`, the core API elements are made directly available
+            as global names in your script or notebook:
+
+            * `tf.core.api.NodeFeature` as `F` instead of `A.api.F`
+            * `tf.core.locality.Locality` as `L` instead of `A.api.L`
+            * `tf.core.text.Text` as `T` instead of `A.api.T`
+            * and a few others (listed after executing the incantation)
+
+        version: string, optional `None`
+            If you do not want to work with the default version of your main corpus,
+            you can specify a different version here.
+
+            !!! caution &#34;Modules&#34;
+                If you also ask for extra data modules by means of the `mod` argument,
+                then the corresponding version of those modules will be chosen.
+                Every properly designed data module must refer to a specific
+                version of the main source!
+
+        mod: string, optional `None`
+            A comma-separated list of modules in one of the forms
+
+            ```
+            {org}/{repo}/{path}
+            {org}/{repo}/{path}:specifier
+            ```
+
+            All features of all those modules will be loaded.
+            If they are not yet present, they will be downloaded from GitHub first.
+
+            For example, there is an easter egg module on GitHub,
+            and you can obtain it by
+
+            ```
+            mod=&#39;etcbc/lingo/easter/tf&#39;
+            ```
+
+            Here the `{org}` is `etcbc`, the `{repo}` is `lingo`,
+            and the `{path}` is `easter/tf` under which
+            version `c` of the feature `egg`
+            is available in TF format.
+
+            You can point to any such directory om the entire GitHub
+            if you know that it contains relevant features.
+
+            The specifier is as in `appName:specifier` and `checkData=specifier`.
+            It is used to get data from a different point in the history.
+
+            Your TF app might be configured to download specific modules.
+            See `moduleSpecs` in the app&#39;s `config.yaml` file.
+
+            !!! caution &#34;Let TF manage your text-fabric-data directory&#34;
+                It is better not to fiddle with your `~/text-fabric-data` directory
+                manually. Let it be filled with auto-downloaded data.
+                You can then delete data sources and modules when needed,
+                and have them redownloaded at your wish,
+                without any hassle or data loss.
+
+        locations, modules: string, optional `None`
+            If you want to add other search locations for TF features manually,
+            you can pass optional `locations` and `modules` parameters,
+            which will be passed to the `tf.fabric.Fabric` call to the core of TF.
+
+            !!! note &#34;More, not less&#34;
+                Using these arguments will load features on top of the
+                default selection of features.
+                You cannot use these arguments to prevent features from being loaded.
+
+            !!! note &#34;appName with `/`&#34;
+                If you use the *appName* argument with a `/` in it,
+                and it does not point to a TF app you have locally,
+                it will be interpreted as a *locations* search path to find `.tf` files.
+                It acts as the main `locations` argument,
+                and will be combined with the `modules` argument.
+
+        api: object, optional, `None`
+            So far, the TF app will construct an advanced API
+            with a more or less standard set of features
+            loaded, and make that API avaible to you, under `A.api`.
+
+            But you can also setup a core API yourself by using
+            `tf.fabric.Fabric` with your choice of locations and modules:
+
+            ```python
+            from tf.fabric import Fabric
+            TF = Fabric(locations=..., modules=...)
+            api = TF.load(features)
+            ```
+
+            Here you have full control over what you load and what not.
+
+            If you want the extra power of the TF app, you can wrap this `api`:
+
+            ```python
+            A = use(&#39;xxxx&#39;, api=api)
+            ```
+
+            !!! hint &#34;Unloaded features&#34;
+                Some apps do not load all available features of the corpus by default.
+
+                This happens when a corpus contains quite a number of features
+                that most people never need.
+                Loading them cost time and takes a lot of RAM.
+
+                In the case where you need an available feature
+                that has not been loaded, you can load it by demanding
+
+                ```python
+                TF.load(&#39;feature1 feature2&#39;, add=True)
+                ```
+
+                provided you have used the `hoist=globals()` parameter earlier.
+                If not, you have to say
+
+                ```python
+                A.api.TF.load(&#39;feature1 feature2&#39;, add=True)
+                ```
+
+        silent: boolean, optional `False`
+            If `True`, nearly all output of this call will be suppressed,
+            including the links to the loaded
+            data, features, and the API methods.
+            Error messages will still come through.
+        &#34;&#34;&#34;
+
         for (key, value) in dict(
             isCompatible=cfg.get(&#34;isCompatible&#34;, None),
             appName=appName,
@@ -429,6 +1020,27 @@ The app &#34;{appName}&#34; will not work!
         pass
 
     def reuse(self, hoist=False):
+        &#34;&#34;&#34;Re-initialize the app.
+
+        The app&#39;s settings are read again, the app&#39;s code is re-imported,
+        the app&#39;s stylesheets are applied again.
+        But the data is left untouched, and no time-consuming reloading of data
+        takes place.
+
+        Handy when you are developing a new app and want to experiment with it
+        without the costly re-loading of the data in every cycle.
+
+        Parameters
+        ----------
+        hoist: boolean, optional `False`
+            Same as in `App`.
+
+        !!! hint &#34;the effect of the config settings&#34;
+            If you are developing a TF app and need to see the effects of
+            the configuration settings in detail, you can conveniently
+            call `reuse` and `tf.applib.settings.showContext` in tandem.
+        &#34;&#34;&#34;
+
         aContext = self.context
         appPath = aContext.appPath
         appName = aContext.appName
@@ -473,12 +1085,50 @@ The app &#34;{appName}&#34; will not work!
 <span>def <span class="ident">reuse</span></span>(<span>self, hoist=False)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Re-initialize the app.</p>
+<p>The app's settings are read again, the app's code is re-imported,
+the app's stylesheets are applied again.
+But the data is left untouched, and no time-consuming reloading of data
+takes place.</p>
+<p>Handy when you are developing a new app and want to experiment with it
+without the costly re-loading of the data in every cycle.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>hoist</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Same as in <code><a title="tf.applib.app.App" href="#tf.applib.app.App">App</a></code>.</dd>
+</dl>
+<div class="admonition hint">
+<p class="admonition-title">the effect of the config settings</p>
+<p>If you are developing a TF app and need to see the effects of
+the configuration settings in detail, you can conveniently
+call <code>reuse</code> and <code><a title="tf.applib.settings.showContext" href="settings.html#tf.applib.settings.showContext">showContext()</a></code> in tandem.</p>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
+    &#34;&#34;&#34;Re-initialize the app.
+
+    The app&#39;s settings are read again, the app&#39;s code is re-imported,
+    the app&#39;s stylesheets are applied again.
+    But the data is left untouched, and no time-consuming reloading of data
+    takes place.
+
+    Handy when you are developing a new app and want to experiment with it
+    without the costly re-loading of the data in every cycle.
+
+    Parameters
+    ----------
+    hoist: boolean, optional `False`
+        Same as in `App`.
+
+    !!! hint &#34;the effect of the config settings&#34;
+        If you are developing a TF app and need to see the effects of
+        the configuration settings in detail, you can conveniently
+        call `reuse` and `tf.applib.settings.showContext` in tandem.
+    &#34;&#34;&#34;
+
     aContext = self.context
     appPath = aContext.appPath
     appName = aContext.appName
