@@ -1,4 +1,6 @@
 """
+[About the Advanced API](https://annotation.github.io/text-fabric/Api/App/)
+
 Where the advanced API really shines is in displaying nodes.
 There are basically two ways of displaying a node:
 

@@ -1,4 +1,26 @@
 """
+[About the Text API](https://annotation.github.io/text-fabric/Api/Text/)
+
+Here are the functions that enable you to get the actual text in the dataset.
+There are several things to accomplish here, such as
+
+*   support the structure of the corpus
+*   support a rigid section system usable by the TF browser
+*   handle multilingual section labels;
+*   switch between various text representations.
+
+The details of the Text API are dependent on the *warp* feature `otext`, which
+is a config feature.
+
+!!! hint "T"
+    The Text API is exposed as `T` or `Text`.
+
+!!! note "otext is optional"
+    If your dataset does not have an `otext` feature,
+    the Text API will not be build.
+    If it exists, but does not specify structure or sections,
+    those parts of the Text API will not be built.
+    Likewise for text representations.
 """
 
 from .data import WARP

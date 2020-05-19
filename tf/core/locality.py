@@ -1,11 +1,66 @@
+"""
+[About the Locality API](https://annotation.github.io/text-fabric/Api/Locality/)
+
+Local navigation between nodes.
+"""
+
 SET_TYPES = {set, frozenset}
 
 
 class Locality(object):
+    """Methods by which you can navigate from a node to its neighborhood.
+
+    Neighbours are: nodes that have slots in common, embedders and embeddees,
+    previous and next siblings.
+
+    !!! note "L"
+        The Locality API is exposed as `L` or `Locality`.
+
+    !!! note "otype parameter"
+        In all of the following `L`-functions, if the `otype` parameter is passed,
+        the result is filtered and only nodes with
+        `otype=nodeType` or `otype in nodeTypes` are retained.
+
+        `otype` can be a string (a single node type)  or a (frozen)set of node types.
+
+    !!! caution "Results of the `L.` functions are tuples, not single nodes"
+          Even if an `L`-function returns a single node, it is packed in a *tuple*.
+          So to get the node itself, you have to dereference the tuple:
+
+          ```python
+          L.u(node)[0]
+          ```
+      """
+
     def __init__(self, api):
         self.api = api
 
     def i(self, n, otype=None):
+        """Produces an ordered tuple of *intersecting* nodes
+
+        Intersecting nodes of a node have slots in common with that node.
+
+        Parameters
+        ----------
+
+        node: dict
+            The node whose intersectors will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes).
+
+            The result never includes *n* itself.
+            But other nodes linked to the same set of slots as *n*
+            may count as intersector nodes.
+
+            Slots themselves can be intersectors.
+        """
+
         api = self.api
         Fotype = api.F.otype
         maxSlot = Fotype.maxSlot
@@ -36,6 +91,31 @@ class Locality(object):
         return sortNodes(result - {n})
 
     def u(self, n, otype=None):
+        """Produces an ordered tuple of *upward* nodes.
+
+        Upward nodes of a node are embedders of that node.
+        One node embeds an other if all slots of the latter are contained in the slots
+        of the former.
+
+        node: integer
+            The node whose embedders will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes),
+            but *reversed: right and small embedders before left and big embedders.
+
+            The result never includes *n* itself.
+            But other nodes linked to the same set of slots as *n*
+            may count as embedder nodes.
+
+            Slots themselves are never embedders.
+        """
+
         if n <= 0:
             return tuple()
         Fotype = self.api.F.otype
@@ -55,6 +135,29 @@ class Locality(object):
             return tuple(m for m in levUp[n - 1] if fOtype(m) in otype)
 
     def d(self, n, otype=None):
+        """Produces an ordered tuple of *downward* nodes.
+
+        Downward nodes of a node are embedded nodes in that node.
+        One node is embedded in an other if all slots of the former are contained
+        in the slots of the latter.
+
+        node: integer
+            The node whose embeddees will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes):
+            left and big embeddees before right and small embeddees.
+
+            The result never includes *n* itself.
+            But other nodes linked to the same set of slots as *n*
+            may count as embeddee nodes.
+        """
+
         Fotype = self.api.F.otype
         fOtype = Fotype.v
         maxSlot = Fotype.maxSlot
@@ -93,6 +196,24 @@ class Locality(object):
             )
 
     def p(self, n, otype=None):
+        """Produces an ordered tuple of *previous* nodes.
+
+        One node is previous to an other if the last slot of the former just preceeds
+        the first slots of the latter.
+
+        node: integer
+            The node whose previous nodes will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes),
+            but *reversed: right and small embedders before left and big embedders.
+        """
+
         if n <= 1:
             return tuple()
         Fotype = self.api.F.otype
@@ -121,6 +242,24 @@ class Locality(object):
             return tuple(m for m in result if fOtype(m) in otype)
 
     def n(self, n, otype=None):
+        """Produces an ordered tuple of *next* nodes.
+
+        One node is next to an other if the first slot of the former just follows
+        the last slot of the latter.
+
+        node: integer
+            The node whose next nodes will be delivered.
+        otype: string or set of strings
+            See `Locality`.
+
+        Returns
+        -------
+        tuple of int
+            The tuple nodes is sorted in the
+            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes):
+            left and big embeddees before right and small embeddees.
+        """
+
         if n <= 0:
             return tuple()
         Fotype = self.api.F.otype

@@ -831,6 +831,28 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
 
 def showContext(app, *keys):
+    """Shows the *context* of the app `tf.app.App.context` in a pretty way.
+
+        The context is the result of computing sensible defaults for the corpus
+        combined with configuration settings in the app's `config.yaml`.
+
+        Parameters
+        ----------
+        keys: iterable of string
+            For each key passed to this function, the information for that key
+            will be displayed. If no keys are passed, all keys will be displayed.
+
+        Returns
+        -------
+        displayed HTML
+            An expandable list of the key-value pair for the requested keys.
+
+        !!! hint "reuse after change"
+            If you are developing an app and change the configuration settings,
+            they will be applied if you do `tf.applib.app.App.reuse()`.
+            See below.
+    """
+
     EM = "*empty*"
     block = "    "
     keys = set(keys)

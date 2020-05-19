@@ -1,3 +1,7 @@
+"""
+Produce links to Text-Fabric data and links from nodes to web resources.
+"""
+
 import re
 import types
 
@@ -185,8 +189,6 @@ def webLink(
 
     Parameters
     ----------
-    app: object
-        The `A`.
     n: int
         A node
     text: string/HTML, optional default `None`
@@ -269,6 +271,24 @@ def webLink(
 
 
 def showProvenance(app, jobName="program code", author="program author"):
+    """Shows the provenance that is normally displayed during data loading.
+
+    This comes in handy if you have started with `use(xxx, silence='deep')` and still
+    need to show the provenance.
+    Moreover, the provenance is shown in a formatted way.
+
+    Parameters
+    ----------
+    jobName: string, optional `program code`
+        E.g. the name of program in which you call this function.
+        In the Text-Fabric browser the name of the job will be entered here.
+        This item will be displayed together with the rest of the provenance.
+
+    author: string, optional `program author`
+        E.g. your own name.
+        This item will be displayed together with the rest of the provenance.
+    """
+
     aContext = app.context
     appName = aContext.appName
     commit = aContext.commit
