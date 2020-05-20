@@ -2,23 +2,23 @@
 
 ## About
 
-??? abstract "Web interface"
+!!! abstract "Web interface"
     TF contains a web interface
     in which you can enter a search template and view the results.
 
     This is realized by a web app based on 
-    [Flask]({{flask}}).
+    [Flask](http://flask.pocoo.org/docs/1.0/).
 
     This web app connects to the [TF kernel](Kernel.md)
     and merges the retrieved data into a set of 
-    [templates]({{tfght}}/{{b_views}}).
+    [templates](https://github.com/annotation/text-fabric/tree/master/tf/server/views).
 
     See the code in
-    [web]({{tfghb}}/{{c_web}}).
+    [web](https://github.com/annotation/text-fabric/blob/master/tf/server/web.py).
 
 ## Start up
 
-??? abstract "Start up"
+!!! abstract "Start up"
     TF kernel, web server and browser page are started
     up by means of a script called `text-fabric`, which will be installed in an executable
     directory by the `pip` installer.
@@ -29,26 +29,26 @@
     python3 -m tf.server.start
     ```
     
-??? abstract "Process management"
+!!! abstract "Process management"
     During start up the following happens:
     
-    ??? abstract "Kill previous processes"
+    !!! abstract "Kill previous processes"
         The system is searched for non-terminated incarnations of the processes
         it wants to start up.
         If they are encountered, they will be killed, so that they cannot prevent
         a successful start up.
     
-    ??? abstract "TF kernel"
+    !!! abstract "TF kernel"
         A [TF kernel](Kernel.md) is started.
         This process loads the bulk of the TF data, so it can take a while.
         When it has loaded the data, it sends out a message that loading is done,
         which is picked up by the script.
 
-    ??? abstract "TF web server"
+    !!! abstract "TF web server"
         A short while after receiving the "data loading done" message,
         the TF web server is started.
         
-        ??? hint "Debug mode"
+        !!! hint "Debug mode"
             If you have passed `-d` to the `text-fabric` script,
             the **Flask** web server will be started in debug and reload mode.
             That means that if you modify `web.py` or a module it imports,
@@ -57,28 +57,28 @@
             If you have changed templates, the css, or the javascript,
             you should do a "refresh from origin".
 
-    ??? abstract "Load web page"
+    !!! abstract "Load web page"
         After a short while, the default web browser will be started
         with a url and port at which the
         web server will listen. You see your browser being started up
         and the TF page being loaded.
 
-    ??? abstract "Waiting"
+    !!! abstract "Waiting"
         The script now waits till the web server is finished.
         You finish it by pressing Ctrl-C, and if you have used the `-d` flag,
         you have to press it twice.
 
-    ??? abstract "Terminate the TF kernel"
+    !!! abstract "Terminate the TF kernel"
         At this point, the `text-fabric` script will terminate the TF kernel.
 
-    ??? abstract "Clean up"
+    !!! abstract "Clean up"
         Now all processes that have started up have been killed.
         
         If something went wrong in this sequence,
         chances are that a process keeps running.
         It will be terminated next time you call the `text-fabric`.
         
-        ??? hint "You can kill too"
+        !!! hint "You can kill too"
             If you run
             
             ```sh
@@ -95,21 +95,21 @@
 
 ## Routes
 
-??? abstract "Routes"
+!!! abstract "Routes"
     There are 4 kinds of routes in the web app:
 
     url pattern | effect
     --- | ---
-    `/server/static/...` | serves a static file from the server-wide [static folder]({{tfght}}/{{b_static}})
+    `/server/static/...` | serves a static file from the server-wide [static folder](https://github.com/annotation/text-fabric/tree/master/tf/server/static)
     `/data/static/...` | serves a static file from the app specific static folder
     `/local/static/...` | serves a static file from a local directory specified by the app
     anything else | submits the form with user data and return the processed request
 
 ## Templates
 
-??? abstract "Templates"
+!!! abstract "Templates"
     There are two templates in
-    [views]({{tfght}}/{{b_views}})
+    [views](https://github.com/annotation/text-fabric/tree/master/tf/server/views)
     :
 
     * *index*: the normal template for returning responses
@@ -123,35 +123,35 @@
 
 ## CSS
 
-??? abstract "CSS"
+!!! abstract "CSS"
     We format the web pages with CSS, with extensive use
     of
-    [flexbox]({{cssflex}}).
+    [flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox).
 
     There are several sources of CSS formatting:
 
     * the CSS loaded from the app dependent extraApi, used
       for pretty displays;
-    * [index.css]({{tfghb}}/{{b_static}}/index.css): the formatting of the 
+    * [index.css](https://github.com/annotation/text-fabric/blob/master/tf/server/static/index.css): the formatting of the 
       *index* web page with which the user interacts;
-    * [export.css]({{tfghb}}/{{b_views}}/export.css)
+    * [export.css](https://github.com/annotation/text-fabric/blob/master/tf/server/views/export.css)
       the formatting of the export page;
-    * [base.css]({{tfghb}}/{{b_views}}/base.css)
+    * [base.css](https://github.com/annotation/text-fabric/blob/master/tf/server/views/base.css)
       shared formatting between the index and export pages.
     
 ## Javascript
 
-??? abstract "Javascript"
+!!! abstract "Javascript"
     We use a
-    [modest amount of Javascript]({{tfghb}}/{{b_static}}/tf.js)
+    [modest amount of Javascript](https://github.com/annotation/text-fabric/blob/master/tf/server/static/tf.js)
     on top of 
     [JQuery](https://api.jquery.com).
 
     For collapsing and expanding elements we use the
-    [details]({{moz_details}})
+    [details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
     element. This is a convenient, Javascript-free way to manage
     collapsing. Unfortunately it is not supported by the Microsoft
     browsers, not even Edge.
 
-    ??? caution "On Windows?"
+    !!! caution "On Windows?"
         Windows users should install Chrome of Firefox.

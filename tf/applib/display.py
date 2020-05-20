@@ -1,41 +1,5 @@
 """
-[About the Advanced API](https://annotation.github.io/text-fabric/Api/App/)
-
-Where the advanced API really shines is in displaying nodes.
-There are basically two ways of displaying a node:
-
-* *plain*: just the associated text of a node, or if that would be too much,
-  an identifying label of that node (e.g. for books, chapters and lexemes).
-* *pretty*: a display of the internal structure of the textual object a node
-  stands for. That structure is adorned with relevant feature values.
-
-These display methods are available for nodes, tuples of nodes, and iterables
-of tuples of nodes (think: query results).
-The names of these methods are
-
-* `plain`, `plainTuple`, and `table`;
-* `pretty`, `prettyTuple` and `show`.
-
-In plain and pretty displays, certain parts can be *highlighted*, which is
-good for displaying query results where the parts that correspond directly to the
-search template are highlighted.
-
-### Display parameters
-
-There is a bunch of parameters that govern how the display functions arrive at their
-results. You can pass them as optional arguments to these functions,
-or you can set up them in advance, and reset them to their original state
-when you are done.
-
-All calls to the display functions look for the values for these parameters in the
-following order:
-
-* optional parameters passed directly to the function,
-* values as set up by previous calls to `displaySetup()`,
-* corpus dependent default values configured by the advanced API.
-
-See `tf.applib.displaysettings.DisplaySettings`
-for a list of display parameters.
+.. include:: ../../docs/applib/display.md
 """
 
 import os
@@ -213,9 +177,7 @@ def displaySetup(app, **options):
     ----------
     options: dict
         Explicit values for selected options that act as overrides of the defaults.
-        A list of all available options is in
-        `tf.applib.displaysettings.DisplaySettings`
-        .
+        A list of all available options is in `tf.applib.displaysettings`.
     """
 
     display = app.display
@@ -276,9 +238,9 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
 
     !!! hint "Examples"
         See for detailed examples the
-        [exportExcel]({{tutnb}}/bhsa/exportExcel.ipynb)
+        [exportExcel](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/exportExcel.ipynb)
         and
-        [exportExcel]({{tutnb}}/oldbabylonian/exportExcel.ipynb)
+        [exportExcel](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/oldbabylonian/exportExcel.ipynb)
         notebooks.
 
     Parameters
@@ -293,8 +255,7 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
     toFile: boolean, optional `results.tsv`
         The name of the exported file.
     options: dict
-        Display options, see
-        `tf.applib.displaysettings.DisplaySettings`.
+        Display options, see `tf.applib.displaysettings`.
 
         !!! note "details"
             * `condensed`
@@ -397,15 +358,14 @@ def table(app, tuples, _asString=False, **options):
         You can condense the list first to containers of `condenseType`,
         before displaying the list.
         Pass the display parameters `condense` and `condenseType`.
-        See `tf.applib.displaysettings.DisplaySettings`.
+        See `tf.applib.displaysettings`.
 
     Parameters
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
     options: dict
-        Display options, see
-        `tf.applib.displaysettings.DisplaySettings`.
+        Display options, see `tf.applib.displaysettings`.
     _asString: boolean, optional `False`
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
@@ -514,8 +474,7 @@ def plainTuple(
         !!! caution
             This option has only effect when used in the TF browser.
     options: dict
-        Display options, see
-        `tf.applib.displaysettings.DisplaySettings`.
+        Display options, see `tf.applib.displaysettings`.
     _asString: boolean, optional `False`
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
@@ -655,8 +614,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     n: integer
         Node
     options: dict
-        Display options, see
-        `tf.applib.displaysettings.DisplaySettings`.
+        Display options, see `tf.applib.displaysettings`.
     _inTuple: boolean, optional `False`
         Whether the result is meant too end up in a table cell produced by
         `plainTuple`. In that case some extra node types count as big and will
@@ -721,15 +679,14 @@ def show(app, tuples, **options):
         You can condense the list first to containers of `condenseType`,
         before displaying the list.
         Pass the display parameters `condense` and `condenseType`.
-        See `tf.applib.displaysettings.DisplaySettings`.
+        See `tf.applib.displaysettings`.
 
     Parameters
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
     options: dict
-        Display options, see
-        `tf.applib.displaysettings.DisplaySettings`.
+        Display options, see `tf.applib.displaysettings`.
 
     Result
     ------
@@ -789,8 +746,7 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
     item: string, optional `result`
         A name for the tuple: it could be a result, or a chapter, or a line.
     options: dict
-        Display options, see
-        `tf.applib.displaysettings.DisplaySettings`.
+        Display options, see `tf.applib.displaysettings`.
 
     Result
     ------
@@ -849,8 +805,7 @@ def pretty(app, n, explain=False, **options):
     In addition, extra features and their values are displayed with the nodes.
 
     !!!  hint "Controlling pretty displays"
-        The following
-        `tf.applib.displaysettings.DisplaySettings`
+        The following `tf.applib.displaysettings`
         are particularly relevant to pretty displays:
 
         * `condenseType`: the standard container to display nodes in;
@@ -863,7 +818,7 @@ def pretty(app, n, explain=False, **options):
     n: integer
         Node
     options: dict
-        Display options, see `tf.applib.displaysettings.DisplaySettings`
+        Display options, see `tf.applib.displaysettings`.
     explain: boolean, optional `False`
         Whether to print a trace of which nodes have been visited and how these
         calls have contributed to the end result.

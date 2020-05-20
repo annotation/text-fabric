@@ -1,10 +1,3 @@
-"""
-Advanced API
-
-A higher level API so that users can get the corpus data in a simple way
-and can display materials of their corpus in an intuitive way.
-"""
-
 import os
 
 from ..parameters import ORG, APP_CODE
@@ -28,18 +21,6 @@ from .repo import checkoutRepo
 
 
 class App:
-    """Advanced TF API.
-
-    There are many scenarios in which you can work with the advanced API:
-    in a Python script or in a notebook or in the TF-browser.
-    If you `tf.server.start` the TF browser, a `tf.server.kernel` process is started
-    that holds the TF data.
-    Then a `tf.server.web` server is started that communicates with the kernel,
-    much like how webserver communicates with a database.
-
-    The advanced API supports all these scenarios.
-    """
-
     def __init__(
         self,
         cfg,
@@ -66,7 +47,7 @@ class App:
         appName: string
             The appname  can be as simple as the name of an existing TF-app.
             The app should exist as a repository `app-`*appName* under
-            [github.com/annotation]({{an}}), see also
+            [github.com/annotation](https://github.com/annotation), see also
             [Corpora](https://annotation.github.io/text-fabric/About/Corpora/).
 
             If there is a `/` in the *appName argument*,

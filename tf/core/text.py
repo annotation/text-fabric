@@ -21,6 +21,8 @@ is a config feature.
     If it exists, but does not specify structure or sections,
     those parts of the Text API will not be built.
     Likewise for text representations.
+
+.. include:: ../../docs/Core/Text.md
 """
 
 from .data import WARP
@@ -615,7 +617,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
         """Gives the text that corresponds to a bunch of nodes.
 
         The
-        [banks]({{tfbanks}}/programs/formats.ipynb)
+        [banks](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/formats.ipynb)
         example corpus shows examples.
 
         nodes: dict

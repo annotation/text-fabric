@@ -1,5 +1,5 @@
 """
-[About the Advanced API](https://annotation.github.io/text-fabric/Api/App/)
+Start the advanced API of TF.
 
 The advanced-API provides extra functionality of top of the core of TF.
 The most notable things are donwloading corpus data and methods for (pretty)

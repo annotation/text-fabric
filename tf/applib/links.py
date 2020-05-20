@@ -176,7 +176,7 @@ def webLink(
 ):
     """Maps a node to a web resource.
 
-    Usually called as `A.weblink(...)`
+    Usually called as `A.webLink(...)`
 
     The mapping is quite sophisticated. It will do sensible things for
     section nodes and lexeme nodes, dependent on how they are configured in

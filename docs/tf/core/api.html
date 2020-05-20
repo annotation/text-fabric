@@ -1,0 +1,1949 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>tf.core.api API documentation</title>
+<meta name="description" content="The core API of TF …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.core.api</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="the-core-api-of-tf">The core API of TF.</h1>
+<p>It provides methods to navigate nodes and edges and lookup features.</p>
+<p>Nodes are linked to subsets of slots, and there is a canonical ordering
+on subsets of integers that is inherited by the nodes.</p>
+<p>The canonical order is a way to sort the nodes in your corpus in such a way
+that you can enumerate all nodes in the order you encounter them if you
+walk through your corpus.</p>
+<p>Briefly this means:</p>
+<ul>
+<li>embedder nodes come before the nodes that lie embedded in them;</li>
+<li>earlier stuff comes before later stuff,</li>
+<li>if a verse coincides with a sentence, the verse comes before the sentence,
+because verses generally contain sentences and not the other way round;</li>
+<li>if two objects are intersecting, but none embeds the other, the one with the
+smallest slot that does not occur in the other, comes first.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">first things first, big things first</p>
+<p>That means, roughly, that you start with a
+book node (Genesis), then a chapter node (Genesis 1), then a verse node, Genesis
+1:1, then a sentence node, then a clause node, a phrase node, and the first word
+node. Then follow all word nodes in the first phrase, then the phrase node of
+the second phrase, followed by the word nodes in that phrase. When ever you
+enter a higher structure, you will first get the node corresponding to that
+structure, and after that the nodes corresponding to the building blocks of that
+structure.</p>
+</div>
+<p>This concept follows the intuition that slot sets with smaller elements come
+before slot set with bigger elements, and embedding slot sets come before
+embedded slot sets. Hence, if you enumerate a set of nodes that happens to
+constitute a tree hierarchy based on slot set embedding, and you enumerate those
+nodes in the slot set order, you will walk the tree in pre-order.</p>
+<p>This order is a modification of the one as described in (Doedens 1994, 3.6.3).</p>
+<p><img alt="fabric" src="../images/DoedensLO.png"></p>
+<blockquote>
+<p>Doedens, Crist-Jan (1994), <em>Text Databases. One Database Model and Several
+Retrieval Languages</em>, number 14 in Language and Computers, Editions Rodopi,
+Amsterdam, Netherlands and Atlanta, USA. ISBN: 90-5183-729-1,
+<a href="https://books.google.nl/books?id=9ggOBRz1dO4C.">https://books.google.nl/books?id=9ggOBRz1dO4C.</a> The order as defined by
+Doedens corresponds to walking trees in post-order.</p>
+</blockquote>
+<p>For a lot of processing, it is handy to have a the stack of embedding elements
+available when working with an element. That is the advantage of pre-order over
+post-order. It is very much like SAX parsing in the XML world.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../../docs/core/api.md
+&#34;&#34;&#34;
+
+import collections
+from .helpers import makeInverse, makeInverseVal, flattenToSet, console
+from .locality import Locality
+from .text import Text
+from ..search.search import Search
+
+API_REFS = dict(
+    AllComputeds=(&#34;Computed&#34;, &#34;computedall&#34;, &#34;computed-data&#34;),
+    AllEdges=(&#34;Features&#34;, &#34;edgeall&#34;, &#34;edge-features&#34;),
+    AllFeatures=(&#34;Features&#34;, &#34;nodeall&#34;, &#34;node-features&#34;),
+    C=(&#34;Computed&#34;, &#34;computed&#34;, &#34;computed-data&#34;),
+    Call=(&#34;Computed&#34;, &#34;computedall&#34;, &#34;computed-data&#34;),
+    Computed=(&#34;Computed&#34;, &#34;computed&#34;, &#34;computed-data&#34;),
+    ComputedString=(&#34;Computed&#34;, &#34;computedstr&#34;, &#34;computed-data&#34;),
+    Cs=(&#34;Computed&#34;, &#34;computedstr&#34;, &#34;computed-data&#34;),
+    E=(&#34;Features&#34;, &#34;edge&#34;, &#34;edge-features&#34;),
+    Eall=(&#34;Features&#34;, &#34;edgeall&#34;, &#34;edge-features&#34;),
+    Edge=(&#34;Features&#34;, &#34;edge&#34;, &#34;edge-features&#34;),
+    EdgeString=(&#34;Features&#34;, &#34;edgestr&#34;, &#34;edge-features&#34;),
+    Es=(&#34;Features&#34;, &#34;edgestr&#34;, &#34;edge-features&#34;),
+    F=(&#34;Features&#34;, &#34;node&#34;, &#34;node-features&#34;),
+    Fall=(&#34;Features&#34;, &#34;nodeall&#34;, &#34;node-features&#34;),
+    Feature=(&#34;Features&#34;, &#34;node&#34;, &#34;node-features&#34;),
+    FeatureString=(&#34;Features&#34;, &#34;nodestr&#34;, &#34;node-features&#34;),
+    Fs=(&#34;Features&#34;, &#34;nodestr&#34;, &#34;node-features&#34;),
+    L=(&#34;Locality&#34;, &#34;locality&#34;, &#34;locality&#34;),
+    Locality=(&#34;Locality&#34;, &#34;locality&#34;, &#34;locality&#34;),
+    N=(&#34;Nodes&#34;, &#34;generator&#34;, &#34;navigating-nodes&#34;),
+    Nodes=(&#34;Nodes&#34;, &#34;generator&#34;, &#34;navigating-nodes&#34;),
+    S=(&#34;Search&#34;, &#34;search&#34;, &#34;search&#34;),
+    Search=(&#34;Search&#34;, &#34;search&#34;, &#34;search&#34;),
+    T=(&#34;Text&#34;, &#34;text&#34;, &#34;text&#34;),
+    TF=(&#34;Fabric&#34;, &#34;fabric&#34;, &#34;loading&#34;),
+    Text=(&#34;Text&#34;, &#34;text&#34;, &#34;text&#34;),
+    cache=(&#34;Misc&#34;, &#34;cache&#34;, &#34;messaging&#34;),
+    ensureLoaded=(&#34;Fabric&#34;, &#34;ensure&#34;, &#34;loading&#34;),
+    error=(&#34;Misc&#34;, &#34;error&#34;, &#34;messaging&#34;),
+    ignored=(&#34;Fabric&#34;, &#34;ignored&#34;, &#34;loading&#34;),
+    indent=(&#34;Misc&#34;, &#34;indent&#34;, &#34;messaging&#34;),
+    info=(&#34;Misc&#34;, &#34;info&#34;, &#34;messaging&#34;),
+    warning=(&#34;Misc&#34;, &#34;warning&#34;, &#34;messaging&#34;),
+    isSilent=(&#34;Misc&#34;, &#34;isSilent&#34;, &#34;messaging&#34;),
+    setSilent=(&#34;Misc&#34;, &#34;setSilent&#34;, &#34;messaging&#34;),
+    silentOn=(&#34;Misc&#34;, &#34;silentOn&#34;, &#34;messaging&#34;),
+    silentOff=(&#34;Misc&#34;, &#34;silentOff&#34;, &#34;messaging&#34;),
+    loadLog=(&#34;Fabric&#34;, &#34;loadlog&#34;, &#34;loading&#34;),
+    otypeRank=(&#34;Nodes&#34;, &#34;rank&#34;, &#34;navigating-nodes&#34;),
+    reset=(&#34;Misc&#34;, &#34;reset&#34;, &#34;messaging&#34;),
+    sortKey=(&#34;Nodes&#34;, &#34;key&#34;, &#34;navigating-nodes&#34;),
+    sortKeyTuple=(&#34;Nodes&#34;, &#34;keyTuple&#34;, &#34;navigating-nodes&#34;),
+    sortNodes=(&#34;Nodes&#34;, &#34;sort&#34;, &#34;navigating-nodes&#34;),
+)
+
+
+class OtypeFeature(object):
+    &#34;&#34;&#34;Provides access to *otype* feature data.
+    &#34;&#34;&#34;
+
+    def __init__(self, api, metaData, data):
+        self.api = api
+        self.meta = metaData
+        &#34;&#34;&#34;Metadata of the feature.&#34;&#34;&#34;
+
+        self.data = data[0]
+        self.maxSlot = data[1]
+        &#34;&#34;&#34;Last slot node in the corpus.&#34;&#34;&#34;
+
+        self.maxNode = data[2]
+        &#34;&#34;&#34;Last node node.in the corpus.&#34;&#34;&#34;
+
+        self.slotType = data[3]
+        &#34;&#34;&#34;The name of the slot type.&#34;&#34;&#34;
+
+        self.all = None
+        &#34;&#34;&#34;List of all node types from big to small.&#34;&#34;&#34;
+
+    def items(self):
+        slotType = self.slotType
+        maxSlot = self.maxSlot
+        data = self.data
+
+        for n in range(1, maxSlot + 1):
+            yield (n, slotType)
+
+        maxNode = self.maxNode
+
+        shift = maxSlot + 1
+
+        for n in range(maxSlot + 1, maxNode + 1):
+            yield (n, data[n - shift])
+
+    def v(self, n):
+        if n == 0:
+            return None
+        if n &lt; self.maxSlot + 1:
+            return self.slotType
+        m = n - self.maxSlot
+        if m &lt;= len(self.data):
+            return self.data[m - 1]
+        return None
+
+    def s(self, val):
+        # NB: the support attribute has been added by precomputing __levels__
+        if val in self.support:
+            (b, e) = self.support[val]
+            return range(b, e + 1)
+        else:
+            return ()
+
+    def sInterval(self, val):
+        # NB: the support attribute has been added by precomputing __levels__
+        if val in self.support:
+            return self.support[val]
+        else:
+            return ()
+
+
+class OslotsFeature(object):
+    &#34;&#34;&#34;Provides access to *oslots* feature data.
+    &#34;&#34;&#34;
+
+    def __init__(self, api, metaData, data):
+        self.api = api
+        self.meta = metaData
+        &#34;&#34;&#34;Metadata of the feature.&#34;&#34;&#34;
+
+        self.data = data[0]
+        self.maxSlot = data[1]
+        self.maxNode = data[2]
+
+    def items(self):
+        maxSlot = self.maxSlot
+        data = self.data
+        maxNode = self.maxNode
+
+        shift = maxSlot + 1
+
+        for n in range(maxSlot + 1, maxNode + 1):
+            yield (n, data[n - shift])
+
+    def s(self, n):
+        if n == 0:
+            return ()
+        if n &lt; self.maxSlot + 1:
+            return (n,)
+        m = n - self.maxSlot
+        if m &lt;= len(self.data):
+            return self.data[m - 1]
+        return ()
+
+
+class NodeFeature(object):
+    &#34;&#34;&#34;Provides access to (node) feature data.
+    &#34;&#34;&#34;
+
+    def __init__(self, api, metaData, data):
+        self.api = api
+        self.meta = metaData
+        &#34;&#34;&#34;Metadata of the feature.&#34;&#34;&#34;
+
+        self.data = data
+
+    def items(self):
+        return self.data.items()
+
+    def v(self, n):
+        if n in self.data:
+            return self.data[n]
+        return None
+
+    def s(self, val):
+        Crank = self.api.C.rank.data
+        return tuple(
+            sorted(
+                [n for n in self.data if self.data[n] == val],
+                key=lambda n: Crank[n - 1],
+            )
+        )
+
+    def freqList(self, nodeTypes=None):
+        fql = collections.Counter()
+        if nodeTypes is None:
+            for n in self.data:
+                fql[self.data[n]] += 1
+        else:
+            fOtype = self.api.F.otype.v
+            for n in self.data:
+                if fOtype(n) in nodeTypes:
+                    fql[self.data[n]] += 1
+        return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
+
+
+class EdgeFeature(object):
+    &#34;&#34;&#34;Provides access to (edge) feature data.
+    &#34;&#34;&#34;
+
+    def __init__(self, api, metaData, data, doValues):
+        self.api = api
+        self.meta = metaData
+        &#34;&#34;&#34;Metadata of the feature.&#34;&#34;&#34;
+
+        self.doValues = doValues
+        if type(data) is tuple:
+            self.data = data[0]
+            self.dataInv = data[1]
+        else:
+            self.data = data
+            self.dataInv = (
+                makeInverseVal(self.data) if doValues else makeInverse(self.data)
+            )
+
+    def items(self):
+        return self.data.items()
+
+    def f(self, n):
+        if n not in self.data:
+            return ()
+        Crank = self.api.C.rank.data
+        if self.doValues:
+            return tuple(sorted(self.data[n].items(), key=lambda mv: Crank[mv[0] - 1]))
+        else:
+            return tuple(sorted(self.data[n], key=lambda m: Crank[m - 1]))
+
+    def t(self, n):
+        if n not in self.dataInv:
+            return ()
+        Crank = self.api.C.rank.data
+        if self.doValues:
+            return tuple(
+                sorted(self.dataInv[n].items(), key=lambda mv: Crank[mv[0] - 1])
+            )
+        else:
+            return tuple(sorted(self.dataInv[n], key=lambda m: Crank[m - 1]))
+
+    def b(self, n):
+        if n not in self.data and n not in self.dataInv:
+            return ()
+        Crank = self.api.C.rank.data
+        if self.doValues:
+            result = {}
+            if n in self.dataInv:
+                result.update(self.dataInv[n].items())
+            if n in self.data:
+                result.update(self.data[n].items())
+            return tuple(sorted(result.items(), key=lambda mv: Crank[mv[0] - 1]))
+        else:
+            result = set()
+            if n in self.dataInv:
+                result |= self.dataInv[n]
+            if n in self.data:
+                result |= self.data[n]
+            return tuple(sorted(result, key=lambda m: Crank[m - 1]))
+
+    def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
+        if nodeTypesFrom is None and nodeTypesTo is None:
+            if self.doValues:
+                fql = collections.Counter()
+                for (n, vals) in self.data.items():
+                    for val in vals.values():
+                        fql[val] += 1
+                return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
+            else:
+                fql = 0
+                for (n, ms) in self.data.items():
+                    fql += len(ms)
+                return fql
+        else:
+            fOtype = self.api.F.otype.v
+            if self.doValues:
+                fql = collections.Counter()
+                for (n, vals) in self.data.items():
+                    if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
+                        for (m, val) in vals.items():
+                            if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
+                                fql[val] += 1
+                return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
+            else:
+                fql = 0
+                for (n, ms) in self.data.items():
+                    if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
+                        for m in ms:
+                            if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
+                                fql += len(ms)
+                return fql
+
+
+class Computed(object):
+    &#34;&#34;&#34;Provides access to precomputed data.
+    &#34;&#34;&#34;
+
+    def __init__(self, api, data):
+        self.api = api
+        self.data = data
+
+
+class NodeFeatures(object):
+    pass
+
+
+class EdgeFeatures(object):
+    pass
+
+
+class Computeds(object):
+    pass
+
+
+class Api(object):
+    def __init__(self, TF):
+        self.TF = TF
+        self.ignored = tuple(sorted(TF.featuresIgnored))
+        self.F = NodeFeatures()
+        self.Feature = self.F
+        self.E = EdgeFeatures()
+        self.Edge = self.E
+        self.C = Computeds()
+        self.Computed = self.C
+        tm = TF.tm
+        self.silentOn = tm.silentOn
+        self.silentOff = tm.silentOff
+        self.isSilent = tm.isSilent
+        self.setSilent = tm.setSilent
+        self.info = tm.info
+        self.warning = tm.warning
+        self.error = tm.error
+        self.cache = tm.cache
+        self.reset = tm.reset
+        self.indent = tm.indent
+        self.loadLog = tm.cache
+        self.sortKey = None
+        &#34;&#34;&#34;Sort key function for the canonical ordering between nodes.
+
+        See `tf.core.api.Api` and `sortNodes`.
+
+        !!! hint &#34;usage&#34;
+            The following two pieces of code do the same thing:
+            `sortNodes(nodeSet)` and `sorted(nodeSet, key=sortKey)`.
+        &#34;&#34;&#34;
+
+        self.sortKeyTuple = None
+        &#34;&#34;&#34;Sort key function for the canonical ordering between tuples of nodes.
+        It applies `sortKey` to each member of the tuple.
+        Handy to sort search results. We can sort them in canonical order like this:
+
+        ```python
+        sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
+        ```
+
+        This is exactly what `sortKeyTuple` does, but then a bit more efficient:
+
+        ```python
+        sorted(results, key=sortKeyTuple)
+        ```
+        &#34;&#34;&#34;
+
+        self.otypeRank = None
+        &#34;&#34;&#34;Dictionary that provides a ranking of the node types.
+
+        The node types are ordered in `C.levels.data`, and if you reverse that list,
+        you get the rank of a type by looking at the position in which that type occurs.
+
+        The *slotType* has rank 0 (`otypeRank[F.otype.slotType] == 0`),
+        and the more comprehensive a type is, the higher its rank.
+        &#34;&#34;&#34;
+
+        setattr(self, &#34;FeatureString&#34;, self.Fs)
+        setattr(self, &#34;EdgeString&#34;, self.Es)
+        setattr(self, &#34;ComputedString&#34;, self.Cs)
+        setattr(self, &#34;Nodes&#34;, self.N)
+        setattr(self, &#34;AllFeatures&#34;, self.Fall)
+        setattr(self, &#34;AllEdges&#34;, self.Eall)
+        setattr(self, &#34;AllComputeds&#34;, self.Call)
+
+    def Fs(self, fName):
+        if not hasattr(self.F, fName):
+            self.error(f&#39;Node feature &#34;{fName}&#34; not loaded&#39;)
+            return None
+        return getattr(self.F, fName)
+
+    def Es(self, fName):
+        if not hasattr(self.E, fName):
+            self.error(f&#39;Edge feature &#34;{fName}&#34; not loaded&#39;)
+            return None
+        return getattr(self.E, fName)
+
+    def Cs(self, fName):
+        if not hasattr(self.C, fName):
+            self.error(f&#39;Computed feature &#34;{fName}&#34; not loaded&#39;)
+            return None
+        return getattr(self.C, fName)
+
+    def N(self):
+        &#34;&#34;&#34;Generates all nodes in the *canonical order*.
+
+        Iterating over `N()` delivers you all nodes of your corpus
+        in a very natural order. See `tf.core.api.Api`.
+
+        !!! hint &#34;More ways of walking&#34;
+            Under `tf.core.api.NodeFeatures` there is another convenient way
+            to walk through subsets of nodes.
+
+        Returns
+        -------
+        nodes: int
+            One at a time.
+        &#34;&#34;&#34;
+
+        for n in self.C.order.data:
+            yield n
+
+    def sortNodes(self, nodeSet):
+        &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
+
+        See `tf.core.api.Api`.
+
+        nodeSet: iterable
+            An iterable of nodes to be sorted.
+        &#34;&#34;&#34;
+
+        Crank = self.C.rank.data
+        return sorted(nodeSet, key=lambda n: Crank[n - 1])
+
+    def Fall(self):
+        return sorted(x[0] for x in self.F.__dict__.items())
+
+    def Eall(self):
+        return sorted(x[0] for x in self.E.__dict__.items())
+
+    def Call(self):
+        return sorted(x[0] for x in self.C.__dict__.items())
+
+    # API_REFS:
+    # F=&gt;(Features, node, node-features),
+
+    def makeAvailableIn(self, scope):
+        for member in dir(self):
+            if &#34;_&#34; not in member and member != &#34;makeAvailableIn&#34;:
+                scope[member] = getattr(self, member)
+                if member not in API_REFS:
+                    console(f&#39;WARNING: API member &#34;{member}&#34; not documented&#39;)
+
+        grouped = {}
+        for (member, (head, sub, ref)) in API_REFS.items():
+            grouped.setdefault(ref, {}).setdefault((head, sub), []).append(member)
+
+        # grouped
+        # node-features=&gt;(Features, node)=&gt;[F, ...]
+
+        docs = []
+        for (ref, groups) in sorted(grouped.items()):
+            chunks = []
+            for ((head, sub), members) in sorted(groups.items()):
+                chunks.append(&#34; &#34;.join(sorted(members, key=lambda x: (len(x), x))))
+            docs.append((head, ref, tuple(chunks)))
+        return docs
+
+    # docs
+    # (Features, node-features, (&#39;F ...&#39;, ...))
+
+    def ensureLoaded(self, features):
+        F = self.F
+        E = self.E
+        TF = self.TF
+        warning = self.warning
+
+        needToLoad = set()
+        loadedFeatures = set()
+
+        for fName in sorted(flattenToSet(features)):
+            fObj = TF.features.get(fName, None)
+            if not fObj:
+                warning(f&#39;Cannot load feature &#34;{fName}&#34;: not in dataset&#39;)
+                continue
+            if fObj.dataLoaded and (hasattr(F, fName) or hasattr(E, fName)):
+                loadedFeatures.add(fName)
+            else:
+                needToLoad.add(fName)
+        if len(needToLoad):
+            TF.load(
+                needToLoad, add=True, silent=&#34;deep&#34;,
+            )
+            loadedFeatures |= needToLoad
+        return loadedFeatures
+
+
+def addSortKey(api):
+    Crank = api.C.rank.data
+    api.sortKey = lambda n: Crank[n - 1]
+    api.sortKeyTuple = lambda tup: tuple(Crank[n - 1] for n in tup)
+
+
+def addOtype(api):
+    setattr(api.F.otype, &#34;all&#34;, tuple(o[0] for o in api.C.levels.data))
+    setattr(
+        api.F.otype, &#34;support&#34;, dict(((o[0], (o[2], o[3])) for o in api.C.levels.data))
+    )
+
+
+def addLocality(api):
+    api.L = Locality(api)
+    api.Locality = api.L
+
+
+def addRank(api):
+    C = api.C
+    api.otypeRank = {d[0]: i for (i, d) in enumerate(reversed(C.levels.data))}
+
+
+def addText(api):
+    api.T = Text(api)
+    api.Text = api.T
+
+
+def addSearch(api, silent):
+    api.S = Search(api, silent)
+    api.Search = api.S</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.core.api.addLocality"><code class="name flex">
+<span>def <span class="ident">addLocality</span></span>(<span>api)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def addLocality(api):
+    api.L = Locality(api)
+    api.Locality = api.L</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.addOtype"><code class="name flex">
+<span>def <span class="ident">addOtype</span></span>(<span>api)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def addOtype(api):
+    setattr(api.F.otype, &#34;all&#34;, tuple(o[0] for o in api.C.levels.data))
+    setattr(
+        api.F.otype, &#34;support&#34;, dict(((o[0], (o[2], o[3])) for o in api.C.levels.data))
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.addRank"><code class="name flex">
+<span>def <span class="ident">addRank</span></span>(<span>api)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def addRank(api):
+    C = api.C
+    api.otypeRank = {d[0]: i for (i, d) in enumerate(reversed(C.levels.data))}</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.addSearch"><code class="name flex">
+<span>def <span class="ident">addSearch</span></span>(<span>api, silent)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def addSearch(api, silent):
+    api.S = Search(api, silent)
+    api.Search = api.S</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.addSortKey"><code class="name flex">
+<span>def <span class="ident">addSortKey</span></span>(<span>api)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def addSortKey(api):
+    Crank = api.C.rank.data
+    api.sortKey = lambda n: Crank[n - 1]
+    api.sortKeyTuple = lambda tup: tuple(Crank[n - 1] for n in tup)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.addText"><code class="name flex">
+<span>def <span class="ident">addText</span></span>(<span>api)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def addText(api):
+    api.T = Text(api)
+    api.Text = api.T</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.core.api.Api"><code class="flex name class">
+<span>class <span class="ident">Api</span></span>
+<span>(</span><span>TF)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Api(object):
+    def __init__(self, TF):
+        self.TF = TF
+        self.ignored = tuple(sorted(TF.featuresIgnored))
+        self.F = NodeFeatures()
+        self.Feature = self.F
+        self.E = EdgeFeatures()
+        self.Edge = self.E
+        self.C = Computeds()
+        self.Computed = self.C
+        tm = TF.tm
+        self.silentOn = tm.silentOn
+        self.silentOff = tm.silentOff
+        self.isSilent = tm.isSilent
+        self.setSilent = tm.setSilent
+        self.info = tm.info
+        self.warning = tm.warning
+        self.error = tm.error
+        self.cache = tm.cache
+        self.reset = tm.reset
+        self.indent = tm.indent
+        self.loadLog = tm.cache
+        self.sortKey = None
+        &#34;&#34;&#34;Sort key function for the canonical ordering between nodes.
+
+        See `tf.core.api.Api` and `sortNodes`.
+
+        !!! hint &#34;usage&#34;
+            The following two pieces of code do the same thing:
+            `sortNodes(nodeSet)` and `sorted(nodeSet, key=sortKey)`.
+        &#34;&#34;&#34;
+
+        self.sortKeyTuple = None
+        &#34;&#34;&#34;Sort key function for the canonical ordering between tuples of nodes.
+        It applies `sortKey` to each member of the tuple.
+        Handy to sort search results. We can sort them in canonical order like this:
+
+        ```python
+        sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
+        ```
+
+        This is exactly what `sortKeyTuple` does, but then a bit more efficient:
+
+        ```python
+        sorted(results, key=sortKeyTuple)
+        ```
+        &#34;&#34;&#34;
+
+        self.otypeRank = None
+        &#34;&#34;&#34;Dictionary that provides a ranking of the node types.
+
+        The node types are ordered in `C.levels.data`, and if you reverse that list,
+        you get the rank of a type by looking at the position in which that type occurs.
+
+        The *slotType* has rank 0 (`otypeRank[F.otype.slotType] == 0`),
+        and the more comprehensive a type is, the higher its rank.
+        &#34;&#34;&#34;
+
+        setattr(self, &#34;FeatureString&#34;, self.Fs)
+        setattr(self, &#34;EdgeString&#34;, self.Es)
+        setattr(self, &#34;ComputedString&#34;, self.Cs)
+        setattr(self, &#34;Nodes&#34;, self.N)
+        setattr(self, &#34;AllFeatures&#34;, self.Fall)
+        setattr(self, &#34;AllEdges&#34;, self.Eall)
+        setattr(self, &#34;AllComputeds&#34;, self.Call)
+
+    def Fs(self, fName):
+        if not hasattr(self.F, fName):
+            self.error(f&#39;Node feature &#34;{fName}&#34; not loaded&#39;)
+            return None
+        return getattr(self.F, fName)
+
+    def Es(self, fName):
+        if not hasattr(self.E, fName):
+            self.error(f&#39;Edge feature &#34;{fName}&#34; not loaded&#39;)
+            return None
+        return getattr(self.E, fName)
+
+    def Cs(self, fName):
+        if not hasattr(self.C, fName):
+            self.error(f&#39;Computed feature &#34;{fName}&#34; not loaded&#39;)
+            return None
+        return getattr(self.C, fName)
+
+    def N(self):
+        &#34;&#34;&#34;Generates all nodes in the *canonical order*.
+
+        Iterating over `N()` delivers you all nodes of your corpus
+        in a very natural order. See `tf.core.api.Api`.
+
+        !!! hint &#34;More ways of walking&#34;
+            Under `tf.core.api.NodeFeatures` there is another convenient way
+            to walk through subsets of nodes.
+
+        Returns
+        -------
+        nodes: int
+            One at a time.
+        &#34;&#34;&#34;
+
+        for n in self.C.order.data:
+            yield n
+
+    def sortNodes(self, nodeSet):
+        &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
+
+        See `tf.core.api.Api`.
+
+        nodeSet: iterable
+            An iterable of nodes to be sorted.
+        &#34;&#34;&#34;
+
+        Crank = self.C.rank.data
+        return sorted(nodeSet, key=lambda n: Crank[n - 1])
+
+    def Fall(self):
+        return sorted(x[0] for x in self.F.__dict__.items())
+
+    def Eall(self):
+        return sorted(x[0] for x in self.E.__dict__.items())
+
+    def Call(self):
+        return sorted(x[0] for x in self.C.__dict__.items())
+
+    # API_REFS:
+    # F=&gt;(Features, node, node-features),
+
+    def makeAvailableIn(self, scope):
+        for member in dir(self):
+            if &#34;_&#34; not in member and member != &#34;makeAvailableIn&#34;:
+                scope[member] = getattr(self, member)
+                if member not in API_REFS:
+                    console(f&#39;WARNING: API member &#34;{member}&#34; not documented&#39;)
+
+        grouped = {}
+        for (member, (head, sub, ref)) in API_REFS.items():
+            grouped.setdefault(ref, {}).setdefault((head, sub), []).append(member)
+
+        # grouped
+        # node-features=&gt;(Features, node)=&gt;[F, ...]
+
+        docs = []
+        for (ref, groups) in sorted(grouped.items()):
+            chunks = []
+            for ((head, sub), members) in sorted(groups.items()):
+                chunks.append(&#34; &#34;.join(sorted(members, key=lambda x: (len(x), x))))
+            docs.append((head, ref, tuple(chunks)))
+        return docs
+
+    # docs
+    # (Features, node-features, (&#39;F ...&#39;, ...))
+
+    def ensureLoaded(self, features):
+        F = self.F
+        E = self.E
+        TF = self.TF
+        warning = self.warning
+
+        needToLoad = set()
+        loadedFeatures = set()
+
+        for fName in sorted(flattenToSet(features)):
+            fObj = TF.features.get(fName, None)
+            if not fObj:
+                warning(f&#39;Cannot load feature &#34;{fName}&#34;: not in dataset&#39;)
+                continue
+            if fObj.dataLoaded and (hasattr(F, fName) or hasattr(E, fName)):
+                loadedFeatures.add(fName)
+            else:
+                needToLoad.add(fName)
+        if len(needToLoad):
+            TF.load(
+                needToLoad, add=True, silent=&#34;deep&#34;,
+            )
+            loadedFeatures |= needToLoad
+        return loadedFeatures</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.core.api.Api.otypeRank"><code class="name">var <span class="ident">otypeRank</span></code></dt>
+<dd>
+<div class="desc"><p>Dictionary that provides a ranking of the node types.</p>
+<p>The node types are ordered in <code>C.levels.data</code>, and if you reverse that list,
+you get the rank of a type by looking at the position in which that type occurs.</p>
+<p>The <em>slotType</em> has rank 0 (<code>otypeRank[F.otype.slotType] == 0</code>),
+and the more comprehensive a type is, the higher its rank.</p></div>
+</dd>
+<dt id="tf.core.api.Api.sortKey"><code class="name">var <span class="ident">sortKey</span></code></dt>
+<dd>
+<div class="desc"><p>Sort key function for the canonical ordering between nodes.</p>
+<p>See <code><a title="tf.core.api.Api" href="#tf.core.api.Api">Api</a></code> and <code>sortNodes</code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">usage</p>
+<p>The following two pieces of code do the same thing:
+<code>sortNodes(nodeSet)</code> and <code>sorted(nodeSet, key=sortKey)</code>.</p>
+</div></div>
+</dd>
+<dt id="tf.core.api.Api.sortKeyTuple"><code class="name">var <span class="ident">sortKeyTuple</span></code></dt>
+<dd>
+<div class="desc"><p>Sort key function for the canonical ordering between tuples of nodes.
+It applies <code>sortKey</code> to each member of the tuple.
+Handy to sort search results. We can sort them in canonical order like this:</p>
+<pre><code class="python">sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
+</code></pre>
+<p>This is exactly what <code>sortKeyTuple</code> does, but then a bit more efficient:</p>
+<pre><code class="python">sorted(results, key=sortKeyTuple)
+</code></pre></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.core.api.Api.Call"><code class="name flex">
+<span>def <span class="ident">Call</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def Call(self):
+    return sorted(x[0] for x in self.C.__dict__.items())</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.Api.Cs"><code class="name flex">
+<span>def <span class="ident">Cs</span></span>(<span>self, fName)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def Cs(self, fName):
+    if not hasattr(self.C, fName):
+        self.error(f&#39;Computed feature &#34;{fName}&#34; not loaded&#39;)
+        return None
+    return getattr(self.C, fName)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.Api.Eall"><code class="name flex">
+<span>def <span class="ident">Eall</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def Eall(self):
+    return sorted(x[0] for x in self.E.__dict__.items())</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.Api.Es"><code class="name flex">
+<span>def <span class="ident">Es</span></span>(<span>self, fName)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def Es(self, fName):
+    if not hasattr(self.E, fName):
+        self.error(f&#39;Edge feature &#34;{fName}&#34; not loaded&#39;)
+        return None
+    return getattr(self.E, fName)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.Api.Fall"><code class="name flex">
+<span>def <span class="ident">Fall</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def Fall(self):
+    return sorted(x[0] for x in self.F.__dict__.items())</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.Api.Fs"><code class="name flex">
+<span>def <span class="ident">Fs</span></span>(<span>self, fName)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def Fs(self, fName):
+    if not hasattr(self.F, fName):
+        self.error(f&#39;Node feature &#34;{fName}&#34; not loaded&#39;)
+        return None
+    return getattr(self.F, fName)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.Api.N"><code class="name flex">
+<span>def <span class="ident">N</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates all nodes in the <em>canonical order</em>.</p>
+<p>Iterating over <code>N()</code> delivers you all nodes of your corpus
+in a very natural order. See <code><a title="tf.core.api.Api" href="#tf.core.api.Api">Api</a></code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">More ways of walking</p>
+<p>Under <code><a title="tf.core.api.NodeFeatures" href="#tf.core.api.NodeFeatures">NodeFeatures</a></code> there is another convenient way
+to walk through subsets of nodes.</p>
+</div>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>nodes</code></strong> :&ensp;<code>int</code></dt>
+<dd>One at a time.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def N(self):
+    &#34;&#34;&#34;Generates all nodes in the *canonical order*.
+
+    Iterating over `N()` delivers you all nodes of your corpus
+    in a very natural order. See `tf.core.api.Api`.
+
+    !!! hint &#34;More ways of walking&#34;
+        Under `tf.core.api.NodeFeatures` there is another convenient way
+        to walk through subsets of nodes.
+
+    Returns
+    -------
+    nodes: int
+        One at a time.
+    &#34;&#34;&#34;
+
+    for n in self.C.order.data:
+        yield n</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.Api.ensureLoaded"><code class="name flex">
+<span>def <span class="ident">ensureLoaded</span></span>(<span>self, features)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ensureLoaded(self, features):
+    F = self.F
+    E = self.E
+    TF = self.TF
+    warning = self.warning
+
+    needToLoad = set()
+    loadedFeatures = set()
+
+    for fName in sorted(flattenToSet(features)):
+        fObj = TF.features.get(fName, None)
+        if not fObj:
+            warning(f&#39;Cannot load feature &#34;{fName}&#34;: not in dataset&#39;)
+            continue
+        if fObj.dataLoaded and (hasattr(F, fName) or hasattr(E, fName)):
+            loadedFeatures.add(fName)
+        else:
+            needToLoad.add(fName)
+    if len(needToLoad):
+        TF.load(
+            needToLoad, add=True, silent=&#34;deep&#34;,
+        )
+        loadedFeatures |= needToLoad
+    return loadedFeatures</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.Api.makeAvailableIn"><code class="name flex">
+<span>def <span class="ident">makeAvailableIn</span></span>(<span>self, scope)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeAvailableIn(self, scope):
+    for member in dir(self):
+        if &#34;_&#34; not in member and member != &#34;makeAvailableIn&#34;:
+            scope[member] = getattr(self, member)
+            if member not in API_REFS:
+                console(f&#39;WARNING: API member &#34;{member}&#34; not documented&#39;)
+
+    grouped = {}
+    for (member, (head, sub, ref)) in API_REFS.items():
+        grouped.setdefault(ref, {}).setdefault((head, sub), []).append(member)
+
+    # grouped
+    # node-features=&gt;(Features, node)=&gt;[F, ...]
+
+    docs = []
+    for (ref, groups) in sorted(grouped.items()):
+        chunks = []
+        for ((head, sub), members) in sorted(groups.items()):
+            chunks.append(&#34; &#34;.join(sorted(members, key=lambda x: (len(x), x))))
+        docs.append((head, ref, tuple(chunks)))
+    return docs</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.Api.sortNodes"><code class="name flex">
+<span>def <span class="ident">sortNodes</span></span>(<span>self, nodeSet)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delivers a tuple of nodes sorted by the <em>canonical ordering</em>.</p>
+<p>See <code><a title="tf.core.api.Api" href="#tf.core.api.Api">Api</a></code>.</p>
+<p>nodeSet: iterable
+An iterable of nodes to be sorted.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sortNodes(self, nodeSet):
+    &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
+
+    See `tf.core.api.Api`.
+
+    nodeSet: iterable
+        An iterable of nodes to be sorted.
+    &#34;&#34;&#34;
+
+    Crank = self.C.rank.data
+    return sorted(nodeSet, key=lambda n: Crank[n - 1])</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="tf.core.api.Computed"><code class="flex name class">
+<span>class <span class="ident">Computed</span></span>
+<span>(</span><span>api, data)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Provides access to precomputed data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Computed(object):
+    &#34;&#34;&#34;Provides access to precomputed data.
+    &#34;&#34;&#34;
+
+    def __init__(self, api, data):
+        self.api = api
+        self.data = data</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.Computeds"><code class="flex name class">
+<span>class <span class="ident">Computeds</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Computeds(object):
+    pass</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.EdgeFeature"><code class="flex name class">
+<span>class <span class="ident">EdgeFeature</span></span>
+<span>(</span><span>api, metaData, data, doValues)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Provides access to (edge) feature data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EdgeFeature(object):
+    &#34;&#34;&#34;Provides access to (edge) feature data.
+    &#34;&#34;&#34;
+
+    def __init__(self, api, metaData, data, doValues):
+        self.api = api
+        self.meta = metaData
+        &#34;&#34;&#34;Metadata of the feature.&#34;&#34;&#34;
+
+        self.doValues = doValues
+        if type(data) is tuple:
+            self.data = data[0]
+            self.dataInv = data[1]
+        else:
+            self.data = data
+            self.dataInv = (
+                makeInverseVal(self.data) if doValues else makeInverse(self.data)
+            )
+
+    def items(self):
+        return self.data.items()
+
+    def f(self, n):
+        if n not in self.data:
+            return ()
+        Crank = self.api.C.rank.data
+        if self.doValues:
+            return tuple(sorted(self.data[n].items(), key=lambda mv: Crank[mv[0] - 1]))
+        else:
+            return tuple(sorted(self.data[n], key=lambda m: Crank[m - 1]))
+
+    def t(self, n):
+        if n not in self.dataInv:
+            return ()
+        Crank = self.api.C.rank.data
+        if self.doValues:
+            return tuple(
+                sorted(self.dataInv[n].items(), key=lambda mv: Crank[mv[0] - 1])
+            )
+        else:
+            return tuple(sorted(self.dataInv[n], key=lambda m: Crank[m - 1]))
+
+    def b(self, n):
+        if n not in self.data and n not in self.dataInv:
+            return ()
+        Crank = self.api.C.rank.data
+        if self.doValues:
+            result = {}
+            if n in self.dataInv:
+                result.update(self.dataInv[n].items())
+            if n in self.data:
+                result.update(self.data[n].items())
+            return tuple(sorted(result.items(), key=lambda mv: Crank[mv[0] - 1]))
+        else:
+            result = set()
+            if n in self.dataInv:
+                result |= self.dataInv[n]
+            if n in self.data:
+                result |= self.data[n]
+            return tuple(sorted(result, key=lambda m: Crank[m - 1]))
+
+    def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
+        if nodeTypesFrom is None and nodeTypesTo is None:
+            if self.doValues:
+                fql = collections.Counter()
+                for (n, vals) in self.data.items():
+                    for val in vals.values():
+                        fql[val] += 1
+                return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
+            else:
+                fql = 0
+                for (n, ms) in self.data.items():
+                    fql += len(ms)
+                return fql
+        else:
+            fOtype = self.api.F.otype.v
+            if self.doValues:
+                fql = collections.Counter()
+                for (n, vals) in self.data.items():
+                    if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
+                        for (m, val) in vals.items():
+                            if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
+                                fql[val] += 1
+                return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
+            else:
+                fql = 0
+                for (n, ms) in self.data.items():
+                    if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
+                        for m in ms:
+                            if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
+                                fql += len(ms)
+                return fql</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.core.api.EdgeFeature.meta"><code class="name">var <span class="ident">meta</span></code></dt>
+<dd>
+<div class="desc"><p>Metadata of the feature.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.core.api.EdgeFeature.b"><code class="name flex">
+<span>def <span class="ident">b</span></span>(<span>self, n)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def b(self, n):
+    if n not in self.data and n not in self.dataInv:
+        return ()
+    Crank = self.api.C.rank.data
+    if self.doValues:
+        result = {}
+        if n in self.dataInv:
+            result.update(self.dataInv[n].items())
+        if n in self.data:
+            result.update(self.data[n].items())
+        return tuple(sorted(result.items(), key=lambda mv: Crank[mv[0] - 1]))
+    else:
+        result = set()
+        if n in self.dataInv:
+            result |= self.dataInv[n]
+        if n in self.data:
+            result |= self.data[n]
+        return tuple(sorted(result, key=lambda m: Crank[m - 1]))</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.EdgeFeature.f"><code class="name flex">
+<span>def <span class="ident">f</span></span>(<span>self, n)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def f(self, n):
+    if n not in self.data:
+        return ()
+    Crank = self.api.C.rank.data
+    if self.doValues:
+        return tuple(sorted(self.data[n].items(), key=lambda mv: Crank[mv[0] - 1]))
+    else:
+        return tuple(sorted(self.data[n], key=lambda m: Crank[m - 1]))</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.EdgeFeature.freqList"><code class="name flex">
+<span>def <span class="ident">freqList</span></span>(<span>self, nodeTypesFrom=None, nodeTypesTo=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
+    if nodeTypesFrom is None and nodeTypesTo is None:
+        if self.doValues:
+            fql = collections.Counter()
+            for (n, vals) in self.data.items():
+                for val in vals.values():
+                    fql[val] += 1
+            return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
+        else:
+            fql = 0
+            for (n, ms) in self.data.items():
+                fql += len(ms)
+            return fql
+    else:
+        fOtype = self.api.F.otype.v
+        if self.doValues:
+            fql = collections.Counter()
+            for (n, vals) in self.data.items():
+                if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
+                    for (m, val) in vals.items():
+                        if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
+                            fql[val] += 1
+            return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
+        else:
+            fql = 0
+            for (n, ms) in self.data.items():
+                if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
+                    for m in ms:
+                        if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
+                            fql += len(ms)
+            return fql</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.EdgeFeature.items"><code class="name flex">
+<span>def <span class="ident">items</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def items(self):
+    return self.data.items()</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.EdgeFeature.t"><code class="name flex">
+<span>def <span class="ident">t</span></span>(<span>self, n)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def t(self, n):
+    if n not in self.dataInv:
+        return ()
+    Crank = self.api.C.rank.data
+    if self.doValues:
+        return tuple(
+            sorted(self.dataInv[n].items(), key=lambda mv: Crank[mv[0] - 1])
+        )
+    else:
+        return tuple(sorted(self.dataInv[n], key=lambda m: Crank[m - 1]))</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="tf.core.api.EdgeFeatures"><code class="flex name class">
+<span>class <span class="ident">EdgeFeatures</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EdgeFeatures(object):
+    pass</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.NodeFeature"><code class="flex name class">
+<span>class <span class="ident">NodeFeature</span></span>
+<span>(</span><span>api, metaData, data)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Provides access to (node) feature data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NodeFeature(object):
+    &#34;&#34;&#34;Provides access to (node) feature data.
+    &#34;&#34;&#34;
+
+    def __init__(self, api, metaData, data):
+        self.api = api
+        self.meta = metaData
+        &#34;&#34;&#34;Metadata of the feature.&#34;&#34;&#34;
+
+        self.data = data
+
+    def items(self):
+        return self.data.items()
+
+    def v(self, n):
+        if n in self.data:
+            return self.data[n]
+        return None
+
+    def s(self, val):
+        Crank = self.api.C.rank.data
+        return tuple(
+            sorted(
+                [n for n in self.data if self.data[n] == val],
+                key=lambda n: Crank[n - 1],
+            )
+        )
+
+    def freqList(self, nodeTypes=None):
+        fql = collections.Counter()
+        if nodeTypes is None:
+            for n in self.data:
+                fql[self.data[n]] += 1
+        else:
+            fOtype = self.api.F.otype.v
+            for n in self.data:
+                if fOtype(n) in nodeTypes:
+                    fql[self.data[n]] += 1
+        return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.core.api.NodeFeature.meta"><code class="name">var <span class="ident">meta</span></code></dt>
+<dd>
+<div class="desc"><p>Metadata of the feature.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.core.api.NodeFeature.freqList"><code class="name flex">
+<span>def <span class="ident">freqList</span></span>(<span>self, nodeTypes=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def freqList(self, nodeTypes=None):
+    fql = collections.Counter()
+    if nodeTypes is None:
+        for n in self.data:
+            fql[self.data[n]] += 1
+    else:
+        fOtype = self.api.F.otype.v
+        for n in self.data:
+            if fOtype(n) in nodeTypes:
+                fql[self.data[n]] += 1
+    return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.NodeFeature.items"><code class="name flex">
+<span>def <span class="ident">items</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def items(self):
+    return self.data.items()</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.NodeFeature.s"><code class="name flex">
+<span>def <span class="ident">s</span></span>(<span>self, val)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def s(self, val):
+    Crank = self.api.C.rank.data
+    return tuple(
+        sorted(
+            [n for n in self.data if self.data[n] == val],
+            key=lambda n: Crank[n - 1],
+        )
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.NodeFeature.v"><code class="name flex">
+<span>def <span class="ident">v</span></span>(<span>self, n)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def v(self, n):
+    if n in self.data:
+        return self.data[n]
+    return None</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="tf.core.api.NodeFeatures"><code class="flex name class">
+<span>class <span class="ident">NodeFeatures</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NodeFeatures(object):
+    pass</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.OslotsFeature"><code class="flex name class">
+<span>class <span class="ident">OslotsFeature</span></span>
+<span>(</span><span>api, metaData, data)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Provides access to <em>oslots</em> feature data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class OslotsFeature(object):
+    &#34;&#34;&#34;Provides access to *oslots* feature data.
+    &#34;&#34;&#34;
+
+    def __init__(self, api, metaData, data):
+        self.api = api
+        self.meta = metaData
+        &#34;&#34;&#34;Metadata of the feature.&#34;&#34;&#34;
+
+        self.data = data[0]
+        self.maxSlot = data[1]
+        self.maxNode = data[2]
+
+    def items(self):
+        maxSlot = self.maxSlot
+        data = self.data
+        maxNode = self.maxNode
+
+        shift = maxSlot + 1
+
+        for n in range(maxSlot + 1, maxNode + 1):
+            yield (n, data[n - shift])
+
+    def s(self, n):
+        if n == 0:
+            return ()
+        if n &lt; self.maxSlot + 1:
+            return (n,)
+        m = n - self.maxSlot
+        if m &lt;= len(self.data):
+            return self.data[m - 1]
+        return ()</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.core.api.OslotsFeature.meta"><code class="name">var <span class="ident">meta</span></code></dt>
+<dd>
+<div class="desc"><p>Metadata of the feature.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.core.api.OslotsFeature.items"><code class="name flex">
+<span>def <span class="ident">items</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def items(self):
+    maxSlot = self.maxSlot
+    data = self.data
+    maxNode = self.maxNode
+
+    shift = maxSlot + 1
+
+    for n in range(maxSlot + 1, maxNode + 1):
+        yield (n, data[n - shift])</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.OslotsFeature.s"><code class="name flex">
+<span>def <span class="ident">s</span></span>(<span>self, n)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def s(self, n):
+    if n == 0:
+        return ()
+    if n &lt; self.maxSlot + 1:
+        return (n,)
+    m = n - self.maxSlot
+    if m &lt;= len(self.data):
+        return self.data[m - 1]
+    return ()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="tf.core.api.OtypeFeature"><code class="flex name class">
+<span>class <span class="ident">OtypeFeature</span></span>
+<span>(</span><span>api, metaData, data)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Provides access to <em>otype</em> feature data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class OtypeFeature(object):
+    &#34;&#34;&#34;Provides access to *otype* feature data.
+    &#34;&#34;&#34;
+
+    def __init__(self, api, metaData, data):
+        self.api = api
+        self.meta = metaData
+        &#34;&#34;&#34;Metadata of the feature.&#34;&#34;&#34;
+
+        self.data = data[0]
+        self.maxSlot = data[1]
+        &#34;&#34;&#34;Last slot node in the corpus.&#34;&#34;&#34;
+
+        self.maxNode = data[2]
+        &#34;&#34;&#34;Last node node.in the corpus.&#34;&#34;&#34;
+
+        self.slotType = data[3]
+        &#34;&#34;&#34;The name of the slot type.&#34;&#34;&#34;
+
+        self.all = None
+        &#34;&#34;&#34;List of all node types from big to small.&#34;&#34;&#34;
+
+    def items(self):
+        slotType = self.slotType
+        maxSlot = self.maxSlot
+        data = self.data
+
+        for n in range(1, maxSlot + 1):
+            yield (n, slotType)
+
+        maxNode = self.maxNode
+
+        shift = maxSlot + 1
+
+        for n in range(maxSlot + 1, maxNode + 1):
+            yield (n, data[n - shift])
+
+    def v(self, n):
+        if n == 0:
+            return None
+        if n &lt; self.maxSlot + 1:
+            return self.slotType
+        m = n - self.maxSlot
+        if m &lt;= len(self.data):
+            return self.data[m - 1]
+        return None
+
+    def s(self, val):
+        # NB: the support attribute has been added by precomputing __levels__
+        if val in self.support:
+            (b, e) = self.support[val]
+            return range(b, e + 1)
+        else:
+            return ()
+
+    def sInterval(self, val):
+        # NB: the support attribute has been added by precomputing __levels__
+        if val in self.support:
+            return self.support[val]
+        else:
+            return ()</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.core.api.OtypeFeature.all"><code class="name">var <span class="ident">all</span></code></dt>
+<dd>
+<div class="desc"><p>List of all node types from big to small.</p></div>
+</dd>
+<dt id="tf.core.api.OtypeFeature.maxNode"><code class="name">var <span class="ident">maxNode</span></code></dt>
+<dd>
+<div class="desc"><p>Last node node.in the corpus.</p></div>
+</dd>
+<dt id="tf.core.api.OtypeFeature.maxSlot"><code class="name">var <span class="ident">maxSlot</span></code></dt>
+<dd>
+<div class="desc"><p>Last slot node in the corpus.</p></div>
+</dd>
+<dt id="tf.core.api.OtypeFeature.meta"><code class="name">var <span class="ident">meta</span></code></dt>
+<dd>
+<div class="desc"><p>Metadata of the feature.</p></div>
+</dd>
+<dt id="tf.core.api.OtypeFeature.slotType"><code class="name">var <span class="ident">slotType</span></code></dt>
+<dd>
+<div class="desc"><p>The name of the slot type.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.core.api.OtypeFeature.items"><code class="name flex">
+<span>def <span class="ident">items</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def items(self):
+    slotType = self.slotType
+    maxSlot = self.maxSlot
+    data = self.data
+
+    for n in range(1, maxSlot + 1):
+        yield (n, slotType)
+
+    maxNode = self.maxNode
+
+    shift = maxSlot + 1
+
+    for n in range(maxSlot + 1, maxNode + 1):
+        yield (n, data[n - shift])</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.OtypeFeature.s"><code class="name flex">
+<span>def <span class="ident">s</span></span>(<span>self, val)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def s(self, val):
+    # NB: the support attribute has been added by precomputing __levels__
+    if val in self.support:
+        (b, e) = self.support[val]
+        return range(b, e + 1)
+    else:
+        return ()</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.OtypeFeature.sInterval"><code class="name flex">
+<span>def <span class="ident">sInterval</span></span>(<span>self, val)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sInterval(self, val):
+    # NB: the support attribute has been added by precomputing __levels__
+    if val in self.support:
+        return self.support[val]
+    else:
+        return ()</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.OtypeFeature.v"><code class="name flex">
+<span>def <span class="ident">v</span></span>(<span>self, n)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def v(self, n):
+    if n == 0:
+        return None
+    if n &lt; self.maxSlot + 1:
+        return self.slotType
+    m = n - self.maxSlot
+    if m &lt;= len(self.data):
+        return self.data[m - 1]
+    return None</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<img src="../images/tf-small.png">
+<img src="../../images/tf-small.png">
+<div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#the-core-api-of-tf">The core API of TF.</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.core" href="index.html">tf.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="tf.core.api.addLocality" href="#tf.core.api.addLocality">addLocality</a></code></li>
+<li><code><a title="tf.core.api.addOtype" href="#tf.core.api.addOtype">addOtype</a></code></li>
+<li><code><a title="tf.core.api.addRank" href="#tf.core.api.addRank">addRank</a></code></li>
+<li><code><a title="tf.core.api.addSearch" href="#tf.core.api.addSearch">addSearch</a></code></li>
+<li><code><a title="tf.core.api.addSortKey" href="#tf.core.api.addSortKey">addSortKey</a></code></li>
+<li><code><a title="tf.core.api.addText" href="#tf.core.api.addText">addText</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.core.api.Api" href="#tf.core.api.Api">Api</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.core.api.Api.Call" href="#tf.core.api.Api.Call">Call</a></code></li>
+<li><code><a title="tf.core.api.Api.Cs" href="#tf.core.api.Api.Cs">Cs</a></code></li>
+<li><code><a title="tf.core.api.Api.Eall" href="#tf.core.api.Api.Eall">Eall</a></code></li>
+<li><code><a title="tf.core.api.Api.Es" href="#tf.core.api.Api.Es">Es</a></code></li>
+<li><code><a title="tf.core.api.Api.Fall" href="#tf.core.api.Api.Fall">Fall</a></code></li>
+<li><code><a title="tf.core.api.Api.Fs" href="#tf.core.api.Api.Fs">Fs</a></code></li>
+<li><code><a title="tf.core.api.Api.N" href="#tf.core.api.Api.N">N</a></code></li>
+<li><code><a title="tf.core.api.Api.ensureLoaded" href="#tf.core.api.Api.ensureLoaded">ensureLoaded</a></code></li>
+<li><code><a title="tf.core.api.Api.makeAvailableIn" href="#tf.core.api.Api.makeAvailableIn">makeAvailableIn</a></code></li>
+<li><code><a title="tf.core.api.Api.otypeRank" href="#tf.core.api.Api.otypeRank">otypeRank</a></code></li>
+<li><code><a title="tf.core.api.Api.sortKey" href="#tf.core.api.Api.sortKey">sortKey</a></code></li>
+<li><code><a title="tf.core.api.Api.sortKeyTuple" href="#tf.core.api.Api.sortKeyTuple">sortKeyTuple</a></code></li>
+<li><code><a title="tf.core.api.Api.sortNodes" href="#tf.core.api.Api.sortNodes">sortNodes</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tf.core.api.Computed" href="#tf.core.api.Computed">Computed</a></code></h4>
+</li>
+<li>
+<h4><code><a title="tf.core.api.Computeds" href="#tf.core.api.Computeds">Computeds</a></code></h4>
+</li>
+<li>
+<h4><code><a title="tf.core.api.EdgeFeature" href="#tf.core.api.EdgeFeature">EdgeFeature</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.core.api.EdgeFeature.b" href="#tf.core.api.EdgeFeature.b">b</a></code></li>
+<li><code><a title="tf.core.api.EdgeFeature.f" href="#tf.core.api.EdgeFeature.f">f</a></code></li>
+<li><code><a title="tf.core.api.EdgeFeature.freqList" href="#tf.core.api.EdgeFeature.freqList">freqList</a></code></li>
+<li><code><a title="tf.core.api.EdgeFeature.items" href="#tf.core.api.EdgeFeature.items">items</a></code></li>
+<li><code><a title="tf.core.api.EdgeFeature.meta" href="#tf.core.api.EdgeFeature.meta">meta</a></code></li>
+<li><code><a title="tf.core.api.EdgeFeature.t" href="#tf.core.api.EdgeFeature.t">t</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tf.core.api.EdgeFeatures" href="#tf.core.api.EdgeFeatures">EdgeFeatures</a></code></h4>
+</li>
+<li>
+<h4><code><a title="tf.core.api.NodeFeature" href="#tf.core.api.NodeFeature">NodeFeature</a></code></h4>
+<ul class="">
+<li><code><a title="tf.core.api.NodeFeature.freqList" href="#tf.core.api.NodeFeature.freqList">freqList</a></code></li>
+<li><code><a title="tf.core.api.NodeFeature.items" href="#tf.core.api.NodeFeature.items">items</a></code></li>
+<li><code><a title="tf.core.api.NodeFeature.meta" href="#tf.core.api.NodeFeature.meta">meta</a></code></li>
+<li><code><a title="tf.core.api.NodeFeature.s" href="#tf.core.api.NodeFeature.s">s</a></code></li>
+<li><code><a title="tf.core.api.NodeFeature.v" href="#tf.core.api.NodeFeature.v">v</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tf.core.api.NodeFeatures" href="#tf.core.api.NodeFeatures">NodeFeatures</a></code></h4>
+</li>
+<li>
+<h4><code><a title="tf.core.api.OslotsFeature" href="#tf.core.api.OslotsFeature">OslotsFeature</a></code></h4>
+<ul class="">
+<li><code><a title="tf.core.api.OslotsFeature.items" href="#tf.core.api.OslotsFeature.items">items</a></code></li>
+<li><code><a title="tf.core.api.OslotsFeature.meta" href="#tf.core.api.OslotsFeature.meta">meta</a></code></li>
+<li><code><a title="tf.core.api.OslotsFeature.s" href="#tf.core.api.OslotsFeature.s">s</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tf.core.api.OtypeFeature" href="#tf.core.api.OtypeFeature">OtypeFeature</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.core.api.OtypeFeature.all" href="#tf.core.api.OtypeFeature.all">all</a></code></li>
+<li><code><a title="tf.core.api.OtypeFeature.items" href="#tf.core.api.OtypeFeature.items">items</a></code></li>
+<li><code><a title="tf.core.api.OtypeFeature.maxNode" href="#tf.core.api.OtypeFeature.maxNode">maxNode</a></code></li>
+<li><code><a title="tf.core.api.OtypeFeature.maxSlot" href="#tf.core.api.OtypeFeature.maxSlot">maxSlot</a></code></li>
+<li><code><a title="tf.core.api.OtypeFeature.meta" href="#tf.core.api.OtypeFeature.meta">meta</a></code></li>
+<li><code><a title="tf.core.api.OtypeFeature.s" href="#tf.core.api.OtypeFeature.s">s</a></code></li>
+<li><code><a title="tf.core.api.OtypeFeature.sInterval" href="#tf.core.api.OtypeFeature.sInterval">sInterval</a></code></li>
+<li><code><a title="tf.core.api.OtypeFeature.slotType" href="#tf.core.api.OtypeFeature.slotType">slotType</a></code></li>
+<li><code><a title="tf.core.api.OtypeFeature.v" href="#tf.core.api.OtypeFeature.v">v</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

@@ -55,10 +55,10 @@ h1.chars {
 }
 </style>
 
-???+ note "Disclaimer"
+!!! note "Disclaimer"
     This just a look-up table, not a full exposition of the organisation of the Masoretic system.
 
-??? abstract "Transcriptions"
+!!! abstract "Transcriptions"
     The ETCBC transcription is used by the ETCBC.
     It has entries for all accents, but not
     for text-critical annotations such as uncertainty, and correction.
@@ -69,16 +69,16 @@ h1.chars {
     and entered them in the
     etcbc column, although they are not strictly etcbc marks.
 
-??? abstract "Phonetics"
+!!! abstract "Phonetics"
     The phonetic representation is meant as a
     tentative 1-1 correspondence with pronunciation, not with the script.
     See
-    [phono.ipynb]({{etcbcnb}}/phono/blob/master/programs/phono.ipynb),
+    [phono.ipynb](https://nbviewer.jupyter.org/github/etcbc/phono/blob/master/programs/phono.ipynb),
     where the phonetic transcription is computed and thoroughly documented.
 
 ## Consonants
 
-??? abstract "Details"
+!!! abstract "Details"
     *   For most  consonants: an inner dot is a *dagesh forte*.
     *   For the <span class="g">בגדכפת</span> consonants:
         an inner dot is either a *dagesh forte* or a *dagesh lene*.
@@ -363,12 +363,12 @@ h1.chars {
 
 ## Vowels
 
-??? caution "Qere Ketiv"
+!!! caution "Qere Ketiv"
     The phonetics follows the *qere*, not the *ketiv*,
     when they are different.
     In that case a `*` is added.
 
-??? caution "Tetragrammaton"
+!!! caution "Tetragrammaton"
     The tetragrammaton <span class="g">יהוה</span>
     is (vowel)-pointed in different ways;
     the phonetics follows the pointing, but the tetragrammaton
@@ -608,7 +608,7 @@ h1.chars {
 
 ## Punctuation
 
-??? abstract "Details"
+!!! abstract "Details"
     Some specialties in the Masoretic system are not reflected
     in the phonetics:
 
@@ -691,7 +691,7 @@ h1.chars {
 
 ## Hybrid
 
-??? abstract "Details"
+!!! abstract "Details"
     There is a character that is mostly punctuation, but that 
     can also influence the nature of some accents occurring in the word before.
     Such a character is a hybrid between punctuation and accent.
@@ -724,7 +724,7 @@ h1.chars {
 
 ## Accents
 
-??? abstract "Details"
+!!! abstract "Details"
     Some accents play a role in deciding whether a schwa is silent or mobile
     and whether a qamets is gadol or qatan.
     In the phonetics those accents appear as `ˈ` or `ˌ`.
@@ -1003,7 +1003,7 @@ h1.chars {
 
 ## Numerals
 
-??? abstract "Details"
+!!! abstract "Details"
     These signs occur in the Dead Sea scrolls.
     We represent them with conventional Hebrew characters for numbers
     and use the geresh accent or another accent to mark the letter
@@ -1086,7 +1086,7 @@ h1.chars {
 
 ## Text-critical
 
-??? abstract "Details"
+!!! abstract "Details"
     These signs occur in the Dead Sea scrolls.
     They are used to indicate uncertainty and editing acts by ancient scribes
     or modern editors.

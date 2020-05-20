@@ -4,6 +4,7 @@ setup(
     name="text-fabric",
     packages=[
         "tf",
+        "tf.about",
         "tf.applib",
         "tf.convert",
         "tf.compose",

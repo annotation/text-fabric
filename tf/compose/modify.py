@@ -1,3 +1,7 @@
+"""
+.. include:: ../../docs/compose/modify.md
+"""
+
 import collections
 
 from ..fabric import Fabric

@@ -1,3 +1,7 @@
+"""
+.. include:: ../../docs/applib/repo.md
+"""
+
 import os
 import io
 import re

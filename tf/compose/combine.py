@@ -1,3 +1,7 @@
+"""
+.. include:: ../../docs/compose/combine.md
+"""
+
 import os
 import collections
 

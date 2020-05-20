@@ -233,7 +233,21 @@ def shipDocs():
 
 
 def serveApidocs():
-    proc = Popen(["pdoc3", "--http", ":", "tf"])
+    # proc = Popen(["pdoc3", "--http", ":", "tf"])
+    proc = Popen(
+        [
+            "pdoc3",
+            "--force",
+            "--html",
+            "--output-dir",
+            "docs",
+            "--template-dir",
+            "docs/templates",
+            "--http",
+            ":",
+            "tf",
+        ]
+    )
     sleep(1)
     run("open http://localhost:8080/tf", shell=True)
     try:
@@ -286,7 +300,7 @@ def filterProcess(proc):
 
 
 def apidocs():
-    cmdLine = "pdoc3" " --force" " --html" " --output-dir docs/apidocs/html" " tf"
+    cmdLine = "pdoc3 --force --html --output-dir docs --template-dir docs/templates tf"
     run(cmdLine, shell=True)
 
 

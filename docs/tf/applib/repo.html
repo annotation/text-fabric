@@ -1,0 +1,2476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>tf.applib.repo API documentation</title>
+<meta name="description" content="Auto downloading from GitHub …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.applib.repo</code></h1>
+</header>
+<section id="section-intro">
+<h2 id="auto-downloading-from-github">Auto downloading from GitHub</h2>
+<div class="admonition abstract">
+<p class="admonition-title">checkoutRepo()</p>
+<p>```python
+from tf.applib.repo import checkoutRepo</p>
+<p>checkoutRepo(
+org='annotation'
+repo='tutorials',
+folder='text-fabric/examples/banks/tf',
+version='',
+checkout='',
+source=None,
+dest=None,
+withPaths=True,
+keep=True,
+silent=False,
+label='data',
+)
+```</p>
+</div>
+<div class="admonition explanation">
+<p class="admonition-title">Description</p>
+<p>Maintain a local copy of a subfolder <em>folder</em> in GitHub repository <em>repo</em> of <em>org</em>.
+The copy may be taken from any point in the commit history of the online repo.</p>
+<p>If you call this function, it will check whether the requested data is already
+on your computer in the expected location.
+If not, it may check whether the data is online and if so, download it to the
+expected location.</p>
+</div>
+<div class="admonition explanation">
+<p class="admonition-title">Result</p>
+<p>The result of a call to checkoutRepo() is a tuple:</p>
+<p><code>python
+(commitOffline, releaseOffline, kindLocal, localBase, localDir)</code></p>
+<p>Here is the meaning:</p>
+<ul>
+<li><em>commitOffline</em> is the commit hash of the data you have offline afterwards</li>
+<li><em>releaseOffline</em> is the release tag of the data you have offline afterwards</li>
+<li><em>kindLocal</em> indicates whether an online check has been performed:
+it is <code>None</code> if there has been an online check. Otherwise it is
+<code>clone</code> if the data is in your <code>~/github</code> directory else it is <code>local</code>.</li>
+<li><em>localBase</em> where the data is under: <code>~/github</code> or <code>~/text-fabric-data</code>,
+or whatever you have passed as <em>source</em> and <em>dest</em>, see below.</li>
+<li><em>localDir</em> releative path from <em>localBase</em> to your data.
+If your data has versions, <em>localDir</em> points to directory that has the versions,
+not to a specific version.</li>
+</ul>
+<p>Your local copy can be found under your <code>~/github</code> or <code>~/text-fabric-data</code>
+directory using a relative path <em>org/repo/folder</em> if there is a <em>version</em>, else
+<em>org/repo/folder/version</em>.</p>
+</div>
+<div class="admonition explanation">
+<p class="admonition-title">checkout, source and dest</p>
+<p>The <em>checkout</em> parameter determines from which point in the history the copy
+will be taken and where it will be placed.
+That will be either your <code>~/github</code> or your <code>~/text-fabric-data</code> directories.</p>
+<p>You can override the hard-coded <code>~/github</code> and <code>~/text-fabric-data</code> directories
+by passing <em>source</em> and <em>dest</em> respectively.</p>
+<p>See the
+<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb">repo</a>
+notebook for an exhaustive demo of all the checkout options.</p>
+</div>
+<div class="admonition explanation">
+<p class="admonition-title">other parameters</p>
+<p><em>withPaths=False</em> will loose the directory structure of files that are being
+downloaded.</p>
+<p><em>keep=False</em> will destroy the destination directory before a download takes place.</p>
+<p><em>silent=True</em> will suppress non-error messages.</p>
+<p>*label='something' will change the word "data" in log messages to what you choose.
+We use <code>label='TF-app'</code> when we use this function to checkout the code
+of a TF-app.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Rate limiting</p>
+<p>The <code>checkRepo()</code> function uses the GitHub API.
+GitHub has a rate limiting policy for its API of max 60 calls per hour.
+See <a href="Github.md">GitHub</a> to deal with this if it becomes a problem.</p>
+</div>
+<h1 id="github">GitHub</h1>
+<p>GitHub has a rate limiting policy for its API of max 60 calls per hour.
+This can be too restrictive, and here are two ways to keep working nevertheless.</p>
+<h2 id="increase-the-rate-limit">Increase the rate limit</h2>
+<p>If you use this function in an application of yours that uses it very often,
+you can increase the limit to 5000 calls per hour by making yourself known.</p>
+<ul>
+<li><a href="https://github.com/settings/tokens">create a personal access token</a></li>
+<li>Copy your token and put it in an environment variable named <code>GHPERS</code>
+on the system where your app runs.
+See below how to do that.</li>
+<li>If <code><a title="tf.applib.repo.checkoutRepo" href="#tf.applib.repo.checkoutRepo">checkoutRepo()</a></code> finds this variable, it will add the
+token to every GitHub API call it makes, and that will
+increase the rate.</li>
+<li>Never pass your personal credentials on to others, let them obtain their own!</li>
+</ul>
+<p>You might want to read this:</p>
+<ul>
+<li><a href="https://developer.github.com/v3/#rate-limiting">Read more about rate limiting on Github</a></li>
+</ul>
+<p>How to put your personal access token into an environment variable?</p>
+<div class="admonition note">
+<p class="admonition-title">What is an environment variable?</p>
+<p>It is a setting on your system that various programs/processes can read.
+On Windows it is part of the <code>Registry</code>.</p>
+<p>In this particular case, you put a personal token that you obtain from GitHub
+in such an environment variable.
+When Text-Fabric accesses GitHub, it will look up this token
+first, and pass it to the GitHub API. GitHub then knows who you are and
+will give you more privileges.</p>
+</div>
+<h3 id="on-mac-and-linux">On Mac and Linux</h3>
+<p>Find the file that contains your terminal settings. In many cases that is
+<code>.bash_profile</code> in your home directory.</p>
+<p>Some people put commands like these in their <code>~/.bashrc</code> file, which is also fine.
+If you do not see a <code>.bashrc</code> file, put it into your <code>.bash_profile</code> file.</p>
+<p>A slightly more advanced shell than <code>bash</code> is <code>zsh</code> and it is the default on newer
+Macs. If that is your case, look for a file <code>.zshrc</code> in your home directory or
+create one.</p>
+<p>Whatever is your case, pick the file indicated above and edit it.</p>
+<div class="admonition hint">
+<p class="admonition-title">How to edit a file in your terminal?</p>
+<p>If you are already familiar with <code>vi</code>, <code>vim</code>, <code>emacs</code>, or <code>nano</code>
+you already know how to do it.</p>
+<p>If not, <code>nano</code> is simple editor that is useful for tasks like this.
+Assuming that you want to edit the <code>.zshrc</code> in your home directory,
+go to your terminal and say this:</p>
+<p><code>nano ~/.zshrc</code></p>
+<p>Then you get a view on your file. Then </p>
+<ul>
+<li>press <code>Ctrl V</code> a number of times till you are at the end of the file,</li>
+<li>type the two lines lines of text (specified in the next step), or
+copy them from the clipboard</li>
+<li>type <code>Ctrl X</code> to exit; nano will ask you to save changes, type <code>Y</code>,
+it will then verify the file name, type <code>Enter</code> and you're done</li>
+</ul>
+</div>
+<p>Put the following lines in this file:</p>
+<pre><code class="sh">GHPERS=&quot;xxx&quot;
+export GHPERS
+</code></pre>
+<p>where the <code>xxx</code> are replaced by your actual token.</p>
+<p>Then restart your terminal or say in an existing terminal</p>
+<pre><code class="sh">source ~/.zshrc
+</code></pre>
+<h3 id="on-windows">On Windows</h3>
+<p>Click on the Start button and type in <code>environment variable</code> into the search box.</p>
+<p>Click on <code>Edit the system environment variables</code>.</p>
+<p>This will
+open up the System Properties dialog to the Advanced tab.</p>
+<p>Click on the <code>Environment Variables button</code> at the bottom.</p>
+<p>Click on <code>New &hellip;</code> under <code>User environment variables</code>.</p>
+<p>Then fill in <code>GHPERS</code> under <em>name</em> and the token string under <em>value</em>.</p>
+<p>Then quit the command prompt and start a new one.</p>
+<h3 id="result">Result</h3>
+<p>With this done, you will automatically get the good rate limit,
+whenever you fire up Text-Fabric in the future.</p>
+<h2 id="minimize-accessing-github">Minimize accessing Github</h2>
+<p>Another way te avoid being bitten by the rate limit is to reduce the number
+of your access actions to GitHub.</p>
+<p>There are two instances where Text-Fabric wants to access GitHub:</p>
+<ol>
+<li>when you start the Text-Fabric browser from the command line</li>
+<li>when you give the <code>use()</code> command in your Python program (or in a Jupyter Notebook).</li>
+</ol>
+<h3 id="using-a-corpus-for-the-first-time-within-the-rate-limit">Using a corpus for the first time, within the rate limit</h3>
+<p>If you are still within the rate limit, just give the usual commands, such as</p>
+<pre><code class="sh">text-fabric corpus
+</code></pre>
+<p>or</p>
+<pre><code class="python">use('corpus', hoist=globals())
+</code></pre>
+<p>where <code>corpus</code> should be replaced with the real name of your corpus.</p>
+<p>The data will be downloaded to your computer and stored in your
+<code>~/text-fabric-data</code> directory tree.</p>
+<h3 id="using-a-corpus-for-the-first-time-after-hitting-the-rate-limit">Using a corpus for the first time, after hitting the rate limit</h3>
+<p>If you want to load a new corpus after having passed the rate limit, and not
+wanting to wait an hour, you could directly clone the repos from GitHub:</p>
+<p>Open your terminal, and go to (or create) directory <code>~/github</code> (in your
+home directory).</p>
+<p>Inside that directory, go to or create directory <code>annotation</code>.
+Go to that directory.</p>
+<p>Then do</p>
+<pre><code class="sh">git clone https://github.com/annotation/app-corpus
+</code></pre>
+<p>(replacing <code>corpus</code> with the name of your corpus).</p>
+<p>This will fetch the Text-Fabric <em>app</em> for that corpus.</p>
+<p>Now the corpus data itself:</p>
+<p>Find out where on GitHub it is (organization/corpus), e.g.
+<code>Nino-cunei/oldbabylonian</code> or <code>etcbc/bhsa</code>.</p>
+<p>Under your local <code>~/github</code>, find or create directory <code>organization</code>.
+Then go to that directory and say:</p>
+<pre><code class="sh">git clone https://github.com/organization/corpus
+</code></pre>
+<p>(replacing <code>organization</code> with the name of the organization where the corpus resides
+and <code>corpus</code> with the name of your corpus).
+Now you have all data you need on your system.</p>
+<p>If you want to see by example how to use this data, have a look at
+<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb">repo</a>,
+especially when it discusses <code>clone</code>.</p>
+<p>In order to run Text-Fabric without further access to GitHub, say</p>
+<pre><code class="sh">text-fabric corpus:clone checkout=clone
+</code></pre>
+<p>or, in a program,</p>
+<pre><code class="python">A = use('corpus:clone', checkData='clone', hoist=globals())
+</code></pre>
+<p>This will instruct Text-Fabric to use the app and data from within your <code>~/github</code>
+directory tree.</p>
+<h3 id="using-a-corpus-that-you-already-have">Using a corpus that you already have</h3>
+<p>Depending on how you got the corpus, it is in your
+<code>~/github</code> or in your <code>~/text-fabric-data</code> directory tree.</p>
+<p>If you cloned it from GitHub or created it yourself, it is in your <code>~/github</code> tree;
+if you used the autoload of Text-Fabric it is in your <code>~/text-fabric-data</code>.</p>
+<p>In the first case, do this:</p>
+<pre><code class="sh">text-fabric corpus:clone checkout=clone
+</code></pre>
+<p>or, in a program,</p>
+<pre><code class="python">A = use('corpus:clone', checkData='clone', hoist=globals())
+</code></pre>
+<p>In the second case, do just this:</p>
+<pre><code class="sh">text-fabric corpus
+</code></pre>
+<p>or, in a program,</p>
+<pre><code class="python">A = use('corpus', hoist=globals())
+</code></pre>
+<p>See also <code><a title="tf.applib.app.App" href="app.html#tf.applib.app.App">App</a></code>.</p>
+<h3 id="updating-a-corpus-that-you-already-have">Updating a corpus that you already have</h3>
+<p>If you cloned it from GitHub (or created it yourself in your <code>~/github</code> tree):</p>
+<p>In your terminal:</p>
+<pre><code class="sh">cd ~/github/organization/repo
+git pull origin master
+</code></pre>
+<p>(replacing <code>organization</code> with the name of the organization where the corpus resides
+and <code>corpus</code> with the name of your corpus).</p>
+<p>Now you have the newest corpus data on your system. and you can use it as follows:</p>
+<pre><code class="sh">text-fabric corpus:clone checkout=clone
+</code></pre>
+<p>or, in a program,</p>
+<pre><code class="python">A = use('corpus:clone', checkData='clone', hoist=globals())
+</code></pre>
+<p>If you have autoloaded it from GitHub, you have to add the <code>latest</code> or <code>hot</code> specifier:</p>
+<pre><code class="sh">text-fabric corpus:latest checkout=latest
+</code></pre>
+<p>or, in a program,</p>
+<pre><code class="python">A = use('corpus:latest', checkData='latest', hoist=globals())
+</code></pre>
+<p>And after that, you can omit <code>latest</code> or <code>hot</code> again, until you need new data again.</p>
+<div class="admonition hint">
+<p class="admonition-title">App versus data</p>
+<p>The checkout specifiers such as <code>latest</code>, <code>hot</code>, <code>clone</code> apply to either the corpus data
+or the TF App.</p>
+<p>If the specifier follows the app name, separated with a colon, it directs how the app code
+is being obtained.</p>
+<p>If it is the value of the <code>checkout</code> parameter, it directs how the corpus data
+is being obtained.</p>
+</div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../../docs/applib/repo.md
+&#34;&#34;&#34;
+
+import os
+import io
+import re
+from shutil import rmtree
+import requests
+import base64
+from zipfile import ZipFile
+
+from github import Github, GithubException, UnknownObjectException
+
+from ..parameters import (
+    URL_GH,
+    GH_BASE,
+    EXPRESS_BASE,
+    EXPRESS_SYNC,
+    EXPRESS_SYNC_LEGACY,
+)
+from ..core.helpers import console
+
+
+class Checkout(object):
+    @staticmethod
+    def fromString(string):
+        commit = None
+        release = None
+        local = None
+        if not string:
+            commit = &#34;&#34;
+            release = &#34;&#34;
+        elif string == &#34;latest&#34;:
+            commit = None
+            release = &#34;&#34;
+        elif string == &#34;hot&#34;:
+            commit = &#34;&#34;
+            release = None
+        elif string in {&#34;local&#34;, &#34;clone&#34;}:
+            commit = None
+            release = None
+            local = string
+        elif &#34;.&#34; in string or len(string) &lt; 12:
+            commit = None
+            release = string
+        else:
+            commit = string
+            release = None
+        return (commit, release, local)
+
+    @staticmethod
+    def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
+        extra = &#34;&#34;
+        if local:
+            baseRep = source if local == &#34;clone&#34; else dest
+            extra = f&#34; offline under {baseRep}&#34;
+        if local == &#34;clone&#34;:
+            result = f&#34;repo clone&#34;
+        elif commit and release:
+            result = f&#34;r{release}=#{commit}&#34;
+        elif commit:
+            result = f&#34;#{commit}&#34;
+        elif release:
+            result = f&#34;r{release}&#34;
+        elif commit is None and release is None:
+            result = f&#34;unknown release or commit&#34;
+        elif commit is None:
+            result = f&#34;latest release&#34;
+        elif release is None:
+            result = f&#34;latest commit&#34;
+        else:
+            result = f&#34;latest release or commit&#34;
+        return f&#34;{result}{extra}&#34;
+
+    def isClone(self):
+        return self.local == &#34;clone&#34;
+
+    def isOffline(self):
+        return self.local in {&#34;clone&#34;, &#34;local&#34;}
+
+    def __init__(
+        self,
+        org,
+        repo,
+        relative,
+        checkout,
+        source,
+        dest,
+        keep,
+        withPaths,
+        silent,
+        version=None,
+        label=&#34;data&#34;,
+    ):
+        self.label = label
+        self.org = org
+        self.repo = repo
+        self.source = source
+        self.dest = dest
+        (self.commitChk, self.releaseChk, self.local) = self.fromString(checkout)
+        clone = self.isClone()
+        offline = self.isOffline()
+
+        self.relative = relative
+        self.version = version
+        versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
+        self.versionRep = versionRep
+        relativeRep = f&#34;/{relative}&#34; if relative else &#34;&#34;
+        relativeGh = f&#34;/tree/master/{relative}&#34; if relative else &#34;&#34;
+        self.baseGh = f&#34;{URL_GH}/{org}/{repo}{relativeGh}{versionRep}&#34;
+        self.dataDir = f&#34;{relative}{versionRep}&#34;
+
+        self.baseLocal = os.path.expanduser(self.dest)
+        self.dataRelLocal = f&#34;{org}/{repo}{relativeRep}&#34;
+        self.dirPathSaveLocal = f&#34;{self.baseLocal}/{org}/{repo}&#34;
+        self.dirPathLocal = f&#34;{self.baseLocal}/{self.dataRelLocal}{versionRep}&#34;
+        self.dataPathLocal = f&#34;{self.dataRelLocal}{versionRep}&#34;
+        self.filePathLocal = f&#34;{self.dirPathLocal}/{EXPRESS_SYNC}&#34;
+
+        self.baseClone = os.path.expanduser(self.source)
+        self.dataRelClone = f&#34;{org}/{repo}{relativeRep}&#34;
+        self.dirPathClone = f&#34;{self.baseClone}/{self.dataRelClone}{versionRep}&#34;
+        self.dataPathClone = f&#34;{self.dataRelClone}{versionRep}&#34;
+
+        self.dataPath = self.dataRelClone if clone else self.dataRelLocal
+
+        self.keep = keep
+        self.withPaths = withPaths
+        self.ghConn = None
+
+        self.commitOff = None
+        self.releaseOff = None
+        self.commitOn = None
+        self.releaseOn = None
+        self.releaseCommitOn = None
+
+        self.silent = silent
+
+        self.repoOnline = None
+        self.localBase = False
+        self.localDir = None
+
+        if clone:
+            self.commitOff = None
+            self.releaseOff = None
+        else:
+            self.fixInfo()
+            self.readInfo()
+
+        if not offline:
+            self.connect()
+            self.fetchInfo()
+
+    def log(self, msg, newline=True):
+        silent = self.silent
+        if not silent:
+            console(msg, newline=newline)
+
+    def warning(self, msg, newline=True):
+        silent = self.silent
+        if not silent == &#34;deep&#34;:
+            console(msg, newline=newline)
+
+    def error(self, msg, newline=True):
+        console(msg, error=True, newline=newline)
+
+    def possibleError(self, msg, showErrors, again=False, indent=&#34;\t&#34;, newline=False):
+        if showErrors:
+            self.error(msg, newline=newline)
+        else:
+            self.warning(msg, newline=newline)
+            if again:
+                self.warning(f&#34;{indent}Will try something else&#34;)
+
+    def makeSureLocal(self, attempt=False):
+        label = self.label
+        offline = self.isOffline()
+        clone = self.isClone()
+
+        cOff = self.commitOff
+        rOff = self.releaseOff
+        cChk = self.commitChk
+        rChk = self.releaseChk
+        cOn = self.commitOn
+        rOn = self.releaseOn
+        rcOn = self.releaseCommitOn
+
+        askExact = rChk or cChk
+        askExactRelease = rChk
+        askExactCommit = cChk
+        askLatest = not askExact and (rChk == &#34;&#34; or cChk == &#34;&#34;)
+        askLatestAny = rChk == &#34;&#34; and cChk == &#34;&#34;
+        askLatestRelease = rChk == &#34;&#34; and cChk is None
+        askLatestCommit = cChk == &#34;&#34; and rChk is None
+
+        isExactReleaseOff = rChk and rChk == rOff
+        isExactCommitOff = cChk and cChk == cOff
+        isExactReleaseOn = rChk and rChk == rOn
+        isExactCommitOn = cChk and cChk == cOn
+        isLatestRelease = rOff and rOff == rOn or cOff and cOff == rcOn
+        isLatestCommit = cOff and cOff == cOn
+
+        isLocal = (
+            askExactRelease
+            and isExactReleaseOff
+            or askExactCommit
+            and isExactCommitOff
+            or askLatestAny
+            and (isLatestRelease or isLatestCommit)
+            or askLatestRelease
+            and isLatestRelease
+            or askLatestCommit
+            and isLatestCommit
+        )
+        mayLocal = (
+            askLatestAny
+            and (rOff or cOff)
+            or askLatestRelease
+            and rOff
+            or askLatestCommit
+            and cOff
+        )
+        canOnline = self.repoOnline
+        isOnline = canOnline and (
+            askExactRelease
+            and isExactReleaseOn
+            or askExactCommit
+            and isExactCommitOn
+            or askLatestAny
+            or askLatestRelease
+            or askLatestCommit
+        )
+
+        if offline:
+            if clone:
+                dirPath = self.dirPathClone
+                self.localBase = self.baseClone if os.path.exists(dirPath) else False
+            else:
+                self.localBase = (
+                    self.baseLocal
+                    if (
+                        cChk
+                        and cChk == cOff
+                        or cChk is None
+                        and cOff
+                        or rChk
+                        and rChk == rOff
+                        or rChk is None
+                        and rOff
+                    )
+                    else False
+                )
+            if not self.localBase:
+                method = self.warning if attempt else self.error
+                method(f&#34;The requested {label} is not available offline&#34;)
+        else:
+            if isLocal:
+                self.localBase = self.baseLocal
+            else:
+                if not canOnline:
+                    if askLatest:
+                        if mayLocal:
+                            self.warning(f&#34;The offline {label} may not be the latest&#34;)
+                            self.localBase = self.baseLocal
+                        else:
+                            self.error(
+                                f&#34;The requested {label} is not available offline&#34;
+                            )
+                    else:
+                        self.warning(f&#34;The requested {label} is not available offline&#34;)
+                        self.error(f&#34;No online connection&#34;)
+                elif not isOnline:
+                    self.error(f&#34;The requested {label} is not available online&#34;)
+                else:
+                    self.localBase = self.baseLocal if self.download() else False
+
+        if self.localBase:
+            self.localDir = self.dataPath
+            state = (
+                &#34;requested&#34;
+                if askExact
+                else &#34;latest release&#34;
+                if rChk == &#34;&#34; and canOnline and self.releaseOff
+                else &#34;latest? release&#34;
+                if rChk == &#34;&#34; and not canOnline and self.releaseOff
+                else &#34;latest commit&#34;
+                if cChk == &#34;&#34; and canOnline and self.commitOff
+                else &#34;latest? commit&#34;
+                if cChk == &#34;&#34; and not canOnline and self.commitOff
+                else &#34;local release&#34;
+                if self.local == &#34;local&#34; and self.releaseOff
+                else &#34;local commit&#34;
+                if self.local == &#34;local&#34; and self.commitOff
+                else &#34;local github&#34;
+                if self.local == &#34;clone&#34;
+                else &#34;for whatever reason&#34;
+            )
+            offString = self.toString(
+                self.commitOff,
+                self.releaseOff,
+                self.local,
+                dest=self.dest,
+                source=self.source,
+            )
+            self.log(
+                f&#34;Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:&#34;
+            )
+            self.log(f&#34;\t{offString} ({state})&#34;)
+
+    def download(self):
+        cChk = self.commitChk
+        rChk = self.releaseChk
+
+        fetched = False
+        if rChk is not None:
+            fetched = self.downloadRelease(rChk, showErrors=cChk is None)
+        if not fetched and cChk is not None:
+            fetched = self.downloadCommit(cChk, showErrors=True)
+
+        if fetched:
+            self.writeInfo()
+        return fetched
+
+    def downloadRelease(self, release, showErrors=True):
+        cChk = self.commitChk
+        r = self.getReleaseObj(release, showErrors=showErrors)
+        if not r:
+            return False
+        (commit, release) = self.getReleaseFromObj(r)
+
+        assets = None
+        try:
+            assets = r.get_assets()
+        except Exception:
+            pass
+        assetUrl = None
+        versionRep3 = f&#34;-{self.version}&#34; if self.version else &#34;&#34;
+        relativeFlat = self.relative.replace(&#34;/&#34;, &#34;-&#34;)
+        dataFile = f&#34;{relativeFlat}{versionRep3}.zip&#34;
+        if assets and assets.totalCount &gt; 0:
+            for asset in assets:
+                if asset.name == dataFile:
+                    assetUrl = asset.browser_download_url
+                    break
+        fetched = False
+        if assetUrl:
+            fetched = self.downloadZip(assetUrl, showErrors=False)
+        if not fetched:
+            thisShowErrors = not cChk == &#34;&#34;
+            fetched = self.downloadCommit(commit, showErrors=thisShowErrors)
+        if fetched:
+            self.commitOff = commit
+            self.releaseOff = release
+        return fetched
+
+    def downloadCommit(self, commit, showErrors=True):
+        c = self.getCommitObj(commit)
+        if not c:
+            return False
+        commit = self.getCommitFromObj(c)
+        fetched = self.downloadDir(commit, exclude=r&#34;\.tfx&#34;, showErrors=showErrors)
+        if fetched:
+            self.commitOff = commit
+            self.releaseOff = None
+        return fetched
+
+    def downloadZip(self, dataUrl, showErrors=True):
+        label = self.label
+        self.log(f&#34;\tdownloading {dataUrl} ... &#34;)
+        try:
+            r = requests.get(dataUrl, allow_redirects=True)
+            self.log(f&#34;\tunzipping ... &#34;)
+            zf = io.BytesIO(r.content)
+        except Exception as e:
+            msg = f&#34;\t{str(e)}\n\tcould not download {dataUrl}&#34;
+            self.possibleError(msg, showErrors, again=True)
+            return False
+
+        self.log(f&#34;\tsaving {label}&#34;)
+
+        cwd = os.getcwd()
+        destZip = self.dirPathLocal
+        try:
+            z = ZipFile(zf)
+            if not self.keep:
+                if os.path.exists(destZip):
+                    rmtree(destZip)
+            os.makedirs(destZip, exist_ok=True)
+            os.chdir(destZip)
+            if self.withPaths:
+                z.extractall()
+                if os.path.exists(&#34;__MACOSX&#34;):
+                    rmtree(&#34;__MACOSX&#34;)
+            else:
+                for zInfo in z.infolist():
+                    if zInfo.filename[-1] == &#34;/&#34;:
+                        continue
+                    if zInfo.filename.startswith(&#34;__MACOS&#34;):
+                        continue
+                    zInfo.filename = os.path.basename(zInfo.filename)
+                    z.extract(zInfo)
+        except Exception:
+            msg = f&#34;\tcould not save {label} to {destZip}&#34;
+            self.possibleError(msg, showErrors, again=True)
+            os.chdir(cwd)
+            return False
+        os.chdir(cwd)
+        return True
+
+    def downloadDir(self, commit, exclude=None, showErrors=False):
+        g = self.repoOnline
+        if not g:
+            return None
+
+        destDir = f&#34;{self.dirPathLocal}&#34;
+        destSave = f&#34;{self.dirPathSaveLocal}&#34;
+        if not self.keep:
+            if os.path.exists(destDir):
+                rmtree(destDir)
+        os.makedirs(destDir, exist_ok=True)
+
+        excludeRe = re.compile(exclude) if exclude else None
+
+        good = True
+
+        def _downloadDir(subPath, level=0):
+            nonlocal good
+            if not good:
+                return
+            lead = &#34;\t&#34; * level
+            try:
+                contents = g.get_contents(subPath, ref=commit)
+            except UnknownObjectException:
+                msg = f&#34;{lead}No directory {subPath} in {self.toString(commit, None, False)}&#34;
+                self.possibleError(msg, showErrors, again=True, indent=lead)
+                good = False
+                return
+            for content in contents:
+                thisPath = content.path
+                self.log(f&#34;\t{lead}{thisPath}...&#34;, newline=False)
+                if exclude and excludeRe.search(thisPath):
+                    self.log(&#34;excluded&#34;)
+                    continue
+                if content.type == &#34;dir&#34;:
+                    self.log(&#34;directory&#34;)
+                    os.makedirs(f&#34;{destSave}/{thisPath}&#34;, exist_ok=True)
+                    _downloadDir(thisPath, level + 1)
+                else:
+                    try:
+                        fileContent = g.get_git_blob(content.sha)
+                        fileData = base64.b64decode(fileContent.content)
+                        fileDest = f&#34;{destSave}/{thisPath}&#34;
+                        with open(fileDest, &#34;wb&#34;) as fd:
+                            fd.write(fileData)
+                        self.log(&#34;downloaded&#34;)
+                    except (GithubException, IOError):
+                        msg = &#34;error&#34;
+                        self.possibleError(msg, showErrors, again=True, indent=lead)
+                        good = False
+
+        _downloadDir(self.dataDir, 0)
+
+        if good:
+            self.log(&#34;\tOK&#34;)
+        else:
+            msg = &#34;\tFailed&#34;
+            self.possibleError(msg, showErrors)
+
+        return good
+
+    def getRelease(self, release, showErrors=True):
+        r = self.getReleaseObj(release, showErrors=showErrors)
+        if not r:
+            return None
+        return self.getReleaseFromObj(r)
+
+    def getCommit(self, commit):
+        c = self.getCommitObj(commit)
+        if not c:
+            return None
+        return self.getCommitFromObj(c)
+
+    def getReleaseObj(self, release, showErrors=True):
+        g = self.repoOnline
+        if not g:
+            return None
+
+        r = None
+        msg = f&#39; tagged &#34;{release}&#34;&#39; if release else &#34;s&#34;
+
+        try:
+            r = g.get_release(release) if release else g.get_latest_release()
+        except UnknownObjectException:
+            self.possibleError(f&#34;\tno release{msg}&#34;, showErrors)
+        except Exception:
+            self.possibleError(f&#34;\tcannot find release{msg}&#34;, showErrors)
+        return r
+
+    def getCommitObj(self, commit):
+        g = self.repoOnline
+        if not g:
+            return None
+
+        c = None
+        msg = f&#39; with hash &#34;{commit}&#34;&#39; if commit else &#34;s&#34;
+
+        try:
+            cs = g.get_commits(sha=commit) if commit else g.get_commits()
+            if cs.totalCount:
+                c = cs[0]
+            else:
+                self.error(f&#34;\tno commit{msg}&#34;)
+        except Exception:
+            self.error(f&#34;\tcannot find commit{msg}&#34;)
+        return c
+
+    def getReleaseFromObj(self, r):
+        g = self.repoOnline
+        if not g:
+            return None
+        release = r.tag_name
+        ref = g.get_git_ref(f&#34;tags/{release}&#34;)
+        commit = ref.object.sha
+        return (commit, release)
+
+    def getCommitFromObj(self, c):
+        g = self.repoOnline
+        if not g:
+            return None
+        return c.sha
+
+    def fetchInfo(self):
+        g = self.repoOnline
+        if not g:
+            return
+        self.commitOn = None
+        self.releaseOn = None
+        self.releaseCommitOn = None
+        if self.releaseChk is not None:
+            result = self.getRelease(self.releaseChk, showErrors=self.commitChk is None)
+            if result:
+                (self.releaseCommitOn, self.releaseOn) = result
+        if self.commitChk is not None:
+            result = self.getCommit(self.commitChk)
+            if result:
+                self.commitOn = result
+
+    def fixInfo(self):
+        sDir = self.dirPathLocal
+        if not os.path.exists(sDir):
+            return
+        for sFile in EXPRESS_SYNC_LEGACY:
+            sPath = f&#34;{sDir}/{sFile}&#34;
+            if os.path.exists(sPath):
+                goodPath = f&#34;{sDir}/{EXPRESS_SYNC}&#34;
+                if os.path.exists(goodPath):
+                    os.remove(sPath)
+                else:
+                    os.rename(sPath, goodPath)
+
+    def readInfo(self):
+        if os.path.exists(self.filePathLocal):
+            with open(self.filePathLocal, encoding=&#34;utf8&#34;) as f:
+                for line in f:
+                    string = line.strip()
+                    (commit, release, local) = self.fromString(string)
+                    if commit:
+                        self.commitOff = commit
+                    if release:
+                        self.releaseOff = release
+
+    def writeInfo(self):
+        if not os.path.exists(self.dirPathLocal):
+            os.makedirs(self.dirPathLocal, exist_ok=True)
+        with open(self.filePathLocal, &#34;w&#34;, encoding=&#34;utf8&#34;) as f:
+            if self.releaseOff:
+                f.write(f&#34;{self.releaseOff}\n&#34;)
+            if self.commitOff:
+                f.write(f&#34;{self.commitOff}\n&#34;)
+
+    def connect(self):
+        if not self.ghConn:
+            ghPerson = os.environ.get(&#34;GHPERS&#34;, None)
+            if ghPerson:
+                self.ghConn = Github(ghPerson)
+            else:
+                ghClient = os.environ.get(&#34;GHCLIENT&#34;, None)
+                ghSecret = os.environ.get(&#34;GHSECRET&#34;, None)
+                if ghClient and ghSecret:
+                    self.ghConn = Github(client_id=ghClient, client_secret=ghSecret)
+                else:
+                    self.ghConn = Github()
+        try:
+            rate = self.ghConn.get_rate_limit().core
+            self.log(
+                f&#34;rate limit is {rate.limit} requests per hour,&#34;
+                f&#34; with {rate.remaining} left for this hour&#34;
+            )
+            if rate.limit &lt; 100:
+                self.warning(
+                    f&#34;To increase the rate,&#34;
+                    f&#34;see https://annotation.github.io/text-fabric/Api/Repo/&#34;
+                )
+
+            self.log(
+                f&#34;\tconnecting to online GitHub repo {self.org}/{self.repo} ... &#34;,
+                newline=False,
+            )
+            self.repoOnline = self.ghConn.get_repo(f&#34;{self.org}/{self.repo}&#34;)
+            self.log(f&#34;connected&#34;)
+        except GithubException as why:
+            self.warning(f&#34;failed&#34;)
+            self.warning(f&#34;GitHub says: {why}&#34;)
+        except IOError:
+            self.warning(f&#34;no internet&#34;)
+
+
+def checkoutRepo(
+    org=&#34;annotation&#34;,
+    repo=&#34;tutorials&#34;,
+    folder=&#34;text-fabric/examples/banks/tf&#34;,
+    version=&#34;&#34;,
+    checkout=&#34;&#34;,
+    source=GH_BASE,
+    dest=EXPRESS_BASE,
+    withPaths=True,
+    keep=True,
+    silent=False,
+    label=&#34;data&#34;,
+):
+    def resolve(chkout, attempt=False):
+        rData = Checkout(
+            org,
+            repo,
+            folder,
+            chkout,
+            source,
+            dest,
+            keep,
+            withPaths,
+            silent,
+            version=version,
+            label=label,
+        )
+        rData.makeSureLocal(attempt=attempt)
+        return (
+            (
+                rData.commitOff,
+                rData.releaseOff,
+                rData.local,
+                rData.localBase,
+                rData.localDir,
+            )
+            if rData.localBase
+            else (None, None, False, False, None)
+        )
+
+    if checkout == &#34;&#34;:
+        rData = resolve(&#34;local&#34;, attempt=True)
+        if rData[3]:
+            return rData
+    return resolve(checkout)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.applib.repo.checkoutRepo"><code class="name flex">
+<span>def <span class="ident">checkoutRepo</span></span>(<span>org='annotation', repo='tutorials', folder='text-fabric/examples/banks/tf', version='', checkout='', source='~/github', dest='~/text-fabric-data', withPaths=True, keep=True, silent=False, label='data')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def checkoutRepo(
+    org=&#34;annotation&#34;,
+    repo=&#34;tutorials&#34;,
+    folder=&#34;text-fabric/examples/banks/tf&#34;,
+    version=&#34;&#34;,
+    checkout=&#34;&#34;,
+    source=GH_BASE,
+    dest=EXPRESS_BASE,
+    withPaths=True,
+    keep=True,
+    silent=False,
+    label=&#34;data&#34;,
+):
+    def resolve(chkout, attempt=False):
+        rData = Checkout(
+            org,
+            repo,
+            folder,
+            chkout,
+            source,
+            dest,
+            keep,
+            withPaths,
+            silent,
+            version=version,
+            label=label,
+        )
+        rData.makeSureLocal(attempt=attempt)
+        return (
+            (
+                rData.commitOff,
+                rData.releaseOff,
+                rData.local,
+                rData.localBase,
+                rData.localDir,
+            )
+            if rData.localBase
+            else (None, None, False, False, None)
+        )
+
+    if checkout == &#34;&#34;:
+        rData = resolve(&#34;local&#34;, attempt=True)
+        if rData[3]:
+            return rData
+    return resolve(checkout)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.applib.repo.Checkout"><code class="flex name class">
+<span>class <span class="ident">Checkout</span></span>
+<span>(</span><span>org, repo, relative, checkout, source, dest, keep, withPaths, silent, version=None, label='data')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Checkout(object):
+    @staticmethod
+    def fromString(string):
+        commit = None
+        release = None
+        local = None
+        if not string:
+            commit = &#34;&#34;
+            release = &#34;&#34;
+        elif string == &#34;latest&#34;:
+            commit = None
+            release = &#34;&#34;
+        elif string == &#34;hot&#34;:
+            commit = &#34;&#34;
+            release = None
+        elif string in {&#34;local&#34;, &#34;clone&#34;}:
+            commit = None
+            release = None
+            local = string
+        elif &#34;.&#34; in string or len(string) &lt; 12:
+            commit = None
+            release = string
+        else:
+            commit = string
+            release = None
+        return (commit, release, local)
+
+    @staticmethod
+    def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
+        extra = &#34;&#34;
+        if local:
+            baseRep = source if local == &#34;clone&#34; else dest
+            extra = f&#34; offline under {baseRep}&#34;
+        if local == &#34;clone&#34;:
+            result = f&#34;repo clone&#34;
+        elif commit and release:
+            result = f&#34;r{release}=#{commit}&#34;
+        elif commit:
+            result = f&#34;#{commit}&#34;
+        elif release:
+            result = f&#34;r{release}&#34;
+        elif commit is None and release is None:
+            result = f&#34;unknown release or commit&#34;
+        elif commit is None:
+            result = f&#34;latest release&#34;
+        elif release is None:
+            result = f&#34;latest commit&#34;
+        else:
+            result = f&#34;latest release or commit&#34;
+        return f&#34;{result}{extra}&#34;
+
+    def isClone(self):
+        return self.local == &#34;clone&#34;
+
+    def isOffline(self):
+        return self.local in {&#34;clone&#34;, &#34;local&#34;}
+
+    def __init__(
+        self,
+        org,
+        repo,
+        relative,
+        checkout,
+        source,
+        dest,
+        keep,
+        withPaths,
+        silent,
+        version=None,
+        label=&#34;data&#34;,
+    ):
+        self.label = label
+        self.org = org
+        self.repo = repo
+        self.source = source
+        self.dest = dest
+        (self.commitChk, self.releaseChk, self.local) = self.fromString(checkout)
+        clone = self.isClone()
+        offline = self.isOffline()
+
+        self.relative = relative
+        self.version = version
+        versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
+        self.versionRep = versionRep
+        relativeRep = f&#34;/{relative}&#34; if relative else &#34;&#34;
+        relativeGh = f&#34;/tree/master/{relative}&#34; if relative else &#34;&#34;
+        self.baseGh = f&#34;{URL_GH}/{org}/{repo}{relativeGh}{versionRep}&#34;
+        self.dataDir = f&#34;{relative}{versionRep}&#34;
+
+        self.baseLocal = os.path.expanduser(self.dest)
+        self.dataRelLocal = f&#34;{org}/{repo}{relativeRep}&#34;
+        self.dirPathSaveLocal = f&#34;{self.baseLocal}/{org}/{repo}&#34;
+        self.dirPathLocal = f&#34;{self.baseLocal}/{self.dataRelLocal}{versionRep}&#34;
+        self.dataPathLocal = f&#34;{self.dataRelLocal}{versionRep}&#34;
+        self.filePathLocal = f&#34;{self.dirPathLocal}/{EXPRESS_SYNC}&#34;
+
+        self.baseClone = os.path.expanduser(self.source)
+        self.dataRelClone = f&#34;{org}/{repo}{relativeRep}&#34;
+        self.dirPathClone = f&#34;{self.baseClone}/{self.dataRelClone}{versionRep}&#34;
+        self.dataPathClone = f&#34;{self.dataRelClone}{versionRep}&#34;
+
+        self.dataPath = self.dataRelClone if clone else self.dataRelLocal
+
+        self.keep = keep
+        self.withPaths = withPaths
+        self.ghConn = None
+
+        self.commitOff = None
+        self.releaseOff = None
+        self.commitOn = None
+        self.releaseOn = None
+        self.releaseCommitOn = None
+
+        self.silent = silent
+
+        self.repoOnline = None
+        self.localBase = False
+        self.localDir = None
+
+        if clone:
+            self.commitOff = None
+            self.releaseOff = None
+        else:
+            self.fixInfo()
+            self.readInfo()
+
+        if not offline:
+            self.connect()
+            self.fetchInfo()
+
+    def log(self, msg, newline=True):
+        silent = self.silent
+        if not silent:
+            console(msg, newline=newline)
+
+    def warning(self, msg, newline=True):
+        silent = self.silent
+        if not silent == &#34;deep&#34;:
+            console(msg, newline=newline)
+
+    def error(self, msg, newline=True):
+        console(msg, error=True, newline=newline)
+
+    def possibleError(self, msg, showErrors, again=False, indent=&#34;\t&#34;, newline=False):
+        if showErrors:
+            self.error(msg, newline=newline)
+        else:
+            self.warning(msg, newline=newline)
+            if again:
+                self.warning(f&#34;{indent}Will try something else&#34;)
+
+    def makeSureLocal(self, attempt=False):
+        label = self.label
+        offline = self.isOffline()
+        clone = self.isClone()
+
+        cOff = self.commitOff
+        rOff = self.releaseOff
+        cChk = self.commitChk
+        rChk = self.releaseChk
+        cOn = self.commitOn
+        rOn = self.releaseOn
+        rcOn = self.releaseCommitOn
+
+        askExact = rChk or cChk
+        askExactRelease = rChk
+        askExactCommit = cChk
+        askLatest = not askExact and (rChk == &#34;&#34; or cChk == &#34;&#34;)
+        askLatestAny = rChk == &#34;&#34; and cChk == &#34;&#34;
+        askLatestRelease = rChk == &#34;&#34; and cChk is None
+        askLatestCommit = cChk == &#34;&#34; and rChk is None
+
+        isExactReleaseOff = rChk and rChk == rOff
+        isExactCommitOff = cChk and cChk == cOff
+        isExactReleaseOn = rChk and rChk == rOn
+        isExactCommitOn = cChk and cChk == cOn
+        isLatestRelease = rOff and rOff == rOn or cOff and cOff == rcOn
+        isLatestCommit = cOff and cOff == cOn
+
+        isLocal = (
+            askExactRelease
+            and isExactReleaseOff
+            or askExactCommit
+            and isExactCommitOff
+            or askLatestAny
+            and (isLatestRelease or isLatestCommit)
+            or askLatestRelease
+            and isLatestRelease
+            or askLatestCommit
+            and isLatestCommit
+        )
+        mayLocal = (
+            askLatestAny
+            and (rOff or cOff)
+            or askLatestRelease
+            and rOff
+            or askLatestCommit
+            and cOff
+        )
+        canOnline = self.repoOnline
+        isOnline = canOnline and (
+            askExactRelease
+            and isExactReleaseOn
+            or askExactCommit
+            and isExactCommitOn
+            or askLatestAny
+            or askLatestRelease
+            or askLatestCommit
+        )
+
+        if offline:
+            if clone:
+                dirPath = self.dirPathClone
+                self.localBase = self.baseClone if os.path.exists(dirPath) else False
+            else:
+                self.localBase = (
+                    self.baseLocal
+                    if (
+                        cChk
+                        and cChk == cOff
+                        or cChk is None
+                        and cOff
+                        or rChk
+                        and rChk == rOff
+                        or rChk is None
+                        and rOff
+                    )
+                    else False
+                )
+            if not self.localBase:
+                method = self.warning if attempt else self.error
+                method(f&#34;The requested {label} is not available offline&#34;)
+        else:
+            if isLocal:
+                self.localBase = self.baseLocal
+            else:
+                if not canOnline:
+                    if askLatest:
+                        if mayLocal:
+                            self.warning(f&#34;The offline {label} may not be the latest&#34;)
+                            self.localBase = self.baseLocal
+                        else:
+                            self.error(
+                                f&#34;The requested {label} is not available offline&#34;
+                            )
+                    else:
+                        self.warning(f&#34;The requested {label} is not available offline&#34;)
+                        self.error(f&#34;No online connection&#34;)
+                elif not isOnline:
+                    self.error(f&#34;The requested {label} is not available online&#34;)
+                else:
+                    self.localBase = self.baseLocal if self.download() else False
+
+        if self.localBase:
+            self.localDir = self.dataPath
+            state = (
+                &#34;requested&#34;
+                if askExact
+                else &#34;latest release&#34;
+                if rChk == &#34;&#34; and canOnline and self.releaseOff
+                else &#34;latest? release&#34;
+                if rChk == &#34;&#34; and not canOnline and self.releaseOff
+                else &#34;latest commit&#34;
+                if cChk == &#34;&#34; and canOnline and self.commitOff
+                else &#34;latest? commit&#34;
+                if cChk == &#34;&#34; and not canOnline and self.commitOff
+                else &#34;local release&#34;
+                if self.local == &#34;local&#34; and self.releaseOff
+                else &#34;local commit&#34;
+                if self.local == &#34;local&#34; and self.commitOff
+                else &#34;local github&#34;
+                if self.local == &#34;clone&#34;
+                else &#34;for whatever reason&#34;
+            )
+            offString = self.toString(
+                self.commitOff,
+                self.releaseOff,
+                self.local,
+                dest=self.dest,
+                source=self.source,
+            )
+            self.log(
+                f&#34;Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:&#34;
+            )
+            self.log(f&#34;\t{offString} ({state})&#34;)
+
+    def download(self):
+        cChk = self.commitChk
+        rChk = self.releaseChk
+
+        fetched = False
+        if rChk is not None:
+            fetched = self.downloadRelease(rChk, showErrors=cChk is None)
+        if not fetched and cChk is not None:
+            fetched = self.downloadCommit(cChk, showErrors=True)
+
+        if fetched:
+            self.writeInfo()
+        return fetched
+
+    def downloadRelease(self, release, showErrors=True):
+        cChk = self.commitChk
+        r = self.getReleaseObj(release, showErrors=showErrors)
+        if not r:
+            return False
+        (commit, release) = self.getReleaseFromObj(r)
+
+        assets = None
+        try:
+            assets = r.get_assets()
+        except Exception:
+            pass
+        assetUrl = None
+        versionRep3 = f&#34;-{self.version}&#34; if self.version else &#34;&#34;
+        relativeFlat = self.relative.replace(&#34;/&#34;, &#34;-&#34;)
+        dataFile = f&#34;{relativeFlat}{versionRep3}.zip&#34;
+        if assets and assets.totalCount &gt; 0:
+            for asset in assets:
+                if asset.name == dataFile:
+                    assetUrl = asset.browser_download_url
+                    break
+        fetched = False
+        if assetUrl:
+            fetched = self.downloadZip(assetUrl, showErrors=False)
+        if not fetched:
+            thisShowErrors = not cChk == &#34;&#34;
+            fetched = self.downloadCommit(commit, showErrors=thisShowErrors)
+        if fetched:
+            self.commitOff = commit
+            self.releaseOff = release
+        return fetched
+
+    def downloadCommit(self, commit, showErrors=True):
+        c = self.getCommitObj(commit)
+        if not c:
+            return False
+        commit = self.getCommitFromObj(c)
+        fetched = self.downloadDir(commit, exclude=r&#34;\.tfx&#34;, showErrors=showErrors)
+        if fetched:
+            self.commitOff = commit
+            self.releaseOff = None
+        return fetched
+
+    def downloadZip(self, dataUrl, showErrors=True):
+        label = self.label
+        self.log(f&#34;\tdownloading {dataUrl} ... &#34;)
+        try:
+            r = requests.get(dataUrl, allow_redirects=True)
+            self.log(f&#34;\tunzipping ... &#34;)
+            zf = io.BytesIO(r.content)
+        except Exception as e:
+            msg = f&#34;\t{str(e)}\n\tcould not download {dataUrl}&#34;
+            self.possibleError(msg, showErrors, again=True)
+            return False
+
+        self.log(f&#34;\tsaving {label}&#34;)
+
+        cwd = os.getcwd()
+        destZip = self.dirPathLocal
+        try:
+            z = ZipFile(zf)
+            if not self.keep:
+                if os.path.exists(destZip):
+                    rmtree(destZip)
+            os.makedirs(destZip, exist_ok=True)
+            os.chdir(destZip)
+            if self.withPaths:
+                z.extractall()
+                if os.path.exists(&#34;__MACOSX&#34;):
+                    rmtree(&#34;__MACOSX&#34;)
+            else:
+                for zInfo in z.infolist():
+                    if zInfo.filename[-1] == &#34;/&#34;:
+                        continue
+                    if zInfo.filename.startswith(&#34;__MACOS&#34;):
+                        continue
+                    zInfo.filename = os.path.basename(zInfo.filename)
+                    z.extract(zInfo)
+        except Exception:
+            msg = f&#34;\tcould not save {label} to {destZip}&#34;
+            self.possibleError(msg, showErrors, again=True)
+            os.chdir(cwd)
+            return False
+        os.chdir(cwd)
+        return True
+
+    def downloadDir(self, commit, exclude=None, showErrors=False):
+        g = self.repoOnline
+        if not g:
+            return None
+
+        destDir = f&#34;{self.dirPathLocal}&#34;
+        destSave = f&#34;{self.dirPathSaveLocal}&#34;
+        if not self.keep:
+            if os.path.exists(destDir):
+                rmtree(destDir)
+        os.makedirs(destDir, exist_ok=True)
+
+        excludeRe = re.compile(exclude) if exclude else None
+
+        good = True
+
+        def _downloadDir(subPath, level=0):
+            nonlocal good
+            if not good:
+                return
+            lead = &#34;\t&#34; * level
+            try:
+                contents = g.get_contents(subPath, ref=commit)
+            except UnknownObjectException:
+                msg = f&#34;{lead}No directory {subPath} in {self.toString(commit, None, False)}&#34;
+                self.possibleError(msg, showErrors, again=True, indent=lead)
+                good = False
+                return
+            for content in contents:
+                thisPath = content.path
+                self.log(f&#34;\t{lead}{thisPath}...&#34;, newline=False)
+                if exclude and excludeRe.search(thisPath):
+                    self.log(&#34;excluded&#34;)
+                    continue
+                if content.type == &#34;dir&#34;:
+                    self.log(&#34;directory&#34;)
+                    os.makedirs(f&#34;{destSave}/{thisPath}&#34;, exist_ok=True)
+                    _downloadDir(thisPath, level + 1)
+                else:
+                    try:
+                        fileContent = g.get_git_blob(content.sha)
+                        fileData = base64.b64decode(fileContent.content)
+                        fileDest = f&#34;{destSave}/{thisPath}&#34;
+                        with open(fileDest, &#34;wb&#34;) as fd:
+                            fd.write(fileData)
+                        self.log(&#34;downloaded&#34;)
+                    except (GithubException, IOError):
+                        msg = &#34;error&#34;
+                        self.possibleError(msg, showErrors, again=True, indent=lead)
+                        good = False
+
+        _downloadDir(self.dataDir, 0)
+
+        if good:
+            self.log(&#34;\tOK&#34;)
+        else:
+            msg = &#34;\tFailed&#34;
+            self.possibleError(msg, showErrors)
+
+        return good
+
+    def getRelease(self, release, showErrors=True):
+        r = self.getReleaseObj(release, showErrors=showErrors)
+        if not r:
+            return None
+        return self.getReleaseFromObj(r)
+
+    def getCommit(self, commit):
+        c = self.getCommitObj(commit)
+        if not c:
+            return None
+        return self.getCommitFromObj(c)
+
+    def getReleaseObj(self, release, showErrors=True):
+        g = self.repoOnline
+        if not g:
+            return None
+
+        r = None
+        msg = f&#39; tagged &#34;{release}&#34;&#39; if release else &#34;s&#34;
+
+        try:
+            r = g.get_release(release) if release else g.get_latest_release()
+        except UnknownObjectException:
+            self.possibleError(f&#34;\tno release{msg}&#34;, showErrors)
+        except Exception:
+            self.possibleError(f&#34;\tcannot find release{msg}&#34;, showErrors)
+        return r
+
+    def getCommitObj(self, commit):
+        g = self.repoOnline
+        if not g:
+            return None
+
+        c = None
+        msg = f&#39; with hash &#34;{commit}&#34;&#39; if commit else &#34;s&#34;
+
+        try:
+            cs = g.get_commits(sha=commit) if commit else g.get_commits()
+            if cs.totalCount:
+                c = cs[0]
+            else:
+                self.error(f&#34;\tno commit{msg}&#34;)
+        except Exception:
+            self.error(f&#34;\tcannot find commit{msg}&#34;)
+        return c
+
+    def getReleaseFromObj(self, r):
+        g = self.repoOnline
+        if not g:
+            return None
+        release = r.tag_name
+        ref = g.get_git_ref(f&#34;tags/{release}&#34;)
+        commit = ref.object.sha
+        return (commit, release)
+
+    def getCommitFromObj(self, c):
+        g = self.repoOnline
+        if not g:
+            return None
+        return c.sha
+
+    def fetchInfo(self):
+        g = self.repoOnline
+        if not g:
+            return
+        self.commitOn = None
+        self.releaseOn = None
+        self.releaseCommitOn = None
+        if self.releaseChk is not None:
+            result = self.getRelease(self.releaseChk, showErrors=self.commitChk is None)
+            if result:
+                (self.releaseCommitOn, self.releaseOn) = result
+        if self.commitChk is not None:
+            result = self.getCommit(self.commitChk)
+            if result:
+                self.commitOn = result
+
+    def fixInfo(self):
+        sDir = self.dirPathLocal
+        if not os.path.exists(sDir):
+            return
+        for sFile in EXPRESS_SYNC_LEGACY:
+            sPath = f&#34;{sDir}/{sFile}&#34;
+            if os.path.exists(sPath):
+                goodPath = f&#34;{sDir}/{EXPRESS_SYNC}&#34;
+                if os.path.exists(goodPath):
+                    os.remove(sPath)
+                else:
+                    os.rename(sPath, goodPath)
+
+    def readInfo(self):
+        if os.path.exists(self.filePathLocal):
+            with open(self.filePathLocal, encoding=&#34;utf8&#34;) as f:
+                for line in f:
+                    string = line.strip()
+                    (commit, release, local) = self.fromString(string)
+                    if commit:
+                        self.commitOff = commit
+                    if release:
+                        self.releaseOff = release
+
+    def writeInfo(self):
+        if not os.path.exists(self.dirPathLocal):
+            os.makedirs(self.dirPathLocal, exist_ok=True)
+        with open(self.filePathLocal, &#34;w&#34;, encoding=&#34;utf8&#34;) as f:
+            if self.releaseOff:
+                f.write(f&#34;{self.releaseOff}\n&#34;)
+            if self.commitOff:
+                f.write(f&#34;{self.commitOff}\n&#34;)
+
+    def connect(self):
+        if not self.ghConn:
+            ghPerson = os.environ.get(&#34;GHPERS&#34;, None)
+            if ghPerson:
+                self.ghConn = Github(ghPerson)
+            else:
+                ghClient = os.environ.get(&#34;GHCLIENT&#34;, None)
+                ghSecret = os.environ.get(&#34;GHSECRET&#34;, None)
+                if ghClient and ghSecret:
+                    self.ghConn = Github(client_id=ghClient, client_secret=ghSecret)
+                else:
+                    self.ghConn = Github()
+        try:
+            rate = self.ghConn.get_rate_limit().core
+            self.log(
+                f&#34;rate limit is {rate.limit} requests per hour,&#34;
+                f&#34; with {rate.remaining} left for this hour&#34;
+            )
+            if rate.limit &lt; 100:
+                self.warning(
+                    f&#34;To increase the rate,&#34;
+                    f&#34;see https://annotation.github.io/text-fabric/Api/Repo/&#34;
+                )
+
+            self.log(
+                f&#34;\tconnecting to online GitHub repo {self.org}/{self.repo} ... &#34;,
+                newline=False,
+            )
+            self.repoOnline = self.ghConn.get_repo(f&#34;{self.org}/{self.repo}&#34;)
+            self.log(f&#34;connected&#34;)
+        except GithubException as why:
+            self.warning(f&#34;failed&#34;)
+            self.warning(f&#34;GitHub says: {why}&#34;)
+        except IOError:
+            self.warning(f&#34;no internet&#34;)</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="tf.applib.repo.Checkout.fromString"><code class="name flex">
+<span>def <span class="ident">fromString</span></span>(<span>string)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def fromString(string):
+    commit = None
+    release = None
+    local = None
+    if not string:
+        commit = &#34;&#34;
+        release = &#34;&#34;
+    elif string == &#34;latest&#34;:
+        commit = None
+        release = &#34;&#34;
+    elif string == &#34;hot&#34;:
+        commit = &#34;&#34;
+        release = None
+    elif string in {&#34;local&#34;, &#34;clone&#34;}:
+        commit = None
+        release = None
+        local = string
+    elif &#34;.&#34; in string or len(string) &lt; 12:
+        commit = None
+        release = string
+    else:
+        commit = string
+        release = None
+    return (commit, release, local)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.toString"><code class="name flex">
+<span>def <span class="ident">toString</span></span>(<span>commit, release, local, source='~/github', dest='~/text-fabric-data')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
+    extra = &#34;&#34;
+    if local:
+        baseRep = source if local == &#34;clone&#34; else dest
+        extra = f&#34; offline under {baseRep}&#34;
+    if local == &#34;clone&#34;:
+        result = f&#34;repo clone&#34;
+    elif commit and release:
+        result = f&#34;r{release}=#{commit}&#34;
+    elif commit:
+        result = f&#34;#{commit}&#34;
+    elif release:
+        result = f&#34;r{release}&#34;
+    elif commit is None and release is None:
+        result = f&#34;unknown release or commit&#34;
+    elif commit is None:
+        result = f&#34;latest release&#34;
+    elif release is None:
+        result = f&#34;latest commit&#34;
+    else:
+        result = f&#34;latest release or commit&#34;
+    return f&#34;{result}{extra}&#34;</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.applib.repo.Checkout.connect"><code class="name flex">
+<span>def <span class="ident">connect</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def connect(self):
+    if not self.ghConn:
+        ghPerson = os.environ.get(&#34;GHPERS&#34;, None)
+        if ghPerson:
+            self.ghConn = Github(ghPerson)
+        else:
+            ghClient = os.environ.get(&#34;GHCLIENT&#34;, None)
+            ghSecret = os.environ.get(&#34;GHSECRET&#34;, None)
+            if ghClient and ghSecret:
+                self.ghConn = Github(client_id=ghClient, client_secret=ghSecret)
+            else:
+                self.ghConn = Github()
+    try:
+        rate = self.ghConn.get_rate_limit().core
+        self.log(
+            f&#34;rate limit is {rate.limit} requests per hour,&#34;
+            f&#34; with {rate.remaining} left for this hour&#34;
+        )
+        if rate.limit &lt; 100:
+            self.warning(
+                f&#34;To increase the rate,&#34;
+                f&#34;see https://annotation.github.io/text-fabric/Api/Repo/&#34;
+            )
+
+        self.log(
+            f&#34;\tconnecting to online GitHub repo {self.org}/{self.repo} ... &#34;,
+            newline=False,
+        )
+        self.repoOnline = self.ghConn.get_repo(f&#34;{self.org}/{self.repo}&#34;)
+        self.log(f&#34;connected&#34;)
+    except GithubException as why:
+        self.warning(f&#34;failed&#34;)
+        self.warning(f&#34;GitHub says: {why}&#34;)
+    except IOError:
+        self.warning(f&#34;no internet&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.download"><code class="name flex">
+<span>def <span class="ident">download</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def download(self):
+    cChk = self.commitChk
+    rChk = self.releaseChk
+
+    fetched = False
+    if rChk is not None:
+        fetched = self.downloadRelease(rChk, showErrors=cChk is None)
+    if not fetched and cChk is not None:
+        fetched = self.downloadCommit(cChk, showErrors=True)
+
+    if fetched:
+        self.writeInfo()
+    return fetched</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.downloadCommit"><code class="name flex">
+<span>def <span class="ident">downloadCommit</span></span>(<span>self, commit, showErrors=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def downloadCommit(self, commit, showErrors=True):
+    c = self.getCommitObj(commit)
+    if not c:
+        return False
+    commit = self.getCommitFromObj(c)
+    fetched = self.downloadDir(commit, exclude=r&#34;\.tfx&#34;, showErrors=showErrors)
+    if fetched:
+        self.commitOff = commit
+        self.releaseOff = None
+    return fetched</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.downloadDir"><code class="name flex">
+<span>def <span class="ident">downloadDir</span></span>(<span>self, commit, exclude=None, showErrors=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def downloadDir(self, commit, exclude=None, showErrors=False):
+    g = self.repoOnline
+    if not g:
+        return None
+
+    destDir = f&#34;{self.dirPathLocal}&#34;
+    destSave = f&#34;{self.dirPathSaveLocal}&#34;
+    if not self.keep:
+        if os.path.exists(destDir):
+            rmtree(destDir)
+    os.makedirs(destDir, exist_ok=True)
+
+    excludeRe = re.compile(exclude) if exclude else None
+
+    good = True
+
+    def _downloadDir(subPath, level=0):
+        nonlocal good
+        if not good:
+            return
+        lead = &#34;\t&#34; * level
+        try:
+            contents = g.get_contents(subPath, ref=commit)
+        except UnknownObjectException:
+            msg = f&#34;{lead}No directory {subPath} in {self.toString(commit, None, False)}&#34;
+            self.possibleError(msg, showErrors, again=True, indent=lead)
+            good = False
+            return
+        for content in contents:
+            thisPath = content.path
+            self.log(f&#34;\t{lead}{thisPath}...&#34;, newline=False)
+            if exclude and excludeRe.search(thisPath):
+                self.log(&#34;excluded&#34;)
+                continue
+            if content.type == &#34;dir&#34;:
+                self.log(&#34;directory&#34;)
+                os.makedirs(f&#34;{destSave}/{thisPath}&#34;, exist_ok=True)
+                _downloadDir(thisPath, level + 1)
+            else:
+                try:
+                    fileContent = g.get_git_blob(content.sha)
+                    fileData = base64.b64decode(fileContent.content)
+                    fileDest = f&#34;{destSave}/{thisPath}&#34;
+                    with open(fileDest, &#34;wb&#34;) as fd:
+                        fd.write(fileData)
+                    self.log(&#34;downloaded&#34;)
+                except (GithubException, IOError):
+                    msg = &#34;error&#34;
+                    self.possibleError(msg, showErrors, again=True, indent=lead)
+                    good = False
+
+    _downloadDir(self.dataDir, 0)
+
+    if good:
+        self.log(&#34;\tOK&#34;)
+    else:
+        msg = &#34;\tFailed&#34;
+        self.possibleError(msg, showErrors)
+
+    return good</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.downloadRelease"><code class="name flex">
+<span>def <span class="ident">downloadRelease</span></span>(<span>self, release, showErrors=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def downloadRelease(self, release, showErrors=True):
+    cChk = self.commitChk
+    r = self.getReleaseObj(release, showErrors=showErrors)
+    if not r:
+        return False
+    (commit, release) = self.getReleaseFromObj(r)
+
+    assets = None
+    try:
+        assets = r.get_assets()
+    except Exception:
+        pass
+    assetUrl = None
+    versionRep3 = f&#34;-{self.version}&#34; if self.version else &#34;&#34;
+    relativeFlat = self.relative.replace(&#34;/&#34;, &#34;-&#34;)
+    dataFile = f&#34;{relativeFlat}{versionRep3}.zip&#34;
+    if assets and assets.totalCount &gt; 0:
+        for asset in assets:
+            if asset.name == dataFile:
+                assetUrl = asset.browser_download_url
+                break
+    fetched = False
+    if assetUrl:
+        fetched = self.downloadZip(assetUrl, showErrors=False)
+    if not fetched:
+        thisShowErrors = not cChk == &#34;&#34;
+        fetched = self.downloadCommit(commit, showErrors=thisShowErrors)
+    if fetched:
+        self.commitOff = commit
+        self.releaseOff = release
+    return fetched</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.downloadZip"><code class="name flex">
+<span>def <span class="ident">downloadZip</span></span>(<span>self, dataUrl, showErrors=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def downloadZip(self, dataUrl, showErrors=True):
+    label = self.label
+    self.log(f&#34;\tdownloading {dataUrl} ... &#34;)
+    try:
+        r = requests.get(dataUrl, allow_redirects=True)
+        self.log(f&#34;\tunzipping ... &#34;)
+        zf = io.BytesIO(r.content)
+    except Exception as e:
+        msg = f&#34;\t{str(e)}\n\tcould not download {dataUrl}&#34;
+        self.possibleError(msg, showErrors, again=True)
+        return False
+
+    self.log(f&#34;\tsaving {label}&#34;)
+
+    cwd = os.getcwd()
+    destZip = self.dirPathLocal
+    try:
+        z = ZipFile(zf)
+        if not self.keep:
+            if os.path.exists(destZip):
+                rmtree(destZip)
+        os.makedirs(destZip, exist_ok=True)
+        os.chdir(destZip)
+        if self.withPaths:
+            z.extractall()
+            if os.path.exists(&#34;__MACOSX&#34;):
+                rmtree(&#34;__MACOSX&#34;)
+        else:
+            for zInfo in z.infolist():
+                if zInfo.filename[-1] == &#34;/&#34;:
+                    continue
+                if zInfo.filename.startswith(&#34;__MACOS&#34;):
+                    continue
+                zInfo.filename = os.path.basename(zInfo.filename)
+                z.extract(zInfo)
+    except Exception:
+        msg = f&#34;\tcould not save {label} to {destZip}&#34;
+        self.possibleError(msg, showErrors, again=True)
+        os.chdir(cwd)
+        return False
+    os.chdir(cwd)
+    return True</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.error"><code class="name flex">
+<span>def <span class="ident">error</span></span>(<span>self, msg, newline=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def error(self, msg, newline=True):
+    console(msg, error=True, newline=newline)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.fetchInfo"><code class="name flex">
+<span>def <span class="ident">fetchInfo</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fetchInfo(self):
+    g = self.repoOnline
+    if not g:
+        return
+    self.commitOn = None
+    self.releaseOn = None
+    self.releaseCommitOn = None
+    if self.releaseChk is not None:
+        result = self.getRelease(self.releaseChk, showErrors=self.commitChk is None)
+        if result:
+            (self.releaseCommitOn, self.releaseOn) = result
+    if self.commitChk is not None:
+        result = self.getCommit(self.commitChk)
+        if result:
+            self.commitOn = result</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.fixInfo"><code class="name flex">
+<span>def <span class="ident">fixInfo</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fixInfo(self):
+    sDir = self.dirPathLocal
+    if not os.path.exists(sDir):
+        return
+    for sFile in EXPRESS_SYNC_LEGACY:
+        sPath = f&#34;{sDir}/{sFile}&#34;
+        if os.path.exists(sPath):
+            goodPath = f&#34;{sDir}/{EXPRESS_SYNC}&#34;
+            if os.path.exists(goodPath):
+                os.remove(sPath)
+            else:
+                os.rename(sPath, goodPath)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.getCommit"><code class="name flex">
+<span>def <span class="ident">getCommit</span></span>(<span>self, commit)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getCommit(self, commit):
+    c = self.getCommitObj(commit)
+    if not c:
+        return None
+    return self.getCommitFromObj(c)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.getCommitFromObj"><code class="name flex">
+<span>def <span class="ident">getCommitFromObj</span></span>(<span>self, c)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getCommitFromObj(self, c):
+    g = self.repoOnline
+    if not g:
+        return None
+    return c.sha</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.getCommitObj"><code class="name flex">
+<span>def <span class="ident">getCommitObj</span></span>(<span>self, commit)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getCommitObj(self, commit):
+    g = self.repoOnline
+    if not g:
+        return None
+
+    c = None
+    msg = f&#39; with hash &#34;{commit}&#34;&#39; if commit else &#34;s&#34;
+
+    try:
+        cs = g.get_commits(sha=commit) if commit else g.get_commits()
+        if cs.totalCount:
+            c = cs[0]
+        else:
+            self.error(f&#34;\tno commit{msg}&#34;)
+    except Exception:
+        self.error(f&#34;\tcannot find commit{msg}&#34;)
+    return c</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.getRelease"><code class="name flex">
+<span>def <span class="ident">getRelease</span></span>(<span>self, release, showErrors=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getRelease(self, release, showErrors=True):
+    r = self.getReleaseObj(release, showErrors=showErrors)
+    if not r:
+        return None
+    return self.getReleaseFromObj(r)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.getReleaseFromObj"><code class="name flex">
+<span>def <span class="ident">getReleaseFromObj</span></span>(<span>self, r)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getReleaseFromObj(self, r):
+    g = self.repoOnline
+    if not g:
+        return None
+    release = r.tag_name
+    ref = g.get_git_ref(f&#34;tags/{release}&#34;)
+    commit = ref.object.sha
+    return (commit, release)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.getReleaseObj"><code class="name flex">
+<span>def <span class="ident">getReleaseObj</span></span>(<span>self, release, showErrors=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getReleaseObj(self, release, showErrors=True):
+    g = self.repoOnline
+    if not g:
+        return None
+
+    r = None
+    msg = f&#39; tagged &#34;{release}&#34;&#39; if release else &#34;s&#34;
+
+    try:
+        r = g.get_release(release) if release else g.get_latest_release()
+    except UnknownObjectException:
+        self.possibleError(f&#34;\tno release{msg}&#34;, showErrors)
+    except Exception:
+        self.possibleError(f&#34;\tcannot find release{msg}&#34;, showErrors)
+    return r</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.isClone"><code class="name flex">
+<span>def <span class="ident">isClone</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def isClone(self):
+    return self.local == &#34;clone&#34;</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.isOffline"><code class="name flex">
+<span>def <span class="ident">isOffline</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def isOffline(self):
+    return self.local in {&#34;clone&#34;, &#34;local&#34;}</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.log"><code class="name flex">
+<span>def <span class="ident">log</span></span>(<span>self, msg, newline=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def log(self, msg, newline=True):
+    silent = self.silent
+    if not silent:
+        console(msg, newline=newline)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.makeSureLocal"><code class="name flex">
+<span>def <span class="ident">makeSureLocal</span></span>(<span>self, attempt=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeSureLocal(self, attempt=False):
+    label = self.label
+    offline = self.isOffline()
+    clone = self.isClone()
+
+    cOff = self.commitOff
+    rOff = self.releaseOff
+    cChk = self.commitChk
+    rChk = self.releaseChk
+    cOn = self.commitOn
+    rOn = self.releaseOn
+    rcOn = self.releaseCommitOn
+
+    askExact = rChk or cChk
+    askExactRelease = rChk
+    askExactCommit = cChk
+    askLatest = not askExact and (rChk == &#34;&#34; or cChk == &#34;&#34;)
+    askLatestAny = rChk == &#34;&#34; and cChk == &#34;&#34;
+    askLatestRelease = rChk == &#34;&#34; and cChk is None
+    askLatestCommit = cChk == &#34;&#34; and rChk is None
+
+    isExactReleaseOff = rChk and rChk == rOff
+    isExactCommitOff = cChk and cChk == cOff
+    isExactReleaseOn = rChk and rChk == rOn
+    isExactCommitOn = cChk and cChk == cOn
+    isLatestRelease = rOff and rOff == rOn or cOff and cOff == rcOn
+    isLatestCommit = cOff and cOff == cOn
+
+    isLocal = (
+        askExactRelease
+        and isExactReleaseOff
+        or askExactCommit
+        and isExactCommitOff
+        or askLatestAny
+        and (isLatestRelease or isLatestCommit)
+        or askLatestRelease
+        and isLatestRelease
+        or askLatestCommit
+        and isLatestCommit
+    )
+    mayLocal = (
+        askLatestAny
+        and (rOff or cOff)
+        or askLatestRelease
+        and rOff
+        or askLatestCommit
+        and cOff
+    )
+    canOnline = self.repoOnline
+    isOnline = canOnline and (
+        askExactRelease
+        and isExactReleaseOn
+        or askExactCommit
+        and isExactCommitOn
+        or askLatestAny
+        or askLatestRelease
+        or askLatestCommit
+    )
+
+    if offline:
+        if clone:
+            dirPath = self.dirPathClone
+            self.localBase = self.baseClone if os.path.exists(dirPath) else False
+        else:
+            self.localBase = (
+                self.baseLocal
+                if (
+                    cChk
+                    and cChk == cOff
+                    or cChk is None
+                    and cOff
+                    or rChk
+                    and rChk == rOff
+                    or rChk is None
+                    and rOff
+                )
+                else False
+            )
+        if not self.localBase:
+            method = self.warning if attempt else self.error
+            method(f&#34;The requested {label} is not available offline&#34;)
+    else:
+        if isLocal:
+            self.localBase = self.baseLocal
+        else:
+            if not canOnline:
+                if askLatest:
+                    if mayLocal:
+                        self.warning(f&#34;The offline {label} may not be the latest&#34;)
+                        self.localBase = self.baseLocal
+                    else:
+                        self.error(
+                            f&#34;The requested {label} is not available offline&#34;
+                        )
+                else:
+                    self.warning(f&#34;The requested {label} is not available offline&#34;)
+                    self.error(f&#34;No online connection&#34;)
+            elif not isOnline:
+                self.error(f&#34;The requested {label} is not available online&#34;)
+            else:
+                self.localBase = self.baseLocal if self.download() else False
+
+    if self.localBase:
+        self.localDir = self.dataPath
+        state = (
+            &#34;requested&#34;
+            if askExact
+            else &#34;latest release&#34;
+            if rChk == &#34;&#34; and canOnline and self.releaseOff
+            else &#34;latest? release&#34;
+            if rChk == &#34;&#34; and not canOnline and self.releaseOff
+            else &#34;latest commit&#34;
+            if cChk == &#34;&#34; and canOnline and self.commitOff
+            else &#34;latest? commit&#34;
+            if cChk == &#34;&#34; and not canOnline and self.commitOff
+            else &#34;local release&#34;
+            if self.local == &#34;local&#34; and self.releaseOff
+            else &#34;local commit&#34;
+            if self.local == &#34;local&#34; and self.commitOff
+            else &#34;local github&#34;
+            if self.local == &#34;clone&#34;
+            else &#34;for whatever reason&#34;
+        )
+        offString = self.toString(
+            self.commitOff,
+            self.releaseOff,
+            self.local,
+            dest=self.dest,
+            source=self.source,
+        )
+        self.log(
+            f&#34;Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:&#34;
+        )
+        self.log(f&#34;\t{offString} ({state})&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.possibleError"><code class="name flex">
+<span>def <span class="ident">possibleError</span></span>(<span>self, msg, showErrors, again=False, indent='\t', newline=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def possibleError(self, msg, showErrors, again=False, indent=&#34;\t&#34;, newline=False):
+    if showErrors:
+        self.error(msg, newline=newline)
+    else:
+        self.warning(msg, newline=newline)
+        if again:
+            self.warning(f&#34;{indent}Will try something else&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.readInfo"><code class="name flex">
+<span>def <span class="ident">readInfo</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def readInfo(self):
+    if os.path.exists(self.filePathLocal):
+        with open(self.filePathLocal, encoding=&#34;utf8&#34;) as f:
+            for line in f:
+                string = line.strip()
+                (commit, release, local) = self.fromString(string)
+                if commit:
+                    self.commitOff = commit
+                if release:
+                    self.releaseOff = release</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.warning"><code class="name flex">
+<span>def <span class="ident">warning</span></span>(<span>self, msg, newline=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def warning(self, msg, newline=True):
+    silent = self.silent
+    if not silent == &#34;deep&#34;:
+        console(msg, newline=newline)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.repo.Checkout.writeInfo"><code class="name flex">
+<span>def <span class="ident">writeInfo</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def writeInfo(self):
+    if not os.path.exists(self.dirPathLocal):
+        os.makedirs(self.dirPathLocal, exist_ok=True)
+    with open(self.filePathLocal, &#34;w&#34;, encoding=&#34;utf8&#34;) as f:
+        if self.releaseOff:
+            f.write(f&#34;{self.releaseOff}\n&#34;)
+        if self.commitOff:
+            f.write(f&#34;{self.commitOff}\n&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<img src="../images/tf-small.png">
+<img src="../../images/tf-small.png">
+<div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#auto-downloading-from-github">Auto downloading from GitHub</a></li>
+<li><a href="#github">GitHub</a><ul>
+<li><a href="#increase-the-rate-limit">Increase the rate limit</a><ul>
+<li><a href="#on-mac-and-linux">On Mac and Linux</a></li>
+<li><a href="#on-windows">On Windows</a></li>
+<li><a href="#result">Result</a></li>
+</ul>
+</li>
+<li><a href="#minimize-accessing-github">Minimize accessing Github</a><ul>
+<li><a href="#using-a-corpus-for-the-first-time-within-the-rate-limit">Using a corpus for the first time, within the rate limit</a></li>
+<li><a href="#using-a-corpus-for-the-first-time-after-hitting-the-rate-limit">Using a corpus for the first time, after hitting the rate limit</a></li>
+<li><a href="#using-a-corpus-that-you-already-have">Using a corpus that you already have</a></li>
+<li><a href="#updating-a-corpus-that-you-already-have">Updating a corpus that you already have</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.applib.repo.checkoutRepo" href="#tf.applib.repo.checkoutRepo">checkoutRepo</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.applib.repo.Checkout" href="#tf.applib.repo.Checkout">Checkout</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.applib.repo.Checkout.connect" href="#tf.applib.repo.Checkout.connect">connect</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.download" href="#tf.applib.repo.Checkout.download">download</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.downloadCommit" href="#tf.applib.repo.Checkout.downloadCommit">downloadCommit</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.downloadDir" href="#tf.applib.repo.Checkout.downloadDir">downloadDir</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.downloadRelease" href="#tf.applib.repo.Checkout.downloadRelease">downloadRelease</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.downloadZip" href="#tf.applib.repo.Checkout.downloadZip">downloadZip</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.error" href="#tf.applib.repo.Checkout.error">error</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.fetchInfo" href="#tf.applib.repo.Checkout.fetchInfo">fetchInfo</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.fixInfo" href="#tf.applib.repo.Checkout.fixInfo">fixInfo</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.fromString" href="#tf.applib.repo.Checkout.fromString">fromString</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.getCommit" href="#tf.applib.repo.Checkout.getCommit">getCommit</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.getCommitFromObj" href="#tf.applib.repo.Checkout.getCommitFromObj">getCommitFromObj</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.getCommitObj" href="#tf.applib.repo.Checkout.getCommitObj">getCommitObj</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.getRelease" href="#tf.applib.repo.Checkout.getRelease">getRelease</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.getReleaseFromObj" href="#tf.applib.repo.Checkout.getReleaseFromObj">getReleaseFromObj</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.getReleaseObj" href="#tf.applib.repo.Checkout.getReleaseObj">getReleaseObj</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.isClone" href="#tf.applib.repo.Checkout.isClone">isClone</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.isOffline" href="#tf.applib.repo.Checkout.isOffline">isOffline</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.log" href="#tf.applib.repo.Checkout.log">log</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.makeSureLocal" href="#tf.applib.repo.Checkout.makeSureLocal">makeSureLocal</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.possibleError" href="#tf.applib.repo.Checkout.possibleError">possibleError</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.readInfo" href="#tf.applib.repo.Checkout.readInfo">readInfo</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.toString" href="#tf.applib.repo.Checkout.toString">toString</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.warning" href="#tf.applib.repo.Checkout.warning">warning</a></code></li>
+<li><code><a title="tf.applib.repo.Checkout.writeInfo" href="#tf.applib.repo.Checkout.writeInfo">writeInfo</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

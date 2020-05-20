@@ -2,22 +2,22 @@
 
 ## About
 
-??? abstract "About"
+!!! abstract "About"
     Here are functions that are being used by various parts of the
     TF browser infrastructure, such as 
 
-    * [kernel.py]({{tfghb}}/{{c_kernel}})
-    * [web.py]({{tfghb}}/{{c_web}})
-    * [start.py]({{tfghb}}/{{c_start}})
+    * [kernel.py](https://github.com/annotation/text-fabric/blob/master/tf/server/kernel.py)
+    * [web.py](https://github.com/annotation/text-fabric/blob/master/tf/server/web.py)
+    * [start.py](https://github.com/annotation/text-fabric/blob/master/tf/server/start.py)
 
 ## Argument parsing
 
-??? abstract "Apologies"
+!!! abstract "Apologies"
     Really, we should replace the whole adhoc argument parsing by a decent use
     of the Python module
-    [argparse]({{python}}/library/argparse.html#module-argparse). 
+    [argparse](https://docs.python.org/3/library/argparse.html#module-argparse). 
 
-??? abstract "Specific args"
+!!! abstract "Specific args"
     The following table shows functions that are responsible for
     detecting a specific command line argument.
 
@@ -40,7 +40,7 @@
     `getSets` | `--sets=`...
 
 
-??? abstract "getParam(interactive=False)"
+!!! abstract "getParam(interactive=False)"
     Checks whether a *dataSource* parameter has been passed on the command line.
     If so, it checks whether it specifies an existing app.
     If no *dataSource* has been passed, and `interactive` is true,
@@ -48,7 +48,7 @@
 
 ## Locating the app
 
-??? abstract "The problem"
+!!! abstract "The problem"
     The data source specific apps are bundled inside the TF package.
     The web server of the TF browser needs the files in those apps,
     not as Python modules, but just as files on disk.
@@ -58,20 +58,20 @@
 
     Yet we have found a way through the labyrinth!
 
-??? abstract "getAppdir(myDir, dataSource)"
+!!! abstract "getAppdir(myDir, dataSource)"
     The code in
-    [web.py]({{tfghb}}/{{c_web}})
+    [web.py](https://github.com/annotation/text-fabric/blob/master/tf/server/web.py)
     will pass its file location as `myDir`.
     Form there this function computes the locstion of the file in which
     the webapp of the *dataSource* resides: the location of the
     *dataSource* package in
-    [apps]({{tfght}}/{{b_apps}}).
+    [apps](https://github.com/annotation/text-fabric/tree/master/tf/apps).
 
     See also [App structure](../Implementation/Apps.md#the-structure-of-apps)
 
 ## Getting and setting form values
 
-??? abstract "Request and response"
+!!! abstract "Request and response"
     The TF browser user interacts with the web app by clicking and typing,
     as a result of which a HTML form gets filled in.
     This form as regularly submitted to the web server with a request
@@ -87,10 +87,10 @@
 
 ## HTML formatting
 
-??? abstract "HTML generation"
+!!! abstract "HTML generation"
     Here we generate the HTML for bigger chunks on the page.
 
-??? abstract "pageLinks(nResults, position, spread=10)"
+!!! abstract "pageLinks(nResults, position, spread=10)"
     Provide navigation links for results sets, big or small.
 
     It creates links around *position* in a set of *nResults*.
@@ -105,7 +105,7 @@
 
     And so on, until the stepping factor becomes bigger than the result set.
 
-??? abstract "passageLinks(passages, sec0, sec1)"
+!!! abstract "passageLinks(passages, sec0, sec1)"
     Provide navigation links for passages,
     in the form of links to sections of level 0, 1 and 2 (books, chapters and verses).
     
@@ -116,18 +116,18 @@
     
     If both `sec0` and `sec1` are given, de sec1 entry is focused. 
 
-??? abstract "shapeOptions(options, values)"
+!!! abstract "shapeOptions(options, values)"
     Wraps the options, specified by the option specification in `config.py`
     into HTML.
     See also [App structure](../Implementation/Apps.md#the-structure-of-apps)
 
-??? abstract "shapeCondense(condenseTypes, value)"
+!!! abstract "shapeCondense(condenseTypes, value)"
     Provides a radio-buttoned chooser for the
     [condense types](../Kernel/#data-service-api).
 
     `value` is the currently chosen option.
 
-??? abstract "shapeFormats(textFormats, value)"
+!!! abstract "shapeFormats(textFormats, value)"
     Provides a radio-buttoned chooser for the
     [text formats](../Kernel/#data-service-api).
 
