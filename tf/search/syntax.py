@@ -72,7 +72,7 @@ reTp = type(reRe)
 
 def syntax(searchExe):
     error = searchExe.api.error
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     searchExe.good = True
     searchExe.badSyntax = []
     searchExe.searchLines = searchExe.searchTemplate.split("\n")
@@ -81,12 +81,12 @@ def syntax(searchExe):
     _tokenize(searchExe)
 
     if not searchExe.good:
-        searchExe.showOuterTemplate(msgCache)
+        searchExe.showOuterTemplate(_msgCache)
         for (i, line) in enumerate(searchExe.searchLines):
-            error(f"{i + offset:>2} {line}", tm=False, cache=msgCache)
+            error(f"{i + offset:>2} {line}", tm=False, cache=_msgCache)
         for (ln, eline) in searchExe.badSyntax:
             txt = eline if ln is None else f"line {ln + offset}: {eline}"
-            error(txt, tm=False, cache=msgCache)
+            error(txt, tm=False, cache=_msgCache)
 
 
 def _tokenize(searchExe):

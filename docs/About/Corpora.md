@@ -43,90 +43,16 @@ acronym | language/writing system | name | period | description | converted by
 [oldassyrian](https://github.com/annotation/app-oldassyrian) | Akkadian / cuneiform | Old Assyrian documents | 2000 - 1900 | see [About](https://github.com/Nino-cunei/oldassyrian/blob/master/docs/about.md) | Dirk Roorda, Cale Johnson, Alba de Ridder, Martijn Kokken
 oldroyal | Akkadian-Sumerian cuneiform | Bilingual royal inscriptions | 2000 - 1600 | more info to come | Martijn Kokken, Dirk Roorda
 
-
-## Get apps
+## Get corpora
 
 ### Automatically
 
 Text-Fabric downloads apps from [annotation](https://github.com/annotation) automatically
 when you use them.
 
-If you do:
+See `tf.about.use`.
 
-```python
-use('xxxx')
-```
-
-(Python) or 
-
-```sh
-text-fabric xxxx
-```
-
-(Text-Fabric browser)
-
-then Text-Fabric will fetch the `xxxx` app for you, if it exists.
-
-Once you have the app, Text-Fabric will use your offline copy.
-It will not check for newer versions by default.
-
-But if you pass `-c` resp `check=True`, Text-Fabric will check online
-for newer versions of the app and if there are,
-it will download the newest version and run it.
-
-```python
-use('xxxx', check=True)
-```
-
-```sh
-text-fabric xxxx -c
-```
-
-Apps end up in `text-fabric-data/__apps__` relative your home directory.
-
-If you have trouble with an app `xxxx`, just remove the entire directory
-`text-fabric-data/__apps__/xxxx` and run either of the commands above. 
-
-## Get data
-
-### Automatically
-Text-Fabric apps download the corpus data for you automatically.
-
-When you use the browser, it happens when you start it up.
-
-And from within a Python program,
-you get the data when you do the
-[incantation](../Api/App.md#incantation).
-
-In a program (e.g. a Jupyter notebook):
-
-```python
-use('xxxx')
-```
-
-In the Text-Fabric browser:
-
-```sh
-text-fabric xxxx
-```
-
-This will also automatically upgrade your data if there are new releases.
-If you want to avoid upgrades, add the `:local` specifier.
-
-```python
-use('xxxx', checkout='local')
-```
-
-```sh
-text-fabric xxxx --checkout=local
-```
-
-There are more options, see the
-[incantation](../Api/App.md#incantation).
-
-Data ends up in `text-fabric-data/`*orgName*/*repoName* relative your home directory,
-where *orgName* is the organization or person on GitHub that has
-the repo *repoName* that contains the data.
+Data ends up in a logical place under your `~/text-fabric-data/`.
 
 The TF data is fairly compact.
 
@@ -150,12 +76,12 @@ Then, when you invoke the app, pass the specifier `:clone`.
 This instructs Text-Fabric to look in your local GitHub clone, rather
 than online or in `text-fabric-data`, where downloaded data is stored.
 
-```python tab="notebook or program"
-use('xxxx:clone')
+```python
+use('xxxx:clone', checkout="clone")
 ```
 
-```sh tab="TF browser"
-text-fabric xxxx --checkout=clone
+```sh
+text-fabric xxxx:clone --checkout=clone
 ```
 
 In this way, you can work with data that is under your control.
@@ -173,11 +99,4 @@ In this way, you can work with data that is under your control.
 
 Researchers are continually adding new insights in the form of new feature
 data. TF apps make it easy to use that data alongside the main data source.
-Read more about the data life cycle in [Data](../Api/Data.md)
-
-## More corpora
-
-The
-[text-fabric-data](https://github.com/annotation/text-fabric-data)
-repo has some corpora that have been converted to TF,
-but for which no supporting  TF-apps have been written.
+Read more about the data life cycle in `tf.about.datasharing`.

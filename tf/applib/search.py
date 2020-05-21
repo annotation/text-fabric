@@ -18,7 +18,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     This function calls the lower level `tf.search.search.Search` facility aka `S`.
     But whereas the `S` version returns a generator which yields the results
     one by one, the `A` version collects all results and sorts them in the
-    [canonical order](../Api/Nodes.md#navigating-nodes).
+    canonical order (`tf.core.api`).
     (but you can change the sorting, see the `sort` parameter).
     It then reports the number of results.
 
@@ -27,7 +27,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     the features that have been used in the query.
 
     query: dict
-        the [search template](../Use/Search.md#search-template-reference)
+        the search template (`tf.about.searchusage`)
         that has to be searched for.
 
     silent: boolean, optional `False`
@@ -60,16 +60,16 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
         This is handy when you need node sets that cannot be conveniently queried.
         You can produce them by hand-coding.
         Once you got them, you can use them over and over again in queries.
-        Or you can save them with [writeSets](Lib.md#sets)
+        Or you can save them with `tf.lib.writeSets`
         and use them in the TF browser.
 
     sort: boolean, optional `True`
         If `True` (default), search results will be returned in
-        [canonical order](../Api/Nodes.md#navigating-nodes).
+        canonical order (`tf.core.api`).
 
         !!! note "canonical sort key for tuples"
             This sort is achieved by using the function
-            [sortKeyTuple](../Api/Nodes.md#navigating-nodes)
+            `tf.core.api.Api.sortKeyTuple`
             as sort key.
 
         If it is a *sort key*, i.e. function that can be applied to tuples of nodes
@@ -78,7 +78,12 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
         If it is a `False` value, no sorting will be applied.
 
     !!! hint "search template reference"
-        See the [search template reference](../Use/Search.md#search-templates)
+        See the search template reference (`tf.about.searchusage`)
+
+    !!! note "Context Jupyter"
+        The intended context of this function is: an ordinary Python program (including
+        the Jupyter notebook).
+        Web apps can better use `tf.applib.search.runSearch`.
     """
 
     api = app.api
@@ -130,6 +135,17 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
 
 
 def runSearch(app, query, cache):
+    """A wrapper around the generic search interface of TF.
+
+    Before running the TF search, the *query* will be looked up in the *cache*.
+    If present, its cached results/error messages will be returned.
+    If not, the query will be run, results/error messages collected, put in the *cache*,
+    and returned.
+
+    !!! note "Context web app"
+        The intended context of this function is: web app.
+    """
+
     api = app.api
     S = api.S
     plainSearch = S.search
@@ -137,7 +153,7 @@ def runSearch(app, query, cache):
     cacheKey = (query, False)
     if cacheKey in cache:
         return cache[cacheKey]
-    options = dict(msgCache=[])
+    options = dict(_msgCache=[])
     if app.sets is not None:
         options["sets"] = app.sets
     (queryResults, messages, exe) = plainSearch(query, here=False, **options)
@@ -155,6 +171,19 @@ def runSearch(app, query, cache):
 
 
 def runSearchCondensed(app, query, cache, condenseType):
+    """A wrapper around the generic search interface of TF.
+
+    When query results need to be condensed into a container,
+    this function takes care of that.
+    It first tries the *cache* for condensed query results.
+    If that fails,
+    it collects the bare query results from the cache or by running the query.
+    Then it condenses the results, puts them in the *cache*, and returns them.
+
+    !!! note "Context web app"
+        The intended context of this function is: web app.
+    """
+
     api = app.api
     cacheKey = (query, True, condenseType)
     if cacheKey in cache:

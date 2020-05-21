@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.clean API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Clean …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,24 @@
 <h1 class="title">Module <code>tf.clean</code></h1>
 </header>
 <section id="section-intro">
+<h1 id="clean">Clean</h1>
+<p>From version 7.7.7 onwards, Text-Fabric uses a parameter <code><a title="tf.parameters.PACK_VERSION" href="parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code>
+to mark the stored pre-computed data.
+Whenever there are incompatible changes in the packed data format, this
+version number will be increased and Text-Fabric will not attempt to load
+the older pre-computed data.</p>
+<p>The older data will not be removed, however.
+Use the function <code><a title="tf.clean.clean" href="#tf.clean.clean">clean()</a></code> to get rid of pre-computed data
+that you no longer need.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import sys
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../docs/main/clean.md
+&#34;&#34;&#34;
+
+import sys
 import os
 import re
 from shutil import rmtree
@@ -283,7 +296,9 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#clean">Clean</a></li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>

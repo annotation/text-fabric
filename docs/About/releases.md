@@ -43,7 +43,7 @@ text-fabric appName:hot
 2020-05-14
 
 * New method in the
-  [`L`-API](../Api/Locality.md): `L.i(node, otype=nodeTypes)`.
+  `L`-API (`tf.core.locality.Locality.i`): `L.i(node, otype=nodeTypes)`.
   It delivers the *intersectors* of a node, i.e. the nodes that share slots
   with the given `node`.
 * Fixed a subtle bug in the `A.pretty()` which manifested itself in the Old Babylonian corpus.
@@ -53,7 +53,7 @@ text-fabric appName:hot
   rest of `pretty`.
 * More improvements in the display logic where things refuse to be hierarchical.
 * To the display option `extraFeatures` you may also pass values like `type:feature`,
-  see [displaysettings](../Api/App.md#display) under list of display parameters.
+  see displaysettings (`tf.applib.displaysettings`) under list of display parameters.
 
 
 ### 8.0
@@ -213,9 +213,7 @@ were advised to create a pair of client-id and client-token strings.
 
 The advise is now: create a personal access token.
 
-See
-[Rate limiting](../Api/Github.md)
-(scroll to the end).
+See Rate limiting in (`tf.applib.repo`).
 
 Also: a bug fix to the walker conversion, again: thanks Ernst for spotting it.
 
@@ -234,8 +232,7 @@ Thanks to Ernst Boogert for spotting them.
 
 2019-12-16
 
-Add behaviour to the `modify()` function in the
-[compose API](../Api/Compose.md)
+Add behaviour to the `tf.compose.modify()` function
 so that you can output modified features only instead of a whole dataset.
 (Following a suggestion by Cody Kingham).
 
@@ -387,13 +384,11 @@ You can also test on `>` and `<` if the node features are integer valued.
 And for string valued features, you can also reduce the values before comparing by means
 of a regular expression, which specifies the parts of the value that will be stripped.
 
-See also the [docs](../Use/Search.md#relational-operators),
-jump to **Based on node features**.
+See also `tf.about.searchusage`, jump to **Based on node features**.
 
 The working of `silent=True` has been fine-tuned (i.e. it is
 easier to silence TF in more cases.)
-There is also a `silent` parameter for the
-[walker conversion](../Create/Convert.md).
+There is also a `silent` parameter for the `tf.convert.walker` conversion.
 
 The `info()` function always checks whether it should be silent or not.
 There is a new `warning()` function that is silent if `silent='deep'`.
@@ -410,8 +405,7 @@ The biggest addition is
 a new `tf.compose` package with operators to manipulate TF data sets:
 `combine()` and `modify()`.
 
-See
-[specs](../Api/Compose.md)
+See `tf.compose`.
 and the
 [compose chapter](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/compose.ipynb)
 in the Banks tutorial, where you can see it in action
@@ -446,8 +440,7 @@ a confusion between `sections` and `structure`
 If a TF-app needs to import its own modules, there is the risk of conflicts
 when several TF-apps get loaded in the same program and they import modules
 with the same name.
-TF offers a function
-[`loadModule()`](../Implementation/Apps.md#components)
+TF offers a function `tf.applib.find.loadModule`
 by which an app can dynamically load
 a module, and this function makes sure that the imported module gets
 an app-dependent internal name.
@@ -524,7 +517,7 @@ The new, flexible system is meant to reflect the structure of the corpus, and wi
 give you means to navigate the copus accordingly.
 
 Quick examples: [banks](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/structure.ipynb).
-Documentation: [structure](../Api/Text.md#structure). 
+Documentation: structure in `tf.core.text`.
 
 #### 7.7.1
 
@@ -557,7 +550,7 @@ Largely backward compatible, in that:
 
 You have to use the `descend` parameter a lot less.
 
-See the [docs](../Api/Text.md#text-representation)
+See the `tf.core.text`.
 
 ### 7.6
 
@@ -625,10 +618,9 @@ Now you can also use
 that look for `n` and `m` such that there is an `edgeFeature` edge from `n` to `m`,
 or from `m` to `n`, or both.
 
-See the [docs](../Use/Search.md#relational-operators)
+See the `tf.about.searchusage`.
 
-This corresponds to
-[`E.`*edgeFeature*`.b()`](../Api/Features.md#edge-features).
+This corresponds to edge features.
 
 See also the
 [Banks example](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/app.ipynb).
@@ -724,7 +716,7 @@ more efficient for the users.
 There is a new utility function `checkoutRepo()`, by which you can
 maintain a local copy of any subdirectory of any repo on Github.
 
-See [Repo](../Api/Repo.md)
+See `tf.applib.repo`.
 
 This is yet another step in making your scholarly work reproducible.
 
@@ -825,7 +817,7 @@ that have an incoming edge from `m` and the nodes that have an outgoing edge to 
 
 * Changes in font handling
 * New flag in `pretty()`: `full=False`.
-  See the [docs](../Api/App.md#display)
+  See `tf.applib.display`
 
 #### 7.4.8
 
@@ -1114,38 +1106,30 @@ For more info: see [#38](https://github.com/annotation/text-fabric/issues/38)
     * `prettySetup()` has been replaced with `displaySetup()` and `displayReset()`,
       by which
       you can configure a whole bunch of display parameters selectively.
-      **[Display](../Api/App.md#display)**
     * All display functions (`pretty plain prettyTuple plainTuple show table`)
       accept a new optional parameter `withPassage`
       which will add a section label to the display.
       This parameter can be regulated in `displaySetup`. 
-      **[Display](../Api/App.md#display)**
     * `A.search()` accepts a new optional parameter: `sort=...`
       by which you can ask for
       canonically sorted results (`True`),
       custom sorted results (pass your onw key function),
       or unsorted results (`False`).
-      **[A.search](../Api/App.md#search)**
     * New functions `A.nodeFromSectionStr()` and `A.sectionStrFromNode()`
       which give the passage string of any kind of node, if possible.
-      **[Section support for apps](../Api/App.md#sections)**
     * The function `A.plain()` now responds to the `highlights` parameter:
       you can highlight material inside plain displays.
-      **[A.plain](../Api/App.md#display)**
       and
       **[display tutorial](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/display.ipynb)**
     * New function `T.sectionTuple(n)` which gives the tuple of section nodes in which `n`
       is embedded
-      **[T.sectionTuple](../Api/Text.md#sections)**
     * **Modified function `T.sectionFromNode(n, fillup=False)`**
       It used to give a tuple (section1, section2, section3), also for nodes of type
       section1 and section2 (like book and chapter). The new behaviour is the same if
       `fillup=True`. But if `fillup=False` (default), it returns a 1-tuple for
       section1 nodes and a 2-tuple for section2 nodes.
-      **[T.sectionFromNode](../Api/Text.md#sections)**
     * New API member `sortKeyTuple` to sort tuples of nodes in the
-      canonical ordering.
-      **[sortKeyTuple](../Api/Nodes.md#navigating-nodes)**
+      canonical ordering (`tf.core.api`).
     * The code to detect the file name and path of the script/notebook you are running in,
       is inherently brittle. It is unwise to base decisions on that.
       This code has been removed from TF.
@@ -1234,7 +1218,7 @@ Under the hood:
 
 Quick start: the new [share](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/share.ipynb)
 
-See the [advanced guide](../Use/UseX.md)
+See the `tf.about.datasharing`
 for concrete and detailed hints how to make most of this version.
 
 ## 6
@@ -1453,7 +1437,6 @@ This change was needed for the Text-Fabric browser, in order to represent *lexem
     * [RESULTSX.tsv](https://github.com/annotation/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv)
 
 It might also be handy for the programmers amongst you.
-See the updated [API doc on T](../Api/Text.md#text-representation), expand the T.text() item.
 
 ##### Auto update
 The Text-Fabric browser checks if you are using the most recent release of the data.
@@ -1467,7 +1450,7 @@ in the [font library](https://fontlibrary.org).
 Not worth telling.
 
 !!! hint "update Text-Fabric"
-    To update Text-Fabric itself to version 6.0, consult [Upgrade](Install.md#text-fabric).
+    To update Text-Fabric itself to version 6.0, consult `tf.about.install`.
     Perform this step first, because the new TF may download the new data for you.
 
 !!! caution "Data update needed"
@@ -1935,7 +1918,6 @@ Docs and metadata update
 *   Quantifiers.
 
     You can now use quantifiers in search. One of them is like `NOTEXIST` in MQL.
-    See the [docs](../Use/Search.md#quantifiers)
 
 *   A number of minor fixes.
 
@@ -2120,7 +2102,7 @@ Uruk API:
 
 2018-04-23
 
-[Search](../Api/Search.md#search):
+Search
 
 *   You can use regular expressions to specify feature values in queries.
 *   You could already search for nodes which have a non-None value for a certain
@@ -2258,7 +2240,7 @@ container type only contains small instances of the contained type and not the
 bigger ones.
 
 Now you can override the computation by text-fabric by means of a key-value in
-the *otext* feature. See the [api](../Api/Text.md#levels-of-node-types).
+the *otext* feature.
 
 ### 3.1
 
@@ -2328,7 +2310,7 @@ Edges with edge values did not allow for the absence of values. Now they do.
 
 2017-10-05
 
-A major tweak in the [importMQL()](../Create/Convert.md#mql-import) function so that it can
+A major tweak in the `tf.fabric.Fabric.importMQL` function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
 version 3 of the [BHSA](https://github.com/etcbc/bhsa). In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
@@ -2339,7 +2321,7 @@ of slots.
 
 2017-10-05
 
-Another little tweak in the [importMQL()](../Create/Convert.md#mql-import) function so that it
+Another little tweak in the `tf.fabric.Fabric.importMQL` function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
 MQL for version 3 of the [BHSA](https://github.com/etcbc/bhsa).
 
@@ -2347,7 +2329,7 @@ MQL for version 3 of the [BHSA](https://github.com/etcbc/bhsa).
 
 2017-10-04
 
-Little tweak in the [importMQL()](../Create/Convert.md#mql-import) function so that it can handle
+Little tweak in the `tf.fabric.Fabric.importMQL` function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
 [extrabiblical](https://github.com/etcbc/extrabiblical) material.
 
@@ -2370,7 +2352,7 @@ Bug fix in reading edge features with values.
 2017-10-02
 
 MQL! You can now convert MQL data into a TF dataset:
-[importMQL()](../Create/Convert.md#mql-import). We had already [exportMQL()](../Create/Convert.md#mql-export).
+`tf.fabric.Fabric.importMQL`. We had already `tf.fabric.Fabric.exportMQL`.
 
 The consequence is that we can operate with much agility between the worlds of
 MQL and TF.
@@ -2388,11 +2370,10 @@ enriched MQL, so that the enriched data can be queried by MQL.
 2017-09-29
 
 Completion: TF defines the concept of
-[edges](../Api/Features.md#edge-features) that
+edges that
 carry a value. But so far we have not used them. It turned out that it was
 impossible to let TF know that an edge carries values, when
-[saving](../Api/Fabric.md#saving-features) data
-as a new feature. Now it is possible.
+saving data as a new feature. Now it is possible.
 
 #### 2.3.14
 
@@ -2402,8 +2383,7 @@ Bug fix: it was not possible to get
 `T.nodeFromSection(('2_Chronicles', 36, 23))`, the last verse in the Bible.
 
 This is the consequence of a bug in precomputing the sections
-[sections](../Api/Computed.md#computed-data). The
-preparation step used
+sections. The preparation step used
 
 ```python
 range(firstVerse, lastVerse)
@@ -2426,14 +2406,14 @@ Loading TF was not completely silent if `silent=True` was passed. Better now.
 2017-09-18
 
 *   Small fix in
-    [TF.save()](../Api/Fabric.md#saving-features).
+    TF.save().
     The spec says that the metadata under the empty key will be inserted into all
     features, but in fact this did not happen. Instead it was used as a default
     when some feature did not have metadata specified.
 
     From now on, that metadata will spread through all features.
 
-*   New API function [explore](../Api/Fabric.md#loading), to get a list of all known
+*   New API function explore, to get a list of all known
     features in a dataset.
 
 #### 2.3.11
@@ -2467,7 +2447,7 @@ TF has a list of default locations to look for data sources: `~/Downloads`,
 2017-07-24
 
 The section levels (book, chapter, verse) were supposed to be customizable
-through the [otext](../Model/Data-Model.md#otext-config-feature-optional) feature. But in
+through the otext feature. But in
 fact, up till version 2.3.7 this did not work. From now on the names of the
 section types and the features that name/number them, are given in the `otext`
 feature. It is still the case that exactly three levels must be specified,
@@ -2499,11 +2479,11 @@ Also the `Fabric()` call can be made silent now.
 
 Improvements:
 
-*   you can load features more silently. See [`TF.load()`](../Api/Fabric.md#loading-features);
-*   you can search more silently. See [`S.study()`](../Api/Search.md#prepare-for-search);
-*   you can search more concisely. See the new [`S.search()`](../Api/Search.md#search-command);
+*   you can load features more silently. See `TF.load()`;
+*   you can search more silently. See `S.study()`;
+*   you can search more concisely. See the new `S.search()`;
 *   when fetching results, the `amount` parameter of
-    [`S.fetch()`](../Api/Search.md#getting-results) has been renamed to `limit`;
+    `S.fetch()` has been renamed to `limit`;
 *   the tutorial notebooks (see links on top) have been updated.
 
 #### 2.3.2
@@ -2540,10 +2520,9 @@ Small fixes.
 
 ##### New: sortKey
 
-The API has a new member: [`sortKey`](../Api/Nodes.md#sorting-nodes)
+The API has a new member: `sortKey`
 
-New relationships in templates: [`nearness`](../Api/Search.md#nearness-comparison). See for
-examples the end of the
+New relationships in templates: `nearness`. See for examples the end of the
 [searchTutorial](https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb).
 Thanks to James Cuénod for requesting nearness operators.
 
@@ -2594,7 +2573,7 @@ for an updated exposition on searching.
 
 ##### New: Search
 
-![warmXmas](../images/warmXmas.jpg)
+![warmXmas](../../images/warmXmas.jpg)
 
 *Want to feel cosy with Christmas? Put your laptop on your lap, update
 Text-Fabric, and start playing with search. Your laptop will spin itself warm
@@ -2624,7 +2603,7 @@ Xmas.
 
 ##### New
 
-[`F.otype.sInterval()`](../Api/Features.md#warp-feature-otype)
+`F.otype.sInterval()`
 
 #### 1.2.6
 
@@ -2641,7 +2620,7 @@ It has been remedied.
 
 !!! note
     Your computed data needs to be refreshed. This can be done by calling a new
-    function [`TF.clearCache()`](../Api/Misc.md#clearing-the-cache). When you use TF after
+    function `TF.clearCache()`. When you use TF after
     this, you will see it working quite hard to recompute a bunch of data.
 
 #### 1.2.5
@@ -2661,12 +2640,12 @@ Documentation update
 
 ##### Frequency lists ###
 
-[`F.feature.freqList()`](../Api/Features.md#node-features): get a sorted frequency list for any
+`F.feature.freqList()`: get a sorted frequency list for any
 feature. Handy as a first step in exploring a feature.
 
 ##### Export to MQL ###
 
-[`TF.exportMQL()`](../Create/Convert.md#export-to-mql): export a whole dataset as a MQL database.
+`TF.exportMQL()`: export a whole dataset as a MQL database.
 Including all modules that you have loaded with it.
 
 ##### Changed

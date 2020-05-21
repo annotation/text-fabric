@@ -81,6 +81,24 @@ def levels(info, error, otype, oslots, otext):
 
     The order of the tuple is descending by average number of slots per node of that
     type.
+
+    !!! explanation &#34;Level computation and customization&#34;
+        All node types have a level, defined by the average amount of slots object of
+        that type usually occupy. The bigger the average object, the lower the levels.
+        Books have the lowest level, words the highest level.
+
+        However, this can be overruled. Suppose you have a node type *phrase* and above
+        it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
+        versa. If all phrases are contained in clusters, and some clusters have more
+        than one phrase, the automatic level ranking of node types works out well in
+        this case. But if clusters only have very small phrases, and the big phrases do
+        not occur in clusters, then the algorithm may assign a lower rank to clusters
+        than to phrases.
+
+        In general, it is too expensive to try to compute the levels in a sophisticated
+        way. In order to remedy cases where the algorithm assigns wrong levels, you can
+        add a `@levels` key to the `otext` config feature.
+        See `tf.core.text`.
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -128,10 +146,7 @@ def order(info, error, otype, oslots, levels):
     &#34;&#34;&#34;Computes order data.
 
     The canonical ordering between nodes is defined in terms of the slots that
-    nodes contain.
-
-    A node *A*  comes before a node *B* if, *A* contains the smallest slot
-    that occurs in only one of *A* and *B*.
+    nodes contain, see `tf.core.api`.
 
     Parameters
     ----------
@@ -198,7 +213,7 @@ def rank(info, error, otype, order):
     &#34;&#34;&#34;Computes rank data.
 
     The rank of a node is its place in among the other nodes in the
-    canonical ordering (see `order`).
+    canonical order (see `tf.core.api`).
 
     Parameters
     ----------
@@ -251,11 +266,18 @@ def levUp(info, error, otype, oslots, rank):
     -------
     tuple
         The n-th member is an array of the embedder nodes of n.
-        Those arrays are sorted in canonical ordering.
+        Those arrays are sorted in canonical order (`tf.core.api`).
 
     !!! hint &#34;Memory efficiency&#34;
         Many nodes have the same array of embedders.
         Those embedder arrays will be reused for those nodes.
+
+    !!! caution &#34;Use with care&#34;
+        It is not advisable to this data directly by `C.levUp.data`,
+        it is far better to use the `tf.core.locality.Locality.u` function.
+
+        Only when every bit of performance waste has to be squeezed out,
+        this raw data might be a deal.
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -327,12 +349,19 @@ def levDown(info, error, otype, levUp, rank):
     -------
     tuple
         The *n*-th member is an array of the embedded nodes of *n + maxSlot*.
-        Those arrays are sorted in canonical ordering.
+        Those arrays are sorted in canonical order (`tf.core.api`).
 
     !!! hint &#34;Memory efficiency&#34;
         Slot nodes do not have embedded nodes, so they do not have to occupy
         space in this tuple. Hence the first member are the embedded nodes
         of node *maxSlot + 1*.
+
+    !!! caution &#34;Use with care&#34;
+        It is not advisable to this data directly by `C.levDown.data`,
+        it is far better to use the `tf.core.locality.Locality.d` function.
+
+        Only when every bit of performance waste has to be squeezed out,
+        this raw data might be a deal.
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -379,12 +408,12 @@ def boundary(info, error, otype, oslots, rank):
     tuple
         *   first: tuple of array
             The *n*-th member is the array of nodes that start at slot *n*,
-            ordered in *reversed* canonical ordering;
+            ordered in *reversed* canonical order (`tf.core.api`);
         *   last: tuple of array
             The *n*-th member is the array of nodes that end at slot *n*,
-            ordered in canonical ordering;
+            ordered in canonical order;
 
-    !!! hint &#34;why  reversed canonical ordering&#34;
+    !!! hint &#34;why  reversed canonical order?&#34;
         Just for symmetry.
     &#34;&#34;&#34;
 
@@ -451,6 +480,12 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
             Mapping from section-level-1 nodes to mappings from
             section-level-2 headings to mappings from
             section-level3 headings to section-level-3 nodes.
+
+    !!! caution &#34;Custom names&#34;
+        Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
+        It is the corpus data, especially the `otext` config feature that
+        spells out the names of the sections.
+
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -698,16 +733,16 @@ and
 <ul>
 <li>first: tuple of array
 The <em>n</em>-th member is the array of nodes that start at slot <em>n</em>,
-ordered in <em>reversed</em> canonical ordering;</li>
+ordered in <em>reversed</em> canonical order (<code><a title="tf.core.api" href="api.html">tf.core.api</a></code>);</li>
 <li>last: tuple of array
 The <em>n</em>-th member is the array of nodes that end at slot <em>n</em>,
-ordered in canonical ordering;</li>
+ordered in canonical order;</li>
 </ul>
 </dd>
 </dl>
 <div class="admonition hint">
 <p class="admonition-title">why
-reversed canonical ordering</p>
+reversed canonical order?</p>
 <p>Just for symmetry.</p>
 </div></div>
 <details class="source">
@@ -743,12 +778,12 @@ reversed canonical ordering</p>
     tuple
         *   first: tuple of array
             The *n*-th member is the array of nodes that start at slot *n*,
-            ordered in *reversed* canonical ordering;
+            ordered in *reversed* canonical order (`tf.core.api`);
         *   last: tuple of array
             The *n*-th member is the array of nodes that end at slot *n*,
-            ordered in canonical ordering;
+            ordered in canonical order;
 
-    !!! hint &#34;why  reversed canonical ordering&#34;
+    !!! hint &#34;why  reversed canonical order?&#34;
         Just for symmetry.
     &#34;&#34;&#34;
 
@@ -796,13 +831,20 @@ the level-down data.</p>
 <dl>
 <dt><code>tuple</code></dt>
 <dd>The <em>n</em>-th member is an array of the embedded nodes of <em>n + maxSlot</em>.
-Those arrays are sorted in canonical ordering.</dd>
+Those arrays are sorted in canonical order (<code><a title="tf.core.api" href="api.html">tf.core.api</a></code>).</dd>
 </dl>
 <div class="admonition hint">
 <p class="admonition-title">Memory efficiency</p>
 <p>Slot nodes do not have embedded nodes, so they do not have to occupy
 space in this tuple. Hence the first member are the embedded nodes
 of node <em>maxSlot + 1</em>.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Use with care</p>
+<p>It is not advisable to this data directly by <code>C.levDown.data</code>,
+it is far better to use the <code><a title="tf.core.locality.Locality.d" href="locality.html#tf.core.locality.Locality.d">Locality.d()</a></code> function.</p>
+<p>Only when every bit of performance waste has to be squeezed out,
+this raw data might be a deal.</p>
 </div></div>
 <details class="source">
 <summary>
@@ -833,12 +875,19 @@ of node <em>maxSlot + 1</em>.</p>
     -------
     tuple
         The *n*-th member is an array of the embedded nodes of *n + maxSlot*.
-        Those arrays are sorted in canonical ordering.
+        Those arrays are sorted in canonical order (`tf.core.api`).
 
     !!! hint &#34;Memory efficiency&#34;
         Slot nodes do not have embedded nodes, so they do not have to occupy
         space in this tuple. Hence the first member are the embedded nodes
         of node *maxSlot + 1*.
+
+    !!! caution &#34;Use with care&#34;
+        It is not advisable to this data directly by `C.levDown.data`,
+        it is far better to use the `tf.core.locality.Locality.d` function.
+
+        Only when every bit of performance waste has to be squeezed out,
+        this raw data might be a deal.
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -881,12 +930,19 @@ the level-up data.</p>
 <dl>
 <dt><code>tuple</code></dt>
 <dd>The n-th member is an array of the embedder nodes of n.
-Those arrays are sorted in canonical ordering.</dd>
+Those arrays are sorted in canonical order (<code><a title="tf.core.api" href="api.html">tf.core.api</a></code>).</dd>
 </dl>
 <div class="admonition hint">
 <p class="admonition-title">Memory efficiency</p>
 <p>Many nodes have the same array of embedders.
 Those embedder arrays will be reused for those nodes.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Use with care</p>
+<p>It is not advisable to this data directly by <code>C.levUp.data</code>,
+it is far better to use the <code><a title="tf.core.locality.Locality.u" href="locality.html#tf.core.locality.Locality.u">Locality.u()</a></code> function.</p>
+<p>Only when every bit of performance waste has to be squeezed out,
+this raw data might be a deal.</p>
 </div></div>
 <details class="source">
 <summary>
@@ -917,11 +973,18 @@ Those embedder arrays will be reused for those nodes.</p>
     -------
     tuple
         The n-th member is an array of the embedder nodes of n.
-        Those arrays are sorted in canonical ordering.
+        Those arrays are sorted in canonical order (`tf.core.api`).
 
     !!! hint &#34;Memory efficiency&#34;
         Many nodes have the same array of embedders.
         Those embedder arrays will be reused for those nodes.
+
+    !!! caution &#34;Use with care&#34;
+        It is not advisable to this data directly by `C.levUp.data`,
+        it is far better to use the `tf.core.locality.Locality.u` function.
+
+        Only when every bit of performance waste has to be squeezed out,
+        this raw data might be a deal.
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -1003,7 +1066,24 @@ and order the node types on that.</p>
 <dt><code>The <a title="tf.core.prepare.order" href="#tf.core.prepare.order">order()</a></code> of <code>the tuple is descending by average number</code> of <code>slots per node</code> of <code>that</code></dt>
 <dd>&nbsp;</dd>
 </dl>
-<p>type.</p></div>
+<p>type.</p>
+<div class="admonition explanation">
+<p class="admonition-title">Level computation and customization</p>
+<p>All node types have a level, defined by the average amount of slots object of
+that type usually occupy. The bigger the average object, the lower the levels.
+Books have the lowest level, words the highest level.</p>
+<p>However, this can be overruled. Suppose you have a node type <em>phrase</em> and above
+it a node type <em>cluster</em>, i.e. phrases are contained in clusters, but not vice
+versa. If all phrases are contained in clusters, and some clusters have more
+than one phrase, the automatic level ranking of node types works out well in
+this case. But if clusters only have very small phrases, and the big phrases do
+not occur in clusters, then the algorithm may assign a lower rank to clusters
+than to phrases.</p>
+<p>In general, it is too expensive to try to compute the levels in a sophisticated
+way. In order to remedy cases where the algorithm assigns wrong levels, you can
+add a <code>@levels</code> key to the <code>otext</code> config feature.
+See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1039,6 +1119,24 @@ and order the node types on that.</p>
 
     The order of the tuple is descending by average number of slots per node of that
     type.
+
+    !!! explanation &#34;Level computation and customization&#34;
+        All node types have a level, defined by the average amount of slots object of
+        that type usually occupy. The bigger the average object, the lower the levels.
+        Books have the lowest level, words the highest level.
+
+        However, this can be overruled. Suppose you have a node type *phrase* and above
+        it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
+        versa. If all phrases are contained in clusters, and some clusters have more
+        than one phrase, the automatic level ranking of node types works out well in
+        this case. But if clusters only have very small phrases, and the big phrases do
+        not occur in clusters, then the algorithm may assign a lower rank to clusters
+        than to phrases.
+
+        In general, it is too expensive to try to compute the levels in a sophisticated
+        way. In order to remedy cases where the algorithm assigns wrong levels, you can
+        add a `@levels` key to the `otext` config feature.
+        See `tf.core.text`.
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -1088,10 +1186,7 @@ and order the node types on that.</p>
 <dd>
 <div class="desc"><p>Computes order data.</p>
 <p>The canonical ordering between nodes is defined in terms of the slots that
-nodes contain.</p>
-<p>A node <em>A</em>
-comes before a node <em>B</em> if, <em>A</em> contains the smallest slot
-that occurs in only one of <em>A</em> and <em>B</em>.</p>
+nodes contain, see <code><a title="tf.core.api" href="api.html">tf.core.api</a></code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
@@ -1121,10 +1216,7 @@ that occurs in only one of <em>A</em> and <em>B</em>.</p>
     &#34;&#34;&#34;Computes order data.
 
     The canonical ordering between nodes is defined in terms of the slots that
-    nodes contain.
-
-    A node *A*  comes before a node *B* if, *A* contains the smallest slot
-    that occurs in only one of *A* and *B*.
+    nodes contain, see `tf.core.api`.
 
     Parameters
     ----------
@@ -1193,7 +1285,7 @@ that occurs in only one of <em>A</em> and <em>B</em>.</p>
 <dd>
 <div class="desc"><p>Computes rank data.</p>
 <p>The rank of a node is its place in among the other nodes in the
-canonical ordering (see <code><a title="tf.core.prepare.order" href="#tf.core.prepare.order">order()</a></code>).</p>
+canonical order (see <code><a title="tf.core.api" href="api.html">tf.core.api</a></code>).</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
@@ -1221,7 +1313,7 @@ canonical ordering (see <code><a title="tf.core.prepare.order" href="#tf.core.pr
     &#34;&#34;&#34;Computes rank data.
 
     The rank of a node is its place in among the other nodes in the
-    canonical ordering (see `order`).
+    canonical order (see `tf.core.api`).
 
     Parameters
     ----------
@@ -1296,7 +1388,13 @@ section-level-2 headings to mappings from
 section-level3 headings to section-level-3 nodes.</li>
 </ul>
 </dd>
-</dl></div>
+</dl>
+<div class="admonition caution">
+<p class="admonition-title">Custom names</p>
+<p>Note that the terms <code>book</code>, <code>chapter</code>, <code>verse</code> are not baked into Text-Fabric.
+It is the corpus data, especially the <code>otext</code> config feature that
+spells out the names of the sections.</p>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1345,6 +1443,12 @@ section-level3 headings to section-level-3 nodes.</li>
             Mapping from section-level-1 nodes to mappings from
             section-level-2 headings to mappings from
             section-level3 headings to section-level-3 nodes.
+
+    !!! caution &#34;Custom names&#34;
+        Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
+        It is the corpus data, especially the `otext` config feature that
+        spells out the names of the sections.
+
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype

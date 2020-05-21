@@ -10,6 +10,21 @@ from ..applib.displaysettings import INTERFACE_OPTIONS
 
 
 def pageLinks(nResults, position, spread=10):
+    """Provide navigation links for results sets, big or small.
+
+    It creates links around *position* in a set of *nResults*.
+    The spread indicates how many links before and after *position* are generated
+    in each column.
+
+    There will be multiple columns. The right most column contains links
+    to results `position - spread` to `position + spread`.
+
+    Left of that there is a column for results `position - spread*spread`
+    to `position + spread*spread`, stepping by `spread`.
+
+    And so on, until the stepping factor becomes bigger than the result set.
+    """
+
     if spread <= 1:
         spread = 1
     elif nResults == 0:
@@ -62,6 +77,18 @@ def pageLinks(nResults, position, spread=10):
 
 
 def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
+    """Provide navigation links for passages,
+
+    in the form of links to sections of level 0, 1 and 2 (books, chapters and verses).
+
+    If `sec0` is not given, only a list of sec0 links is produced.
+
+    If `sec0` is given, but `sec1` not, a list of links for sec1s within the given `sec0`
+    is produced.
+
+    If both `sec0` and `sec1` are given, de sec1 entry is focused.
+    """
+
     sec0s = []
     sec1s = []
     for s0 in passages[0]:
@@ -89,6 +116,9 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
 
 
 def wrapOptions(context, form):
+    """Wraps the options, including the app-specific ones, into HTML.
+    """
+
     interfaceDefaults = context.interfaceDefaults
 
     options = {k for (k, v) in interfaceDefaults.items() if v is not None}
@@ -125,6 +155,13 @@ def wrapBase(allowedBaseTypes, value):
 
 
 def wrapCondense(condenseTypes, value):
+    """Provides a radio-buttoned chooser for the condense types.
+
+    See `tf.applib.displaysettings`.
+
+    `value` is the currently chosen condense type.
+    """
+
     html = []
     lastType = len(condenseTypes) - 1
     for (i, (otype, av, b, e)) in enumerate(condenseTypes):
@@ -146,6 +183,14 @@ def wrapCondense(condenseTypes, value):
 
 
 def wrapFormats(allFormats, value):
+    """
+    Provides a radio-buttoned chooser for the text formats.
+
+    See `tf.applib.displaysettings`.
+
+    `value` is the currently chosen format.
+    """
+
     html = []
     for (i, fmt) in enumerate(allFormats):
         checked = " checked " if value == fmt else ""

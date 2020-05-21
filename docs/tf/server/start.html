@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.server.start API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Start kernel and webserver …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,74 @@
 <h1 class="title">Module <code>tf.server.start</code></h1>
 </header>
 <section id="section-intro">
+<h1 id="start-kernel-and-webserver">Start kernel and webserver</h1>
+<p>What the <code>text-fabric</code> script does is the same as:</p>
+<pre><code class="sh">python3 -m tf.server.start
+</code></pre>
+<p>During start up the following happens:</p>
+<dl>
+<dt>Kill previous processes</dt>
+<dd>The system is searched for non-terminated incarnations of the processes
+it wants to start up.
+If they are encountered, they will be killed, so that they cannot prevent
+a successful start up.</dd>
+<dt>Start TF kernel</dt>
+<dd>A <code><a title="tf.server.kernel" href="kernel.html">tf.server.kernel</a></code> is started.
+This process loads the bulk of the TF data, so it can take a while.
+When it has loaded the data, it sends out a message that loading is done,
+which is picked up by the script.</dd>
+<dt>Start TF web server</dt>
+<dd>
+<p>A short while after receiving the "data loading done" message,
+the TF web server is started.</p>
+<div class="admonition hint">
+<p class="admonition-title">Debug mode</p>
+<p>If you have passed <code>-d</code> to the <code>text-fabric</code> script,
+the <strong>Flask</strong> web server will be started in debug and reload mode.
+That means that if you modify <code>web.py</code> or a module it imports,
+the web server will reload itself automatically.
+When you refresh the browser you see the changes.
+If you have changed templates, the css, or the javascript,
+you should do a "refresh from origin".</p>
+</div>
+</dd>
+<dt>Load web page</dt>
+<dd>After a short while, the default web browser will be started
+with a url and port at which the
+web server will listen. You see your browser being started up
+and the TF page being loaded.</dd>
+<dt>Wait</dt>
+<dd>The script now waits till the web server is finished.
+You finish it by pressing Ctrl-C, and if you have used the <code>-d</code> flag,
+you have to press it twice.</dd>
+<dt>Terminate the TF kernel"</dt>
+<dd>At this point, the <code>text-fabric</code> script will terminate the TF kernel.</dd>
+<dt>Clean up</dt>
+<dd>
+<p>Now all processes that have started up have been killed.</p>
+<p>If something went wrong in this sequence, chances are that a process keeps running.
+It will be terminated next time you call the <code>text-fabric</code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">You can kill too</p>
+<p>If you run</p>
+<p><code>sh
+text-fabric -k</code> </p>
+<p>all tf-browser-related processes will be killed.</p>
+<p><code>sh
+text-fabric -k ddd</code></p>
+<p>will kill all such processes as far as they are for data source <code>ddd</code>.</p>
+</div>
+</dd>
+</dl>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import sys
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../../docs/server/start.md
+&#34;&#34;&#34;
+
+import sys
 import os
 from platform import system
 
@@ -628,7 +691,9 @@ if __name__ == &#34;__main__&#34;:
 <div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#start-kernel-and-webserver">Start kernel and webserver</a></li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>

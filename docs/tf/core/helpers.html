@@ -52,6 +52,12 @@ def isInt(val):
 
 
 def mathEsc(val):
+    &#34;&#34;&#34;Escape $ signs to `&lt;span&gt;$&lt;/span&gt;`.
+
+    To prevent them from being interpreted as math in a Jupyter notebook
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
     return &#34;&#34; if val is None else (str(val).replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;))
 
 
@@ -64,6 +70,12 @@ def mdEsc(val):
 
 
 def htmlEsc(val):
+    &#34;&#34;&#34;Escape certain HTML characters by HTML entities.
+
+    To prevent them to be interpreted as HTML
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
     return (
         &#34;&#34;
         if val is None
@@ -77,6 +89,12 @@ def htmlEsc(val):
 
 
 def mdhtmlEsc(val):
+    &#34;&#34;&#34;Escape certain Markdown characters by HTML entities or span elements.
+
+    To prevent them to be interpreted as Markdown
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
     return (
         &#34;&#34;
         if val is None
@@ -576,12 +594,20 @@ def mergeDictOfSets(d1, d2):
 <span>def <span class="ident">htmlEsc</span></span>(<span>val)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Escape certain HTML characters by HTML entities.</p>
+<p>To prevent them to be interpreted as HTML
+in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def htmlEsc(val):
+    &#34;&#34;&#34;Escape certain HTML characters by HTML entities.
+
+    To prevent them to be interpreted as HTML
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
     return (
         &#34;&#34;
         if val is None
@@ -719,12 +745,20 @@ def mergeDictOfSets(d1, d2):
 <span>def <span class="ident">mathEsc</span></span>(<span>val)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Escape $ signs to <code>&lt;span&gt;$&lt;/span&gt;</code>.</p>
+<p>To prevent them from being interpreted as math in a Jupyter notebook
+in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def mathEsc(val):
+    &#34;&#34;&#34;Escape $ signs to `&lt;span&gt;$&lt;/span&gt;`.
+
+    To prevent them from being interpreted as math in a Jupyter notebook
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
     return &#34;&#34; if val is None else (str(val).replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;))</code></pre>
 </details>
 </dd>
@@ -749,12 +783,20 @@ def mergeDictOfSets(d1, d2):
 <span>def <span class="ident">mdhtmlEsc</span></span>(<span>val)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Escape certain Markdown characters by HTML entities or span elements.</p>
+<p>To prevent them to be interpreted as Markdown
+in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def mdhtmlEsc(val):
+    &#34;&#34;&#34;Escape certain Markdown characters by HTML entities or span elements.
+
+    To prevent them to be interpreted as Markdown
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
     return (
         &#34;&#34;
         if val is None

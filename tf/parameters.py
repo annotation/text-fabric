@@ -31,7 +31,7 @@ Instead, TF will produce freshly compressed data files.
 The compressed data files are stored in a directory `.tf/{PVN}/` next
 to the original `tf`  files, where `{PVN}` is the package version number.
 
-See also `tf.clean`.
+See also the utility `tf.clean`.
 """
 
 API_VERSION = 1

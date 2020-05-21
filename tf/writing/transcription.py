@@ -1,7 +1,36 @@
+"""
+.. include:: ../../docs/writing/transcription.md
+"""
 import re
 
 
 class Transcription(object):
+    """Conversion between unicode and various transcriptions.
+
+    Usage notes:
+
+    Invoke the transcription functionality as follows:
+
+    ```python
+    from tf.writing.transcription import Transcription
+    ```
+
+    Some of the attributes and methods below are *class* attributes,
+    others are instance attributes.
+
+    A class attribute `aaa` can be retrieved by saying
+
+    ```Transcription.aaa```.
+
+    To retrieve an instance attribute, you need an instance first, like
+
+    ```python
+    tr = Transcription()
+    ```
+
+    and then you can say `tr.aaa`.
+    """
+
     decomp = {
         "\u05E9\u05C1": "\uFB2A",
         "\u05E9\u05C2": "\uFB2B",
@@ -104,6 +133,22 @@ class Transcription(object):
         "'": "\u05f3",  # punctuation geresh
         '"': "\u05f4",  # punctuation gershayim
     }
+    """
+    Maps all ETCBC transliteration character combinations for Hebrew to Unicode.
+
+    Example: print the sof-pasuq:
+
+    ```python
+    print(Transcription.hebrew_mapping['00'])
+    ```
+
+    Output:
+
+    ```
+    ׃
+    ```
+    """
+
     hebrew_cons = ">BGDHWZXVJKLMNS<PYQRFCT"
     trans_final_pat = re.compile(
         r"(["
@@ -303,6 +348,21 @@ class Transcription(object):
         "_": "\u2014",  # dash in caesuras
         "o": "\u2022",  # large dot in caesuras
     }
+    """
+    Maps all ETCBC transliteration character combinations for Syriac to Unicode.
+
+    Example: print the semkath-final:
+
+    ```python
+    print(Transcription.syriac_mapping['s'])
+    ```
+
+    Output:
+
+    ```
+    ܤ
+    ```
+    """
 
     trans_syriac_pat = re.compile(r"([AE@IU][12]?|=[.#:\^/\\]|[\^#][!:\\]|.)")
 
@@ -369,6 +429,35 @@ class Transcription(object):
         "%": "\u06ec",  # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
         "]": "\u06ed",  # ARABIC SMALL LOW MEEM
     }
+    """
+    Maps an Arabic transliteration character to Unicode.
+
+    Example: print the beh
+
+    ```python
+    print(Transcription.syriac_mapping['b'])
+    ```
+
+    Output:
+
+    ```
+    ب
+    ```
+
+    Maps an Arabic letter in unicode to its transliteration
+
+    Example: print the beh transliteration
+
+    ```python
+    print(Transcription.syriac_mapping['ب'])
+    ```
+
+    Output:
+
+    ```
+    b
+    ```
+    """
 
     arabic_mappingi = dict((v, k) for (k, v) in arabic_mapping.items())
 
@@ -416,6 +505,28 @@ class Transcription(object):
         return s
 
     def suffix_and_finales(word):
+        """
+        Given an ETCBC transliteration, split it into the word material
+        and the interword material that follows it (space, punctuation).
+        Replace the last consonant of the word material by its final form, if applicable.
+
+        Output a tuple with the modified word material and the interword material.
+
+        Example:
+
+        ```python
+        print(Transcription.suffix_and_finales('71T_H@>@95REY00'))
+        ```
+
+        Output:
+
+        ```
+        ('71T_H@>@95REy', '00\n')
+        ```
+
+        Note that the `Y` has been replaced by `y`.
+        """
+
         # first split the word proper from the suffix,
         # and add a space if there is no other suffix
         add_space = ""
@@ -481,12 +592,71 @@ class Transcription(object):
     # if there is a combination of dagesh, vowel and accent.
 
     def suppress_space(word):
+        """
+        Given an ETCBC transliteration of a word,
+        match the end of the word for interpunction and spacing characters
+        (sof pasuq, paseq, nun hafukha, setumah, petuhah, space, no-space)
+
+        Example:
+
+        ```python
+        print(Transcription.suppress_space('B.:&'))
+        print(Transcription.suppress_space('B.@R@74>'))
+        print(Transcription.suppress_space('71T_H@>@95REY00'))
+        ```
+
+        Output:
+
+        ```
+        <re.Match object; span=(3, 4), match='&'>
+        None
+        <re.Match object; span=(13, 15), match='00'>
+        ```
+        """
+
         return Transcription.noorigspace.search(word)
 
     def to_etcbc_v(word):
+        """
+        Given an ETCBC transliteration of a fully pointed word,
+        strip all the non-vowel pointing (i.e. the accents).
+
+        Example:
+
+        ```python
+        print(Transcription.to_etcbc_v('HAC.@MA73JIm'))
+        ```
+
+        Output:
+
+        ```
+        HAC.@MAJIm
+        ```
+        """
+
         return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)
 
     def to_etcbc_c(word):
+        """
+        Given an ETCBC transliteration of a fully pointed word,
+        strip everything except the consonants.
+        Punctuation will also be stripped.
+
+        Example:
+
+        ```python
+        print(Transcription.to_etcbc_c('HAC.@MA73JIm'))
+        ```
+
+        Output:
+
+        ```
+        H#MJM
+        ```
+
+        Note that the pointed shin (`C`) is replaced by an unpointed one (`#`).
+        """
+
         word = Transcription.remove_point_pat.sub(Transcription._remove_point, word)
         word = Transcription.remove_psn_pat.sub(
             "00", word
@@ -498,34 +668,184 @@ class Transcription(object):
         return Transcription.shin_pat.sub("#", word)
 
     def to_hebrew(word):
+        """
+        Given a transliteration of a fully pointed word,
+        produce the word in Unicode Hebrew.
+        Care will be taken that vowel pointing will be added to consonants
+        before accent pointing.
+
+        Example:
+
+        ```python
+        print(Transcription.to_hebrew('HAC.@MA73JIm'))
+        ```
+
+        Output:
+
+        ```
+        הַשָּׁמַ֖יִם
+        ```
+        """
+
         word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
         return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)
 
     def to_hebrew_v(word):
+        """
+        Given a transliteration of a fully pointed word,
+        produce the word in Unicode Hebrew, but without the accents.
+
+        Example:
+
+        ```python
+        print(Transcription.to_hebrew_v('HAC.@MA73JIm'))
+        ```
+
+        Output:
+
+        ```
+        הַשָּׁמַיִם
+        ```
+        """
+
         return Transcription.trans_hebrew_pat.sub(
             Transcription._map_hebrew, Transcription.to_etcbc_v(word)
         )
 
     def to_hebrew_c(word):
+        """
+        Given a transliteration of a fully pointed word,
+        produce the word in Unicode Hebrew, but without the pointing.
+
+        Example:
+
+        ```python
+        print(Transcription.to_hebrew_c('HAC.@MA73JIm'))
+        ```
+
+        Output:
+
+        ```
+        השמימ
+        ```
+
+        Note that final consonant forms are not being used.
+        """
+
         return Transcription.trans_hebrew_pat.sub(
             Transcription._map_hebrew, Transcription.to_etcbc_c(word)
         )
 
     def to_hebrew_x(word):
+        """
+        Given a transliteration of a fully pointed word,
+        produce the word in Unicode Hebrew, but without the pointing.
+        Vowel pointing and accent pointing will be applied in the order given
+        by the input word.
+
+        Example:
+
+        ```python
+        print(Transcription.to_hebrew_x('HAC.@MA73JIm'))
+        ```
+
+        Output:
+
+        ```
+        הַשָּׁמַ֖יִם
+        ```
+        """
+
         return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)
 
     def ph_simplify(pword):
+        """
+        Given a phonological transliteration of a fully pointed word,
+        produce a more coarse phonological transliteration.
+
+        Example:
+
+        ```python
+        print(Transcription.ph_simplify('ʔᵉlōhˈîm'))
+        print(Transcription.ph_simplify('māqˈôm'))
+        print(Transcription.ph_simplify('kol'))
+        ```
+
+        Output:
+
+        ```
+        ʔlōhîm
+        måqôm
+        kål
+        ```
+
+        Note that the simplified version transliterates the qamets gadol and qatan
+        to the same
+        character.
+        """
+
         return Transcription.ph_simple_pat.sub(Transcription._ph_simple, pword)
 
     def from_hebrew(self, word):
+        """
+        Given a fully pointed word in Unicode Hebrew,
+        produce the word in ETCBC transliteration.
+
+        Example:
+
+        ```python
+        print(tr.from_hebrew('הָאָֽרֶץ׃'))
+        ```
+
+        Output:
+
+        ```
+        H@>@95REy00
+        ```
+        """
+
         return "".join(
             self.hebrew_mappingi.get(x, x) for x in Transcription._comp(word)
         )
 
     def to_syriac(self, word):
+        """
+        Given a word in ETCBC transliteration,
+        produce the word in Unicode Syriac.
+
+        Example:
+
+        ```python
+        print(tr.to_syriac('MKSJN'))
+        ```
+
+        Output:
+
+        ```
+        ܡܟܣܝܢ
+        ```
+        """
+
         return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)
 
     def from_syriac(self, word):
+        """
+        Given a word in Unicode Syriac,
+        produce the word in ETCBC transliteration.
+
+        Example:
+
+        ```python
+        print(tr.from_syriac('ܡܟܣܝܢ'))
+        ```
+
+        Output:
+
+        ```
+        MKSJN
+        ```
+        """
+
         return "".join(self.syriac_mappingi.get(x, x) for x in word)
 
     def can_to_syriac(self, word):
@@ -539,7 +859,41 @@ class Transcription(object):
         return all(c in self.syriac_mappingi for c in word if c != " ")
 
     def to_arabic(word):
+        """
+        Given a word in transliteration,
+        produce the word in Unicode Arabic.
+
+        Example:
+
+        ```python
+        print(tr.to_arabic('bisomi'))
+        ```
+
+        Output:
+
+        ```
+        بِسْمِ
+        ```
+        """
+
         return "".join(Transcription.arabic_mapping.get(x, x) for x in word)
 
     def from_arabic(word):
+        """
+        Given a word in Unicode Arabic,
+        produce the word in transliteration.
+
+        Example:
+
+        ```python
+        print(tr.from_arabic('بِسْمِ'))
+        ```
+
+        Output:
+
+        ```
+        bisomi
+        ```
+        """
+
         return "".join(Transcription.arabic_mappingi.get(x, x) for x in word)

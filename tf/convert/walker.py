@@ -1,3 +1,7 @@
+"""
+.. include:: ../../docs/convert/walker.md
+"""
+
 import collections
 import functools
 import re
@@ -88,6 +92,88 @@ class CV(object):
         generateTf=True,
         force=False,
     ):
+        """Asks a director function to walk through source data and receives its actions.
+
+        The `director` function should unravel the source.
+        You have to program the `director`, which takes one argument: `cv`.
+        From the `cv` you can use a few standard actions that instruct Text-Fabric
+        to build a graph.
+
+        This function will check whether the metadata makes sense and is minimally
+        complete.
+
+        During node creation the section structure will be watched,
+        and you will be warned if irregularities occur.
+
+        After the creation of the feature data, some extra checks will be performed
+        to see whether the metadata matches the data and vice versa.
+
+        The new feature data will be written to the output directory of the
+        underlying TF object.  In fact, the rules are exactly the same as for
+        `tf.fabric.Fabric.save`.
+
+        Parameters
+        ----------
+        slotType: string
+            The node type that acts as the type of the slots in the data set.
+
+        oText: dict
+            The configuration information to be stored in the `otext` feature:
+
+            * section types
+            * section features
+            * text formats
+
+        generic: dict
+            Metadata that will be written into the header of all generated TF features.
+
+            You can make changes to this later on, dynamically in your director.
+
+        intFeatures: iterable
+            The set of features that have integer values only.
+
+            You can make changes to this later on, dynamically in your director.
+
+        featureMeta: dict of dict
+            For each node or edge feature descriptive metadata can be supplied.
+
+            You can make changes to this later on, dynamically in your director.
+
+        warn: boolean, optional `True`
+            This regulates the response to warnings:
+
+            `True` (default): stop after warnings (as if they are errors);
+
+            `False` continue after warnings but do show them;
+
+            `None` suppress all warnings.
+
+        silent: boolean, optional `None`
+            By this you can suppress informational messages: `silent=True`.
+
+        force: boolean, optional `False`
+            This forces the process to continue after errors.
+            Your TF set might not be valid.
+            Yet this can be useful during testing, when you know
+            that not everything is OK, but you want to check some results.
+            Especially when dealing with large datasets, you might want to test
+            with little pieces. But then you get a kind of non-fatal errors that
+            stand in the way of testing. For those cases: `force=True`.
+
+        generateTf: boolean, optional `True`
+            You can pass `False` here to suppress the actual writing of TF data.
+            In that way you can dry-run the director to check for errors and warnings
+
+        director: function
+            An ordinary function that takes one argument, the `cv` object, and
+            should not deliver anything.
+
+            Writing this function is the main job to do when you want to convert a data source
+            to TF.
+
+            See `tf.convert.walker` for more details.
+        """
+
         info = self.TF.tm.info
         indent = self.TF.tm.indent
 

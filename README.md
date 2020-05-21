@@ -13,9 +13,6 @@
 
 All about Text-Fabric is in the
 [docs](https://annotation.github.io/text-fabric).
-You'll find the
-[docstrings of TF](https://annotation.github.io/text-fabric/apidocs/html/tf/index.html)
-there as well.
 
 Want to contribute?
 Start with the [contribution notes](codestyle/contributing.md).

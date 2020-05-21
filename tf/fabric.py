@@ -1,9 +1,8 @@
-import os
-
-"""Defined the main class.
-
-Also lists the precomputation steps.
 """
+.. include:: ../docs/main/fabric.md
+"""
+
+import os
 
 import collections
 from .parameters import VERSION, NAME, APIREF, LOCATIONS
@@ -86,7 +85,7 @@ KIND = dict(__sections__="section", __structure__="structure")
 
 
 class Fabric(object):
-    """Main class of the TF package.
+    """Initialize the core API for a corpus.
 
     Top level management of
 
@@ -94,6 +93,66 @@ class Fabric(object):
     *   loading and saving feature data
     *   precomputing auxiliary data
     *   caching precomputed and compressed data
+
+    Text-Fabric is initialized for a corpus.
+    It will search a set of directories and catalog all `.tf` files it finds there.
+    These are the features you can subsequently load.
+
+    Here `directories` and `subdirectories` are strings with directory names
+    separated by newlines, or iterables of directories.
+
+    Parameters
+    ----------
+    locations: string | iterable of strings, optional
+        The directories specified here are used as base locations
+        in searching for tf feature files.
+        In general, they will not searched directly, but certain subdirectories
+        of them will be searched, specified by the `modules` parameter.
+
+        Defaults:
+
+        ```
+        ~/Downloads/text-fabric-data
+        ~/text-fabric-data
+        ~/github/text-fabric-data
+        ```
+
+        So if you have stored your main Text-Fabric dataset in
+        `text-fabric-data` in one of these directories
+        you do not have to pass a location to Fabric.
+
+    modules: string | iterable of strings
+        The directories specified in here are used as sub directories
+        appended to the directories given by the `locations` parameter.
+
+        All `.tf` files (non-recursively) in any `location/module`
+        will be added to the feature set to be loaded in this session.
+        The order in `modules` is important, because if a feature occurs in
+        multiple modules, the last one will be chosen.
+        In this way you can easily override certain features in one module
+        by features in an other module of your choice.
+
+        Default: `['']`
+
+        So if you leave it out, Text-Fabric will just search the paths specified
+        in `locations`.
+
+    silent:
+        If `True` is passed, banners and normal progress messages are suppressed.
+        If `'deep'` is passed, all informational and warning messages are suppressed.
+        Errors still pass through.
+
+    !!! note "otext@ in modules"
+        If modules contain features with a name starting with `otext@`, then the format
+        definitions in these features will be added to the format definitions in the
+        regular `otext` feature (which is a `tf.core.data.WARP` feature).
+        In this way, modules that define new features for text representation,
+        also can add new formats to the Text-API.
+
+    Returns
+    -------
+    object
+        An object from which you can call up all the of methods of the core API.
     """
 
     def __init__(self, locations=None, modules=None, silent=False):
@@ -102,6 +161,9 @@ class Fabric(object):
         self.tm.setSilent(silent)
         self.banner = f"This is {NAME} {VERSION}"
         self.version = VERSION
+        """The version number of the Text-Fabric library.
+        """
+
         (on32, warn, msg) = check32()
         if on32:
             self.tm.info(warn, tm=False)
@@ -134,9 +196,65 @@ Api reference : {APIREF}
             "\n\t".join(f"{l}/{f}" for f in self.modules) for l in self.locations
         )
         self.featuresRequested = []
+        self.features = {}
+        """Dictionary of all features that TF has found, whether loaded or not.
+
+        Under each feature name is all info about that feature.
+
+        The best use of this is to get the metadata of features:
+
+        ```python
+        TF.features['fff'].metaData
+        ```
+
+        This works for all features `fff` that have been found,
+        whether the feature is loaded or not.
+
+        If a feature is loaded, you can also use
+
+        `F.fff.meta` of `E.fff.meta` depending on whether `fff` is a node feature
+        or an edge feature.
+
+        !!! caution "Do not print!"
+            If a feature is loaded, its data is also in the feature info.
+            This can be an enormous amount of information, and you can easily
+            overwhelm your notebook if you print it.
+        """
+
         self._makeIndex()
 
     def load(self, features, add=False, silent=None):
+        """Loads features from disk into RAM memory.
+
+        Parameters
+        ----------
+
+        features: string | iterable
+            Either a string containing space separated feature names, or an
+            iterable of feature names.
+            The feature names are just the names of `.tf` files
+            without directory information and without extension.
+        add: boolean, optional `False`
+            The features will be added to the same currently loaded features, managed
+            by the current API.
+            Meant to be able to dynamically load features without reloading lots
+            of features for nothing.
+        silent: boolean, optional `None`
+            If `False`, the features will be loaded rather silently,
+            most messages will be suppressed.
+            Time consuming operations will always be announced,
+            so that you know what Text-Fabric is doing.
+            If `True` is passed, all informational messages will be suppressed.
+            This is handy I you want to load data as part of other methods, on-the-fly.
+
+        Returns
+        -------
+        boolean | object
+            If `add` is `True` nothing is returned. Otherwise,
+            the result is a new `tf.core.api.Api` if the feature could be loaded,
+            else `False`.
+        """
+
         if silent is not None:
             wasSilent = self.tm.isSilent()
             self.tm.setSilent(silent)
@@ -235,6 +353,36 @@ Api reference : {APIREF}
             return result
 
     def explore(self, silent=None, show=True):
+        """Makes categorization of all features in the dataset.
+
+        Parameters
+        ----------
+        silent: boolean, optional `None`
+            If `False` a message containing the total numbers of features
+            is issued.
+        show: boolean, optional `True`
+            If `False`, the resulting dictionary is delivered in `TF.featureSets`;
+            if `True`, the dictionary is returned as function result.
+
+        Returns
+        -------
+        dict | None
+            A dictionary  with keys `nodes`, `edges`, `configs`, `computeds`.
+            Under each key there is the set of feature names in that category.
+            How this dictionary is delivered, depends on the parameter *show*.
+
+        !!! explanation "configs"
+            These are config features, with metadata only, no data. E.g. `otext`.
+
+        !!! explanation "computeds"
+            These are blocks of precomputed data, available under the `C` API,
+            see `tf.core.api.Computeds`.
+
+        The sets do not indicate whether a feature is loaded or not.
+        There are other functions that give you the loaded features:
+        `tf.core.api.Api.Fall` for nodes and `tf.core.api.Api.Eall` for edges.
+        """
+
         if silent is not None:
             wasSilent = self.tm.isSilent()
             self.tm.setSilent(silent)
@@ -280,6 +428,25 @@ Api reference : {APIREF}
         return api
 
     def clearCache(self):
+        """Clears the cache of compiled TF data.
+
+        Text-Fabric precomputes data for you, so that it can be loaded faster.
+        If the original data is updated, Text-Fabric detects it,
+        and will recompute that data.
+
+        But there are cases, when the algorithms of Text-Fabric have changed,
+        without any changes in the data, where you might want to clear the cache
+        of precomputed results.
+
+        Calling this function just does it, and it is equivalent with manually removing
+        all `.tfx` files inside the hidden `.tf` directory inside your dataset.
+
+        See also `tf.clean`.
+
+        !!! hint "No need to load"
+            It is not needed to execute a `TF.load()` first.
+        """
+
         for (fName, fObj) in self.features.items():
             fObj.cleanDataBin()
 
@@ -292,6 +459,86 @@ Api reference : {APIREF}
         module=None,
         silent=None,
     ):
+        """Saves newly generated data to disk as TF features, nodes and/or edges.
+
+        If you have collected feature data in dictionaries, keyed by the
+        names of the features, and valued by their feature data,
+        then you can save that data to `.tf` feature files on disk.
+
+        It is this easy to export new data as features:
+        collect the data and metadata of the features and feed it in an orderly way
+        to `TF.save()` and there you go.
+
+        Parameters
+        ----------
+        nodeFeatures: dict of dict
+            The data of a node feature is a dictionary with nodes as keys (integers!)
+            and strings or numbers as (feature) values.
+            This parameter holds all those dictionaries, keyed by feature name.
+
+        edgeFeatures: dict of dict
+            The data of an edge feature is a dictionary with nodes as keys, and sets or
+            dictionaries as values. These sets should be sets of nodes (integers!),
+            and these dictionaries should have nodes as keys and strings or numbers
+            as values.
+            This parameter holds all those dictionaries, keyed by feature name.
+
+        metadata: dict of  dict
+            The meta data for every feature to be saved is a key-value dictionary.
+            This parameter holds all those dictionaries, keyed by feature name.
+
+            !!! explanation "value types"
+                The type of the feature values ('int' or 'str') should be specified
+                under key `valueType`.
+
+            !!! explanation "edge values"
+                If you save an edge feature, and there are values in that edge feature,
+                you have to say so, by specifying `edgeValues=True`
+                in the metadata for that feature.
+
+            !!! explanation "generic metadata"
+                This parameter may also contain fields under the empty name.
+                These fields will be added to all features in `nodeFeatures` and
+                `edgeFeatures`.
+
+            !!! explanation "config features"
+                If you need to write the *config* feature `otext`,
+                which is a metadata-only feature, just
+                add the metadata under key `otext` in this parameter and make sure
+                that `otext` is not a key in `nodeFeatures` nor in
+                `edgeFeatures`.
+                These fields will be written into the separate config feature `otext`,
+                with no data associated.
+
+        location: dict
+            The (meta)data will be written to the very last directory that TF searched
+            when looking for features (this is determined by the
+            `locations` and `modules` parameters in `tf.fabric.Fabric`.
+
+            If both `locations` and `modules` are empty, writing will take place
+            in the current directory.
+
+            But you can override it:
+
+            If you pass `location=something`, TF will save in `something/mod`,
+            where `mod` is the last meber of the `modules` parameter of TF.
+
+        module: dict
+            This is an additional way of overriding the default location
+            where TF saves new features. See the *location* parameter.
+
+            If you pass `module=something`, TF will save in `loc/something`,
+            where `loc` is the last member of the `locations` parameter of TF.
+
+            If you pass `location=path1` and `module=path2`,
+            TF will save in `path1/path2`.
+
+        silent: boolean, optional `None`
+            TF is silent if you specified `silent=True` in a preceding
+            `TF=Fabric()` call.
+            But if you did not, you can also pass `silent=True` to this call.
+        """
+
         good = True
         if silent is not None:
             wasSilent = self.tm.isSilent()
@@ -430,6 +677,25 @@ Api reference : {APIREF}
         return good
 
     def exportMQL(self, mqlName, mqlDir):
+        """Exports the complete TF dataset into single MQL database.
+
+        See also `tf.convert.mql`.
+
+        Parameters
+        ----------
+        dirName: string
+        dbName: string
+
+        Returns
+        -------
+        None
+            The exported data will be written to file *dirName*`/`*dbName.mql*.
+            If `dirName` starts with `~`, the `~` will be expanded to your
+            home directory.
+            Likewise, `..` will be expanded to the parent of the current directory,
+            and `.` to the current directory, both only at the start of `dirName`.
+        """
+
         self.tm.indent(level=0, reset=True)
         mqlDir = expandDir(self, mqlDir)
 
@@ -438,6 +704,49 @@ Api reference : {APIREF}
         mql.write()
 
     def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
+        """Converts an MQL database dump to a Text-Fabric dataset.
+
+        !!! hint "Destination directory"
+            It is recommended to call this `importMQL` on a TF instance called with
+
+            ```python
+            TF = Fabric(locations=targetDir)
+            ```
+
+            Then the resulting features will be written in the targetDir.
+            In fact, the rules are exactly the same as for `save()`.
+
+        Parameters
+        ----------
+        slotType: string
+            You have to tell which object type in the MQL file acts as the slot type,
+            because TF cannot see that on its own.
+
+        otext: dict
+            You can pass the information about sections and text formats as
+            the parameter `otext`. This info will end up in the `otext.tf` feature.
+            Pass it as a dictionary of keys and values, like so:
+
+            ```python
+            otext = {
+                'fmt:text-trans-plain': '{glyphs}{trailer}',
+                'sectionFeatures': 'book,chapter,verse',
+            }
+            ```
+
+        meta: dict
+            Likewise, you can add a dictionary of keys and values that will added to
+            the metadata of all features. Handy to add provenance data here:
+
+            ```python
+            meta = dict(
+                dataset='DLC',
+                datasetName='Digital Language Corpus',
+                author="That 's me",
+            )
+            ```
+        """
+
         self.tm.indent(level=0, reset=True)
         (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(
             mqlFile, self.tm, slotType=slotType, otext=otext, meta=meta

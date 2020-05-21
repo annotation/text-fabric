@@ -43,23 +43,23 @@ STRATEGY = &#34;&#34;&#34;
 
 def setStrategy(searchExe, strategy, keep=False):
     error = searchExe.api.error
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     if strategy is None:
         if keep:
             return
         strategy = STRATEGY[0]
     if strategy not in STRATEGY:
-        error(f&#39;Strategy not defined: &#34;{strategy}&#34;&#39;, cache=msgCache)
+        error(f&#39;Strategy not defined: &#34;{strategy}&#34;&#39;, cache=_msgCache)
         error(
             &#34;Allowed strategies:\n{}&#34;.format(&#34;\n&#34;.join(f&#34;    {s}&#34; for s in STRATEGY)),
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         searchExe.good = False
 
     func = globals().get(f&#34;_{strategy}&#34;, None)
     if not func:
-        error(f&#39;Strategy is defined, but not implemented: &#34;{strategy}&#34;&#39;, cache=msgCache)
+        error(f&#39;Strategy is defined, but not implemented: &#34;{strategy}&#34;&#39;, cache=_msgCache)
         searchExe.good = False
     searchExe.strategy = types.MethodType(func, searchExe)
     searchExe.strategyName = strategy
@@ -525,7 +525,7 @@ def _stitchPlan(searchExe, strategy=None):
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
     error = searchExe.api.error
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
 
     setStrategy(searchExe, strategy, keep=True)
     if not searchExe.good:
@@ -565,7 +565,7 @@ def _stitchPlan(searchExe, strategy=None):
 In template: {qnodesO}
 In plan    : {newNodesO}&#34;&#34;&#34;,
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         good = False
 
@@ -577,7 +577,7 @@ In plan    : {newNodesO}&#34;&#34;&#34;,
 In template: {qedgesO}
 In plan    : {newCedgesO}&#34;&#34;&#34;,
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         # good = False
 
@@ -926,23 +926,23 @@ def _stitchResults(searchExe):
 </summary>
 <pre><code class="python">def setStrategy(searchExe, strategy, keep=False):
     error = searchExe.api.error
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     if strategy is None:
         if keep:
             return
         strategy = STRATEGY[0]
     if strategy not in STRATEGY:
-        error(f&#39;Strategy not defined: &#34;{strategy}&#34;&#39;, cache=msgCache)
+        error(f&#39;Strategy not defined: &#34;{strategy}&#34;&#39;, cache=_msgCache)
         error(
             &#34;Allowed strategies:\n{}&#34;.format(&#34;\n&#34;.join(f&#34;    {s}&#34; for s in STRATEGY)),
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         searchExe.good = False
 
     func = globals().get(f&#34;_{strategy}&#34;, None)
     if not func:
-        error(f&#39;Strategy is defined, but not implemented: &#34;{strategy}&#34;&#39;, cache=msgCache)
+        error(f&#39;Strategy is defined, but not implemented: &#34;{strategy}&#34;&#39;, cache=_msgCache)
         searchExe.good = False
     searchExe.strategy = types.MethodType(func, searchExe)
     searchExe.strategyName = strategy</code></pre>

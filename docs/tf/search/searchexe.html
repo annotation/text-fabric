@@ -32,6 +32,10 @@ from .spin import spinAtoms, spinEdges
 from .stitch import setStrategy, stitch
 
 
+PROGRESS = 100
+LIMIT = 1000
+
+
 class SearchExe(object):
     perfParams = {}
 
@@ -51,7 +55,7 @@ class SearchExe(object):
         shallow=False,
         silent=True,
         showQuantifiers=False,
-        msgCache=False,
+        _msgCache=False,
         setInfo={},
     ):
         self.api = api
@@ -65,7 +69,7 @@ class SearchExe(object):
         self.silent = silent
         api.setSilent(silent)
         self.showQuantifiers = showQuantifiers
-        self.msgCache = msgCache if type(msgCache) is list else -1 if msgCache else 0
+        self._msgCache = _msgCache if type(_msgCache) is list else -1 if _msgCache else 0
         self.good = True
         self.setInfo = setInfo
         basicRelations(self, api)
@@ -85,7 +89,7 @@ class SearchExe(object):
     def study(self, strategy=None):
         api = self.api
         info = api.info
-        msgCache = self.msgCache
+        _msgCache = self._msgCache
         self.api.indent(level=0, reset=True)
         self.good = True
 
@@ -93,7 +97,7 @@ class SearchExe(object):
         if not self.good:
             return
 
-        info(&#34;Checking search template ...&#34;, cache=msgCache)
+        info(&#34;Checking search template ...&#34;, cache=_msgCache)
 
         self._parse()
         self._prepare()
@@ -101,25 +105,25 @@ class SearchExe(object):
             return
         info(
             f&#34;Setting up search space for {len(self.qnodes)} objects ...&#34;,
-            cache=msgCache,
+            cache=_msgCache,
         )
         spinAtoms(self)
         info(
             f&#34;Constraining search space with {len(self.qedges)} relations ...&#34;,
-            cache=msgCache,
+            cache=_msgCache,
         )
         spinEdges(self)
-        info(f&#34;\t{len(self.thinned)} edges thinned&#34;, cache=msgCache)
+        info(f&#34;\t{len(self.thinned)} edges thinned&#34;, cache=_msgCache)
         info(
             f&#34;Setting up retrieval plan with strategy {self.strategyName} ...&#34;,
-            cache=msgCache,
+            cache=_msgCache,
         )
         stitch(self)
         if self.good:
             yarnContent = sum(len(y) for y in self.yarns.values())
-            info(f&#34;Ready to deliver results from {yarnContent} nodes&#34;, cache=msgCache)
-            info(&#34;Iterate over S.fetch() to get the results&#34;, tm=False, cache=msgCache)
-            info(&#34;See S.showPlan() to interpret the results&#34;, tm=False, cache=msgCache)
+            info(f&#34;Ready to deliver results from {yarnContent} nodes&#34;, cache=_msgCache)
+            info(&#34;Iterate over S.fetch() to get the results&#34;, tm=False, cache=_msgCache)
+            info(&#34;See S.showPlan() to interpret the results&#34;, tm=False, cache=_msgCache)
 
     def fetch(self, limit=None):
         if not self.good:
@@ -141,7 +145,7 @@ class SearchExe(object):
     def count(self, progress=None, limit=None):
         info = self.api.info
         error = self.api.error
-        msgCache = self.msgCache
+        _msgCache = self._msgCache
         indent = self.api.indent
         indent(level=0, reset=True)
 
@@ -149,12 +153,9 @@ class SearchExe(object):
             error(
                 &#34;This search has problems. No results to count.&#34;,
                 tm=False,
-                cache=msgCache,
+                cache=_msgCache,
             )
             return
-
-        PROGRESS = 100
-        LIMIT = 1000
 
         if progress is None:
             progress = PROGRESS
@@ -165,7 +166,7 @@ class SearchExe(object):
             &#34;Counting results per {} up to {} ...&#34;.format(
                 progress, limit if limit &gt; 0 else &#34; the end of the results&#34;,
             ),
-            cache=msgCache,
+            cache=_msgCache,
         )
         indent(level=1, reset=True)
 
@@ -176,7 +177,7 @@ class SearchExe(object):
             j += 1
             if j == progress:
                 j = 0
-                info(i, cache=msgCache)
+                info(i, cache=_msgCache)
             if limit &gt; 0 and i &gt;= limit:
                 break
 
@@ -188,15 +189,15 @@ class SearchExe(object):
     def showPlan(self, details=False):
         displayPlan(self, details=details)
 
-    def showOuterTemplate(self, msgCache):
+    def showOuterTemplate(self, _msgCache):
         error = self.api.error
         offset = self.offset
         outerTemplate = self.outerTemplate
         quKind = self.quKind
         if offset and outerTemplate is not None:
             for (i, line) in enumerate(outerTemplate.split(&#34;\n&#34;)):
-                error(f&#34;{i:&gt;2} {line}&#34;, tm=False, cache=msgCache)
-            error(f&#34;line {offset:&gt;2}: Error under {quKind}:&#34;, tm=False, cache=msgCache)
+                error(f&#34;{i:&gt;2} {line}&#34;, tm=False, cache=_msgCache)
+            error(f&#34;line {offset:&gt;2}: Error under {quKind}:&#34;, tm=False, cache=_msgCache)
 
     # TOP-LEVEL IMPLEMENTATION METHODS
 
@@ -226,7 +227,7 @@ class SearchExe(object):
 <dl>
 <dt id="tf.search.searchexe.SearchExe"><code class="flex name class">
 <span>class <span class="ident">SearchExe</span></span>
-<span>(</span><span>api, searchTemplate, outerTemplate=None, quKind=None, offset=0, level=0, sets=None, shallow=False, silent=True, showQuantifiers=False, msgCache=False, setInfo={})</span>
+<span>(</span><span>api, searchTemplate, outerTemplate=None, quKind=None, offset=0, level=0, sets=None, shallow=False, silent=True, showQuantifiers=False, setInfo={})</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -253,7 +254,7 @@ class SearchExe(object):
         shallow=False,
         silent=True,
         showQuantifiers=False,
-        msgCache=False,
+        _msgCache=False,
         setInfo={},
     ):
         self.api = api
@@ -267,7 +268,7 @@ class SearchExe(object):
         self.silent = silent
         api.setSilent(silent)
         self.showQuantifiers = showQuantifiers
-        self.msgCache = msgCache if type(msgCache) is list else -1 if msgCache else 0
+        self._msgCache = _msgCache if type(_msgCache) is list else -1 if _msgCache else 0
         self.good = True
         self.setInfo = setInfo
         basicRelations(self, api)
@@ -287,7 +288,7 @@ class SearchExe(object):
     def study(self, strategy=None):
         api = self.api
         info = api.info
-        msgCache = self.msgCache
+        _msgCache = self._msgCache
         self.api.indent(level=0, reset=True)
         self.good = True
 
@@ -295,7 +296,7 @@ class SearchExe(object):
         if not self.good:
             return
 
-        info(&#34;Checking search template ...&#34;, cache=msgCache)
+        info(&#34;Checking search template ...&#34;, cache=_msgCache)
 
         self._parse()
         self._prepare()
@@ -303,25 +304,25 @@ class SearchExe(object):
             return
         info(
             f&#34;Setting up search space for {len(self.qnodes)} objects ...&#34;,
-            cache=msgCache,
+            cache=_msgCache,
         )
         spinAtoms(self)
         info(
             f&#34;Constraining search space with {len(self.qedges)} relations ...&#34;,
-            cache=msgCache,
+            cache=_msgCache,
         )
         spinEdges(self)
-        info(f&#34;\t{len(self.thinned)} edges thinned&#34;, cache=msgCache)
+        info(f&#34;\t{len(self.thinned)} edges thinned&#34;, cache=_msgCache)
         info(
             f&#34;Setting up retrieval plan with strategy {self.strategyName} ...&#34;,
-            cache=msgCache,
+            cache=_msgCache,
         )
         stitch(self)
         if self.good:
             yarnContent = sum(len(y) for y in self.yarns.values())
-            info(f&#34;Ready to deliver results from {yarnContent} nodes&#34;, cache=msgCache)
-            info(&#34;Iterate over S.fetch() to get the results&#34;, tm=False, cache=msgCache)
-            info(&#34;See S.showPlan() to interpret the results&#34;, tm=False, cache=msgCache)
+            info(f&#34;Ready to deliver results from {yarnContent} nodes&#34;, cache=_msgCache)
+            info(&#34;Iterate over S.fetch() to get the results&#34;, tm=False, cache=_msgCache)
+            info(&#34;See S.showPlan() to interpret the results&#34;, tm=False, cache=_msgCache)
 
     def fetch(self, limit=None):
         if not self.good:
@@ -343,7 +344,7 @@ class SearchExe(object):
     def count(self, progress=None, limit=None):
         info = self.api.info
         error = self.api.error
-        msgCache = self.msgCache
+        _msgCache = self._msgCache
         indent = self.api.indent
         indent(level=0, reset=True)
 
@@ -351,12 +352,9 @@ class SearchExe(object):
             error(
                 &#34;This search has problems. No results to count.&#34;,
                 tm=False,
-                cache=msgCache,
+                cache=_msgCache,
             )
             return
-
-        PROGRESS = 100
-        LIMIT = 1000
 
         if progress is None:
             progress = PROGRESS
@@ -367,7 +365,7 @@ class SearchExe(object):
             &#34;Counting results per {} up to {} ...&#34;.format(
                 progress, limit if limit &gt; 0 else &#34; the end of the results&#34;,
             ),
-            cache=msgCache,
+            cache=_msgCache,
         )
         indent(level=1, reset=True)
 
@@ -378,7 +376,7 @@ class SearchExe(object):
             j += 1
             if j == progress:
                 j = 0
-                info(i, cache=msgCache)
+                info(i, cache=_msgCache)
             if limit &gt; 0 and i &gt;= limit:
                 break
 
@@ -390,15 +388,15 @@ class SearchExe(object):
     def showPlan(self, details=False):
         displayPlan(self, details=details)
 
-    def showOuterTemplate(self, msgCache):
+    def showOuterTemplate(self, _msgCache):
         error = self.api.error
         offset = self.offset
         outerTemplate = self.outerTemplate
         quKind = self.quKind
         if offset and outerTemplate is not None:
             for (i, line) in enumerate(outerTemplate.split(&#34;\n&#34;)):
-                error(f&#34;{i:&gt;2} {line}&#34;, tm=False, cache=msgCache)
-            error(f&#34;line {offset:&gt;2}: Error under {quKind}:&#34;, tm=False, cache=msgCache)
+                error(f&#34;{i:&gt;2} {line}&#34;, tm=False, cache=_msgCache)
+            error(f&#34;line {offset:&gt;2}: Error under {quKind}:&#34;, tm=False, cache=_msgCache)
 
     # TOP-LEVEL IMPLEMENTATION METHODS
 
@@ -454,7 +452,7 @@ def setPerfParams(cls, info):
 <pre><code class="python">def count(self, progress=None, limit=None):
     info = self.api.info
     error = self.api.error
-    msgCache = self.msgCache
+    _msgCache = self._msgCache
     indent = self.api.indent
     indent(level=0, reset=True)
 
@@ -462,12 +460,9 @@ def setPerfParams(cls, info):
         error(
             &#34;This search has problems. No results to count.&#34;,
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         return
-
-    PROGRESS = 100
-    LIMIT = 1000
 
     if progress is None:
         progress = PROGRESS
@@ -478,7 +473,7 @@ def setPerfParams(cls, info):
         &#34;Counting results per {} up to {} ...&#34;.format(
             progress, limit if limit &gt; 0 else &#34; the end of the results&#34;,
         ),
-        cache=msgCache,
+        cache=_msgCache,
     )
     indent(level=1, reset=True)
 
@@ -489,7 +484,7 @@ def setPerfParams(cls, info):
         j += 1
         if j == progress:
             j = 0
-            info(i, cache=msgCache)
+            info(i, cache=_msgCache)
         if limit &gt; 0 and i &gt;= limit:
             break
 
@@ -545,7 +540,7 @@ def setPerfParams(cls, info):
 </details>
 </dd>
 <dt id="tf.search.searchexe.SearchExe.showOuterTemplate"><code class="name flex">
-<span>def <span class="ident">showOuterTemplate</span></span>(<span>self, msgCache)</span>
+<span>def <span class="ident">showOuterTemplate</span></span>(<span>self, _msgCache)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -553,15 +548,15 @@ def setPerfParams(cls, info):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def showOuterTemplate(self, msgCache):
+<pre><code class="python">def showOuterTemplate(self, _msgCache):
     error = self.api.error
     offset = self.offset
     outerTemplate = self.outerTemplate
     quKind = self.quKind
     if offset and outerTemplate is not None:
         for (i, line) in enumerate(outerTemplate.split(&#34;\n&#34;)):
-            error(f&#34;{i:&gt;2} {line}&#34;, tm=False, cache=msgCache)
-        error(f&#34;line {offset:&gt;2}: Error under {quKind}:&#34;, tm=False, cache=msgCache)</code></pre>
+            error(f&#34;{i:&gt;2} {line}&#34;, tm=False, cache=_msgCache)
+        error(f&#34;line {offset:&gt;2}: Error under {quKind}:&#34;, tm=False, cache=_msgCache)</code></pre>
 </details>
 </dd>
 <dt id="tf.search.searchexe.SearchExe.showPlan"><code class="name flex">
@@ -589,7 +584,7 @@ def setPerfParams(cls, info):
 <pre><code class="python">def study(self, strategy=None):
     api = self.api
     info = api.info
-    msgCache = self.msgCache
+    _msgCache = self._msgCache
     self.api.indent(level=0, reset=True)
     self.good = True
 
@@ -597,7 +592,7 @@ def setPerfParams(cls, info):
     if not self.good:
         return
 
-    info(&#34;Checking search template ...&#34;, cache=msgCache)
+    info(&#34;Checking search template ...&#34;, cache=_msgCache)
 
     self._parse()
     self._prepare()
@@ -605,25 +600,25 @@ def setPerfParams(cls, info):
         return
     info(
         f&#34;Setting up search space for {len(self.qnodes)} objects ...&#34;,
-        cache=msgCache,
+        cache=_msgCache,
     )
     spinAtoms(self)
     info(
         f&#34;Constraining search space with {len(self.qedges)} relations ...&#34;,
-        cache=msgCache,
+        cache=_msgCache,
     )
     spinEdges(self)
-    info(f&#34;\t{len(self.thinned)} edges thinned&#34;, cache=msgCache)
+    info(f&#34;\t{len(self.thinned)} edges thinned&#34;, cache=_msgCache)
     info(
         f&#34;Setting up retrieval plan with strategy {self.strategyName} ...&#34;,
-        cache=msgCache,
+        cache=_msgCache,
     )
     stitch(self)
     if self.good:
         yarnContent = sum(len(y) for y in self.yarns.values())
-        info(f&#34;Ready to deliver results from {yarnContent} nodes&#34;, cache=msgCache)
-        info(&#34;Iterate over S.fetch() to get the results&#34;, tm=False, cache=msgCache)
-        info(&#34;See S.showPlan() to interpret the results&#34;, tm=False, cache=msgCache)</code></pre>
+        info(f&#34;Ready to deliver results from {yarnContent} nodes&#34;, cache=_msgCache)
+        info(&#34;Iterate over S.fetch() to get the results&#34;, tm=False, cache=_msgCache)
+        info(&#34;See S.showPlan() to interpret the results&#34;, tm=False, cache=_msgCache)</code></pre>
 </details>
 </dd>
 </dl>

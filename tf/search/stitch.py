@@ -17,23 +17,23 @@ STRATEGY = """
 
 def setStrategy(searchExe, strategy, keep=False):
     error = searchExe.api.error
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     if strategy is None:
         if keep:
             return
         strategy = STRATEGY[0]
     if strategy not in STRATEGY:
-        error(f'Strategy not defined: "{strategy}"', cache=msgCache)
+        error(f'Strategy not defined: "{strategy}"', cache=_msgCache)
         error(
             "Allowed strategies:\n{}".format("\n".join(f"    {s}" for s in STRATEGY)),
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         searchExe.good = False
 
     func = globals().get(f"_{strategy}", None)
     if not func:
-        error(f'Strategy is defined, but not implemented: "{strategy}"', cache=msgCache)
+        error(f'Strategy is defined, but not implemented: "{strategy}"', cache=_msgCache)
         searchExe.good = False
     searchExe.strategy = types.MethodType(func, searchExe)
     searchExe.strategyName = strategy
@@ -499,7 +499,7 @@ def _stitchPlan(searchExe, strategy=None):
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
     error = searchExe.api.error
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
 
     setStrategy(searchExe, strategy, keep=True)
     if not searchExe.good:
@@ -539,7 +539,7 @@ def _stitchPlan(searchExe, strategy=None):
 In template: {qnodesO}
 In plan    : {newNodesO}""",
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         good = False
 
@@ -551,7 +551,7 @@ In plan    : {newNodesO}""",
 In template: {qedgesO}
 In plan    : {newCedgesO}""",
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         # good = False
 

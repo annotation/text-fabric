@@ -1,34 +1,38 @@
 # Background
 
 ## Research data management
+
 Text-Fabric supports the research data cycle of retrieving/analysing/generating/archiving
 research results.
 
 ### Share data
+
 When using the TF browser, results can be
-[exported](../Use/Browser.md#work-with-exported-results).
+exported, see `tf.applib.display.export`.
 
 When programming in a notebook, TF generates many useful links after having been
 invoked. In this way the provenance of your data will be shared wherever you
 share the notebook (GitHub, NBviewer, Software Heritage Archive).
 
 ### Contribute data
-Researchers can produce new data
-[features](../Api/Fabric.md#saving-features)
+
+Researchers can produce new data (`tf.fabric.Fabric.save`)
 out of their findings and package their new data into modules and
-[distribute](../Api/Data.md) it to GitHub.
+distribute it to GitHub, see `tf.about.datasharing`.
 Other people can use that data just by mentioning the GitHub location.
 Text-Fabric will auto-load it for them.
 
 ## Factory
+
 Text-Fabric can be used to construct websites,
 for example [SHEBANQ](https://shebanq.ancient-data.org).
 In the case of SHEBANQ, data has been converted to mysql databases.
-However, with the built-in [TF kernel](../Server/Kernel.md),
+However, with the built-in TF kernel] (`tf.server.kernel`),
 it is also possible to use TF itself as a database to
 serve multiple connections and requests.
 
 ## API organization
+
 All corpora are different, and it shows when we have to display the materials.
 Text-Fabric offers a plain display of corpus text and a pretty display of feature-enriched
 structures.  
@@ -43,16 +47,17 @@ A well-configured app can auto-download the corpus data, holds provenance inform
 of all data sources that are being used for a corpus, and takes care of an optimal display
 of the patterns in the corpus.
 
-* [current TF-apps](Corpora.md)
-* [advanced API](../Api/App.md)
-* [core API](../Api/Features.md)
-* [app tweaking](../Implementation/Apps.md)
+* Corpora: `tf.about.corpora`
+* advanced: API: `tf.applib`
+* core API: `tf.core`
 
 ## Design principles
+
 There are a number of things that set Text-Fabric apart from most other ways to encode 
 corpora.
 
 ### Minimalistic model
+
 Text-Fabric is based on a minimalistic data model for text plus annotations.
 
 A defining characteristic is that Text-Fabric 
@@ -70,7 +75,8 @@ that have the tree as their first class data model.
 Hence, almost by definition, Text-Fabric does not make use of XML technology.
 
 ### Performance matters
-Based on this model, Text-Fabric offers a [processing API](../Api/Fabric.md)
+
+Based on this model, Text-Fabric offers a core API (`tf.fabric`)
 to search, navigate and process text and its annotations.
 A lot of care has been taken to make this API work as fast as possible.
 Efficiency in data processing has been a design criterion from the start.
@@ -85,8 +91,7 @@ Efficiency in data processing has been a design criterion from the start.
 ## Code organization and statistics
 
 To get an impression of the software that is Text-Fabric,
-in terms of organization and size, see
-[Code](../Code/Overview.md) and [lines](../Code/Stats.md).
+in terms of organization and size, see `tf.about.code`.
 
 ## History
 
@@ -123,25 +128,21 @@ as a tool for constructing the website
     * a new search engine (inspired by [MQL](https://emdros.org) and
     * support for research data workflows.
 
-    [Version 7](../Use/UseX.md) capitalizes on the latter.
+Time moves on, and nowhere is that felt as keenly as in computing science.
+Programming has become easier, humanists become better programmers,
+and personal computers have become powerful
+enough to do a sizable amount of data science on them.
 
-!!! explanation "State of the art"
-    Time moves on, and nowhere is that felt as keenly as in computing science.
-    Programming has become easier, humanists become better programmers,
-    and personal computers have become powerful
-    enough to do a sizable amount of data science on them.
+That leads to exciting *tipping points*:
 
-    That leads to exciting *tipping points*:
+> In sociology, a tipping point is a point in time when a group - or
+  a large number of group members — rapidly and dramatically changes
+  its behavior by widely adopting a previously rare practice.
 
-    > In sociology, a tipping point is a point in time when a group - or
-      a large number of group members — rapidly and dramatically changes
-      its behavior by widely adopting a previously rare practice.
+> [WikiPedia](https://en.wikipedia.org/wiki/Tipping_point_(sociology))
 
-    > [WikiPedia](https://en.wikipedia.org/wiki/Tipping_point_(sociology))
+**Text-Fabric is an attempt to tip the scales** by providing digital humanists with the
+functions they need *now*, based on technology that appeals *now*.
 
-    **Text-Fabric is an attempt to tip the scales** by providing digital humanists with the
-    functions they need *now*, based on technology that appeals *now*.
-
-    Hence, my implementation of Text-Fabric search has been done from the ground up,
-    and uses a strategy that is very different from Ulrik's MQL search engine.
-
+Hence, my implementation of Text-Fabric search has been done from the ground up,
+and uses a strategy that is very different from Ulrik's MQL search engine.

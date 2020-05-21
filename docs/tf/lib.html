@@ -32,6 +32,27 @@ from .core.helpers import console
 
 
 def writeSets(sets, dest):
+    &#34;&#34;&#34;Writes a dictionary of named sets to file.
+
+    The dictionary will be written as a gzipped, pickled data structure.
+
+    Intended use: if you have constructed custom node sets that you want to use
+    in search templates that run in the TF browser.
+
+    Parameters
+    ----------
+    sets: dict of sets
+        The keys are names for the values, which are sets of nodes.
+    dest: string
+        A file path. You may use `~` to refer to your home directory.
+        The result will be written from this file.
+
+    Returns
+    -------
+    boolean
+        `True` if all went well, `False` otherwise.
+    &#34;&#34;&#34;
+
     destPath = os.path.expanduser(dest)
     (baseDir, fileName) = os.path.split(destPath)
     if not os.path.exists(baseDir):
@@ -46,6 +67,24 @@ def writeSets(sets, dest):
 
 
 def readSets(source):
+    &#34;&#34;&#34;Reads a dictionary of named sets from file.
+
+    This is used by the TF browser, when the user has passed a
+    `--sets=fileName` argument to it.
+
+    Parameters
+    ----------
+    source: string
+        A file path. You may use `~` to refer to your home directory.
+        This file must contain a gzipped, pickled data structure.
+
+    Returns
+    -------
+    data | boolean
+        The data structure contained in the file if all went well, False otherwise.
+
+    &#34;&#34;&#34;
+
     sourcePath = os.path.expanduser(source)
     if not os.path.exists(sourcePath):
         console(f&#39;Sets file &#34;{source}&#34; does not exist.&#39;)
@@ -66,12 +105,43 @@ def readSets(source):
 <span>def <span class="ident">readSets</span></span>(<span>source)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Reads a dictionary of named sets from file.</p>
+<p>This is used by the TF browser, when the user has passed a
+<code>--sets=fileName</code> argument to it.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>source</code></strong> :&ensp;<code>string</code></dt>
+<dd>A file path. You may use <code>~</code> to refer to your home directory.
+This file must contain a gzipped, pickled data structure.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>data | boolean</code></dt>
+<dd>The data structure contained in the file if all went well, False otherwise.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def readSets(source):
+    &#34;&#34;&#34;Reads a dictionary of named sets from file.
+
+    This is used by the TF browser, when the user has passed a
+    `--sets=fileName` argument to it.
+
+    Parameters
+    ----------
+    source: string
+        A file path. You may use `~` to refer to your home directory.
+        This file must contain a gzipped, pickled data structure.
+
+    Returns
+    -------
+    data | boolean
+        The data structure contained in the file if all went well, False otherwise.
+
+    &#34;&#34;&#34;
+
     sourcePath = os.path.expanduser(source)
     if not os.path.exists(sourcePath):
         console(f&#39;Sets file &#34;{source}&#34; does not exist.&#39;)
@@ -85,12 +155,49 @@ def readSets(source):
 <span>def <span class="ident">writeSets</span></span>(<span>sets, dest)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Writes a dictionary of named sets to file.</p>
+<p>The dictionary will be written as a gzipped, pickled data structure.</p>
+<p>Intended use: if you have constructed custom node sets that you want to use
+in search templates that run in the TF browser.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>sets</code></strong> :&ensp;<code>dict</code> of <code>sets</code></dt>
+<dd>The keys are names for the values, which are sets of nodes.</dd>
+<dt><strong><code>dest</code></strong> :&ensp;<code>string</code></dt>
+<dd>A file path. You may use <code>~</code> to refer to your home directory.
+The result will be written from this file.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd><code>True</code> if all went well, <code>False</code> otherwise.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def writeSets(sets, dest):
+    &#34;&#34;&#34;Writes a dictionary of named sets to file.
+
+    The dictionary will be written as a gzipped, pickled data structure.
+
+    Intended use: if you have constructed custom node sets that you want to use
+    in search templates that run in the TF browser.
+
+    Parameters
+    ----------
+    sets: dict of sets
+        The keys are names for the values, which are sets of nodes.
+    dest: string
+        A file path. You may use `~` to refer to your home directory.
+        The result will be written from this file.
+
+    Returns
+    -------
+    boolean
+        `True` if all went well, `False` otherwise.
+    &#34;&#34;&#34;
+
     destPath = os.path.expanduser(dest)
     (baseDir, fileName) = os.path.split(destPath)
     if not os.path.exists(baseDir):

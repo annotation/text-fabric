@@ -14,10 +14,36 @@ SEQ_TYPES2 = {tuple, list, set, frozenset}
 
 
 def dm(md):
+    """Display markdown in a Jupyter notebook.
+
+    Parameters
+    ----------
+    md: string
+        Raw markdown string.
+
+    Returns
+    -------
+    None
+        The formatted markdown is rendered in the output cell.
+    """
+
     display(Markdown(md))
 
 
 def dh(html):
+    """Display HTML in a Jupyter notebook.
+
+    Parameters
+    ----------
+    html: string
+        Raw html string.
+
+    Returns
+    -------
+    None
+        The formatted HTML is rendered in the output cell.
+    """
+
     display(HTML(html))
 
 

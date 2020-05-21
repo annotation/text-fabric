@@ -4,17 +4,18 @@
 
 ## Stay up to date!
 
-Always use the latest version of Text-Fabric, because there is still a lot of development going on.
+Always use the latest version of Text-Fabric, because there is still
+a lot of development going on.
 
-A working installation contains three parts that are updated occasionally, sometinmes slowly, other times
-rapidly:
+A working installation contains three parts that are updated occasionally,
+sometinmes slowly, other times rapidly:
 
 * text-fabric itself, the Python library that you obtained by `pip3 install text-fabric`;
 * TF apps, the apps that are specialized in a specific corpus; you obtained it when you said
   `text-fabric appName` or `A = use(appName)`;
 * TF data, which was downloaded by that same statement that downloaded the app.
 
-See [Install](#install) for instructions how to upgrade these things.
+See `tf.about.install` for instructions how to upgrade these things.
 
 
 ## Latest Text-Fabric
@@ -31,8 +32,8 @@ Why do I not get the latest version of Text-Fabric?
     pip3 install --upgrade text-fabric
     ```
 
-    If this still does not download the most recent version of `text-fabric`, it may have been caused by caching.
-    Then say:
+    If this still does not download the most recent version of `text-fabric`,
+    it may have been caused by caching. Then say:
 
     ```sh
     pip3 install --upgrade --no-cache-dir text-fabric
@@ -59,7 +60,8 @@ Why do I **still** not get the latest version of Text-Fabric!?!?
       * (Macos regular Python)
         `/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages`
 
-        Remove the subdirectory `tf` from this location, plus all files with `text-fabric` in the name.
+        Remove the subdirectory `tf` from this location, plus all files with
+        `text-fabric` in the name.
 
     * After this, you can make a fresh install of `text-fabric`:
 
@@ -78,15 +80,16 @@ Older versions do not get away!
 :   Older versions of Python may be in the way.
     The following hygeneic measures are known to be beneficial:
 
-    When you have upgraded Python, remove PATH statements for older versions from your system startup files.
+    When you have upgraded Python, remove PATH statements for older versions
+    from your system startup files.
   
     * For the Macos: look at `.bashrc`, `.bash_profile` in your home directory.
-    * For Windows: on the command prompt, say `echo %path%` to see what the content of your PATH
-      variable is. If you see references to older versions of python than you actually work with,
-      they need to be removed. [Here is how](https://www.computerhope.com/issues/ch000549.htm)
+    * For Windows: on the command prompt, say `echo %path%` to see what the content
+      of your PATH variable is. If you see references to older versions of python
+      than you actually work with, they need to be removed.
+      [Here is how](https://www.computerhope.com/issues/ch000549.htm)
     
     Do not remove references to Python `2.*`, but only outdated Python `3.*` versions. 
-
 
 ## Text-Fabric browser
 
@@ -109,8 +112,8 @@ Out of memory
     Maybe you had too many programs (or browser tabs) open at that time.
 
     Close as many programs as possible (even better, restart your machine) and try again.
-    TF is know to work on Windows 10 machines with only 3GB RAM on board, but only in the best
-    of circumstances.
+    TF is know to work on Windows 10 machines with only 3GB RAM on board,
+    but only in the best of circumstances.
 
     If your machine has 4GB of RAM, it should be possible to run TF, with care.
 

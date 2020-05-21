@@ -32,6 +32,24 @@ from .display import plain, plainTuple, pretty, prettyTuple
 def compose(
     app, tuples, features, position, opened, getx=None, **options,
 ):
+    &#34;&#34;&#34;Takes a list of tuples and composes it into an HTML table.
+
+    Some of the rows will be expandable, namely the rows specified by `opened`,
+    for which extra data has been fetched.
+
+    *features* is a list of names of features that will be shown
+    in expanded pretty displays.
+    Typically, it is the list of features used in the query that delivered the tuples.
+
+    *position* The current position in the list. Will be highlighted in the display.
+
+    *getx=None* If `None`, a portion of the tuples will be put in a table. otherwise,
+    it is an index in the list for which a pretty display will be retrieved.
+    Typically, this happens when a TF-browser user clicks on a table row
+    in order to expand
+    it.
+    &#34;&#34;&#34;
+
     display = app.display
     dContext = display.get(options)
     condensed = dContext.condensed
@@ -111,6 +129,13 @@ def compose(
 def composeT(
     app, features, tuples, opened, getx=None, **options,
 ):
+    &#34;&#34;&#34;Takes a list of tuples and composes it into an HTML table.
+
+    Very much like `compose`,
+    but here the tuples come from a sections and/or tuples specification
+    in the TF-browser.
+    &#34;&#34;&#34;
+
     display = app.display
 
     api = app.api
@@ -191,6 +216,15 @@ def composeP(
     getx=None,
     **options,
 ):
+    &#34;&#34;&#34;Takes a list of tuples and composes it into an HTML table.
+
+    Like `composeT`, but this is meant to compose the items at section level 2 (verses) within
+    an item of section level 1 (chapter) within an item of section level 0 (a book).
+
+    Typically invoked when a user of the TF-browser is browsing passages.
+    The query is used to highlight its results in the passages that the user is browsing.
+    &#34;&#34;&#34;
+
     display = app.display
 
     api = app.api
@@ -253,6 +287,13 @@ def composeP(
 def _plainTextSFinal(
     app, browseNavLevel, finalSecType, sNode, opened, secFinal, **options,
 ):
+    &#34;&#34;&#34;
+    Produces a single item corresponding to a section 2 level (verse) for display
+    in the browser.
+
+    It will rendered as plain text, but expandable to a pretty display.
+    &#34;&#34;&#34;
+
     display = app.display
     dContext = display.get(options)
     fmt = dContext.fmt
@@ -309,7 +350,18 @@ def _plainTextSFinal(
 <span>def <span class="ident">compose</span></span>(<span>app, tuples, features, position, opened, getx=None, **options)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Takes a list of tuples and composes it into an HTML table.</p>
+<p>Some of the rows will be expandable, namely the rows specified by <code>opened</code>,
+for which extra data has been fetched.</p>
+<p><em>features</em> is a list of names of features that will be shown
+in expanded pretty displays.
+Typically, it is the list of features used in the query that delivered the tuples.</p>
+<p><em>position</em> The current position in the list. Will be highlighted in the display.</p>
+<p><em>getx=None</em> If <code>None</code>, a portion of the tuples will be put in a table. otherwise,
+it is an index in the list for which a pretty display will be retrieved.
+Typically, this happens when a TF-browser user clicks on a table row
+in order to expand
+it.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -317,6 +369,24 @@ def _plainTextSFinal(
 <pre><code class="python">def compose(
     app, tuples, features, position, opened, getx=None, **options,
 ):
+    &#34;&#34;&#34;Takes a list of tuples and composes it into an HTML table.
+
+    Some of the rows will be expandable, namely the rows specified by `opened`,
+    for which extra data has been fetched.
+
+    *features* is a list of names of features that will be shown
+    in expanded pretty displays.
+    Typically, it is the list of features used in the query that delivered the tuples.
+
+    *position* The current position in the list. Will be highlighted in the display.
+
+    *getx=None* If `None`, a portion of the tuples will be put in a table. otherwise,
+    it is an index in the list for which a pretty display will be retrieved.
+    Typically, this happens when a TF-browser user clicks on a table row
+    in order to expand
+    it.
+    &#34;&#34;&#34;
+
     display = app.display
     dContext = display.get(options)
     condensed = dContext.condensed
@@ -394,7 +464,11 @@ def _plainTextSFinal(
 <span>def <span class="ident">composeP</span></span>(<span>app, browseNavLevel, finalSecType, features, items, opened, secFinal, getx=None, **options)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Takes a list of tuples and composes it into an HTML table.</p>
+<p>Like <code><a title="tf.applib.tables.composeT" href="#tf.applib.tables.composeT">composeT()</a></code>, but this is meant to compose the items at section level 2 (verses) within
+an item of section level 1 (chapter) within an item of section level 0 (a book).</p>
+<p>Typically invoked when a user of the TF-browser is browsing passages.
+The query is used to highlight its results in the passages that the user is browsing.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -410,6 +484,15 @@ def _plainTextSFinal(
     getx=None,
     **options,
 ):
+    &#34;&#34;&#34;Takes a list of tuples and composes it into an HTML table.
+
+    Like `composeT`, but this is meant to compose the items at section level 2 (verses) within
+    an item of section level 1 (chapter) within an item of section level 0 (a book).
+
+    Typically invoked when a user of the TF-browser is browsing passages.
+    The query is used to highlight its results in the passages that the user is browsing.
+    &#34;&#34;&#34;
+
     display = app.display
 
     api = app.api
@@ -473,7 +556,10 @@ def _plainTextSFinal(
 <span>def <span class="ident">composeT</span></span>(<span>app, features, tuples, opened, getx=None, **options)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Takes a list of tuples and composes it into an HTML table.</p>
+<p>Very much like <code><a title="tf.applib.tables.compose" href="#tf.applib.tables.compose">compose()</a></code>,
+but here the tuples come from a sections and/or tuples specification
+in the TF-browser.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -481,6 +567,13 @@ def _plainTextSFinal(
 <pre><code class="python">def composeT(
     app, features, tuples, opened, getx=None, **options,
 ):
+    &#34;&#34;&#34;Takes a list of tuples and composes it into an HTML table.
+
+    Very much like `compose`,
+    but here the tuples come from a sections and/or tuples specification
+    in the TF-browser.
+    &#34;&#34;&#34;
+
     display = app.display
 
     api = app.api

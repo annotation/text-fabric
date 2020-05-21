@@ -72,7 +72,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
 
     (quKind, quTemplates, parentName, ln) = quantifier
     info = searchExe.api.info
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     indent = searchExe.api.indent
     showQuantifiers = searchExe.showQuantifiers
     silent = searchExe.silent
@@ -83,7 +83,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
 
     if showQuantifiers:
         indent(level=level + 1, reset=True)
-        info(f'"Quantifier on "{cleanAtom}"', cache=msgCache)
+        info(f'"Quantifier on "{cleanAtom}"', cache=_msgCache)
 
     if quKind == QWITHOUT:
         queryN = "\n".join((cleanAtom, quTemplates[0]))
@@ -98,17 +98,17 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
             shallow=True,
             showQuantifiers=showQuantifiers,
             silent=silent,
-            msgCache=msgCache,
+            _msgCache=_msgCache,
             setInfo=searchExe.setInfo,
         )
         if showQuantifiers:
             indent(level=level + 2, reset=True)
-            info(f"{quKind}\n{queryN}\n{QEND}", tm=False, cache=msgCache)
+            info(f"{quKind}\n{queryN}\n{QEND}", tm=False, cache=_msgCache)
         noResults = exe.search()
         resultYarn = universe - noResults
         if showQuantifiers:
             indent(level=level + 2)
-            info(f"{len(noResults)} nodes to exclude", cache=msgCache)
+            info(f"{len(noResults)} nodes to exclude", cache=_msgCache)
     elif quKind == QWHERE:
         # compute the atom+antecedent:
         #   as result tuples
@@ -124,16 +124,16 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
             shallow=False,
             showQuantifiers=showQuantifiers,
             silent=silent,
-            msgCache=msgCache,
+            _msgCache=_msgCache,
             setInfo=searchExe.setInfo,
         )
         if showQuantifiers:
             indent(level=level + 2, reset=True)
-            info(f"{quKind}\n{queryA}", tm=False, cache=msgCache)
+            info(f"{quKind}\n{queryA}", tm=False, cache=_msgCache)
         aResultTuples = exe.search(limit=-1)
         if showQuantifiers:
             indent(level=level + 2)
-            info(f"{len(aResultTuples)} matching nodes", cache=msgCache)
+            info(f"{len(aResultTuples)} matching nodes", cache=_msgCache)
         if not aResultTuples:
             resultYarn = yarn
         else:
@@ -154,16 +154,16 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
                 shallow=sizeA,
                 showQuantifiers=showQuantifiers,
                 silent=silent,
-                msgCache=msgCache,
+                _msgCache=_msgCache,
                 setInfo=searchExe.setInfo,
             )
             if showQuantifiers:
                 indent(level=level + 2, reset=True)
-                info(f"{QHAVE}\n{queryAH}\n{QEND}", tm=False, cache=msgCache)
+                info(f"{QHAVE}\n{queryAH}\n{QEND}", tm=False, cache=_msgCache)
             ahResults = exe.search()
             if showQuantifiers:
                 indent(level=level + 2)
-                info(f"{len(ahResults)} matching nodes", cache=msgCache)
+                info(f"{len(ahResults)} matching nodes", cache=_msgCache)
 
             # determine the shallow tuples that correspond to
             #   atom+antecedent but not consequent
@@ -173,7 +173,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
                 indent(level=level + 2)
                 info(
                     f"{len(resultsAnotH)} match antecedent but not consequent",
-                    cache=msgCache,
+                    cache=_msgCache,
                 )
 
             # now have the atoms that do NOT qualify:
@@ -196,7 +196,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
                 shallow=True,
                 showQuantifiers=showQuantifiers,
                 silent=silent,
-                msgCache=msgCache,
+                _msgCache=_msgCache,
                 setInfo=searchExe.setInfo,
             )
             offset += len(alt.split("\n")) + 1
@@ -205,7 +205,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
                 info(
                     (f"{quKind if i == 0 else QOR}\n{queryAlt}"),
                     tm=False,
-                    cache=msgCache,
+                    cache=_msgCache,
                 )
             altResults = exe.search()
             altResults &= universe
@@ -215,12 +215,12 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
             nNew = len(resultYarn)
             if showQuantifiers:
                 indent(level=level + 2)
-                info(f"adding {nAlt} to {nYarn} yields {nNew} nodes", cache=msgCache)
+                info(f"adding {nAlt} to {nYarn} yields {nNew} nodes", cache=_msgCache)
                 if i == nAlts - 1:
-                    info(QEND, tm=False, cache=msgCache)
+                    info(QEND, tm=False, cache=_msgCache)
     if showQuantifiers:
         indent(level=level + 1)
-        info(f"reduction from {len(yarn)} to {len(resultYarn)} nodes", cache=msgCache)
+        info(f"reduction from {len(yarn)} to {len(resultYarn)} nodes", cache=_msgCache)
         indent(level=0)
     return resultYarn
 

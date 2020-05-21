@@ -58,7 +58,7 @@ def connectedness(searchExe):
     error = searchExe.api.error
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
 
     componentIndex = dict(((q, {q}) for q in range(len(qnodes))))
     for (f, rela, t) in qedges:
@@ -81,17 +81,17 @@ def connectedness(searchExe):
         searchExe.components.append([sorted(c), componentEdges.get(c, [])])
     lComps = len(searchExe.components)
     if lComps == 0:
-        error(&#34;Search without instructions. Tell me what to look for.&#34;, cache=msgCache)
+        error(&#34;Search without instructions. Tell me what to look for.&#34;, cache=_msgCache)
         searchExe.good = False
     elif lComps &gt; 1:
         error(
             f&#34;More than one connected components ({len(searchExe.components)}):&#34;,
-            cache=msgCache,
+            cache=_msgCache,
         )
         error(
             &#34;Either run the subqueries one by one, or connect the components by a relation&#34;,
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         searchExe.good = False
 
@@ -99,7 +99,7 @@ def connectedness(searchExe):
 def multiEdges(searchExe):
     relations = searchExe.relations
     qedges = searchExe.qedges
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     api = searchExe.api
     error = api.error
 
@@ -127,7 +127,7 @@ def multiEdges(searchExe):
                 error(
                     f&#34;Multi-edge with {len(ts)} destinations: {eRep}&#34;,
                     tm=False,
-                    cache=msgCache,
+                    cache=_msgCache,
                 )
             medges.append(es)
 
@@ -145,7 +145,7 @@ def displayPlan(searchExe, details=False):
     info = api.info
     wasSilent = isSilent()
     setSilent(False)
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     nodeLine = searchExe.nodeLine
     qedges = searchExe.qedges
     (qs, es) = searchExe.stitchPlan
@@ -155,23 +155,23 @@ def displayPlan(searchExe, details=False):
         info(
             f&#34;Search with {len(qs)} objects and {len(es)} relations&#34;,
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         info(
             &#34;Results are instantiations of the following objects:&#34;,
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         for q in qs:
             displayNode(searchExe, q)
         if len(es) != 0:
-            info(&#34;Performance parameters:&#34;, tm=False, cache=msgCache)
+            info(&#34;Performance parameters:&#34;, tm=False, cache=_msgCache)
             for (k, v) in searchExe.perfParams.items():
-                info(f&#34;\t{k:&lt;20} = {v:&gt;7}&#34;, tm=False, cache=msgCache)
+                info(f&#34;\t{k:&lt;20} = {v:&gt;7}&#34;, tm=False, cache=_msgCache)
             info(
                 &#34;Instantiations are computed along the following relations:&#34;,
                 tm=False,
-                cache=msgCache,
+                cache=_msgCache,
             )
             (firstE, firstDir) = es[0]
             (f, rela, t) = qedges[firstE]
@@ -184,7 +184,7 @@ def displayPlan(searchExe, details=False):
                 nodesSeen |= displayEdge(searchExe, *e, nodesSeen)
     info(
         &#34;The results are connected to the original search template as follows:&#34;,
-        cache=msgCache,
+        cache=_msgCache,
     )
 
     resultNode = {}
@@ -193,14 +193,14 @@ def displayPlan(searchExe, details=False):
     for (i, line) in enumerate(searchExe.searchLines):
         rNode = resultNode.get(i, &#34;&#34;)
         prefix = &#34;&#34; if rNode == &#34;&#34; else &#34;R&#34;
-        info(f&#34;{i + offset:&gt;2} {prefix:&lt;1}{rNode:&lt;2} {line}&#34;, tm=False, cache=msgCache)
+        info(f&#34;{i + offset:&gt;2} {prefix:&lt;1}{rNode:&lt;2} {line}&#34;, tm=False, cache=_msgCache)
 
     setSilent(wasSilent)
 
 
 def displayNode(searchExe, q, pos2=False):
     info = searchExe.api.info
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     qnodes = searchExe.qnodes
     yarns = searchExe.yarns
     space = &#34; &#34; * 31
@@ -213,12 +213,12 @@ def displayNode(searchExe, q, pos2=False):
             q, qnodes[q][0], space, len(yarns[q]),
         )
     )
-    info(nodeInfo, tm=False, cache=msgCache)
+    info(nodeInfo, tm=False, cache=_msgCache)
 
 
 def displayEdge(searchExe, e, dir, nodesSeen):
     info = searchExe.api.info
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
     converse = searchExe.converse
@@ -255,7 +255,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
             thinRep,
         ),
         tm=False,
-        cache=msgCache,
+        cache=_msgCache,
     )
     return nodesInvolved</code></pre>
 </details>
@@ -280,7 +280,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
     error = searchExe.api.error
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
 
     componentIndex = dict(((q, {q}) for q in range(len(qnodes))))
     for (f, rela, t) in qedges:
@@ -303,17 +303,17 @@ def displayEdge(searchExe, e, dir, nodesSeen):
         searchExe.components.append([sorted(c), componentEdges.get(c, [])])
     lComps = len(searchExe.components)
     if lComps == 0:
-        error(&#34;Search without instructions. Tell me what to look for.&#34;, cache=msgCache)
+        error(&#34;Search without instructions. Tell me what to look for.&#34;, cache=_msgCache)
         searchExe.good = False
     elif lComps &gt; 1:
         error(
             f&#34;More than one connected components ({len(searchExe.components)}):&#34;,
-            cache=msgCache,
+            cache=_msgCache,
         )
         error(
             &#34;Either run the subqueries one by one, or connect the components by a relation&#34;,
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         searchExe.good = False</code></pre>
 </details>
@@ -329,7 +329,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 </summary>
 <pre><code class="python">def displayEdge(searchExe, e, dir, nodesSeen):
     info = searchExe.api.info
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
     converse = searchExe.converse
@@ -366,7 +366,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
             thinRep,
         ),
         tm=False,
-        cache=msgCache,
+        cache=_msgCache,
     )
     return nodesInvolved</code></pre>
 </details>
@@ -382,7 +382,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 </summary>
 <pre><code class="python">def displayNode(searchExe, q, pos2=False):
     info = searchExe.api.info
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     qnodes = searchExe.qnodes
     yarns = searchExe.yarns
     space = &#34; &#34; * 31
@@ -395,7 +395,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
             q, qnodes[q][0], space, len(yarns[q]),
         )
     )
-    info(nodeInfo, tm=False, cache=msgCache)</code></pre>
+    info(nodeInfo, tm=False, cache=_msgCache)</code></pre>
 </details>
 </dd>
 <dt id="tf.search.graph.displayPlan"><code class="name flex">
@@ -416,7 +416,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
     info = api.info
     wasSilent = isSilent()
     setSilent(False)
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     nodeLine = searchExe.nodeLine
     qedges = searchExe.qedges
     (qs, es) = searchExe.stitchPlan
@@ -426,23 +426,23 @@ def displayEdge(searchExe, e, dir, nodesSeen):
         info(
             f&#34;Search with {len(qs)} objects and {len(es)} relations&#34;,
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         info(
             &#34;Results are instantiations of the following objects:&#34;,
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         for q in qs:
             displayNode(searchExe, q)
         if len(es) != 0:
-            info(&#34;Performance parameters:&#34;, tm=False, cache=msgCache)
+            info(&#34;Performance parameters:&#34;, tm=False, cache=_msgCache)
             for (k, v) in searchExe.perfParams.items():
-                info(f&#34;\t{k:&lt;20} = {v:&gt;7}&#34;, tm=False, cache=msgCache)
+                info(f&#34;\t{k:&lt;20} = {v:&gt;7}&#34;, tm=False, cache=_msgCache)
             info(
                 &#34;Instantiations are computed along the following relations:&#34;,
                 tm=False,
-                cache=msgCache,
+                cache=_msgCache,
             )
             (firstE, firstDir) = es[0]
             (f, rela, t) = qedges[firstE]
@@ -455,7 +455,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
                 nodesSeen |= displayEdge(searchExe, *e, nodesSeen)
     info(
         &#34;The results are connected to the original search template as follows:&#34;,
-        cache=msgCache,
+        cache=_msgCache,
     )
 
     resultNode = {}
@@ -464,7 +464,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
     for (i, line) in enumerate(searchExe.searchLines):
         rNode = resultNode.get(i, &#34;&#34;)
         prefix = &#34;&#34; if rNode == &#34;&#34; else &#34;R&#34;
-        info(f&#34;{i + offset:&gt;2} {prefix:&lt;1}{rNode:&lt;2} {line}&#34;, tm=False, cache=msgCache)
+        info(f&#34;{i + offset:&gt;2} {prefix:&lt;1}{rNode:&lt;2} {line}&#34;, tm=False, cache=_msgCache)
 
     setSilent(wasSilent)</code></pre>
 </details>
@@ -481,7 +481,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 <pre><code class="python">def multiEdges(searchExe):
     relations = searchExe.relations
     qedges = searchExe.qedges
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     api = searchExe.api
     error = api.error
 
@@ -509,7 +509,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
                 error(
                     f&#34;Multi-edge with {len(ts)} destinations: {eRep}&#34;,
                     tm=False,
-                    cache=msgCache,
+                    cache=_msgCache,
                 )
             medges.append(es)
 

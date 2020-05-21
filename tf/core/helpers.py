@@ -26,6 +26,12 @@ def isInt(val):
 
 
 def mathEsc(val):
+    """Escape $ signs to `<span>$</span>`.
+
+    To prevent them from being interpreted as math in a Jupyter notebook
+    in cases where you need them literally.
+    """
+
     return "" if val is None else (str(val).replace("$", "<span>$</span>"))
 
 
@@ -38,6 +44,12 @@ def mdEsc(val):
 
 
 def htmlEsc(val):
+    """Escape certain HTML characters by HTML entities.
+
+    To prevent them to be interpreted as HTML
+    in cases where you need them literally.
+    """
+
     return (
         ""
         if val is None
@@ -51,6 +63,12 @@ def htmlEsc(val):
 
 
 def mdhtmlEsc(val):
+    """Escape certain Markdown characters by HTML entities or span elements.
+
+    To prevent them to be interpreted as Markdown
+    in cases where you need them literally.
+    """
+
     return (
         ""
         if val is None

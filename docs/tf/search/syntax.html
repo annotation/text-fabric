@@ -98,7 +98,7 @@ reTp = type(reRe)
 
 def syntax(searchExe):
     error = searchExe.api.error
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     searchExe.good = True
     searchExe.badSyntax = []
     searchExe.searchLines = searchExe.searchTemplate.split(&#34;\n&#34;)
@@ -107,12 +107,12 @@ def syntax(searchExe):
     _tokenize(searchExe)
 
     if not searchExe.good:
-        searchExe.showOuterTemplate(msgCache)
+        searchExe.showOuterTemplate(_msgCache)
         for (i, line) in enumerate(searchExe.searchLines):
-            error(f&#34;{i + offset:&gt;2} {line}&#34;, tm=False, cache=msgCache)
+            error(f&#34;{i + offset:&gt;2} {line}&#34;, tm=False, cache=_msgCache)
         for (ln, eline) in searchExe.badSyntax:
             txt = eline if ln is None else f&#34;line {ln + offset}: {eline}&#34;
-            error(txt, tm=False, cache=msgCache)
+            error(txt, tm=False, cache=_msgCache)
 
 
 def _tokenize(searchExe):
@@ -916,7 +916,7 @@ def _unesc(x, inRe=False):
 </summary>
 <pre><code class="python">def syntax(searchExe):
     error = searchExe.api.error
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     searchExe.good = True
     searchExe.badSyntax = []
     searchExe.searchLines = searchExe.searchTemplate.split(&#34;\n&#34;)
@@ -925,12 +925,12 @@ def _unesc(x, inRe=False):
     _tokenize(searchExe)
 
     if not searchExe.good:
-        searchExe.showOuterTemplate(msgCache)
+        searchExe.showOuterTemplate(_msgCache)
         for (i, line) in enumerate(searchExe.searchLines):
-            error(f&#34;{i + offset:&gt;2} {line}&#34;, tm=False, cache=msgCache)
+            error(f&#34;{i + offset:&gt;2} {line}&#34;, tm=False, cache=_msgCache)
         for (ln, eline) in searchExe.badSyntax:
             txt = eline if ln is None else f&#34;line {ln + offset}: {eline}&#34;
-            error(txt, tm=False, cache=msgCache)</code></pre>
+            error(txt, tm=False, cache=_msgCache)</code></pre>
 </details>
 </dd>
 </dl>

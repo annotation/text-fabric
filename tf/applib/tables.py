@@ -6,6 +6,24 @@ from .display import plain, plainTuple, pretty, prettyTuple
 def compose(
     app, tuples, features, position, opened, getx=None, **options,
 ):
+    """Takes a list of tuples and composes it into an HTML table.
+
+    Some of the rows will be expandable, namely the rows specified by `opened`,
+    for which extra data has been fetched.
+
+    *features* is a list of names of features that will be shown
+    in expanded pretty displays.
+    Typically, it is the list of features used in the query that delivered the tuples.
+
+    *position* The current position in the list. Will be highlighted in the display.
+
+    *getx=None* If `None`, a portion of the tuples will be put in a table. otherwise,
+    it is an index in the list for which a pretty display will be retrieved.
+    Typically, this happens when a TF-browser user clicks on a table row
+    in order to expand
+    it.
+    """
+
     display = app.display
     dContext = display.get(options)
     condensed = dContext.condensed
@@ -85,6 +103,13 @@ def compose(
 def composeT(
     app, features, tuples, opened, getx=None, **options,
 ):
+    """Takes a list of tuples and composes it into an HTML table.
+
+    Very much like `compose`,
+    but here the tuples come from a sections and/or tuples specification
+    in the TF-browser.
+    """
+
     display = app.display
 
     api = app.api
@@ -165,6 +190,15 @@ def composeP(
     getx=None,
     **options,
 ):
+    """Takes a list of tuples and composes it into an HTML table.
+
+    Like `composeT`, but this is meant to compose the items at section level 2 (verses) within
+    an item of section level 1 (chapter) within an item of section level 0 (a book).
+
+    Typically invoked when a user of the TF-browser is browsing passages.
+    The query is used to highlight its results in the passages that the user is browsing.
+    """
+
     display = app.display
 
     api = app.api
@@ -227,6 +261,13 @@ def composeP(
 def _plainTextSFinal(
     app, browseNavLevel, finalSecType, sNode, opened, secFinal, **options,
 ):
+    """
+    Produces a single item corresponding to a section 2 level (verse) for display
+    in the browser.
+
+    It will rendered as plain text, but expandable to a pretty display.
+    """
+
     display = app.display
     dContext = display.get(options)
     fmt = dContext.fmt

@@ -1,3 +1,7 @@
+"""
+.. include:: ../../docs/server/start.md
+"""
+
 import sys
 import os
 from platform import system

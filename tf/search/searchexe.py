@@ -6,6 +6,10 @@ from .spin import spinAtoms, spinEdges
 from .stitch import setStrategy, stitch
 
 
+PROGRESS = 100
+LIMIT = 1000
+
+
 class SearchExe(object):
     perfParams = {}
 
@@ -25,7 +29,7 @@ class SearchExe(object):
         shallow=False,
         silent=True,
         showQuantifiers=False,
-        msgCache=False,
+        _msgCache=False,
         setInfo={},
     ):
         self.api = api
@@ -39,7 +43,7 @@ class SearchExe(object):
         self.silent = silent
         api.setSilent(silent)
         self.showQuantifiers = showQuantifiers
-        self.msgCache = msgCache if type(msgCache) is list else -1 if msgCache else 0
+        self._msgCache = _msgCache if type(_msgCache) is list else -1 if _msgCache else 0
         self.good = True
         self.setInfo = setInfo
         basicRelations(self, api)
@@ -59,7 +63,7 @@ class SearchExe(object):
     def study(self, strategy=None):
         api = self.api
         info = api.info
-        msgCache = self.msgCache
+        _msgCache = self._msgCache
         self.api.indent(level=0, reset=True)
         self.good = True
 
@@ -67,7 +71,7 @@ class SearchExe(object):
         if not self.good:
             return
 
-        info("Checking search template ...", cache=msgCache)
+        info("Checking search template ...", cache=_msgCache)
 
         self._parse()
         self._prepare()
@@ -75,25 +79,25 @@ class SearchExe(object):
             return
         info(
             f"Setting up search space for {len(self.qnodes)} objects ...",
-            cache=msgCache,
+            cache=_msgCache,
         )
         spinAtoms(self)
         info(
             f"Constraining search space with {len(self.qedges)} relations ...",
-            cache=msgCache,
+            cache=_msgCache,
         )
         spinEdges(self)
-        info(f"\t{len(self.thinned)} edges thinned", cache=msgCache)
+        info(f"\t{len(self.thinned)} edges thinned", cache=_msgCache)
         info(
             f"Setting up retrieval plan with strategy {self.strategyName} ...",
-            cache=msgCache,
+            cache=_msgCache,
         )
         stitch(self)
         if self.good:
             yarnContent = sum(len(y) for y in self.yarns.values())
-            info(f"Ready to deliver results from {yarnContent} nodes", cache=msgCache)
-            info("Iterate over S.fetch() to get the results", tm=False, cache=msgCache)
-            info("See S.showPlan() to interpret the results", tm=False, cache=msgCache)
+            info(f"Ready to deliver results from {yarnContent} nodes", cache=_msgCache)
+            info("Iterate over S.fetch() to get the results", tm=False, cache=_msgCache)
+            info("See S.showPlan() to interpret the results", tm=False, cache=_msgCache)
 
     def fetch(self, limit=None):
         if not self.good:
@@ -115,7 +119,7 @@ class SearchExe(object):
     def count(self, progress=None, limit=None):
         info = self.api.info
         error = self.api.error
-        msgCache = self.msgCache
+        _msgCache = self._msgCache
         indent = self.api.indent
         indent(level=0, reset=True)
 
@@ -123,12 +127,9 @@ class SearchExe(object):
             error(
                 "This search has problems. No results to count.",
                 tm=False,
-                cache=msgCache,
+                cache=_msgCache,
             )
             return
-
-        PROGRESS = 100
-        LIMIT = 1000
 
         if progress is None:
             progress = PROGRESS
@@ -139,7 +140,7 @@ class SearchExe(object):
             "Counting results per {} up to {} ...".format(
                 progress, limit if limit > 0 else " the end of the results",
             ),
-            cache=msgCache,
+            cache=_msgCache,
         )
         indent(level=1, reset=True)
 
@@ -150,7 +151,7 @@ class SearchExe(object):
             j += 1
             if j == progress:
                 j = 0
-                info(i, cache=msgCache)
+                info(i, cache=_msgCache)
             if limit > 0 and i >= limit:
                 break
 
@@ -162,15 +163,15 @@ class SearchExe(object):
     def showPlan(self, details=False):
         displayPlan(self, details=details)
 
-    def showOuterTemplate(self, msgCache):
+    def showOuterTemplate(self, _msgCache):
         error = self.api.error
         offset = self.offset
         outerTemplate = self.outerTemplate
         quKind = self.quKind
         if offset and outerTemplate is not None:
             for (i, line) in enumerate(outerTemplate.split("\n")):
-                error(f"{i:>2} {line}", tm=False, cache=msgCache)
-            error(f"line {offset:>2}: Error under {quKind}:", tm=False, cache=msgCache)
+                error(f"{i:>2} {line}", tm=False, cache=_msgCache)
+            error(f"line {offset:>2}: Error under {quKind}:", tm=False, cache=_msgCache)
 
     # TOP-LEVEL IMPLEMENTATION METHODS
 

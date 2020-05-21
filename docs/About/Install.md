@@ -12,15 +12,17 @@ Your computer should be a 64-bit machine and it needs at least 3 GB RAM memory.
 It should run Linux, Macos, or Windows.
 
 !!! caution "close other programs"
-    When you run the Text-Fabric browser for the first time, make sure that most of that minimum
-    of 3GB RAM is actually available, and not in use by other programs.
+    When you run the Text-Fabric browser for the first time,
+    make sure that most of that minimum of 3GB RAM is actually available,
+    and not in use by other programs.
 
 ### Python
 
 Install or upgrade Python on your system to at least version 3.6.3.
 
 
-Go for the 64-bit version. Otherwise Python may not be able to address all the memory it needs.
+Go for the 64-bit version. Otherwise Python may not be able to address
+all the memory it needs.
 
 The leanest install is provided by [python.org](https://www.python.org/downloads/).
 
@@ -28,15 +30,18 @@ You can also install it from [anaconda.com](https://www.anaconda.com/download).
 
 #### On Windows?
 
-Choose Anaconda over standard Python. The reason is that when you want to add Jupyter to the mix,
-you need to have additional developers' tools installed.
+Choose Anaconda over standard Python. The reason is that when you want to add Jupyter
+to the mix, you need to have additional developers' tools installed.
 The Anaconda distribution has Jupyter out of the box.
 
-When installing Python, make sure that the installer adds the path to Python to your environment variables.
+When installing Python, make sure that the installer adds the path to Python
+to your environment variables.
 
 **Install Chrome of Firefox and set it as your default browser.**
-The Text-Fabric browser does not display well in Microsoft Edge, for Edge does not support the
-[details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) element.
+The Text-Fabric browser does not display well in Microsoft Edge,
+for Edge does not support the
+[details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+element.
 
 #### On Linux?
 
@@ -102,8 +107,7 @@ In order to work with a corpus you need its data.
 
 For some corpora there is a TF app, which takes care of downloading and updating that data.
 
-[Corpora](#corpora) tells you how to install and update a TF app and get the corpus data.
-
+`tf.about.corpora` tells you how to install and update a TF app and get the corpus data.
 
 ## Jupyter notebook
 

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.server.web API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Web interface …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,97 @@
 <h1 class="title">Module <code>tf.server.web</code></h1>
 </header>
 <section id="section-intro">
+<h1 id="web-interface">Web interface</h1>
+<h2 id="about">About</h2>
+<p>TF contains a web interface
+in which you can enter a search template and view the results.</p>
+<p>This is realized by a web app based on
+<a href="http://flask.pocoo.org/docs/1.0/">Flask</a>.</p>
+<p>This web app connects to the <code><a title="tf.server.kernel" href="kernel.html">tf.server.kernel</a></code> and merges the retrieved data into a set of
+<a href="https://github.com/annotation/text-fabric/tree/master/tf/server/views">templates</a>.</p>
+<h2 id="start-up">Start up</h2>
+<p>TF kernel, web server and browser page are started
+up by means of a script called <code>text-fabric</code>, which will be installed in an executable
+directory by the <code>pip</code> installer.</p>
+<h2 id="routes">Routes</h2>
+<p>There are 4 kinds of routes in the web app:</p>
+<table>
+<thead>
+<tr>
+<th>url pattern</th>
+<th>effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/server/static/...</code></td>
+<td>serves a static file from the server-wide <a href="https://github.com/annotation/text-fabric/tree/master/tf/server/static">static folder</a></td>
+</tr>
+<tr>
+<td><code>/data/static/...</code></td>
+<td>serves a static file from the app specific static folder</td>
+</tr>
+<tr>
+<td><code>/local/static/...</code></td>
+<td>serves a static file from a local directory specified by the app</td>
+</tr>
+<tr>
+<td>anything else</td>
+<td>submits the form with user data and return the processed request</td>
+</tr>
+</tbody>
+</table>
+<h2 id="templates">Templates</h2>
+<p>There are two templates in
+<a href="https://github.com/annotation/text-fabric/tree/master/tf/server/views">views</a>
+:</p>
+<ul>
+<li><em>index</em>: the normal template for returning responses
+to user requests;</li>
+<li><em>export</em>: the template used for exporting results; it
+has printer/PDF-friendly formatting: good page breaks.
+Pretty displays always occur on a page by their own.
+It has very few user interaction controls.
+When saved as PDF from the browser, it is a neat record
+of work done, with DOI links to the corpus and to Text-Fabric.</li>
+</ul>
+<h2 id="css">CSS</h2>
+<p>We format the web pages with CSS, with extensive use of
+<a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox">flexbox</a>.</p>
+<p>There are several sources of CSS formatting:</p>
+<ul>
+<li>the CSS loaded from the app dependent extraApi, used
+for pretty displays;</li>
+<li><a href="https://github.com/annotation/text-fabric/blob/master/tf/server/static/index.css">index.css</a>: the formatting of the
+<em>index</em> web page with which the user interacts;</li>
+<li><a href="https://github.com/annotation/text-fabric/blob/master/tf/server/views/export.css">export.css</a>
+the formatting of the export page;</li>
+<li><a href="https://github.com/annotation/text-fabric/blob/master/tf/server/views/base.css">base.css</a>
+shared formatting between the index and export pages.</li>
+</ul>
+<h2 id="javascript">Javascript</h2>
+<p>We use a
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/server/static/tf.js">modest amount of Javascript</a>
+on top of
+<a href="https://api.jquery.com">JQuery</a>.</p>
+<p>For collapsing and expanding elements we use the
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details">details</a>
+element. This is a convenient, Javascript-free way to manage
+collapsing. Unfortunately it is not supported by the Microsoft
+browsers, not even Edge.</p>
+<div class="admonition caution">
+<p class="admonition-title">On Windows?</p>
+<p>Windows users should install Chrome of Firefox.</p>
+</div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import os
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../../docs/server/web.md
+&#34;&#34;&#34;
+
+import os
 import sys
 import pickle
 
@@ -312,7 +398,17 @@ if __name__ == &#34;__main__&#34;:
 <div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#web-interface">Web interface</a><ul>
+<li><a href="#about">About</a></li>
+<li><a href="#start-up">Start up</a></li>
+<li><a href="#routes">Routes</a></li>
+<li><a href="#templates">Templates</a></li>
+<li><a href="#css">CSS</a></li>
+<li><a href="#javascript">Javascript</a></li>
+</ul>
+</li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>

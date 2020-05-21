@@ -1,4 +1,25 @@
-# Text
+# Text API
+
+Here are the functions that enable you to get the actual text in the dataset.
+There are several things to accomplish here, such as
+
+*   support the structure of the corpus
+*   support a rigid section system usable by the TF browser
+*   handle multilingual section labels;
+*   switch between various text representations.
+
+The details of the Text API are dependent on the `tf.core.data.WARP` feature `otext`,
+which is a config feature.
+
+!!! hint "T"
+    The Text API is exposed as `T` or `Text`.
+
+!!! note "otext is optional"
+    If your dataset does not have an `otext` feature,
+    the Text API will not be build.
+    If it exists, but does not specify structure or sections,
+    those parts of the Text API will not be built.
+    Likewise for text representations.
 
 ## Structure
 
@@ -199,7 +220,7 @@ set, not by Text-Fabric.
     There is complete freedom of choosing names for text formats.
     They do not have to complied with the above-mentioned scheme.
 
-!!! "layout in formats"
+!!! note "layout in formats"
     So far, text formats only result in plain text.
-    A [TF-app](../Implementation/Apps.md) may define and implement extra text
+    A TF-app (`tf.applib.app`) may define and implement extra text
     formats which may invoke all HTML+CSS styling that you can think of.

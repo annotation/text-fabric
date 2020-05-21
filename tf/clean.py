@@ -1,3 +1,7 @@
+"""
+.. include:: ../docs/main/clean.md
+"""
+
 import sys
 import os
 import re

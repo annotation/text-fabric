@@ -149,6 +149,9 @@ def findAppClass(appName, appPath):
 
 
 def loadModule(moduleName, *args):
+    &#34;&#34;&#34;Load a module dynamically.
+    &#34;&#34;&#34;
+
     (dataSource, appPath) = args[1:3]
     try:
         spec = util.spec_from_file_location(
@@ -301,12 +304,15 @@ The corpus data may not be found.
 <span>def <span class="ident">loadModule</span></span>(<span>moduleName, *args)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Load a module dynamically.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def loadModule(moduleName, *args):
+    &#34;&#34;&#34;Load a module dynamically.
+    &#34;&#34;&#34;
+
     (dataSource, appPath) = args[1:3]
     try:
         spec = util.spec_from_file_location(

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.core.text API documentation</title>
-<meta name="description" content="[About the Text API](https://annotation.github.io/text-fabric/Api/Text/) …" />
+<meta name="description" content="Text API …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,7 +20,7 @@
 <h1 class="title">Module <code>tf.core.text</code></h1>
 </header>
 <section id="section-intro">
-<p><a href="https://annotation.github.io/text-fabric/Api/Text/">About the Text API</a></p>
+<h1 id="text-api">Text API</h1>
 <p>Here are the functions that enable you to get the actual text in the dataset.
 There are several things to accomplish here, such as</p>
 <ul>
@@ -29,8 +29,8 @@ There are several things to accomplish here, such as</p>
 <li>handle multilingual section labels;</li>
 <li>switch between various text representations.</li>
 </ul>
-<p>The details of the Text API are dependent on the <em>warp</em> feature <code>otext</code>, which
-is a config feature.</p>
+<p>The details of the Text API are dependent on the <code><a title="tf.core.data.WARP" href="data.html#tf.core.data.WARP">WARP</a></code> feature <code>otext</code>,
+which is a config feature.</p>
 <div class="admonition hint">
 <p class="admonition-title">T</p>
 <p>The Text API is exposed as <code>T</code> or <code><a title="tf.core.text.Text" href="#tf.core.text.Text">Text</a></code>.</p>
@@ -43,7 +43,6 @@ If it exists, but does not specify structure or sections,
 those parts of the Text API will not be built.
 Likewise for text representations.</p>
 </div>
-<h1 id="text">Text</h1>
 <h2 id="structure">Structure</h2>
 <p>If a corpus has sectional elements, such as
 series, volume, book, part, document, chapter, fragment, verse, halfverse,
@@ -237,39 +236,18 @@ set, not by Text-Fabric.</p>
 <p>There is complete freedom of choosing names for text formats.
 They do not have to complied with the above-mentioned scheme.</p>
 </div>
-<p>!!! "layout in formats"
-So far, text formats only result in plain text.
-A <a href="../Implementation/Apps.md">TF-app</a> may define and implement extra text
+<div class="admonition note">
+<p class="admonition-title">layout in formats</p>
+<p>So far, text formats only result in plain text.
+A TF-app (<code><a title="tf.applib.app" href="../applib/app.html">tf.applib.app</a></code>) may define and implement extra text
 formats which may invoke all HTML+CSS styling that you can think of.</p>
+</div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-[About the Text API](https://annotation.github.io/text-fabric/Api/Text/)
-
-Here are the functions that enable you to get the actual text in the dataset.
-There are several things to accomplish here, such as
-
-*   support the structure of the corpus
-*   support a rigid section system usable by the TF browser
-*   handle multilingual section labels;
-*   switch between various text representations.
-
-The details of the Text API are dependent on the *warp* feature `otext`, which
-is a config feature.
-
-!!! hint &#34;T&#34;
-    The Text API is exposed as `T` or `Text`.
-
-!!! note &#34;otext is optional&#34;
-    If your dataset does not have an `otext` feature,
-    the Text API will not be build.
-    If it exists, but does not specify structure or sections,
-    those parts of the Text API will not be built.
-    Likewise for text representations.
-
-.. include:: ../../docs/Core/Text.md
+.. include:: ../../docs/core/text.md
 &#34;&#34;&#34;
 
 from .data import WARP
@@ -3581,7 +3559,7 @@ is the node that has heading <code>((book, Genesis), (chapter, 3))</code>.</p>
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#text">Text</a><ul>
+<li><a href="#text-api">Text API</a><ul>
 <li><a href="#structure">Structure</a></li>
 <li><a href="#sections">Sections</a></li>
 <li><a href="#book-names-and-languages">Book names and languages</a></li>

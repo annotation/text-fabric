@@ -1,8 +1,7 @@
 """
-[About the Locality API](https://annotation.github.io/text-fabric/Api/Locality/)
-
-Local navigation between nodes.
+.. include:: ../../docs/core/locality.md
 """
+
 
 SET_TYPES = {set, frozenset}
 
@@ -68,7 +67,7 @@ class Locality(object):
         -------
         tuple of int
             The tuple nodes is sorted in the
-            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes).
+            canonical order (`tf.core.api`).
 
             The result never includes *n* itself.
             But other nodes linked to the same set of slots as *n*
@@ -121,8 +120,7 @@ class Locality(object):
         Returns
         -------
         tuple of int
-            The tuple nodes is sorted in the
-            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes),
+            The tuple nodes is sorted in the canonical order (`tf.core.api`),
             but *reversed: right and small embedders before left and big embedders.
 
             The result never includes *n* itself.
@@ -165,8 +163,7 @@ class Locality(object):
         Returns
         -------
         tuple of int
-            The tuple nodes is sorted in the
-            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes):
+            The tuple nodes is sorted in the canonical order (`tf.core.api`),
             left and big embeddees before right and small embeddees.
 
             The result never includes *n* itself.
@@ -225,8 +222,7 @@ class Locality(object):
         Returns
         -------
         tuple of int
-            The tuple nodes is sorted in the
-            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes),
+            The tuple nodes is sorted in the canonical order (`tf.core.api`),
             but *reversed: right and small embedders before left and big embedders.
         """
 
@@ -271,8 +267,7 @@ class Locality(object):
         Returns
         -------
         tuple of int
-            The tuple nodes is sorted in the
-            [canonical ordering](https://annotation.github.io/text-fabric/Api/Nodes#sorting-nodes):
+            The tuple nodes is sorted in the canonical order (`tf.core.api`),
             left and big embeddees before right and small embeddees.
         """
 

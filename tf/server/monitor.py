@@ -20,7 +20,7 @@ def main(cargs=sys.argv):
 
     commands = {
         "1": "searchExe",
-        "2": "msgCache",
+        "2": "_msgCache",
     }
     commandText = "\n".join(f"[{k:>2}] {v}" for (k, v) in commands.items())
     try:

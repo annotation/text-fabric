@@ -23,6 +23,12 @@ WARP = (
     "oslots",
     "otext",
 )
+"""The names of the central features of TF data sets.
+
+The features `otype` and `oslots` are crucial to every TF dataset.
+Without them, a dataset is not a TF dataset, although it could still be a
+TF data module.
+"""
 
 WARP2_DEFAULT = dict(sectionFeatures="", sectionTypes="")
 

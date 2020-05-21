@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.server.servelib API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Common Server Related Functions …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,24 @@
 <h1 class="title">Module <code>tf.server.servelib</code></h1>
 </header>
 <section id="section-intro">
+<h1 id="common-server-related-functions">Common Server Related Functions</h1>
+<h2 id="about">About</h2>
+<p>Here are functions that are being used by various parts of the
+TF browser infrastructure, such as </p>
+<ul>
+<li><code><a title="tf.server.kernel" href="kernel.html">tf.server.kernel</a></code></li>
+<li><code><a title="tf.server.web" href="web.html">tf.server.web</a></code></li>
+<li><code><a title="tf.server.start" href="start.html">tf.server.start</a></code></li>
+</ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import json
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../../docs/server/servelib.md
+&#34;&#34;&#34;
+
+import json
 from io import BytesIO
 from zipfile import ZipFile
 
@@ -47,6 +60,20 @@ def getInt(x, default=1):
 
 
 def getFormData(interfaceDefaults):
+    &#34;&#34;&#34;Get form data.
+
+    The TF browser user interacts with the web app by clicking and typing,
+    as a result of which a HTML form gets filled in.
+    This form as regularly submitted to the web server with a request
+    for a new incarnation of the page: a response.
+
+    The values that come with a request, must be peeled out of the form,
+    and stored as logical values.
+
+    Most of the data has a known function to the web server,
+    but there is also a list of webapp dependent options.
+    &#34;&#34;&#34;
+
     form = {}
     jobName = request.form.get(&#34;jobName&#34;, &#34;&#34;).strip()
     if jobName:
@@ -209,12 +236,34 @@ Job: {form[&#39;jobName&#39;]}
 <span>def <span class="ident">getFormData</span></span>(<span>interfaceDefaults)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Get form data.</p>
+<p>The TF browser user interacts with the web app by clicking and typing,
+as a result of which a HTML form gets filled in.
+This form as regularly submitted to the web server with a request
+for a new incarnation of the page: a response.</p>
+<p>The values that come with a request, must be peeled out of the form,
+and stored as logical values.</p>
+<p>Most of the data has a known function to the web server,
+but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getFormData(interfaceDefaults):
+    &#34;&#34;&#34;Get form data.
+
+    The TF browser user interacts with the web app by clicking and typing,
+    as a result of which a HTML form gets filled in.
+    This form as regularly submitted to the web server with a request
+    for a new incarnation of the page: a response.
+
+    The values that come with a request, must be peeled out of the form,
+    and stored as logical values.
+
+    Most of the data has a known function to the web server,
+    but there is also a list of webapp dependent options.
+    &#34;&#34;&#34;
+
     form = {}
     jobName = request.form.get(&#34;jobName&#34;, &#34;&#34;).strip()
     if jobName:
@@ -322,7 +371,12 @@ Job: {form[&#39;jobName&#39;]}
 <div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#common-server-related-functions">Common Server Related Functions</a><ul>
+<li><a href="#about">About</a></li>
+</ul>
+</li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>

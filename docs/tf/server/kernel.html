@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.server.kernel API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Text-Fabric kernel …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,68 @@
 <h1 class="title">Module <code>tf.server.kernel</code></h1>
 </header>
 <section id="section-intro">
+<h1 id="text-fabric-kernel">Text-Fabric kernel</h1>
+<p>Text-Fabric can be used as a service.
+The full API of Text-Fabric needs a lot of memory, which makes it unusably for
+rapid successions of loading and unloading, like when used in a web server context.</p>
+<p>However, you can start TF as a service process, after which many clients can connect to it,
+all looking at the same (read-only) data. We call this a <strong>TF kernel</strong>.</p>
+<p>The API that the TF kernel offers is limited, it is primarily template search that is offered.
+see <em>Kernel API</em> below.</p>
+<h2 id="start">Start</h2>
+<p>You can run the TF kernel as follows:</p>
+<pre><code class="sh">python3 -m tf.server.kernel ddd
+</code></pre>
+<p>where <code>ddd</code> points to a corpus, see <code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code>.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>See the
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/server/start.py">start-up script</a>
+of the text-fabric browser.</p>
+</div>
+<h2 id="connect">Connect</h2>
+<p>The TF kernel can be connected by an other Python program as follows:</p>
+<pre><code class="python">from tf.server.kernel import makeTfConnection
+TF = makeTfConnection(host, port)
+api = TF.connect()
+</code></pre>
+<p>After this, <code>api</code> can be used to obtain information from the TF kernel.</p>
+<p>See the web server of the text-fabric browser, <code><a title="tf.server.web" href="web.html">tf.server.web</a></code>.</p>
+<h2 id="kernel-api">Kernel API</h2>
+<p>The API of the TF kernel is created by the function <code><a title="tf.server.kernel.makeTfKernel" href="#tf.server.kernel.makeTfKernel">makeTfKernel()</a></code>.</p>
+<p>It returns a class <code>TfKernel</code> with a number of exposed methods
+that can be called by other programs.</p>
+<p>For the machinery of interprocess communication we rely on the
+<a href="https://github.com/tomerfiliba/rpyc">rpyc</a> module.
+See especially the docs on
+<a href="https://rpyc.readthedocs.io/en/latest/docs/services.html#services">services</a>.</p>
+<div class="admonition explanation">
+<p class="admonition-title">Shadow objects</p>
+<p>The way rpyc works in the case of data transmission has a pitfall.
+When a service returns a Python object to the client, it
+does not return the object itself, but only a shadow object
+so called <em>netref</em> objects. This strategy is called
+<a href="https://rpyc.readthedocs.io/en/latest/docs/theory.html#boxing">boxing</a>.
+To the client the shadow object looks like the real thing,
+but when the client needs to access members, they will be fetched
+on the fly.</p>
+<p>This is a performance problem when the service sends a big list or dict,
+and the client iterates over all its items. Each item will be fetched in
+a separate interprocess call, which causes an enormous overhead.</p>
+<p>Boxing only happens for mutable objects. And here lies the work-around:</p>
+<p>The service must send big chunks of data as immutable objects,
+such as tuples. They are sent within a single interprocess call,
+and fly swiftly through the connecting pipe.</p>
+</div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import sys
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../../docs/server/kernel.md
+&#34;&#34;&#34;
+
+import sys
 import pickle
 from functools import reduce
 
@@ -65,6 +122,13 @@ def makeTfKernel(app, appName, port):
             pass
 
         def exposed_monitor(self):
+            &#34;&#34;&#34;A utility function that spits out some information from the kernel
+            to the outside world.
+
+            At this moment it is only used for debugging, but later it can be useful
+            to monitor the kernel or manage it while it remains running.
+            &#34;&#34;&#34;
+
             app = self.app
             api = app.api
             S = api.S
@@ -73,16 +137,25 @@ def makeTfKernel(app, appName, port):
             if searchExe:
                 searchExe = searchExe.outerTemplate
 
-            msgCache = api.cache(_asString=True)
+            _msgCache = api.cache(_asString=True)
 
-            data = dict(searchExe=searchExe, msgCache=msgCache)
+            data = dict(searchExe=searchExe, _msgCache=_msgCache)
             return data
 
         def exposed_header(self):
+            &#34;&#34;&#34;Fetches all the stuff to create a header.
+
+            This is shown after loading a data set.
+            It contains links to data and documentation of the data source.
+            &#34;&#34;&#34;
+
             app = self.app
             return app.header()
 
         def exposed_provenance(self):
+            &#34;&#34;&#34;Fetches provenance metadata to be shown on exported data pages.
+            &#34;&#34;&#34;
+
             app = self.app
             aContext = app.context
             commit = aContext.commit
@@ -90,6 +163,15 @@ def makeTfKernel(app, appName, port):
             return (appProvenance, app.provenance)
 
         def exposed_setNames(self):
+            &#34;&#34;&#34;Gets the names of the custom sets that the kernel has loaded.
+
+            The kernel can load additional sets of data triggered by the
+            `--sets=` command line argument with which the kernel
+            was started.
+
+            A web server kan use this informatiomn to write out provenance info.
+            &#34;&#34;&#34;
+
             app = self.app
             return (
                 tuple(sorted(app.sets.keys()))
@@ -98,10 +180,16 @@ def makeTfKernel(app, appName, port):
             )
 
         def exposed_css(self):
+            &#34;&#34;&#34;Delivers the CSS code to be inserted on the browser page.
+            &#34;&#34;&#34;
+
             app = self.app
             return f&#39;&lt;style type=&#34;text/css&#34;&gt;{app.loadCss()}&lt;/style&gt;&#39;
 
         def exposed_context(self):
+            &#34;&#34;&#34;Fetches the TF app context settings for the corpus.
+            &#34;&#34;&#34;
+
             return pickle.dumps(app.context)
 
         def exposed_passage(
@@ -115,6 +203,42 @@ def makeTfKernel(app, appName, port):
             getx=None,
             **options,
         ):
+            &#34;&#34;&#34;Gets passages, i.e. sections of level 1 (chapter-like).
+
+            The material will be displayed as a sequence of plain
+            representations of the sec2s (verse-like), which can be expanded to pretty
+            displays when the user chooses to do so.
+
+            Parameters
+            ----------
+            features: string | iterable
+                The features that should be displayed in pretty displays when expanding
+                a plain representation of a sec2 into a pretty display
+
+            query: string
+                The query whose results should be highlighted in the passage display.
+
+            sec0: string | int
+                The level 0 section (book)-like label in which the passage occurs
+
+            sec1: string | int, optional `None`
+                The level 1 section (chapter)-like label to fetch
+
+            sec2: string | int, optional `None`
+                The level 2 section (verse-like) label that should get focus
+
+            opened: set, optional, `set()`
+                The set of items that are currently expanded into pretty display
+
+            getx: string | int, optional `None`
+                If given, only a single sec2 (verse) will be fetched, but in pretty
+                display.
+                `getx` is the identifier (section label, verse number) of the item/
+
+            options: dict
+                Additional, optional display options, see `tf.applib.displaysettings`.
+            &#34;&#34;&#34;
+
             app = self.app
             api = app.api
             F = api.F
@@ -194,7 +318,7 @@ def makeTfKernel(app, appName, port):
             app = self.app
             rawSearch = app.api.S.search
 
-            (results, messages) = rawSearch(query, msgCache=True)
+            (results, messages) = rawSearch(query, _msgCache=True)
             if messages:
                 # console(messages, error=True)
                 results = ()
@@ -206,6 +330,34 @@ def makeTfKernel(app, appName, port):
         def exposed_table(
             self, kind, task, features, opened=set(), getx=None, **options,
         ):
+            &#34;&#34;&#34;Fetches material corresponding to a list of sections or tuples of nodes.
+
+            Parameters
+            ----------
+            kind: string
+                Either `sections` or `tuples`:
+                whether to find section material or tuple material.
+
+            task: iterable
+                The list of things (sections or tuples) to retrieve the material for;
+                Typically coming from the *section pad* / *node pad* in the browser.
+
+            features: string | iterable
+                The features that should be displayed in pretty displays when expanding
+                a plain representation of a sec2 into a pretty display
+
+            opened: set, optional, `set()`
+                The set of items that are currently expanded into pretty display
+
+            getx: string | int, optional `None`
+                If given, only a single sec2 (verse) will be fetched, but in pretty
+                display.
+                `getx` is the identifier (section label, verse number) of the item/
+
+            options: dict
+                Additional, optional display options, see `tf.applib.displaysettings`.
+            &#34;&#34;&#34;
+
             app = self.app
 
             if kind == &#34;sections&#34;:
@@ -243,6 +395,40 @@ def makeTfKernel(app, appName, port):
         def exposed_search(
             self, query, batch, position=1, opened=set(), getx=None, **options,
         ):
+            &#34;&#34;&#34;Executes a TF search template, retrieves formatted results.
+
+            The very work horse of this API.
+
+            Formatted results for additional nodes and sections are also retrieved.
+
+            Parameters
+            ----------
+            query: string
+                The query whose results should be highlighted in the passage display.
+                Typically coming from the *search pad* in the browser.
+
+            batch: int
+                The number of table rows to show on one page in the browser.
+
+            position: integer, optional `1`
+                The position that is in focus in the browser.
+                The navigation links take this position as the central point,
+                and enable the user to navigate to neighbouring results,
+                in ever bigger strides.
+
+            opened: set, optional, `set()`
+                The set of items that are currently expanded into pretty display.
+                Normally, only the information to provide a *plain*
+                representation of a result is being fetched,
+                but for the opened ones information is gathered for
+                pretty displays.
+
+            getx: string | int, optional `None`
+                If given, only a single sec2 (verse) will be fetched, but in pretty
+                display.
+                `getx` is the identifier (section label, verse number) of the item/
+            &#34;&#34;&#34;
+
             app = self.app
             display = app.display
             dContext = display.get(options)
@@ -295,6 +481,12 @@ def makeTfKernel(app, appName, port):
             return (table, messages, featureStr, start, total)
 
         def exposed_csvs(self, query, tuples, sections, **options):
+            &#34;&#34;&#34;Gets query results etc. in plain csv format.
+
+            The query results, tuples, and sections are retrieved, as in
+            `exposed_search`, but this function only needs some features per node.
+            &#34;&#34;&#34;
+
             app = self.app
             display = app.display
             dContext = display.get(options)
@@ -558,6 +750,13 @@ if __name__ == &#34;__main__&#34;:
             pass
 
         def exposed_monitor(self):
+            &#34;&#34;&#34;A utility function that spits out some information from the kernel
+            to the outside world.
+
+            At this moment it is only used for debugging, but later it can be useful
+            to monitor the kernel or manage it while it remains running.
+            &#34;&#34;&#34;
+
             app = self.app
             api = app.api
             S = api.S
@@ -566,16 +765,25 @@ if __name__ == &#34;__main__&#34;:
             if searchExe:
                 searchExe = searchExe.outerTemplate
 
-            msgCache = api.cache(_asString=True)
+            _msgCache = api.cache(_asString=True)
 
-            data = dict(searchExe=searchExe, msgCache=msgCache)
+            data = dict(searchExe=searchExe, _msgCache=_msgCache)
             return data
 
         def exposed_header(self):
+            &#34;&#34;&#34;Fetches all the stuff to create a header.
+
+            This is shown after loading a data set.
+            It contains links to data and documentation of the data source.
+            &#34;&#34;&#34;
+
             app = self.app
             return app.header()
 
         def exposed_provenance(self):
+            &#34;&#34;&#34;Fetches provenance metadata to be shown on exported data pages.
+            &#34;&#34;&#34;
+
             app = self.app
             aContext = app.context
             commit = aContext.commit
@@ -583,6 +791,15 @@ if __name__ == &#34;__main__&#34;:
             return (appProvenance, app.provenance)
 
         def exposed_setNames(self):
+            &#34;&#34;&#34;Gets the names of the custom sets that the kernel has loaded.
+
+            The kernel can load additional sets of data triggered by the
+            `--sets=` command line argument with which the kernel
+            was started.
+
+            A web server kan use this informatiomn to write out provenance info.
+            &#34;&#34;&#34;
+
             app = self.app
             return (
                 tuple(sorted(app.sets.keys()))
@@ -591,10 +808,16 @@ if __name__ == &#34;__main__&#34;:
             )
 
         def exposed_css(self):
+            &#34;&#34;&#34;Delivers the CSS code to be inserted on the browser page.
+            &#34;&#34;&#34;
+
             app = self.app
             return f&#39;&lt;style type=&#34;text/css&#34;&gt;{app.loadCss()}&lt;/style&gt;&#39;
 
         def exposed_context(self):
+            &#34;&#34;&#34;Fetches the TF app context settings for the corpus.
+            &#34;&#34;&#34;
+
             return pickle.dumps(app.context)
 
         def exposed_passage(
@@ -608,6 +831,42 @@ if __name__ == &#34;__main__&#34;:
             getx=None,
             **options,
         ):
+            &#34;&#34;&#34;Gets passages, i.e. sections of level 1 (chapter-like).
+
+            The material will be displayed as a sequence of plain
+            representations of the sec2s (verse-like), which can be expanded to pretty
+            displays when the user chooses to do so.
+
+            Parameters
+            ----------
+            features: string | iterable
+                The features that should be displayed in pretty displays when expanding
+                a plain representation of a sec2 into a pretty display
+
+            query: string
+                The query whose results should be highlighted in the passage display.
+
+            sec0: string | int
+                The level 0 section (book)-like label in which the passage occurs
+
+            sec1: string | int, optional `None`
+                The level 1 section (chapter)-like label to fetch
+
+            sec2: string | int, optional `None`
+                The level 2 section (verse-like) label that should get focus
+
+            opened: set, optional, `set()`
+                The set of items that are currently expanded into pretty display
+
+            getx: string | int, optional `None`
+                If given, only a single sec2 (verse) will be fetched, but in pretty
+                display.
+                `getx` is the identifier (section label, verse number) of the item/
+
+            options: dict
+                Additional, optional display options, see `tf.applib.displaysettings`.
+            &#34;&#34;&#34;
+
             app = self.app
             api = app.api
             F = api.F
@@ -687,7 +946,7 @@ if __name__ == &#34;__main__&#34;:
             app = self.app
             rawSearch = app.api.S.search
 
-            (results, messages) = rawSearch(query, msgCache=True)
+            (results, messages) = rawSearch(query, _msgCache=True)
             if messages:
                 # console(messages, error=True)
                 results = ()
@@ -699,6 +958,34 @@ if __name__ == &#34;__main__&#34;:
         def exposed_table(
             self, kind, task, features, opened=set(), getx=None, **options,
         ):
+            &#34;&#34;&#34;Fetches material corresponding to a list of sections or tuples of nodes.
+
+            Parameters
+            ----------
+            kind: string
+                Either `sections` or `tuples`:
+                whether to find section material or tuple material.
+
+            task: iterable
+                The list of things (sections or tuples) to retrieve the material for;
+                Typically coming from the *section pad* / *node pad* in the browser.
+
+            features: string | iterable
+                The features that should be displayed in pretty displays when expanding
+                a plain representation of a sec2 into a pretty display
+
+            opened: set, optional, `set()`
+                The set of items that are currently expanded into pretty display
+
+            getx: string | int, optional `None`
+                If given, only a single sec2 (verse) will be fetched, but in pretty
+                display.
+                `getx` is the identifier (section label, verse number) of the item/
+
+            options: dict
+                Additional, optional display options, see `tf.applib.displaysettings`.
+            &#34;&#34;&#34;
+
             app = self.app
 
             if kind == &#34;sections&#34;:
@@ -736,6 +1023,40 @@ if __name__ == &#34;__main__&#34;:
         def exposed_search(
             self, query, batch, position=1, opened=set(), getx=None, **options,
         ):
+            &#34;&#34;&#34;Executes a TF search template, retrieves formatted results.
+
+            The very work horse of this API.
+
+            Formatted results for additional nodes and sections are also retrieved.
+
+            Parameters
+            ----------
+            query: string
+                The query whose results should be highlighted in the passage display.
+                Typically coming from the *search pad* in the browser.
+
+            batch: int
+                The number of table rows to show on one page in the browser.
+
+            position: integer, optional `1`
+                The position that is in focus in the browser.
+                The navigation links take this position as the central point,
+                and enable the user to navigate to neighbouring results,
+                in ever bigger strides.
+
+            opened: set, optional, `set()`
+                The set of items that are currently expanded into pretty display.
+                Normally, only the information to provide a *plain*
+                representation of a result is being fetched,
+                but for the opened ones information is gathered for
+                pretty displays.
+
+            getx: string | int, optional `None`
+                If given, only a single sec2 (verse) will be fetched, but in pretty
+                display.
+                `getx` is the identifier (section label, verse number) of the item/
+            &#34;&#34;&#34;
+
             app = self.app
             display = app.display
             dContext = display.get(options)
@@ -788,6 +1109,12 @@ if __name__ == &#34;__main__&#34;:
             return (table, messages, featureStr, start, total)
 
         def exposed_csvs(self, query, tuples, sections, **options):
+            &#34;&#34;&#34;Gets query results etc. in plain csv format.
+
+            The query results, tuples, and sections are retrieved, as in
+            `exposed_search`, but this function only needs some features per node.
+            &#34;&#34;&#34;
+
             app = self.app
             display = app.display
             dContext = display.get(options)
@@ -865,7 +1192,14 @@ if __name__ == &#34;__main__&#34;:
 <div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#text-fabric-kernel">Text-Fabric kernel</a><ul>
+<li><a href="#start">Start</a></li>
+<li><a href="#connect">Connect</a></li>
+<li><a href="#kernel-api">Kernel API</a></li>
+</ul>
+</li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>

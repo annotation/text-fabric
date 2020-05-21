@@ -40,10 +40,36 @@ SEQ_TYPES2 = {tuple, list, set, frozenset}
 
 
 def dm(md):
+    &#34;&#34;&#34;Display markdown in a Jupyter notebook.
+
+    Parameters
+    ----------
+    md: string
+        Raw markdown string.
+
+    Returns
+    -------
+    None
+        The formatted markdown is rendered in the output cell.
+    &#34;&#34;&#34;
+
     display(Markdown(md))
 
 
 def dh(html):
+    &#34;&#34;&#34;Display HTML in a Jupyter notebook.
+
+    Parameters
+    ----------
+    html: string
+        Raw html string.
+
+    Returns
+    -------
+    None
+        The formatted HTML is rendered in the output cell.
+    &#34;&#34;&#34;
+
     display(HTML(html))
 
 
@@ -307,12 +333,35 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 <span>def <span class="ident">dh</span></span>(<span>html)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Display HTML in a Jupyter notebook.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>html</code></strong> :&ensp;<code>string</code></dt>
+<dd>Raw html string.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>The formatted HTML is rendered in the output cell.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def dh(html):
+    &#34;&#34;&#34;Display HTML in a Jupyter notebook.
+
+    Parameters
+    ----------
+    html: string
+        Raw html string.
+
+    Returns
+    -------
+    None
+        The formatted HTML is rendered in the output cell.
+    &#34;&#34;&#34;
+
     display(HTML(html))</code></pre>
 </details>
 </dd>
@@ -320,12 +369,35 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 <span>def <span class="ident">dm</span></span>(<span>md)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Display markdown in a Jupyter notebook.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>md</code></strong> :&ensp;<code>string</code></dt>
+<dd>Raw markdown string.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>The formatted markdown is rendered in the output cell.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def dm(md):
+    &#34;&#34;&#34;Display markdown in a Jupyter notebook.
+
+    Parameters
+    ----------
+    md: string
+        Raw markdown string.
+
+    Returns
+    -------
+    None
+        The formatted markdown is rendered in the output cell.
+    &#34;&#34;&#34;
+
     display(Markdown(md))</code></pre>
 </details>
 </dd>

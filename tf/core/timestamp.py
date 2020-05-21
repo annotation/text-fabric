@@ -1,3 +1,7 @@
+"""
+.. include:: ../../docs/core/timestamp.md
+"""
+
 import sys
 import time
 
@@ -54,34 +58,134 @@ class Timestamp(object):
             return result
 
     def info(self, msg, tm=True, nl=True, cache=0):
+        """Sends an informational message to the standard output.
+
+        Parameters
+        ----------
+        msg: string
+            The string to be displayed
+        tm: boolean, optional `True`
+            Whether the message is to be prepended with the elapsed time.
+        nl: boolean, optional `True`
+            Whether a newline should be appended to the message.
+        cache: integer, optional `0`
+            Whether the message should be cached.
+
+        !!! caution "Silence"
+            Informational messages are not displayed in silent mode.
+        """
+
         if not self.silent:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def warning(self, msg, tm=True, nl=True, cache=0):
+        """Sends an warning message to the standard output.
+
+        Parameters
+        ----------
+        msg: string
+            The string to be displayed
+        tm: boolean, optional `True`
+            Whether the message is to be prepended with the elapsed time.
+        nl: boolean, optional `True`
+            Whether a newline should be appended to the message.
+        cache: integer, optional `0`
+            Whether the message should be cached.
+
+        !!! caution "Silence"
+            Warning messages are not displayed if silent mode is `deep`.
+        """
+
         if self.silent != "deep":
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def error(self, msg, tm=True, nl=True, cache=0):
+        """Sends an warning message to the standard error.
+
+        In a Jupyter notebook, the standard error is displayed with
+        a reddish background colour.
+
+        Parameters
+        ----------
+        msg: string
+            The string to be displayed
+        tm: boolean, optional `True`
+            Whether the message is to be prepended with the elapsed time.
+        nl: boolean, optional `True`
+            Whether a newline should be appended to the message.
+        cache: integer, optional `0`
+            Whether the message should be cached.
+
+        !!! caution "Silence"
+            Warning messages are displayed irrespective of the  silent mode.
+        """
+
         self.raw_msg(msg, tm=tm, nl=nl, cache=cache, error=True)
 
-    def indent(self, level=None, reset=False, verbose=None):
+    def indent(self, level=None, reset=False, _verbose=None):
+        """Changes the indentation and timing of forthcoming messages.
+
+        Messages can be indented. Multiline messages will have the indent
+        prepended to each of its lines.
+
+        The reported time is with respect to a starting point, which can be reset.
+        The starting points at different levels are independent of each other.
+
+        level: integer, optional `None`
+            The indentation level.
+        reset: boolean, optional `False`
+            If `True`, the elapsed time to will be reset to 0 at the given level.
+        """
+
         self.level = 0 if level is None else level
         self.levelRep = self.oneLevelRep * self.level
         if reset:
             self.timestamp[self.level] = time.time()
-        if verbose is not None:
-            self.verbose = verbose
+        if _verbose is not None:
+            self.verbose = _verbose
 
     def isSilent(self):
+        """The current verbosity.
+
+        Returns
+        -------
+        boolean | string
+            `False` not suppressing informational messages.
+            `True` suppressing informational messages.
+            `'deep'` also suppressing warnings.
+        """
         return self.silent
 
     def setSilent(self, silent):
+        """Set the verbosity.
+
+        Parameters
+        ----------
+        silent: boolean | string
+            If `False` do not suppress informational messages.
+            If `True` suppress informational messages.
+            If `'deep'` also suppress warnings.
+
+        Error messages are never suppressed.
+        """
+
         self.silent = silent
 
     def silentOn(self, deep=False):
+        """Suppress informational messages.
+
+        Parameters
+        ----------
+        deep: boolean, optional `False`
+            If `True` also suppress warnings.
+        """
+
         self.silent = True if not deep else "deep"
 
     def silentOff(self):
+        """Enable informational messages.
+        """
+
         self.silent = False
 
     def _elapsed(self):

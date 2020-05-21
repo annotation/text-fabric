@@ -1,3 +1,7 @@
+"""
+.. include:: ../../docs/convert/mql.md
+"""
+
 import os
 import re
 from itertools import chain

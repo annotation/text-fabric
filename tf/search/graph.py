@@ -32,7 +32,7 @@ def connectedness(searchExe):
     error = searchExe.api.error
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
 
     componentIndex = dict(((q, {q}) for q in range(len(qnodes))))
     for (f, rela, t) in qedges:
@@ -55,17 +55,17 @@ def connectedness(searchExe):
         searchExe.components.append([sorted(c), componentEdges.get(c, [])])
     lComps = len(searchExe.components)
     if lComps == 0:
-        error("Search without instructions. Tell me what to look for.", cache=msgCache)
+        error("Search without instructions. Tell me what to look for.", cache=_msgCache)
         searchExe.good = False
     elif lComps > 1:
         error(
             f"More than one connected components ({len(searchExe.components)}):",
-            cache=msgCache,
+            cache=_msgCache,
         )
         error(
             "Either run the subqueries one by one, or connect the components by a relation",
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         searchExe.good = False
 
@@ -73,7 +73,7 @@ def connectedness(searchExe):
 def multiEdges(searchExe):
     relations = searchExe.relations
     qedges = searchExe.qedges
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     api = searchExe.api
     error = api.error
 
@@ -101,7 +101,7 @@ def multiEdges(searchExe):
                 error(
                     f"Multi-edge with {len(ts)} destinations: {eRep}",
                     tm=False,
-                    cache=msgCache,
+                    cache=_msgCache,
                 )
             medges.append(es)
 
@@ -119,7 +119,7 @@ def displayPlan(searchExe, details=False):
     info = api.info
     wasSilent = isSilent()
     setSilent(False)
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     nodeLine = searchExe.nodeLine
     qedges = searchExe.qedges
     (qs, es) = searchExe.stitchPlan
@@ -129,23 +129,23 @@ def displayPlan(searchExe, details=False):
         info(
             f"Search with {len(qs)} objects and {len(es)} relations",
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         info(
             "Results are instantiations of the following objects:",
             tm=False,
-            cache=msgCache,
+            cache=_msgCache,
         )
         for q in qs:
             displayNode(searchExe, q)
         if len(es) != 0:
-            info("Performance parameters:", tm=False, cache=msgCache)
+            info("Performance parameters:", tm=False, cache=_msgCache)
             for (k, v) in searchExe.perfParams.items():
-                info(f"\t{k:<20} = {v:>7}", tm=False, cache=msgCache)
+                info(f"\t{k:<20} = {v:>7}", tm=False, cache=_msgCache)
             info(
                 "Instantiations are computed along the following relations:",
                 tm=False,
-                cache=msgCache,
+                cache=_msgCache,
             )
             (firstE, firstDir) = es[0]
             (f, rela, t) = qedges[firstE]
@@ -158,7 +158,7 @@ def displayPlan(searchExe, details=False):
                 nodesSeen |= displayEdge(searchExe, *e, nodesSeen)
     info(
         "The results are connected to the original search template as follows:",
-        cache=msgCache,
+        cache=_msgCache,
     )
 
     resultNode = {}
@@ -167,14 +167,14 @@ def displayPlan(searchExe, details=False):
     for (i, line) in enumerate(searchExe.searchLines):
         rNode = resultNode.get(i, "")
         prefix = "" if rNode == "" else "R"
-        info(f"{i + offset:>2} {prefix:<1}{rNode:<2} {line}", tm=False, cache=msgCache)
+        info(f"{i + offset:>2} {prefix:<1}{rNode:<2} {line}", tm=False, cache=_msgCache)
 
     setSilent(wasSilent)
 
 
 def displayNode(searchExe, q, pos2=False):
     info = searchExe.api.info
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     qnodes = searchExe.qnodes
     yarns = searchExe.yarns
     space = " " * 31
@@ -187,12 +187,12 @@ def displayNode(searchExe, q, pos2=False):
             q, qnodes[q][0], space, len(yarns[q]),
         )
     )
-    info(nodeInfo, tm=False, cache=msgCache)
+    info(nodeInfo, tm=False, cache=_msgCache)
 
 
 def displayEdge(searchExe, e, dir, nodesSeen):
     info = searchExe.api.info
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
     converse = searchExe.converse
@@ -229,6 +229,6 @@ def displayEdge(searchExe, e, dir, nodesSeen):
             thinRep,
         ),
         tm=False,
-        cache=msgCache,
+        cache=_msgCache,
     )
     return nodesInvolved

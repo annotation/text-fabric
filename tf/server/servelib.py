@@ -1,3 +1,7 @@
+"""
+.. include:: ../../docs/server/servelib.md
+"""
+
 import json
 from io import BytesIO
 from zipfile import ZipFile
@@ -21,6 +25,20 @@ def getInt(x, default=1):
 
 
 def getFormData(interfaceDefaults):
+    """Get form data.
+
+    The TF browser user interacts with the web app by clicking and typing,
+    as a result of which a HTML form gets filled in.
+    This form as regularly submitted to the web server with a request
+    for a new incarnation of the page: a response.
+
+    The values that come with a request, must be peeled out of the form,
+    and stored as logical values.
+
+    Most of the data has a known function to the web server,
+    but there is also a list of webapp dependent options.
+    """
+
     form = {}
     jobName = request.form.get("jobName", "").strip()
     if jobName:

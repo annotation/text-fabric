@@ -55,7 +55,7 @@ text-fabric appName:hot
 <p>2020-05-14</p>
 <ul>
 <li>New method in the
-<a href="../Api/Locality.md"><code>L</code>-API</a>: <code>L.i(node, otype=nodeTypes)</code>.
+<code>L</code>-API (<code><a title="tf.core.locality.Locality.i" href="../core/locality.html#tf.core.locality.Locality.i">Locality.i()</a></code>): <code>L.i(node, otype=nodeTypes)</code>.
 It delivers the <em>intersectors</em> of a node, i.e. the nodes that share slots
 with the given <code>node</code>.</li>
 <li>Fixed a subtle bug in the <code>A.pretty()</code> which manifested itself in the Old Babylonian corpus.
@@ -65,7 +65,7 @@ the displayer "forgot" the nodes encountered in <code>plain</code>, so they coul
 rest of <code>pretty</code>.</li>
 <li>More improvements in the display logic where things refuse to be hierarchical.</li>
 <li>To the display option <code>extraFeatures</code> you may also pass values like <code>type:feature</code>,
-see <a href="../Api/App.md#display">displaysettings</a> under list of display parameters.</li>
+see displaysettings (<code><a title="tf.applib.displaysettings" href="../applib/displaysettings.html">tf.applib.displaysettings</a></code>) under list of display parameters.</li>
 </ul>
 <h3 id="80">8.0</h3>
 <h4 id="803">8.0.3</h4>
@@ -197,9 +197,7 @@ Text-Fabric uses the GitHub API to fetch data from repositories.
 In order to increase the rate limit from 50 x per hour to 5000 x per hour, users
 were advised to create a pair of client-id and client-token strings.</p>
 <p>The advise is now: create a personal access token.</p>
-<p>See
-<a href="../Api/Github.md">Rate limiting</a>
-(scroll to the end).</p>
+<p>See Rate limiting in (<code><a title="tf.applib.repo" href="../applib/repo.html">tf.applib.repo</a></code>).</p>
 <p>Also: a bug fix to the walker conversion, again: thanks Ernst for spotting it.</p>
 <h3 id="79">7.9</h3>
 <h4 id="791-2">7.9.1-2</h4>
@@ -209,8 +207,7 @@ were advised to create a pair of client-id and client-token strings.</p>
 <p>Thanks to Ernst Boogert for spotting them.</p>
 <h4 id="790">7.9.0</h4>
 <p>2019-12-16</p>
-<p>Add behaviour to the <code>modify()</code> function in the
-<a href="../Api/Compose.md">compose API</a>
+<p>Add behaviour to the <code><a title="tf.compose.modify" href="../compose/modify.html">tf.compose.modify</a></code> function
 so that you can output modified features only instead of a whole dataset.
 (Following a suggestion by Cody Kingham).</p>
 <p>2019-07-24</p>
@@ -306,12 +303,10 @@ second word.</p>
 <p>You can also test on <code>&gt;</code> and <code>&lt;</code> if the node features are integer valued.</p>
 <p>And for string valued features, you can also reduce the values before comparing by means
 of a regular expression, which specifies the parts of the value that will be stripped.</p>
-<p>See also the <a href="../Use/Search.md#relational-operators">docs</a>,
-jump to <strong>Based on node features</strong>.</p>
+<p>See also <code><a title="tf.about.searchusage" href="searchusage.html">tf.about.searchusage</a></code>, jump to <strong>Based on node features</strong>.</p>
 <p>The working of <code>silent=True</code> has been fine-tuned (i.e. it is
 easier to silence TF in more cases.)
-There is also a <code>silent</code> parameter for the
-<a href="../Create/Convert.md">walker conversion</a>.</p>
+There is also a <code>silent</code> parameter for the <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code> conversion.</p>
 <p>The <code>info()</code> function always checks whether it should be silent or not.
 There is a new <code>warning()</code> function that is silent if <code>silent='deep'</code>.
 So you can use <code>warning()</code> to issue messages that you do not want to be silenced
@@ -322,8 +317,7 @@ by <code>silent=True</code>.</p>
 <p>The biggest addition is
 a new <code><a title="tf.compose" href="../compose/index.html">tf.compose</a></code> package with operators to manipulate TF data sets:
 <code>combine()</code> and <code>modify()</code>.</p>
-<p>See
-<a href="../Api/Compose.md">specs</a>
+<p>See <code><a title="tf.compose" href="../compose/index.html">tf.compose</a></code>.
 and the
 <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/compose.ipynb">compose chapter</a>
 in the Banks tutorial, where you can see it in action
@@ -351,8 +345,7 @@ a confusion between <code>sections</code> and <code>structure</code></p>
 <p>If a TF-app needs to import its own modules, there is the risk of conflicts
 when several TF-apps get loaded in the same program and they import modules
 with the same name.
-TF offers a function
-<a href="../Implementation/Apps.md#components"><code>loadModule()</code></a>
+TF offers a function <code><a title="tf.applib.find.loadModule" href="../applib/find.html#tf.applib.find.loadModule">loadModule()</a></code>
 by which an app can dynamically load
 a module, and this function makes sure that the imported module gets
 an app-dependent internal name.</p>
@@ -405,7 +398,7 @@ in decent portions.</p>
 <p>The new, flexible system is meant to reflect the structure of the corpus, and will
 give you means to navigate the copus accordingly.</p>
 <p>Quick examples: <a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/structure.ipynb">banks</a>.
-Documentation: <a href="../Api/Text.md#structure">structure</a>. </p>
+Documentation: structure in <code><a title="tf.core.text" href="../core/text.html">tf.core.text</a></code>.</p>
 <h4 id="771">7.7.1</h4>
 <p>2019-05-10</p>
 <ul>
@@ -432,7 +425,7 @@ for them all.</p>
 <li>when it produced nothing, it will now produce sensible things, in many cases.</li>
 </ul>
 <p>You have to use the <code>descend</code> parameter a lot less.</p>
-<p>See the <a href="../Api/Text.md#text-representation">docs</a></p>
+<p>See the <code><a title="tf.core.text" href="../core/text.html">tf.core.text</a></code>.</p>
 <h3 id="76">7.6</h3>
 <h4 id="768">7.6.8</h4>
 <p>2019-05-02</p>
@@ -470,9 +463,8 @@ and likewise</p>
 </code></pre>
 <p>that look for <code>n</code> and <code>m</code> such that there is an <code>edgeFeature</code> edge from <code>n</code> to <code>m</code>,
 or from <code>m</code> to <code>n</code>, or both.</p>
-<p>See the <a href="../Use/Search.md#relational-operators">docs</a></p>
-<p>This corresponds to
-<a href="../Api/Features.md#edge-features"><code>E.</code><em>edgeFeature</em><code>.b()</code></a>.</p>
+<p>See the <code><a title="tf.about.searchusage" href="searchusage.html">tf.about.searchusage</a></code>.</p>
+<p>This corresponds to edge features.</p>
 <p>See also the
 <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/app.ipynb">Banks example</a>.</p>
 <h4 id="762">7.6.2</h4>
@@ -538,7 +530,7 @@ more efficient for the users.</p>
 <h5 id="checkoutrepo"><code>checkoutRepo()</code></h5>
 <p>There is a new utility function <code>checkoutRepo()</code>, by which you can
 maintain a local copy of any subdirectory of any repo on Github.</p>
-<p>See <a href="../Api/Repo.md">Repo</a></p>
+<p>See <code><a title="tf.applib.repo" href="../applib/repo.html">tf.applib.repo</a></code>.</p>
 <p>This is yet another step in making your scholarly work reproducible.</p>
 <h5 id="fix-in-query-parsing">Fix in query parsing</h5>
 <p>Queries like </p>
@@ -607,7 +599,7 @@ type. This behaviour is now the same as for pretty displays.</li>
 <ul>
 <li>Changes in font handling</li>
 <li>New flag in <code>pretty()</code>: <code>full=False</code>.
-See the <a href="../Api/App.md#display">docs</a></li>
+See <code><a title="tf.applib.display" href="../applib/display.html">tf.applib.display</a></code></li>
 </ul>
 <h4 id="748">7.4.8</h4>
 <p>2019-03-07</p>
@@ -802,39 +794,31 @@ a code file of more than 1000 lines.</p>
 <ul>
 <li><code>prettySetup()</code> has been replaced with <code>displaySetup()</code> and <code>displayReset()</code>,
 by which
-you can configure a whole bunch of display parameters selectively.
-<strong><a href="../Api/App.md#display">Display</a></strong></li>
+you can configure a whole bunch of display parameters selectively.</li>
 <li>All display functions (<code>pretty plain prettyTuple plainTuple show table</code>)
 accept a new optional parameter <code>withPassage</code>
 which will add a section label to the display.
-This parameter can be regulated in <code>displaySetup</code>.
-<strong><a href="../Api/App.md#display">Display</a></strong></li>
+This parameter can be regulated in <code>displaySetup</code>. </li>
 <li><code>A.search()</code> accepts a new optional parameter: <code>sort=...</code>
 by which you can ask for
 canonically sorted results (<code>True</code>),
 custom sorted results (pass your onw key function),
-or unsorted results (<code>False</code>).
-<strong><a href="../Api/App.md#search">A.search</a></strong></li>
+or unsorted results (<code>False</code>).</li>
 <li>New functions <code>A.nodeFromSectionStr()</code> and <code>A.sectionStrFromNode()</code>
-which give the passage string of any kind of node, if possible.
-<strong><a href="../Api/App.md#sections">Section support for apps</a></strong></li>
+which give the passage string of any kind of node, if possible.</li>
 <li>The function <code>A.plain()</code> now responds to the <code>highlights</code> parameter:
 you can highlight material inside plain displays.
-<strong><a href="../Api/App.md#display">A.plain</a></strong>
 and
 <strong><a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/display.ipynb">display tutorial</a></strong></li>
 <li>New function <code>T.sectionTuple(n)</code> which gives the tuple of section nodes in which <code>n</code>
-is embedded
-<strong><a href="../Api/Text.md#sections">T.sectionTuple</a></strong></li>
+is embedded</li>
 <li><strong>Modified function <code>T.sectionFromNode(n, fillup=False)</code></strong>
 It used to give a tuple (section1, section2, section3), also for nodes of type
 section1 and section2 (like book and chapter). The new behaviour is the same if
 <code>fillup=True</code>. But if <code>fillup=False</code> (default), it returns a 1-tuple for
-section1 nodes and a 2-tuple for section2 nodes.
-<strong><a href="../Api/Text.md#sections">T.sectionFromNode</a></strong></li>
+section1 nodes and a 2-tuple for section2 nodes.</li>
 <li>New API member <code>sortKeyTuple</code> to sort tuples of nodes in the
-canonical ordering.
-<strong><a href="../Api/Nodes.md#navigating-nodes">sortKeyTuple</a></strong></li>
+canonical ordering (<code><a title="tf.core.api" href="../core/api.html">tf.core.api</a></code>).</li>
 <li>The code to detect the file name and path of the script/notebook you are running in,
 is inherently brittle. It is unwise to base decisions on that.
 This code has been removed from TF.
@@ -915,7 +899,7 @@ also the foreign features;</li>
 <li>it is easier to turn corpora into new text-fabric apps.</li>
 </ul>
 <p>Quick start: the new <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/share.ipynb">share</a></p>
-<p>See the <a href="../Use/UseX.md">advanced guide</a>
+<p>See the <code><a title="tf.about.datasharing" href="datasharing.html">tf.about.datasharing</a></code>
 for concrete and detailed hints how to make most of this version.</p>
 <h2 id="6">6</h2>
 <h3 id="64">6.4</h3>
@@ -1076,8 +1060,7 @@ However, there is only one version kept in <code>~/text-fabric-data</code>, so t
 <li><a href="https://github.com/annotation/text-fabric/blob/master/test/bhsa/bhsa-Dictionary/RESULTSX.tsv">RESULTSX.tsv</a></li>
 </ul>
 </div>
-<p>It might also be handy for the programmers amongst you.
-See the updated <a href="../Api/Text.md#text-representation">API doc on T</a>, expand the T.text() item.</p>
+<p>It might also be handy for the programmers amongst you.</p>
 <h5 id="auto-update">Auto update</h5>
 <p>The Text-Fabric browser checks if you are using the most recent release of the data.</p>
 <h5 id="font-rendering">Font rendering</h5>
@@ -1088,7 +1071,7 @@ in the <a href="https://fontlibrary.org">font library</a>.</p>
 <p>Not worth telling.</p>
 <div class="admonition hint">
 <p class="admonition-title">update Text-Fabric</p>
-<p>To update Text-Fabric itself to version 6.0, consult <a href="Install.md#text-fabric">Upgrade</a>.
+<p>To update Text-Fabric itself to version 6.0, consult <code><a title="tf.about.install" href="install.html">tf.about.install</a></code>.
 Perform this step first, because the new TF may download the new data for you.</p>
 </div>
 <div class="admonition caution">
@@ -1395,8 +1378,7 @@ It triggers the output of context information for nodes in the result tuples.</p
 <p>So, in addition to <code>=</code> we have <code>#</code> for "not equal".
 *
 Quantifiers.</p>
-<p>You can now use quantifiers in search. One of them is like <code>NOTEXIST</code> in MQL.
-See the <a href="../Use/Search.md#quantifiers">docs</a></p>
+<p>You can now use quantifiers in search. One of them is like <code>NOTEXIST</code> in MQL.</p>
 </li>
 <li>
 <p>A number of minor fixes.</p>
@@ -1542,7 +1524,7 @@ of search results.</li>
 </ul>
 <h4 id="340">3.4.0</h4>
 <p>2018-04-23</p>
-<p><a href="../Api/Search.md#search">Search</a>:</p>
+<p>Search</p>
 <ul>
 <li>You can use regular expressions to specify feature values in queries.</li>
 <li>You could already search for nodes which have a non-None value for a certain
@@ -1637,7 +1619,7 @@ have a smaller average size than contained node types. This happens when a
 container type only contains small instances of the contained type and not the
 bigger ones.</p>
 <p>Now you can override the computation by text-fabric by means of a key-value in
-the <em>otext</em> feature. See the <a href="../Api/Text.md#levels-of-node-types">api</a>.</p>
+the <em>otext</em> feature.</p>
 <h3 id="31">3.1</h3>
 <h4 id="315">3.1.5</h4>
 <p>2018-02-15</p>
@@ -1677,7 +1659,7 @@ with the <code>IN</code> relationship of MQL, like <code>[chapter book IN (Genes
 <p>Edges with edge values did not allow for the absence of values. Now they do.</p>
 <h4 id="306">3.0.6</h4>
 <p>2017-10-05</p>
-<p>A major tweak in the <a href="../Create/Convert.md#mql-import">importMQL()</a> function so that it can
+<p>A major tweak in the <code><a title="tf.fabric.Fabric.importMQL" href="../fabric.html#tf.fabric.Fabric.importMQL">Fabric.importMQL()</a></code> function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
 version 3 of the <a href="https://github.com/etcbc/bhsa">BHSA</a>. In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
@@ -1685,12 +1667,12 @@ Hebrew Bible. I transform a gapped sequence of monads into a continuous sequence
 of slots.</p>
 <h4 id="305">3.0.5</h4>
 <p>2017-10-05</p>
-<p>Another little tweak in the <a href="../Create/Convert.md#mql-import">importMQL()</a> function so that it
+<p>Another little tweak in the <code><a title="tf.fabric.Fabric.importMQL" href="../fabric.html#tf.fabric.Fabric.importMQL">Fabric.importMQL()</a></code> function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
 MQL for version 3 of the <a href="https://github.com/etcbc/bhsa">BHSA</a>.</p>
 <h4 id="304">3.0.4</h4>
 <p>2017-10-04</p>
-<p>Little tweak in the <a href="../Create/Convert.md#mql-import">importMQL()</a> function so that it can handle
+<p>Little tweak in the <code><a title="tf.fabric.Fabric.importMQL" href="../fabric.html#tf.fabric.Fabric.importMQL">Fabric.importMQL()</a></code> function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
 <a href="https://github.com/etcbc/extrabiblical">extrabiblical</a> material.</p>
 <h4 id="302-303">3.0.2, 3.0.3</h4>
@@ -1704,7 +1686,7 @@ has moved from <a href="https://github.com/etcbc">ETCBC</a> to
 <h4 id="300">3.0.0</h4>
 <p>2017-10-02</p>
 <p>MQL! You can now convert MQL data into a TF dataset:
-<a href="../Create/Convert.md#mql-import">importMQL()</a>. We had already <a href="../Create/Convert.md#mql-export">exportMQL()</a>.</p>
+<code><a title="tf.fabric.Fabric.importMQL" href="../fabric.html#tf.fabric.Fabric.importMQL">Fabric.importMQL()</a></code>. We had already <code><a title="tf.fabric.Fabric.exportMQL" href="../fabric.html#tf.fabric.Fabric.exportMQL">Fabric.exportMQL()</a></code>.</p>
 <p>The consequence is that we can operate with much agility between the worlds of
 MQL and TF.</p>
 <p>We can start with source data in MQL, convert it to TF, combine it with other TF
@@ -1715,18 +1697,16 @@ enriched MQL, so that the enriched data can be queried by MQL.</p>
 <h4 id="2315">2.3.15</h4>
 <p>2017-09-29</p>
 <p>Completion: TF defines the concept of
-<a href="../Api/Features.md#edge-features">edges</a> that
+edges that
 carry a value. But so far we have not used them. It turned out that it was
 impossible to let TF know that an edge carries values, when
-<a href="../Api/Fabric.md#saving-features">saving</a> data
-as a new feature. Now it is possible.</p>
+saving data as a new feature. Now it is possible.</p>
 <h4 id="2314">2.3.14</h4>
 <p>2017-09-29</p>
 <p>Bug fix: it was not possible to get
 <code>T.nodeFromSection(('2_Chronicles', 36, 23))</code>, the last verse in the Bible.</p>
 <p>This is the consequence of a bug in precomputing the sections
-<a href="../Api/Computed.md#computed-data">sections</a>. The
-preparation step used</p>
+sections. The preparation step used</p>
 <pre><code class="python">range(firstVerse, lastVerse)
 </code></pre>
 <p>somewhere, which should of course have been</p>
@@ -1740,14 +1720,14 @@ preparation step used</p>
 <ul>
 <li>
 <p>Small fix in
-<a href="../Api/Fabric.md#saving-features">TF.save()</a>.
+TF.save().
 The spec says that the metadata under the empty key will be inserted into all
 features, but in fact this did not happen. Instead it was used as a default
 when some feature did not have metadata specified.</p>
 <p>From now on, that metadata will spread through all features.</p>
 </li>
 <li>
-<p>New API function <a href="../Api/Fabric.md#loading">explore</a>, to get a list of all known
+<p>New API function explore, to get a list of all known
 features in a dataset.</p>
 </li>
 </ul>
@@ -1773,7 +1753,7 @@ newlines and tabs in the formats. Enter them as <code>\n</code> and <code>\t</co
 <h4 id="238">2.3.8</h4>
 <p>2017-07-24</p>
 <p>The section levels (book, chapter, verse) were supposed to be customizable
-through the <a href="../Model/Data-Model.md#otext-config-feature-optional">otext</a> feature. But in
+through the otext feature. But in
 fact, up till version 2.3.7 this did not work. From now on the names of the
 section types and the features that name/number them, are given in the <code>otext</code>
 feature. It is still the case that exactly three levels must be specified,
@@ -1793,11 +1773,11 @@ in the template got discarded after an outdent.</p>
 <p>2017-02-11</p>
 <p>Improvements:</p>
 <ul>
-<li>you can load features more silently. See <a href="../Api/Fabric.md#loading-features"><code>TF.load()</code></a>;</li>
-<li>you can search more silently. See <a href="../Api/Search.md#prepare-for-search"><code>S.study()</code></a>;</li>
-<li>you can search more concisely. See the new <a href="../Api/Search.md#search-command"><code>S.search()</code></a>;</li>
+<li>you can load features more silently. See <code>TF.load()</code>;</li>
+<li>you can search more silently. See <code>S.study()</code>;</li>
+<li>you can search more concisely. See the new <code>S.search()</code>;</li>
 <li>when fetching results, the <code>amount</code> parameter of
-<a href="../Api/Search.md#getting-results"><code>S.fetch()</code></a> has been renamed to <code>limit</code>;</li>
+<code>S.fetch()</code> has been renamed to <code>limit</code>;</li>
 <li>the tutorial notebooks (see links on top) have been updated.</li>
 </ul>
 <h4 id="232">2.3.2</h4>
@@ -1818,9 +1798,8 @@ nodes were delivered as integers, instead of 1-tuples of integers.</p>
 <h4 id="220">2.2.0</h4>
 <p>2017-01-06</p>
 <h5 id="new-sortkey">New: sortKey</h5>
-<p>The API has a new member: <a href="../Api/Nodes.md#sorting-nodes"><code>sortKey</code></a></p>
-<p>New relationships in templates: <a href="../Api/Search.md#nearness-comparison"><code>nearness</code></a>. See for
-examples the end of the
+<p>The API has a new member: <code>sortKey</code></p>
+<p>New relationships in templates: <code>nearness</code>. See for examples the end of the
 <a href="https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb">searchTutorial</a>.
 Thanks to James Cuénod for requesting nearness operators.</p>
 <h5 id="fixes">Fixes</h5>
@@ -1854,7 +1833,7 @@ for an updated exposition on searching.</p>
 <h4 id="200">2.0.0</h4>
 <p>2016-12-23</p>
 <h5 id="new-search">New: Search</h5>
-<p><img alt="warmXmas" src="../images/warmXmas.jpg"></p>
+<p><img alt="warmXmas" src="../../images/warmXmas.jpg"></p>
 <p><em>Want to feel cosy with Christmas? Put your laptop on your lap, update
 Text-Fabric, and start playing with search. Your laptop will spin itself warm
 with your queries!</em></p>
@@ -1872,7 +1851,7 @@ Xmas.</p>
 <h4 id="127">1.2.7</h4>
 <p>2016-12-14</p>
 <h5 id="new">New</h5>
-<p><a href="../Api/Features.md#warp-feature-otype"><code>F.otype.sInterval()</code></a></p>
+<p><code>F.otype.sInterval()</code></p>
 <h4 id="126">1.2.6</h4>
 <p>2016-12-14</p>
 <h5 id="bug-fix">bug fix</h5>
@@ -1884,7 +1863,7 @@ containing phrase.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Your computed data needs to be refreshed. This can be done by calling a new
-function <a href="../Api/Misc.md#clearing-the-cache"><code>TF.clearCache()</code></a>. When you use TF after
+function <code>TF.clearCache()</code>. When you use TF after
 this, you will see it working quite hard to recompute a bunch of data.</p>
 </div>
 <h4 id="125">1.2.5</h4>
@@ -1898,10 +1877,10 @@ this, you will see it working quite hard to recompute a bunch of data.</p>
 </div>
 <h5 id="new_1">New</h5>
 <h5 id="frequency-lists">Frequency lists</h5>
-<p><a href="../Api/Features.md#node-features"><code>F.feature.freqList()</code></a>: get a sorted frequency list for any
+<p><code>F.feature.freqList()</code>: get a sorted frequency list for any
 feature. Handy as a first step in exploring a feature.</p>
 <h5 id="export-to-mql">Export to MQL</h5>
-<p><a href="../Create/Convert.md#export-to-mql"><code>TF.exportMQL()</code></a>: export a whole dataset as a MQL database.
+<p><code>TF.exportMQL()</code>: export a whole dataset as a MQL database.
 Including all modules that you have loaded with it.</p>
 <h5 id="changed">Changed</h5>
 <p>The slot numbers start at 0, no longer at 1. Personally I prefer the zero

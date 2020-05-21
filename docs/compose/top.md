@@ -11,5 +11,3 @@ There are the following basic operations:
 See also the
 [compose chapter](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/compose.ipynb)
 in the Banks tutorial.
-
-

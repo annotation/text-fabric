@@ -1,3 +1,7 @@
+"""
+.. include:: ../../docs/server/web.md
+"""
+
 import os
 import sys
 import pickle

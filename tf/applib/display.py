@@ -1671,6 +1671,11 @@ def _getBigType(app, dContext, nType, otypeRank):
 
 
 def _getBoundary(isPretty, api, oContext, inSlots, n, nType, chunk=None):
+    """Utility function to ask from the TF API the slots contained in a node.
+
+    From that, a CSS class for the border box will be determined and returned.
+    """
+
     ltr = oContext.ltr
     startCls = "r" if ltr == "rtl" else "l"
     endCls = "l" if ltr == "rtl" else "r"
@@ -1845,6 +1850,12 @@ def _getSlots(api, n):
 
 
 def _getFeatures(app, dContext, n, nType):
+    """Feature fetcher.
+
+    Helper for `pretty` that wraps the requested features and their values for
+    *node* in HTML for pretty display.
+    """
+
     api = app.api
     L = api.L
     Fs = api.Fs

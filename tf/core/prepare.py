@@ -47,6 +47,24 @@ def levels(info, error, otype, oslots, otext):
 
     The order of the tuple is descending by average number of slots per node of that
     type.
+
+    !!! explanation "Level computation and customization"
+        All node types have a level, defined by the average amount of slots object of
+        that type usually occupy. The bigger the average object, the lower the levels.
+        Books have the lowest level, words the highest level.
+
+        However, this can be overruled. Suppose you have a node type *phrase* and above
+        it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
+        versa. If all phrases are contained in clusters, and some clusters have more
+        than one phrase, the automatic level ranking of node types works out well in
+        this case. But if clusters only have very small phrases, and the big phrases do
+        not occur in clusters, then the algorithm may assign a lower rank to clusters
+        than to phrases.
+
+        In general, it is too expensive to try to compute the levels in a sophisticated
+        way. In order to remedy cases where the algorithm assigns wrong levels, you can
+        add a `@levels` key to the `otext` config feature.
+        See `tf.core.text`.
     """
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -94,10 +112,7 @@ def order(info, error, otype, oslots, levels):
     """Computes order data.
 
     The canonical ordering between nodes is defined in terms of the slots that
-    nodes contain.
-
-    A node *A*  comes before a node *B* if, *A* contains the smallest slot
-    that occurs in only one of *A* and *B*.
+    nodes contain, see `tf.core.api`.
 
     Parameters
     ----------
@@ -164,7 +179,7 @@ def rank(info, error, otype, order):
     """Computes rank data.
 
     The rank of a node is its place in among the other nodes in the
-    canonical ordering (see `order`).
+    canonical order (see `tf.core.api`).
 
     Parameters
     ----------
@@ -217,11 +232,18 @@ def levUp(info, error, otype, oslots, rank):
     -------
     tuple
         The n-th member is an array of the embedder nodes of n.
-        Those arrays are sorted in canonical ordering.
+        Those arrays are sorted in canonical order (`tf.core.api`).
 
     !!! hint "Memory efficiency"
         Many nodes have the same array of embedders.
         Those embedder arrays will be reused for those nodes.
+
+    !!! caution "Use with care"
+        It is not advisable to this data directly by `C.levUp.data`,
+        it is far better to use the `tf.core.locality.Locality.u` function.
+
+        Only when every bit of performance waste has to be squeezed out,
+        this raw data might be a deal.
     """
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -293,12 +315,19 @@ def levDown(info, error, otype, levUp, rank):
     -------
     tuple
         The *n*-th member is an array of the embedded nodes of *n + maxSlot*.
-        Those arrays are sorted in canonical ordering.
+        Those arrays are sorted in canonical order (`tf.core.api`).
 
     !!! hint "Memory efficiency"
         Slot nodes do not have embedded nodes, so they do not have to occupy
         space in this tuple. Hence the first member are the embedded nodes
         of node *maxSlot + 1*.
+
+    !!! caution "Use with care"
+        It is not advisable to this data directly by `C.levDown.data`,
+        it is far better to use the `tf.core.locality.Locality.d` function.
+
+        Only when every bit of performance waste has to be squeezed out,
+        this raw data might be a deal.
     """
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -345,12 +374,12 @@ def boundary(info, error, otype, oslots, rank):
     tuple
         *   first: tuple of array
             The *n*-th member is the array of nodes that start at slot *n*,
-            ordered in *reversed* canonical ordering;
+            ordered in *reversed* canonical order (`tf.core.api`);
         *   last: tuple of array
             The *n*-th member is the array of nodes that end at slot *n*,
-            ordered in canonical ordering;
+            ordered in canonical order;
 
-    !!! hint "why  reversed canonical ordering"
+    !!! hint "why  reversed canonical order?"
         Just for symmetry.
     """
 
@@ -417,6 +446,12 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
             Mapping from section-level-1 nodes to mappings from
             section-level-2 headings to mappings from
             section-level3 headings to section-level-3 nodes.
+
+    !!! caution "Custom names"
+        Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
+        It is the corpus data, especially the `otext` config feature that
+        spells out the names of the sections.
+
     """
 
     (otype, maxSlot, maxNode, slotType) = otype

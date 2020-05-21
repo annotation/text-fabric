@@ -10,5 +10,6 @@ The core API consists of
 * `E`: see `api.EdgeFeature` (retrieve feature values for edges)
 * `L`: see `locality.Locality` (move between levels)
 * `T`: see `text.Text` (get the text)
+* `S`: see `tf.search.search` (search by templates)
 
 plus some additional methods.

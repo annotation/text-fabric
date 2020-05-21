@@ -80,7 +80,7 @@
 !!! caution "Rate limiting"
     The `checkRepo()` function uses the GitHub API.
     GitHub has a rate limiting policy for its API of max 60 calls per hour.
-    See [GitHub](Github.md) to deal with this if it becomes a problem.
+    See below to deal with this if it becomes a problem.
 
 # GitHub
 

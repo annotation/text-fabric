@@ -2,12 +2,18 @@
 
 It provides methods to navigate nodes and edges and lookup features.
 
+## Canonical Order
+
 Nodes are linked to subsets of slots, and there is a canonical ordering
 on subsets of integers that is inherited by the nodes.
 
 The canonical order is a way to sort the nodes in your corpus in such a way
 that you can enumerate all nodes in the order you encounter them if you
 walk through your corpus.
+
+Formally
+:   A node *A* comes before a node *B* if *A* contains the smallest slot
+    that occurs in only one of *A* and *B*.
 
 Briefly this means:
 
@@ -36,7 +42,7 @@ nodes in the slot set order, you will walk the tree in pre-order.
 
 This order is a modification of the one as described in (Doedens 1994, 3.6.3).
 
-![fabric](../images/DoedensLO.png)
+![fabric](../../images/DoedensLO.png)
 
 > Doedens, Crist-Jan (1994), *Text Databases. One Database Model and Several
 > Retrieval Languages*, number 14 in Language and Computers, Editions Rodopi,

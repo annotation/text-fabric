@@ -123,6 +123,9 @@ def findAppClass(appName, appPath):
 
 
 def loadModule(moduleName, *args):
+    """Load a module dynamically.
+    """
+
     (dataSource, appPath) = args[1:3]
     try:
         spec = util.spec_from_file_location(

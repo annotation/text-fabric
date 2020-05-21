@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf.core.timestamp API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Timed messages …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,17 @@
 <h1 class="title">Module <code>tf.core.timestamp</code></h1>
 </header>
 <section id="section-intro">
+<h1 id="timed-messages">Timed messages</h1>
+<p>Error and informational messages can be issued, with a time indication.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import sys
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../../docs/core/timestamp.md
+&#34;&#34;&#34;
+
+import sys
 import time
 
 
@@ -80,34 +86,134 @@ class Timestamp(object):
             return result
 
     def info(self, msg, tm=True, nl=True, cache=0):
+        &#34;&#34;&#34;Sends an informational message to the standard output.
+
+        Parameters
+        ----------
+        msg: string
+            The string to be displayed
+        tm: boolean, optional `True`
+            Whether the message is to be prepended with the elapsed time.
+        nl: boolean, optional `True`
+            Whether a newline should be appended to the message.
+        cache: integer, optional `0`
+            Whether the message should be cached.
+
+        !!! caution &#34;Silence&#34;
+            Informational messages are not displayed in silent mode.
+        &#34;&#34;&#34;
+
         if not self.silent:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def warning(self, msg, tm=True, nl=True, cache=0):
+        &#34;&#34;&#34;Sends an warning message to the standard output.
+
+        Parameters
+        ----------
+        msg: string
+            The string to be displayed
+        tm: boolean, optional `True`
+            Whether the message is to be prepended with the elapsed time.
+        nl: boolean, optional `True`
+            Whether a newline should be appended to the message.
+        cache: integer, optional `0`
+            Whether the message should be cached.
+
+        !!! caution &#34;Silence&#34;
+            Warning messages are not displayed if silent mode is `deep`.
+        &#34;&#34;&#34;
+
         if self.silent != &#34;deep&#34;:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def error(self, msg, tm=True, nl=True, cache=0):
+        &#34;&#34;&#34;Sends an warning message to the standard error.
+
+        In a Jupyter notebook, the standard error is displayed with
+        a reddish background colour.
+
+        Parameters
+        ----------
+        msg: string
+            The string to be displayed
+        tm: boolean, optional `True`
+            Whether the message is to be prepended with the elapsed time.
+        nl: boolean, optional `True`
+            Whether a newline should be appended to the message.
+        cache: integer, optional `0`
+            Whether the message should be cached.
+
+        !!! caution &#34;Silence&#34;
+            Warning messages are displayed irrespective of the  silent mode.
+        &#34;&#34;&#34;
+
         self.raw_msg(msg, tm=tm, nl=nl, cache=cache, error=True)
 
-    def indent(self, level=None, reset=False, verbose=None):
+    def indent(self, level=None, reset=False, _verbose=None):
+        &#34;&#34;&#34;Changes the indentation and timing of forthcoming messages.
+
+        Messages can be indented. Multiline messages will have the indent
+        prepended to each of its lines.
+
+        The reported time is with respect to a starting point, which can be reset.
+        The starting points at different levels are independent of each other.
+
+        level: integer, optional `None`
+            The indentation level.
+        reset: boolean, optional `False`
+            If `True`, the elapsed time to will be reset to 0 at the given level.
+        &#34;&#34;&#34;
+
         self.level = 0 if level is None else level
         self.levelRep = self.oneLevelRep * self.level
         if reset:
             self.timestamp[self.level] = time.time()
-        if verbose is not None:
-            self.verbose = verbose
+        if _verbose is not None:
+            self.verbose = _verbose
 
     def isSilent(self):
+        &#34;&#34;&#34;The current verbosity.
+
+        Returns
+        -------
+        boolean | string
+            `False` not suppressing informational messages.
+            `True` suppressing informational messages.
+            `&#39;deep&#39;` also suppressing warnings.
+        &#34;&#34;&#34;
         return self.silent
 
     def setSilent(self, silent):
+        &#34;&#34;&#34;Set the verbosity.
+
+        Parameters
+        ----------
+        silent: boolean | string
+            If `False` do not suppress informational messages.
+            If `True` suppress informational messages.
+            If `&#39;deep&#39;` also suppress warnings.
+
+        Error messages are never suppressed.
+        &#34;&#34;&#34;
+
         self.silent = silent
 
     def silentOn(self, deep=False):
+        &#34;&#34;&#34;Suppress informational messages.
+
+        Parameters
+        ----------
+        deep: boolean, optional `False`
+            If `True` also suppress warnings.
+        &#34;&#34;&#34;
+
         self.silent = True if not deep else &#34;deep&#34;
 
     def silentOff(self):
+        &#34;&#34;&#34;Enable informational messages.
+        &#34;&#34;&#34;
+
         self.silent = False
 
     def _elapsed(self):
@@ -193,34 +299,134 @@ class Timestamp(object):
             return result
 
     def info(self, msg, tm=True, nl=True, cache=0):
+        &#34;&#34;&#34;Sends an informational message to the standard output.
+
+        Parameters
+        ----------
+        msg: string
+            The string to be displayed
+        tm: boolean, optional `True`
+            Whether the message is to be prepended with the elapsed time.
+        nl: boolean, optional `True`
+            Whether a newline should be appended to the message.
+        cache: integer, optional `0`
+            Whether the message should be cached.
+
+        !!! caution &#34;Silence&#34;
+            Informational messages are not displayed in silent mode.
+        &#34;&#34;&#34;
+
         if not self.silent:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def warning(self, msg, tm=True, nl=True, cache=0):
+        &#34;&#34;&#34;Sends an warning message to the standard output.
+
+        Parameters
+        ----------
+        msg: string
+            The string to be displayed
+        tm: boolean, optional `True`
+            Whether the message is to be prepended with the elapsed time.
+        nl: boolean, optional `True`
+            Whether a newline should be appended to the message.
+        cache: integer, optional `0`
+            Whether the message should be cached.
+
+        !!! caution &#34;Silence&#34;
+            Warning messages are not displayed if silent mode is `deep`.
+        &#34;&#34;&#34;
+
         if self.silent != &#34;deep&#34;:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def error(self, msg, tm=True, nl=True, cache=0):
+        &#34;&#34;&#34;Sends an warning message to the standard error.
+
+        In a Jupyter notebook, the standard error is displayed with
+        a reddish background colour.
+
+        Parameters
+        ----------
+        msg: string
+            The string to be displayed
+        tm: boolean, optional `True`
+            Whether the message is to be prepended with the elapsed time.
+        nl: boolean, optional `True`
+            Whether a newline should be appended to the message.
+        cache: integer, optional `0`
+            Whether the message should be cached.
+
+        !!! caution &#34;Silence&#34;
+            Warning messages are displayed irrespective of the  silent mode.
+        &#34;&#34;&#34;
+
         self.raw_msg(msg, tm=tm, nl=nl, cache=cache, error=True)
 
-    def indent(self, level=None, reset=False, verbose=None):
+    def indent(self, level=None, reset=False, _verbose=None):
+        &#34;&#34;&#34;Changes the indentation and timing of forthcoming messages.
+
+        Messages can be indented. Multiline messages will have the indent
+        prepended to each of its lines.
+
+        The reported time is with respect to a starting point, which can be reset.
+        The starting points at different levels are independent of each other.
+
+        level: integer, optional `None`
+            The indentation level.
+        reset: boolean, optional `False`
+            If `True`, the elapsed time to will be reset to 0 at the given level.
+        &#34;&#34;&#34;
+
         self.level = 0 if level is None else level
         self.levelRep = self.oneLevelRep * self.level
         if reset:
             self.timestamp[self.level] = time.time()
-        if verbose is not None:
-            self.verbose = verbose
+        if _verbose is not None:
+            self.verbose = _verbose
 
     def isSilent(self):
+        &#34;&#34;&#34;The current verbosity.
+
+        Returns
+        -------
+        boolean | string
+            `False` not suppressing informational messages.
+            `True` suppressing informational messages.
+            `&#39;deep&#39;` also suppressing warnings.
+        &#34;&#34;&#34;
         return self.silent
 
     def setSilent(self, silent):
+        &#34;&#34;&#34;Set the verbosity.
+
+        Parameters
+        ----------
+        silent: boolean | string
+            If `False` do not suppress informational messages.
+            If `True` suppress informational messages.
+            If `&#39;deep&#39;` also suppress warnings.
+
+        Error messages are never suppressed.
+        &#34;&#34;&#34;
+
         self.silent = silent
 
     def silentOn(self, deep=False):
+        &#34;&#34;&#34;Suppress informational messages.
+
+        Parameters
+        ----------
+        deep: boolean, optional `False`
+            If `True` also suppress warnings.
+        &#34;&#34;&#34;
+
         self.silent = True if not deep else &#34;deep&#34;
 
     def silentOff(self):
+        &#34;&#34;&#34;Enable informational messages.
+        &#34;&#34;&#34;
+
         self.silent = False
 
     def _elapsed(self):
@@ -266,43 +472,135 @@ class Timestamp(object):
 <span>def <span class="ident">error</span></span>(<span>self, msg, tm=True, nl=True, cache=0)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sends an warning message to the standard error.</p>
+<p>In a Jupyter notebook, the standard error is displayed with
+a reddish background colour.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>msg</code></strong> :&ensp;<code>string</code></dt>
+<dd>The string to be displayed</dd>
+<dt><strong><code>tm</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether the message is to be prepended with the elapsed time.</dd>
+<dt><strong><code>nl</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether a newline should be appended to the message.</dd>
+<dt><strong><code>cache</code></strong> :&ensp;<code>integer</code>, optional <code>0</code></dt>
+<dd>Whether the message should be cached.</dd>
+</dl>
+<div class="admonition caution">
+<p class="admonition-title">Silence</p>
+<p>Warning messages are displayed irrespective of the
+silent mode.</p>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def error(self, msg, tm=True, nl=True, cache=0):
+    &#34;&#34;&#34;Sends an warning message to the standard error.
+
+    In a Jupyter notebook, the standard error is displayed with
+    a reddish background colour.
+
+    Parameters
+    ----------
+    msg: string
+        The string to be displayed
+    tm: boolean, optional `True`
+        Whether the message is to be prepended with the elapsed time.
+    nl: boolean, optional `True`
+        Whether a newline should be appended to the message.
+    cache: integer, optional `0`
+        Whether the message should be cached.
+
+    !!! caution &#34;Silence&#34;
+        Warning messages are displayed irrespective of the  silent mode.
+    &#34;&#34;&#34;
+
     self.raw_msg(msg, tm=tm, nl=nl, cache=cache, error=True)</code></pre>
 </details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.indent"><code class="name flex">
-<span>def <span class="ident">indent</span></span>(<span>self, level=None, reset=False, verbose=None)</span>
+<span>def <span class="ident">indent</span></span>(<span>self, level=None, reset=False)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Changes the indentation and timing of forthcoming messages.</p>
+<p>Messages can be indented. Multiline messages will have the indent
+prepended to each of its lines.</p>
+<p>The reported time is with respect to a starting point, which can be reset.
+The starting points at different levels are independent of each other.</p>
+<p>level: integer, optional <code>None</code>
+The indentation level.
+reset: boolean, optional <code>False</code>
+If <code>True</code>, the elapsed time to will be reset to 0 at the given level.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def indent(self, level=None, reset=False, verbose=None):
+<pre><code class="python">def indent(self, level=None, reset=False, _verbose=None):
+    &#34;&#34;&#34;Changes the indentation and timing of forthcoming messages.
+
+    Messages can be indented. Multiline messages will have the indent
+    prepended to each of its lines.
+
+    The reported time is with respect to a starting point, which can be reset.
+    The starting points at different levels are independent of each other.
+
+    level: integer, optional `None`
+        The indentation level.
+    reset: boolean, optional `False`
+        If `True`, the elapsed time to will be reset to 0 at the given level.
+    &#34;&#34;&#34;
+
     self.level = 0 if level is None else level
     self.levelRep = self.oneLevelRep * self.level
     if reset:
         self.timestamp[self.level] = time.time()
-    if verbose is not None:
-        self.verbose = verbose</code></pre>
+    if _verbose is not None:
+        self.verbose = _verbose</code></pre>
 </details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.info"><code class="name flex">
 <span>def <span class="ident">info</span></span>(<span>self, msg, tm=True, nl=True, cache=0)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sends an informational message to the standard output.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>msg</code></strong> :&ensp;<code>string</code></dt>
+<dd>The string to be displayed</dd>
+<dt><strong><code>tm</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether the message is to be prepended with the elapsed time.</dd>
+<dt><strong><code>nl</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether a newline should be appended to the message.</dd>
+<dt><strong><code>cache</code></strong> :&ensp;<code>integer</code>, optional <code>0</code></dt>
+<dd>Whether the message should be cached.</dd>
+</dl>
+<div class="admonition caution">
+<p class="admonition-title">Silence</p>
+<p>Informational messages are not displayed in silent mode.</p>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def info(self, msg, tm=True, nl=True, cache=0):
+    &#34;&#34;&#34;Sends an informational message to the standard output.
+
+    Parameters
+    ----------
+    msg: string
+        The string to be displayed
+    tm: boolean, optional `True`
+        Whether the message is to be prepended with the elapsed time.
+    nl: boolean, optional `True`
+        Whether a newline should be appended to the message.
+    cache: integer, optional `0`
+        Whether the message should be cached.
+
+    !!! caution &#34;Silence&#34;
+        Informational messages are not displayed in silent mode.
+    &#34;&#34;&#34;
+
     if not self.silent:
         self.raw_msg(msg, tm=tm, nl=nl, cache=cache)</code></pre>
 </details>
@@ -311,12 +609,28 @@ class Timestamp(object):
 <span>def <span class="ident">isSilent</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>The current verbosity.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean | string</code></dt>
+<dd><code>False</code> not suppressing informational messages.
+<code>True</code> suppressing informational messages.
+<code>'deep'</code> also suppressing warnings.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def isSilent(self):
+    &#34;&#34;&#34;The current verbosity.
+
+    Returns
+    -------
+    boolean | string
+        `False` not suppressing informational messages.
+        `True` suppressing informational messages.
+        `&#39;deep&#39;` also suppressing warnings.
+    &#34;&#34;&#34;
     return self.silent</code></pre>
 </details>
 </dd>
@@ -370,12 +684,32 @@ class Timestamp(object):
 <span>def <span class="ident">setSilent</span></span>(<span>self, silent)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Set the verbosity.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>silent</code></strong> :&ensp;<code>boolean | string</code></dt>
+<dd>If <code>False</code> do not suppress informational messages.
+If <code>True</code> suppress informational messages.
+If <code>'deep'</code> also suppress warnings.</dd>
+</dl>
+<p>Error messages are never suppressed.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setSilent(self, silent):
+    &#34;&#34;&#34;Set the verbosity.
+
+    Parameters
+    ----------
+    silent: boolean | string
+        If `False` do not suppress informational messages.
+        If `True` suppress informational messages.
+        If `&#39;deep&#39;` also suppress warnings.
+
+    Error messages are never suppressed.
+    &#34;&#34;&#34;
+
     self.silent = silent</code></pre>
 </details>
 </dd>
@@ -383,12 +717,15 @@ class Timestamp(object):
 <span>def <span class="ident">silentOff</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Enable informational messages.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def silentOff(self):
+    &#34;&#34;&#34;Enable informational messages.
+    &#34;&#34;&#34;
+
     self.silent = False</code></pre>
 </details>
 </dd>
@@ -396,12 +733,25 @@ class Timestamp(object):
 <span>def <span class="ident">silentOn</span></span>(<span>self, deep=False)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Suppress informational messages.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>deep</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If <code>True</code> also suppress warnings.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def silentOn(self, deep=False):
+    &#34;&#34;&#34;Suppress informational messages.
+
+    Parameters
+    ----------
+    deep: boolean, optional `False`
+        If `True` also suppress warnings.
+    &#34;&#34;&#34;
+
     self.silent = True if not deep else &#34;deep&#34;</code></pre>
 </details>
 </dd>
@@ -409,12 +759,44 @@ class Timestamp(object):
 <span>def <span class="ident">warning</span></span>(<span>self, msg, tm=True, nl=True, cache=0)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sends an warning message to the standard output.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>msg</code></strong> :&ensp;<code>string</code></dt>
+<dd>The string to be displayed</dd>
+<dt><strong><code>tm</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether the message is to be prepended with the elapsed time.</dd>
+<dt><strong><code>nl</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether a newline should be appended to the message.</dd>
+<dt><strong><code>cache</code></strong> :&ensp;<code>integer</code>, optional <code>0</code></dt>
+<dd>Whether the message should be cached.</dd>
+</dl>
+<div class="admonition caution">
+<p class="admonition-title">Silence</p>
+<p>Warning messages are not displayed if silent mode is <code>deep</code>.</p>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def warning(self, msg, tm=True, nl=True, cache=0):
+    &#34;&#34;&#34;Sends an warning message to the standard output.
+
+    Parameters
+    ----------
+    msg: string
+        The string to be displayed
+    tm: boolean, optional `True`
+        Whether the message is to be prepended with the elapsed time.
+    nl: boolean, optional `True`
+        Whether a newline should be appended to the message.
+    cache: integer, optional `0`
+        Whether the message should be cached.
+
+    !!! caution &#34;Silence&#34;
+        Warning messages are not displayed if silent mode is `deep`.
+    &#34;&#34;&#34;
+
     if self.silent != &#34;deep&#34;:
         self.raw_msg(msg, tm=tm, nl=nl, cache=cache)</code></pre>
 </details>
@@ -430,7 +812,9 @@ class Timestamp(object):
 <div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#timed-messages">Timed messages</a></li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>

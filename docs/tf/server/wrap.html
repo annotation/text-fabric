@@ -36,6 +36,21 @@ from ..applib.displaysettings import INTERFACE_OPTIONS
 
 
 def pageLinks(nResults, position, spread=10):
+    &#34;&#34;&#34;Provide navigation links for results sets, big or small.
+
+    It creates links around *position* in a set of *nResults*.
+    The spread indicates how many links before and after *position* are generated
+    in each column.
+
+    There will be multiple columns. The right most column contains links
+    to results `position - spread` to `position + spread`.
+
+    Left of that there is a column for results `position - spread*spread`
+    to `position + spread*spread`, stepping by `spread`.
+
+    And so on, until the stepping factor becomes bigger than the result set.
+    &#34;&#34;&#34;
+
     if spread &lt;= 1:
         spread = 1
     elif nResults == 0:
@@ -88,6 +103,18 @@ def pageLinks(nResults, position, spread=10):
 
 
 def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
+    &#34;&#34;&#34;Provide navigation links for passages,
+
+    in the form of links to sections of level 0, 1 and 2 (books, chapters and verses).
+
+    If `sec0` is not given, only a list of sec0 links is produced.
+
+    If `sec0` is given, but `sec1` not, a list of links for sec1s within the given `sec0`
+    is produced.
+
+    If both `sec0` and `sec1` are given, de sec1 entry is focused.
+    &#34;&#34;&#34;
+
     sec0s = []
     sec1s = []
     for s0 in passages[0]:
@@ -115,6 +142,9 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
 
 
 def wrapOptions(context, form):
+    &#34;&#34;&#34;Wraps the options, including the app-specific ones, into HTML.
+    &#34;&#34;&#34;
+
     interfaceDefaults = context.interfaceDefaults
 
     options = {k for (k, v) in interfaceDefaults.items() if v is not None}
@@ -151,6 +181,13 @@ def wrapBase(allowedBaseTypes, value):
 
 
 def wrapCondense(condenseTypes, value):
+    &#34;&#34;&#34;Provides a radio-buttoned chooser for the condense types.
+
+    See `tf.applib.displaysettings`.
+
+    `value` is the currently chosen condense type.
+    &#34;&#34;&#34;
+
     html = []
     lastType = len(condenseTypes) - 1
     for (i, (otype, av, b, e)) in enumerate(condenseTypes):
@@ -172,6 +209,14 @@ def wrapCondense(condenseTypes, value):
 
 
 def wrapFormats(allFormats, value):
+    &#34;&#34;&#34;
+    Provides a radio-buttoned chooser for the text formats.
+
+    See `tf.applib.displaysettings`.
+
+    `value` is the currently chosen format.
+    &#34;&#34;&#34;
+
     html = []
     for (i, fmt) in enumerate(allFormats):
         checked = &#34; checked &#34; if value == fmt else &#34;&#34;
@@ -342,12 +387,35 @@ def _coarsify(n, spread):
 <span>def <span class="ident">pageLinks</span></span>(<span>nResults, position, spread=10)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Provide navigation links for results sets, big or small.</p>
+<p>It creates links around <em>position</em> in a set of <em>nResults</em>.
+The spread indicates how many links before and after <em>position</em> are generated
+in each column.</p>
+<p>There will be multiple columns. The right most column contains links
+to results <code>position - spread</code> to <code>position + spread</code>.</p>
+<p>Left of that there is a column for results <code>position - spread*spread</code>
+to <code>position + spread*spread</code>, stepping by <code>spread</code>.</p>
+<p>And so on, until the stepping factor becomes bigger than the result set.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def pageLinks(nResults, position, spread=10):
+    &#34;&#34;&#34;Provide navigation links for results sets, big or small.
+
+    It creates links around *position* in a set of *nResults*.
+    The spread indicates how many links before and after *position* are generated
+    in each column.
+
+    There will be multiple columns. The right most column contains links
+    to results `position - spread` to `position + spread`.
+
+    Left of that there is a column for results `position - spread*spread`
+    to `position + spread*spread`, stepping by `spread`.
+
+    And so on, until the stepping factor becomes bigger than the result set.
+    &#34;&#34;&#34;
+
     if spread &lt;= 1:
         spread = 1
     elif nResults == 0:
@@ -403,12 +471,29 @@ def _coarsify(n, spread):
 <span>def <span class="ident">passageLinks</span></span>(<span>passages, sec0Type, sec0, sec1, tillLevel)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Provide navigation links for passages,</p>
+<p>in the form of links to sections of level 0, 1 and 2 (books, chapters and verses).</p>
+<p>If <code>sec0</code> is not given, only a list of sec0 links is produced.</p>
+<p>If <code>sec0</code> is given, but <code>sec1</code> not, a list of links for sec1s within the given <code>sec0</code>
+is produced.</p>
+<p>If both <code>sec0</code> and <code>sec1</code> are given, de sec1 entry is focused.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
+    &#34;&#34;&#34;Provide navigation links for passages,
+
+    in the form of links to sections of level 0, 1 and 2 (books, chapters and verses).
+
+    If `sec0` is not given, only a list of sec0 links is produced.
+
+    If `sec0` is given, but `sec1` not, a list of links for sec1s within the given `sec0`
+    is produced.
+
+    If both `sec0` and `sec1` are given, de sec1 entry is focused.
+    &#34;&#34;&#34;
+
     sec0s = []
     sec1s = []
     for s0 in passages[0]:
@@ -459,12 +544,21 @@ def _coarsify(n, spread):
 <span>def <span class="ident">wrapCondense</span></span>(<span>condenseTypes, value)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Provides a radio-buttoned chooser for the condense types.</p>
+<p>See <code><a title="tf.applib.displaysettings" href="../applib/displaysettings.html">tf.applib.displaysettings</a></code>.</p>
+<p><code>value</code> is the currently chosen condense type.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def wrapCondense(condenseTypes, value):
+    &#34;&#34;&#34;Provides a radio-buttoned chooser for the condense types.
+
+    See `tf.applib.displaysettings`.
+
+    `value` is the currently chosen condense type.
+    &#34;&#34;&#34;
+
     html = []
     lastType = len(condenseTypes) - 1
     for (i, (otype, av, b, e)) in enumerate(condenseTypes):
@@ -489,12 +583,22 @@ def _coarsify(n, spread):
 <span>def <span class="ident">wrapFormats</span></span>(<span>allFormats, value)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Provides a radio-buttoned chooser for the text formats.</p>
+<p>See <code><a title="tf.applib.displaysettings" href="../applib/displaysettings.html">tf.applib.displaysettings</a></code>.</p>
+<p><code>value</code> is the currently chosen format.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def wrapFormats(allFormats, value):
+    &#34;&#34;&#34;
+    Provides a radio-buttoned chooser for the text formats.
+
+    See `tf.applib.displaysettings`.
+
+    `value` is the currently chosen format.
+    &#34;&#34;&#34;
+
     html = []
     for (i, fmt) in enumerate(allFormats):
         checked = &#34; checked &#34; if value == fmt else &#34;&#34;
@@ -512,12 +616,15 @@ def _coarsify(n, spread):
 <span>def <span class="ident">wrapOptions</span></span>(<span>context, form)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Wraps the options, including the app-specific ones, into HTML.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def wrapOptions(context, form):
+    &#34;&#34;&#34;Wraps the options, including the app-specific ones, into HTML.
+    &#34;&#34;&#34;
+
     interfaceDefaults = context.interfaceDefaults
 
     options = {k for (k, v) in interfaceDefaults.items() if v is not None}

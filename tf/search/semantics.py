@@ -11,30 +11,30 @@ def semantics(searchExe):
     if not searchExe.good:
         return
     error = searchExe.api.error
-    msgCache = searchExe.msgCache
+    _msgCache = searchExe._msgCache
     searchExe.badSemantics = []
     offset = searchExe.offset
 
     _grammar(searchExe)
 
     if not searchExe.good:
-        searchExe.showOuterTemplate(msgCache)
+        searchExe.showOuterTemplate(_msgCache)
         for (i, line) in enumerate(searchExe.searchLines):
-            error(f"{i + offset:>2} {line}", tm=False, cache=msgCache)
+            error(f"{i + offset:>2} {line}", tm=False, cache=_msgCache)
         for (ln, eline) in searchExe.badSemantics:
             txt = eline if ln is None else f"line {ln + offset}: {eline}"
-            error(txt, tm=False, cache=msgCache)
+            error(txt, tm=False, cache=_msgCache)
         return
 
     if searchExe.good:
         _validation(searchExe)
     if not searchExe.good:
-        searchExe.showOuterTemplate(msgCache)
+        searchExe.showOuterTemplate(_msgCache)
         for (i, line) in enumerate(searchExe.searchLines):
-            error(f"{i + offset:>2} {line}", tm=False, cache=msgCache)
+            error(f"{i + offset:>2} {line}", tm=False, cache=_msgCache)
         for (ln, eline) in searchExe.badSemantics:
             txt = eline if ln is None else f"line {ln + offset}: {eline}"
-            error(txt, tm=False, cache=msgCache)
+            error(txt, tm=False, cache=_msgCache)
 
 
 def _grammar(searchExe):
