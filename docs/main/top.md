@@ -9,6 +9,7 @@ Text-Fabric is a piece of machinery for processing such corpora as annotated gra
 
 ## Straight to ...
 
+* Release ntes (`tf.about.releases`)
 * Install (`tf.about.install`)
 * Browser (`tf.about.browser`)
 * Use (`tf.about.use`)
