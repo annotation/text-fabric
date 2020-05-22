@@ -1,7 +1,7 @@
 # Usage
 
 Below `xxx` should be replaced by the name of an official
-[TF-app](https://annotation.github.io/text-fabric/About/Corpora/),
+TF-app, `tf.about.corpora`,
 or a path to an app on your system, or a path to TF dataset on your system.
 
 You can work with the TF-browser or with the TF-API.

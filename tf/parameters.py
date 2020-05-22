@@ -5,7 +5,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '8.1.1'
+VERSION = '8.1.2'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -131,8 +131,11 @@ DOI_URL_PREFIX = "https://doi.org"
 DOI_TF = "10.5281/zenodo.592193"
 """DOI of an archived copy of this repo at Zenodo."""
 
-APIREF = f"https://{ORG}.github.io/{REPO}/Api/Fabric/"
+APIREF = f"https://{ORG}.github.io/{REPO}/cheatsheet.html"
 """Link to the Api docs of Text-Fabric."""
+
+SEARCHREF = f"https://{ORG}.github.io/{REPO}/about/searchusage.html"
+"""Link to the Search docs of Text-Fabric."""
 
 APP_URL = f"{URL_GH}/{ORG}"
 """Url of the GitHub location that contains all the TF apps."""

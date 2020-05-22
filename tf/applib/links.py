@@ -8,6 +8,8 @@ import types
 from ..parameters import (
     URL_GH,
     URL_TFDOC,
+    SEARCHREF,
+    APIREF,
     APP_URL,
     APP_NB_URL,
 )
@@ -98,7 +100,7 @@ def linksApi(app, silent):
     tfLink = (
         outLink(
             f"Text-Fabric API {api.TF.version}",
-            f"{URL_TFDOC}/Api/Fabric/",
+            APIREF,
             "text-fabric-api",
         )
         if isCompatible
@@ -107,7 +109,7 @@ def linksApi(app, silent):
     tfsLink = (
         outLink(
             "Search Reference",
-            f"{URL_TFDOC}/Use/Search/",
+            SEARCHREF,
             "Search Templates Introduction and Reference",
         )
         if isCompatible

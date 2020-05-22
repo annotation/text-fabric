@@ -2,7 +2,7 @@ import os
 
 from ..parameters import ORG, APP_CODE
 from ..fabric import Fabric
-from ..parameters import URL_TFDOC, TEMP_DIR
+from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
 from ..core.helpers import console, setDir
 from .find import findAppConfig, findAppClass
@@ -48,7 +48,7 @@ class App:
             The appname  can be as simple as the name of an existing TF-app.
             The app should exist as a repository `app-`*appName* under
             [github.com/annotation](https://github.com/annotation), see also
-            [Corpora](https://annotation.github.io/text-fabric/About/Corpora/).
+            `tf.about.corpora`.
 
             If there is a `/` in the *appName argument*,
             it is interpreted as a location on your  system.
@@ -281,8 +281,10 @@ class App:
             displayApi(self, silent)
             textApi(self)
             if hoist:
-                docs = self.api.makeAvailableIn(hoist)
+                # docs = self.api.makeAvailableIn(hoist)
+                self.api.makeAvailableIn(hoist)
                 if not silent:
+                    """
                     dh(
                         "<details open><summary><b>API members</b>:</summary>\n"
                         + "<br/>\n".join(
@@ -297,6 +299,12 @@ class App:
                             for (head, ref, entries) in docs
                         )
                         + "</details>"
+                    )
+                    """
+                    dh(
+                        "<div>"
+                        + outLink("TF API directly available", APIREF, title="doc")
+                        + "</div>"
                     )
         else:
             if not _browse:

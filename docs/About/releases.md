@@ -38,7 +38,16 @@ text-fabric appName:hot
 
 ### 8.1
 
-#### 8.1.0
+#### 8.1.2
+
+2020-05-22
+
+Thoroughly reorganized docs.
+All available documentation has now moved into docstrings.
+The formatted docstrings form the online documentation as well.
+See `tf`.
+
+#### 8.1.0, 8.1.1
 
 2020-05-14
 
@@ -224,7 +233,7 @@ Also: a bug fix to the walker conversion, again: thanks Ernst for spotting it.
 2020-02-13
 
 Fixed a few bugs in the `cv.stop()` function in the
-[walker conversion](https://annotation.github.io/text-fabric/Create/Convert/)
+walker conversion, see `tf.convert.walker`.
 
 Thanks to Ernst Boogert for spotting them.
 
@@ -777,7 +786,7 @@ Further tweaks in layout of `plain()`.
 2019-03-13
 
 API addition for `E` (edges):
-[`E.feature.b()`](https://annotation.github.io/text-fabric/Api/Features/#edge-features)
+`E.feature.b()`
 gives the symmetrical closure
 of the edges under `feature`. That means it combines the results of
 `E.feature.f()` and `E.feature.t()`.

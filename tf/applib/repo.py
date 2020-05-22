@@ -14,6 +14,7 @@ from github import Github, GithubException, UnknownObjectException
 
 from ..parameters import (
     URL_GH,
+    URL_TFDOC,
     GH_BASE,
     EXPRESS_BASE,
     EXPRESS_SYNC,
@@ -600,7 +601,7 @@ class Checkout(object):
             if rate.limit < 100:
                 self.warning(
                     f"To increase the rate,"
-                    f"see https://annotation.github.io/text-fabric/Api/Repo/"
+                    f"see {URL_TFDOC}/applib/repo.html/"
                 )
 
             self.log(

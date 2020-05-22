@@ -10,12 +10,12 @@ from .helpers import dm, parseFeatures, transitiveClosure
 VAR_PATTERN = re.compile(r"\{([^}]+)\}")
 
 WRITING_DEFAULTS = dict(
-    akk=dict(language="Akkadian", direction="ltr",),
-    hbo=dict(language="Hebrew", direction="rtl",),
-    syc=dict(language="Syriac", direction="rtl",),
-    ara=dict(language="Arabic", direction="rtl",),
-    grc=dict(language="Greek", direction="ltr",),
-    cld=dict(language="Aramaic", direction="ltr",),
+    akk=dict(language="akkadian", direction="ltr",),
+    hbo=dict(language="hebrew", direction="rtl",),
+    syc=dict(language="syriac", direction="rtl",),
+    ara=dict(language="arabic", direction="rtl",),
+    grc=dict(language="greek", direction="ltr",),
+    cld=dict(language="aramaic", direction="ltr",),
 )
 WRITING_DEFAULTS[""] = dict(language="", direction="ltr",)
 
@@ -100,7 +100,7 @@ DOC_DEFAULTS = (
     ("docUrl", "{docBase}/{docPage}{docExt}"),
     ("featureBase", "{docBase}/features/<feature>{docExt}"),
     ("featurePage", "home"),
-    ("charUrl", "{tfDoc}/Writing/Transcription/{language}"),
+    ("charUrl", "{tfDoc}/writing/{language}.html"),
     ("charText", "How TF features represent text"),
 )
 

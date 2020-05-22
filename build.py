@@ -5,9 +5,11 @@ from glob import glob
 
 from time import sleep
 from shutil import rmtree
-from subprocess import run, Popen
+from subprocess import run, call, Popen, PIPE
 
-import psutil
+import errno
+import time
+import unicodedata
 
 from tf.core.helpers import console
 
@@ -28,6 +30,7 @@ VERSION_CONFIG = dict(
     ),
 )
 
+URL = "https://annotation.github.io/text-fabric/"
 AN_BASE = os.path.expanduser("~/github/annotation")
 TUT_BASE = f"{AN_BASE}/tutorials"
 TF_BASE = f"{AN_BASE}/text-fabric"
@@ -35,6 +38,10 @@ TEST_BASE = f"{TF_BASE}/test"
 APP_BASE = f"{TF_BASE}/apps"
 PACKAGE = "text-fabric"
 SCRIPT = "/Library/Frameworks/Python.framework/Versions/3.7/bin/text-fabric"
+
+SRC = "site"
+REMOTE = "origin"
+BRANCH = "gh-pages"
 
 currentVersion = None
 newVersion = None
@@ -59,9 +66,9 @@ command:
 --help
 help  : print help and exit
 
-adocs : serve apidocs locally
-bdocs : build apidocs
 docs  : serve docs locally
+pdocs : build docs
+sdocs : ship docs
 clean : clean local develop build
 l     : local develop build
 i     : local non-develop build
@@ -93,9 +100,9 @@ def readArgs():
     if arg not in {
         "a",
         "t",
-        "adocs",
-        "bdocs",
         "docs",
+        "pdocs",
+        "sdocs",
         "clean",
         "l",
         "lp",
@@ -226,28 +233,181 @@ def commitTut(msg):
     os.chdir(f"{TF_BASE}")
 
 
-def shipDocs():
-    codestats()
-    apidocs()
-    run(["mkdocs", "gh-deploy"])
+if sys.version_info[0] == 3:
+
+    def enc(text):
+        if isinstance(text, bytes):
+            return text
+        return text.encode()
+
+    def dec(text):
+        if isinstance(text, bytes):
+            return text.decode("utf-8")
+        return text
+
+    def write(pipe, data):
+        try:
+            pipe.stdin.write(data)
+        except OSError as e:
+            if e.errno != errno.EPIPE:
+                raise
 
 
-def serveApidocs():
-    # proc = Popen(["pdoc3", "--http", ":", "tf"])
-    proc = Popen(
-        [
-            "pdoc3",
-            "--force",
-            "--html",
-            "--output-dir",
-            "docs",
-            "--template-dir",
-            "docs/templates",
-            "--http",
-            ":",
-            "tf",
-        ]
-    )
+else:
+
+    def enc(text):
+        if isinstance(text, unicode):  # noqa: F821
+            return text.encode("utf-8")
+        return text
+
+    def dec(text):
+        if isinstance(text, unicode):  # noqa: F821
+            return text
+        return text.decode("utf-8")
+
+    def write(pipe, data):
+        pipe.stdin.write(data)
+
+
+# COPIED FROM MKDOCS AND MODIFIED
+
+
+def normalize_path(path):
+    # Fix unicode pathnames on OS X
+    # See: https://stackoverflow.com/a/5582439/44289
+    if sys.platform == "darwin":
+        return unicodedata.normalize("NFKC", dec(path))
+    return path
+
+
+def try_rebase(remote, branch):
+    cmd = ["git", "rev-list", "--max-count=1", "{}/{}".format(remote, branch)]
+    p = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    (rev, _) = p.communicate()
+    if p.wait() != 0:
+        return True
+    cmd = ["git", "update-ref", "refs/heads/%s" % branch, dec(rev.strip())]
+    if call(cmd) != 0:
+        return False
+    return True
+
+
+def get_config(key):
+    p = Popen(["git", "config", key], stdin=PIPE, stdout=PIPE)
+    (value, _) = p.communicate()
+    return value.decode("utf-8").strip()
+
+
+def get_prev_commit(branch):
+    cmd = ["git", "rev-list", "--max-count=1", branch, "--"]
+    p = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    (rev, _) = p.communicate()
+    if p.wait() != 0:
+        return None
+    return rev.decode("utf-8").strip()
+
+
+def mk_when(timestamp=None):
+    if timestamp is None:
+        timestamp = int(time.time())
+    currtz = "%+05d" % (-1 * time.timezone / 36)  # / 3600 * 100
+    return "{} {}".format(timestamp, currtz)
+
+
+def start_commit(pipe, branch, message):
+    uname = dec(get_config("user.name"))
+    email = dec(get_config("user.email"))
+    write(pipe, enc("commit refs/heads/%s\n" % branch))
+    write(pipe, enc("committer {} <{}> {}\n".format(uname, email, mk_when())))
+    write(pipe, enc("data %d\n%s\n" % (len(message), message)))
+    head = get_prev_commit(branch)
+    if head:
+        write(pipe, enc("from %s\n" % head))
+    write(pipe, enc("deleteall\n"))
+
+
+def add_file(pipe, srcpath, tgtpath):
+    with open(srcpath, "rb") as handle:
+        if os.access(srcpath, os.X_OK):
+            write(pipe, enc("M 100755 inline %s\n" % tgtpath))
+        else:
+            write(pipe, enc("M 100644 inline %s\n" % tgtpath))
+        data = handle.read()
+        write(pipe, enc("data %d\n" % len(data)))
+        write(pipe, enc(data))
+        write(pipe, enc("\n"))
+
+
+def add_nojekyll(pipe):
+    write(pipe, enc("M 100644 inline .nojekyll\n"))
+    write(pipe, enc("data 0\n"))
+    write(pipe, enc("\n"))
+
+
+def gitpath(fname):
+    norm = os.path.normpath(fname)
+    return "/".join(norm.split(os.path.sep))
+
+
+def ghp_import():
+    if not try_rebase(REMOTE, BRANCH):
+        print("Failed to rebase %s branch.", BRANCH)
+
+    cmd = ["git", "fast-import", "--date-format=raw", "--quiet"]
+    kwargs = {"stdin": PIPE}
+    if sys.version_info >= (3, 2, 0):
+        kwargs["universal_newlines"] = False
+    pipe = Popen(cmd, **kwargs)
+    start_commit(pipe, BRANCH, "docs update")
+    for path, _, fnames in os.walk(SRC):
+        for fn in fnames:
+            fpath = os.path.join(path, fn)
+            fpath = normalize_path(fpath)
+            gpath = gitpath(os.path.relpath(fpath, start=SRC))
+            add_file(pipe, fpath, gpath)
+    add_nojekyll(pipe)
+    write(pipe, enc("\n"))
+    pipe.stdin.close()
+    if pipe.wait() != 0:
+        sys.stdout.write(enc("Failed to process commit.\n"))
+
+    cmd = ["git", "push", REMOTE, BRANCH]
+    proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
+    (out, err) = proc.communicate()
+    result = proc.wait() == 0
+
+    return result, dec(err)
+
+
+def gh_deploy():
+    (result, error) = ghp_import()
+    if not result:
+        print("Failed to deploy to GitHub with error: \n%s", error)
+        raise SystemExit(1)
+    else:
+        print("Your documentation should shortly be available at: " + URL)
+
+
+# END COPIED FROM MKDOCS AND MODIFIED
+
+
+PDOC3 = [
+    "pdoc3",
+    "--force",
+    "--html",
+    "--output-dir",
+    "site",
+    "--template-dir",
+    "docs/templates",
+]
+PDOC3STR = " ".join(PDOC3)
+
+
+def pdoc3serve():
+    """Build the docs into site and serve them.
+    """
+
+    proc = Popen([*PDOC3, "--http", ":", "tf"])
     sleep(1)
     run("open http://localhost:8080/tf", shell=True)
     try:
@@ -257,52 +417,13 @@ def serveApidocs():
     proc.terminate()
 
 
-def serveDocs():
-    codestats()
-    apidocs()
-    killProcesses()
-    proc = Popen(["mkdocs", "serve"])
-    sleep(3)
-    run("open http://127.0.0.1:8000", shell=True)
-    try:
-        proc.wait()
-    except KeyboardInterrupt:
-        pass
-    proc.terminate()
+def pdoc3():
+    """Build the docs into site.
+    """
 
-
-def killProcesses():
-    myself = os.getpid()
-    for proc in psutil.process_iter(attrs=["pid", "name"]):
-        pid = proc.info["pid"]
-        if pid == myself:
-            continue
-        if filterProcess(proc):
-            try:
-                proc.terminate()
-                console(f"mkdocs [{pid}] terminated")
-            except psutil.NoSuchProcess:
-                console(f"mkdocs [{pid}] already terminated")
-
-
-def filterProcess(proc):
-    procName = proc.info["name"]
-    commandName = "" if procName is None else procName.lower()
-    found = False
-    if commandName.endswith("python"):
-        parts = proc.cmdline()
-        if len(parts) >= 3:
-            if parts[1].endswith("mkdocs") and parts[2] == "serve":
-                found = True
-            if parts[1] == "build.py" and parts[2] == "docs":
-                found = True
-    return found
-
-
-def apidocs():
     cmdLines = [
         "rm -rf site",
-        "pdoc3 --force --html --output-dir site --template-dir docs/templates tf",
+        f"{PDOC3STR} tf",
         "mv site/tf/* site",
         "rmdir site/tf",
         "cp -r docs/images site",
@@ -313,35 +434,12 @@ def apidocs():
         run(cmdLine, shell=True)
 
 
-def codestats():
-    xd = (
-        ".pytest_cache,__pycache__,node_modules,.tmp,.git,_temp,"
-        ".ipynb_checkpoints,images,fonts,favicons,compiled"
-    )
-    xdtf = xd + ",applib,convert,compose,core,search,server,writing"
-    xdtest = xd + ",tf"
-    rfFmt = "docs/Code/Stats{}.md"
-    cmdLine = (
-        "cloc"
-        " --no-autogen"
-        " --exclude_dir={}"
-        " --exclude-list-file={}"
-        f" --report-file={rfFmt}"
-        " --md"
-        " {}"
-    )
-    nex = "cloc_exclude.lst"
-    run(cmdLine.format(xd, nex, "", ". ../app-*/code"), shell=True)
-    run(cmdLine.format(xdtf, nex, "Toplevel", "tf"), shell=True)
-    run(cmdLine.format(xd, nex, "Applib", "tf/applib"), shell=True)
-    run(cmdLine.format(xd, nex, "Apps", "../app-*/code"), shell=True)
-    run(cmdLine.format(xd, nex, "Compose", "tf/compose"), shell=True)
-    run(cmdLine.format(xd, nex, "Convert", "tf/convert"), shell=True)
-    run(cmdLine.format(xd, nex, "Core", "tf/core"), shell=True)
-    run(cmdLine.format(xd, nex, "Search", "tf/search"), shell=True)
-    run(cmdLine.format(xd, nex, "Server", "tf/server"), shell=True)
-    run(cmdLine.format(xd, nex, "Writing", "tf/writing"), shell=True)
-    run(cmdLine.format(xdtest, nex, "Test", "test/generic"), shell=True)
+def shipDocs():
+    """Build the docs into site and ship them.
+    """
+
+    pdoc3()
+    gh_deploy()
 
 
 def tfbrowse(dataset, remaining):
@@ -390,12 +488,12 @@ def main():
         tfbrowse(msg, remaining)
     elif task == "t":
         tftest(msg, remaining)
-    elif task == "adocs":
-        serveApidocs()
-    elif task == "bdocs":
-        apidocs()
     elif task == "docs":
-        serveDocs()
+        pdoc3serve()
+    elif task == "pdocs":
+        pdoc3()
+    elif task == "sdocs":
+        shipDocs()
     elif task == "clean":
         clean()
     elif task == "l":
