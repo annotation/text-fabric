@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>tf.cheatsheet API documentation</title>
+<meta name="description" content="Text-Fabric API …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.cheatsheet</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="text-fabric-api">Text-Fabric API</h1>
+<h2 id="advanced-api">Advanced API</h2>
+<h3 id="initialisation-configuration-meta-data-and-linking">Initialisation, configuration, meta data, and linking</h3>
+<dl>
+<dt><code>A = use('corpus', hoist=globals())</code></dt>
+<dd>start up</dd>
+<dd><code><a title="tf.app.use" href="app.html#tf.app.use">use()</a></code></dd>
+<dt><code>A.reuse()</code></dt>
+<dd>reload config data</dd>
+<dd><code><a title="tf.applib.app.App.reuse" href="applib/app.html#tf.applib.app.App.reuse">App.reuse()</a></code></dd>
+<dt><code>A.showContext(...)</code></dt>
+<dd>show app settings</dd>
+<dd><code><a title="tf.applib.settings.showContext" href="applib/settings.html#tf.applib.settings.showContext">showContext()</a></code></dd>
+<dt><code>A.header()</code></dt>
+<dd>show colofon</dd>
+<dd><code><a title="tf.applib.links.header" href="applib/links.html#tf.applib.links.header">header()</a></code></dd>
+<dt><code>A.showProvenance(...)</code></dt>
+<dd>show provenance of code and data</dd>
+<dd><code><a title="tf.applib.links.showProvenance" href="applib/links.html#tf.applib.links.showProvenance">showProvenance()</a></code></dd>
+<dt><code>A.webLink(n, ...)</code></dt>
+<dd>hyperlink to node n on the web</dd>
+<dd><code><a title="tf.applib.links.webLink" href="applib/links.html#tf.applib.links.webLink">webLink()</a></code></dd>
+</dl>
+<h3 id="displaying">Displaying</h3>
+<dl>
+<dt><code>method(option1=value1, option2=value2, ...)</code></dt>
+<dd>Many of the following methods accept these options as keyword arguments: </dd>
+<dd><code><a title="tf.applib.displaysettings" href="applib/displaysettings.html">tf.applib.displaysettings</a></code></dd>
+<dt><code>A.displaySetup(...)</code></dt>
+<dd>set up display options</dd>
+<dd><code><a title="tf.applib.display.displaySetup" href="applib/display.html#tf.applib.display.displaySetup">displaySetup()</a></code></dd>
+<dt><code>A.displayReset(...)</code></dt>
+<dd>resetdisplay options</dd>
+<dd><code><a title="tf.applib.display.displayReset" href="applib/display.html#tf.applib.display.displayReset">displayReset()</a></code></dd>
+<dt><code>A.table(results, ...)</code></dt>
+<dd>plain rendering of tuple of tuples of node</dd>
+<dd><code><a title="tf.applib.display.table" href="applib/display.html#tf.applib.display.table">table()</a></code></dd>
+<dt><code>A.plainTuple(tup, ith, ...)</code></dt>
+<dd>plain rendering of tuple of node</dd>
+<dd><code><a title="tf.applib.display.plainTuple" href="applib/display.html#tf.applib.display.plainTuple">plainTuple()</a></code></dd>
+<dt><code>A.plain(node, ...)</code></dt>
+<dd>plain rendering of node</dd>
+<dd><code><a title="tf.applib.display.plain" href="applib/display.html#tf.applib.display.plain">plain()</a></code></dd>
+<dt><code>A.show(results, ...)</code></dt>
+<dd>pretty rendering of tuple of tuples of node</dd>
+<dd><code><a title="tf.applib.display.show" href="applib/display.html#tf.applib.display.show">show()</a></code></dd>
+<dt><code>A.prettyTuple(tup, ith, ...)</code></dt>
+<dd>pretty rendering of tuple of node</dd>
+<dd><code><a title="tf.applib.display.prettyTuple" href="applib/display.html#tf.applib.display.prettyTuple">prettyTuple()</a></code></dd>
+<dt><code>A.pretty(node, ...)</code></dt>
+<dd>pretty rendering of node</dd>
+<dd><code><a title="tf.applib.display.pretty" href="applib/display.html#tf.applib.display.pretty">pretty()</a></code></dd>
+</dl>
+<h3 id="search-high-level">Search (high level)</h3>
+<dl>
+<dt><code>A.search(...)</code></dt>
+<dd>search, collect and deliver results, report number of results</dd>
+<dd><code><a title="tf.applib.search.search" href="applib/search.html#tf.applib.search.search">search()</a></code></dd>
+</dl>
+<h3 id="sections-and-structure">Sections and Structure</h3>
+<dl>
+<dt><code>A.nodeFromSectionStr(...)</code></dt>
+<dd>lookup node for sectionheading</dd>
+<dd><code><a title="tf.applib.sections.nodeFromSectionStr" href="applib/sections.html#tf.applib.sections.nodeFromSectionStr">nodeFromSectionStr()</a></code></dd>
+<dt><code>A.sectionStrFromNode(...)</code></dt>
+<dd>lookup section heading for node</dd>
+<dd><code><a title="tf.applib.sections.sectionStrFromNode" href="applib/sections.html#tf.applib.sections.sectionStrFromNode">sectionStrFromNode()</a></code></dd>
+<dt><code>A.structureStrFromNode(...)</code></dt>
+<dd>lookup structure heading for node</dd>
+<dd><code><a title="tf.applib.sections.structureStrFromNode" href="applib/sections.html#tf.applib.sections.structureStrFromNode">structureStrFromNode()</a></code></dd>
+</dl>
+<h2 id="core-api">Core API</h2>
+<h3 id="dataset">Dataset</h3>
+<h4 id="loading">Loading</h4>
+<dl>
+<dt><code>TF = Fabric(locations=directories, modules=subdirectories, silent=False)</code></dt>
+<dd>Initialize API on dataset from explicit directories.
+Use <code><a title="tf.app.use" href="app.html#tf.app.use">use()</a></code> instead wherever you can.</dd>
+<dd><code><a title="tf.fabric.Fabric" href="fabric.html#tf.fabric.Fabric">Fabric</a></code></dd>
+<dt><code>TF.explore(show=True)</code></dt>
+<dd>Get features by category, loaded or unloaded</dd>
+<dd><code><a title="tf.fabric.Fabric.explore" href="fabric.html#tf.fabric.Fabric.explore">Fabric.explore()</a></code></dd>
+<dt><code>TF.loadAll(silent=None)</code></dt>
+<dd>Load all loadable features. </dd>
+<dd><code><a title="tf.fabric.Fabric.loadAll" href="fabric.html#tf.fabric.Fabric.loadAll">Fabric.loadAll()</a></code></dd>
+<dt><code>TF.load(features, add=False)</code></dt>
+<dd>Load a bunch of features from scratch or additionally. </dd>
+<dd><code><a title="tf.fabric.Fabric.load" href="fabric.html#tf.fabric.Fabric.load">Fabric.load()</a></code></dd>
+<dt><code>ensureLoaded(features)</code></dt>
+<dd>Make sure that features are loaded.</dd>
+<dd><code><a title="tf.core.api.Api.ensureLoaded" href="core/api.html#tf.core.api.Api.ensureLoaded">Api.ensureLoaded()</a></code></dd>
+<dt><code>makeAvailableIn(globals())</code></dt>
+<dd>Make the members of the core API available in the global scope</dd>
+<dd><code><a title="tf.core.api.Api.makeAvailableIn" href="core/api.html#tf.core.api.Api.makeAvailableIn">Api.makeAvailableIn()</a></code></dd>
+<dt><code>ignored</code></dt>
+<dd>Which features have been overridden.</dd>
+<dd><code><a title="tf.core.api.Api.ignored" href="core/api.html#tf.core.api.Api.ignored">Api.ignored</a></code></dd>
+<dt><code>loadLog()</code></dt>
+<dd>Log of the feature loading process</dd>
+<dd><code><a title="tf.core.api.Api.loadLog" href="core/api.html#tf.core.api.Api.loadLog">Api.loadLog</a></code></dd>
+</dl>
+<h4 id="saving">Saving</h4>
+<dl>
+<dt><code>TF.save(nodeFeatures={}, edgeFeatures={}, metaData={},,...)</code></dt>
+<dd>Save a bunch of newly generated features to disk.</dd>
+<dd><code><a title="tf.fabric.Fabric.save" href="fabric.html#tf.fabric.Fabric.save">Fabric.save()</a></code></dd>
+</dl>
+<h3 id="nodes">Nodes</h3>
+<p>Read about the canonical ordering here: <code><a title="tf.core.api" href="core/api.html">tf.core.api</a></code>.</p>
+<dl>
+<dt><code>N()</code></dt>
+<dd>generator of all nodes in canonical ordering</dd>
+<dd><code><a title="tf.core.api.Api.N" href="core/api.html#tf.core.api.Api.N">Api.N()</a></code></dd>
+<dt><code>sortNodes(nodes)</code></dt>
+<dd>sorts <code>nodes</code> in the canonical ordering</dd>
+<dd><code><a title="tf.core.api.Api.sortNodes" href="core/api.html#tf.core.api.Api.sortNodes">Api.sortNodes()</a></code></dd>
+<dt><code>otypeRank[nodeType]</code></dt>
+<dd>ranking position of <code>nodeType</code></dd>
+<dd><code><a title="tf.core.api.Api.otypeRank" href="core/api.html#tf.core.api.Api.otypeRank">Api.otypeRank</a></code></dd>
+<dt><code>sortKey(node)</code></dt>
+<dd>defines the canonical ordering on nodes</dd>
+<dd><code><a title="tf.core.api.Api.sortKey" href="core/api.html#tf.core.api.Api.sortKey">Api.sortKey</a></code></dd>
+<dt><code>sortKeyTuple(tup)</code></dt>
+<dd>extends the canonical ordering on nodes to tuples of nodes</dd>
+<dd><code><a title="tf.core.api.Api.sortKeyTuple" href="core/api.html#tf.core.api.Api.sortKeyTuple">Api.sortKeyTuple</a></code></dd>
+</dl>
+<h3 id="features">Features</h3>
+<h4 id="node-features">Node features</h4>
+<dl>
+<dt><code>Fall()</code></dt>
+<dd>all loaded feature names (node features only)</dd>
+<dd><code><a title="tf.core.api.Api.Fall" href="core/api.html#tf.core.api.Api.Fall">Api.Fall()</a></code></dd>
+<dt><code>F.fff.v(node)</code></dt>
+<dd>get value of node feature <code>fff</code></dd>
+<dd><code><a title="tf.core.api.NodeFeature.v" href="core/api.html#tf.core.api.NodeFeature.v">NodeFeature.v()</a></code></dd>
+<dt><code>F.fff.s(value)</code></dt>
+<dd>get nodes where feature <code>fff</code> has <code>value</code></dd>
+<dd><code><a title="tf.core.api.NodeFeature.s" href="core/api.html#tf.core.api.NodeFeature.s">NodeFeature.s()</a></code></dd>
+<dt><code>F.fff.freqList(...)</code></dt>
+<dd>frequency list of values of `fff</dd>
+<dd><code><a title="tf.core.api.NodeFeature.freqList" href="core/api.html#tf.core.api.NodeFeature.freqList">NodeFeature.freqList()</a></code></dd>
+<dt><code>F.fff.items(...)</code></dt>
+<dd>generator of all entries of <code>fff</code> as mapping from nodes to values</dd>
+<dd><code><a title="tf.core.api.NodeFeature.freqList" href="core/api.html#tf.core.api.NodeFeature.freqList">NodeFeature.freqList()</a></code></dd>
+<dt><code>F.fff.meta</code></dt>
+<dd>meta data of feature <code>fff</code></dd>
+<dd><code><a title="tf.core.api.NodeFeature.meta" href="core/api.html#tf.core.api.NodeFeature.meta">NodeFeature.meta</a></code></dd>
+<dt><code>Fs('fff')</code></dt>
+<dd>identical to <code>F.ffff</code> usable if name of feature is variable</dd>
+<dd><code><a title="tf.core.api.NodeFeature" href="core/api.html#tf.core.api.NodeFeature">NodeFeature</a></code></dd>
+</dl>
+<h4 id="special-feature-otype">Special feature <code>otype</code></h4>
+<p>Maps nodes to their types.</p>
+<dl>
+<dt><code>F.otype.v(node)</code></dt>
+<dd>get type of <code>node</code></dd>
+<dd><code><a title="tf.core.api.OtypeFeature.v" href="core/api.html#tf.core.api.OtypeFeature.v">OtypeFeature.v()</a></code></dd>
+<dt><code>F.otype.s(nodeType)</code></dt>
+<dd>get all nodes of type <code>nodeType</code></dd>
+<dd><code><a title="tf.core.api.OtypeFeature.s" href="core/api.html#tf.core.api.OtypeFeature.s">OtypeFeature.s()</a></code></dd>
+<dt><code>F.otype.sInterval(nodeType)</code></dt>
+<dd>gives start and ending nodes of <code>nodeType</code></dd>
+<dd><code><a title="tf.core.api.OtypeFeature.s" href="core/api.html#tf.core.api.OtypeFeature.s">OtypeFeature.s()</a></code></dd>
+<dt><code>F.otype.items(...)</code></dt>
+<dd>generator of all (node, type) pairs.</dd>
+<dd><code><a title="tf.core.api.OtypeFeature.items" href="core/api.html#tf.core.api.OtypeFeature.items">OtypeFeature.items()</a></code></dd>
+<dt><code>F.otype.meta</code></dt>
+<dd>meta data of feature <code>otype</code></dd>
+<dd><code><a title="tf.core.api.OtypeFeature.meta" href="core/api.html#tf.core.api.OtypeFeature.meta">OtypeFeature.meta</a></code></dd>
+<dt><code>F.otype.maxSlot</code></dt>
+<dd>the last slot node</dd>
+<dd><code><a title="tf.core.api.OtypeFeature.maxSlot" href="core/api.html#tf.core.api.OtypeFeature.maxSlot">OtypeFeature.maxSlot</a></code></dd>
+<dt><code>F.otype.maxNode</code></dt>
+<dd>the last node</dd>
+<dd><code><a title="tf.core.api.OtypeFeature.maxNode" href="core/api.html#tf.core.api.OtypeFeature.maxNode">OtypeFeature.maxNode</a></code></dd>
+<dt><code>F.otype.slotType</code></dt>
+<dd>the slot type</dd>
+<dd><code><a title="tf.core.api.OtypeFeature.slotType" href="core/api.html#tf.core.api.OtypeFeature.slotType">OtypeFeature.slotType</a></code></dd>
+<dt><code>F.otype.all</code></dt>
+<dd>sorted list of all node types</dd>
+<dd><code><a title="tf.core.api.OtypeFeature.all" href="core/api.html#tf.core.api.OtypeFeature.all">OtypeFeature.all</a></code></dd>
+</dl>
+<h4 id="edge-features">Edge features</h4>
+<dl>
+<dt><code>Eall()</code></dt>
+<dd>all loaded feature names (edge features only)</dd>
+<dd><code><a title="tf.core.api.Api.Eall" href="core/api.html#tf.core.api.Api.Eall">Api.Eall()</a></code></dd>
+<dt><code>E.fff.f(node)</code></dt>
+<dd>get value of feature <code>fff</code> for edges <em>from</em> node</dd>
+<dd><code><a title="tf.core.api.EdgeFeature.f" href="core/api.html#tf.core.api.EdgeFeature.f">EdgeFeature.f()</a></code></dd>
+<dt><code>E.fff.t(node)</code></dt>
+<dd>get value of feature <code>fff</code> for edges <em>to</em> node</dd>
+<dd><code><a title="tf.core.api.EdgeFeature.t" href="core/api.html#tf.core.api.EdgeFeature.t">EdgeFeature.t()</a></code></dd>
+<dt><code>E.fff.freqList(...)</code></dt>
+<dd>frequency list of values of `fff</dd>
+<dd><code><a title="tf.core.api.EdgeFeature.freqList" href="core/api.html#tf.core.api.EdgeFeature.freqList">EdgeFeature.freqList()</a></code></dd>
+<dt><code>E.fff.items(...)</code></dt>
+<dd>generator of all entries of <code>fff</code> as mapping from edges to values</dd>
+<dd><code><a title="tf.core.api.EdgeFeature.items" href="core/api.html#tf.core.api.EdgeFeature.items">EdgeFeature.items()</a></code></dd>
+<dt><code>E.fff.b(node)</code></dt>
+<dd>get value of feature <code>fff</code> for edges <em>from</em> and <em>to</em> node</dd>
+<dd><code><a title="tf.core.api.EdgeFeature.t" href="core/api.html#tf.core.api.EdgeFeature.t">EdgeFeature.t()</a></code></dd>
+<dt><code>E.fff.meta</code></dt>
+<dd>all meta data of feature <code>fff</code></dd>
+<dd><code><a title="tf.core.api.EdgeFeature.meta" href="core/api.html#tf.core.api.EdgeFeature.meta">EdgeFeature.meta</a></code></dd>
+<dt><code>Es('fff')</code></dt>
+<dd>identical to <code>E.fff</code> usable if name of feature is variable</dd>
+<dd><code><a title="tf.core.api.EdgeFeature" href="core/api.html#tf.core.api.EdgeFeature">EdgeFeature</a></code></dd>
+</dl>
+<h4 id="special-feature-oslots">Special feature <code>oslots</code></h4>
+<p>Maps nodes to the set of slots they occupy.</p>
+<dl>
+<dt><code>E.oslots.items(...)</code></dt>
+<dd>generator of all entries of <code>oslots</code> as mapping from nodes to sets of slots</dd>
+<dd><code><a title="tf.core.api.OslotsFeature.items" href="core/api.html#tf.core.api.OslotsFeature.items">OslotsFeature.items()</a></code></dd>
+<dt><code>E.oslots.s(node)</code></dt>
+<dd>set of slots linked to <code>node</code></dd>
+<dd><code><a title="tf.core.api.OslotsFeature.s" href="core/api.html#tf.core.api.OslotsFeature.s">OslotsFeature.s()</a></code></dd>
+<dt><code>E.oslots.meta</code></dt>
+<dd>all meta data of feature <code>oslots</code></dd>
+<dd><code><a title="tf.core.api.OslotsFeature.meta" href="core/api.html#tf.core.api.OslotsFeature.meta">OslotsFeature.meta</a></code></dd>
+</dl>
+<h3 id="locality">Locality</h3>
+<dl>
+<dt><code>L.i(node, otype=...)</code></dt>
+<dd>go to intersectiing node</dd>
+<dd><code><a title="tf.core.locality.Locality.i" href="core/locality.html#tf.core.locality.Locality.i">Locality.i()</a></code></dd>
+<dt><code>L.u(node, otype=...)</code></dt>
+<dd>go one level up</dd>
+<dd><code><a title="tf.core.locality.Locality.u" href="core/locality.html#tf.core.locality.Locality.u">Locality.u()</a></code></dd>
+<dt><code>L.d(node, otype=...)</code></dt>
+<dd>go one level down</dd>
+<dd><code><a title="tf.core.locality.Locality.d" href="core/locality.html#tf.core.locality.Locality.d">Locality.d()</a></code></dd>
+<dt><code>L.p(node, otype=...)</code></dt>
+<dd>go to adjacent previous node</dd>
+<dd><code><a title="tf.core.locality.Locality.p" href="core/locality.html#tf.core.locality.Locality.p">Locality.p()</a></code></dd>
+<dt><code>L.n(node, otype=...)</code></dt>
+<dd>go to adjacent next node</dd>
+<dd><code><a title="tf.core.locality.Locality.n" href="core/locality.html#tf.core.locality.Locality.n">Locality.n()</a></code></dd>
+</dl>
+<h3 id="text">Text</h3>
+<dl>
+<dt><code>T.text(node, fmt=..., ...)</code></dt>
+<dd>give formatted text associated with node</dd>
+<dd><code><a title="tf.core.text.Text.text" href="core/text.html#tf.core.text.Text.text">Text.text()</a></code></dd>
+</dl>
+<h3 id="sections">Sections</h3>
+<p>Rigid 1 or 2 or 3 sectioning system</p>
+<dl>
+<dt><code>T.sectionTuple(node)</code></dt>
+<dd>give tuple of section nodes that contain <code>n</code></dd>
+<dd><code><a title="tf.core.text.Text.sectionTuple" href="core/text.html#tf.core.text.Text.sectionTuple">Text.sectionTuple()</a></code></dd>
+<dt><code>T.sectionFromNode(node)</code></dt>
+<dd>give section heading of node</dd>
+<dd><code><a title="tf.core.text.Text.sectionFromNode" href="core/text.html#tf.core.text.Text.sectionFromNode">Text.sectionFromNode()</a></code></dd>
+<dt><code>T.nodeFromSection(section)</code></dt>
+<dd>give node for section heading</dd>
+<dd><code><a title="tf.core.text.Text.nodeFromSection" href="core/text.html#tf.core.text.Text.nodeFromSection">Text.nodeFromSection()</a></code></dd>
+</dl>
+<h3 id="structure">Structure</h3>
+<p>Flexible multilevel sectioning system</p>
+<dl>
+<dt><code>T.headingFromNode(node)</code></dt>
+<dd>give structure heading of node</dd>
+<dd><code><a title="tf.core.text.Text.headingFromNode" href="core/text.html#tf.core.text.Text.headingFromNode">Text.headingFromNode()</a></code></dd>
+<dt><code>T.nodeFromHeading(heading)</code></dt>
+<dd>give node for structure heading</dd>
+<dd><code><a title="tf.core.text.Text.nodeFromHeading" href="core/text.html#tf.core.text.Text.nodeFromHeading">Text.nodeFromHeading()</a></code></dd>
+<dt><code>T.structureInfo()</code></dt>
+<dd>give summary of dataset structure</dd>
+<dd><code><a title="tf.core.text.Text.structureInfo" href="core/text.html#tf.core.text.Text.structureInfo">Text.structureInfo()</a></code></dd>
+<dt><code>T.structure(node)</code></dt>
+<dd>give structure of <code>node</code> and all in it.</dd>
+<dd><code><a title="tf.core.text.Text.structure" href="core/text.html#tf.core.text.Text.structure">Text.structure()</a></code></dd>
+<dt><code>T.structurePretty(node)</code></dt>
+<dd>pretty print structure of <code>node</code> and all in it.</dd>
+<dd><code><a title="tf.core.text.Text.structurePretty" href="core/text.html#tf.core.text.Text.structurePretty">Text.structurePretty()</a></code></dd>
+<dt><code>T.top()</code></dt>
+<dd>give all top-level structural nodes in the dataset</dd>
+<dd><code><a title="tf.core.text.Text.top" href="core/text.html#tf.core.text.Text.top">Text.top()</a></code></dd>
+<dt><code>T.up(node)</code></dt>
+<dd>gives parent of structural node</dd>
+<dd><code><a title="tf.core.text.Text.up" href="core/text.html#tf.core.text.Text.up">Text.up()</a></code></dd>
+<dt><code>T.down(node)</code></dt>
+<dd>gives children of structural node</dd>
+<dd><code><a title="tf.core.text.Text.down" href="core/text.html#tf.core.text.Text.down">Text.down()</a></code></dd>
+</dl>
+<h3 id="search-low-level">Search (low level)</h3>
+<h4 id="preparation">Preparation</h4>
+<dl>
+<dt><code>S.search(query, limit=None)</code></dt>
+<dd>Query the TF dataset with a template</dd>
+<dd><code><a title="tf.search.search.Search.search" href="search/search.html#tf.search.search.Search.search">Search.search()</a></code></dd>
+<dt><code>S.study(query, ...)</code></dt>
+<dd>Study the query in order to set up a plan</dd>
+<dd><code><a title="tf.search.search.Search.study" href="search/search.html#tf.search.search.Search.study">Search.study()</a></code></dd>
+<dt><code>S.showPlan(details=False)</code></dt>
+<dd>Show the search plan resulting from the last study.</dd>
+<dd><code><a title="tf.search.search.Search.showPlan" href="search/search.html#tf.search.search.Search.showPlan">Search.showPlan()</a></code></dd>
+<dt><code>S.relationsLegend()</code></dt>
+<dd>Catalog of all relational devices in search templates</dd>
+<dd><code><a title="tf.search.search.Search.relationsLegend" href="search/search.html#tf.search.search.Search.relationsLegend">Search.relationsLegend()</a></code></dd>
+</dl>
+<h4 id="fetching-results">Fetching results</h4>
+<dl>
+<dt><code>S.count(progress=None, limit=None)</code></dt>
+<dd>Count the results, up to a limit</dd>
+<dd><code><a title="tf.search.search.Search.study" href="search/search.html#tf.search.search.Search.study">Search.study()</a></code></dd>
+<dt><code>S.fetch(limit=None, ...)</code></dt>
+<dd>Fetches the results, up to a limit</dd>
+<dd><code><a title="tf.search.search.Search.fetch" href="search/search.html#tf.search.search.Search.fetch">Search.fetch()</a></code></dd>
+<dt><code>S.glean(tup)</code></dt>
+<dd>Renders a single result into something human readable.</dd>
+<dd><code><a title="tf.search.search.Search.glean" href="search/search.html#tf.search.search.Search.glean">Search.glean()</a></code></dd>
+</dl>
+<h4 id="implementation">Implementation</h4>
+<dl>
+<dt><code>S.tweakPerformance(...)</code></dt>
+<dd>Set certain parameters that influence the performance of search.</dd>
+<dd><code><a title="tf.search.search.Search.tweakPerformance" href="search/search.html#tf.search.search.Search.tweakPerformance">Search.tweakPerformance()</a></code></dd>
+</dl>
+<h3 id="tf-dataset-manipulation">TF Dataset Manipulation</h3>
+<p><code>from tf.compose import combine, modify</code></p>
+<dl>
+<dt><code>combine((source1, source2, ...), target)</code></dt>
+<dd>Combines several TF datasets into one new TF dataset</dd>
+<dd><code><a title="tf.compose.combine" href="compose/combine.html">tf.compose.combine</a></code></dd>
+<dt><code>modify(source, target, ...)</code></dt>
+<dd>Modifies a TF datasets into one new TF dataset</dd>
+<dd><code><a title="tf.compose.modify" href="compose/modify.html">tf.compose.modify</a></code></dd>
+</dl>
+<h3 id="data-interchange">Data Interchange</h3>
+<h4 id="custom-node-sets-for-search">Custom node sets for search</h4>
+<pre><code>from tf.lib import readSets
+from tf.lib import writeSets
+</code></pre>
+<dl>
+<dt><code>readSets(sourceFile)</code></dt>
+<dd>reads a named sets from file</dd>
+<dd><code><a title="tf.lib.readSets" href="lib.html#tf.lib.readSets">readSets()</a></code></dd>
+<dt><code>writeSets(sets, destFile)</code></dt>
+<dd>writes a named sets to file</dd>
+<dd><code><a title="tf.lib.writeSets" href="lib.html#tf.lib.writeSets">writeSets()</a></code></dd>
+</dl>
+<h4 id="export-to-excel">Export to Excel</h4>
+<dl>
+<dt><code>A.export(results, ...)</code></dt>
+<dd>export formatted data</dd>
+<dd><code><a title="tf.applib.display.export" href="applib/display.html#tf.applib.display.export">export()</a></code></dd>
+</dl>
+<h4 id="mql-interchange">MQL interchange</h4>
+<dl>
+<dt><code>TF.exportMQL()</code></dt>
+<dd>export loaded dataset to MQL</dd>
+<dd>`tf.fabric.Fabric.exportMQL</dd>
+<dt><code>TF.importMQL()</code></dt>
+<dd>convert MQL file to TF dataset</dd>
+<dd>`tf.fabric.Fabric.importMQL</dd>
+</dl>
+<h4 id="walker-conversion">Walker conversion</h4>
+<dl>
+<dt><code>cv = CV(TF)</code></dt>
+<dd>convert structured data to TF dataset</dd>
+<dd><code><a title="tf.convert.walker" href="convert/walker.html">tf.convert.walker</a></code></dd>
+</dl>
+<h3 id="logging">Logging</h3>
+<dl>
+<dt><code>TF.version</code></dt>
+<dd>version number of the Text-Fabric package.</dd>
+<dd>`tf.fabric.Fabric.version</dd>
+<dt><code>TF.banner</code></dt>
+<dd>banner of the Text-Fabric program.</dd>
+<dd>`tf.fabric.Fabric.banner</dd>
+<dt><code>isSilent()</code></dt>
+<dd>report the verbosity of Text-Fabric</dd>
+<dd><code><a title="tf.core.timestamp.Timestamp.isSilent" href="core/timestamp.html#tf.core.timestamp.Timestamp.isSilent">Timestamp.isSilent()</a></code></dd>
+<dt><code>silentOn(deep=False)</code></dt>
+<dd>make TF silent from now on.</dd>
+<dd><code><a title="tf.core.timestamp.Timestamp.silentOn" href="core/timestamp.html#tf.core.timestamp.Timestamp.silentOn">Timestamp.silentOn()</a></code></dd>
+<dt><code>silentOff()</code></dt>
+<dd>make TF talkative from now on.</dd>
+<dd><code><a title="tf.core.timestamp.Timestamp.silentOff" href="core/timestamp.html#tf.core.timestamp.Timestamp.silentOff">Timestamp.silentOff()</a></code></dd>
+<dt><code>setSilent(silent)</code></dt>
+<dd>set the verbosity of Text-Fabric.</dd>
+<dd><code><a title="tf.core.timestamp.Timestamp.setSilent" href="core/timestamp.html#tf.core.timestamp.Timestamp.setSilent">Timestamp.setSilent()</a></code></dd>
+<dt><code>indent(level=None, reset=False)</code></dt>
+<dd>Sets up indentation and timing of following messages</dd>
+<dd><code><a title="tf.core.timestamp.Timestamp.indent" href="core/timestamp.html#tf.core.timestamp.Timestamp.indent">Timestamp.indent()</a></code></dd>
+<dt><code>info(msg, tm=True, nl=True, ...)</code></dt>
+<dd>informational message</dd>
+<dd><code><a title="tf.core.timestamp.Timestamp.info" href="core/timestamp.html#tf.core.timestamp.Timestamp.info">Timestamp.info()</a></code></dd>
+<dt><code>warning(msg, tm=True, nl=True, ...)</code></dt>
+<dd>warning message</dd>
+<dd><code><a title="tf.core.timestamp.Timestamp.warning" href="core/timestamp.html#tf.core.timestamp.Timestamp.warning">Timestamp.warning()</a></code></dd>
+<dt><code>error(msg, tm=True, nl=True, ...)</code></dt>
+<dd>error message</dd>
+<dd><code><a title="tf.core.timestamp.Timestamp.error" href="core/timestamp.html#tf.core.timestamp.Timestamp.error">Timestamp.error()</a></code></dd>
+</dl>
+<h3 id="computed-data-components">Computed data components.</h3>
+<p>Access to precomputed data: <code><a title="tf.core.api.Computeds" href="core/api.html#tf.core.api.Computeds">Computeds</a></code>.</p>
+<p>All components have just one useful attribute: <code>.data</code>.</p>
+<dl>
+<dt><code>Call()</code></dt>
+<dd>all precomputed data component names</dd>
+<dd><code><a title="tf.core.api.Api.Call" href="core/api.html#tf.core.api.Api.Call">Api.Call()</a></code></dd>
+<dt><code>C.levels.data</code></dt>
+<dd>various statistics on node types</dd>
+<dd><code><a title="tf.core.prepare.levels" href="core/prepare.html#tf.core.prepare.levels">levels()</a></code></dd>
+<dt><code>C.order.data</code></dt>
+<dd>the canonical order of the nodes (<code><a title="tf.core.api" href="core/api.html">tf.core.api</a></code>)</dd>
+<dd><code><a title="tf.core.prepare.order" href="core/prepare.html#tf.core.prepare.order">order()</a></code></dd>
+<dt><code>C.rank.data</code></dt>
+<dd>the rank of the nodes in the canonical order (<code><a title="tf.core.api" href="core/api.html">tf.core.api</a></code>)</dd>
+<dd><code><a title="tf.core.prepare.rank" href="core/prepare.html#tf.core.prepare.rank">rank()</a></code></dd>
+<dt><code>C.levUp.data</code></dt>
+<dd>feeds the <code><a title="tf.core.locality.Locality.u" href="core/locality.html#tf.core.locality.Locality.u">Locality.u()</a></code> function</dd>
+<dd><code><a title="tf.core.prepare.levUp" href="core/prepare.html#tf.core.prepare.levUp">levUp()</a></code></dd>
+<dt><code>C.levDown.data</code></dt>
+<dd>feeds the <code><a title="tf.core.locality.Locality.d" href="core/locality.html#tf.core.locality.Locality.d">Locality.d()</a></code> function</dd>
+<dd><code><a title="tf.core.prepare.levDown" href="core/prepare.html#tf.core.prepare.levDown">levDown()</a></code></dd>
+<dt><code>C.boundary.data</code></dt>
+<dd>feeds the <code><a title="tf.core.locality.Locality.p" href="core/locality.html#tf.core.locality.Locality.p">Locality.p()</a></code> and <code><a title="tf.core.locality.Locality.n" href="core/locality.html#tf.core.locality.Locality.n">Locality.n()</a></code>
+functions</dd>
+<dd><code><a title="tf.core.prepare.boundary" href="core/prepare.html#tf.core.prepare.boundary">boundary()</a></code></dd>
+<dt><code>C.sections.data</code></dt>
+<dd>feeds the section part of <code><a title="tf.core.text" href="core/text.html">tf.core.text</a></code></dd>
+<dd><code><a title="tf.core.prepare.sections" href="core/prepare.html#tf.core.prepare.sections">sections()</a></code></dd>
+<dt><code>C.structure.data</code></dt>
+<dd>feeds the structure part of <code><a title="tf.core.text" href="core/text.html">tf.core.text</a></code></dd>
+<dd><code><a title="tf.core.prepare.structure" href="core/prepare.html#tf.core.prepare.structure">structure()</a></code></dd>
+</dl>
+<h3 id="house-keeping">House keeping</h3>
+<dl>
+<dt><code>TF.clearCache()</code></dt>
+<dd>clears the cache of compiled TF data</dd>
+<dd><code><a title="tf.fabric.Fabric.clearCache" href="fabric.html#tf.fabric.Fabric.clearCache">Fabric.clearCache()</a></code></dd>
+<dt><code>TF.clean()</code></dt>
+<dd>clears the cache of compiled TF data</dd>
+<dd><code><a title="tf.clean" href="clean.html">tf.clean</a></code></dd>
+</dl>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../docs/main/cheatsheet.md
+&#34;&#34;&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<img src="images/tf-small.png">
+<img src="../images/tf-small.png">
+<div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#text-fabric-api">Text-Fabric API</a><ul>
+<li><a href="#advanced-api">Advanced API</a><ul>
+<li><a href="#initialisation-configuration-meta-data-and-linking">Initialisation, configuration, meta data, and linking</a></li>
+<li><a href="#displaying">Displaying</a></li>
+<li><a href="#search-high-level">Search (high level)</a></li>
+<li><a href="#sections-and-structure">Sections and Structure</a></li>
+</ul>
+</li>
+<li><a href="#core-api">Core API</a><ul>
+<li><a href="#dataset">Dataset</a><ul>
+<li><a href="#loading">Loading</a></li>
+<li><a href="#saving">Saving</a></li>
+</ul>
+</li>
+<li><a href="#nodes">Nodes</a></li>
+<li><a href="#features">Features</a><ul>
+<li><a href="#node-features">Node features</a></li>
+<li><a href="#special-feature-otype">Special feature otype</a></li>
+<li><a href="#edge-features">Edge features</a></li>
+<li><a href="#special-feature-oslots">Special feature oslots</a></li>
+</ul>
+</li>
+<li><a href="#locality">Locality</a></li>
+<li><a href="#text">Text</a></li>
+<li><a href="#sections">Sections</a></li>
+<li><a href="#structure">Structure</a></li>
+<li><a href="#search-low-level">Search (low level)</a><ul>
+<li><a href="#preparation">Preparation</a></li>
+<li><a href="#fetching-results">Fetching results</a></li>
+<li><a href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li><a href="#tf-dataset-manipulation">TF Dataset Manipulation</a></li>
+<li><a href="#data-interchange">Data Interchange</a><ul>
+<li><a href="#custom-node-sets-for-search">Custom node sets for search</a></li>
+<li><a href="#export-to-excel">Export to Excel</a></li>
+<li><a href="#mql-interchange">MQL interchange</a></li>
+<li><a href="#walker-conversion">Walker conversion</a></li>
+</ul>
+</li>
+<li><a href="#logging">Logging</a></li>
+<li><a href="#computed-data-components">Computed data components.</a></li>
+<li><a href="#house-keeping">House keeping</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf" href="index.html">tf</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

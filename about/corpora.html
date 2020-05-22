@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>tf.about.corpora API documentation</title>
+<meta name="description" content="Corpora …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.about.corpora</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="corpora">Corpora</h1>
+<p>Corpora are usually stored in an online repository, such as GitHub or a research data archive
+such as <a href="https://dans.knaw.nl/en/front-page?set_language=en">DANS</a>.</p>
+<p>Some corpora are supported by Text-Fabric <em>apps</em>.</p>
+<p>These apps provide a browser interface for the corpus, and they enhance the API for working
+with them programmatically.</p>
+<p>A TF app can also download and update the corpus <em>data</em>.</p>
+<h3 id="current-tf-apps">Current TF apps</h3>
+<table>
+<thead>
+<tr>
+<th>acronym</th>
+<th>language/writing system</th>
+<th>name</th>
+<th>period</th>
+<th>description</th>
+<th>converted by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/annotation/app-athenaeus">athenaeus</a></td>
+<td>Greek</td>
+<td>Works of Athenaeus</td>
+<td>80 - 170</td>
+<td>Deipnosophistae</td>
+<td>Ernst Boogert</td>
+</tr>
+<tr>
+<td><a href="https://github.com/annotation/app-banks">banks</a></td>
+<td>modern english</td>
+<td>Iain M. Banks</td>
+<td>1984 - 1987</td>
+<td>99 words from the SF novel <a href="https://read.amazon.com/kp/kshare?asin=B002TXZRQI&amp;id=NpPGzf_HT5aADabyiDDSIQ&amp;reshareId=RZ91SGMZJPWK9S1Y4EZX&amp;reshareChannel=system">Consider Phlebas</a></td>
+<td>Dirk Roorda</td>
+</tr>
+<tr>
+<td><a href="https://github.com/annotation/app-bhsa">bhsa</a></td>
+<td>Hebrew</td>
+<td>Hebrew Bible</td>
+<td>1000 BC - 900 AD</td>
+<td><a href="https://etcbc.github.io/bhsa/">Biblia Hebraica Stuttgartensia (Amstelodamensis)</a></td>
+<td>Dirk Roorda + ETCBC</td>
+</tr>
+<tr>
+<td><a href="https://github.com/annotation/app-dss">dss</a></td>
+<td>Hebrew</td>
+<td>Dead Sea Scrolls</td>
+<td>300 BC - 100 AD</td>
+<td><a href="https://github.com/ETCBC/dss/blob/master/docs/about.md">Transcriptions with morphology based on Martin Abegg's data files</a></td>
+<td>Dirk Roorda, Jarod Jacobs</td>
+</tr>
+<tr>
+<td><a href="https://github.com/annotation/app-nena">nena</a></td>
+<td>Aramaic</td>
+<td>North Eastern Neo-Aramaic Corpus</td>
+<td>2000</td>
+<td><a href="https://nena.ames.cam.ac.uk">Nena Cambridge</a></td>
+<td>Cody Kingham</td>
+</tr>
+<tr>
+<td><a href="https://github.com/annotation/app-oldbabylonian">oldbabylonian</a></td>
+<td>Akkadian / cuneiform</td>
+<td>Old Babylonian letters</td>
+<td>1900 - 1600 BC</td>
+<td><a href="https://github.com/Nino-cunei/oldbabylonian/blob/master/docs/about.md">Altbabylonische Briefe in Umschrift und Übersetzung</a></td>
+<td>Dirk Roorda, Cale Johnson</td>
+</tr>
+<tr>
+<td><a href="https://github.com/annotation/app-peshitta">peshitta</a></td>
+<td>Syriac</td>
+<td>Syriac Old Testament</td>
+<td>1000 BC - 900 AD</td>
+<td><a href="https://github.com/ETCBC/peshitta/blob/master/docs/about.md">Vetus Testamentum Syriace</a></td>
+<td>Dirk Roorda, Hannes Vlaardingerbroek</td>
+</tr>
+<tr>
+<td><a href="https://github.com/annotation/app-quran">quran</a></td>
+<td>Arabic</td>
+<td>Quran</td>
+<td>600 - 900</td>
+<td><a href="https://github.com/q-ran/quran/blob/master/docs/about.md">Quranic Arabic Corpus</a></td>
+<td>Dirk Roorda, Cornelis van Lit</td>
+</tr>
+<tr>
+<td><a href="https://github.com/annotation/app-syrnt">syrnt</a></td>
+<td>Syriac</td>
+<td>Syriac New Testament</td>
+<td>0 - 1000</td>
+<td><a href="https://github.com/ETCBC/syrnt/blob/master/docs/about.md">Novum Testamentum Syriace</a></td>
+<td>Dirk Roorda, Hannes Vlaardingerbroek</td>
+</tr>
+<tr>
+<td><a href="https://github.com/annotation/app-tisch">tisch</a></td>
+<td>Greek</td>
+<td>New Testament</td>
+<td>50 - 450</td>
+<td>Greek New Testament in Tischendorf 8th Edition</td>
+<td>Cody Kingham</td>
+</tr>
+<tr>
+<td><a href="https://github.com/annotation/app-uruk">uruk</a></td>
+<td>proto-cuneiform</td>
+<td>Uruk</td>
+<td>4000 - 3100 BC</td>
+<td><a href="https://github.com/Nino-cunei/uruk/blob/master/docs/about.md">Archaic tablets from Uruk</a></td>
+<td>Dirk Roorda, Cale Johnson</td>
+</tr>
+</tbody>
+</table>
+<p>All these apps can be found in
+<a href="https://github.com/annotation">annotation</a> on GitHub.
+Each repo named <code>app-</code><em>appName</em> hosts the app named <em>appName</em>.</p>
+<h3 id="current-tf-corpora-without-an-app">Current TF corpora without an app</h3>
+<table>
+<thead>
+<tr>
+<th>acronym</th>
+<th>language/writing system</th>
+<th>name</th>
+<th>period</th>
+<th>description</th>
+<th>converted by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/annotation/app-patristics">patristics</a></td>
+<td>Greek</td>
+<td>Works by Church Fathers</td>
+<td>200 - 600</td>
+<td>see <a href="https://github.com/pthu/patristics">PThU</a></td>
+<td>Ernst Boogert</td>
+</tr>
+</tbody>
+</table>
+<h3 id="intentions">Intentions</h3>
+<table>
+<thead>
+<tr>
+<th>acronym</th>
+<th>language/writing system</th>
+<th>name</th>
+<th>period</th>
+<th>description</th>
+<th>converted by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/annotation/app-oldassyrian">oldassyrian</a></td>
+<td>Akkadian / cuneiform</td>
+<td>Old Assyrian documents</td>
+<td>2000 - 1900</td>
+<td>see <a href="https://github.com/Nino-cunei/oldassyrian/blob/master/docs/about.md">About</a></td>
+<td>Dirk Roorda, Cale Johnson, Alba de Ridder, Martijn Kokken</td>
+</tr>
+<tr>
+<td>oldroyal</td>
+<td>Akkadian-Sumerian cuneiform</td>
+<td>Bilingual royal inscriptions</td>
+<td>2000 - 1600</td>
+<td>more info to come</td>
+<td>Martijn Kokken, Dirk Roorda</td>
+</tr>
+</tbody>
+</table>
+<h2 id="get-corpora">Get corpora</h2>
+<h3 id="automatically">Automatically</h3>
+<p>Text-Fabric downloads apps from <a href="https://github.com/annotation">annotation</a> automatically
+when you use them.</p>
+<p>See <code><a title="tf.about.use" href="use.html">tf.about.use</a></code>.</p>
+<p>Data ends up in a logical place under your <code>~/text-fabric-data/</code>.</p>
+<p>The TF data is fairly compact.</p>
+<div class="admonition caution">
+<p class="admonition-title">Size of data</p>
+<p>There might be sizable additional data for some corpora,
+images for example.
+In that case, take care to have a good internet connection
+when you use a TF app for the first time.</p>
+</div>
+<h3 id="manually">Manually</h3>
+<p>Corpus data of app-supported corpora reside in a GitHub repo.
+You can manually clone such a data repository and point Text-Fabric to that data.</p>
+<p>First, take care that your clone ends up in <code>github/</code><em>orgName</em>
+(relative your home directory)
+where <em>orgName</em> is the organization or person on GitHub under which you have
+found the repo.</p>
+<p>Then, when you invoke the app, pass the specifier <code>:clone</code>.
+This instructs Text-Fabric to look in your local GitHub clone, rather
+than online or in <code>text-fabric-data</code>, where downloaded data is stored.</p>
+<pre><code class="python">use('xxxx:clone', checkout=&quot;clone&quot;)
+</code></pre>
+<pre><code class="sh">text-fabric xxxx:clone --checkout=clone
+</code></pre>
+<p>In this way, you can work with data that is under your control.</p>
+<div class="admonition caution">
+<p class="admonition-title">Size of data</p>
+<p>Cloning a data repository is more costly then letting Text-Fabric download the data.
+A data repository may contain several versions and representations of the data,
+including the their change histories. There might also be other
+material in the repo, such as source data, tutorials, programs.</p>
+<p>For example, the <code>etcbc/bhsa</code> repo is several GB, but the TF data for a specific
+version is only 25MB.</p>
+</div>
+<h3 id="extra-data">Extra data</h3>
+<p>Researchers are continually adding new insights in the form of new feature
+data. TF apps make it easy to use that data alongside the main data source.
+Read more about the data life cycle in <code><a title="tf.about.datasharing" href="datasharing.html">tf.about.datasharing</a></code>.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../../docs/about/corpora.md
+&#34;&#34;&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<img src="images/tf-small.png">
+<img src="../images/tf-small.png">
+<div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#corpora">Corpora</a><ul>
+<li><a href="#current-tf-apps">Current TF apps</a></li>
+<li><a href="#current-tf-corpora-without-an-app">Current TF corpora without an app</a></li>
+<li><a href="#intentions">Intentions</a></li>
+<li><a href="#get-corpora">Get corpora</a><ul>
+<li><a href="#automatically">Automatically</a></li>
+<li><a href="#manually">Manually</a></li>
+<li><a href="#extra-data">Extra data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.about" href="index.html">tf.about</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

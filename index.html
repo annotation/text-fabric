@@ -1,1 +1,215 @@
-<!doctype html><html lang=en class=no-js> <head><link href=https://fonts.gstatic.com rel=preconnect crossorigin><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="ie=edge"><meta name=description content="Text-Fabric is a Python3 package for Text plus Annotations. It provides a data model, a text file format, a binary format, an API, and apps for (ancient) text plus (linguistic) annotations."><link href=https://annotation.github.io/text-fabric/ rel=canonical><meta name=author content="Dirk Roorda"><meta name=lang:clipboard.copy content="Copy to clipboard"><meta name=lang:clipboard.copied content="Copied to clipboard"><meta name=lang:search.language content=en><meta name=lang:search.pipeline.stopwords content=True><meta name=lang:search.pipeline.trimmer content=True><meta name=lang:search.result.none content="No matching documents"><meta name=lang:search.result.one content="1 matching document"><meta name=lang:search.result.other content="# matching documents"><meta name=lang:search.tokenizer content=[\s\-]+><link rel="shortcut icon" href=images/icon/favicon.ico><meta name=generator content="mkdocs-1.1, mkdocs-material-4.6.3"><title>Text-Fabric</title><link rel=stylesheet href=assets/stylesheets/application.44877490.css><script src=assets/javascripts/modernizr.b81a0a10.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,700|Glegoo:300,400,400i,700|Ubuntu+Mono&display=swap"><style>.body-type,body,input{font-family:"Open Sans",sans-serif}.head-type,h1,h2,h3,h4,h5{font-family:"Glegoo",serif}.code-type,code,kbd,pre{font-family:"Ubuntu Mono",monospace}</style><link rel=stylesheet href=assets/fonts/material-icons.css></head> <body dir=ltr> <svg class=md-svg> <defs> <svg xmlns=http://www.w3.org/2000/svg width=416 height=448 viewbox="0 0 416 448" id=__github><path fill=currentColor d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg> </defs> </svg> <input class=md-toggle data-md-toggle=drawer type=checkbox id=__drawer autocomplete=off> <input class=md-toggle data-md-toggle=search type=checkbox id=__search autocomplete=off> <label class=md-overlay data-md-component=overlay for=__drawer></label> <a href=#text-fabric tabindex=1 class=md-skip> Skip to content </a> <header class=md-header data-md-component=header> <nav class="md-header-nav md-grid"> <div class=md-flex> <div class="md-flex__cell md-flex__cell--shrink"> <a href=https://dans.knaw.nl/en title="Data Archiving and Networked Services (DANS)" class="md-header-nav__button md-logo"> <img src=assets/images/DANS.gif height=50> </a> </div> <div class="md-flex__cell md-flex__cell--shrink"> <a href=https://annotation.github.io/text-fabric/ title=Text-Fabric class="md-header-nav__button md-logo"> <img src=images/tf-small.png height=50> </a> </div> <div class="md-flex__cell md-flex__cell--shrink"> <label class="md-icon md-icon--menu md-header-nav__button" for=__drawer></label> </div> <div class="md-flex__cell md-flex__cell--stretch"> <div class="md-flex__ellipsis md-header-nav__title head-type" data-md-component=title> <span class=md-header-nav__topic> Text-Fabric </span> <span class=md-header-nav__topic> Home </span> </div> </div> <div class="md-flex__cell md-flex__cell--shrink"> <label class="md-icon md-icon--search md-header-nav__button" for=__search></label> <div class=md-search data-md-component=search role=dialog> <label class=md-search__overlay for=__search></label> <div class=md-search__inner role=search> <form class=md-search__form name=search> <input type=text class=md-search__input name=query placeholder=Search autocapitalize=off autocorrect=off autocomplete=off spellcheck=false data-md-component=query data-md-state=active> <label class="md-icon md-search__icon" for=__search></label> <button type=reset class="md-icon md-search__icon" data-md-component=reset tabindex=-1> &#xE5CD; </button> </form> <div class=md-search__output> <div class=md-search__scrollwrap data-md-scrollfix> <div class=md-search-result data-md-component=result> <div class=md-search-result__meta> Type to start searching </div> <ol class=md-search-result__list></ol> </div> </div> </div> </div> </div> </div> <div class="md-flex__cell md-flex__cell--shrink"> <div class=md-header-nav__source> <a href=https://github.com/annotation/text-fabric/ title="Go to repository" class=md-source data-md-source=github> <div class=md-source__icon> <svg viewbox="0 0 24 24" width=24 height=24> <use xlink:href=#__github width=24 height=24></use> </svg> </div> <div class=md-source__repository> annotation/text-fabric </div> </a> </div> </div> </div> </nav> </header> <div class=md-container> <nav class=md-tabs data-md-component=tabs> <div class="md-tabs__inner md-grid"> <ul class=md-tabs__list> <li class=md-tabs__item> <a href=. title=Home class="md-tabs__link md-tabs__link--active head-type"> Home </a> </li> <li class=md-tabs__item> <a href=About/Install/ title=About class="md-tabs__link head-type"> About </a> </li> <li class=md-tabs__item> <a href=Use/Use/ title=Use class="md-tabs__link head-type"> Use </a> </li> <li class=md-tabs__item> <a href=Api/App/ title=Api class="md-tabs__link head-type"> Api </a> </li> <li class=md-tabs__item> <a href=Writing/Arabic/ title=Writing class="md-tabs__link head-type"> Writing </a> </li> <li class=md-tabs__item> <a href=Model/Data-Model/ title=Model class="md-tabs__link head-type"> Model </a> </li> <li class=md-tabs__item> <a href=Create/Convert/ title=Create class="md-tabs__link head-type"> Create </a> </li> <li class=md-tabs__item> <a href=Server/Kernel/ title=Server class="md-tabs__link head-type"> Server </a> </li> <li class=md-tabs__item> <a href=Code/Overview/ title=Code class="md-tabs__link head-type"> Code </a> </li> <li class=md-tabs__item> <a href=Implementation/Apps/ title=Implementation class="md-tabs__link head-type"> Implementation </a> </li> </ul> </div> </nav> <main class=md-main> <div class="md-main__inner md-grid" data-md-component=container> <div class="md-sidebar md-sidebar--primary" data-md-component=navigation> <div class=md-sidebar__scrollwrap> <div class=md-sidebar__inner> <nav class="md-nav md-nav--primary" data-md-level=0> <label class="md-nav__title head-type md-nav__title--site" for=__drawer> <a href=https://annotation.github.io/text-fabric/ title=Text-Fabric class="md-nav__button md-logo"> <img src=images/tf-small.png width=48 height=48> </a> Text-Fabric </label> <div class=md-nav__source> <a href=https://github.com/annotation/text-fabric/ title="Go to repository" class=md-source data-md-source=github> <div class=md-source__icon> <svg viewbox="0 0 24 24" width=24 height=24> <use xlink:href=#__github width=24 height=24></use> </svg> </div> <div class=md-source__repository> annotation/text-fabric </div> </a> </div> <ul class=md-nav__list data-md-scrollfix> <li class="md-nav__item md-nav__item--active"> <input class="md-toggle md-nav__toggle" data-md-toggle=toc type=checkbox id=__toc> <label class="md-nav__link md-nav__link--active head-type" for=__toc> Home </label> <a href=. title=Home class="md-nav__link md-nav__link--active head-type"> Home </a> <nav class="md-nav md-nav--secondary"> <label class="md-nav__title head-type" for=__toc>Table of contents</label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=#straight-to title="Straight to ..." class="md-nav__link head-type"> Straight to ... </a> </li> <li class=md-nav__item> <a href=#author title=Author class="md-nav__link head-type"> Author </a> </li> <li class=md-nav__item> <a href=#acknowledgements title=Acknowledgements class="md-nav__link head-type"> Acknowledgements </a> </li> <li class=md-nav__item> <a href=#more-resources title="More resources" class="md-nav__link head-type"> More resources </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-toggle md-nav__toggle" data-md-toggle=nav-2 type=checkbox id=nav-2> <label class="md-nav__link head-type" for=nav-2> About </label> <nav class=md-nav data-md-component=collapsible data-md-level=1> <label class="md-nav__title head-type" for=nav-2> About </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=About/Install/ title=Install class="md-nav__link head-type"> Install </a> </li> <li class=md-nav__item> <a href=About/Corpora/ title=Corpora class="md-nav__link head-type"> Corpora </a> </li> <li class=md-nav__item> <a href=About/Faq/ title=Faq class="md-nav__link head-type"> Faq </a> </li> <li class=md-nav__item> <a href=About/Story/ title=Story class="md-nav__link head-type"> Story </a> </li> <li class=md-nav__item> <a href=About/News/ title=News class="md-nav__link head-type"> News </a> </li> <li class=md-nav__item> <a href=About/Older/ title=Older class="md-nav__link head-type"> Older </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-toggle md-nav__toggle" data-md-toggle=nav-3 type=checkbox id=nav-3> <label class="md-nav__link head-type" for=nav-3> Use </label> <nav class=md-nav data-md-component=collapsible data-md-level=1> <label class="md-nav__title head-type" for=nav-3> Use </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=Use/Use/ title=Use class="md-nav__link head-type"> Use </a> </li> <li class=md-nav__item> <a href=Use/Browser/ title=Browser class="md-nav__link head-type"> Browser </a> </li> <li class=md-nav__item> <a href=Use/Search/ title=Search class="md-nav__link head-type"> Search </a> </li> <li class=md-nav__item> <a href=Use/UseX/ title=Advanced class="md-nav__link head-type"> Advanced </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-toggle md-nav__toggle" data-md-toggle=nav-4 type=checkbox id=nav-4> <label class="md-nav__link head-type" for=nav-4> Api </label> <nav class=md-nav data-md-component=collapsible data-md-level=1> <label class="md-nav__title head-type" for=nav-4> Api </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=Api/App/ title=Advanced class="md-nav__link head-type"> Advanced </a> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-toggle md-nav__toggle" data-md-toggle=nav-4-2 type=checkbox id=nav-4-2> <label class="md-nav__link head-type" for=nav-4-2> Core </label> <nav class=md-nav data-md-component=collapsible data-md-level=2> <label class="md-nav__title head-type" for=nav-4-2> Core </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=Api/Fabric/ title=TF class="md-nav__link head-type"> TF </a> </li> <li class=md-nav__item> <a href=Api/Features/ title="E/F - (Edge-)Features" class="md-nav__link head-type"> E/F - (Edge-)Features </a> </li> <li class=md-nav__item> <a href=Api/Nodes/ title="N - Nodes" class="md-nav__link head-type"> N - Nodes </a> </li> <li class=md-nav__item> <a href=Api/Locality/ title="L - Locality" class="md-nav__link head-type"> L - Locality </a> </li> <li class=md-nav__item> <a href=Api/Text/ title="T - Text" class="md-nav__link head-type"> T - Text </a> </li> <li class=md-nav__item> <a href=Api/Search/ title="S - Search" class="md-nav__link head-type"> S - Search </a> </li> <li class=md-nav__item> <a href=Api/Computed/ title="C - Computed" class="md-nav__link head-type"> C - Computed </a> </li> <li class=md-nav__item> <a href=Api/Misc/ title=Miscellaneous class="md-nav__link head-type"> Miscellaneous </a> </li> <li class=md-nav__item> <a href=Api/Lib/ title=Lib class="md-nav__link head-type"> Lib </a> </li> <li class=md-nav__item> <a href=Api/Helpers/ title=Helpers class="md-nav__link head-type"> Helpers </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-toggle md-nav__toggle" data-md-toggle=nav-4-3 type=checkbox id=nav-4-3> <label class="md-nav__link head-type" for=nav-4-3> Data flow </label> <nav class=md-nav data-md-component=collapsible data-md-level=2> <label class="md-nav__title head-type" for=nav-4-3> Data flow </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=Api/Data/ title=Data class="md-nav__link head-type"> Data </a> </li> <li class=md-nav__item> <a href=Api/Repo/ title=Repo class="md-nav__link head-type"> Repo </a> </li> <li class=md-nav__item> <a href=Api/Github/ title=GitHub class="md-nav__link head-type"> GitHub </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-toggle md-nav__toggle" data-md-toggle=nav-4-4 type=checkbox id=nav-4-4> <label class="md-nav__link head-type" for=nav-4-4> Compose </label> <nav class=md-nav data-md-component=collapsible data-md-level=2> <label class="md-nav__title head-type" for=nav-4-4> Compose </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=Api/Compose/ title=Combining class="md-nav__link head-type"> Combining </a> </li> </ul> </nav> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-toggle md-nav__toggle" data-md-toggle=nav-5 type=checkbox id=nav-5> <label class="md-nav__link head-type" for=nav-5> Writing </label> <nav class=md-nav data-md-component=collapsible data-md-level=1> <label class="md-nav__title head-type" for=nav-5> Writing </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=Writing/Arabic/ title=Arabic class="md-nav__link head-type"> Arabic </a> </li> <li class=md-nav__item> <a href=Writing/Hebrew/ title=Hebrew class="md-nav__link head-type"> Hebrew </a> </li> <li class=md-nav__item> <a href=Writing/Syriac/ title=Syriac class="md-nav__link head-type"> Syriac </a> </li> <li class=md-nav__item> <a href=Writing/Transcription/ title=Transcription class="md-nav__link head-type"> Transcription </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-toggle md-nav__toggle" data-md-toggle=nav-6 type=checkbox id=nav-6> <label class="md-nav__link head-type" for=nav-6> Model </label> <nav class=md-nav data-md-component=collapsible data-md-level=1> <label class="md-nav__title head-type" for=nav-6> Model </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=Model/Data-Model/ title=Data class="md-nav__link head-type"> Data </a> </li> <li class=md-nav__item> <a href=Model/File-formats/ title=Format class="md-nav__link head-type"> Format </a> </li> <li class=md-nav__item> <a href=Model/Optimizations/ title=Tweaks class="md-nav__link head-type"> Tweaks </a> </li> <li class=md-nav__item> <a href=Model/Search/ title=Search class="md-nav__link head-type"> Search </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-toggle md-nav__toggle" data-md-toggle=nav-7 type=checkbox id=nav-7> <label class="md-nav__link head-type" for=nav-7> Create </label> <nav class=md-nav data-md-component=collapsible data-md-level=1> <label class="md-nav__title head-type" for=nav-7> Create </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=Create/Convert/ title=Convert class="md-nav__link head-type"> Convert </a> </li> <li class=md-nav__item> <a href=Create/CreateTF/ title=Pattern class="md-nav__link head-type"> Pattern </a> </li> <li class=md-nav__item> <a href=Create/ExampleText/ title="Example data" class="md-nav__link head-type"> Example data </a> </li> <li class=md-nav__item> <a href=Create/MQL/ title=MQL class="md-nav__link head-type"> MQL </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-toggle md-nav__toggle" data-md-toggle=nav-8 type=checkbox id=nav-8> <label class="md-nav__link head-type" for=nav-8> Server </label> <nav class=md-nav data-md-component=collapsible data-md-level=1> <label class="md-nav__title head-type" for=nav-8> Server </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=Server/Kernel/ title=Kernel class="md-nav__link head-type"> Kernel </a> </li> <li class=md-nav__item> <a href=Server/Web/ title=Web class="md-nav__link head-type"> Web </a> </li> <li class=md-nav__item> <a href=Server/Common/ title=Common class="md-nav__link head-type"> Common </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-toggle md-nav__toggle" data-md-toggle=nav-9 type=checkbox id=nav-9> <label class="md-nav__link head-type" for=nav-9> Code </label> <nav class=md-nav data-md-component=collapsible data-md-level=1> <label class="md-nav__title head-type" for=nav-9> Code </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=Code/Overview/ title=Overview class="md-nav__link head-type"> Overview </a> </li> <li class=md-nav__item> <a href=Code/Tests/ title=Tests class="md-nav__link head-type"> Tests </a> </li> <li class=md-nav__item> <a href=Code/Stats/ title="Stats (overall)" class="md-nav__link head-type"> Stats (overall) </a> </li> <li class=md-nav__item> <a href=Code/StatsToplevel/ title="Stats (TF-toplevel)" class="md-nav__link head-type"> Stats (TF-toplevel) </a> </li> <li class=md-nav__item> <a href=Code/StatsCore/ title="Stats (TF-core)" class="md-nav__link head-type"> Stats (TF-core) </a> </li> <li class=md-nav__item> <a href=Code/StatsSearch/ title="Stats (TF-search)" class="md-nav__link head-type"> Stats (TF-search) </a> </li> <li class=md-nav__item> <a href=Code/StatsConvert/ title="Stats (TF-convert)" class="md-nav__link head-type"> Stats (TF-convert) </a> </li> <li class=md-nav__item> <a href=Code/StatsCompose/ title="Stats (TF-compose)" class="md-nav__link head-type"> Stats (TF-compose) </a> </li> <li class=md-nav__item> <a href=Code/StatsWriting/ title="Stats (TF-writing)" class="md-nav__link head-type"> Stats (TF-writing) </a> </li> <li class=md-nav__item> <a href=Code/StatsServer/ title="Stats (TF-server)" class="md-nav__link head-type"> Stats (TF-server) </a> </li> <li class=md-nav__item> <a href=Code/StatsApplib/ title="Stats (TF-app support)" class="md-nav__link head-type"> Stats (TF-app support) </a> </li> <li class=md-nav__item> <a href=Code/StatsApps/ title="Stats (TF-apps)" class="md-nav__link head-type"> Stats (TF-apps) </a> </li> <li class=md-nav__item> <a href=Code/StatsTest/ title="Stats (Tests)" class="md-nav__link head-type"> Stats (Tests) </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--nested"> <input class="md-toggle md-nav__toggle" data-md-toggle=nav-10 type=checkbox id=nav-10> <label class="md-nav__link head-type" for=nav-10> Implementation </label> <nav class=md-nav data-md-component=collapsible data-md-level=1> <label class="md-nav__title head-type" for=nav-10> Implementation </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=Implementation/Apps/ title=Apps class="md-nav__link head-type"> Apps </a> </li> <li class=md-nav__item> <a href=Implementation/Setup/ title=Setup class="md-nav__link head-type"> Setup </a> </li> <li class=md-nav__item> <a href=Implementation/Data/ title=Data class="md-nav__link head-type"> Data </a> </li> <li class=md-nav__item> <a href=Implementation/Display/ title=Display class="md-nav__link head-type"> Display </a> </li> <li class=md-nav__item> <a href=Implementation/Highlight/ title=Highlight class="md-nav__link head-type"> Highlight </a> </li> <li class=md-nav__item> <a href=Implementation/Links/ title=Links class="md-nav__link head-type"> Links </a> </li> <li class=md-nav__item> <a href=Implementation/Search/ title=Search class="md-nav__link head-type"> Search </a> </li> <li class=md-nav__item> <a href=Implementation/Tables/ title=Tables class="md-nav__link head-type"> Tables </a> </li> <li class=md-nav__item> <a href=Implementation/Helpers/ title=Helpers class="md-nav__link head-type"> Helpers </a> </li> <li class=md-nav__item> <a href=apidocs/html/tf/ title=docstrings class="md-nav__link head-type"> docstrings </a> </li> </ul> </nav> </li> </ul> </nav> </div> </div> </div> <div class="md-sidebar md-sidebar--secondary" data-md-component=toc> <div class=md-sidebar__scrollwrap> <div class=md-sidebar__inner> <nav class="md-nav md-nav--secondary"> <label class="md-nav__title head-type" for=__toc>Table of contents</label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=#straight-to title="Straight to ..." class="md-nav__link head-type"> Straight to ... </a> </li> <li class=md-nav__item> <a href=#author title=Author class="md-nav__link head-type"> Author </a> </li> <li class=md-nav__item> <a href=#acknowledgements title=Acknowledgements class="md-nav__link head-type"> Acknowledgements </a> </li> <li class=md-nav__item> <a href=#more-resources title="More resources" class="md-nav__link head-type"> More resources </a> </li> </ul> </nav> </div> </div> </div> <div class=md-content> <article class="md-content__inner md-typeset"> <a href=https://github.com/annotation/text-fabric/edit/master/docs/index.md title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a> <p><img alt=logo src=images/tf-small.png></p> <h1 id=text-fabric>Text-Fabric<a class=headerlink href=#text-fabric title="Permanent link">&para;</a></h1> <p>A corpus of ancient texts and linguistic annotations represents a large body of knowledge. Text-Fabric makes that knowledge accessible to programmers and non-programmers.</p> <p>Text-Fabric is:</p> <ul> <li>a <a href=Use/Browser/ >browser</a> for text corpora;</li> <li>a <a href=Use/Search/ >search engine</a> by means of templates;</li> <li>a Python3 package offering an <a href=Api/App/ >API</a> for processing corpora;</li> <li>a data model and file format for corpora as <a href=Model/Data-Model/ >annotated graphs</a></li> </ul> <h2 id=straight-to>Straight to ...<a class=headerlink href=#straight-to title="Permanent link">&para;</a></h2> <p><a href=About/Install/ >Installation</a></p> <p><a href=Use/Use/ >Use</a></p> <p><a href=Use/Search/ >Search guide</a></p> <p><a href=About/Corpora/ >Official TF apps</a></p> <p><a href=Api/App/ >Advanced API <code>A</code></a></p> <p><a href=Api/Fabric/ >Core API <code>F E L T</code></a></p> <h2 id=author>Author<a class=headerlink href=#author title="Permanent link">&para;</a></h2> <p><strong>Author</strong>: <a href=https://www.annotation.nl>Dirk Roorda</a></p> <p>Cite Text-Fabric as <a href=https://doi.org/10.5281/zenodo.592193>DOI: 10.5281/zenodo.592193</a>.</p> <h2 id=acknowledgements>Acknowledgements<a class=headerlink href=#acknowledgements title="Permanent link">&para;</a></h2> <p>Text-Fabric is a matter of putting a few good ideas by others into practice.</p> <p>While I wrote most of the code, a product like Text-Fabric is unthinkable without the contributions of avid users that take the trouble to give feedback and file issues, and have the zeal and stamina to hold on when things are frustrating and bugs overwhelming, and give encouragement when they are happy.</p> <p>In particular I thank</p> <ul> <li>Andrea Scharnhorst</li> <li>Cale Johnson</li> <li>Camil Staps</li> <li>Christian Høygaard-Jensen</li> <li>Christiaan Erwich</li> <li>Cody Kingham</li> <li>Ernst Boogert</li> <li>Eliran Wong</li> <li>Gyusang Jin</li> <li>Henk Harmsen</li> <li>James Cuénod</li> <li>Johan de Joode</li> <li>Kyoungsik Kim</li> <li>Martijn Naaijer</li> <li>Stephen Ku</li> <li>Wido van Peursen</li> </ul> <h2 id=more-resources>More resources<a class=headerlink href=#more-resources title="Permanent link">&para;</a></h2> <p>Papers:</p> <ul> <li><a href=https://doi.org/10.1163/24523666-01000011>Coding the Hebrew Bible</a></li> <li><a href=https://arxiv.org/abs/1603.01541>Parallel Texts in the Hebrew Bible, New Methods and Visualizations </a></li> <li><a href=https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/ >The Hebrew Bible as Data: Laboratory - Sharing - Experiences</a> (preprint: <a href=https://arxiv.org/abs/1501.01866>arxiv</a>)</li> <li><a href=https://arxiv.org/abs/1410.0286>LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible</a></li> <li><a href=https://arxiv.org/abs/1412.6069>Annotation as a New Paradigm in Research Archiving</a></li> </ul> <p>Presentations:</p> <p><a href=https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/lorentz2020/start.ipynb>Hands on with Dead Sea Scrolls, Old Babylonian Tablets, and the Q'uran</a> (Lorentz Leiden 2020)</p> <p><a href=https://www.slideshare.net/dirkroorda/tf-incontext>Text-Fabric in Context</a> (Lorentz Leiden 2020)</p> <p><a href=https://www.slideshare.net/dirkroorda/ancient-corpora-analysis>Data Analysis in Ancient Corpora</a> (Cambridge 2019, with Cody Kingham)</p> <p><a href=https://nbviewer.jupyter.org/github/ETCBC/lingo/blob/master/presentations/Copenhagen2018.ipynb>Text-Fabric as IKEA logistics</a> (Copenhagen 2017)</p> <p>Here is a motivational <a href=http://www.slideshare.net/dirkroorda/text-fabric>presentation</a>, given just before <a href="https://global-learning.org/mod/forum/discuss.php?d=22">SBL 2016</a> in the Lutheran Church of San Antonio.</p> </article> </div> </div> </main> <footer class=md-footer> <div class=md-footer-nav> <nav class="md-footer-nav__inner md-grid"> <a href=About/Install/ title=Install class="md-flex md-footer-nav__link md-footer-nav__link--next head-type" rel=next> <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"> <span class=md-flex__ellipsis> Install </span> </div> <div class="md-flex__cell md-flex__cell--shrink"> <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i> </div> </a> </nav> </div> <div class="md-footer-meta md-typeset"> <div class="md-footer-meta__inner md-grid"> <div class=md-footer-copyright> <div class=md-footer-disclaimer> The content of this site is produced under responsibility of project <b>annotation/text-fabric</b> and is subject to change. </div> <div> powered by <a href=https://www.mkdocs.org>MkDocs</a> and <a href=https://squidfunk.github.io/mkdocs-material/ > Material for MkDocs</a> customised by <a href=https://github.com/Dans-labs>Dans-labs</a> </div> </div> <div class=md-footer-dans> <div>DANS is an institute of KNAW and NWO</div> <div> <a href=https://dans.knaw.nl/en title="Data Archiving and Networked Services (DANS)"><img class=md-footer-dans__img src=assets/images/DANS.gif height=50></a> <a target=_blank href=https://www.knaw.nl/en><img src=assets/images/knaw.png height=50></a> <a target=_blank href=https://www.nwo.nl/en><img src=assets/images/nwo.png height=50></a> </div> <div><i>Driven by data</i></div> </div> <link rel=stylesheet href=assets/fonts/font-awesome.css> <style>.md-footer-social__desc{font-family:"Open Sans",sans-serif;-webkit-font-smoothing:auto}</style> <ul class=md-footer-social> <li class=md-footer-social__li> <a href=http://eepurl.com/dvnr8D class="md-footer-social__link fa fa-envelope-square"> <span class=md-footer-social__desc>Newsletter</span> </a> </li> <li class=md-footer-social__li> <a href=https://twitter.com/DANSKNAW class="md-footer-social__link fa fa-twitter-square"> <span class=md-footer-social__desc>Twitter</span> </a> </li> <li class=md-footer-social__li> <a href=https://www.youtube.com/user/DANSDataArchiving class="md-footer-social__link fa fa-youtube-square"> <span class=md-footer-social__desc>YouTube</span> </a> </li> <li class=md-footer-social__li> <a href=https://www.linkedin.com/company/dans class="md-footer-social__link fa fa-linkedin-square"> <span class=md-footer-social__desc>LinkedIn</span> </a> </li> </div> </div> </footer> </div> <script src=assets/javascripts/application.43c0530e.js></script> <script>app.initialize({version:"1.1",url:{base:"."}})</script> </body> </html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>tf API documentation</title>
+<meta name="description" content="![logo](images/tf.png) …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Package <code>tf</code></h1>
+</header>
+<section id="section-intro">
+<p><img alt="logo" src="images/tf.png"></p>
+<h1 id="text-fabric">Text-Fabric</h1>
+<p>A corpus of ancient texts and linguistic annotations represents a large body of knowledge.
+Text-Fabric makes that knowledge accessible to programmers and non-programmers.</p>
+<p>Text-Fabric is a piece of machinery for processing such corpora as annotated graphs.</p>
+<h2 id="straight-to">Straight to &hellip;</h2>
+<ul>
+<li>Install (<code><a title="tf.about.install" href="about/install.html">tf.about.install</a></code>)</li>
+<li>Browser (<code><a title="tf.about.browser" href="about/browser.html">tf.about.browser</a></code>)</li>
+<li>Use (<code><a title="tf.about.use" href="about/use.html">tf.about.use</a></code>)</li>
+<li>Search (<code><a title="tf.about.searchusage" href="about/searchusage.html">tf.about.searchusage</a></code>)</li>
+<li>API (<code><a title="tf.cheatsheet" href="cheatsheet.html">tf.cheatsheet</a></code>)</li>
+<li>Corpora (<code><a title="tf.about.corpora" href="about/corpora.html">tf.about.corpora</a></code>)</li>
+<li>Data Model (<code><a title="tf.about.datamodel" href="about/datamodel.html">tf.about.datamodel</a></code>)</li>
+<li>File Format (<code><a title="tf.about.fileformats" href="about/fileformats.html">tf.about.fileformats</a></code>, <code><a title="tf.about.optimizations" href="about/optimizations.html">tf.about.optimizations</a></code>)</li>
+<li>Code Organisation (<code><a title="tf.about.code" href="about/code.html">tf.about.code</a></code>)</li>
+</ul>
+<h2 id="author">Author</h2>
+<p><strong>Author</strong>:
+<a href="https://www.annotation.nl">Dirk Roorda</a></p>
+<p>Cite Text-Fabric as
+<a href="https://doi.org/10.5281/zenodo.592193">DOI: 10.5281/zenodo.592193</a>.</p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>Text-Fabric is a matter of putting a few good ideas by others into practice.</p>
+<p>While I wrote most of the code,
+a product like Text-Fabric is unthinkable without the contributions
+of avid users that take the trouble to give feedback and file issues,
+and have the zeal and stamina to hold on
+when things are frustrating and bugs overwhelming,
+and give encouragement when they are happy.</p>
+<p>In particular thanks to</p>
+<ul>
+<li>Andrea Scharnhorst</li>
+<li>Cale Johnson</li>
+<li>Camil Staps</li>
+<li>Christian Høygaard-Jensen</li>
+<li>Christiaan Erwich</li>
+<li>Cody Kingham</li>
+<li>Ernst Boogert</li>
+<li>Eliran Wong</li>
+<li>Gyusang Jin</li>
+<li>Henk Harmsen</li>
+<li>James Cuénod</li>
+<li>Johan de Joode</li>
+<li>Kyoungsik Kim</li>
+<li>Martijn Naaijer</li>
+<li>Stephen Ku</li>
+<li>Wido van Peursen</li>
+</ul>
+<h2 id="more-resources">More resources</h2>
+<p>Papers:</p>
+<ul>
+<li><a href="https://doi.org/10.1163/24523666-01000011">Coding the Hebrew Bible</a></li>
+<li><a href="https://arxiv.org/abs/1603.01541">Parallel Texts in the Hebrew Bible, New Methods and Visualizations </a></li>
+<li><a href="https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/">The Hebrew Bible as Data: Laboratory - Sharing - Experiences</a>
+(preprint: <a href="https://arxiv.org/abs/1501.01866">arxiv</a>)</li>
+<li><a href="https://arxiv.org/abs/1410.0286">LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible</a></li>
+<li><a href="https://arxiv.org/abs/1412.6069">Annotation as a New Paradigm in Research Archiving</a></li>
+</ul>
+<p>Presentations:</p>
+<p><a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/lorentz2020/start.ipynb">Hands on with Dead Sea Scrolls, Old Babylonian Tablets, and the Q'uran</a>
+(Lorentz Leiden 2020)</p>
+<p><a href="https://www.slideshare.net/dirkroorda/tf-incontext">Text-Fabric in Context</a> (Lorentz Leiden 2020)</p>
+<p><a href="https://www.slideshare.net/dirkroorda/ancient-corpora-analysis">Data Analysis in Ancient Corpora</a> (Cambridge 2019, with Cody Kingham)</p>
+<p><a href="https://nbviewer.jupyter.org/github/ETCBC/lingo/blob/master/presentations/Copenhagen2018.ipynb">Text-Fabric as IKEA logistics</a> (Copenhagen 2017)</p>
+<p>Here is a motivational <a href="http://www.slideshare.net/dirkroorda/text-fabric">presentation</a>, given just before <a href="https://global-learning.org/mod/forum/discuss.php?d=22">SBL 2016</a>
+in the Lutheran Church of San Antonio.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../docs/main/top.md
+&#34;&#34;&#34;</code></pre>
+</details>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="tf.about" href="about/index.html">tf.about</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="tf.app" href="app.html">tf.app</a></code></dt>
+<dd>
+<div class="desc"><p>Start the advanced API of TF …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.applib" href="applib/index.html">tf.applib</a></code></dt>
+<dd>
+<div class="desc"><p>Advanced API …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.cheatsheet" href="cheatsheet.html">tf.cheatsheet</a></code></dt>
+<dd>
+<div class="desc"><p>Text-Fabric API …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.clean" href="clean.html">tf.clean</a></code></dt>
+<dd>
+<div class="desc"><p>Clean …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.compose" href="compose/index.html">tf.compose</a></code></dt>
+<dd>
+<div class="desc"><p>Combining data …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.convert" href="convert/index.html">tf.convert</a></code></dt>
+<dd>
+<div class="desc"><p>Various forms of data interchange …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.core" href="core/index.html">tf.core</a></code></dt>
+<dd>
+<div class="desc"><p>Core API of TF …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.fabric" href="fabric.html">tf.fabric</a></code></dt>
+<dd>
+<div class="desc"><p>Fabric …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.lib" href="lib.html">tf.lib</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="tf.parameters" href="parameters.html">tf.parameters</a></code></dt>
+<dd>
+<div class="desc"><p>Fixed values for the whole program.</p></div>
+</dd>
+<dt><code class="name"><a title="tf.search" href="search/index.html">tf.search</a></code></dt>
+<dd>
+<div class="desc"><ul>
+<li>User guide to search: <code><a title="tf.about.searchusage" href="about/searchusage.html">tf.about.searchusage</a></code></li>
+<li>Search API: <code><a title="tf.search.search" href="search/search.html">tf.search.search</a></code>.</li>
+<li>Implementation of search: <code><a title="tf.about.searchdesign" href="about/searchdesign.html">tf.about.searchdesign</a></code></li>
+</ul></div>
+</dd>
+<dt><code class="name"><a title="tf.server" href="server/index.html">tf.server</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="tf.writing" href="writing/index.html">tf.writing</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<img src="images/tf-small.png">
+<img src="../images/tf-small.png">
+<div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#text-fabric">Text-Fabric</a><ul>
+<li><a href="#straight-to">Straight to &hellip;</a></li>
+<li><a href="#author">Author</a></li>
+<li><a href="#acknowledgements">Acknowledgements</a></li>
+<li><a href="#more-resources">More resources</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="tf.about" href="about/index.html">tf.about</a></code></li>
+<li><code><a title="tf.app" href="app.html">tf.app</a></code></li>
+<li><code><a title="tf.applib" href="applib/index.html">tf.applib</a></code></li>
+<li><code><a title="tf.cheatsheet" href="cheatsheet.html">tf.cheatsheet</a></code></li>
+<li><code><a title="tf.clean" href="clean.html">tf.clean</a></code></li>
+<li><code><a title="tf.compose" href="compose/index.html">tf.compose</a></code></li>
+<li><code><a title="tf.convert" href="convert/index.html">tf.convert</a></code></li>
+<li><code><a title="tf.core" href="core/index.html">tf.core</a></code></li>
+<li><code><a title="tf.fabric" href="fabric.html">tf.fabric</a></code></li>
+<li><code><a title="tf.lib" href="lib.html">tf.lib</a></code></li>
+<li><code><a title="tf.parameters" href="parameters.html">tf.parameters</a></code></li>
+<li><code><a title="tf.search" href="search/index.html">tf.search</a></code></li>
+<li><code><a title="tf.server" href="server/index.html">tf.server</a></code></li>
+<li><code><a title="tf.writing" href="writing/index.html">tf.writing</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

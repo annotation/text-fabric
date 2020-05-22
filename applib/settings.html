@@ -1,0 +1,2238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>tf.applib.settings API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.applib.settings</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import re
+import types
+
+from ..parameters import URL_GH, URL_NB, URL_TFDOC
+from ..core.helpers import console, mdEsc
+from .displaysettings import INTERFACE_OPTIONS
+from .helpers import dm, parseFeatures, transitiveClosure
+
+
+VAR_PATTERN = re.compile(r&#34;\{([^}]+)\}&#34;)
+
+WRITING_DEFAULTS = dict(
+    akk=dict(language=&#34;Akkadian&#34;, direction=&#34;ltr&#34;,),
+    hbo=dict(language=&#34;Hebrew&#34;, direction=&#34;rtl&#34;,),
+    syc=dict(language=&#34;Syriac&#34;, direction=&#34;rtl&#34;,),
+    ara=dict(language=&#34;Arabic&#34;, direction=&#34;rtl&#34;,),
+    grc=dict(language=&#34;Greek&#34;, direction=&#34;ltr&#34;,),
+    cld=dict(language=&#34;Aramaic&#34;, direction=&#34;ltr&#34;,),
+)
+WRITING_DEFAULTS[&#34;&#34;] = dict(language=&#34;&#34;, direction=&#34;ltr&#34;,)
+
+FONT_BASE = (
+    &#34;https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts&#34;
+)
+
+METHOD = &#34;method&#34;
+STYLE = &#34;style&#34;
+DESCEND = &#34;descend&#34;
+
+FMT_KEYS = {METHOD, STYLE}
+
+DEFAULT_CLS = &#34;txtn&#34;
+DEFAULT_CLS_SRC = &#34;txto&#34;
+DEFAULT_CLS_ORIG = &#34;txtu&#34;
+DEFAULT_CLS_TRANS = &#34;txtt&#34;
+DEFAULT_CLS_PHONO = &#34;txtp&#34;
+
+NORMAL = &#34;normal&#34;
+ORIG = &#34;orig&#34;
+
+FORMAT_CLS = (
+    (NORMAL, DEFAULT_CLS),
+    (ORIG, DEFAULT_CLS_ORIG),
+    (&#34;trans&#34;, DEFAULT_CLS_TRANS),
+    (&#34;source&#34;, DEFAULT_CLS_SRC),
+    (&#34;phono&#34;, DEFAULT_CLS_PHONO),
+)
+
+LEVEL_DEFAULTS = dict(
+    level={
+        4: dict(flow=&#34;hor&#34;),
+        3: dict(flow=&#34;hor&#34;),
+        2: dict(flow=&#34;hor&#34;),
+        1: dict(flow=&#34;hor&#34;),
+        0: dict(flow=&#34;ver&#34;),
+    },
+    flow=dict(ver=dict(wrap=False, stretch=False), hor=dict(wrap=True, stretch=True)),
+    wrap=None,
+    stretch=None,
+)
+
+RELATIVE_DEFAULT = &#34;tf&#34;
+
+MSPEC_KEYS = set(
+    &#34;&#34;&#34;
+    org
+    repo
+    relative
+    corpus
+    docUrl
+    doi
+&#34;&#34;&#34;.strip().split()
+)
+
+PROVENANCE_DEFAULTS = (
+    (&#34;org&#34;, None),
+    (&#34;repo&#34;, None),
+    (&#34;relative&#34;, RELATIVE_DEFAULT),
+    (&#34;graphicsRelative&#34;, None),
+    (&#34;version&#34;, None),
+    (&#34;moduleSpecs&#34;, ()),
+    (&#34;zip&#34;, None),
+    (&#34;corpus&#34;, &#34;TF dataset (unspecified)&#34;),
+    (&#34;doi&#34;, None),
+    (&#34;webBase&#34;, None),
+    (&#34;webHint&#34;, None),
+    (&#34;webLang&#34;, None),
+    (&#34;webLexId&#34;, None),
+    (&#34;webUrl&#34;, None),
+    (&#34;webUrlLex&#34;, None),
+    (&#34;webLexId&#34;, None),
+    (&#34;webHint&#34;, None),
+)
+
+DOC_DEFAULTS = (
+    (&#34;docRoot&#34;, &#34;{urlGh}&#34;),
+    (&#34;docExt&#34;, &#34;.md&#34;),
+    (&#34;docBase&#34;, &#34;{docRoot}/{org}/{repo}/blob/master/docs&#34;),
+    (&#34;docPage&#34;, &#34;home&#34;),
+    (&#34;docUrl&#34;, &#34;{docBase}/{docPage}{docExt}&#34;),
+    (&#34;featureBase&#34;, &#34;{docBase}/features/&lt;feature&gt;{docExt}&#34;),
+    (&#34;featurePage&#34;, &#34;home&#34;),
+    (&#34;charUrl&#34;, &#34;{tfDoc}/Writing/Transcription/{language}&#34;),
+    (&#34;charText&#34;, &#34;How TF features represent text&#34;),
+)
+
+DATA_DISPLAY_DEFAULTS = (
+    (&#34;excludedFeatures&#34;, set(), False),
+    (&#34;noneValues&#34;, {None}, False),
+    (&#34;sectionSep1&#34;, &#34; &#34;, False),
+    (&#34;sectionSep2&#34;, &#34;:&#34;, False),
+    (&#34;textFormats&#34;, {}, True),
+    (&#34;browseNavLevel&#34;, None, True),
+    (&#34;browseContentPretty&#34;, False, False),
+    (&#34;showVerseInTuple&#34;, False, False),
+    (&#34;exampleSection&#34;, None, True),
+    (&#34;exampleSectionHtml&#34;, None, True),
+)
+
+TYPE_KEYS = set(
+    &#34;&#34;&#34;
+    base
+    children
+    childrenPlain
+    chunkOf
+    condense
+    features
+    featuresBare
+    flow
+    graphics
+    hide
+    label
+    level
+    lexOcc
+    lineNumber
+    stretch
+    template
+    transform
+    verselike
+    wrap
+&#34;&#34;&#34;.strip().split()
+)
+
+HOOKS = &#34;&#34;&#34;
+    afterChild
+    childrenCustom
+    plainCustom
+    prettyCustom
+&#34;&#34;&#34;.strip().split()
+
+
+class AppCurrent:
+    def __init__(self, specs):
+        self.update(specs)
+
+    def update(self, specs):
+        for (k, v) in specs.items():
+            setattr(self, k, v)
+
+    def get(self, k, v):
+        return getattr(self, k, v)
+
+
+class Check:
+    def __init__(self, app, withApi):
+        self.app = app
+        self.withApi = withApi
+        self.errors = []
+
+    def checkSetting(self, k, v, extra=None):
+        app = self.app
+        withApi = self.withApi
+        errors = self.errors
+        dKey = self.dKey
+        specs = app.specs
+
+        if withApi:
+            api = app.api
+            F = api.F
+            T = api.T
+            Fall = api.Fall
+            allNodeFeatures = set(Fall())
+            nTypes = F.otype.all
+            sectionTypes = T.sectionTypes
+
+            if k in {&#34;template&#34;, &#34;label&#34;}:
+                (template, feats) = extra
+                if template is not True and type(template) is not str:
+                    errors.append(f&#34;{k} must be `true` or a string&#34;)
+                for feat in feats:
+                    if feat not in allNodeFeatures:
+                        if feat not in specs[&#34;transform&#34;].get(dKey, {}):
+                            errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
+            elif k in {&#34;featuresBare&#34;, &#34;features&#34;}:
+                feats = extra[0]
+                tps = extra[1].values()
+                for feat in feats:
+                    if feat not in allNodeFeatures:
+                        errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
+                for tp in tps:
+                    if tp not in nTypes:
+                        errors.append(f&#34;{k}: node type {tp} not present&#34;)
+            elif k == &#34;base&#34;:
+                pass
+            elif k == &#34;lineNumber&#34;:
+                if v not in allNodeFeatures:
+                    errors.append(f&#34;{k}: feature {v} not loaded&#34;)
+            elif k == &#34;browseNavLevel&#34;:
+                allowedValues = set(range(len(sectionTypes)))
+                if v not in allowedValues:
+                    allowed = &#34;,&#34;.join(sorted(allowedValues))
+                    errors.append(f&#34;{k} must be an integer in {allowed}&#34;)
+            elif k == &#34;children&#34;:
+                if type(v) is not str and type(v) is not list:
+                    errors.append(f&#34;{k} must be a (list of) node types&#34;)
+                else:
+                    v = {v} if type(v) is str else set(v)
+                    for tp in v:
+                        if tp not in nTypes:
+                            errors.append(f&#34;{k}: node type {tp} not present&#34;)
+            elif k in {&#34;lexOcc&#34;, &#34;chunkOf&#34;}:
+                if type(v) is not str or v not in nTypes:
+                    errors.append(f&#34;{k}: node type {v} not present&#34;)
+            elif k == &#34;transform&#34;:
+                for (feat, method) in extra.items():
+                    if type(method) is str:
+                        errors.append(f&#34;{k}:{feat}: {method}() not implemented in app&#34;)
+            elif k == &#34;style&#34;:
+                if type(v) is not str or v.lower() != v:
+                    errors.append(f&#34;{k} must be an all lowercase string&#34;)
+            elif k in {
+                &#34;lineNumbers&#34;,
+                &#34;prettyTypes&#34;,
+                &#34;queryFeatures&#34;,
+                &#34;showChunks&#34;,
+                &#34;showGraphics&#34;,
+                &#34;standardFeatures&#34;,
+                &#34;withNodes&#34;,
+                &#34;withTypes&#34;,
+            }:
+                allowed = self.extra[k]
+                if not allowed and v is not None:
+                    errors.append(
+                        f&#34;{k}={v} is not useful (dataset lacks relevant features)&#34;
+                    )
+            elif k == &#34;textFormats&#34;:
+                formatStyle = specs[&#34;formatStyle&#34;]
+                if type(v) is dict:
+                    for (fmt, fmtInfo) in v.items():
+                        for (fk, fv) in fmtInfo.items():
+                            if fk not in FMT_KEYS:
+                                errors.append(f&#34;{k}: {fmt}: illegal key {fk}&#34;)
+                                continue
+                            if fk == METHOD:
+                                (descendType, func) = T.splitFormat(fv)
+                                func = f&#34;fmt_{func}&#34;
+                                if not hasattr(app, func):
+                                    errors.append(
+                                        f&#34;{k}: {fmt} needs unimplemented method {func}&#34;
+                                    )
+                            elif fk == STYLE:
+                                if fv not in formatStyle:
+                                    if fv.lower() != fv:
+                                        errors.append(
+                                            f&#34;{k}: {fmt}: style {fv}&#34;
+                                            f&#34; must be all lowercase&#34;
+                                        )
+                else:
+                    errors.append(f&#34;{k} must be a dictionary&#34;)
+        else:
+            if k in {&#34;excludedFeatures&#34;, &#34;noneValues&#34;}:
+                if type(v) is not list:
+                    errors.append(f&#34;{k} must be a list&#34;)
+            elif k in {
+                &#34;sectionSep1&#34;,
+                &#34;sectionSep2&#34;,
+                &#34;exampleSection&#34;,
+                &#34;exampleSectionHtml&#34;,
+            }:
+                if type(v) is not str:
+                    errors.append(f&#34;{k} must be a string&#34;)
+            elif k == &#34;writing&#34;:
+                allowedValues = set(WRITING_DEFAULTS)
+                if v not in allowedValues:
+                    allowed = &#34;,&#34;.join(allowedValues - {&#34;&#34;})
+                    errors.append(f&#34;{k} must be the empty string or one of {allowed}&#34;)
+            elif k in {&#34;direction&#34;, &#34;language&#34;}:
+                allowedValues = {w[k] for w in WRITING_DEFAULTS}
+                if v not in allowedValues:
+                    allowed = &#34;,&#34;.join(allowedValues)
+                    errors.append(f&#34;{k} must be one of {allowed}&#34;)
+            elif k in {
+                &#34;browseContentPretty&#34;,
+                &#34;base&#34;,
+                &#34;childrenPlain&#34;,
+                &#34;condense&#34;,
+                &#34;graphics&#34;,
+                &#34;hide&#34;,
+                &#34;showVerseInTuple&#34;,
+                &#34;stretch&#34;,
+                &#34;verselike&#34;,
+                &#34;wrap&#34;,
+            }:
+                allowedValues = {True, False}
+                if v not in allowedValues:
+                    allowed = &#34;true,false&#34;
+                    errors.append(f&#34;{k} must be a boolean in {allowed}&#34;)
+            elif k == &#34;flow&#34;:
+                allowedValues = {&#34;hor&#34;, &#34;ver&#34;}
+                if v not in allowedValues:
+                    allowed = &#34;,&#34;.join(allowedValues)
+                    errors.append(f&#34;{k} must be a value in {allowed}&#34;)
+            elif k == &#34;level&#34;:
+                allowedValues = set(range(len(4)))
+                if v not in allowedValues:
+                    allowed = &#34;,&#34;.join(sorted(allowedValues))
+                    errors.append(f&#34;{k} must be an integer in {allowed}&#34;)
+
+    def checkGroup(self, cfg, defaults, dKey, postpone=set(), extra=None):
+        self.cfg = cfg
+        self.defaults = defaults
+        self.dKey = dKey
+        self.extra = extra
+        errors = []
+
+        errors.clear()
+        dSource = cfg.get(dKey, {})
+
+        for (k, v) in dSource.items():
+            if k in defaults:
+                if k not in postpone:
+                    self.checkSetting(k, v)
+            else:
+                errors.append(f&#34;Illegal parameter `{k}` with value {v}&#34;)
+
+    def checkItem(self, cfg, dKey):
+        self.cfg = cfg
+        self.dKey = dKey
+        errors = self.errors
+
+        errors.clear()
+        if dKey in cfg:
+            self.checkSetting(dKey, cfg[dKey])
+
+    def report(self):
+        errors = self.errors
+        dKey = self.dKey
+
+        if errors:
+            console(f&#34;App config error(s) in {dKey}:&#34;, error=True)
+            for msg in errors:
+                console(f&#34;\t{msg}&#34;, error=True)
+
+        self.errors = []
+
+
+def setAppSpecs(app, cfg, reset=False):
+    specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
+    app.specs = specs
+    specs.update(cfg)
+    checker = Check(app, False)
+
+    dKey = &#34;writing&#34;
+    checker.checkItem(cfg, dKey)
+    checker.report()
+    value = cfg.get(dKey, &#34;&#34;)
+    specs[dKey] = value
+    for (k, v) in WRITING_DEFAULTS[value].items():
+        specs[k] = v
+    extension = f&#34; {value}&#34; if value else &#34;&#34;
+    defaultClsOrig = f&#34;{DEFAULT_CLS_ORIG}{extension}&#34;
+    specs.update(extension=extension, defaultClsOrig=defaultClsOrig)
+
+    for (dKey, defaults) in (
+        (&#34;provenanceSpec&#34;, PROVENANCE_DEFAULTS),
+        (&#34;docs&#34;, DOC_DEFAULTS),
+    ):
+        checker.checkGroup(cfg, {d[0] for d in defaults}, dKey)
+        checker.report()
+        dSource = cfg.get(dKey, {})
+        for (k, v) in defaults:
+            val = dSource.get(k, v)
+            val = (
+                None
+                if val is None
+                else val.format(**specs)
+                if type(val) is str
+                else val
+            )
+            specs[k] = val
+
+        if dKey == &#34;provenanceSpec&#34;:
+            moduleSpecs = specs[&#34;moduleSpecs&#34;] or []
+            for moduleSpec in moduleSpecs:
+                for k in MSPEC_KEYS:
+                    if k in moduleSpec:
+                        v = moduleSpec[k]
+                        if k == &#34;docUrl&#34; and v is not None:
+                            v = v.format(**specs)
+                            moduleSpec[k] = v
+                    else:
+                        moduleSpec[k] = (
+                            specs.get(k, None)
+                            if k in {&#34;org&#34;, &#34;repo&#34;}
+                            else RELATIVE_DEFAULT
+                            if k == &#34;relative&#34;
+                            else None
+                        )
+
+        specs[dKey] = {k[0]: specs[k[0]] for k in defaults}
+
+    if specs[&#34;zip&#34;] is None:
+        org = specs[&#34;org&#34;]
+        repo = specs[&#34;repo&#34;]
+        graphicsRelative = specs[&#34;graphicsRelative&#34;]
+        graphicsModule = [(org, repo, graphicsRelative)] if graphicsRelative else []
+        specs[&#34;zip&#34;] = (
+            [repo]
+            + [(m[&#34;org&#34;], m[&#34;repo&#34;], m[&#34;relative&#34;],) for m in moduleSpecs]
+            + graphicsModule
+        )
+
+    for (dKey, method) in (
+        (&#34;dataDisplay&#34;, getDataDefaults),
+        (&#34;typeDisplay&#34;, getTypeDefaults),
+    ):
+        method(app, cfg, dKey, False)
+
+    if reset:
+        aContext = getattr(app, &#34;context&#34;, None)
+        if aContext:
+            for key in HOOKS:
+                specs[key] = aContext.get(key, {})
+    else:
+        for key in HOOKS:
+            specs[key] = {}
+    app.context = AppCurrent(specs)
+
+
+def setAppSpecsApi(app, cfg):
+    api = app.api
+    T = api.T
+    C = api.C
+    sectionTypeSet = T.sectionTypeSet
+
+    specs = app.specs
+
+    for (dKey, method) in (
+        (&#34;dataDisplay&#34;, getDataDefaults),
+        (&#34;typeDisplay&#34;, getTypeDefaults),
+    ):
+        method(app, cfg, dKey, True)
+
+    specs[&#34;allowedBaseTypes&#34;] = tuple(
+        e[0] for e in C.levels.data[0:-1] if e[0] not in sectionTypeSet
+    )
+
+    specs[&#34;condenseTypes&#34;] = C.levels.data
+    specs[&#34;defaultFormat&#34;] = T.defaultFormat
+
+    dKey = &#34;interfaceDefaults&#34;
+    interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
+    dSource = cfg.get(dKey, {})
+    specific = {&#34;lineNumbers&#34;, &#34;showChunks&#34;, &#34;showGraphics&#34;}
+
+    allowed = {}
+    for (k, v) in interfaceDefaults.items():
+        allow = (
+            (
+                k == &#34;lineNumbers&#34;
+                and specs[&#34;lineNumberFeature&#34;]
+                or k == &#34;showChunks&#34;
+                and specs[&#34;isChunkOf&#34;]
+                or k == &#34;showGraphics&#34;
+                and specs[&#34;hasGraphics&#34;]
+            )
+            if k in specific
+            else True
+        )
+        if k in dSource:
+            val = dSource[k]
+            default = val if allow else None
+        else:
+            default = v if allow else None
+        interfaceDefaults[k] = default
+        allowed[k] = allow
+    checker = Check(app, True)
+    checker.checkGroup(cfg, interfaceDefaults, dKey, extra=allowed)
+    checker.report()
+    specs[dKey] = interfaceDefaults
+
+    app.context.update(specs)
+    app.showContext = types.MethodType(showContext, app)
+
+
+def getDataDefaults(app, cfg, dKey, withApi):
+    checker = Check(app, withApi)
+
+    if withApi:
+        api = app.api
+        F = api.F
+        T = api.T
+        sectionTypes = T.sectionTypes
+
+    specs = app.specs
+
+    givenInfo = cfg.get(dKey, {})
+
+    if withApi:
+        formatStyle = {f[0]: f[1] for f in FORMAT_CLS}
+        formatStyle[ORIG] = specs[&#34;defaultClsOrig&#34;]
+        specs[&#34;formatStyle&#34;] = formatStyle
+
+    allowedKeys = {d[0] for d in DATA_DISPLAY_DEFAULTS}
+    checker.checkGroup(cfg, allowedKeys, dKey)
+    checker.report()
+
+    for (attr, default, needsApi) in DATA_DISPLAY_DEFAULTS:
+        if needsApi and not withApi or not needsApi and withApi:
+            continue
+
+        if attr == &#34;browseNavLevel&#34;:
+            default = len(sectionTypes) - 1 if sectionTypes else 1
+
+        value = givenInfo.get(attr, specs.get(attr, default))
+        if attr in specs and attr not in givenInfo:
+            continue
+        elif attr == &#34;exampleSection&#34;:
+            if not value:
+                if sectionTypes:
+                    verseType = sectionTypes[-1]
+                    firstVerse = F.otype.s(verseType)[0]
+                    value = app.sectionStrFromNode(firstVerse)
+                else:
+                    value = &#34;passage&#34;
+            specs[&#34;exampleSection&#34;] = value
+            specs[&#34;exampleSectionHtml&#34;] = f&#34;&lt;code&gt;{value}&lt;/code&gt;&#34;
+        if attr == &#34;textFormats&#34;:
+            methods = {fmt: v[METHOD] for (fmt, v) in value.items() if METHOD in v}
+            styles = {fmt: v.get(STYLE, None) for (fmt, v) in value.items()}
+            specs[&#34;formatMethod&#34;] = methods
+            specs[&#34;formatHtml&#34;] = {T.splitFormat(fmt)[1] for fmt in methods}
+            compileFormatCls(app, specs, styles)
+
+        else:
+            specs[attr] = value
+
+
+def getTypeDefaults(app, cfg, dKey, withApi):
+    if not withApi:
+        return
+
+    checker = Check(app, withApi)
+    givenInfo = cfg.get(dKey, {})
+
+    api = app.api
+    F = api.F
+    T = api.T
+    otypeRank = api.otypeRank
+    slotType = F.otype.slotType
+    nTypes = F.otype.all
+    structureTypes = T.structureTypes
+    structureTypeSet = T.structureTypeSet
+    sectionTypes = T.sectionTypes
+    sectionTypeSet = T.sectionTypeSet
+
+    sectionalTypeSet = sectionTypeSet | structureTypeSet
+
+    specs = app.specs
+
+    noChildren = set()
+    isChunkOf = {}
+    featuresBare = {}
+    features = {}
+    lineNumberFeature = {}
+    hasGraphics = set()
+    verseTypes = {sectionTypes[-1]} if sectionTypes else set()
+    verseRank = otypeRank[sectionTypes[-1]] if sectionTypes else None
+    lexMap = {}
+    baseTypes = set()
+    condenseType = None
+    templates = {}
+    labels = {}
+    styles = {}
+    givenLevels = {}
+    levels = {}
+    childType = {}
+    transform = {}
+
+    specs[&#34;transform&#34;] = transform
+    formatStyle = specs[&#34;formatStyle&#34;]
+
+    for nType in nTypes:
+        template = (
+            True if nType == slotType or nType in sectionalTypeSet - verseTypes else &#34;&#34;
+        )
+        for dest in (templates, labels):
+            dest[nType] = (template, ())
+
+    unknownTypes = {nType for nType in givenInfo if nType not in nTypes}
+    if unknownTypes:
+        unknownTypesRep = &#34;,&#34;.join(sorted(unknownTypes))
+        console(f&#34;App config error(s) in typeDisplay: {unknownTypesRep}&#34;, error=True)
+
+    for (nType, info) in givenInfo.items():
+        checker.checkGroup(
+            givenInfo,
+            TYPE_KEYS,
+            nType,
+            postpone={
+                &#34;base&#34;,
+                &#34;label&#34;,
+                &#34;template&#34;,
+                &#34;features&#34;,
+                &#34;featuresBare&#34;,
+                &#34;transform&#34;,
+            },
+        )
+        checker.report()
+
+        if info.get(&#34;verselike&#34;, False):
+            verseTypes.add(nType)
+
+        lOcc = info.get(&#34;lexOcc&#34;, None)
+        if lOcc is not None:
+            lexMap[lOcc] = nType
+
+        if &#34;base&#34; in info:
+            base = info[&#34;base&#34;]
+            checker.checkSetting(&#34;base&#34;, base)
+            baseTypes.add(nType)
+
+        if &#34;condense&#34; in info:
+            condenseType = nType
+
+        trans = info.get(&#34;transform&#34;, None)
+        if trans is not None:
+            resolvedTrans = {}
+            for (feat, func) in trans.items():
+                methodName = f&#34;transform_{func}&#34;
+                resolvedTrans[feat] = getattr(app, methodName, methodName)
+            v = resolvedTrans
+            checker.checkSetting(&#34;transform&#34;, trans, extra=v)
+            transform[nType] = v
+
+        for (k, dest) in ((&#34;template&#34;, templates), (&#34;label&#34;, labels)):
+            if k in info:
+                template = info[k]
+                templateFeatures = (
+                    VAR_PATTERN.findall(template) if type(template) is str else ()
+                )
+                dest[nType] = (template, templateFeatures)
+                checker.checkSetting(
+                    k, template, extra=(template, templateFeatures),
+                )
+
+        if &#34;style&#34; in info:
+            style = info[&#34;style&#34;]
+            styles[nType] = formatStyle.get(style, style)
+
+        for k in (&#34;featuresBare&#34;, &#34;features&#34;):
+            v = info.get(k, &#34;&#34;)
+            parsedV = parseFeatures(v)
+            checker.checkSetting(k, v, extra=parsedV)
+            if k == &#34;features&#34;:
+                features[nType] = parsedV
+            else:
+                featuresBare[nType] = parsedV
+
+        lineNumber = info.get(&#34;lineNumber&#34;, None)
+        if lineNumber is not None:
+            lineNumberFeature[nType] = lineNumber
+
+        graphics = info.get(&#34;graphics&#34;, False)
+        if graphics:
+            hasGraphics.add(nType)
+
+        if not info.get(&#34;childrenPlain&#34;, True):
+            noChildren.add(nType)
+
+        chunkOf = info.get(&#34;chunkOf&#34;, None)
+        if chunkOf is not None:
+            isChunkOf[nType] = chunkOf
+
+        verselike = info.get(&#34;verselike&#34;, False)
+        if verselike:
+            verseTypes.add(nType)
+
+        if &#34;level&#34; in info or &#34;flow&#34; in info or &#34;wrap&#34; in info or &#34;stretch&#34; in info:
+            givenLevels[nType] = {
+                k: v for (k, v) in info.items() if k in LEVEL_DEFAULTS
+            }
+
+        if &#34;children&#34; in info:
+            childs = info[&#34;children&#34;] or ()
+            if type(childs) is str:
+                childs = {childs}
+            else:
+                childs = set(childs)
+            childType[nType] = set(childs or ())
+
+        checker.report()
+
+    lexTypes = set(lexMap.values())
+    nTypesNoLex = [n for n in nTypes if n not in lexTypes]
+
+    levelTypes = [set(), set(), set(), set(), set()]
+    levelTypes[4] = sectionalTypeSet - verseTypes
+    levelTypes[3] = verseTypes
+    levelTypes[0] = {slotType} | lexTypes
+
+    remainingTypeSet = set(nTypes) - levelTypes[4] - levelTypes[3] - levelTypes[0]
+    remainingTypes = tuple(x for x in nTypes if x in remainingTypeSet)
+    nRemaining = len(remainingTypes)
+
+    if nRemaining == 0:
+        midType = slotType
+    elif nRemaining == 1:
+        midType = remainingTypes[0]
+        levelTypes[1] = {midType}
+    else:
+        mid = len(remainingTypes) // 2
+        midType = remainingTypes[mid]
+        levelTypes[2] = set(remainingTypes[0:mid])
+        levelTypes[1] = set(remainingTypes[mid:])
+
+    children = {
+        nType: {nTypesNoLex[i + 1]}
+        for (i, nType) in enumerate(nTypesNoLex)
+        if nType in levelTypes[2] | levelTypes[1]
+    }
+    children.update(
+        {
+            nType: {nTypesNoLex[i + 1]}
+            for (i, nType) in enumerate(structureTypes)
+            if i &lt; len(structureTypes) - 1
+        }
+    )
+    children.update(
+        {
+            nType: {nTypesNoLex[i + 1]}
+            for (i, nType) in enumerate(sectionTypes)
+            if i &lt; len(sectionTypes) - 1
+        }
+    )
+
+    lowestSectionalTypes = set() | verseTypes
+    if sectionTypes:
+        lowestSectionalTypes.add(sectionTypes[-1])
+    if structureTypes:
+        lowestSectionalTypes.add(structureTypes[-1])
+
+    biggestOtherType = slotType
+    for rt in remainingTypes:
+        if verseRank is None or otypeRank[rt] &lt; verseRank:
+            biggestOtherType = rt
+            break
+    smallestOtherType = remainingTypes[-1] if remainingTypes else None
+
+    for lexType in lexTypes:
+        if lexType in children:
+            del children[lexType]
+
+    for lowestSectionalType in lowestSectionalTypes:
+        if lowestSectionalType not in children:
+            children[lowestSectionalType] = {biggestOtherType}
+        else:
+            children[lowestSectionalType].add(biggestOtherType)
+
+    if smallestOtherType is not None and smallestOtherType != slotType:
+        if smallestOtherType not in children:
+            children[smallestOtherType] = {slotType}
+        else:
+            children[smallestOtherType].add(slotType)
+
+    if condenseType is None:
+        condenseType = sectionTypes[-1] if sectionTypes else midType
+
+    for (i, nTypes) in enumerate(levelTypes):
+        for nType in nTypes:
+            levels[nType] = getLevel(i, givenLevels.get(nType, {}), nType in verseTypes)
+
+    for (nType, childInfo) in children.items():
+        if nType not in childType:
+            childType[nType] = childInfo
+
+    levelCls = {}
+
+    for (nType, nTypeInfo) in levels.items():
+        level = nTypeInfo[&#34;level&#34;]
+        flow = nTypeInfo[&#34;flow&#34;]
+        wrap = nTypeInfo[&#34;wrap&#34;]
+
+        containerCls = f&#34;contnr c{level}&#34;
+        labelCls = f&#34;lbl c{level}&#34;
+        childrenCls = (
+            f&#34;children {flow} {&#39;wrap&#39; if wrap else &#39;&#39;}&#34;
+            if childType.get(nType, None)
+            else &#34;&#34;
+        )
+
+        levelCls[nType] = dict(
+            container=containerCls, label=labelCls, children=childrenCls,
+        )
+
+    descendantType = transitiveClosure(childType)
+
+    specs.update(
+        baseTypes=baseTypes if baseTypes else {slotType},
+        childType=childType,
+        chunkedTypes=set(isChunkOf.values()),
+        condenseType=condenseType,
+        descendantType=descendantType,
+        features=features,
+        featuresBare=featuresBare,
+        hasGraphics=hasGraphics,
+        isChunkOf=isChunkOf,
+        labels=labels,
+        levels=levels,
+        levelCls=levelCls,
+        lexMap=lexMap,
+        lexTypes=lexTypes,
+        lineNumberFeature=lineNumberFeature,
+        noChildren=noChildren,
+        noDescendTypes=lexTypes,
+        styles=styles,
+        templates=templates,
+        transform=transform,
+        verseTypes=verseTypes,
+    )
+
+
+def showContext(app, *keys):
+    &#34;&#34;&#34;Shows the *context* of the app `tf.applib.app.App.context` in a pretty way.
+
+        The context is the result of computing sensible defaults for the corpus
+        combined with configuration settings in the app&#39;s `config.yaml`.
+
+        Parameters
+        ----------
+        keys: iterable of string
+            For each key passed to this function, the information for that key
+            will be displayed. If no keys are passed, all keys will be displayed.
+
+        Returns
+        -------
+        displayed HTML
+            An expandable list of the key-value pair for the requested keys.
+
+        !!! hint &#34;reuse after change&#34;
+            If you are developing an app and change the configuration settings,
+            they will be applied if you do `tf.applib.app.App.reuse()`.
+            See below.
+    &#34;&#34;&#34;
+
+    EM = &#34;*empty*&#34;
+    block = &#34;    &#34;
+    keys = set(keys)
+
+    def eScalar(x, level):
+        if type(x) is str and &#34;\n&#34; in x:
+            indent = block * level
+            return (
+                f&#34;\n{indent}```\n{indent}&#34;
+                + f&#34;\n{indent}&#34;.join(x.split(&#34;\n&#34;))
+                + f&#34;\n{indent}```\n&#34;
+            )
+        return f&#34;`{mdEsc(str(x))}`&#34; if x else EM
+
+    def eEmpty(x):
+        return EM if type(x) is str else str(x)
+
+    def eList(x, level):
+        tpv = type(x)
+        indent = block * level
+        md = &#34;\n&#34;
+        for (i, v) in enumerate(sorted(x, key=lambda y: str(y)) if tpv is set else x):
+            item = f&#34;{i + 1}.&#34; if level == 0 else &#34;*&#34;
+            md += f&#34;{indent}{item:&lt;4}{eData(v, level + 1)}&#34;
+        return md
+
+    def eDict(x, level):
+        indent = block * level
+        md = &#34;\n&#34;
+        for (k, v) in sorted(x.items(), key=lambda y: str(y)):
+            item = &#34;*&#34;
+            md += f&#34;{indent}{item:&lt;4}**{eScalar(k, level)}**:&#34; f&#34; {eData(v, level + 1)}&#34;
+        return md
+
+    def eRest(x, level):
+        indent = block * level
+        return &#34;\n&#34; + indent + eScalar(x, level) + &#34;\n&#34;
+
+    def eData(x, level):
+        if not x:
+            return eEmpty(x) + &#34;\n&#34;
+        tpv = type(x)
+        if tpv is str or tpv is float or tpv is int or tpv is bool:
+            return eScalar(x, level) + &#34;\n&#34;
+        if tpv is list or tpv is tuple or tpv is set:
+            return eList(x, level)
+        if tpv is dict:
+            return eDict(x, level)
+        return eRest(x, level)
+
+    openRep1 = &#34;open&#34; if len(keys) else &#34;&#34;
+    openRep2 = &#34;open&#34; if len(keys) == 1 else &#34;&#34;
+    md = [
+        f&#34;&lt;details {openRep1}&gt;&#34;
+        f&#34;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n\n&#34;
+    ]
+    for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
+        if len(keys) and k not in keys:
+            continue
+        md.append(
+            f&#34;&lt;details {openRep2}&gt;&#34;
+            f&#34;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
+        )
+    md.append(&#34;&lt;/details&gt;\n&#34;)
+    dm(&#34;&#34;.join(md))
+
+
+def getLevel(defaultLevel, givenInfo, isVerse):
+    level = givenInfo.get(&#34;level&#34;, defaultLevel)
+    defaultsFromLevel = LEVEL_DEFAULTS[&#34;level&#34;][level]
+    flow = givenInfo.get(&#34;flow&#34;, &#34;hor&#34; if isVerse else defaultsFromLevel[&#34;flow&#34;])
+    defaultsFromFlow = LEVEL_DEFAULTS[&#34;flow&#34;][flow]
+    wrap = givenInfo.get(&#34;wrap&#34;, defaultsFromFlow[&#34;wrap&#34;])
+    stretch = givenInfo.get(&#34;stretch&#34;, defaultsFromFlow[&#34;stretch&#34;])
+    return dict(level=level, flow=flow, wrap=wrap, stretch=stretch)
+
+
+def compileFormatCls(app, specs, givenStyles):
+    api = app.api
+    T = api.T
+
+    result = {}
+    extraFormats = set()
+
+    formatStyle = specs[&#34;formatStyle&#34;]
+    defaultClsOrig = specs[&#34;defaultClsOrig&#34;]
+
+    for fmt in givenStyles:
+        fmt = T.splitFormat(fmt)[1]
+        extraFormats.add(fmt)
+
+    for fmt in set(T.formats) | set(extraFormats):
+        style = givenStyles.get(fmt, None)
+        if style is None:
+            textCls = None
+            for (key, cls) in FORMAT_CLS:
+                if (
+                    f&#34;-{key}-&#34; in fmt
+                    or fmt.startswith(f&#34;{key}-&#34;)
+                    or fmt.endswith(f&#34;-{key}&#34;)
+                ):
+                    textCls = defaultClsOrig if key == ORIG else cls
+            if textCls is None:
+                textCls = DEFAULT_CLS
+        else:
+            textCls = defaultClsOrig if style == ORIG else formatStyle.get(style, style)
+        result[fmt] = textCls
+
+    specs[&#34;formatCls&#34;] = result</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.applib.settings.compileFormatCls"><code class="name flex">
+<span>def <span class="ident">compileFormatCls</span></span>(<span>app, specs, givenStyles)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def compileFormatCls(app, specs, givenStyles):
+    api = app.api
+    T = api.T
+
+    result = {}
+    extraFormats = set()
+
+    formatStyle = specs[&#34;formatStyle&#34;]
+    defaultClsOrig = specs[&#34;defaultClsOrig&#34;]
+
+    for fmt in givenStyles:
+        fmt = T.splitFormat(fmt)[1]
+        extraFormats.add(fmt)
+
+    for fmt in set(T.formats) | set(extraFormats):
+        style = givenStyles.get(fmt, None)
+        if style is None:
+            textCls = None
+            for (key, cls) in FORMAT_CLS:
+                if (
+                    f&#34;-{key}-&#34; in fmt
+                    or fmt.startswith(f&#34;{key}-&#34;)
+                    or fmt.endswith(f&#34;-{key}&#34;)
+                ):
+                    textCls = defaultClsOrig if key == ORIG else cls
+            if textCls is None:
+                textCls = DEFAULT_CLS
+        else:
+            textCls = defaultClsOrig if style == ORIG else formatStyle.get(style, style)
+        result[fmt] = textCls
+
+    specs[&#34;formatCls&#34;] = result</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.settings.getDataDefaults"><code class="name flex">
+<span>def <span class="ident">getDataDefaults</span></span>(<span>app, cfg, dKey, withApi)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getDataDefaults(app, cfg, dKey, withApi):
+    checker = Check(app, withApi)
+
+    if withApi:
+        api = app.api
+        F = api.F
+        T = api.T
+        sectionTypes = T.sectionTypes
+
+    specs = app.specs
+
+    givenInfo = cfg.get(dKey, {})
+
+    if withApi:
+        formatStyle = {f[0]: f[1] for f in FORMAT_CLS}
+        formatStyle[ORIG] = specs[&#34;defaultClsOrig&#34;]
+        specs[&#34;formatStyle&#34;] = formatStyle
+
+    allowedKeys = {d[0] for d in DATA_DISPLAY_DEFAULTS}
+    checker.checkGroup(cfg, allowedKeys, dKey)
+    checker.report()
+
+    for (attr, default, needsApi) in DATA_DISPLAY_DEFAULTS:
+        if needsApi and not withApi or not needsApi and withApi:
+            continue
+
+        if attr == &#34;browseNavLevel&#34;:
+            default = len(sectionTypes) - 1 if sectionTypes else 1
+
+        value = givenInfo.get(attr, specs.get(attr, default))
+        if attr in specs and attr not in givenInfo:
+            continue
+        elif attr == &#34;exampleSection&#34;:
+            if not value:
+                if sectionTypes:
+                    verseType = sectionTypes[-1]
+                    firstVerse = F.otype.s(verseType)[0]
+                    value = app.sectionStrFromNode(firstVerse)
+                else:
+                    value = &#34;passage&#34;
+            specs[&#34;exampleSection&#34;] = value
+            specs[&#34;exampleSectionHtml&#34;] = f&#34;&lt;code&gt;{value}&lt;/code&gt;&#34;
+        if attr == &#34;textFormats&#34;:
+            methods = {fmt: v[METHOD] for (fmt, v) in value.items() if METHOD in v}
+            styles = {fmt: v.get(STYLE, None) for (fmt, v) in value.items()}
+            specs[&#34;formatMethod&#34;] = methods
+            specs[&#34;formatHtml&#34;] = {T.splitFormat(fmt)[1] for fmt in methods}
+            compileFormatCls(app, specs, styles)
+
+        else:
+            specs[attr] = value</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.settings.getLevel"><code class="name flex">
+<span>def <span class="ident">getLevel</span></span>(<span>defaultLevel, givenInfo, isVerse)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getLevel(defaultLevel, givenInfo, isVerse):
+    level = givenInfo.get(&#34;level&#34;, defaultLevel)
+    defaultsFromLevel = LEVEL_DEFAULTS[&#34;level&#34;][level]
+    flow = givenInfo.get(&#34;flow&#34;, &#34;hor&#34; if isVerse else defaultsFromLevel[&#34;flow&#34;])
+    defaultsFromFlow = LEVEL_DEFAULTS[&#34;flow&#34;][flow]
+    wrap = givenInfo.get(&#34;wrap&#34;, defaultsFromFlow[&#34;wrap&#34;])
+    stretch = givenInfo.get(&#34;stretch&#34;, defaultsFromFlow[&#34;stretch&#34;])
+    return dict(level=level, flow=flow, wrap=wrap, stretch=stretch)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.settings.getTypeDefaults"><code class="name flex">
+<span>def <span class="ident">getTypeDefaults</span></span>(<span>app, cfg, dKey, withApi)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getTypeDefaults(app, cfg, dKey, withApi):
+    if not withApi:
+        return
+
+    checker = Check(app, withApi)
+    givenInfo = cfg.get(dKey, {})
+
+    api = app.api
+    F = api.F
+    T = api.T
+    otypeRank = api.otypeRank
+    slotType = F.otype.slotType
+    nTypes = F.otype.all
+    structureTypes = T.structureTypes
+    structureTypeSet = T.structureTypeSet
+    sectionTypes = T.sectionTypes
+    sectionTypeSet = T.sectionTypeSet
+
+    sectionalTypeSet = sectionTypeSet | structureTypeSet
+
+    specs = app.specs
+
+    noChildren = set()
+    isChunkOf = {}
+    featuresBare = {}
+    features = {}
+    lineNumberFeature = {}
+    hasGraphics = set()
+    verseTypes = {sectionTypes[-1]} if sectionTypes else set()
+    verseRank = otypeRank[sectionTypes[-1]] if sectionTypes else None
+    lexMap = {}
+    baseTypes = set()
+    condenseType = None
+    templates = {}
+    labels = {}
+    styles = {}
+    givenLevels = {}
+    levels = {}
+    childType = {}
+    transform = {}
+
+    specs[&#34;transform&#34;] = transform
+    formatStyle = specs[&#34;formatStyle&#34;]
+
+    for nType in nTypes:
+        template = (
+            True if nType == slotType or nType in sectionalTypeSet - verseTypes else &#34;&#34;
+        )
+        for dest in (templates, labels):
+            dest[nType] = (template, ())
+
+    unknownTypes = {nType for nType in givenInfo if nType not in nTypes}
+    if unknownTypes:
+        unknownTypesRep = &#34;,&#34;.join(sorted(unknownTypes))
+        console(f&#34;App config error(s) in typeDisplay: {unknownTypesRep}&#34;, error=True)
+
+    for (nType, info) in givenInfo.items():
+        checker.checkGroup(
+            givenInfo,
+            TYPE_KEYS,
+            nType,
+            postpone={
+                &#34;base&#34;,
+                &#34;label&#34;,
+                &#34;template&#34;,
+                &#34;features&#34;,
+                &#34;featuresBare&#34;,
+                &#34;transform&#34;,
+            },
+        )
+        checker.report()
+
+        if info.get(&#34;verselike&#34;, False):
+            verseTypes.add(nType)
+
+        lOcc = info.get(&#34;lexOcc&#34;, None)
+        if lOcc is not None:
+            lexMap[lOcc] = nType
+
+        if &#34;base&#34; in info:
+            base = info[&#34;base&#34;]
+            checker.checkSetting(&#34;base&#34;, base)
+            baseTypes.add(nType)
+
+        if &#34;condense&#34; in info:
+            condenseType = nType
+
+        trans = info.get(&#34;transform&#34;, None)
+        if trans is not None:
+            resolvedTrans = {}
+            for (feat, func) in trans.items():
+                methodName = f&#34;transform_{func}&#34;
+                resolvedTrans[feat] = getattr(app, methodName, methodName)
+            v = resolvedTrans
+            checker.checkSetting(&#34;transform&#34;, trans, extra=v)
+            transform[nType] = v
+
+        for (k, dest) in ((&#34;template&#34;, templates), (&#34;label&#34;, labels)):
+            if k in info:
+                template = info[k]
+                templateFeatures = (
+                    VAR_PATTERN.findall(template) if type(template) is str else ()
+                )
+                dest[nType] = (template, templateFeatures)
+                checker.checkSetting(
+                    k, template, extra=(template, templateFeatures),
+                )
+
+        if &#34;style&#34; in info:
+            style = info[&#34;style&#34;]
+            styles[nType] = formatStyle.get(style, style)
+
+        for k in (&#34;featuresBare&#34;, &#34;features&#34;):
+            v = info.get(k, &#34;&#34;)
+            parsedV = parseFeatures(v)
+            checker.checkSetting(k, v, extra=parsedV)
+            if k == &#34;features&#34;:
+                features[nType] = parsedV
+            else:
+                featuresBare[nType] = parsedV
+
+        lineNumber = info.get(&#34;lineNumber&#34;, None)
+        if lineNumber is not None:
+            lineNumberFeature[nType] = lineNumber
+
+        graphics = info.get(&#34;graphics&#34;, False)
+        if graphics:
+            hasGraphics.add(nType)
+
+        if not info.get(&#34;childrenPlain&#34;, True):
+            noChildren.add(nType)
+
+        chunkOf = info.get(&#34;chunkOf&#34;, None)
+        if chunkOf is not None:
+            isChunkOf[nType] = chunkOf
+
+        verselike = info.get(&#34;verselike&#34;, False)
+        if verselike:
+            verseTypes.add(nType)
+
+        if &#34;level&#34; in info or &#34;flow&#34; in info or &#34;wrap&#34; in info or &#34;stretch&#34; in info:
+            givenLevels[nType] = {
+                k: v for (k, v) in info.items() if k in LEVEL_DEFAULTS
+            }
+
+        if &#34;children&#34; in info:
+            childs = info[&#34;children&#34;] or ()
+            if type(childs) is str:
+                childs = {childs}
+            else:
+                childs = set(childs)
+            childType[nType] = set(childs or ())
+
+        checker.report()
+
+    lexTypes = set(lexMap.values())
+    nTypesNoLex = [n for n in nTypes if n not in lexTypes]
+
+    levelTypes = [set(), set(), set(), set(), set()]
+    levelTypes[4] = sectionalTypeSet - verseTypes
+    levelTypes[3] = verseTypes
+    levelTypes[0] = {slotType} | lexTypes
+
+    remainingTypeSet = set(nTypes) - levelTypes[4] - levelTypes[3] - levelTypes[0]
+    remainingTypes = tuple(x for x in nTypes if x in remainingTypeSet)
+    nRemaining = len(remainingTypes)
+
+    if nRemaining == 0:
+        midType = slotType
+    elif nRemaining == 1:
+        midType = remainingTypes[0]
+        levelTypes[1] = {midType}
+    else:
+        mid = len(remainingTypes) // 2
+        midType = remainingTypes[mid]
+        levelTypes[2] = set(remainingTypes[0:mid])
+        levelTypes[1] = set(remainingTypes[mid:])
+
+    children = {
+        nType: {nTypesNoLex[i + 1]}
+        for (i, nType) in enumerate(nTypesNoLex)
+        if nType in levelTypes[2] | levelTypes[1]
+    }
+    children.update(
+        {
+            nType: {nTypesNoLex[i + 1]}
+            for (i, nType) in enumerate(structureTypes)
+            if i &lt; len(structureTypes) - 1
+        }
+    )
+    children.update(
+        {
+            nType: {nTypesNoLex[i + 1]}
+            for (i, nType) in enumerate(sectionTypes)
+            if i &lt; len(sectionTypes) - 1
+        }
+    )
+
+    lowestSectionalTypes = set() | verseTypes
+    if sectionTypes:
+        lowestSectionalTypes.add(sectionTypes[-1])
+    if structureTypes:
+        lowestSectionalTypes.add(structureTypes[-1])
+
+    biggestOtherType = slotType
+    for rt in remainingTypes:
+        if verseRank is None or otypeRank[rt] &lt; verseRank:
+            biggestOtherType = rt
+            break
+    smallestOtherType = remainingTypes[-1] if remainingTypes else None
+
+    for lexType in lexTypes:
+        if lexType in children:
+            del children[lexType]
+
+    for lowestSectionalType in lowestSectionalTypes:
+        if lowestSectionalType not in children:
+            children[lowestSectionalType] = {biggestOtherType}
+        else:
+            children[lowestSectionalType].add(biggestOtherType)
+
+    if smallestOtherType is not None and smallestOtherType != slotType:
+        if smallestOtherType not in children:
+            children[smallestOtherType] = {slotType}
+        else:
+            children[smallestOtherType].add(slotType)
+
+    if condenseType is None:
+        condenseType = sectionTypes[-1] if sectionTypes else midType
+
+    for (i, nTypes) in enumerate(levelTypes):
+        for nType in nTypes:
+            levels[nType] = getLevel(i, givenLevels.get(nType, {}), nType in verseTypes)
+
+    for (nType, childInfo) in children.items():
+        if nType not in childType:
+            childType[nType] = childInfo
+
+    levelCls = {}
+
+    for (nType, nTypeInfo) in levels.items():
+        level = nTypeInfo[&#34;level&#34;]
+        flow = nTypeInfo[&#34;flow&#34;]
+        wrap = nTypeInfo[&#34;wrap&#34;]
+
+        containerCls = f&#34;contnr c{level}&#34;
+        labelCls = f&#34;lbl c{level}&#34;
+        childrenCls = (
+            f&#34;children {flow} {&#39;wrap&#39; if wrap else &#39;&#39;}&#34;
+            if childType.get(nType, None)
+            else &#34;&#34;
+        )
+
+        levelCls[nType] = dict(
+            container=containerCls, label=labelCls, children=childrenCls,
+        )
+
+    descendantType = transitiveClosure(childType)
+
+    specs.update(
+        baseTypes=baseTypes if baseTypes else {slotType},
+        childType=childType,
+        chunkedTypes=set(isChunkOf.values()),
+        condenseType=condenseType,
+        descendantType=descendantType,
+        features=features,
+        featuresBare=featuresBare,
+        hasGraphics=hasGraphics,
+        isChunkOf=isChunkOf,
+        labels=labels,
+        levels=levels,
+        levelCls=levelCls,
+        lexMap=lexMap,
+        lexTypes=lexTypes,
+        lineNumberFeature=lineNumberFeature,
+        noChildren=noChildren,
+        noDescendTypes=lexTypes,
+        styles=styles,
+        templates=templates,
+        transform=transform,
+        verseTypes=verseTypes,
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.settings.setAppSpecs"><code class="name flex">
+<span>def <span class="ident">setAppSpecs</span></span>(<span>app, cfg, reset=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setAppSpecs(app, cfg, reset=False):
+    specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
+    app.specs = specs
+    specs.update(cfg)
+    checker = Check(app, False)
+
+    dKey = &#34;writing&#34;
+    checker.checkItem(cfg, dKey)
+    checker.report()
+    value = cfg.get(dKey, &#34;&#34;)
+    specs[dKey] = value
+    for (k, v) in WRITING_DEFAULTS[value].items():
+        specs[k] = v
+    extension = f&#34; {value}&#34; if value else &#34;&#34;
+    defaultClsOrig = f&#34;{DEFAULT_CLS_ORIG}{extension}&#34;
+    specs.update(extension=extension, defaultClsOrig=defaultClsOrig)
+
+    for (dKey, defaults) in (
+        (&#34;provenanceSpec&#34;, PROVENANCE_DEFAULTS),
+        (&#34;docs&#34;, DOC_DEFAULTS),
+    ):
+        checker.checkGroup(cfg, {d[0] for d in defaults}, dKey)
+        checker.report()
+        dSource = cfg.get(dKey, {})
+        for (k, v) in defaults:
+            val = dSource.get(k, v)
+            val = (
+                None
+                if val is None
+                else val.format(**specs)
+                if type(val) is str
+                else val
+            )
+            specs[k] = val
+
+        if dKey == &#34;provenanceSpec&#34;:
+            moduleSpecs = specs[&#34;moduleSpecs&#34;] or []
+            for moduleSpec in moduleSpecs:
+                for k in MSPEC_KEYS:
+                    if k in moduleSpec:
+                        v = moduleSpec[k]
+                        if k == &#34;docUrl&#34; and v is not None:
+                            v = v.format(**specs)
+                            moduleSpec[k] = v
+                    else:
+                        moduleSpec[k] = (
+                            specs.get(k, None)
+                            if k in {&#34;org&#34;, &#34;repo&#34;}
+                            else RELATIVE_DEFAULT
+                            if k == &#34;relative&#34;
+                            else None
+                        )
+
+        specs[dKey] = {k[0]: specs[k[0]] for k in defaults}
+
+    if specs[&#34;zip&#34;] is None:
+        org = specs[&#34;org&#34;]
+        repo = specs[&#34;repo&#34;]
+        graphicsRelative = specs[&#34;graphicsRelative&#34;]
+        graphicsModule = [(org, repo, graphicsRelative)] if graphicsRelative else []
+        specs[&#34;zip&#34;] = (
+            [repo]
+            + [(m[&#34;org&#34;], m[&#34;repo&#34;], m[&#34;relative&#34;],) for m in moduleSpecs]
+            + graphicsModule
+        )
+
+    for (dKey, method) in (
+        (&#34;dataDisplay&#34;, getDataDefaults),
+        (&#34;typeDisplay&#34;, getTypeDefaults),
+    ):
+        method(app, cfg, dKey, False)
+
+    if reset:
+        aContext = getattr(app, &#34;context&#34;, None)
+        if aContext:
+            for key in HOOKS:
+                specs[key] = aContext.get(key, {})
+    else:
+        for key in HOOKS:
+            specs[key] = {}
+    app.context = AppCurrent(specs)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.settings.setAppSpecsApi"><code class="name flex">
+<span>def <span class="ident">setAppSpecsApi</span></span>(<span>app, cfg)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setAppSpecsApi(app, cfg):
+    api = app.api
+    T = api.T
+    C = api.C
+    sectionTypeSet = T.sectionTypeSet
+
+    specs = app.specs
+
+    for (dKey, method) in (
+        (&#34;dataDisplay&#34;, getDataDefaults),
+        (&#34;typeDisplay&#34;, getTypeDefaults),
+    ):
+        method(app, cfg, dKey, True)
+
+    specs[&#34;allowedBaseTypes&#34;] = tuple(
+        e[0] for e in C.levels.data[0:-1] if e[0] not in sectionTypeSet
+    )
+
+    specs[&#34;condenseTypes&#34;] = C.levels.data
+    specs[&#34;defaultFormat&#34;] = T.defaultFormat
+
+    dKey = &#34;interfaceDefaults&#34;
+    interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
+    dSource = cfg.get(dKey, {})
+    specific = {&#34;lineNumbers&#34;, &#34;showChunks&#34;, &#34;showGraphics&#34;}
+
+    allowed = {}
+    for (k, v) in interfaceDefaults.items():
+        allow = (
+            (
+                k == &#34;lineNumbers&#34;
+                and specs[&#34;lineNumberFeature&#34;]
+                or k == &#34;showChunks&#34;
+                and specs[&#34;isChunkOf&#34;]
+                or k == &#34;showGraphics&#34;
+                and specs[&#34;hasGraphics&#34;]
+            )
+            if k in specific
+            else True
+        )
+        if k in dSource:
+            val = dSource[k]
+            default = val if allow else None
+        else:
+            default = v if allow else None
+        interfaceDefaults[k] = default
+        allowed[k] = allow
+    checker = Check(app, True)
+    checker.checkGroup(cfg, interfaceDefaults, dKey, extra=allowed)
+    checker.report()
+    specs[dKey] = interfaceDefaults
+
+    app.context.update(specs)
+    app.showContext = types.MethodType(showContext, app)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.settings.showContext"><code class="name flex">
+<span>def <span class="ident">showContext</span></span>(<span>app, *keys)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Shows the <em>context</em> of the app <code><a title="tf.applib.app.App.context" href="app.html#tf.applib.app.App.context">App.context</a></code> in a pretty way.</p>
+<p>The context is the result of computing sensible defaults for the corpus
+combined with configuration settings in the app's <code>config.yaml</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>keys</code></strong> :&ensp;<code>iterable</code> of <code>string</code></dt>
+<dd>For each key passed to this function, the information for that key
+will be displayed. If no keys are passed, all keys will be displayed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>displayed HTML</code></dt>
+<dd>An expandable list of the key-value pair for the requested keys.</dd>
+</dl>
+<div class="admonition hint">
+<p class="admonition-title">reuse after change</p>
+<p>If you are developing an app and change the configuration settings,
+they will be applied if you do <code><a title="tf.applib.app.App.reuse" href="app.html#tf.applib.app.App.reuse">App.reuse()</a></code>.
+See below.</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def showContext(app, *keys):
+    &#34;&#34;&#34;Shows the *context* of the app `tf.applib.app.App.context` in a pretty way.
+
+        The context is the result of computing sensible defaults for the corpus
+        combined with configuration settings in the app&#39;s `config.yaml`.
+
+        Parameters
+        ----------
+        keys: iterable of string
+            For each key passed to this function, the information for that key
+            will be displayed. If no keys are passed, all keys will be displayed.
+
+        Returns
+        -------
+        displayed HTML
+            An expandable list of the key-value pair for the requested keys.
+
+        !!! hint &#34;reuse after change&#34;
+            If you are developing an app and change the configuration settings,
+            they will be applied if you do `tf.applib.app.App.reuse()`.
+            See below.
+    &#34;&#34;&#34;
+
+    EM = &#34;*empty*&#34;
+    block = &#34;    &#34;
+    keys = set(keys)
+
+    def eScalar(x, level):
+        if type(x) is str and &#34;\n&#34; in x:
+            indent = block * level
+            return (
+                f&#34;\n{indent}```\n{indent}&#34;
+                + f&#34;\n{indent}&#34;.join(x.split(&#34;\n&#34;))
+                + f&#34;\n{indent}```\n&#34;
+            )
+        return f&#34;`{mdEsc(str(x))}`&#34; if x else EM
+
+    def eEmpty(x):
+        return EM if type(x) is str else str(x)
+
+    def eList(x, level):
+        tpv = type(x)
+        indent = block * level
+        md = &#34;\n&#34;
+        for (i, v) in enumerate(sorted(x, key=lambda y: str(y)) if tpv is set else x):
+            item = f&#34;{i + 1}.&#34; if level == 0 else &#34;*&#34;
+            md += f&#34;{indent}{item:&lt;4}{eData(v, level + 1)}&#34;
+        return md
+
+    def eDict(x, level):
+        indent = block * level
+        md = &#34;\n&#34;
+        for (k, v) in sorted(x.items(), key=lambda y: str(y)):
+            item = &#34;*&#34;
+            md += f&#34;{indent}{item:&lt;4}**{eScalar(k, level)}**:&#34; f&#34; {eData(v, level + 1)}&#34;
+        return md
+
+    def eRest(x, level):
+        indent = block * level
+        return &#34;\n&#34; + indent + eScalar(x, level) + &#34;\n&#34;
+
+    def eData(x, level):
+        if not x:
+            return eEmpty(x) + &#34;\n&#34;
+        tpv = type(x)
+        if tpv is str or tpv is float or tpv is int or tpv is bool:
+            return eScalar(x, level) + &#34;\n&#34;
+        if tpv is list or tpv is tuple or tpv is set:
+            return eList(x, level)
+        if tpv is dict:
+            return eDict(x, level)
+        return eRest(x, level)
+
+    openRep1 = &#34;open&#34; if len(keys) else &#34;&#34;
+    openRep2 = &#34;open&#34; if len(keys) == 1 else &#34;&#34;
+    md = [
+        f&#34;&lt;details {openRep1}&gt;&#34;
+        f&#34;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n\n&#34;
+    ]
+    for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
+        if len(keys) and k not in keys:
+            continue
+        md.append(
+            f&#34;&lt;details {openRep2}&gt;&#34;
+            f&#34;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
+        )
+    md.append(&#34;&lt;/details&gt;\n&#34;)
+    dm(&#34;&#34;.join(md))</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.applib.settings.AppCurrent"><code class="flex name class">
+<span>class <span class="ident">AppCurrent</span></span>
+<span>(</span><span>specs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AppCurrent:
+    def __init__(self, specs):
+        self.update(specs)
+
+    def update(self, specs):
+        for (k, v) in specs.items():
+            setattr(self, k, v)
+
+    def get(self, k, v):
+        return getattr(self, k, v)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.applib.settings.AppCurrent.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self, k, v)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get(self, k, v):
+    return getattr(self, k, v)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.settings.AppCurrent.update"><code class="name flex">
+<span>def <span class="ident">update</span></span>(<span>self, specs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update(self, specs):
+    for (k, v) in specs.items():
+        setattr(self, k, v)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="tf.applib.settings.Check"><code class="flex name class">
+<span>class <span class="ident">Check</span></span>
+<span>(</span><span>app, withApi)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Check:
+    def __init__(self, app, withApi):
+        self.app = app
+        self.withApi = withApi
+        self.errors = []
+
+    def checkSetting(self, k, v, extra=None):
+        app = self.app
+        withApi = self.withApi
+        errors = self.errors
+        dKey = self.dKey
+        specs = app.specs
+
+        if withApi:
+            api = app.api
+            F = api.F
+            T = api.T
+            Fall = api.Fall
+            allNodeFeatures = set(Fall())
+            nTypes = F.otype.all
+            sectionTypes = T.sectionTypes
+
+            if k in {&#34;template&#34;, &#34;label&#34;}:
+                (template, feats) = extra
+                if template is not True and type(template) is not str:
+                    errors.append(f&#34;{k} must be `true` or a string&#34;)
+                for feat in feats:
+                    if feat not in allNodeFeatures:
+                        if feat not in specs[&#34;transform&#34;].get(dKey, {}):
+                            errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
+            elif k in {&#34;featuresBare&#34;, &#34;features&#34;}:
+                feats = extra[0]
+                tps = extra[1].values()
+                for feat in feats:
+                    if feat not in allNodeFeatures:
+                        errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
+                for tp in tps:
+                    if tp not in nTypes:
+                        errors.append(f&#34;{k}: node type {tp} not present&#34;)
+            elif k == &#34;base&#34;:
+                pass
+            elif k == &#34;lineNumber&#34;:
+                if v not in allNodeFeatures:
+                    errors.append(f&#34;{k}: feature {v} not loaded&#34;)
+            elif k == &#34;browseNavLevel&#34;:
+                allowedValues = set(range(len(sectionTypes)))
+                if v not in allowedValues:
+                    allowed = &#34;,&#34;.join(sorted(allowedValues))
+                    errors.append(f&#34;{k} must be an integer in {allowed}&#34;)
+            elif k == &#34;children&#34;:
+                if type(v) is not str and type(v) is not list:
+                    errors.append(f&#34;{k} must be a (list of) node types&#34;)
+                else:
+                    v = {v} if type(v) is str else set(v)
+                    for tp in v:
+                        if tp not in nTypes:
+                            errors.append(f&#34;{k}: node type {tp} not present&#34;)
+            elif k in {&#34;lexOcc&#34;, &#34;chunkOf&#34;}:
+                if type(v) is not str or v not in nTypes:
+                    errors.append(f&#34;{k}: node type {v} not present&#34;)
+            elif k == &#34;transform&#34;:
+                for (feat, method) in extra.items():
+                    if type(method) is str:
+                        errors.append(f&#34;{k}:{feat}: {method}() not implemented in app&#34;)
+            elif k == &#34;style&#34;:
+                if type(v) is not str or v.lower() != v:
+                    errors.append(f&#34;{k} must be an all lowercase string&#34;)
+            elif k in {
+                &#34;lineNumbers&#34;,
+                &#34;prettyTypes&#34;,
+                &#34;queryFeatures&#34;,
+                &#34;showChunks&#34;,
+                &#34;showGraphics&#34;,
+                &#34;standardFeatures&#34;,
+                &#34;withNodes&#34;,
+                &#34;withTypes&#34;,
+            }:
+                allowed = self.extra[k]
+                if not allowed and v is not None:
+                    errors.append(
+                        f&#34;{k}={v} is not useful (dataset lacks relevant features)&#34;
+                    )
+            elif k == &#34;textFormats&#34;:
+                formatStyle = specs[&#34;formatStyle&#34;]
+                if type(v) is dict:
+                    for (fmt, fmtInfo) in v.items():
+                        for (fk, fv) in fmtInfo.items():
+                            if fk not in FMT_KEYS:
+                                errors.append(f&#34;{k}: {fmt}: illegal key {fk}&#34;)
+                                continue
+                            if fk == METHOD:
+                                (descendType, func) = T.splitFormat(fv)
+                                func = f&#34;fmt_{func}&#34;
+                                if not hasattr(app, func):
+                                    errors.append(
+                                        f&#34;{k}: {fmt} needs unimplemented method {func}&#34;
+                                    )
+                            elif fk == STYLE:
+                                if fv not in formatStyle:
+                                    if fv.lower() != fv:
+                                        errors.append(
+                                            f&#34;{k}: {fmt}: style {fv}&#34;
+                                            f&#34; must be all lowercase&#34;
+                                        )
+                else:
+                    errors.append(f&#34;{k} must be a dictionary&#34;)
+        else:
+            if k in {&#34;excludedFeatures&#34;, &#34;noneValues&#34;}:
+                if type(v) is not list:
+                    errors.append(f&#34;{k} must be a list&#34;)
+            elif k in {
+                &#34;sectionSep1&#34;,
+                &#34;sectionSep2&#34;,
+                &#34;exampleSection&#34;,
+                &#34;exampleSectionHtml&#34;,
+            }:
+                if type(v) is not str:
+                    errors.append(f&#34;{k} must be a string&#34;)
+            elif k == &#34;writing&#34;:
+                allowedValues = set(WRITING_DEFAULTS)
+                if v not in allowedValues:
+                    allowed = &#34;,&#34;.join(allowedValues - {&#34;&#34;})
+                    errors.append(f&#34;{k} must be the empty string or one of {allowed}&#34;)
+            elif k in {&#34;direction&#34;, &#34;language&#34;}:
+                allowedValues = {w[k] for w in WRITING_DEFAULTS}
+                if v not in allowedValues:
+                    allowed = &#34;,&#34;.join(allowedValues)
+                    errors.append(f&#34;{k} must be one of {allowed}&#34;)
+            elif k in {
+                &#34;browseContentPretty&#34;,
+                &#34;base&#34;,
+                &#34;childrenPlain&#34;,
+                &#34;condense&#34;,
+                &#34;graphics&#34;,
+                &#34;hide&#34;,
+                &#34;showVerseInTuple&#34;,
+                &#34;stretch&#34;,
+                &#34;verselike&#34;,
+                &#34;wrap&#34;,
+            }:
+                allowedValues = {True, False}
+                if v not in allowedValues:
+                    allowed = &#34;true,false&#34;
+                    errors.append(f&#34;{k} must be a boolean in {allowed}&#34;)
+            elif k == &#34;flow&#34;:
+                allowedValues = {&#34;hor&#34;, &#34;ver&#34;}
+                if v not in allowedValues:
+                    allowed = &#34;,&#34;.join(allowedValues)
+                    errors.append(f&#34;{k} must be a value in {allowed}&#34;)
+            elif k == &#34;level&#34;:
+                allowedValues = set(range(len(4)))
+                if v not in allowedValues:
+                    allowed = &#34;,&#34;.join(sorted(allowedValues))
+                    errors.append(f&#34;{k} must be an integer in {allowed}&#34;)
+
+    def checkGroup(self, cfg, defaults, dKey, postpone=set(), extra=None):
+        self.cfg = cfg
+        self.defaults = defaults
+        self.dKey = dKey
+        self.extra = extra
+        errors = []
+
+        errors.clear()
+        dSource = cfg.get(dKey, {})
+
+        for (k, v) in dSource.items():
+            if k in defaults:
+                if k not in postpone:
+                    self.checkSetting(k, v)
+            else:
+                errors.append(f&#34;Illegal parameter `{k}` with value {v}&#34;)
+
+    def checkItem(self, cfg, dKey):
+        self.cfg = cfg
+        self.dKey = dKey
+        errors = self.errors
+
+        errors.clear()
+        if dKey in cfg:
+            self.checkSetting(dKey, cfg[dKey])
+
+    def report(self):
+        errors = self.errors
+        dKey = self.dKey
+
+        if errors:
+            console(f&#34;App config error(s) in {dKey}:&#34;, error=True)
+            for msg in errors:
+                console(f&#34;\t{msg}&#34;, error=True)
+
+        self.errors = []</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.applib.settings.Check.checkGroup"><code class="name flex">
+<span>def <span class="ident">checkGroup</span></span>(<span>self, cfg, defaults, dKey, postpone=set(), extra=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def checkGroup(self, cfg, defaults, dKey, postpone=set(), extra=None):
+    self.cfg = cfg
+    self.defaults = defaults
+    self.dKey = dKey
+    self.extra = extra
+    errors = []
+
+    errors.clear()
+    dSource = cfg.get(dKey, {})
+
+    for (k, v) in dSource.items():
+        if k in defaults:
+            if k not in postpone:
+                self.checkSetting(k, v)
+        else:
+            errors.append(f&#34;Illegal parameter `{k}` with value {v}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.settings.Check.checkItem"><code class="name flex">
+<span>def <span class="ident">checkItem</span></span>(<span>self, cfg, dKey)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def checkItem(self, cfg, dKey):
+    self.cfg = cfg
+    self.dKey = dKey
+    errors = self.errors
+
+    errors.clear()
+    if dKey in cfg:
+        self.checkSetting(dKey, cfg[dKey])</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.settings.Check.checkSetting"><code class="name flex">
+<span>def <span class="ident">checkSetting</span></span>(<span>self, k, v, extra=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def checkSetting(self, k, v, extra=None):
+    app = self.app
+    withApi = self.withApi
+    errors = self.errors
+    dKey = self.dKey
+    specs = app.specs
+
+    if withApi:
+        api = app.api
+        F = api.F
+        T = api.T
+        Fall = api.Fall
+        allNodeFeatures = set(Fall())
+        nTypes = F.otype.all
+        sectionTypes = T.sectionTypes
+
+        if k in {&#34;template&#34;, &#34;label&#34;}:
+            (template, feats) = extra
+            if template is not True and type(template) is not str:
+                errors.append(f&#34;{k} must be `true` or a string&#34;)
+            for feat in feats:
+                if feat not in allNodeFeatures:
+                    if feat not in specs[&#34;transform&#34;].get(dKey, {}):
+                        errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
+        elif k in {&#34;featuresBare&#34;, &#34;features&#34;}:
+            feats = extra[0]
+            tps = extra[1].values()
+            for feat in feats:
+                if feat not in allNodeFeatures:
+                    errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
+            for tp in tps:
+                if tp not in nTypes:
+                    errors.append(f&#34;{k}: node type {tp} not present&#34;)
+        elif k == &#34;base&#34;:
+            pass
+        elif k == &#34;lineNumber&#34;:
+            if v not in allNodeFeatures:
+                errors.append(f&#34;{k}: feature {v} not loaded&#34;)
+        elif k == &#34;browseNavLevel&#34;:
+            allowedValues = set(range(len(sectionTypes)))
+            if v not in allowedValues:
+                allowed = &#34;,&#34;.join(sorted(allowedValues))
+                errors.append(f&#34;{k} must be an integer in {allowed}&#34;)
+        elif k == &#34;children&#34;:
+            if type(v) is not str and type(v) is not list:
+                errors.append(f&#34;{k} must be a (list of) node types&#34;)
+            else:
+                v = {v} if type(v) is str else set(v)
+                for tp in v:
+                    if tp not in nTypes:
+                        errors.append(f&#34;{k}: node type {tp} not present&#34;)
+        elif k in {&#34;lexOcc&#34;, &#34;chunkOf&#34;}:
+            if type(v) is not str or v not in nTypes:
+                errors.append(f&#34;{k}: node type {v} not present&#34;)
+        elif k == &#34;transform&#34;:
+            for (feat, method) in extra.items():
+                if type(method) is str:
+                    errors.append(f&#34;{k}:{feat}: {method}() not implemented in app&#34;)
+        elif k == &#34;style&#34;:
+            if type(v) is not str or v.lower() != v:
+                errors.append(f&#34;{k} must be an all lowercase string&#34;)
+        elif k in {
+            &#34;lineNumbers&#34;,
+            &#34;prettyTypes&#34;,
+            &#34;queryFeatures&#34;,
+            &#34;showChunks&#34;,
+            &#34;showGraphics&#34;,
+            &#34;standardFeatures&#34;,
+            &#34;withNodes&#34;,
+            &#34;withTypes&#34;,
+        }:
+            allowed = self.extra[k]
+            if not allowed and v is not None:
+                errors.append(
+                    f&#34;{k}={v} is not useful (dataset lacks relevant features)&#34;
+                )
+        elif k == &#34;textFormats&#34;:
+            formatStyle = specs[&#34;formatStyle&#34;]
+            if type(v) is dict:
+                for (fmt, fmtInfo) in v.items():
+                    for (fk, fv) in fmtInfo.items():
+                        if fk not in FMT_KEYS:
+                            errors.append(f&#34;{k}: {fmt}: illegal key {fk}&#34;)
+                            continue
+                        if fk == METHOD:
+                            (descendType, func) = T.splitFormat(fv)
+                            func = f&#34;fmt_{func}&#34;
+                            if not hasattr(app, func):
+                                errors.append(
+                                    f&#34;{k}: {fmt} needs unimplemented method {func}&#34;
+                                )
+                        elif fk == STYLE:
+                            if fv not in formatStyle:
+                                if fv.lower() != fv:
+                                    errors.append(
+                                        f&#34;{k}: {fmt}: style {fv}&#34;
+                                        f&#34; must be all lowercase&#34;
+                                    )
+            else:
+                errors.append(f&#34;{k} must be a dictionary&#34;)
+    else:
+        if k in {&#34;excludedFeatures&#34;, &#34;noneValues&#34;}:
+            if type(v) is not list:
+                errors.append(f&#34;{k} must be a list&#34;)
+        elif k in {
+            &#34;sectionSep1&#34;,
+            &#34;sectionSep2&#34;,
+            &#34;exampleSection&#34;,
+            &#34;exampleSectionHtml&#34;,
+        }:
+            if type(v) is not str:
+                errors.append(f&#34;{k} must be a string&#34;)
+        elif k == &#34;writing&#34;:
+            allowedValues = set(WRITING_DEFAULTS)
+            if v not in allowedValues:
+                allowed = &#34;,&#34;.join(allowedValues - {&#34;&#34;})
+                errors.append(f&#34;{k} must be the empty string or one of {allowed}&#34;)
+        elif k in {&#34;direction&#34;, &#34;language&#34;}:
+            allowedValues = {w[k] for w in WRITING_DEFAULTS}
+            if v not in allowedValues:
+                allowed = &#34;,&#34;.join(allowedValues)
+                errors.append(f&#34;{k} must be one of {allowed}&#34;)
+        elif k in {
+            &#34;browseContentPretty&#34;,
+            &#34;base&#34;,
+            &#34;childrenPlain&#34;,
+            &#34;condense&#34;,
+            &#34;graphics&#34;,
+            &#34;hide&#34;,
+            &#34;showVerseInTuple&#34;,
+            &#34;stretch&#34;,
+            &#34;verselike&#34;,
+            &#34;wrap&#34;,
+        }:
+            allowedValues = {True, False}
+            if v not in allowedValues:
+                allowed = &#34;true,false&#34;
+                errors.append(f&#34;{k} must be a boolean in {allowed}&#34;)
+        elif k == &#34;flow&#34;:
+            allowedValues = {&#34;hor&#34;, &#34;ver&#34;}
+            if v not in allowedValues:
+                allowed = &#34;,&#34;.join(allowedValues)
+                errors.append(f&#34;{k} must be a value in {allowed}&#34;)
+        elif k == &#34;level&#34;:
+            allowedValues = set(range(len(4)))
+            if v not in allowedValues:
+                allowed = &#34;,&#34;.join(sorted(allowedValues))
+                errors.append(f&#34;{k} must be an integer in {allowed}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.applib.settings.Check.report"><code class="name flex">
+<span>def <span class="ident">report</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def report(self):
+    errors = self.errors
+    dKey = self.dKey
+
+    if errors:
+        console(f&#34;App config error(s) in {dKey}:&#34;, error=True)
+        for msg in errors:
+            console(f&#34;\t{msg}&#34;, error=True)
+
+    self.errors = []</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<img src="images/tf-small.png">
+<img src="../images/tf-small.png">
+<div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="tf.applib.settings.compileFormatCls" href="#tf.applib.settings.compileFormatCls">compileFormatCls</a></code></li>
+<li><code><a title="tf.applib.settings.getDataDefaults" href="#tf.applib.settings.getDataDefaults">getDataDefaults</a></code></li>
+<li><code><a title="tf.applib.settings.getLevel" href="#tf.applib.settings.getLevel">getLevel</a></code></li>
+<li><code><a title="tf.applib.settings.getTypeDefaults" href="#tf.applib.settings.getTypeDefaults">getTypeDefaults</a></code></li>
+<li><code><a title="tf.applib.settings.setAppSpecs" href="#tf.applib.settings.setAppSpecs">setAppSpecs</a></code></li>
+<li><code><a title="tf.applib.settings.setAppSpecsApi" href="#tf.applib.settings.setAppSpecsApi">setAppSpecsApi</a></code></li>
+<li><code><a title="tf.applib.settings.showContext" href="#tf.applib.settings.showContext">showContext</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.applib.settings.AppCurrent" href="#tf.applib.settings.AppCurrent">AppCurrent</a></code></h4>
+<ul class="">
+<li><code><a title="tf.applib.settings.AppCurrent.get" href="#tf.applib.settings.AppCurrent.get">get</a></code></li>
+<li><code><a title="tf.applib.settings.AppCurrent.update" href="#tf.applib.settings.AppCurrent.update">update</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tf.applib.settings.Check" href="#tf.applib.settings.Check">Check</a></code></h4>
+<ul class="">
+<li><code><a title="tf.applib.settings.Check.checkGroup" href="#tf.applib.settings.Check.checkGroup">checkGroup</a></code></li>
+<li><code><a title="tf.applib.settings.Check.checkItem" href="#tf.applib.settings.Check.checkItem">checkItem</a></code></li>
+<li><code><a title="tf.applib.settings.Check.checkSetting" href="#tf.applib.settings.Check.checkSetting">checkSetting</a></code></li>
+<li><code><a title="tf.applib.settings.Check.report" href="#tf.applib.settings.Check.report">report</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
