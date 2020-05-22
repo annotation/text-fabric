@@ -36,12 +36,12 @@ from .helpers import dm, parseFeatures, transitiveClosure
 VAR_PATTERN = re.compile(r&#34;\{([^}]+)\}&#34;)
 
 WRITING_DEFAULTS = dict(
-    akk=dict(language=&#34;Akkadian&#34;, direction=&#34;ltr&#34;,),
-    hbo=dict(language=&#34;Hebrew&#34;, direction=&#34;rtl&#34;,),
-    syc=dict(language=&#34;Syriac&#34;, direction=&#34;rtl&#34;,),
-    ara=dict(language=&#34;Arabic&#34;, direction=&#34;rtl&#34;,),
-    grc=dict(language=&#34;Greek&#34;, direction=&#34;ltr&#34;,),
-    cld=dict(language=&#34;Aramaic&#34;, direction=&#34;ltr&#34;,),
+    akk=dict(language=&#34;akkadian&#34;, direction=&#34;ltr&#34;,),
+    hbo=dict(language=&#34;hebrew&#34;, direction=&#34;rtl&#34;,),
+    syc=dict(language=&#34;syriac&#34;, direction=&#34;rtl&#34;,),
+    ara=dict(language=&#34;arabic&#34;, direction=&#34;rtl&#34;,),
+    grc=dict(language=&#34;greek&#34;, direction=&#34;ltr&#34;,),
+    cld=dict(language=&#34;aramaic&#34;, direction=&#34;ltr&#34;,),
 )
 WRITING_DEFAULTS[&#34;&#34;] = dict(language=&#34;&#34;, direction=&#34;ltr&#34;,)
 
@@ -126,7 +126,7 @@ DOC_DEFAULTS = (
     (&#34;docUrl&#34;, &#34;{docBase}/{docPage}{docExt}&#34;),
     (&#34;featureBase&#34;, &#34;{docBase}/features/&lt;feature&gt;{docExt}&#34;),
     (&#34;featurePage&#34;, &#34;home&#34;),
-    (&#34;charUrl&#34;, &#34;{tfDoc}/Writing/Transcription/{language}&#34;),
+    (&#34;charUrl&#34;, &#34;{tfDoc}/writing/{language}.html&#34;),
     (&#34;charText&#34;, &#34;How TF features represent text&#34;),
 )
 
@@ -2182,9 +2182,7 @@ See below.</p>
 </section>
 </article>
 <nav id="sidebar">
-<img src="images/tf-small.png">
 <img src="../images/tf-small.png">
-<div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>

@@ -35,6 +35,8 @@ import types
 from ..parameters import (
     URL_GH,
     URL_TFDOC,
+    SEARCHREF,
+    APIREF,
     APP_URL,
     APP_NB_URL,
 )
@@ -125,7 +127,7 @@ def linksApi(app, silent):
     tfLink = (
         outLink(
             f&#34;Text-Fabric API {api.TF.version}&#34;,
-            f&#34;{URL_TFDOC}/Api/Fabric/&#34;,
+            APIREF,
             &#34;text-fabric-api&#34;,
         )
         if isCompatible
@@ -134,7 +136,7 @@ def linksApi(app, silent):
     tfsLink = (
         outLink(
             &#34;Search Reference&#34;,
-            f&#34;{URL_TFDOC}/Use/Search/&#34;,
+            SEARCHREF,
             &#34;Search Templates Introduction and Reference&#34;,
         )
         if isCompatible
@@ -700,7 +702,7 @@ we force <code>silent=True</code>.</p></div>
     tfLink = (
         outLink(
             f&#34;Text-Fabric API {api.TF.version}&#34;,
-            f&#34;{URL_TFDOC}/Api/Fabric/&#34;,
+            APIREF,
             &#34;text-fabric-api&#34;,
         )
         if isCompatible
@@ -709,7 +711,7 @@ we force <code>silent=True</code>.</p></div>
     tfsLink = (
         outLink(
             &#34;Search Reference&#34;,
-            f&#34;{URL_TFDOC}/Use/Search/&#34;,
+            SEARCHREF,
             &#34;Search Templates Introduction and Reference&#34;,
         )
         if isCompatible
@@ -1051,9 +1053,7 @@ other attributes.</dd>
 </section>
 </article>
 <nav id="sidebar">
-<img src="images/tf-small.png">
 <img src="../images/tf-small.png">
-<div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>

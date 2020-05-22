@@ -294,6 +294,7 @@ from github import Github, GithubException, UnknownObjectException
 
 from ..parameters import (
     URL_GH,
+    URL_TFDOC,
     GH_BASE,
     EXPRESS_BASE,
     EXPRESS_SYNC,
@@ -880,7 +881,7 @@ class Checkout(object):
             if rate.limit &lt; 100:
                 self.warning(
                     f&#34;To increase the rate,&#34;
-                    f&#34;see https://annotation.github.io/text-fabric/Api/Repo/&#34;
+                    f&#34;see {URL_TFDOC}/applib/repo.html/&#34;
                 )
 
             self.log(
@@ -1599,7 +1600,7 @@ def checkoutRepo(
             if rate.limit &lt; 100:
                 self.warning(
                     f&#34;To increase the rate,&#34;
-                    f&#34;see https://annotation.github.io/text-fabric/Api/Repo/&#34;
+                    f&#34;see {URL_TFDOC}/applib/repo.html/&#34;
                 )
 
             self.log(
@@ -1719,7 +1720,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
         if rate.limit &lt; 100:
             self.warning(
                 f&#34;To increase the rate,&#34;
-                f&#34;see https://annotation.github.io/text-fabric/Api/Repo/&#34;
+                f&#34;see {URL_TFDOC}/applib/repo.html/&#34;
             )
 
         self.log(
@@ -2394,9 +2395,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 </section>
 </article>
 <nav id="sidebar">
-<img src="images/tf-small.png">
 <img src="../images/tf-small.png">
-<div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
 <h1>Index</h1>
 <div class="toc">
 <ul>

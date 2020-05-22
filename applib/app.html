@@ -28,7 +28,7 @@
 
 from ..parameters import ORG, APP_CODE
 from ..fabric import Fabric
-from ..parameters import URL_TFDOC, TEMP_DIR
+from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
 from ..core.helpers import console, setDir
 from .find import findAppConfig, findAppClass
@@ -74,7 +74,7 @@ class App:
             The appname  can be as simple as the name of an existing TF-app.
             The app should exist as a repository `app-`*appName* under
             [github.com/annotation](https://github.com/annotation), see also
-            [Corpora](https://annotation.github.io/text-fabric/About/Corpora/).
+            `tf.about.corpora`.
 
             If there is a `/` in the *appName argument*,
             it is interpreted as a location on your  system.
@@ -307,8 +307,10 @@ class App:
             displayApi(self, silent)
             textApi(self)
             if hoist:
-                docs = self.api.makeAvailableIn(hoist)
+                # docs = self.api.makeAvailableIn(hoist)
+                self.api.makeAvailableIn(hoist)
                 if not silent:
+                    &#34;&#34;&#34;
                     dh(
                         &#34;&lt;details open&gt;&lt;summary&gt;&lt;b&gt;API members&lt;/b&gt;:&lt;/summary&gt;\n&#34;
                         + &#34;&lt;br/&gt;\n&#34;.join(
@@ -323,6 +325,12 @@ class App:
                             for (head, ref, entries) in docs
                         )
                         + &#34;&lt;/details&gt;&#34;
+                    )
+                    &#34;&#34;&#34;
+                    dh(
+                        &#34;&lt;div&gt;&#34;
+                        + outLink(&#34;TF API directly available&#34;, APIREF, title=&#34;doc&#34;)
+                        + &#34;&lt;/div&gt;&#34;
                     )
         else:
             if not _browse:
@@ -537,7 +545,7 @@ def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
 can be as simple as the name of an existing TF-app.
 The app should exist as a repository <code>app-</code><em>appName</em> under
 <a href="https://github.com/annotation">github.com/annotation</a>, see also
-<a href="https://annotation.github.io/text-fabric/About/Corpora/">Corpora</a>.</p>
+<code><a title="tf.about.corpora" href="../about/corpora.html">tf.about.corpora</a></code>.</p>
 <p>If there is a <code>/</code> in the <em>appName argument</em>,
 it is interpreted as a location on your
 system.</p>
@@ -725,7 +733,7 @@ Error messages will still come through.</dd>
             The appname  can be as simple as the name of an existing TF-app.
             The app should exist as a repository `app-`*appName* under
             [github.com/annotation](https://github.com/annotation), see also
-            [Corpora](https://annotation.github.io/text-fabric/About/Corpora/).
+            `tf.about.corpora`.
 
             If there is a `/` in the *appName argument*,
             it is interpreted as a location on your  system.
@@ -958,8 +966,10 @@ Error messages will still come through.</dd>
             displayApi(self, silent)
             textApi(self)
             if hoist:
-                docs = self.api.makeAvailableIn(hoist)
+                # docs = self.api.makeAvailableIn(hoist)
+                self.api.makeAvailableIn(hoist)
                 if not silent:
+                    &#34;&#34;&#34;
                     dh(
                         &#34;&lt;details open&gt;&lt;summary&gt;&lt;b&gt;API members&lt;/b&gt;:&lt;/summary&gt;\n&#34;
                         + &#34;&lt;br/&gt;\n&#34;.join(
@@ -974,6 +984,12 @@ Error messages will still come through.</dd>
                             for (head, ref, entries) in docs
                         )
                         + &#34;&lt;/details&gt;&#34;
+                    )
+                    &#34;&#34;&#34;
+                    dh(
+                        &#34;&lt;div&gt;&#34;
+                        + outLink(&#34;TF API directly available&#34;, APIREF, title=&#34;doc&#34;)
+                        + &#34;&lt;/div&gt;&#34;
                     )
         else:
             if not _browse:
@@ -1139,9 +1155,7 @@ call <code>reuse</code> and <code><a title="tf.applib.settings.showContext" href
 </section>
 </article>
 <nav id="sidebar">
-<img src="images/tf-small.png">
 <img src="../images/tf-small.png">
-<div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>

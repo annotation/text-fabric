@@ -32,7 +32,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = &#39;8.1.1&#39;
+VERSION = &#39;8.1.2&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -158,8 +158,11 @@ DOI_URL_PREFIX = &#34;https://doi.org&#34;
 DOI_TF = &#34;10.5281/zenodo.592193&#34;
 &#34;&#34;&#34;DOI of an archived copy of this repo at Zenodo.&#34;&#34;&#34;
 
-APIREF = f&#34;https://{ORG}.github.io/{REPO}/Api/Fabric/&#34;
+APIREF = f&#34;https://{ORG}.github.io/{REPO}/cheatsheet.html&#34;
 &#34;&#34;&#34;Link to the Api docs of Text-Fabric.&#34;&#34;&#34;
+
+SEARCHREF = f&#34;https://{ORG}.github.io/{REPO}/about/searchusage.html&#34;
+&#34;&#34;&#34;Link to the Search docs of Text-Fabric.&#34;&#34;&#34;
 
 APP_URL = f&#34;{URL_GH}/{ORG}&#34;
 &#34;&#34;&#34;Url of the GitHub location that contains all the TF apps.&#34;&#34;&#34;
@@ -366,6 +369,10 @@ files, where <code>{PVN}</code> is the package version number.</p>
 <div class="desc"><p>GitHub repo name.</p>
 <p>This is the name of the repo that contains Text-Fabric.</p></div>
 </dd>
+<dt id="tf.parameters.SEARCHREF"><code class="name">var <span class="ident">SEARCHREF</span></code></dt>
+<dd>
+<div class="desc"><p>Link to the Search docs of Text-Fabric.</p></div>
+</dd>
 <dt id="tf.parameters.SERVER_DISPLAY"><code class="name">var <span class="ident">SERVER_DISPLAY</span></code></dt>
 <dd>
 <div class="desc"><p>Bunch of TF-generic css files.</p></div>
@@ -440,9 +447,7 @@ pickled and compressed to .tfx files.</p>
 </section>
 </article>
 <nav id="sidebar">
-<img src="images/tf-small.png">
 <img src="../images/tf-small.png">
-<div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>
@@ -477,6 +482,7 @@ pickled and compressed to .tfx files.</p>
 <li><code><a title="tf.parameters.PICKLE_PROTOCOL" href="#tf.parameters.PICKLE_PROTOCOL">PICKLE_PROTOCOL</a></code></li>
 <li><code><a title="tf.parameters.RELATIVE" href="#tf.parameters.RELATIVE">RELATIVE</a></code></li>
 <li><code><a title="tf.parameters.REPO" href="#tf.parameters.REPO">REPO</a></code></li>
+<li><code><a title="tf.parameters.SEARCHREF" href="#tf.parameters.SEARCHREF">SEARCHREF</a></code></li>
 <li><code><a title="tf.parameters.SERVER_DISPLAY" href="#tf.parameters.SERVER_DISPLAY">SERVER_DISPLAY</a></code></li>
 <li><code><a title="tf.parameters.SERVER_DISPLAY_BASE" href="#tf.parameters.SERVER_DISPLAY_BASE">SERVER_DISPLAY_BASE</a></code></li>
 <li><code><a title="tf.parameters.TEMP_DIR" href="#tf.parameters.TEMP_DIR">TEMP_DIR</a></code></li>
