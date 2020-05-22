@@ -2573,7 +2573,7 @@ for an updated exposition on searching.
 
 ##### New: Search
 
-![warmXmas](../../images/warmXmas.jpg)
+![warmXmas](../images/warmXmas.jpg)
 
 *Want to feel cosy with Christmas? Put your laptop on your lap, update
 Text-Fabric, and start playing with search. Your laptop will spin itself warm

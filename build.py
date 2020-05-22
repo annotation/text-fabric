@@ -300,8 +300,17 @@ def filterProcess(proc):
 
 
 def apidocs():
-    cmdLine = "pdoc3 --force --html --output-dir docs --template-dir docs/templates tf"
-    run(cmdLine, shell=True)
+    cmdLines = [
+        "rm -rf site",
+        "pdoc3 --force --html --output-dir site --template-dir docs/templates tf",
+        "mv site/tf/* site",
+        "rmdir site/tf",
+        "cp -r docs/images site",
+        "touch site/.nojekyll",
+    ]
+    for cmdLine in cmdLines:
+        print(cmdLine)
+        run(cmdLine, shell=True)
 
 
 def codestats():

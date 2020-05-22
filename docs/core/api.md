@@ -42,7 +42,7 @@ nodes in the slot set order, you will walk the tree in pre-order.
 
 This order is a modification of the one as described in (Doedens 1994, 3.6.3).
 
-![fabric](../../images/DoedensLO.png)
+![fabric](../images/DoedensLO.png)
 
 > Doedens, Crist-Jan (1994), *Text Databases. One Database Model and Several
 > Retrieval Languages*, number 14 in Language and Computers, Editions Rodopi,

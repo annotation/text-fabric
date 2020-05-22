@@ -230,11 +230,11 @@ Make a release
 :   If you want to single out a certain commit as stable data and give it a version number,
     go to your repo on GitHub, click the releases link, and make a new release.
 
-    ![releases](../../images/add-releases.png)
+    ![releases](../images/add-releases.png)
 
     Then click *Draft a new release*
 
-    ![releases](../../images/add-draft.png)
+    ![releases](../images/add-draft.png)
 
     Fill in the details, especially the release version (something like `0.2`),
     although nothing in the workflow depends on the exact form of the version number;
@@ -283,7 +283,7 @@ Package into zip files
 
     Attach these versions, or just the newest version, to the release and publish the release.
             
-    ![releases](../../images/add-attach.png)
+    ![releases](../images/add-attach.png)
 
     Zip your data with the `text-fabric-zip` command as explained above.
     It will look into your local github directory, pickup the features from there,
@@ -393,11 +393,11 @@ More about using data modules
 
     The display looks like this:
 
-    ![sense](../../images/add-sim.png)
+    ![sense](../images/add-sim.png)
 
     And if you export the data, the extra module is listed in the provenance.
 
-    ![sense](../../images/add-sim-prov.png)
+    ![sense](../images/add-sim-prov.png)
 
     !!! explanation "Feature display in the TF browser"
         You can use new features in queries.
@@ -469,7 +469,7 @@ More modules at the same time
 
     Note that `heads` is an edge feature.
 
-    ![sense](../../images/add-heads.png)
+    ![sense](../images/add-heads.png)
 
     In a Jupyter notebook, it goes like this:
 
@@ -486,7 +486,7 @@ More modules at the same time
     )
     ```
 
-    ![sense](../../images/add-incantation.png)
+    ![sense](../images/add-incantation.png)
 
     Now you can run the same query as before:
 

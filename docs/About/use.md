@@ -19,7 +19,7 @@ text-fabric xxx
 
 Then your browser will open and there you'll find links to further help.
 
-![tfbrowser](../../images/tfbrowser.png)
+![tfbrowser](../images/tfbrowser.png)
 
 **On Windows:**
 You can click the Start Menu, and type the command in the search box, and then Enter.
