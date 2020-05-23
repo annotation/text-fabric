@@ -112,6 +112,9 @@ def combine(
 
     All details of the combination can be steered by means of parameters.
 
+    Parameters
+    ----------
+
     locations: tuple of (string or tuple)
         You can either pass just the locations of the components,
         or you can give them a name and pass `(name, location)` instead.
@@ -176,21 +179,6 @@ def combine(
         you can pass them in the parameter `featureMeta` as in the following example,
         where we pass meta data for a feature called `level` with integer values.
 
-        !!! example
-            ```python
-            combine(
-                (&#39;banks&#39;, &#39;banks/tf/0.2&#39;),
-                (&#39;river&#39;, &#39;banks/tf/0.4&#39;),
-                &#39;riverbanks/tf/1.0&#39;,
-                featureMeta=dict(
-                  level=dict(
-                    valueType=&#39;int&#39;,
-                    description=&#39;level of a section node&#39;,
-                  ),
-                ),
-            )
-            ```
-
         The contents of the `otext.tf` features are also metadata,
         and their contents will be merged in exactly the same way.
 
@@ -206,60 +194,78 @@ def combine(
         and will override anything with the same key
         that is already in one of the components.
 
-        !!! example
-            ```python
-            combine(
-                (&#39;banks&#39;, &#39;banks/tf/0.2&#39;),
-                (&#39;river&#39;, &#39;banks/tf/0.4&#39;),
-                &#39;riverbanks/tf/1.0&#39;,
-                featureMeta=dict(
-                    otext=dict(
-                        componentType=&#39;volume&#39;,
-                        componentFeature=&#39;vol&#39;,
-                        sectionTypes=&#39;volume,chapter,line&#39;,
-                        sectionFeatures=&#39;title,number,number&#39;,
-                    ),
-                ),
-                silent=False,
-            )
-            ```
-
-            will give rise to something like this (assuming that `banks` and
-            `rivers` have some deviating material in their `otext.tf`:
-
-            ```
-            @config
-            @compiler=Dirk Roorda
-            @dateWritten=2019-05-20T19:12:23Z
-            @fmt:line-default={letters:XXX}{terminator}
-            @fmt:line-term=line#{terminator}
-            @fmt:text-orig-extra={letters}{punc}{gap}
-            @fmt:text-orig-full={letters}
-            @fmt:text-orig-full!banks={letters}{punc}
-            @fmt:text-orig-full!rivers={letters}{gap}
-            @name=Culture quotes from Iain Banks
-            @purpose=exposition
-            @sectionFeatures=title,number,number
-            @sectionFeatures!banks=title,number,number
-            @sectionFeatures!rivers=number,number,number
-            @sectionTypes=volume,chapter,line
-            @sectionTypes!banks=book,chapter,sentence
-            @sectionTypes!rivers=chapter,sentence,line
-            @source=Good Reads
-            @status=with for similarities in a separate module
-            @structureFeatures!banks=title,number,number,number
-            @structureFeatures!rivers=title,number,number
-            @structureTypes!banks=book,chapter,sentence,line
-            @structureTypes!rivers=book,chapter,sentence
-            @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
-            @version=0.2
-            @writtenBy=Text-Fabric
-            @writtenBy=Text-Fabric
-            @dateWritten=2019-05-28T10:55:06Z
-            ```
-
     silent: boolean, optional `False`
         Suppress or enable informational messages.
+
+    Example:
+
+    ```python
+    combine(
+        (&#39;banks&#39;, &#39;banks/tf/0.2&#39;),
+        (&#39;river&#39;, &#39;banks/tf/0.4&#39;),
+        &#39;riverbanks/tf/1.0&#39;,
+        featureMeta=dict(
+          level=dict(
+            valueType=&#39;int&#39;,
+            description=&#39;level of a section node&#39;,
+          ),
+        ),
+    )
+    ```
+
+    Example:
+
+    ```python
+    combine(
+        (&#39;banks&#39;, &#39;banks/tf/0.2&#39;),
+        (&#39;river&#39;, &#39;banks/tf/0.4&#39;),
+        &#39;riverbanks/tf/1.0&#39;,
+        featureMeta=dict(
+            otext=dict(
+                componentType=&#39;volume&#39;,
+                componentFeature=&#39;vol&#39;,
+                sectionTypes=&#39;volume,chapter,line&#39;,
+                sectionFeatures=&#39;title,number,number&#39;,
+            ),
+        ),
+        silent=False,
+    )
+    ```
+
+    This will give rise to something like this (assuming that `banks` and
+    `rivers` have some deviating material in their `otext.tf`:
+
+    ```
+    @config
+    @compiler=Dirk Roorda
+    @dateWritten=2019-05-20T19:12:23Z
+    @fmt:line-default={letters:XXX}{terminator}
+    @fmt:line-term=line#{terminator}
+    @fmt:text-orig-extra={letters}{punc}{gap}
+    @fmt:text-orig-full={letters}
+    @fmt:text-orig-full!banks={letters}{punc}
+    @fmt:text-orig-full!rivers={letters}{gap}
+    @name=Culture quotes from Iain Banks
+    @purpose=exposition
+    @sectionFeatures=title,number,number
+    @sectionFeatures!banks=title,number,number
+    @sectionFeatures!rivers=number,number,number
+    @sectionTypes=volume,chapter,line
+    @sectionTypes!banks=book,chapter,sentence
+    @sectionTypes!rivers=chapter,sentence,line
+    @source=Good Reads
+    @status=with for similarities in a separate module
+    @structureFeatures!banks=title,number,number,number
+    @structureFeatures!rivers=title,number,number
+    @structureTypes!banks=book,chapter,sentence,line
+    @structureTypes!rivers=book,chapter,sentence
+    @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+    @version=0.2
+    @writtenBy=Text-Fabric
+    @writtenBy=Text-Fabric
+    @dateWritten=2019-05-28T10:55:06Z
+    ```
+
     &#34;&#34;&#34;
 
     if not dirEmpty(targetLocation):
@@ -590,150 +596,144 @@ added to the combined result.</p>
 <p>Care will be taken of the metadata of the features and the contents
 of the <code>otext.tf</code> feature, which consists of metadata only.</p>
 <p>All details of the combination can be steered by means of parameters.</p>
-<p>locations: tuple of (string or tuple)
-You can either pass just the locations of the components,
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>locations</code></strong> :&ensp;<code>tuple</code> of <code>(string</code> or <code>tuple)</code></dt>
+<dd>You can either pass just the locations of the components,
 or you can give them a name and pass <code>(name, location)</code> instead.
-If you do not give a name to a component, its location will be used as name.</p>
-<p>targetLocation: string
-The directory into which the feature files of the combined dataset
-will be written.</p>
-<p>componentType, componentFeature: string, optional <code>None</code>
-If a string value for one of these is passed, a new node type will be added,
+If you do not give a name to a component, its location will be used as name.</dd>
+<dt><strong><code>targetLocation</code></strong> :&ensp;<code>string</code></dt>
+<dd>The directory into which the feature files of the combined dataset
+will be written.</dd>
+<dt><strong><code>componentType</code></strong>, <strong><code>componentFeature</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>
+<p>If a string value for one of these is passed, a new node type will be added,
 with nodes for each component.
 There will also be a new feature, that assigns the name of a component
 to the node of that component.</p>
-<pre><code>The name of the new node type is the value of &lt;code&gt;componentType&lt;/code&gt;
-if it is a non-empty string, else it is the value of &lt;code&gt;componentFeature&lt;/code&gt;.
-
-The name of the new feature is &lt;code&gt;componentFeature&lt;/code&gt;
-if it is a non-empty string, else it is the value of &lt;code&gt;componentType&lt;/code&gt;.
-
-!!! caution "componentType must be fresh"
-    It is an error if the &lt;code&gt;componentType&lt;/code&gt; is a node type that already
-    occurs in one of the components.
-
-!!! note "componentFeature may exist"
-    The &lt;code&gt;componentFeature&lt;/code&gt; may already exist in one or more components.
-    In that case the new feature values for nodes of &lt;code&gt;componentType&lt;/code&gt; will
-    just be added to it.
-
-!!! example
-    ```python
-    combine(
-        ('banks', 'banks/tf/0.2'),
-        ('river', 'banks/tf/0.4'),
-        'riverbanks/tf/1.0',
-        componentType='volume',
-        componentFeature='vol',
-    )
-    ```
-
-    This results of a dataset with nodes and features from the components
-    found at the indicated places on your file system.
-    After combination, the components are visible in the data set as nodes
-    of type &lt;code&gt;volume&lt;/code&gt;, and the feature &lt;code&gt;vol&lt;/code&gt; provides the names &lt;code&gt;banks&lt;/code&gt; and &lt;code&gt;river&lt;/code&gt;
-    for those nodes.
-</code></pre>
-<p>featureMeta: dict, optional <code>None</code>
-The meta data of the components involved will be merged.
+<p>The name of the new node type is the value of <code>componentType</code>
+if it is a non-empty string, else it is the value of <code>componentFeature</code>.</p>
+<p>The name of the new feature is <code>componentFeature</code>
+if it is a non-empty string, else it is the value of <code>componentType</code>.</p>
+<div class="admonition caution">
+<p class="admonition-title">componentType must be fresh</p>
+<p>It is an error if the <code>componentType</code> is a node type that already
+occurs in one of the components.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">componentFeature may exist</p>
+<p>The <code>componentFeature</code> may already exist in one or more components.
+In that case the new feature values for nodes of <code>componentType</code> will
+just be added to it.</p>
+</div>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p><code>python
+combine(
+('banks', 'banks/tf/0.2'),
+('river', 'banks/tf/0.4'),
+'riverbanks/tf/1.0',
+componentType='volume',
+componentFeature='vol',
+)</code></p>
+<p>This results of a dataset with nodes and features from the components
+found at the indicated places on your file system.
+After combination, the components are visible in the data set as nodes
+of type <code>volume</code>, and the feature <code>vol</code> provides the names <code>banks</code> and <code>river</code>
+for those nodes.</p>
+</div>
+</dd>
+<dt><strong><code>featureMeta</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>
+<p>The meta data of the components involved will be merged.
 If feature metadata of the same feature is encountered in different components,
 and if components specify different values for the same keys,
 the different values will be stored under a key with the name of
 the component appended to the key, separated by a <code>!</code>.</p>
-<pre><code>The special metadata field &lt;code&gt;valueType&lt;/code&gt; will just be reduced to one single value &lt;code&gt;str&lt;/code&gt;
-if some components have it as &lt;code&gt;str&lt;/code&gt; and others as &lt;code&gt;int&lt;/code&gt;.
+<p>The special metadata field <code>valueType</code> will just be reduced to one single value <code>str</code>
+if some components have it as <code>str</code> and others as <code>int</code>.
 If the components assign the same value type to a feature, that value type
-will be assigned to the combined feature.
-
-If you want to assign other meta data to specific features,
+will be assigned to the combined feature.</p>
+<p>If you want to assign other meta data to specific features,
 or pass meta data for new features that orginate from the merging process,
-you can pass them in the parameter &lt;code&gt;featureMeta&lt;/code&gt; as in the following example,
-where we pass meta data for a feature called &lt;code&gt;level&lt;/code&gt; with integer values.
-
-!!! example
-    ```python
-    combine(
-        ('banks', 'banks/tf/0.2'),
-        ('river', 'banks/tf/0.4'),
-        'riverbanks/tf/1.0',
-        featureMeta=dict(
-          level=dict(
-            valueType='int',
-            description='level of a section node',
-          ),
-        ),
-    )
-    ```
-
-The contents of the &lt;code&gt;otext.tf&lt;/code&gt; features are also metadata,
-and their contents will be merged in exactly the same way.
-
-So if the section/structure specifications and the formats are not
+you can pass them in the parameter <code>featureMeta</code> as in the following example,
+where we pass meta data for a feature called <code>level</code> with integer values.</p>
+<p>The contents of the <code>otext.tf</code> features are also metadata,
+and their contents will be merged in exactly the same way.</p>
+<p>So if the section/structure specifications and the formats are not
 the same for all components, you will see them spread out
-in fields qualified by the component name with a `!` sign between
-the key and the component.
-
-But you can add new specifications explicitly,
-as meta data of the &lt;code&gt;otext&lt;/code&gt; feature.
+in fields qualified by the component name with a <code>!</code> sign between
+the key and the component.</p>
+<p>But you can add new specifications explicitly,
+as meta data of the <code>otext</code> feature.
 by passing them as keyword arguments.
-They will be passed directly to the combined &lt;code&gt;otext.tf&lt;/code&gt; feature
+They will be passed directly to the combined <code>otext.tf</code> feature
 and will override anything with the same key
-that is already in one of the components.
-
-!!! example
-    ```python
-    combine(
-        ('banks', 'banks/tf/0.2'),
-        ('river', 'banks/tf/0.4'),
-        'riverbanks/tf/1.0',
-        featureMeta=dict(
-            otext=dict(
-                componentType='volume',
-                componentFeature='vol',
-                sectionTypes='volume,chapter,line',
-                sectionFeatures='title,number,number',
-            ),
-        ),
-        silent=False,
-    )
-    ```
-
-    will give rise to something like this (assuming that &lt;code&gt;banks&lt;/code&gt; and
-    &lt;code&gt;rivers&lt;/code&gt; have some deviating material in their &lt;code&gt;otext.tf&lt;/code&gt;:
-
-    ```
-    @config
-    @compiler=Dirk Roorda
-    @dateWritten=2019-05-20T19:12:23Z
-    @fmt:line-default={letters:XXX}{terminator}
-    @fmt:line-term=line#{terminator}
-    @fmt:text-orig-extra={letters}{punc}{gap}
-    @fmt:text-orig-full={letters}
-    @fmt:text-orig-full!banks={letters}{punc}
-    @fmt:text-orig-full!rivers={letters}{gap}
-    @name=Culture quotes from Iain Banks
-    @purpose=exposition
-    @sectionFeatures=title,number,number
-    @sectionFeatures!banks=title,number,number
-    @sectionFeatures!rivers=number,number,number
-    @sectionTypes=volume,chapter,line
-    @sectionTypes!banks=book,chapter,sentence
-    @sectionTypes!rivers=chapter,sentence,line
-    @source=Good Reads
-    @status=with for similarities in a separate module
-    @structureFeatures!banks=title,number,number,number
-    @structureFeatures!rivers=title,number,number
-    @structureTypes!banks=book,chapter,sentence,line
-    @structureTypes!rivers=book,chapter,sentence
-    @url=&lt;https://www.goodreads.com/work/quotes/14366-consider-phlebas&gt;
-    @version=0.2
-    @writtenBy=Text-Fabric
-    @writtenBy=Text-Fabric
-    @dateWritten=2019-05-28T10:55:06Z
-    ```
+that is already in one of the components.</p>
+</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Suppress or enable informational messages.</dd>
+</dl>
+<p>Example:</p>
+<pre><code class="python">combine(
+    ('banks', 'banks/tf/0.2'),
+    ('river', 'banks/tf/0.4'),
+    'riverbanks/tf/1.0',
+    featureMeta=dict(
+      level=dict(
+        valueType='int',
+        description='level of a section node',
+      ),
+    ),
+)
 </code></pre>
-<p>silent: boolean, optional <code>False</code>
-Suppress or enable informational messages.</p></div>
+<p>Example:</p>
+<pre><code class="python">combine(
+    ('banks', 'banks/tf/0.2'),
+    ('river', 'banks/tf/0.4'),
+    'riverbanks/tf/1.0',
+    featureMeta=dict(
+        otext=dict(
+            componentType='volume',
+            componentFeature='vol',
+            sectionTypes='volume,chapter,line',
+            sectionFeatures='title,number,number',
+        ),
+    ),
+    silent=False,
+)
+</code></pre>
+<p>This will give rise to something like this (assuming that <code>banks</code> and
+<code>rivers</code> have some deviating material in their <code>otext.tf</code>:</p>
+<pre><code>@config
+@compiler=Dirk Roorda
+@dateWritten=2019-05-20T19:12:23Z
+@fmt:line-default={letters:XXX}{terminator}
+@fmt:line-term=line#{terminator}
+@fmt:text-orig-extra={letters}{punc}{gap}
+@fmt:text-orig-full={letters}
+@fmt:text-orig-full!banks={letters}{punc}
+@fmt:text-orig-full!rivers={letters}{gap}
+@name=Culture quotes from Iain Banks
+@purpose=exposition
+@sectionFeatures=title,number,number
+@sectionFeatures!banks=title,number,number
+@sectionFeatures!rivers=number,number,number
+@sectionTypes=volume,chapter,line
+@sectionTypes!banks=book,chapter,sentence
+@sectionTypes!rivers=chapter,sentence,line
+@source=Good Reads
+@status=with for similarities in a separate module
+@structureFeatures!banks=title,number,number,number
+@structureFeatures!rivers=title,number,number
+@structureTypes!banks=book,chapter,sentence,line
+@structureTypes!rivers=book,chapter,sentence
+@url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+@version=0.2
+@writtenBy=Text-Fabric
+@writtenBy=Text-Fabric
+@dateWritten=2019-05-28T10:55:06Z
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -769,6 +769,9 @@ Suppress or enable informational messages.</p></div>
     of the `otext.tf` feature, which consists of metadata only.
 
     All details of the combination can be steered by means of parameters.
+
+    Parameters
+    ----------
 
     locations: tuple of (string or tuple)
         You can either pass just the locations of the components,
@@ -834,21 +837,6 @@ Suppress or enable informational messages.</p></div>
         you can pass them in the parameter `featureMeta` as in the following example,
         where we pass meta data for a feature called `level` with integer values.
 
-        !!! example
-            ```python
-            combine(
-                (&#39;banks&#39;, &#39;banks/tf/0.2&#39;),
-                (&#39;river&#39;, &#39;banks/tf/0.4&#39;),
-                &#39;riverbanks/tf/1.0&#39;,
-                featureMeta=dict(
-                  level=dict(
-                    valueType=&#39;int&#39;,
-                    description=&#39;level of a section node&#39;,
-                  ),
-                ),
-            )
-            ```
-
         The contents of the `otext.tf` features are also metadata,
         and their contents will be merged in exactly the same way.
 
@@ -864,60 +852,78 @@ Suppress or enable informational messages.</p></div>
         and will override anything with the same key
         that is already in one of the components.
 
-        !!! example
-            ```python
-            combine(
-                (&#39;banks&#39;, &#39;banks/tf/0.2&#39;),
-                (&#39;river&#39;, &#39;banks/tf/0.4&#39;),
-                &#39;riverbanks/tf/1.0&#39;,
-                featureMeta=dict(
-                    otext=dict(
-                        componentType=&#39;volume&#39;,
-                        componentFeature=&#39;vol&#39;,
-                        sectionTypes=&#39;volume,chapter,line&#39;,
-                        sectionFeatures=&#39;title,number,number&#39;,
-                    ),
-                ),
-                silent=False,
-            )
-            ```
-
-            will give rise to something like this (assuming that `banks` and
-            `rivers` have some deviating material in their `otext.tf`:
-
-            ```
-            @config
-            @compiler=Dirk Roorda
-            @dateWritten=2019-05-20T19:12:23Z
-            @fmt:line-default={letters:XXX}{terminator}
-            @fmt:line-term=line#{terminator}
-            @fmt:text-orig-extra={letters}{punc}{gap}
-            @fmt:text-orig-full={letters}
-            @fmt:text-orig-full!banks={letters}{punc}
-            @fmt:text-orig-full!rivers={letters}{gap}
-            @name=Culture quotes from Iain Banks
-            @purpose=exposition
-            @sectionFeatures=title,number,number
-            @sectionFeatures!banks=title,number,number
-            @sectionFeatures!rivers=number,number,number
-            @sectionTypes=volume,chapter,line
-            @sectionTypes!banks=book,chapter,sentence
-            @sectionTypes!rivers=chapter,sentence,line
-            @source=Good Reads
-            @status=with for similarities in a separate module
-            @structureFeatures!banks=title,number,number,number
-            @structureFeatures!rivers=title,number,number
-            @structureTypes!banks=book,chapter,sentence,line
-            @structureTypes!rivers=book,chapter,sentence
-            @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
-            @version=0.2
-            @writtenBy=Text-Fabric
-            @writtenBy=Text-Fabric
-            @dateWritten=2019-05-28T10:55:06Z
-            ```
-
     silent: boolean, optional `False`
         Suppress or enable informational messages.
+
+    Example:
+
+    ```python
+    combine(
+        (&#39;banks&#39;, &#39;banks/tf/0.2&#39;),
+        (&#39;river&#39;, &#39;banks/tf/0.4&#39;),
+        &#39;riverbanks/tf/1.0&#39;,
+        featureMeta=dict(
+          level=dict(
+            valueType=&#39;int&#39;,
+            description=&#39;level of a section node&#39;,
+          ),
+        ),
+    )
+    ```
+
+    Example:
+
+    ```python
+    combine(
+        (&#39;banks&#39;, &#39;banks/tf/0.2&#39;),
+        (&#39;river&#39;, &#39;banks/tf/0.4&#39;),
+        &#39;riverbanks/tf/1.0&#39;,
+        featureMeta=dict(
+            otext=dict(
+                componentType=&#39;volume&#39;,
+                componentFeature=&#39;vol&#39;,
+                sectionTypes=&#39;volume,chapter,line&#39;,
+                sectionFeatures=&#39;title,number,number&#39;,
+            ),
+        ),
+        silent=False,
+    )
+    ```
+
+    This will give rise to something like this (assuming that `banks` and
+    `rivers` have some deviating material in their `otext.tf`:
+
+    ```
+    @config
+    @compiler=Dirk Roorda
+    @dateWritten=2019-05-20T19:12:23Z
+    @fmt:line-default={letters:XXX}{terminator}
+    @fmt:line-term=line#{terminator}
+    @fmt:text-orig-extra={letters}{punc}{gap}
+    @fmt:text-orig-full={letters}
+    @fmt:text-orig-full!banks={letters}{punc}
+    @fmt:text-orig-full!rivers={letters}{gap}
+    @name=Culture quotes from Iain Banks
+    @purpose=exposition
+    @sectionFeatures=title,number,number
+    @sectionFeatures!banks=title,number,number
+    @sectionFeatures!rivers=number,number,number
+    @sectionTypes=volume,chapter,line
+    @sectionTypes!banks=book,chapter,sentence
+    @sectionTypes!rivers=chapter,sentence,line
+    @source=Good Reads
+    @status=with for similarities in a separate module
+    @structureFeatures!banks=title,number,number,number
+    @structureFeatures!rivers=title,number,number
+    @structureTypes!banks=book,chapter,sentence,line
+    @structureTypes!rivers=book,chapter,sentence
+    @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+    @version=0.2
+    @writtenBy=Text-Fabric
+    @writtenBy=Text-Fabric
+    @dateWritten=2019-05-28T10:55:06Z
+    ```
+
     &#34;&#34;&#34;
 
     if not dirEmpty(targetLocation):
