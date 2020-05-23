@@ -242,6 +242,96 @@ They do not have to complied with the above-mentioned scheme.</p>
 A TF-app (<code><a title="tf.applib.app" href="../applib/app.html">tf.applib.app</a></code>) may define and implement extra text
 formats which may invoke all HTML+CSS styling that you can think of.</p>
 </div>
+<h3 id="the-ttext-function">The T.text() function</h3>
+<p>The way th <code><a title="tf.core.text.Text.text" href="#tf.core.text.Text.text">Text.text()</a></code> responds to its parameters may look complicated,
+but the retionale is that the defaults should be sensible.</p>
+<p>Consider the simplest call to this function: <code>T.text(node)</code>.
+This will apply the default format to <code>node</code>.
+If <code>node</code> is non-slot, then in most cases
+the default format will be applied to the slots contained in <code>node</code>.</p>
+<p>But for special node types, where the best representation
+is not obtained by descending down
+to the contained slot nodes, the dataset may define
+special default types that use other
+features to furnish a decent representation.</p>
+<div class="admonition explanation">
+<p class="admonition-title">lexemes</p>
+<p>In some corpora case this happens for the type of lexemes: <code>lex</code>.
+Lexemes contain their occurrences
+as slots, but the representation of a lexeme
+is not the string of its occurrences, but
+resides in a feature such as <code>voc_lex_utf8</code>
+(vocalized lexeme in Unicode).</p>
+<p>If the dataset defines the format <code>lex-default={lex}</code>,
+this is the only thing needed to regulate
+the representation of a lexeme.</p>
+<p>Hence, <code>T.text(lx)</code> results in the lexeme representation of <code>lx</code>.</p>
+<p>But if you really want to print out all occurrences of lexeme <code>lx</code>,
+you can say <code>T.text(lx, descend=True)</code>.</p>
+</div>
+<div class="admonition explanation">
+<p class="admonition-title">words and signs</p>
+<p>In some corpora the characters or signs are the slot level, and there is
+a non slot level of words.
+Some text formats are best defined on signs, others best on words.</p>
+<p>For example, if words are associated with lexemes, stored in a word
+feature <code>lex</code>, we can define a text format</p>
+<p><code>lex-orig-full=word#{lex}</code></p>
+<p>When you call <code>T.text(n)</code> for a non-slot, non-word node,
+normally the node will be replaced by the slot nodes it contains,
+before applying the template in the format.
+But if you pass a format that specifies a different node type,
+nodes will be replaced by contained nodes of that type. So</p>
+<p><code>T.text(n, fmt='lex-orig-full')</code></p>
+<p>will lookup all word nodes under <em>n</em> and apply the template <code>{lex}</code>
+to them.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">same and different behaviours</p>
+<p>The consequences of the rules might be unexpected in some cases.
+Here are a few observations:</p>
+<ul>
+<li>formats like <code>phrase-default</code> can be implicitly invoked for phrase nodes,
+but <code>descend=True</code> prevents that;</li>
+<li>when a format targeted at phrases is invoked for phrase nodes,
+<code>descend=True</code> will not cause the expansion of those nodes to slot nodes,
+because the phrase node is already expanded
+to the target type of the format;</li>
+</ul>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">memory aid</p>
+<ul>
+<li>If <em>fmt</em> is explicitly passed, it will be the format used
+no matter what, and it determines the level of the nodes to descend to;</li>
+<li>Descending is the norm, it can only be prevented
+by setting default formats for node types or
+by passing <code>descend=False</code> to <code>T.text()</code>;</li>
+<li><code>descend=True</code> is stronger than type-specific default formats,
+but weaker than explicitly passed formats;</li>
+<li><strong>Pass <code>explain=True</code> for a dynamic explanation.</strong></li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Non slot nodes allowed</p>
+<p>In most cases, the nodes fed to <code>T.text()</code> are slots, and the formats are
+templates that use features that are defined for slots.</p>
+<p>But nothing prevents you to define a format
+for non-slot nodes, and use features
+defined for a non-slot node type.</p>
+<p>If, for example, your slot type is <em>glyph</em>,
+and you want a format that renders
+lexemes, which are not defined for glyphs but for words,
+you can just define a format in terms of word features.</p>
+<p>It is your responsibility to take care to use the formats
+for node types for which they make sense.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Escape whitespace in formats</p>
+<p>When defining formats in <code>otext.tf</code>,
+if you need a newline or tab in the format,
+specify it as <code>\n</code> and <code>\t</code>.</p>
+</div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -845,11 +935,15 @@ There are {len(hdFromNd)} structural elements in the dataset.
         [banks](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/formats.ipynb)
         example corpus shows examples.
 
+        Parameters
+        ----------
+
         nodes: dict
             *nodes* can be a single node or an arbitrary iterable of nodes
             of arbitrary types.
             No attempt will be made to sort the nodes.
             If you need order, it is better to sort the nodes first.
+
         fmt: boolean, optional `None`
             The text-format of the text representation.
 
@@ -865,6 +959,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
 
             If a value for *fmt* is passed, but it is not a format defined in the
             *otext.tf* feature, there will be an error message and `None` is returned.
+
         descend: boolean, optional `None`
             Whether to descend to constituent nodes.
 
@@ -892,99 +987,6 @@ There are {len(hdFromNd)} structural elements in the dataset.
             The logic of this function is subtle.
             If you call it and the results baffles you, pass `explain=True`
             and it will explain what it is doing.
-
-        !!! hint &#34;The default is sensible&#34;
-            Consider the simplest call to this function: `T.text(node)`.
-            This will apply the default format to `node`.
-            If `node` is non-slot, then in most cases
-            the default format will be applied to the slots contained in `node`.
-
-            But for special node types, where the best representation
-            is not obtained by descending down
-            to the contained slot nodes, the dataset may define
-            special default types that use other
-            features to furnish a decent representation.
-
-            !!! example &#34;lexemes&#34;
-                In some corpora case this happens for the type of lexemes: `lex`.
-                Lexemes contain their occurrences
-                as slots, but the representation of a lexeme
-                is not the string of its occurrences, but
-                resides in a feature such as `voc_lex_utf8`
-                (vocalized lexeme in Unicode).
-
-                If the dataset defines the format `lex-default={lex} `,
-                this is the only thing needed to regulate
-                the representation of a lexeme.
-
-                Hence, `T.text(lx)` results in the lexeme representation of `lx`.
-
-                But if you really want to print out all occurrences of lexeme `lx`,
-                you can say `T.text(lx, descend=True)`.
-
-            !!! example &#34;words and signs&#34;
-                In some corpora the characters or signs are the slot level, and there is
-                a non slot level of words.
-                Some text formats are best defined on signs, others best on words.
-
-                For example, if words are associated with lexemes, stored in a word
-                feature `lex`, we can define a text format
-
-                ```lex-orig-full=word#{lex} ```
-
-                When you call `T.text(n)` for a non-slot, non-word node,
-                normally the node will be replaced by the slot nodes it contains,
-                before applying the template in the format.
-                But if you pass a format that specifies a different node type,
-                nodes will be replaced by contained nodes of that type. So
-
-                ```T.text(n, fmt=&#39;lex-orig-full&#39;)```
-
-                will lookup all word nodes under *n* and apply the template `{lex}`
-                to them.
-
-        !!! caution &#34;same and different behaviours&#34;
-            The consequences of the rules might be unexpected in some cases.
-            Here are a few observations:
-
-            * formats like `phrase-default` can be implicitly invoked for phrase nodes,
-              but `descend=True` prevents that;
-            * when a format targeted at phrases is invoked for phrase nodes,
-              `descend=True` will not cause the expansion of those nodes to slot nodes,
-              because the phrase node is already expanded
-              to the target type of the format;
-
-
-        !!! hint &#34;memory aid&#34;
-            *   If *fmt* is explicitly passed, it will be the format used
-                no matter what, and it determines the level of the nodes to descend to;
-            *   Descending is the norm, it can only be prevented
-                by setting default formats for node types or
-                by passing `descend=False` to `T.text()`;
-            *   `descend=True` is stronger than type-specific default formats,
-                but weaker than explicitly passed formats;
-            *   **Pass `explain=True` for a dynamic explanation.**
-
-        ??? note &#34;Non slot nodes allowed&#34;
-            In most cases, the nodes fed to `T.text()` are slots, and the formats are
-            templates that use features that are defined for slots.
-
-            But nothing prevents you to define a format
-            for non-slot nodes, and use features
-            defined for a non-slot node type.
-
-            If, for example, your slot type is *glyph*,
-            and you want a format that renders
-            lexemes, which are not defined for glyphs but for words,
-            you can just define a format in terms of word features.
-
-            It is your responsibility to take care to use the formats
-            for node types for which they make sense.
-
-        !!! caution &#34;Escape whitespace in formats&#34;
-            When defining formats in `otext.tf`,
-            if you need a newline or tab in the format,
-            specify it as `\n` and `\t`.
         &#34;&#34;&#34;
 
         api = self.api
@@ -1851,11 +1853,15 @@ There are {len(hdFromNd)} structural elements in the dataset.
         [banks](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/formats.ipynb)
         example corpus shows examples.
 
+        Parameters
+        ----------
+
         nodes: dict
             *nodes* can be a single node or an arbitrary iterable of nodes
             of arbitrary types.
             No attempt will be made to sort the nodes.
             If you need order, it is better to sort the nodes first.
+
         fmt: boolean, optional `None`
             The text-format of the text representation.
 
@@ -1871,6 +1877,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
 
             If a value for *fmt* is passed, but it is not a format defined in the
             *otext.tf* feature, there will be an error message and `None` is returned.
+
         descend: boolean, optional `None`
             Whether to descend to constituent nodes.
 
@@ -1898,99 +1905,6 @@ There are {len(hdFromNd)} structural elements in the dataset.
             The logic of this function is subtle.
             If you call it and the results baffles you, pass `explain=True`
             and it will explain what it is doing.
-
-        !!! hint &#34;The default is sensible&#34;
-            Consider the simplest call to this function: `T.text(node)`.
-            This will apply the default format to `node`.
-            If `node` is non-slot, then in most cases
-            the default format will be applied to the slots contained in `node`.
-
-            But for special node types, where the best representation
-            is not obtained by descending down
-            to the contained slot nodes, the dataset may define
-            special default types that use other
-            features to furnish a decent representation.
-
-            !!! example &#34;lexemes&#34;
-                In some corpora case this happens for the type of lexemes: `lex`.
-                Lexemes contain their occurrences
-                as slots, but the representation of a lexeme
-                is not the string of its occurrences, but
-                resides in a feature such as `voc_lex_utf8`
-                (vocalized lexeme in Unicode).
-
-                If the dataset defines the format `lex-default={lex} `,
-                this is the only thing needed to regulate
-                the representation of a lexeme.
-
-                Hence, `T.text(lx)` results in the lexeme representation of `lx`.
-
-                But if you really want to print out all occurrences of lexeme `lx`,
-                you can say `T.text(lx, descend=True)`.
-
-            !!! example &#34;words and signs&#34;
-                In some corpora the characters or signs are the slot level, and there is
-                a non slot level of words.
-                Some text formats are best defined on signs, others best on words.
-
-                For example, if words are associated with lexemes, stored in a word
-                feature `lex`, we can define a text format
-
-                ```lex-orig-full=word#{lex} ```
-
-                When you call `T.text(n)` for a non-slot, non-word node,
-                normally the node will be replaced by the slot nodes it contains,
-                before applying the template in the format.
-                But if you pass a format that specifies a different node type,
-                nodes will be replaced by contained nodes of that type. So
-
-                ```T.text(n, fmt=&#39;lex-orig-full&#39;)```
-
-                will lookup all word nodes under *n* and apply the template `{lex}`
-                to them.
-
-        !!! caution &#34;same and different behaviours&#34;
-            The consequences of the rules might be unexpected in some cases.
-            Here are a few observations:
-
-            * formats like `phrase-default` can be implicitly invoked for phrase nodes,
-              but `descend=True` prevents that;
-            * when a format targeted at phrases is invoked for phrase nodes,
-              `descend=True` will not cause the expansion of those nodes to slot nodes,
-              because the phrase node is already expanded
-              to the target type of the format;
-
-
-        !!! hint &#34;memory aid&#34;
-            *   If *fmt* is explicitly passed, it will be the format used
-                no matter what, and it determines the level of the nodes to descend to;
-            *   Descending is the norm, it can only be prevented
-                by setting default formats for node types or
-                by passing `descend=False` to `T.text()`;
-            *   `descend=True` is stronger than type-specific default formats,
-                but weaker than explicitly passed formats;
-            *   **Pass `explain=True` for a dynamic explanation.**
-
-        ??? note &#34;Non slot nodes allowed&#34;
-            In most cases, the nodes fed to `T.text()` are slots, and the formats are
-            templates that use features that are defined for slots.
-
-            But nothing prevents you to define a format
-            for non-slot nodes, and use features
-            defined for a non-slot node type.
-
-            If, for example, your slot type is *glyph*,
-            and you want a format that renders
-            lexemes, which are not defined for glyphs but for words,
-            you can just define a format in terms of word features.
-
-            It is your responsibility to take care to use the formats
-            for node types for which they make sense.
-
-        !!! caution &#34;Escape whitespace in formats&#34;
-            When defining formats in `otext.tf`,
-            if you need a newline or tab in the format,
-            specify it as `\n` and `\t`.
         &#34;&#34;&#34;
 
         api = self.api
@@ -3003,152 +2917,56 @@ below a node.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Gives the text that corresponds to a bunch of nodes.</p>
-<pre><code>    The
-    [banks](&lt;https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/formats.ipynb&gt;)
-    example corpus shows examples.
-
-    nodes: dict
-        *nodes* can be a single node or an arbitrary iterable of nodes
-        of arbitrary types.
-        No attempt will be made to sort the nodes.
-        If you need order, it is better to sort the nodes first.
-    fmt: boolean, optional &lt;code&gt;None&lt;/code&gt;
-        The text-format of the text representation.
-
-        If it is not specified or &lt;code&gt;None&lt;/code&gt;, each node will be formatted with
-        a node type specific format, defined as *nodeType*`-default`, if it
-        exists.
-
-        If there is no node specific format, the default format
-        `text-orig-full` will be used.
-
-        If `text-orig-full` is not defined, an error message will be issued,
-        and the nodes will be represented by their types and numbers.
-
-        If a value for *fmt* is passed, but it is not a format defined in the
-        *otext.tf* feature, there will be an error message and &lt;code&gt;None&lt;/code&gt; is returned.
-    descend: boolean, optional &lt;code&gt;None&lt;/code&gt;
-        Whether to descend to constituent nodes.
-
-        If &lt;code&gt;True&lt;/code&gt;, nodes will be replaced by a sequence of their consituent nodes,
-        which have a type specified by the format chosen, or, if the format does
-        not specify such a type, the node will be replaced
-        by the slots contained in it.
-
-        If &lt;code&gt;False&lt;/code&gt;, nodes will not be replaced.
-
-        If *descend* is not specified or None,
-        a node will be replaced by its constituent nodes,
-        unless its type is associated with the given format or,
-        if no format is given, by the default format of its type, or,
-        if there is no such format, by its slots.
-
-        !!! caution "no nodes to descend to"
-            If you call `T.text(n, fmt=myfmt)`
-            and &lt;code&gt;myfmt&lt;/code&gt; is targeted to a node type that is
-            bigger than the node type of &lt;code&gt;n&lt;/code&gt;,
-            then the so-called descending leads to an empty
-            sequence of nodes and hence to an empty string.
-
-    explain: boolean, optional &lt;code&gt;False&lt;/code&gt;
-        The logic of this function is subtle.
-        If you call it and the results baffles you, pass `explain=True`
-        and it will explain what it is doing.
-
-    !!! hint "The default is sensible"
-        Consider the simplest call to this function: &lt;code&gt;T.text(node)&lt;/code&gt;.
-        This will apply the default format to &lt;code&gt;node&lt;/code&gt;.
-        If &lt;code&gt;node&lt;/code&gt; is non-slot, then in most cases
-        the default format will be applied to the slots contained in &lt;code&gt;node&lt;/code&gt;.
-
-        But for special node types, where the best representation
-        is not obtained by descending down
-        to the contained slot nodes, the dataset may define
-        special default types that use other
-        features to furnish a decent representation.
-
-        !!! example "lexemes"
-            In some corpora case this happens for the type of lexemes: &lt;code&gt;lex&lt;/code&gt;.
-            Lexemes contain their occurrences
-            as slots, but the representation of a lexeme
-            is not the string of its occurrences, but
-            resides in a feature such as &lt;code&gt;voc\_lex\_utf8&lt;/code&gt;
-            (vocalized lexeme in Unicode).
-
-            If the dataset defines the format `lex-default={lex} `,
-            this is the only thing needed to regulate
-            the representation of a lexeme.
-
-            Hence, &lt;code&gt;T.text(lx)&lt;/code&gt; results in the lexeme representation of &lt;code&gt;lx&lt;/code&gt;.
-
-            But if you really want to print out all occurrences of lexeme &lt;code&gt;lx&lt;/code&gt;,
-            you can say `T.text(lx, descend=True)`.
-
-        !!! example "words and signs"
-            In some corpora the characters or signs are the slot level, and there is
-            a non slot level of words.
-            Some text formats are best defined on signs, others best on words.
-
-            For example, if words are associated with lexemes, stored in a word
-            feature &lt;code&gt;lex&lt;/code&gt;, we can define a text format
-
-            ```lex-orig-full=word#{lex} ```
-
-            When you call &lt;code&gt;T.text(n)&lt;/code&gt; for a non-slot, non-word node,
-            normally the node will be replaced by the slot nodes it contains,
-            before applying the template in the format.
-            But if you pass a format that specifies a different node type,
-            nodes will be replaced by contained nodes of that type. So
-
-            ```T.text(n, fmt='lex-orig-full')```
-
-            will lookup all word nodes under *n* and apply the template `{lex}`
-            to them.
-
-    !!! caution "same and different behaviours"
-        The consequences of the rules might be unexpected in some cases.
-        Here are a few observations:
-
-        * formats like `phrase-default` can be implicitly invoked for phrase nodes,
-          but `descend=True` prevents that;
-        * when a format targeted at phrases is invoked for phrase nodes,
-          `descend=True` will not cause the expansion of those nodes to slot nodes,
-          because the phrase node is already expanded
-          to the target type of the format;
-
-
-    !!! hint "memory aid"
-        *   If *fmt* is explicitly passed, it will be the format used
-            no matter what, and it determines the level of the nodes to descend to;
-        *   Descending is the norm, it can only be prevented
-            by setting default formats for node types or
-            by passing `descend=False` to &lt;code&gt;T.text()&lt;/code&gt;;
-        *   `descend=True` is stronger than type-specific default formats,
-            but weaker than explicitly passed formats;
-        *   **Pass `explain=True` for a dynamic explanation.**
-
-    ??? note "Non slot nodes allowed"
-        In most cases, the nodes fed to &lt;code&gt;T.text()&lt;/code&gt; are slots, and the formats are
-        templates that use features that are defined for slots.
-
-        But nothing prevents you to define a format
-        for non-slot nodes, and use features
-        defined for a non-slot node type.
-
-        If, for example, your slot type is *glyph*,
-        and you want a format that renders
-        lexemes, which are not defined for glyphs but for words,
-        you can just define a format in terms of word features.
-
-        It is your responsibility to take care to use the formats
-        for node types for which they make sense.
-
-    !!! caution "Escape whitespace in formats"
-        When defining formats in &lt;code&gt;otext.tf&lt;/code&gt;,
-        if you need a newline or tab in the format,
-        specify it as `
-</code></pre>
-<p><code> and </code> `.</p></div>
+<p>The
+<a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/formats.ipynb">banks</a>
+example corpus shows examples.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>nodes</code></strong> :&ensp;<code>dict</code></dt>
+<dd><em>nodes</em> can be a single node or an arbitrary iterable of nodes
+of arbitrary types.
+No attempt will be made to sort the nodes.
+If you need order, it is better to sort the nodes first.</dd>
+<dt><strong><code>fmt</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>
+<p>The text-format of the text representation.</p>
+<p>If it is not specified or <code>None</code>, each node will be formatted with
+a node type specific format, defined as <em>nodeType</em><code>-default</code>, if it
+exists.</p>
+<p>If there is no node specific format, the default format
+<code>text-orig-full</code> will be used.</p>
+<p>If <code>text-orig-full</code> is not defined, an error message will be issued,
+and the nodes will be represented by their types and numbers.</p>
+<p>If a value for <em>fmt</em> is passed, but it is not a format defined in the
+<em>otext.tf</em> feature, there will be an error message and <code>None</code> is returned.</p>
+</dd>
+<dt><strong><code>descend</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>
+<p>Whether to descend to constituent nodes.</p>
+<p>If <code>True</code>, nodes will be replaced by a sequence of their consituent nodes,
+which have a type specified by the format chosen, or, if the format does
+not specify such a type, the node will be replaced
+by the slots contained in it.</p>
+<p>If <code>False</code>, nodes will not be replaced.</p>
+<p>If <em>descend</em> is not specified or None,
+a node will be replaced by its constituent nodes,
+unless its type is associated with the given format or,
+if no format is given, by the default format of its type, or,
+if there is no such format, by its slots.</p>
+<div class="admonition caution">
+<p class="admonition-title">no nodes to descend to</p>
+<p>If you call <code>T.text(n, fmt=myfmt)</code>
+and <code>myfmt</code> is targeted to a node type that is
+bigger than the node type of <code>n</code>,
+then the so-called descending leads to an empty
+sequence of nodes and hence to an empty string.</p>
+</div>
+</dd>
+<dt><strong><code>explain</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>The logic of this function is subtle.
+If you call it and the results baffles you, pass <code>explain=True</code>
+and it will explain what it is doing.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -3160,11 +2978,15 @@ below a node.</dd>
         [banks](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/formats.ipynb)
         example corpus shows examples.
 
+        Parameters
+        ----------
+
         nodes: dict
             *nodes* can be a single node or an arbitrary iterable of nodes
             of arbitrary types.
             No attempt will be made to sort the nodes.
             If you need order, it is better to sort the nodes first.
+
         fmt: boolean, optional `None`
             The text-format of the text representation.
 
@@ -3180,6 +3002,7 @@ below a node.</dd>
 
             If a value for *fmt* is passed, but it is not a format defined in the
             *otext.tf* feature, there will be an error message and `None` is returned.
+
         descend: boolean, optional `None`
             Whether to descend to constituent nodes.
 
@@ -3207,99 +3030,6 @@ below a node.</dd>
             The logic of this function is subtle.
             If you call it and the results baffles you, pass `explain=True`
             and it will explain what it is doing.
-
-        !!! hint &#34;The default is sensible&#34;
-            Consider the simplest call to this function: `T.text(node)`.
-            This will apply the default format to `node`.
-            If `node` is non-slot, then in most cases
-            the default format will be applied to the slots contained in `node`.
-
-            But for special node types, where the best representation
-            is not obtained by descending down
-            to the contained slot nodes, the dataset may define
-            special default types that use other
-            features to furnish a decent representation.
-
-            !!! example &#34;lexemes&#34;
-                In some corpora case this happens for the type of lexemes: `lex`.
-                Lexemes contain their occurrences
-                as slots, but the representation of a lexeme
-                is not the string of its occurrences, but
-                resides in a feature such as `voc_lex_utf8`
-                (vocalized lexeme in Unicode).
-
-                If the dataset defines the format `lex-default={lex} `,
-                this is the only thing needed to regulate
-                the representation of a lexeme.
-
-                Hence, `T.text(lx)` results in the lexeme representation of `lx`.
-
-                But if you really want to print out all occurrences of lexeme `lx`,
-                you can say `T.text(lx, descend=True)`.
-
-            !!! example &#34;words and signs&#34;
-                In some corpora the characters or signs are the slot level, and there is
-                a non slot level of words.
-                Some text formats are best defined on signs, others best on words.
-
-                For example, if words are associated with lexemes, stored in a word
-                feature `lex`, we can define a text format
-
-                ```lex-orig-full=word#{lex} ```
-
-                When you call `T.text(n)` for a non-slot, non-word node,
-                normally the node will be replaced by the slot nodes it contains,
-                before applying the template in the format.
-                But if you pass a format that specifies a different node type,
-                nodes will be replaced by contained nodes of that type. So
-
-                ```T.text(n, fmt=&#39;lex-orig-full&#39;)```
-
-                will lookup all word nodes under *n* and apply the template `{lex}`
-                to them.
-
-        !!! caution &#34;same and different behaviours&#34;
-            The consequences of the rules might be unexpected in some cases.
-            Here are a few observations:
-
-            * formats like `phrase-default` can be implicitly invoked for phrase nodes,
-              but `descend=True` prevents that;
-            * when a format targeted at phrases is invoked for phrase nodes,
-              `descend=True` will not cause the expansion of those nodes to slot nodes,
-              because the phrase node is already expanded
-              to the target type of the format;
-
-
-        !!! hint &#34;memory aid&#34;
-            *   If *fmt* is explicitly passed, it will be the format used
-                no matter what, and it determines the level of the nodes to descend to;
-            *   Descending is the norm, it can only be prevented
-                by setting default formats for node types or
-                by passing `descend=False` to `T.text()`;
-            *   `descend=True` is stronger than type-specific default formats,
-                but weaker than explicitly passed formats;
-            *   **Pass `explain=True` for a dynamic explanation.**
-
-        ??? note &#34;Non slot nodes allowed&#34;
-            In most cases, the nodes fed to `T.text()` are slots, and the formats are
-            templates that use features that are defined for slots.
-
-            But nothing prevents you to define a format
-            for non-slot nodes, and use features
-            defined for a non-slot node type.
-
-            If, for example, your slot type is *glyph*,
-            and you want a format that renders
-            lexemes, which are not defined for glyphs but for words,
-            you can just define a format in terms of word features.
-
-            It is your responsibility to take care to use the formats
-            for node types for which they make sense.
-
-        !!! caution &#34;Escape whitespace in formats&#34;
-            When defining formats in `otext.tf`,
-            if you need a newline or tab in the format,
-            specify it as `\n` and `\t`.
         &#34;&#34;&#34;
 
         api = self.api
@@ -3553,7 +3283,9 @@ is the node that has heading <code>((book, Genesis), (chapter, 3))</code>.</p>
 </section>
 </article>
 <nav id="sidebar">
-<img src="../images/tf-small.png">
+<p><img src="/images/tf-small.png"></p>
+<p><a href="/cheatsheet.png">cheat sheet</a></p>
+<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
 <h1>Index</h1>
 <div class="toc">
 <ul>
@@ -3561,7 +3293,10 @@ is the node that has heading <code>((book, Genesis), (chapter, 3))</code>.</p>
 <li><a href="#structure">Structure</a></li>
 <li><a href="#sections">Sections</a></li>
 <li><a href="#book-names-and-languages">Book names and languages</a></li>
-<li><a href="#text-representation">Text representation</a></li>
+<li><a href="#text-representation">Text representation</a><ul>
+<li><a href="#the-ttext-function">The T.text() function</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

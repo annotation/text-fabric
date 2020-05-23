@@ -203,6 +203,11 @@ class Fabric(object):
         self.tm = Timestamp()
         self.tm.setSilent(silent)
         self.banner = f&#34;This is {NAME} {VERSION}&#34;
+        &#34;&#34;&#34;The banner the Text-Fabric.
+
+        Will be shown just after start up, if the silence is not `deep`.
+        &#34;&#34;&#34;
+
         self.version = VERSION
         &#34;&#34;&#34;The version number of the Text-Fabric library.
         &#34;&#34;&#34;
@@ -1216,6 +1221,11 @@ also can add new formats to the Text-API.</p>
         self.tm = Timestamp()
         self.tm.setSilent(silent)
         self.banner = f&#34;This is {NAME} {VERSION}&#34;
+        &#34;&#34;&#34;The banner the Text-Fabric.
+
+        Will be shown just after start up, if the silence is not `deep`.
+        &#34;&#34;&#34;
+
         self.version = VERSION
         &#34;&#34;&#34;The version number of the Text-Fabric library.
         &#34;&#34;&#34;
@@ -2047,6 +2057,11 @@ Api reference : {APIREF}
 </details>
 <h3>Instance variables</h3>
 <dl>
+<dt id="tf.fabric.Fabric.banner"><code class="name">var <span class="ident">banner</span></code></dt>
+<dd>
+<div class="desc"><p>The banner the Text-Fabric.</p>
+<p>Will be shown just after start up, if the silence is not <code>deep</code>.</p></div>
+</dd>
 <dt id="tf.fabric.Fabric.features"><code class="name">var <span class="ident">features</span></code></dt>
 <dd>
 <div class="desc"><p>Dictionary of all features that TF has found, whether loaded or not.</p>
@@ -2883,7 +2898,9 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 </section>
 </article>
 <nav id="sidebar">
-<img src="../images/tf-small.png">
+<p><img src="/images/tf-small.png"></p>
+<p><a href="/cheatsheet.png">cheat sheet</a></p>
+<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
 <h1>Index</h1>
 <div class="toc">
 <ul>
@@ -2906,6 +2923,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <li>
 <h4><code><a title="tf.fabric.Fabric" href="#tf.fabric.Fabric">Fabric</a></code></h4>
 <ul class="two-column">
+<li><code><a title="tf.fabric.Fabric.banner" href="#tf.fabric.Fabric.banner">banner</a></code></li>
 <li><code><a title="tf.fabric.Fabric.clearCache" href="#tf.fabric.Fabric.clearCache">clearCache</a></code></li>
 <li><code><a title="tf.fabric.Fabric.explore" href="#tf.fabric.Fabric.explore">explore</a></code></li>
 <li><code><a title="tf.fabric.Fabric.exportMQL" href="#tf.fabric.Fabric.exportMQL">exportMQL</a></code></li>

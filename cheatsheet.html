@@ -159,17 +159,17 @@ Use <code><a title="tf.app.use" href="app.html#tf.app.use">use()</a></code> inst
 <dd>get nodes where feature <code>fff</code> has <code>value</code></dd>
 <dd><code><a title="tf.core.api.NodeFeature.s" href="core/api.html#tf.core.api.NodeFeature.s">NodeFeature.s()</a></code></dd>
 <dt><code>F.fff.freqList(...)</code></dt>
-<dd>frequency list of values of `fff</dd>
+<dd>frequency list of values of <code>fff</code></dd>
 <dd><code><a title="tf.core.api.NodeFeature.freqList" href="core/api.html#tf.core.api.NodeFeature.freqList">NodeFeature.freqList()</a></code></dd>
 <dt><code>F.fff.items(...)</code></dt>
 <dd>generator of all entries of <code>fff</code> as mapping from nodes to values</dd>
-<dd><code><a title="tf.core.api.NodeFeature.freqList" href="core/api.html#tf.core.api.NodeFeature.freqList">NodeFeature.freqList()</a></code></dd>
+<dd><code><a title="tf.core.api.NodeFeature.items" href="core/api.html#tf.core.api.NodeFeature.items">NodeFeature.items()</a></code></dd>
 <dt><code>F.fff.meta</code></dt>
 <dd>meta data of feature <code>fff</code></dd>
 <dd><code><a title="tf.core.api.NodeFeature.meta" href="core/api.html#tf.core.api.NodeFeature.meta">NodeFeature.meta</a></code></dd>
 <dt><code>Fs('fff')</code></dt>
-<dd>identical to <code>F.ffff</code> usable if name of feature is variable</dd>
-<dd><code><a title="tf.core.api.NodeFeature" href="core/api.html#tf.core.api.NodeFeature">NodeFeature</a></code></dd>
+<dd>identical to <code>F.ffff</code>, usable if name of feature is variable</dd>
+<dd><code><a title="tf.core.api.Api.Fs" href="core/api.html#tf.core.api.Api.Fs">Api.Fs()</a></code></dd>
 </dl>
 <h4 id="special-feature-otype">Special feature <code>otype</code></h4>
 <p>Maps nodes to their types.</p>
@@ -182,7 +182,7 @@ Use <code><a title="tf.app.use" href="app.html#tf.app.use">use()</a></code> inst
 <dd><code><a title="tf.core.api.OtypeFeature.s" href="core/api.html#tf.core.api.OtypeFeature.s">OtypeFeature.s()</a></code></dd>
 <dt><code>F.otype.sInterval(nodeType)</code></dt>
 <dd>gives start and ending nodes of <code>nodeType</code></dd>
-<dd><code><a title="tf.core.api.OtypeFeature.s" href="core/api.html#tf.core.api.OtypeFeature.s">OtypeFeature.s()</a></code></dd>
+<dd><code><a title="tf.core.api.OtypeFeature.sInterval" href="core/api.html#tf.core.api.OtypeFeature.sInterval">OtypeFeature.sInterval()</a></code></dd>
 <dt><code>F.otype.items(...)</code></dt>
 <dd>generator of all (node, type) pairs.</dd>
 <dd><code><a title="tf.core.api.OtypeFeature.items" href="core/api.html#tf.core.api.OtypeFeature.items">OtypeFeature.items()</a></code></dd>
@@ -221,13 +221,13 @@ Use <code><a title="tf.app.use" href="app.html#tf.app.use">use()</a></code> inst
 <dd><code><a title="tf.core.api.EdgeFeature.items" href="core/api.html#tf.core.api.EdgeFeature.items">EdgeFeature.items()</a></code></dd>
 <dt><code>E.fff.b(node)</code></dt>
 <dd>get value of feature <code>fff</code> for edges <em>from</em> and <em>to</em> node</dd>
-<dd><code><a title="tf.core.api.EdgeFeature.t" href="core/api.html#tf.core.api.EdgeFeature.t">EdgeFeature.t()</a></code></dd>
+<dd><code><a title="tf.core.api.EdgeFeature.b" href="core/api.html#tf.core.api.EdgeFeature.b">EdgeFeature.b()</a></code></dd>
 <dt><code>E.fff.meta</code></dt>
 <dd>all meta data of feature <code>fff</code></dd>
 <dd><code><a title="tf.core.api.EdgeFeature.meta" href="core/api.html#tf.core.api.EdgeFeature.meta">EdgeFeature.meta</a></code></dd>
 <dt><code>Es('fff')</code></dt>
-<dd>identical to <code>E.fff</code> usable if name of feature is variable</dd>
-<dd><code><a title="tf.core.api.EdgeFeature" href="core/api.html#tf.core.api.EdgeFeature">EdgeFeature</a></code></dd>
+<dd>identical to <code>E.fff</code>, usable if name of feature is variable</dd>
+<dd><code><a title="tf.core.api.Api.Es" href="core/api.html#tf.core.api.Api.Es">Api.Es()</a></code></dd>
 </dl>
 <h4 id="special-feature-oslots">Special feature <code>oslots</code></h4>
 <p>Maps nodes to the set of slots they occupy.</p>
@@ -245,7 +245,7 @@ Use <code><a title="tf.app.use" href="app.html#tf.app.use">use()</a></code> inst
 <h3 id="locality">Locality</h3>
 <dl>
 <dt><code>L.i(node, otype=...)</code></dt>
-<dd>go to intersectiing node</dd>
+<dd>go to intersecting nodes</dd>
 <dd><code><a title="tf.core.locality.Locality.i" href="core/locality.html#tf.core.locality.Locality.i">Locality.i()</a></code></dd>
 <dt><code>L.u(node, otype=...)</code></dt>
 <dd>go one level up</dd>
@@ -254,10 +254,10 @@ Use <code><a title="tf.app.use" href="app.html#tf.app.use">use()</a></code> inst
 <dd>go one level down</dd>
 <dd><code><a title="tf.core.locality.Locality.d" href="core/locality.html#tf.core.locality.Locality.d">Locality.d()</a></code></dd>
 <dt><code>L.p(node, otype=...)</code></dt>
-<dd>go to adjacent previous node</dd>
+<dd>go to adjacent previous nodes</dd>
 <dd><code><a title="tf.core.locality.Locality.p" href="core/locality.html#tf.core.locality.Locality.p">Locality.p()</a></code></dd>
 <dt><code>L.n(node, otype=...)</code></dt>
-<dd>go to adjacent next node</dd>
+<dd>go to adjacent next nodes</dd>
 <dd><code><a title="tf.core.locality.Locality.n" href="core/locality.html#tf.core.locality.Locality.n">Locality.n()</a></code></dd>
 </dl>
 <h3 id="text">Text</h3>
@@ -270,7 +270,7 @@ Use <code><a title="tf.app.use" href="app.html#tf.app.use">use()</a></code> inst
 <p>Rigid 1 or 2 or 3 sectioning system</p>
 <dl>
 <dt><code>T.sectionTuple(node)</code></dt>
-<dd>give tuple of section nodes that contain <code>n</code></dd>
+<dd>give tuple of section nodes that contain node</dd>
 <dd><code><a title="tf.core.text.Text.sectionTuple" href="core/text.html#tf.core.text.Text.sectionTuple">Text.sectionTuple()</a></code></dd>
 <dt><code>T.sectionFromNode(node)</code></dt>
 <dd>give section heading of node</dd>
@@ -374,12 +374,13 @@ from tf.lib import writeSets
 <dl>
 <dt><code>TF.exportMQL()</code></dt>
 <dd>export loaded dataset to MQL</dd>
-<dd>`tf.fabric.Fabric.exportMQL</dd>
+<dd><code><a title="tf.fabric.Fabric.exportMQL" href="fabric.html#tf.fabric.Fabric.exportMQL">Fabric.exportMQL()</a></code></dd>
 <dt><code>TF.importMQL()</code></dt>
 <dd>convert MQL file to TF dataset</dd>
-<dd>`tf.fabric.Fabric.importMQL</dd>
+<dd><code><a title="tf.fabric.Fabric.importMQL" href="fabric.html#tf.fabric.Fabric.importMQL">Fabric.importMQL()</a></code></dd>
 </dl>
 <h4 id="walker-conversion">Walker conversion</h4>
+<p><code>from tf.convert.walker import CV</code></p>
 <dl>
 <dt><code>cv = CV(TF)</code></dt>
 <dd>convert structured data to TF dataset</dd>
@@ -389,10 +390,10 @@ from tf.lib import writeSets
 <dl>
 <dt><code>TF.version</code></dt>
 <dd>version number of the Text-Fabric package.</dd>
-<dd>`tf.fabric.Fabric.version</dd>
+<dd><code><a title="tf.fabric.Fabric.version" href="fabric.html#tf.fabric.Fabric.version">Fabric.version</a></code></dd>
 <dt><code>TF.banner</code></dt>
 <dd>banner of the Text-Fabric program.</dd>
-<dd>`tf.fabric.Fabric.banner</dd>
+<dd><code><a title="tf.fabric.Fabric.banner" href="fabric.html#tf.fabric.Fabric.banner">Fabric.banner</a></code></dd>
 <dt><code>isSilent()</code></dt>
 <dd>report the verbosity of Text-Fabric</dd>
 <dd><code><a title="tf.core.timestamp.Timestamp.isSilent" href="core/timestamp.html#tf.core.timestamp.Timestamp.isSilent">Timestamp.isSilent()</a></code></dd>
@@ -425,6 +426,9 @@ from tf.lib import writeSets
 <dt><code>Call()</code></dt>
 <dd>all precomputed data component names</dd>
 <dd><code><a title="tf.core.api.Api.Call" href="core/api.html#tf.core.api.Api.Call">Api.Call()</a></code></dd>
+<dt><code>Cs('ccc')</code></dt>
+<dd>identical to <code>C.ccc</code>, usable if name of component is variable</dd>
+<dd><code><a title="tf.core.api.Api.Cs" href="core/api.html#tf.core.api.Api.Cs">Api.Cs()</a></code></dd>
 <dt><code>C.levels.data</code></dt>
 <dd>various statistics on node types</dd>
 <dd><code><a title="tf.core.prepare.levels" href="core/prepare.html#tf.core.prepare.levels">levels()</a></code></dd>
@@ -456,7 +460,10 @@ functions</dd>
 <dt><code>TF.clearCache()</code></dt>
 <dd>clears the cache of compiled TF data</dd>
 <dd><code><a title="tf.fabric.Fabric.clearCache" href="fabric.html#tf.fabric.Fabric.clearCache">Fabric.clearCache()</a></code></dd>
-<dt><code>TF.clean()</code></dt>
+</dl>
+<p><code>from tf.clean import clean</code></p>
+<dl>
+<dt><code>clean()</code></dt>
 <dd>clears the cache of compiled TF data</dd>
 <dd><code><a title="tf.clean" href="clean.html">tf.clean</a></code></dd>
 </dl>
@@ -479,7 +486,9 @@ functions</dd>
 </section>
 </article>
 <nav id="sidebar">
-<img src="../images/tf-small.png">
+<p><img src="/images/tf-small.png"></p>
+<p><a href="/cheatsheet.png">cheat sheet</a></p>
+<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
 <h1>Index</h1>
 <div class="toc">
 <ul>
