@@ -862,7 +862,7 @@ def pretty(app, n, explain=False, **options):
     The internal structure of the nodes that are involved is also revealed.
     In addition, extra features and their values are displayed with the nodes.
 
-    !!!  hint &#34;Controlling pretty displays&#34;
+    !!! hint &#34;Controlling pretty displays&#34;
         The following `tf.applib.displaysettings`
         are particularly relevant to pretty displays:
 
@@ -2745,15 +2745,19 @@ Depending on <em>asString</em> above.</p></div>
 <div class="desc"><p>Displays the material that corresponds to a node in a graphical way.</p>
 <p>The internal structure of the nodes that are involved is also revealed.
 In addition, extra features and their values are displayed with the nodes.</p>
-<p>!!!
-hint "Controlling pretty displays"
-The following <code><a title="tf.applib.displaysettings" href="displaysettings.html">tf.applib.displaysettings</a></code>
+<div class="admonition hint">
+<p class="admonition-title">Controlling pretty displays</p>
+<p>The following <code><a title="tf.applib.displaysettings" href="displaysettings.html">tf.applib.displaysettings</a></code>
 are particularly relevant to pretty displays:</p>
-<pre><code>* &lt;code&gt;condenseType&lt;/code&gt;: the standard container to display nodes in;
-* &lt;code&gt;full&lt;/code&gt;: whether to display a reference to the material or the material itself;
-* &lt;code&gt;extraFeatures&lt;/code&gt;: additional features to  display
-* &lt;code&gt;tupleFeatures&lt;/code&gt;: additional features to  display (primarily for &lt;code&gt;&lt;a title="tf.applib.display.export" href="#tf.applib.display.export"&gt;export()&lt;/a&gt;&lt;/code&gt;.
-</code></pre>
+<ul>
+<li><code>condenseType</code>: the standard container to display nodes in;</li>
+<li><code>full</code>: whether to display a reference to the material or the material itself;</li>
+<li><code>extraFeatures</code>: additional features to
+display</li>
+<li><code>tupleFeatures</code>: additional features to
+display (primarily for <code><a title="tf.applib.display.export" href="#tf.applib.display.export">export()</a></code>.</li>
+</ul>
+</div>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
@@ -2778,7 +2782,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
     The internal structure of the nodes that are involved is also revealed.
     In addition, extra features and their values are displayed with the nodes.
 
-    !!!  hint &#34;Controlling pretty displays&#34;
+    !!! hint &#34;Controlling pretty displays&#34;
         The following `tf.applib.displaysettings`
         are particularly relevant to pretty displays:
 

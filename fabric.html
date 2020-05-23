@@ -469,6 +469,16 @@ Api reference : {APIREF}
             )
 
     def loadAll(self, silent=None):
+        &#34;&#34;&#34;Load all loadable features.
+
+        Parameters
+        ----------
+        silent: boolean, optional `None`
+            TF is silent if you specified `silent=True` in a preceding
+            `TF=Fabric()` call.
+            But if you did not, you can also pass `silent=True` to this call.
+        &#34;&#34;&#34;
+
         api = self.load(&#34;&#34;, silent=silent)
         allFeatures = self.explore(silent=silent or True, show=True)
         loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
@@ -1487,6 +1497,16 @@ Api reference : {APIREF}
             )
 
     def loadAll(self, silent=None):
+        &#34;&#34;&#34;Load all loadable features.
+
+        Parameters
+        ----------
+        silent: boolean, optional `None`
+            TF is silent if you specified `silent=True` in a preceding
+            `TF=Fabric()` call.
+            But if you did not, you can also pass `silent=True` to this call.
+        &#34;&#34;&#34;
+
         api = self.load(&#34;&#34;, silent=silent)
         allFeatures = self.explore(silent=silent or True, show=True)
         loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
@@ -2567,12 +2587,29 @@ else <code>False</code>.</dd>
 <span>def <span class="ident">loadAll</span></span>(<span>self, silent=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Load all loadable features.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>TF is silent if you specified <code>silent=True</code> in a preceding
+<code>TF=Fabric()</code> call.
+But if you did not, you can also pass <code>silent=True</code> to this call.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def loadAll(self, silent=None):
+    &#34;&#34;&#34;Load all loadable features.
+
+    Parameters
+    ----------
+    silent: boolean, optional `None`
+        TF is silent if you specified `silent=True` in a preceding
+        `TF=Fabric()` call.
+        But if you did not, you can also pass `silent=True` to this call.
+    &#34;&#34;&#34;
+
     api = self.load(&#34;&#34;, silent=silent)
     allFeatures = self.explore(silent=silent or True, show=True)
     loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
