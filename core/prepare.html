@@ -82,6 +82,8 @@ def levels(info, error, otype, oslots, otext):
     The order of the tuple is descending by average number of slots per node of that
     type.
 
+    Notes
+    -----
     !!! explanation &#34;Level computation and customization&#34;
         All node types have a level, defined by the average amount of slots object of
         that type usually occupy. The bigger the average object, the lower the levels.
@@ -166,6 +168,8 @@ def order(info, error, otype, oslots, levels):
     array
         All nodes, slot and nonslot, in canonical order.
 
+    Notes
+    -----
     We store the result in an array because it saves a lot of memory, and access
     is still fast.
     &#34;&#34;&#34;
@@ -231,6 +235,8 @@ def rank(info, error, otype, order):
     array
         The ranks of all nodes, slot and nonslot, with respect to the canonical order.
 
+    Notes
+    -----
     We store the result in an array because it saves a lot of memory, and access
     is still fast.
     &#34;&#34;&#34;
@@ -268,6 +274,8 @@ def levUp(info, error, otype, oslots, rank):
         The n-th member is an array of the embedder nodes of n.
         Those arrays are sorted in canonical order (`tf.core.api`).
 
+    Notes
+    -----
     !!! hint &#34;Memory efficiency&#34;
         Many nodes have the same array of embedders.
         Those embedder arrays will be reused for those nodes.
@@ -413,6 +421,8 @@ def boundary(info, error, otype, oslots, rank):
             The *n*-th member is the array of nodes that end at slot *n*,
             ordered in canonical order;
 
+    Notes
+    -----
     !!! hint &#34;why  reversed canonical order?&#34;
         Just for symmetry.
     &#34;&#34;&#34;
@@ -481,6 +491,8 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
             section-level-2 headings to mappings from
             section-level3 headings to section-level-3 nodes.
 
+    Notes
+    -----
     !!! caution &#34;Custom names&#34;
         Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
         It is the corpus data, especially the `otext` config feature that
@@ -594,14 +606,16 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     -------
     tuple
         *   headingFromNode
-            Mapping from nodes to section keys
+            (Mapping from nodes to section keys)
         *   nodeFromHeading
-            Mapping from section keys to nodes
+            (Mapping from section keys to nodes)
         *   multiple
         *   top
         *   up
         *   down
 
+    Notes
+    -----
     A section key of a structural node is obtained by going a level up from
     that node, retrieving the heading of that structural node, then going up again,
     and so on till a top node is reached. The tuple of headings obtained in this way
@@ -783,6 +797,8 @@ reversed canonical order?</p>
             The *n*-th member is the array of nodes that end at slot *n*,
             ordered in canonical order;
 
+    Notes
+    -----
     !!! hint &#34;why  reversed canonical order?&#34;
         Just for symmetry.
     &#34;&#34;&#34;
@@ -975,6 +991,8 @@ this raw data might be a deal.</p>
         The n-th member is an array of the embedder nodes of n.
         Those arrays are sorted in canonical order (`tf.core.api`).
 
+    Notes
+    -----
     !!! hint &#34;Memory efficiency&#34;
         Many nodes have the same array of embedders.
         Those embedder arrays will be reused for those nodes.
@@ -1120,6 +1138,8 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
     The order of the tuple is descending by average number of slots per node of that
     type.
 
+    Notes
+    -----
     !!! explanation &#34;Level computation and customization&#34;
         All node types have a level, defined by the average amount of slots object of
         that type usually occupy. The bigger the average object, the lower the levels.
@@ -1204,10 +1224,10 @@ nodes contain, see <code><a title="tf.core.api" href="api.html">tf.core.api</a><
 <dl>
 <dt><code>array</code></dt>
 <dd>All nodes, slot and nonslot, in canonical order.</dd>
-<dt><code>We store the result in an array because it saves a lot</code> of <code>memory, and access</code></dt>
-<dd>&nbsp;</dd>
 </dl>
-<p>is still fast.</p></div>
+<h2 id="notes">Notes</h2>
+<p>We store the result in an array because it saves a lot of memory, and access
+is still fast.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1236,6 +1256,8 @@ nodes contain, see <code><a title="tf.core.api" href="api.html">tf.core.api</a><
     array
         All nodes, slot and nonslot, in canonical order.
 
+    Notes
+    -----
     We store the result in an array because it saves a lot of memory, and access
     is still fast.
     &#34;&#34;&#34;
@@ -1301,10 +1323,10 @@ canonical order (see <code><a title="tf.core.api" href="api.html">tf.core.api</a
 <dl>
 <dt><code>array</code></dt>
 <dd>The ranks of all nodes, slot and nonslot, with respect to the canonical order.</dd>
-<dt><code>We store the result in an array because it saves a lot</code> of <code>memory, and access</code></dt>
-<dd>&nbsp;</dd>
 </dl>
-<p>is still fast.</p></div>
+<h2 id="notes">Notes</h2>
+<p>We store the result in an array because it saves a lot of memory, and access
+is still fast.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1331,6 +1353,8 @@ canonical order (see <code><a title="tf.core.api" href="api.html">tf.core.api</a
     array
         The ranks of all nodes, slot and nonslot, with respect to the canonical order.
 
+    Notes
+    -----
     We store the result in an array because it saves a lot of memory, and access
     is still fast.
     &#34;&#34;&#34;
@@ -1444,6 +1468,8 @@ spells out the names of the sections.</p>
             section-level-2 headings to mappings from
             section-level3 headings to section-level-3 nodes.
 
+    Notes
+    -----
     !!! caution &#34;Custom names&#34;
         Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
         It is the corpus data, especially the `otext` config feature that
@@ -1558,23 +1584,21 @@ contain the section headings.</p>
 <dd>
 <ul>
 <li>headingFromNode
-Mapping from nodes to section keys</li>
+(Mapping from nodes to section keys)</li>
 <li>nodeFromHeading
-Mapping from section keys to nodes</li>
+(Mapping from section keys to nodes)</li>
 <li>multiple</li>
 <li>top</li>
 <li>up</li>
 <li>down</li>
 </ul>
 </dd>
-<dt><code>A section key</code> of <code>a structural node is obtained by going a level up from</code></dt>
-<dd>&nbsp;</dd>
-<dt><code>that node, retrieving the heading</code> of <code>that structural node, then going up again,</code></dt>
-<dd>&nbsp;</dd>
-<dt><code>and so on till a top node is reached. The tuple</code> of <code>headings obtained in this way</code></dt>
-<dd>&nbsp;</dd>
 </dl>
-<p>is the
+<h2 id="notes">Notes</h2>
+<p>A section key of a structural node is obtained by going a level up from
+that node, retrieving the heading of that structural node, then going up again,
+and so on till a top node is reached. The tuple of headings obtained in this way
+is the
 section key.</p></div>
 <details class="source">
 <summary>
@@ -1619,14 +1643,16 @@ section key.</p></div>
     -------
     tuple
         *   headingFromNode
-            Mapping from nodes to section keys
+            (Mapping from nodes to section keys)
         *   nodeFromHeading
-            Mapping from section keys to nodes
+            (Mapping from section keys to nodes)
         *   multiple
         *   top
         *   up
         *   down
 
+    Notes
+    -----
     A section key of a structural node is obtained by going a level up from
     that node, retrieving the heading of that structural node, then going up again,
     and so on till a top node is reached. The tuple of headings obtained in this way

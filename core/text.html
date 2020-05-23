@@ -565,6 +565,8 @@ class Text(object):
             where the *fillup* parameter plays the same role as in
             `Text.sectionTuple`.
 
+    Notes
+    -----
         !!! hint &#34;crossing verse boundaries&#34;
             Sometimes a sentence or clause in a verse continue into the next verse.
             In those cases, this function will return different results for
@@ -799,9 +801,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
             The parent is that structural node that whose heading you get from
             the heading of *n* minus its last element.
 
-            !!!hint &#34;Example&#34;
-                The parent of `((book, Genesis), (chapter, 3), (verse, 16))`
-                is the node that has heading `((book, Genesis), (chapter, 3))`.
+        Notes
+        -----
+        !!!hint &#34;Example&#34;
+            The parent of `((book, Genesis), (chapter, 3), (verse, 16))`
+            is the node that has heading `((book, Genesis), (chapter, 3))`.
         &#34;&#34;&#34;
 
         api = self.api
@@ -836,9 +840,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
             The children are those structural nodes whose headings are one
             longer than the one from *n*.
 
-            !!!hint &#34;Example&#34;
-                The children of `((book, Genesis), (chapter, 3))` are the nodes
-                with heading `((book, Genesis), (chapter, 3), (verse, 1))`, etc.
+        Notes
+        -----
+        !!!hint &#34;Example&#34;
+            The children of `((book, Genesis), (chapter, 3))` are the nodes
+            with heading `((book, Genesis), (chapter, 3), (verse, 1))`, etc.
         &#34;&#34;&#34;
 
         api = self.api
@@ -872,13 +878,15 @@ There are {len(hdFromNd)} structural elements in the dataset.
             It is the tuple of pairs (node type, feature value)
             for all ancestors of *n*.
 
-            !!!hint &#34;Example&#34;
-                E.g., the heading of the verse node corresponding to Genesis 3:16
-                is `((book, Genesis), (chapter, 3), (verse, 16))`.
+        Notes
+        -----
+        !!!hint &#34;Example&#34;
+            E.g., the heading of the verse node corresponding to Genesis 3:16
+            is `((book, Genesis), (chapter, 3), (verse, 16))`.
 
-            !!!hint &#34;Power tip&#34;
-                If you are interested in the complete mapping: it is stored in
-                the dictionary `hdFromNd`.
+        !!!hint &#34;Power tip&#34;
+            If you are interested in the complete mapping: it is stored in
+            the dictionary `hdFromNd`.
         &#34;&#34;&#34;
 
         api = self.api
@@ -913,9 +921,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
             only the last one in the corpus will be returned.
             `hdMult` contains all such cases.
 
-            !!!hint &#34;Power tip&#34;
-                If you are interested in the complete mapping: it is stored in
-                the dictionary `ndFromHd`.
+        Notes
+        -----
+        !!!hint &#34;Power tip&#34;
+            If you are interested in the complete mapping: it is stored in
+            the dictionary `ndFromHd`.
         &#34;&#34;&#34;
 
         api = self.api
@@ -1483,6 +1493,8 @@ and <code>lang='en'</code> the language of the book name.</p></div>
             where the *fillup* parameter plays the same role as in
             `Text.sectionTuple`.
 
+    Notes
+    -----
         !!! hint &#34;crossing verse boundaries&#34;
             Sometimes a sentence or clause in a verse continue into the next verse.
             In those cases, this function will return different results for
@@ -1717,9 +1729,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
             The parent is that structural node that whose heading you get from
             the heading of *n* minus its last element.
 
-            !!!hint &#34;Example&#34;
-                The parent of `((book, Genesis), (chapter, 3), (verse, 16))`
-                is the node that has heading `((book, Genesis), (chapter, 3))`.
+        Notes
+        -----
+        !!!hint &#34;Example&#34;
+            The parent of `((book, Genesis), (chapter, 3), (verse, 16))`
+            is the node that has heading `((book, Genesis), (chapter, 3))`.
         &#34;&#34;&#34;
 
         api = self.api
@@ -1754,9 +1768,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
             The children are those structural nodes whose headings are one
             longer than the one from *n*.
 
-            !!!hint &#34;Example&#34;
-                The children of `((book, Genesis), (chapter, 3))` are the nodes
-                with heading `((book, Genesis), (chapter, 3), (verse, 1))`, etc.
+        Notes
+        -----
+        !!!hint &#34;Example&#34;
+            The children of `((book, Genesis), (chapter, 3))` are the nodes
+            with heading `((book, Genesis), (chapter, 3), (verse, 1))`, etc.
         &#34;&#34;&#34;
 
         api = self.api
@@ -1790,13 +1806,15 @@ There are {len(hdFromNd)} structural elements in the dataset.
             It is the tuple of pairs (node type, feature value)
             for all ancestors of *n*.
 
-            !!!hint &#34;Example&#34;
-                E.g., the heading of the verse node corresponding to Genesis 3:16
-                is `((book, Genesis), (chapter, 3), (verse, 16))`.
+        Notes
+        -----
+        !!!hint &#34;Example&#34;
+            E.g., the heading of the verse node corresponding to Genesis 3:16
+            is `((book, Genesis), (chapter, 3), (verse, 16))`.
 
-            !!!hint &#34;Power tip&#34;
-                If you are interested in the complete mapping: it is stored in
-                the dictionary `hdFromNd`.
+        !!!hint &#34;Power tip&#34;
+            If you are interested in the complete mapping: it is stored in
+            the dictionary `hdFromNd`.
         &#34;&#34;&#34;
 
         api = self.api
@@ -1831,9 +1849,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
             only the last one in the corpus will be returned.
             `hdMult` contains all such cases.
 
-            !!!hint &#34;Power tip&#34;
-                If you are interested in the complete mapping: it is stored in
-                the dictionary `ndFromHd`.
+        Notes
+        -----
+        !!!hint &#34;Power tip&#34;
+            If you are interested in the complete mapping: it is stored in
+            the dictionary `ndFromHd`.
         &#34;&#34;&#34;
 
         api = self.api
@@ -2176,16 +2196,14 @@ EXPLANATION: T.text() called with parameters:
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><strong><code>children</code></strong> :&ensp;<code>tuple</code> of <code>integers</code></dt>
-<dd>
-<p>The children are those structural nodes whose headings are one
-longer than the one from <em>n</em>.</p>
+<dd>The children are those structural nodes whose headings are one
+longer than the one from <em>n</em>.</dd>
+</dl>
 <div class="admonition hint">
 <p class="admonition-title">Example</p>
 <p>The children of <code>((book, Genesis), (chapter, 3))</code> are the nodes
 with heading <code>((book, Genesis), (chapter, 3), (verse, 1))</code>, etc.</p>
-</div>
-</dd>
-</dl></div>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2204,9 +2222,11 @@ with heading <code>((book, Genesis), (chapter, 3), (verse, 1))</code>, etc.</p>
         The children are those structural nodes whose headings are one
         longer than the one from *n*.
 
-        !!!hint &#34;Example&#34;
-            The children of `((book, Genesis), (chapter, 3))` are the nodes
-            with heading `((book, Genesis), (chapter, 3), (verse, 1))`, etc.
+    Notes
+    -----
+    !!!hint &#34;Example&#34;
+        The children of `((book, Genesis), (chapter, 3))` are the nodes
+        with heading `((book, Genesis), (chapter, 3), (verse, 1))`, etc.
     &#34;&#34;&#34;
 
     api = self.api
@@ -2240,9 +2260,9 @@ with heading <code>((book, Genesis), (chapter, 3), (verse, 1))</code>, etc.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><strong><code>heading</code></strong> :&ensp;<code>tuple</code> of <code>pairs</code></dt>
-<dd>
-<p>It is the tuple of pairs (node type, feature value)
-for all ancestors of <em>n</em>.</p>
+<dd>It is the tuple of pairs (node type, feature value)
+for all ancestors of <em>n</em>.</dd>
+</dl>
 <div class="admonition hint">
 <p class="admonition-title">Example</p>
 <p>E.g., the heading of the verse node corresponding to Genesis 3:16
@@ -2252,9 +2272,7 @@ is <code>((book, Genesis), (chapter, 3), (verse, 16))</code>.</p>
 <p class="admonition-title">Power tip</p>
 <p>If you are interested in the complete mapping: it is stored in
 the dictionary <code>hdFromNd</code>.</p>
-</div>
-</dd>
-</dl></div>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2273,13 +2291,15 @@ the dictionary <code>hdFromNd</code>.</p>
         It is the tuple of pairs (node type, feature value)
         for all ancestors of *n*.
 
-        !!!hint &#34;Example&#34;
-            E.g., the heading of the verse node corresponding to Genesis 3:16
-            is `((book, Genesis), (chapter, 3), (verse, 16))`.
+    Notes
+    -----
+    !!!hint &#34;Example&#34;
+        E.g., the heading of the verse node corresponding to Genesis 3:16
+        is `((book, Genesis), (chapter, 3), (verse, 16))`.
 
-        !!!hint &#34;Power tip&#34;
-            If you are interested in the complete mapping: it is stored in
-            the dictionary `hdFromNd`.
+    !!!hint &#34;Power tip&#34;
+        If you are interested in the complete mapping: it is stored in
+        the dictionary `hdFromNd`.
     &#34;&#34;&#34;
 
     api = self.api
@@ -2313,17 +2333,15 @@ the dictionary <code>hdFromNd</code>.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><strong><code>node</code></strong> :&ensp;<code>int</code></dt>
-<dd>
-<p>If there is more than one node that corresponds to the heading,
+<dd>If there is more than one node that corresponds to the heading,
 only the last one in the corpus will be returned.
-<code>hdMult</code> contains all such cases.</p>
+<code>hdMult</code> contains all such cases.</dd>
+</dl>
 <div class="admonition hint">
 <p class="admonition-title">Power tip</p>
 <p>If you are interested in the complete mapping: it is stored in
 the dictionary <code>ndFromHd</code>.</p>
-</div>
-</dd>
-</dl></div>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2343,9 +2361,11 @@ the dictionary <code>ndFromHd</code>.</p>
         only the last one in the corpus will be returned.
         `hdMult` contains all such cases.
 
-        !!!hint &#34;Power tip&#34;
-            If you are interested in the complete mapping: it is stored in
-            the dictionary `ndFromHd`.
+    Notes
+    -----
+    !!!hint &#34;Power tip&#34;
+        If you are interested in the complete mapping: it is stored in
+        the dictionary `ndFromHd`.
     &#34;&#34;&#34;
 
     api = self.api
@@ -2432,43 +2452,41 @@ the result is a level 1 node.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Gives the full heading of a section node.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
-<dd>The node whose heading to retrieve.</dd>
-<dt><strong><code>lastSlot</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>Whether the reference node will be the last slot contained by <em>n</em>
-or the first slot.</dd>
-<dt><strong><code>lang</code></strong> :&ensp;<code>string</code>, optional <code>en</code></dt>
-<dd>The language assumed for the section parts,
-as far as they are language dependent.
-Must be a 2-letter language code.</dd>
-<dt><strong><code>fillup</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>Whether to fill up the tuple with missing section elements.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><strong><code>heading</code></strong> :&ensp;<code>tuple</code> of <code>pairs</code></dt>
-<dd>
-<p>If <em>n</em> is not a section node, a reference node <em>r</em> will be taken
-according to the <em>lastSlot</em> parameter.</p>
-<p>It is the tuple of integer/string values for section ancestors
-of <em>r</em> and <em>r</em> itself,
-where the <em>fillup</em> parameter plays the same role as in
-<code><a title="tf.core.text.Text.sectionTuple" href="#tf.core.text.Text.sectionTuple">Text.sectionTuple()</a></code>.</p>
-</dd>
-</dl>
-<div class="admonition hint">
-<p class="admonition-title">crossing verse boundaries</p>
-<p>Sometimes a sentence or clause in a verse continue into the next verse.
-In those cases, this function will return different results for
-<code>lastSlot=False</code> and <code>lastSlot=True</code>.</p>
-</div>
-<div class="admonition caution">
-<p class="admonition-title">nodes outside sections</p>
-<p>Nodes that lie outside any book, chapter, or verse
-will get a <code>None</code> in the corresponding members of the returned tuple.</p>
-</div></div>
+<pre><code>Parameters
+----------
+n: integer
+    The node whose heading to retrieve.
+lastSlot: boolean, optional &lt;code&gt;False&lt;/code&gt;
+    Whether the reference node will be the last slot contained by *n*
+    or the first slot.
+lang: string, optional &lt;code&gt;en&lt;/code&gt;
+    The language assumed for the section parts,
+    as far as they are language dependent.
+    Must be a 2-letter language code.
+fillup: boolean, optional &lt;code&gt;False&lt;/code&gt;
+    Whether to fill up the tuple with missing section elements.
+
+Returns
+-------
+heading: tuple of pairs
+    If *n* is not a section node, a reference node *r* will be taken
+    according to the *lastSlot* parameter.
+
+    It is the tuple of integer/string values for section ancestors
+    of *r* and *r* itself,
+    where the *fillup* parameter plays the same role as in
+    &lt;code&gt;&lt;a title="tf.core.text.Text.sectionTuple" href="#tf.core.text.Text.sectionTuple"&gt;Text.sectionTuple()&lt;/a&gt;&lt;/code&gt;.
+</code></pre>
+<h2 id="notes">Notes</h2>
+<pre><code>!!! hint "crossing verse boundaries"
+    Sometimes a sentence or clause in a verse continue into the next verse.
+    In those cases, this function will return different results for
+    `lastSlot=False` and `lastSlot=True`.
+
+!!! caution "nodes outside sections"
+    Nodes that lie outside any book, chapter, or verse
+    will get a &lt;code&gt;None&lt;/code&gt; in the corresponding members of the returned tuple.
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2501,6 +2519,8 @@ will get a <code>None</code> in the corresponding members of the returned tuple.
         where the *fillup* parameter plays the same role as in
         `Text.sectionTuple`.
 
+Notes
+-----
     !!! hint &#34;crossing verse boundaries&#34;
         Sometimes a sentence or clause in a verse continue into the next verse.
         In those cases, this function will return different results for
@@ -3225,16 +3245,14 @@ or a higher level.</p></div>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><strong><code>parent</code></strong> :&ensp;<code>integer</code></dt>
-<dd>
-<p>The parent is that structural node that whose heading you get from
-the heading of <em>n</em> minus its last element.</p>
+<dd>The parent is that structural node that whose heading you get from
+the heading of <em>n</em> minus its last element.</dd>
+</dl>
 <div class="admonition hint">
 <p class="admonition-title">Example</p>
 <p>The parent of <code>((book, Genesis), (chapter, 3), (verse, 16))</code>
 is the node that has heading <code>((book, Genesis), (chapter, 3))</code>.</p>
-</div>
-</dd>
-</dl></div>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -3253,9 +3271,11 @@ is the node that has heading <code>((book, Genesis), (chapter, 3))</code>.</p>
         The parent is that structural node that whose heading you get from
         the heading of *n* minus its last element.
 
-        !!!hint &#34;Example&#34;
-            The parent of `((book, Genesis), (chapter, 3), (verse, 16))`
-            is the node that has heading `((book, Genesis), (chapter, 3))`.
+    Notes
+    -----
+    !!!hint &#34;Example&#34;
+        The parent of `((book, Genesis), (chapter, 3), (verse, 16))`
+        is the node that has heading `((book, Genesis), (chapter, 3))`.
     &#34;&#34;&#34;
 
     api = self.api

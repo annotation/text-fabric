@@ -554,6 +554,8 @@ class EdgeFeature(object):
             If there are no edges to the node, the empty tuple is returned,
             rather than `None`.
 
+        Notes
+        -----
         !!! hint &#34;symmetric closure&#34;
             This method gives the *symmetric closure* of a set of edges:
             if there is an edge between *n* and *m*, this method will deliver
@@ -584,11 +586,14 @@ class EdgeFeature(object):
             n == value=4 ==&gt; m
             m == value=6 ==&gt; n
             ```
+
             then
+
             ```
             E.b(n) = (m, 4)
             E.b(m) = (n, 6)
             ```
+
         &#34;&#34;&#34;
 
         if n not in self.data and n not in self.dataInv:
@@ -964,6 +969,8 @@ class Api(object):
             A grouped list of API members that has been hoisted to the global
             scope.
 
+        Notes
+        -----
         !!! explanation &#34;Why pass `globals()`?&#34;
             Although we know it should always be `globals()`, we cannot
             define a function that looks into the `globals()` of its caller.
@@ -1390,6 +1397,8 @@ def addSearch(api, silent):
             A grouped list of API members that has been hoisted to the global
             scope.
 
+        Notes
+        -----
         !!! explanation &#34;Why pass `globals()`?&#34;
             Although we know it should always be `globals()`, we cannot
             define a function that looks into the `globals()` of its caller.
@@ -1893,6 +1902,8 @@ So we have to pass it on.</p>
         A grouped list of API members that has been hoisted to the global
         scope.
 
+    Notes
+    -----
     !!! explanation &#34;Why pass `globals()`?&#34;
         Although we know it should always be `globals()`, we cannot
         define a function that looks into the `globals()` of its caller.
@@ -2168,6 +2179,8 @@ versions of TF after 7.7.7.</p>
             If there are no edges to the node, the empty tuple is returned,
             rather than `None`.
 
+        Notes
+        -----
         !!! hint &#34;symmetric closure&#34;
             This method gives the *symmetric closure* of a set of edges:
             if there is an edge between *n* and *m*, this method will deliver
@@ -2198,11 +2211,14 @@ versions of TF after 7.7.7.</p>
             n == value=4 ==&gt; m
             m == value=6 ==&gt; n
             ```
+
             then
+
             ```
             E.b(n) = (m, 4)
             E.b(m) = (n, 6)
             ```
+
         &#34;&#34;&#34;
 
         if n not in self.data and n not in self.dataInv:
@@ -2349,9 +2365,9 @@ different values for the two directions.</p>
 <p class="admonition-title">conflicting values</p>
 <p>Suppose we have</p>
 <p><code>n == value=4 ==&gt; m
-m == value=6 ==&gt; n</code>
-then
-<code>E.b(n) = (m, 4)
+m == value=6 ==&gt; n</code></p>
+<p>then</p>
+<p><code>E.b(n) = (m, 4)
 E.b(m) = (n, 6)</code></p>
 </div></div>
 <details class="source">
@@ -2382,6 +2398,8 @@ E.b(m) = (n, 6)</code></p>
         If there are no edges to the node, the empty tuple is returned,
         rather than `None`.
 
+    Notes
+    -----
     !!! hint &#34;symmetric closure&#34;
         This method gives the *symmetric closure* of a set of edges:
         if there is an edge between *n* and *m*, this method will deliver
@@ -2412,11 +2430,14 @@ E.b(m) = (n, 6)</code></p>
         n == value=4 ==&gt; m
         m == value=6 ==&gt; n
         ```
+
         then
+
         ```
         E.b(n) = (m, 4)
         E.b(m) = (n, 6)
         ```
+
     &#34;&#34;&#34;
 
     if n not in self.data and n not in self.dataInv:
