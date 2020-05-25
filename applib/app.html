@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/app.py#L0-L439" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/app.py#L0-L451" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 
@@ -410,6 +410,18 @@ def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
             and this local directory is supplied for its `locations`
             parameter. This has the effect that the TF features here will
             be loaded.
+
+    checkoutApp: string
+        The checkout specifier for the app code. See `tf.applib.app.App`.
+
+    args: mixed
+        Arguments that will be passed to the initializer of the `tf.applib.app.App`
+        class.
+
+    kwargs: mixed
+        Keyword arguments that will be passed to the initializer of the
+        `tf.applib.app.App` class.
+
     &#34;&#34;&#34;
 
     if not appName or &#34;/&#34; in appName:
@@ -498,11 +510,19 @@ parameter. This has the effect that the TF features here will
 be loaded.</li>
 </ul>
 </dd>
+<dt><strong><code>checkoutApp</code></strong> :&ensp;<code>string</code></dt>
+<dd>The checkout specifier for the app code. See <code><a title="tf.applib.app.App" href="#tf.applib.app.App">App</a></code>.</dd>
+<dt><strong><code>args</code></strong> :&ensp;<code>mixed</code></dt>
+<dd>Arguments that will be passed to the initializer of the <code><a title="tf.applib.app.App" href="#tf.applib.app.App">App</a></code>
+class.</dd>
+<dt><strong><code>kwargs</code></strong> :&ensp;<code>mixed</code></dt>
+<dd>Keyword arguments that will be passed to the initializer of the
+<code><a title="tf.applib.app.App" href="#tf.applib.app.App">App</a></code> class.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/app.py#L367-L440" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/app.py#L367-L452" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
     &#34;&#34;&#34;Find a TF app by name and initialize an object of its main class.
@@ -521,6 +541,18 @@ be loaded.</li>
             and this local directory is supplied for its `locations`
             parameter. This has the effect that the TF features here will
             be loaded.
+
+    checkoutApp: string
+        The checkout specifier for the app code. See `tf.applib.app.App`.
+
+    args: mixed
+        Arguments that will be passed to the initializer of the `tf.applib.app.App`
+        class.
+
+    kwargs: mixed
+        Keyword arguments that will be passed to the initializer of the
+        `tf.applib.app.App` class.
+
     &#34;&#34;&#34;
 
     if not appName or &#34;/&#34; in appName:

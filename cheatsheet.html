@@ -343,53 +343,6 @@ Use <code><a title="tf.app.use" href="app.html#tf.app.use">use()</a></code> inst
 <dd>Set certain parameters that influence the performance of search.</dd>
 <dd><code><a title="tf.search.search.Search.tweakPerformance" href="search/search.html#tf.search.search.Search.tweakPerformance">Search.tweakPerformance()</a></code></dd>
 </dl>
-<h3 id="tf-dataset-manipulation">TF Dataset Manipulation</h3>
-<pre><code class="python">from tf.compose import combine, modify
-</code></pre>
-<dl>
-<dt><code>combine((source1, source2, ...), target)</code></dt>
-<dd>Combines several TF datasets into one new TF dataset</dd>
-<dd><code><a title="tf.compose.combine" href="compose/combine.html">tf.compose.combine</a></code></dd>
-<dt><code>modify(source, target, ...)</code></dt>
-<dd>Modifies a TF datasets into one new TF dataset</dd>
-<dd><code><a title="tf.compose.modify" href="compose/modify.html">tf.compose.modify</a></code></dd>
-</dl>
-<h3 id="data-interchange">Data Interchange</h3>
-<h4 id="custom-node-sets-for-search">Custom node sets for search</h4>
-<pre><code class="python">from tf.lib import readSets
-from tf.lib import writeSets
-</code></pre>
-<dl>
-<dt><code>readSets(sourceFile)</code></dt>
-<dd>reads a named sets from file</dd>
-<dd><code><a title="tf.lib.readSets" href="lib.html#tf.lib.readSets">readSets()</a></code></dd>
-<dt><code>writeSets(sets, destFile)</code></dt>
-<dd>writes a named sets to file</dd>
-<dd><code><a title="tf.lib.writeSets" href="lib.html#tf.lib.writeSets">writeSets()</a></code></dd>
-</dl>
-<h4 id="export-to-excel">Export to Excel</h4>
-<dl>
-<dt><code>A.export(results, ...)</code></dt>
-<dd>export formatted data</dd>
-<dd><code><a title="tf.applib.display.export" href="applib/display.html#tf.applib.display.export">export()</a></code></dd>
-</dl>
-<h4 id="mql-interchange">MQL interchange</h4>
-<dl>
-<dt><code>TF.exportMQL()</code></dt>
-<dd>export loaded dataset to MQL</dd>
-<dd><code><a title="tf.fabric.Fabric.exportMQL" href="fabric.html#tf.fabric.Fabric.exportMQL">Fabric.exportMQL()</a></code></dd>
-<dt><code>TF.importMQL()</code></dt>
-<dd>convert MQL file to TF dataset</dd>
-<dd><code><a title="tf.fabric.Fabric.importMQL" href="fabric.html#tf.fabric.Fabric.importMQL">Fabric.importMQL()</a></code></dd>
-</dl>
-<h4 id="walker-conversion">Walker conversion</h4>
-<pre><code class="python">from tf.convert.walker import CV
-</code></pre>
-<dl>
-<dt><code>cv = CV(TF)</code></dt>
-<dd>convert structured data to TF dataset</dd>
-<dd><code><a title="tf.convert.walker" href="convert/walker.html">tf.convert.walker</a></code></dd>
-</dl>
 <h3 id="logging">Logging</h3>
 <dl>
 <dt><code>TF.version</code></dt>
@@ -472,6 +425,62 @@ functions</dd>
 <dd>clears the cache of compiled TF data</dd>
 <dd><code><a title="tf.clean" href="clean.html">tf.clean</a></code></dd>
 </dl>
+<h2 id="tf-dataset-manipulation">TF Dataset Manipulation</h2>
+<pre><code class="python">from tf.compose import combine, modify
+</code></pre>
+<dl>
+<dt><code>combine((source1, source2, ...), target)</code></dt>
+<dd>Combines several TF datasets into one new TF dataset</dd>
+<dd><code><a title="tf.compose.combine" href="compose/combine.html">tf.compose.combine</a></code></dd>
+<dt><code>modify(source, target, ...)</code></dt>
+<dd>Modifies a TF datasets into one new TF dataset</dd>
+<dd><code><a title="tf.compose.modify" href="compose/modify.html">tf.compose.modify</a></code></dd>
+</dl>
+<h2 id="data-interchange">Data Interchange</h2>
+<h3 id="custom-node-sets-for-search">Custom node sets for search</h3>
+<pre><code class="python">from tf.lib import readSets
+from tf.lib import writeSets
+</code></pre>
+<dl>
+<dt><code>readSets(sourceFile)</code></dt>
+<dd>reads a named sets from file</dd>
+<dd><code><a title="tf.lib.readSets" href="lib.html#tf.lib.readSets">readSets()</a></code></dd>
+<dt><code>writeSets(sets, destFile)</code></dt>
+<dd>writes a named sets to file</dd>
+<dd><code><a title="tf.lib.writeSets" href="lib.html#tf.lib.writeSets">writeSets()</a></code></dd>
+</dl>
+<h3 id="export-to-excel">Export to Excel</h3>
+<dl>
+<dt><code>A.export(results, ...)</code></dt>
+<dd>export formatted data</dd>
+<dd><code><a title="tf.applib.display.export" href="applib/display.html#tf.applib.display.export">export()</a></code></dd>
+</dl>
+<h3 id="mql-interchange">MQL interchange</h3>
+<dl>
+<dt><code>TF.exportMQL()</code></dt>
+<dd>export loaded dataset to MQL</dd>
+<dd><code><a title="tf.fabric.Fabric.exportMQL" href="fabric.html#tf.fabric.Fabric.exportMQL">Fabric.exportMQL()</a></code></dd>
+<dt><code>TF.importMQL()</code></dt>
+<dd>convert MQL file to TF dataset</dd>
+<dd><code><a title="tf.fabric.Fabric.importMQL" href="fabric.html#tf.fabric.Fabric.importMQL">Fabric.importMQL()</a></code></dd>
+</dl>
+<h3 id="walker-conversion">Walker conversion</h3>
+<pre><code class="python">from tf.convert.walker import CV
+</code></pre>
+<dl>
+<dt><code>cv = CV(TF)</code></dt>
+<dd>convert structured data to TF dataset</dd>
+<dd><code><a title="tf.convert.walker" href="convert/walker.html">tf.convert.walker</a></code></dd>
+</dl>
+<h2 id="t-app-development">T-App development</h2>
+<dl>
+<dt><code>mmm = loadModule("mmm", *args)</code></dt>
+<dd>load supporting TF-app specific module</dd>
+<dd><code><a title="tf.applib.find.loadModule" href="applib/find.html#tf.applib.find.loadModule">loadModule()</a></code></dd>
+<dt><code>~/mypath/app-myname/code/config.yaml</code></dt>
+<dd>settings for a TF-App</dd>
+<dd><a href="https://github.com/annotation/app-default/blob/master/code/config.yaml">app-default</a></dd>
+</dl>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -534,6 +543,11 @@ data-gaCategoryParameter="tf.cheatsheet">
 <li><a href="#implementation">Implementation</a></li>
 </ul>
 </li>
+<li><a href="#logging">Logging</a></li>
+<li><a href="#computed-data-components">Computed data components.</a></li>
+<li><a href="#house-keeping">House keeping</a></li>
+</ul>
+</li>
 <li><a href="#tf-dataset-manipulation">TF Dataset Manipulation</a></li>
 <li><a href="#data-interchange">Data Interchange</a><ul>
 <li><a href="#custom-node-sets-for-search">Custom node sets for search</a></li>
@@ -542,11 +556,7 @@ data-gaCategoryParameter="tf.cheatsheet">
 <li><a href="#walker-conversion">Walker conversion</a></li>
 </ul>
 </li>
-<li><a href="#logging">Logging</a></li>
-<li><a href="#computed-data-components">Computed data components.</a></li>
-<li><a href="#house-keeping">House keeping</a></li>
-</ul>
-</li>
+<li><a href="#t-app-development">T-App development</a></li>
 </ul>
 </li>
 </ul>

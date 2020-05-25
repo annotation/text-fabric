@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/find.py#L0-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/find.py#L0-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import os
@@ -42,6 +42,14 @@ from .helpers import getLocalDir
 
 
 def findAppConfig(appName, appPath, commit, release, local, version=None):
+    &#34;&#34;&#34;Find the config information of an app.
+
+    If there is a `config.yaml` file, read it and check the compatibility
+    of the config settings with the current version of Text-Fabric.
+
+    If there is no such file, fill in a few basic settings.
+    &#34;&#34;&#34;
+
     configPath = f&#34;{appPath}/{APP_CONFIG}&#34;
     cssPath = f&#34;{appPath}/{APP_DISPLAY}&#34;
 
@@ -131,6 +139,19 @@ The corpus data may not be found.
 
 
 def findAppClass(appName, appPath):
+    &#34;&#34;&#34;Find the class definition of an app.
+
+    The file `app.py` in the app directory will be looked up,
+    if it exists, it will be loaded as a Python module, and from
+    this module we try to get the class `TfApp`.
+
+    Returns
+    -------
+    class | None
+        If `TfApp` can be found and imported, it is the result.
+        Otherwise we return `none`.
+    &#34;&#34;&#34;
+
     appClass = None
     moduleName = f&#34;tf.apps.{appName}.app&#34;
     filePath = f&#34;{appPath}/app.py&#34;
@@ -152,19 +173,27 @@ def findAppClass(appName, appPath):
 
 
 def loadModule(moduleName, *args):
-    &#34;&#34;&#34;Load a module dynamically.
+    &#34;&#34;&#34;Load a module dynamically, by name.
+
+    Parameters
+    ----------
+    moduleName: string
+        Name of a module under a TF-app that needs to be imported.
+    args: mixed
+        The same list of arguments that is passed to `tf.applib.app.App`
+        of which only the `appName` and the `appPath` are used.
     &#34;&#34;&#34;
 
-    (dataSource, appPath) = args[1:3]
+    (appName, appPath) = args[1:3]
     try:
         spec = util.spec_from_file_location(
-            f&#34;tf.apps.{dataSource}.{moduleName}&#34;, f&#34;{appPath}/{moduleName}.py&#34;,
+            f&#34;tf.apps.{appName}.{moduleName}&#34;, f&#34;{appPath}/{moduleName}.py&#34;,
         )
         module = util.module_from_spec(spec)
         spec.loader.exec_module(module)
     except Exception as e:
         console(f&#34;loadModule: {str(e)}&#34;, error=True)
-        console(f&#39;loadModule: {moduleName} in &#34;{dataSource}&#34; not found&#39;)
+        console(f&#39;loadModule: {moduleName} in &#34;{appName}&#34; not found&#39;)
     return module</code></pre>
 </details>
 </section>
@@ -179,13 +208,35 @@ def loadModule(moduleName, *args):
 <span>def <span class="ident">findAppClass</span></span>(<span>appName, appPath)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Find the class definition of an app.</p>
+<p>The file <code>app.py</code> in the app directory will be looked up,
+if it exists, it will be loaded as a Python module, and from
+this module we try to get the class <code>TfApp</code>.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>class | None</code></dt>
+<dd>If <code>TfApp</code> can be found and imported, it is the result.
+Otherwise we return <code>none</code>.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/find.py#L104-L122" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/find.py#L112-L143" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findAppClass(appName, appPath):
+    &#34;&#34;&#34;Find the class definition of an app.
+
+    The file `app.py` in the app directory will be looked up,
+    if it exists, it will be loaded as a Python module, and from
+    this module we try to get the class `TfApp`.
+
+    Returns
+    -------
+    class | None
+        If `TfApp` can be found and imported, it is the result.
+        Otherwise we return `none`.
+    &#34;&#34;&#34;
+
     appClass = None
     moduleName = f&#34;tf.apps.{appName}.app&#34;
     filePath = f&#34;{appPath}/app.py&#34;
@@ -210,13 +261,24 @@ def loadModule(moduleName, *args):
 <span>def <span class="ident">findAppConfig</span></span>(<span>appName, appPath, commit, release, local, version=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Find the config information of an app.</p>
+<p>If there is a <code>config.yaml</code> file, read it and check the compatibility
+of the config settings with the current version of Text-Fabric.</p>
+<p>If there is no such file, fill in a few basic settings.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/find.py#L15-L101" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/find.py#L15-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findAppConfig(appName, appPath, commit, release, local, version=None):
+    &#34;&#34;&#34;Find the config information of an app.
+
+    If there is a `config.yaml` file, read it and check the compatibility
+    of the config settings with the current version of Text-Fabric.
+
+    If there is no such file, fill in a few basic settings.
+    &#34;&#34;&#34;
+
     configPath = f&#34;{appPath}/{APP_CONFIG}&#34;
     cssPath = f&#34;{appPath}/{APP_DISPLAY}&#34;
 
@@ -309,26 +371,42 @@ The corpus data may not be found.
 <span>def <span class="ident">loadModule</span></span>(<span>moduleName, *args)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Load a module dynamically.</p></div>
+<div class="desc"><p>Load a module dynamically, by name.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>moduleName</code></strong> :&ensp;<code>string</code></dt>
+<dd>Name of a module under a TF-app that needs to be imported.</dd>
+<dt><strong><code>args</code></strong> :&ensp;<code>mixed</code></dt>
+<dd>The same list of arguments that is passed to <code><a title="tf.applib.app.App" href="app.html#tf.applib.app.App">App</a></code>
+of which only the <code>appName</code> and the <code>appPath</code> are used.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/find.py#L125-L139" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/find.py#L146-L168" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadModule(moduleName, *args):
-    &#34;&#34;&#34;Load a module dynamically.
+    &#34;&#34;&#34;Load a module dynamically, by name.
+
+    Parameters
+    ----------
+    moduleName: string
+        Name of a module under a TF-app that needs to be imported.
+    args: mixed
+        The same list of arguments that is passed to `tf.applib.app.App`
+        of which only the `appName` and the `appPath` are used.
     &#34;&#34;&#34;
 
-    (dataSource, appPath) = args[1:3]
+    (appName, appPath) = args[1:3]
     try:
         spec = util.spec_from_file_location(
-            f&#34;tf.apps.{dataSource}.{moduleName}&#34;, f&#34;{appPath}/{moduleName}.py&#34;,
+            f&#34;tf.apps.{appName}.{moduleName}&#34;, f&#34;{appPath}/{moduleName}.py&#34;,
         )
         module = util.module_from_spec(spec)
         spec.loader.exec_module(module)
     except Exception as e:
         console(f&#34;loadModule: {str(e)}&#34;, error=True)
-        console(f&#39;loadModule: {moduleName} in &#34;{dataSource}&#34; not found&#39;)
+        console(f&#39;loadModule: {moduleName} in &#34;{appName}&#34; not found&#39;)
     return module</code></pre>
 </details>
 </dd>
