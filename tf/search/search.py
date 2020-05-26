@@ -129,7 +129,7 @@ class Search(object):
             If you find that the times your queries take varies a lot,
             increase these values to 10000.
         tryLimitTo: integer
-            See `tryLimitFrom
+            See `tryLimitFrom`
         """
 
         api = self.api
@@ -205,6 +205,8 @@ class Search(object):
             Otherwise, the results will be fetched up till `limit`
             and delivered as a tuple.
 
+        Notes
+        -----
         !!! hint "More info on the search plan"
             Searching is complex. The search template must be parsed, interpreted,
             and translated into a search plan. See `tf.search.search.Search.study`.
@@ -242,7 +244,6 @@ class Search(object):
         will be constructed and executed. These searches will be reported clearly.
 
         The resulting plan can be viewd by `tf.search.search.Search.showPlan`.
-        See also `tf.about.searchusage`.
 
         Parameters
         ----------
@@ -276,6 +277,10 @@ class Search(object):
 
         silent: boolean, optional `None`
             If you want to suppress most of the output, say `silent=True`.
+
+        See Also
+        --------
+        Search guide: `tf.about.searchusage`.
         """
 
         exe = SearchExe(
@@ -317,6 +322,8 @@ class Search(object):
             Otherwise, the results will be fetched up till `limit`
             and delivered as a tuple.
 
+        Notes
+        -----
         !!! example "Iterating over the `fetch()` generator"
             You typically fetch results by saying:
 
@@ -451,6 +458,8 @@ class Search(object):
             The result indicats where the tuple occurs in terms of sections,
             and what text is associated with the tuple.
 
+        Notes
+        -----
         !!! example "Inspecting results"
             ```
             for result in S.fetch(limit=10):

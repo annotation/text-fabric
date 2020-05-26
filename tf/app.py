@@ -51,9 +51,9 @@ def use(appName, *args, **kwargs):
     A: object
         The object whose attributes and methods constitute the advanced API.
 
-    !!! hint "reuse"
-        See also `tf.applib.app.App.reuse` which reconfigures all settings
-        without the costly step of reloading the data.
+    See Also
+    --------
+    reuse: `tf.applib.app.App.reuse`
     """
 
     parts = appName.split(":", maxsplit=1)

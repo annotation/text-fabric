@@ -3,6 +3,8 @@
 """
 
 import collections
+import functools
+
 from .helpers import makeInverse, makeInverseVal, flattenToSet, console
 from .locality import Locality
 from .text import Text
@@ -51,6 +53,7 @@ API_REFS = dict(
     otypeRank=("Nodes", "rank", "navigating-nodes"),
     reset=("Misc", "reset", "messaging"),
     sortKey=("Nodes", "key", "navigating-nodes"),
+    sortKeyChunk=("Nodes", "keyChunk", "navigating-nodes"),
     sortKeyTuple=("Nodes", "keyTuple", "navigating-nodes"),
     sortNodes=("Nodes", "sort", "navigating-nodes"),
 )
@@ -478,6 +481,8 @@ class EdgeFeature(object):
             If there are no edges to the node, the empty tuple is returned,
             rather than `None`.
 
+        Notes
+        -----
         !!! hint "symmetric closure"
             This method gives the *symmetric closure* of a set of edges:
             if there is an edge between *n* and *m*, this method will deliver
@@ -508,11 +513,14 @@ class EdgeFeature(object):
             n == value=4 ==> m
             m == value=6 ==> n
             ```
+
             then
+
             ```
             E.b(n) = (m, 4)
             E.b(m) = (n, 6)
             ```
+
         """
 
         if n not in self.data and n not in self.dataInv:
@@ -715,11 +723,14 @@ class Api(object):
         self.sortKey = None
         """Sort key function for the canonical ordering between nodes.
 
-        See `tf.core.api` and `sortNodes`.
 
         !!! hint "usage"
             The following two pieces of code do the same thing:
             `sortNodes(nodeSet)` and `sorted(nodeSet, key=sortKey)`.
+
+        See Also
+        --------
+        canonical ordering: `tf.core.api` and `sortNodes`.
         """
 
         self.sortKeyTuple = None
@@ -736,6 +747,36 @@ class Api(object):
         ```python
         sorted(results, key=sortKeyTuple)
         ```
+
+        See Also
+        --------
+        canonical ordering: `tf.core.api`.
+        """
+
+        self.sortKeyChunk = None
+        """Sort key function for the canonical ordering between chunks of nodes.
+
+        ```python
+        sorted(chunks, key=sortKeyChunk)
+        ```
+
+        A chunk is a tuple consisting of a node and a subset of its slots.
+        Mostly, this subset of slots is contiguous (no gaps), and mostly it is
+        maximal: the slots immediately before and after the chunk do not belong to the node.
+
+        But the sortkey also works if these conditions are not met.
+
+        Notes
+        -----
+        The use case for this function is that we have a bunch of nodes,
+        each linked to a set of slots.
+        For each node, we have split its slot set in maximal contiguous parts, its chunks.
+        Now we want to order those chunks in the canonical ordering.
+
+        See Also
+        --------
+        Unravel: `tf.applib.display._unravel`
+        canonical ordering: `tf.core.api`.
         """
 
         self.otypeRank = None
@@ -821,10 +862,12 @@ class Api(object):
     def sortNodes(self, nodeSet):
         """Delivers a tuple of nodes sorted by the *canonical ordering*.
 
-        See `tf.core.api`.
-
         nodeSet: iterable
             An iterable of nodes to be sorted.
+
+        See Also
+        --------
+        canonical ordering: `tf.core.api`
         """
 
         Crank = self.C.rank.data
@@ -888,6 +931,8 @@ class Api(object):
             A grouped list of API members that has been hoisted to the global
             scope.
 
+        Notes
+        -----
         !!! explanation "Why pass `globals()`?"
             Although we know it should always be `globals()`, we cannot
             define a function that looks into the `globals()` of its caller.
@@ -983,6 +1028,44 @@ def addLocality(api):
 def addRank(api):
     C = api.C
     api.otypeRank = {d[0]: i for (i, d) in enumerate(reversed(C.levels.data))}
+
+
+def addSortKeyChunk(api):
+    otypeRank = api.otypeRank
+    otypev = api.F.otype.v
+
+    def before(chunkA, chunkB):
+        """Determines the order between two chunks
+
+        Parameters
+        ----------
+        chunkA: tuple of string, set of int
+        chunkB: tuple of string, set of int
+
+        Notes
+        -----
+        The slot sets in both parameters will be compared.
+        If they are equal, then the rank of the types of the nodes
+        will be used to force a decision.
+        """
+
+        (nodeA, slotsA) = chunkA
+        (nodeB, slotsB) = chunkB
+        typeA = otypev(nodeA)
+        typeB = otypev(nodeB)
+        rankA = otypeRank(typeA)
+        rankB = otypeRank(typeB)
+        if slotsA == slotsB:
+            return 0 if rankA == rankB else -1 if rankA < rankB else 1
+        if slotsA > slotsB:
+            return -1
+        if slotsA < slotsB:
+            return 1
+        minA = min(slotsA - slotsB)
+        minB = min(slotsB - slotsA)
+        return -1 if minA < minB else 1 if minB < minA else None
+
+    return functools.cmp_to_key(before)
 
 
 def addText(api):

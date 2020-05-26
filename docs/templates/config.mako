@@ -20,11 +20,11 @@
     # If set, format links to objects in online source code repository
     # according to this template. Supported keywords for interpolation
     # are: commit, path, start_line, end_line.
-    #git_link_template = 'https://github.com/USER/PROJECT/blob/{commit}/{path}#L{start_line}-L{end_line}'
+    git_link_template = 'https://github.com/annotation/text-fabric/blob/{commit}/{path}#L{start_line}-L{end_line}'
     #git_link_template = 'https://gitlab.com/USER/PROJECT/blob/{commit}/{path}#L{start_line}-L{end_line}'
     #git_link_template = 'https://bitbucket.org/USER/PROJECT/src/{commit}/{path}#lines-{start_line}:{end_line}'
     #git_link_template = 'https://CGIT_HOSTNAME/PROJECT/tree/{path}?id={commit}#n{start-line}'
-    git_link_template = None
+    #git_link_template = None
 
     # A prefix to use for every HTML hyperlink in the generated documentation.
     # No prefix results in all links being relative.
@@ -45,8 +45,8 @@
     # If set, insert Google Custom Search search bar widget above the sidebar index.
     # The whitespace-separated tokens represent arbitrary extra queries (at least one
     # must match) passed to regular Google search. Example:
-    #search_query = 'inurl:github.com/USER/PROJECT  site:PROJECT.github.io  site:PROJECT.website'
-    search_query = ''
+    search_query = 'inurl:github.com/annotation  site:annotation.github.io  site:www.annotation.nl'
+    #search_query = ''
 
     # If set, render LaTeX math syntax within \(...\) (inline equations),
     # or within \[...\] or $$...$$ or `.. math::` (block equations)

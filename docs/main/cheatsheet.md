@@ -159,6 +159,10 @@ Read about the canonical ordering here: `tf.core.api`.
 :   extends the canonical ordering on nodes to tuples of nodes
 :   `tf.core.api.Api.sortKeyTuple`
 
+```sortKeyChunk(node)```
+:   defines the canonical ordering on node chunks
+:   `tf.core.api.Api.sortKeyChunk`
+
 ### Features
 
 #### Node features
@@ -176,20 +180,20 @@ Read about the canonical ordering here: `tf.core.api`.
 :   `tf.core.api.NodeFeature.s`
 
 ```F.fff.freqList(...)```
-:   frequency list of values of `fff
+:   frequency list of values of `fff`
 :   `tf.core.api.NodeFeature.freqList`
 
 ```F.fff.items(...)```
 :   generator of all entries of `fff` as mapping from nodes to values
-:   `tf.core.api.NodeFeature.freqList`
+:   `tf.core.api.NodeFeature.items`
 
 ```F.fff.meta```
 :   meta data of feature `fff`
 :   `tf.core.api.NodeFeature.meta`
 
 ```Fs('fff')```
-:   identical to ```F.ffff``` usable if name of feature is variable
-:   `tf.core.api.NodeFeature`
+:   identical to `F.ffff`, usable if name of feature is variable
+:   `tf.core.api.Api.Fs`
 
 #### Special feature `otype`
 
@@ -205,7 +209,7 @@ Maps nodes to their types.
 
 ```F.otype.sInterval(nodeType)```
 :   gives start and ending nodes of `nodeType`
-:   `tf.core.api.OtypeFeature.s`
+:   `tf.core.api.OtypeFeature.sInterval`
 
 ```F.otype.items(...)```
 :   generator of all (node, type) pairs.
@@ -255,15 +259,15 @@ Maps nodes to their types.
 
 ```E.fff.b(node)```
 :   get value of feature `fff` for edges *from* and *to* node
-:   `tf.core.api.EdgeFeature.t`
+:   `tf.core.api.EdgeFeature.b`
 
 ```E.fff.meta```
 :   all meta data of feature `fff`
 :   `tf.core.api.EdgeFeature.meta`
 
 ```Es('fff')```
-:   identical to ```E.fff``` usable if name of feature is variable
-:   `tf.core.api.EdgeFeature`
+:   identical to `E.fff`, usable if name of feature is variable
+:   `tf.core.api.Api.Es`
 
 #### Special feature `oslots`
 
@@ -284,7 +288,7 @@ Maps nodes to the set of slots they occupy.
 ### Locality
 
 ```L.i(node, otype=...)```
-:   go to intersectiing node
+:   go to intersecting nodes
 :   `tf.core.locality.Locality.i`
 
 ```L.u(node, otype=...)```
@@ -296,11 +300,11 @@ Maps nodes to the set of slots they occupy.
 :   `tf.core.locality.Locality.d`
 
 ```L.p(node, otype=...)```
-:   go to adjacent previous node
+:   go to adjacent previous nodes
 :   `tf.core.locality.Locality.p`
 
 ```L.n(node, otype=...)```
-:   go to adjacent next node
+:   go to adjacent next nodes
 :   `tf.core.locality.Locality.n`
 
 ### Text
@@ -314,7 +318,7 @@ Maps nodes to the set of slots they occupy.
 Rigid 1 or 2 or 3 sectioning system
 
 ```T.sectionTuple(node)```
-:   give tuple of section nodes that contain `n`
+:   give tuple of section nodes that contain node
 :   `tf.core.text.Text.sectionTuple`
 
 ```T.sectionFromNode(node)```
@@ -385,7 +389,7 @@ Flexible multilevel sectioning system
 
 ```S.count(progress=None, limit=None)```
 :   Count the results, up to a limit
-:   `tf.search.search.Search.study`
+:   `tf.search.search.Search.count`
 
 ```S.fetch(limit=None, ...)```
 :   Fetches the results, up to a limit
@@ -401,66 +405,15 @@ Flexible multilevel sectioning system
 :   Set certain parameters that influence the performance of search.
 :   `tf.search.search.Search.tweakPerformance`
 
-### TF Dataset Manipulation
-
-```from tf.compose import combine, modify```
-
-```combine((source1, source2, ...), target)```
-:   Combines several TF datasets into one new TF dataset
-:   `tf.compose.combine`
-
-```modify(source, target, ...)```
-:   Modifies a TF datasets into one new TF dataset
-:   `tf.compose.modify`
-
-### Data Interchange
-
-#### Custom node sets for search
-
-```
-from tf.lib import readSets
-from tf.lib import writeSets
-```
-
-```readSets(sourceFile)```
-:   reads a named sets from file
-:   `tf.lib.readSets`
-
-```writeSets(sets, destFile)```
-:   writes a named sets to file
-:   `tf.lib.writeSets`
-
-#### Export to Excel
-
-```A.export(results, ...)```
-:   export formatted data
-:   `tf.applib.display.export`
-
-#### MQL interchange
-
-```TF.exportMQL()```
-:   export loaded dataset to MQL
-: `tf.fabric.Fabric.exportMQL
-
-```TF.importMQL()```
-:   convert MQL file to TF dataset
-:   `tf.fabric.Fabric.importMQL
-
-#### Walker conversion
-
-```cv = CV(TF)```
-:   convert structured data to TF dataset
-:   `tf.convert.walker`
-
 ### Logging
 
 ```TF.version```
 :   version number of the Text-Fabric package.
-:   `tf.fabric.Fabric.version
+:   `tf.fabric.Fabric.version`
 
 ```TF.banner```
 :   banner of the Text-Fabric program.
-:   `tf.fabric.Fabric.banner
+:   `tf.fabric.Fabric.banner`
 
 ```isSilent()```
 :   report the verbosity of Text-Fabric
@@ -504,6 +457,10 @@ All components have just one useful attribute: `.data`.
 :   all precomputed data component names
 :   `tf.core.api.Api.Call`
 
+```Cs('ccc')```
+:   identical to `C.ccc`, usable if name of component is variable
+:   `tf.core.api.Api.Cs`
+
 ```C.levels.data```
 :   various statistics on node types
 :   `tf.core.prepare.levels`
@@ -543,7 +500,78 @@ All components have just one useful attribute: `.data`.
 :   clears the cache of compiled TF data
 :   `tf.fabric.Fabric.clearCache`
 
-```TF.clean()```
+```python
+from tf.clean import clean
+```
+
+```clean()```
 :   clears the cache of compiled TF data
 :   `tf.clean`
+
+## TF Dataset Manipulation
+
+```python
+from tf.compose import combine, modify
+```
+
+```combine((source1, source2, ...), target)```
+:   Combines several TF datasets into one new TF dataset
+:   `tf.compose.combine`
+
+```modify(source, target, ...)```
+:   Modifies a TF datasets into one new TF dataset
+:   `tf.compose.modify`
+
+## Data Interchange
+
+### Custom node sets for search
+
+```python
+from tf.lib import readSets
+from tf.lib import writeSets
+```
+
+```readSets(sourceFile)```
+:   reads a named sets from file
+:   `tf.lib.readSets`
+
+```writeSets(sets, destFile)```
+:   writes a named sets to file
+:   `tf.lib.writeSets`
+
+### Export to Excel
+
+```A.export(results, ...)```
+:   export formatted data
+:   `tf.applib.display.export`
+
+### MQL interchange
+
+```TF.exportMQL()```
+:   export loaded dataset to MQL
+: `tf.fabric.Fabric.exportMQL`
+
+```TF.importMQL()```
+:   convert MQL file to TF dataset
+:   `tf.fabric.Fabric.importMQL`
+
+### Walker conversion
+
+```python
+from tf.convert.walker import CV
+```
+
+```cv = CV(TF)```
+:   convert structured data to TF dataset
+:   `tf.convert.walker`
+
+## T-App development
+
+```mmm = loadModule("mmm", *args)```
+:   load supporting TF-app specific module
+:   `tf.applib.find.loadModule`
+
+```~/mypath/app-myname/code/config.yaml```
+:   settings for a TF-App
+:   [app-default](https://github.com/annotation/app-default/blob/master/code/config.yaml)
 

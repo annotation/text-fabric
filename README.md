@@ -17,10 +17,6 @@ All about Text-Fabric is in the
 Want to contribute?
 Start with the [contribution notes](codestyle/contributing.md).
 
-# News
-
-[release notes](https://annotation.github.io/text-fabric/About/News/)
-
 ---
 
 <a target="_blank" href="https://archive.softwareheritage.org/browse/origin/https://github.com/annotation/text-fabric/directory/"><img src="/docs/images/shalogo.png" width="100" align="left"/></a>

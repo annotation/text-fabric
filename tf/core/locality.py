@@ -121,7 +121,7 @@ class Locality(object):
         -------
         tuple of int
             The tuple nodes is sorted in the canonical order (`tf.core.api`),
-            but *reversed: right and small embedders before left and big embedders.
+            but *reversed*: right and small embedders before left and big embedders.
 
             The result never includes *n* itself.
             But other nodes linked to the same set of slots as *n*
@@ -223,7 +223,7 @@ class Locality(object):
         -------
         tuple of int
             The tuple nodes is sorted in the canonical order (`tf.core.api`),
-            but *reversed: right and small embedders before left and big embedders.
+            but *reversed*: right and small embedders before left and big embedders.
         """
 
         if n <= 1:

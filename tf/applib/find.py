@@ -13,6 +13,14 @@ from .helpers import getLocalDir
 
 
 def findAppConfig(appName, appPath, commit, release, local, version=None):
+    """Find the config information of an app.
+
+    If there is a `config.yaml` file, read it and check the compatibility
+    of the config settings with the current version of Text-Fabric.
+
+    If there is no such file, fill in a few basic settings.
+    """
+
     configPath = f"{appPath}/{APP_CONFIG}"
     cssPath = f"{appPath}/{APP_DISPLAY}"
 
@@ -102,6 +110,19 @@ The corpus data may not be found.
 
 
 def findAppClass(appName, appPath):
+    """Find the class definition of an app.
+
+    The file `app.py` in the app directory will be looked up,
+    if it exists, it will be loaded as a Python module, and from
+    this module we try to get the class `TfApp`.
+
+    Returns
+    -------
+    class | None
+        If `TfApp` can be found and imported, it is the result.
+        Otherwise we return `none`.
+    """
+
     appClass = None
     moduleName = f"tf.apps.{appName}.app"
     filePath = f"{appPath}/app.py"
@@ -123,17 +144,25 @@ def findAppClass(appName, appPath):
 
 
 def loadModule(moduleName, *args):
-    """Load a module dynamically.
+    """Load a module dynamically, by name.
+
+    Parameters
+    ----------
+    moduleName: string
+        Name of a module under a TF-app that needs to be imported.
+    args: mixed
+        The same list of arguments that is passed to `tf.applib.app.App`
+        of which only the `appName` and the `appPath` are used.
     """
 
-    (dataSource, appPath) = args[1:3]
+    (appName, appPath) = args[1:3]
     try:
         spec = util.spec_from_file_location(
-            f"tf.apps.{dataSource}.{moduleName}", f"{appPath}/{moduleName}.py",
+            f"tf.apps.{appName}.{moduleName}", f"{appPath}/{moduleName}.py",
         )
         module = util.module_from_spec(spec)
         spec.loader.exec_module(module)
     except Exception as e:
         console(f"loadModule: {str(e)}", error=True)
-        console(f'loadModule: {moduleName} in "{dataSource}" not found')
+        console(f'loadModule: {moduleName} in "{appName}" not found')
     return module

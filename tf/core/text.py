@@ -227,14 +227,17 @@ class Text(object):
             where the *fillup* parameter plays the same role as in
             `Text.sectionTuple`.
 
+        Notes
+        -----
         !!! hint "crossing verse boundaries"
             Sometimes a sentence or clause in a verse continue into the next verse.
             In those cases, this function will return different results for
             `lastSlot=False` and `lastSlot=True`.
 
-        !!! caution "nodes outside sections"
-            Nodes that lie outside any book, chapter, or verse
-            will get a `None` in the corresponding members of the returned tuple.
+        Warnings
+        --------
+        Nodes that lie outside any book, chapter, or verse
+        will get a `None` in the corresponding members of the returned tuple.
         """
         sTuple = self.sectionTuple(n, lastSlot=lastSlot, fillup=fillup)
         if len(sTuple) == 0:
@@ -461,9 +464,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
             The parent is that structural node that whose heading you get from
             the heading of *n* minus its last element.
 
-            !!!hint "Example"
-                The parent of `((book, Genesis), (chapter, 3), (verse, 16))`
-                is the node that has heading `((book, Genesis), (chapter, 3))`.
+        Notes
+        -----
+        !!!hint "Example"
+            The parent of `((book, Genesis), (chapter, 3), (verse, 16))`
+            is the node that has heading `((book, Genesis), (chapter, 3))`.
         """
 
         api = self.api
@@ -498,9 +503,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
             The children are those structural nodes whose headings are one
             longer than the one from *n*.
 
-            !!!hint "Example"
-                The children of `((book, Genesis), (chapter, 3))` are the nodes
-                with heading `((book, Genesis), (chapter, 3), (verse, 1))`, etc.
+        Notes
+        -----
+        !!!hint "Example"
+            The children of `((book, Genesis), (chapter, 3))` are the nodes
+            with heading `((book, Genesis), (chapter, 3), (verse, 1))`, etc.
         """
 
         api = self.api
@@ -534,13 +541,15 @@ There are {len(hdFromNd)} structural elements in the dataset.
             It is the tuple of pairs (node type, feature value)
             for all ancestors of *n*.
 
-            !!!hint "Example"
-                E.g., the heading of the verse node corresponding to Genesis 3:16
-                is `((book, Genesis), (chapter, 3), (verse, 16))`.
+        Notes
+        -----
+        !!!hint "Example"
+            E.g., the heading of the verse node corresponding to Genesis 3:16
+            is `((book, Genesis), (chapter, 3), (verse, 16))`.
 
-            !!!hint "Power tip"
-                If you are interested in the complete mapping: it is stored in
-                the dictionary `hdFromNd`.
+        !!!hint "Power tip"
+            If you are interested in the complete mapping: it is stored in
+            the dictionary `hdFromNd`.
         """
 
         api = self.api
@@ -575,9 +584,11 @@ There are {len(hdFromNd)} structural elements in the dataset.
             only the last one in the corpus will be returned.
             `hdMult` contains all such cases.
 
-            !!!hint "Power tip"
-                If you are interested in the complete mapping: it is stored in
-                the dictionary `ndFromHd`.
+        Notes
+        -----
+        !!!hint "Power tip"
+            If you are interested in the complete mapping: it is stored in
+            the dictionary `ndFromHd`.
         """
 
         api = self.api
@@ -597,11 +608,15 @@ There are {len(hdFromNd)} structural elements in the dataset.
         [banks](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/formats.ipynb)
         example corpus shows examples.
 
+        Parameters
+        ----------
+
         nodes: dict
             *nodes* can be a single node or an arbitrary iterable of nodes
             of arbitrary types.
             No attempt will be made to sort the nodes.
             If you need order, it is better to sort the nodes first.
+
         fmt: boolean, optional `None`
             The text-format of the text representation.
 
@@ -617,6 +632,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
 
             If a value for *fmt* is passed, but it is not a format defined in the
             *otext.tf* feature, there will be an error message and `None` is returned.
+
         descend: boolean, optional `None`
             Whether to descend to constituent nodes.
 
@@ -644,99 +660,6 @@ There are {len(hdFromNd)} structural elements in the dataset.
             The logic of this function is subtle.
             If you call it and the results baffles you, pass `explain=True`
             and it will explain what it is doing.
-
-        !!! hint "The default is sensible"
-            Consider the simplest call to this function: `T.text(node)`.
-            This will apply the default format to `node`.
-            If `node` is non-slot, then in most cases
-            the default format will be applied to the slots contained in `node`.
-
-            But for special node types, where the best representation
-            is not obtained by descending down
-            to the contained slot nodes, the dataset may define
-            special default types that use other
-            features to furnish a decent representation.
-
-            !!! example "lexemes"
-                In some corpora case this happens for the type of lexemes: `lex`.
-                Lexemes contain their occurrences
-                as slots, but the representation of a lexeme
-                is not the string of its occurrences, but
-                resides in a feature such as `voc_lex_utf8`
-                (vocalized lexeme in Unicode).
-
-                If the dataset defines the format `lex-default={lex} `,
-                this is the only thing needed to regulate
-                the representation of a lexeme.
-
-                Hence, `T.text(lx)` results in the lexeme representation of `lx`.
-
-                But if you really want to print out all occurrences of lexeme `lx`,
-                you can say `T.text(lx, descend=True)`.
-
-            !!! example "words and signs"
-                In some corpora the characters or signs are the slot level, and there is
-                a non slot level of words.
-                Some text formats are best defined on signs, others best on words.
-
-                For example, if words are associated with lexemes, stored in a word
-                feature `lex`, we can define a text format
-
-                ```lex-orig-full=word#{lex} ```
-
-                When you call `T.text(n)` for a non-slot, non-word node,
-                normally the node will be replaced by the slot nodes it contains,
-                before applying the template in the format.
-                But if you pass a format that specifies a different node type,
-                nodes will be replaced by contained nodes of that type. So
-
-                ```T.text(n, fmt='lex-orig-full')```
-
-                will lookup all word nodes under *n* and apply the template `{lex}`
-                to them.
-
-        !!! caution "same and different behaviours"
-            The consequences of the rules might be unexpected in some cases.
-            Here are a few observations:
-
-            * formats like `phrase-default` can be implicitly invoked for phrase nodes,
-              but `descend=True` prevents that;
-            * when a format targeted at phrases is invoked for phrase nodes,
-              `descend=True` will not cause the expansion of those nodes to slot nodes,
-              because the phrase node is already expanded
-              to the target type of the format;
-
-
-        !!! hint "memory aid"
-            *   If *fmt* is explicitly passed, it will be the format used
-                no matter what, and it determines the level of the nodes to descend to;
-            *   Descending is the norm, it can only be prevented
-                by setting default formats for node types or
-                by passing `descend=False` to `T.text()`;
-            *   `descend=True` is stronger than type-specific default formats,
-                but weaker than explicitly passed formats;
-            *   **Pass `explain=True` for a dynamic explanation.**
-
-        ??? note "Non slot nodes allowed"
-            In most cases, the nodes fed to `T.text()` are slots, and the formats are
-            templates that use features that are defined for slots.
-
-            But nothing prevents you to define a format
-            for non-slot nodes, and use features
-            defined for a non-slot node type.
-
-            If, for example, your slot type is *glyph*,
-            and you want a format that renders
-            lexemes, which are not defined for glyphs but for words,
-            you can just define a format in terms of word features.
-
-            It is your responsibility to take care to use the formats
-            for node types for which they make sense.
-
-        !!! caution "Escape whitespace in formats"
-            When defining formats in `otext.tf`,
-            if you need a newline or tab in the format,
-            specify it as `\n` and `\t`.
         """
 
         api = self.api

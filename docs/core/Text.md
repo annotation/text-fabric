@@ -224,3 +224,100 @@ set, not by Text-Fabric.
     So far, text formats only result in plain text.
     A TF-app (`tf.applib.app`) may define and implement extra text
     formats which may invoke all HTML+CSS styling that you can think of.
+
+### The T.text() function
+
+The way th `tf.core.text.Text.text` responds to its parameters may look complicated,
+but the retionale is that the defaults should be sensible.
+
+Consider the simplest call to this function: `T.text(node)`.
+This will apply the default format to `node`.
+If `node` is non-slot, then in most cases
+the default format will be applied to the slots contained in `node`.
+
+But for special node types, where the best representation
+is not obtained by descending down
+to the contained slot nodes, the dataset may define
+special default types that use other
+features to furnish a decent representation.
+
+!!! explanation "lexemes"
+    In some corpora case this happens for the type of lexemes: `lex`.
+    Lexemes contain their occurrences
+    as slots, but the representation of a lexeme
+    is not the string of its occurrences, but
+    resides in a feature such as `voc_lex_utf8`
+    (vocalized lexeme in Unicode).
+
+    If the dataset defines the format `lex-default={lex} `,
+    this is the only thing needed to regulate
+    the representation of a lexeme.
+
+    Hence, `T.text(lx)` results in the lexeme representation of `lx`.
+
+    But if you really want to print out all occurrences of lexeme `lx`,
+    you can say `T.text(lx, descend=True)`.
+
+!!! explanation "words and signs"
+    In some corpora the characters or signs are the slot level, and there is
+    a non slot level of words.
+    Some text formats are best defined on signs, others best on words.
+
+    For example, if words are associated with lexemes, stored in a word
+    feature `lex`, we can define a text format
+
+    ```lex-orig-full=word#{lex} ```
+
+    When you call `T.text(n)` for a non-slot, non-word node,
+    normally the node will be replaced by the slot nodes it contains,
+    before applying the template in the format.
+    But if you pass a format that specifies a different node type,
+    nodes will be replaced by contained nodes of that type. So
+
+    ```T.text(n, fmt='lex-orig-full')```
+
+    will lookup all word nodes under *n* and apply the template `{lex}`
+    to them.
+
+!!! caution "same and different behaviours"
+    The consequences of the rules might be unexpected in some cases.
+    Here are a few observations:
+
+    * formats like `phrase-default` can be implicitly invoked for phrase nodes,
+      but `descend=True` prevents that;
+    * when a format targeted at phrases is invoked for phrase nodes,
+      `descend=True` will not cause the expansion of those nodes to slot nodes,
+      because the phrase node is already expanded
+      to the target type of the format;
+
+
+!!! hint "memory aid"
+    *   If *fmt* is explicitly passed, it will be the format used
+        no matter what, and it determines the level of the nodes to descend to;
+    *   Descending is the norm, it can only be prevented
+        by setting default formats for node types or
+        by passing `descend=False` to `T.text()`;
+    *   `descend=True` is stronger than type-specific default formats,
+        but weaker than explicitly passed formats;
+    *   **Pass `explain=True` for a dynamic explanation.**
+
+!!! note "Non slot nodes allowed"
+    In most cases, the nodes fed to `T.text()` are slots, and the formats are
+    templates that use features that are defined for slots.
+
+    But nothing prevents you to define a format
+    for non-slot nodes, and use features
+    defined for a non-slot node type.
+
+    If, for example, your slot type is *glyph*,
+    and you want a format that renders
+    lexemes, which are not defined for glyphs but for words,
+    you can just define a format in terms of word features.
+
+    It is your responsibility to take care to use the formats
+    for node types for which they make sense.
+
+!!! caution "Escape whitespace in formats"
+    When defining formats in `otext.tf`,
+    if you need a newline or tab in the format,
+    specify it as `\n` and `\t`.

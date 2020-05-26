@@ -47,8 +47,7 @@ class App:
         appName: string
             The appname  can be as simple as the name of an existing TF-app.
             The app should exist as a repository `app-`*appName* under
-            [github.com/annotation](https://github.com/annotation), see also
-            `tf.about.corpora`.
+            [github.com/annotation](https://github.com/annotation).
 
             If there is a `/` in the *appName argument*,
             it is interpreted as a location on your  system.
@@ -220,12 +219,18 @@ class App:
             including the links to the loaded
             data, features, and the API methods.
             Error messages will still come through.
+
+        See Also
+        --------
+        corpora: `tf.about.corpora`.
         """
 
         self.context = None
         """Result of interpreting all configuration options in `config.yaml`.
 
-        See also `tf.applib.settings.showContext`.
+        See Also
+        --------
+        showContext: `tf.applib.settings.showContext`.
         """
 
         for (key, value) in dict(
@@ -317,9 +322,6 @@ The app "{appName}" will not work!
                     error=True,
                 )
 
-    def reinit(self):
-        pass
-
     def reuse(self, hoist=False):
         """Re-initialize the app.
 
@@ -353,7 +355,6 @@ The app "{appName}" will not work!
 
         cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
         findAppClass(appName, appPath)
-        self.reinit()
 
         setAppSpecs(self, cfg, reset=True)
 
@@ -369,6 +370,36 @@ The app "{appName}" will not work!
 
 
 def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
+    """Find a TF app by name and initialize an object of its main class.
+
+    Parameters
+    ----------
+    appName: string
+        Either:
+
+        * the plain name of an official TF app (e.g. `bhsa`, `oldbabylonian`)
+        * or a local directory, containing at least one `/`:
+          * if it points to a directory under which an unofficial app sits:
+            that app will be loaded
+          * else it is assumed that the local directory is a TF data directory:
+            a vanilla app without extra configuration is initialized
+            and this local directory is supplied for its `locations`
+            parameter. This has the effect that the TF features here will
+            be loaded.
+
+    checkoutApp: string
+        The checkout specifier for the app code. See `tf.applib.app.App`.
+
+    args: mixed
+        Arguments that will be passed to the initializer of the `tf.applib.app.App`
+        class.
+
+    kwargs: mixed
+        Keyword arguments that will be passed to the initializer of the
+        `tf.applib.app.App` class.
+
+    """
+
     if not appName or "/" in appName:
         appPath = os.path.expanduser(appName) if appName else ""
         absPath = os.path.abspath(appPath)

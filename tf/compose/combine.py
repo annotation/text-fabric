@@ -63,6 +63,9 @@ def combine(
 
     All details of the combination can be steered by means of parameters.
 
+    Parameters
+    ----------
+
     locations: tuple of (string or tuple)
         You can either pass just the locations of the components,
         or you can give them a name and pass `(name, location)` instead.
@@ -127,21 +130,6 @@ def combine(
         you can pass them in the parameter `featureMeta` as in the following example,
         where we pass meta data for a feature called `level` with integer values.
 
-        !!! example
-            ```python
-            combine(
-                ('banks', 'banks/tf/0.2'),
-                ('river', 'banks/tf/0.4'),
-                'riverbanks/tf/1.0',
-                featureMeta=dict(
-                  level=dict(
-                    valueType='int',
-                    description='level of a section node',
-                  ),
-                ),
-            )
-            ```
-
         The contents of the `otext.tf` features are also metadata,
         and their contents will be merged in exactly the same way.
 
@@ -157,60 +145,78 @@ def combine(
         and will override anything with the same key
         that is already in one of the components.
 
-        !!! example
-            ```python
-            combine(
-                ('banks', 'banks/tf/0.2'),
-                ('river', 'banks/tf/0.4'),
-                'riverbanks/tf/1.0',
-                featureMeta=dict(
-                    otext=dict(
-                        componentType='volume',
-                        componentFeature='vol',
-                        sectionTypes='volume,chapter,line',
-                        sectionFeatures='title,number,number',
-                    ),
-                ),
-                silent=False,
-            )
-            ```
-
-            will give rise to something like this (assuming that `banks` and
-            `rivers` have some deviating material in their `otext.tf`:
-
-            ```
-            @config
-            @compiler=Dirk Roorda
-            @dateWritten=2019-05-20T19:12:23Z
-            @fmt:line-default={letters:XXX}{terminator}
-            @fmt:line-term=line#{terminator}
-            @fmt:text-orig-extra={letters}{punc}{gap}
-            @fmt:text-orig-full={letters}
-            @fmt:text-orig-full!banks={letters}{punc}
-            @fmt:text-orig-full!rivers={letters}{gap}
-            @name=Culture quotes from Iain Banks
-            @purpose=exposition
-            @sectionFeatures=title,number,number
-            @sectionFeatures!banks=title,number,number
-            @sectionFeatures!rivers=number,number,number
-            @sectionTypes=volume,chapter,line
-            @sectionTypes!banks=book,chapter,sentence
-            @sectionTypes!rivers=chapter,sentence,line
-            @source=Good Reads
-            @status=with for similarities in a separate module
-            @structureFeatures!banks=title,number,number,number
-            @structureFeatures!rivers=title,number,number
-            @structureTypes!banks=book,chapter,sentence,line
-            @structureTypes!rivers=book,chapter,sentence
-            @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
-            @version=0.2
-            @writtenBy=Text-Fabric
-            @writtenBy=Text-Fabric
-            @dateWritten=2019-05-28T10:55:06Z
-            ```
-
     silent: boolean, optional `False`
         Suppress or enable informational messages.
+
+    Example:
+
+    ```python
+    combine(
+        ('banks', 'banks/tf/0.2'),
+        ('river', 'banks/tf/0.4'),
+        'riverbanks/tf/1.0',
+        featureMeta=dict(
+          level=dict(
+            valueType='int',
+            description='level of a section node',
+          ),
+        ),
+    )
+    ```
+
+    Example:
+
+    ```python
+    combine(
+        ('banks', 'banks/tf/0.2'),
+        ('river', 'banks/tf/0.4'),
+        'riverbanks/tf/1.0',
+        featureMeta=dict(
+            otext=dict(
+                componentType='volume',
+                componentFeature='vol',
+                sectionTypes='volume,chapter,line',
+                sectionFeatures='title,number,number',
+            ),
+        ),
+        silent=False,
+    )
+    ```
+
+    This will give rise to something like this (assuming that `banks` and
+    `rivers` have some deviating material in their `otext.tf`:
+
+    ```
+    @config
+    @compiler=Dirk Roorda
+    @dateWritten=2019-05-20T19:12:23Z
+    @fmt:line-default={letters:XXX}{terminator}
+    @fmt:line-term=line#{terminator}
+    @fmt:text-orig-extra={letters}{punc}{gap}
+    @fmt:text-orig-full={letters}
+    @fmt:text-orig-full!banks={letters}{punc}
+    @fmt:text-orig-full!rivers={letters}{gap}
+    @name=Culture quotes from Iain Banks
+    @purpose=exposition
+    @sectionFeatures=title,number,number
+    @sectionFeatures!banks=title,number,number
+    @sectionFeatures!rivers=number,number,number
+    @sectionTypes=volume,chapter,line
+    @sectionTypes!banks=book,chapter,sentence
+    @sectionTypes!rivers=chapter,sentence,line
+    @source=Good Reads
+    @status=with for similarities in a separate module
+    @structureFeatures!banks=title,number,number,number
+    @structureFeatures!rivers=title,number,number
+    @structureTypes!banks=book,chapter,sentence,line
+    @structureTypes!rivers=book,chapter,sentence
+    @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+    @version=0.2
+    @writtenBy=Text-Fabric
+    @writtenBy=Text-Fabric
+    @dateWritten=2019-05-28T10:55:06Z
+    ```
+
     """
 
     if not dirEmpty(targetLocation):

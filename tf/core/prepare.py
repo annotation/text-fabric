@@ -48,6 +48,8 @@ def levels(info, error, otype, oslots, otext):
     The order of the tuple is descending by average number of slots per node of that
     type.
 
+    Notes
+    -----
     !!! explanation "Level computation and customization"
         All node types have a level, defined by the average amount of slots object of
         that type usually occupy. The bigger the average object, the lower the levels.
@@ -109,10 +111,10 @@ def levels(info, error, otype, oslots, otext):
 
 
 def order(info, error, otype, oslots, levels):
-    """Computes order data.
+    """Computes order data for the canonical ordering.
 
     The canonical ordering between nodes is defined in terms of the slots that
-    nodes contain, see `tf.core.api`.
+    nodes contain.
 
     Parameters
     ----------
@@ -132,8 +134,14 @@ def order(info, error, otype, oslots, levels):
     array
         All nodes, slot and nonslot, in canonical order.
 
+    Notes
+    -----
     We store the result in an array because it saves a lot of memory, and access
     is still fast.
+
+    See Also
+    --------
+    canonical ordering: `tf.core.api`.
     """
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -197,6 +205,8 @@ def rank(info, error, otype, order):
     array
         The ranks of all nodes, slot and nonslot, with respect to the canonical order.
 
+    Notes
+    -----
     We store the result in an array because it saves a lot of memory, and access
     is still fast.
     """
@@ -234,16 +244,19 @@ def levUp(info, error, otype, oslots, rank):
         The n-th member is an array of the embedder nodes of n.
         Those arrays are sorted in canonical order (`tf.core.api`).
 
+    Notes
+    -----
     !!! hint "Memory efficiency"
         Many nodes have the same array of embedders.
         Those embedder arrays will be reused for those nodes.
 
-    !!! caution "Use with care"
-        It is not advisable to this data directly by `C.levUp.data`,
-        it is far better to use the `tf.core.locality.Locality.u` function.
+    Warnings
+    --------
+    It is not advisable to this data directly by `C.levUp.data`,
+    it is far better to use the `tf.core.locality.Locality.u` function.
 
-        Only when every bit of performance waste has to be squeezed out,
-        this raw data might be a deal.
+    Only when every bit of performance waste has to be squeezed out,
+    this raw data might be a deal.
     """
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -379,6 +392,8 @@ def boundary(info, error, otype, oslots, rank):
             The *n*-th member is the array of nodes that end at slot *n*,
             ordered in canonical order;
 
+    Notes
+    -----
     !!! hint "why  reversed canonical order?"
         Just for symmetry.
     """
@@ -447,10 +462,11 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
             section-level-2 headings to mappings from
             section-level3 headings to section-level-3 nodes.
 
-    !!! caution "Custom names"
-        Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
-        It is the corpus data, especially the `otext` config feature that
-        spells out the names of the sections.
+    Warnings
+    --------
+    Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
+    It is the corpus data, especially the `otext` config feature that
+    spells out the names of the sections.
 
     """
 
@@ -560,14 +576,16 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     -------
     tuple
         *   headingFromNode
-            Mapping from nodes to section keys
+            (Mapping from nodes to section keys)
         *   nodeFromHeading
-            Mapping from section keys to nodes
+            (Mapping from section keys to nodes)
         *   multiple
         *   top
         *   up
         *   down
 
+    Notes
+    -----
     A section key of a structural node is obtained by going a level up from
     that node, retrieving the heading of that structural node, then going up again,
     and so on till a top node is reached. The tuple of headings obtained in this way

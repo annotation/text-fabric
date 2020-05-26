@@ -353,6 +353,7 @@ def ghp_import():
     if not try_rebase(REMOTE, BRANCH):
         print("Failed to rebase %s branch.", BRANCH)
 
+    console("copy docs to the gh-pages branch")
     cmd = ["git", "fast-import", "--date-format=raw", "--quiet"]
     kwargs = {"stdin": PIPE}
     if sys.version_info >= (3, 2, 0):
@@ -371,6 +372,7 @@ def ghp_import():
     if pipe.wait() != 0:
         sys.stdout.write(enc("Failed to process commit.\n"))
 
+    console("push gh-pages branch to GitHub")
     cmd = ["git", "push", REMOTE, BRANCH]
     proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
     (out, err) = proc.communicate()
@@ -429,6 +431,7 @@ def pdoc3():
         "cp -r docs/images site",
         "touch site/.nojekyll",
     ]
+    console("Build docs")
     for cmdLine in cmdLines:
         print(cmdLine)
         run(cmdLine, shell=True)

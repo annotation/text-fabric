@@ -36,6 +36,7 @@ from .core.api import (
     OslotsFeature,
     Computed,
     addSortKey,
+    addSortKeyChunk,
     addOtype,
     addLocality,
     addRank,
@@ -160,6 +161,11 @@ class Fabric(object):
         self.tm = Timestamp()
         self.tm.setSilent(silent)
         self.banner = f"This is {NAME} {VERSION}"
+        """The banner the Text-Fabric.
+
+        Will be shown just after start up, if the silence is not `deep`.
+        """
+
         self.version = VERSION
         """The version number of the Text-Fabric library.
         """
@@ -371,6 +377,8 @@ Api reference : {APIREF}
             Under each key there is the set of feature names in that category.
             How this dictionary is delivered, depends on the parameter *show*.
 
+        Notes
+        -----
         !!! explanation "configs"
             These are config features, with metadata only, no data. E.g. `otext`.
 
@@ -421,6 +429,16 @@ Api reference : {APIREF}
             )
 
     def loadAll(self, silent=None):
+        """Load all loadable features.
+
+        Parameters
+        ----------
+        silent: boolean, optional `None`
+            TF is silent if you specified `silent=True` in a preceding
+            `TF=Fabric()` call.
+            But if you did not, you can also pass `silent=True` to this call.
+        """
+
         api = self.load("", silent=silent)
         allFeatures = self.explore(silent=silent or True, show=True)
         loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
@@ -441,10 +459,12 @@ Api reference : {APIREF}
         Calling this function just does it, and it is equivalent with manually removing
         all `.tfx` files inside the hidden `.tf` directory inside your dataset.
 
-        See also `tf.clean`.
-
         !!! hint "No need to load"
             It is not needed to execute a `TF.load()` first.
+
+        See Also
+        --------
+        clean: `tf.clean`.
         """
 
         for (fName, fObj) in self.features.items():
@@ -679,8 +699,6 @@ Api reference : {APIREF}
     def exportMQL(self, mqlName, mqlDir):
         """Exports the complete TF dataset into single MQL database.
 
-        See also `tf.convert.mql`.
-
         Parameters
         ----------
         dirName: string
@@ -694,6 +712,10 @@ Api reference : {APIREF}
             home directory.
             Likewise, `..` will be expanded to the parent of the current directory,
             and `.` to the current directory, both only at the start of `dirName`.
+
+        See Also
+        --------
+        convert: `tf.convert.mql`.
         """
 
         self.tm.indent(level=0, reset=True)
@@ -940,6 +962,7 @@ Api reference : {APIREF}
         addLocality(api)
         addRank(api)
         addText(api)
+        addSortKeyChunk(api)
         addSearch(api, silent)
         self.tm.indent(level=0)
         self.tm.info("All features loaded/computed - for details use loadLog()")

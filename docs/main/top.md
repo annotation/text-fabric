@@ -9,7 +9,7 @@ Text-Fabric is a piece of machinery for processing such corpora as annotated gra
 
 ## Straight to ...
 
-* Release ntes (`tf.about.releases`)
+* Release notes (`tf.about.releases`)
 * Install (`tf.about.install`)
 * Browser (`tf.about.browser`)
 * Use (`tf.about.use`)
@@ -58,7 +58,20 @@ In particular thanks to
 * Stephen Ku
 * Wido van Peursen
 
+<img src="images/DANS-logo.png" width="200">
+
 ## More resources
+
+Tutorials:
+
+* [BHSA](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/start.ipynb)
+* [DSS](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/dss/start.ipynb)
+* [OldBabylonian](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/oldbabylonian/start.ipynb)
+* [Uruk](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/uruk/start.ipynb)
+* [Q'uran](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/quran/start.ipynb)
+* and more: [all tutorials](https://nbviewer.jupyter.org/github/annotation/tutorials/tree/master/)
+
+---
 
 Papers:
 
@@ -68,6 +81,8 @@ Papers:
    (preprint: [arxiv](https://arxiv.org/abs/1501.01866))
 * [LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible](https://arxiv.org/abs/1410.0286)
 * [Annotation as a New Paradigm in Research Archiving](https://arxiv.org/abs/1412.6069)
+
+---
 
 Presentations:
 

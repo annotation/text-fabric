@@ -2,13 +2,14 @@
 .. include:: ../../docs/applib/display.md
 """
 
+
 import os
 import types
 from collections import namedtuple
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
 from ..core.text import DEFAULT_FORMAT
-from ..core.helpers import mdEsc, htmlEsc, flattenToSet, console
+from ..core.helpers import mdEsc, htmlEsc, flattenToSet, chunkify, console
 from .helpers import getText, htmlSafe, getResultsX, tupleEnum, RESULT, dh, NB
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights, getHlAtt
@@ -23,7 +24,18 @@ QUAD = "  "
 
 __pdoc__ = {}
 
-OuterContext = namedtuple(
+
+class OuterContext:
+    """Outer node properties during plain() and pretty().
+    Only the properties of the node for which the outer call
+    plain() or pretty() has been made, not the nodes encountered
+    during recursion."
+    """
+
+    pass
+
+
+OuterContext = namedtuple(  # noqa: F811
     "OuterContext",
     """
     ltr
@@ -33,12 +45,6 @@ OuterContext = namedtuple(
     explain
 """.strip().split(),
 )
-OuterContext.__doc__ = (
-    "Outer node properties during plain() and pretty(). "
-    "Only the properties of the node for which the outer call"
-    " plain() or pretty() has been made, not the nodes encountered"
-    " during recursion."
-)
 __pdoc__["OuterContext.ltr"] = "writing direction."
 __pdoc__["OuterContext.textCls"] = "Css class for full text."
 __pdoc__["OuterContext.slots"] = "Set of slots under the outer node."
@@ -46,7 +52,15 @@ __pdoc__[
     "OuterContext.inTuple"
 ] = "Whether the outer node is displayed as part of a tuple of nodes."
 
-NodeContext = namedtuple(
+
+class NodeContext:
+    """Node properties during plain() or pretty().
+    """
+
+    pass
+
+
+NodeContext = namedtuple(  # noqa: F811
     "NodeContext",
     """
     slotType
@@ -67,7 +81,6 @@ NodeContext = namedtuple(
     hidden
 """.strip().split(),
 )
-NodeContext.__doc__ = "Node properties during plain() or pretty()."
 __pdoc__["NodeContext.slotType"] = "The slot type of the data set."
 __pdoc__["NodeContext.nType"] = "The node type of the current node."
 __pdoc__["NodeContext.isSlot"] = "Whether the current node is a slot node."
@@ -350,9 +363,9 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
 def table(app, tuples, _asString=False, **options):
     """Plain displays of an iterable of tuples of nodes in a table.
 
-        The list is displayed as a compact markdown table.
-        Every row is prepended with the sequence number in the iterable,
-        and then displayed by `plainTuple`
+    The list is displayed as a compact markdown table.
+    Every row is prepended with the sequence number in the iterable,
+    and then displayed by `plainTuple`
 
     !!! hint "condense, condenseType"
         You can condense the list first to containers of `condenseType`,
@@ -673,7 +686,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
 def show(app, tuples, **options):
     """Displays an iterable of tuples of nodes.
 
-        The elements of the list are displayed by `A.prettyTuple()`.
+    The elements of the list are displayed by `A.prettyTuple()`.
 
     !!! hint "condense, condenseType"
         You can condense the list first to containers of `condenseType`,
@@ -804,7 +817,7 @@ def pretty(app, n, explain=False, **options):
     The internal structure of the nodes that are involved is also revealed.
     In addition, extra features and their values are displayed with the nodes.
 
-    !!!  hint "Controlling pretty displays"
+    !!! hint "Controlling pretty displays"
         The following `tf.applib.displaysettings`
         are particularly relevant to pretty displays:
 
@@ -892,6 +905,7 @@ def pretty(app, n, explain=False, **options):
 
 
 # PLAIN LOW-LEVEL
+
 
 def _doPlain(
     app,
@@ -1132,6 +1146,7 @@ def _doPlainNode(
 
 
 # PRETTY LOW-LEVEL
+
 
 def _doPretty(
     app, dContext, oContext, pContext, n, outer, first, last, level, html, done, called,
@@ -1534,9 +1549,7 @@ def _prepareDisplay(
         else _getChildren(app, isPretty, dContext, oContext, n, nType)
     )
 
-    boundaryResult = _getBoundary(
-        isPretty, api, oContext, slots, n, nType, chunk=chunk
-    )
+    boundaryResult = _getBoundary(isPretty, api, oContext, slots, n, nType, chunk=chunk)
     if boundaryResult is None:
         return nType
 
@@ -1795,6 +1808,21 @@ def _getChildren(app, isPretty, dContext, oContext, n, nType):
             and not (set(L.u(ch, otype=baseTypes)) & refSet)
         )
     return children
+
+
+def _unravel(app, oContext, n, nType, called=set()):
+    api = app.api
+    L = api.L
+    E = api.E
+    sortKeyChunk = api.sortKeyChunk
+    aContext = app.context
+    childType = aContext.childType
+    slots = oContext.slots
+
+    iNodes = L.i(n, otype=childType[nType]) if nType in childType else L.i(n)
+    return chunkify(
+        ((n, frozenset(E.oslots.s(n))) for n in iNodes), slots, called, sortKeyChunk
+    )
 
 
 def _getNodePart(app, isPretty, dContext, n, nType, isSlot, outer, isHl):

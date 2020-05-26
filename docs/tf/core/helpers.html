@@ -1,0 +1,1155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>tf.core.helpers API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.core.helpers</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import os
+import sys
+import re
+
+LETTER = set(&#34;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&#34;)
+VALID = set(&#34;_0123456789&#34;) | LETTER
+
+WARN32 = &#34;&#34;&#34;WARNING: you are not running a 64-bit implementation of Python.
+You may run into memory problems if you load a big data set.
+Consider installing a 64-bit Python.
+&#34;&#34;&#34;
+
+MSG64 = &#34;&#34;&#34;Running on 64-bit Python&#34;&#34;&#34;
+
+
+def dirEmpty(target):
+    return not os.path.exists(target) or not os.listdir(target)
+
+
+def isInt(val):
+    try:
+        val = int(val)
+    except Exception:
+        return False
+    return True
+
+
+def mathEsc(val):
+    &#34;&#34;&#34;Escape $ signs to `&lt;span&gt;$&lt;/span&gt;`.
+
+    To prevent them from being interpreted as math in a Jupyter notebook
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
+    return &#34;&#34; if val is None else (str(val).replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;))
+
+
+def mdEsc(val):
+    return (
+        &#34;&#34;
+        if val is None
+        else (str(val).replace(&#34;|&#34;, &#34;&amp;#124;&#34;).replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;))
+    )
+
+
+def htmlEsc(val):
+    &#34;&#34;&#34;Escape certain HTML characters by HTML entities.
+
+    To prevent them to be interpreted as HTML
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
+    return (
+        &#34;&#34;
+        if val is None
+        else (
+            str(val)
+            .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+            .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+            .replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
+        )
+    )
+
+
+def mdhtmlEsc(val):
+    &#34;&#34;&#34;Escape certain Markdown characters by HTML entities or span elements.
+
+    To prevent them to be interpreted as Markdown
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
+    return (
+        &#34;&#34;
+        if val is None
+        else (
+            str(val)
+            .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+            .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+            .replace(&#34;|&#34;, &#34;&amp;#124;&#34;)
+            .replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
+        )
+    )
+
+
+def splitModRef(moduleRef):
+    parts = moduleRef.split(&#34;:&#34;, 1)
+    if len(parts) == 1:
+        parts.append(&#34;&#34;)
+    (ref, specifier) = parts
+    parts = ref.split(&#34;/&#34;, 2)
+
+    if len(parts) &lt; 2:
+        console(
+            f&#34;&#34;&#34;
+Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
+&#34;&#34;&#34;,
+            error=True,
+        )
+        return None
+
+    if len(parts) == 2:
+        parts.append(&#34;&#34;)
+
+    return [*parts, specifier]
+
+
+def camel(name):
+    if not name:
+        return name
+    temp = name.replace(&#34;_&#34;, &#34; &#34;).title().replace(&#34; &#34;, &#34;&#34;)
+    return temp[0].lower() + temp[1:]
+
+
+def check32():
+    warn = &#34;&#34;
+    msg = &#34;&#34;
+    on32 = sys.maxsize &lt; 2 ** 63 - 1
+    if on32 &lt; 2 ** 63 - 1:
+        warn = WARN32
+    else:
+        msg = MSG64
+    return (on32, warn, msg)
+
+
+def console(*msg, error=False, newline=True):
+    msg = &#34; &#34;.join(m if type(m) is str else repr(m) for m in msg)
+    msg = msg[1:] if msg.startswith(&#34;\n&#34;) else msg
+    msg = msg[0:-1] if msg.endswith(&#34;\n&#34;) else msg
+    target = sys.stderr if error else sys.stdout
+    nl = &#34;\n&#34; if newline else &#34;&#34;
+    target.write(f&#34;{msg}{nl}&#34;)
+    target.flush()
+
+
+def cleanName(name):
+    clean = &#34;&#34;.join(c if c in VALID else &#34;_&#34; for c in name)
+    if clean == &#34;&#34; or not clean[0] in LETTER:
+        clean = &#34;x&#34; + clean
+    return clean
+
+
+def isClean(name):
+    if name is None or len(name) == 0 or name[0] not in LETTER:
+        return False
+    return all(c in VALID for c in name[1:])
+
+
+def flattenToSet(features):
+    theseFeatures = set()
+    if type(features) is str:
+        theseFeatures |= set(features.split())
+    else:
+        for feature in features:
+            if type(feature) is str:
+                theseFeatures.add(feature)
+            else:
+                feature = feature[1]
+                if type(feature) is str:
+                    theseFeatures |= set(feature.split())
+                else:
+                    theseFeatures |= set(feature)
+    return theseFeatures
+
+
+def setDir(obj):
+    obj.homeDir = os.path.expanduser(&#34;~&#34;).replace(&#34;\\&#34;, &#34;/&#34;)
+    obj.curDir = os.getcwd().replace(&#34;\\&#34;, &#34;/&#34;)
+    (obj.parentDir, x) = os.path.split(obj.curDir)
+
+
+def expandDir(obj, dirName):
+    if dirName.startswith(&#34;~&#34;):
+        dirName = dirName.replace(&#34;~&#34;, obj.homeDir, 1)
+    elif dirName.startswith(&#34;..&#34;):
+        dirName = dirName.replace(&#34;..&#34;, obj.parentDir, 1)
+    elif dirName.startswith(&#34;.&#34;):
+        dirName = dirName.replace(&#34;.&#34;, obj.curDir, 1)
+    return dirName
+
+
+def setFromSpec(spec):
+    covered = set()
+    for r_str in spec.split(&#34;,&#34;):
+        bounds = r_str.split(&#34;-&#34;)
+        if len(bounds) == 1:
+            covered.add(int(r_str))
+        else:
+            b = int(bounds[0])
+            e = int(bounds[1])
+            if e &lt; b:
+                (b, e) = (e, b)
+            for n in range(b, e + 1):
+                covered.add(n)
+    return covered
+
+
+def rangesFromSet(nodeSet):
+    # ranges = []
+    curstart = None
+    curend = None
+    for n in sorted(nodeSet):
+        if curstart is None:
+            curstart = n
+            curend = n
+        elif n == curend + 1:
+            curend = n
+        else:
+            yield (curstart, curend)
+            # ranges.append((curstart, curend))
+            curstart = n
+            curend = n
+    if curstart is not None:
+        yield (curstart, curend)
+        # ranges.append((curstart, curend))
+    # return ranges
+
+
+def rangesFromList(nodeList):  # the list must be sorted
+    # ranges = []
+    curstart = None
+    curend = None
+    for n in nodeList:
+        if curstart is None:
+            curstart = n
+            curend = n
+        elif n == curend + 1:
+            curend = n
+        else:
+            yield (curstart, curend)
+            # ranges.append((curstart, curend))
+            curstart = n
+            curend = n
+    if curstart is not None:
+        yield (curstart, curend)
+        # ranges.append((curstart, curend))
+    # return ranges
+
+
+def specFromRanges(ranges):  # ranges must be normalized
+    return &#34;,&#34;.join(
+        &#34;{}&#34;.format(r[0]) if r[0] == r[1] else &#34;{}-{}&#34;.format(*r) for r in ranges
+    )
+
+
+def valueFromTf(tf):
+    return &#34;\\&#34;.join(
+        x.replace(&#34;\\t&#34;, &#34;\t&#34;).replace(&#34;\\n&#34;, &#34;\n&#34;) for x in tf.split(&#34;\\\\&#34;)
+    )
+
+
+def tfFromValue(val):
+    valTp = type(val)
+    isInt = valTp is int
+    isStr = valTp is str
+    if not isInt and not isStr:
+        console(f&#34;Wrong type for a TF value: {valTp}: {val}&#34;, error=True)
+        return None
+    return (
+        str(val)
+        if type(val) is int
+        else val.replace(&#34;\\&#34;, &#34;\\\\&#34;).replace(&#34;\t&#34;, &#34;\\t&#34;).replace(&#34;\n&#34;, &#34;\\n&#34;)
+    )
+
+
+def makeIndex(data):
+    inv = {}
+    for (n, m) in data.items():
+        inv.setdefault(m, set()).add(n)
+    return inv
+
+
+def makeInverse(data):
+    inverse = {}
+    for n in data:
+        for m in data[n]:
+            inverse.setdefault(m, set()).add(n)
+    return inverse
+
+
+def makeInverseVal(data):
+    inverse = {}
+    for n in data:
+        for (m, val) in data[n].items():
+            inverse.setdefault(m, {})[n] = val
+    return inverse
+
+
+def nbytes(by):
+    units = [&#34;B&#34;, &#34;KB&#34;, &#34;MB&#34;, &#34;GB&#34;, &#34;TB&#34;]
+    for i in range(len(units)):
+        if by &lt; 1024 or i == len(units) - 1:
+            fmt = &#34;{:&gt;5}{}&#34; if i == 0 else &#34;{:&gt;5.1f}{}&#34;
+            return fmt.format(by, units[i])
+        by /= 1024
+
+
+def collectFormats(config):
+    varPattern = re.compile(r&#34;\{([^}]+?)(:[^}]+)?\}&#34;)
+    featureSet = set()
+
+    def collectFormat(tpl):
+        features = []
+        default = &#34;&#34;
+
+        def varReplace(match):
+            nonlocal default
+            varText = match.group(1)
+            default = (match.group(2) or &#34;:&#34;)[1:]
+            fts = tuple(varText.split(&#34;/&#34;))
+            features.append((fts, default))
+            for ft in fts:
+                featureSet.add(ft)
+            return &#34;{}&#34;
+
+        rtpl = varPattern.sub(varReplace, tpl)
+        return (rtpl, tuple(features))
+
+    formats = {}
+    for (fmt, tpl) in sorted(config.items()):
+        if fmt.startswith(&#34;fmt:&#34;):
+            formats[fmt[4:]] = collectFormat(tpl)
+    return (formats, sorted(featureSet))
+
+
+def itemize(string, sep=None):
+    if not string:
+        return []
+    if not sep:
+        return string.strip().split()
+    return string.strip().split(sep)
+
+
+def project(iterableOfTuples, maxDimension):
+    if maxDimension == 1:
+        return {r[0] for r in iterableOfTuples}
+    return {r[0:maxDimension] for r in iterableOfTuples}
+
+
+msgLinePat = &#34;^( *[0-9]+) (.*)$&#34;
+msgLineRe = re.compile(msgLinePat)
+
+
+def wrapMessages(messages):
+    if type(messages) is str:
+        messages = messages.split(&#34;\n&#34;)
+    html = []
+    for msg in messages:
+        if type(msg) is tuple:
+            (error, nl, msgRep) = msg
+            match = msgLineRe.match(msgRep)
+            msg = msgRep + (&#34;&lt;br/&gt;&#34; if nl else &#34;&#34;)
+            clsName = &#34;eline&#34; if error and not match else &#34;tline&#34;
+        else:
+            match = msgLineRe.match(msg)
+            clsName = &#34;tline&#34; if match else &#34;eline&#34;
+            msg = msg.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
+        html.append(f&#39;&lt;span class=&#34;{clsName.lower()}&#34;&gt;{msg}&lt;/span&gt;&#39;)
+    return &#34;&#34;.join(html)
+
+
+def makeExamples(nodeList):
+    lN = len(nodeList)
+    if lN &lt;= 10:
+        return f&#34;{lN:&gt;7} x: &#34; + (&#34;, &#34;.join(str(n) for n in nodeList))
+    else:
+        return (
+            f&#34;{lN:&gt;7} x: &#34;
+            + (&#34;, &#34;.join(str(n) for n in nodeList[0:5]))
+            + &#34; ... &#34;
+            + (&#34;, &#34;.join(str(n) for n in nodeList[-5:]))
+        )
+
+
+def setFromValue(x, asInt=False):
+    return (
+        set()
+        if x is None
+        else x
+        if type(x) in {set, frozenset}
+        else {int(x) if asInt else x}
+        if type(x) is str
+        else ({int(v) for v in x} if asInt else set(x))
+    )
+
+
+def mergeDictOfSets(d1, d2):
+    for (n, ms) in d2.items():
+        if n in d1:
+            d1[n] |= ms
+        else:
+            d1[n] = ms</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.core.helpers.camel"><code class="name flex">
+<span>def <span class="ident">camel</span></span>(<span>name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def camel(name):
+    if not name:
+        return name
+    temp = name.replace(&#34;_&#34;, &#34; &#34;).title().replace(&#34; &#34;, &#34;&#34;)
+    return temp[0].lower() + temp[1:]</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.check32"><code class="name flex">
+<span>def <span class="ident">check32</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def check32():
+    warn = &#34;&#34;
+    msg = &#34;&#34;
+    on32 = sys.maxsize &lt; 2 ** 63 - 1
+    if on32 &lt; 2 ** 63 - 1:
+        warn = WARN32
+    else:
+        msg = MSG64
+    return (on32, warn, msg)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.cleanName"><code class="name flex">
+<span>def <span class="ident">cleanName</span></span>(<span>name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cleanName(name):
+    clean = &#34;&#34;.join(c if c in VALID else &#34;_&#34; for c in name)
+    if clean == &#34;&#34; or not clean[0] in LETTER:
+        clean = &#34;x&#34; + clean
+    return clean</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.collectFormats"><code class="name flex">
+<span>def <span class="ident">collectFormats</span></span>(<span>config)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def collectFormats(config):
+    varPattern = re.compile(r&#34;\{([^}]+?)(:[^}]+)?\}&#34;)
+    featureSet = set()
+
+    def collectFormat(tpl):
+        features = []
+        default = &#34;&#34;
+
+        def varReplace(match):
+            nonlocal default
+            varText = match.group(1)
+            default = (match.group(2) or &#34;:&#34;)[1:]
+            fts = tuple(varText.split(&#34;/&#34;))
+            features.append((fts, default))
+            for ft in fts:
+                featureSet.add(ft)
+            return &#34;{}&#34;
+
+        rtpl = varPattern.sub(varReplace, tpl)
+        return (rtpl, tuple(features))
+
+    formats = {}
+    for (fmt, tpl) in sorted(config.items()):
+        if fmt.startswith(&#34;fmt:&#34;):
+            formats[fmt[4:]] = collectFormat(tpl)
+    return (formats, sorted(featureSet))</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.console"><code class="name flex">
+<span>def <span class="ident">console</span></span>(<span>*msg, error=False, newline=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def console(*msg, error=False, newline=True):
+    msg = &#34; &#34;.join(m if type(m) is str else repr(m) for m in msg)
+    msg = msg[1:] if msg.startswith(&#34;\n&#34;) else msg
+    msg = msg[0:-1] if msg.endswith(&#34;\n&#34;) else msg
+    target = sys.stderr if error else sys.stdout
+    nl = &#34;\n&#34; if newline else &#34;&#34;
+    target.write(f&#34;{msg}{nl}&#34;)
+    target.flush()</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.dirEmpty"><code class="name flex">
+<span>def <span class="ident">dirEmpty</span></span>(<span>target)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dirEmpty(target):
+    return not os.path.exists(target) or not os.listdir(target)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.expandDir"><code class="name flex">
+<span>def <span class="ident">expandDir</span></span>(<span>obj, dirName)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def expandDir(obj, dirName):
+    if dirName.startswith(&#34;~&#34;):
+        dirName = dirName.replace(&#34;~&#34;, obj.homeDir, 1)
+    elif dirName.startswith(&#34;..&#34;):
+        dirName = dirName.replace(&#34;..&#34;, obj.parentDir, 1)
+    elif dirName.startswith(&#34;.&#34;):
+        dirName = dirName.replace(&#34;.&#34;, obj.curDir, 1)
+    return dirName</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.flattenToSet"><code class="name flex">
+<span>def <span class="ident">flattenToSet</span></span>(<span>features)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def flattenToSet(features):
+    theseFeatures = set()
+    if type(features) is str:
+        theseFeatures |= set(features.split())
+    else:
+        for feature in features:
+            if type(feature) is str:
+                theseFeatures.add(feature)
+            else:
+                feature = feature[1]
+                if type(feature) is str:
+                    theseFeatures |= set(feature.split())
+                else:
+                    theseFeatures |= set(feature)
+    return theseFeatures</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.htmlEsc"><code class="name flex">
+<span>def <span class="ident">htmlEsc</span></span>(<span>val)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Escape certain HTML characters by HTML entities.</p>
+<p>To prevent them to be interpreted as HTML
+in cases where you need them literally.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def htmlEsc(val):
+    &#34;&#34;&#34;Escape certain HTML characters by HTML entities.
+
+    To prevent them to be interpreted as HTML
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
+    return (
+        &#34;&#34;
+        if val is None
+        else (
+            str(val)
+            .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+            .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+            .replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
+        )
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.isClean"><code class="name flex">
+<span>def <span class="ident">isClean</span></span>(<span>name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def isClean(name):
+    if name is None or len(name) == 0 or name[0] not in LETTER:
+        return False
+    return all(c in VALID for c in name[1:])</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.isInt"><code class="name flex">
+<span>def <span class="ident">isInt</span></span>(<span>val)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def isInt(val):
+    try:
+        val = int(val)
+    except Exception:
+        return False
+    return True</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.itemize"><code class="name flex">
+<span>def <span class="ident">itemize</span></span>(<span>string, sep=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def itemize(string, sep=None):
+    if not string:
+        return []
+    if not sep:
+        return string.strip().split()
+    return string.strip().split(sep)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.makeExamples"><code class="name flex">
+<span>def <span class="ident">makeExamples</span></span>(<span>nodeList)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeExamples(nodeList):
+    lN = len(nodeList)
+    if lN &lt;= 10:
+        return f&#34;{lN:&gt;7} x: &#34; + (&#34;, &#34;.join(str(n) for n in nodeList))
+    else:
+        return (
+            f&#34;{lN:&gt;7} x: &#34;
+            + (&#34;, &#34;.join(str(n) for n in nodeList[0:5]))
+            + &#34; ... &#34;
+            + (&#34;, &#34;.join(str(n) for n in nodeList[-5:]))
+        )</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.makeIndex"><code class="name flex">
+<span>def <span class="ident">makeIndex</span></span>(<span>data)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeIndex(data):
+    inv = {}
+    for (n, m) in data.items():
+        inv.setdefault(m, set()).add(n)
+    return inv</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.makeInverse"><code class="name flex">
+<span>def <span class="ident">makeInverse</span></span>(<span>data)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeInverse(data):
+    inverse = {}
+    for n in data:
+        for m in data[n]:
+            inverse.setdefault(m, set()).add(n)
+    return inverse</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.makeInverseVal"><code class="name flex">
+<span>def <span class="ident">makeInverseVal</span></span>(<span>data)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def makeInverseVal(data):
+    inverse = {}
+    for n in data:
+        for (m, val) in data[n].items():
+            inverse.setdefault(m, {})[n] = val
+    return inverse</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.mathEsc"><code class="name flex">
+<span>def <span class="ident">mathEsc</span></span>(<span>val)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Escape $ signs to <code>&lt;span&gt;$&lt;/span&gt;</code>.</p>
+<p>To prevent them from being interpreted as math in a Jupyter notebook
+in cases where you need them literally.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mathEsc(val):
+    &#34;&#34;&#34;Escape $ signs to `&lt;span&gt;$&lt;/span&gt;`.
+
+    To prevent them from being interpreted as math in a Jupyter notebook
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
+    return &#34;&#34; if val is None else (str(val).replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;))</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.mdEsc"><code class="name flex">
+<span>def <span class="ident">mdEsc</span></span>(<span>val)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mdEsc(val):
+    return (
+        &#34;&#34;
+        if val is None
+        else (str(val).replace(&#34;|&#34;, &#34;&amp;#124;&#34;).replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;))
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.mdhtmlEsc"><code class="name flex">
+<span>def <span class="ident">mdhtmlEsc</span></span>(<span>val)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Escape certain Markdown characters by HTML entities or span elements.</p>
+<p>To prevent them to be interpreted as Markdown
+in cases where you need them literally.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mdhtmlEsc(val):
+    &#34;&#34;&#34;Escape certain Markdown characters by HTML entities or span elements.
+
+    To prevent them to be interpreted as Markdown
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
+    return (
+        &#34;&#34;
+        if val is None
+        else (
+            str(val)
+            .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+            .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+            .replace(&#34;|&#34;, &#34;&amp;#124;&#34;)
+            .replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
+        )
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.mergeDictOfSets"><code class="name flex">
+<span>def <span class="ident">mergeDictOfSets</span></span>(<span>d1, d2)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mergeDictOfSets(d1, d2):
+    for (n, ms) in d2.items():
+        if n in d1:
+            d1[n] |= ms
+        else:
+            d1[n] = ms</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.nbytes"><code class="name flex">
+<span>def <span class="ident">nbytes</span></span>(<span>by)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nbytes(by):
+    units = [&#34;B&#34;, &#34;KB&#34;, &#34;MB&#34;, &#34;GB&#34;, &#34;TB&#34;]
+    for i in range(len(units)):
+        if by &lt; 1024 or i == len(units) - 1:
+            fmt = &#34;{:&gt;5}{}&#34; if i == 0 else &#34;{:&gt;5.1f}{}&#34;
+            return fmt.format(by, units[i])
+        by /= 1024</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.project"><code class="name flex">
+<span>def <span class="ident">project</span></span>(<span>iterableOfTuples, maxDimension)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def project(iterableOfTuples, maxDimension):
+    if maxDimension == 1:
+        return {r[0] for r in iterableOfTuples}
+    return {r[0:maxDimension] for r in iterableOfTuples}</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.rangesFromList"><code class="name flex">
+<span>def <span class="ident">rangesFromList</span></span>(<span>nodeList)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rangesFromList(nodeList):  # the list must be sorted
+    # ranges = []
+    curstart = None
+    curend = None
+    for n in nodeList:
+        if curstart is None:
+            curstart = n
+            curend = n
+        elif n == curend + 1:
+            curend = n
+        else:
+            yield (curstart, curend)
+            # ranges.append((curstart, curend))
+            curstart = n
+            curend = n
+    if curstart is not None:
+        yield (curstart, curend)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.rangesFromSet"><code class="name flex">
+<span>def <span class="ident">rangesFromSet</span></span>(<span>nodeSet)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rangesFromSet(nodeSet):
+    # ranges = []
+    curstart = None
+    curend = None
+    for n in sorted(nodeSet):
+        if curstart is None:
+            curstart = n
+            curend = n
+        elif n == curend + 1:
+            curend = n
+        else:
+            yield (curstart, curend)
+            # ranges.append((curstart, curend))
+            curstart = n
+            curend = n
+    if curstart is not None:
+        yield (curstart, curend)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.setDir"><code class="name flex">
+<span>def <span class="ident">setDir</span></span>(<span>obj)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setDir(obj):
+    obj.homeDir = os.path.expanduser(&#34;~&#34;).replace(&#34;\\&#34;, &#34;/&#34;)
+    obj.curDir = os.getcwd().replace(&#34;\\&#34;, &#34;/&#34;)
+    (obj.parentDir, x) = os.path.split(obj.curDir)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.setFromSpec"><code class="name flex">
+<span>def <span class="ident">setFromSpec</span></span>(<span>spec)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setFromSpec(spec):
+    covered = set()
+    for r_str in spec.split(&#34;,&#34;):
+        bounds = r_str.split(&#34;-&#34;)
+        if len(bounds) == 1:
+            covered.add(int(r_str))
+        else:
+            b = int(bounds[0])
+            e = int(bounds[1])
+            if e &lt; b:
+                (b, e) = (e, b)
+            for n in range(b, e + 1):
+                covered.add(n)
+    return covered</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.setFromValue"><code class="name flex">
+<span>def <span class="ident">setFromValue</span></span>(<span>x, asInt=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setFromValue(x, asInt=False):
+    return (
+        set()
+        if x is None
+        else x
+        if type(x) in {set, frozenset}
+        else {int(x) if asInt else x}
+        if type(x) is str
+        else ({int(v) for v in x} if asInt else set(x))
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.specFromRanges"><code class="name flex">
+<span>def <span class="ident">specFromRanges</span></span>(<span>ranges)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def specFromRanges(ranges):  # ranges must be normalized
+    return &#34;,&#34;.join(
+        &#34;{}&#34;.format(r[0]) if r[0] == r[1] else &#34;{}-{}&#34;.format(*r) for r in ranges
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.splitModRef"><code class="name flex">
+<span>def <span class="ident">splitModRef</span></span>(<span>moduleRef)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def splitModRef(moduleRef):
+    parts = moduleRef.split(&#34;:&#34;, 1)
+    if len(parts) == 1:
+        parts.append(&#34;&#34;)
+    (ref, specifier) = parts
+    parts = ref.split(&#34;/&#34;, 2)
+
+    if len(parts) &lt; 2:
+        console(
+            f&#34;&#34;&#34;
+Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
+&#34;&#34;&#34;,
+            error=True,
+        )
+        return None
+
+    if len(parts) == 2:
+        parts.append(&#34;&#34;)
+
+    return [*parts, specifier]</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.tfFromValue"><code class="name flex">
+<span>def <span class="ident">tfFromValue</span></span>(<span>val)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def tfFromValue(val):
+    valTp = type(val)
+    isInt = valTp is int
+    isStr = valTp is str
+    if not isInt and not isStr:
+        console(f&#34;Wrong type for a TF value: {valTp}: {val}&#34;, error=True)
+        return None
+    return (
+        str(val)
+        if type(val) is int
+        else val.replace(&#34;\\&#34;, &#34;\\\\&#34;).replace(&#34;\t&#34;, &#34;\\t&#34;).replace(&#34;\n&#34;, &#34;\\n&#34;)
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.valueFromTf"><code class="name flex">
+<span>def <span class="ident">valueFromTf</span></span>(<span>tf)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def valueFromTf(tf):
+    return &#34;\\&#34;.join(
+        x.replace(&#34;\\t&#34;, &#34;\t&#34;).replace(&#34;\\n&#34;, &#34;\n&#34;) for x in tf.split(&#34;\\\\&#34;)
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.wrapMessages"><code class="name flex">
+<span>def <span class="ident">wrapMessages</span></span>(<span>messages)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def wrapMessages(messages):
+    if type(messages) is str:
+        messages = messages.split(&#34;\n&#34;)
+    html = []
+    for msg in messages:
+        if type(msg) is tuple:
+            (error, nl, msgRep) = msg
+            match = msgLineRe.match(msgRep)
+            msg = msgRep + (&#34;&lt;br/&gt;&#34; if nl else &#34;&#34;)
+            clsName = &#34;eline&#34; if error and not match else &#34;tline&#34;
+        else:
+            match = msgLineRe.match(msg)
+            clsName = &#34;tline&#34; if match else &#34;eline&#34;
+            msg = msg.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
+        html.append(f&#39;&lt;span class=&#34;{clsName.lower()}&#34;&gt;{msg}&lt;/span&gt;&#39;)
+    return &#34;&#34;.join(html)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<img src="../images/tf-small.png">
+<img src="../../images/tf-small.png">
+<div><a href="/tf/cheatsheet.html">cheat sheet</a></div>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.core" href="index.html">tf.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="tf.core.helpers.camel" href="#tf.core.helpers.camel">camel</a></code></li>
+<li><code><a title="tf.core.helpers.check32" href="#tf.core.helpers.check32">check32</a></code></li>
+<li><code><a title="tf.core.helpers.cleanName" href="#tf.core.helpers.cleanName">cleanName</a></code></li>
+<li><code><a title="tf.core.helpers.collectFormats" href="#tf.core.helpers.collectFormats">collectFormats</a></code></li>
+<li><code><a title="tf.core.helpers.console" href="#tf.core.helpers.console">console</a></code></li>
+<li><code><a title="tf.core.helpers.dirEmpty" href="#tf.core.helpers.dirEmpty">dirEmpty</a></code></li>
+<li><code><a title="tf.core.helpers.expandDir" href="#tf.core.helpers.expandDir">expandDir</a></code></li>
+<li><code><a title="tf.core.helpers.flattenToSet" href="#tf.core.helpers.flattenToSet">flattenToSet</a></code></li>
+<li><code><a title="tf.core.helpers.htmlEsc" href="#tf.core.helpers.htmlEsc">htmlEsc</a></code></li>
+<li><code><a title="tf.core.helpers.isClean" href="#tf.core.helpers.isClean">isClean</a></code></li>
+<li><code><a title="tf.core.helpers.isInt" href="#tf.core.helpers.isInt">isInt</a></code></li>
+<li><code><a title="tf.core.helpers.itemize" href="#tf.core.helpers.itemize">itemize</a></code></li>
+<li><code><a title="tf.core.helpers.makeExamples" href="#tf.core.helpers.makeExamples">makeExamples</a></code></li>
+<li><code><a title="tf.core.helpers.makeIndex" href="#tf.core.helpers.makeIndex">makeIndex</a></code></li>
+<li><code><a title="tf.core.helpers.makeInverse" href="#tf.core.helpers.makeInverse">makeInverse</a></code></li>
+<li><code><a title="tf.core.helpers.makeInverseVal" href="#tf.core.helpers.makeInverseVal">makeInverseVal</a></code></li>
+<li><code><a title="tf.core.helpers.mathEsc" href="#tf.core.helpers.mathEsc">mathEsc</a></code></li>
+<li><code><a title="tf.core.helpers.mdEsc" href="#tf.core.helpers.mdEsc">mdEsc</a></code></li>
+<li><code><a title="tf.core.helpers.mdhtmlEsc" href="#tf.core.helpers.mdhtmlEsc">mdhtmlEsc</a></code></li>
+<li><code><a title="tf.core.helpers.mergeDictOfSets" href="#tf.core.helpers.mergeDictOfSets">mergeDictOfSets</a></code></li>
+<li><code><a title="tf.core.helpers.nbytes" href="#tf.core.helpers.nbytes">nbytes</a></code></li>
+<li><code><a title="tf.core.helpers.project" href="#tf.core.helpers.project">project</a></code></li>
+<li><code><a title="tf.core.helpers.rangesFromList" href="#tf.core.helpers.rangesFromList">rangesFromList</a></code></li>
+<li><code><a title="tf.core.helpers.rangesFromSet" href="#tf.core.helpers.rangesFromSet">rangesFromSet</a></code></li>
+<li><code><a title="tf.core.helpers.setDir" href="#tf.core.helpers.setDir">setDir</a></code></li>
+<li><code><a title="tf.core.helpers.setFromSpec" href="#tf.core.helpers.setFromSpec">setFromSpec</a></code></li>
+<li><code><a title="tf.core.helpers.setFromValue" href="#tf.core.helpers.setFromValue">setFromValue</a></code></li>
+<li><code><a title="tf.core.helpers.specFromRanges" href="#tf.core.helpers.specFromRanges">specFromRanges</a></code></li>
+<li><code><a title="tf.core.helpers.splitModRef" href="#tf.core.helpers.splitModRef">splitModRef</a></code></li>
+<li><code><a title="tf.core.helpers.tfFromValue" href="#tf.core.helpers.tfFromValue">tfFromValue</a></code></li>
+<li><code><a title="tf.core.helpers.valueFromTf" href="#tf.core.helpers.valueFromTf">valueFromTf</a></code></li>
+<li><code><a title="tf.core.helpers.wrapMessages" href="#tf.core.helpers.wrapMessages">wrapMessages</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

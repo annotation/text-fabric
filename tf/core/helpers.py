@@ -216,7 +216,6 @@ def rangesFromSet(nodeSet):
 
 
 def rangesFromList(nodeList):  # the list must be sorted
-    # ranges = []
     curstart = None
     curend = None
     for n in nodeList:
@@ -227,13 +226,10 @@ def rangesFromList(nodeList):  # the list must be sorted
             curend = n
         else:
             yield (curstart, curend)
-            # ranges.append((curstart, curend))
             curstart = n
             curend = n
     if curstart is not None:
         yield (curstart, curend)
-        # ranges.append((curstart, curend))
-    # return ranges
 
 
 def specFromRanges(ranges):  # ranges must be normalized
@@ -389,3 +385,87 @@ def mergeDictOfSets(d1, d2):
             d1[n] |= ms
         else:
             d1[n] = ms
+
+
+def chunkify(protoChunks, substrate, called, sortKeyChunk):
+    """Divides and filters nodes into contiguous chunks.
+
+    Only nodes are retained that have slots in a given set of slots,
+    and for those nodes, all slots outside that set will be removed.
+
+    Moreover, if a chunk is member of the set `called`, it will be excluded.
+
+    Parameters
+    ----------
+    protoChunks: iterable of tuple (int, tuple)
+        A proto chunk is a 2-tuple: a node and the tuple of its slots
+        in canonical ordering.
+
+    substrate: set of int
+        Set of slots that acts as a substrate: we are only interested in nodes
+        insofar they occupy these slots
+
+    called: set of (int, frozenset)
+        A set of chunks that are in progress.
+        We will not deliver chunks that are already in called.
+
+    sortKeyChunk: function
+        A sort key to order the chunks, typically `tf.core.api.Api.sortKeyChunk`.
+
+    Returns
+    -------
+    2-tuple of set, dict
+        The first part is the set of real chunks (n, slots) of the nodes
+        where the slots are contiguous frozen sets of slots in so far as they are part
+        of the substrate.
+
+        The second part is a dict, where the real chunks are keys, and the values
+        are pairs of boundary types:
+
+        `lno` `rno`
+        : no left resp. right boundary
+
+        `ln` `rn`
+        : left resp. right node boundary
+
+        `lc` `rc`
+        : left resp.right chunk  boundary
+
+    Notes
+    -----
+    The real chunks are returned as a tuple in the canonical order.
+
+    Node and chunk boundaries are indicated if they occur within the substrate.
+    A node boundary is typically a left or right solid border of a box.
+    A chunk boundary is typically a left or right dotted border of a box.
+
+    If a boundary occurs at a slot which is not in the substrate, the box of that
+    chunk does not have corresponding left or right border.
+
+    See Also
+    --------
+    canonical ordering: `tf.core.api`
+    """
+
+    chunks = set()
+    boundaries = {}
+
+    for (n, slots) in protoChunks:
+        ranges = list(rangesFromList(slots))
+        nR = len(ranges) - 1
+        for (i, (b, e)) in enumerate(ranges):
+            chunkSlots = frozenset(range(b, e + 1))
+            substrateSlots = substrate & chunkSlots
+            if not substrateSlots:
+                continue
+            substrateRanges = rangesFromList(substrateSlots)
+            for (bS, eS) in substrateRanges:
+                substrateSlots = frozenset(range(bS, eS + 1))
+                chunkKey = (n, substrateSlots)
+                if chunkKey in called:
+                    continue
+                boundaryL = 'lno' if bS != b else 'ln' if i == 0 else 'lc'
+                boundaryR = 'rno' if eS != e else 'rn' if i == nR else 'rc'
+                chunks.add(chunkKey)
+                boundaries[chunkKey] = (boundaryL, boundaryR, (b, e), (bS, eS), i, nR)
+    return (sorted(chunks, key=sortKeyChunk), boundaries)

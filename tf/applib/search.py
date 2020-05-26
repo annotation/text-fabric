@@ -26,6 +26,9 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     in such a way that subsequent calls to `tf.applib.display.export` emit
     the features that have been used in the query.
 
+    Parameters
+    ----------
+
     query: dict
         the search template (`tf.about.searchusage`)
         that has to be searched for.
