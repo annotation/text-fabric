@@ -142,7 +142,7 @@ class Data(object):
                 actionRep == "M" or (actionRep == "B" and self.method)
             ):
                 pass
-            self.tm.info(
+            self.tm.warning(
                 msgFormat.format(actionRep, self.fileName, sourceRep),
                 cache=1 if actionRep in "CT" else -1,
             )

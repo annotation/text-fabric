@@ -37,6 +37,7 @@ from .core.api import (
     Computed,
     addSortKey,
     addSortKeyChunk,
+    addN,
     addOtype,
     addLocality,
     addRank,
@@ -172,7 +173,7 @@ class Fabric(object):
 
         (on32, warn, msg) = check32()
         if on32:
-            self.tm.info(warn, tm=False)
+            self.tm.warning(warn, tm=False)
         if msg:
             self.tm.info(msg, tm=False)
         self.tm.info(
@@ -856,7 +857,7 @@ Api reference : {APIREF}
                 dependencies = dependencies + sFeats
             for dep in dependencies:
                 if dep not in self.features:
-                    self.tm.info(
+                    self.tm.warning(
                         f'Missing dependency for computed data feature "{fName}": "{dep}"'
                     )
                     thisGood = False
@@ -963,6 +964,7 @@ Api reference : {APIREF}
         addRank(api)
         addText(api)
         addSortKeyChunk(api)
+        addN(api)
         addSearch(api, silent)
         self.tm.indent(level=0)
         self.tm.info("All features loaded/computed - for details use loadLog()")

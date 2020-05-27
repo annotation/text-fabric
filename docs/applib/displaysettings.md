@@ -39,16 +39,10 @@ queryFeatures: boolean, optional `True`
     **interface option**
     indicates whether pretty displays should show the features
     mentioned in the last query and their values.
-showChunks: boolean, optional `False`
+showHidden: boolean, optional `False`
     **interface option**
-    The corpus data may contain nodes that represent discontinuous pieces of text.
-    Some corpora also offer node types that represent all continuous chunks of those
-    nodes.
-    By default, the advanced API, will
-    show those chunks with the original nodes wrapped around them, with dotted borders
-    indicating the discontinuities..
-    When pretty-displaying such structures, the display of the chunks themselves can be
-    reduced, because they tend to make displays unwieldy.
+    The corpus data may contain nodes of types that are marked as hidden by the TF app
+    configuration. When `showHidden` is `True`, these nodes will be shown.
 showGraphics: boolean, optional `True`
     **interface option**
     indicates whether plain and pretty displays should include associated

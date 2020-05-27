@@ -15,7 +15,7 @@ At most three levels:
 * level 3 is for small things, such as lines.
 
 Text-Fabric uses these levels in the Text-Fabric browser, to divide your corpus
-into chunks that can conveniently be displayed to you in the browser.
+into divisions that can conveniently be displayed to you in the browser.
 
 ### Structure
 

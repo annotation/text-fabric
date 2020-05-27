@@ -8,10 +8,6 @@
 :   start up
 :   `tf.app.use`
 
-```A.reuse()```
-:   reload config data
-:   `tf.applib.app.App.reuse`
-
 ```A.showContext(...)```
 :   show app settings
 :   `tf.applib.settings.showContext`
@@ -113,19 +109,19 @@
 :   Load a bunch of features from scratch or additionally. 
 :   `tf.fabric.Fabric.load`
 
-```ensureLoaded(features)```
+```TF.ensureLoaded(features)```
 :   Make sure that features are loaded.
 :   `tf.core.api.Api.ensureLoaded`
 
-```makeAvailableIn(globals())```
+```TF.makeAvailableIn(globals())```
 :   Make the members of the core API available in the global scope
 :   `tf.core.api.Api.makeAvailableIn`
 
-```ignored```
+```TF.ignored```
 :   Which features have been overridden.
 :   `tf.core.api.Api.ignored`
 
-```loadLog()```
+```TF.loadLog()```
 :   Log of the feature loading process
 :   `tf.core.api.Api.loadLog`
 
@@ -143,23 +139,23 @@ Read about the canonical ordering here: `tf.core.api`.
 :   generator of all nodes in canonical ordering
 :   `tf.core.api.Api.N`
 
-```sortNodes(nodes)```
+```N.sortNodes(nodes)```
 :   sorts `nodes` in the canonical ordering
 :   `tf.core.api.Api.sortNodes`
 
-```otypeRank[nodeType]```
+```N.otypeRank[nodeType]```
 :   ranking position of `nodeType`
 :   `tf.core.api.Api.otypeRank`
 
-```sortKey(node)```
+```N.sortKey(node)```
 :   defines the canonical ordering on nodes
 :   `tf.core.api.Api.sortKey`
 
-```sortKeyTuple(tup)```
+```N.sortKeyTuple(tup)```
 :   extends the canonical ordering on nodes to tuples of nodes
 :   `tf.core.api.Api.sortKeyTuple`
 
-```sortKeyChunk(node)```
+```N.sortKeyChunk(node)```
 :   defines the canonical ordering on node chunks
 :   `tf.core.api.Api.sortKeyChunk`
 
@@ -415,35 +411,35 @@ Flexible multilevel sectioning system
 :   banner of the Text-Fabric program.
 :   `tf.fabric.Fabric.banner`
 
-```isSilent()```
+```TF.isSilent()```
 :   report the verbosity of Text-Fabric
 :   `tf.core.timestamp.Timestamp.isSilent`
 
-```silentOn(deep=False)```
+```TF.silentOn(deep=False)```
 :   make TF silent from now on.
 :   `tf.core.timestamp.Timestamp.silentOn`
 
-```silentOff()```
+```TF.silentOff()```
 :   make TF talkative from now on.
 :   `tf.core.timestamp.Timestamp.silentOff`
 
-```setSilent(silent)```
+```TF.setSilent(silent)```
 :   set the verbosity of Text-Fabric.
 :   `tf.core.timestamp.Timestamp.setSilent`
 
-```indent(level=None, reset=False)```
+```TF.indent(level=None, reset=False)```
 :   Sets up indentation and timing of following messages
 :   `tf.core.timestamp.Timestamp.indent`
 
-```info(msg, tm=True, nl=True, ...)```
+```TF.info(msg, tm=True, nl=True, ...)```
 :   informational message
 :   `tf.core.timestamp.Timestamp.info`
 
-```warning(msg, tm=True, nl=True, ...)```
+```TF.warning(msg, tm=True, nl=True, ...)```
 :   warning message
 :   `tf.core.timestamp.Timestamp.warning`
 
-```error(msg, tm=True, nl=True, ...)```
+```TF.error(msg, tm=True, nl=True, ...)```
 :   error message
 :   `tf.core.timestamp.Timestamp.error`
 
@@ -565,7 +561,15 @@ from tf.convert.walker import CV
 :   convert structured data to TF dataset
 :   `tf.convert.walker`
 
-## T-App development
+## TF-App development
+
+```A.reuse()```
+:   reload config data
+:   `tf.applib.app.App.reuse`
+
+```python
+from tf.applib.find import loadModule
+```
 
 ```mmm = loadModule("mmm", *args)```
 :   load supporting TF-app specific module

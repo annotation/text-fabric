@@ -122,13 +122,12 @@ TYPE_KEYS = set(
     base
     children
     childrenPlain
-    chunkOf
     condense
     features
     featuresBare
     flow
     graphics
-    hide
+    hidden
     label
     level
     lexOcc
@@ -218,7 +217,7 @@ class Check:
                     for tp in v:
                         if tp not in nTypes:
                             errors.append(f"{k}: node type {tp} not present")
-            elif k in {"lexOcc", "chunkOf"}:
+            elif k in {"lexOcc"}:
                 if type(v) is not str or v not in nTypes:
                     errors.append(f"{k}: node type {v} not present")
             elif k == "transform":
@@ -232,7 +231,7 @@ class Check:
                 "lineNumbers",
                 "prettyTypes",
                 "queryFeatures",
-                "showChunks",
+                "showHidden",
                 "showGraphics",
                 "standardFeatures",
                 "withNodes",
@@ -295,7 +294,7 @@ class Check:
                 "childrenPlain",
                 "condense",
                 "graphics",
-                "hide",
+                "hidden",
                 "showVerseInTuple",
                 "stretch",
                 "verselike",
@@ -461,7 +460,7 @@ def setAppSpecsApi(app, cfg):
     dKey = "interfaceDefaults"
     interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
     dSource = cfg.get(dKey, {})
-    specific = {"lineNumbers", "showChunks", "showGraphics"}
+    specific = {"lineNumbers", "showHidden", "showGraphics"}
 
     allowed = {}
     for (k, v) in interfaceDefaults.items():
@@ -469,8 +468,8 @@ def setAppSpecsApi(app, cfg):
             (
                 k == "lineNumbers"
                 and specs["lineNumberFeature"]
-                or k == "showChunks"
-                and specs["isChunkOf"]
+                or k == "showHidden"
+                and specs["isHidden"]
                 or k == "showGraphics"
                 and specs["hasGraphics"]
             )
@@ -569,7 +568,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     specs = app.specs
 
     noChildren = set()
-    isChunkOf = {}
+    isHidden = set()
     featuresBare = {}
     features = {}
     lineNumberFeature = {}
@@ -678,9 +677,9 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         if not info.get("childrenPlain", True):
             noChildren.add(nType)
 
-        chunkOf = info.get("chunkOf", None)
-        if chunkOf is not None:
-            isChunkOf[nType] = chunkOf
+        hidden = info.get("hidden", None)
+        if hidden:
+            isHidden.add(nType)
 
         verselike = info.get("verselike", False)
         if verselike:
@@ -808,13 +807,12 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     specs.update(
         baseTypes=baseTypes if baseTypes else {slotType},
         childType=childType,
-        chunkedTypes=set(isChunkOf.values()),
         condenseType=condenseType,
         descendantType=descendantType,
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
-        isChunkOf=isChunkOf,
+        isHidden=isHidden,
         labels=labels,
         levels=levels,
         levelCls=levelCls,

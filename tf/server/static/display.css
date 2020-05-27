@@ -98,6 +98,21 @@ span.plain {
     white-space: pre-wrap;
     text-align: start;
 }
+.gr,.gl {
+    white-space: pre-wrap;
+    border-color: var(--border-color-gap);
+    border-width: var(--border-width-gap);
+    border-top-style: none;
+    border-bottom-style: none;
+}
+.gr {
+    border-right-style: solid;
+    border-left-style: dashed;
+}
+.gl {
+    border-right-style: dashed;
+    border-left-style: solid;
+}
 .features {
     font-family: monospace;
     font-size: medium;
@@ -336,12 +351,14 @@ div.pval {
   --meta-color:       hsla(  0,   0%,  90%, 0.7  );
   --meta-width:       0.15rem;
   --border-color-nul: hsla(  0,   0%,  90%, 0.5  );
+  --border-color-gap: hsla(  0,  50%,  70%, 1.0  );
   --border-color0:    hsla(  0,   0%,  90%, 0.9  );
   --border-color1:    hsla(  0,   0%,  80%, 0.9  );
   --border-color2:    hsla(  0,   0%,  70%, 0.9  );
   --border-color3:    hsla(  0,   0%,  80%, 0.8  );
   --border-color4:    hsla(  0,   0%,  60%, 0.9  );
   --border-width-nul: 0.1rem;
+  --border-width-gap: 0.1rem;
   --border-width0:    0.1rem;
   --border-width1:    0.15rem;
   --border-width2:    0.2rem;

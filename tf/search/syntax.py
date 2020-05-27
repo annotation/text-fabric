@@ -64,7 +64,6 @@ opStripRe = re.compile(opStripPat)
 quLineRe = re.compile(quLinePat)
 relRe = re.compile(relPat)
 reRe = re.compile(rePat)
-# whiteRe = re.compile(r'^\s*$')
 whiteRe = re.compile(r"^\s*(%|$)")
 
 reTp = type(reRe)

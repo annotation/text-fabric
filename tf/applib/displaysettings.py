@@ -45,11 +45,11 @@ INTERFACE_OPTIONS = (
         "Show the features mentioned in the last query for every node in the results",
     ),
     (
-        "showChunks",
+        "showHidden",
         False,
         "showc",
-        "show chunks",
-        "Show chunk types fully. Only if the TF data has node types and companion chunked node types",
+        "show hidden",
+        "Show hidden types. Only if the TF data has hidden node types",
     ),
     (
         "lineNumbers",

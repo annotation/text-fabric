@@ -308,7 +308,9 @@ class App:
                     """
                     dh(
                         "<div>"
-                        + outLink("TF API directly available", APIREF, title="doc")
+                        + outLink(
+                            "names TF N F E L T S directly usable", APIREF, title="doc"
+                        )
                         + "</div>"
                     )
         else:

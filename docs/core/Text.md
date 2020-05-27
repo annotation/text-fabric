@@ -80,7 +80,7 @@ functions available by which you can make handy use of that information.
     rich sectioning that may be present in a corpus.
 
     On the other hand, applications (such as TF apps) can access a predictable
-    sectioning system by which they can chunk the material in practical portions.
+    sectioning system by which they can divide the material in practical portions.
 
     The rule of thumb is:
     
@@ -88,12 +88,12 @@ functions available by which you can make handy use of that information.
     of which there might be (very) many. The TF browser has a control that
     can deal with long lists.
 
-    Level 2 divides a level 1 section into a chunk that can be loaded into 
+    Level 2 divides a level 1 section into a division that can be loaded into 
     a webpage, without overwhelming the browser.
     Even better, it should be just one or a few screenfuls of text, when
     represented in `plain` view.
 
-    Level 3 divides a level 2 section into chunks that roughly corresponds to lines.
+    Level 3 divides a level 2 section into divisions that roughly corresponds to lines.
     Such lines typically take up one screenful if represented in `pretty` view.
 
 !!! explanation "Section levels are generic"

@@ -4,6 +4,7 @@
 
 import collections
 import functools
+import types
 
 from .helpers import makeInverse, makeInverseVal, flattenToSet, console
 from .locality import Locality
@@ -38,25 +39,28 @@ API_REFS = dict(
     T=("Text", "text", "text"),
     TF=("Fabric", "fabric", "loading"),
     Text=("Text", "text", "text"),
-    cache=("Misc", "cache", "messaging"),
-    ensureLoaded=("Fabric", "ensure", "loading"),
-    error=("Misc", "error", "messaging"),
-    ignored=("Fabric", "ignored", "loading"),
-    indent=("Misc", "indent", "messaging"),
-    info=("Misc", "info", "messaging"),
-    warning=("Misc", "warning", "messaging"),
-    isSilent=("Misc", "isSilent", "messaging"),
-    setSilent=("Misc", "setSilent", "messaging"),
-    silentOn=("Misc", "silentOn", "messaging"),
-    silentOff=("Misc", "silentOff", "messaging"),
-    loadLog=("Fabric", "loadlog", "loading"),
-    otypeRank=("Nodes", "rank", "navigating-nodes"),
-    reset=("Misc", "reset", "messaging"),
-    sortKey=("Nodes", "key", "navigating-nodes"),
-    sortKeyChunk=("Nodes", "keyChunk", "navigating-nodes"),
-    sortKeyTuple=("Nodes", "keyTuple", "navigating-nodes"),
-    sortNodes=("Nodes", "sort", "navigating-nodes"),
+    # cache=("Misc", "cache", "messaging"),
+    # ensureLoaded=("Fabric", "ensure", "loading"),
+    # error=("Misc", "error", "messaging"),
+    # ignored=("Fabric", "ignored", "loading"),
+    # indent=("Misc", "indent", "messaging"),
+    # info=("Misc", "info", "messaging"),
+    # warning=("Misc", "warning", "messaging"),
+    # isSilent=("Misc", "isSilent", "messaging"),
+    # setSilent=("Misc", "setSilent", "messaging"),
+    # silentOn=("Misc", "silentOn", "messaging"),
+    # silentOff=("Misc", "silentOff", "messaging"),
+    # loadLog=("Fabric", "loadlog", "loading"),
+    # otypeRank=("Nodes", "rank", "navigating-nodes"),
+    # reset=("Misc", "reset", "messaging"),
+    # sortKey=("Nodes", "key", "navigating-nodes"),
+    # sortKeyChunk=("Nodes", "keyChunk", "navigating-nodes"),
+    # sortKeyTuple=("Nodes", "keyTuple", "navigating-nodes"),
+    # sortNodes=("Nodes", "sort", "navigating-nodes"),
 )
+
+GAP_START = '_gapStart_'
+GAP_END = '_gapEnd_'
 
 
 class OtypeFeature(object):
@@ -603,6 +607,27 @@ class EdgeFeature(object):
                 return fql
 
 
+def N(api):
+    """Generates all nodes in the *canonical order*.
+    (`tf.core.api`)
+
+    Iterating over `N()` delivers you all nodes of your corpus
+    in a very natural order. See `tf.core.api.Api`.
+
+    !!! hint "More ways of walking"
+        Under `tf.core.api.NodeFeatures` there is another convenient way
+        to walk through subsets of nodes.
+
+    Returns
+    -------
+    nodes: int
+        One at a time.
+    """
+
+    for n in api.C.order.data:
+        yield n
+
+
 class Computed(object):
     """Provides access to precomputed data.
 
@@ -695,6 +720,7 @@ class Api(object):
         Features are ignored if the feature is also present in another location
         that is loaded later.
         """
+        TF.ignored = self.ignored
 
         self.F = NodeFeatures()
         self.Feature = self.F
@@ -704,16 +730,28 @@ class Api(object):
         self.Computed = self.C
         tm = TF.tm
         self.silentOn = tm.silentOn
+        TF.silentOn = self.silentOn
         self.silentOff = tm.silentOff
+        TF.silentOff = self.silentOff
         self.isSilent = tm.isSilent
+        TF.isSilent = self.isSilent
         self.setSilent = tm.setSilent
+        TF.setSilent = self.setSilent
         self.info = tm.info
+        TF.info = self.info
         self.warning = tm.warning
+        TF.warning = self.warning
         self.error = tm.error
+        TF.error = self.error
         self.cache = tm.cache
+        TF.cache = self.cache
         self.reset = tm.reset
+        TF.reset = self.reset
         self.indent = tm.indent
+        TF.indent = self.indent
         self.loadLog = tm.cache
+        TF.loadLog = self.loadLog
+
         """All messages produced during the feature loading process.
 
         It also shows the messages that have been suppressed due to the `silent`
@@ -789,6 +827,10 @@ class Api(object):
         and the more comprehensive a type is, the higher its rank.
         """
 
+        TF.ensureLoaded = self.ensureLoaded
+        TF.makeAvailableIn = self.makeAvailableIn
+        self.N = N
+
         setattr(self, "FeatureString", self.Fs)
         setattr(self, "EdgeString", self.Es)
         setattr(self, "ComputedString", self.Cs)
@@ -839,26 +881,6 @@ class Api(object):
             return None
         return getattr(self.C, fName)
 
-    def N(self):
-        """Generates all nodes in the *canonical order*.
-        (`tf.core.api`)
-
-        Iterating over `N()` delivers you all nodes of your corpus
-        in a very natural order. See `tf.core.api.Api`.
-
-        !!! hint "More ways of walking"
-            Under `tf.core.api.NodeFeatures` there is another convenient way
-            to walk through subsets of nodes.
-
-        Returns
-        -------
-        nodes: int
-            One at a time.
-        """
-
-        for n in self.C.order.data:
-            yield n
-
     def sortNodes(self, nodeSet):
         """Delivers a tuple of nodes sorted by the *canonical ordering*.
 
@@ -892,7 +914,9 @@ class Api(object):
         return sorted(x[0] for x in self.C.__dict__.items())
 
     def makeAvailableIn(self, scope):
-        """Exports every member of the API to the global namespace.
+        """Exports members of the API to the global namespace.
+
+        Only the members whose names start with a capital are exported.
 
         If you are working with a single data source in your program, it is a bit
         tedious to write the initial `TF.api.` or `A.api` all the time.
@@ -940,7 +964,7 @@ class Api(object):
         """
 
         for member in dir(self):
-            if "_" not in member and member != "makeAvailableIn":
+            if "_" not in member and member[0].isupper():
                 scope[member] = getattr(self, member)
                 if member not in API_REFS:
                     console(f'WARNING: API member "{member}" not documented')
@@ -1010,7 +1034,10 @@ class Api(object):
 def addSortKey(api):
     Crank = api.C.rank.data
     api.sortKey = lambda n: Crank[n - 1]
+    api.N.sortKey = api.sortKey
     api.sortKeyTuple = lambda tup: tuple(Crank[n - 1] for n in tup)
+    api.N.sortKeyTuple = api.sortKeyTuple
+    api.N.sortNodes = api.sortNodes
 
 
 def addOtype(api):
@@ -1028,6 +1055,7 @@ def addLocality(api):
 def addRank(api):
     C = api.C
     api.otypeRank = {d[0]: i for (i, d) in enumerate(reversed(C.levels.data))}
+    api.N.otypeRank = api.otypeRank
 
 
 def addSortKeyChunk(api):
@@ -1051,12 +1079,10 @@ def addSortKeyChunk(api):
 
         (nodeA, slotsA) = chunkA
         (nodeB, slotsB) = chunkB
-        typeA = otypev(nodeA)
-        typeB = otypev(nodeB)
-        rankA = otypeRank(typeA)
-        rankB = otypeRank(typeB)
+        rankA = otypeRank[otypev(nodeA)] if type(nodeA) is int else -1 if nodeA == GAP_START else 10000 if nodeA == GAP_END else 0
+        rankB = otypeRank[otypev(nodeB)] if type(nodeB) is int else -1 if nodeB == GAP_START else 10000 if nodeB == GAP_END else 0
         if slotsA == slotsB:
-            return 0 if rankA == rankB else -1 if rankA < rankB else 1
+            return 0 if rankA == rankB else -1 if rankA > rankB else 1
         if slotsA > slotsB:
             return -1
         if slotsA < slotsB:
@@ -1065,7 +1091,12 @@ def addSortKeyChunk(api):
         minB = min(slotsB - slotsA)
         return -1 if minA < minB else 1 if minB < minA else None
 
-    return functools.cmp_to_key(before)
+    api.sortKeyChunk = functools.cmp_to_key(before)
+    api.N.sortKeyChunk = api.sortKeyChunk
+
+
+def addN(api):
+    api.N = types.MethodType(api.N, api)
 
 
 def addText(api):

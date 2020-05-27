@@ -147,7 +147,7 @@ def order(info, error, otype, oslots, levels):
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     info("assigning otype levels to nodes")
-    otypeLevels = dict(((x[0], i) for (i, x) in enumerate(levels)))
+    otypeLevels = dict(((x[0], i) for (i, x) in enumerate(reversed(levels))))
 
     def otypeRank(n):
         return otypeLevels[slotType if n < maxSlot + 1 else otype[n - maxSlot - 1]]
@@ -168,7 +168,7 @@ def order(info, error, otype, oslots, levels):
         oa = otypeRank(na)
         ob = otypeRank(nb)
         if sa == sb:
-            return 0 if oa == ob else -1 if oa < ob else 1
+            return 0 if oa == ob else -1 if oa > ob else 1
         if sa > sb:
             return -1
         if sa < sb:
