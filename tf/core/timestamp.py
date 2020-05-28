@@ -8,9 +8,11 @@ import time
 
 class Timestamp(object):
     def __init__(self, level=None):
+        indent = self.indent
+
         self.oneLevelRep = "   |   "
         self.timestamp = {}
-        self.indent(level=level, reset=True)
+        indent(level=level, reset=True)
         self.log = []
         self.verbose = -2  # regulates all messages
         self.silent = False  # regulates informational messages only
@@ -197,4 +199,7 @@ class Timestamp(object):
             return f"{interval:>2d}s"
         if interval < 3600:
             return f"{interval // 60:>2d}m {interval % 60:>02d}s"
-        return f"{interval // 3600:>2d}h {(interval % 3600) // 60:>02d}m {interval % 60:>02d}s"
+        return (
+            f"{interval // 3600:>2d}h {(interval % 3600) // 60:>02d}m"
+            f" {interval % 60:>02d}s"
+        )

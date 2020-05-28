@@ -36,7 +36,7 @@ See Also
 clean: `tf.clean`.
 """
 
-API_VERSION = 1
+API_VERSION = 2
 """TF API version.
 
 Text-Fabric offers and API to TF apps.

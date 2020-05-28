@@ -37,10 +37,7 @@ static
     on the other hand.
 
 config.yaml
-:   Settings to feed the advanced API for this app.
-
-    The app is driven by the settings as specified in the 
-    [config file of the default TF app](https://github.com/annotation/app-default/blob/master/code/config.yaml).
+:   Settings to feed the advanced API for this app. See `tf.applib.settings`.
 
 app.py
 :   Corpus dependent helpers for the advanced API.

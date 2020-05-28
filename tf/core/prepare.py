@@ -114,7 +114,9 @@ def order(info, error, otype, oslots, levels):
     """Computes order data for the canonical ordering.
 
     The canonical ordering between nodes is defined in terms of the slots that
-    nodes contain.
+    nodes contain, and if that is not decisive, the rank of the node type is taken
+    into account, and if that is still not decisive, the node itself is taken into
+    account.
 
     Parameters
     ----------
@@ -141,7 +143,7 @@ def order(info, error, otype, oslots, levels):
 
     See Also
     --------
-    canonical ordering: `tf.core.api`.
+    canonical ordering: `tf.core.nodes`.
     """
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -168,7 +170,13 @@ def order(info, error, otype, oslots, levels):
         oa = otypeRank(na)
         ob = otypeRank(nb)
         if sa == sb:
-            return 0 if oa == ob else -1 if oa > ob else 1
+            return (
+                (-1 if na < nb else 1 if na > nb else 0)
+                if oa == ob
+                else -1
+                if oa > ob
+                else 1
+            )
         if sa > sb:
             return -1
         if sa < sb:
@@ -187,7 +195,7 @@ def rank(info, error, otype, order):
     """Computes rank data.
 
     The rank of a node is its place in among the other nodes in the
-    canonical order (see `tf.core.api`).
+    canonical order (see `tf.core.nodes`).
 
     Parameters
     ----------
@@ -242,7 +250,7 @@ def levUp(info, error, otype, oslots, rank):
     -------
     tuple
         The n-th member is an array of the embedder nodes of n.
-        Those arrays are sorted in canonical order (`tf.core.api`).
+        Those arrays are sorted in canonical order (`tf.core.nodes`).
 
     Notes
     -----
@@ -328,7 +336,7 @@ def levDown(info, error, otype, levUp, rank):
     -------
     tuple
         The *n*-th member is an array of the embedded nodes of *n + maxSlot*.
-        Those arrays are sorted in canonical order (`tf.core.api`).
+        Those arrays are sorted in canonical order (`tf.core.nodes`).
 
     !!! hint "Memory efficiency"
         Slot nodes do not have embedded nodes, so they do not have to occupy
@@ -387,7 +395,7 @@ def boundary(info, error, otype, oslots, rank):
     tuple
         *   first: tuple of array
             The *n*-th member is the array of nodes that start at slot *n*,
-            ordered in *reversed* canonical order (`tf.core.api`);
+            ordered in *reversed* canonical order (`tf.core.nodes`);
         *   last: tuple of array
             The *n*-th member is the array of nodes that end at slot *n*,
             ordered in canonical order;

@@ -18,7 +18,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     This function calls the lower level `tf.search.search.Search` facility aka `S`.
     But whereas the `S` version returns a generator which yields the results
     one by one, the `A` version collects all results and sorts them in the
-    canonical order (`tf.core.api`).
+    canonical order (`tf.core.nodes`).
     (but you can change the sorting, see the `sort` parameter).
     It then reports the number of results.
 
@@ -68,11 +68,11 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
 
     sort: boolean, optional `True`
         If `True` (default), search results will be returned in
-        canonical order (`tf.core.api`).
+        canonical order (`tf.core.nodes`).
 
         !!! note "canonical sort key for tuples"
             This sort is achieved by using the function
-            `tf.core.api.Api.sortKeyTuple`
+            `tf.core.nodes.Nodes.sortKeyTuple`
             as sort key.
 
         If it is a *sort key*, i.e. function that can be applied to tuples of nodes
@@ -89,12 +89,13 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
         Web apps can better use `tf.applib.search.runSearch`.
     """
 
+    info = app.info
+    isSilent = app.isSilent
+    setSilent = app.setSilent
     api = app.api
-    info = api.info
-    isSilent = api.isSilent
-    setSilent = api.setSilent
     S = api.S
-    sortKeyTuple = api.sortKeyTuple
+    N = api.N
+    sortKeyTuple = N.sortKeyTuple
 
     wasSilent = isSilent()
 

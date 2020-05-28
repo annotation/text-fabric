@@ -9,8 +9,15 @@ from collections import namedtuple
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
 from ..core.text import DEFAULT_FORMAT
-from ..core.helpers import mdEsc, htmlEsc, flattenToSet, rangesFromList, rangesFromSet, console
-from ..core.api import GAP_START, GAP_END
+from ..core.helpers import (
+    mdEsc,
+    htmlEsc,
+    flattenToSet,
+    rangesFromList,
+    rangesFromSet,
+    console,
+)
+from ..core.nodes import GAP_START, GAP_END
 from .helpers import getText, htmlSafe, getResultsX, tupleEnum, RESULT, dh, NB
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights, getHlAtt
@@ -672,7 +679,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
         0,
         passage,
         [],
-        {},
+        set(),
         {},
     )
     sep = " " if passage and rep else ""
@@ -796,7 +803,8 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
             return
 
     api = app.api
-    sortKey = api.sortKey
+    N = api.N
+    sortKey = N.sortKey
 
     containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
     highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
@@ -874,7 +882,8 @@ def pretty(app, n, explain=False, **options):
     F = api.F
     E = api.E
     L = api.L
-    otypeRank = api.otypeRank
+    N = api.N
+    otypeRank = N.otypeRank
 
     ltr = _getLtr(app, dContext)
     textCls = _getTextCls(app, fmt)
@@ -914,7 +923,7 @@ def pretty(app, n, explain=False, **options):
         True,
         0,
         html,
-        {},
+        set(),
         {},
     )
 
@@ -973,10 +982,9 @@ def _doPlain(
         )
         return "".join(html) if outer else None
 
-    nDone = done.setdefault(n, set())
     nCalled = called.setdefault(n, set())
 
-    finished = slots <= nDone
+    finished = slots <= done
     calledBefore = slots <= nCalled
     if finished or calledBefore:
         _note(
@@ -991,7 +999,7 @@ def _doPlain(
             level,
             "already " + ("finished" if finished else "called"),
             task=slots,
-            done=nDone,
+            done=done,
             called=nCalled,
         )
         return "".join(html) if outer else None
@@ -1011,17 +1019,7 @@ def _doPlain(
         html.append(nodePart)
 
     contrib = _doPlainNode(
-        app,
-        dContext,
-        oContext,
-        nContext,
-        n,
-        outer,
-        first,
-        last,
-        level,
-        passage,
-        done=done,
+        app, dContext, oContext, nContext, n, outer, first, last, level, passage, done,
     )
     _note(
         app, False, oContext, n, nContext.nType, slots, first, last, level, contrib,
@@ -1049,7 +1047,7 @@ def _doPlain(
         chunks=chunks,
         chunkBoundaries=chunkBoundaries,
         task=slots,
-        done=nDone,
+        done=done,
         called=nCalled,
     )
 
@@ -1077,8 +1075,7 @@ def _doPlain(
 
     html.append("</span>")
 
-    nDone = done.setdefault(n, set())
-    nDone |= slots
+    done |= slots
 
     if chunks:
         _note(
@@ -1093,14 +1090,14 @@ def _doPlain(
             level,
             None,
             "end subchunks",
-            done=nDone,
+            done=done,
         )
 
     return "".join(html) if outer else None
 
 
 def _doPlainNode(
-    app, dContext, oContext, nContext, n, outer, first, last, level, passage, done={}
+    app, dContext, oContext, nContext, n, outer, first, last, level, passage, done
 ):
     api = app.api
     T = api.T
@@ -1190,10 +1187,9 @@ def _doPretty(
         )
         return "".join(html) if outer else None
 
-    nDone = done.setdefault(n, set())
     nCalled = called.setdefault(n, set())
 
-    finished = slots <= nDone
+    finished = slots <= done
     calledBefore = slots <= nCalled
     if finished or calledBefore:
         _note(
@@ -1208,7 +1204,7 @@ def _doPretty(
             level,
             "already " + ("finished" if finished else "called"),
             task=slots,
-            done=nDone,
+            done=done,
             called=nCalled,
         )
         return "".join(html) if outer else None
@@ -1287,7 +1283,7 @@ def _doPretty(
         chunks=chunks,
         chunkBoundaries=chunkBoundaries,
         task=slots,
-        done=nDone,
+        done=done,
         called=nCalled,
     )
 
@@ -1315,8 +1311,7 @@ def _doPretty(
         if after:
             html.append(after(ch))
 
-    nDone = done.setdefault(n, set())
-    nDone |= slots
+    done |= slots
 
     if chunks:
         _note(
@@ -1469,15 +1464,7 @@ def _doPrettyNode(
 
 
 def _prepareDisplay(
-    app,
-    isPretty,
-    dContext,
-    oContext,
-    n,
-    slots,
-    outer,
-    done=set(),
-    called={},
+    app, isPretty, dContext, oContext, n, slots, outer, done=set(), called={},
 ):
     api = app.api
     F = api.F
@@ -1503,8 +1490,6 @@ def _prepareDisplay(
 
     isSlot = nType == slotType
 
-    nDone = done.get(n, set())
-
     isBaseNonSlot = nType != slotType and nType in baseTypes
 
     (chunks, chunkBoundaries) = (
@@ -1514,7 +1499,7 @@ def _prepareDisplay(
         or nType in lexTypes
         or (not isPretty and nType in noChildren)
         else _getChildren(
-            app, isPretty, dContext, oContext, n, nType, slots, called, nDone
+            app, isPretty, dContext, oContext, n, nType, slots, called, done
         )
     )
 
@@ -1658,12 +1643,14 @@ def _getLtr(app, dContext):
     )
 
 
-def _getBigType(app, dContext, nType, otypeRank):
+def _getBigType(app, dContext, nType):
     api = app.api
     T = api.T
+    N = api.N
 
     sectionTypeSet = T.sectionTypeSet
     structureTypeSet = T.structureTypeSet
+    otypeRank = N.otypeRank
 
     full = dContext.full
     condenseType = dContext.condenseType
@@ -1683,10 +1670,9 @@ def _getChildren(app, isPretty, dContext, oContext, n, nType, slots, called, don
     L = api.L
     F = api.F
     E = api.E
-    otypeRank = api.otypeRank
-    sortKeyChunk = api.sortKeyChunk
     slotType = F.otype.slotType
     fOtypev = F.otype.v
+    eOslots = E.oslots.s
 
     aContext = app.context
     verseTypes = aContext.verseTypes
@@ -1707,14 +1693,18 @@ def _getChildren(app, isPretty, dContext, oContext, n, nType, slots, called, don
     isBigType = (
         inTuple
         if not isPretty and nType in verseTypes and not showVerseInTuple
-        else _getBigType(app, dContext, nType, otypeRank)
+        else _getBigType(app, dContext, nType)
     )
 
     if isBigType and not full:
         children = ()
     elif nType in descendantType:
         myDescendantType = descendantType[nType]
-        children = L.i(n, otype=myDescendantType)
+        children = tuple(
+            c
+            for c in L.i(n, otype=myDescendantType)
+            if fOtypev(c) != nType or not slots <= frozenset(eOslots(c))
+        )
         if nType in childrenCustom:
             (condition, method, add) = childrenCustom[nType]
             if condition(n):
@@ -1740,15 +1730,11 @@ def _getChildren(app, isPretty, dContext, oContext, n, nType, slots, called, don
         children = tuple(ch for ch in children if fOtypev(ch) not in toHide)
 
     return _chunkify(
-        sortKeyChunk,
-        ltr,
-        ((n, frozenset(E.oslots.s(n))) for n in children),
-        substrate,
-        called,
+        app, ltr, ((n, eOslots(n)) for n in children), substrate, called,
     )
 
 
-def _chunkify(sortKeyChunk, ltr, protoChunks, substrate, called):
+def _chunkify(app, ltr, protoChunks, substrate, called):
     """Divides and filters nodes into contiguous chunks.
 
     Only nodes are retained that have slots in a given set of slots,
@@ -1758,9 +1744,6 @@ def _chunkify(sortKeyChunk, ltr, protoChunks, substrate, called):
 
     Parameters
     ----------
-    sortKeyChunk: function
-        A sort key to order the chunks, typically `tf.core.api.Api.sortKeyChunk`.
-
     ltr: string
         Writing direction of the corpus
 
@@ -1810,8 +1793,12 @@ def _chunkify(sortKeyChunk, ltr, protoChunks, substrate, called):
 
     See Also
     --------
-    canonical ordering: `tf.core.api`
+    canonical ordering: `tf.core.nodes`
     """
+
+    api = app.api
+    N = api.N
+    sortKeyChunk = N.sortKeyChunk
 
     startCls = "r" if ltr == "rtl" else "l"
     endCls = "l" if ltr == "rtl" else "r"
@@ -1823,18 +1810,17 @@ def _chunkify(sortKeyChunk, ltr, protoChunks, substrate, called):
         ranges = list(rangesFromList(slots))
         nR = len(ranges) - 1
         for (i, (b, e)) in enumerate(ranges):
-            chunkSlots = frozenset(range(b, e + 1))
-            substrateSlots = substrate & chunkSlots
-            if not substrateSlots:
+            protoChunkSlots = frozenset(range(b, e + 1)) & substrate
+            if not protoChunkSlots:
                 continue
-            substrateRanges = rangesFromList(substrateSlots)
+            substrateRanges = rangesFromList(sorted(protoChunkSlots))
             for (bS, eS) in substrateRanges:
-                substrateSlots = frozenset(range(bS, eS + 1))
-                if n in called and substrateSlots <= called[n]:
+                chunkSlots = frozenset(range(bS, eS + 1))
+                if n in called and chunkSlots <= called[n]:
                     continue
                 boundaryL = f"{startCls}no" if bS != b else "" if i == 0 else startCls
                 boundaryR = f"{endCls}no" if eS != e else "" if i == nR else endCls
-                chunkKey = (n, substrateSlots)
+                chunkKey = (n, chunkSlots)
                 chunks.add(chunkKey)
                 boundaries[chunkKey] = f"{boundaryL} {boundaryR}"
     sortedChunks = sorted(chunks, key=sortKeyChunk)
@@ -1850,8 +1836,8 @@ def _chunkify(sortKeyChunk, ltr, protoChunks, substrate, called):
             geKey = (GAP_END, frozenset([b]))
             gaps.add(gsKey)
             gaps.add(geKey)
-            boundaries[gsKey] = 'g' + startCls
-            boundaries[geKey] = 'g' + endCls
+            boundaries[gsKey] = "g" + startCls
+            boundaries[geKey] = "g" + endCls
         prevEnd = e
     sortedChunks = sorted(sortedChunks + list(gaps), key=sortKeyChunk)
     return (sortedChunks, boundaries)
@@ -1991,7 +1977,8 @@ def _getFeatures(app, dContext, n, nType):
 
 def _getRefMember(app, tup, dContext):
     api = app.api
-    otypeRank = api.otypeRank
+    N = api.N
+    otypeRank = N.otypeRank
     fOtypev = api.F.otype.v
 
     minRank = None

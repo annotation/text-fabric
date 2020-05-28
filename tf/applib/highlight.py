@@ -82,8 +82,9 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     """
 
     F = api.F
+    N = api.N
     fOtype = F.otype.v
-    otypeRank = api.otypeRank
+    otypeRank = N.otypeRank
 
     condenseRank = otypeRank[condenseType]
     if highlights is None:

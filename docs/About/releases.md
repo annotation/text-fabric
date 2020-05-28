@@ -36,6 +36,56 @@ text-fabric appName:hot
 
 ## 8
 
+### 8.2
+
+#### 8.2.0
+
+2020-06-01
+
+Improved display algorithm: corpora need less configuration for TF
+to generate good displays.
+In particular, the atom types of the BHSA are now handled without
+tricky branches in the code.
+
+Core API: a bit of streamlining:
+all exposed methods now fall under one of `A TF N F E L T S`.
+
+#### Backward incompatibility
+
+!!! caution "corpus apps"
+    The API between TF and its apps has changed.
+    If you upgrade TF to this version, you also have to upgrade the
+    TF apps you work with.
+    You can do that by adding the checkout specifier `latest` when
+    you call the corpus, e.g. for the BHSA:
+
+    ```
+    A = use("bhsa:latest", hoist=globals()")
+    ```
+
+    One time is enough.
+
+!!! caution "logging functions"
+    The methods `info` `error` `warning` are no longer hoisted to the
+    global name space.
+
+    Use `A.info` or `TF.info` for these methods.
+
+    A quick fix is define, after loading:
+
+    `info = A.info`
+
+    etc.
+
+!!! caution "node functions"
+    `N()` has become: `N.walk()`
+
+    `sortNodes`, `sortKey`, `sortkeyTuple`, `sortkeyChunk`
+    and `otypeRank` are no longer hooisted to the global name space.
+
+    Use `N.sortNodes` etc. instead for all these methods.
+
+
 ### 8.1
 
 #### 8.1.2
@@ -1138,7 +1188,7 @@ For more info: see [#38](https://github.com/annotation/text-fabric/issues/38)
       `fillup=True`. But if `fillup=False` (default), it returns a 1-tuple for
       section1 nodes and a 2-tuple for section2 nodes.
     * New API member `sortKeyTuple` to sort tuples of nodes in the
-      canonical ordering (`tf.core.api`).
+      canonical ordering (`tf.core.nodes`).
     * The code to detect the file name and path of the script/notebook you are running in,
       is inherently brittle. It is unwise to base decisions on that.
       This code has been removed from TF.

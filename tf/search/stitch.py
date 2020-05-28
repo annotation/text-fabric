@@ -16,7 +16,7 @@ STRATEGY = """
 
 
 def setStrategy(searchExe, strategy, keep=False):
-    error = searchExe.api.error
+    error = searchExe.api.TF.error
     _msgCache = searchExe._msgCache
     if strategy is None:
         if keep:
@@ -498,7 +498,7 @@ def stitch(searchExe):
 def _stitchPlan(searchExe, strategy=None):
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
-    error = searchExe.api.error
+    error = searchExe.api.TF.error
     _msgCache = searchExe._msgCache
 
     setStrategy(searchExe, strategy, keep=True)

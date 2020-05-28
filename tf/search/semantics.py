@@ -10,7 +10,7 @@ from .syntax import reTp, kRe, deContext
 def semantics(searchExe):
     if not searchExe.good:
         return
-    error = searchExe.api.error
+    error = searchExe.api.TF.error
     _msgCache = searchExe._msgCache
     searchExe.badSemantics = []
     offset = searchExe.offset

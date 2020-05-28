@@ -99,7 +99,7 @@ def linksApi(app, silent):
     )
     tfLink = (
         outLink(
-            f"Text-Fabric API {api.TF.version}",
+            f"Text-Fabric API {app.version}",
             APIREF,
             "text-fabric-api",
         )
@@ -230,7 +230,7 @@ def webLink(
 
     if nType in lexTypes:
         if text is None:
-            text = getText(app, False, n, nType, False, True, True, "", None)
+            text = getText(app, False, n, nType, False, True, True, "", None, None)
         if webUrlLex and webLexId:
             lid = (
                 app.getLexId(n)
@@ -344,7 +344,7 @@ def _featuresPerModule(app):
         return UNSUPPORTED
 
     api = app.api
-    TF = api.TF
+    TF = app.TF
 
     aContext = app.context
     mOrg = aContext.org

@@ -70,7 +70,7 @@ reTp = type(reRe)
 
 
 def syntax(searchExe):
-    error = searchExe.api.error
+    error = searchExe.api.TF.error
     _msgCache = searchExe._msgCache
     searchExe.good = True
     searchExe.badSyntax = []

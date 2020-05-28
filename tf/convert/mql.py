@@ -27,10 +27,12 @@ ONE_ENUM_TYPE = True
 
 class MQL(object):
     def __init__(self, mqlDir, mqlName, tfFeatures, tm):
+        error = self.tm.error
+
         self.mqlDir = mqlDir
         cleanDb = cleanName(mqlName)
         if cleanDb != mqlName:
-            self.tm.error(f'db name "{mqlName}" => "{cleanDb}"')
+            error(f'db name "{mqlName}" => "{cleanDb}"')
         self.mqlName = cleanDb
         self.tfFeatures = tfFeatures
         self.tm = tm
@@ -38,24 +40,29 @@ class MQL(object):
         self._check()
 
     def write(self):
+        tm = self.tm
+        error = tm.error
+        info = tm.info
+        indent = tm.indent
+
         if not self.good:
             return
         if not os.path.exists(self.mqlDir):
             try:
                 os.makedirs(self.mqlDir, exist_ok=True)
             except Exception:
-                self.tm.error(f'Cannot create directory "{self.mqlDir}"')
+                error(f'Cannot create directory "{self.mqlDir}"')
                 self.good = False
                 return
         mqlPath = f"{self.mqlDir}/{self.mqlName}.mql"
         try:
             fm = open(mqlPath, "w", encoding="utf8")
         except Exception:
-            self.tm.error(f"Could not write to {mqlPath}")
+            error(f"Could not write to {mqlPath}")
             self.good = False
             return
 
-        self.tm.info(f"Loading {len(self.featureList)} features")
+        info(f"Loading {len(self.featureList)} features")
         for ft in self.featureList:
             fObj = self.features[ft]
             fObj.load()
@@ -66,14 +73,20 @@ class MQL(object):
         self._writeTypes()
         self._writeDataAll()
         self._writeEndDb()
-        self.tm.indent(level=0)
-        self.tm.info("Done")
+        indent(level=0)
+        info("Done")
 
     def _check(self):
-        self.tm.info(f"Checking features of dataset {self.mqlName}")
+        tm = self.tm
+        error = tm.error
+        info = tm.info
+        indent = tm.indent
+
+        info(f"Checking features of dataset {self.mqlName}")
+
         self.features = {}
         self.featureList = []
-        self.tm.indent(level=1)
+        indent(level=1)
         for (f, fo) in sorted(self.tfFeatures.items()):
             if fo.method is not None or f in WARP:
                 continue
@@ -82,13 +95,13 @@ class MQL(object):
                 continue
             cleanF = cleanName(f)
             if cleanF != f:
-                self.tm.error(f'feature "{f}" => "{cleanF}"')
+                error(f'feature "{f}" => "{cleanF}"')
             self.featureList.append(cleanF)
             self.features[cleanF] = fo
         good = True
         for feat in (WARP[0], WARP[1], "__levels__"):
             if feat not in self.tfFeatures:
-                self.tm.error(
+                error(
                     "{} feature {} is missing from data set".format(
                         "Warp"
                         if feat in WARP
@@ -103,11 +116,11 @@ class MQL(object):
                 fObj = self.tfFeatures[feat]
                 if not fObj.load():
                     good = False
-        self.tm.indent(level=0)
+        indent(level=0)
         if not good:
-            self.tm.error("Export to MQL aborted")
+            error("Export to MQL aborted")
         else:
-            self.tm.info(f"{len(self.featureList)} features to export to MQL ...")
+            info(f"{len(self.featureList)} features to export to MQL ...")
         self.good = good
 
     def _writeStartDb(self):
@@ -132,9 +145,13 @@ GO
         self.fm.close()
 
     def _writeEnums(self):
-        self.tm.indent(level=0)
-        self.tm.info("Writing enumerations")
-        self.tm.indent(level=1)
+        tm = self.tm
+        info = tm.info
+        indent = tm.indent
+
+        indent(level=0)
+        info("Writing enumerations")
+        indent(level=1)
         for ft in self.featureList:
             fObj = self.features[ft]
             if fObj.isEdge or fObj.dataType == "int":
@@ -159,13 +176,16 @@ GO
         else:
             for ft in sorted(self.enums):
                 self._writeEnum(ft)
-            self.tm.indent(level=0)
-            self.tm.info(f"Written {len(self.enums)} enumerations")
+            indent(level=0)
+            info(f"Written {len(self.enums)} enumerations")
 
     def _writeEnumsAsOne(self):
+        tm = self.tm
+        info = tm.info
+
         fValues = list(chain.from_iterable((set(fV) for fV in self.enums.values())))
         if len(fValues):
-            self.tm.info(f"Writing an all-in-one enum with {len(fValues):>4} values")
+            info(f"Writing an all-in-one enum with {len(fValues):>4} values")
             fValuesEnumerated = ",\n\t".join(
                 "{} = {}".format(fVal, i) for (i, fVal) in enumerate(fValues)
             )
@@ -179,9 +199,12 @@ GO
             )
 
     def _writeEnum(self, ft):
+        tm = self.tm
+        info = tm.info
+
         fValues = self.enums[ft]
         if len(fValues):
-            self.tm.info(f"enum {ft:<15} with {len(fValues):>4} values")
+            info(f"enum {ft:<15} with {len(fValues):>4} values")
             fValuesEnumerated = ",\n\t".join(
                 f"{fVal} = {i}" for (i, fVal) in enumerate(fValues)
             )
@@ -207,9 +230,14 @@ GO
         def valIds(ids):
             return "({})".format(",".join(str(i) for i in ids))
 
+        tm = self.tm
+        error = tm.error
+        info = tm.info
+        indent = tm.indent
+
         self.levels = self.tfFeatures["__levels__"].data[::-1]
-        self.tm.indent(level=0)
-        self.tm.info(
+        indent(level=0)
+        info(
             "Mapping {} features onto {} object types".format(
                 len(self.featureList), len(self.levels),
             )
@@ -218,7 +246,7 @@ GO
         for (otype, av, start, end) in self.levels:
             cleanOtype = cleanName(otype)
             if cleanOtype != otype:
-                self.tm.error(f'otype "{otype}" => "{cleanOtype}"')
+                error(f'otype "{otype}" => "{cleanOtype}"')
             otypeSupport[cleanOtype] = set(range(start, end + 1))
 
         self.otypes = {}
@@ -272,7 +300,10 @@ GO
         )
 
     def _writeDataAll(self):
-        self.tm.info(
+        tm = self.tm
+        info = tm.info
+
+        info(
             "Writing {} features as data in {} object types".format(
                 len(self.featureList), len(self.levels),
             )
@@ -285,9 +316,13 @@ GO
 
     def _writeData(self, otype, start, end):
         tm = self.tm
+        info = tm.info
+        indent = tm.indent
+
         fm = self.fm
-        tm.indent(level=1, reset=True)
-        tm.info(f"{otype} data ...")
+
+        indent(level=1, reset=True)
+        info(f"{otype} data ...")
         oslots = self.oslots
         maxSlot = self.maxSlot
         oFeats = self.otypes[otype]
@@ -307,7 +342,7 @@ WITH OBJECT TYPE[{o}]
         LIMIT = 50000
         t = 0
         j = 0
-        tm.indent(level=2, reset=True)
+        indent(level=2, reset=True)
         for n in range(start, end + 1):
             oMql = """
 CREATE OBJECT
@@ -341,13 +376,13 @@ WITH OBJECT TYPE[{o}]
                         o=otype
                     )
                 )
-                tm.info(
+                info(
                     f"batch of size {nbytes(curSize):>20} with {j:>7} of {t:>7} {otype}s"
                 )
                 j = 0
                 curSize = 0
 
-        tm.info(f"batch of size {nbytes(curSize):>20} with {j:>7} of {t:>7} {otype}s")
+        info(f"batch of size {nbytes(curSize):>20} with {j:>7} of {t:>7} {otype}s")
         fm.write(
             """
 GO
@@ -358,8 +393,8 @@ GO
             )
         )
 
-        tm.indent(level=1)
-        tm.info("{} data: {} objects".format(otype, t))
+        indent(level=1)
+        info("{} data: {} objects".format(otype, t))
 
 
 # MQL IMPORT
@@ -380,8 +415,10 @@ def uni(line):
 
 
 def tfFromMql(mqlFile, tm, slotType=None, otext=None, meta=None):
+    error = tm.error
+
     if slotType is None:
-        tm.error("ERROR: no slotType specified")
+        error("ERROR: no slotType specified")
         return (False, {}, {}, {})
     (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlFile, tm)
     if not good:
@@ -390,7 +427,10 @@ def tfFromMql(mqlFile, tm, slotType=None, otext=None, meta=None):
 
 
 def parseMql(mqlFile, tm):
-    tm.info("Parsing mql source ...")
+    info = tm.info
+    error = tm.error
+
+    info("Parsing mql source ...")
     fh = open(mqlFile, encoding="utf8")
 
     objectTypes = dict()
@@ -422,14 +462,14 @@ def parseMql(mqlFile, tm):
     for (ln, line) in enumerate(fh):
         inThisChunk += 1
         if inThisChunk == chunkSize:
-            tm.info(f"\tline {ln + 1:>9}")
+            info(f"\tline {ln + 1:>9}")
             inThisChunk = 0
         if line.startswith("CREATE OBJECTS WITH OBJECT TYPE") or line.startswith(
             "WITH OBJECT TYPE"
         ):
             comps = line.rstrip().rstrip("]").split("[", 1)
             curTable = comps[1]
-            tm.info(f"\t\tobjects in {curTable}")
+            info(f"\t\tobjects in {curTable}")
             curObject = None
             if curTable not in tables:
                 tables[curTable] = dict()
@@ -461,7 +501,7 @@ def parseMql(mqlFile, tm):
                 if line.startswith("["):
                     curObjectType = line.rstrip()[1:]
                     objectTypes[curObjectType] = dict()
-                    tm.info(f"\t\totype {curObjectType}")
+                    info(f"\t\totype {curObjectType}")
                     inObjectTypeFeatures = True
                     continue
             if inObjectTypeFeatures:
@@ -497,7 +537,7 @@ def parseMql(mqlFile, tm):
                     nodeF.setdefault(curObjectType, set()).add(feature)
 
                 objectTypes[curObjectType][feature] = (ftype, default)
-                tm.info(
+                info(
                     "\t\t\tfeature {} ({}) =def= {} : {}".format(
                         feature, ftype, default, "edge" if isEdge else "node"
                     )
@@ -564,7 +604,7 @@ def parseMql(mqlFile, tm):
                                 uni(value) if isText else value
                             )
                     else:
-                        tm.error(f"ERROR: line {ln}: unrecognized line -->{line}<--")
+                        error(f"ERROR: line {ln}: unrecognized line -->{line}<--")
                         good = False
                         break
             else:
@@ -576,22 +616,24 @@ def parseMql(mqlFile, tm):
                 words = line.split()
                 curEnum = words[2]
                 enums[curEnum] = dict(default=None, values=[])
-                tm.info(f"\t\tenum {curEnum}")
+                info(f"\t\tenum {curEnum}")
             elif line.startswith("CREATE OBJECT TYPE"):
                 curObjectType = True
                 inObjectTypeFeatures = False
-    tm.info(f"{ln + 1} lines parsed")
+    info(f"{ln + 1} lines parsed")
     fh.close()
     for table in tables:
-        tm.info(f"{len(tables[table])} objects of type {table}")
+        info(f"{len(tables[table])} objects of type {table}")
 
     if len(tables) == 0:
-        tm.info("No objects found")
+        info("No objects found")
     return (good, objectTypes, tables, nodeF, edgeF)
 
 
 def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
-    tm.info("Making TF data ...")
+    info = tm.info
+
+    info("Making TF data ...")
 
     NIL = {"nil", "NIL", "Nil"}
 
@@ -615,12 +657,12 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
 
     good = True
 
-    tm.info("Monad - idd mapping ...")
+    info("Monad - idd mapping ...")
     for idd in tables.get(slotType, {}):
         monad = list(tables[slotType][idd]["monads"])[0]
         iddFromMonad[monad] = idd
 
-    tm.info("Removing holes in the monad sequence")
+    info("Removing holes in the monad sequence")
     # we set up a monad - slot mapping
     curSlot = 0
     otype = dict()
@@ -633,9 +675,9 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
         otype[curSlot] = slotType
 
     maxSlot = curSlot
-    tm.info(f"maxSlot={maxSlot}")
+    info(f"maxSlot={maxSlot}")
 
-    tm.info("Node mapping and otype ...")
+    info("Node mapping and otype ...")
     node = maxSlot
     for t in tableOrder[1:]:
         for idd in sorted(tables[t]):
@@ -647,7 +689,7 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     nodeFeatures["otype"] = otype
     metaData["otype"] = dict(valueType="str")
 
-    tm.info("oslots ...")
+    info("oslots ...")
     oslots = dict()
     for t in tableOrder[1:]:
         for idd in tables.get(t, {}):
@@ -657,7 +699,7 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     edgeFeatures["oslots"] = oslots
     metaData["oslots"] = dict(valueType="str")
 
-    tm.info("metadata ...")
+    info("metadata ...")
     for t in nodeF:
         for f in nodeF[t]:
             ftype = objectTypes[t][f][0]
@@ -666,16 +708,16 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
         for f in edgeF[t]:
             metaData.setdefault(f, {})["valueType"] = "str"
 
-    tm.info("features ...")
+    info("features ...")
     chunkSize = 100000
     for t in tableOrder:
-        tm.info(f"\tfeatures from {t}s")
+        info(f"\tfeatures from {t}s")
         inThisChunk = 0
         thisTable = tables.get(t, {})
         for (i, idd) in enumerate(thisTable):
             inThisChunk += 1
             if inThisChunk == chunkSize:
-                tm.info(f"\t{i + 1:>9} {t}s")
+                info(f"\t{i + 1:>9} {t}s")
                 inThisChunk = 0
             node = nodeFromIdd[idd]
             features = tables[t][idd]["feats"]
@@ -688,6 +730,6 @@ def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
                         )
                 else:
                     nodeFeatures.setdefault(f, {})[node] = v
-        tm.info(f"\t{len(thisTable):>9} {t}s")
+        info(f"\t{len(thisTable):>9} {t}s")
 
     return (good, nodeFeatures, edgeFeatures, metaData)

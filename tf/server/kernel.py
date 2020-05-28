@@ -29,7 +29,11 @@ def makeTfKernel(app, appName, port):
     if not app.api:
         console(f"{TF_ERROR}")
         return False
-    app.api.reset()
+    TF = app.api.TF
+    reset = TF.reset
+    cache = TF.cache
+
+    reset()
     cache = {}
     console(f"{TF_DONE}\nKernel listening at port {port}")
 
@@ -58,7 +62,7 @@ def makeTfKernel(app, appName, port):
             if searchExe:
                 searchExe = searchExe.outerTemplate
 
-            _msgCache = api.cache(_asString=True)
+            _msgCache = cache(_asString=True)
 
             data = dict(searchExe=searchExe, _msgCache=_msgCache)
             return data

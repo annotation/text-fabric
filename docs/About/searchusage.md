@@ -409,7 +409,7 @@ do not have values).
 *   `#`: is unequal (meaning a different node, a clause and a verse that occupy
     the same slots are still unequal)
     ![op](../images/Spatial/Spatial.002.png)
-*   `<` `>`: before and after (in the *canonical ordering*, see `tf.core.api`)
+*   `<` `>`: before and after (in the *canonical ordering*, see `tf.core.nodes`)
     ![op](../images/Spatial/Spatial.003.png)
 
 #### Slot comparison

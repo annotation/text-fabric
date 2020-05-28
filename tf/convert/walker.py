@@ -20,13 +20,18 @@ class CV(object):
 
     def __init__(self, TF, silent=False):
         self.TF = TF
-        self.wasSilent = self.TF.tm.isSilent()
-        self.TF.tm.setSilent(silent)
+        tm = TF.tm
+        isSilent = tm.isSilent
+        setSilent = tm.setSilent
+
+        self.wasSilent = isSilent()
+        setSilent(silent)
 
     def _showWarnings(self):
-        error = self.TF.tm.error
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        error = tm.error
+        info = tm.info
+        indent = tm.indent
 
         warnings = self.warnings
         warn = self.warn
@@ -55,9 +60,10 @@ class CV(object):
                     info("use `cv.walk(..., warn=None)` to suppress warnings")
 
     def _showErrors(self):
-        error = self.TF.tm.error
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        error = tm.error
+        info = tm.info
+        indent = tm.indent
         forcedStop = self.forcedStop
 
         errors = self.errors
@@ -174,8 +180,10 @@ class CV(object):
             See `tf.convert.walker` for more details.
         """
 
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        info = tm.info
+        indent = tm.indent
+        setSilent = tm.setSilent
 
         indent(level=0, reset=True)
         info("Importing data from walking through the source ...")
@@ -227,15 +235,16 @@ class CV(object):
                 )
 
         self._showWarnings()
-        self.TF.tm.setSilent(self.wasSilent)
+        setSilent(self.wasSilent)
 
         return self.good
 
     def _prepareMeta(self, otext, generic):
         varRe = re.compile(r"\{([^}]+)\}")
 
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        info = tm.info
+        indent = tm.indent
 
         if not self.good and not self.force:
             return
@@ -429,7 +438,9 @@ class CV(object):
         return good
 
     def stop(self, msg):
-        error = self.TF.tm.error
+        tm = self.TF.tm
+        error = tm.error
+
         error(f"Forced stop: {msg}")
         self.good = False
         self.force = False
@@ -632,7 +643,8 @@ class CV(object):
         # If you resume a slot node, it all non slot nodes in the current context
         # will be linked to it.
 
-        info = self.TF.tm.info
+        tm = self.TF.tm
+        info = tm.info
 
         if not self.good:
             return
@@ -692,8 +704,9 @@ class CV(object):
         self._showErrors()
 
     def _removeUnlinked(self):
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        info = tm.info
+        indent = tm.indent
 
         if not self.good and not self.force:
             return
@@ -744,7 +757,8 @@ class CV(object):
             indent(level=1)
 
     def _checkGraph(self):
-        info = self.TF.tm.info
+        tm = self.TF.tm
+        info = tm.info
 
         if not self.good and not self.force:
             return
@@ -775,7 +789,8 @@ class CV(object):
         self._showErrors()
 
     def _checkFeatures(self):
-        info = self.TF.tm.info
+        tm = self.TF.tm
+        info = tm.info
 
         if not self.good and not self.force:
             return
@@ -913,7 +928,8 @@ class CV(object):
         self._showErrors()
 
     def _reorderNodes(self):
-        info = self.TF.tm.info
+        tm = self.TF.tm
+        info = tm.info
 
         if not self.good and not self.force:
             return
@@ -977,8 +993,9 @@ class CV(object):
         return functools.cmp_to_key(before)
 
     def _reassignFeatures(self):
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        info = tm.info
+        indent = tm.indent
 
         if not self.good and not self.force:
             return

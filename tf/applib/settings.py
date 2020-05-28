@@ -1,3 +1,8 @@
+"""
+.. include:: ../../docs/applib/settings.md
+"""
+
+
 import re
 import types
 
@@ -555,7 +560,8 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     api = app.api
     F = api.F
     T = api.T
-    otypeRank = api.otypeRank
+    N = api.N
+    otypeRank = N.otypeRank
     slotType = F.otype.slotType
     nTypes = F.otype.all
     structureTypes = T.structureTypes
@@ -802,7 +808,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
             container=containerCls, label=labelCls, children=childrenCls,
         )
 
-    descendantType = transitiveClosure(childType)
+    descendantType = transitiveClosure(childType, {slotType})
 
     specs.update(
         baseTypes=baseTypes if baseTypes else {slotType},

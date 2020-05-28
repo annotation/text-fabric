@@ -27,6 +27,14 @@
 
 ### Displaying
 
+```A.dm(markdownString)```
+:   display markdown string in notebook
+:   `tf.applib.helpers.dm`
+
+```A.dh(htmlString)```
+:   display HTML string in notebook
+:   `tf.applib.helpers.dh`
+
 ```method(option1=value1, option2=value2, ...)```
 :   Many of the following methods accept these options as keyword arguments: 
 :   `tf.applib.displaysettings`
@@ -133,31 +141,31 @@
 
 ### Nodes
 
-Read about the canonical ordering here: `tf.core.api`.
+Read about the canonical ordering here: `tf.core.nodes`.
 
-```N()```
+```N.walk()```
 :   generator of all nodes in canonical ordering
-:   `tf.core.api.Api.N`
+:   `tf.core.nodes.Nodes.walk`
 
 ```N.sortNodes(nodes)```
 :   sorts `nodes` in the canonical ordering
-:   `tf.core.api.Api.sortNodes`
+:   `tf.core.nodes.Nodes.sortNodes`
 
 ```N.otypeRank[nodeType]```
 :   ranking position of `nodeType`
-:   `tf.core.api.Api.otypeRank`
+:   `tf.core.nodes.Nodes.otypeRank`
 
 ```N.sortKey(node)```
 :   defines the canonical ordering on nodes
-:   `tf.core.api.Api.sortKey`
+:   `tf.core.nodes.Nodes.sortKey`
 
 ```N.sortKeyTuple(tup)```
 :   extends the canonical ordering on nodes to tuples of nodes
-:   `tf.core.api.Api.sortKeyTuple`
+:   `tf.core.nodes.Nodes.sortKeyTuple`
 
 ```N.sortKeyChunk(node)```
 :   defines the canonical ordering on node chunks
-:   `tf.core.api.Api.sortKeyChunk`
+:   `tf.core.nodes.Nodes.sortKeyChunk`
 
 ### Features
 
@@ -169,23 +177,23 @@ Read about the canonical ordering here: `tf.core.api`.
 
 ```F.fff.v(node)```
 :   get value of node feature `fff`
-:   `tf.core.api.NodeFeature.v`
+:   `tf.core.nodefeature.NodeFeature.v`
 
 ```F.fff.s(value)```
 :   get nodes where feature `fff` has `value`
-:   `tf.core.api.NodeFeature.s`
+:   `tf.core.nodefeature.NodeFeature.s`
 
 ```F.fff.freqList(...)```
 :   frequency list of values of `fff`
-:   `tf.core.api.NodeFeature.freqList`
+:   `tf.core.nodefeature.NodeFeature.freqList`
 
 ```F.fff.items(...)```
 :   generator of all entries of `fff` as mapping from nodes to values
-:   `tf.core.api.NodeFeature.items`
+:   `tf.core.nodefeature.NodeFeature.items`
 
 ```F.fff.meta```
 :   meta data of feature `fff`
-:   `tf.core.api.NodeFeature.meta`
+:   `tf.core.nodefeature.NodeFeature.meta`
 
 ```Fs('fff')```
 :   identical to `F.ffff`, usable if name of feature is variable
@@ -197,39 +205,39 @@ Maps nodes to their types.
 
 ```F.otype.v(node)```
 :   get type of `node`
-:   `tf.core.api.OtypeFeature.v`
+:   `tf.core.otypefeature.OtypeFeature.v`
 
 ```F.otype.s(nodeType)```
 :   get all nodes of type `nodeType`
-:   `tf.core.api.OtypeFeature.s`
+:   `tf.core.otypefeature.OtypeFeature.s`
 
 ```F.otype.sInterval(nodeType)```
 :   gives start and ending nodes of `nodeType`
-:   `tf.core.api.OtypeFeature.sInterval`
+:   `tf.core.otypefeature.OtypeFeature.sInterval`
 
 ```F.otype.items(...)```
 :   generator of all (node, type) pairs.
-:   `tf.core.api.OtypeFeature.items`
+:   `tf.core.otypefeature.OtypeFeature.items`
 
 ```F.otype.meta```
 :   meta data of feature `otype`
-:   `tf.core.api.OtypeFeature.meta`
+:   `tf.core.otypefeature.OtypeFeature.meta`
 
 ```F.otype.maxSlot```
 :   the last slot node
-:   `tf.core.api.OtypeFeature.maxSlot`
+:   `tf.core.otypefeature.OtypeFeature.maxSlot`
 
 ```F.otype.maxNode```
 :   the last node
-:   `tf.core.api.OtypeFeature.maxNode`
+:   `tf.core.otypefeature.OtypeFeature.maxNode`
 
 ```F.otype.slotType```
 :   the slot type
-:   `tf.core.api.OtypeFeature.slotType`
+:   `tf.core.otypefeature.OtypeFeature.slotType`
 
 ```F.otype.all```
 :   sorted list of all node types
-:   `tf.core.api.OtypeFeature.all`
+:   `tf.core.otypefeature.OtypeFeature.all`
 
 #### Edge features
 
@@ -239,27 +247,27 @@ Maps nodes to their types.
 
 ```E.fff.f(node)```
 :   get value of feature `fff` for edges *from* node
-:   `tf.core.api.EdgeFeature.f`
+:   `tf.core.edgefeature.EdgeFeature.f`
 
 ```E.fff.t(node)```
 :   get value of feature `fff` for edges *to* node
-:   `tf.core.api.EdgeFeature.t`
+:   `tf.core.edgefeature.EdgeFeature.t`
 
 ```E.fff.freqList(...)```
-:   frequency list of values of `fff
-:   `tf.core.api.EdgeFeature.freqList`
+:   frequency list of values of `fff`
+:   `tf.core.edgefeature.EdgeFeature.freqList`
 
 ```E.fff.items(...)```
 :   generator of all entries of `fff` as mapping from edges to values
-:   `tf.core.api.EdgeFeature.items`
+:   `tf.core.edgefeature.EdgeFeature.items`
 
 ```E.fff.b(node)```
 :   get value of feature `fff` for edges *from* and *to* node
-:   `tf.core.api.EdgeFeature.b`
+:   `tf.core.edgefeature.EdgeFeature.b`
 
 ```E.fff.meta```
 :   all meta data of feature `fff`
-:   `tf.core.api.EdgeFeature.meta`
+:   `tf.core.edgefeature.EdgeFeature.meta`
 
 ```Es('fff')```
 :   identical to `E.fff`, usable if name of feature is variable
@@ -271,15 +279,15 @@ Maps nodes to the set of slots they occupy.
 
 ```E.oslots.items(...)```
 :   generator of all entries of `oslots` as mapping from nodes to sets of slots
-:   `tf.core.api.OslotsFeature.items`
+:   `tf.core.oslotsfeature.OslotsFeature.items`
 
 ```E.oslots.s(node)```
 :   set of slots linked to `node`
-:   `tf.core.api.OslotsFeature.s`
+:   `tf.core.oslotsfeature.OslotsFeature.s`
 
 ```E.oslots.meta```
 :   all meta data of feature `oslots`
-:   `tf.core.api.OslotsFeature.meta`
+:   `tf.core.oslotsfeature.OslotsFeature.meta`
 
 ### Locality
 
@@ -403,49 +411,59 @@ Flexible multilevel sectioning system
 
 ### Logging
 
-```TF.version```
+```A.dm(markdownString)```
+:   display markdown string in notebook
+:   `tf.applib.helpers.dm`
+
+```A.dh(htmlString)```
+:   display HTML string in notebook
+:   `tf.applib.helpers.dh`
+
+The following methods work also for `TF.` instead of `A.`:
+
+```A.version```
 :   version number of the Text-Fabric package.
 :   `tf.fabric.Fabric.version`
 
-```TF.banner```
+```A.banner```
 :   banner of the Text-Fabric program.
 :   `tf.fabric.Fabric.banner`
 
-```TF.isSilent()```
+```A.isSilent()```
 :   report the verbosity of Text-Fabric
 :   `tf.core.timestamp.Timestamp.isSilent`
 
-```TF.silentOn(deep=False)```
+```A.silentOn(deep=False)```
 :   make TF silent from now on.
 :   `tf.core.timestamp.Timestamp.silentOn`
 
-```TF.silentOff()```
+```A.silentOff()```
 :   make TF talkative from now on.
 :   `tf.core.timestamp.Timestamp.silentOff`
 
-```TF.setSilent(silent)```
+```A.setSilent(silent)```
 :   set the verbosity of Text-Fabric.
 :   `tf.core.timestamp.Timestamp.setSilent`
 
-```TF.indent(level=None, reset=False)```
+```A.indent(level=None, reset=False)```
 :   Sets up indentation and timing of following messages
 :   `tf.core.timestamp.Timestamp.indent`
 
-```TF.info(msg, tm=True, nl=True, ...)```
+```A.info(msg, tm=True, nl=True, ...)```
 :   informational message
 :   `tf.core.timestamp.Timestamp.info`
 
-```TF.warning(msg, tm=True, nl=True, ...)```
+```A.warning(msg, tm=True, nl=True, ...)```
 :   warning message
 :   `tf.core.timestamp.Timestamp.warning`
 
-```TF.error(msg, tm=True, nl=True, ...)```
+```A.error(msg, tm=True, nl=True, ...)```
 :   error message
 :   `tf.core.timestamp.Timestamp.error`
 
 ### Computed data components.
 
-Access to precomputed data: `tf.core.api.Computeds`.
+Access to precomputed data: `tf.core.computed.Computeds`.
 
 All components have just one useful attribute: `.data`.
 
@@ -462,11 +480,11 @@ All components have just one useful attribute: `.data`.
 :   `tf.core.prepare.levels`
 
 ```C.order.data```
-:   the canonical order of the nodes (`tf.core.api`)
+:   the canonical order of the nodes (`tf.core.nodes`)
 :   `tf.core.prepare.order`
 
 ```C.rank.data```
-:   the rank of the nodes in the canonical order (`tf.core.api`)
+:   the rank of the nodes in the canonical order (`tf.core.nodes`)
 :   `tf.core.prepare.rank`
 
 ```C.levUp.data```

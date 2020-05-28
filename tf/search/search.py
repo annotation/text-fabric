@@ -133,10 +133,11 @@ class Search(object):
         """
 
         api = self.api
-        error = api.error
-        info = api.info
-        isSilent = api.isSilent
-        setSilent = api.setSilent
+        TF = api.TF
+        error = TF.error
+        info = TF.info
+        isSilent = TF.isSilent
+        setSilent = TF.setSilent
         defaults = self.perfDefaults
 
         wasSilent = isSilent()
@@ -347,13 +348,15 @@ class Search(object):
         """
 
         exe = self.exe
+        TF = self.api.TF
+
         if exe is None:
-            error = self.api.error
+            error = TF.error
             error('Cannot fetch if there is no previous "study()"')
         else:
             queryResults = exe.fetch(limit=limit)
             if type(_msgCache) is list:
-                messages = self.api.cache(_asString=True)
+                messages = TF.cache(_asString=True)
                 return (queryResults, messages)
             return queryResults
 
@@ -391,7 +394,7 @@ class Search(object):
 
         exe = self.exe
         if exe is None:
-            error = self.api.error
+            error = self.api.TF.error
             error('Cannot count if there is no previous "study()"')
         else:
             exe.count(progress=progress, limit=limit)
@@ -417,7 +420,7 @@ class Search(object):
 
         exe = self.exe
         if exe is None:
-            error = self.api.error
+            error = self.api.TF.error
             error('Cannot show plan if there is no previous "study()"')
         else:
             exe.showPlan(details=details)

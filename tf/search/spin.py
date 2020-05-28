@@ -71,9 +71,10 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
     from .searchexe import SearchExe
 
     (quKind, quTemplates, parentName, ln) = quantifier
-    info = searchExe.api.info
+    TF = searchExe.api.TF
+    info = TF.info
     _msgCache = searchExe._msgCache
-    indent = searchExe.api.indent
+    indent = TF.indent
     showQuantifiers = searchExe.showQuantifiers
     silent = searchExe.silent
     level = searchExe.level

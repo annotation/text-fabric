@@ -14,8 +14,8 @@ class SearchExe(object):
     perfParams = {}
 
     @classmethod
-    def setPerfParams(cls, info):
-        cls.perfParams = info
+    def setPerfParams(cls, params):
+        cls.perfParams = params
 
     def __init__(
         self,
@@ -33,6 +33,9 @@ class SearchExe(object):
         setInfo={},
     ):
         self.api = api
+        TF = api.TF
+        setSilent = TF.setSilent
+
         self.searchTemplate = searchTemplate
         self.outerTemplate = outerTemplate
         self.quKind = quKind
@@ -41,7 +44,7 @@ class SearchExe(object):
         self.sets = sets
         self.shallow = 0 if not shallow else 1 if shallow is True else shallow
         self.silent = silent
-        api.setSilent(silent)
+        setSilent(silent)
         self.showQuantifiers = showQuantifiers
         self._msgCache = _msgCache if type(_msgCache) is list else -1 if _msgCache else 0
         self.good = True
@@ -52,8 +55,9 @@ class SearchExe(object):
 
     def search(self, limit=None):
         api = self.api
-        isSilent = api.isSilent
-        setSilent = api.setSilent
+        TF = api.TF
+        isSilent = TF.isSilent
+        setSilent = TF.setSilent
         wasSilent = isSilent()
         setSilent(True)
         self.study()
@@ -62,9 +66,12 @@ class SearchExe(object):
 
     def study(self, strategy=None):
         api = self.api
-        info = api.info
+        TF = api.TF
+        info = TF.info
+        indent = TF.indent
         _msgCache = self._msgCache
-        self.api.indent(level=0, reset=True)
+
+        indent(level=0, reset=True)
         self.good = True
 
         setStrategy(self, strategy)
@@ -117,10 +124,11 @@ class SearchExe(object):
         return queryResults
 
     def count(self, progress=None, limit=None):
-        info = self.api.info
-        error = self.api.error
+        TF = self.api.TF
+        info = TF.info
+        error = TF.error
         _msgCache = self._msgCache
-        indent = self.api.indent
+        indent = TF.indent
         indent(level=0, reset=True)
 
         if not self.good:
@@ -164,7 +172,7 @@ class SearchExe(object):
         displayPlan(self, details=details)
 
     def showOuterTemplate(self, _msgCache):
-        error = self.api.error
+        error = self.api.TF.error
         offset = self.offset
         outerTemplate = self.outerTemplate
         quKind = self.quKind

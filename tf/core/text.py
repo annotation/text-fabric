@@ -302,8 +302,9 @@ class Text(object):
         """
 
         api = self.api
-        info = api.info
-        error = api.error
+        TF = api.TF
+        info = TF.info
+        error = TF.error
         hdMult = self.hdMult
         hdFromNd = self.hdFromNd
         headings = self.headings
@@ -374,7 +375,8 @@ There are {len(hdFromNd)} structural elements in the dataset.
         """
 
         api = self.api
-        error = api.error
+        TF = api.TF
+        error = TF.error
         F = api.F
         fOtype = F.otype.v
         hdTop = self.hdTop
@@ -442,7 +444,8 @@ There are {len(hdFromNd)} structural elements in the dataset.
         """
 
         api = self.api
-        error = api.error
+        TF = api.TF
+        error = TF.error
         hdTop = self.hdTop
 
         if hdTop is None:
@@ -473,7 +476,8 @@ There are {len(hdFromNd)} structural elements in the dataset.
 
         api = self.api
         F = api.F
-        error = api.error
+        TF = api.TF
+        error = TF.error
         fOtype = F.otype.v
 
         hdUp = self.hdUp
@@ -513,7 +517,8 @@ There are {len(hdFromNd)} structural elements in the dataset.
         api = self.api
         F = api.F
         fOtype = F.otype.v
-        error = api.error
+        TF = api.TF
+        error = TF.error
         hdDown = self.hdDown
         if hdDown is None:
             error(f"structure types are not configured", tm=False)
@@ -554,7 +559,8 @@ There are {len(hdFromNd)} structural elements in the dataset.
 
         api = self.api
         F = api.F
-        error = api.error
+        TF = api.TF
+        error = TF.error
         fOtype = F.otype.v
         hdFromNd = self.hdFromNd
         if hdFromNd is None:
@@ -592,7 +598,8 @@ There are {len(hdFromNd)} structural elements in the dataset.
         """
 
         api = self.api
-        error = api.error
+        TF = api.TF
+        error = TF.error
         ndFromHd = self.ndFromHd
         if ndFromHd is None:
             error(f"structure types are not configured", tm=False)
@@ -666,7 +673,8 @@ There are {len(hdFromNd)} structural elements in the dataset.
         E = api.E
         F = api.F
         L = api.L
-        error = api.error
+        TF = api.TF
+        error = TF.error
 
         fOtype = F.otype.v
         slotType = F.otype.slotType

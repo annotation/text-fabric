@@ -29,7 +29,7 @@ BOUNDED = {
 
 
 def connectedness(searchExe):
-    error = searchExe.api.error
+    error = searchExe.api.TF.error
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
     _msgCache = searchExe._msgCache
@@ -75,7 +75,7 @@ def multiEdges(searchExe):
     qedges = searchExe.qedges
     _msgCache = searchExe._msgCache
     api = searchExe.api
-    error = api.error
+    error = api.TF.error
 
     medgesIndex = {}
     # will be a dict keyed by edge destination, then by upper/lower bound
@@ -114,9 +114,10 @@ def displayPlan(searchExe, details=False):
     if not searchExe.good:
         return
     api = searchExe.api
-    setSilent = api.setSilent
-    isSilent = api.isSilent
-    info = api.info
+    TF = api.TF
+    setSilent = TF.setSilent
+    isSilent = TF.isSilent
+    info = TF.info
     wasSilent = isSilent()
     setSilent(False)
     _msgCache = searchExe._msgCache
@@ -173,7 +174,7 @@ def displayPlan(searchExe, details=False):
 
 
 def displayNode(searchExe, q, pos2=False):
-    info = searchExe.api.info
+    info = searchExe.api.TF.info
     _msgCache = searchExe._msgCache
     qnodes = searchExe.qnodes
     yarns = searchExe.yarns
@@ -191,7 +192,7 @@ def displayNode(searchExe, q, pos2=False):
 
 
 def displayEdge(searchExe, e, dir, nodesSeen):
-    info = searchExe.api.info
+    info = searchExe.api.TF.info
     _msgCache = searchExe._msgCache
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges

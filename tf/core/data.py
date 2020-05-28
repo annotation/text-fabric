@@ -76,10 +76,17 @@ class Data(object):
         self.dataType = "str"
 
     def load(self, metaOnly=False, silent=None):
+        tm = self.tm
+        isSilent = tm.isSilent
+        setSilent = tm.setSilent
+        indent = tm.indent
+        warning = tm.warning
+        error = tm.error
+
         if silent is not None:
-            wasSilent = self.tm.isSilent()
-            self.tm.setSilent(silent)
-        self.tm.indent(level=1, reset=True)
+            wasSilent = isSilent()
+            setSilent(silent)
+        indent(level=1, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
         sourceRep = (
@@ -142,16 +149,16 @@ class Data(object):
                 actionRep == "M" or (actionRep == "B" and self.method)
             ):
                 pass
-            self.tm.warning(
+            warning(
                 msgFormat.format(actionRep, self.fileName, sourceRep),
                 cache=1 if actionRep in "CT" else -1,
             )
         else:
             self.dataError = True
-            self.tm.error(msgFormat.format(actionRep, self.fileName, sourceRep))
+            error(msgFormat.format(actionRep, self.fileName, sourceRep))
 
         if silent is not None:
-            self.tm.setSilent(wasSilent)
+            setSilent(wasSilent)
         return good
 
     def unload(self):
@@ -159,35 +166,46 @@ class Data(object):
         self.dataLoaded = False
 
     def save(self, overwrite=False, nodeRanges=False, silent=None):
+        tm = self.tm
+        isSilent = tm.isSilent
+        setSilent = tm.setSilent
+
         if silent is not None:
-            wasSilent = self.tm.isSilent()
-            self.tm.setSilent(silent)
+            wasSilent = isSilent()
+            setSilent(silent)
         result = self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
         if silent is not None:
-            self.tm.setSilent(wasSilent)
+            setSilent(wasSilent)
         return result
 
     def _setDataType(self):
         if self.isConfig:
             return
+
+        tm = self.tm
+        error = tm.error
+
         dataTypesStr = ", ".join(DATA_TYPES)
         if "valueType" in self.metaData:
             dataType = self.metaData["valueType"]
             if dataType not in DATA_TYPES:
-                self.tm.error(
+                error(
                     f'Unknown @valueType: "{dataType}". Should be one of {dataTypesStr}'
                 )
                 self.dataType = DATA_TYPES[0]
             else:
                 self.dataType = dataType
         else:
-            self.tm.error(f"Missing @valueType. Should be one of {dataTypesStr}")
+            error(f"Missing @valueType. Should be one of {dataTypesStr}")
             self.dataType = DATA_TYPES[0]
 
     def _readTf(self, metaOnly=False):
+        tm = self.tm
+        error = tm.error
+
         path = self.path
         if not os.path.exists(path):
-            self.tm.error(f'TF reading: feature file "{path}" does not exist')
+            error(f'TF reading: feature file "{path}" does not exist')
             return False
         fh = open(path, encoding="utf8")
         i = 0
@@ -204,7 +222,7 @@ class Data(object):
                 elif text == "@config":
                     self.isConfig = True
                 else:
-                    self.tm.error(f"Line {i}: missing @node/@edge/@config")
+                    error(f"Line {i}: missing @node/@edge/@config")
                     fh.close()
                     return False
                 continue
@@ -218,7 +236,7 @@ class Data(object):
                 continue
             else:
                 if text != "":
-                    self.tm.error(f"Line {i}: missing blank line after metadata")
+                    error(f"Line {i}: missing blank line after metadata")
                     fh.close()
                     return False
                 else:
@@ -231,6 +249,9 @@ class Data(object):
         return good
 
     def _readDataTf(self, fh, firstI):
+        tm = self.tm
+        error = tm.error
+
         errors = collections.defaultdict(list)
         i = firstI
         implicit_node = 1
@@ -317,13 +338,13 @@ class Data(object):
                         data[n] = value
         for kind in errors:
             lnk = len(errors[kind])
-            self.tm.error(
+            error(
                 "{} in lines {}".format(
                     kind, ",".join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF])
                 )
             )
             if lnk > ERROR_CUTOFF:
-                self.tm.error(f"\t and {lnk - ERROR_CUTOFF} more cases", tm=False)
+                error(f"\t and {lnk - ERROR_CUTOFF} more cases", tm=False)
         self.data = data
         if not errors:
             if self.fileName == WARP[0]:
@@ -346,7 +367,7 @@ class Data(object):
                 nodeRange = maxNode - maxSlot
                 nodesMapped = len(nodeList)
                 if nodeRange > nodesMapped:
-                    self.tm.error(
+                    error(
                         f"ERROR: {WARP[1]} fails to map {nodeRange - nodesMapped} nodes"
                     )
                     errors = True
@@ -399,14 +420,18 @@ class Data(object):
         if not good:
             return False
 
+        tm = self.tm
+        indent = tm.indent
+        error = tm.error
+
         def info(msg, tm=True):
-            self.tm.info(cmpFormat.format(msg), tm=tm, cache=-1)
+            info(cmpFormat.format(msg), tm=tm, cache=-1)
 
         def error(msg, tm=True):
-            self.tm.error(cmpFormat.format(msg), tm=tm)
+            error(cmpFormat.format(msg), tm=tm)
 
         cmpFormat = f"c {self.fileName:<20} {{}}"
-        self.tm.indent(level=2, reset=True)
+        indent(level=2, reset=True)
 
         self.data = self.method(
             info,
@@ -430,7 +455,12 @@ class Data(object):
         metaOnly=False,
         nodeRanges=False,
     ):
-        self.tm.indent(level=1, reset=True)
+        tm = self.tm
+        indent = tm.indent
+        info = tm.info
+        error = tm.error
+
+        indent(level=1, reset=True)
         metaOnly = metaOnly or self.isConfig
 
         dirName = dirName or self.dirName
@@ -440,20 +470,20 @@ class Data(object):
             try:
                 os.makedirs(dirName, exist_ok=True)
             except Exception:
-                self.tm.error(f'Cannot create directory "{dirName}"')
+                error(f'Cannot create directory "{dirName}"')
                 return False
         fpath = f"{dirName}/{fileName}{extension}"
         if fpath == self.path:
             if os.path.exists(fpath):
                 if not overwrite:
-                    self.tm.error(
+                    error(
                         f'Feature file "{fpath}" already exists, feature will not be written'
                     )
                     return False
         try:
             fh = open(fpath, "w", encoding="utf8")
         except Exception:
-            self.tm.error(f'Cannot write to feature file "{fpath}"')
+            error(f'Cannot write to feature file "{fpath}"')
             return False
         fh.write(
             "@{}\n".format(
@@ -478,19 +508,22 @@ class Data(object):
         fh.close()
         msgFormat = "{:<1} {:<20} to {}"
         if good:
-            self.tm.info(msgFormat.format("M" if metaOnly else "T", fileName, dirName))
+            info(msgFormat.format("M" if metaOnly else "T", fileName, dirName))
         else:
-            self.tm.error(msgFormat.format("M" if metaOnly else "T", fileName, dirName))
+            error(msgFormat.format("M" if metaOnly else "T", fileName, dirName))
         return good
 
     def _writeDataTf(self, fh, nodeRanges=False):
+        tm = self.tm
+        error = tm.error
+
         data = self.data
         if type(data) is tuple:
             # just in case the WARP data is present as a sequence and not a dict
             # in case it has been loaded from a binary representation
             fName = self.fileName
             if fName not in {WARP[0], WARP[1]}:
-                self.tm.error("Data type tuple not suitable for non-WARP feature")
+                error("Data type tuple not suitable for non-WARP feature")
                 return False
             maxSlot = data[2] if fName == WARP[0] else data[1]
             slotType = data[1] if fName == WARP[0] else None
@@ -575,8 +608,11 @@ class Data(object):
         return True
 
     def _readDataBin(self):
+        tm = self.tm
+        error = tm.error
+
         if not os.path.exists(self.binPath):
-            self.tm.error(f'TF reading: feature file "{self.binPath}" does not exist')
+            error(f'TF reading: feature file "{self.binPath}" does not exist')
             return False
         with gzip.open(self.binPath, "rb") as f:
             self.data = pickle.load(f)
@@ -588,12 +624,15 @@ class Data(object):
             os.unlink(self.binPath)
 
     def _writeDataBin(self):
+        tm = self.tm
+        error = tm.error
+
         good = True
         if not os.path.exists(self.binDir):
             try:
                 os.makedirs(self.binDir, exist_ok=True)
             except Exception:
-                self.tm.error(f'Cannot create directory "{self.binDir}"')
+                error(f'Cannot create directory "{self.binDir}"')
                 good = False
         if not good:
             return False
@@ -601,7 +640,7 @@ class Data(object):
             with gzip.open(self.binPath, "wb", compresslevel=GZIP_LEVEL) as f:
                 pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
         except Exception as e:
-            self.tm.error(f'Cannot write to file "{self.binPath}" because: {str(e)}')
+            error(f'Cannot write to file "{self.binPath}" because: {str(e)}')
             self.cleanDataBin()
             good = False
         self.dataLoaded = time.time()

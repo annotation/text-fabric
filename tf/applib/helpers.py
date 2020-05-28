@@ -138,10 +138,47 @@ def parseFeatures(features):
     return (bare, indirect)
 
 
-def transitiveClosure(relation):
-    descendants = {}
-    for (parent, children) in relation.items():
-        descendants[parent] = set(children)
+def transitiveClosure(relation, reflexiveExceptions):
+    """Produce the reflexive transitive closure of a relation.
+
+    The transitive closure of a relation R is the relation TR
+    such that aTRb if and only if there is a chain of c1, c2, ..., cn
+    such that ARc1, c1Rc2, ..., cnRb.
+
+    If we allow the chain to have length zero, we effectively have that
+    aTRa for all elements. That is the reflexive, transitive closure.
+
+    This function builds the latter, but we allow for exceptions to the
+    reflexivity.
+
+    Parameters
+    ----------
+    relation: dict
+        The input relation, keyed by elements, valued by the set of
+        elements that stand in relation to the key.
+    reflexiveExceptions: set
+        The set of elements that will not be reflexively closed.
+
+    Returns
+    -------
+    dict
+        The transitive reflexive closure (with possible exceptions to
+        the reflexivity) of the given relation.
+
+    Notes
+    -----
+    We use this function to build the closure of the childType relation
+    between node types. We want to exclude the slot type from the
+    reflexivity. The closure of the childType relation is the descendant type
+    relation.
+    The display algorithm uses this to unravel nodes.
+
+    See also
+    --------
+    Display algorithm: `tf.applib.display`.
+    """
+
+    descendants = {parent: set(children) for (parent, children) in relation.items()}
 
     changed = True
     while changed:
@@ -153,6 +190,9 @@ def transitiveClosure(relation):
                         if grandChild not in descendants[parent]:
                             descendants[parent].add(grandChild)
                             changed = True
+    for parent in relation:
+        if parent not in reflexiveExceptions:
+            descendants[parent].add(parent)
     return descendants
 
 
@@ -237,8 +277,9 @@ def getResultsX(app, results, features, condenseType, fmt=None):
     F = api.F
     Fs = api.Fs
     T = api.T
+    N = api.N
     fOtype = F.otype.v
-    otypeRank = api.otypeRank
+    otypeRank = N.otypeRank
     sectionTypeSet = T.sectionTypeSet
 
     aContext = app.context

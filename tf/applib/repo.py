@@ -167,17 +167,23 @@ class Checkout(object):
         console(msg, error=True, newline=newline)
 
     def possibleError(self, msg, showErrors, again=False, indent="\t", newline=False):
+        error = self.error
+        warning = self.warning
+
         if showErrors:
-            self.error(msg, newline=newline)
+            error(msg, newline=newline)
         else:
-            self.warning(msg, newline=newline)
+            warning(msg, newline=newline)
             if again:
-                self.warning(f"{indent}Will try something else")
+                warning(f"{indent}Will try something else")
 
     def makeSureLocal(self, attempt=False):
         label = self.label
         offline = self.isOffline()
         clone = self.isClone()
+
+        error = self.error
+        warning = self.warning
 
         cOff = self.commitOff
         rOff = self.releaseOff
@@ -262,17 +268,17 @@ class Checkout(object):
                 if not canOnline:
                     if askLatest:
                         if mayLocal:
-                            self.warning(f"The offline {label} may not be the latest")
+                            warning(f"The offline {label} may not be the latest")
                             self.localBase = self.baseLocal
                         else:
-                            self.error(
+                            error(
                                 f"The requested {label} is not available offline"
                             )
                     else:
-                        self.warning(f"The requested {label} is not available offline")
-                        self.error(f"No online connection")
+                        warning(f"The requested {label} is not available offline")
+                        error(f"No online connection")
                 elif not isOnline:
-                    self.error(f"The requested {label} is not available online")
+                    error(f"The requested {label} is not available online")
                 else:
                     self.localBase = self.baseLocal if self.download() else False
 
@@ -499,6 +505,8 @@ class Checkout(object):
         return r
 
     def getCommitObj(self, commit):
+        error = self.error
+
         g = self.repoOnline
         if not g:
             return None
@@ -511,9 +519,9 @@ class Checkout(object):
             if cs.totalCount:
                 c = cs[0]
             else:
-                self.error(f"\tno commit{msg}")
+                error(f"\tno commit{msg}")
         except Exception:
-            self.error(f"\tcannot find commit{msg}")
+            error(f"\tcannot find commit{msg}")
         return c
 
     def getReleaseFromObj(self, r):
@@ -581,6 +589,8 @@ class Checkout(object):
                 f.write(f"{self.commitOff}\n")
 
     def connect(self):
+        warning = self.warning
+
         if not self.ghConn:
             ghPerson = os.environ.get("GHPERS", None)
             if ghPerson:
@@ -599,7 +609,7 @@ class Checkout(object):
                 f" with {rate.remaining} left for this hour"
             )
             if rate.limit < 100:
-                self.warning(
+                warning(
                     f"To increase the rate,"
                     f"see {URL_TFDOC}/applib/repo.html/"
                 )
@@ -611,10 +621,10 @@ class Checkout(object):
             self.repoOnline = self.ghConn.get_repo(f"{self.org}/{self.repo}")
             self.log(f"connected")
         except GithubException as why:
-            self.warning(f"failed")
-            self.warning(f"GitHub says: {why}")
+            warning(f"failed")
+            warning(f"GitHub says: {why}")
         except IOError:
-            self.warning(f"no internet")
+            warning(f"no internet")
 
 
 def checkoutRepo(

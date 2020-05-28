@@ -63,8 +63,8 @@ withNodes: boolean, optional `False`
         to look up all information
         about each node that the corpus has to offer:
 
-        * **F**: `tf.core.api.NodeFeature`
-        * **E**: `tf.core.api.EdgeFeature`
+        * **F**: `tf.core.nodefeature.NodeFeature`
+        * **E**: `tf.core.edgefeature.EdgeFeature`
         * **L**: `tf.core.locality.Locality`
         * **T**: `tf.core.text.Text`
 withTypes: boolean, optional `False`

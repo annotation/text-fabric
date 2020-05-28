@@ -28,19 +28,16 @@ from .core.prepare import (
     sections,
     structure,
 )
+from .core.computed import Computed
+from .core.nodefeature import NodeFeature
+from .core.edgefeature import EdgeFeature
+from .core.otypefeature import OtypeFeature
+from .core.oslotsfeature import OslotsFeature
 from .core.api import (
     Api,
-    NodeFeature,
-    EdgeFeature,
-    OtypeFeature,
-    OslotsFeature,
-    Computed,
-    addSortKey,
-    addSortKeyChunk,
-    addN,
+    addNodes,
     addOtype,
     addLocality,
-    addRank,
     addText,
     addSearch,
 )
@@ -158,9 +155,12 @@ class Fabric(object):
     """
 
     def __init__(self, locations=None, modules=None, silent=False):
+
         self.silent = silent
-        self.tm = Timestamp()
-        self.tm.setSilent(silent)
+        tm = Timestamp()
+        self.tm = tm
+        setSilent = tm.setSilent
+        setSilent(silent)
         self.banner = f"This is {NAME} {VERSION}"
         """The banner the Text-Fabric.
 
@@ -172,11 +172,14 @@ class Fabric(object):
         """
 
         (on32, warn, msg) = check32()
+        warning = tm.warning
+        info = tm.info
+
         if on32:
-            self.tm.warning(warn, tm=False)
+            warning(warn, tm=False)
         if msg:
-            self.tm.info(msg, tm=False)
-        self.tm.info(
+            info(msg, tm=False)
+        info(
             f"""{self.banner}
 Api reference : {APIREF}
 """,
@@ -262,11 +265,20 @@ Api reference : {APIREF}
             else `False`.
         """
 
+        tm = self.tm
+        isSilent = tm.isSilent
+        setSilent = tm.setSilent
+        indent = tm.indent
+        info = tm.info
+        warning = tm.warning
+        error = tm.error
+        cache = tm.cache
+
         if silent is not None:
-            wasSilent = self.tm.isSilent()
-            self.tm.setSilent(silent)
-        self.tm.indent(level=0, reset=True)
-        self.tm.info("loading features ...")
+            wasSilent = isSilent()
+            setSilent(silent)
+        indent(level=0, reset=True)
+        info("loading features ...")
         self.sectionsOK = True
         self.structureOK = True
         self.good = True
@@ -299,7 +311,7 @@ Api reference : {APIREF}
                     0 < len(self.sectionFeats) <= 3
                 ):
                     if not add:
-                        self.tm.warning(
+                        warning(
                             f"Dataset without sections in {WARP[2]}:"
                             f"no section functions in the T-API"
                         )
@@ -315,7 +327,7 @@ Api reference : {APIREF}
                     self.textFeatures |= set(self.sectionFeatsWithLanguage)
                 if not self.structureTypes or not self.structureFeats:
                     if not add:
-                        self.tm.warning(
+                        warning(
                             f"Dataset without structure sections in {WARP[2]}:"
                             f"no structure functions in the T-API"
                         )
@@ -338,9 +350,9 @@ Api reference : {APIREF}
             for fName in self.featuresRequested:
                 self._loadFeature(fName)
         if not self.good:
-            self.tm.indent(level=0)
-            self.tm.error("Not all features could be loaded/computed")
-            self.tm.cache()
+            indent(level=0)
+            error("Not all features could be loaded/computed")
+            cache()
             result = False
         elif add:
             try:
@@ -355,7 +367,7 @@ Api reference : {APIREF}
                 console(MEM_MSG)
                 result = False
         if silent is not None:
-            self.tm.setSilent(wasSilent)
+            setSilent(wasSilent)
         if not add:
             return result
 
@@ -385,16 +397,21 @@ Api reference : {APIREF}
 
         !!! explanation "computeds"
             These are blocks of precomputed data, available under the `C` API,
-            see `tf.core.api.Computeds`.
+            see `tf.core.computed.Computeds`.
 
         The sets do not indicate whether a feature is loaded or not.
         There are other functions that give you the loaded features:
         `tf.core.api.Api.Fall` for nodes and `tf.core.api.Api.Eall` for edges.
         """
 
+        tm = self.tm
+        isSilent = tm.isSilent
+        setSilent = tm.setSilent
+        info = tm.info
+
         if silent is not None:
-            wasSilent = self.tm.isSilent()
-            self.tm.setSilent(silent)
+            wasSilent = isSilent()
+            setSilent(silent)
         nodes = set()
         edges = set()
         configs = set()
@@ -411,7 +428,7 @@ Api reference : {APIREF}
             else:
                 dest = nodes
             dest.add(fName)
-        self.tm.info(
+        info(
             "Feature overview: {} for nodes; {} for edges; {} configs; {} computed".format(
                 len(nodes), len(edges), len(configs), len(computeds),
             )
@@ -420,7 +437,7 @@ Api reference : {APIREF}
             nodes=nodes, edges=edges, configs=configs, computeds=computeds
         )
         if silent is not None:
-            self.tm.setSilent(wasSilent)
+            setSilent(wasSilent)
         if show:
             return dict(
                 (kind, tuple(sorted(kindSet)))
@@ -560,18 +577,25 @@ Api reference : {APIREF}
             But if you did not, you can also pass `silent=True` to this call.
         """
 
+        tm = self.tm
+        isSilent = tm.isSilent
+        setSilent = tm.setSilent
+        indent = tm.indent
+        info = tm.info
+        error = tm.error
+
         good = True
         if silent is not None:
-            wasSilent = self.tm.isSilent()
-            self.tm.setSilent(silent)
-        self.tm.indent(level=0, reset=True)
+            wasSilent = isSilent()
+            setSilent(silent)
+        indent(level=0, reset=True)
         self._getWriteLoc(location=location, module=module)
         configFeatures = dict(
             f
             for f in metaData.items()
             if f[0] != "" and f[0] not in nodeFeatures and f[0] not in edgeFeatures
         )
-        self.tm.info(
+        info(
             "Exporting {} node and {} edge and {} config features to {}:".format(
                 len(nodeFeatures),
                 len(edgeFeatures),
@@ -592,7 +616,7 @@ Api reference : {APIREF}
         maxNode = None
         slotType = None
         if WARP[0] in nodeFeatures:
-            self.tm.info(f"VALIDATING {WARP[1]} feature")
+            info(f"VALIDATING {WARP[1]} feature")
             otypeData = nodeFeatures[WARP[0]]
             if type(otypeData) is tuple:
                 (otypeData, slotType, maxSlot, maxNode) = otypeData
@@ -601,16 +625,16 @@ Api reference : {APIREF}
                 maxSlot = max(n for n in otypeData if otypeData[n] == slotType)
                 maxNode = max(otypeData)
         if WARP[1] in edgeFeatures:
-            self.tm.info(f"VALIDATING {WARP[1]} feature")
+            info(f"VALIDATING {WARP[1]} feature")
             oslotsData = edgeFeatures[WARP[1]]
             if type(oslotsData) is tuple:
                 (oslotsData, maxSlot, maxNode) = oslotsData
             if maxSlot is None or maxNode is None:
-                self.tm.error(f"ERROR: cannot check validity of {WARP[1]} feature")
+                error(f"ERROR: cannot check validity of {WARP[1]} feature")
                 good = False
             else:
-                self.tm.info(f"maxSlot={maxSlot:>11}")
-                self.tm.info(f"maxNode={maxNode:>11}")
+                info(f"maxSlot={maxSlot:>11}")
+                info(f"maxNode={maxNode:>11}")
                 maxNodeInData = max(oslotsData)
                 minNodeInData = min(oslotsData)
 
@@ -631,17 +655,17 @@ Api reference : {APIREF}
                             unmappedNodes.append(n)
 
                 if mappedSlotNodes:
-                    self.tm.error(f"ERROR: {WARP[1]} maps slot nodes")
-                    self.tm.error(makeExamples(mappedSlotNodes), tm=False)
+                    error(f"ERROR: {WARP[1]} maps slot nodes")
+                    error(makeExamples(mappedSlotNodes), tm=False)
                     good = False
                 if fakeNodes:
-                    self.tm.error(
+                    error(
                         f"ERROR: {WARP[1]} maps nodes that are not in {WARP[0]}"
                     )
-                    self.tm.error(makeExamples(fakeNodes), tm=False)
+                    error(makeExamples(fakeNodes), tm=False)
                     good = False
                 if unmappedNodes:
-                    self.tm.error(f"ERROR: {WARP[1]} fails to map nodes:")
+                    error(f"ERROR: {WARP[1]} fails to map nodes:")
                     unmappedByType = {}
                     for n in unmappedNodes:
                         unmappedByType.setdefault(
@@ -650,13 +674,13 @@ Api reference : {APIREF}
                     for (nType, nodes) in sorted(
                         unmappedByType.items(), key=lambda x: (-len(x[1]), x[0]),
                     ):
-                        self.tm.error(
+                        error(
                             f"--- unmapped {nType:<10} : {makeExamples(nodes)}"
                         )
                     good = False
 
             if good:
-                self.tm.info(f"OK: {WARP[1]} is valid")
+                info(f"OK: {WARP[1]} is valid")
 
         for (fName, data, isEdge, isConfig) in todo:
             edgeValues = False
@@ -681,8 +705,8 @@ Api reference : {APIREF}
                 total[tag] += 1
             else:
                 failed[tag] += 1
-        self.tm.indent(level=0)
-        self.tm.info(
+        indent(level=0)
+        info(
             f"""Exported {total["node"]} node features"""
             f""" and {total["edge"]} edge features"""
             f""" and {total["config"]} config features"""
@@ -690,11 +714,11 @@ Api reference : {APIREF}
         )
         if len(failed):
             for (tag, nf) in sorted(failed.items()):
-                self.tm.error(f"Failed to export {nf} {tag} features")
+                error(f"Failed to export {nf} {tag} features")
             good = False
 
         if silent is not None:
-            self.tm.setSilent(wasSilent)
+            setSilent(wasSilent)
         return good
 
     def exportMQL(self, mqlName, mqlDir):
@@ -719,7 +743,10 @@ Api reference : {APIREF}
         convert: `tf.convert.mql`.
         """
 
-        self.tm.indent(level=0, reset=True)
+        tm = self.tm
+        indent = tm.indent
+
+        indent(level=0, reset=True)
         mqlDir = expandDir(self, mqlDir)
 
         mqlNameClean = cleanName(mqlName)
@@ -770,7 +797,10 @@ Api reference : {APIREF}
             ```
         """
 
-        self.tm.indent(level=0, reset=True)
+        tm = self.tm
+        indent = tm.indent
+
+        indent(level=0, reset=True)
         (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(
             mqlFile, self.tm, slotType=slotType, otext=otext, meta=meta
         )
@@ -782,10 +812,15 @@ Api reference : {APIREF}
     def _loadFeature(self, fName, optional=False):
         if not self.good:
             return False
-        silent = self.tm.isSilent()
+
+        tm = self.tm
+        isSilent = tm.isSilent
+        error = tm.error
+
+        silent = isSilent()
         if fName not in self.features:
             if not optional:
-                self.tm.error(f'Feature "{fName}" not available in\n{self.locationRep}')
+                error(f'Feature "{fName}" not available in\n{self.locationRep}')
                 self.good = False
         else:
             # if not self.features[fName].load(silent=silent or (fName not in self.featuresRequested)):
@@ -793,6 +828,10 @@ Api reference : {APIREF}
                 self.good = False
 
     def _makeIndex(self):
+        tm = self.tm
+        info = tm.info
+        warning = tm.warning
+
         self.features = {}
         self.featuresIgnored = {}
         tfFiles = {}
@@ -815,7 +854,7 @@ Api reference : {APIREF}
                     self.featuresIgnored.setdefault(fName, []).append(featurePath)
             self.features[fName] = Data(chosenFPath, self.tm)
         self._getWriteLoc()
-        self.tm.info(
+        info(
             "{} features found and {} ignored".format(
                 len(tfFiles), sum(len(x) for x in self.featuresIgnored.values()),
             ),
@@ -826,7 +865,7 @@ Api reference : {APIREF}
         for fName in WARP:
             if fName not in self.features:
                 if fName == WARP[2]:
-                    self.tm.info(
+                    info(
                         (
                             f'Warp feature "{WARP[2]}" not found. Working without Text-API\n'
                         )
@@ -836,7 +875,7 @@ Api reference : {APIREF}
                     )
                     self.features[WARP[2]].dataLoaded = True
                 else:
-                    self.tm.info(
+                    info(
                         f'Warp feature "{fName}" not found in\n{self.locationRep}'
                     )
                     good = False
@@ -857,7 +896,7 @@ Api reference : {APIREF}
                 dependencies = dependencies + sFeats
             for dep in dependencies:
                 if dep not in self.features:
-                    self.tm.warning(
+                    warning(
                         f'Missing dependency for computed data feature "{fName}": "{dep}"'
                     )
                     thisGood = False
@@ -908,7 +947,12 @@ Api reference : {APIREF}
         if not self.good:
             return None
 
-        silent = self.tm.isSilent()
+        tm = self.tm
+        isSilent = tm.isSilent
+        indent = tm.indent
+        info = tm.info
+
+        silent = isSilent()
         api = Api(self)
 
         w0info = self.features[WARP[0]]
@@ -958,16 +1002,13 @@ Api reference : {APIREF}
                             if hasattr(api.F, fName):
                                 delattr(api.F, fName)
                         fObj.unload()
-        addSortKey(api)
         addOtype(api)
+        addNodes(api)
         addLocality(api)
-        addRank(api)
         addText(api)
-        addSortKeyChunk(api)
-        addN(api)
         addSearch(api, silent)
-        self.tm.indent(level=0)
-        self.tm.info("All features loaded/computed - for details use loadLog()")
+        indent(level=0)
+        info("All features loaded/computed - for details use loadLog()")
         self.api = api
         return api
 
@@ -975,6 +1016,9 @@ Api reference : {APIREF}
         if not self.good:
             return None
         api = self.api
+        tm = self.tm
+        indent = tm.indent
+        info = tm.info
 
         requestedSet = set(self.featuresRequested)
 
@@ -1011,5 +1055,5 @@ Api reference : {APIREF}
                             if hasattr(api.F, fName):
                                 delattr(api.F, fName)
                         fObj.unload()
-        self.tm.indent(level=0)
-        self.tm.info("All additional features loaded - for details use loadLog()")
+        indent(level=0)
+        info("All additional features loaded - for details use loadLog()")

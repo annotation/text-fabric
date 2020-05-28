@@ -118,8 +118,8 @@ class DisplaySettings:
         self.reset()
 
     def reset(self, *options):
-        api = self.app.api
-        error = api.error
+        app = self.app
+        error = app.error
 
         for option in options:
             if option not in self.displayDefaults:
@@ -137,8 +137,9 @@ class DisplaySettings:
             self.displaySettings[option] = normValue[1]
 
     def normalize(self, option, value):
-        api = self.app.api
-        error = api.error
+        app = self.app
+        api = app.api
+        error = app.error
 
         if option not in self.displayDefaults:
             error(f'WARNING: unknown display option "{option}" will be ignored')
@@ -179,10 +180,11 @@ class DisplaySettings:
         return (True, value)
 
     def check(self, msg, options):
-        api = self.app.api
+        app = self.app
+        api = app.api
         Fotype = api.F.otype
         sectionTypeSet = api.T.sectionTypeSet
-        error = api.error
+        error = app.error
 
         good = True
         for (option, value) in options.items():

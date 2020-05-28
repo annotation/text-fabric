@@ -239,7 +239,7 @@ edges from nodes to the slots they contain.
 From the information in `oslots` we can compute the embedding relationships
 between all nodes.
 
-It gives also rise to a canonical ordering of nodes, see `tf.core.api`.
+It gives also rise to a canonical ordering of nodes, see `tf.core.nodes`.
 
 ### otext: config feature (optional)
 

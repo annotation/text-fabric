@@ -6,7 +6,7 @@ from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
 from ..core.helpers import console, setDir
 from .find import findAppConfig, findAppClass
-from .helpers import dh
+from .helpers import dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
 from .links import linksApi, outLink
 from .text import textApi
@@ -18,6 +18,20 @@ from .repo import checkoutRepo
 
 
 # SET UP A TF API FOR AN APP
+
+
+FROM_TF_METHODS = """
+    version
+    banner
+    silentOn
+    silentOff
+    isSilent
+    setSilent
+    info
+    warning
+    error
+    indent
+""".strip().split()
 
 
 class App:
@@ -100,7 +114,7 @@ class App:
             If you pass `globals()`, the core API elements are made directly available
             as global names in your script or notebook:
 
-            * `tf.core.api.NodeFeature` as `F` instead of `A.api.F`
+            * `tf.core.nodefeature.NodeFeature` as `F` instead of `A.api.F`
             * `tf.core.locality.Locality` as `L` instead of `A.api.L`
             * `tf.core.text.Text` as `T` instead of `A.api.T`
             * and a few others (listed after executing the incantation)
@@ -243,6 +257,9 @@ class App:
         ).items():
             setattr(self, key, value)
 
+        setattr(self, 'dm', dm)
+        setattr(self, 'dh', dh)
+
         setAppSpecs(self, cfg)
         aContext = self.context
         version = aContext.version
@@ -263,6 +280,7 @@ class App:
                 (locations, modules) = specs
                 self.tempDir = f"{self.repoLocation}/{TEMP_DIR}"
                 TF = Fabric(locations=locations, modules=modules, silent=silent or True)
+                self.TF = TF
                 api = TF.load("", silent=silent or True)
                 if api:
                     self.api = api
@@ -279,6 +297,8 @@ class App:
                 self.api = None
 
         if self.api:
+            for m in FROM_TF_METHODS:
+                setattr(self, m, getattr(self.TF, m))
             linksApi(self, silent)
             searchApi(self)
             sectionsApi(self)
@@ -313,6 +333,9 @@ class App:
                         )
                         + "</div>"
                     )
+
+            silentOff = self.silentOff
+            silentOff()
         else:
             if not _browse:
                 console(
