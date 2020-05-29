@@ -214,7 +214,7 @@ class Check:
                 if v not in allowedValues:
                     allowed = ",".join(sorted(allowedValues))
                     errors.append(f"{k} must be an integer in {allowed}")
-            elif k == "children":
+            elif k in {"children", "xChildren"}:
                 if type(v) is not str and type(v) is not list:
                     errors.append(f"{k} must be a (list of) node types")
                 else:
@@ -590,6 +590,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     givenLevels = {}
     levels = {}
     childType = {}
+    xChildType = {}
     transform = {}
 
     specs["transform"] = transform
@@ -704,6 +705,14 @@ def getTypeDefaults(app, cfg, dKey, withApi):
                 childs = set(childs)
             childType[nType] = set(childs or ())
 
+        if "xChildren" in info:
+            xChilds = info["xChildren"] or ()
+            if type(xChilds) is str:
+                xChilds = {xChilds}
+            else:
+                xChilds = set(xChilds)
+            xChildType[nType] = set(xChilds or ())
+
         checker.report()
 
     lexTypes = set(lexMap.values())
@@ -810,9 +819,16 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
     descendantType = transitiveClosure(childType, {slotType})
 
+    for (parent, xChildren) in xChildType.items():
+        if parent in descendantType:
+            descendants = descendantType[parent]
+            for xChild in xChildren:
+                descendants.discard(xChild)
+
     specs.update(
         baseTypes=baseTypes if baseTypes else {slotType},
         childType=childType,
+        xChildType=xChildType,
         condenseType=condenseType,
         descendantType=descendantType,
         features=features,
@@ -853,7 +869,7 @@ def showContext(app, *keys):
 
     See Also
     --------
-    reuse: `tf.applib.app.App.reuse`.
+    tf.applib.app.App.reuse
     """
 
     EM = "*empty*"

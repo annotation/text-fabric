@@ -53,7 +53,7 @@ def use(appName, *args, **kwargs):
 
     See Also
     --------
-    reuse: `tf.applib.app.App.reuse`
+    tf.applib.app.App.reuse
     """
 
     parts = appName.split(":", maxsplit=1)

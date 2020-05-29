@@ -482,7 +482,7 @@ Api reference : {APIREF}
 
         See Also
         --------
-        clean: `tf.clean`.
+        tf.clean
         """
 
         for (fName, fObj) in self.features.items():
@@ -740,7 +740,7 @@ Api reference : {APIREF}
 
         See Also
         --------
-        convert: `tf.convert.mql`.
+        tf.convert.mql
         """
 
         tm = self.tm

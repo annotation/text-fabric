@@ -143,7 +143,7 @@ def order(info, error, otype, oslots, levels):
 
     See Also
     --------
-    canonical ordering: `tf.core.nodes`.
+    tf.core.nodes: canonical ordering
     """
 
     (otype, maxSlot, maxNode, slotType) = otype

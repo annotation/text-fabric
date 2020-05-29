@@ -21,7 +21,6 @@ from .repo import checkoutRepo
 
 
 FROM_TF_METHODS = """
-    version
     banner
     silentOn
     silentOff
@@ -236,7 +235,7 @@ class App:
 
         See Also
         --------
-        corpora: `tf.about.corpora`.
+        tf.about.corpora
         """
 
         self.context = None
@@ -244,7 +243,7 @@ class App:
 
         See Also
         --------
-        showContext: `tf.applib.settings.showContext`.
+        tf.applib.settings.showContext
         """
 
         for (key, value) in dict(
@@ -257,8 +256,8 @@ class App:
         ).items():
             setattr(self, key, value)
 
-        setattr(self, 'dm', dm)
-        setattr(self, 'dh', dh)
+        setattr(self, "dm", dm)
+        setattr(self, "dh", dh)
 
         setAppSpecs(self, cfg)
         aContext = self.context
@@ -329,7 +328,9 @@ class App:
                     dh(
                         "<div>"
                         + outLink(
-                            "names TF N F E L T S directly usable", APIREF, title="doc"
+                            "names N F E L T S C TF directly usable",
+                            APIREF,
+                            title="doc",
                         )
                         + "</div>"
                     )

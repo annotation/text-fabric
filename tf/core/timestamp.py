@@ -5,6 +5,8 @@
 import sys
 import time
 
+from .helpers import unexpanduser as ux
+
 
 class Timestamp(object):
     def __init__(self, level=None):
@@ -24,6 +26,7 @@ class Timestamp(object):
         # cache =  0: only to console
         if self.verbose != -2 and self.level >= self.verbose:
             return
+        msg = ux(msg)
         if tm:
             msgRep = f"{self.levelRep}{self._elapsed():>7} {msg}".replace(
                 "\n", "\n" + self.levelRep

@@ -12,6 +12,12 @@ Consider installing a 64-bit Python.
 
 MSG64 = """Running on 64-bit Python"""
 
+HOME_DIR = os.path.expanduser("~").replace("\\", "/")
+
+
+def unexpanduser(path):
+    return path.replace(HOME_DIR, '~')
+
 
 def dirEmpty(target):
     return not os.path.exists(target) or not os.listdir(target)
@@ -124,6 +130,7 @@ def check32():
 
 def console(*msg, error=False, newline=True):
     msg = " ".join(m if type(m) is str else repr(m) for m in msg)
+    msg = unexpanduser(msg)
     msg = msg[1:] if msg.startswith("\n") else msg
     msg = msg[0:-1] if msg.endswith("\n") else msg
     target = sys.stderr if error else sys.stdout

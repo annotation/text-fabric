@@ -50,6 +50,11 @@ tricky branches in the code.
 Core API: a bit of streamlining:
 all exposed methods now fall under one of `A TF N F E L T S`.
 
+!!! hint "new"
+    If you want to talk to yourself in markdown or HTML you can use
+    `A.dm(markdownString)` and `A.dh(htmlString)`.
+    See `tf.applib.helpers.dm` and `tf.applib.helpers.dh`.
+
 #### Backward incompatibility
 
 !!! caution "corpus apps"

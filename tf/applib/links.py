@@ -13,7 +13,7 @@ from ..parameters import (
     APP_URL,
     APP_NB_URL,
 )
-from ..core.helpers import htmlEsc
+from ..core.helpers import htmlEsc, unexpanduser as ux
 from .repo import Checkout
 from .helpers import getText, dh
 from ..server.wrap import wrapProvenance
@@ -46,8 +46,6 @@ def linksApi(app, silent):
     app.header = types.MethodType(header, app)
     app.webLink = types.MethodType(webLink, app)
     isCompatible = app.isCompatible
-
-    api = app.api
 
     aContext = app.context
     appName = aContext.appName
@@ -99,7 +97,7 @@ def linksApi(app, silent):
     )
     tfLink = (
         outLink(
-            f"Text-Fabric API {app.version}",
+            f"Text-Fabric API {app.TF.version}",
             APIREF,
             "text-fabric-api",
         )
@@ -464,7 +462,7 @@ def _featuresPerModule(app):
             else:
                 featureRep = feature
             featureInfo = TF.features[feature]
-            featurePath = featureInfo.path
+            featurePath = ux(featureInfo.path)
             isEdge = featureInfo.isEdge
             pre = "<b><i>" if isEdge else ""
             post = "</i></b>" if isEdge else ""

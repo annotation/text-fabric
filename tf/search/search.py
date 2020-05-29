@@ -281,7 +281,7 @@ class Search(object):
 
         See Also
         --------
-        Search guide: `tf.about.searchusage`.
+        tf.about.searchusage: Search guide
         """
 
         exe = SearchExe(

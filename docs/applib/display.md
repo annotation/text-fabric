@@ -64,6 +64,8 @@ and `slots` is a frozen set of slots (also integers).
 The unravel algorithm takes a sequence of chunks and
 unravels them to another sequence of chunks.
 
+See `tf.applib.displaylib.chunkify`.
+
 ### Intersecting nodes
 
 Nodes or chunks whose slot sets intersect, are intersecting nodes, except the node itself.

@@ -27,7 +27,7 @@ ONE_ENUM_TYPE = True
 
 class MQL(object):
     def __init__(self, mqlDir, mqlName, tfFeatures, tm):
-        error = self.tm.error
+        error = tm.error
 
         self.mqlDir = mqlDir
         cleanDb = cleanName(mqlName)

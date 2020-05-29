@@ -1,3 +1,7 @@
+"""
+.. include:: ../../docs/convert/recorder.md
+"""
+
 from itertools import chain
 
 ZWJ = "\u200d"  # zero width joiner

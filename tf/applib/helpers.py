@@ -175,7 +175,7 @@ def transitiveClosure(relation, reflexiveExceptions):
 
     See also
     --------
-    Display algorithm: `tf.applib.display`.
+    tf.applib.display: Display algorithm
     """
 
     descendants = {parent: set(children) for (parent, children) in relation.items()}

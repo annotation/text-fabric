@@ -1,8 +1,6 @@
-# Text-Fabric API
+# `A.` Advanced API
 
-## Advanced API
-
-### Initialisation, configuration, meta data, and linking
+## Initialisation, configuration, meta data, and linking
 
 ```A = use('corpus', hoist=globals())```
 :   start up
@@ -24,8 +22,9 @@
 :   hyperlink to node n on the web
 :   `tf.applib.links.webLink`
 
+---
 
-### Displaying
+## Displaying
 
 ```A.dm(markdownString)```
 :   display markdown string in notebook
@@ -35,7 +34,7 @@
 :   display HTML string in notebook
 :   `tf.applib.helpers.dh`
 
-```method(option1=value1, option2=value2, ...)```
+```A.method(option1=value1, option2=value2, ...)```
 :   Many of the following methods accept these options as keyword arguments: 
 :   `tf.applib.displaysettings`
 
@@ -71,15 +70,17 @@
 :   pretty rendering of node
 :   `tf.applib.display.pretty`
 
+---
 
-### Search (high level)
+## Search (high level)
 
 ```A.search(...)```
 :   search, collect and deliver results, report number of results
 :   `tf.applib.search.search`
 
+---
 
-### Sections and Structure
+## Sections and Structure
 
 ```A.nodeFromSectionStr(...)```
 :   lookup node for sectionheading
@@ -93,53 +94,73 @@
 :   lookup structure heading for node
 :   `tf.applib.sections.structureStrFromNode`
 
+---
 
-## Core API
+## Export to Excel
 
-### Dataset
+```A.export(results, ...)```
+:   export formatted data
+:   `tf.applib.display.export`
 
-#### Loading
+---
 
-```TF = Fabric(locations=directories, modules=subdirectories, silent=False)```
-:   Initialize API on dataset from explicit directories.
-    Use `tf.app.use` instead wherever you can.
-:   `tf.fabric.Fabric`
+# Logging
 
-```TF.explore(show=True)```
-:   Get features by category, loaded or unloaded
-:   `tf.fabric.Fabric.explore`
+```A.dm(markdownString)```
+:   display markdown string in notebook
+:   `tf.applib.helpers.dm`
 
-```TF.loadAll(silent=None)```
-:   Load all loadable features. 
-:   `tf.fabric.Fabric.loadAll`
+```A.dh(htmlString)```
+:   display HTML string in notebook
+:   `tf.applib.helpers.dh`
 
-```TF.load(features, add=False)```
-:   Load a bunch of features from scratch or additionally. 
-:   `tf.fabric.Fabric.load`
+```A.version```
+:   version number of data of the corpus.
+:   `tf.fabric.Fabric.version`
 
-```TF.ensureLoaded(features)```
-:   Make sure that features are loaded.
-:   `tf.core.api.Api.ensureLoaded`
+The following methods work also for `TF.` instead of `A.`:
 
-```TF.makeAvailableIn(globals())```
-:   Make the members of the core API available in the global scope
-:   `tf.core.api.Api.makeAvailableIn`
+```A.banner```
+:   banner of the Text-Fabric program.
+:   `tf.fabric.Fabric.banner`
 
-```TF.ignored```
-:   Which features have been overridden.
-:   `tf.core.api.Api.ignored`
+```A.isSilent()```
+:   report the verbosity of Text-Fabric
+:   `tf.core.timestamp.Timestamp.isSilent`
 
-```TF.loadLog()```
-:   Log of the feature loading process
-:   `tf.core.api.Api.loadLog`
+```A.silentOn(deep=False)```
+:   make TF silent from now on.
+:   `tf.core.timestamp.Timestamp.silentOn`
 
-#### Saving
+```A.silentOff()```
+:   make TF talkative from now on.
+:   `tf.core.timestamp.Timestamp.silentOff`
 
-```TF.save(nodeFeatures={}, edgeFeatures={}, metaData={},,...)```
-:   Save a bunch of newly generated features to disk.
-:   `tf.fabric.Fabric.save`
+```A.setSilent(silent)```
+:   set the verbosity of Text-Fabric.
+:   `tf.core.timestamp.Timestamp.setSilent`
 
-### Nodes
+```A.indent(level=None, reset=False)```
+:   Sets up indentation and timing of following messages
+:   `tf.core.timestamp.Timestamp.indent`
+
+```A.info(msg, tm=True, nl=True, ...)```
+:   informational message
+:   `tf.core.timestamp.Timestamp.info`
+
+```A.warning(msg, tm=True, nl=True, ...)```
+:   warning message
+:   `tf.core.timestamp.Timestamp.warning`
+
+```A.error(msg, tm=True, nl=True, ...)```
+:   error message
+:   `tf.core.timestamp.Timestamp.error`
+
+---
+
+# `N. F. E. L. T. S. C.` Core API
+
+## `N.` Nodes
 
 Read about the canonical ordering here: `tf.core.nodes`.
 
@@ -167,9 +188,9 @@ Read about the canonical ordering here: `tf.core.nodes`.
 :   defines the canonical ordering on node chunks
 :   `tf.core.nodes.Nodes.sortKeyChunk`
 
-### Features
+---
 
-#### Node features
+## `F.` Node features
 
 ```Fall()```
 :   all loaded feature names (node features only)
@@ -199,7 +220,9 @@ Read about the canonical ordering here: `tf.core.nodes`.
 :   identical to `F.ffff`, usable if name of feature is variable
 :   `tf.core.api.Api.Fs`
 
-#### Special feature `otype`
+---
+
+## Special node feature `otype`
 
 Maps nodes to their types.
 
@@ -239,7 +262,9 @@ Maps nodes to their types.
 :   sorted list of all node types
 :   `tf.core.otypefeature.OtypeFeature.all`
 
-#### Edge features
+---
+
+## `E.` Edge features
 
 ```Eall()```
 :   all loaded feature names (edge features only)
@@ -273,7 +298,9 @@ Maps nodes to their types.
 :   identical to `E.fff`, usable if name of feature is variable
 :   `tf.core.api.Api.Es`
 
-#### Special feature `oslots`
+---
+
+## Special edge feature `oslots`
 
 Maps nodes to the set of slots they occupy.
 
@@ -289,7 +316,9 @@ Maps nodes to the set of slots they occupy.
 :   all meta data of feature `oslots`
 :   `tf.core.oslotsfeature.OslotsFeature.meta`
 
-### Locality
+---
+
+## `L.` Locality
 
 ```L.i(node, otype=...)```
 :   go to intersecting nodes
@@ -311,13 +340,17 @@ Maps nodes to the set of slots they occupy.
 :   go to adjacent next nodes
 :   `tf.core.locality.Locality.n`
 
-### Text
+---
+
+## `T.` Text
 
 ```T.text(node, fmt=..., ...)```
 :   give formatted text associated with node
 :   `tf.core.text.Text.text`
 
-### Sections
+---
+
+## Sections
 
 Rigid 1 or 2 or 3 sectioning system
 
@@ -333,7 +366,9 @@ Rigid 1 or 2 or 3 sectioning system
 :   give node for section heading
 :   `tf.core.text.Text.nodeFromSection`
 
-### Structure
+---
+
+## Structure
 
 Flexible multilevel sectioning system
 
@@ -369,9 +404,13 @@ Flexible multilevel sectioning system
 :   gives children of structural node
 :   `tf.core.text.Text.down`
 
-### Search (low level)
+---
 
-#### Preparation
+## `S.` Search (low level)
+
+[searchRough](https://annotation.github.io/text-fabric/about/searchusage.html#quantifiers)
+
+### Preparation
 
 ```S.search(query, limit=None)```
 :   Query the TF dataset with a template
@@ -389,7 +428,9 @@ Flexible multilevel sectioning system
 :   Catalog of all relational devices in search templates
 :   `tf.search.search.Search.relationsLegend`
 
-#### Fetching results
+---
+
+### Fetching results
 
 ```S.count(progress=None, limit=None)```
 :   Count the results, up to a limit
@@ -403,65 +444,17 @@ Flexible multilevel sectioning system
 :   Renders a single result into something human readable.
 :   `tf.search.search.Search.glean`
 
-#### Implementation
+---
+
+### Implementation
 
 ```S.tweakPerformance(...)```
 :   Set certain parameters that influence the performance of search.
 :   `tf.search.search.Search.tweakPerformance`
 
-### Logging
+---
 
-```A.dm(markdownString)```
-:   display markdown string in notebook
-:   `tf.applib.helpers.dm`
-
-```A.dh(htmlString)```
-:   display HTML string in notebook
-:   `tf.applib.helpers.dh`
-
-The following methods work also for `TF.` instead of `A.`:
-
-```A.version```
-:   version number of the Text-Fabric package.
-:   `tf.fabric.Fabric.version`
-
-```A.banner```
-:   banner of the Text-Fabric program.
-:   `tf.fabric.Fabric.banner`
-
-```A.isSilent()```
-:   report the verbosity of Text-Fabric
-:   `tf.core.timestamp.Timestamp.isSilent`
-
-```A.silentOn(deep=False)```
-:   make TF silent from now on.
-:   `tf.core.timestamp.Timestamp.silentOn`
-
-```A.silentOff()```
-:   make TF talkative from now on.
-:   `tf.core.timestamp.Timestamp.silentOff`
-
-```A.setSilent(silent)```
-:   set the verbosity of Text-Fabric.
-:   `tf.core.timestamp.Timestamp.setSilent`
-
-```A.indent(level=None, reset=False)```
-:   Sets up indentation and timing of following messages
-:   `tf.core.timestamp.Timestamp.indent`
-
-```A.info(msg, tm=True, nl=True, ...)```
-:   informational message
-:   `tf.core.timestamp.Timestamp.info`
-
-```A.warning(msg, tm=True, nl=True, ...)```
-:   warning message
-:   `tf.core.timestamp.Timestamp.warning`
-
-```A.error(msg, tm=True, nl=True, ...)```
-:   error message
-:   `tf.core.timestamp.Timestamp.error`
-
-### Computed data components.
+## `C.` Computed data components.
 
 Access to precomputed data: `tf.core.computed.Computeds`.
 
@@ -508,7 +501,60 @@ All components have just one useful attribute: `.data`.
 :   feeds the structure part of `tf.core.text`
 :   `tf.core.prepare.structure`
 
-### House keeping
+---
+
+# `TF.` Dataset
+
+## Loading
+
+```TF = Fabric(locations=directories, modules=subdirectories, silent=False)```
+:   Initialize API on dataset from explicit directories.
+    Use `tf.app.use` instead wherever you can.
+:   `tf.fabric.Fabric`
+
+```TF.explore(show=True)```
+:   Get features by category, loaded or unloaded
+:   `tf.fabric.Fabric.explore`
+
+```TF.loadAll(silent=None)```
+:   Load all loadable features. 
+:   `tf.fabric.Fabric.loadAll`
+
+```TF.load(features, add=False)```
+:   Load a bunch of features from scratch or additionally. 
+:   `tf.fabric.Fabric.load`
+
+```TF.ensureLoaded(features)```
+:   Make sure that features are loaded.
+:   `tf.core.api.Api.ensureLoaded`
+
+```TF.makeAvailableIn(globals())```
+:   Make the members of the core API available in the global scope
+:   `tf.core.api.Api.makeAvailableIn`
+
+```TF.ignored```
+:   Which features have been overridden.
+:   `tf.core.api.Api.ignored`
+
+```TF.loadLog()```
+:   Log of the feature loading process
+:   `tf.core.timestamp.Timestamp.cache`
+
+---
+
+## Saving
+
+```TF.save(nodeFeatures={}, edgeFeatures={}, metaData={},,...)```
+:   Save a bunch of newly generated features to disk.
+:   `tf.fabric.Fabric.save`
+
+---
+
+## House keeping
+
+```TF.version```
+:   version number of Text-Fabric.
+:   `tf.fabric.Fabric.version`
 
 ```TF.clearCache()```
 :   clears the cache of compiled TF data
@@ -522,7 +568,9 @@ from tf.clean import clean
 :   clears the cache of compiled TF data
 :   `tf.clean`
 
-## TF Dataset Manipulation
+---
+
+# Dataset Algebra
 
 ```python
 from tf.compose import combine, modify
@@ -536,9 +584,11 @@ from tf.compose import combine, modify
 :   Modifies a TF datasets into one new TF dataset
 :   `tf.compose.modify`
 
-## Data Interchange
+---
 
-### Custom node sets for search
+# Data Interchange
+
+## Custom node sets for search
 
 ```python
 from tf.lib import readSets
@@ -553,13 +603,29 @@ from tf.lib import writeSets
 :   writes a named sets to file
 :   `tf.lib.writeSets`
 
-### Export to Excel
+---
+
+## Export to Excel
 
 ```A.export(results, ...)```
 :   export formatted data
 :   `tf.applib.display.export`
 
-### MQL interchange
+---
+
+## BRAT
+
+```python
+from convert.recorder import Recorder
+```
+
+```Recorder()```
+:   generate annotatable plain text and import annotations
+:   `tf.convert.recorder`
+
+---
+
+## MQL interchange
 
 ```TF.exportMQL()```
 :   export loaded dataset to MQL
@@ -569,7 +635,9 @@ from tf.lib import writeSets
 :   convert MQL file to TF dataset
 :   `tf.fabric.Fabric.importMQL`
 
-### Walker conversion
+---
+
+## Walker conversion
 
 ```python
 from tf.convert.walker import CV
@@ -579,7 +647,9 @@ from tf.convert.walker import CV
 :   convert structured data to TF dataset
 :   `tf.convert.walker`
 
-## TF-App development
+---
+
+# TF-App development
 
 ```A.reuse()```
 :   reload config data
@@ -595,5 +665,6 @@ from tf.applib.find import loadModule
 
 ```~/mypath/app-myname/code/config.yaml```
 :   settings for a TF-App
-:   [app-default](https://github.com/annotation/app-default/blob/master/code/config.yaml)
+:   `tf.applib.settings`
+    e.g. [app-default](https://github.com/annotation/app-default/blob/master/code/config.yaml)
 

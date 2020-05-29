@@ -8,6 +8,7 @@ import re
 from shutil import rmtree
 
 from .parameters import PACK_VERSION
+from .core.helpers import unexpanduser as ux
 
 TFD = "text-fabric-data"
 GH = "github"
@@ -20,13 +21,13 @@ binvRe = re.compile(r"/\.tf/([^/]+)$")
 
 def out(msg):
     """Write to standard normal output immediately."""
-    sys.stdout.write(msg)
+    sys.stdout.write(ux(msg))
     sys.stdout.flush()
 
 
 def err(msg):
     """Write to standard error output immediately."""
-    sys.stderr.write(msg)
+    sys.stderr.write(ux(msg))
     sys.stderr.flush()
 
 
@@ -67,7 +68,7 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
     else:
         for root in ROOTS:
             if root == TFD and not tfd or root == GH and not gh:
-                sys.stdout.write(f"skipped {root}\n")
+                out(f"skipped {root}\n")
                 continue
             bases.append(os.path.expanduser(f"~/{root}"))
 

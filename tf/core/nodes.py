@@ -35,7 +35,8 @@ class Nodes:
 
         See Also
         --------
-        canonical ordering: `tf.core.nodes` and `sortNodes`.
+        tf.core.nodes: canonical ordering
+        tf.core.nodes.Nodes.sortNodes: sorting nodes
         """
 
         self.sortKeyTuple = lambda tup: tuple(Crank[n - 1] for n in tup)
@@ -55,7 +56,7 @@ class Nodes:
 
         See Also
         --------
-        canonical ordering: `tf.core.nodes`.
+        tf.core.nodes: canonical ordering
         """
 
         self.sortKeyChunk = self.makeSortKeyChunk()
@@ -80,8 +81,7 @@ class Nodes:
 
         See Also
         --------
-        Unravel: `tf.applib.display._unravel`
-        canonical ordering: `tf.core.nodes`.
+        tf.core.nodes: canonical ordering
         """
 
     def makeSortKeyChunk(self):
@@ -156,7 +156,7 @@ class Nodes:
 
         See Also
         --------
-        canonical ordering: `tf.core.nodes`
+        tf.core.nodes: canonical ordering
         """
 
         api = self.api

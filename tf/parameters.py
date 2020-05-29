@@ -5,7 +5,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '8.1.2'
+VERSION = '8.2.0'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -33,7 +33,7 @@ to the original `tf`  files, where `{PVN}` is the package version number.
 
 See Also
 --------
-clean: `tf.clean`.
+tf.clean
 """
 
 API_VERSION = 2

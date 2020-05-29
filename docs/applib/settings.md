@@ -615,7 +615,7 @@ Default:
 
 ### `children`
 
-Which type of children to be included in the display.
+Which type of child nodes to be included in the display.
 The value should be a node type or a set of node types:
 
 ```
@@ -628,13 +628,36 @@ children:
   - word
 ```
 
+### `xChildren`
+
+Which type of child nodes to be excluded in the display.
+
+!!! hint
+    Use this if you want to exclude some types of nodes directly appearing
+    inside other nodes, e.g. in 
+    [dss](https://github.com/annotation/app-dss/blob/master/code/config.yaml).
+    where we want to prevent signs to be directly displayed below lines, because
+    there should always be a word around the signs.
+    The DSS has end-of-line tokens, outside any word, but inside the lines.
+
+!!! caution "Loss of material"
+    By excluding certain child types you may loose slots in the display.
+    This might be intentional, as in the DSS, but it could lead to
+    unwanted omissions.
+
+The value should be a node type or a set of node types:
+
+```
+xChildren: sign
+```
+
+```
+xChildren:
+  - sign
+```
+
 Default:
-:   string | list, roughly computed as follows:
-
-    Each type is the child of the type with one higher rank (types are ranked by the
-    average slot length of their nodes).
-
-    But lexeme types do not have children.
+:   string | list, `[]`
 
 ---
 
