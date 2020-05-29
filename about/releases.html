@@ -64,8 +64,8 @@ all exposed methods now fall under one of <code>A TF N F E L T S</code>.</p>
 <div class="admonition hint">
 <p class="admonition-title">new</p>
 <p>If you want to talk to yourself in markdown or HTML you can use
-<code>A.dm(markdownString)</code> and <code>A.dh(htmlString)</code>.
-See <code><a title="tf.applib.helpers.dm" href="../applib/helpers.html#tf.applib.helpers.dm">dm()</a></code> and <code><a title="tf.applib.helpers.dh" href="../applib/helpers.html#tf.applib.helpers.dh">dh()</a></code>.</p>
+<code>A.dm(markdownString)</code> and <code>A.dh(htmlString)</code>.</p>
+<p>See <code><a title="tf.applib.helpers.dm" href="../applib/helpers.html#tf.applib.helpers.dm">dm()</a></code> and <code><a title="tf.applib.helpers.dh" href="../applib/helpers.html#tf.applib.helpers.dh">dh()</a></code>.</p>
 </div>
 <h4 id="backward-incompatibility">Backward incompatibility</h4>
 <div class="admonition caution">
@@ -83,17 +83,29 @@ you call the corpus, e.g. for the BHSA:</p>
 <p>The methods <code>info</code> <code>error</code> <code>warning</code> are no longer hoisted to the
 global name space.</p>
 <p>Use <code>A.info</code> or <code>TF.info</code> for these methods.</p>
-<p>A quick fix is define, after loading:</p>
-<p><code>info = A.info</code></p>
-<p>etc.</p>
 </div>
 <div class="admonition caution">
 <p class="admonition-title">node functions</p>
 <p><code>N()</code> has become: <code>N.walk()</code></p>
 <p><code>sortNodes</code>, <code>sortKey</code>, <code>sortkeyTuple</code>, <code>sortkeyChunk</code>
-and <code>otypeRank</code> are no longer hooisted to the global name space.</p>
+and <code>otypeRank</code> are no longer hoisted to the global name space.</p>
 <p>Use <code>N.sortNodes</code> etc. instead for all these methods.</p>
 </div>
+<div class="admonition hint">
+<p class="admonition-title">fix the compatibility relatively easily</p>
+<p>If you use the functions in question a lot in a program or notebook,
+define them right after the incantation as follows:</p>
+</div>
+<pre><code class="python">A = use('xxx', hoist=globals())
+
+info = A.info
+error = A.error
+silentOn = A.silentOn
+...
+sortNodes = N.sortNodes
+...
+</code></pre>
+<p>etc.</p>
 <h3 id="81">8.1</h3>
 <h4 id="812">8.1.2</h4>
 <p>2020-05-22</p>
