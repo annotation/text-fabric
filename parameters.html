@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/parameters.py#L0-L212" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/parameters.py#L0-L214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Fixed values for the whole program.
 &#34;&#34;&#34;
@@ -35,7 +35,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = &#39;8.1.2&#39;
+VERSION = &#39;8.2.0&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -61,10 +61,12 @@ Instead, TF will produce freshly compressed data files.
 The compressed data files are stored in a directory `.tf/{PVN}/` next
 to the original `tf`  files, where `{PVN}` is the package version number.
 
-See also the utility `tf.clean`.
+See Also
+--------
+tf.clean
 &#34;&#34;&#34;
 
-API_VERSION = 1
+API_VERSION = 2
 &#34;&#34;&#34;TF API version.
 
 Text-Fabric offers and API to TF apps.
@@ -357,7 +359,8 @@ Instead, TF will produce freshly compressed data files.</p>
 <p>The compressed data files are stored in a directory <code>.tf/{PVN}/</code> next
 to the original <code><a title="tf" href="index.html">tf</a></code>
 files, where <code>{PVN}</code> is the package version number.</p>
-<p>See also the utility <code><a title="tf.clean" href="clean.html">tf.clean</a></code>.</p></div>
+<h2 id="see-also">See Also</h2>
+<p><code><a title="tf.clean" href="clean.html">tf.clean</a></code></p></div>
 </dd>
 <dt id="tf.parameters.PICKLE_PROTOCOL"><code class="name">var <span class="ident">PICKLE_PROTOCOL</span></code></dt>
 <dd>
@@ -450,9 +453,8 @@ pickled and compressed to .tfx files.</p>
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.parameters">

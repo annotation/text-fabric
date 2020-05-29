@@ -52,6 +52,48 @@ text-fabric appName:hot
 </div>
 <hr>
 <h2 id="8">8</h2>
+<h3 id="82">8.2</h3>
+<h4 id="820">8.2.0</h4>
+<p>2020-06-01</p>
+<p>Improved display algorithm: corpora need less configuration for TF
+to generate good displays.
+In particular, the atom types of the BHSA are now handled without
+tricky branches in the code.</p>
+<p>Core API: a bit of streamlining:
+all exposed methods now fall under one of <code>A TF N F E L T S</code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">new</p>
+<p>If you want to talk to yourself in markdown or HTML you can use
+<code>A.dm(markdownString)</code> and <code>A.dh(htmlString)</code>.
+See <code><a title="tf.applib.helpers.dm" href="../applib/helpers.html#tf.applib.helpers.dm">dm()</a></code> and <code><a title="tf.applib.helpers.dh" href="../applib/helpers.html#tf.applib.helpers.dh">dh()</a></code>.</p>
+</div>
+<h4 id="backward-incompatibility">Backward incompatibility</h4>
+<div class="admonition caution">
+<p class="admonition-title">corpus apps</p>
+<p>The API between TF and its apps has changed.
+If you upgrade TF to this version, you also have to upgrade the
+TF apps you work with.
+You can do that by adding the checkout specifier <code>latest</code> when
+you call the corpus, e.g. for the BHSA:</p>
+<p><code>A = use("bhsa:latest", hoist=globals()")</code></p>
+<p>One time is enough.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">logging functions</p>
+<p>The methods <code>info</code> <code>error</code> <code>warning</code> are no longer hoisted to the
+global name space.</p>
+<p>Use <code>A.info</code> or <code>TF.info</code> for these methods.</p>
+<p>A quick fix is define, after loading:</p>
+<p><code>info = A.info</code></p>
+<p>etc.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">node functions</p>
+<p><code>N()</code> has become: <code>N.walk()</code></p>
+<p><code>sortNodes</code>, <code>sortKey</code>, <code>sortkeyTuple</code>, <code>sortkeyChunk</code>
+and <code>otypeRank</code> are no longer hooisted to the global name space.</p>
+<p>Use <code>N.sortNodes</code> etc. instead for all these methods.</p>
+</div>
 <h3 id="81">8.1</h3>
 <h4 id="812">8.1.2</h4>
 <p>2020-05-22</p>
@@ -826,7 +868,7 @@ section1 and section2 (like book and chapter). The new behaviour is the same if
 <code>fillup=True</code>. But if <code>fillup=False</code> (default), it returns a 1-tuple for
 section1 nodes and a 2-tuple for section2 nodes.</li>
 <li>New API member <code>sortKeyTuple</code> to sort tuples of nodes in the
-canonical ordering (<code><a title="tf.core.api" href="../core/api.html">tf.core.api</a></code>).</li>
+canonical ordering (<code><a title="tf.core.nodes" href="../core/nodes.html">tf.core.nodes</a></code>).</li>
 <li>The code to detect the file name and path of the script/notebook you are running in,
 is inherently brittle. It is unwise to base decisions on that.
 This code has been removed from TF.
@@ -1902,7 +1944,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/about/releases.md
@@ -1919,9 +1961,8 @@ see in TF if they want to use it in MQL and vice versa.</p>
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.about.releases">
@@ -1931,6 +1972,11 @@ data-gaCategoryParameter="tf.about.releases">
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#8">8</a><ul>
+<li><a href="#82">8.2</a><ul>
+<li><a href="#820">8.2.0</a></li>
+<li><a href="#backward-incompatibility">Backward incompatibility</a></li>
+</ul>
+</li>
 <li><a href="#81">8.1</a><ul>
 <li><a href="#812">8.1.2</a></li>
 <li><a href="#810-811">8.1.0, 8.1.1</a></li>

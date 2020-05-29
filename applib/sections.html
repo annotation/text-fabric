@@ -35,7 +35,7 @@ a few pages</li>
 <li>level 3 is for small things, such as lines.</li>
 </ul>
 <p>Text-Fabric uses these levels in the Text-Fabric browser, to divide your corpus
-into chunks that can conveniently be displayed to you in the browser.</p>
+into divisions that can conveniently be displayed to you in the browser.</p>
 <h3 id="structure">Structure</h3>
 <p>Any number of levels.
 You can use them to divide your corpus into units that follow the logic of your corpus,
@@ -43,7 +43,7 @@ without regard for how they are to be displayed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/sections.py#L0-L197" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/sections.py#L0-L197" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Section
 
@@ -62,7 +62,7 @@ At most three levels:
 * level 3 is for small things, such as lines.
 
 Text-Fabric uses these levels in the Text-Fabric browser, to divide your corpus
-into chunks that can conveniently be displayed to you in the browser.
+into divisions that can conveniently be displayed to you in the browser.
 
 ### Structure
 
@@ -295,7 +295,7 @@ Must be a 2-letter language code.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/sections.py#L37-L117" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/sections.py#L37-L117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
     &#34;&#34;&#34;Find the node of a section string.
@@ -408,7 +408,7 @@ with dummies for missing parts if <em>fillup</em> is true.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/sections.py#L120-L158" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/sections.py#L120-L158" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
     &#34;&#34;&#34;The heading of a section to which a node belongs.
@@ -459,7 +459,7 @@ with dummies for missing parts if <em>fillup</em> is true.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/sections.py#L30-L34" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/sections.py#L30-L34" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sectionsApi(app):
     app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
@@ -485,7 +485,7 @@ The result is built from the labels of the individual section levels.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/sections.py#L161-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/sections.py#L161-L191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def structureStrFromNode(app, n):
     &#34;&#34;&#34;The heading of a structure to which a node belongs.
@@ -526,9 +526,8 @@ The result is built from the labels of the individual section levels.</dd>
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.applib.sections">

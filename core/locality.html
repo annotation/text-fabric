@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/locality.py#L0-L300" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/locality.py#L0-L301" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/core/locality.md
@@ -61,7 +61,7 @@ class Locality(object):
           ```
 
     !!! caution &#34;Locality and node types&#34;
-        When using `sortNodes` and the `L` methods,
+        When using `tf.core.nodes.Nodes.sortNodes` and the `L` methods,
         note the following.
 
         Suppose you have node types `verse` and `sentence`, and usually a
@@ -97,7 +97,7 @@ class Locality(object):
         -------
         tuple of int
             The tuple nodes is sorted in the
-            canonical order (`tf.core.api`).
+            canonical order (`tf.core.nodes`).
 
             The result never includes *n* itself.
             But other nodes linked to the same set of slots as *n*
@@ -107,6 +107,7 @@ class Locality(object):
         &#34;&#34;&#34;
 
         api = self.api
+        N = api.N
         Fotype = api.F.otype
         maxSlot = Fotype.maxSlot
         if n &lt;= maxSlot:
@@ -114,7 +115,7 @@ class Locality(object):
         maxNode = Fotype.maxNode
         if n &gt; maxNode:
             return tuple()
-        sortNodes = api.sortNodes
+        sortNodes = N.sortNodes
         if not otype:
             otype = set(Fotype.all)
         elif type(otype) is str:
@@ -150,7 +151,7 @@ class Locality(object):
         Returns
         -------
         tuple of int
-            The tuple nodes is sorted in the canonical order (`tf.core.api`),
+            The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             but *reversed*: right and small embedders before left and big embedders.
 
             The result never includes *n* itself.
@@ -193,7 +194,7 @@ class Locality(object):
         Returns
         -------
         tuple of int
-            The tuple nodes is sorted in the canonical order (`tf.core.api`),
+            The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             left and big embeddees before right and small embeddees.
 
             The result never includes *n* itself.
@@ -252,7 +253,7 @@ class Locality(object):
         Returns
         -------
         tuple of int
-            The tuple nodes is sorted in the canonical order (`tf.core.api`),
+            The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             but *reversed*: right and small embedders before left and big embedders.
         &#34;&#34;&#34;
 
@@ -297,7 +298,7 @@ class Locality(object):
         Returns
         -------
         tuple of int
-            The tuple nodes is sorted in the canonical order (`tf.core.api`),
+            The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             left and big embeddees before right and small embeddees.
         &#34;&#34;&#34;
 
@@ -369,7 +370,7 @@ L.u(node)[0]</code></p>
 </div>
 <div class="admonition caution">
 <p class="admonition-title">Locality and node types</p>
-<p>When using <code>sortNodes</code> and the <code>L</code> methods,
+<p>When using <code><a title="tf.core.nodes.Nodes.sortNodes" href="nodes.html#tf.core.nodes.Nodes.sortNodes">Nodes.sortNodes()</a></code> and the <code>L</code> methods,
 note the following.</p>
 <p>Suppose you have node types <code>verse</code> and <code>sentence</code>, and usually a
 verse has multiple sentences, but not vice versa. Then you expect that</p>
@@ -387,7 +388,7 @@ same words, then that is a case where:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/locality.py#L9-L301" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/locality.py#L9-L302" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Locality(object):
     &#34;&#34;&#34;Methods by which you can navigate from a node to its neighborhood.
@@ -414,7 +415,7 @@ same words, then that is a case where:</p>
           ```
 
     !!! caution &#34;Locality and node types&#34;
-        When using `sortNodes` and the `L` methods,
+        When using `tf.core.nodes.Nodes.sortNodes` and the `L` methods,
         note the following.
 
         Suppose you have node types `verse` and `sentence`, and usually a
@@ -450,7 +451,7 @@ same words, then that is a case where:</p>
         -------
         tuple of int
             The tuple nodes is sorted in the
-            canonical order (`tf.core.api`).
+            canonical order (`tf.core.nodes`).
 
             The result never includes *n* itself.
             But other nodes linked to the same set of slots as *n*
@@ -460,6 +461,7 @@ same words, then that is a case where:</p>
         &#34;&#34;&#34;
 
         api = self.api
+        N = api.N
         Fotype = api.F.otype
         maxSlot = Fotype.maxSlot
         if n &lt;= maxSlot:
@@ -467,7 +469,7 @@ same words, then that is a case where:</p>
         maxNode = Fotype.maxNode
         if n &gt; maxNode:
             return tuple()
-        sortNodes = api.sortNodes
+        sortNodes = N.sortNodes
         if not otype:
             otype = set(Fotype.all)
         elif type(otype) is str:
@@ -503,7 +505,7 @@ same words, then that is a case where:</p>
         Returns
         -------
         tuple of int
-            The tuple nodes is sorted in the canonical order (`tf.core.api`),
+            The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             but *reversed*: right and small embedders before left and big embedders.
 
             The result never includes *n* itself.
@@ -546,7 +548,7 @@ same words, then that is a case where:</p>
         Returns
         -------
         tuple of int
-            The tuple nodes is sorted in the canonical order (`tf.core.api`),
+            The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             left and big embeddees before right and small embeddees.
 
             The result never includes *n* itself.
@@ -605,7 +607,7 @@ same words, then that is a case where:</p>
         Returns
         -------
         tuple of int
-            The tuple nodes is sorted in the canonical order (`tf.core.api`),
+            The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             but *reversed*: right and small embedders before left and big embedders.
         &#34;&#34;&#34;
 
@@ -650,7 +652,7 @@ same words, then that is a case where:</p>
         Returns
         -------
         tuple of int
-            The tuple nodes is sorted in the canonical order (`tf.core.api`),
+            The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             left and big embeddees before right and small embeddees.
         &#34;&#34;&#34;
 
@@ -701,7 +703,7 @@ See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality"
 <dl>
 <dt><code>tuple</code> of <code>int</code></dt>
 <dd>
-<p>The tuple nodes is sorted in the canonical order (<code><a title="tf.core.api" href="api.html">tf.core.api</a></code>),
+<p>The tuple nodes is sorted in the canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>),
 left and big embeddees before right and small embeddees.</p>
 <p>The result never includes <em>n</em> itself.
 But other nodes linked to the same set of slots as <em>n</em>
@@ -711,7 +713,7 @@ may count as embeddee nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/locality.py#L151-L209" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/locality.py#L152-L210" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def d(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *downward* nodes.
@@ -728,7 +730,7 @@ may count as embeddee nodes.</p>
     Returns
     -------
     tuple of int
-        The tuple nodes is sorted in the canonical order (`tf.core.api`),
+        The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
         left and big embeddees before right and small embeddees.
 
         The result never includes *n* itself.
@@ -792,7 +794,7 @@ may count as embeddee nodes.</p>
 <dt><code>tuple</code> of <code>int</code></dt>
 <dd>
 <p>The tuple nodes is sorted in the
-canonical order (<code><a title="tf.core.api" href="api.html">tf.core.api</a></code>).</p>
+canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>).</p>
 <p>The result never includes <em>n</em> itself.
 But other nodes linked to the same set of slots as <em>n</em>
 may count as intersector nodes.</p>
@@ -802,7 +804,7 @@ may count as intersector nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/locality.py#L53-L106" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/locality.py#L53-L107" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def i(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *intersecting* nodes
@@ -821,7 +823,7 @@ may count as intersector nodes.</p>
     -------
     tuple of int
         The tuple nodes is sorted in the
-        canonical order (`tf.core.api`).
+        canonical order (`tf.core.nodes`).
 
         The result never includes *n* itself.
         But other nodes linked to the same set of slots as *n*
@@ -831,6 +833,7 @@ may count as intersector nodes.</p>
     &#34;&#34;&#34;
 
     api = self.api
+    N = api.N
     Fotype = api.F.otype
     maxSlot = Fotype.maxSlot
     if n &lt;= maxSlot:
@@ -838,7 +841,7 @@ may count as intersector nodes.</p>
     maxNode = Fotype.maxNode
     if n &gt; maxNode:
         return tuple()
-    sortNodes = api.sortNodes
+    sortNodes = N.sortNodes
     if not otype:
         otype = set(Fotype.all)
     elif type(otype) is str:
@@ -874,13 +877,13 @@ See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality"
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code> of <code>int</code></dt>
-<dd>The tuple nodes is sorted in the canonical order (<code><a title="tf.core.api" href="api.html">tf.core.api</a></code>),
+<dd>The tuple nodes is sorted in the canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>),
 left and big embeddees before right and small embeddees.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/locality.py#L256-L301" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/locality.py#L257-L302" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def n(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *next* nodes.
@@ -896,7 +899,7 @@ left and big embeddees before right and small embeddees.</dd>
     Returns
     -------
     tuple of int
-        The tuple nodes is sorted in the canonical order (`tf.core.api`),
+        The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
         left and big embeddees before right and small embeddees.
     &#34;&#34;&#34;
 
@@ -944,13 +947,13 @@ See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality"
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code> of <code>int</code></dt>
-<dd>The tuple nodes is sorted in the canonical order (<code><a title="tf.core.api" href="api.html">tf.core.api</a></code>),
+<dd>The tuple nodes is sorted in the canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>),
 but <em>reversed</em>: right and small embedders before left and big embedders.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/locality.py#L211-L254" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/locality.py#L212-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def p(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *previous* nodes.
@@ -966,7 +969,7 @@ but <em>reversed</em>: right and small embedders before left and big embedders.<
     Returns
     -------
     tuple of int
-        The tuple nodes is sorted in the canonical order (`tf.core.api`),
+        The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
         but *reversed*: right and small embedders before left and big embedders.
     &#34;&#34;&#34;
 
@@ -1014,7 +1017,7 @@ See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality"
 <dl>
 <dt><code>tuple</code> of <code>int</code></dt>
 <dd>
-<p>The tuple nodes is sorted in the canonical order (<code><a title="tf.core.api" href="api.html">tf.core.api</a></code>),
+<p>The tuple nodes is sorted in the canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>),
 but <em>reversed</em>: right and small embedders before left and big embedders.</p>
 <p>The result never includes <em>n</em> itself.
 But other nodes linked to the same set of slots as <em>n</em>
@@ -1025,7 +1028,7 @@ may count as embedder nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/locality.py#L108-L149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/locality.py#L109-L150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def u(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *upward* nodes.
@@ -1042,7 +1045,7 @@ may count as embedder nodes.</p>
     Returns
     -------
     tuple of int
-        The tuple nodes is sorted in the canonical order (`tf.core.api`),
+        The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
         but *reversed*: right and small embedders before left and big embedders.
 
         The result never includes *n* itself.
@@ -1077,9 +1080,8 @@ may count as embedder nodes.</p>
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.core.locality">

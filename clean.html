@@ -34,7 +34,7 @@ that you no longer need.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/clean.py#L0-L103" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/clean.py#L0-L104" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/main/clean.md
@@ -46,6 +46,7 @@ import re
 from shutil import rmtree
 
 from .parameters import PACK_VERSION
+from .core.helpers import unexpanduser as ux
 
 TFD = &#34;text-fabric-data&#34;
 GH = &#34;github&#34;
@@ -58,13 +59,13 @@ binvRe = re.compile(r&#34;/\.tf/([^/]+)$&#34;)
 
 def out(msg):
     &#34;&#34;&#34;Write to standard normal output immediately.&#34;&#34;&#34;
-    sys.stdout.write(msg)
+    sys.stdout.write(ux(msg))
     sys.stdout.flush()
 
 
 def err(msg):
     &#34;&#34;&#34;Write to standard error output immediately.&#34;&#34;&#34;
-    sys.stderr.write(msg)
+    sys.stderr.write(ux(msg))
     sys.stderr.flush()
 
 
@@ -105,7 +106,7 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
     else:
         for root in ROOTS:
             if root == TFD and not tfd or root == GH and not gh:
-                sys.stdout.write(f&#34;skipped {root}\n&#34;)
+                out(f&#34;skipped {root}\n&#34;)
                 continue
             bases.append(os.path.expanduser(f&#34;~/{root}&#34;))
 
@@ -183,7 +184,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/clean.py#L33-L104" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/clean.py#L34-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
     &#34;&#34;&#34;Clean up older compressed .tfx files.
@@ -222,7 +223,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
     else:
         for root in ROOTS:
             if root == TFD and not tfd or root == GH and not gh:
-                sys.stdout.write(f&#34;skipped {root}\n&#34;)
+                out(f&#34;skipped {root}\n&#34;)
                 continue
             bases.append(os.path.expanduser(f&#34;~/{root}&#34;))
 
@@ -267,11 +268,11 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/clean.py#L27-L30" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/clean.py#L28-L31" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def err(msg):
     &#34;&#34;&#34;Write to standard error output immediately.&#34;&#34;&#34;
-    sys.stderr.write(msg)
+    sys.stderr.write(ux(msg))
     sys.stderr.flush()</code></pre>
 </details>
 </dd>
@@ -283,11 +284,11 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/clean.py#L21-L24" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/clean.py#L22-L25" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def out(msg):
     &#34;&#34;&#34;Write to standard normal output immediately.&#34;&#34;&#34;
-    sys.stdout.write(msg)
+    sys.stdout.write(ux(msg))
     sys.stdout.flush()</code></pre>
 </details>
 </dd>
@@ -297,9 +298,8 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.clean">

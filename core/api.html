@@ -24,66 +24,21 @@
 <section id="section-intro">
 <h1 id="the-core-api-of-tf">The core API of TF.</h1>
 <p>It provides methods to navigate nodes and edges and lookup features.</p>
-<h2 id="canonical-order">Canonical Order</h2>
-<p>Nodes are linked to subsets of slots, and there is a canonical ordering
-on subsets of integers that is inherited by the nodes.</p>
-<p>The canonical order is a way to sort the nodes in your corpus in such a way
-that you can enumerate all nodes in the order you encounter them if you
-walk through your corpus.</p>
-<dl>
-<dt>Formally</dt>
-<dd>A node <em>A</em> comes before a node <em>B</em> if <em>A</em> contains the smallest slot
-that occurs in only one of <em>A</em> and <em>B</em>.</dd>
-</dl>
-<p>Briefly this means:</p>
-<ul>
-<li>embedder nodes come before the nodes that lie embedded in them;</li>
-<li>earlier stuff comes before later stuff,</li>
-<li>if a verse coincides with a sentence, the verse comes before the sentence,
-because verses generally contain sentences and not the other way round;</li>
-<li>if two objects are intersecting, but none embeds the other, the one with the
-smallest slot that does not occur in the other, comes first.</li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">first things first, big things first</p>
-<p>That means, roughly, that you start with a
-book node (Genesis), then a chapter node (Genesis 1), then a verse node, Genesis
-1:1, then a sentence node, then a clause node, a phrase node, and the first word
-node. Then follow all word nodes in the first phrase, then the phrase node of
-the second phrase, followed by the word nodes in that phrase. When ever you
-enter a higher structure, you will first get the node corresponding to that
-structure, and after that the nodes corresponding to the building blocks of that
-structure.</p>
-</div>
-<p>This concept follows the intuition that slot sets with smaller elements come
-before slot set with bigger elements, and embedding slot sets come before
-embedded slot sets. Hence, if you enumerate a set of nodes that happens to
-constitute a tree hierarchy based on slot set embedding, and you enumerate those
-nodes in the slot set order, you will walk the tree in pre-order.</p>
-<p>This order is a modification of the one as described in (Doedens 1994, 3.6.3).</p>
-<p><img alt="fabric" src="../images/DoedensLO.png"></p>
-<blockquote>
-<p>Doedens, Crist-Jan (1994), <em>Text Databases. One Database Model and Several
-Retrieval Languages</em>, number 14 in Language and Computers, Editions Rodopi,
-Amsterdam, Netherlands and Atlanta, USA. ISBN: 90-5183-729-1,
-<a href="https://books.google.nl/books?id=9ggOBRz1dO4C.">https://books.google.nl/books?id=9ggOBRz1dO4C.</a> The order as defined by
-Doedens corresponds to walking trees in post-order.</p>
-</blockquote>
-<p>For a lot of processing, it is handy to have a the stack of embedding elements
-available when working with an element. That is the advantage of pre-order over
-post-order. It is very much like SAX parsing in the XML world.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L0-L1001" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L0-L292" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/core/api.md
 &#34;&#34;&#34;
 
-import collections
-from .helpers import makeInverse, makeInverseVal, flattenToSet, console
+from .helpers import flattenToSet, console
+from .nodes import Nodes
 from .locality import Locality
+from .nodefeature import NodeFeatures
+from .edgefeature import EdgeFeatures
+from .computed import Computeds
 from .text import Text
 from ..search.search import Search
 
@@ -108,658 +63,14 @@ API_REFS = dict(
     Fs=(&#34;Features&#34;, &#34;nodestr&#34;, &#34;node-features&#34;),
     L=(&#34;Locality&#34;, &#34;locality&#34;, &#34;locality&#34;),
     Locality=(&#34;Locality&#34;, &#34;locality&#34;, &#34;locality&#34;),
-    N=(&#34;Nodes&#34;, &#34;generator&#34;, &#34;navigating-nodes&#34;),
-    Nodes=(&#34;Nodes&#34;, &#34;generator&#34;, &#34;navigating-nodes&#34;),
+    N=(&#34;Nodes&#34;, &#34;nodes&#34;, &#34;navigating-nodes&#34;),
+    Nodes=(&#34;Nodes&#34;, &#34;nodes&#34;, &#34;navigating-nodes&#34;),
     S=(&#34;Search&#34;, &#34;search&#34;, &#34;search&#34;),
     Search=(&#34;Search&#34;, &#34;search&#34;, &#34;search&#34;),
     T=(&#34;Text&#34;, &#34;text&#34;, &#34;text&#34;),
     TF=(&#34;Fabric&#34;, &#34;fabric&#34;, &#34;loading&#34;),
     Text=(&#34;Text&#34;, &#34;text&#34;, &#34;text&#34;),
-    cache=(&#34;Misc&#34;, &#34;cache&#34;, &#34;messaging&#34;),
-    ensureLoaded=(&#34;Fabric&#34;, &#34;ensure&#34;, &#34;loading&#34;),
-    error=(&#34;Misc&#34;, &#34;error&#34;, &#34;messaging&#34;),
-    ignored=(&#34;Fabric&#34;, &#34;ignored&#34;, &#34;loading&#34;),
-    indent=(&#34;Misc&#34;, &#34;indent&#34;, &#34;messaging&#34;),
-    info=(&#34;Misc&#34;, &#34;info&#34;, &#34;messaging&#34;),
-    warning=(&#34;Misc&#34;, &#34;warning&#34;, &#34;messaging&#34;),
-    isSilent=(&#34;Misc&#34;, &#34;isSilent&#34;, &#34;messaging&#34;),
-    setSilent=(&#34;Misc&#34;, &#34;setSilent&#34;, &#34;messaging&#34;),
-    silentOn=(&#34;Misc&#34;, &#34;silentOn&#34;, &#34;messaging&#34;),
-    silentOff=(&#34;Misc&#34;, &#34;silentOff&#34;, &#34;messaging&#34;),
-    loadLog=(&#34;Fabric&#34;, &#34;loadlog&#34;, &#34;loading&#34;),
-    otypeRank=(&#34;Nodes&#34;, &#34;rank&#34;, &#34;navigating-nodes&#34;),
-    reset=(&#34;Misc&#34;, &#34;reset&#34;, &#34;messaging&#34;),
-    sortKey=(&#34;Nodes&#34;, &#34;key&#34;, &#34;navigating-nodes&#34;),
-    sortKeyTuple=(&#34;Nodes&#34;, &#34;keyTuple&#34;, &#34;navigating-nodes&#34;),
-    sortNodes=(&#34;Nodes&#34;, &#34;sort&#34;, &#34;navigating-nodes&#34;),
 )
-
-
-class OtypeFeature(object):
-    &#34;&#34;&#34;Provides access to *otype* feature data.
-
-    In general, features are stored as dictionaries, but this specific feature
-    has an optimized representation. Since it is a large feature and present
-    in any TF dataset, this pays off.
-    &#34;&#34;&#34;
-
-    def __init__(self, api, metaData, data):
-        self.api = api
-        self.meta = metaData
-        &#34;&#34;&#34;Metadata of the feature.
-
-        This is the information found in the lines starting with `@`
-        in the `.tf` feature file.
-        &#34;&#34;&#34;
-
-        self.data = data[0]
-        self.maxSlot = data[1]
-        &#34;&#34;&#34;Last slot node in the corpus.&#34;&#34;&#34;
-
-        self.maxNode = data[2]
-        &#34;&#34;&#34;Last node node.in the corpus.&#34;&#34;&#34;
-
-        self.slotType = data[3]
-        &#34;&#34;&#34;The name of the slot type.&#34;&#34;&#34;
-
-        self.all = None
-        &#34;&#34;&#34;List of all node types from big to small.&#34;&#34;&#34;
-
-    def items(self):
-        &#34;&#34;&#34;As in `tf.core.api.NodeFeature.items`.
-        &#34;&#34;&#34;
-
-        slotType = self.slotType
-        maxSlot = self.maxSlot
-        data = self.data
-
-        for n in range(1, maxSlot + 1):
-            yield (n, slotType)
-
-        maxNode = self.maxNode
-
-        shift = maxSlot + 1
-
-        for n in range(maxSlot + 1, maxNode + 1):
-            yield (n, data[n - shift])
-
-    def v(self, n):
-        &#34;&#34;&#34;Get the node type of a node.
-
-        Parameters
-        ----------
-        n: integer
-            The node in question
-
-        Returns
-        -------
-        string
-            The node type of that node. All nodes have a node type, and it is
-            always a string.
-        &#34;&#34;&#34;
-
-        if n == 0:
-            return None
-        if n &lt; self.maxSlot + 1:
-            return self.slotType
-        m = n - self.maxSlot
-        if m &lt;= len(self.data):
-            return self.data[m - 1]
-        return None
-
-    def s(self, val):
-        &#34;&#34;&#34;Query all nodes having a specified node type.
-
-        This is an other way to walk through nodes than using `N()`,
-        see `tf.core.api.Api.N`.
-
-        Parameters
-        ----------
-        val: int | string
-            The node type that all resulting nodes have.
-
-        Returns
-        -------
-        tuple of int
-            All nodes that have this node type, sorted in the canonical order.
-            (`tf.core.api`)
-        &#34;&#34;&#34;
-
-        # NB: the support attribute has been added by precomputing __levels__
-        if val in self.support:
-            (b, e) = self.support[val]
-            return range(b, e + 1)
-        else:
-            return ()
-
-    def sInterval(self, val):
-        &#34;&#34;&#34;The interval of nodes having a specified node type.
-
-        The nodes are organized in intervals of nodes with the same type.
-        For each type there is only one such interval.
-        The first interval, `1:maxSlot + 1` is reserved for the slot type.
-
-        Parameters
-        ----------
-        val: int | string
-            The node type in question.
-
-        Returns
-        -------
-        2-tuple of int
-            The start and end node of the interval of nodes with this type.
-        &#34;&#34;&#34;
-
-        # NB: the support attribute has been added by precomputing __levels__
-        if val in self.support:
-            return self.support[val]
-        else:
-            return ()
-
-
-class OslotsFeature(object):
-    &#34;&#34;&#34;Provides access to *oslots* feature data.
-
-    In general, features are stored as dictionaries, but this specific feature
-    has an optimized representation. Since it is a large feature and present
-    in any TF dataset, this pays off.
-    &#34;&#34;&#34;
-
-    def __init__(self, api, metaData, data):
-        self.api = api
-        self.meta = metaData
-        &#34;&#34;&#34;Metadata of the feature.
-
-        This is the information found in the lines starting with `@`
-        in the `.tf` feature file.
-        &#34;&#34;&#34;
-
-        self.data = data[0]
-        self.maxSlot = data[1]
-        self.maxNode = data[2]
-
-    def items(self):
-        &#34;&#34;&#34;A generator that yields the non-slot nodes with their slots.
-        &#34;&#34;&#34;
-
-        maxSlot = self.maxSlot
-        data = self.data
-        maxNode = self.maxNode
-
-        shift = maxSlot + 1
-
-        for n in range(maxSlot + 1, maxNode + 1):
-            yield (n, data[n - shift])
-
-    def s(self, n):
-        &#34;&#34;&#34;Get the slots of a (non-slot) node.
-
-        Parameters
-        ----------
-        node: integer
-            The node whose slots must be retrieved.
-
-        Returns
-        -------
-        tuple
-            The slot nodes of the node in question, in canonical order.
-            (`tf.core.api`)
-
-            For slot nodes `n` it is the tuple `(n,)`.
-
-            All non-slot nodes are linked to at least one slot.
-        &#34;&#34;&#34;
-
-        if n == 0:
-            return ()
-        if n &lt; self.maxSlot + 1:
-            return (n,)
-        m = n - self.maxSlot
-        if m &lt;= len(self.data):
-            return self.data[m - 1]
-        return ()
-
-
-class NodeFeature(object):
-    &#34;&#34;&#34;Provides access to (node) feature data.
-
-    For feature `fff` it is the result of `F.fff` or `Fs(&#39;fff&#39;)`.
-    &#34;&#34;&#34;
-
-    def __init__(self, api, metaData, data):
-        self.api = api
-        self.meta = metaData
-        &#34;&#34;&#34;Metadata of the feature.
-
-        This is the information found in the lines starting with `@`
-        in the `.tf` feature file.
-        &#34;&#34;&#34;
-
-        self.data = data
-
-    def items(self):
-        &#34;&#34;&#34;A generator that yields the items of the feature, seen as a mapping.
-
-        It does not yield entries for nodes without values,
-        so this gives you a rather efficient way to iterate over
-        just the feature data, instead of over all nodes.
-
-        If you need this repeatedly, or you need the whole dictionary,
-        you can store the result as follows:
-
-        `data = dict(F.fff.items())`
-        &#34;&#34;&#34;
-
-        return self.data.items()
-
-    def v(self, n):
-        &#34;&#34;&#34;Get the value of a feature for a node.
-
-        Parameters
-        ----------
-        n: integer
-            The node in question
-
-        Returns
-        -------
-        integer | string | None
-            The value of the feature for that node, if it is defined, else `None`.
-        &#34;&#34;&#34;
-
-        if n in self.data:
-            return self.data[n]
-        return None
-
-    def s(self, val):
-        &#34;&#34;&#34;Query all nodes having a specified feature value.
-
-        This is an other way to walk through nodes than using `N()`,
-        see `tf.core.api.Api.N`.
-
-        Parameters
-        ----------
-        value: int | string
-            The feature value that all resulting nodes have.
-
-        Returns
-        -------
-        tuple of int
-            All nodes that have this value for this feature,
-            sorted in the canonical order.
-            (`tf.core.api`)
-        &#34;&#34;&#34;
-
-        Crank = self.api.C.rank.data
-        return tuple(
-            sorted(
-                [n for n in self.data if self.data[n] == val],
-                key=lambda n: Crank[n - 1],
-            )
-        )
-
-    def freqList(self, nodeTypes=None):
-        &#34;&#34;&#34;Frequency list of the values of this feature.
-
-        Inspect the values of this feature and see how often they occur.
-
-        Parameters
-        ----------
-        nodeTypes: set of string, optional `None`
-            If you pass a set of nodeTypes, only the values for nodes
-            within those types will be counted.
-
-        Returns
-        -------
-        tuple of 2-tuple
-            A tuple of `(value, frequency)`, items, ordered by `frequency`,
-            highest frequencies first.
-
-        &#34;&#34;&#34;
-
-        fql = collections.Counter()
-        if nodeTypes is None:
-            for n in self.data:
-                fql[self.data[n]] += 1
-        else:
-            fOtype = self.api.F.otype.v
-            for n in self.data:
-                if fOtype(n) in nodeTypes:
-                    fql[self.data[n]] += 1
-        return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
-
-
-class EdgeFeature(object):
-    &#34;&#34;&#34;Provides access to (edge) feature data.
-
-    For feature `fff` it is the result of `E.fff` or `Es(&#39;fff&#39;)`.
-    &#34;&#34;&#34;
-
-    def __init__(self, api, metaData, data, doValues):
-        self.api = api
-        self.meta = metaData
-        &#34;&#34;&#34;Metadata of the feature.
-
-        This is the information found in the lines starting with `@`
-        in the `.tf` feature file.
-        &#34;&#34;&#34;
-
-        self.doValues = doValues
-        if type(data) is tuple:
-            self.data = data[0]
-            self.dataInv = data[1]
-        else:
-            self.data = data
-            self.dataInv = (
-                makeInverseVal(self.data) if doValues else makeInverse(self.data)
-            )
-
-    def items(self):
-        &#34;&#34;&#34;A generator that yields the items of the feature, seen as a mapping.
-
-        This gives you a rather efficient way to iterate over
-        just the feature data.
-
-        If you need this repeatedly, or you need the whole dictionary,
-        you can store the result as follows:
-
-        `data = dict(E.fff.items())`
-        &#34;&#34;&#34;
-
-        return self.data.items()
-
-    def f(self, n):
-        &#34;&#34;&#34;Get outgoing edges *from* a node.
-
-        The edges are those pairs of nodes specified in the feature data,
-        whose first node is the `n`.
-
-        Parameters
-        ----------
-        node: integer
-            The node **from** which the edges in question start.
-
-        Returns
-        -------
-        set | dict
-            The nodes reached by the edges **from** a certain node.
-            The members of the result are just nodes, if this feature does not
-            assign values to edges.
-            Otherwise the members are tuples of the destination node and the
-            value that the feature assigns to this pair of nodes.
-
-            If there are no edges from the node, the empty tuple is returned,
-            rather than `None`.
-        &#34;&#34;&#34;
-
-        if n not in self.data:
-            return ()
-        Crank = self.api.C.rank.data
-        if self.doValues:
-            return tuple(sorted(self.data[n].items(), key=lambda mv: Crank[mv[0] - 1]))
-        else:
-            return tuple(sorted(self.data[n], key=lambda m: Crank[m - 1]))
-
-    def t(self, n):
-        &#34;&#34;&#34;Get incoming edges *to* a node.
-
-        The edges are those pairs of nodes specified in the feature data,
-        whose second node is the `n`.
-
-        Parameters
-        ----------
-        node: integer
-            The node **to** which the edges in question connect.
-
-        Returns
-        -------
-        set | dict
-            The nodes where the edges **to** a certain node start.
-            The members of the result are just nodes, if this feature does not
-            assign values to edges.
-            Otherwise the members are tuples of the start node and the
-            value that the feature assigns to this pair of nodes.
-
-            If there are no edges to the node, the empty tuple is returned,
-            rather than `None`.
-        &#34;&#34;&#34;
-
-        if n not in self.dataInv:
-            return ()
-        Crank = self.api.C.rank.data
-        if self.doValues:
-            return tuple(
-                sorted(self.dataInv[n].items(), key=lambda mv: Crank[mv[0] - 1])
-            )
-        else:
-            return tuple(sorted(self.dataInv[n], key=lambda m: Crank[m - 1]))
-
-    def b(self, n):
-        &#34;&#34;&#34;Query *both* incoming edges to, and outgoing edges from a node.
-
-        The edges are those pairs of nodes specified in the feature data,
-        whose first or second node is the `n`.
-
-        Parameters
-        ----------
-        node: integer
-            The node **from** which the edges in question start or
-            **to** which the edges in question connect.
-
-        Returns
-        -------
-        set | dict
-            The nodes where the edges **to** a certain node start.
-            The members of the result are just nodes, if this feature does not
-            assign values to edges.
-            Otherwise the members are tuples of the start node and the
-            value that the feature assigns to this pair of nodes.
-
-            If there are no edges to the node, the empty tuple is returned,
-            rather than `None`.
-
-        Notes
-        -----
-        !!! hint &#34;symmetric closure&#34;
-            This method gives the *symmetric closure* of a set of edges:
-            if there is an edge between *n* and *m*, this method will deliver
-            its value, no matter the direction of the edge.
-
-        !!! example &#34;symmetric edges&#34;
-            Some edge sets are semantically symmetric, for example *similarity*.
-            If *n* is similar to *m*, then *m* is similar to *n*.
-
-            But if you store such an edge feature completely,
-            half of the data is redundant.
-            By virtue of this method you do not have to do that, you only need to store
-            one of the edges between *n* and *m* (it does not matter which one),
-            and `E.fff.b(n)` will nevertheless produce the complete results.
-
-        !!! caution &#34;conflicting values&#34;
-            If your set of edges is not symmetric, and edges carry values, it might
-            very well be the case that edges between the same pair of nodes carry
-            different values for the two directions.
-
-            In that case, this method gives precedence to the edges that
-            *depart* from the node to those that go *to* the node.
-
-        !!! example &#34;conflicting values&#34;
-            Suppose we have
-
-            ```
-            n == value=4 ==&gt; m
-            m == value=6 ==&gt; n
-            ```
-
-            then
-
-            ```
-            E.b(n) = (m, 4)
-            E.b(m) = (n, 6)
-            ```
-
-        &#34;&#34;&#34;
-
-        if n not in self.data and n not in self.dataInv:
-            return ()
-        Crank = self.api.C.rank.data
-        if self.doValues:
-            result = {}
-            if n in self.dataInv:
-                result.update(self.dataInv[n].items())
-            if n in self.data:
-                result.update(self.data[n].items())
-            return tuple(sorted(result.items(), key=lambda mv: Crank[mv[0] - 1]))
-        else:
-            result = set()
-            if n in self.dataInv:
-                result |= self.dataInv[n]
-            if n in self.data:
-                result |= self.data[n]
-            return tuple(sorted(result, key=lambda m: Crank[m - 1]))
-
-    def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
-        &#34;&#34;&#34;Frequency list of the values of this feature.
-
-        Inspect the values of this feature and see how often they occur.
-
-        If the feature does not assign values, return the number of node pairs
-        in this edge.
-
-        If the edge feature does have values, inspect them and see
-        how often they occur.
-        The result is a list of pairs `(value, frequency)`, ordered by `frequency`,
-        highest frequencies first.
-
-        Parameters
-        ----------
-        nodeTypesFrom: set of string, optional `None`
-            If you pass a set of nodeTypes here, only the values for edges
-            that start *from* a node with such a type will be counted.
-        nodeTypesTo: set of string, optional `None`
-            If you pass a set of nodeTypes here, only the values for edges
-            that go *to* a node with such a type will be counted.
-
-        Returns
-        -------
-        tuple of 2-tuple
-            A tuple of `(value, frequency)`, items, ordered by `frequency`,
-            highest frequencies first.
-
-        &#34;&#34;&#34;
-
-        if nodeTypesFrom is None and nodeTypesTo is None:
-            if self.doValues:
-                fql = collections.Counter()
-                for (n, vals) in self.data.items():
-                    for val in vals.values():
-                        fql[val] += 1
-                return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
-            else:
-                fql = 0
-                for (n, ms) in self.data.items():
-                    fql += len(ms)
-                return fql
-        else:
-            fOtype = self.api.F.otype.v
-            if self.doValues:
-                fql = collections.Counter()
-                for (n, vals) in self.data.items():
-                    if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
-                        for (m, val) in vals.items():
-                            if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
-                                fql[val] += 1
-                return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
-            else:
-                fql = 0
-                for (n, ms) in self.data.items():
-                    if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
-                        for m in ms:
-                            if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
-                                fql += len(ms)
-                return fql
-
-
-class Computed(object):
-    &#34;&#34;&#34;Provides access to precomputed data.
-
-    For component `ccc` it is the result of `C.ccc` or `Cs(&#39;ccc&#39;)`.
-    &#34;&#34;&#34;
-
-    def __init__(self, api, data):
-        self.api = api
-        self.data = data
-
-
-class NodeFeatures(object):
-    &#34;&#34;&#34;Mappings from nodes to values.
-
-    Every node feature is logically a mapping from nodes to values,
-    string or integer.
-
-    A feature object gives you methods that you can pass a node and that returns
-    its value for that node.
-
-    It is easiest to think of all node features as a dictionary keyed by nodes.
-
-    However, some features have an optimized representation, and do not have
-    a dictionary underneath.
-
-    But you can still iterate over the data of a feature as if it were a
-    dictionary: `tf.core.api.NodeFeature.items`
-    &#34;&#34;&#34;
-
-
-class EdgeFeatures(object):
-    &#34;&#34;&#34;Mappings from edges to values.
-
-    Every edge feature is logically a mapping from pairs of nodes to values,
-    string or integer.
-
-    A feature object gives you methods that you can pass a node and that returns
-    its value for that node.
-
-    It is easiest to think of all edge features as a dictionary keyed by nodes.
-    The values are either sets or dictionaries.
-    If the value is a set, then the elements are the second node in the pair
-    and the value is `None`.
-    If the value is a dictionary, then the keys are the second node in the pair,
-    and the value is the value that the edge feature assigns to this pair.
-
-    However, some features have an optimized representation, and do not have
-    a dictionary underneath.
-
-    But you can still iterate over the data of a feature as if it were a
-    dictionary: `tf.core.api.EdgeFeature.items`
-    &#34;&#34;&#34;
-
-
-class Computeds(object):
-    &#34;&#34;&#34;Precomputed data components.
-
-    In order to make the API work, Text-Fabric prepares some data and saves it in
-    quick-load format. Most of this data are the features, but there is some extra
-    data needed for the special functions of the `tf.core.data.WARP` features and the
-    `tf.core.locality.Locality` API.
-
-    Normally, you do not use this data, but since it is there, it might be valuable,
-    so we have made it accessible in the `tf.core.api.Computeds`-api.
-
-    !!! explanation &#34;Pre-computed data storage&#34;
-        Pre-computed data is stored in cache directories in a directory `.tf`
-        inside the directory where the `otype` feature is encountered.
-
-        After precomputation the result is pickled and gzipped and written to a
-        `.tfx` file with the same name as the name of the feature.
-        This is done for nromal features and pre-computed features likewise.
-
-        After version 7.7.7 version the memory footprint of some precomputed features
-        has been reduced. Because the precomputed features on disk are exact replicas
-        of the precomputed features in RAM, older precomputed data does not work with
-        versions of TF after 7.7.7.
-
-        But from that version onwards, there is a parameter,
-        `tf.parameters.PACK_VERSION` to detect incompatibilities.
-    &#34;&#34;&#34;
 
 
 class Api(object):
@@ -771,6 +82,7 @@ class Api(object):
         Features are ignored if the feature is also present in another location
         that is loaded later.
         &#34;&#34;&#34;
+        TF.ignored = self.ignored
 
         self.F = NodeFeatures()
         self.Feature = self.F
@@ -779,63 +91,30 @@ class Api(object):
         self.C = Computeds()
         self.Computed = self.C
         tm = TF.tm
-        self.silentOn = tm.silentOn
-        self.silentOff = tm.silentOff
-        self.isSilent = tm.isSilent
-        self.setSilent = tm.setSilent
-        self.info = tm.info
-        self.warning = tm.warning
-        self.error = tm.error
-        self.cache = tm.cache
-        self.reset = tm.reset
-        self.indent = tm.indent
-        self.loadLog = tm.cache
+        TF.silentOn = tm.silentOn
+        TF.silentOff = tm.silentOff
+        TF.isSilent = tm.isSilent
+        TF.setSilent = tm.setSilent
+        TF.info = tm.info
+        TF.warning = tm.warning
+        TF.error = tm.error
+        TF.cache = tm.cache
+        TF.reset = tm.reset
+        TF.indent = tm.indent
+        TF.loadLog = tm.cache
+
         &#34;&#34;&#34;All messages produced during the feature loading process.
 
         It also shows the messages that have been suppressed due to the `silent`
         parameter.
         &#34;&#34;&#34;
 
-        self.sortKey = None
-        &#34;&#34;&#34;Sort key function for the canonical ordering between nodes.
-
-        See `tf.core.api` and `sortNodes`.
-
-        !!! hint &#34;usage&#34;
-            The following two pieces of code do the same thing:
-            `sortNodes(nodeSet)` and `sorted(nodeSet, key=sortKey)`.
-        &#34;&#34;&#34;
-
-        self.sortKeyTuple = None
-        &#34;&#34;&#34;Sort key function for the canonical ordering between tuples of nodes.
-        It applies `sortKey` to each member of the tuple.
-        Handy to sort search results. We can sort them in canonical order like this:
-
-        ```python
-        sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
-        ```
-
-        This is exactly what `sortKeyTuple` does, but then a bit more efficient:
-
-        ```python
-        sorted(results, key=sortKeyTuple)
-        ```
-        &#34;&#34;&#34;
-
-        self.otypeRank = None
-        &#34;&#34;&#34;Dictionary that provides a ranking of the node types.
-
-        The node types are ordered in `C.levels.data`, and if you reverse that list,
-        you get the rank of a type by looking at the position in which that type occurs.
-
-        The *slotType* has rank 0 (`otypeRank[F.otype.slotType] == 0`),
-        and the more comprehensive a type is, the higher its rank.
-        &#34;&#34;&#34;
+        TF.ensureLoaded = self.ensureLoaded
+        TF.makeAvailableIn = self.makeAvailableIn
 
         setattr(self, &#34;FeatureString&#34;, self.Fs)
         setattr(self, &#34;EdgeString&#34;, self.Es)
         setattr(self, &#34;ComputedString&#34;, self.Cs)
-        setattr(self, &#34;Nodes&#34;, self.N)
         setattr(self, &#34;AllFeatures&#34;, self.Fall)
         setattr(self, &#34;AllEdges&#34;, self.Eall)
         setattr(self, &#34;AllComputeds&#34;, self.Call)
@@ -850,7 +129,7 @@ class Api(object):
         &#34;&#34;&#34;
 
         if not hasattr(self.F, fName):
-            self.error(f&#39;Node feature &#34;{fName}&#34; not loaded&#39;)
+            self.TF.error(f&#39;Node feature &#34;{fName}&#34; not loaded&#39;)
             return None
         return getattr(self.F, fName)
 
@@ -864,7 +143,7 @@ class Api(object):
         &#34;&#34;&#34;
 
         if not hasattr(self.E, fName):
-            self.error(f&#39;Edge feature &#34;{fName}&#34; not loaded&#39;)
+            self.TF.error(f&#39;Edge feature &#34;{fName}&#34; not loaded&#39;)
             return None
         return getattr(self.E, fName)
 
@@ -878,41 +157,9 @@ class Api(object):
         &#34;&#34;&#34;
 
         if not hasattr(self.C, fName):
-            self.error(f&#39;Computed feature &#34;{fName}&#34; not loaded&#39;)
+            self.TF.error(f&#39;Computed feature &#34;{fName}&#34; not loaded&#39;)
             return None
         return getattr(self.C, fName)
-
-    def N(self):
-        &#34;&#34;&#34;Generates all nodes in the *canonical order*.
-        (`tf.core.api`)
-
-        Iterating over `N()` delivers you all nodes of your corpus
-        in a very natural order. See `tf.core.api.Api`.
-
-        !!! hint &#34;More ways of walking&#34;
-            Under `tf.core.api.NodeFeatures` there is another convenient way
-            to walk through subsets of nodes.
-
-        Returns
-        -------
-        nodes: int
-            One at a time.
-        &#34;&#34;&#34;
-
-        for n in self.C.order.data:
-            yield n
-
-    def sortNodes(self, nodeSet):
-        &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
-
-        See `tf.core.api`.
-
-        nodeSet: iterable
-            An iterable of nodes to be sorted.
-        &#34;&#34;&#34;
-
-        Crank = self.C.rank.data
-        return sorted(nodeSet, key=lambda n: Crank[n - 1])
 
     def Fall(self):
         &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.
@@ -933,7 +180,9 @@ class Api(object):
         return sorted(x[0] for x in self.C.__dict__.items())
 
     def makeAvailableIn(self, scope):
-        &#34;&#34;&#34;Exports every member of the API to the global namespace.
+        &#34;&#34;&#34;Exports members of the API to the global namespace.
+
+        Only the members whose names start with a capital are exported.
 
         If you are working with a single data source in your program, it is a bit
         tedious to write the initial `TF.api.` or `A.api` all the time.
@@ -981,7 +230,7 @@ class Api(object):
         &#34;&#34;&#34;
 
         for member in dir(self):
-            if &#34;_&#34; not in member and member != &#34;makeAvailableIn&#34;:
+            if &#34;_&#34; not in member and member[0].isupper():
                 scope[member] = getattr(self, member)
                 if member not in API_REFS:
                     console(f&#39;WARNING: API member &#34;{member}&#34; not documented&#39;)
@@ -1026,7 +275,7 @@ class Api(object):
         F = self.F
         E = self.E
         TF = self.TF
-        warning = self.warning
+        warning = TF.warning
 
         needToLoad = set()
         loadedFeatures = set()
@@ -1048,12 +297,6 @@ class Api(object):
         return loadedFeatures
 
 
-def addSortKey(api):
-    Crank = api.C.rank.data
-    api.sortKey = lambda n: Crank[n - 1]
-    api.sortKeyTuple = lambda tup: tuple(Crank[n - 1] for n in tup)
-
-
 def addOtype(api):
     setattr(api.F.otype, &#34;all&#34;, tuple(o[0] for o in api.C.levels.data))
     setattr(
@@ -1066,9 +309,9 @@ def addLocality(api):
     api.Locality = api.L
 
 
-def addRank(api):
-    C = api.C
-    api.otypeRank = {d[0]: i for (i, d) in enumerate(reversed(C.levels.data))}
+def addNodes(api):
+    api.N = Nodes(api)
+    api.Nodes = api.N
 
 
 def addText(api):
@@ -1096,11 +339,26 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L985-L987" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L276-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addLocality(api):
     api.L = Locality(api)
     api.Locality = api.L</code></pre>
+</details>
+</dd>
+<dt id="tf.core.api.addNodes"><code class="name flex">
+<span>def <span class="ident">addNodes</span></span>(<span>api)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L281-L283" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def addNodes(api):
+    api.N = Nodes(api)
+    api.Nodes = api.N</code></pre>
 </details>
 </dd>
 <dt id="tf.core.api.addOtype"><code class="name flex">
@@ -1111,28 +369,13 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L978-L982" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L269-L273" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addOtype(api):
     setattr(api.F.otype, &#34;all&#34;, tuple(o[0] for o in api.C.levels.data))
     setattr(
         api.F.otype, &#34;support&#34;, dict(((o[0], (o[2], o[3])) for o in api.C.levels.data))
     )</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.addRank"><code class="name flex">
-<span>def <span class="ident">addRank</span></span>(<span>api)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L990-L992" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def addRank(api):
-    C = api.C
-    api.otypeRank = {d[0]: i for (i, d) in enumerate(reversed(C.levels.data))}</code></pre>
 </details>
 </dd>
 <dt id="tf.core.api.addSearch"><code class="name flex">
@@ -1143,27 +386,11 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L1000-L1002" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L291-L293" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addSearch(api, silent):
     api.S = Search(api, silent)
     api.Search = api.S</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.addSortKey"><code class="name flex">
-<span>def <span class="ident">addSortKey</span></span>(<span>api)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L972-L975" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def addSortKey(api):
-    Crank = api.C.rank.data
-    api.sortKey = lambda n: Crank[n - 1]
-    api.sortKeyTuple = lambda tup: tuple(Crank[n - 1] for n in tup)</code></pre>
 </details>
 </dd>
 <dt id="tf.core.api.addText"><code class="name flex">
@@ -1174,7 +401,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L995-L997" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L286-L288" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addText(api):
     api.T = Text(api)
@@ -1195,7 +422,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L686-L969" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L45-L266" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Api(object):
     def __init__(self, TF):
@@ -1206,6 +433,7 @@ def addSearch(api, silent):
         Features are ignored if the feature is also present in another location
         that is loaded later.
         &#34;&#34;&#34;
+        TF.ignored = self.ignored
 
         self.F = NodeFeatures()
         self.Feature = self.F
@@ -1214,63 +442,30 @@ def addSearch(api, silent):
         self.C = Computeds()
         self.Computed = self.C
         tm = TF.tm
-        self.silentOn = tm.silentOn
-        self.silentOff = tm.silentOff
-        self.isSilent = tm.isSilent
-        self.setSilent = tm.setSilent
-        self.info = tm.info
-        self.warning = tm.warning
-        self.error = tm.error
-        self.cache = tm.cache
-        self.reset = tm.reset
-        self.indent = tm.indent
-        self.loadLog = tm.cache
+        TF.silentOn = tm.silentOn
+        TF.silentOff = tm.silentOff
+        TF.isSilent = tm.isSilent
+        TF.setSilent = tm.setSilent
+        TF.info = tm.info
+        TF.warning = tm.warning
+        TF.error = tm.error
+        TF.cache = tm.cache
+        TF.reset = tm.reset
+        TF.indent = tm.indent
+        TF.loadLog = tm.cache
+
         &#34;&#34;&#34;All messages produced during the feature loading process.
 
         It also shows the messages that have been suppressed due to the `silent`
         parameter.
         &#34;&#34;&#34;
 
-        self.sortKey = None
-        &#34;&#34;&#34;Sort key function for the canonical ordering between nodes.
-
-        See `tf.core.api` and `sortNodes`.
-
-        !!! hint &#34;usage&#34;
-            The following two pieces of code do the same thing:
-            `sortNodes(nodeSet)` and `sorted(nodeSet, key=sortKey)`.
-        &#34;&#34;&#34;
-
-        self.sortKeyTuple = None
-        &#34;&#34;&#34;Sort key function for the canonical ordering between tuples of nodes.
-        It applies `sortKey` to each member of the tuple.
-        Handy to sort search results. We can sort them in canonical order like this:
-
-        ```python
-        sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
-        ```
-
-        This is exactly what `sortKeyTuple` does, but then a bit more efficient:
-
-        ```python
-        sorted(results, key=sortKeyTuple)
-        ```
-        &#34;&#34;&#34;
-
-        self.otypeRank = None
-        &#34;&#34;&#34;Dictionary that provides a ranking of the node types.
-
-        The node types are ordered in `C.levels.data`, and if you reverse that list,
-        you get the rank of a type by looking at the position in which that type occurs.
-
-        The *slotType* has rank 0 (`otypeRank[F.otype.slotType] == 0`),
-        and the more comprehensive a type is, the higher its rank.
-        &#34;&#34;&#34;
+        TF.ensureLoaded = self.ensureLoaded
+        TF.makeAvailableIn = self.makeAvailableIn
 
         setattr(self, &#34;FeatureString&#34;, self.Fs)
         setattr(self, &#34;EdgeString&#34;, self.Es)
         setattr(self, &#34;ComputedString&#34;, self.Cs)
-        setattr(self, &#34;Nodes&#34;, self.N)
         setattr(self, &#34;AllFeatures&#34;, self.Fall)
         setattr(self, &#34;AllEdges&#34;, self.Eall)
         setattr(self, &#34;AllComputeds&#34;, self.Call)
@@ -1285,7 +480,7 @@ def addSearch(api, silent):
         &#34;&#34;&#34;
 
         if not hasattr(self.F, fName):
-            self.error(f&#39;Node feature &#34;{fName}&#34; not loaded&#39;)
+            self.TF.error(f&#39;Node feature &#34;{fName}&#34; not loaded&#39;)
             return None
         return getattr(self.F, fName)
 
@@ -1299,7 +494,7 @@ def addSearch(api, silent):
         &#34;&#34;&#34;
 
         if not hasattr(self.E, fName):
-            self.error(f&#39;Edge feature &#34;{fName}&#34; not loaded&#39;)
+            self.TF.error(f&#39;Edge feature &#34;{fName}&#34; not loaded&#39;)
             return None
         return getattr(self.E, fName)
 
@@ -1313,41 +508,9 @@ def addSearch(api, silent):
         &#34;&#34;&#34;
 
         if not hasattr(self.C, fName):
-            self.error(f&#39;Computed feature &#34;{fName}&#34; not loaded&#39;)
+            self.TF.error(f&#39;Computed feature &#34;{fName}&#34; not loaded&#39;)
             return None
         return getattr(self.C, fName)
-
-    def N(self):
-        &#34;&#34;&#34;Generates all nodes in the *canonical order*.
-        (`tf.core.api`)
-
-        Iterating over `N()` delivers you all nodes of your corpus
-        in a very natural order. See `tf.core.api.Api`.
-
-        !!! hint &#34;More ways of walking&#34;
-            Under `tf.core.api.NodeFeatures` there is another convenient way
-            to walk through subsets of nodes.
-
-        Returns
-        -------
-        nodes: int
-            One at a time.
-        &#34;&#34;&#34;
-
-        for n in self.C.order.data:
-            yield n
-
-    def sortNodes(self, nodeSet):
-        &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
-
-        See `tf.core.api`.
-
-        nodeSet: iterable
-            An iterable of nodes to be sorted.
-        &#34;&#34;&#34;
-
-        Crank = self.C.rank.data
-        return sorted(nodeSet, key=lambda n: Crank[n - 1])
 
     def Fall(self):
         &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.
@@ -1368,7 +531,9 @@ def addSearch(api, silent):
         return sorted(x[0] for x in self.C.__dict__.items())
 
     def makeAvailableIn(self, scope):
-        &#34;&#34;&#34;Exports every member of the API to the global namespace.
+        &#34;&#34;&#34;Exports members of the API to the global namespace.
+
+        Only the members whose names start with a capital are exported.
 
         If you are working with a single data source in your program, it is a bit
         tedious to write the initial `TF.api.` or `A.api` all the time.
@@ -1416,7 +581,7 @@ def addSearch(api, silent):
         &#34;&#34;&#34;
 
         for member in dir(self):
-            if &#34;_&#34; not in member and member != &#34;makeAvailableIn&#34;:
+            if &#34;_&#34; not in member and member[0].isupper():
                 scope[member] = getattr(self, member)
                 if member not in API_REFS:
                     console(f&#39;WARNING: API member &#34;{member}&#34; not documented&#39;)
@@ -1461,7 +626,7 @@ def addSearch(api, silent):
         F = self.F
         E = self.E
         TF = self.TF
-        warning = self.warning
+        warning = TF.warning
 
         needToLoad = set()
         loadedFeatures = set()
@@ -1490,41 +655,6 @@ def addSearch(api, silent):
 <p>Features are ignored if the feature is also present in another location
 that is loaded later.</p></div>
 </dd>
-<dt id="tf.core.api.Api.loadLog"><code class="name">var <span class="ident">loadLog</span></code></dt>
-<dd>
-<div class="desc"><p>All messages produced during the feature loading process.</p>
-<p>It also shows the messages that have been suppressed due to the <code>silent</code>
-parameter.</p></div>
-</dd>
-<dt id="tf.core.api.Api.otypeRank"><code class="name">var <span class="ident">otypeRank</span></code></dt>
-<dd>
-<div class="desc"><p>Dictionary that provides a ranking of the node types.</p>
-<p>The node types are ordered in <code>C.levels.data</code>, and if you reverse that list,
-you get the rank of a type by looking at the position in which that type occurs.</p>
-<p>The <em>slotType</em> has rank 0 (<code>otypeRank[F.otype.slotType] == 0</code>),
-and the more comprehensive a type is, the higher its rank.</p></div>
-</dd>
-<dt id="tf.core.api.Api.sortKey"><code class="name">var <span class="ident">sortKey</span></code></dt>
-<dd>
-<div class="desc"><p>Sort key function for the canonical ordering between nodes.</p>
-<p>See <code><a title="tf.core.api" href="#tf.core.api">tf.core.api</a></code> and <code>sortNodes</code>.</p>
-<div class="admonition hint">
-<p class="admonition-title">usage</p>
-<p>The following two pieces of code do the same thing:
-<code>sortNodes(nodeSet)</code> and <code>sorted(nodeSet, key=sortKey)</code>.</p>
-</div></div>
-</dd>
-<dt id="tf.core.api.Api.sortKeyTuple"><code class="name">var <span class="ident">sortKeyTuple</span></code></dt>
-<dd>
-<div class="desc"><p>Sort key function for the canonical ordering between tuples of nodes.
-It applies <code>sortKey</code> to each member of the tuple.
-Handy to sort search results. We can sort them in canonical order like this:</p>
-<pre><code class="python">sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
-</code></pre>
-<p>This is exactly what <code>sortKeyTuple</code> does, but then a bit more efficient:</p>
-<pre><code class="python">sorted(results, key=sortKeyTuple)
-</code></pre></div>
-</dd>
 </dl>
 <h3>Methods</h3>
 <dl>
@@ -1536,7 +666,7 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L850-L854" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L145-L149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Call(self):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded computed data names.
@@ -1557,7 +687,7 @@ you can not use <code>C.component</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L792-L804" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L119-L131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Cs(self, fName):
     &#34;&#34;&#34;Get the computed data sub API.
@@ -1569,7 +699,7 @@ you can not use <code>C.component</code>, but you should use
     &#34;&#34;&#34;
 
     if not hasattr(self.C, fName):
-        self.error(f&#39;Computed feature &#34;{fName}&#34; not loaded&#39;)
+        self.TF.error(f&#39;Computed feature &#34;{fName}&#34; not loaded&#39;)
         return None
     return getattr(self.C, fName)</code></pre>
 </details>
@@ -1582,7 +712,7 @@ you can not use <code>C.component</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L844-L848" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L139-L143" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Eall(self):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded edge feature names.
@@ -1603,7 +733,7 @@ you can not use <code>E.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L778-L790" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L105-L117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Es(self, fName):
     &#34;&#34;&#34;Get the edge feature sub API.
@@ -1615,7 +745,7 @@ you can not use <code>E.feature</code>, but you should use
     &#34;&#34;&#34;
 
     if not hasattr(self.E, fName):
-        self.error(f&#39;Edge feature &#34;{fName}&#34; not loaded&#39;)
+        self.TF.error(f&#39;Edge feature &#34;{fName}&#34; not loaded&#39;)
         return None
     return getattr(self.E, fName)</code></pre>
 </details>
@@ -1628,7 +758,7 @@ you can not use <code>E.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L838-L842" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L133-L137" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Fall(self):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.
@@ -1649,7 +779,7 @@ you can not use <code>F.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L764-L776" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L91-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Fs(self, fName):
     &#34;&#34;&#34;Get the node feature sub API.
@@ -1661,53 +791,9 @@ you can not use <code>F.feature</code>, but you should use
     &#34;&#34;&#34;
 
     if not hasattr(self.F, fName):
-        self.error(f&#39;Node feature &#34;{fName}&#34; not loaded&#39;)
+        self.TF.error(f&#39;Node feature &#34;{fName}&#34; not loaded&#39;)
         return None
     return getattr(self.F, fName)</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.Api.N"><code class="name flex">
-<span>def <span class="ident">N</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Generates all nodes in the <em>canonical order</em>.
-(<code><a title="tf.core.api" href="#tf.core.api">tf.core.api</a></code>)</p>
-<p>Iterating over <code>N()</code> delivers you all nodes of your corpus
-in a very natural order. See <code><a title="tf.core.api.Api" href="#tf.core.api.Api">Api</a></code>.</p>
-<div class="admonition hint">
-<p class="admonition-title">More ways of walking</p>
-<p>Under <code><a title="tf.core.api.NodeFeatures" href="#tf.core.api.NodeFeatures">NodeFeatures</a></code> there is another convenient way
-to walk through subsets of nodes.</p>
-</div>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><strong><code>nodes</code></strong> :&ensp;<code>int</code></dt>
-<dd>One at a time.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L806-L824" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def N(self):
-    &#34;&#34;&#34;Generates all nodes in the *canonical order*.
-    (`tf.core.api`)
-
-    Iterating over `N()` delivers you all nodes of your corpus
-    in a very natural order. See `tf.core.api.Api`.
-
-    !!! hint &#34;More ways of walking&#34;
-        Under `tf.core.api.NodeFeatures` there is another convenient way
-        to walk through subsets of nodes.
-
-    Returns
-    -------
-    nodes: int
-        One at a time.
-    &#34;&#34;&#34;
-
-    for n in self.C.order.data:
-        yield n</code></pre>
 </details>
 </dd>
 <dt id="tf.core.api.Api.ensureLoaded"><code class="name flex">
@@ -1732,7 +818,7 @@ without directory information and without extension.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L928-L969" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L225-L266" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ensureLoaded(self, features):
     &#34;&#34;&#34;Checks if features are loaded and if not loads them.
@@ -1756,7 +842,7 @@ without directory information and without extension.</dd>
     F = self.F
     E = self.E
     TF = self.TF
-    warning = self.warning
+    warning = TF.warning
 
     needToLoad = set()
     loadedFeatures = set()
@@ -1782,7 +868,8 @@ without directory information and without extension.</dd>
 <span>def <span class="ident">makeAvailableIn</span></span>(<span>self, scope)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Exports every member of the API to the global namespace.</p>
+<div class="desc"><p>Exports members of the API to the global namespace.</p>
+<p>Only the members whose names start with a capital are exported.</p>
 <p>If you are working with a single data source in your program, it is a bit
 tedious to write the initial <code>TF.api.</code> or <code>A.api</code> all the time.
 By this method you can avoid that.</p>
@@ -1831,7 +918,7 @@ This might or might not improve the readability of your program.</p>
 </tr>
 <tr>
 <td><code>C</code></td>
-<td><code><a title="tf.core.api.Computed" href="#tf.core.api.Computed">Computed</a></code></td>
+<td><code>Computed</code></td>
 </tr>
 <tr>
 <td><code>Cs</code>
@@ -1879,10 +966,12 @@ So we have to pass it on.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L856-L923" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/api.py#L151-L220" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAvailableIn(self, scope):
-    &#34;&#34;&#34;Exports every member of the API to the global namespace.
+    &#34;&#34;&#34;Exports members of the API to the global namespace.
+
+    Only the members whose names start with a capital are exported.
 
     If you are working with a single data source in your program, it is a bit
     tedious to write the initial `TF.api.` or `A.api` all the time.
@@ -1930,7 +1019,7 @@ So we have to pass it on.</p>
     &#34;&#34;&#34;
 
     for member in dir(self):
-        if &#34;_&#34; not in member and member != &#34;makeAvailableIn&#34;:
+        if &#34;_&#34; not in member and member[0].isupper():
             scope[member] = getattr(self, member)
             if member not in API_REFS:
                 console(f&#39;WARNING: API member &#34;{member}&#34; not documented&#39;)
@@ -1951,1697 +1040,14 @@ So we have to pass it on.</p>
     return docs</code></pre>
 </details>
 </dd>
-<dt id="tf.core.api.Api.sortNodes"><code class="name flex">
-<span>def <span class="ident">sortNodes</span></span>(<span>self, nodeSet)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Delivers a tuple of nodes sorted by the <em>canonical ordering</em>.</p>
-<p>See <code><a title="tf.core.api" href="#tf.core.api">tf.core.api</a></code>.</p>
-<p>nodeSet: iterable
-An iterable of nodes to be sorted.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L826-L836" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def sortNodes(self, nodeSet):
-    &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
-
-    See `tf.core.api`.
-
-    nodeSet: iterable
-        An iterable of nodes to be sorted.
-    &#34;&#34;&#34;
-
-    Crank = self.C.rank.data
-    return sorted(nodeSet, key=lambda n: Crank[n - 1])</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
-<dt id="tf.core.api.Computed"><code class="flex name class">
-<span>class <span class="ident">Computed</span></span>
-<span>(</span><span>api, data)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Provides access to precomputed data.</p>
-<p>For component <code>ccc</code> it is the result of <code>C.ccc</code> or <code>Cs('ccc')</code>.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L603-L611" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">class Computed(object):
-    &#34;&#34;&#34;Provides access to precomputed data.
-
-    For component `ccc` it is the result of `C.ccc` or `Cs(&#39;ccc&#39;)`.
-    &#34;&#34;&#34;
-
-    def __init__(self, api, data):
-        self.api = api
-        self.data = data</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.Computeds"><code class="flex name class">
-<span>class <span class="ident">Computeds</span></span>
-</code></dt>
-<dd>
-<div class="desc"><p>Precomputed data components.</p>
-<p>In order to make the API work, Text-Fabric prepares some data and saves it in
-quick-load format. Most of this data are the features, but there is some extra
-data needed for the special functions of the <code><a title="tf.core.data.WARP" href="data.html#tf.core.data.WARP">WARP</a></code> features and the
-<code><a title="tf.core.locality.Locality" href="locality.html#tf.core.locality.Locality">Locality</a></code> API.</p>
-<p>Normally, you do not use this data, but since it is there, it might be valuable,
-so we have made it accessible in the <code><a title="tf.core.api.Computeds" href="#tf.core.api.Computeds">Computeds</a></code>-api.</p>
-<div class="admonition explanation">
-<p class="admonition-title">Pre-computed data storage</p>
-<p>Pre-computed data is stored in cache directories in a directory <code>.<a title="tf" href="../index.html">tf</a></code>
-inside the directory where the <code>otype</code> feature is encountered.</p>
-<p>After precomputation the result is pickled and gzipped and written to a
-<code>.tfx</code> file with the same name as the name of the feature.
-This is done for nromal features and pre-computed features likewise.</p>
-<p>After version 7.7.7 version the memory footprint of some precomputed features
-has been reduced. Because the precomputed features on disk are exact replicas
-of the precomputed features in RAM, older precomputed data does not work with
-versions of TF after 7.7.7.</p>
-<p>But from that version onwards, there is a parameter,
-<code><a title="tf.parameters.PACK_VERSION" href="../parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code> to detect incompatibilities.</p>
-</div></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L657-L683" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">class Computeds(object):
-    &#34;&#34;&#34;Precomputed data components.
-
-    In order to make the API work, Text-Fabric prepares some data and saves it in
-    quick-load format. Most of this data are the features, but there is some extra
-    data needed for the special functions of the `tf.core.data.WARP` features and the
-    `tf.core.locality.Locality` API.
-
-    Normally, you do not use this data, but since it is there, it might be valuable,
-    so we have made it accessible in the `tf.core.api.Computeds`-api.
-
-    !!! explanation &#34;Pre-computed data storage&#34;
-        Pre-computed data is stored in cache directories in a directory `.tf`
-        inside the directory where the `otype` feature is encountered.
-
-        After precomputation the result is pickled and gzipped and written to a
-        `.tfx` file with the same name as the name of the feature.
-        This is done for nromal features and pre-computed features likewise.
-
-        After version 7.7.7 version the memory footprint of some precomputed features
-        has been reduced. Because the precomputed features on disk are exact replicas
-        of the precomputed features in RAM, older precomputed data does not work with
-        versions of TF after 7.7.7.
-
-        But from that version onwards, there is a parameter,
-        `tf.parameters.PACK_VERSION` to detect incompatibilities.
-    &#34;&#34;&#34;</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.EdgeFeature"><code class="flex name class">
-<span>class <span class="ident">EdgeFeature</span></span>
-<span>(</span><span>api, metaData, data, doValues)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Provides access to (edge) feature data.</p>
-<p>For feature <code>fff</code> it is the result of <code>E.fff</code> or <code>Es('fff')</code>.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L352-L600" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">class EdgeFeature(object):
-    &#34;&#34;&#34;Provides access to (edge) feature data.
-
-    For feature `fff` it is the result of `E.fff` or `Es(&#39;fff&#39;)`.
-    &#34;&#34;&#34;
-
-    def __init__(self, api, metaData, data, doValues):
-        self.api = api
-        self.meta = metaData
-        &#34;&#34;&#34;Metadata of the feature.
-
-        This is the information found in the lines starting with `@`
-        in the `.tf` feature file.
-        &#34;&#34;&#34;
-
-        self.doValues = doValues
-        if type(data) is tuple:
-            self.data = data[0]
-            self.dataInv = data[1]
-        else:
-            self.data = data
-            self.dataInv = (
-                makeInverseVal(self.data) if doValues else makeInverse(self.data)
-            )
-
-    def items(self):
-        &#34;&#34;&#34;A generator that yields the items of the feature, seen as a mapping.
-
-        This gives you a rather efficient way to iterate over
-        just the feature data.
-
-        If you need this repeatedly, or you need the whole dictionary,
-        you can store the result as follows:
-
-        `data = dict(E.fff.items())`
-        &#34;&#34;&#34;
-
-        return self.data.items()
-
-    def f(self, n):
-        &#34;&#34;&#34;Get outgoing edges *from* a node.
-
-        The edges are those pairs of nodes specified in the feature data,
-        whose first node is the `n`.
-
-        Parameters
-        ----------
-        node: integer
-            The node **from** which the edges in question start.
-
-        Returns
-        -------
-        set | dict
-            The nodes reached by the edges **from** a certain node.
-            The members of the result are just nodes, if this feature does not
-            assign values to edges.
-            Otherwise the members are tuples of the destination node and the
-            value that the feature assigns to this pair of nodes.
-
-            If there are no edges from the node, the empty tuple is returned,
-            rather than `None`.
-        &#34;&#34;&#34;
-
-        if n not in self.data:
-            return ()
-        Crank = self.api.C.rank.data
-        if self.doValues:
-            return tuple(sorted(self.data[n].items(), key=lambda mv: Crank[mv[0] - 1]))
-        else:
-            return tuple(sorted(self.data[n], key=lambda m: Crank[m - 1]))
-
-    def t(self, n):
-        &#34;&#34;&#34;Get incoming edges *to* a node.
-
-        The edges are those pairs of nodes specified in the feature data,
-        whose second node is the `n`.
-
-        Parameters
-        ----------
-        node: integer
-            The node **to** which the edges in question connect.
-
-        Returns
-        -------
-        set | dict
-            The nodes where the edges **to** a certain node start.
-            The members of the result are just nodes, if this feature does not
-            assign values to edges.
-            Otherwise the members are tuples of the start node and the
-            value that the feature assigns to this pair of nodes.
-
-            If there are no edges to the node, the empty tuple is returned,
-            rather than `None`.
-        &#34;&#34;&#34;
-
-        if n not in self.dataInv:
-            return ()
-        Crank = self.api.C.rank.data
-        if self.doValues:
-            return tuple(
-                sorted(self.dataInv[n].items(), key=lambda mv: Crank[mv[0] - 1])
-            )
-        else:
-            return tuple(sorted(self.dataInv[n], key=lambda m: Crank[m - 1]))
-
-    def b(self, n):
-        &#34;&#34;&#34;Query *both* incoming edges to, and outgoing edges from a node.
-
-        The edges are those pairs of nodes specified in the feature data,
-        whose first or second node is the `n`.
-
-        Parameters
-        ----------
-        node: integer
-            The node **from** which the edges in question start or
-            **to** which the edges in question connect.
-
-        Returns
-        -------
-        set | dict
-            The nodes where the edges **to** a certain node start.
-            The members of the result are just nodes, if this feature does not
-            assign values to edges.
-            Otherwise the members are tuples of the start node and the
-            value that the feature assigns to this pair of nodes.
-
-            If there are no edges to the node, the empty tuple is returned,
-            rather than `None`.
-
-        Notes
-        -----
-        !!! hint &#34;symmetric closure&#34;
-            This method gives the *symmetric closure* of a set of edges:
-            if there is an edge between *n* and *m*, this method will deliver
-            its value, no matter the direction of the edge.
-
-        !!! example &#34;symmetric edges&#34;
-            Some edge sets are semantically symmetric, for example *similarity*.
-            If *n* is similar to *m*, then *m* is similar to *n*.
-
-            But if you store such an edge feature completely,
-            half of the data is redundant.
-            By virtue of this method you do not have to do that, you only need to store
-            one of the edges between *n* and *m* (it does not matter which one),
-            and `E.fff.b(n)` will nevertheless produce the complete results.
-
-        !!! caution &#34;conflicting values&#34;
-            If your set of edges is not symmetric, and edges carry values, it might
-            very well be the case that edges between the same pair of nodes carry
-            different values for the two directions.
-
-            In that case, this method gives precedence to the edges that
-            *depart* from the node to those that go *to* the node.
-
-        !!! example &#34;conflicting values&#34;
-            Suppose we have
-
-            ```
-            n == value=4 ==&gt; m
-            m == value=6 ==&gt; n
-            ```
-
-            then
-
-            ```
-            E.b(n) = (m, 4)
-            E.b(m) = (n, 6)
-            ```
-
-        &#34;&#34;&#34;
-
-        if n not in self.data and n not in self.dataInv:
-            return ()
-        Crank = self.api.C.rank.data
-        if self.doValues:
-            result = {}
-            if n in self.dataInv:
-                result.update(self.dataInv[n].items())
-            if n in self.data:
-                result.update(self.data[n].items())
-            return tuple(sorted(result.items(), key=lambda mv: Crank[mv[0] - 1]))
-        else:
-            result = set()
-            if n in self.dataInv:
-                result |= self.dataInv[n]
-            if n in self.data:
-                result |= self.data[n]
-            return tuple(sorted(result, key=lambda m: Crank[m - 1]))
-
-    def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
-        &#34;&#34;&#34;Frequency list of the values of this feature.
-
-        Inspect the values of this feature and see how often they occur.
-
-        If the feature does not assign values, return the number of node pairs
-        in this edge.
-
-        If the edge feature does have values, inspect them and see
-        how often they occur.
-        The result is a list of pairs `(value, frequency)`, ordered by `frequency`,
-        highest frequencies first.
-
-        Parameters
-        ----------
-        nodeTypesFrom: set of string, optional `None`
-            If you pass a set of nodeTypes here, only the values for edges
-            that start *from* a node with such a type will be counted.
-        nodeTypesTo: set of string, optional `None`
-            If you pass a set of nodeTypes here, only the values for edges
-            that go *to* a node with such a type will be counted.
-
-        Returns
-        -------
-        tuple of 2-tuple
-            A tuple of `(value, frequency)`, items, ordered by `frequency`,
-            highest frequencies first.
-
-        &#34;&#34;&#34;
-
-        if nodeTypesFrom is None and nodeTypesTo is None:
-            if self.doValues:
-                fql = collections.Counter()
-                for (n, vals) in self.data.items():
-                    for val in vals.values():
-                        fql[val] += 1
-                return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
-            else:
-                fql = 0
-                for (n, ms) in self.data.items():
-                    fql += len(ms)
-                return fql
-        else:
-            fOtype = self.api.F.otype.v
-            if self.doValues:
-                fql = collections.Counter()
-                for (n, vals) in self.data.items():
-                    if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
-                        for (m, val) in vals.items():
-                            if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
-                                fql[val] += 1
-                return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
-            else:
-                fql = 0
-                for (n, ms) in self.data.items():
-                    if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
-                        for m in ms:
-                            if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
-                                fql += len(ms)
-                return fql</code></pre>
-</details>
-<h3>Instance variables</h3>
-<dl>
-<dt id="tf.core.api.EdgeFeature.meta"><code class="name">var <span class="ident">meta</span></code></dt>
-<dd>
-<div class="desc"><p>Metadata of the feature.</p>
-<p>This is the information found in the lines starting with <code>@</code>
-in the <code>.<a title="tf" href="../index.html">tf</a></code> feature file.</p></div>
-</dd>
-</dl>
-<h3>Methods</h3>
-<dl>
-<dt id="tf.core.api.EdgeFeature.b"><code class="name flex">
-<span>def <span class="ident">b</span></span>(<span>self, n)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Query <em>both</em> incoming edges to, and outgoing edges from a node.</p>
-<p>The edges are those pairs of nodes specified in the feature data,
-whose first or second node is the <code>n</code>.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
-<dd>The node <strong>from</strong> which the edges in question start or
-<strong>to</strong> which the edges in question connect.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>set | dict</code></dt>
-<dd>
-<p>The nodes where the edges <strong>to</strong> a certain node start.
-The members of the result are just nodes, if this feature does not
-assign values to edges.
-Otherwise the members are tuples of the start node and the
-value that the feature assigns to this pair of nodes.</p>
-<p>If there are no edges to the node, the empty tuple is returned,
-rather than <code>None</code>.</p>
-</dd>
-</dl>
-<div class="admonition hint">
-<p class="admonition-title">symmetric closure</p>
-<p>This method gives the <em>symmetric closure</em> of a set of edges:
-if there is an edge between <em>n</em> and <em>m</em>, this method will deliver
-its value, no matter the direction of the edge.</p>
-</div>
-<div class="admonition example">
-<p class="admonition-title">symmetric edges</p>
-<p>Some edge sets are semantically symmetric, for example <em>similarity</em>.
-If <em>n</em> is similar to <em>m</em>, then <em>m</em> is similar to <em>n</em>.</p>
-<p>But if you store such an edge feature completely,
-half of the data is redundant.
-By virtue of this method you do not have to do that, you only need to store
-one of the edges between <em>n</em> and <em>m</em> (it does not matter which one),
-and <code>E.fff.b(n)</code> will nevertheless produce the complete results.</p>
-</div>
-<div class="admonition caution">
-<p class="admonition-title">conflicting values</p>
-<p>If your set of edges is not symmetric, and edges carry values, it might
-very well be the case that edges between the same pair of nodes carry
-different values for the two directions.</p>
-<p>In that case, this method gives precedence to the edges that
-<em>depart</em> from the node to those that go <em>to</em> the node.</p>
-</div>
-<div class="admonition example">
-<p class="admonition-title">conflicting values</p>
-<p>Suppose we have</p>
-<p><code>n == value=4 ==&gt; m
-m == value=6 ==&gt; n</code></p>
-<p>then</p>
-<p><code>E.b(n) = (m, 4)
-E.b(m) = (n, 6)</code></p>
-</div></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L457-L539" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def b(self, n):
-    &#34;&#34;&#34;Query *both* incoming edges to, and outgoing edges from a node.
-
-    The edges are those pairs of nodes specified in the feature data,
-    whose first or second node is the `n`.
-
-    Parameters
-    ----------
-    node: integer
-        The node **from** which the edges in question start or
-        **to** which the edges in question connect.
-
-    Returns
-    -------
-    set | dict
-        The nodes where the edges **to** a certain node start.
-        The members of the result are just nodes, if this feature does not
-        assign values to edges.
-        Otherwise the members are tuples of the start node and the
-        value that the feature assigns to this pair of nodes.
-
-        If there are no edges to the node, the empty tuple is returned,
-        rather than `None`.
-
-    Notes
-    -----
-    !!! hint &#34;symmetric closure&#34;
-        This method gives the *symmetric closure* of a set of edges:
-        if there is an edge between *n* and *m*, this method will deliver
-        its value, no matter the direction of the edge.
-
-    !!! example &#34;symmetric edges&#34;
-        Some edge sets are semantically symmetric, for example *similarity*.
-        If *n* is similar to *m*, then *m* is similar to *n*.
-
-        But if you store such an edge feature completely,
-        half of the data is redundant.
-        By virtue of this method you do not have to do that, you only need to store
-        one of the edges between *n* and *m* (it does not matter which one),
-        and `E.fff.b(n)` will nevertheless produce the complete results.
-
-    !!! caution &#34;conflicting values&#34;
-        If your set of edges is not symmetric, and edges carry values, it might
-        very well be the case that edges between the same pair of nodes carry
-        different values for the two directions.
-
-        In that case, this method gives precedence to the edges that
-        *depart* from the node to those that go *to* the node.
-
-    !!! example &#34;conflicting values&#34;
-        Suppose we have
-
-        ```
-        n == value=4 ==&gt; m
-        m == value=6 ==&gt; n
-        ```
-
-        then
-
-        ```
-        E.b(n) = (m, 4)
-        E.b(m) = (n, 6)
-        ```
-
-    &#34;&#34;&#34;
-
-    if n not in self.data and n not in self.dataInv:
-        return ()
-    Crank = self.api.C.rank.data
-    if self.doValues:
-        result = {}
-        if n in self.dataInv:
-            result.update(self.dataInv[n].items())
-        if n in self.data:
-            result.update(self.data[n].items())
-        return tuple(sorted(result.items(), key=lambda mv: Crank[mv[0] - 1]))
-    else:
-        result = set()
-        if n in self.dataInv:
-            result |= self.dataInv[n]
-        if n in self.data:
-            result |= self.data[n]
-        return tuple(sorted(result, key=lambda m: Crank[m - 1]))</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.EdgeFeature.f"><code class="name flex">
-<span>def <span class="ident">f</span></span>(<span>self, n)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get outgoing edges <em>from</em> a node.</p>
-<p>The edges are those pairs of nodes specified in the feature data,
-whose first node is the <code>n</code>.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
-<dd>The node <strong>from</strong> which the edges in question start.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>set | dict</code></dt>
-<dd>
-<p>The nodes reached by the edges <strong>from</strong> a certain node.
-The members of the result are just nodes, if this feature does not
-assign values to edges.
-Otherwise the members are tuples of the destination node and the
-value that the feature assigns to this pair of nodes.</p>
-<p>If there are no edges from the node, the empty tuple is returned,
-rather than <code>None</code>.</p>
-</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L391-L421" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def f(self, n):
-    &#34;&#34;&#34;Get outgoing edges *from* a node.
-
-    The edges are those pairs of nodes specified in the feature data,
-    whose first node is the `n`.
-
-    Parameters
-    ----------
-    node: integer
-        The node **from** which the edges in question start.
-
-    Returns
-    -------
-    set | dict
-        The nodes reached by the edges **from** a certain node.
-        The members of the result are just nodes, if this feature does not
-        assign values to edges.
-        Otherwise the members are tuples of the destination node and the
-        value that the feature assigns to this pair of nodes.
-
-        If there are no edges from the node, the empty tuple is returned,
-        rather than `None`.
-    &#34;&#34;&#34;
-
-    if n not in self.data:
-        return ()
-    Crank = self.api.C.rank.data
-    if self.doValues:
-        return tuple(sorted(self.data[n].items(), key=lambda mv: Crank[mv[0] - 1]))
-    else:
-        return tuple(sorted(self.data[n], key=lambda m: Crank[m - 1]))</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.EdgeFeature.freqList"><code class="name flex">
-<span>def <span class="ident">freqList</span></span>(<span>self, nodeTypesFrom=None, nodeTypesTo=None)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Frequency list of the values of this feature.</p>
-<p>Inspect the values of this feature and see how often they occur.</p>
-<p>If the feature does not assign values, return the number of node pairs
-in this edge.</p>
-<p>If the edge feature does have values, inspect them and see
-how often they occur.
-The result is a list of pairs <code>(value, frequency)</code>, ordered by <code>frequency</code>,
-highest frequencies first.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>nodeTypesFrom</code></strong> :&ensp;<code>set</code> of <code>string</code>, optional <code>None</code></dt>
-<dd>If you pass a set of nodeTypes here, only the values for edges
-that start <em>from</em> a node with such a type will be counted.</dd>
-<dt><strong><code>nodeTypesTo</code></strong> :&ensp;<code>set</code> of <code>string</code>, optional <code>None</code></dt>
-<dd>If you pass a set of nodeTypes here, only the values for edges
-that go <em>to</em> a node with such a type will be counted.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>tuple</code> of <code>2-tuple</code></dt>
-<dd>A tuple of <code>(value, frequency)</code>, items, ordered by <code>frequency</code>,
-highest frequencies first.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L541-L600" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
-    &#34;&#34;&#34;Frequency list of the values of this feature.
-
-    Inspect the values of this feature and see how often they occur.
-
-    If the feature does not assign values, return the number of node pairs
-    in this edge.
-
-    If the edge feature does have values, inspect them and see
-    how often they occur.
-    The result is a list of pairs `(value, frequency)`, ordered by `frequency`,
-    highest frequencies first.
-
-    Parameters
-    ----------
-    nodeTypesFrom: set of string, optional `None`
-        If you pass a set of nodeTypes here, only the values for edges
-        that start *from* a node with such a type will be counted.
-    nodeTypesTo: set of string, optional `None`
-        If you pass a set of nodeTypes here, only the values for edges
-        that go *to* a node with such a type will be counted.
-
-    Returns
-    -------
-    tuple of 2-tuple
-        A tuple of `(value, frequency)`, items, ordered by `frequency`,
-        highest frequencies first.
-
-    &#34;&#34;&#34;
-
-    if nodeTypesFrom is None and nodeTypesTo is None:
-        if self.doValues:
-            fql = collections.Counter()
-            for (n, vals) in self.data.items():
-                for val in vals.values():
-                    fql[val] += 1
-            return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
-        else:
-            fql = 0
-            for (n, ms) in self.data.items():
-                fql += len(ms)
-            return fql
-    else:
-        fOtype = self.api.F.otype.v
-        if self.doValues:
-            fql = collections.Counter()
-            for (n, vals) in self.data.items():
-                if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
-                    for (m, val) in vals.items():
-                        if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
-                            fql[val] += 1
-            return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
-        else:
-            fql = 0
-            for (n, ms) in self.data.items():
-                if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
-                    for m in ms:
-                        if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
-                            fql += len(ms)
-            return fql</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.EdgeFeature.items"><code class="name flex">
-<span>def <span class="ident">items</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>A generator that yields the items of the feature, seen as a mapping.</p>
-<p>This gives you a rather efficient way to iterate over
-just the feature data.</p>
-<p>If you need this repeatedly, or you need the whole dictionary,
-you can store the result as follows:</p>
-<p><code>data = dict(E.fff.items())</code></p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L377-L389" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def items(self):
-    &#34;&#34;&#34;A generator that yields the items of the feature, seen as a mapping.
-
-    This gives you a rather efficient way to iterate over
-    just the feature data.
-
-    If you need this repeatedly, or you need the whole dictionary,
-    you can store the result as follows:
-
-    `data = dict(E.fff.items())`
-    &#34;&#34;&#34;
-
-    return self.data.items()</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.EdgeFeature.t"><code class="name flex">
-<span>def <span class="ident">t</span></span>(<span>self, n)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get incoming edges <em>to</em> a node.</p>
-<p>The edges are those pairs of nodes specified in the feature data,
-whose second node is the <code>n</code>.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
-<dd>The node <strong>to</strong> which the edges in question connect.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>set | dict</code></dt>
-<dd>
-<p>The nodes where the edges <strong>to</strong> a certain node start.
-The members of the result are just nodes, if this feature does not
-assign values to edges.
-Otherwise the members are tuples of the start node and the
-value that the feature assigns to this pair of nodes.</p>
-<p>If there are no edges to the node, the empty tuple is returned,
-rather than <code>None</code>.</p>
-</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L423-L455" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def t(self, n):
-    &#34;&#34;&#34;Get incoming edges *to* a node.
-
-    The edges are those pairs of nodes specified in the feature data,
-    whose second node is the `n`.
-
-    Parameters
-    ----------
-    node: integer
-        The node **to** which the edges in question connect.
-
-    Returns
-    -------
-    set | dict
-        The nodes where the edges **to** a certain node start.
-        The members of the result are just nodes, if this feature does not
-        assign values to edges.
-        Otherwise the members are tuples of the start node and the
-        value that the feature assigns to this pair of nodes.
-
-        If there are no edges to the node, the empty tuple is returned,
-        rather than `None`.
-    &#34;&#34;&#34;
-
-    if n not in self.dataInv:
-        return ()
-    Crank = self.api.C.rank.data
-    if self.doValues:
-        return tuple(
-            sorted(self.dataInv[n].items(), key=lambda mv: Crank[mv[0] - 1])
-        )
-    else:
-        return tuple(sorted(self.dataInv[n], key=lambda m: Crank[m - 1]))</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
-<dt id="tf.core.api.EdgeFeatures"><code class="flex name class">
-<span>class <span class="ident">EdgeFeatures</span></span>
-</code></dt>
-<dd>
-<div class="desc"><p>Mappings from edges to values.</p>
-<p>Every edge feature is logically a mapping from pairs of nodes to values,
-string or integer.</p>
-<p>A feature object gives you methods that you can pass a node and that returns
-its value for that node.</p>
-<p>It is easiest to think of all edge features as a dictionary keyed by nodes.
-The values are either sets or dictionaries.
-If the value is a set, then the elements are the second node in the pair
-and the value is <code>None</code>.
-If the value is a dictionary, then the keys are the second node in the pair,
-and the value is the value that the edge feature assigns to this pair.</p>
-<p>However, some features have an optimized representation, and do not have
-a dictionary underneath.</p>
-<p>But you can still iterate over the data of a feature as if it were a
-dictionary: <code><a title="tf.core.api.EdgeFeature.items" href="#tf.core.api.EdgeFeature.items">EdgeFeature.items()</a></code></p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L633-L654" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">class EdgeFeatures(object):
-    &#34;&#34;&#34;Mappings from edges to values.
-
-    Every edge feature is logically a mapping from pairs of nodes to values,
-    string or integer.
-
-    A feature object gives you methods that you can pass a node and that returns
-    its value for that node.
-
-    It is easiest to think of all edge features as a dictionary keyed by nodes.
-    The values are either sets or dictionaries.
-    If the value is a set, then the elements are the second node in the pair
-    and the value is `None`.
-    If the value is a dictionary, then the keys are the second node in the pair,
-    and the value is the value that the edge feature assigns to this pair.
-
-    However, some features have an optimized representation, and do not have
-    a dictionary underneath.
-
-    But you can still iterate over the data of a feature as if it were a
-    dictionary: `tf.core.api.EdgeFeature.items`
-    &#34;&#34;&#34;</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.NodeFeature"><code class="flex name class">
-<span>class <span class="ident">NodeFeature</span></span>
-<span>(</span><span>api, metaData, data)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Provides access to (node) feature data.</p>
-<p>For feature <code>fff</code> it is the result of <code>F.fff</code> or <code>Fs('fff')</code>.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L244-L349" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">class NodeFeature(object):
-    &#34;&#34;&#34;Provides access to (node) feature data.
-
-    For feature `fff` it is the result of `F.fff` or `Fs(&#39;fff&#39;)`.
-    &#34;&#34;&#34;
-
-    def __init__(self, api, metaData, data):
-        self.api = api
-        self.meta = metaData
-        &#34;&#34;&#34;Metadata of the feature.
-
-        This is the information found in the lines starting with `@`
-        in the `.tf` feature file.
-        &#34;&#34;&#34;
-
-        self.data = data
-
-    def items(self):
-        &#34;&#34;&#34;A generator that yields the items of the feature, seen as a mapping.
-
-        It does not yield entries for nodes without values,
-        so this gives you a rather efficient way to iterate over
-        just the feature data, instead of over all nodes.
-
-        If you need this repeatedly, or you need the whole dictionary,
-        you can store the result as follows:
-
-        `data = dict(F.fff.items())`
-        &#34;&#34;&#34;
-
-        return self.data.items()
-
-    def v(self, n):
-        &#34;&#34;&#34;Get the value of a feature for a node.
-
-        Parameters
-        ----------
-        n: integer
-            The node in question
-
-        Returns
-        -------
-        integer | string | None
-            The value of the feature for that node, if it is defined, else `None`.
-        &#34;&#34;&#34;
-
-        if n in self.data:
-            return self.data[n]
-        return None
-
-    def s(self, val):
-        &#34;&#34;&#34;Query all nodes having a specified feature value.
-
-        This is an other way to walk through nodes than using `N()`,
-        see `tf.core.api.Api.N`.
-
-        Parameters
-        ----------
-        value: int | string
-            The feature value that all resulting nodes have.
-
-        Returns
-        -------
-        tuple of int
-            All nodes that have this value for this feature,
-            sorted in the canonical order.
-            (`tf.core.api`)
-        &#34;&#34;&#34;
-
-        Crank = self.api.C.rank.data
-        return tuple(
-            sorted(
-                [n for n in self.data if self.data[n] == val],
-                key=lambda n: Crank[n - 1],
-            )
-        )
-
-    def freqList(self, nodeTypes=None):
-        &#34;&#34;&#34;Frequency list of the values of this feature.
-
-        Inspect the values of this feature and see how often they occur.
-
-        Parameters
-        ----------
-        nodeTypes: set of string, optional `None`
-            If you pass a set of nodeTypes, only the values for nodes
-            within those types will be counted.
-
-        Returns
-        -------
-        tuple of 2-tuple
-            A tuple of `(value, frequency)`, items, ordered by `frequency`,
-            highest frequencies first.
-
-        &#34;&#34;&#34;
-
-        fql = collections.Counter()
-        if nodeTypes is None:
-            for n in self.data:
-                fql[self.data[n]] += 1
-        else:
-            fOtype = self.api.F.otype.v
-            for n in self.data:
-                if fOtype(n) in nodeTypes:
-                    fql[self.data[n]] += 1
-        return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))</code></pre>
-</details>
-<h3>Instance variables</h3>
-<dl>
-<dt id="tf.core.api.NodeFeature.meta"><code class="name">var <span class="ident">meta</span></code></dt>
-<dd>
-<div class="desc"><p>Metadata of the feature.</p>
-<p>This is the information found in the lines starting with <code>@</code>
-in the <code>.<a title="tf" href="../index.html">tf</a></code> feature file.</p></div>
-</dd>
-</dl>
-<h3>Methods</h3>
-<dl>
-<dt id="tf.core.api.NodeFeature.freqList"><code class="name flex">
-<span>def <span class="ident">freqList</span></span>(<span>self, nodeTypes=None)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Frequency list of the values of this feature.</p>
-<p>Inspect the values of this feature and see how often they occur.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>nodeTypes</code></strong> :&ensp;<code>set</code> of <code>string</code>, optional <code>None</code></dt>
-<dd>If you pass a set of nodeTypes, only the values for nodes
-within those types will be counted.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>tuple</code> of <code>2-tuple</code></dt>
-<dd>A tuple of <code>(value, frequency)</code>, items, ordered by <code>frequency</code>,
-highest frequencies first.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L321-L349" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def freqList(self, nodeTypes=None):
-    &#34;&#34;&#34;Frequency list of the values of this feature.
-
-    Inspect the values of this feature and see how often they occur.
-
-    Parameters
-    ----------
-    nodeTypes: set of string, optional `None`
-        If you pass a set of nodeTypes, only the values for nodes
-        within those types will be counted.
-
-    Returns
-    -------
-    tuple of 2-tuple
-        A tuple of `(value, frequency)`, items, ordered by `frequency`,
-        highest frequencies first.
-
-    &#34;&#34;&#34;
-
-    fql = collections.Counter()
-    if nodeTypes is None:
-        for n in self.data:
-            fql[self.data[n]] += 1
-    else:
-        fOtype = self.api.F.otype.v
-        for n in self.data:
-            if fOtype(n) in nodeTypes:
-                fql[self.data[n]] += 1
-    return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.NodeFeature.items"><code class="name flex">
-<span>def <span class="ident">items</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>A generator that yields the items of the feature, seen as a mapping.</p>
-<p>It does not yield entries for nodes without values,
-so this gives you a rather efficient way to iterate over
-just the feature data, instead of over all nodes.</p>
-<p>If you need this repeatedly, or you need the whole dictionary,
-you can store the result as follows:</p>
-<p><code>data = dict(F.fff.items())</code></p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L261-L274" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def items(self):
-    &#34;&#34;&#34;A generator that yields the items of the feature, seen as a mapping.
-
-    It does not yield entries for nodes without values,
-    so this gives you a rather efficient way to iterate over
-    just the feature data, instead of over all nodes.
-
-    If you need this repeatedly, or you need the whole dictionary,
-    you can store the result as follows:
-
-    `data = dict(F.fff.items())`
-    &#34;&#34;&#34;
-
-    return self.data.items()</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.NodeFeature.s"><code class="name flex">
-<span>def <span class="ident">s</span></span>(<span>self, val)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Query all nodes having a specified feature value.</p>
-<p>This is an other way to walk through nodes than using <code>N()</code>,
-see <code><a title="tf.core.api.Api.N" href="#tf.core.api.Api.N">Api.N()</a></code>.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>value</code></strong> :&ensp;<code>int | string</code></dt>
-<dd>The feature value that all resulting nodes have.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>tuple</code> of <code>int</code></dt>
-<dd>All nodes that have this value for this feature,
-sorted in the canonical order.
-(<code><a title="tf.core.api" href="#tf.core.api">tf.core.api</a></code>)</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L294-L319" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def s(self, val):
-    &#34;&#34;&#34;Query all nodes having a specified feature value.
-
-    This is an other way to walk through nodes than using `N()`,
-    see `tf.core.api.Api.N`.
-
-    Parameters
-    ----------
-    value: int | string
-        The feature value that all resulting nodes have.
-
-    Returns
-    -------
-    tuple of int
-        All nodes that have this value for this feature,
-        sorted in the canonical order.
-        (`tf.core.api`)
-    &#34;&#34;&#34;
-
-    Crank = self.api.C.rank.data
-    return tuple(
-        sorted(
-            [n for n in self.data if self.data[n] == val],
-            key=lambda n: Crank[n - 1],
-        )
-    )</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.NodeFeature.v"><code class="name flex">
-<span>def <span class="ident">v</span></span>(<span>self, n)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get the value of a feature for a node.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
-<dd>The node in question</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>integer | string | None</code></dt>
-<dd>The value of the feature for that node, if it is defined, else <code>None</code>.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L276-L292" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def v(self, n):
-    &#34;&#34;&#34;Get the value of a feature for a node.
-
-    Parameters
-    ----------
-    n: integer
-        The node in question
-
-    Returns
-    -------
-    integer | string | None
-        The value of the feature for that node, if it is defined, else `None`.
-    &#34;&#34;&#34;
-
-    if n in self.data:
-        return self.data[n]
-    return None</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
-<dt id="tf.core.api.NodeFeatures"><code class="flex name class">
-<span>class <span class="ident">NodeFeatures</span></span>
-</code></dt>
-<dd>
-<div class="desc"><p>Mappings from nodes to values.</p>
-<p>Every node feature is logically a mapping from nodes to values,
-string or integer.</p>
-<p>A feature object gives you methods that you can pass a node and that returns
-its value for that node.</p>
-<p>It is easiest to think of all node features as a dictionary keyed by nodes.</p>
-<p>However, some features have an optimized representation, and do not have
-a dictionary underneath.</p>
-<p>But you can still iterate over the data of a feature as if it were a
-dictionary: <code><a title="tf.core.api.NodeFeature.items" href="#tf.core.api.NodeFeature.items">NodeFeature.items()</a></code></p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L614-L630" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">class NodeFeatures(object):
-    &#34;&#34;&#34;Mappings from nodes to values.
-
-    Every node feature is logically a mapping from nodes to values,
-    string or integer.
-
-    A feature object gives you methods that you can pass a node and that returns
-    its value for that node.
-
-    It is easiest to think of all node features as a dictionary keyed by nodes.
-
-    However, some features have an optimized representation, and do not have
-    a dictionary underneath.
-
-    But you can still iterate over the data of a feature as if it were a
-    dictionary: `tf.core.api.NodeFeature.items`
-    &#34;&#34;&#34;</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.OslotsFeature"><code class="flex name class">
-<span>class <span class="ident">OslotsFeature</span></span>
-<span>(</span><span>api, metaData, data)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Provides access to <em>oslots</em> feature data.</p>
-<p>In general, features are stored as dictionaries, but this specific feature
-has an optimized representation. Since it is a large feature and present
-in any TF dataset, this pays off.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L181-L241" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">class OslotsFeature(object):
-    &#34;&#34;&#34;Provides access to *oslots* feature data.
-
-    In general, features are stored as dictionaries, but this specific feature
-    has an optimized representation. Since it is a large feature and present
-    in any TF dataset, this pays off.
-    &#34;&#34;&#34;
-
-    def __init__(self, api, metaData, data):
-        self.api = api
-        self.meta = metaData
-        &#34;&#34;&#34;Metadata of the feature.
-
-        This is the information found in the lines starting with `@`
-        in the `.tf` feature file.
-        &#34;&#34;&#34;
-
-        self.data = data[0]
-        self.maxSlot = data[1]
-        self.maxNode = data[2]
-
-    def items(self):
-        &#34;&#34;&#34;A generator that yields the non-slot nodes with their slots.
-        &#34;&#34;&#34;
-
-        maxSlot = self.maxSlot
-        data = self.data
-        maxNode = self.maxNode
-
-        shift = maxSlot + 1
-
-        for n in range(maxSlot + 1, maxNode + 1):
-            yield (n, data[n - shift])
-
-    def s(self, n):
-        &#34;&#34;&#34;Get the slots of a (non-slot) node.
-
-        Parameters
-        ----------
-        node: integer
-            The node whose slots must be retrieved.
-
-        Returns
-        -------
-        tuple
-            The slot nodes of the node in question, in canonical order.
-            (`tf.core.api`)
-
-            For slot nodes `n` it is the tuple `(n,)`.
-
-            All non-slot nodes are linked to at least one slot.
-        &#34;&#34;&#34;
-
-        if n == 0:
-            return ()
-        if n &lt; self.maxSlot + 1:
-            return (n,)
-        m = n - self.maxSlot
-        if m &lt;= len(self.data):
-            return self.data[m - 1]
-        return ()</code></pre>
-</details>
-<h3>Instance variables</h3>
-<dl>
-<dt id="tf.core.api.OslotsFeature.meta"><code class="name">var <span class="ident">meta</span></code></dt>
-<dd>
-<div class="desc"><p>Metadata of the feature.</p>
-<p>This is the information found in the lines starting with <code>@</code>
-in the <code>.<a title="tf" href="../index.html">tf</a></code> feature file.</p></div>
-</dd>
-</dl>
-<h3>Methods</h3>
-<dl>
-<dt id="tf.core.api.OslotsFeature.items"><code class="name flex">
-<span>def <span class="ident">items</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>A generator that yields the non-slot nodes with their slots.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L202-L213" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def items(self):
-    &#34;&#34;&#34;A generator that yields the non-slot nodes with their slots.
-    &#34;&#34;&#34;
-
-    maxSlot = self.maxSlot
-    data = self.data
-    maxNode = self.maxNode
-
-    shift = maxSlot + 1
-
-    for n in range(maxSlot + 1, maxNode + 1):
-        yield (n, data[n - shift])</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.OslotsFeature.s"><code class="name flex">
-<span>def <span class="ident">s</span></span>(<span>self, n)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get the slots of a (non-slot) node.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
-<dd>The node whose slots must be retrieved.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>tuple</code></dt>
-<dd>
-<p>The slot nodes of the node in question, in canonical order.
-(<code><a title="tf.core.api" href="#tf.core.api">tf.core.api</a></code>)</p>
-<p>For slot nodes <code>n</code> it is the tuple <code>(n,)</code>.</p>
-<p>All non-slot nodes are linked to at least one slot.</p>
-</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L215-L241" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def s(self, n):
-    &#34;&#34;&#34;Get the slots of a (non-slot) node.
-
-    Parameters
-    ----------
-    node: integer
-        The node whose slots must be retrieved.
-
-    Returns
-    -------
-    tuple
-        The slot nodes of the node in question, in canonical order.
-        (`tf.core.api`)
-
-        For slot nodes `n` it is the tuple `(n,)`.
-
-        All non-slot nodes are linked to at least one slot.
-    &#34;&#34;&#34;
-
-    if n == 0:
-        return ()
-    if n &lt; self.maxSlot + 1:
-        return (n,)
-    m = n - self.maxSlot
-    if m &lt;= len(self.data):
-        return self.data[m - 1]
-    return ()</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
-<dt id="tf.core.api.OtypeFeature"><code class="flex name class">
-<span>class <span class="ident">OtypeFeature</span></span>
-<span>(</span><span>api, metaData, data)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Provides access to <em>otype</em> feature data.</p>
-<p>In general, features are stored as dictionaries, but this specific feature
-has an optimized representation. Since it is a large feature and present
-in any TF dataset, this pays off.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L59-L178" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">class OtypeFeature(object):
-    &#34;&#34;&#34;Provides access to *otype* feature data.
-
-    In general, features are stored as dictionaries, but this specific feature
-    has an optimized representation. Since it is a large feature and present
-    in any TF dataset, this pays off.
-    &#34;&#34;&#34;
-
-    def __init__(self, api, metaData, data):
-        self.api = api
-        self.meta = metaData
-        &#34;&#34;&#34;Metadata of the feature.
-
-        This is the information found in the lines starting with `@`
-        in the `.tf` feature file.
-        &#34;&#34;&#34;
-
-        self.data = data[0]
-        self.maxSlot = data[1]
-        &#34;&#34;&#34;Last slot node in the corpus.&#34;&#34;&#34;
-
-        self.maxNode = data[2]
-        &#34;&#34;&#34;Last node node.in the corpus.&#34;&#34;&#34;
-
-        self.slotType = data[3]
-        &#34;&#34;&#34;The name of the slot type.&#34;&#34;&#34;
-
-        self.all = None
-        &#34;&#34;&#34;List of all node types from big to small.&#34;&#34;&#34;
-
-    def items(self):
-        &#34;&#34;&#34;As in `tf.core.api.NodeFeature.items`.
-        &#34;&#34;&#34;
-
-        slotType = self.slotType
-        maxSlot = self.maxSlot
-        data = self.data
-
-        for n in range(1, maxSlot + 1):
-            yield (n, slotType)
-
-        maxNode = self.maxNode
-
-        shift = maxSlot + 1
-
-        for n in range(maxSlot + 1, maxNode + 1):
-            yield (n, data[n - shift])
-
-    def v(self, n):
-        &#34;&#34;&#34;Get the node type of a node.
-
-        Parameters
-        ----------
-        n: integer
-            The node in question
-
-        Returns
-        -------
-        string
-            The node type of that node. All nodes have a node type, and it is
-            always a string.
-        &#34;&#34;&#34;
-
-        if n == 0:
-            return None
-        if n &lt; self.maxSlot + 1:
-            return self.slotType
-        m = n - self.maxSlot
-        if m &lt;= len(self.data):
-            return self.data[m - 1]
-        return None
-
-    def s(self, val):
-        &#34;&#34;&#34;Query all nodes having a specified node type.
-
-        This is an other way to walk through nodes than using `N()`,
-        see `tf.core.api.Api.N`.
-
-        Parameters
-        ----------
-        val: int | string
-            The node type that all resulting nodes have.
-
-        Returns
-        -------
-        tuple of int
-            All nodes that have this node type, sorted in the canonical order.
-            (`tf.core.api`)
-        &#34;&#34;&#34;
-
-        # NB: the support attribute has been added by precomputing __levels__
-        if val in self.support:
-            (b, e) = self.support[val]
-            return range(b, e + 1)
-        else:
-            return ()
-
-    def sInterval(self, val):
-        &#34;&#34;&#34;The interval of nodes having a specified node type.
-
-        The nodes are organized in intervals of nodes with the same type.
-        For each type there is only one such interval.
-        The first interval, `1:maxSlot + 1` is reserved for the slot type.
-
-        Parameters
-        ----------
-        val: int | string
-            The node type in question.
-
-        Returns
-        -------
-        2-tuple of int
-            The start and end node of the interval of nodes with this type.
-        &#34;&#34;&#34;
-
-        # NB: the support attribute has been added by precomputing __levels__
-        if val in self.support:
-            return self.support[val]
-        else:
-            return ()</code></pre>
-</details>
-<h3>Instance variables</h3>
-<dl>
-<dt id="tf.core.api.OtypeFeature.all"><code class="name">var <span class="ident">all</span></code></dt>
-<dd>
-<div class="desc"><p>List of all node types from big to small.</p></div>
-</dd>
-<dt id="tf.core.api.OtypeFeature.maxNode"><code class="name">var <span class="ident">maxNode</span></code></dt>
-<dd>
-<div class="desc"><p>Last node node.in the corpus.</p></div>
-</dd>
-<dt id="tf.core.api.OtypeFeature.maxSlot"><code class="name">var <span class="ident">maxSlot</span></code></dt>
-<dd>
-<div class="desc"><p>Last slot node in the corpus.</p></div>
-</dd>
-<dt id="tf.core.api.OtypeFeature.meta"><code class="name">var <span class="ident">meta</span></code></dt>
-<dd>
-<div class="desc"><p>Metadata of the feature.</p>
-<p>This is the information found in the lines starting with <code>@</code>
-in the <code>.<a title="tf" href="../index.html">tf</a></code> feature file.</p></div>
-</dd>
-<dt id="tf.core.api.OtypeFeature.slotType"><code class="name">var <span class="ident">slotType</span></code></dt>
-<dd>
-<div class="desc"><p>The name of the slot type.</p></div>
-</dd>
-</dl>
-<h3>Methods</h3>
-<dl>
-<dt id="tf.core.api.OtypeFeature.items"><code class="name flex">
-<span>def <span class="ident">items</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>As in <code><a title="tf.core.api.NodeFeature.items" href="#tf.core.api.NodeFeature.items">NodeFeature.items()</a></code>.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L89-L105" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def items(self):
-    &#34;&#34;&#34;As in `tf.core.api.NodeFeature.items`.
-    &#34;&#34;&#34;
-
-    slotType = self.slotType
-    maxSlot = self.maxSlot
-    data = self.data
-
-    for n in range(1, maxSlot + 1):
-        yield (n, slotType)
-
-    maxNode = self.maxNode
-
-    shift = maxSlot + 1
-
-    for n in range(maxSlot + 1, maxNode + 1):
-        yield (n, data[n - shift])</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.OtypeFeature.s"><code class="name flex">
-<span>def <span class="ident">s</span></span>(<span>self, val)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Query all nodes having a specified node type.</p>
-<p>This is an other way to walk through nodes than using <code>N()</code>,
-see <code><a title="tf.core.api.Api.N" href="#tf.core.api.Api.N">Api.N()</a></code>.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>val</code></strong> :&ensp;<code>int | string</code></dt>
-<dd>The node type that all resulting nodes have.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>tuple</code> of <code>int</code></dt>
-<dd>All nodes that have this node type, sorted in the canonical order.
-(<code><a title="tf.core.api" href="#tf.core.api">tf.core.api</a></code>)</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L131-L154" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def s(self, val):
-    &#34;&#34;&#34;Query all nodes having a specified node type.
-
-    This is an other way to walk through nodes than using `N()`,
-    see `tf.core.api.Api.N`.
-
-    Parameters
-    ----------
-    val: int | string
-        The node type that all resulting nodes have.
-
-    Returns
-    -------
-    tuple of int
-        All nodes that have this node type, sorted in the canonical order.
-        (`tf.core.api`)
-    &#34;&#34;&#34;
-
-    # NB: the support attribute has been added by precomputing __levels__
-    if val in self.support:
-        (b, e) = self.support[val]
-        return range(b, e + 1)
-    else:
-        return ()</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.OtypeFeature.sInterval"><code class="name flex">
-<span>def <span class="ident">sInterval</span></span>(<span>self, val)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>The interval of nodes having a specified node type.</p>
-<p>The nodes are organized in intervals of nodes with the same type.
-For each type there is only one such interval.
-The first interval, <code>1:maxSlot + 1</code> is reserved for the slot type.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>val</code></strong> :&ensp;<code>int | string</code></dt>
-<dd>The node type in question.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>2-tuple</code> of <code>int</code></dt>
-<dd>The start and end node of the interval of nodes with this type.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L156-L178" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def sInterval(self, val):
-    &#34;&#34;&#34;The interval of nodes having a specified node type.
-
-    The nodes are organized in intervals of nodes with the same type.
-    For each type there is only one such interval.
-    The first interval, `1:maxSlot + 1` is reserved for the slot type.
-
-    Parameters
-    ----------
-    val: int | string
-        The node type in question.
-
-    Returns
-    -------
-    2-tuple of int
-        The start and end node of the interval of nodes with this type.
-    &#34;&#34;&#34;
-
-    # NB: the support attribute has been added by precomputing __levels__
-    if val in self.support:
-        return self.support[val]
-    else:
-        return ()</code></pre>
-</details>
-</dd>
-<dt id="tf.core.api.OtypeFeature.v"><code class="name flex">
-<span>def <span class="ident">v</span></span>(<span>self, n)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get the node type of a node.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
-<dd>The node in question</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>string</code></dt>
-<dd>The node type of that node. All nodes have a node type, and it is
-always a string.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/api.py#L107-L129" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def v(self, n):
-    &#34;&#34;&#34;Get the node type of a node.
-
-    Parameters
-    ----------
-    n: integer
-        The node in question
-
-    Returns
-    -------
-    string
-        The node type of that node. All nodes have a node type, and it is
-        always a string.
-    &#34;&#34;&#34;
-
-    if n == 0:
-        return None
-    if n &lt; self.maxSlot + 1:
-        return self.slotType
-    m = n - self.maxSlot
-    if m &lt;= len(self.data):
-        return self.data[m - 1]
-    return None</code></pre>
-</details>
-</dd>
 </dl>
 </dd>
 </dl>
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.core.api">
@@ -3649,10 +1055,7 @@ data-gaCategoryParameter="tf.core.api">
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#the-core-api-of-tf">The core API of TF.</a><ul>
-<li><a href="#canonical-order">Canonical Order</a></li>
-</ul>
-</li>
+<li><a href="#the-core-api-of-tf">The core API of TF.</a></li>
 </ul>
 </div>
 <ul id="index">
@@ -3662,12 +1065,11 @@ data-gaCategoryParameter="tf.core.api">
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="tf.core.api.addLocality" href="#tf.core.api.addLocality">addLocality</a></code></li>
+<li><code><a title="tf.core.api.addNodes" href="#tf.core.api.addNodes">addNodes</a></code></li>
 <li><code><a title="tf.core.api.addOtype" href="#tf.core.api.addOtype">addOtype</a></code></li>
-<li><code><a title="tf.core.api.addRank" href="#tf.core.api.addRank">addRank</a></code></li>
 <li><code><a title="tf.core.api.addSearch" href="#tf.core.api.addSearch">addSearch</a></code></li>
-<li><code><a title="tf.core.api.addSortKey" href="#tf.core.api.addSortKey">addSortKey</a></code></li>
 <li><code><a title="tf.core.api.addText" href="#tf.core.api.addText">addText</a></code></li>
 </ul>
 </li>
@@ -3682,70 +1084,9 @@ data-gaCategoryParameter="tf.core.api">
 <li><code><a title="tf.core.api.Api.Es" href="#tf.core.api.Api.Es">Es</a></code></li>
 <li><code><a title="tf.core.api.Api.Fall" href="#tf.core.api.Api.Fall">Fall</a></code></li>
 <li><code><a title="tf.core.api.Api.Fs" href="#tf.core.api.Api.Fs">Fs</a></code></li>
-<li><code><a title="tf.core.api.Api.N" href="#tf.core.api.Api.N">N</a></code></li>
 <li><code><a title="tf.core.api.Api.ensureLoaded" href="#tf.core.api.Api.ensureLoaded">ensureLoaded</a></code></li>
 <li><code><a title="tf.core.api.Api.ignored" href="#tf.core.api.Api.ignored">ignored</a></code></li>
-<li><code><a title="tf.core.api.Api.loadLog" href="#tf.core.api.Api.loadLog">loadLog</a></code></li>
 <li><code><a title="tf.core.api.Api.makeAvailableIn" href="#tf.core.api.Api.makeAvailableIn">makeAvailableIn</a></code></li>
-<li><code><a title="tf.core.api.Api.otypeRank" href="#tf.core.api.Api.otypeRank">otypeRank</a></code></li>
-<li><code><a title="tf.core.api.Api.sortKey" href="#tf.core.api.Api.sortKey">sortKey</a></code></li>
-<li><code><a title="tf.core.api.Api.sortKeyTuple" href="#tf.core.api.Api.sortKeyTuple">sortKeyTuple</a></code></li>
-<li><code><a title="tf.core.api.Api.sortNodes" href="#tf.core.api.Api.sortNodes">sortNodes</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="tf.core.api.Computed" href="#tf.core.api.Computed">Computed</a></code></h4>
-</li>
-<li>
-<h4><code><a title="tf.core.api.Computeds" href="#tf.core.api.Computeds">Computeds</a></code></h4>
-</li>
-<li>
-<h4><code><a title="tf.core.api.EdgeFeature" href="#tf.core.api.EdgeFeature">EdgeFeature</a></code></h4>
-<ul class="two-column">
-<li><code><a title="tf.core.api.EdgeFeature.b" href="#tf.core.api.EdgeFeature.b">b</a></code></li>
-<li><code><a title="tf.core.api.EdgeFeature.f" href="#tf.core.api.EdgeFeature.f">f</a></code></li>
-<li><code><a title="tf.core.api.EdgeFeature.freqList" href="#tf.core.api.EdgeFeature.freqList">freqList</a></code></li>
-<li><code><a title="tf.core.api.EdgeFeature.items" href="#tf.core.api.EdgeFeature.items">items</a></code></li>
-<li><code><a title="tf.core.api.EdgeFeature.meta" href="#tf.core.api.EdgeFeature.meta">meta</a></code></li>
-<li><code><a title="tf.core.api.EdgeFeature.t" href="#tf.core.api.EdgeFeature.t">t</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="tf.core.api.EdgeFeatures" href="#tf.core.api.EdgeFeatures">EdgeFeatures</a></code></h4>
-</li>
-<li>
-<h4><code><a title="tf.core.api.NodeFeature" href="#tf.core.api.NodeFeature">NodeFeature</a></code></h4>
-<ul class="">
-<li><code><a title="tf.core.api.NodeFeature.freqList" href="#tf.core.api.NodeFeature.freqList">freqList</a></code></li>
-<li><code><a title="tf.core.api.NodeFeature.items" href="#tf.core.api.NodeFeature.items">items</a></code></li>
-<li><code><a title="tf.core.api.NodeFeature.meta" href="#tf.core.api.NodeFeature.meta">meta</a></code></li>
-<li><code><a title="tf.core.api.NodeFeature.s" href="#tf.core.api.NodeFeature.s">s</a></code></li>
-<li><code><a title="tf.core.api.NodeFeature.v" href="#tf.core.api.NodeFeature.v">v</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="tf.core.api.NodeFeatures" href="#tf.core.api.NodeFeatures">NodeFeatures</a></code></h4>
-</li>
-<li>
-<h4><code><a title="tf.core.api.OslotsFeature" href="#tf.core.api.OslotsFeature">OslotsFeature</a></code></h4>
-<ul class="">
-<li><code><a title="tf.core.api.OslotsFeature.items" href="#tf.core.api.OslotsFeature.items">items</a></code></li>
-<li><code><a title="tf.core.api.OslotsFeature.meta" href="#tf.core.api.OslotsFeature.meta">meta</a></code></li>
-<li><code><a title="tf.core.api.OslotsFeature.s" href="#tf.core.api.OslotsFeature.s">s</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="tf.core.api.OtypeFeature" href="#tf.core.api.OtypeFeature">OtypeFeature</a></code></h4>
-<ul class="two-column">
-<li><code><a title="tf.core.api.OtypeFeature.all" href="#tf.core.api.OtypeFeature.all">all</a></code></li>
-<li><code><a title="tf.core.api.OtypeFeature.items" href="#tf.core.api.OtypeFeature.items">items</a></code></li>
-<li><code><a title="tf.core.api.OtypeFeature.maxNode" href="#tf.core.api.OtypeFeature.maxNode">maxNode</a></code></li>
-<li><code><a title="tf.core.api.OtypeFeature.maxSlot" href="#tf.core.api.OtypeFeature.maxSlot">maxSlot</a></code></li>
-<li><code><a title="tf.core.api.OtypeFeature.meta" href="#tf.core.api.OtypeFeature.meta">meta</a></code></li>
-<li><code><a title="tf.core.api.OtypeFeature.s" href="#tf.core.api.OtypeFeature.s">s</a></code></li>
-<li><code><a title="tf.core.api.OtypeFeature.sInterval" href="#tf.core.api.OtypeFeature.sInterval">sInterval</a></code></li>
-<li><code><a title="tf.core.api.OtypeFeature.slotType" href="#tf.core.api.OtypeFeature.slotType">slotType</a></code></li>
-<li><code><a title="tf.core.api.OtypeFeature.v" href="#tf.core.api.OtypeFeature.v">v</a></code></li>
 </ul>
 </li>
 </ul>

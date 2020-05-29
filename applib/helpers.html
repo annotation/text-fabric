@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/helpers.py#L0-L295" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/helpers.py#L0-L336" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 
@@ -167,10 +167,47 @@ def parseFeatures(features):
     return (bare, indirect)
 
 
-def transitiveClosure(relation):
-    descendants = {}
-    for (parent, children) in relation.items():
-        descendants[parent] = set(children)
+def transitiveClosure(relation, reflexiveExceptions):
+    &#34;&#34;&#34;Produce the reflexive transitive closure of a relation.
+
+    The transitive closure of a relation R is the relation TR
+    such that aTRb if and only if there is a chain of c1, c2, ..., cn
+    such that ARc1, c1Rc2, ..., cnRb.
+
+    If we allow the chain to have length zero, we effectively have that
+    aTRa for all elements. That is the reflexive, transitive closure.
+
+    This function builds the latter, but we allow for exceptions to the
+    reflexivity.
+
+    Parameters
+    ----------
+    relation: dict
+        The input relation, keyed by elements, valued by the set of
+        elements that stand in relation to the key.
+    reflexiveExceptions: set
+        The set of elements that will not be reflexively closed.
+
+    Returns
+    -------
+    dict
+        The transitive reflexive closure (with possible exceptions to
+        the reflexivity) of the given relation.
+
+    Notes
+    -----
+    We use this function to build the closure of the childType relation
+    between node types. We want to exclude the slot type from the
+    reflexivity. The closure of the childType relation is the descendant type
+    relation.
+    The display algorithm uses this to unravel nodes.
+
+    See also
+    --------
+    tf.applib.display: Display algorithm
+    &#34;&#34;&#34;
+
+    descendants = {parent: set(children) for (parent, children) in relation.items()}
 
     changed = True
     while changed:
@@ -182,6 +219,9 @@ def transitiveClosure(relation):
                         if grandChild not in descendants[parent]:
                             descendants[parent].add(grandChild)
                             changed = True
+    for parent in relation:
+        if parent not in reflexiveExceptions:
+            descendants[parent].add(parent)
     return descendants
 
 
@@ -266,8 +306,9 @@ def getResultsX(app, results, features, condenseType, fmt=None):
     F = api.F
     Fs = api.Fs
     T = api.T
+    N = api.N
     fOtype = F.otype.v
-    otypeRank = api.otypeRank
+    otypeRank = N.otypeRank
     sectionTypeSet = T.sectionTypeSet
 
     aContext = app.context
@@ -350,7 +391,7 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/helpers.py#L33-L47" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/helpers.py#L33-L47" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dh(html):
     &#34;&#34;&#34;Display HTML in a Jupyter notebook.
@@ -387,7 +428,7 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/helpers.py#L16-L30" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/helpers.py#L16-L30" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dm(md):
     &#34;&#34;&#34;Display markdown in a Jupyter notebook.
@@ -414,7 +455,7 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/helpers.py#L53-L64" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/helpers.py#L53-L64" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getLocalDir(cfg, local, version):
     provenanceSpec = cfg.get(&#34;provenanceSpec&#34;, {})
@@ -438,15 +479,16 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/helpers.py#L235-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/helpers.py#L275-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getResultsX(app, results, features, condenseType, fmt=None):
     api = app.api
     F = api.F
     Fs = api.Fs
     T = api.T
+    N = api.N
     fOtype = F.otype.v
-    otypeRank = api.otypeRank
+    otypeRank = N.otypeRank
     sectionTypeSet = T.sectionTypeSet
 
     aContext = app.context
@@ -512,7 +554,7 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/helpers.py#L163-L212" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/helpers.py#L203-L252" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getText(
     app, isPretty, n, nType, outer, first, last, level, passage, descend, dContext=None
@@ -574,7 +616,7 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/helpers.py#L215-L229" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/helpers.py#L255-L269" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValue(app, n, nType, feat, suppress):
     F = app.api.F
@@ -601,7 +643,7 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/helpers.py#L67-L79" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/helpers.py#L67-L79" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def hasData(local, org, repo, version, relative):
     versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
@@ -626,7 +668,7 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/helpers.py#L159-L160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/helpers.py#L199-L200" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def htmlSafe(text, isHtml):
     return text if isHtml else htmlEsc(text)</code></pre>
@@ -640,7 +682,7 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/helpers.py#L112-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/helpers.py#L112-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseFeatures(features):
     if (
@@ -672,19 +714,88 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 </details>
 </dd>
 <dt id="tf.applib.helpers.transitiveClosure"><code class="name flex">
-<span>def <span class="ident">transitiveClosure</span></span>(<span>relation)</span>
+<span>def <span class="ident">transitiveClosure</span></span>(<span>relation, reflexiveExceptions)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Produce the reflexive transitive closure of a relation.</p>
+<p>The transitive closure of a relation R is the relation TR
+such that aTRb if and only if there is a chain of c1, c2, &hellip;, cn
+such that ARc1, c1Rc2, &hellip;, cnRb.</p>
+<p>If we allow the chain to have length zero, we effectively have that
+aTRa for all elements. That is the reflexive, transitive closure.</p>
+<p>This function builds the latter, but we allow for exceptions to the
+reflexivity.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>relation</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The input relation, keyed by elements, valued by the set of
+elements that stand in relation to the key.</dd>
+<dt><strong><code>reflexiveExceptions</code></strong> :&ensp;<code>set</code></dt>
+<dd>The set of elements that will not be reflexively closed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>The transitive reflexive closure (with possible exceptions to
+the reflexivity) of the given relation.</dd>
+</dl>
+<h2 id="notes">Notes</h2>
+<p>We use this function to build the closure of the childType relation
+between node types. We want to exclude the slot type from the
+reflexivity. The closure of the childType relation is the descendant type
+relation.
+The display algorithm uses this to unravel nodes.</p>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="tf.applib.display" href="display.html">tf.applib.display</a></code></dt>
+<dd>Display algorithm</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/helpers.py#L141-L156" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/helpers.py#L141-L196" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def transitiveClosure(relation):
-    descendants = {}
-    for (parent, children) in relation.items():
-        descendants[parent] = set(children)
+<pre><code class="python">def transitiveClosure(relation, reflexiveExceptions):
+    &#34;&#34;&#34;Produce the reflexive transitive closure of a relation.
+
+    The transitive closure of a relation R is the relation TR
+    such that aTRb if and only if there is a chain of c1, c2, ..., cn
+    such that ARc1, c1Rc2, ..., cnRb.
+
+    If we allow the chain to have length zero, we effectively have that
+    aTRa for all elements. That is the reflexive, transitive closure.
+
+    This function builds the latter, but we allow for exceptions to the
+    reflexivity.
+
+    Parameters
+    ----------
+    relation: dict
+        The input relation, keyed by elements, valued by the set of
+        elements that stand in relation to the key.
+    reflexiveExceptions: set
+        The set of elements that will not be reflexively closed.
+
+    Returns
+    -------
+    dict
+        The transitive reflexive closure (with possible exceptions to
+        the reflexivity) of the given relation.
+
+    Notes
+    -----
+    We use this function to build the closure of the childType relation
+    between node types. We want to exclude the slot type from the
+    reflexivity. The closure of the childType relation is the descendant type
+    relation.
+    The display algorithm uses this to unravel nodes.
+
+    See also
+    --------
+    tf.applib.display: Display algorithm
+    &#34;&#34;&#34;
+
+    descendants = {parent: set(children) for (parent, children) in relation.items()}
 
     changed = True
     while changed:
@@ -696,6 +807,9 @@ def getResultsX(app, results, features, condenseType, fmt=None):
                         if grandChild not in descendants[parent]:
                             descendants[parent].add(grandChild)
                             changed = True
+    for parent in relation:
+        if parent not in reflexiveExceptions:
+            descendants[parent].add(parent)
     return descendants</code></pre>
 </details>
 </dd>
@@ -707,7 +821,7 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/helpers.py#L82-L109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/helpers.py#L82-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tupleEnum(tuples, start, end, limit, item):
     if start is None:
@@ -745,9 +859,8 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.applib.helpers">

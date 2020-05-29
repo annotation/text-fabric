@@ -72,7 +72,7 @@ This also holds for all data that is created during executions of a query:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/search.py#L0-L502" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/search.py#L0-L508" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/search/search.md
@@ -209,10 +209,11 @@ class Search(object):
         &#34;&#34;&#34;
 
         api = self.api
-        error = api.error
-        info = api.info
-        isSilent = api.isSilent
-        setSilent = api.setSilent
+        TF = api.TF
+        error = TF.error
+        info = TF.info
+        isSilent = TF.isSilent
+        setSilent = TF.setSilent
         defaults = self.perfDefaults
 
         wasSilent = isSilent()
@@ -320,7 +321,6 @@ class Search(object):
         will be constructed and executed. These searches will be reported clearly.
 
         The resulting plan can be viewd by `tf.search.search.Search.showPlan`.
-        See also `tf.about.searchusage`.
 
         Parameters
         ----------
@@ -354,6 +354,10 @@ class Search(object):
 
         silent: boolean, optional `None`
             If you want to suppress most of the output, say `silent=True`.
+
+        See Also
+        --------
+        tf.about.searchusage: Search guide
         &#34;&#34;&#34;
 
         exe = SearchExe(
@@ -420,13 +424,15 @@ class Search(object):
         &#34;&#34;&#34;
 
         exe = self.exe
+        TF = self.api.TF
+
         if exe is None:
-            error = self.api.error
+            error = TF.error
             error(&#39;Cannot fetch if there is no previous &#34;study()&#34;&#39;)
         else:
             queryResults = exe.fetch(limit=limit)
             if type(_msgCache) is list:
-                messages = self.api.cache(_asString=True)
+                messages = TF.cache(_asString=True)
                 return (queryResults, messages)
             return queryResults
 
@@ -464,7 +470,7 @@ class Search(object):
 
         exe = self.exe
         if exe is None:
-            error = self.api.error
+            error = self.api.TF.error
             error(&#39;Cannot count if there is no previous &#34;study()&#34;&#39;)
         else:
             exe.count(progress=progress, limit=limit)
@@ -490,7 +496,7 @@ class Search(object):
 
         exe = self.exe
         if exe is None:
-            error = self.api.error
+            error = self.api.TF.error
             error(&#39;Cannot show plan if there is no previous &#34;study()&#34;&#39;)
         else:
             exe.showPlan(details=details)
@@ -597,7 +603,7 @@ class Search(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/search.py#L10-L503" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/search.py#L10-L509" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Search(object):
     &#34;&#34;&#34;
@@ -725,10 +731,11 @@ class Search(object):
         &#34;&#34;&#34;
 
         api = self.api
-        error = api.error
-        info = api.info
-        isSilent = api.isSilent
-        setSilent = api.setSilent
+        TF = api.TF
+        error = TF.error
+        info = TF.info
+        isSilent = TF.isSilent
+        setSilent = TF.setSilent
         defaults = self.perfDefaults
 
         wasSilent = isSilent()
@@ -836,7 +843,6 @@ class Search(object):
         will be constructed and executed. These searches will be reported clearly.
 
         The resulting plan can be viewd by `tf.search.search.Search.showPlan`.
-        See also `tf.about.searchusage`.
 
         Parameters
         ----------
@@ -870,6 +876,10 @@ class Search(object):
 
         silent: boolean, optional `None`
             If you want to suppress most of the output, say `silent=True`.
+
+        See Also
+        --------
+        tf.about.searchusage: Search guide
         &#34;&#34;&#34;
 
         exe = SearchExe(
@@ -936,13 +946,15 @@ class Search(object):
         &#34;&#34;&#34;
 
         exe = self.exe
+        TF = self.api.TF
+
         if exe is None:
-            error = self.api.error
+            error = TF.error
             error(&#39;Cannot fetch if there is no previous &#34;study()&#34;&#39;)
         else:
             queryResults = exe.fetch(limit=limit)
             if type(_msgCache) is list:
-                messages = self.api.cache(_asString=True)
+                messages = TF.cache(_asString=True)
                 return (queryResults, messages)
             return queryResults
 
@@ -980,7 +992,7 @@ class Search(object):
 
         exe = self.exe
         if exe is None:
-            error = self.api.error
+            error = self.api.TF.error
             error(&#39;Cannot count if there is no previous &#34;study()&#34;&#39;)
         else:
             exe.count(progress=progress, limit=limit)
@@ -1006,7 +1018,7 @@ class Search(object):
 
         exe = self.exe
         if exe is None:
-            error = self.api.error
+            error = self.api.TF.error
             error(&#39;Cannot show plan if there is no previous &#34;study()&#34;&#39;)
         else:
             exe.showPlan(details=details)
@@ -1132,7 +1144,7 @@ on the screen in a series of timed messages.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/search.py#L357-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/search.py#L363-L400" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def count(self, progress=None, limit=None):
     &#34;&#34;&#34;Counts the results, with progress messages, optionally up to a limit.
@@ -1168,7 +1180,7 @@ on the screen in a series of timed messages.</dd>
 
     exe = self.exe
     if exe is None:
-        error = self.api.error
+        error = self.api.TF.error
         error(&#39;Cannot count if there is no previous &#34;study()&#34;&#39;)
     else:
         exe.count(progress=progress, limit=limit)</code></pre>
@@ -1219,7 +1231,7 @@ S.fetch(limit=10)</code></p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/search.py#L299-L355" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/search.py#L303-L361" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetch(self, limit=None, _msgCache=False):
     &#34;&#34;&#34;Retrieves query results, up to a limit.
@@ -1269,13 +1281,15 @@ S.fetch(limit=10)</code></p>
     &#34;&#34;&#34;
 
     exe = self.exe
+    TF = self.api.TF
+
     if exe is None:
-        error = self.api.error
+        error = TF.error
         error(&#39;Cannot fetch if there is no previous &#34;study()&#34;&#39;)
     else:
         queryResults = exe.fetch(limit=limit)
         if type(_msgCache) is list:
-            messages = self.api.cache(_asString=True)
+            messages = TF.cache(_asString=True)
             return (queryResults, messages)
         return queryResults</code></pre>
 </details>
@@ -1319,7 +1333,7 @@ See <code><a title="tf.applib.display.show" href="../applib/display.html#tf.appl
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/search.py#L438-L503" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/search.py#L444-L509" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def glean(self, tup):
     &#34;&#34;&#34;Renders a single result into something human readable.
@@ -1403,7 +1417,7 @@ See <code><a title="tf.applib.display.show" href="../applib/display.html#tf.appl
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/search.py#L422-L436" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/search.py#L428-L442" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def relationsLegend(self):
     &#34;&#34;&#34;Dynamic info about the basic relations that can be used in templates.
@@ -1465,7 +1479,7 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/search.py#L163-L233" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/search.py#L164-L234" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(
     self,
@@ -1562,7 +1576,7 @@ will be retrieved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/search.py#L396-L420" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/search.py#L402-L426" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showPlan(self, details=False):
     &#34;&#34;&#34;Show the result of the latest study of a template.
@@ -1585,7 +1599,7 @@ will be retrieved.</dd>
 
     exe = self.exe
     if exe is None:
-        error = self.api.error
+        error = self.api.TF.error
         error(&#39;Cannot show plan if there is no previous &#34;study()&#34;&#39;)
     else:
         exe.showPlan(details=details)</code></pre>
@@ -1600,8 +1614,7 @@ will be retrieved.</dd>
 will be set up.</p>
 <p>If the search template query has quantifiers, the asscociated search templates
 will be constructed and executed. These searches will be reported clearly.</p>
-<p>The resulting plan can be viewd by <code><a title="tf.search.search.Search.showPlan" href="#tf.search.search.Search.showPlan">Search.showPlan()</a></code>.
-See also <code><a title="tf.about.searchusage" href="../about/searchusage.html">tf.about.searchusage</a></code>.</p>
+<p>The resulting plan can be viewd by <code><a title="tf.search.search.Search.showPlan" href="#tf.search.search.Search.showPlan">Search.showPlan()</a></code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>searchTemplate</code></strong> :&ensp;<code>string</code></dt>
@@ -1631,11 +1644,16 @@ only the first <em>n</em> members of each tuple is retained.</p>
 In the search template you can refer to those names to invoke those sets.</dd>
 <dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
 <dd>If you want to suppress most of the output, say <code>silent=True</code>.</dd>
+</dl>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="tf.about.searchusage" href="../about/searchusage.html">tf.about.searchusage</a></code></dt>
+<dd>Search guide</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/search.py#L235-L297" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/search.py#L236-L301" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def study(
     self, searchTemplate, strategy=None, sets=None, shallow=False, here=True,
@@ -1649,7 +1667,6 @@ In the search template you can refer to those names to invoke those sets.</dd>
     will be constructed and executed. These searches will be reported clearly.
 
     The resulting plan can be viewd by `tf.search.search.Search.showPlan`.
-    See also `tf.about.searchusage`.
 
     Parameters
     ----------
@@ -1683,6 +1700,10 @@ In the search template you can refer to those names to invoke those sets.</dd>
 
     silent: boolean, optional `None`
         If you want to suppress most of the output, say `silent=True`.
+
+    See Also
+    --------
+    tf.about.searchusage: Search guide
     &#34;&#34;&#34;
 
     exe = SearchExe(
@@ -1806,7 +1827,7 @@ increase these values to 10000.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/search.py#L26-L161" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/search.py#L26-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakPerformance(self, silent=False, **kwargs):
     &#34;&#34;&#34;Tweak parameters that influence the search process.
@@ -1918,10 +1939,11 @@ increase these values to 10000.</p>
     &#34;&#34;&#34;
 
     api = self.api
-    error = api.error
-    info = api.info
-    isSilent = api.isSilent
-    setSilent = api.setSilent
+    TF = api.TF
+    error = TF.error
+    info = TF.info
+    isSilent = TF.isSilent
+    setSilent = TF.setSilent
     defaults = self.perfDefaults
 
     wasSilent = isSilent()
@@ -1952,9 +1974,8 @@ increase these values to 10000.</p>
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.search.search">

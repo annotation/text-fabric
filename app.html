@@ -33,7 +33,7 @@ and can be invoked by a simple incantation: <code><a title="tf.app.use" href="#t
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/app.py#L0-L65" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/app.py#L0-L63" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Start the advanced API of TF.
@@ -90,9 +90,7 @@ def use(appName, *args, **kwargs):
 
     See Also
     --------
-    reuse:
-        `tf.applib.app.App.reuse` reconfigures all settings
-        without the costly step of reloading the data.
+    tf.applib.app.App.reuse
     &#34;&#34;&#34;
 
     parts = appName.split(&#34;:&#34;, maxsplit=1)
@@ -147,14 +145,11 @@ about <em>appName</em>.</dd>
 <dd>The object whose attributes and methods constitute the advanced API.</dd>
 </dl>
 <h2 id="see-also">See Also</h2>
-<dl>
-<dt><code>reuse</code></dt>
-<dd><code><a title="tf.applib.app.App.reuse" href="applib/app.html#tf.applib.app.App.reuse">App.reuse()</a></code> reconfigures all settings without the costly step of reloading the data.</dd>
-</dl></div>
+<p><code><a title="tf.applib.app.App.reuse" href="applib/app.html#tf.applib.app.App.reuse">App.reuse()</a></code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/app.py#L20-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/app.py#L20-L64" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def use(appName, *args, **kwargs):
     &#34;&#34;&#34;Make use of a corpus by offering the advanced API to access it.
@@ -192,9 +187,7 @@ about <em>appName</em>.</dd>
 
     See Also
     --------
-    reuse:
-        `tf.applib.app.App.reuse` reconfigures all settings
-        without the costly step of reloading the data.
+    tf.applib.app.App.reuse
     &#34;&#34;&#34;
 
     parts = appName.split(&#34;:&#34;, maxsplit=1)
@@ -211,9 +204,8 @@ about <em>appName</em>.</dd>
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.app">

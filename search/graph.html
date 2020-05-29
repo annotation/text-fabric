@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/graph.py#L0-L233" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/graph.py#L0-L234" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from itertools import chain
 
@@ -58,7 +58,7 @@ BOUNDED = {
 
 
 def connectedness(searchExe):
-    error = searchExe.api.error
+    error = searchExe.api.TF.error
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
     _msgCache = searchExe._msgCache
@@ -104,7 +104,7 @@ def multiEdges(searchExe):
     qedges = searchExe.qedges
     _msgCache = searchExe._msgCache
     api = searchExe.api
-    error = api.error
+    error = api.TF.error
 
     medgesIndex = {}
     # will be a dict keyed by edge destination, then by upper/lower bound
@@ -143,9 +143,10 @@ def displayPlan(searchExe, details=False):
     if not searchExe.good:
         return
     api = searchExe.api
-    setSilent = api.setSilent
-    isSilent = api.isSilent
-    info = api.info
+    TF = api.TF
+    setSilent = TF.setSilent
+    isSilent = TF.isSilent
+    info = TF.info
     wasSilent = isSilent()
     setSilent(False)
     _msgCache = searchExe._msgCache
@@ -202,7 +203,7 @@ def displayPlan(searchExe, details=False):
 
 
 def displayNode(searchExe, q, pos2=False):
-    info = searchExe.api.info
+    info = searchExe.api.TF.info
     _msgCache = searchExe._msgCache
     qnodes = searchExe.qnodes
     yarns = searchExe.yarns
@@ -220,7 +221,7 @@ def displayNode(searchExe, q, pos2=False):
 
 
 def displayEdge(searchExe, e, dir, nodesSeen):
-    info = searchExe.api.info
+    info = searchExe.api.TF.info
     _msgCache = searchExe._msgCache
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
@@ -278,10 +279,10 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/graph.py#L31-L70" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/graph.py#L31-L70" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def connectedness(searchExe):
-    error = searchExe.api.error
+    error = searchExe.api.TF.error
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
     _msgCache = searchExe._msgCache
@@ -330,10 +331,10 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/graph.py#L193-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/graph.py#L194-L235" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayEdge(searchExe, e, dir, nodesSeen):
-    info = searchExe.api.info
+    info = searchExe.api.TF.info
     _msgCache = searchExe._msgCache
     qnodes = searchExe.qnodes
     qedges = searchExe.qedges
@@ -384,10 +385,10 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/graph.py#L175-L190" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/graph.py#L176-L191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayNode(searchExe, q, pos2=False):
-    info = searchExe.api.info
+    info = searchExe.api.TF.info
     _msgCache = searchExe._msgCache
     qnodes = searchExe.qnodes
     yarns = searchExe.yarns
@@ -412,15 +413,16 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/graph.py#L113-L172" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/graph.py#L113-L173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayPlan(searchExe, details=False):
     if not searchExe.good:
         return
     api = searchExe.api
-    setSilent = api.setSilent
-    isSilent = api.isSilent
-    info = api.info
+    TF = api.TF
+    setSilent = TF.setSilent
+    isSilent = TF.isSilent
+    info = TF.info
     wasSilent = isSilent()
     setSilent(False)
     _msgCache = searchExe._msgCache
@@ -484,14 +486,14 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/graph.py#L73-L110" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/graph.py#L73-L110" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def multiEdges(searchExe):
     relations = searchExe.relations
     qedges = searchExe.qedges
     _msgCache = searchExe._msgCache
     api = searchExe.api
-    error = api.error
+    error = api.TF.error
 
     medgesIndex = {}
     # will be a dict keyed by edge destination, then by upper/lower bound
@@ -532,9 +534,8 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.search.graph">

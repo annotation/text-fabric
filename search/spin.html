@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/spin.py#L0-L420" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/spin.py#L0-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 from random import randrange
@@ -100,9 +100,10 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
     from .searchexe import SearchExe
 
     (quKind, quTemplates, parentName, ln) = quantifier
-    info = searchExe.api.info
+    TF = searchExe.api.TF
+    info = TF.info
     _msgCache = searchExe._msgCache
-    indent = searchExe.api.indent
+    indent = TF.indent
     showQuantifiers = searchExe.showQuantifiers
     silent = searchExe.silent
     level = searchExe.level
@@ -465,7 +466,7 @@ def spinEdges(searchExe):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/spin.py#L234-L299" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/spin.py#L235-L300" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def estimateSpreads(searchExe, both=False):
     TRY_LIMIT_F = searchExe.perfParams[&#34;tryLimitFrom&#34;]
@@ -543,7 +544,7 @@ def spinEdges(searchExe):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/spin.py#L228-L231" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/spin.py#L229-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def spinAtoms(searchExe):
     qnodes = searchExe.qnodes
@@ -559,7 +560,7 @@ def spinEdges(searchExe):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/spin.py#L398-L421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/spin.py#L399-L422" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def spinEdges(searchExe):
     qnodes = searchExe.qnodes
@@ -593,9 +594,8 @@ def spinEdges(searchExe):
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.search.spin">

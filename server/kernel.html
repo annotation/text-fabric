@@ -78,7 +78,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/server/kernel.py#L0-L558" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/server/kernel.py#L0-L562" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/server/kernel.md
@@ -111,7 +111,11 @@ def makeTfKernel(app, appName, port):
     if not app.api:
         console(f&#34;{TF_ERROR}&#34;)
         return False
-    app.api.reset()
+    TF = app.api.TF
+    reset = TF.reset
+    cache = TF.cache
+
+    reset()
     cache = {}
     console(f&#34;{TF_DONE}\nKernel listening at port {port}&#34;)
 
@@ -140,7 +144,7 @@ def makeTfKernel(app, appName, port):
             if searchExe:
                 searchExe = searchExe.outerTemplate
 
-            _msgCache = api.cache(_asString=True)
+            _msgCache = cache(_asString=True)
 
             data = dict(searchExe=searchExe, _msgCache=_msgCache)
             return data
@@ -656,7 +660,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/server/kernel.py#L499-L540" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/server/kernel.py#L503-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -710,7 +714,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/server/kernel.py#L480-L493" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/server/kernel.py#L484-L497" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(host, port, timeout):
     class TfConnection(object):
@@ -736,13 +740,17 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/server/kernel.py#L28-L474" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/server/kernel.py#L28-L478" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:
         console(f&#34;{TF_ERROR}&#34;)
         return False
-    app.api.reset()
+    TF = app.api.TF
+    reset = TF.reset
+    cache = TF.cache
+
+    reset()
     cache = {}
     console(f&#34;{TF_DONE}\nKernel listening at port {port}&#34;)
 
@@ -771,7 +779,7 @@ if __name__ == &#34;__main__&#34;:
             if searchExe:
                 searchExe = searchExe.outerTemplate
 
-            _msgCache = api.cache(_asString=True)
+            _msgCache = cache(_asString=True)
 
             data = dict(searchExe=searchExe, _msgCache=_msgCache)
             return data
@@ -1193,9 +1201,8 @@ if __name__ == &#34;__main__&#34;:
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.server.kernel">

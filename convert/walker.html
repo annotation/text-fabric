@@ -235,7 +235,7 @@ nevertheless.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L0-L1039" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L0-L1056" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/convert/walker.md
@@ -259,13 +259,18 @@ class CV(object):
 
     def __init__(self, TF, silent=False):
         self.TF = TF
-        self.wasSilent = self.TF.tm.isSilent()
-        self.TF.tm.setSilent(silent)
+        tm = TF.tm
+        isSilent = tm.isSilent
+        setSilent = tm.setSilent
+
+        self.wasSilent = isSilent()
+        setSilent(silent)
 
     def _showWarnings(self):
-        error = self.TF.tm.error
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        error = tm.error
+        info = tm.info
+        indent = tm.indent
 
         warnings = self.warnings
         warn = self.warn
@@ -294,9 +299,10 @@ class CV(object):
                     info(&#34;use `cv.walk(..., warn=None)` to suppress warnings&#34;)
 
     def _showErrors(self):
-        error = self.TF.tm.error
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        error = tm.error
+        info = tm.info
+        indent = tm.indent
         forcedStop = self.forcedStop
 
         errors = self.errors
@@ -413,8 +419,10 @@ class CV(object):
             See `tf.convert.walker` for more details.
         &#34;&#34;&#34;
 
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        info = tm.info
+        indent = tm.indent
+        setSilent = tm.setSilent
 
         indent(level=0, reset=True)
         info(&#34;Importing data from walking through the source ...&#34;)
@@ -466,15 +474,16 @@ class CV(object):
                 )
 
         self._showWarnings()
-        self.TF.tm.setSilent(self.wasSilent)
+        setSilent(self.wasSilent)
 
         return self.good
 
     def _prepareMeta(self, otext, generic):
         varRe = re.compile(r&#34;\{([^}]+)\}&#34;)
 
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        info = tm.info
+        indent = tm.indent
 
         if not self.good and not self.force:
             return
@@ -668,7 +677,9 @@ class CV(object):
         return good
 
     def stop(self, msg):
-        error = self.TF.tm.error
+        tm = self.TF.tm
+        error = tm.error
+
         error(f&#34;Forced stop: {msg}&#34;)
         self.good = False
         self.force = False
@@ -871,7 +882,8 @@ class CV(object):
         # If you resume a slot node, it all non slot nodes in the current context
         # will be linked to it.
 
-        info = self.TF.tm.info
+        tm = self.TF.tm
+        info = tm.info
 
         if not self.good:
             return
@@ -931,8 +943,9 @@ class CV(object):
         self._showErrors()
 
     def _removeUnlinked(self):
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        info = tm.info
+        indent = tm.indent
 
         if not self.good and not self.force:
             return
@@ -983,7 +996,8 @@ class CV(object):
             indent(level=1)
 
     def _checkGraph(self):
-        info = self.TF.tm.info
+        tm = self.TF.tm
+        info = tm.info
 
         if not self.good and not self.force:
             return
@@ -1014,7 +1028,8 @@ class CV(object):
         self._showErrors()
 
     def _checkFeatures(self):
-        info = self.TF.tm.info
+        tm = self.TF.tm
+        info = tm.info
 
         if not self.good and not self.force:
             return
@@ -1152,7 +1167,8 @@ class CV(object):
         self._showErrors()
 
     def _reorderNodes(self):
-        info = self.TF.tm.info
+        tm = self.TF.tm
+        info = tm.info
 
         if not self.good and not self.force:
             return
@@ -1216,8 +1232,9 @@ class CV(object):
         return functools.cmp_to_key(before)
 
     def _reassignFeatures(self):
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        info = tm.info
+        indent = tm.indent
 
         if not self.good and not self.force:
             return
@@ -1297,7 +1314,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L13-L1040" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L13-L1057" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV(object):
     S = &#34;slot&#34;
@@ -1309,13 +1326,18 @@ class CV(object):
 
     def __init__(self, TF, silent=False):
         self.TF = TF
-        self.wasSilent = self.TF.tm.isSilent()
-        self.TF.tm.setSilent(silent)
+        tm = TF.tm
+        isSilent = tm.isSilent
+        setSilent = tm.setSilent
+
+        self.wasSilent = isSilent()
+        setSilent(silent)
 
     def _showWarnings(self):
-        error = self.TF.tm.error
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        error = tm.error
+        info = tm.info
+        indent = tm.indent
 
         warnings = self.warnings
         warn = self.warn
@@ -1344,9 +1366,10 @@ class CV(object):
                     info(&#34;use `cv.walk(..., warn=None)` to suppress warnings&#34;)
 
     def _showErrors(self):
-        error = self.TF.tm.error
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        error = tm.error
+        info = tm.info
+        indent = tm.indent
         forcedStop = self.forcedStop
 
         errors = self.errors
@@ -1463,8 +1486,10 @@ class CV(object):
             See `tf.convert.walker` for more details.
         &#34;&#34;&#34;
 
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        info = tm.info
+        indent = tm.indent
+        setSilent = tm.setSilent
 
         indent(level=0, reset=True)
         info(&#34;Importing data from walking through the source ...&#34;)
@@ -1516,15 +1541,16 @@ class CV(object):
                 )
 
         self._showWarnings()
-        self.TF.tm.setSilent(self.wasSilent)
+        setSilent(self.wasSilent)
 
         return self.good
 
     def _prepareMeta(self, otext, generic):
         varRe = re.compile(r&#34;\{([^}]+)\}&#34;)
 
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        info = tm.info
+        indent = tm.indent
 
         if not self.good and not self.force:
             return
@@ -1718,7 +1744,9 @@ class CV(object):
         return good
 
     def stop(self, msg):
-        error = self.TF.tm.error
+        tm = self.TF.tm
+        error = tm.error
+
         error(f&#34;Forced stop: {msg}&#34;)
         self.good = False
         self.force = False
@@ -1921,7 +1949,8 @@ class CV(object):
         # If you resume a slot node, it all non slot nodes in the current context
         # will be linked to it.
 
-        info = self.TF.tm.info
+        tm = self.TF.tm
+        info = tm.info
 
         if not self.good:
             return
@@ -1981,8 +2010,9 @@ class CV(object):
         self._showErrors()
 
     def _removeUnlinked(self):
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        info = tm.info
+        indent = tm.indent
 
         if not self.good and not self.force:
             return
@@ -2033,7 +2063,8 @@ class CV(object):
             indent(level=1)
 
     def _checkGraph(self):
-        info = self.TF.tm.info
+        tm = self.TF.tm
+        info = tm.info
 
         if not self.good and not self.force:
             return
@@ -2064,7 +2095,8 @@ class CV(object):
         self._showErrors()
 
     def _checkFeatures(self):
-        info = self.TF.tm.info
+        tm = self.TF.tm
+        info = tm.info
 
         if not self.good and not self.force:
             return
@@ -2202,7 +2234,8 @@ class CV(object):
         self._showErrors()
 
     def _reorderNodes(self):
-        info = self.TF.tm.info
+        tm = self.TF.tm
+        info = tm.info
 
         if not self.good and not self.force:
             return
@@ -2266,8 +2299,9 @@ class CV(object):
         return functools.cmp_to_key(before)
 
     def _reassignFeatures(self):
-        info = self.TF.tm.info
-        indent = self.TF.tm.indent
+        tm = self.TF.tm
+        info = tm.info
+        indent = tm.indent
 
         if not self.good and not self.force:
             return
@@ -2365,7 +2399,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L566-L567" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L577-L578" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def active(self, node):
     return node in self.curEmbedders</code></pre>
@@ -2379,7 +2413,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L569-L570" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L580-L581" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeTypes(self):
     return {node[0] for node in self.curEmbedders}</code></pre>
@@ -2393,7 +2427,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L515-L522" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L526-L533" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
     edgeFeatures = self.edgeFeatures
@@ -2413,7 +2447,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L504-L513" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L515-L524" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feature(self, node, **features):
     nodeFeatures = self.nodeFeatures
@@ -2435,7 +2469,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L572-L585" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L583-L596" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, feature, *args):
     errors = self.errors
@@ -2461,7 +2495,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L562-L564" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L573-L575" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linked(self, node):
     oslots = self.oslots
@@ -2476,7 +2510,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L531-L560" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L542-L571" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def meta(self, feat, **metadata):
     errors = self.errors
@@ -2518,7 +2552,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L462-L482" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L473-L493" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def node(self, nType):
     slotType = self.slotType
@@ -2551,7 +2585,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L524-L529" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L535-L540" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occurs(self, feat):
     nodeFeatures = self.nodeFeatures
@@ -2569,7 +2603,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L490-L502" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L501-L513" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resume(self, node):
     curEmbedders = self.curEmbedders
@@ -2594,7 +2628,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L438-L460" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L449-L471" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def slot(self):
     curSeq = self.curSeq
@@ -2629,10 +2663,12 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L431-L436" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L440-L447" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stop(self, msg):
-    error = self.TF.tm.error
+    tm = self.TF.tm
+    error = tm.error
+
     error(f&#34;Forced stop: {msg}&#34;)
     self.good = False
     self.force = False
@@ -2647,7 +2683,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L484-L488" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L495-L499" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def terminate(self, node):
     self.stats[self.T] += 1
@@ -2735,7 +2771,7 @@ to TF.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/convert/walker.py#L83-L232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/convert/walker.py#L89-L240" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(
     self,
@@ -2831,8 +2867,10 @@ to TF.</p>
         See `tf.convert.walker` for more details.
     &#34;&#34;&#34;
 
-    info = self.TF.tm.info
-    indent = self.TF.tm.indent
+    tm = self.TF.tm
+    info = tm.info
+    indent = tm.indent
+    setSilent = tm.setSilent
 
     indent(level=0, reset=True)
     info(&#34;Importing data from walking through the source ...&#34;)
@@ -2884,7 +2922,7 @@ to TF.</p>
             )
 
     self._showWarnings()
-    self.TF.tm.setSilent(self.wasSilent)
+    setSilent(self.wasSilent)
 
     return self.good</code></pre>
 </details>
@@ -2895,9 +2933,8 @@ to TF.</p>
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.convert.walker">

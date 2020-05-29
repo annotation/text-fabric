@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/searchexe.py#L0-L189" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/searchexe.py#L0-L197" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from .relations import basicRelations
 from .syntax import syntax
@@ -43,8 +43,8 @@ class SearchExe(object):
     perfParams = {}
 
     @classmethod
-    def setPerfParams(cls, info):
-        cls.perfParams = info
+    def setPerfParams(cls, params):
+        cls.perfParams = params
 
     def __init__(
         self,
@@ -62,6 +62,9 @@ class SearchExe(object):
         setInfo={},
     ):
         self.api = api
+        TF = api.TF
+        setSilent = TF.setSilent
+
         self.searchTemplate = searchTemplate
         self.outerTemplate = outerTemplate
         self.quKind = quKind
@@ -70,7 +73,7 @@ class SearchExe(object):
         self.sets = sets
         self.shallow = 0 if not shallow else 1 if shallow is True else shallow
         self.silent = silent
-        api.setSilent(silent)
+        setSilent(silent)
         self.showQuantifiers = showQuantifiers
         self._msgCache = _msgCache if type(_msgCache) is list else -1 if _msgCache else 0
         self.good = True
@@ -81,8 +84,9 @@ class SearchExe(object):
 
     def search(self, limit=None):
         api = self.api
-        isSilent = api.isSilent
-        setSilent = api.setSilent
+        TF = api.TF
+        isSilent = TF.isSilent
+        setSilent = TF.setSilent
         wasSilent = isSilent()
         setSilent(True)
         self.study()
@@ -91,9 +95,12 @@ class SearchExe(object):
 
     def study(self, strategy=None):
         api = self.api
-        info = api.info
+        TF = api.TF
+        info = TF.info
+        indent = TF.indent
         _msgCache = self._msgCache
-        self.api.indent(level=0, reset=True)
+
+        indent(level=0, reset=True)
         self.good = True
 
         setStrategy(self, strategy)
@@ -146,10 +153,11 @@ class SearchExe(object):
         return queryResults
 
     def count(self, progress=None, limit=None):
-        info = self.api.info
-        error = self.api.error
+        TF = self.api.TF
+        info = TF.info
+        error = TF.error
         _msgCache = self._msgCache
-        indent = self.api.indent
+        indent = TF.indent
         indent(level=0, reset=True)
 
         if not self.good:
@@ -193,7 +201,7 @@ class SearchExe(object):
         displayPlan(self, details=details)
 
     def showOuterTemplate(self, _msgCache):
-        error = self.api.error
+        error = self.api.TF.error
         offset = self.offset
         outerTemplate = self.outerTemplate
         quKind = self.quKind
@@ -237,14 +245,14 @@ class SearchExe(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/searchexe.py#L13-L190" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/searchexe.py#L13-L198" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class SearchExe(object):
     perfParams = {}
 
     @classmethod
-    def setPerfParams(cls, info):
-        cls.perfParams = info
+    def setPerfParams(cls, params):
+        cls.perfParams = params
 
     def __init__(
         self,
@@ -262,6 +270,9 @@ class SearchExe(object):
         setInfo={},
     ):
         self.api = api
+        TF = api.TF
+        setSilent = TF.setSilent
+
         self.searchTemplate = searchTemplate
         self.outerTemplate = outerTemplate
         self.quKind = quKind
@@ -270,7 +281,7 @@ class SearchExe(object):
         self.sets = sets
         self.shallow = 0 if not shallow else 1 if shallow is True else shallow
         self.silent = silent
-        api.setSilent(silent)
+        setSilent(silent)
         self.showQuantifiers = showQuantifiers
         self._msgCache = _msgCache if type(_msgCache) is list else -1 if _msgCache else 0
         self.good = True
@@ -281,8 +292,9 @@ class SearchExe(object):
 
     def search(self, limit=None):
         api = self.api
-        isSilent = api.isSilent
-        setSilent = api.setSilent
+        TF = api.TF
+        isSilent = TF.isSilent
+        setSilent = TF.setSilent
         wasSilent = isSilent()
         setSilent(True)
         self.study()
@@ -291,9 +303,12 @@ class SearchExe(object):
 
     def study(self, strategy=None):
         api = self.api
-        info = api.info
+        TF = api.TF
+        info = TF.info
+        indent = TF.indent
         _msgCache = self._msgCache
-        self.api.indent(level=0, reset=True)
+
+        indent(level=0, reset=True)
         self.good = True
 
         setStrategy(self, strategy)
@@ -346,10 +361,11 @@ class SearchExe(object):
         return queryResults
 
     def count(self, progress=None, limit=None):
-        info = self.api.info
-        error = self.api.error
+        TF = self.api.TF
+        info = TF.info
+        error = TF.error
         _msgCache = self._msgCache
-        indent = self.api.indent
+        indent = TF.indent
         indent(level=0, reset=True)
 
         if not self.good:
@@ -393,7 +409,7 @@ class SearchExe(object):
         displayPlan(self, details=details)
 
     def showOuterTemplate(self, _msgCache):
-        error = self.api.error
+        error = self.api.TF.error
         offset = self.offset
         outerTemplate = self.outerTemplate
         quKind = self.quKind
@@ -428,18 +444,18 @@ class SearchExe(object):
 <h3>Static methods</h3>
 <dl>
 <dt id="tf.search.searchexe.SearchExe.setPerfParams"><code class="name flex">
-<span>def <span class="ident">setPerfParams</span></span>(<span>info)</span>
+<span>def <span class="ident">setPerfParams</span></span>(<span>params)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/searchexe.py#L16-L18" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/searchexe.py#L16-L18" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
-def setPerfParams(cls, info):
-    cls.perfParams = info</code></pre>
+def setPerfParams(cls, params):
+    cls.perfParams = params</code></pre>
 </details>
 </dd>
 </dl>
@@ -453,13 +469,14 @@ def setPerfParams(cls, info):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/searchexe.py#L119-L159" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/searchexe.py#L126-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def count(self, progress=None, limit=None):
-    info = self.api.info
-    error = self.api.error
+    TF = self.api.TF
+    info = TF.info
+    error = TF.error
     _msgCache = self._msgCache
-    indent = self.api.indent
+    indent = TF.indent
     indent(level=0, reset=True)
 
     if not self.good:
@@ -506,7 +523,7 @@ def setPerfParams(cls, info):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/searchexe.py#L102-L117" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/searchexe.py#L109-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetch(self, limit=None):
     if not self.good:
@@ -534,12 +551,13 @@ def setPerfParams(cls, info):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/searchexe.py#L53-L61" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/searchexe.py#L56-L65" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(self, limit=None):
     api = self.api
-    isSilent = api.isSilent
-    setSilent = api.setSilent
+    TF = api.TF
+    isSilent = TF.isSilent
+    setSilent = TF.setSilent
     wasSilent = isSilent()
     setSilent(True)
     self.study()
@@ -555,10 +573,10 @@ def setPerfParams(cls, info):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/searchexe.py#L166-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/searchexe.py#L174-L182" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showOuterTemplate(self, _msgCache):
-    error = self.api.error
+    error = self.api.TF.error
     offset = self.offset
     outerTemplate = self.outerTemplate
     quKind = self.quKind
@@ -576,7 +594,7 @@ def setPerfParams(cls, info):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/searchexe.py#L163-L164" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/searchexe.py#L171-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showPlan(self, details=False):
     displayPlan(self, details=details)</code></pre>
@@ -590,13 +608,16 @@ def setPerfParams(cls, info):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/searchexe.py#L63-L100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/searchexe.py#L67-L107" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def study(self, strategy=None):
     api = self.api
-    info = api.info
+    TF = api.TF
+    info = TF.info
+    indent = TF.indent
     _msgCache = self._msgCache
-    self.api.indent(level=0, reset=True)
+
+    indent(level=0, reset=True)
     self.good = True
 
     setStrategy(self, strategy)
@@ -638,9 +659,8 @@ def setPerfParams(cls, info):
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.search.searchexe">

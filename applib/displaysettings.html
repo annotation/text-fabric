@@ -68,16 +68,10 @@ The node type of slot nodes is never displayed.</dd>
 <dd><strong>interface option</strong>
 indicates whether pretty displays should show the features
 mentioned in the last query and their values.</dd>
-<dt><strong><code>showChunks</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dt><strong><code>showHidden</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd><strong>interface option</strong>
-The corpus data may contain nodes that represent discontinuous pieces of text.
-Some corpora also offer node types that represent all continuous chunks of those
-nodes.
-By default, the advanced API, will
-show those chunks with the original nodes wrapped around them, with dotted borders
-indicating the discontinuities..
-When pretty-displaying such structures, the display of the chunks themselves can be
-reduced, because they tend to make displays unwieldy.</dd>
+The corpus data may contain nodes of types that are marked as hidden by the TF app
+configuration. When <code>showHidden</code> is <code>True</code>, these nodes will be shown.</dd>
 <dt><strong><code>showGraphics</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd><strong>interface option</strong>
 indicates whether plain and pretty displays should include associated
@@ -99,8 +93,8 @@ its node number, and you can use the following APIs
 to look up all information
 about each node that the corpus has to offer:</p>
 <ul>
-<li><strong>F</strong>: <code><a title="tf.core.api.NodeFeature" href="../core/api.html#tf.core.api.NodeFeature">NodeFeature</a></code></li>
-<li><strong>E</strong>: <code><a title="tf.core.api.EdgeFeature" href="../core/api.html#tf.core.api.EdgeFeature">EdgeFeature</a></code></li>
+<li><strong>F</strong>: <code><a title="tf.core.nodefeature.NodeFeature" href="../core/nodefeature.html#tf.core.nodefeature.NodeFeature">NodeFeature</a></code></li>
+<li><strong>E</strong>: <code><a title="tf.core.edgefeature.EdgeFeature" href="../core/edgefeature.html#tf.core.edgefeature.EdgeFeature">EdgeFeature</a></code></li>
 <li><strong>L</strong>: <code><a title="tf.core.locality.Locality" href="../core/locality.html#tf.core.locality.Locality">Locality</a></code></li>
 <li><strong>T</strong>: <code><a title="tf.core.text.Text" href="../core/text.html#tf.core.text.Text">Text</a></code></li>
 </ul>
@@ -293,7 +287,7 @@ nodes will be linked with a web link
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/displaysettings.py#L0-L241" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/displaysettings.py#L0-L243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/applib/displaysettings.md
@@ -342,11 +336,11 @@ INTERFACE_OPTIONS = (
         &#34;Show the features mentioned in the last query for every node in the results&#34;,
     ),
     (
-        &#34;showChunks&#34;,
+        &#34;showHidden&#34;,
         False,
         &#34;showc&#34;,
-        &#34;show chunks&#34;,
-        &#34;Show chunk types fully. Only if the TF data has node types and companion chunked node types&#34;,
+        &#34;show hidden&#34;,
+        &#34;Show hidden types. Only if the TF data has hidden node types&#34;,
     ),
     (
         &#34;lineNumbers&#34;,
@@ -415,8 +409,8 @@ class DisplaySettings:
         self.reset()
 
     def reset(self, *options):
-        api = self.app.api
-        error = api.error
+        app = self.app
+        error = app.error
 
         for option in options:
             if option not in self.displayDefaults:
@@ -434,8 +428,9 @@ class DisplaySettings:
             self.displaySettings[option] = normValue[1]
 
     def normalize(self, option, value):
-        api = self.app.api
-        error = api.error
+        app = self.app
+        api = app.api
+        error = app.error
 
         if option not in self.displayDefaults:
             error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
@@ -476,10 +471,11 @@ class DisplaySettings:
         return (True, value)
 
     def check(self, msg, options):
-        api = self.app.api
+        app = self.app
+        api = app.api
         Fotype = api.F.otype
         sectionTypeSet = api.T.sectionTypeSet
-        error = api.error
+        error = app.error
 
         good = True
         for (option, value) in options.items():
@@ -557,7 +553,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/displaysettings.py#L95-L98" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/displaysettings.py#L95-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class DisplayCurrent:
     def __init__(self, options):
@@ -574,7 +570,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/displaysettings.py#L101-L242" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/displaysettings.py#L101-L244" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class DisplaySettings:
 
@@ -596,8 +592,8 @@ class DisplaySettings:
         self.reset()
 
     def reset(self, *options):
-        api = self.app.api
-        error = api.error
+        app = self.app
+        error = app.error
 
         for option in options:
             if option not in self.displayDefaults:
@@ -615,8 +611,9 @@ class DisplaySettings:
             self.displaySettings[option] = normValue[1]
 
     def normalize(self, option, value):
-        api = self.app.api
-        error = api.error
+        app = self.app
+        api = app.api
+        error = app.error
 
         if option not in self.displayDefaults:
             error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
@@ -657,10 +654,11 @@ class DisplaySettings:
         return (True, value)
 
     def check(self, msg, options):
-        api = self.app.api
+        app = self.app
+        api = app.api
         Fotype = api.F.otype
         sectionTypeSet = api.T.sectionTypeSet
-        error = api.error
+        error = app.error
 
         good = True
         for (option, value) in options.items():
@@ -729,13 +727,14 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/displaysettings.py#L181-L223" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/displaysettings.py#L182-L225" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check(self, msg, options):
-    api = self.app.api
+    app = self.app
+    api = app.api
     Fotype = api.F.otype
     sectionTypeSet = api.T.sectionTypeSet
-    error = api.error
+    error = app.error
 
     good = True
     for (option, value) in options.items():
@@ -784,7 +783,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/displaysettings.py#L241-L242" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/displaysettings.py#L243-L244" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consume(self, options, *remove):
     return {o: options[o] for o in options if o not in remove}</code></pre>
@@ -798,7 +797,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/displaysettings.py#L225-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/displaysettings.py#L227-L241" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, options):
     displayDefaults = self.displayDefaults
@@ -825,11 +824,12 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/displaysettings.py#L139-L179" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/displaysettings.py#L139-L180" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(self, option, value):
-    api = self.app.api
-    error = api.error
+    app = self.app
+    api = app.api
+    error = app.error
 
     if option not in self.displayDefaults:
         error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
@@ -878,11 +878,11 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/displaysettings.py#L120-L130" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/displaysettings.py#L120-L130" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self, *options):
-    api = self.app.api
-    error = api.error
+    app = self.app
+    error = app.error
 
     for option in options:
         if option not in self.displayDefaults:
@@ -901,7 +901,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/displaysettings.py#L132-L137" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/displaysettings.py#L132-L137" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setup(self, **options):
     for (option, value) in options.items():
@@ -917,9 +917,8 @@ class DisplaySettings:
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.applib.displaysettings">

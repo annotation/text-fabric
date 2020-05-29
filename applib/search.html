@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/search.py#L0-L196" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/search.py#L0-L197" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Calls from the advanced API to the Search API.
@@ -48,7 +48,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     This function calls the lower level `tf.search.search.Search` facility aka `S`.
     But whereas the `S` version returns a generator which yields the results
     one by one, the `A` version collects all results and sorts them in the
-    canonical order (`tf.core.api`).
+    canonical order (`tf.core.nodes`).
     (but you can change the sorting, see the `sort` parameter).
     It then reports the number of results.
 
@@ -98,11 +98,11 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
 
     sort: boolean, optional `True`
         If `True` (default), search results will be returned in
-        canonical order (`tf.core.api`).
+        canonical order (`tf.core.nodes`).
 
         !!! note &#34;canonical sort key for tuples&#34;
             This sort is achieved by using the function
-            `tf.core.api.Api.sortKeyTuple`
+            `tf.core.nodes.Nodes.sortKeyTuple`
             as sort key.
 
         If it is a *sort key*, i.e. function that can be applied to tuples of nodes
@@ -119,12 +119,13 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
         Web apps can better use `tf.applib.search.runSearch`.
     &#34;&#34;&#34;
 
+    info = app.info
+    isSilent = app.isSilent
+    setSilent = app.setSilent
     api = app.api
-    info = api.info
-    isSilent = api.isSilent
-    setSilent = api.setSilent
     S = api.S
-    sortKeyTuple = api.sortKeyTuple
+    N = api.N
+    sortKeyTuple = N.sortKeyTuple
 
     wasSilent = isSilent()
 
@@ -250,7 +251,7 @@ and returned.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/search.py#L140-L173" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/search.py#L141-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearch(app, query, cache):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -306,7 +307,7 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/search.py#L176-L197" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/search.py#L177-L198" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearchCondensed(app, query, cache, condenseType):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -340,7 +341,7 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
 <p>This function calls the lower level <code><a title="tf.search.search.Search" href="../search/search.html#tf.search.search.Search">Search</a></code> facility aka <code>S</code>.
 But whereas the <code>S</code> version returns a generator which yields the results
 one by one, the <code>A</code> version collects all results and sorts them in the
-canonical order (<code><a title="tf.core.api" href="../core/api.html">tf.core.api</a></code>).
+canonical order (<code><a title="tf.core.nodes" href="../core/nodes.html">tf.core.nodes</a></code>).
 (but you can change the sorting, see the <code>sort</code> parameter).
 It then reports the number of results.</p>
 <p>It will also set the display parameter <code>tupleFeatures</code> (see below)
@@ -380,11 +381,11 @@ and use them in the TF browser.</p>
 <dt><strong><code>sort</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd>
 <p>If <code>True</code> (default), search results will be returned in
-canonical order (<code><a title="tf.core.api" href="../core/api.html">tf.core.api</a></code>).</p>
+canonical order (<code><a title="tf.core.nodes" href="../core/nodes.html">tf.core.nodes</a></code>).</p>
 <div class="admonition note">
 <p class="admonition-title">canonical sort key for tuples</p>
 <p>This sort is achieved by using the function
-<code><a title="tf.core.api.Api.sortKeyTuple" href="../core/api.html#tf.core.api.Api.sortKeyTuple">Api.sortKeyTuple</a></code>
+<code><a title="tf.core.nodes.Nodes.sortKeyTuple" href="../core/nodes.html#tf.core.nodes.Nodes.sortKeyTuple">Nodes.sortKeyTuple</a></code>
 as sort key.</p>
 </div>
 <p>If it is a <em>sort key</em>, i.e. function that can be applied to tuples of nodes
@@ -405,7 +406,7 @@ Web apps can better use <code><a title="tf.applib.search.runSearch" href="#tf.ap
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/search.py#L15-L137" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/search.py#L15-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     &#34;&#34;&#34;Search with some high-level features.
@@ -413,7 +414,7 @@ Web apps can better use <code><a title="tf.applib.search.runSearch" href="#tf.ap
     This function calls the lower level `tf.search.search.Search` facility aka `S`.
     But whereas the `S` version returns a generator which yields the results
     one by one, the `A` version collects all results and sorts them in the
-    canonical order (`tf.core.api`).
+    canonical order (`tf.core.nodes`).
     (but you can change the sorting, see the `sort` parameter).
     It then reports the number of results.
 
@@ -463,11 +464,11 @@ Web apps can better use <code><a title="tf.applib.search.runSearch" href="#tf.ap
 
     sort: boolean, optional `True`
         If `True` (default), search results will be returned in
-        canonical order (`tf.core.api`).
+        canonical order (`tf.core.nodes`).
 
         !!! note &#34;canonical sort key for tuples&#34;
             This sort is achieved by using the function
-            `tf.core.api.Api.sortKeyTuple`
+            `tf.core.nodes.Nodes.sortKeyTuple`
             as sort key.
 
         If it is a *sort key*, i.e. function that can be applied to tuples of nodes
@@ -484,12 +485,13 @@ Web apps can better use <code><a title="tf.applib.search.runSearch" href="#tf.ap
         Web apps can better use `tf.applib.search.runSearch`.
     &#34;&#34;&#34;
 
+    info = app.info
+    isSilent = app.isSilent
+    setSilent = app.setSilent
     api = app.api
-    info = api.info
-    isSilent = api.isSilent
-    setSilent = api.setSilent
     S = api.S
-    sortKeyTuple = api.sortKeyTuple
+    N = api.N
+    sortKeyTuple = N.sortKeyTuple
 
     wasSilent = isSilent()
 
@@ -540,7 +542,7 @@ Web apps can better use <code><a title="tf.applib.search.runSearch" href="#tf.ap
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/search.py#L11-L12" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/search.py#L11-L12" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def searchApi(app):
     app.search = types.MethodType(search, app)</code></pre>
@@ -552,9 +554,8 @@ Web apps can better use <code><a title="tf.applib.search.runSearch" href="#tf.ap
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.applib.search">

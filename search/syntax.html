@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/syntax.py#L0-L670" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/syntax.py#L0-L669" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 
@@ -93,14 +93,13 @@ opStripRe = re.compile(opStripPat)
 quLineRe = re.compile(quLinePat)
 relRe = re.compile(relPat)
 reRe = re.compile(rePat)
-# whiteRe = re.compile(r&#39;^\s*$&#39;)
 whiteRe = re.compile(r&#34;^\s*(%|$)&#34;)
 
 reTp = type(reRe)
 
 
 def syntax(searchExe):
-    error = searchExe.api.error
+    error = searchExe.api.TF.error
     _msgCache = searchExe._msgCache
     searchExe.good = True
     searchExe.badSyntax = []
@@ -715,7 +714,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/syntax.py#L599-L604" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/syntax.py#L598-L603" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanParent(atom, parentName):
     (kind, data) = parseLine(atom)
@@ -733,7 +732,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/syntax.py#L607-L650" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/syntax.py#L606-L649" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def deContext(quantifier, parentName):
     (quKind, quTemplates, ln) = quantifier
@@ -789,7 +788,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/syntax.py#L504-L566" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/syntax.py#L503-L565" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseFeatureVals(searchExe, featStr, features, i, asEdge=False):
     if asEdge:
@@ -864,7 +863,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/syntax.py#L458-L501" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/syntax.py#L457-L500" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseLine(line):
     for x in [True]:
@@ -920,10 +919,10 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/search/syntax.py#L73-L89" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/search/syntax.py#L72-L88" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def syntax(searchExe):
-    error = searchExe.api.error
+    error = searchExe.api.TF.error
     _msgCache = searchExe._msgCache
     searchExe.good = True
     searchExe.badSyntax = []
@@ -947,9 +946,8 @@ def _unesc(x, inRe=False):
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.search.syntax">

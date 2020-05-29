@@ -41,7 +41,7 @@ The names of these methods are</p>
 <p>In plain and pretty displays, certain parts can be <em>highlighted</em>, which is
 good for displaying query results where the parts that correspond directly to the
 search template are highlighted.</p>
-<h3 id="display-parameters">Display parameters</h3>
+<h2 id="display-parameters">Display parameters</h2>
 <p>There is a bunch of parameters that govern how the display functions arrive at their
 results. You can pass them as optional arguments to these functions,
 or you can set up them in advance, and reset them to their original state
@@ -54,10 +54,100 @@ following order:</p>
 <li>corpus dependent default values configured by the advanced API.</li>
 </ul>
 <p>See <code><a title="tf.applib.displaysettings" href="displaysettings.html">tf.applib.displaysettings</a></code> for a list of display parameters.</p>
+<h2 id="display-algorithm">Display algorithm</h2>
+<p>Both <code><a title="tf.applib.display.pretty" href="#tf.applib.display.pretty">pretty()</a></code> and <code><a title="tf.applib.display.plain" href="#tf.applib.display.plain">plain()</a></code> depend on an algorithm to <em>unravel</em> nodes to other nodes.</p>
+<p>For example, when we display a sentence, we also display its clauses and phrases and words,
+which all correspond to nodes.</p>
+<p>Here is a top-level sketchy description of the <em>unravel</em> algorithm.</p>
+<h3 id="descendant-types">Descendant types</h3>
+<p>Node types are ranked: node types whose nodes occupy more slots on average have a higher rank
+than types whose nodes occupy less slots on average.
+You can inspect the ranking of the types in your dataset by <code><a title="tf.core.nodes.Nodes.otypeRank" href="../core/nodes.html#tf.core.nodes.Nodes.otypeRank">Nodes.otypeRank</a></code>.</p>
+<p>For each node type, we collect the set of descendant types: the types with lower or equal rank.
+So each type is its own descendant. But we prevent the slot type from being its own
+descendant.</p>
+<h3 id="chunkify">Chunkify</h3>
+<p>Every node is linked to a set of slots. These slots may or may not form a contiguous chunk.
+For the purposes of displaying nodes, we divide each node into maximal contiguous chunks.
+Such a chunk is specified by a tuple <code>(n, slots)</code>, where <code>n</code> is the node (an integer),
+and <code>slots</code> is a frozen set of slots (also integers).</p>
+<p>The unravel algorithm takes a sequence of chunks and
+unravels them to another sequence of chunks.</p>
+<p>See <code><a title="tf.applib.displaylib.chunkify" href="displaylib.html#tf.applib.displaylib.chunkify">chunkify()</a></code>.</p>
+<h3 id="intersecting-nodes">Intersecting nodes</h3>
+<p>Nodes or chunks whose slot sets intersect, are intersecting nodes, except the node itself.</p>
+<h3 id="canonical-order">Canonical order</h3>
+<p>Before we feed chunks to the display, we sort them in <em>canonical order</em>, based on their
+slots and node type.</p>
+<ul>
+<li>Chunks with earlier first slots come before chunks with later first slots.</li>
+<li>For chunks that have the same first slots: look at the slots they do <em>not</em> have in common.
+The chunk with the earlier such slot comes before the chunk with the later such slot.</li>
+<li>For chunks that have the same sets of slots: look at their node type.
+Different node types: the chunk with the higher ranked
+node type comes before the one with the lower ranked node type.</li>
+<li>For chunks that have the same sets of slots and the same node type:
+the chunk whose node (as integer) comes before the node of the other chunk, comes before.</li>
+</ul>
+<p>See <code><a title="tf.core.nodes" href="../core/nodes.html">tf.core.nodes</a></code>.</p>
+<h3 id="substrate">Substrate</h3>
+<p>Sometimes we do not want to display a node completely, but restricted to a set of slots.
+We call this set the <em>substrate</em>.</p>
+<p>It typically happens in a node is contained in a parent node that has multiple chunks.
+The child node should be displayed in parts: in each chunk of the parent node, the child node
+should be displayed in as far its slots are contained in that chunk.</p>
+<h3 id="output">Output</h3>
+<p>When we unravel a list of chunks, we produce output for the chunks, one by one.
+For each chunk, the output consists of a contribution by the node of the chunk, followed
+by the result of unraveling the chunk into related chunks and collecting their output.</p>
+<h3 id="called-and-done">Called and done</h3>
+<p>During the process of unraveling chunks, we may encounter chunks that we have met before,
+and may or may not have produced their output already.</p>
+<p>More precisely, for each node we keep track of the chunks related to that node:</p>
+<dl>
+<dt><strong>called</strong></dt>
+<dd>maps each node to the set of its chunks that are being processed but have not finished yet</dd>
+<dt><strong>done</strong></dt>
+<dd>the set of slots that already occur in the output.</dd>
+</dl>
+<h3 id="all-pieces-together">All pieces together</h3>
+<p>In order to display node <code>n</code> the algorithm works as follows:</p>
+<ol>
+<li>Set the <strong>substrate</strong> to all slots of the node.</li>
+<li>Chunkify the node in a <strong>canonically sorted</strong> list of its chunks</li>
+<li>Display the list of these chunks on this substrate.</li>
+</ol>
+<p>Now we describe recursively how to display a list of chunks on a substrate.</p>
+<p>Set <strong>done</strong> to the empty set, <strong>called</strong> to the empty mapping.</p>
+<p>Work through the chunks in that order, for each chunk:</p>
+<ol>
+<li>Take the intersection of the slots of the chunk with the substrate.
+This will be the new slot set of this chunk.</li>
+<li>If the intersection is empty: skip this chunk.</li>
+<li>If the node of the chunk is already in <strong>called</strong>, mapped to a slot set
+that encompasses the slot set of this chunk: skip this chunk.</li>
+<li>If all the slots of the chunk are already in <strong>done</strong>: skip this chunk.</li>
+<li>Add the chunk to <strong>called</strong>, mapped to its slot set.</li>
+<li>Produce output for the node of the chunk.</li>
+<li>Unravel the chunk: get the all <em>intersecting</em> <em>descendant</em> nodes of the node of the chunk.</li>
+<li><strong>chunkify</strong> these nodes into a canonically order list of chunks.</li>
+<li>Recursively work through the descendant chunks but on a different substrate:
+the slots of the (parent) chunk minus the slots already done.</li>
+<li>Add all the slots of the chunk to the <strong>done</strong> set.</li>
+<li>Process the new chunk.</li>
+</ol>
+<h3 id="notes">Notes</h3>
+<p>When nodes represent textual objects that intersect with each other, it is possible that
+slots are contained in several of such objects.
+The algorithm takes care that they will not be output twice
+(by means of <strong>called</strong> and <strong>done</strong>).</p>
+<p>When textual objects have gaps, it is wrong to process each object completely before
+going to the next one. Because then the slots will be displayed in the wrong order.</p>
+<p>By chunkifying and sorting the chunks in canonical order, this is prevented.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L0-L1969" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/display.py#L0-L835" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/applib/display.md
@@ -66,125 +156,26 @@ following order:</p>
 
 import os
 import types
-from collections import namedtuple
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
-from ..core.text import DEFAULT_FORMAT
-from ..core.helpers import mdEsc, htmlEsc, flattenToSet, console
-from .helpers import getText, htmlSafe, getResultsX, tupleEnum, RESULT, dh, NB
+from ..core.helpers import mdEsc, flattenToSet
+from .helpers import getResultsX, tupleEnum, RESULT, dh
 from .condense import condense, condenseSet
-from .highlight import getTupleHighlights, getHlAtt
+from .highlight import getTupleHighlights
 from .displaysettings import DisplaySettings
-from .settings import ORIG
+from .displaylib import (
+    OuterContext,
+    _doPlain,
+    _doPretty,
+    _getPassage,
+    _getRefMember,
+    _getLtr,
+    _getTextCls,
+    _doPassage,
+)
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
-LIMIT_DISPLAY_DEPTH = 100
-
-QUAD = &#34;  &#34;
-
-__pdoc__ = {}
-
-
-class OuterContext:
-    &#34;&#34;&#34;Outer node properties during plain() and pretty().
-    Only the properties of the node for which the outer call
-    plain() or pretty() has been made, not the nodes encountered
-    during recursion.&#34;
-    &#34;&#34;&#34;
-    pass
-
-
-OuterContext = namedtuple(  # noqa: F811
-    &#34;OuterContext&#34;,
-    &#34;&#34;&#34;
-    ltr
-    textCls
-    slots
-    inTuple
-    explain
-&#34;&#34;&#34;.strip().split(),
-)
-__pdoc__[&#34;OuterContext.ltr&#34;] = &#34;writing direction.&#34;
-__pdoc__[&#34;OuterContext.textCls&#34;] = &#34;Css class for full text.&#34;
-__pdoc__[&#34;OuterContext.slots&#34;] = &#34;Set of slots under the outer node.&#34;
-__pdoc__[
-    &#34;OuterContext.inTuple&#34;
-] = &#34;Whether the outer node is displayed as part of a tuple of nodes.&#34;
-
-
-class NodeContext:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-    pass
-
-
-NodeContext = namedtuple(  # noqa: F811
-    &#34;NodeContext&#34;,
-    &#34;&#34;&#34;
-    slotType
-    nType
-    isSlot
-    isSlotOrDescend
-    descend
-    isBaseNonSlot
-    hasChunks
-    children
-    boundaryCls
-    textCls
-    hlCls
-    hlStyle
-    nodePart
-    cls
-    slots
-    hidden
-&#34;&#34;&#34;.strip().split(),
-)
-__pdoc__[&#34;NodeContext.slotType&#34;] = &#34;The slot type of the data set.&#34;
-__pdoc__[&#34;NodeContext.nType&#34;] = &#34;The node type of the current node.&#34;
-__pdoc__[&#34;NodeContext.isSlot&#34;] = &#34;Whether the current node is a slot node.&#34;
-__pdoc__[&#34;NodeContext.isSlotOrDescend&#34;] = (
-    &#34;Whether the current node is a slot node or&#34;
-    &#34; has a type to which the current text format should descend.&#34;
-    &#34; This type is determined by the current text format.&#34;
-)
-__pdoc__[&#34;NodeContext.descend&#34;] = (
-    &#34;When calling T.text(n, descend=??) for this node, what should we&#34;
-    &#34; substitute for the ?? ?&#34;
-)
-__pdoc__[&#34;NodeContext.isBaseNonSlot&#34;] = (
-    &#34;Whether the current node has a type that is currently a baseType,&#34;
-    &#34; i.e. a type where a pretty display should stop unfolding.&#34;
-    &#34; No need to put the slot type in this set.&#34;
-)
-__pdoc__[&#34;NodeContext.hasChunks&#34;] = (
-    &#34;Whether the current node has a type that has a related type that&#34;
-    &#34; corresponds to contiguous chunks that build it. &#34;
-    &#34; E.g. in the BHSA the type phrase has a chunk type phrase_atom.&#34;
-)
-__pdoc__[&#34;NodeContext.children&#34;] = &#34;The children of the current node.&#34;
-__pdoc__[&#34;NodeContext.boundaryCls&#34;] = (
-    &#34;Css class that represent the kinds of boundaries for this node.&#34;
-    &#34; Nodes can have a firm of dotted left/right boundary, or no boundary at all.&#34;
-)
-__pdoc__[&#34;NodeContext.textCls&#34;] = &#34;The text Css class of the current node.&#34;
-__pdoc__[&#34;NodeContext.hlCls&#34;] = &#34;The highlight Css class of the current node.&#34;
-__pdoc__[&#34;NodeContext.hlStyle&#34;] = &#34;The highlight style attribute of the current node.&#34;
-__pdoc__[
-    &#34;NodeContext.nodePart&#34;
-] = &#34;The node type/number insofar it has to be displayed for the current node&#34;
-__pdoc__[&#34;NodeContext.cls&#34;] = (
-    &#34;A dict of several classes for the display of the node:&#34;
-    &#34; for the container, the label, and the children of the node;&#34;
-    &#34; might be set by prettyCustom&#34;
-)
-__pdoc__[&#34;NodeContext.slots&#34;] = &#34;Set of slots that must be displayed for this node&#34;
-__pdoc__[&#34;NodeContext.hidden&#34;] = (
-    &#34;Whether the outer container and label of the current node&#34;
-    &#34; should be hidden.&#34;
-    &#34; This is used to reduce displays by hiding the chunk types of types&#34;
-    &#34; that have chunks. E.g. in the BHSA: the phrase_atoms can be hidden.&#34;
-)
 
 
 def displayApi(app, silent):
@@ -720,15 +711,30 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
 
     _browse = app._browse
     api = app.api
+    E = api.E
 
     ltr = _getLtr(app, dContext)
     textCls = _getTextCls(app, fmt)
-    slots = _getSlots(api, n)
+    slots = frozenset(E.oslots.s(n))
 
     oContext = OuterContext(ltr, textCls, slots, _inTuple, not not explain)
     passage = _getPassage(app, True, dContext, oContext, n)
+    boundaryCls = &#34;&#34;
     rep = _doPlain(
-        app, dContext, oContext, None, n, True, True, True, 0, passage, [], {}, {}
+        app,
+        dContext,
+        oContext,
+        n,
+        slots,
+        boundaryCls,
+        True,
+        True,
+        True,
+        0,
+        passage,
+        [],
+        set(),
+        {},
     )
     sep = &#34; &#34; if passage and rep else &#34;&#34;
 
@@ -851,7 +857,8 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
             return
 
     api = app.api
-    sortKey = api.sortKey
+    N = api.N
+    sortKey = N.sortKey
 
     containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
     highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
@@ -927,8 +934,10 @@ def pretty(app, n, explain=False, **options):
 
     api = app.api
     F = api.F
+    E = api.E
     L = api.L
-    otypeRank = api.otypeRank
+    N = api.N
+    otypeRank = N.otypeRank
 
     ltr = _getLtr(app, dContext)
     textCls = _getTextCls(app, fmt)
@@ -944,10 +953,10 @@ def pretty(app, n, explain=False, **options):
             if ups:
                 containerN = ups[0]
 
-    slots = (
-        _getSlots(api, n)
-        if not condensed or not condenseType or containerN is None
-        else _getSlots(api, containerN)
+    slots = frozenset(
+        E.oslots.s(
+            n if not condensed or not condenseType or containerN is None else containerN
+        )
     )
 
     oContext = OuterContext(ltr, textCls, slots, False, not not explain)
@@ -955,1080 +964,27 @@ def pretty(app, n, explain=False, **options):
 
     html = []
 
-    _doPretty(app, dContext, oContext, None, n, True, True, True, 0, html, {}, {})
+    boundaryCls = &#34;&#34;
+    _doPretty(
+        app,
+        dContext,
+        oContext,
+        n,
+        slots,
+        boundaryCls,
+        True,
+        True,
+        True,
+        0,
+        html,
+        set(),
+        {},
+    )
 
     htmlStr = passage + &#34;&#34;.join(html)
     if _browse:
         return htmlStr
-    dh(htmlStr)
-
-
-# PLAIN LOW-LEVEL
-
-def _doPlain(
-    app,
-    dContext,
-    oContext,
-    pContext,
-    n,
-    outer,
-    first,
-    last,
-    level,
-    passage,
-    html,
-    done,
-    called,
-):
-    if _depthExceeded(level):
-        return
-
-    origOuter = outer
-    if outer is None:
-        outer = True
-
-    nContext = _prepareDisplay(
-        app, False, dContext, oContext, pContext, n, origOuter, done=done,
-    )
-    if type(nContext) is str:
-        _note(False, oContext, n, nContext, first, last, level, &#34;nothing to do&#34;)
-        return &#34;&#34;.join(html) if outer else None
-
-    nDone = done.setdefault(n, set())
-    nCalled = called.setdefault(n, set())
-
-    slots = nContext.slots
-
-    finished = slots &lt;= nDone
-    calledBefore = slots &lt;= nCalled
-    if finished or calledBefore:
-        _note(
-            False,
-            oContext,
-            n,
-            nContext.nType,
-            first,
-            last,
-            level,
-            &#34;already &#34; + (&#34;finished&#34; if finished else &#34;called&#34;),
-            task=slots,
-            done=nDone,
-            called=nCalled,
-        )
-        return &#34;&#34;.join(html) if outer else None
-
-    aContext = app.context
-    chunkedTypes = aContext.chunkedTypes
-
-    ltr = oContext.ltr
-
-    nType = nContext.nType
-    hlCls = nContext.hlCls
-    hlStyle = nContext.hlStyle
-    boundaryCls = nContext.boundaryCls
-    nodePart = nContext.nodePart
-    children = nContext.children
-
-    outerCls = f&#34;outer&#34; if outer else &#34;&#34;
-
-    didChunkedType = False
-
-    sdone = {}
-    if not (outer and nType in chunkedTypes):
-        snodeInfo = _getChunkedType(app, nContext, n, outer)
-        if snodeInfo:
-            (sn, spContext) = snodeInfo
-            snContext = _prepareDisplay(
-                app,
-                False,
-                dContext,
-                oContext,
-                spContext,
-                sn,
-                False,
-                chunk=n,
-                done=sdone,
-            )
-            shlCls = snContext.hlCls
-            shlStyle = snContext.hlStyle
-            snodePart = snContext.nodePart
-            sboundaryCls = snContext.boundaryCls
-
-            if (type(snContext) is not str) and shlCls:
-                sclses = f&#34;plain {sboundaryCls} {shlCls}&#34;
-                html.append(f&#39;&lt;span class=&#34;{sclses}&#34; {shlStyle}&gt;&#39;)
-                if snodePart:
-                    html.append(snodePart)
-                didChunkedType = True
-
-        clses = (
-            f&#34;plain {&#39;&#39; if didChunkedType else outerCls} {ltr} {boundaryCls} {hlCls}&#34;
-        )
-        html.append(f&#39;&lt;span class=&#34;{clses}&#34; {hlStyle}&gt;&#39;)
-
-        if nodePart:
-            html.append(nodePart)
-
-        html.append(
-            _doPlainNode(
-                app,
-                dContext,
-                oContext,
-                nContext,
-                n,
-                outer,
-                first,
-                last,
-                level,
-                passage,
-                done=done,
-            )
-        )
-
-    nCalled.update(nContext.slots)
-
-    lastCh = len(children) - 1
-
-    _note(
-        False,
-        oContext,
-        n,
-        nContext.nType,
-        first,
-        last,
-        level,
-        &#34;start children&#34; if children else &#34;bottom node&#34;,
-        children=children,
-        task=slots,
-        done=nDone,
-        called=nCalled,
-    )
-
-    for (i, ch) in enumerate(children):
-        thisFirst = first and i == 0
-        thisLast = last and i == lastCh
-        _doPlain(
-            app,
-            dContext,
-            oContext,
-            nContext,
-            ch,
-            False,
-            thisFirst,
-            thisLast,
-            level + 1,
-            &#34;&#34;,
-            html,
-            done,
-            called,
-        )
-    if not (outer and nType in chunkedTypes):
-        html.append(&#34;&lt;/span&gt;&#34;)
-        if didChunkedType:
-            html.append(&#34;&lt;/span&gt;&#34;)
-
-    nDone = done.setdefault(n, set())
-    nDone |= slots
-
-    if children:
-        _note(
-            False,
-            oContext,
-            n,
-            nContext.nType,
-            first,
-            last,
-            level,
-            &#34;end children&#34;,
-            done=nDone,
-        )
-
-    return &#34;&#34;.join(html) if outer else None
-
-
-def _doPlainNode(
-    app, dContext, oContext, nContext, n, outer, first, last, level, passage, done={}
-):
-    api = app.api
-    T = api.T
-
-    aContext = app.context
-    plainCustom = aContext.plainCustom
-
-    isHtml = dContext.isHtml
-    fmt = dContext.fmt
-
-    ltr = oContext.ltr
-    textCls = nContext.textCls
-
-    nType = nContext.nType
-
-    isSlotOrDescend = nContext.isSlotOrDescend
-    descend = nContext.descend
-
-    if nType in plainCustom:
-        method = plainCustom[nType]
-        contrib = method(app, dContext, oContext, nContext, n, outer, done=done)
-        return contrib
-    if isSlotOrDescend:
-        text = htmlSafe(
-            T.text(
-                n,
-                fmt=fmt,
-                descend=descend,
-                outer=outer,
-                first=first,
-                last=last,
-                level=level,
-            ),
-            isHtml,
-        )
-        contrib = f&#39;&lt;span class=&#34;{textCls}&#34;&gt;{text}&lt;/span&gt;&#39;
-    else:
-        tplFilled = getText(
-            app,
-            False,
-            n,
-            nType,
-            outer,
-            first,
-            last,
-            level,
-            passage if outer else &#34;&#34;,
-            descend,
-            dContext=dContext,
-        )
-        contrib = f&#39;&lt;span class=&#34;plain {textCls} {ltr}&#34;&gt;{tplFilled}&lt;/span&gt;&#39;
-
-    return contrib
-
-
-# PRETTY LOW-LEVEL
-
-def _doPretty(
-    app, dContext, oContext, pContext, n, outer, first, last, level, html, done, called,
-):
-    if _depthExceeded(level):
-        return
-
-    nContext = _prepareDisplay(
-        app, True, dContext, oContext, pContext, n, outer, done=done
-    )
-    if type(nContext) is str:
-        _note(True, oContext, n, nContext, first, last, level, &#34;nothing to do&#34;)
-        return &#34;&#34;.join(html) if outer else None
-
-    nDone = done.setdefault(n, set())
-    nCalled = called.setdefault(n, set())
-
-    slots = nContext.slots
-
-    finished = slots &lt;= nDone
-    calledBefore = slots &lt;= nCalled
-    if finished or calledBefore:
-        _note(
-            True,
-            oContext,
-            n,
-            nContext.nType,
-            first,
-            last,
-            level,
-            &#34;already &#34; + (&#34;finished&#34; if finished else &#34;called&#34;),
-            task=slots,
-            done=nDone,
-            called=nCalled,
-        )
-        return &#34;&#34;.join(html) if outer else None
-
-    aContext = app.context
-    afterChild = aContext.afterChild
-    hasGraphics = aContext.hasGraphics
-
-    showGraphics = dContext.showGraphics
-
-    ltr = oContext.ltr
-
-    isBaseNonSlot = nContext.isBaseNonSlot
-    nType = nContext.nType
-    hasChunks = nContext.hasChunks
-    children = nContext.children
-    cls = nContext.cls
-    childCls = cls[&#34;children&#34;]
-
-    nodePlain = None
-    if isBaseNonSlot:
-        nodePlain = _doPlain(
-            app,
-            dContext,
-            oContext,
-            nContext,
-            n,
-            None,
-            first,
-            last,
-            level,
-            &#34;&#34;,
-            [],
-            done,
-            called,
-        )
-
-    didChunkedType = False
-
-    snodeInfo = _getChunkedType(app, nContext, n, outer)
-    if snodeInfo:
-        (sn, spContext) = snodeInfo
-        snContext = _prepareDisplay(
-            app, True, dContext, oContext, spContext, sn, False, chunk=n, done=done,
-        )
-        if type(snContext) is not str:
-            sisBaseNonSlot = snContext.isBaseNonSlot
-            scls = snContext.cls
-            schildCls = scls[&#34;children&#34;]
-            sslots = snContext.slots
-
-            snodePlain = None
-            if sisBaseNonSlot:
-                snodePlain = _doPlain(
-                    app,
-                    dContext,
-                    oContext,
-                    spContext,
-                    sn,
-                    None,
-                    first,
-                    last,
-                    level,
-                    &#34;&#34;,
-                    [],
-                    done,
-                    called,
-                )
-            (slabel, sfeaturePart) = _doPrettyNode(
-                app,
-                dContext,
-                oContext,
-                snContext,
-                sn,
-                False,
-                first,
-                last,
-                level,
-                snodePlain,
-            )
-            (scontainerB, scontainerE) = _doPrettyWrapPre(
-                app,
-                sn,
-                False,
-                slabel,
-                sfeaturePart,
-                html,
-                snContext,
-                showGraphics,
-                hasGraphics,
-                ltr,
-            )
-            done.setdefault(sn, set()).add(sslots)
-            nDone = done.setdefault(sn, set())
-            nDone |= sslots
-            html.append(f&#39;&lt;div class=&#34;{schildCls} {ltr}&#34;&gt;&#39;)
-
-            didChunkedType = True
-
-    if not hasChunks or isBaseNonSlot:
-        (label, featurePart) = _doPrettyNode(
-            app, dContext, oContext, nContext, n, outer, first, last, level, nodePlain
-        )
-        (containerB, containerE) = _doPrettyWrapPre(
-            app,
-            n,
-            outer,
-            label,
-            featurePart,
-            html,
-            nContext,
-            showGraphics,
-            hasGraphics,
-            ltr,
-        )
-
-    nCalled.update(nContext.slots)
-
-    if children:
-        html.append(f&#39;&lt;div class=&#34;{childCls} {ltr}&#34;&gt;&#39;)
-
-    lastCh = len(children) - 1
-
-    _note(
-        True,
-        oContext,
-        n,
-        nContext.nType,
-        first,
-        last,
-        level,
-        &#34;start children&#34; if children else &#34;bottom node&#34;,
-        children=children,
-        task=slots,
-        done=nDone,
-        called=nCalled,
-    )
-
-    for (i, ch) in enumerate(children):
-        thisFirst = first and i == 0
-        thisLast = last and i == lastCh
-        _doPretty(
-            app,
-            dContext,
-            oContext,
-            nContext,
-            ch,
-            False,
-            thisFirst,
-            thisLast,
-            level + 1,
-            html,
-            done,
-            called,
-        )
-        after = afterChild.get(nType, None)
-        if after:
-            html.append(after(ch))
-
-    nDone = done.setdefault(n, set())
-    nDone |= slots
-
-    if children:
-        _note(
-            True,
-            oContext,
-            n,
-            nContext.nType,
-            first,
-            last,
-            level,
-            &#34;end children&#34;,
-            task=slots,
-        )
-
-    if children:
-        html.append(&#34;&lt;/div&gt;&#34;)
-
-    if not hasChunks or isBaseNonSlot:
-        _doPrettyWrapPost(label, featurePart, html, containerB, containerE)
-
-    if didChunkedType:
-        _doPrettyWrapPost(slabel, sfeaturePart, html, scontainerB, scontainerE)
-        html.append(&#34;&lt;/div&gt;&#34;)
-
-    return &#34;&#34;.join(html) if outer else None
-
-
-def _doPrettyWrapPre(
-    app, n, outer, label, featurePart, html, nContext, showGraphics, hasGraphics, ltr,
-):
-    nType = nContext.nType
-    hidden = nContext.hidden
-    cls = nContext.cls
-    contCls = &#34;contnr cnul&#34; if hidden else cls[&#34;container&#34;]
-    hlCls = nContext.hlCls
-    hlStyle = nContext.hlStyle
-    boundaryCls = nContext.boundaryCls
-    children = nContext.children
-    label0 = label.get(&#34;&#34;, None)
-    labelB = label.get(&#34;b&#34;, None)
-
-    containerB = f&#39;&lt;div class=&#34;{contCls} {{}} {ltr} {boundaryCls} {hlCls}&#34; {hlStyle}&gt;&#39;
-    containerE = f&#34;&lt;/div&gt;&#34;
-
-    terminalCls = &#34;trm&#34;
-    # if hidden:
-    #    html.append(containerB.format(terminalCls))
-    # else:
-    material = &#34;&#34; if hidden else f&#34; {featurePart}&#34;
-    if labelB is not None:
-        trm = terminalCls
-        html.append(f&#34;{containerB.format(trm)}{labelB}{material}{containerE}&#34;)
-    if label0 is not None:
-        trm = &#34;&#34; if children and not hidden else terminalCls
-        html.append(f&#34;{containerB.format(trm)}{label0}{material}&#34;)
-
-    if showGraphics and nType in hasGraphics:
-        html.append(app.getGraphics(n, nType, outer))
-
-    return (containerB, containerE)
-
-
-def _doPrettyWrapPost(label, featurePart, html, containerB, containerE):
-    label0 = label.get(&#34;&#34;, None)
-    labelE = label.get(&#34;e&#34;, None)
-
-    if label0 is not None:
-        html.append(containerE)
-    if labelE is not None:
-        html.append(f&#34;{containerB}{labelE} {featurePart}{containerE}&#34;)
-
-
-def _doPrettyNode(
-    app, dContext, oContext, nContext, n, outer, first, last, level, nodePlain
-):
-    api = app.api
-    L = api.L
-
-    aContext = app.context
-    lexTypes = aContext.lexTypes
-    lexMap = aContext.lexMap
-
-    textCls = nContext.textCls
-    hidden = nContext.hidden
-
-    nType = nContext.nType
-    cls = nContext.cls
-    hlCls = nContext.hlCls
-    hlStyle = nContext.hlStyle
-    descend = nContext.descend
-    isBaseNonSlot = nContext.isBaseNonSlot
-    children = nContext.children
-    nodePart = nContext.nodePart
-
-    labelHlCls = &#34;&#34;
-    labelHlStyle = &#34;&#34;
-
-    if isBaseNonSlot:
-        heading = nodePlain
-    else:
-        labelHlCls = hlCls
-        labelHlStyle = hlStyle
-        heading = getText(
-            app,
-            True,
-            n,
-            nType,
-            outer,
-            first,
-            last,
-            level,
-            &#34;&#34;,
-            descend,
-            dContext=dContext,
-        )
-
-    heading = f&#39;&lt;span class=&#34;{textCls}&#34;&gt;{heading}&lt;/span&gt;&#39; if heading else &#34;&#34;
-
-    featurePart = _getFeatures(app, dContext, n, nType)
-
-    if nType in lexTypes:
-        slots = _getSlots(api, n)
-        extremeOccs = (slots[0],) if len(slots) == 1 else (slots[0], slots[-1])
-        linkOccs = &#34; - &#34;.join(app.webLink(lo, _asString=True) for lo in extremeOccs)
-        featurePart += f&#39;&lt;div class=&#34;occs&#34;&gt;{linkOccs}&lt;/div&gt;&#39;
-    if nType in lexMap:
-        lx = L.u(n, otype=lexMap[nType])
-        if lx:
-            heading = app.webLink(lx[0], heading, _asString=True)
-
-    label = {}
-    for x in (&#34;&#34;, &#34;b&#34;, &#34;e&#34;):
-        key = f&#34;label{x}&#34;
-        if key in cls:
-            val = cls[key]
-            terminalCls = &#34;trm&#34; if x or not children else &#34;&#34;
-            sep = &#34; &#34; if nodePart and heading else &#34;&#34;
-            material = (
-                (heading if nodePlain else &#34;&#34;)
-                if hidden
-                else f&#34;{nodePart}{sep}{heading}&#34;
-                if nodePart or heading
-                else &#34;&#34;
-            )
-            label[x] = (
-                f&#39;&lt;div class=&#34;{val} {terminalCls} {labelHlCls}&#34; {labelHlStyle}&gt;&#39;
-                f&#34;{material}&lt;/div&gt;&#34;
-                if material
-                else &#34;&#34;
-            )
-
-    return (label, featurePart)
-
-
-def _prepareDisplay(
-    app, isPretty, dContext, oContext, pContext, n, outer, chunk=None, done=set(),
-):
-    api = app.api
-    F = api.F
-    T = api.T
-    slotType = F.otype.slotType
-    nType = F.otype.v(n)
-
-    aContext = app.context
-    levelCls = aContext.levelCls
-    noChildren = aContext.noChildren
-    prettyCustom = aContext.prettyCustom
-    isChunkOf = aContext.isChunkOf
-    chunkedTypes = aContext.chunkedTypes
-    lexTypes = aContext.lexTypes
-    styles = aContext.styles
-
-    fmt = dContext.fmt
-    baseTypes = dContext.baseTypes
-    _setSubBaseTypes(aContext, dContext, slotType)
-
-    highlights = dContext.highlights
-    showChunks = dContext.showChunks
-
-    descendType = T.formats.get(fmt, slotType)
-    bottomTypes = baseTypes if isPretty else {descendType}
-
-    isSlot = nType == slotType
-    hasChunks = nType in chunkedTypes
-    isHidden = not showChunks and nType in isChunkOf
-
-    slots = (
-        oContext.slots
-        if pContext is None
-        else frozenset()
-        if type(pContext) is str
-        else pContext.slots
-    )
-    nDone = done.get(n, set())
-    slots -= nDone
-
-    isBaseNonSlot = nType != slotType and nType in baseTypes
-
-    children = (
-        ()
-        if isSlot
-        or nType in bottomTypes
-        or isChunkOf.get(nType, None) in bottomTypes
-        or nType in lexTypes
-        or (not isPretty and nType in noChildren)
-        else _getChildren(app, isPretty, dContext, oContext, n, nType)
-    )
-
-    boundaryResult = _getBoundary(
-        isPretty, api, oContext, slots, n, nType, chunk=chunk
-    )
-    if boundaryResult is None:
-        return nType
-
-    (boundaryCls, slots) = boundaryResult
-    if not slots:
-        return nType
-
-    (hlCls, hlStyle) = getHlAtt(app, n, highlights, baseTypes, not isPretty)
-
-    isSlotOrDescend = isSlot or nType == descendType
-    descend = False if descendType == slotType else None
-
-    nodePart = _getNodePart(
-        app, isPretty, dContext, n, nType, isSlot, outer, hlCls != &#34;&#34;
-    )
-    cls = {}
-    if isPretty:
-        if nType in levelCls:
-            cls.update(levelCls[nType])
-        if nType in prettyCustom:
-            prettyCustom[nType](app, n, nType, cls)
-
-    textCls = styles.get(nType, oContext.textCls)
-
-    return NodeContext(
-        slotType,
-        nType,
-        isSlot,
-        isSlotOrDescend,
-        descend,
-        isBaseNonSlot,
-        hasChunks,
-        children,
-        boundaryCls,
-        textCls,
-        hlCls,
-        hlStyle,
-        nodePart,
-        cls,
-        slots,
-        isHidden,
-    )
-
-
-def _depthExceeded(level):
-    if level &gt; LIMIT_DISPLAY_DEPTH:
-        console(&#34;DISPLAY: maximal depth exceeded: {LIMIT_DISPLAY_DEPTH}&#34;, error=True)
-        return True
-    return False
-
-
-def _note(isPretty, oContext, n, nType, first, last, level, *labels, **info):
-    if not oContext.explain:
-        return
-    block = QUAD * level
-    kindRep = &#34;pretty&#34; if isPretty else &#34;plain&#34;
-    labelRep = &#34; &#34;.join(str(lab) for lab in labels)
-    console(f&#34;{block}&lt;{level}&gt;{kindRep}({nType} {n}): {labelRep}&#34;, error=True)
-    for (k, v) in info.items():
-        console(f&#34;{block}&lt;{level}&gt;      {k:&lt;10} = {repr(v)}&#34;, error=True)
-
-
-def _setSubBaseTypes(aContext, dContext, slotType):
-    descendantType = aContext.descendantType
-    isChunkOf = aContext.isChunkOf
-    baseTypes = dContext.baseTypes
-
-    chunkBaseTypes = {ct for (ct, t) in isChunkOf.items() if t in baseTypes}
-    subBaseTypes = set()
-
-    if baseTypes and baseTypes != {slotType}:
-        for bt in baseTypes:
-            if bt in descendantType:
-                subBaseTypes |= descendantType[bt]
-    dContext.subBaseTypes = subBaseTypes - baseTypes - chunkBaseTypes
-
-
-def _doPassage(dContext, i):
-    withPassage = dContext.withPassage
-    return withPassage is not True and withPassage and i + 1 in withPassage
-
-
-def _getPassage(app, isPretty, dContext, oContext, n):
-    withPassage = dContext.withPassage
-
-    if not withPassage:
-        return &#34;&#34;
-
-    passage = app.webLink(n, _asString=True)
-    return f&#39;&lt;span class=&#34;section ltr&#34;&gt;{passage}{NB}&lt;/span&gt;&#39;
-
-
-def _getTextCls(app, fmt):
-    aContext = app.context
-    formatCls = aContext.formatCls
-    defaultClsOrig = aContext.defaultClsOrig
-
-    return formatCls.get(fmt or DEFAULT_FORMAT, defaultClsOrig)
-
-
-def _getLtr(app, dContext):
-    aContext = app.context
-    direction = aContext.direction
-
-    fmt = dContext.fmt or DEFAULT_FORMAT
-
-    return (
-        &#34;rtl&#34;
-        if direction == &#34;rtl&#34; and (f&#34;{ORIG}-&#34; in fmt or f&#34;-{ORIG}&#34; in fmt)
-        else (&#34;&#34; if direction == &#34;ltr&#34; else &#34;ltr&#34;)
-    )
-
-
-def _getBigType(app, dContext, nType, otypeRank):
-    api = app.api
-    T = api.T
-
-    sectionTypeSet = T.sectionTypeSet
-    structureTypeSet = T.structureTypeSet
-
-    full = dContext.full
-    condenseType = dContext.condenseType
-
-    isBig = False
-    if not full:
-        if sectionTypeSet and nType in sectionTypeSet | structureTypeSet:
-            if condenseType is None or otypeRank[nType] &gt; otypeRank[condenseType]:
-                isBig = True
-        elif condenseType is not None and otypeRank[nType] &gt; otypeRank[condenseType]:
-            isBig = True
-    return isBig
-
-
-def _getBoundary(isPretty, api, oContext, inSlots, n, nType, chunk=None):
-    &#34;&#34;&#34;Utility function to ask from the TF API the slots contained in a node.
-
-    From that, a CSS class for the border box will be determined and returned.
-    &#34;&#34;&#34;
-
-    ltr = oContext.ltr
-    startCls = &#34;r&#34; if ltr == &#34;rtl&#34; else &#34;l&#34;
-    endCls = &#34;l&#34; if ltr == &#34;rtl&#34; else &#34;r&#34;
-
-    boundaryCls = &#34;&#34;
-
-    nSlots = _getSlots(api, n)
-
-    chunkSlots = _getSlots(api, chunk) &amp; nSlots if chunk else None
-
-    slots = inSlots &amp; (chunkSlots if chunk else nSlots)
-
-    if not slots:
-        return None
-
-    nStart = min(nSlots)
-    nEnd = max(nSlots)
-    tStart = min(slots)
-    tEnd = max(slots)
-
-    boundaryCls = &#34;&#34;
-
-    if chunk:
-        chStart = min(chunkSlots)
-        chEnd = max(chunkSlots)
-
-    kind = &#34;&#34;
-    if nStart &lt; tStart:
-        kind = (
-            &#34;&#34;
-            if ((tStart - 1 not in nSlots) or (chunk and chStart == tStart))
-            else &#34;no&#34;
-        )
-        boundaryCls += f&#34; {startCls}{kind}&#34;
-    if nEnd &gt; tEnd:
-        kind = &#34;&#34; if ((tEnd + 1 not in nSlots) or (chunk and chEnd == tEnd)) else &#34;no&#34;
-        boundaryCls += f&#34; {endCls}{kind}&#34;
-
-    return (boundaryCls, slots)
-
-
-def _getChunkedType(app, nContext, n, outer):
-
-    aContext = app.context
-    isChunkOf = aContext.isChunkOf
-    chunkedTypes = aContext.chunkedTypes
-
-    nType = nContext.nType
-
-    if not outer and nType not in chunkedTypes and nType in isChunkOf:
-        api = app.api
-        L = api.L
-        chunkedType = isChunkOf[nType]
-        sn = L.u(n, otype=chunkedType)
-        if sn:
-            E = api.E
-            nSlots = nContext.slots
-            sownSlots = frozenset(E.oslots.s(sn[0]))
-            return (
-                sn[0],
-                nContext._replace(slots=nSlots &amp; sownSlots),
-            )
-
-    return None
-
-
-def _getChildren(app, isPretty, dContext, oContext, n, nType):
-    api = app.api
-    L = api.L
-    F = api.F
-    otypeRank = api.otypeRank
-    sortNodes = api.sortNodes
-    slotType = F.otype.slotType
-    fOtypev = F.otype.v
-
-    aContext = app.context
-    verseTypes = aContext.verseTypes
-    childType = aContext.childType
-    baseTypes = dContext.baseTypes
-    subBaseTypes = dContext.subBaseTypes
-    childrenCustom = aContext.childrenCustom
-    showVerseInTuple = aContext.showVerseInTuple
-
-    inTuple = oContext.inTuple
-
-    full = dContext.full
-
-    isBigType = (
-        inTuple
-        if not isPretty and nType in verseTypes and not showVerseInTuple
-        else _getBigType(app, dContext, nType, otypeRank)
-    )
-
-    if isBigType and not full:
-        children = ()
-    elif nType in childType:
-        childType = childType[nType]
-        children = L.i(n, otype=childType)
-        if nType in childrenCustom:
-            (condition, method, add) = childrenCustom[nType]
-            if condition(n):
-                others = method(n)
-                if add:
-                    children += others
-                else:
-                    children = others
-
-            children = sortNodes(set(children) - {n})
-    else:
-        children = L.i(n)
-    if isPretty and baseTypes and baseTypes != {slotType}:
-        refSet = set(children)
-        children = tuple(
-            ch
-            for ch in children
-            if (fOtypev(ch) not in subBaseTypes)
-            and not (set(L.u(ch, otype=baseTypes)) &amp; refSet)
-        )
-    return children
-
-
-def _getNodePart(app, isPretty, dContext, n, nType, isSlot, outer, isHl):
-    _browse = app._browse
-
-    Fs = app.api.Fs
-
-    aContext = app.context
-    lineNumberFeature = aContext.lineNumberFeature
-    allowInfo = isPretty or outer is None or outer or isHl
-
-    withNodes = dContext.withNodes and outer is not None
-    withTypes = dContext.withTypes and outer is not None
-    prettyTypes = dContext.prettyTypes and outer is not None
-    lineNumbers = dContext.lineNumbers and outer is not None
-
-    num = &#34;&#34;
-    if withNodes and allowInfo:
-        num = n
-
-    ntp = &#34;&#34;
-    if (withTypes or isPretty and prettyTypes) and not isSlot and allowInfo:
-        ntp = nType
-
-    line = &#34;&#34;
-    if lineNumbers and allowInfo:
-        feat = lineNumberFeature.get(nType, None)
-        if feat:
-            line = Fs(feat).v(n)
-        if line:
-            line = f&#34;@{line}&#34; if line else &#34;&#34;
-
-    elemb = &#39;a href=&#34;#&#34;&#39; if _browse else &#34;span&#34;
-    eleme = &#34;a&#34; if _browse else &#34;span&#34;
-    sep = &#34;:&#34; if ntp and num else &#34;&#34;
-
-    return (
-        f&#39;&lt;{elemb} class=&#34;nd&#34;&gt;{ntp}{sep}{num}{line}&lt;/{eleme}&gt;&#39;
-        if ntp or num or line
-        else &#34;&#34;
-    )
-
-
-def _getSlots(api, n):
-    F = api.F
-    fOtype = F.otype.v
-    slotType = F.otype.slotType
-    if fOtype(n) == slotType:
-        return frozenset((n,))
-    E = api.E
-    maxSlot = F.otype.maxSlot
-    return frozenset(E.oslots.data[n - maxSlot - 1])
-
-
-def _getFeatures(app, dContext, n, nType):
-    &#34;&#34;&#34;Feature fetcher.
-
-    Helper for `pretty` that wraps the requested features and their values for
-    *node* in HTML for pretty display.
-    &#34;&#34;&#34;
-
-    api = app.api
-    L = api.L
-    Fs = api.Fs
-
-    aContext = app.context
-    featuresBare = aContext.featuresBare
-    features = aContext.features
-
-    dFeatures = dContext.features
-    dFeaturesIndirect = dContext.featuresIndirect
-    queryFeatures = dContext.queryFeatures
-    standardFeatures = dContext.standardFeatures
-    suppress = dContext.suppress
-    noneValues = dContext.noneValues
-
-    (theseFeatures, indirect) = features.get(nType, ((), {}))
-    (theseFeaturesBare, indirectBare) = featuresBare.get(nType, ((), {}))
-
-    # a feature can be nType:feature
-    # do a L.u(n, otype=nType)[0] and take the feature from there
-
-    givenFeatureSet = set(theseFeatures) | set(theseFeaturesBare)
-    xFeatures = tuple(
-        f for f in dFeatures if not standardFeatures or f not in givenFeatureSet
-    )
-    featureList = tuple(theseFeaturesBare + theseFeatures) + xFeatures
-    bFeatures = len(theseFeaturesBare)
-    nbFeatures = len(theseFeaturesBare) + len(theseFeatures)
-
-    featurePart = &#34;&#34;
-
-    if standardFeatures or queryFeatures:
-        for (i, name) in enumerate(featureList):
-            if name not in suppress:
-                fsName = Fs(name)
-                if fsName is None:
-                    continue
-                fsNamev = fsName.v
-
-                value = None
-                if (
-                    name in dFeaturesIndirect
-                    or name in indirectBare
-                    or name in indirect
-                ):
-                    refType = (
-                        dFeaturesIndirect[name]
-                        if name in dFeaturesIndirect
-                        else indirectBare[name]
-                        if name in indirectBare
-                        else indirect[name]
-                    )
-                    refNode = L.u(n, otype=refType)
-                    refNode = refNode[0] if refNode else None
-                else:
-                    refNode = n
-                if refNode is not None:
-                    value = fsNamev(refNode)
-
-                value = None if value in noneValues else htmlEsc(value or &#34;&#34;)
-                if value is not None:
-                    value = value.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
-                    isBare = i &lt; bFeatures
-                    isExtra = i &gt;= nbFeatures
-                    if (
-                        isExtra
-                        and not queryFeatures
-                        or not isExtra
-                        and not standardFeatures
-                    ):
-                        continue
-                    nameRep = &#34;&#34; if isBare else f&#39;&lt;span class=&#34;f&#34;&gt;{name}=&lt;/span&gt;&#39;
-                    titleRep = f&#39;title=&#34;{name}&#34;&#39; if isBare else &#34;&#34;
-                    xCls = &#34;xft&#34; if isExtra else &#34;&#34;
-                    featurePart += (
-                        f&#39;&lt;span class=&#34;{name.lower()} {xCls}&#34; {titleRep}&gt;&#39;
-                        f&#34;{nameRep}{value}&lt;/span&gt;&#34;
-                    )
-    if not featurePart:
-        return &#34;&#34;
-
-    return f&#34;&lt;div class=&#39;features&#39;&gt;{featurePart}&lt;/div&gt;&#34;
-
-
-def _getRefMember(app, tup, dContext):
-    api = app.api
-    otypeRank = api.otypeRank
-    fOtypev = api.F.otype.v
-
-    minRank = None
-    minN = None
-    for n in tup:
-        nType = fOtypev(n)
-        rank = otypeRank[nType]
-        if minRank is None or rank &lt; minRank:
-            minRank = rank
-            minN = n
-            if minRank == 0:
-                break
-
-    return (tup[0] if tup else None) if minN is None else minN</code></pre>
+    dh(htmlStr)</code></pre>
 </details>
 </section>
 <section>
@@ -2064,7 +1020,7 @@ we force <code>silent=True</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L129-L168" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/display.py#L30-L69" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayApi(app, silent):
     &#34;&#34;&#34;Produce the display API.
@@ -2125,7 +1081,7 @@ Otherwise, restore all display settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L199-L216" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/display.py#L100-L117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayReset(app, *options):
     &#34;&#34;&#34;Restore display parameters to their defaults.
@@ -2173,7 +1129,7 @@ A list of all available options is in <code><a title="tf.applib.displaysettings"
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L171-L196" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/display.py#L72-L97" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displaySetup(app, **options):
     &#34;&#34;&#34;Set up all display parameters.
@@ -2292,7 +1248,7 @@ open it with <code>encoding=utf_16</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L247-L355" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/display.py#L148-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
@@ -2415,7 +1371,7 @@ else the CSS is returned.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L221-L244" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/display.py#L122-L145" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadCss(app):
     &#34;&#34;&#34;The CSS is looked up and then loaded into a notebook if we are not
@@ -2475,7 +1431,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L616-L678" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/display.py#L517-L594" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     &#34;&#34;&#34;Display the plain text of a node.
@@ -2523,15 +1479,30 @@ Depending on <em>asString</em> above.</p></div>
 
     _browse = app._browse
     api = app.api
+    E = api.E
 
     ltr = _getLtr(app, dContext)
     textCls = _getTextCls(app, fmt)
-    slots = _getSlots(api, n)
+    slots = frozenset(E.oslots.s(n))
 
     oContext = OuterContext(ltr, textCls, slots, _inTuple, not not explain)
     passage = _getPassage(app, True, dContext, oContext, n)
+    boundaryCls = &#34;&#34;
     rep = _doPlain(
-        app, dContext, oContext, None, n, True, True, True, 0, passage, [], {}, {}
+        app,
+        dContext,
+        oContext,
+        n,
+        slots,
+        boundaryCls,
+        True,
+        True,
+        True,
+        0,
+        passage,
+        [],
+        set(),
+        {},
     )
     sep = &#34; &#34; if passage and rep else &#34;&#34;
 
@@ -2591,7 +1562,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L450-L613" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/display.py#L351-L514" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plainTuple(
     app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options
@@ -2796,7 +1767,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L812-L902" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/display.py#L729-L836" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pretty(app, n, explain=False, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
@@ -2855,8 +1826,10 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 
     api = app.api
     F = api.F
+    E = api.E
     L = api.L
-    otypeRank = api.otypeRank
+    N = api.N
+    otypeRank = N.otypeRank
 
     ltr = _getLtr(app, dContext)
     textCls = _getTextCls(app, fmt)
@@ -2872,10 +1845,10 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
             if ups:
                 containerN = ups[0]
 
-    slots = (
-        _getSlots(api, n)
-        if not condensed or not condenseType or containerN is None
-        else _getSlots(api, containerN)
+    slots = frozenset(
+        E.oslots.s(
+            n if not condensed or not condenseType or containerN is None else containerN
+        )
     )
 
     oContext = OuterContext(ltr, textCls, slots, False, not not explain)
@@ -2883,7 +1856,22 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 
     html = []
 
-    _doPretty(app, dContext, oContext, None, n, True, True, True, 0, html, {}, {})
+    boundaryCls = &#34;&#34;
+    _doPretty(
+        app,
+        dContext,
+        oContext,
+        n,
+        slots,
+        boundaryCls,
+        True,
+        True,
+        True,
+        0,
+        html,
+        set(),
+        {},
+    )
 
     htmlStr = passage + &#34;&#34;.join(html)
     if _browse:
@@ -2919,7 +1907,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L742-L809" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/display.py#L658-L726" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prettyTuple(app, tup, seq, item=RESULT, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
@@ -2972,7 +1960,8 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
             return
 
     api = app.api
-    sortKey = api.sortKey
+    N = api.N
+    sortKey = N.sortKey
 
     containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
     highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
@@ -3018,7 +2007,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L684-L739" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/display.py#L600-L655" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def show(app, tuples, **options):
     &#34;&#34;&#34;Displays an iterable of tuples of nodes.
@@ -3107,7 +2096,7 @@ HTML string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L361-L447" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/applib/display.py#L262-L348" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def table(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.
@@ -3201,151 +2190,11 @@ HTML string.</dd>
 </dl>
 </section>
 <section>
-<h2 class="section-title" id="header-classes">Classes</h2>
-<dl>
-<dt id="tf.applib.display.NodeContext"><code class="flex name class">
-<span>class <span class="ident">NodeContext</span></span>
-<span>(</span><span>slotType, nType, isSlot, isSlotOrDescend, descend, isBaseNonSlot, hasChunks, children, boundaryCls, textCls, hlCls, hlStyle, nodePart, cls, slots, hidden)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>NodeContext(slotType, nType, isSlot, isSlotOrDescend, descend, isBaseNonSlot, hasChunks, children, boundaryCls, textCls, hlCls, hlStyle, nodePart, cls, slots, hidden)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L55-L58" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">class NodeContext:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-    pass</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>builtins.tuple</li>
-</ul>
-<h3>Instance variables</h3>
-<dl>
-<dt id="tf.applib.display.NodeContext.boundaryCls"><code class="name">var <span class="ident">boundaryCls</span></code></dt>
-<dd>
-<div class="desc"><p>Css class that represent the kinds of boundaries for this node. Nodes can have a firm of dotted left/right boundary, or no boundary at all.</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.children"><code class="name">var <span class="ident">children</span></code></dt>
-<dd>
-<div class="desc"><p>The children of the current node.</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.cls"><code class="name">var <span class="ident">cls</span></code></dt>
-<dd>
-<div class="desc"><p>A dict of several classes for the display of the node: for the container, the label, and the children of the node; might be set by prettyCustom</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.descend"><code class="name">var <span class="ident">descend</span></code></dt>
-<dd>
-<div class="desc"><p>When calling T.text(n, descend=??) for this node, what should we substitute for the ?? ?</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.hasChunks"><code class="name">var <span class="ident">hasChunks</span></code></dt>
-<dd>
-<div class="desc"><p>Whether the current node has a type that has a related type that corresponds to contiguous chunks that build it.
-E.g. in the BHSA the type phrase has a chunk type phrase_atom.</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.hidden"><code class="name">var <span class="ident">hidden</span></code></dt>
-<dd>
-<div class="desc"><p>Whether the outer container and label of the current node should be hidden. This is used to reduce displays by hiding the chunk types of types that have chunks. E.g. in the BHSA: the phrase_atoms can be hidden.</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.hlCls"><code class="name">var <span class="ident">hlCls</span></code></dt>
-<dd>
-<div class="desc"><p>The highlight Css class of the current node.</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.hlStyle"><code class="name">var <span class="ident">hlStyle</span></code></dt>
-<dd>
-<div class="desc"><p>The highlight style attribute of the current node.</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.isBaseNonSlot"><code class="name">var <span class="ident">isBaseNonSlot</span></code></dt>
-<dd>
-<div class="desc"><p>Whether the current node has a type that is currently a baseType, i.e. a type where a pretty display should stop unfolding. No need to put the slot type in this set.</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.isSlot"><code class="name">var <span class="ident">isSlot</span></code></dt>
-<dd>
-<div class="desc"><p>Whether the current node is a slot node.</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.isSlotOrDescend"><code class="name">var <span class="ident">isSlotOrDescend</span></code></dt>
-<dd>
-<div class="desc"><p>Whether the current node is a slot node or has a type to which the current text format should descend. This type is determined by the current text format.</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.nType"><code class="name">var <span class="ident">nType</span></code></dt>
-<dd>
-<div class="desc"><p>The node type of the current node.</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.nodePart"><code class="name">var <span class="ident">nodePart</span></code></dt>
-<dd>
-<div class="desc"><p>The node type/number insofar it has to be displayed for the current node</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.slotType"><code class="name">var <span class="ident">slotType</span></code></dt>
-<dd>
-<div class="desc"><p>The slot type of the data set.</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.slots"><code class="name">var <span class="ident">slots</span></code></dt>
-<dd>
-<div class="desc"><p>Set of slots that must be displayed for this node</p></div>
-</dd>
-<dt id="tf.applib.display.NodeContext.textCls"><code class="name">var <span class="ident">textCls</span></code></dt>
-<dd>
-<div class="desc"><p>The text Css class of the current node.</p></div>
-</dd>
-</dl>
-</dd>
-<dt id="tf.applib.display.OuterContext"><code class="flex name class">
-<span>class <span class="ident">OuterContext</span></span>
-<span>(</span><span>ltr, textCls, slots, inTuple, explain)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>OuterContext(ltr, textCls, slots, inTuple, explain)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/applib/display.py#L28-L34" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">class OuterContext:
-    &#34;&#34;&#34;Outer node properties during plain() and pretty().
-    Only the properties of the node for which the outer call
-    plain() or pretty() has been made, not the nodes encountered
-    during recursion.&#34;
-    &#34;&#34;&#34;
-    pass</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>builtins.tuple</li>
-</ul>
-<h3>Instance variables</h3>
-<dl>
-<dt id="tf.applib.display.OuterContext.explain"><code class="name">var <span class="ident">explain</span></code></dt>
-<dd>
-<div class="desc"><p>Alias for field number 4</p></div>
-</dd>
-<dt id="tf.applib.display.OuterContext.inTuple"><code class="name">var <span class="ident">inTuple</span></code></dt>
-<dd>
-<div class="desc"><p>Whether the outer node is displayed as part of a tuple of nodes.</p></div>
-</dd>
-<dt id="tf.applib.display.OuterContext.ltr"><code class="name">var <span class="ident">ltr</span></code></dt>
-<dd>
-<div class="desc"><p>writing direction.</p></div>
-</dd>
-<dt id="tf.applib.display.OuterContext.slots"><code class="name">var <span class="ident">slots</span></code></dt>
-<dd>
-<div class="desc"><p>Set of slots under the outer node.</p></div>
-</dd>
-<dt id="tf.applib.display.OuterContext.textCls"><code class="name">var <span class="ident">textCls</span></code></dt>
-<dd>
-<div class="desc"><p>Css class for full text.</p></div>
-</dd>
-</dl>
-</dd>
-</dl>
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.applib.display">
@@ -3355,6 +2204,18 @@ data-gaCategoryParameter="tf.applib.display">
 <ul>
 <li><a href="#display">Display</a><ul>
 <li><a href="#display-parameters">Display parameters</a></li>
+<li><a href="#display-algorithm">Display algorithm</a><ul>
+<li><a href="#descendant-types">Descendant types</a></li>
+<li><a href="#chunkify">Chunkify</a></li>
+<li><a href="#intersecting-nodes">Intersecting nodes</a></li>
+<li><a href="#canonical-order">Canonical order</a></li>
+<li><a href="#substrate">Substrate</a></li>
+<li><a href="#output">Output</a></li>
+<li><a href="#called-and-done">Called and done</a></li>
+<li><a href="#all-pieces-together">All pieces together</a></li>
+<li><a href="#notes">Notes</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -3378,41 +2239,6 @@ data-gaCategoryParameter="tf.applib.display">
 <li><code><a title="tf.applib.display.prettyTuple" href="#tf.applib.display.prettyTuple">prettyTuple</a></code></li>
 <li><code><a title="tf.applib.display.show" href="#tf.applib.display.show">show</a></code></li>
 <li><code><a title="tf.applib.display.table" href="#tf.applib.display.table">table</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-classes">Classes</a></h3>
-<ul>
-<li>
-<h4><code><a title="tf.applib.display.NodeContext" href="#tf.applib.display.NodeContext">NodeContext</a></code></h4>
-<ul class="two-column">
-<li><code><a title="tf.applib.display.NodeContext.boundaryCls" href="#tf.applib.display.NodeContext.boundaryCls">boundaryCls</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.children" href="#tf.applib.display.NodeContext.children">children</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.cls" href="#tf.applib.display.NodeContext.cls">cls</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.descend" href="#tf.applib.display.NodeContext.descend">descend</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.hasChunks" href="#tf.applib.display.NodeContext.hasChunks">hasChunks</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.hidden" href="#tf.applib.display.NodeContext.hidden">hidden</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.hlCls" href="#tf.applib.display.NodeContext.hlCls">hlCls</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.hlStyle" href="#tf.applib.display.NodeContext.hlStyle">hlStyle</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.isBaseNonSlot" href="#tf.applib.display.NodeContext.isBaseNonSlot">isBaseNonSlot</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.isSlot" href="#tf.applib.display.NodeContext.isSlot">isSlot</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.isSlotOrDescend" href="#tf.applib.display.NodeContext.isSlotOrDescend">isSlotOrDescend</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.nType" href="#tf.applib.display.NodeContext.nType">nType</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.nodePart" href="#tf.applib.display.NodeContext.nodePart">nodePart</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.slotType" href="#tf.applib.display.NodeContext.slotType">slotType</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.slots" href="#tf.applib.display.NodeContext.slots">slots</a></code></li>
-<li><code><a title="tf.applib.display.NodeContext.textCls" href="#tf.applib.display.NodeContext.textCls">textCls</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="tf.applib.display.OuterContext" href="#tf.applib.display.OuterContext">OuterContext</a></code></h4>
-<ul class="">
-<li><code><a title="tf.applib.display.OuterContext.explain" href="#tf.applib.display.OuterContext.explain">explain</a></code></li>
-<li><code><a title="tf.applib.display.OuterContext.inTuple" href="#tf.applib.display.OuterContext.inTuple">inTuple</a></code></li>
-<li><code><a title="tf.applib.display.OuterContext.ltr" href="#tf.applib.display.OuterContext.ltr">ltr</a></code></li>
-<li><code><a title="tf.applib.display.OuterContext.slots" href="#tf.applib.display.OuterContext.slots">slots</a></code></li>
-<li><code><a title="tf.applib.display.OuterContext.textCls" href="#tf.applib.display.OuterContext.textCls">textCls</a></code></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>

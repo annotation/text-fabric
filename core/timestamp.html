@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L0-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L0-L207" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/core/timestamp.md
@@ -36,12 +36,16 @@
 import sys
 import time
 
+from .helpers import unexpanduser as ux
+
 
 class Timestamp(object):
     def __init__(self, level=None):
+        indent = self.indent
+
         self.oneLevelRep = &#34;   |   &#34;
         self.timestamp = {}
-        self.indent(level=level, reset=True)
+        indent(level=level, reset=True)
         self.log = []
         self.verbose = -2  # regulates all messages
         self.silent = False  # regulates informational messages only
@@ -53,6 +57,7 @@ class Timestamp(object):
         # cache =  0: only to console
         if self.verbose != -2 and self.level &gt;= self.verbose:
             return
+        msg = ux(msg)
         if tm:
             msgRep = f&#34;{self.levelRep}{self._elapsed():&gt;7} {msg}&#34;.replace(
                 &#34;\n&#34;, &#34;\n&#34; + self.levelRep
@@ -228,7 +233,10 @@ class Timestamp(object):
             return f&#34;{interval:&gt;2d}s&#34;
         if interval &lt; 3600:
             return f&#34;{interval // 60:&gt;2d}m {interval % 60:&gt;02d}s&#34;
-        return f&#34;{interval // 3600:&gt;2d}h {(interval % 3600) // 60:&gt;02d}m {interval % 60:&gt;02d}s&#34;</code></pre>
+        return (
+            f&#34;{interval // 3600:&gt;2d}h {(interval % 3600) // 60:&gt;02d}m&#34;
+            f&#34; {interval % 60:&gt;02d}s&#34;
+        )</code></pre>
 </details>
 </section>
 <section>
@@ -249,13 +257,15 @@ class Timestamp(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L9-L200" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L11-L208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Timestamp(object):
     def __init__(self, level=None):
+        indent = self.indent
+
         self.oneLevelRep = &#34;   |   &#34;
         self.timestamp = {}
-        self.indent(level=level, reset=True)
+        indent(level=level, reset=True)
         self.log = []
         self.verbose = -2  # regulates all messages
         self.silent = False  # regulates informational messages only
@@ -267,6 +277,7 @@ class Timestamp(object):
         # cache =  0: only to console
         if self.verbose != -2 and self.level &gt;= self.verbose:
             return
+        msg = ux(msg)
         if tm:
             msgRep = f&#34;{self.levelRep}{self._elapsed():&gt;7} {msg}&#34;.replace(
                 &#34;\n&#34;, &#34;\n&#34; + self.levelRep
@@ -442,7 +453,10 @@ class Timestamp(object):
             return f&#34;{interval:&gt;2d}s&#34;
         if interval &lt; 3600:
             return f&#34;{interval // 60:&gt;2d}m {interval % 60:&gt;02d}s&#34;
-        return f&#34;{interval // 3600:&gt;2d}h {(interval % 3600) // 60:&gt;02d}m {interval % 60:&gt;02d}s&#34;</code></pre>
+        return (
+            f&#34;{interval // 3600:&gt;2d}h {(interval % 3600) // 60:&gt;02d}m&#34;
+            f&#34; {interval % 60:&gt;02d}s&#34;
+        )</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -454,7 +468,7 @@ class Timestamp(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L44-L58" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L49-L63" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cache(self, _asString=False):
     if _asString:
@@ -499,7 +513,7 @@ silent mode.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L102-L123" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L107-L128" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, msg, tm=True, nl=True, cache=0):
     &#34;&#34;&#34;Sends an warning message to the standard error.
@@ -541,7 +555,7 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L125-L145" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L130-L150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def indent(self, level=None, reset=False, _verbose=None):
     &#34;&#34;&#34;Changes the indentation and timing of forthcoming messages.
@@ -589,7 +603,7 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L60-L79" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L65-L84" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def info(self, msg, tm=True, nl=True, cache=0):
     &#34;&#34;&#34;Sends an informational message to the standard output.
@@ -628,7 +642,7 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L147-L157" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L152-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isSilent(self):
     &#34;&#34;&#34;The current verbosity.
@@ -651,7 +665,7 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L18-L39" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L22-L44" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
     # cache is a list: append to cache, do not output anything
@@ -660,6 +674,7 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
     # cache =  0: only to console
     if self.verbose != -2 and self.level &gt;= self.verbose:
         return
+    msg = ux(msg)
     if tm:
         msgRep = f&#34;{self.levelRep}{self._elapsed():&gt;7} {msg}&#34;.replace(
             &#34;\n&#34;, &#34;\n&#34; + self.levelRep
@@ -685,7 +700,7 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L41-L42" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L46-L47" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self):
     self.log = []</code></pre>
@@ -707,7 +722,7 @@ If <code>'deep'</code> also suppress warnings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L159-L172" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L164-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setSilent(self, silent):
     &#34;&#34;&#34;Set the verbosity.
@@ -733,7 +748,7 @@ If <code>'deep'</code> also suppress warnings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L185-L189" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L190-L194" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def silentOff(self):
     &#34;&#34;&#34;Enable informational messages.
@@ -755,7 +770,7 @@ If <code>'deep'</code> also suppress warnings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L174-L183" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L179-L188" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def silentOn(self, deep=False):
     &#34;&#34;&#34;Suppress informational messages.
@@ -792,7 +807,7 @@ If <code>'deep'</code> also suppress warnings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/timestamp.py#L81-L100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/timestamp.py#L86-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def warning(self, msg, tm=True, nl=True, cache=0):
     &#34;&#34;&#34;Sends an warning message to the standard output.
@@ -822,9 +837,8 @@ If <code>'deep'</code> also suppress warnings.</dd>
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.core.timestamp">

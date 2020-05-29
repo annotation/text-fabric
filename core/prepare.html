@@ -33,7 +33,7 @@ the order and nature of the steps is configured in
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/prepare.py#L0-L674" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/prepare.py#L0-L686" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Functions that precompute data.
 
@@ -148,10 +148,12 @@ def levels(info, error, otype, oslots, otext):
 
 
 def order(info, error, otype, oslots, levels):
-    &#34;&#34;&#34;Computes order data.
+    &#34;&#34;&#34;Computes order data for the canonical ordering.
 
     The canonical ordering between nodes is defined in terms of the slots that
-    nodes contain, see `tf.core.api`.
+    nodes contain, and if that is not decisive, the rank of the node type is taken
+    into account, and if that is still not decisive, the node itself is taken into
+    account.
 
     Parameters
     ----------
@@ -175,12 +177,16 @@ def order(info, error, otype, oslots, levels):
     -----
     We store the result in an array because it saves a lot of memory, and access
     is still fast.
+
+    See Also
+    --------
+    tf.core.nodes: canonical ordering
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     info(&#34;assigning otype levels to nodes&#34;)
-    otypeLevels = dict(((x[0], i) for (i, x) in enumerate(levels)))
+    otypeLevels = dict(((x[0], i) for (i, x) in enumerate(reversed(levels))))
 
     def otypeRank(n):
         return otypeLevels[slotType if n &lt; maxSlot + 1 else otype[n - maxSlot - 1]]
@@ -201,7 +207,13 @@ def order(info, error, otype, oslots, levels):
         oa = otypeRank(na)
         ob = otypeRank(nb)
         if sa == sb:
-            return 0 if oa == ob else -1 if oa &lt; ob else 1
+            return (
+                (-1 if na &lt; nb else 1 if na &gt; nb else 0)
+                if oa == ob
+                else -1
+                if oa &gt; ob
+                else 1
+            )
         if sa &gt; sb:
             return -1
         if sa &lt; sb:
@@ -220,7 +232,7 @@ def rank(info, error, otype, order):
     &#34;&#34;&#34;Computes rank data.
 
     The rank of a node is its place in among the other nodes in the
-    canonical order (see `tf.core.api`).
+    canonical order (see `tf.core.nodes`).
 
     Parameters
     ----------
@@ -275,7 +287,7 @@ def levUp(info, error, otype, oslots, rank):
     -------
     tuple
         The n-th member is an array of the embedder nodes of n.
-        Those arrays are sorted in canonical order (`tf.core.api`).
+        Those arrays are sorted in canonical order (`tf.core.nodes`).
 
     Notes
     -----
@@ -283,12 +295,13 @@ def levUp(info, error, otype, oslots, rank):
         Many nodes have the same array of embedders.
         Those embedder arrays will be reused for those nodes.
 
-    !!! caution &#34;Use with care&#34;
-        It is not advisable to this data directly by `C.levUp.data`,
-        it is far better to use the `tf.core.locality.Locality.u` function.
+    Warnings
+    --------
+    It is not advisable to this data directly by `C.levUp.data`,
+    it is far better to use the `tf.core.locality.Locality.u` function.
 
-        Only when every bit of performance waste has to be squeezed out,
-        this raw data might be a deal.
+    Only when every bit of performance waste has to be squeezed out,
+    this raw data might be a deal.
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -360,7 +373,7 @@ def levDown(info, error, otype, levUp, rank):
     -------
     tuple
         The *n*-th member is an array of the embedded nodes of *n + maxSlot*.
-        Those arrays are sorted in canonical order (`tf.core.api`).
+        Those arrays are sorted in canonical order (`tf.core.nodes`).
 
     !!! hint &#34;Memory efficiency&#34;
         Slot nodes do not have embedded nodes, so they do not have to occupy
@@ -419,7 +432,7 @@ def boundary(info, error, otype, oslots, rank):
     tuple
         *   first: tuple of array
             The *n*-th member is the array of nodes that start at slot *n*,
-            ordered in *reversed* canonical order (`tf.core.api`);
+            ordered in *reversed* canonical order (`tf.core.nodes`);
         *   last: tuple of array
             The *n*-th member is the array of nodes that end at slot *n*,
             ordered in canonical order;
@@ -494,12 +507,11 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
             section-level-2 headings to mappings from
             section-level3 headings to section-level-3 nodes.
 
-    Notes
-    -----
-    !!! caution &#34;Custom names&#34;
-        Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
-        It is the corpus data, especially the `otext` config feature that
-        spells out the names of the sections.
+    Warnings
+    --------
+    Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
+    It is the corpus data, especially the `otext` config feature that
+    spells out the names of the sections.
 
     &#34;&#34;&#34;
 
@@ -750,7 +762,7 @@ and
 <ul>
 <li>first: tuple of array
 The <em>n</em>-th member is the array of nodes that start at slot <em>n</em>,
-ordered in <em>reversed</em> canonical order (<code><a title="tf.core.api" href="api.html">tf.core.api</a></code>);</li>
+ordered in <em>reversed</em> canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>);</li>
 <li>last: tuple of array
 The <em>n</em>-th member is the array of nodes that end at slot <em>n</em>,
 ordered in canonical order;</li>
@@ -765,7 +777,7 @@ reversed canonical order?</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/prepare.py#L356-L412" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/prepare.py#L369-L425" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def boundary(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes boundary data.
@@ -796,7 +808,7 @@ reversed canonical order?</p>
     tuple
         *   first: tuple of array
             The *n*-th member is the array of nodes that start at slot *n*,
-            ordered in *reversed* canonical order (`tf.core.api`);
+            ordered in *reversed* canonical order (`tf.core.nodes`);
         *   last: tuple of array
             The *n*-th member is the array of nodes that end at slot *n*,
             ordered in canonical order;
@@ -851,7 +863,7 @@ the level-down data.</p>
 <dl>
 <dt><code>tuple</code></dt>
 <dd>The <em>n</em>-th member is an array of the embedded nodes of <em>n + maxSlot</em>.
-Those arrays are sorted in canonical order (<code><a title="tf.core.api" href="api.html">tf.core.api</a></code>).</dd>
+Those arrays are sorted in canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>).</dd>
 </dl>
 <div class="admonition hint">
 <p class="admonition-title">Memory efficiency</p>
@@ -869,7 +881,7 @@ this raw data might be a deal.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/prepare.py#L301-L353" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/prepare.py#L314-L366" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levDown(info, error, otype, levUp, rank):
     &#34;&#34;&#34;Computes level-down data.
@@ -896,7 +908,7 @@ this raw data might be a deal.</p>
     -------
     tuple
         The *n*-th member is an array of the embedded nodes of *n + maxSlot*.
-        Those arrays are sorted in canonical order (`tf.core.api`).
+        Those arrays are sorted in canonical order (`tf.core.nodes`).
 
     !!! hint &#34;Memory efficiency&#34;
         Slot nodes do not have embedded nodes, so they do not have to occupy
@@ -951,24 +963,22 @@ the level-up data.</p>
 <dl>
 <dt><code>tuple</code></dt>
 <dd>The n-th member is an array of the embedder nodes of n.
-Those arrays are sorted in canonical order (<code><a title="tf.core.api" href="api.html">tf.core.api</a></code>).</dd>
+Those arrays are sorted in canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>).</dd>
 </dl>
 <div class="admonition hint">
 <p class="admonition-title">Memory efficiency</p>
 <p>Many nodes have the same array of embedders.
 Those embedder arrays will be reused for those nodes.</p>
 </div>
-<div class="admonition caution">
-<p class="admonition-title">Use with care</p>
+<h2 id="warnings">Warnings</h2>
 <p>It is not advisable to this data directly by <code>C.levUp.data</code>,
 it is far better to use the <code><a title="tf.core.locality.Locality.u" href="locality.html#tf.core.locality.Locality.u">Locality.u()</a></code> function.</p>
 <p>Only when every bit of performance waste has to be squeezed out,
-this raw data might be a deal.</p>
-</div></div>
+this raw data might be a deal.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/prepare.py#L216-L298" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/prepare.py#L228-L311" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levUp(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes level-up data.
@@ -995,7 +1005,7 @@ this raw data might be a deal.</p>
     -------
     tuple
         The n-th member is an array of the embedder nodes of n.
-        Those arrays are sorted in canonical order (`tf.core.api`).
+        Those arrays are sorted in canonical order (`tf.core.nodes`).
 
     Notes
     -----
@@ -1003,12 +1013,13 @@ this raw data might be a deal.</p>
         Many nodes have the same array of embedders.
         Those embedder arrays will be reused for those nodes.
 
-    !!! caution &#34;Use with care&#34;
-        It is not advisable to this data directly by `C.levUp.data`,
-        it is far better to use the `tf.core.locality.Locality.u` function.
+    Warnings
+    --------
+    It is not advisable to this data directly by `C.levUp.data`,
+    it is far better to use the `tf.core.locality.Locality.u` function.
 
-        Only when every bit of performance waste has to be squeezed out,
-        this raw data might be a deal.
+    Only when every bit of performance waste has to be squeezed out,
+    this raw data might be a deal.
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
@@ -1111,7 +1122,7 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/prepare.py#L19-L110" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/prepare.py#L19-L110" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levels(info, error, otype, oslots, otext):
     &#34;&#34;&#34;Computes level data.
@@ -1211,9 +1222,11 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
 <span>def <span class="ident">order</span></span>(<span>info, error, otype, oslots, levels)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Computes order data.</p>
+<div class="desc"><p>Computes order data for the canonical ordering.</p>
 <p>The canonical ordering between nodes is defined in terms of the slots that
-nodes contain, see <code><a title="tf.core.api" href="api.html">tf.core.api</a></code>.</p>
+nodes contain, and if that is not decisive, the rank of the node type is taken
+into account, and if that is still not decisive, the node itself is taken into
+account.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
@@ -1234,17 +1247,24 @@ nodes contain, see <code><a title="tf.core.api" href="api.html">tf.core.api</a><
 </dl>
 <h2 id="notes">Notes</h2>
 <p>We store the result in an array because it saves a lot of memory, and access
-is still fast.</p></div>
+is still fast.</p>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code></dt>
+<dd>canonical ordering</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/prepare.py#L113-L179" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/prepare.py#L113-L191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def order(info, error, otype, oslots, levels):
-    &#34;&#34;&#34;Computes order data.
+    &#34;&#34;&#34;Computes order data for the canonical ordering.
 
     The canonical ordering between nodes is defined in terms of the slots that
-    nodes contain, see `tf.core.api`.
+    nodes contain, and if that is not decisive, the rank of the node type is taken
+    into account, and if that is still not decisive, the node itself is taken into
+    account.
 
     Parameters
     ----------
@@ -1268,12 +1288,16 @@ is still fast.</p></div>
     -----
     We store the result in an array because it saves a lot of memory, and access
     is still fast.
+
+    See Also
+    --------
+    tf.core.nodes: canonical ordering
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     info(&#34;assigning otype levels to nodes&#34;)
-    otypeLevels = dict(((x[0], i) for (i, x) in enumerate(levels)))
+    otypeLevels = dict(((x[0], i) for (i, x) in enumerate(reversed(levels))))
 
     def otypeRank(n):
         return otypeLevels[slotType if n &lt; maxSlot + 1 else otype[n - maxSlot - 1]]
@@ -1294,7 +1318,13 @@ is still fast.</p></div>
         oa = otypeRank(na)
         ob = otypeRank(nb)
         if sa == sb:
-            return 0 if oa == ob else -1 if oa &lt; ob else 1
+            return (
+                (-1 if na &lt; nb else 1 if na &gt; nb else 0)
+                if oa == ob
+                else -1
+                if oa &gt; ob
+                else 1
+            )
         if sa &gt; sb:
             return -1
         if sa &lt; sb:
@@ -1315,7 +1345,7 @@ is still fast.</p></div>
 <dd>
 <div class="desc"><p>Computes rank data.</p>
 <p>The rank of a node is its place in among the other nodes in the
-canonical order (see <code><a title="tf.core.api" href="api.html">tf.core.api</a></code>).</p>
+canonical order (see <code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>).</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
@@ -1338,13 +1368,13 @@ is still fast.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/prepare.py#L182-L213" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/prepare.py#L194-L225" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rank(info, error, otype, order):
     &#34;&#34;&#34;Computes rank data.
 
     The rank of a node is its place in among the other nodes in the
-    canonical order (see `tf.core.api`).
+    canonical order (see `tf.core.nodes`).
 
     Parameters
     ----------
@@ -1422,16 +1452,14 @@ section-level3 headings to section-level-3 nodes.</li>
 </ul>
 </dd>
 </dl>
-<div class="admonition caution">
-<p class="admonition-title">Custom names</p>
+<h2 id="warnings">Warnings</h2>
 <p>Note that the terms <code>book</code>, <code>chapter</code>, <code>verse</code> are not baked into Text-Fabric.
 It is the corpus data, especially the <code>otext</code> config feature that
-spells out the names of the sections.</p>
-</div></div>
+spells out the names of the sections.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/prepare.py#L415-L533" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/prepare.py#L428-L545" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     &#34;&#34;&#34;Computes section data.
@@ -1478,12 +1506,11 @@ spells out the names of the sections.</p>
             section-level-2 headings to mappings from
             section-level3 headings to section-level-3 nodes.
 
-    Notes
-    -----
-    !!! caution &#34;Custom names&#34;
-        Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
-        It is the corpus data, especially the `otext` config feature that
-        spells out the names of the sections.
+    Warnings
+    --------
+    Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
+    It is the corpus data, especially the `otext` config feature that
+    spells out the names of the sections.
 
     &#34;&#34;&#34;
 
@@ -1613,7 +1640,7 @@ section key.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/14f3be75f103a789dbf393029a15a849b85ee615/tf/core/prepare.py#L536-L675" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/prepare.py#L548-L687" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     &#34;&#34;&#34;Computes structure data.
@@ -1763,9 +1790,8 @@ section key.</p></div>
 </section>
 </article>
 <nav id="sidebar">
-<p><img src="/text-fabric/images/tf-small.png"></p>
-<p><a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
-<p><a href="https://github.com/annotation">annotation on GitHub</a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
 data-gaCategoryParameter="tf.core.prepare">

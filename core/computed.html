@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>tf.about.tests API documentation</title>
-<meta name="description" content="Unit tests …" />
+<title>tf.core.computed API documentation</title>
+<meta name="description" content="Precomputed data components …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -19,57 +19,53 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.about.tests</code></h1>
+<h1 class="title">Module <code>tf.core.computed</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="unit-tests">Unit tests</h1>
-<p>The Text-Fabric program code implements a combinatorical explosion.
-There are many environments in which the core engine operates, there
-are several apps that make use of it, and there is a built in query language.</p>
-<p>One way of mastering the complexity and safeguarding the correctness of it all,
-is by employing <a href="https://en.wikipedia.org/wiki/Unit_testing">unit tests</a>.</p>
-<p>To my embarrassment, most parts of Text-Fabric are not covered by unit tests.</p>
-<p>Here we describe the parts that are covered.
-But first a few words about the machinery of unit testing.</p>
-<h2 id="corpus">Corpus</h2>
-<p>We build a
-<a href="https://github.com/annotation/text-fabric/tree/master/test/generic/tf">test corpus</a>,
-wich contains only 10 slots, with node type <code>sign</code> and one other node type <code>part</code>.</p>
-<p>The code to build it is in
-<a href="https://github.com/annotation/text-fabric/blob/master/test/generic/makeTestTf.py">makeTestTf.py</a>.</p>
-<p>Probably the corpus will be enlarged when new tests are being implemented.</p>
-<h2 id="framework">Framework</h2>
-<p>We use the
-<a href="https://docs.python.org/3/library/unittest.html#module-unittest">unittest</a>
-framework that comes with Python.</p>
-<p>It is just a few lines to setup a test class, hence we have not yet separated the code
-for setting up the tests and the data for the specific test suites.
-The fact that we currently have just one test suite does not give much incentive to
-factor the framework out right now.</p>
-<h2 id="relations">Relations</h2>
-<p>The
-basic spatial relations (<code><a title="tf.about.searchusage" href="searchusage.html">tf.about.searchusage</a></code>)
-that are being used in search deserve thorough unit testing.</p>
-<p>There are quite a few of them, they describe refined but abstract relations
-between nodes and the slots they are linked to, and they are optimized for performance,
-which make their implementation error-prone.</p>
-<p>For every relationship we test whether it holds or holds not between a bunch
-of particular nodes.</p>
-<p>The implementation of the relationships tries to determine on before hand whether
-its operands are guaranteed to be slots or guaranteed to be non-slots, or whether
-no guarantee can be given.
-For each particular test, all these cases will be triggered.</p>
-<p>All in all we defined
-<a href="https://github.com/annotation/text-fabric/blob/master/test/generic/relations.py">1000 pairs of nodes</a>
-leading to 2500 queries, which will all be tested against expected answers.</p>
+<p>Precomputed data components.</p>
+<p>In order to make the API work, Text-Fabric prepares some data and saves it in
+quick-load format. Most of this data are the features, but there is some extra
+data needed for the special functions of the <code><a title="tf.core.data.WARP" href="data.html#tf.core.data.WARP">WARP</a></code> features and the
+<code><a title="tf.core.locality.Locality" href="locality.html#tf.core.locality.Locality">Locality</a></code> API.</p>
+<p>Normally, you do not use this data, but since it is there, it might be valuable,
+so we have made it accessible in the <code><a title="tf.core.computed.Computeds" href="#tf.core.computed.Computeds">Computeds</a></code>-api.</p>
+<div class="admonition explanation">
+<p class="admonition-title">Pre-computed data storage</p>
+<p>Pre-computed data is stored in cache directories in a directory <code>.<a title="tf" href="../index.html">tf</a></code>
+inside the directory where the <code>otype</code> feature is encountered.</p>
+<p>After precomputation the result is pickled and gzipped and written to a
+<code>.tfx</code> file with the same name as the name of the feature.
+This is done for nromal features and pre-computed features likewise.</p>
+<p>After version 7.7.7 version the memory footprint of some precomputed features
+has been reduced. Because the precomputed features on disk are exact replicas
+of the precomputed features in RAM, older precomputed data does not work with
+versions of TF after 7.7.7.</p>
+<p>But from that version onwards, there is a parameter,
+<code><a title="tf.parameters.PACK_VERSION" href="../parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code> to detect incompatibilities.</p>
+</div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/about/tests.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/computed.py#L0-L17" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/about/tests.md
-&#34;&#34;&#34;</code></pre>
+.. include:: ../../docs/core/computed.md
+&#34;&#34;&#34;
+
+
+class Computeds(object):
+    pass
+
+
+class Computed(object):
+    &#34;&#34;&#34;Provides access to precomputed data.
+
+    For component `ccc` it is the result of `C.ccc` or `Cs(&#39;ccc&#39;)`.
+    &#34;&#34;&#34;
+
+    def __init__(self, api, data):
+        self.api = api
+        self.data = data</code></pre>
 </details>
 </section>
 <section>
@@ -79,6 +75,46 @@ leading to 2500 queries, which will all be tested against expected answers.</p>
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.core.computed.Computed"><code class="flex name class">
+<span>class <span class="ident">Computed</span></span>
+<span>(</span><span>api, data)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Provides access to precomputed data.</p>
+<p>For component <code>ccc</code> it is the result of <code>C.ccc</code> or <code>Cs('ccc')</code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/computed.py#L10-L18" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class Computed(object):
+    &#34;&#34;&#34;Provides access to precomputed data.
+
+    For component `ccc` it is the result of `C.ccc` or `Cs(&#39;ccc&#39;)`.
+    &#34;&#34;&#34;
+
+    def __init__(self, api, data):
+        self.api = api
+        self.data = data</code></pre>
+</details>
+</dd>
+<dt id="tf.core.computed.Computeds"><code class="flex name class">
+<span>class <span class="ident">Computeds</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5b3fe9174150e11fa4d441cff82da1232bc584dc/tf/core/computed.py#L6-L7" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class Computeds(object):
+    pass</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -86,23 +122,26 @@ leading to 2500 queries, which will all be tested against expected answers.</p>
 <p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
-data-gaCategoryParameter="tf.about.tests">
+data-gaCategoryParameter="tf.core.computed">
 </div>
 <h1>Index</h1>
 <div class="toc">
-<ul>
-<li><a href="#unit-tests">Unit tests</a><ul>
-<li><a href="#corpus">Corpus</a></li>
-<li><a href="#framework">Framework</a></li>
-<li><a href="#relations">Relations</a></li>
-</ul>
-</li>
-</ul>
+<ul></ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.about" href="index.html">tf.about</a></code></li>
+<li><code><a title="tf.core" href="index.html">tf.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.core.computed.Computed" href="#tf.core.computed.Computed">Computed</a></code></h4>
+</li>
+<li>
+<h4><code><a title="tf.core.computed.Computeds" href="#tf.core.computed.Computeds">Computeds</a></code></h4>
+</li>
 </ul>
 </li>
 </ul>
