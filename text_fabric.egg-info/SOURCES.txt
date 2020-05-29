@@ -37,6 +37,7 @@ tf/applib/app.py
 tf/applib/condense.py
 tf/applib/data.py
 tf/applib/display.py
+tf/applib/displaylib.py
 tf/applib/displaysettings.py
 tf/applib/find.py
 tf/applib/helpers.py
@@ -58,9 +59,15 @@ tf/convert/recorder.py
 tf/convert/walker.py
 tf/core/__init__.py
 tf/core/api.py
+tf/core/computed.py
 tf/core/data.py
+tf/core/edgefeature.py
 tf/core/helpers.py
 tf/core/locality.py
+tf/core/nodefeature.py
+tf/core/nodes.py
+tf/core/oslotsfeature.py
+tf/core/otypefeature.py
 tf/core/prepare.py
 tf/core/text.py
 tf/core/timestamp.py
