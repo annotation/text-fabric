@@ -32,19 +32,19 @@ all possibilities.</p>
 <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/tree/master">annotation</a>.</p>
 <p>When TF apps have been updated, they will be autoloaded to the newest version
 provided you call the app as follows:</p>
-<p>```python tab="notebook or program"
-use('appName:latest', &hellip; )</p>
-<pre><code>
-```sh tab=&quot;TF browser&quot;
-text-fabric appName:latest
+<p>(in a program)</p>
+<pre><code class="python">use('appName:latest', ... )
+</code></pre>
+<p>(on the command line)</p>
+<pre><code class="sh">text-fabric appName:latest
 </code></pre>
 <p>This will get you the newest stable version.
 To get the newest unstable version:</p>
-<p>```python tab="notebook or program"
-use('appName:hot', &hellip;)</p>
-<pre><code>
-```sh tab=&quot;TF browser&quot;
-text-fabric appName:hot
+<p>(in a program)</p>
+<pre><code class="python">use('appName:hot', ...)
+</code></pre>
+<p>(on the command line)</p>
+<pre><code class="sh">text-fabric appName:hot
 </code></pre>
 <div class="admonition hint">
 <p class="admonition-title">What's going on</p>
@@ -79,10 +79,10 @@ all exposed methods now fall under one of <code>A TF N F E L T S</code>.</p>
 If you upgrade TF to this version, you also have to upgrade the
 TF apps you work with.
 You can do that by adding the checkout specifier <code>latest</code> when
-you call the corpus, e.g. for the BHSA:</p>
-<p><code>A = use("bhsa:latest", hoist=globals()")</code></p>
-<p>One time is enough.</p>
+you call the corpus, e.g. for the BHSA (one time is enough):</p>
 </div>
+<pre><code class="python">A = use(&quot;bhsa:latest&quot;, hoist=globals()&quot;)
+</code></pre>
 <div class="admonition caution">
 <p class="admonition-title">logging functions</p>
 <p>The methods <code>info</code> <code>error</code> <code>warning</code> are no longer hoisted to the
@@ -432,11 +432,13 @@ either took 9 seconds or 40, randomly. Now it is consistently 9 seconds.</p>
 at the end where the performance parameters are tweaked.</p>
 <h4 id="776-8">7.7.6-8</h4>
 <p>2019-05-20</p>
-<p>New functions
-<code>cv.active()</code>
-and
-<code>cv.activeTypes()</code>
-in the walker conversion (requested by Ernst Boogert). </p>
+<p>New functions</p>
+<pre><code>cv.active(
+</code></pre>
+<p>and</p>
+<pre><code>cv.activeTypes()
+</code></pre>
+<p>in the walker conversion (requested by Ernst Boogert). </p>
 <h4 id="775">7.7.5</h4>
 <p>2019-05-18</p>
 <p>Another 20% of the original memory footprint has been shaved off.
@@ -630,9 +632,10 @@ Now the generic TF applib is robust against this.</p>
 <p>Further tweaks in layout of <code>plain()</code>.</p>
 <h4 id="75_1">7.5</h4>
 <p>2019-03-13</p>
-<p>API addition for <code>E</code> (edges):
-<code>E.feature.b()</code>
-gives the symmetrical closure
+<p>API addition for <code>E</code> (edges):</p>
+<pre><code>E.feature.b()
+</code></pre>
+<p>gives the symmetrical closure
 of the edges under <code>feature</code>. That means it combines the results of
 <code>E.feature.f()</code> and <code>E.feature.t()</code>.
 In plain speech: <code>E.feature.b(m)</code> collects the nodes
@@ -1323,12 +1326,14 @@ However, the help for the text-fabric browser is included in the interface itsel
 <p class="admonition-title">Better process management</p>
 <p>When the TF web interface is started, it cleans up remnant process that might get in the way otherwise.
 You can also say</p>
-<p><code>text-fabric -k</code></p>
+</div>
+<pre><code>text-fabric -k
+</code></pre>
 <p>to kill all remnant processes,
 or</p>
-<p><code>text-fabric -k corpus</code></p>
+<pre><code>text-fabric -k corpus
+</code></pre>
 <p>to kill the processes for a specific corpus only.</p>
-</div>
 <div class="admonition abstract">
 <p class="admonition-title">Manual node entry</p>
 <p>You can enter nodes manually in the TF browser.
@@ -1432,15 +1437,18 @@ It triggers the output of context information for nodes in the result tuples.</p
 <li>
 <p>API Change in Search.</p>
 <p>In search templates I recently added things like</p>
-<p><code>word vt!</code></p>
+<pre><code>word vt!
+</code></pre>
 <p>which checks for words that do not have a value for feature <code>vt</code>.</p>
 <p>The syntax for this has now changed to</p>
-<p><code>word vt#</code></p>
+<pre><code>word vt#
+</code></pre>
 </li>
 <li>
 <p>Unequal (#) in feature value conditions.</p>
 <p>Now you can say things like</p>
-<p><code>word vt#infa|infc</code></p>
+<pre><code>word vt#infa|infc
+</code></pre>
 <p>meaning that the value of feature is not one of <code>infa</code>, <code>infc</code>.</p>
 <p>So, in addition to <code>=</code> we have <code>#</code> for "not equal".
 *
@@ -1961,7 +1969,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/about/releases.md

@@ -119,11 +119,9 @@ e.g. the <code>:</code> in <code>Genesis 1:1</code></p>
 </dl>
 <hr>
 <h3 id="textformats"><code>textFormats</code></h3>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<p><code>textFormats:
-layout-orig-full: layoutRich</code></p>
-</div>
+<pre><code>textFormats:
+    layout-orig-full: layoutRich
+</code></pre>
 <p>Additional text formats that can use HTML styling.</p>
 <dl>
 <dt>Keys</dt>
@@ -824,7 +822,7 @@ it is needed to deviate from the default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L0-L982" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L0-L982" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/applib/settings.md
@@ -1826,7 +1824,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L952-L983" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L952-L983" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compileFormatCls(app, specs, givenStyles):
     api = app.api
@@ -1870,7 +1868,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L500-L550" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L500-L550" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDataDefaults(app, cfg, dKey, withApi):
     checker = Check(app, withApi)
@@ -1933,7 +1931,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L942-L949" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L942-L949" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getLevel(defaultLevel, givenInfo, isVerse):
     level = givenInfo.get(&#34;level&#34;, defaultLevel)
@@ -1953,7 +1951,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L553-L850" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L553-L850" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTypeDefaults(app, cfg, dKey, withApi):
     if not withApi:
@@ -2263,7 +2261,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L361-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L361-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setAppSpecs(app, cfg, reset=False):
     specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
@@ -2356,7 +2354,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L444-L497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L444-L497" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setAppSpecsApi(app, cfg):
     api = app.api
@@ -2437,7 +2435,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L853-L939" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L853-L939" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContext(app, *keys):
     &#34;&#34;&#34;Shows the *context* of the app `tf.applib.app.App.context` in a pretty way.
@@ -2542,7 +2540,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L156-L165" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L156-L165" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppCurrent:
     def __init__(self, specs):
@@ -2565,7 +2563,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L164-L165" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L164-L165" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v):
     return getattr(self, k, v)</code></pre>
@@ -2579,7 +2577,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L160-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L160-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def update(self, specs):
     for (k, v) in specs.items():
@@ -2597,7 +2595,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L168-L358" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L168-L358" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Check:
     def __init__(self, app, withApi):
@@ -2801,7 +2799,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L323-L338" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L323-L338" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkGroup(self, cfg, defaults, dKey, postpone=set(), extra=None):
     self.cfg = cfg
@@ -2829,7 +2827,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L340-L347" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L340-L347" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkItem(self, cfg, dKey):
     self.cfg = cfg
@@ -2849,7 +2847,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L174-L321" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L174-L321" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkSetting(self, k, v, extra=None):
     app = self.app
@@ -3009,7 +3007,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/settings.py#L349-L358" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L349-L358" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def report(self):
     errors = self.errors

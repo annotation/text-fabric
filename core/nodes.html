@@ -75,7 +75,7 @@ post-order. It is very much like SAX parsing in the XML world.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/nodes.py#L0-L186" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/nodes.py#L0-L180" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/core/nodes.md
@@ -123,15 +123,11 @@ class Nodes:
         It applies `sortKey` to each member of the tuple.
         Handy to sort search results. We can sort them in canonical order like this:
 
-        ```python
-        sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
-        ```
+            sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
 
         This is exactly what `sortKeyTuple` does, but then a bit more efficient:
 
-        ```python
-        sorted(results, key=sortKeyTuple)
-        ```
+            sorted(results, key=sortKeyTuple)
 
         See Also
         --------
@@ -141,9 +137,7 @@ class Nodes:
         self.sortKeyChunk = self.makeSortKeyChunk()
         &#34;&#34;&#34;Sort key function for the canonical ordering between chunks of nodes.
 
-        ```python
-        sorted(chunks, key=sortKeyChunk)
-        ```
+            sorted(chunks, key=sortKeyChunk)
 
         A chunk is a tuple consisting of a node and a subset of its slots.
         Mostly, this subset of slots is contiguous (no gaps), and mostly it is
@@ -284,7 +278,7 @@ class Nodes:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/nodes.py#L12-L187" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/nodes.py#L12-L181" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Nodes:
     def __init__(self, api):
@@ -321,15 +315,11 @@ class Nodes:
         It applies `sortKey` to each member of the tuple.
         Handy to sort search results. We can sort them in canonical order like this:
 
-        ```python
-        sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
-        ```
+            sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
 
         This is exactly what `sortKeyTuple` does, but then a bit more efficient:
 
-        ```python
-        sorted(results, key=sortKeyTuple)
-        ```
+            sorted(results, key=sortKeyTuple)
 
         See Also
         --------
@@ -339,9 +329,7 @@ class Nodes:
         self.sortKeyChunk = self.makeSortKeyChunk()
         &#34;&#34;&#34;Sort key function for the canonical ordering between chunks of nodes.
 
-        ```python
-        sorted(chunks, key=sortKeyChunk)
-        ```
+            sorted(chunks, key=sortKeyChunk)
 
         A chunk is a tuple consisting of a node and a subset of its slots.
         Mostly, this subset of slots is contiguous (no gaps), and mostly it is
@@ -492,7 +480,7 @@ and the more comprehensive a type is, the higher its rank.</p></div>
 <dt id="tf.core.nodes.Nodes.sortKeyChunk"><code class="name">var <span class="ident">sortKeyChunk</span></code></dt>
 <dd>
 <div class="desc"><p>Sort key function for the canonical ordering between chunks of nodes.</p>
-<pre><code class="python">sorted(chunks, key=sortKeyChunk)
+<pre><code>sorted(chunks, key=sortKeyChunk)
 </code></pre>
 <p>A chunk is a tuple consisting of a node and a subset of its slots.
 Mostly, this subset of slots is contiguous (no gaps), and mostly it is
@@ -514,10 +502,10 @@ Now we want to order those chunks in the canonical ordering.</p>
 <div class="desc"><p>Sort key function for the canonical ordering between tuples of nodes.
 It applies <code>sortKey</code> to each member of the tuple.
 Handy to sort search results. We can sort them in canonical order like this:</p>
-<pre><code class="python">sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
+<pre><code>sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
 </code></pre>
 <p>This is exactly what <code>sortKeyTuple</code> does, but then a bit more efficient:</p>
-<pre><code class="python">sorted(results, key=sortKeyTuple)
+<pre><code>sorted(results, key=sortKeyTuple)
 </code></pre>
 <h2 id="see-also">See Also</h2>
 <dl>
@@ -536,7 +524,7 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/nodes.py#L87-L149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/nodes.py#L81-L143" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeSortKeyChunk(self):
     api = self.api
@@ -618,7 +606,7 @@ An iterable of nodes to be sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/nodes.py#L151-L165" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/nodes.py#L145-L159" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sortNodes(self, nodeSet):
     &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
@@ -658,7 +646,7 @@ to walk through subsets of nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/nodes.py#L167-L187" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/nodes.py#L161-L181" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(self):
     &#34;&#34;&#34;Generates all nodes in the *canonical order*.

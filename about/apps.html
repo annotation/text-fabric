@@ -40,22 +40,18 @@ whose names start with <code>app-</code>.
 The part after the <code>app-</code> is the name of the app.</p>
 <p>But you can also create apps on your system and work with them.</p>
 <p>Each TF-<em>app</em> consists of a folder <code>code</code> with:</p>
-<dl>
-<dt>static</dt>
-<dd>
+<h3 id="static">static</h3>
 <p>A folder with styles, fonts and logos, to be used by web servers such as the the
 text-fabric browser, see <code><a title="tf.server.web" href="../server/web.html">tf.server.web</a></code>.</p>
 <p>In particular, <code>display.css</code> contains additional styles used for pretty displays.
 These styles will be programmatically combined with other styles,
 to deliver them to the TF browser on the one hand, and to Jupyter notebooks
 on the other hand.</p>
-</dd>
-<dt>config.yaml</dt>
-<dd>Settings to feed the advanced API for this app. See <code><a title="tf.applib.settings" href="../applib/settings.html">tf.applib.settings</a></code>.</dd>
-<dt>app.py</dt>
-<dd>Corpus dependent helpers for the advanced API.</dd>
-<dt>other modules</dt>
-<dd>
+<h3 id="configyaml">config.yaml</h3>
+<p>Settings to feed the advanced API for this app. See <code><a title="tf.applib.settings" href="../applib/settings.html">tf.applib.settings</a></code>.</p>
+<h3 id="apppy">app.py</h3>
+<p>Corpus dependent helpers for the advanced API.</p>
+<h3 id="other-modules">other modules</h3>
 <p>If you organize bits of the functionality of a TF-app into modules
 to be imported by <code>app.py</code>, you can put them in this same directory.</p>
 <div class="admonition caution">
@@ -75,28 +71,29 @@ name, so the Python importer will not conflate them.</p>
 <p>Here is how you load auxiliary modules in your <code>app.py</code>.
 The example is taken from the <code>uruk</code> app, which loads
 two modules, <code>atf</code> and <code>image</code>.</p>
+</div>
 <p><code>atf</code> is a bunch of functions that enrich the api of the app.
 The <code>atf</code> module contains a function that adds all these functions
 to an object:
 <a href="https://github.com/annotation/app-uruk/blob/master/code/atf.py"><code>atfApi</code></a></p>
-<p>```python
-from tf.applib.app import loadModule</p>
-<p>class TfApp(App):
-def <strong>init</strong>(app, <em>args, silent=False, </em>*kwargs):
-app.transform_ctype = types.MethodType(transform_ctype, app)
-app.transform_prime = types.MethodType(transform_prime, app)
-app.transform_atf = types.MethodType(transform_atf, app)</p>
-<pre><code>    atf = loadModule("atf", *args)
-    atf.atfApi(app)
-    app.atf = atf
-    super().__init__(*args, silent=silent, **kwargs)
-    app.image = loadModule("image", *args)
+<pre><code class="python">from tf.applib.app import loadModule
 
-    app.image.getImagery(app, silent, checkout=kwargs.get("checkout", ""))
+class TfApp(App):
+    def __init__(app, *args, silent=False, **kwargs):
+        app.transform_ctype = types.MethodType(transform_ctype, app)
+        app.transform_prime = types.MethodType(transform_prime, app)
+        app.transform_atf = types.MethodType(transform_atf, app)
 
-    app.reinit()
+        atf = loadModule(&quot;atf&quot;, *args)
+        atf.atfApi(app)
+        app.atf = atf
+        super().__init__(*args, silent=silent, **kwargs)
+        app.image = loadModule(&quot;image&quot;, *args)
+
+        app.image.getImagery(app, silent, checkout=kwargs.get(&quot;checkout&quot;, &quot;&quot;))
+
+        app.reinit()
 </code></pre>
-<p>```</p>
 <p>The place to put the <code>loadModule()</code> calls is in the <code>__init()__</code> method of the
 <code>TfApp</code> object, before the call to <code>super().__init()</code>.
 Here the name of the app and the path to the code directory of the
@@ -111,16 +108,11 @@ from which you can get all the names defined by the module and their semantics.<
 a bunch of functions defined in that module as methods to the TfApp object.</p>
 <p>In the <code>image</code> case, we add the code object as an attribute to the TfApp object,
 so that all its methods can retrieve all names defined by the <code>image</code> module.</p>
-</div>
-</dd>
-</dl>
 <h2 id="implementation">Implementation</h2>
 <p>Most parts of the advanced API are implemented in the
 <a href="https://github.com/annotation/text-fabric/blob/master/tf/applib">api</a>
 modules of TF.</p>
-<dl>
-<dt>Two contexts</dt>
-<dd>
+<h3 id="two-contexts">Two contexts</h3>
 <p>Most functions with the <code>app</code> argument are meant to perform their duty
 in two contexts:</p>
 <ul>
@@ -137,12 +129,10 @@ if we use the <code>app</code> in the web app context, otherwise in a programmin
 <p>Most of the code in most functions is independent of <code>_browse</code>.
 The main difference is how to deliver the result:
 by a call to an IPython display method, or by returning raw HTML.</p>
-</dd>
-</dl>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/about/apps.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/about/apps.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/about/apps.md
@@ -169,8 +159,17 @@ data-gaCategoryParameter="tf.about.apps">
 <div class="toc">
 <ul>
 <li><a href="#advanced-api">Advanced API</a><ul>
-<li><a href="#components">Components</a></li>
-<li><a href="#implementation">Implementation</a></li>
+<li><a href="#components">Components</a><ul>
+<li><a href="#static">static</a></li>
+<li><a href="#configyaml">config.yaml</a></li>
+<li><a href="#apppy">app.py</a></li>
+<li><a href="#other-modules">other modules</a></li>
+</ul>
+</li>
+<li><a href="#implementation">Implementation</a><ul>
+<li><a href="#two-contexts">Two contexts</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

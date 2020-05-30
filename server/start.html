@@ -69,22 +69,22 @@ you have to press it twice.</dd>
 <p>Now all processes that have started up have been killed.</p>
 <p>If something went wrong in this sequence, chances are that a process keeps running.
 It will be terminated next time you call the <code>text-fabric</code>.</p>
+</dd>
+</dl>
 <div class="admonition hint">
 <p class="admonition-title">You can kill too</p>
 <p>If you run</p>
-<p><code>sh
-text-fabric -k</code> </p>
-<p>all tf-browser-related processes will be killed.</p>
-<p><code>sh
-text-fabric -k ddd</code></p>
-<p>will kill all such processes as far as they are for data source <code>ddd</code>.</p>
 </div>
-</dd>
-</dl>
+<pre><code class="sh">text-fabric -k
+</code></pre>
+<p>all tf-browser-related processes will be killed.</p>
+<pre><code class="sh">text-fabric -k ddd
+</code></pre>
+<p>will kill all such processes as far as they are for data source <code>ddd</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/server/start.py#L0-L349" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/start.py#L0-L349" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/server/start.md
@@ -453,7 +453,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/server/start.py#L237-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/start.py#L237-L239" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def connectPort(tfProcesses, kind, pos, slug):
     pInfo = tfProcesses.get(slug, {}).get(kind, None)
@@ -468,7 +468,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/server/start.py#L154-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/start.py#L154-L192" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterProcess(proc):
     procName = proc.info[&#34;name&#34;]
@@ -519,7 +519,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/server/start.py#L195-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/start.py#L195-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def indexProcesses():
     tfProcesses = {}
@@ -541,7 +541,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/server/start.py#L242-L346" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/start.py#L242-L346" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     console(BANNER)
@@ -658,7 +658,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/server/start.py#L207-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/start.py#L207-L234" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProcesses(tfProcesses, slug, term=False, kill=False):
     item = (&#34;killed&#34; if kill else &#34;terminated&#34;) if term else &#34;&#34;

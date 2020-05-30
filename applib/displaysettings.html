@@ -23,11 +23,13 @@
 </header>
 <section id="section-intro">
 <h1 id="display-settings">Display Settings.</h1>
-<p>Display options are used by
-<code><a title="tf.applib.display.plain" href="display.html#tf.applib.display.plain">plain()</a></code>
-and
-<code><a title="tf.applib.display.pretty" href="display.html#tf.applib.display.pretty">pretty()</a></code>
-and other display functions.</p>
+<p>Display options are used by</p>
+<pre><code>tf.applib.display.plain
+</code></pre>
+<p>and</p>
+<pre><code>tf.applib.display.pretty
+</code></pre>
+<p>and other display functions.</p>
 <p>This class manages</p>
 <ul>
 <li>the provisining of options with defaults,</li>
@@ -242,8 +244,8 @@ and part of speech on clause atoms, al with value <code>None</code>.</p>
 <p class="admonition-title">Suppress common values</p>
 <p>You can use <code>noneValues</code> also to suppress the normal values of a feature,
 in order to attract attention to the more special values, e.g.</p>
-<p><code>python
-noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}</code></p>
+<pre><code>noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}
+</code></pre>
 </div>
 <div class="admonition caution">
 <p class="admonition-title">None values affect all features</p>
@@ -271,9 +273,10 @@ selectively.</dd>
 Only meant to steer the
 <code>A.export()</code> function below into outputting the
 features you choose.</p>
-<p>It should be a tuple of pairs
-<code>(i, features)</code>
-which means that to member <code>i</code> of a result tuple we assign extra <code>features</code>.</p>
+<p>It should be a tuple of pairs</p>
+<pre><code>(i, features)
+</code></pre>
+<p>which means that to member <code>i</code> of a result tuple we assign extra <code>features</code>.</p>
 <p><code>features</code> may be given as an iterable or a space separated string of feature names.</p>
 </dd>
 <dt><strong><code>withPassage</code></strong> :&ensp;<code>boolean</code> or <code>set</code>, optional <code>True</code></dt>
@@ -287,7 +290,7 @@ nodes will be linked with a web link
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/displaysettings.py#L0-L243" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/displaysettings.py#L0-L243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/applib/displaysettings.md
@@ -553,7 +556,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/displaysettings.py#L95-L98" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/displaysettings.py#L95-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class DisplayCurrent:
     def __init__(self, options):
@@ -570,7 +573,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/displaysettings.py#L101-L244" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/displaysettings.py#L101-L244" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class DisplaySettings:
 
@@ -727,7 +730,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/displaysettings.py#L182-L225" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/displaysettings.py#L182-L225" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check(self, msg, options):
     app = self.app
@@ -783,7 +786,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/displaysettings.py#L243-L244" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/displaysettings.py#L243-L244" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consume(self, options, *remove):
     return {o: options[o] for o in options if o not in remove}</code></pre>
@@ -797,7 +800,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/displaysettings.py#L227-L241" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/displaysettings.py#L227-L241" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, options):
     displayDefaults = self.displayDefaults
@@ -824,7 +827,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/displaysettings.py#L139-L180" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/displaysettings.py#L139-L180" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(self, option, value):
     app = self.app
@@ -878,7 +881,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/displaysettings.py#L120-L130" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/displaysettings.py#L120-L130" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self, *options):
     app = self.app
@@ -901,7 +904,7 @@ class DisplaySettings:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/displaysettings.py#L132-L137" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/displaysettings.py#L132-L137" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setup(self, **options):
     for (option, value) in options.items():

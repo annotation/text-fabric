@@ -147,7 +147,7 @@ going to the next one. Because then the slots will be displayed in the wrong ord
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/display.py#L0-L835" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L0-L831" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/applib/display.md
@@ -343,10 +343,8 @@ def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
               run, then an appropriate call to `displaySetup(tupleFeatures=...)`
               has already been issued, so you can just say:
 
-              ```python
-              results = A.search(query)
-              A.export(results)
-              ```
+                 results = A.search(query)`
+                 A.export(results)`
 
     Results
     -------
@@ -527,9 +525,7 @@ def plainTuple(
         Whether this tuple should be expandable to a `pretty` display.
         The normal output of this row will be wrapped in a
 
-        ``` html
-        &lt;details&gt;&lt;summary&gt;plain&lt;/summary&gt;pretty&lt;/details&gt;
-        ```
+           &lt;details&gt;&lt;summary&gt;plain&lt;/summary&gt;pretty&lt;/details&gt;`
 
         pattern, so that the user can click a triangle to switch between plain
         and pretty display.
@@ -1020,7 +1016,7 @@ we force <code>silent=True</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/display.py#L30-L69" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L30-L69" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayApi(app, silent):
     &#34;&#34;&#34;Produce the display API.
@@ -1081,7 +1077,7 @@ Otherwise, restore all display settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/display.py#L100-L117" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L100-L117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayReset(app, *options):
     &#34;&#34;&#34;Restore display parameters to their defaults.
@@ -1129,7 +1125,7 @@ A list of all available options is in <code><a title="tf.applib.displaysettings"
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/display.py#L72-L97" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L72-L97" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displaySetup(app, **options):
     &#34;&#34;&#34;Set up all display parameters.
@@ -1211,9 +1207,9 @@ with each member of the tuples in the list.</li>
 <p>If the iterable of tuples are the results of a query you have just
 run, then an appropriate call to <code>displaySetup(tupleFeatures=...)</code>
 has already been issued, so you can just say:</p>
-<p><code>python
-results = A.search(query)
-A.export(results)</code></p>
+<pre><code> results = A.search(query)`
+ A.export(results)`
+</code></pre>
 </div>
 </dd>
 </dl>
@@ -1248,7 +1244,7 @@ open it with <code>encoding=utf_16</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/display.py#L148-L256" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L148-L254" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
@@ -1297,10 +1293,8 @@ open it with <code>encoding=utf_16</code>.</p>
               run, then an appropriate call to `displaySetup(tupleFeatures=...)`
               has already been issued, so you can just say:
 
-              ```python
-              results = A.search(query)
-              A.export(results)
-              ```
+                 results = A.search(query)`
+                 A.export(results)`
 
     Results
     -------
@@ -1371,7 +1365,7 @@ else the CSS is returned.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/display.py#L122-L145" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L122-L145" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadCss(app):
     &#34;&#34;&#34;The CSS is looked up and then loaded into a notebook if we are not
@@ -1431,7 +1425,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/display.py#L517-L594" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L513-L590" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     &#34;&#34;&#34;Display the plain text of a node.
@@ -1540,8 +1534,7 @@ for the row of this tuple.</dd>
 <dd>
 <p>Whether this tuple should be expandable to a <code><a title="tf.applib.display.pretty" href="#tf.applib.display.pretty">pretty()</a></code> display.
 The normal output of this row will be wrapped in a</p>
-<p><code>html
-&lt;details&gt;&lt;summary&gt;plain&lt;/summary&gt;pretty&lt;/details&gt;</code></p>
+<p><details><summary>plain</summary>pretty</details>`</p>
 <p>pattern, so that the user can click a triangle to switch between plain
 and pretty display.</p>
 <div class="admonition caution">
@@ -1562,7 +1555,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/display.py#L351-L514" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L349-L510" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plainTuple(
     app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options
@@ -1592,9 +1585,7 @@ Depending on <em>asString</em> above.</p></div>
         Whether this tuple should be expandable to a `pretty` display.
         The normal output of this row will be wrapped in a
 
-        ``` html
-        &lt;details&gt;&lt;summary&gt;plain&lt;/summary&gt;pretty&lt;/details&gt;
-        ```
+           &lt;details&gt;&lt;summary&gt;plain&lt;/summary&gt;pretty&lt;/details&gt;`
 
         pattern, so that the user can click a triangle to switch between plain
         and pretty display.
@@ -1767,7 +1758,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/display.py#L729-L836" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L725-L832" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pretty(app, n, explain=False, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
@@ -1907,7 +1898,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/display.py#L658-L726" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L654-L722" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prettyTuple(app, tup, seq, item=RESULT, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
@@ -2007,7 +1998,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/display.py#L600-L655" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L596-L651" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def show(app, tuples, **options):
     &#34;&#34;&#34;Displays an iterable of tuples of nodes.
@@ -2096,7 +2087,7 @@ HTML string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/display.py#L262-L348" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L260-L346" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def table(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.

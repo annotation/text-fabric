@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/app.py#L0-L482" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/app.py#L0-L473" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 
@@ -160,10 +160,11 @@ class App:
         mod: string, optional `None`
             A comma-separated list of modules in one of the forms
 
-            ```
-            {org}/{repo}/{path}
-            {org}/{repo}/{path}:specifier
-            ```
+               {org}/{repo}/{path}`
+
+            or
+
+               {org}/{repo}/{path}:specifier`
 
             All features of all those modules will be loaded.
             If they are not yet present, they will be downloaded from GitHub first.
@@ -171,9 +172,7 @@ class App:
             For example, there is an easter egg module on GitHub,
             and you can obtain it by
 
-            ```
-            mod=&#39;etcbc/lingo/easter/tf&#39;
-            ```
+               mod=&#39;etcbc/lingo/easter/tf&#39;`
 
             Here the `{org}` is `etcbc`, the `{repo}` is `lingo`,
             and the `{path}` is `easter/tf` under which
@@ -221,19 +220,15 @@ class App:
             But you can also setup a core API yourself by using
             `tf.fabric.Fabric` with your choice of locations and modules:
 
-            ```python
-            from tf.fabric import Fabric
-            TF = Fabric(locations=..., modules=...)
-            api = TF.load(features)
-            ```
+               from tf.fabric import Fabric`
+               TF = Fabric(locations=..., modules=...)`
+               api = TF.load(features)`
 
             Here you have full control over what you load and what not.
 
             If you want the extra power of the TF app, you can wrap this `api`:
 
-            ```python
-            A = use(&#39;xxxx&#39;, api=api)
-            ```
+               A = use(&#39;xxxx&#39;, api=api)`
 
             !!! hint &#34;Unloaded features&#34;
                 Some apps do not load all available features of the corpus by default.
@@ -245,16 +240,12 @@ class App:
                 In the case where you need an available feature
                 that has not been loaded, you can load it by demanding
 
-                ```python
-                TF.load(&#39;feature1 feature2&#39;, add=True)
-                ```
+                   TF.load(&#39;feature1 feature2&#39;, add=True)`
 
                 provided you have used the `hoist=globals()` parameter earlier.
                 If not, you have to say
 
-                ```python
-                A.api.TF.load(&#39;feature1 feature2&#39;, add=True)
-                ```
+                   A.api.TF.load(&#39;feature1 feature2&#39;, add=True)`
 
         silent: boolean, optional `False`
             If `True`, nearly all output of this call will be suppressed,
@@ -553,7 +544,7 @@ class.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/app.py#L398-L483" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/app.py#L389-L474" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
     &#34;&#34;&#34;Find a TF app by name and initialize an object of its main class.
@@ -734,13 +725,14 @@ version of the main source!</p>
 <dt><strong><code>mod</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>
 <p>A comma-separated list of modules in one of the forms</p>
-<p><code>{org}/{repo}/{path}
-{org}/{repo}/{path}:specifier</code></p>
+<p>{org}/{repo}/{path}`</p>
+<p>or</p>
+<p>{org}/{repo}/{path}:specifier`</p>
 <p>All features of all those modules will be loaded.
 If they are not yet present, they will be downloaded from GitHub first.</p>
 <p>For example, there is an easter egg module on GitHub,
 and you can obtain it by</p>
-<p><code>mod='etcbc/lingo/easter/tf'</code></p>
+<p>mod='etcbc/lingo/easter/tf'`</p>
 <p>Here the <code>{org}</code> is <code>etcbc</code>, the <code>{repo}</code> is <code>lingo</code>,
 and the <code>{path}</code> is <code>easter/tf</code> under which
 version <code>c</code> of the feature <code>egg</code>
@@ -787,14 +779,11 @@ with a more or less standard set of features
 loaded, and make that API avaible to you, under <code>A.api</code>.</p>
 <p>But you can also setup a core API yourself by using
 <code><a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric">Fabric</a></code> with your choice of locations and modules:</p>
-<p><code>python
-from tf.fabric import Fabric
-TF = Fabric(locations=..., modules=...)
-api = TF.load(features)</code></p>
+<p>from tf.fabric import Fabric<code>TF = Fabric(locations=..., modules=...)</code>
+api = TF.load(features)`</p>
 <p>Here you have full control over what you load and what not.</p>
 <p>If you want the extra power of the TF app, you can wrap this <code>api</code>:</p>
-<p><code>python
-A = use('xxxx', api=api)</code></p>
+<p>A = use('xxxx', api=api)`</p>
 <div class="admonition hint">
 <p class="admonition-title">Unloaded features</p>
 <p>Some apps do not load all available features of the corpus by default.</p>
@@ -803,12 +792,10 @@ that most people never need.
 Loading them cost time and takes a lot of RAM.</p>
 <p>In the case where you need an available feature
 that has not been loaded, you can load it by demanding</p>
-<p><code>python
-TF.load('feature1 feature2', add=True)</code></p>
+<p>TF.load('feature1 feature2', add=True)`</p>
 <p>provided you have used the <code>hoist=globals()</code> parameter earlier.
 If not, you have to say</p>
-<p><code>python
-A.api.TF.load('feature1 feature2', add=True)</code></p>
+<p>A.api.TF.load('feature1 feature2', add=True)`</p>
 </div>
 </dd>
 <dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
@@ -822,7 +809,7 @@ Error messages will still come through.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/app.py#L36-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/app.py#L36-L386" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -922,10 +909,11 @@ Error messages will still come through.</dd>
         mod: string, optional `None`
             A comma-separated list of modules in one of the forms
 
-            ```
-            {org}/{repo}/{path}
-            {org}/{repo}/{path}:specifier
-            ```
+               {org}/{repo}/{path}`
+
+            or
+
+               {org}/{repo}/{path}:specifier`
 
             All features of all those modules will be loaded.
             If they are not yet present, they will be downloaded from GitHub first.
@@ -933,9 +921,7 @@ Error messages will still come through.</dd>
             For example, there is an easter egg module on GitHub,
             and you can obtain it by
 
-            ```
-            mod=&#39;etcbc/lingo/easter/tf&#39;
-            ```
+               mod=&#39;etcbc/lingo/easter/tf&#39;`
 
             Here the `{org}` is `etcbc`, the `{repo}` is `lingo`,
             and the `{path}` is `easter/tf` under which
@@ -983,19 +969,15 @@ Error messages will still come through.</dd>
             But you can also setup a core API yourself by using
             `tf.fabric.Fabric` with your choice of locations and modules:
 
-            ```python
-            from tf.fabric import Fabric
-            TF = Fabric(locations=..., modules=...)
-            api = TF.load(features)
-            ```
+               from tf.fabric import Fabric`
+               TF = Fabric(locations=..., modules=...)`
+               api = TF.load(features)`
 
             Here you have full control over what you load and what not.
 
             If you want the extra power of the TF app, you can wrap this `api`:
 
-            ```python
-            A = use(&#39;xxxx&#39;, api=api)
-            ```
+               A = use(&#39;xxxx&#39;, api=api)`
 
             !!! hint &#34;Unloaded features&#34;
                 Some apps do not load all available features of the corpus by default.
@@ -1007,16 +989,12 @@ Error messages will still come through.</dd>
                 In the case where you need an available feature
                 that has not been loaded, you can load it by demanding
 
-                ```python
-                TF.load(&#39;feature1 feature2&#39;, add=True)
-                ```
+                   TF.load(&#39;feature1 feature2&#39;, add=True)`
 
                 provided you have used the `hoist=globals()` parameter earlier.
                 If not, you have to say
 
-                ```python
-                A.api.TF.load(&#39;feature1 feature2&#39;, add=True)
-                ```
+                   A.api.TF.load(&#39;feature1 feature2&#39;, add=True)`
 
         silent: boolean, optional `False`
             If `True`, nearly all output of this call will be suppressed,
@@ -1221,7 +1199,7 @@ call <code>reuse</code> and <code><a title="tf.applib.settings.showContext" href
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/applib/app.py#L351-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/app.py#L342-L386" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.

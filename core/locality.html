@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/locality.py#L0-L301" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/locality.py#L0-L299" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/core/locality.md
@@ -56,9 +56,7 @@ class Locality(object):
           Even if an `L`-function returns a single node, it is packed in a *tuple*.
           So to get the node itself, you have to dereference the tuple:
 
-          ```python
-          L.u(node)[0]
-          ```
+              L.u(node)[0]
 
     !!! caution &#34;Locality and node types&#34;
         When using `tf.core.nodes.Nodes.sortNodes` and the `L` methods,
@@ -365,8 +363,8 @@ or a (frozen)set of node types.</p>
 <p class="admonition-title">Results of the <code>L.</code> functions are tuples, not single nodes</p>
 <p>Even if an <code>L</code>-function returns a single node, it is packed in a <em>tuple</em>.
 So to get the node itself, you have to dereference the tuple:</p>
-<p><code>python
-L.u(node)[0]</code></p>
+<pre><code>  L.u(node)[0]
+</code></pre>
 </div>
 <div class="admonition caution">
 <p class="admonition-title">Locality and node types</p>
@@ -388,7 +386,7 @@ same words, then that is a case where:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/locality.py#L9-L302" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/locality.py#L9-L300" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Locality(object):
     &#34;&#34;&#34;Methods by which you can navigate from a node to its neighborhood.
@@ -410,9 +408,7 @@ same words, then that is a case where:</p>
           Even if an `L`-function returns a single node, it is packed in a *tuple*.
           So to get the node itself, you have to dereference the tuple:
 
-          ```python
-          L.u(node)[0]
-          ```
+              L.u(node)[0]
 
     !!! caution &#34;Locality and node types&#34;
         When using `tf.core.nodes.Nodes.sortNodes` and the `L` methods,
@@ -713,7 +709,7 @@ may count as embeddee nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/locality.py#L152-L210" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/locality.py#L150-L208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def d(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *downward* nodes.
@@ -804,7 +800,7 @@ may count as intersector nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/locality.py#L53-L107" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/locality.py#L51-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def i(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *intersecting* nodes
@@ -883,7 +879,7 @@ left and big embeddees before right and small embeddees.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/locality.py#L257-L302" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/locality.py#L255-L300" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def n(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *next* nodes.
@@ -953,7 +949,7 @@ but <em>reversed</em>: right and small embedders before left and big embedders.<
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/locality.py#L212-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/locality.py#L210-L253" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def p(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *previous* nodes.
@@ -1028,7 +1024,7 @@ may count as embedder nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/locality.py#L109-L150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/locality.py#L107-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def u(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *upward* nodes.

@@ -48,7 +48,7 @@ text material to transliterated representations and back.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L0-L898" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L0-L822" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/writing/transcription.md
@@ -63,22 +63,18 @@ class Transcription(object):
 
     Invoke the transcription functionality as follows:
 
-    ```python
-    from tf.writing.transcription import Transcription
-    ```
+        from tf.writing.transcription import Transcription
 
     Some of the attributes and methods below are *class* attributes,
     others are instance attributes.
 
     A class attribute `aaa` can be retrieved by saying
 
-    ```Transcription.aaa```.
+        Transcription.aaa
 
     To retrieve an instance attribute, you need an instance first, like
 
-    ```python
-    tr = Transcription()
-    ```
+        tr = Transcription()
 
     and then you can say `tr.aaa`.
     &#34;&#34;&#34;
@@ -190,15 +186,11 @@ class Transcription(object):
 
     Example: print the sof-pasuq:
 
-    ```python
-    print(Transcription.hebrew_mapping[&#39;00&#39;])
-    ```
+        print(Transcription.hebrew_mapping[&#39;00&#39;])
 
     Output:
 
-    ```
-    ׃
-    ```
+        ׃
     &#34;&#34;&#34;
 
     hebrew_cons = &#34;&gt;BGDHWZXVJKLMNS&lt;PYQRFCT&#34;
@@ -405,15 +397,11 @@ class Transcription(object):
 
     Example: print the semkath-final:
 
-    ```python
-    print(Transcription.syriac_mapping[&#39;s&#39;])
-    ```
+        print(Transcription.syriac_mapping[&#39;s&#39;])
 
     Output:
 
-    ```
-    ܤ
-    ```
+        ܤ
     &#34;&#34;&#34;
 
     trans_syriac_pat = re.compile(r&#34;([AE@IU][12]?|=[.#:\^/\\]|[\^#][!:\\]|.)&#34;)
@@ -486,29 +474,21 @@ class Transcription(object):
 
     Example: print the beh
 
-    ```python
-    print(Transcription.syriac_mapping[&#39;b&#39;])
-    ```
+        print(Transcription.syriac_mapping[&#39;b&#39;])
 
     Output:
 
-    ```
-    ب
-    ```
+        ب
 
     Maps an Arabic letter in unicode to its transliteration
 
     Example: print the beh transliteration
 
-    ```python
-    print(Transcription.syriac_mapping[&#39;ب&#39;])
-    ```
+        print(Transcription.syriac_mapping[&#39;ب&#39;])
 
     Output:
 
-    ```
-    b
-    ```
+        b
     &#34;&#34;&#34;
 
     arabic_mappingi = dict((v, k) for (k, v) in arabic_mapping.items())
@@ -566,15 +546,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;))
-        ```
+            print(Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;))
 
         Output:
 
-        ```
-        (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
-        ```
+            (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
 
         Note that the `Y` has been replaced by `y`.
         &#34;&#34;&#34;
@@ -651,19 +627,15 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.suppress_space(&#39;B.:&amp;&#39;))
-        print(Transcription.suppress_space(&#39;B.@R@74&gt;&#39;))
-        print(Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;))
-        ```
+            print(Transcription.suppress_space(&#39;B.:&amp;&#39;))
+            print(Transcription.suppress_space(&#39;B.@R@74&gt;&#39;))
+            print(Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;))
 
         Output:
 
-        ```
-        &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
-        None
-        &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
-        ```
+            &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
+            None
+            &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
         &#34;&#34;&#34;
 
         return Transcription.noorigspace.search(word)
@@ -675,15 +647,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;))
-        ```
+            print(Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;))
 
         Output:
 
-        ```
-        HAC.@MAJIm
-        ```
+            HAC.@MAJIm
         &#34;&#34;&#34;
 
         return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)
@@ -696,15 +664,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;))
-        ```
+            print(Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;))
 
         Output:
 
-        ```
-        H#MJM
-        ```
+            H#MJM
 
         Note that the pointed shin (`C`) is replaced by an unpointed one (`#`).
         &#34;&#34;&#34;
@@ -728,15 +692,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;))
-        ```
+            print(Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;))
 
         Output:
 
-        ```
-        הַשָּׁמַ֖יִם
-        ```
+            הַשָּׁמַ֖יִם
         &#34;&#34;&#34;
 
         word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
@@ -749,15 +709,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;))
-        ```
+            print(Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;))
 
         Output:
 
-        ```
-        הַשָּׁמַיִם
-        ```
+            הַשָּׁמַיִם
         &#34;&#34;&#34;
 
         return Transcription.trans_hebrew_pat.sub(
@@ -771,15 +727,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;))
-        ```
+            print(Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;))
 
         Output:
 
-        ```
-        השמימ
-        ```
+            השמימ
 
         Note that final consonant forms are not being used.
         &#34;&#34;&#34;
@@ -797,15 +749,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;))
-        ```
+            print(Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;))
 
         Output:
 
-        ```
-        הַשָּׁמַ֖יִם
-        ```
+            הַשָּׁמַ֖יִם
         &#34;&#34;&#34;
 
         return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)
@@ -817,19 +765,15 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;))
-        print(Transcription.ph_simplify(&#39;māqˈôm&#39;))
-        print(Transcription.ph_simplify(&#39;kol&#39;))
-        ```
+            print(Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;))
+            print(Transcription.ph_simplify(&#39;māqˈôm&#39;))
+            print(Transcription.ph_simplify(&#39;kol&#39;))
 
         Output:
 
-        ```
-        ʔlōhîm
-        måqôm
-        kål
-        ```
+            ʔlōhîm
+            måqôm
+            kål
 
         Note that the simplified version transliterates the qamets gadol and qatan
         to the same
@@ -845,15 +789,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;))
-        ```
+            print(tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;))
 
         Output:
 
-        ```
-        H@&gt;@95REy00
-        ```
+            H@&gt;@95REy00
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(
@@ -867,15 +807,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(tr.to_syriac(&#39;MKSJN&#39;))
-        ```
+            print(tr.to_syriac(&#39;MKSJN&#39;))
 
         Output:
 
-        ```
-        ܡܟܣܝܢ
-        ```
+            ܡܟܣܝܢ
         &#34;&#34;&#34;
 
         return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)
@@ -887,15 +823,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(tr.from_syriac(&#39;ܡܟܣܝܢ&#39;))
-        ```
+            print(tr.from_syriac(&#39;ܡܟܣܝܢ&#39;))
 
         Output:
 
-        ```
-        MKSJN
-        ```
+            MKSJN
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(self.syriac_mappingi.get(x, x) for x in word)
@@ -917,15 +849,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(tr.to_arabic(&#39;bisomi&#39;))
-        ```
+            print(tr.to_arabic(&#39;bisomi&#39;))
 
         Output:
 
-        ```
-        بِسْمِ
-        ```
+            بِسْمِ
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(Transcription.arabic_mapping.get(x, x) for x in word)
@@ -937,15 +865,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(tr.from_arabic(&#39;بِسْمِ&#39;))
-        ```
+            print(tr.from_arabic(&#39;بِسْمِ&#39;))
 
         Output:
 
-        ```
-        bisomi
-        ```
+            bisomi
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(Transcription.arabic_mappingi.get(x, x) for x in word)</code></pre>
@@ -967,20 +891,21 @@ class Transcription(object):
 <div class="desc"><p>Conversion between unicode and various transcriptions.</p>
 <p>Usage notes:</p>
 <p>Invoke the transcription functionality as follows:</p>
-<pre><code class="python">from tf.writing.transcription import Transcription
+<pre><code>from tf.writing.transcription import Transcription
 </code></pre>
 <p>Some of the attributes and methods below are <em>class</em> attributes,
 others are instance attributes.</p>
 <p>A class attribute <code>aaa</code> can be retrieved by saying</p>
-<p><code>Transcription.aaa</code>.</p>
+<pre><code>Transcription.aaa
+</code></pre>
 <p>To retrieve an instance attribute, you need an instance first, like</p>
-<pre><code class="python">tr = Transcription()
+<pre><code>tr = Transcription()
 </code></pre>
 <p>and then you can say <code>tr.aaa</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L7-L899" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L7-L823" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Transcription(object):
     &#34;&#34;&#34;Conversion between unicode and various transcriptions.
@@ -989,22 +914,18 @@ others are instance attributes.</p>
 
     Invoke the transcription functionality as follows:
 
-    ```python
-    from tf.writing.transcription import Transcription
-    ```
+        from tf.writing.transcription import Transcription
 
     Some of the attributes and methods below are *class* attributes,
     others are instance attributes.
 
     A class attribute `aaa` can be retrieved by saying
 
-    ```Transcription.aaa```.
+        Transcription.aaa
 
     To retrieve an instance attribute, you need an instance first, like
 
-    ```python
-    tr = Transcription()
-    ```
+        tr = Transcription()
 
     and then you can say `tr.aaa`.
     &#34;&#34;&#34;
@@ -1116,15 +1037,11 @@ others are instance attributes.</p>
 
     Example: print the sof-pasuq:
 
-    ```python
-    print(Transcription.hebrew_mapping[&#39;00&#39;])
-    ```
+        print(Transcription.hebrew_mapping[&#39;00&#39;])
 
     Output:
 
-    ```
-    ׃
-    ```
+        ׃
     &#34;&#34;&#34;
 
     hebrew_cons = &#34;&gt;BGDHWZXVJKLMNS&lt;PYQRFCT&#34;
@@ -1331,15 +1248,11 @@ others are instance attributes.</p>
 
     Example: print the semkath-final:
 
-    ```python
-    print(Transcription.syriac_mapping[&#39;s&#39;])
-    ```
+        print(Transcription.syriac_mapping[&#39;s&#39;])
 
     Output:
 
-    ```
-    ܤ
-    ```
+        ܤ
     &#34;&#34;&#34;
 
     trans_syriac_pat = re.compile(r&#34;([AE@IU][12]?|=[.#:\^/\\]|[\^#][!:\\]|.)&#34;)
@@ -1412,29 +1325,21 @@ others are instance attributes.</p>
 
     Example: print the beh
 
-    ```python
-    print(Transcription.syriac_mapping[&#39;b&#39;])
-    ```
+        print(Transcription.syriac_mapping[&#39;b&#39;])
 
     Output:
 
-    ```
-    ب
-    ```
+        ب
 
     Maps an Arabic letter in unicode to its transliteration
 
     Example: print the beh transliteration
 
-    ```python
-    print(Transcription.syriac_mapping[&#39;ب&#39;])
-    ```
+        print(Transcription.syriac_mapping[&#39;ب&#39;])
 
     Output:
 
-    ```
-    b
-    ```
+        b
     &#34;&#34;&#34;
 
     arabic_mappingi = dict((v, k) for (k, v) in arabic_mapping.items())
@@ -1492,15 +1397,11 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;))
-        ```
+            print(Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;))
 
         Output:
 
-        ```
-        (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
-        ```
+            (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
 
         Note that the `Y` has been replaced by `y`.
         &#34;&#34;&#34;
@@ -1577,19 +1478,15 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(Transcription.suppress_space(&#39;B.:&amp;&#39;))
-        print(Transcription.suppress_space(&#39;B.@R@74&gt;&#39;))
-        print(Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;))
-        ```
+            print(Transcription.suppress_space(&#39;B.:&amp;&#39;))
+            print(Transcription.suppress_space(&#39;B.@R@74&gt;&#39;))
+            print(Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;))
 
         Output:
 
-        ```
-        &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
-        None
-        &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
-        ```
+            &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
+            None
+            &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
         &#34;&#34;&#34;
 
         return Transcription.noorigspace.search(word)
@@ -1601,15 +1498,11 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;))
-        ```
+            print(Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;))
 
         Output:
 
-        ```
-        HAC.@MAJIm
-        ```
+            HAC.@MAJIm
         &#34;&#34;&#34;
 
         return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)
@@ -1622,15 +1515,11 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;))
-        ```
+            print(Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;))
 
         Output:
 
-        ```
-        H#MJM
-        ```
+            H#MJM
 
         Note that the pointed shin (`C`) is replaced by an unpointed one (`#`).
         &#34;&#34;&#34;
@@ -1654,15 +1543,11 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;))
-        ```
+            print(Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;))
 
         Output:
 
-        ```
-        הַשָּׁמַ֖יִם
-        ```
+            הַשָּׁמַ֖יִם
         &#34;&#34;&#34;
 
         word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
@@ -1675,15 +1560,11 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;))
-        ```
+            print(Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;))
 
         Output:
 
-        ```
-        הַשָּׁמַיִם
-        ```
+            הַשָּׁמַיִם
         &#34;&#34;&#34;
 
         return Transcription.trans_hebrew_pat.sub(
@@ -1697,15 +1578,11 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;))
-        ```
+            print(Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;))
 
         Output:
 
-        ```
-        השמימ
-        ```
+            השמימ
 
         Note that final consonant forms are not being used.
         &#34;&#34;&#34;
@@ -1723,15 +1600,11 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;))
-        ```
+            print(Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;))
 
         Output:
 
-        ```
-        הַשָּׁמַ֖יִם
-        ```
+            הַשָּׁמַ֖יִם
         &#34;&#34;&#34;
 
         return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)
@@ -1743,19 +1616,15 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;))
-        print(Transcription.ph_simplify(&#39;māqˈôm&#39;))
-        print(Transcription.ph_simplify(&#39;kol&#39;))
-        ```
+            print(Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;))
+            print(Transcription.ph_simplify(&#39;māqˈôm&#39;))
+            print(Transcription.ph_simplify(&#39;kol&#39;))
 
         Output:
 
-        ```
-        ʔlōhîm
-        måqôm
-        kål
-        ```
+            ʔlōhîm
+            måqôm
+            kål
 
         Note that the simplified version transliterates the qamets gadol and qatan
         to the same
@@ -1771,15 +1640,11 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;))
-        ```
+            print(tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;))
 
         Output:
 
-        ```
-        H@&gt;@95REy00
-        ```
+            H@&gt;@95REy00
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(
@@ -1793,15 +1658,11 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(tr.to_syriac(&#39;MKSJN&#39;))
-        ```
+            print(tr.to_syriac(&#39;MKSJN&#39;))
 
         Output:
 
-        ```
-        ܡܟܣܝܢ
-        ```
+            ܡܟܣܝܢ
         &#34;&#34;&#34;
 
         return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)
@@ -1813,15 +1674,11 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(tr.from_syriac(&#39;ܡܟܣܝܢ&#39;))
-        ```
+            print(tr.from_syriac(&#39;ܡܟܣܝܢ&#39;))
 
         Output:
 
-        ```
-        MKSJN
-        ```
+            MKSJN
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(self.syriac_mappingi.get(x, x) for x in word)
@@ -1843,15 +1700,11 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(tr.to_arabic(&#39;bisomi&#39;))
-        ```
+            print(tr.to_arabic(&#39;bisomi&#39;))
 
         Output:
 
-        ```
-        بِسْمِ
-        ```
+            بِسْمِ
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(Transcription.arabic_mapping.get(x, x) for x in word)
@@ -1863,15 +1716,11 @@ others are instance attributes.</p>
 
         Example:
 
-        ```python
-        print(tr.from_arabic(&#39;بِسْمِ&#39;))
-        ```
+            print(tr.from_arabic(&#39;بِسْمِ&#39;))
 
         Output:
 
-        ```
-        bisomi
-        ```
+            bisomi
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(Transcription.arabic_mappingi.get(x, x) for x in word)</code></pre>
@@ -1882,18 +1731,16 @@ others are instance attributes.</p>
 <dd>
 <div class="desc"><p>Maps an Arabic transliteration character to Unicode.</p>
 <p>Example: print the beh</p>
-<pre><code class="python">print(Transcription.syriac_mapping['b'])
+<pre><code>print(Transcription.syriac_mapping['b'])
 </code></pre>
-<p>Output:</p>
-<pre><code>ب
-</code></pre>
+<h2 id="output">Output</h2>
+<p>ب</p>
 <p>Maps an Arabic letter in unicode to its transliteration</p>
 <p>Example: print the beh transliteration</p>
-<pre><code class="python">print(Transcription.syriac_mapping['ب'])
+<pre><code>print(Transcription.syriac_mapping['ب'])
 </code></pre>
-<p>Output:</p>
-<pre><code>b
-</code></pre></div>
+<h2 id="output_1">Output</h2>
+<p>b</p></div>
 </dd>
 <dt id="tf.writing.transcription.Transcription.arabic_mappingi"><code class="name">var <span class="ident">arabic_mappingi</span></code></dt>
 <dd>
@@ -1911,11 +1758,10 @@ others are instance attributes.</p>
 <dd>
 <div class="desc"><p>Maps all ETCBC transliteration character combinations for Hebrew to Unicode.</p>
 <p>Example: print the sof-pasuq:</p>
-<pre><code class="python">print(Transcription.hebrew_mapping['00'])
+<pre><code>print(Transcription.hebrew_mapping['00'])
 </code></pre>
-<p>Output:</p>
-<pre><code>׃
-</code></pre></div>
+<h2 id="output">Output</h2>
+<p>׃</p></div>
 </dd>
 <dt id="tf.writing.transcription.Transcription.noorigspace"><code class="name">var <span class="ident">noorigspace</span></code></dt>
 <dd>
@@ -1953,11 +1799,10 @@ others are instance attributes.</p>
 <dd>
 <div class="desc"><p>Maps all ETCBC transliteration character combinations for Syriac to Unicode.</p>
 <p>Example: print the semkath-final:</p>
-<pre><code class="python">print(Transcription.syriac_mapping['s'])
+<pre><code>print(Transcription.syriac_mapping['s'])
 </code></pre>
-<p>Output:</p>
-<pre><code>ܤ
-</code></pre></div>
+<h2 id="output">Output</h2>
+<p>ܤ</p></div>
 </dd>
 <dt id="tf.writing.transcription.Transcription.syriac_mapping_pil"><code class="name">var <span class="ident">syriac_mapping_pil</span></code></dt>
 <dd>
@@ -1990,7 +1835,7 @@ others are instance attributes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L858-L859" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L790-L791" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def can_from_syriac(self, word):
     return all(c in self.syriac_mappingi for c in word if c != &#34; &#34;)</code></pre>
@@ -2004,7 +1849,7 @@ others are instance attributes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L851-L856" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L783-L788" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def can_to_syriac(self, word):
     return all(
@@ -2020,16 +1865,14 @@ others are instance attributes.</p>
 <dd>
 <div class="desc"><p>Given a word in Unicode Arabic,
 produce the word in transliteration.</p>
-<p>Example:</p>
-<pre><code class="python">print(tr.from_arabic('بِسْمِ'))
-</code></pre>
-<p>Output:</p>
-<pre><code>bisomi
-</code></pre></div>
+<h2 id="example">Example</h2>
+<p>print(tr.from_arabic('بِسْمِ'))</p>
+<h2 id="output">Output</h2>
+<p>bisomi</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L881-L899" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L809-L823" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def from_arabic(word):
     &#34;&#34;&#34;
@@ -2038,15 +1881,11 @@ produce the word in transliteration.</p>
 
     Example:
 
-    ```python
-    print(tr.from_arabic(&#39;بِسْمِ&#39;))
-    ```
+        print(tr.from_arabic(&#39;بِسْمِ&#39;))
 
     Output:
 
-    ```
-    bisomi
-    ```
+        bisomi
     &#34;&#34;&#34;
 
     return &#34;&#34;.join(Transcription.arabic_mappingi.get(x, x) for x in word)</code></pre>
@@ -2058,16 +1897,14 @@ produce the word in transliteration.</p>
 <dd>
 <div class="desc"><p>Given a fully pointed word in Unicode Hebrew,
 produce the word in ETCBC transliteration.</p>
-<p>Example:</p>
-<pre><code class="python">print(tr.from_hebrew('הָאָֽרֶץ׃'))
-</code></pre>
-<p>Output:</p>
-<pre><code>H@&gt;@95REy00
-</code></pre></div>
+<h2 id="example">Example</h2>
+<p>print(tr.from_hebrew('הָאָֽרֶץ׃'))</p>
+<h2 id="output">Output</h2>
+<p>H@&gt;@95REy00</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L789-L809" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L733-L749" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def from_hebrew(self, word):
     &#34;&#34;&#34;
@@ -2076,15 +1913,11 @@ produce the word in ETCBC transliteration.</p>
 
     Example:
 
-    ```python
-    print(tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;))
-    ```
+        print(tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;))
 
     Output:
 
-    ```
-    H@&gt;@95REy00
-    ```
+        H@&gt;@95REy00
     &#34;&#34;&#34;
 
     return &#34;&#34;.join(
@@ -2098,16 +1931,14 @@ produce the word in ETCBC transliteration.</p>
 <dd>
 <div class="desc"><p>Given a word in Unicode Syriac,
 produce the word in ETCBC transliteration.</p>
-<p>Example:</p>
-<pre><code class="python">print(tr.from_syriac('ܡܟܣܝܢ'))
-</code></pre>
-<p>Output:</p>
-<pre><code>MKSJN
-</code></pre></div>
+<h2 id="example">Example</h2>
+<p>print(tr.from_syriac('ܡܟܣܝܢ'))</p>
+<h2 id="output">Output</h2>
+<p>MKSJN</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L831-L849" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L767-L781" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def from_syriac(self, word):
     &#34;&#34;&#34;
@@ -2116,15 +1947,11 @@ produce the word in ETCBC transliteration.</p>
 
     Example:
 
-    ```python
-    print(tr.from_syriac(&#39;ܡܟܣܝܢ&#39;))
-    ```
+        print(tr.from_syriac(&#39;ܡܟܣܝܢ&#39;))
 
     Output:
 
-    ```
-    MKSJN
-    ```
+        MKSJN
     &#34;&#34;&#34;
 
     return &#34;&#34;.join(self.syriac_mappingi.get(x, x) for x in word)</code></pre>
@@ -2136,23 +1963,21 @@ produce the word in ETCBC transliteration.</p>
 <dd>
 <div class="desc"><p>Given a phonological transliteration of a fully pointed word,
 produce a more coarse phonological transliteration.</p>
-<p>Example:</p>
-<pre><code class="python">print(Transcription.ph_simplify('ʔᵉlōhˈîm'))
+<h2 id="example">Example</h2>
+<p>print(Transcription.ph_simplify('ʔᵉlōhˈîm'))
 print(Transcription.ph_simplify('māqˈôm'))
-print(Transcription.ph_simplify('kol'))
-</code></pre>
-<p>Output:</p>
-<pre><code>ʔlōhîm
+print(Transcription.ph_simplify('kol'))</p>
+<h2 id="output">Output</h2>
+<p>ʔlōhîm
 måqôm
-kål
-</code></pre>
+kål</p>
 <p>Note that the simplified version transliterates the qamets gadol and qatan
 to the same
 character.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L761-L787" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L709-L731" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ph_simplify(pword):
     &#34;&#34;&#34;
@@ -2161,19 +1986,15 @@ character.</p></div>
 
     Example:
 
-    ```python
-    print(Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;))
-    print(Transcription.ph_simplify(&#39;māqˈôm&#39;))
-    print(Transcription.ph_simplify(&#39;kol&#39;))
-    ```
+        print(Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;))
+        print(Transcription.ph_simplify(&#39;māqˈôm&#39;))
+        print(Transcription.ph_simplify(&#39;kol&#39;))
 
     Output:
 
-    ```
-    ʔlōhîm
-    måqôm
-    kål
-    ```
+        ʔlōhîm
+        måqôm
+        kål
 
     Note that the simplified version transliterates the qamets gadol and qatan
     to the same
@@ -2194,23 +2015,19 @@ Replace the last consonant of the word material by its final form, if applicable
 
     Example:
 
-    ```python
-    print(Transcription.suffix_and_finales('71T_H@&gt;@95REY00'))
-    ```
+        print(Transcription.suffix_and_finales('71T_H@&gt;@95REY00'))
 
     Output:
 
-    ```
-    ('71T_H@&gt;@95REy', '00
+        ('71T_H@&gt;@95REy', '00
 </code></pre>
-<p>')
-```</p>
+<p>')</p>
 <pre><code>    Note that the &lt;code&gt;Y&lt;/code&gt; has been replaced by &lt;code&gt;y&lt;/code&gt;.
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L507-L568" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L487-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def suffix_and_finales(word):
     &#34;&#34;&#34;
@@ -2222,15 +2039,11 @@ Replace the last consonant of the word material by its final form, if applicable
 
     Example:
 
-    ```python
-    print(Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;))
-    ```
+        print(Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;))
 
     Output:
 
-    ```
-    (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
-    ```
+        (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
 
     Note that the `Y` has been replaced by `y`.
     &#34;&#34;&#34;
@@ -2283,20 +2096,18 @@ Replace the last consonant of the word material by its final form, if applicable
 <div class="desc"><p>Given an ETCBC transliteration of a word,
 match the end of the word for interpunction and spacing characters
 (sof pasuq, paseq, nun hafukha, setumah, petuhah, space, no-space)</p>
-<p>Example:</p>
-<pre><code class="python">print(Transcription.suppress_space('B.:&amp;'))
+<h2 id="example">Example</h2>
+<p>print(Transcription.suppress_space('B.:&amp;'))
 print(Transcription.suppress_space('B.@R@74&gt;'))
-print(Transcription.suppress_space('71T_H@&gt;@95REY00'))
-</code></pre>
-<p>Output:</p>
-<pre><code>&lt;re.Match object; span=(3, 4), match='&amp;'&gt;
+print(Transcription.suppress_space('71T_H@&gt;@95REY00'))</p>
+<h2 id="output">Output</h2>
+<p><re.Match object; span=(3, 4), match='&'>
 None
-&lt;re.Match object; span=(13, 15), match='00'&gt;
-</code></pre></div>
+<re.Match object; span=(13, 15), match='00'></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L594-L617" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L570-L589" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def suppress_space(word):
     &#34;&#34;&#34;
@@ -2306,19 +2117,15 @@ None
 
     Example:
 
-    ```python
-    print(Transcription.suppress_space(&#39;B.:&amp;&#39;))
-    print(Transcription.suppress_space(&#39;B.@R@74&gt;&#39;))
-    print(Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;))
-    ```
+        print(Transcription.suppress_space(&#39;B.:&amp;&#39;))
+        print(Transcription.suppress_space(&#39;B.@R@74&gt;&#39;))
+        print(Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;))
 
     Output:
 
-    ```
-    &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
-    None
-    &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
-    ```
+        &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
+        None
+        &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
     &#34;&#34;&#34;
 
     return Transcription.noorigspace.search(word)</code></pre>
@@ -2332,7 +2139,7 @@ None
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L494-L495" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L474-L475" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sycSplitPunc(self):
     pass</code></pre>
@@ -2344,16 +2151,14 @@ None
 <dd>
 <div class="desc"><p>Given a word in transliteration,
 produce the word in Unicode Arabic.</p>
-<p>Example:</p>
-<pre><code class="python">print(tr.to_arabic('bisomi'))
-</code></pre>
-<p>Output:</p>
-<pre><code>بِسْمِ
-</code></pre></div>
+<h2 id="example">Example</h2>
+<p>print(tr.to_arabic('bisomi'))</p>
+<h2 id="output">Output</h2>
+<p>بِسْمِ</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L861-L879" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L793-L807" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_arabic(word):
     &#34;&#34;&#34;
@@ -2362,15 +2167,11 @@ produce the word in Unicode Arabic.</p>
 
     Example:
 
-    ```python
-    print(tr.to_arabic(&#39;bisomi&#39;))
-    ```
+        print(tr.to_arabic(&#39;bisomi&#39;))
 
     Output:
 
-    ```
-    بِسْمِ
-    ```
+        بِسْمِ
     &#34;&#34;&#34;
 
     return &#34;&#34;.join(Transcription.arabic_mapping.get(x, x) for x in word)</code></pre>
@@ -2383,17 +2184,15 @@ produce the word in Unicode Arabic.</p>
 <div class="desc"><p>Given an ETCBC transliteration of a fully pointed word,
 strip everything except the consonants.
 Punctuation will also be stripped.</p>
-<p>Example:</p>
-<pre><code class="python">print(Transcription.to_etcbc_c('HAC.@MA73JIm'))
-</code></pre>
-<p>Output:</p>
-<pre><code>H#MJM
-</code></pre>
+<h2 id="example">Example</h2>
+<p>print(Transcription.to_etcbc_c('HAC.@MA73JIm'))</p>
+<h2 id="output">Output</h2>
+<p>H#MJM</p>
 <p>Note that the pointed shin (<code>C</code>) is replaced by an unpointed one (<code>#</code>).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L639-L668" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L607-L632" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_etcbc_c(word):
     &#34;&#34;&#34;
@@ -2403,15 +2202,11 @@ Punctuation will also be stripped.</p>
 
     Example:
 
-    ```python
-    print(Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;))
-    ```
+        print(Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;))
 
     Output:
 
-    ```
-    H#MJM
-    ```
+        H#MJM
 
     Note that the pointed shin (`C`) is replaced by an unpointed one (`#`).
     &#34;&#34;&#34;
@@ -2433,16 +2228,14 @@ Punctuation will also be stripped.</p>
 <dd>
 <div class="desc"><p>Given an ETCBC transliteration of a fully pointed word,
 strip all the non-vowel pointing (i.e. the accents).</p>
-<p>Example:</p>
-<pre><code class="python">print(Transcription.to_etcbc_v('HAC.@MA73JIm'))
-</code></pre>
-<p>Output:</p>
-<pre><code>HAC.@MAJIm
-</code></pre></div>
+<h2 id="example">Example</h2>
+<p>print(Transcription.to_etcbc_v('HAC.@MA73JIm'))</p>
+<h2 id="output">Output</h2>
+<p>HAC.@MAJIm</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L619-L637" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L591-L605" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_etcbc_v(word):
     &#34;&#34;&#34;
@@ -2451,15 +2244,11 @@ strip all the non-vowel pointing (i.e. the accents).</p>
 
     Example:
 
-    ```python
-    print(Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;))
-    ```
+        print(Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;))
 
     Output:
 
-    ```
-    HAC.@MAJIm
-    ```
+        HAC.@MAJIm
     &#34;&#34;&#34;
 
     return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)</code></pre>
@@ -2473,16 +2262,14 @@ strip all the non-vowel pointing (i.e. the accents).</p>
 produce the word in Unicode Hebrew.
 Care will be taken that vowel pointing will be added to consonants
 before accent pointing.</p>
-<p>Example:</p>
-<pre><code class="python">print(Transcription.to_hebrew('HAC.@MA73JIm'))
-</code></pre>
-<p>Output:</p>
-<pre><code>הַשָּׁמַ֖יִם
-</code></pre></div>
+<h2 id="example">Example</h2>
+<p>print(Transcription.to_hebrew('HAC.@MA73JIm'))</p>
+<h2 id="output">Output</h2>
+<p>הַשָּׁמַ֖יִם</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L670-L691" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L634-L651" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew(word):
     &#34;&#34;&#34;
@@ -2493,15 +2280,11 @@ before accent pointing.</p>
 
     Example:
 
-    ```python
-    print(Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;))
-    ```
+        print(Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;))
 
     Output:
 
-    ```
-    הַשָּׁמַ֖יִם
-    ```
+        הַשָּׁמַ֖יִם
     &#34;&#34;&#34;
 
     word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
@@ -2514,17 +2297,15 @@ before accent pointing.</p>
 <dd>
 <div class="desc"><p>Given a transliteration of a fully pointed word,
 produce the word in Unicode Hebrew, but without the pointing.</p>
-<p>Example:</p>
-<pre><code class="python">print(Transcription.to_hebrew_c('HAC.@MA73JIm'))
-</code></pre>
-<p>Output:</p>
-<pre><code>השמימ
-</code></pre>
+<h2 id="example">Example</h2>
+<p>print(Transcription.to_hebrew_c('HAC.@MA73JIm'))</p>
+<h2 id="output">Output</h2>
+<p>השמימ</p>
 <p>Note that final consonant forms are not being used.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L715-L737" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L671-L689" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew_c(word):
     &#34;&#34;&#34;
@@ -2533,15 +2314,11 @@ produce the word in Unicode Hebrew, but without the pointing.</p>
 
     Example:
 
-    ```python
-    print(Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;))
-    ```
+        print(Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;))
 
     Output:
 
-    ```
-    השמימ
-    ```
+        השמימ
 
     Note that final consonant forms are not being used.
     &#34;&#34;&#34;
@@ -2557,16 +2334,14 @@ produce the word in Unicode Hebrew, but without the pointing.</p>
 <dd>
 <div class="desc"><p>Given a transliteration of a fully pointed word,
 produce the word in Unicode Hebrew, but without the accents.</p>
-<p>Example:</p>
-<pre><code class="python">print(Transcription.to_hebrew_v('HAC.@MA73JIm'))
-</code></pre>
-<p>Output:</p>
-<pre><code>הַשָּׁמַיִם
-</code></pre></div>
+<h2 id="example">Example</h2>
+<p>print(Transcription.to_hebrew_v('HAC.@MA73JIm'))</p>
+<h2 id="output">Output</h2>
+<p>הַשָּׁמַיִם</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L693-L713" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L653-L669" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew_v(word):
     &#34;&#34;&#34;
@@ -2575,15 +2350,11 @@ produce the word in Unicode Hebrew, but without the accents.</p>
 
     Example:
 
-    ```python
-    print(Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;))
-    ```
+        print(Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;))
 
     Output:
 
-    ```
-    הַשָּׁמַיִם
-    ```
+        הַשָּׁמַיִם
     &#34;&#34;&#34;
 
     return Transcription.trans_hebrew_pat.sub(
@@ -2599,16 +2370,14 @@ produce the word in Unicode Hebrew, but without the accents.</p>
 produce the word in Unicode Hebrew, but without the pointing.
 Vowel pointing and accent pointing will be applied in the order given
 by the input word.</p>
-<p>Example:</p>
-<pre><code class="python">print(Transcription.to_hebrew_x('HAC.@MA73JIm'))
-</code></pre>
-<p>Output:</p>
-<pre><code>הַשָּׁמַ֖יִם
-</code></pre></div>
+<h2 id="example">Example</h2>
+<p>print(Transcription.to_hebrew_x('HAC.@MA73JIm'))</p>
+<h2 id="output">Output</h2>
+<p>הַשָּׁמַ֖יִם</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L739-L759" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L691-L707" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew_x(word):
     &#34;&#34;&#34;
@@ -2619,15 +2388,11 @@ by the input word.</p>
 
     Example:
 
-    ```python
-    print(Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;))
-    ```
+        print(Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;))
 
     Output:
 
-    ```
-    הַשָּׁמַ֖יִם
-    ```
+        הַשָּׁמַ֖יִם
     &#34;&#34;&#34;
 
     return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)</code></pre>
@@ -2639,16 +2404,14 @@ by the input word.</p>
 <dd>
 <div class="desc"><p>Given a word in ETCBC transliteration,
 produce the word in Unicode Syriac.</p>
-<p>Example:</p>
-<pre><code class="python">print(tr.to_syriac('MKSJN'))
-</code></pre>
-<p>Output:</p>
-<pre><code>ܡܟܣܝܢ
-</code></pre></div>
+<h2 id="example">Example</h2>
+<p>print(tr.to_syriac('MKSJN'))</p>
+<h2 id="output">Output</h2>
+<p>ܡܟܣܝܢ</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/writing/transcription.py#L811-L829" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/writing/transcription.py#L751-L765" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_syriac(self, word):
     &#34;&#34;&#34;
@@ -2657,15 +2420,11 @@ produce the word in Unicode Syriac.</p>
 
     Example:
 
-    ```python
-    print(tr.to_syriac(&#39;MKSJN&#39;))
-    ```
+        print(tr.to_syriac(&#39;MKSJN&#39;))
 
     Output:
 
-    ```
-    ܡܟܣܝܢ
-    ```
+        ܡܟܣܝܢ
     &#34;&#34;&#34;
 
     return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)</code></pre>

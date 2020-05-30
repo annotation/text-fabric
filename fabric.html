@@ -42,7 +42,7 @@ is available through the advanced API: <code>A</code>, see <code><a title="tf.ap
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L0-L1055" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/fabric.py#L0-L1045" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/main/fabric.md
@@ -156,11 +156,9 @@ class Fabric(object):
 
         Defaults:
 
-        ```
-        ~/Downloads/text-fabric-data
-        ~/text-fabric-data
-        ~/github/text-fabric-data
-        ```
+            ~/Downloads/text-fabric-data
+            ~/text-fabric-data
+            ~/github/text-fabric-data
 
         So if you have stored your main Text-Fabric dataset in
         `text-fabric-data` in one of these directories
@@ -259,9 +257,7 @@ Api reference : {APIREF}
 
         The best use of this is to get the metadata of features:
 
-        ```python
-        TF.features[&#39;fff&#39;].metaData
-        ```
+            TF.features[&#39;fff&#39;].metaData
 
         This works for all features `fff` that have been found,
         whether the feature is loaded or not.
@@ -801,9 +797,7 @@ Api reference : {APIREF}
         !!! hint &#34;Destination directory&#34;
             It is recommended to call this `importMQL` on a TF instance called with
 
-            ```python
-            TF = Fabric(locations=targetDir)
-            ```
+                TF = Fabric(locations=targetDir)
 
             Then the resulting features will be written in the targetDir.
             In fact, the rules are exactly the same as for `save()`.
@@ -819,24 +813,20 @@ Api reference : {APIREF}
             the parameter `otext`. This info will end up in the `otext.tf` feature.
             Pass it as a dictionary of keys and values, like so:
 
-            ```python
-            otext = {
-                &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
-                &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
-            }
-            ```
+                otext = {
+                    &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
+                    &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
+                }
 
         meta: dict
             Likewise, you can add a dictionary of keys and values that will added to
             the metadata of all features. Handy to add provenance data here:
 
-            ```python
-            meta = dict(
-                dataset=&#39;DLC&#39;,
-                datasetName=&#39;Digital Language Corpus&#39;,
-                author=&#34;That &#39;s me&#34;,
-            )
-            ```
+                meta = dict(
+                    dataset=&#39;DLC&#39;,
+                    datasetName=&#39;Digital Language Corpus&#39;,
+                    author=&#34;That &#39;s me&#34;,
+                )
         &#34;&#34;&#34;
 
         tmObj = self.tmObj
@@ -1166,9 +1156,10 @@ in searching for tf feature files.
 In general, they will not searched directly, but certain subdirectories
 of them will be searched, specified by the <code>modules</code> parameter.</p>
 <p>Defaults:</p>
-<p><code>~/Downloads/text-fabric-data
+<pre><code>~/Downloads/text-fabric-data
 ~/text-fabric-data
-~/github/text-fabric-data</code></p>
+~/github/text-fabric-data
+</code></pre>
 <p>So if you have stored your main Text-Fabric dataset in
 <code>text-fabric-data</code> in one of these directories
 you do not have to pass a location to Fabric.</p>
@@ -1208,7 +1199,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L86-L1056" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/fabric.py#L86-L1046" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fabric(object):
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -1237,11 +1228,9 @@ also can add new formats to the Text-API.</p>
 
         Defaults:
 
-        ```
-        ~/Downloads/text-fabric-data
-        ~/text-fabric-data
-        ~/github/text-fabric-data
-        ```
+            ~/Downloads/text-fabric-data
+            ~/text-fabric-data
+            ~/github/text-fabric-data
 
         So if you have stored your main Text-Fabric dataset in
         `text-fabric-data` in one of these directories
@@ -1340,9 +1329,7 @@ Api reference : {APIREF}
 
         The best use of this is to get the metadata of features:
 
-        ```python
-        TF.features[&#39;fff&#39;].metaData
-        ```
+            TF.features[&#39;fff&#39;].metaData
 
         This works for all features `fff` that have been found,
         whether the feature is loaded or not.
@@ -1882,9 +1869,7 @@ Api reference : {APIREF}
         !!! hint &#34;Destination directory&#34;
             It is recommended to call this `importMQL` on a TF instance called with
 
-            ```python
-            TF = Fabric(locations=targetDir)
-            ```
+                TF = Fabric(locations=targetDir)
 
             Then the resulting features will be written in the targetDir.
             In fact, the rules are exactly the same as for `save()`.
@@ -1900,24 +1885,20 @@ Api reference : {APIREF}
             the parameter `otext`. This info will end up in the `otext.tf` feature.
             Pass it as a dictionary of keys and values, like so:
 
-            ```python
-            otext = {
-                &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
-                &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
-            }
-            ```
+                otext = {
+                    &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
+                    &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
+                }
 
         meta: dict
             Likewise, you can add a dictionary of keys and values that will added to
             the metadata of all features. Handy to add provenance data here:
 
-            ```python
-            meta = dict(
-                dataset=&#39;DLC&#39;,
-                datasetName=&#39;Digital Language Corpus&#39;,
-                author=&#34;That &#39;s me&#34;,
-            )
-            ```
+                meta = dict(
+                    dataset=&#39;DLC&#39;,
+                    datasetName=&#39;Digital Language Corpus&#39;,
+                    author=&#34;That &#39;s me&#34;,
+                )
         &#34;&#34;&#34;
 
         tmObj = self.tmObj
@@ -2194,7 +2175,7 @@ Api reference : {APIREF}
 <div class="desc"><p>Dictionary of all features that TF has found, whether loaded or not.</p>
 <p>Under each feature name is all info about that feature.</p>
 <p>The best use of this is to get the metadata of features:</p>
-<pre><code class="python">TF.features['fff'].metaData
+<pre><code>TF.features['fff'].metaData
 </code></pre>
 <p>This works for all features <code>fff</code> that have been found,
 whether the feature is loaded or not.</p>
@@ -2237,7 +2218,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="index.h
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L466-L489" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/fabric.py#L462-L485" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -2302,7 +2283,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L374-L447" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/fabric.py#L370-L443" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=None, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -2406,7 +2387,7 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L720-L750" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/fabric.py#L716-L746" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(self, mqlName, mqlDir):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -2449,8 +2430,8 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
 <div class="admonition hint">
 <p class="admonition-title">Destination directory</p>
 <p>It is recommended to call this <code>importMQL</code> on a TF instance called with</p>
-<p><code>python
-TF = Fabric(locations=targetDir)</code></p>
+<pre><code>TF = Fabric(locations=targetDir)
+</code></pre>
 <p>Then the resulting features will be written in the targetDir.
 In fact, the rules are exactly the same as for <code>save()</code>.</p>
 </div>
@@ -2460,32 +2441,28 @@ In fact, the rules are exactly the same as for <code>save()</code>.</p>
 <dd>You have to tell which object type in the MQL file acts as the slot type,
 because TF cannot see that on its own.</dd>
 <dt><strong><code>otext</code></strong> :&ensp;<code>dict</code></dt>
-<dd>
-<p>You can pass the information about sections and text formats as
+<dd>You can pass the information about sections and text formats as
 the parameter <code>otext</code>. This info will end up in the <code>otext.tf</code> feature.
-Pass it as a dictionary of keys and values, like so:</p>
-<p><code>python
-otext = {
-'fmt:text-trans-plain': '{glyphs}{trailer}',
-'sectionFeatures': 'book,chapter,verse',
-}</code></p>
+Pass it as a dictionary of keys and values, like so:<pre><code>otext = {
+    'fmt:text-trans-plain': '{glyphs}{trailer}',
+    'sectionFeatures': 'book,chapter,verse',
+}
+</code></pre>
 </dd>
 <dt><strong><code>meta</code></strong> :&ensp;<code>dict</code></dt>
-<dd>
-<p>Likewise, you can add a dictionary of keys and values that will added to
-the metadata of all features. Handy to add provenance data here:</p>
-<p><code>python
-meta = dict(
-dataset='DLC',
-datasetName='Digital Language Corpus',
-author="That 's me",
-)</code></p>
+<dd>Likewise, you can add a dictionary of keys and values that will added to
+the metadata of all features. Handy to add provenance data here:<pre><code>meta = dict(
+    dataset='DLC',
+    datasetName='Digital Language Corpus',
+    author="That 's me",
+)
+</code></pre>
 </dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L752-L806" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/fabric.py#L748-L796" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
@@ -2493,9 +2470,7 @@ author="That 's me",
     !!! hint &#34;Destination directory&#34;
         It is recommended to call this `importMQL` on a TF instance called with
 
-        ```python
-        TF = Fabric(locations=targetDir)
-        ```
+            TF = Fabric(locations=targetDir)
 
         Then the resulting features will be written in the targetDir.
         In fact, the rules are exactly the same as for `save()`.
@@ -2511,24 +2486,20 @@ author="That 's me",
         the parameter `otext`. This info will end up in the `otext.tf` feature.
         Pass it as a dictionary of keys and values, like so:
 
-        ```python
-        otext = {
-            &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
-            &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
-        }
-        ```
+            otext = {
+                &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
+                &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
+            }
 
     meta: dict
         Likewise, you can add a dictionary of keys and values that will added to
         the metadata of all features. Handy to add provenance data here:
 
-        ```python
-        meta = dict(
-            dataset=&#39;DLC&#39;,
-            datasetName=&#39;Digital Language Corpus&#39;,
-            author=&#34;That &#39;s me&#34;,
-        )
-        ```
+            meta = dict(
+                dataset=&#39;DLC&#39;,
+                datasetName=&#39;Digital Language Corpus&#39;,
+                author=&#34;That &#39;s me&#34;,
+            )
     &#34;&#34;&#34;
 
     tmObj = self.tmObj
@@ -2579,7 +2550,7 @@ else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L236-L372" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/fabric.py#L232-L368" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=None):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2735,7 +2706,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L449-L464" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/fabric.py#L445-L460" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=None):
     &#34;&#34;&#34;Load all loadable features.
@@ -2839,7 +2810,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L491-L718" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/fabric.py#L487-L714" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,

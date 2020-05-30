@@ -115,16 +115,14 @@ spectacularly. So do not do that.</p>
 <code>~/Downloads</code>;</li>
 <li>before importing the MQL file, delete the previous copy;</li>
 </ul>
-<div class="admonition example">
-<p class="admonition-title">Delete existing copy</p>
-<p><code>sh
-cd ~/Downloads
-rm dataset ; mql -b 3 &lt; dataset.mql</code></p>
-</div>
+<p>Delete existing copy:</p>
+<pre><code class="sh">cd ~/Downloads
+rm dataset ; mql -b 3 &lt; dataset.mql
+</code></pre>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L0-L734" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/convert/mql.py#L0-L734" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/convert/mql.md
@@ -879,7 +877,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L405-L410" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/convert/mql.py#L405-L410" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeuni(match):
     &#34;&#34;&#34; Make proper unicode of a text that contains byte escape codes
@@ -897,7 +895,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L429-L630" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/convert/mql.py#L429-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseMql(mqlFile, tmObj):
     info = tmObj.info
@@ -1111,7 +1109,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L633-L735" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/convert/mql.py#L633-L735" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     info = tmObj.info
@@ -1226,7 +1224,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L417-L426" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/convert/mql.py#L417-L426" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     error = tmObj.error
@@ -1248,7 +1246,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L413-L414" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/convert/mql.py#L413-L414" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def uni(line):
     return uniscan.sub(makeuni, line)</code></pre>
@@ -1268,7 +1266,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L28-L397" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/convert/mql.py#L28-L397" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MQL(object):
     def __init__(self, mqlDir, mqlName, tfFeatures, tmObj):
@@ -1651,7 +1649,7 @@ GO
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L42-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/convert/mql.py#L42-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self):
     tmObj = self.tmObj

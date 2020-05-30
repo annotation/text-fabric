@@ -188,9 +188,7 @@ consist of verbs only:</p>
 <h2 id="search-template-reference">Search template reference</h2>
 <h3 id="template-lines">Template lines</h3>
 <p>We have these kinds of lines in a template:</p>
-<ul>
-<li>
-<p><em>comment</em> lines</p>
+<h4 id="comment-lines"><em>comment</em> lines</h4>
 <ul>
 <li>if the first non-white character on a line is <code>%</code> it is a comment line;</li>
 <li>you cannot comment out parts of lines after a non-white part;</li>
@@ -198,43 +196,34 @@ consist of verbs only:</p>
 <li>comment lines are allowed everywhere;</li>
 <li>comment lines are ignored.</li>
 </ul>
-</li>
-<li>
-<p><em>atom</em> lines</p>
-<ul>
-<li>
-<p>(simple): <strong>indent name:otype-or-set features</strong></p>
-<ul>
-<li>
+<h4 id="atom-lines"><em>atom</em> lines</h4>
+<h5 id="simple-indent-nameotype-or-set-features">(simple): <strong>indent name:otype-or-set features</strong></h5>
 <p>Examples</p>
 <ol>
 <li><code>word pos=verb gender=feminine</code></li>
 <li><code>vb:word pos=verb gender=feminine</code></li>
 <li><code>vb pos=verb gender=feminine</code></li>
 </ol>
-</li>
-<li>
-<p>The indent is significant. Indent is counted as the number of white space
-characters, where tabs count for just 1. <strong>Avoid tabs!</strong>.</p>
-</li>
+<p>Notes</p>
+<ul>
+<li>The indent is significant. Indent is counted as the number of white space
+characters, where tabs count for just 1. <strong>Avoid tabs!</strong>.</li>
 <li>The <strong>name:</strong> part is optional.
 If present, it defines a name for this atom that can be used
 in relational comparisons and other atoms.</li>
-<li>
-<p>The <strong>otype-or-set</strong> part is optional.
-If it is absent, the <strong>name</strong> part must be present.
-The meaning of</p>
-<p><code>p:phrase sp=verb
-p vs=qal</code></p>
-<p>is identical to the meaning of</p>
-<p><code>p:phrase sp=verb
-pnew:phrase vs=qal
-p = pnew</code></p>
-</li>
+<li>The <strong>otype-or-set</strong> part is optional.
+If it is absent, the <strong>name</strong> part must be present.</li>
 </ul>
-</li>
-<li>
-<p>(with relop): <strong>indent op name:otype-or-set features</strong></p>
+<p>The meaning of</p>
+<pre><code>p:phrase sp=verb
+p vs=qal
+</code></pre>
+<p>is identical to the meaning of</p>
+<pre><code>p:phrase sp=verb
+pnew:phrase vs=qal
+p = pnew
+</code></pre>
+<h5 id="with-relop-indent-op-nameotype-or-set-features">(with relop): <strong>indent op name:otype-or-set features</strong></h5>
 <ul>
 <li><code>&lt;: word pos=verb gender=feminine</code></li>
 <li>The relation operator specifies an extra constraint between a preceding atom
@@ -246,28 +235,20 @@ relation holds between the preceding atom and its parent.</li>
 <li>The <strong>name:</strong> part is optional. Exactly as in the case without relop.</li>
 <li>The <strong>otype-or-set</strong> part is optional. Exactly as in the case without relop.</li>
 </ul>
-</li>
-</ul>
 <p>The otype-or-set is either a node type that exists in your TF data set,
 or it is the name of a set that you have passed in the <code>sets</code> parameter alongside
 the query itself when you call <code>search</code> or <code>study</code>.</p>
 <p>See <a href="#feature-specifications"><em>feature specifications</em></a> below for all
 full variety of feature constraints on nodes and edges.</p>
-</li>
-<li>
-<p><em>feature</em> lines: <strong>features</strong></p>
-<ul>
-<li>Indent is not significant. Continuation of feature constraints after a
+<h4 id="feature-lines-features"><em>feature</em> lines: <strong>features</strong></h4>
+<p>Indent is not significant. Continuation of feature constraints after a
 preceding atom line or other feature line. This way you can divide lengthy
-feature constraints over multiple lines.</li>
-</ul>
+feature constraints over multiple lines.</p>
 <p>See
 <a href="#feature-specifications"><em>feature specifications</em></a>
 below for the
 full variety of feature constraints on nodes and edges.</p>
-</li>
-<li>
-<p><em>relation</em> lines: <strong>name operator name</strong></p>
+<h4 id="relation-lines-name-operator-name"><em>relation</em> lines: <strong>name operator name</strong></h4>
 <ul>
 <li><code>s := w</code></li>
 <li><code>m -sub&gt; s</code></li>
@@ -281,10 +262,8 @@ full variety of feature constraints on nodes and edges.</p>
 <a href="#relational-operators"><em>relational operators</em></a>
 below for the
 whole spectrum of relational constraints on nodes.</p>
-</li>
-<li>
-<p><em>quantifier</em> sub-templates:
-Atom lines that contain an otype or set may be followed by
+<h4 id="quantifier-sub-templates"><em>quantifier</em> sub-templates:</h4>
+<p>Atom lines that contain an otype or set may be followed by
 Quantifiers consist of search templates themselves, demarcated by some
 special keywords:</p>
 <ul>
@@ -294,8 +273,6 @@ special keywords:</p>
 <li><code>/-/</code></li>
 </ul>
 <p>See <a href="#quantifiers"><em>quantifiers</em></a> below for all the syntax and semantics.</p>
-</li>
-</ul>
 <h3 id="feature-specifications">Feature specifications</h3>
 <p>The <strong>features</strong> above is a specification of what features with
 which values to search for. This specification must be written as a white-space
@@ -494,7 +471,8 @@ This is only legal if both <code>f</code> and <code>g</code> are string valued f
 <p>If node <code>n</code> has feature <code>lex</code> with value <code>donkey_1</code>
 and node <code>m</code> has feature <code>lex</code> with value <code>donkey_2</code>,
 then the following holds:</p>
-<p><code>n .lex~_[0-9]*$~lex. m</code></p>
+<pre><code>n .lex~_[0-9]*$~lex. m
+</code></pre>
 <p>The values are stripped of their final <code>_1</code> and <code>_2</code> strings before they
 are being compared, leaving the comparison <code>donkey</code> = <code>donkey</code>, which is True.</p>
 </div>
@@ -680,32 +658,36 @@ ordinary templates. This dictates whether your quantifier is syntactically valid
 <div class="admonition example">
 <p class="admonition-title">Nested quantifiers</p>
 <p>Consider</p>
-<p><code>clause
+</div>
+<pre><code>clause
 /where/
-phrase function=Pred
+  phrase function=Pred
 /have/
-/without/
-word sp#verb
+  /without/
+    word sp#verb
+  /-/
 /-/
-/-/
-phrase function=Subj</code></p>
+  phrase function=Subj
+</code></pre>
 <p>The auxiliary templates that will be run are:</p>
 <p>For the outer quantifier:</p>
-<p><code>clause
-phrase function=Pred</code></p>
+<pre><code>clause
+  phrase function=Pred
+</code></pre>
 <p>and</p>
-<p><code>clause
-phrase function=Pred
-/without/
-word sp#verb
-/-/</code></p>
+<pre><code>clause
+  phrase function=Pred
+  /without/
+    word sp#verb
+  /-/
+</code></pre>
 <p>For the inner quantifier:</p>
-<p><code>phrase function=Pred
-word sp#verb</code></p>
+<pre><code>phrase function=Pred
+  word sp#verb
+</code></pre>
 <p>Note that the auxiliary template for the inner quantifier
 is shifted in its entirety to the left, but that the
 relative indentation is exactly as it shows in the original template.</p>
-</div>
 <h5 id="implementation">Implementation</h5>
 <p>Here is a description of the implementation of the
 quantifiers. It is not the real implementation, but it makes clear what is going
@@ -752,7 +734,7 @@ fclause
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/about/searchusage.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/about/searchusage.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/about/searchusage.md
@@ -782,7 +764,18 @@ data-gaCategoryParameter="tf.about.searchusage">
 <li><a href="#what-is-text-fabric-search">What is Text-Fabric Search?</a></li>
 <li><a href="#search-primer">Search primer</a></li>
 <li><a href="#search-template-reference">Search template reference</a><ul>
-<li><a href="#template-lines">Template lines</a></li>
+<li><a href="#template-lines">Template lines</a><ul>
+<li><a href="#comment-lines">comment lines</a></li>
+<li><a href="#atom-lines">atom lines</a><ul>
+<li><a href="#simple-indent-nameotype-or-set-features">(simple): indent name:otype-or-set features</a></li>
+<li><a href="#with-relop-indent-op-nameotype-or-set-features">(with relop): indent op name:otype-or-set features</a></li>
+</ul>
+</li>
+<li><a href="#feature-lines-features">feature lines: features</a></li>
+<li><a href="#relation-lines-name-operator-name">relation lines: name operator name</a></li>
+<li><a href="#quantifier-sub-templates">quantifier sub-templates:</a></li>
+</ul>
+</li>
 <li><a href="#feature-specifications">Feature specifications</a><ul>
 <li><a href="#value-specifications">Value specifications</a></li>
 <li><a href="#additional-constraints">Additional constraints</a></li>

@@ -36,15 +36,15 @@ it needs from GitHub automatically.</p>
 <div class="admonition hint">
 <p class="admonition-title">On Windows?</p>
 <p>You can click the Start Menu, and type</p>
-<p><code>sh
-text-fabric app</code></p>
+<pre><code>text-fabric app
+</code></pre>
 <p>in the search box, and then Enter.</p>
 </div>
 <div class="admonition hint">
 <p class="admonition-title">On Linux or Macos?</p>
 <p>You can open a terminal (command prompt), and just say</p>
-<p><code>sh
-text-fabric app</code></p>
+<pre><code>text-fabric app
+</code></pre>
 </div>
 <div class="admonition explanation">
 <p class="admonition-title">All platforms</p>
@@ -55,7 +55,7 @@ There you'll find links to further help.</p>
 </div>
 <h2 id="more-data">More data</h2>
 <p>You can let TF use extra features: </p>
-<pre><code class="sh">text-fabric app --mod=org/repo/path
+<pre><code>text-fabric app --mod=org/repo/path
 text-fabric app --mod=org/repo/path -c
 text-fabric app --mod=org/repo/path,org/repo/path
 </code></pre>
@@ -66,7 +66,7 @@ a github repo, and a path within that repo.</p>
 <p>You can create custom sets of nodes, give them a name, and use those names
 in search templates.
 The TF browser can import those sets, so that you can use such queries in the browser too.</p>
-<pre><code class="sh">text-fabric app --sets=filePath
+<pre><code>text-fabric app --sets=filePath
 </code></pre>
 <ul>
 <li>Start a TF browser for <code>app</code>.</li>
@@ -98,9 +98,11 @@ It will prompt you to ask if you really want to shut down the kernel.
 If you leave it on, a next TF browser session will connect to it, which is quicker
 than to start up a fresh kernel.</p>
 <p>You can also manually clean up TF related processes:</p>
-<p><code>text-fabric app -k</code></p>
+<pre><code>text-fabric app -k
+</code></pre>
 <p>Or, if you have also processes running for other apps:</p>
-<p><code>text-fabric -k</code> </p>
+<pre><code>text-fabric -k
+</code></pre>
 <h2 id="work-with-exported-results">Work with exported results</h2>
 <p>You can export your results to CSV files which you can process with various tools,
 including your own.</p>
@@ -137,9 +139,9 @@ but in <code>utf_16</code> encoding.
 The reason is that this is the only encoding
 in which Excel handles CSV files properly.</p>
 <p>So if you work with this file in Python, specify the encoding <code>utf_16</code>.</p>
-<pre><code class="python">with open('resultsx.tsv', encoding='utf_16') as fh:
+<pre><code>with open('resultsx.tsv', encoding='utf_16') as fh:
   for row in fh:
-  # do something with row 
+  # do something with row
 </code></pre>
 <p>Conversely, if you want to write a CSV with Hebrew in it,
 to be opened in Excel, take care to:</p>
@@ -147,14 +149,14 @@ to be opened in Excel, take care to:</p>
 <li>give the file name extension <code>.tsv</code> (not <code>.csv</code>)</li>
 <li>make the file <strong>tab</strong> separated (do not use the comma or semicolon!)</li>
 <li>use the encoding <code>utf_16_le</code> (not merely <code>utf_16</code>, nor <code>utf8</code>!)</li>
-<li>start the file with a BOM mark.</li>
-</ul>
-<pre><code class="python">with open('mydata.tsv', 'w', encoding='utf_16_le') as fh:
+<li>start the file with a BOM mark.<pre><code>with open('mydata.tsv', 'w', encoding='utf_16_le') as fh:
   fh.write('\uFEFF')
   for row in myData:
     fh.write('\t'.join(row))
     fh.write('\n')
 </code></pre>
+</li>
+</ul>
 <div class="admonition explanation">
 <p class="admonition-title">Gory details</p>
 <p>The file has been written with the <code>utf_16_le</code> encoding,
@@ -179,7 +181,7 @@ That is unpleasant.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/about/browser.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/about/browser.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/about/browser.md

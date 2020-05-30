@@ -72,7 +72,7 @@ This also holds for all data that is created during executions of a query:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/search/search.py#L0-L508" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L0-L506" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/search/search.md
@@ -404,21 +404,19 @@ class Search(object):
         !!! example &#34;Iterating over the `fetch()` generator&#34;
             You typically fetch results by saying:
 
-            ```python
-            i = 0
-            for tup in S.results():
-                do_something(tup[0])
-                do_something_else(tup[1])
-            ```
+                i = 0
+                for tup in S.results():
+                    do_something(tup[0])
+                    do_something_else(tup[1])
 
             Alternatively, you can set the `limit` parameter, to ask for just so many
             results. They will be fetched, and when they are all collected,
             returned as a tuple.
 
         !!! example &#34;Fetching a limited amount of results&#34;
-            ```python
-            S.fetch(limit=10)
-            ```
+            This
+
+                S.fetch(limit=10)
 
             gives you the first 10 results without further ado.
         &#34;&#34;&#34;
@@ -540,10 +538,10 @@ class Search(object):
         Notes
         -----
         !!! example &#34;Inspecting results&#34;
-            ```
-            for result in S.fetch(limit=10):
-                print(S.glean(result))
-            ```
+            This
+
+                for result in S.fetch(limit=10):
+                    print(S.glean(result))
 
             is a handy way to get an impression of the first bunch of results.
 
@@ -603,7 +601,7 @@ class Search(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/search/search.py#L10-L509" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L10-L507" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Search(object):
     &#34;&#34;&#34;
@@ -926,21 +924,19 @@ class Search(object):
         !!! example &#34;Iterating over the `fetch()` generator&#34;
             You typically fetch results by saying:
 
-            ```python
-            i = 0
-            for tup in S.results():
-                do_something(tup[0])
-                do_something_else(tup[1])
-            ```
+                i = 0
+                for tup in S.results():
+                    do_something(tup[0])
+                    do_something_else(tup[1])
 
             Alternatively, you can set the `limit` parameter, to ask for just so many
             results. They will be fetched, and when they are all collected,
             returned as a tuple.
 
         !!! example &#34;Fetching a limited amount of results&#34;
-            ```python
-            S.fetch(limit=10)
-            ```
+            This
+
+                S.fetch(limit=10)
 
             gives you the first 10 results without further ado.
         &#34;&#34;&#34;
@@ -1062,10 +1058,10 @@ class Search(object):
         Notes
         -----
         !!! example &#34;Inspecting results&#34;
-            ```
-            for result in S.fetch(limit=10):
-                print(S.glean(result))
-            ```
+            This
+
+                for result in S.fetch(limit=10):
+                    print(S.glean(result))
 
             is a handy way to get an impression of the first bunch of results.
 
@@ -1144,7 +1140,7 @@ on the screen in a series of timed messages.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/search/search.py#L363-L400" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L361-L398" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def count(self, progress=None, limit=None):
     &#34;&#34;&#34;Counts the results, with progress messages, optionally up to a limit.
@@ -1213,25 +1209,26 @@ and delivered as a tuple.</p>
 <div class="admonition example">
 <p class="admonition-title">Iterating over the <code>fetch()</code> generator</p>
 <p>You typically fetch results by saying:</p>
-<p><code>python
-i = 0
+<pre><code>i = 0
 for tup in S.results():
-do_something(tup[0])
-do_something_else(tup[1])</code></p>
+    do_something(tup[0])
+    do_something_else(tup[1])
+</code></pre>
 <p>Alternatively, you can set the <code>limit</code> parameter, to ask for just so many
 results. They will be fetched, and when they are all collected,
 returned as a tuple.</p>
 </div>
 <div class="admonition example">
 <p class="admonition-title">Fetching a limited amount of results</p>
-<p><code>python
-S.fetch(limit=10)</code></p>
+<p>This</p>
+<pre><code>S.fetch(limit=10)
+</code></pre>
 <p>gives you the first 10 results without further ado.</p>
 </div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/search/search.py#L303-L361" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L303-L359" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetch(self, limit=None, _msgCache=False):
     &#34;&#34;&#34;Retrieves query results, up to a limit.
@@ -1261,21 +1258,19 @@ S.fetch(limit=10)</code></p>
     !!! example &#34;Iterating over the `fetch()` generator&#34;
         You typically fetch results by saying:
 
-        ```python
-        i = 0
-        for tup in S.results():
-            do_something(tup[0])
-            do_something_else(tup[1])
-        ```
+            i = 0
+            for tup in S.results():
+                do_something(tup[0])
+                do_something_else(tup[1])
 
         Alternatively, you can set the `limit` parameter, to ask for just so many
         results. They will be fetched, and when they are all collected,
         returned as a tuple.
 
     !!! example &#34;Fetching a limited amount of results&#34;
-        ```python
-        S.fetch(limit=10)
-        ```
+        This
+
+            S.fetch(limit=10)
 
         gives you the first 10 results without further ado.
     &#34;&#34;&#34;
@@ -1316,8 +1311,10 @@ and what text is associated with the tuple.</dd>
 </dl>
 <div class="admonition example">
 <p class="admonition-title">Inspecting results</p>
-<p><code>for result in S.fetch(limit=10):
-print(S.glean(result))</code></p>
+<p>This</p>
+<pre><code>for result in S.fetch(limit=10):
+    print(S.glean(result))
+</code></pre>
 <p>is a handy way to get an impression of the first bunch of results.</p>
 </div>
 <div class="admonition hint">
@@ -1333,7 +1330,7 @@ See <code><a title="tf.applib.display.show" href="../applib/display.html#tf.appl
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/search/search.py#L444-L509" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L442-L507" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def glean(self, tup):
     &#34;&#34;&#34;Renders a single result into something human readable.
@@ -1358,10 +1355,10 @@ See <code><a title="tf.applib.display.show" href="../applib/display.html#tf.appl
     Notes
     -----
     !!! example &#34;Inspecting results&#34;
-        ```
-        for result in S.fetch(limit=10):
-            print(S.glean(result))
-        ```
+        This
+
+            for result in S.fetch(limit=10):
+                print(S.glean(result))
 
         is a handy way to get an impression of the first bunch of results.
 
@@ -1417,7 +1414,7 @@ See <code><a title="tf.applib.display.show" href="../applib/display.html#tf.appl
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/search/search.py#L428-L442" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L426-L440" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def relationsLegend(self):
     &#34;&#34;&#34;Dynamic info about the basic relations that can be used in templates.
@@ -1479,7 +1476,7 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/search/search.py#L164-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L164-L234" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(
     self,
@@ -1576,7 +1573,7 @@ will be retrieved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/search/search.py#L402-L426" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L400-L424" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showPlan(self, details=False):
     &#34;&#34;&#34;Show the result of the latest study of a template.
@@ -1653,7 +1650,7 @@ In the search template you can refer to those names to invoke those sets.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/search/search.py#L236-L301" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L236-L301" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def study(
     self, searchTemplate, strategy=None, sets=None, shallow=False, here=True,
@@ -1827,7 +1824,7 @@ increase these values to 10000.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/search/search.py#L26-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L26-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakPerformance(self, silent=False, **kwargs):
     &#34;&#34;&#34;Tweak parameters that influence the search process.
