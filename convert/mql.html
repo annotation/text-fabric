@@ -154,8 +154,8 @@ ONE_ENUM_TYPE = True
 
 
 class MQL(object):
-    def __init__(self, mqlDir, mqlName, tfFeatures, tm):
-        error = tm.error
+    def __init__(self, mqlDir, mqlName, tfFeatures, tmObj):
+        error = tmObj.error
 
         self.mqlDir = mqlDir
         cleanDb = cleanName(mqlName)
@@ -163,15 +163,15 @@ class MQL(object):
             error(f&#39;db name &#34;{mqlName}&#34; =&gt; &#34;{cleanDb}&#34;&#39;)
         self.mqlName = cleanDb
         self.tfFeatures = tfFeatures
-        self.tm = tm
+        self.tmObj = tmObj
         self.enums = {}
         self._check()
 
     def write(self):
-        tm = self.tm
-        error = tm.error
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
 
         if not self.good:
             return
@@ -205,10 +205,10 @@ class MQL(object):
         info(&#34;Done&#34;)
 
     def _check(self):
-        tm = self.tm
-        error = tm.error
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
 
         info(f&#34;Checking features of dataset {self.mqlName}&#34;)
 
@@ -273,9 +273,9 @@ GO
         self.fm.close()
 
     def _writeEnums(self):
-        tm = self.tm
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
 
         indent(level=0)
         info(&#34;Writing enumerations&#34;)
@@ -308,8 +308,8 @@ GO
             info(f&#34;Written {len(self.enums)} enumerations&#34;)
 
     def _writeEnumsAsOne(self):
-        tm = self.tm
-        info = tm.info
+        tmObj = self.tmObj
+        info = tmObj.info
 
         fValues = list(chain.from_iterable((set(fV) for fV in self.enums.values())))
         if len(fValues):
@@ -327,8 +327,8 @@ GO
             )
 
     def _writeEnum(self, ft):
-        tm = self.tm
-        info = tm.info
+        tmObj = self.tmObj
+        info = tmObj.info
 
         fValues = self.enums[ft]
         if len(fValues):
@@ -358,10 +358,10 @@ GO
         def valIds(ids):
             return &#34;({})&#34;.format(&#34;,&#34;.join(str(i) for i in ids))
 
-        tm = self.tm
-        error = tm.error
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
 
         self.levels = self.tfFeatures[&#34;__levels__&#34;].data[::-1]
         indent(level=0)
@@ -428,8 +428,8 @@ GO
         )
 
     def _writeDataAll(self):
-        tm = self.tm
-        info = tm.info
+        tmObj = self.tmObj
+        info = tmObj.info
 
         info(
             &#34;Writing {} features as data in {} object types&#34;.format(
@@ -443,9 +443,9 @@ GO
             self._writeData(otype, start, end)
 
     def _writeData(self, otype, start, end):
-        tm = self.tm
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
 
         fm = self.fm
 
@@ -542,21 +542,21 @@ def uni(line):
     return uniscan.sub(makeuni, line)
 
 
-def tfFromMql(mqlFile, tm, slotType=None, otext=None, meta=None):
-    error = tm.error
+def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
+    error = tmObj.error
 
     if slotType is None:
         error(&#34;ERROR: no slotType specified&#34;)
         return (False, {}, {}, {})
-    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlFile, tm)
+    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlFile, tmObj)
     if not good:
         return (False, {}, {}, {})
-    return tfFromData(tm, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)
+    return tfFromData(tmObj, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)
 
 
-def parseMql(mqlFile, tm):
-    info = tm.info
-    error = tm.error
+def parseMql(mqlFile, tmObj):
+    info = tmObj.info
+    error = tmObj.error
 
     info(&#34;Parsing mql source ...&#34;)
     fh = open(mqlFile, encoding=&#34;utf8&#34;)
@@ -758,8 +758,8 @@ def parseMql(mqlFile, tm):
     return (good, objectTypes, tables, nodeF, edgeF)
 
 
-def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
-    info = tm.info
+def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
+    info = tmObj.info
 
     info(&#34;Making TF data ...&#34;)
 
@@ -890,7 +890,7 @@ such as backslash xb6</p></div>
 </details>
 </dd>
 <dt id="tf.convert.mql.parseMql"><code class="name flex">
-<span>def <span class="ident">parseMql</span></span>(<span>mqlFile, tm)</span>
+<span>def <span class="ident">parseMql</span></span>(<span>mqlFile, tmObj)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -899,9 +899,9 @@ such as backslash xb6</p></div>
 <span>Expand source code</span>
 <a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L429-L630" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def parseMql(mqlFile, tm):
-    info = tm.info
-    error = tm.error
+<pre><code class="python">def parseMql(mqlFile, tmObj):
+    info = tmObj.info
+    error = tmObj.error
 
     info(&#34;Parsing mql source ...&#34;)
     fh = open(mqlFile, encoding=&#34;utf8&#34;)
@@ -1104,7 +1104,7 @@ such as backslash xb6</p></div>
 </details>
 </dd>
 <dt id="tf.convert.mql.tfFromData"><code class="name flex">
-<span>def <span class="ident">tfFromData</span></span>(<span>tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta)</span>
+<span>def <span class="ident">tfFromData</span></span>(<span>tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1113,8 +1113,8 @@ such as backslash xb6</p></div>
 <span>Expand source code</span>
 <a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L633-L735" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
-    info = tm.info
+<pre><code class="python">def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
+    info = tmObj.info
 
     info(&#34;Making TF data ...&#34;)
 
@@ -1219,7 +1219,7 @@ such as backslash xb6</p></div>
 </details>
 </dd>
 <dt id="tf.convert.mql.tfFromMql"><code class="name flex">
-<span>def <span class="ident">tfFromMql</span></span>(<span>mqlFile, tm, slotType=None, otext=None, meta=None)</span>
+<span>def <span class="ident">tfFromMql</span></span>(<span>mqlFile, tmObj, slotType=None, otext=None, meta=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1228,16 +1228,16 @@ such as backslash xb6</p></div>
 <span>Expand source code</span>
 <a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L417-L426" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def tfFromMql(mqlFile, tm, slotType=None, otext=None, meta=None):
-    error = tm.error
+<pre><code class="python">def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
+    error = tmObj.error
 
     if slotType is None:
         error(&#34;ERROR: no slotType specified&#34;)
         return (False, {}, {}, {})
-    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlFile, tm)
+    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlFile, tmObj)
     if not good:
         return (False, {}, {}, {})
-    return tfFromData(tm, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)</code></pre>
+    return tfFromData(tmObj, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.mql.uni"><code class="name flex">
@@ -1261,7 +1261,7 @@ such as backslash xb6</p></div>
 <dl>
 <dt id="tf.convert.mql.MQL"><code class="flex name class">
 <span>class <span class="ident">MQL</span></span>
-<span>(</span><span>mqlDir, mqlName, tfFeatures, tm)</span>
+<span>(</span><span>mqlDir, mqlName, tfFeatures, tmObj)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1271,8 +1271,8 @@ such as backslash xb6</p></div>
 <a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L28-L397" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MQL(object):
-    def __init__(self, mqlDir, mqlName, tfFeatures, tm):
-        error = tm.error
+    def __init__(self, mqlDir, mqlName, tfFeatures, tmObj):
+        error = tmObj.error
 
         self.mqlDir = mqlDir
         cleanDb = cleanName(mqlName)
@@ -1280,15 +1280,15 @@ such as backslash xb6</p></div>
             error(f&#39;db name &#34;{mqlName}&#34; =&gt; &#34;{cleanDb}&#34;&#39;)
         self.mqlName = cleanDb
         self.tfFeatures = tfFeatures
-        self.tm = tm
+        self.tmObj = tmObj
         self.enums = {}
         self._check()
 
     def write(self):
-        tm = self.tm
-        error = tm.error
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
 
         if not self.good:
             return
@@ -1322,10 +1322,10 @@ such as backslash xb6</p></div>
         info(&#34;Done&#34;)
 
     def _check(self):
-        tm = self.tm
-        error = tm.error
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
 
         info(f&#34;Checking features of dataset {self.mqlName}&#34;)
 
@@ -1390,9 +1390,9 @@ GO
         self.fm.close()
 
     def _writeEnums(self):
-        tm = self.tm
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
 
         indent(level=0)
         info(&#34;Writing enumerations&#34;)
@@ -1425,8 +1425,8 @@ GO
             info(f&#34;Written {len(self.enums)} enumerations&#34;)
 
     def _writeEnumsAsOne(self):
-        tm = self.tm
-        info = tm.info
+        tmObj = self.tmObj
+        info = tmObj.info
 
         fValues = list(chain.from_iterable((set(fV) for fV in self.enums.values())))
         if len(fValues):
@@ -1444,8 +1444,8 @@ GO
             )
 
     def _writeEnum(self, ft):
-        tm = self.tm
-        info = tm.info
+        tmObj = self.tmObj
+        info = tmObj.info
 
         fValues = self.enums[ft]
         if len(fValues):
@@ -1475,10 +1475,10 @@ GO
         def valIds(ids):
             return &#34;({})&#34;.format(&#34;,&#34;.join(str(i) for i in ids))
 
-        tm = self.tm
-        error = tm.error
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
 
         self.levels = self.tfFeatures[&#34;__levels__&#34;].data[::-1]
         indent(level=0)
@@ -1545,8 +1545,8 @@ GO
         )
 
     def _writeDataAll(self):
-        tm = self.tm
-        info = tm.info
+        tmObj = self.tmObj
+        info = tmObj.info
 
         info(
             &#34;Writing {} features as data in {} object types&#34;.format(
@@ -1560,9 +1560,9 @@ GO
             self._writeData(otype, start, end)
 
     def _writeData(self, otype, start, end):
-        tm = self.tm
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
 
         fm = self.fm
 
@@ -1654,10 +1654,10 @@ GO
 <a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/convert/mql.py#L42-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self):
-    tm = self.tm
-    error = tm.error
-    info = tm.info
-    indent = tm.indent
+    tmObj = self.tmObj
+    error = tmObj.error
+    info = tmObj.info
+    indent = tmObj.indent
 
     if not self.good:
         return

@@ -42,7 +42,7 @@ is available through the advanced API: <code>A</code>, see <code><a title="tf.ap
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L0-L1058" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L0-L1055" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/main/fabric.md
@@ -203,9 +203,9 @@ class Fabric(object):
     def __init__(self, locations=None, modules=None, silent=False):
 
         self.silent = silent
-        tm = Timestamp()
-        self.tm = tm
-        setSilent = tm.setSilent
+        tmObj = Timestamp()
+        self.tmObj = tmObj
+        setSilent = tmObj.setSilent
         setSilent(silent)
         self.banner = f&#34;This is {NAME} {VERSION}&#34;
         &#34;&#34;&#34;The banner the Text-Fabric.
@@ -218,8 +218,8 @@ class Fabric(object):
         &#34;&#34;&#34;
 
         (on32, warn, msg) = check32()
-        warning = tm.warning
-        info = tm.info
+        warning = tmObj.warning
+        info = tmObj.info
 
         if on32:
             warning(warn, tm=False)
@@ -311,14 +311,14 @@ Api reference : {APIREF}
             else `False`.
         &#34;&#34;&#34;
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
-        indent = tm.indent
-        info = tm.info
-        warning = tm.warning
-        error = tm.error
-        cache = tm.cache
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+        indent = tmObj.indent
+        info = tmObj.info
+        warning = tmObj.warning
+        error = tmObj.error
+        cache = tmObj.cache
 
         if silent is not None:
             wasSilent = isSilent()
@@ -450,10 +450,10 @@ Api reference : {APIREF}
         `tf.core.api.Api.Fall` for nodes and `tf.core.api.Api.Eall` for edges.
         &#34;&#34;&#34;
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
-        info = tm.info
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+        info = tmObj.info
 
         if silent is not None:
             wasSilent = isSilent()
@@ -623,12 +623,12 @@ Api reference : {APIREF}
             But if you did not, you can also pass `silent=True` to this call.
         &#34;&#34;&#34;
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
-        indent = tm.indent
-        info = tm.info
-        error = tm.error
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+        indent = tmObj.indent
+        info = tmObj.info
+        error = tmObj.error
 
         good = True
         if silent is not None:
@@ -705,9 +705,7 @@ Api reference : {APIREF}
                     error(makeExamples(mappedSlotNodes), tm=False)
                     good = False
                 if fakeNodes:
-                    error(
-                        f&#34;ERROR: {WARP[1]} maps nodes that are not in {WARP[0]}&#34;
-                    )
+                    error(f&#34;ERROR: {WARP[1]} maps nodes that are not in {WARP[0]}&#34;)
                     error(makeExamples(fakeNodes), tm=False)
                     good = False
                 if unmappedNodes:
@@ -720,9 +718,7 @@ Api reference : {APIREF}
                     for (nType, nodes) in sorted(
                         unmappedByType.items(), key=lambda x: (-len(x[1]), x[0]),
                     ):
-                        error(
-                            f&#34;--- unmapped {nType:&lt;10} : {makeExamples(nodes)}&#34;
-                        )
+                        error(f&#34;--- unmapped {nType:&lt;10} : {makeExamples(nodes)}&#34;)
                     good = False
 
             if good:
@@ -739,7 +735,7 @@ Api reference : {APIREF}
                 del fMeta[&#34;edgeValues&#34;]
             fObj = Data(
                 f&#34;{self.writeDir}/{fName}.tf&#34;,
-                self.tm,
+                self.tmObj,
                 data=data,
                 metaData=fMeta,
                 isEdge=isEdge,
@@ -789,14 +785,14 @@ Api reference : {APIREF}
         tf.convert.mql
         &#34;&#34;&#34;
 
-        tm = self.tm
-        indent = tm.indent
+        tmObj = self.tmObj
+        indent = tmObj.indent
 
         indent(level=0, reset=True)
         mqlDir = expandDir(self, mqlDir)
 
         mqlNameClean = cleanName(mqlName)
-        mql = MQL(mqlDir, mqlNameClean, self.features, self.tm)
+        mql = MQL(mqlDir, mqlNameClean, self.features, self.tmObj)
         mql.write()
 
     def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
@@ -843,12 +839,12 @@ Api reference : {APIREF}
             ```
         &#34;&#34;&#34;
 
-        tm = self.tm
-        indent = tm.indent
+        tmObj = self.tmObj
+        indent = tmObj.indent
 
         indent(level=0, reset=True)
         (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(
-            mqlFile, self.tm, slotType=slotType, otext=otext, meta=meta
+            mqlFile, self.tmObj, slotType=slotType, otext=otext, meta=meta
         )
         if good:
             self.save(
@@ -859,9 +855,9 @@ Api reference : {APIREF}
         if not self.good:
             return False
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        error = tm.error
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        error = tmObj.error
 
         silent = isSilent()
         if fName not in self.features:
@@ -874,9 +870,9 @@ Api reference : {APIREF}
                 self.good = False
 
     def _makeIndex(self):
-        tm = self.tm
-        info = tm.info
-        warning = tm.warning
+        tmObj = self.tmObj
+        info = tmObj.info
+        warning = tmObj.warning
 
         self.features = {}
         self.featuresIgnored = {}
@@ -898,7 +894,7 @@ Api reference : {APIREF}
             for featurePath in sorted(set(featurePaths[0:-1])):
                 if featurePath != chosenFPath:
                     self.featuresIgnored.setdefault(fName, []).append(featurePath)
-            self.features[fName] = Data(chosenFPath, self.tm)
+            self.features[fName] = Data(chosenFPath, self.tmObj)
         self._getWriteLoc()
         info(
             &#34;{} features found and {} ignored&#34;.format(
@@ -917,13 +913,14 @@ Api reference : {APIREF}
                         )
                     )
                     self.features[WARP[2]] = Data(
-                        f&#34;{WARP[2]}.tf&#34;, self.tm, isConfig=True, metaData=WARP2_DEFAULT,
+                        f&#34;{WARP[2]}.tf&#34;,
+                        self.tmObj,
+                        isConfig=True,
+                        metaData=WARP2_DEFAULT,
                     )
                     self.features[WARP[2]].dataLoaded = True
                 else:
-                    info(
-                        f&#39;Warp feature &#34;{fName}&#34; not found in\n{self.locationRep}&#39;
-                    )
+                    info(f&#39;Warp feature &#34;{fName}&#34; not found in\n{self.locationRep}&#39;)
                     good = False
             elif fName == WARP[2]:
                 self._loadFeature(fName, optional=True)
@@ -950,7 +947,7 @@ Api reference : {APIREF}
                 good = False
             self.features[fName] = Data(
                 f&#34;{self.warpDir}/{fName}.x&#34;,
-                self.tm,
+                self.tmObj,
                 method=method,
                 dependencies=[self.features.get(dep, None) for dep in dependencies],
             )
@@ -993,10 +990,10 @@ Api reference : {APIREF}
         if not self.good:
             return None
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        indent = tm.indent
-        info = tm.info
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        indent = tmObj.indent
+        info = tmObj.info
 
         silent = isSilent()
         api = Api(self)
@@ -1062,9 +1059,9 @@ Api reference : {APIREF}
         if not self.good:
             return None
         api = self.api
-        tm = self.tm
-        indent = tm.indent
-        info = tm.info
+        tmObj = self.tmObj
+        indent = tmObj.indent
+        info = tmObj.info
 
         requestedSet = set(self.featuresRequested)
 
@@ -1211,7 +1208,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L86-L1059" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L86-L1056" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fabric(object):
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -1287,9 +1284,9 @@ also can add new formats to the Text-API.</p>
     def __init__(self, locations=None, modules=None, silent=False):
 
         self.silent = silent
-        tm = Timestamp()
-        self.tm = tm
-        setSilent = tm.setSilent
+        tmObj = Timestamp()
+        self.tmObj = tmObj
+        setSilent = tmObj.setSilent
         setSilent(silent)
         self.banner = f&#34;This is {NAME} {VERSION}&#34;
         &#34;&#34;&#34;The banner the Text-Fabric.
@@ -1302,8 +1299,8 @@ also can add new formats to the Text-API.</p>
         &#34;&#34;&#34;
 
         (on32, warn, msg) = check32()
-        warning = tm.warning
-        info = tm.info
+        warning = tmObj.warning
+        info = tmObj.info
 
         if on32:
             warning(warn, tm=False)
@@ -1395,14 +1392,14 @@ Api reference : {APIREF}
             else `False`.
         &#34;&#34;&#34;
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
-        indent = tm.indent
-        info = tm.info
-        warning = tm.warning
-        error = tm.error
-        cache = tm.cache
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+        indent = tmObj.indent
+        info = tmObj.info
+        warning = tmObj.warning
+        error = tmObj.error
+        cache = tmObj.cache
 
         if silent is not None:
             wasSilent = isSilent()
@@ -1534,10 +1531,10 @@ Api reference : {APIREF}
         `tf.core.api.Api.Fall` for nodes and `tf.core.api.Api.Eall` for edges.
         &#34;&#34;&#34;
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
-        info = tm.info
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+        info = tmObj.info
 
         if silent is not None:
             wasSilent = isSilent()
@@ -1707,12 +1704,12 @@ Api reference : {APIREF}
             But if you did not, you can also pass `silent=True` to this call.
         &#34;&#34;&#34;
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
-        indent = tm.indent
-        info = tm.info
-        error = tm.error
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+        indent = tmObj.indent
+        info = tmObj.info
+        error = tmObj.error
 
         good = True
         if silent is not None:
@@ -1789,9 +1786,7 @@ Api reference : {APIREF}
                     error(makeExamples(mappedSlotNodes), tm=False)
                     good = False
                 if fakeNodes:
-                    error(
-                        f&#34;ERROR: {WARP[1]} maps nodes that are not in {WARP[0]}&#34;
-                    )
+                    error(f&#34;ERROR: {WARP[1]} maps nodes that are not in {WARP[0]}&#34;)
                     error(makeExamples(fakeNodes), tm=False)
                     good = False
                 if unmappedNodes:
@@ -1804,9 +1799,7 @@ Api reference : {APIREF}
                     for (nType, nodes) in sorted(
                         unmappedByType.items(), key=lambda x: (-len(x[1]), x[0]),
                     ):
-                        error(
-                            f&#34;--- unmapped {nType:&lt;10} : {makeExamples(nodes)}&#34;
-                        )
+                        error(f&#34;--- unmapped {nType:&lt;10} : {makeExamples(nodes)}&#34;)
                     good = False
 
             if good:
@@ -1823,7 +1816,7 @@ Api reference : {APIREF}
                 del fMeta[&#34;edgeValues&#34;]
             fObj = Data(
                 f&#34;{self.writeDir}/{fName}.tf&#34;,
-                self.tm,
+                self.tmObj,
                 data=data,
                 metaData=fMeta,
                 isEdge=isEdge,
@@ -1873,14 +1866,14 @@ Api reference : {APIREF}
         tf.convert.mql
         &#34;&#34;&#34;
 
-        tm = self.tm
-        indent = tm.indent
+        tmObj = self.tmObj
+        indent = tmObj.indent
 
         indent(level=0, reset=True)
         mqlDir = expandDir(self, mqlDir)
 
         mqlNameClean = cleanName(mqlName)
-        mql = MQL(mqlDir, mqlNameClean, self.features, self.tm)
+        mql = MQL(mqlDir, mqlNameClean, self.features, self.tmObj)
         mql.write()
 
     def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
@@ -1927,12 +1920,12 @@ Api reference : {APIREF}
             ```
         &#34;&#34;&#34;
 
-        tm = self.tm
-        indent = tm.indent
+        tmObj = self.tmObj
+        indent = tmObj.indent
 
         indent(level=0, reset=True)
         (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(
-            mqlFile, self.tm, slotType=slotType, otext=otext, meta=meta
+            mqlFile, self.tmObj, slotType=slotType, otext=otext, meta=meta
         )
         if good:
             self.save(
@@ -1943,9 +1936,9 @@ Api reference : {APIREF}
         if not self.good:
             return False
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        error = tm.error
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        error = tmObj.error
 
         silent = isSilent()
         if fName not in self.features:
@@ -1958,9 +1951,9 @@ Api reference : {APIREF}
                 self.good = False
 
     def _makeIndex(self):
-        tm = self.tm
-        info = tm.info
-        warning = tm.warning
+        tmObj = self.tmObj
+        info = tmObj.info
+        warning = tmObj.warning
 
         self.features = {}
         self.featuresIgnored = {}
@@ -1982,7 +1975,7 @@ Api reference : {APIREF}
             for featurePath in sorted(set(featurePaths[0:-1])):
                 if featurePath != chosenFPath:
                     self.featuresIgnored.setdefault(fName, []).append(featurePath)
-            self.features[fName] = Data(chosenFPath, self.tm)
+            self.features[fName] = Data(chosenFPath, self.tmObj)
         self._getWriteLoc()
         info(
             &#34;{} features found and {} ignored&#34;.format(
@@ -2001,13 +1994,14 @@ Api reference : {APIREF}
                         )
                     )
                     self.features[WARP[2]] = Data(
-                        f&#34;{WARP[2]}.tf&#34;, self.tm, isConfig=True, metaData=WARP2_DEFAULT,
+                        f&#34;{WARP[2]}.tf&#34;,
+                        self.tmObj,
+                        isConfig=True,
+                        metaData=WARP2_DEFAULT,
                     )
                     self.features[WARP[2]].dataLoaded = True
                 else:
-                    info(
-                        f&#39;Warp feature &#34;{fName}&#34; not found in\n{self.locationRep}&#39;
-                    )
+                    info(f&#39;Warp feature &#34;{fName}&#34; not found in\n{self.locationRep}&#39;)
                     good = False
             elif fName == WARP[2]:
                 self._loadFeature(fName, optional=True)
@@ -2034,7 +2028,7 @@ Api reference : {APIREF}
                 good = False
             self.features[fName] = Data(
                 f&#34;{self.warpDir}/{fName}.x&#34;,
-                self.tm,
+                self.tmObj,
                 method=method,
                 dependencies=[self.features.get(dep, None) for dep in dependencies],
             )
@@ -2077,10 +2071,10 @@ Api reference : {APIREF}
         if not self.good:
             return None
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        indent = tm.indent
-        info = tm.info
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        indent = tmObj.indent
+        info = tmObj.info
 
         silent = isSilent()
         api = Api(self)
@@ -2146,9 +2140,9 @@ Api reference : {APIREF}
         if not self.good:
             return None
         api = self.api
-        tm = self.tm
-        indent = tm.indent
-        info = tm.info
+        tmObj = self.tmObj
+        indent = tmObj.indent
+        info = tmObj.info
 
         requestedSet = set(self.featuresRequested)
 
@@ -2343,10 +2337,10 @@ There are other functions that give you the loaded features:
     `tf.core.api.Api.Fall` for nodes and `tf.core.api.Api.Eall` for edges.
     &#34;&#34;&#34;
 
-    tm = self.tm
-    isSilent = tm.isSilent
-    setSilent = tm.setSilent
-    info = tm.info
+    tmObj = self.tmObj
+    isSilent = tmObj.isSilent
+    setSilent = tmObj.setSilent
+    info = tmObj.info
 
     if silent is not None:
         wasSilent = isSilent()
@@ -2412,7 +2406,7 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L724-L754" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L720-L750" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(self, mqlName, mqlDir):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -2436,14 +2430,14 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
     tf.convert.mql
     &#34;&#34;&#34;
 
-    tm = self.tm
-    indent = tm.indent
+    tmObj = self.tmObj
+    indent = tmObj.indent
 
     indent(level=0, reset=True)
     mqlDir = expandDir(self, mqlDir)
 
     mqlNameClean = cleanName(mqlName)
-    mql = MQL(mqlDir, mqlNameClean, self.features, self.tm)
+    mql = MQL(mqlDir, mqlNameClean, self.features, self.tmObj)
     mql.write()</code></pre>
 </details>
 </dd>
@@ -2491,7 +2485,7 @@ author="That 's me",
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L756-L810" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L752-L806" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
@@ -2537,12 +2531,12 @@ author="That 's me",
         ```
     &#34;&#34;&#34;
 
-    tm = self.tm
-    indent = tm.indent
+    tmObj = self.tmObj
+    indent = tmObj.indent
 
     indent(level=0, reset=True)
     (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(
-        mqlFile, self.tm, slotType=slotType, otext=otext, meta=meta
+        mqlFile, self.tmObj, slotType=slotType, otext=otext, meta=meta
     )
     if good:
         self.save(
@@ -2619,14 +2613,14 @@ else <code>False</code>.</dd>
         else `False`.
     &#34;&#34;&#34;
 
-    tm = self.tm
-    isSilent = tm.isSilent
-    setSilent = tm.setSilent
-    indent = tm.indent
-    info = tm.info
-    warning = tm.warning
-    error = tm.error
-    cache = tm.cache
+    tmObj = self.tmObj
+    isSilent = tmObj.isSilent
+    setSilent = tmObj.setSilent
+    indent = tmObj.indent
+    info = tmObj.info
+    warning = tmObj.warning
+    error = tmObj.error
+    cache = tmObj.cache
 
     if silent is not None:
         wasSilent = isSilent()
@@ -2845,7 +2839,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L491-L722" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/fabric.py#L491-L718" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,
@@ -2936,12 +2930,12 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
         But if you did not, you can also pass `silent=True` to this call.
     &#34;&#34;&#34;
 
-    tm = self.tm
-    isSilent = tm.isSilent
-    setSilent = tm.setSilent
-    indent = tm.indent
-    info = tm.info
-    error = tm.error
+    tmObj = self.tmObj
+    isSilent = tmObj.isSilent
+    setSilent = tmObj.setSilent
+    indent = tmObj.indent
+    info = tmObj.info
+    error = tmObj.error
 
     good = True
     if silent is not None:
@@ -3018,9 +3012,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
                 error(makeExamples(mappedSlotNodes), tm=False)
                 good = False
             if fakeNodes:
-                error(
-                    f&#34;ERROR: {WARP[1]} maps nodes that are not in {WARP[0]}&#34;
-                )
+                error(f&#34;ERROR: {WARP[1]} maps nodes that are not in {WARP[0]}&#34;)
                 error(makeExamples(fakeNodes), tm=False)
                 good = False
             if unmappedNodes:
@@ -3033,9 +3025,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
                 for (nType, nodes) in sorted(
                     unmappedByType.items(), key=lambda x: (-len(x[1]), x[0]),
                 ):
-                    error(
-                        f&#34;--- unmapped {nType:&lt;10} : {makeExamples(nodes)}&#34;
-                    )
+                    error(f&#34;--- unmapped {nType:&lt;10} : {makeExamples(nodes)}&#34;)
                 good = False
 
         if good:
@@ -3052,7 +3042,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
             del fMeta[&#34;edgeValues&#34;]
         fObj = Data(
             f&#34;{self.writeDir}/{fName}.tf&#34;,
-            self.tm,
+            self.tmObj,
             data=data,
             metaData=fMeta,
             isEdge=isEdge,

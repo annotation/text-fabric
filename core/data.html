@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/data.py#L0-L670" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/data.py#L0-L668" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import pickle
@@ -75,7 +75,7 @@ class Data(object):
     def __init__(
         self,
         path,
-        tm,
+        tmObj,
         edgeValues=False,
         data=None,
         isEdge=None,
@@ -87,7 +87,7 @@ class Data(object):
         (dirName, baseName) = os.path.split(path)
         (fileName, extension) = os.path.splitext(baseName)
         self.path = path
-        self.tm = tm
+        self.tmObj = tmObj
         self.dirName = dirName
         self.fileName = fileName
         self.extension = extension
@@ -105,12 +105,12 @@ class Data(object):
         self.dataType = &#34;str&#34;
 
     def load(self, metaOnly=False, silent=None):
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
-        indent = tm.indent
-        warning = tm.warning
-        error = tm.error
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+        indent = tmObj.indent
+        warning = tmObj.warning
+        error = tmObj.error
 
         if silent is not None:
             wasSilent = isSilent()
@@ -195,9 +195,9 @@ class Data(object):
         self.dataLoaded = False
 
     def save(self, overwrite=False, nodeRanges=False, silent=None):
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
 
         if silent is not None:
             wasSilent = isSilent()
@@ -211,8 +211,8 @@ class Data(object):
         if self.isConfig:
             return
 
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         dataTypesStr = &#34;, &#34;.join(DATA_TYPES)
         if &#34;valueType&#34; in self.metaData:
@@ -229,8 +229,8 @@ class Data(object):
             self.dataType = DATA_TYPES[0]
 
     def _readTf(self, metaOnly=False):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         path = self.path
         if not os.path.exists(path):
@@ -278,8 +278,8 @@ class Data(object):
         return good
 
     def _readDataTf(self, fh, firstI):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         errors = collections.defaultdict(list)
         i = firstI
@@ -449,18 +449,16 @@ class Data(object):
         if not good:
             return False
 
-        tm = self.tm
-        indent = tm.indent
-        error = tm.error
+        tmObj = self.tmObj
 
         def info(msg, tm=True):
-            info(cmpFormat.format(msg), tm=tm, cache=-1)
+            tmObj.info(cmpFormat.format(msg), tm=tm, cache=-1)
 
         def error(msg, tm=True):
-            error(cmpFormat.format(msg), tm=tm)
+            tmObj.error(cmpFormat.format(msg), tm=tm)
 
         cmpFormat = f&#34;c {self.fileName:&lt;20} {{}}&#34;
-        indent(level=2, reset=True)
+        tmObj.indent(level=2, reset=True)
 
         self.data = self.method(
             info,
@@ -484,10 +482,10 @@ class Data(object):
         metaOnly=False,
         nodeRanges=False,
     ):
-        tm = self.tm
-        indent = tm.indent
-        info = tm.info
-        error = tm.error
+        tmObj = self.tmObj
+        indent = tmObj.indent
+        info = tmObj.info
+        error = tmObj.error
 
         indent(level=1, reset=True)
         metaOnly = metaOnly or self.isConfig
@@ -543,8 +541,8 @@ class Data(object):
         return good
 
     def _writeDataTf(self, fh, nodeRanges=False):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         data = self.data
         if type(data) is tuple:
@@ -637,8 +635,8 @@ class Data(object):
         return True
 
     def _readDataBin(self):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         if not os.path.exists(self.binPath):
             error(f&#39;TF reading: feature file &#34;{self.binPath}&#34; does not exist&#39;)
@@ -653,8 +651,8 @@ class Data(object):
             os.unlink(self.binPath)
 
     def _writeDataBin(self):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         good = True
         if not os.path.exists(self.binDir):
@@ -721,20 +719,20 @@ TF data module.</p></div>
 <dl>
 <dt id="tf.core.data.Data"><code class="flex name class">
 <span>class <span class="ident">Data</span></span>
-<span>(</span><span>path, tm, edgeValues=False, data=None, isEdge=None, isConfig=None, metaData={}, method=None, dependencies=None)</span>
+<span>(</span><span>path, tmObj, edgeValues=False, data=None, isEdge=None, isConfig=None, metaData={}, method=None, dependencies=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/data.py#L45-L671" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/data.py#L45-L669" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(object):
     def __init__(
         self,
         path,
-        tm,
+        tmObj,
         edgeValues=False,
         data=None,
         isEdge=None,
@@ -746,7 +744,7 @@ TF data module.</p></div>
         (dirName, baseName) = os.path.split(path)
         (fileName, extension) = os.path.splitext(baseName)
         self.path = path
-        self.tm = tm
+        self.tmObj = tmObj
         self.dirName = dirName
         self.fileName = fileName
         self.extension = extension
@@ -764,12 +762,12 @@ TF data module.</p></div>
         self.dataType = &#34;str&#34;
 
     def load(self, metaOnly=False, silent=None):
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
-        indent = tm.indent
-        warning = tm.warning
-        error = tm.error
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+        indent = tmObj.indent
+        warning = tmObj.warning
+        error = tmObj.error
 
         if silent is not None:
             wasSilent = isSilent()
@@ -854,9 +852,9 @@ TF data module.</p></div>
         self.dataLoaded = False
 
     def save(self, overwrite=False, nodeRanges=False, silent=None):
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
 
         if silent is not None:
             wasSilent = isSilent()
@@ -870,8 +868,8 @@ TF data module.</p></div>
         if self.isConfig:
             return
 
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         dataTypesStr = &#34;, &#34;.join(DATA_TYPES)
         if &#34;valueType&#34; in self.metaData:
@@ -888,8 +886,8 @@ TF data module.</p></div>
             self.dataType = DATA_TYPES[0]
 
     def _readTf(self, metaOnly=False):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         path = self.path
         if not os.path.exists(path):
@@ -937,8 +935,8 @@ TF data module.</p></div>
         return good
 
     def _readDataTf(self, fh, firstI):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         errors = collections.defaultdict(list)
         i = firstI
@@ -1108,18 +1106,16 @@ TF data module.</p></div>
         if not good:
             return False
 
-        tm = self.tm
-        indent = tm.indent
-        error = tm.error
+        tmObj = self.tmObj
 
         def info(msg, tm=True):
-            info(cmpFormat.format(msg), tm=tm, cache=-1)
+            tmObj.info(cmpFormat.format(msg), tm=tm, cache=-1)
 
         def error(msg, tm=True):
-            error(cmpFormat.format(msg), tm=tm)
+            tmObj.error(cmpFormat.format(msg), tm=tm)
 
         cmpFormat = f&#34;c {self.fileName:&lt;20} {{}}&#34;
-        indent(level=2, reset=True)
+        tmObj.indent(level=2, reset=True)
 
         self.data = self.method(
             info,
@@ -1143,10 +1139,10 @@ TF data module.</p></div>
         metaOnly=False,
         nodeRanges=False,
     ):
-        tm = self.tm
-        indent = tm.indent
-        info = tm.info
-        error = tm.error
+        tmObj = self.tmObj
+        indent = tmObj.indent
+        info = tmObj.info
+        error = tmObj.error
 
         indent(level=1, reset=True)
         metaOnly = metaOnly or self.isConfig
@@ -1202,8 +1198,8 @@ TF data module.</p></div>
         return good
 
     def _writeDataTf(self, fh, nodeRanges=False):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         data = self.data
         if type(data) is tuple:
@@ -1296,8 +1292,8 @@ TF data module.</p></div>
         return True
 
     def _readDataBin(self):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         if not os.path.exists(self.binPath):
             error(f&#39;TF reading: feature file &#34;{self.binPath}&#34; does not exist&#39;)
@@ -1312,8 +1308,8 @@ TF data module.</p></div>
             os.unlink(self.binPath)
 
     def _writeDataBin(self):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         good = True
         if not os.path.exists(self.binDir):
@@ -1368,7 +1364,7 @@ TF data module.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/data.py#L622-L624" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/data.py#L620-L622" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanDataBin(self):
     if os.path.exists(self.binPath):
@@ -1386,12 +1382,12 @@ TF data module.</p></div>
 <a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/data.py#L78-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, metaOnly=False, silent=None):
-    tm = self.tm
-    isSilent = tm.isSilent
-    setSilent = tm.setSilent
-    indent = tm.indent
-    warning = tm.warning
-    error = tm.error
+    tmObj = self.tmObj
+    isSilent = tmObj.isSilent
+    setSilent = tmObj.setSilent
+    indent = tmObj.indent
+    warning = tmObj.warning
+    error = tmObj.error
 
     if silent is not None:
         wasSilent = isSilent()
@@ -1483,9 +1479,9 @@ TF data module.</p></div>
 <a href="https://github.com/annotation/text-fabric/blob/9fe4ffc86ce466d0085ac02e20e14e8f04ade33b/tf/core/data.py#L168-L179" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=None):
-    tm = self.tm
-    isSilent = tm.isSilent
-    setSilent = tm.setSilent
+    tmObj = self.tmObj
+    isSilent = tmObj.isSilent
+    setSilent = tmObj.setSilent
 
     if silent is not None:
         wasSilent = isSilent()
