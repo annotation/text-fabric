@@ -38,14 +38,23 @@ text-fabric appName:hot
 
 ### 8.2
 
+#### 8.2.1
+
+2020-05-30
+
+Fixed two silly bugs, one of which a show stopper, preventing precomputation after
+download of data to complete.
+
 #### 8.2.0
 
-2020-06-01
+2020-05-29
 
 Improved display algorithm: corpora need less configuration for TF
 to generate good displays.
 In particular, the atom types of the BHSA are now handled without
 tricky branches in the code.
+
+See `tf.applib.display`.
 
 Core API: a bit of streamlining:
 all exposed methods now fall under one of `A TF N F E L T S`.
@@ -53,6 +62,7 @@ all exposed methods now fall under one of `A TF N F E L T S`.
 !!! hint "new"
     If you want to talk to yourself in markdown or HTML you can use
     `A.dm(markdownString)` and `A.dh(htmlString)`.
+
     See `tf.applib.helpers.dm` and `tf.applib.helpers.dh`.
 
 #### Backward incompatibility
@@ -76,20 +86,31 @@ all exposed methods now fall under one of `A TF N F E L T S`.
 
     Use `A.info` or `TF.info` for these methods.
 
-    A quick fix is define, after loading:
-
-    `info = A.info`
-
-    etc.
 
 !!! caution "node functions"
     `N()` has become: `N.walk()`
 
     `sortNodes`, `sortKey`, `sortkeyTuple`, `sortkeyChunk`
-    and `otypeRank` are no longer hooisted to the global name space.
+    and `otypeRank` are no longer hoisted to the global name space.
 
     Use `N.sortNodes` etc. instead for all these methods.
 
+!!! hint "fix the compatibility relatively easily"
+    If you use the functions in question a lot in a program or notebook,
+    define them right after the incantation as follows:
+
+``` python
+A = use('xxx', hoist=globals())
+
+info = A.info
+error = A.error
+silentOn = A.silentOn
+...
+sortNodes = N.sortNodes
+...
+```
+
+etc.
 
 ### 8.1
 

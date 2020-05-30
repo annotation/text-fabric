@@ -5,7 +5,7 @@ annotated by features.
 
 The core API consists of
 
-* `N`: see `api.Api.N` (walk through nodes)
+* `N`: see `nodes.Nodes` (walk through nodes)
 * `F`: see `nodefeature.NodeFeature` (retrieve feature values for nodes)
 * `E`: see `edgefeature.EdgeFeature` (retrieve feature values for edges)
 * `L`: see `locality.Locality` (move between levels)

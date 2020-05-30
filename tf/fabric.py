@@ -157,9 +157,9 @@ class Fabric(object):
     def __init__(self, locations=None, modules=None, silent=False):
 
         self.silent = silent
-        tm = Timestamp()
-        self.tm = tm
-        setSilent = tm.setSilent
+        tmObj = Timestamp()
+        self.tmObj = tmObj
+        setSilent = tmObj.setSilent
         setSilent(silent)
         self.banner = f"This is {NAME} {VERSION}"
         """The banner the Text-Fabric.
@@ -172,8 +172,8 @@ class Fabric(object):
         """
 
         (on32, warn, msg) = check32()
-        warning = tm.warning
-        info = tm.info
+        warning = tmObj.warning
+        info = tmObj.info
 
         if on32:
             warning(warn, tm=False)
@@ -265,14 +265,14 @@ Api reference : {APIREF}
             else `False`.
         """
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
-        indent = tm.indent
-        info = tm.info
-        warning = tm.warning
-        error = tm.error
-        cache = tm.cache
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+        indent = tmObj.indent
+        info = tmObj.info
+        warning = tmObj.warning
+        error = tmObj.error
+        cache = tmObj.cache
 
         if silent is not None:
             wasSilent = isSilent()
@@ -404,10 +404,10 @@ Api reference : {APIREF}
         `tf.core.api.Api.Fall` for nodes and `tf.core.api.Api.Eall` for edges.
         """
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
-        info = tm.info
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+        info = tmObj.info
 
         if silent is not None:
             wasSilent = isSilent()
@@ -577,12 +577,12 @@ Api reference : {APIREF}
             But if you did not, you can also pass `silent=True` to this call.
         """
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
-        indent = tm.indent
-        info = tm.info
-        error = tm.error
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+        indent = tmObj.indent
+        info = tmObj.info
+        error = tmObj.error
 
         good = True
         if silent is not None:
@@ -659,9 +659,7 @@ Api reference : {APIREF}
                     error(makeExamples(mappedSlotNodes), tm=False)
                     good = False
                 if fakeNodes:
-                    error(
-                        f"ERROR: {WARP[1]} maps nodes that are not in {WARP[0]}"
-                    )
+                    error(f"ERROR: {WARP[1]} maps nodes that are not in {WARP[0]}")
                     error(makeExamples(fakeNodes), tm=False)
                     good = False
                 if unmappedNodes:
@@ -674,9 +672,7 @@ Api reference : {APIREF}
                     for (nType, nodes) in sorted(
                         unmappedByType.items(), key=lambda x: (-len(x[1]), x[0]),
                     ):
-                        error(
-                            f"--- unmapped {nType:<10} : {makeExamples(nodes)}"
-                        )
+                        error(f"--- unmapped {nType:<10} : {makeExamples(nodes)}")
                     good = False
 
             if good:
@@ -693,7 +689,7 @@ Api reference : {APIREF}
                 del fMeta["edgeValues"]
             fObj = Data(
                 f"{self.writeDir}/{fName}.tf",
-                self.tm,
+                self.tmObj,
                 data=data,
                 metaData=fMeta,
                 isEdge=isEdge,
@@ -743,14 +739,14 @@ Api reference : {APIREF}
         tf.convert.mql
         """
 
-        tm = self.tm
-        indent = tm.indent
+        tmObj = self.tmObj
+        indent = tmObj.indent
 
         indent(level=0, reset=True)
         mqlDir = expandDir(self, mqlDir)
 
         mqlNameClean = cleanName(mqlName)
-        mql = MQL(mqlDir, mqlNameClean, self.features, self.tm)
+        mql = MQL(mqlDir, mqlNameClean, self.features, self.tmObj)
         mql.write()
 
     def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
@@ -797,12 +793,12 @@ Api reference : {APIREF}
             ```
         """
 
-        tm = self.tm
-        indent = tm.indent
+        tmObj = self.tmObj
+        indent = tmObj.indent
 
         indent(level=0, reset=True)
         (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(
-            mqlFile, self.tm, slotType=slotType, otext=otext, meta=meta
+            mqlFile, self.tmObj, slotType=slotType, otext=otext, meta=meta
         )
         if good:
             self.save(
@@ -813,9 +809,9 @@ Api reference : {APIREF}
         if not self.good:
             return False
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        error = tm.error
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        error = tmObj.error
 
         silent = isSilent()
         if fName not in self.features:
@@ -828,9 +824,9 @@ Api reference : {APIREF}
                 self.good = False
 
     def _makeIndex(self):
-        tm = self.tm
-        info = tm.info
-        warning = tm.warning
+        tmObj = self.tmObj
+        info = tmObj.info
+        warning = tmObj.warning
 
         self.features = {}
         self.featuresIgnored = {}
@@ -852,7 +848,7 @@ Api reference : {APIREF}
             for featurePath in sorted(set(featurePaths[0:-1])):
                 if featurePath != chosenFPath:
                     self.featuresIgnored.setdefault(fName, []).append(featurePath)
-            self.features[fName] = Data(chosenFPath, self.tm)
+            self.features[fName] = Data(chosenFPath, self.tmObj)
         self._getWriteLoc()
         info(
             "{} features found and {} ignored".format(
@@ -871,13 +867,14 @@ Api reference : {APIREF}
                         )
                     )
                     self.features[WARP[2]] = Data(
-                        f"{WARP[2]}.tf", self.tm, isConfig=True, metaData=WARP2_DEFAULT,
+                        f"{WARP[2]}.tf",
+                        self.tmObj,
+                        isConfig=True,
+                        metaData=WARP2_DEFAULT,
                     )
                     self.features[WARP[2]].dataLoaded = True
                 else:
-                    info(
-                        f'Warp feature "{fName}" not found in\n{self.locationRep}'
-                    )
+                    info(f'Warp feature "{fName}" not found in\n{self.locationRep}')
                     good = False
             elif fName == WARP[2]:
                 self._loadFeature(fName, optional=True)
@@ -904,7 +901,7 @@ Api reference : {APIREF}
                 good = False
             self.features[fName] = Data(
                 f"{self.warpDir}/{fName}.x",
-                self.tm,
+                self.tmObj,
                 method=method,
                 dependencies=[self.features.get(dep, None) for dep in dependencies],
             )
@@ -947,10 +944,10 @@ Api reference : {APIREF}
         if not self.good:
             return None
 
-        tm = self.tm
-        isSilent = tm.isSilent
-        indent = tm.indent
-        info = tm.info
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        indent = tmObj.indent
+        info = tmObj.info
 
         silent = isSilent()
         api = Api(self)
@@ -1016,9 +1013,9 @@ Api reference : {APIREF}
         if not self.good:
             return None
         api = self.api
-        tm = self.tm
-        indent = tm.indent
-        info = tm.info
+        tmObj = self.tmObj
+        indent = tmObj.indent
+        info = tmObj.info
 
         requestedSet = set(self.featuresRequested)
 

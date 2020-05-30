@@ -34,14 +34,14 @@ INTERFACE_OPTIONS = (
         "standardFeatures",
         False,
         "showf",
-        "show features",
+        "show standard features",
         "Show the standard feature values for every node in the results",
     ),
     (
         "queryFeatures",
         True,
         "showf",
-        "show features",
+        "show query features",
         "Show the features mentioned in the last query for every node in the results",
     ),
     (

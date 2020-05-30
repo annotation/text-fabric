@@ -26,8 +26,8 @@ ONE_ENUM_TYPE = True
 
 
 class MQL(object):
-    def __init__(self, mqlDir, mqlName, tfFeatures, tm):
-        error = tm.error
+    def __init__(self, mqlDir, mqlName, tfFeatures, tmObj):
+        error = tmObj.error
 
         self.mqlDir = mqlDir
         cleanDb = cleanName(mqlName)
@@ -35,15 +35,15 @@ class MQL(object):
             error(f'db name "{mqlName}" => "{cleanDb}"')
         self.mqlName = cleanDb
         self.tfFeatures = tfFeatures
-        self.tm = tm
+        self.tmObj = tmObj
         self.enums = {}
         self._check()
 
     def write(self):
-        tm = self.tm
-        error = tm.error
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
 
         if not self.good:
             return
@@ -77,10 +77,10 @@ class MQL(object):
         info("Done")
 
     def _check(self):
-        tm = self.tm
-        error = tm.error
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
 
         info(f"Checking features of dataset {self.mqlName}")
 
@@ -145,9 +145,9 @@ GO
         self.fm.close()
 
     def _writeEnums(self):
-        tm = self.tm
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
 
         indent(level=0)
         info("Writing enumerations")
@@ -180,8 +180,8 @@ GO
             info(f"Written {len(self.enums)} enumerations")
 
     def _writeEnumsAsOne(self):
-        tm = self.tm
-        info = tm.info
+        tmObj = self.tmObj
+        info = tmObj.info
 
         fValues = list(chain.from_iterable((set(fV) for fV in self.enums.values())))
         if len(fValues):
@@ -199,8 +199,8 @@ GO
             )
 
     def _writeEnum(self, ft):
-        tm = self.tm
-        info = tm.info
+        tmObj = self.tmObj
+        info = tmObj.info
 
         fValues = self.enums[ft]
         if len(fValues):
@@ -230,10 +230,10 @@ GO
         def valIds(ids):
             return "({})".format(",".join(str(i) for i in ids))
 
-        tm = self.tm
-        error = tm.error
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
 
         self.levels = self.tfFeatures["__levels__"].data[::-1]
         indent(level=0)
@@ -300,8 +300,8 @@ GO
         )
 
     def _writeDataAll(self):
-        tm = self.tm
-        info = tm.info
+        tmObj = self.tmObj
+        info = tmObj.info
 
         info(
             "Writing {} features as data in {} object types".format(
@@ -315,9 +315,9 @@ GO
             self._writeData(otype, start, end)
 
     def _writeData(self, otype, start, end):
-        tm = self.tm
-        info = tm.info
-        indent = tm.indent
+        tmObj = self.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
 
         fm = self.fm
 
@@ -414,21 +414,21 @@ def uni(line):
     return uniscan.sub(makeuni, line)
 
 
-def tfFromMql(mqlFile, tm, slotType=None, otext=None, meta=None):
-    error = tm.error
+def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
+    error = tmObj.error
 
     if slotType is None:
         error("ERROR: no slotType specified")
         return (False, {}, {}, {})
-    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlFile, tm)
+    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlFile, tmObj)
     if not good:
         return (False, {}, {}, {})
-    return tfFromData(tm, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)
+    return tfFromData(tmObj, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)
 
 
-def parseMql(mqlFile, tm):
-    info = tm.info
-    error = tm.error
+def parseMql(mqlFile, tmObj):
+    info = tmObj.info
+    error = tmObj.error
 
     info("Parsing mql source ...")
     fh = open(mqlFile, encoding="utf8")
@@ -630,8 +630,8 @@ def parseMql(mqlFile, tm):
     return (good, objectTypes, tables, nodeF, edgeF)
 
 
-def tfFromData(tm, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
-    info = tm.info
+def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
+    info = tmObj.info
 
     info("Making TF data ...")
 

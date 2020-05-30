@@ -59,18 +59,18 @@ class Api(object):
         self.Edge = self.E
         self.C = Computeds()
         self.Computed = self.C
-        tm = TF.tm
-        TF.silentOn = tm.silentOn
-        TF.silentOff = tm.silentOff
-        TF.isSilent = tm.isSilent
-        TF.setSilent = tm.setSilent
-        TF.info = tm.info
-        TF.warning = tm.warning
-        TF.error = tm.error
-        TF.cache = tm.cache
-        TF.reset = tm.reset
-        TF.indent = tm.indent
-        TF.loadLog = tm.cache
+        tmObj = TF.tmObj
+        TF.silentOn = tmObj.silentOn
+        TF.silentOff = tmObj.silentOff
+        TF.isSilent = tmObj.isSilent
+        TF.setSilent = tmObj.setSilent
+        TF.info = tmObj.info
+        TF.warning = tmObj.warning
+        TF.error = tmObj.error
+        TF.cache = tmObj.cache
+        TF.reset = tmObj.reset
+        TF.indent = tmObj.indent
+        TF.loadLog = tmObj.cache
 
         """All messages produced during the feature loading process.
 

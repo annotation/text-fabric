@@ -274,6 +274,7 @@ def main(cargs=sys.argv):
     stopped = False
     console(slug)
     portKernel = connectPort(tfProcesses, "kernel", 1, slug)
+    portWeb = None
 
     processKernel = None
     processWeb = None

@@ -46,7 +46,7 @@ class Data(object):
     def __init__(
         self,
         path,
-        tm,
+        tmObj,
         edgeValues=False,
         data=None,
         isEdge=None,
@@ -58,7 +58,7 @@ class Data(object):
         (dirName, baseName) = os.path.split(path)
         (fileName, extension) = os.path.splitext(baseName)
         self.path = path
-        self.tm = tm
+        self.tmObj = tmObj
         self.dirName = dirName
         self.fileName = fileName
         self.extension = extension
@@ -76,12 +76,12 @@ class Data(object):
         self.dataType = "str"
 
     def load(self, metaOnly=False, silent=None):
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
-        indent = tm.indent
-        warning = tm.warning
-        error = tm.error
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+        indent = tmObj.indent
+        warning = tmObj.warning
+        error = tmObj.error
 
         if silent is not None:
             wasSilent = isSilent()
@@ -166,9 +166,9 @@ class Data(object):
         self.dataLoaded = False
 
     def save(self, overwrite=False, nodeRanges=False, silent=None):
-        tm = self.tm
-        isSilent = tm.isSilent
-        setSilent = tm.setSilent
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
 
         if silent is not None:
             wasSilent = isSilent()
@@ -182,8 +182,8 @@ class Data(object):
         if self.isConfig:
             return
 
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         dataTypesStr = ", ".join(DATA_TYPES)
         if "valueType" in self.metaData:
@@ -200,8 +200,8 @@ class Data(object):
             self.dataType = DATA_TYPES[0]
 
     def _readTf(self, metaOnly=False):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         path = self.path
         if not os.path.exists(path):
@@ -249,8 +249,8 @@ class Data(object):
         return good
 
     def _readDataTf(self, fh, firstI):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         errors = collections.defaultdict(list)
         i = firstI
@@ -420,18 +420,16 @@ class Data(object):
         if not good:
             return False
 
-        tm = self.tm
-        indent = tm.indent
-        error = tm.error
+        tmObj = self.tmObj
 
         def info(msg, tm=True):
-            info(cmpFormat.format(msg), tm=tm, cache=-1)
+            tmObj.info(cmpFormat.format(msg), tm=tm, cache=-1)
 
         def error(msg, tm=True):
-            error(cmpFormat.format(msg), tm=tm)
+            tmObj.error(cmpFormat.format(msg), tm=tm)
 
         cmpFormat = f"c {self.fileName:<20} {{}}"
-        indent(level=2, reset=True)
+        tmObj.indent(level=2, reset=True)
 
         self.data = self.method(
             info,
@@ -455,10 +453,10 @@ class Data(object):
         metaOnly=False,
         nodeRanges=False,
     ):
-        tm = self.tm
-        indent = tm.indent
-        info = tm.info
-        error = tm.error
+        tmObj = self.tmObj
+        indent = tmObj.indent
+        info = tmObj.info
+        error = tmObj.error
 
         indent(level=1, reset=True)
         metaOnly = metaOnly or self.isConfig
@@ -514,8 +512,8 @@ class Data(object):
         return good
 
     def _writeDataTf(self, fh, nodeRanges=False):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         data = self.data
         if type(data) is tuple:
@@ -608,8 +606,8 @@ class Data(object):
         return True
 
     def _readDataBin(self):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         if not os.path.exists(self.binPath):
             error(f'TF reading: feature file "{self.binPath}" does not exist')
@@ -624,8 +622,8 @@ class Data(object):
             os.unlink(self.binPath)
 
     def _writeDataBin(self):
-        tm = self.tm
-        error = tm.error
+        tmObj = self.tmObj
+        error = tmObj.error
 
         good = True
         if not os.path.exists(self.binDir):
