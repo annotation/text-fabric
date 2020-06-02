@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L0-L272" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L0-L280" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.helpers import itemize, splitModRef, expandDir
 from .repo import checkoutRepo
@@ -78,6 +78,10 @@ class AppData(object):
 
         This is specified by the `org`, `repo` and `relative` settings under
         `provenanceSpec` in `config.yaml`.
+
+        See Also
+        --------
+        tf.applib.settings: options allowed in `config.yaml`
         &#34;&#34;&#34;
 
         app = self.app
@@ -101,6 +105,10 @@ class AppData(object):
 
         These are specified in the `moduleSpecs` setting under
         `provenanceSpecs` in `config.yaml`.
+
+        See Also
+        --------
+        tf.applib.settings: options allowed in `config.yaml`
         &#34;&#34;&#34;
 
         app = self.app
@@ -323,7 +331,7 @@ They are the same as are needed to construct an <code><a title="tf.applib.data.A
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L259-L273" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L267-L281" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModulesData(*args):
     &#34;&#34;&#34;Retrieve all data for a corpus.
@@ -380,7 +388,7 @@ data fetching.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L9-L256" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L9-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData(object):
     def __init__(self, app, moduleRefs, locations, modules, version, checkout, silent):
@@ -425,6 +433,10 @@ data fetching.</p></div>
 
         This is specified by the `org`, `repo` and `relative` settings under
         `provenanceSpec` in `config.yaml`.
+
+        See Also
+        --------
+        tf.applib.settings: options allowed in `config.yaml`
         &#34;&#34;&#34;
 
         app = self.app
@@ -448,6 +460,10 @@ data fetching.</p></div>
 
         These are specified in the `moduleSpecs` setting under
         `provenanceSpecs` in `config.yaml`.
+
+        See Also
+        --------
+        tf.applib.settings: options allowed in `config.yaml`
         &#34;&#34;&#34;
 
         app = self.app
@@ -639,17 +655,26 @@ data fetching.</p></div>
 <dd>
 <div class="desc"><p>Get the main data of the corpus.</p>
 <p>This is specified by the <code>org</code>, <code>repo</code> and <code>relative</code> settings under
-<code>provenanceSpec</code> in <code>config.yaml</code>.</p></div>
+<code>provenanceSpec</code> in <code>config.yaml</code>.</p>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="tf.applib.settings" href="settings.html">tf.applib.settings</a></code></dt>
+<dd>options allowed in <code>config.yaml</code></dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L47-L68" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L47-L72" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getMain(self):
     &#34;&#34;&#34;Get the main data of the corpus.
 
     This is specified by the `org`, `repo` and `relative` settings under
     `provenanceSpec` in `config.yaml`.
+
+    See Also
+    --------
+    tf.applib.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
     app = self.app
@@ -696,7 +721,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L168-L256" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L176-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModule(self, org, repo, relative, checkout, isBase=False, specs=None):
     &#34;&#34;&#34;Prepare to load a single module.
@@ -798,7 +823,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L112-L166" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L120-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModules(self):
     &#34;&#34;&#34;Get data from additional local directories.
@@ -866,7 +891,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L91-L110" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L99-L118" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(self):
     &#34;&#34;&#34;Get data from additional modules.
@@ -896,17 +921,26 @@ location paths and the module paths.</p>
 <dd>
 <div class="desc"><p>Get the data of the standard modules specified by the settings of the corpus.</p>
 <p>These are specified in the <code>moduleSpecs</code> setting under
-<code>provenanceSpecs</code> in <code>config.yaml</code>.</p></div>
+<code>provenanceSpecs</code> in <code>config.yaml</code>.</p>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="tf.applib.settings" href="settings.html">tf.applib.settings</a></code></dt>
+<dd>options allowed in <code>config.yaml</code></dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L70-L89" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/data.py#L74-L97" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getStandard(self):
     &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
 
     These are specified in the `moduleSpecs` setting under
     `provenanceSpecs` in `config.yaml`.
+
+    See Also
+    --------
+    tf.applib.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
     app = self.app

@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L0-L393" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L0-L404" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -420,7 +420,18 @@ def mergeDictOfSets(d1, d2):
         if n in d1:
             d1[n] |= ms
         else:
-            d1[n] = ms</code></pre>
+            d1[n] = ms
+
+
+def mergeDict(source, overrides):
+    &#34;&#34;&#34;Merge overrides into a source dictionary recursively.
+    &#34;&#34;&#34;
+
+    for (k, v) in overrides.items():
+        if k in source and type(source[k]) is dict:
+            mergeDict(source[k], v)
+        else:
+            source[k] = v</code></pre>
 </details>
 </section>
 <section>
@@ -836,6 +847,27 @@ in cases where you need them literally.</p></div>
     )</code></pre>
 </details>
 </dd>
+<dt id="tf.core.helpers.mergeDict"><code class="name flex">
+<span>def <span class="ident">mergeDict</span></span>(<span>source, overrides)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Merge overrides into a source dictionary recursively.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L397-L405" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def mergeDict(source, overrides):
+    &#34;&#34;&#34;Merge overrides into a source dictionary recursively.
+    &#34;&#34;&#34;
+
+    for (k, v) in overrides.items():
+        if k in source and type(source[k]) is dict:
+            mergeDict(source[k], v)
+        else:
+            source[k] = v</code></pre>
+</details>
+</dd>
 <dt id="tf.core.helpers.mergeDictOfSets"><code class="name flex">
 <span>def <span class="ident">mergeDictOfSets</span></span>(<span>d1, d2)</span>
 </code></dt>
@@ -1182,6 +1214,7 @@ data-gaCategoryParameter="tf.core.helpers">
 <li><code><a title="tf.core.helpers.mathEsc" href="#tf.core.helpers.mathEsc">mathEsc</a></code></li>
 <li><code><a title="tf.core.helpers.mdEsc" href="#tf.core.helpers.mdEsc">mdEsc</a></code></li>
 <li><code><a title="tf.core.helpers.mdhtmlEsc" href="#tf.core.helpers.mdhtmlEsc">mdhtmlEsc</a></code></li>
+<li><code><a title="tf.core.helpers.mergeDict" href="#tf.core.helpers.mergeDict">mergeDict</a></code></li>
 <li><code><a title="tf.core.helpers.mergeDictOfSets" href="#tf.core.helpers.mergeDictOfSets">mergeDictOfSets</a></code></li>
 <li><code><a title="tf.core.helpers.nbytes" href="#tf.core.helpers.nbytes">nbytes</a></code></li>
 <li><code><a title="tf.core.helpers.project" href="#tf.core.helpers.project">project</a></code></li>

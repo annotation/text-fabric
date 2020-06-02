@@ -99,8 +99,10 @@ contained in the selected item or as a pretty display of the item itself</p>
 <h3 id="sectionsep1"><code>sectionSep1</code></h3>
 <p>Separator between main and secondary sections in a passage reference;
 e.g. the space in <code>Genesis 1:1</code></p>
-<h2 id="default">Default</h2>
-<p>string: <code> </code> (<em>space</em>)</p>
+<dl>
+<dt>Default:</dt>
+<dd>string: <code> </code> (<em>space</em>)</dd>
+</dl>
 <hr>
 <h3 id="sectionsep2"><code>sectionSep2</code></h3>
 <p>Separator between secondary and tertiary sections in a passage reference;
@@ -822,7 +824,7 @@ it is needed to deviate from the default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L0-L982" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L0-L983" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/applib/settings.md
@@ -1696,6 +1698,7 @@ def showContext(app, *keys):
     See Also
     --------
     tf.applib.app.App.reuse
+    tf.applib.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
     EM = &#34;*empty*&#34;
@@ -1824,7 +1827,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L952-L983" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L953-L984" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compileFormatCls(app, specs, givenStyles):
     api = app.api
@@ -1931,7 +1934,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L942-L949" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L943-L950" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getLevel(defaultLevel, givenInfo, isVerse):
     level = givenInfo.get(&#34;level&#34;, defaultLevel)
@@ -2431,11 +2434,12 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <dd>An expandable list of the key-value pair for the requested keys.</dd>
 </dl>
 <h2 id="see-also">See Also</h2>
-<p><code><a title="tf.applib.app.App.reuse" href="app.html#tf.applib.app.App.reuse">App.reuse()</a></code></p></div>
+<p><code><a title="tf.applib.app.App.reuse" href="app.html#tf.applib.app.App.reuse">App.reuse()</a></code>
+<code>tf.applib.settings: options allowed in</code>config.yaml``</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L853-L939" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L853-L940" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContext(app, *keys):
     &#34;&#34;&#34;Shows the *context* of the app `tf.applib.app.App.context` in a pretty way.
@@ -2457,6 +2461,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
     See Also
     --------
     tf.applib.app.App.reuse
+    tf.applib.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
     EM = &#34;*empty*&#34;

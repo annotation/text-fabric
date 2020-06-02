@@ -147,7 +147,7 @@ going to the next one. Because then the slots will be displayed in the wrong ord
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L0-L831" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L0-L835" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/applib/display.md
@@ -241,6 +241,10 @@ def displaySetup(app, **options):
     options: dict
         Explicit values for selected options that act as overrides of the defaults.
         A list of all available options is in `tf.applib.displaysettings`.
+
+    See Also
+    --------
+    tf.applib.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
     display = app.display
@@ -1077,7 +1081,7 @@ Otherwise, restore all display settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L100-L117" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L104-L121" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayReset(app, *options):
     &#34;&#34;&#34;Restore display parameters to their defaults.
@@ -1121,11 +1125,16 @@ by its <code>config.yaml</code> file, if it exists. See <code><a title="tf.appli
 <dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Explicit values for selected options that act as overrides of the defaults.
 A list of all available options is in <code><a title="tf.applib.displaysettings" href="displaysettings.html">tf.applib.displaysettings</a></code>.</dd>
+</dl>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="tf.applib.settings" href="settings.html">tf.applib.settings</a></code></dt>
+<dd>options allowed in <code>config.yaml</code></dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L72-L97" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L72-L101" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displaySetup(app, **options):
     &#34;&#34;&#34;Set up all display parameters.
@@ -1148,6 +1157,10 @@ A list of all available options is in <code><a title="tf.applib.displaysettings"
     options: dict
         Explicit values for selected options that act as overrides of the defaults.
         A list of all available options is in `tf.applib.displaysettings`.
+
+    See Also
+    --------
+    tf.applib.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
     display = app.display
@@ -1244,7 +1257,7 @@ open it with <code>encoding=utf_16</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L148-L254" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L152-L258" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
@@ -1365,7 +1378,7 @@ else the CSS is returned.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L122-L145" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L126-L149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadCss(app):
     &#34;&#34;&#34;The CSS is looked up and then loaded into a notebook if we are not
@@ -1425,7 +1438,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L513-L590" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L517-L594" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     &#34;&#34;&#34;Display the plain text of a node.
@@ -1555,7 +1568,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L349-L510" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L353-L514" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plainTuple(
     app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options
@@ -1758,7 +1771,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L725-L832" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L729-L836" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pretty(app, n, explain=False, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
@@ -1898,7 +1911,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L654-L722" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L658-L726" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prettyTuple(app, tup, seq, item=RESULT, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
@@ -1998,7 +2011,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L596-L651" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L600-L655" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def show(app, tuples, **options):
     &#34;&#34;&#34;Displays an iterable of tuples of nodes.
@@ -2087,7 +2100,7 @@ HTML string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L260-L346" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/display.py#L264-L350" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def table(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.

@@ -770,9 +770,9 @@ class Checkout(object):
         try:
             r = g.get_release(release) if release else g.get_latest_release()
         except UnknownObjectException:
-            self.possibleError(f&#34;\tno release{msg}&#34;, showErrors)
+            self.possibleError(f&#34;\tno release{msg}&#34;, showErrors, newline=True)
         except Exception:
-            self.possibleError(f&#34;\tcannot find release{msg}&#34;, showErrors)
+            self.possibleError(f&#34;\tcannot find release{msg}&#34;, showErrors, newline=True)
         return r
 
     def getCommitObj(self, commit):
@@ -1501,9 +1501,9 @@ def checkoutRepo(
         try:
             r = g.get_release(release) if release else g.get_latest_release()
         except UnknownObjectException:
-            self.possibleError(f&#34;\tno release{msg}&#34;, showErrors)
+            self.possibleError(f&#34;\tno release{msg}&#34;, showErrors, newline=True)
         except Exception:
-            self.possibleError(f&#34;\tcannot find release{msg}&#34;, showErrors)
+            self.possibleError(f&#34;\tcannot find release{msg}&#34;, showErrors, newline=True)
         return r
 
     def getCommitObj(self, commit):
@@ -2158,9 +2158,9 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     try:
         r = g.get_release(release) if release else g.get_latest_release()
     except UnknownObjectException:
-        self.possibleError(f&#34;\tno release{msg}&#34;, showErrors)
+        self.possibleError(f&#34;\tno release{msg}&#34;, showErrors, newline=True)
     except Exception:
-        self.possibleError(f&#34;\tcannot find release{msg}&#34;, showErrors)
+        self.possibleError(f&#34;\tcannot find release{msg}&#34;, showErrors, newline=True)
     return r</code></pre>
 </details>
 </dd>
