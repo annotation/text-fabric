@@ -44,15 +44,11 @@ class Nodes:
         It applies `sortKey` to each member of the tuple.
         Handy to sort search results. We can sort them in canonical order like this:
 
-        ```python
-        sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
-        ```
+            sorted(results, key=lambda tup: tuple(sortKey(n) for n in tup))
 
         This is exactly what `sortKeyTuple` does, but then a bit more efficient:
 
-        ```python
-        sorted(results, key=sortKeyTuple)
-        ```
+            sorted(results, key=sortKeyTuple)
 
         See Also
         --------
@@ -62,9 +58,7 @@ class Nodes:
         self.sortKeyChunk = self.makeSortKeyChunk()
         """Sort key function for the canonical ordering between chunks of nodes.
 
-        ```python
-        sorted(chunks, key=sortKeyChunk)
-        ```
+            sorted(chunks, key=sortKeyChunk)
 
         A chunk is a tuple consisting of a node and a subset of its slots.
         Mostly, this subset of slots is contiguous (no gaps), and mostly it is

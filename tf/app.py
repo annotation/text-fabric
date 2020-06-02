@@ -41,7 +41,13 @@ def use(appName, *args, **kwargs):
     appName: string
         Name of the corpus, or a local directory.
         Used to find the appropriate TF app, if there is one.
-        Anyway, on object of class `tf.applib.app.App` or a corpus-specific
+
+    *args:
+        Do not pass any other positional argument!
+
+    **kwargs:
+        See `tf.applib.app.App`.
+        In any case, either an object of class `tf.applib.app.App` or a corpus-specific
         derived class `TfAPP` of it is initialized with the remaining parameters.
         Head over to there for a discription of those parameters, including more
         about *appName*.

@@ -53,18 +53,18 @@ Clean up
     If something went wrong in this sequence, chances are that a process keeps running.
     It will be terminated next time you call the `text-fabric`.
     
-    !!! hint "You can kill too"
-        If you run
-        
-        ```sh
-        text-fabric -k
-        ``` 
-        
-        all tf-browser-related processes will be killed.
+!!! hint "You can kill too"
+    If you run
+    
+```sh
+text-fabric -k
+``` 
 
-        ```sh
-        text-fabric -k ddd
-        ```
+all tf-browser-related processes will be killed.
 
-        will kill all such processes as far as they are for data source `ddd`.
+```sh
+text-fabric -k ddd
+```
+
+will kill all such processes as far as they are for data source `ddd`.
 

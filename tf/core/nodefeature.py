@@ -37,7 +37,8 @@ class NodeFeature(object):
         If you need this repeatedly, or you need the whole dictionary,
         you can store the result as follows:
 
-        `data = dict(F.fff.items())`
+           data = dict(F.fff.items())`
+
         """
 
         return self.data.items()

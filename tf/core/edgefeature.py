@@ -46,7 +46,8 @@ class EdgeFeature(object):
         If you need this repeatedly, or you need the whole dictionary,
         you can store the result as follows:
 
-        `data = dict(E.fff.items())`
+           data = dict(E.fff.items())`
+
         """
 
         return self.data.items()
@@ -169,17 +170,13 @@ class EdgeFeature(object):
         !!! example "conflicting values"
             Suppose we have
 
-            ```
-            n == value=4 ==> m
-            m == value=6 ==> n
-            ```
+                n == value=4 ==> m
+                m == value=6 ==> n
 
             then
 
-            ```
-            E.b(n) = (m, 4)
-            E.b(m) = (n, 6)
-            ```
+                E.b(n) = (m, 4)
+                E.b(m) = (n, 6)
 
         """
 

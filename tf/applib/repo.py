@@ -499,9 +499,9 @@ class Checkout(object):
         try:
             r = g.get_release(release) if release else g.get_latest_release()
         except UnknownObjectException:
-            self.possibleError(f"\tno release{msg}", showErrors)
+            self.possibleError(f"\tno release{msg}", showErrors, newline=True)
         except Exception:
-            self.possibleError(f"\tcannot find release{msg}", showErrors)
+            self.possibleError(f"\tcannot find release{msg}", showErrors, newline=True)
         return r
 
     def getCommitObj(self, commit):

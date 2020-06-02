@@ -4,7 +4,7 @@ from ..parameters import ORG, APP_CODE
 from ..fabric import Fabric
 from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
-from ..core.helpers import console, setDir
+from ..core.helpers import console, setDir, mergeDict
 from .find import findAppConfig, findAppClass
 from .helpers import dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
@@ -52,6 +52,7 @@ class App:
         setFile="",
         silent=False,
         _browse=False,
+        **configOverrides,
     ):
         """Set up the advanced TF API.
 
@@ -131,10 +132,11 @@ class App:
         mod: string, optional `None`
             A comma-separated list of modules in one of the forms
 
-            ```
-            {org}/{repo}/{path}
-            {org}/{repo}/{path}:specifier
-            ```
+               {org}/{repo}/{path}`
+
+            or
+
+               {org}/{repo}/{path}:specifier`
 
             All features of all those modules will be loaded.
             If they are not yet present, they will be downloaded from GitHub first.
@@ -142,9 +144,7 @@ class App:
             For example, there is an easter egg module on GitHub,
             and you can obtain it by
 
-            ```
-            mod='etcbc/lingo/easter/tf'
-            ```
+               mod='etcbc/lingo/easter/tf'`
 
             Here the `{org}` is `etcbc`, the `{repo}` is `lingo`,
             and the `{path}` is `easter/tf` under which
@@ -192,19 +192,15 @@ class App:
             But you can also setup a core API yourself by using
             `tf.fabric.Fabric` with your choice of locations and modules:
 
-            ```python
-            from tf.fabric import Fabric
-            TF = Fabric(locations=..., modules=...)
-            api = TF.load(features)
-            ```
+               from tf.fabric import Fabric`
+               TF = Fabric(locations=..., modules=...)`
+               api = TF.load(features)`
 
             Here you have full control over what you load and what not.
 
             If you want the extra power of the TF app, you can wrap this `api`:
 
-            ```python
-            A = use('xxxx', api=api)
-            ```
+               A = use('xxxx', api=api)`
 
             !!! hint "Unloaded features"
                 Some apps do not load all available features of the corpus by default.
@@ -216,16 +212,17 @@ class App:
                 In the case where you need an available feature
                 that has not been loaded, you can load it by demanding
 
-                ```python
-                TF.load('feature1 feature2', add=True)
-                ```
+                   TF.load('feature1 feature2', add=True)`
 
                 provided you have used the `hoist=globals()` parameter earlier.
                 If not, you have to say
 
-                ```python
-                A.api.TF.load('feature1 feature2', add=True)
-                ```
+                   A.api.TF.load('feature1 feature2', add=True)`
+
+        setFile: string, optional, `None`
+            The name of a file that contains condensed set information,
+            produces with `tf.lib.writeSets`.
+            These sets will be read and will become usable in TF queries.
 
         silent: boolean, optional `False`
             If `True`, nearly all output of this call will be suppressed,
@@ -233,9 +230,16 @@ class App:
             data, features, and the API methods.
             Error messages will still come through.
 
+        configOverrides: key value pairs
+            All values here will be used to override configuration settings
+            that are specified in the app's `config.yaml` file.
+            The list of those settings is spelled out in
+            `tf.applib.settings`.
+
         See Also
         --------
-        tf.about.corpora
+        tf.about.corpora: list of corpora with an official TF app
+        tf.applib.settings: description of what can go in a `config.yaml`
         """
 
         self.context = None
@@ -245,6 +249,8 @@ class App:
         --------
         tf.applib.settings.showContext
         """
+
+        mergeDict(cfg, configOverrides)
 
         for (key, value) in dict(
             isCompatible=cfg.get("isCompatible", None),

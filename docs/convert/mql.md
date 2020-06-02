@@ -108,8 +108,9 @@ A good way to prevent clashes:
     `~/Downloads`;
 *   before importing the MQL file, delete the previous copy;
 
-!!! example "Delete existing copy"
-    ```sh
-    cd ~/Downloads
-    rm dataset ; mql -b 3 < dataset.mql
-    ```
+Delete existing copy:
+
+```sh
+cd ~/Downloads
+rm dataset ; mql -b 3 < dataset.mql
+```

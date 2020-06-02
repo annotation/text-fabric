@@ -20,54 +20,57 @@ See `tf.about.install` for instructions how to upgrade these things.
 
 ## Latest Text-Fabric
 
-I have installed Text-Fabric, yet I get complaints that it cannot be found!
-:   Most likely, you installed Text-Fabric into another Python than you use when you run your
-    Python programs. See Python Setup below.
+### Text-Fabric cannot be found!
 
-Why do I not get the latest version of Text-Fabric?
-:   When you get errors doing `pip3 install text-fabric`, there is probably an older version around.
-    You have to say
+Most likely, you installed Text-Fabric into another Python than you use when you run your
+Python programs. See Python Setup below.
 
-    ```sh
-    pip3 install --upgrade text-fabric
-    ```
+### Failed to upgrade Text-Fabric!
 
-    If this still does not download the most recent version of `text-fabric`,
-    it may have been caused by caching. Then say:
+When you get errors doing `pip3 install text-fabric`, there is probably an older version around.
+You have to say
 
-    ```sh
-    pip3 install --upgrade --no-cache-dir text-fabric
-    ```
+```sh
+pip3 install --upgrade text-fabric
+```
 
-    You can check what the newest distributed version of Text-Fabric is on
-    [PyPi](https://pypi.org/project/text-fabric/).
+If this still does not download the most recent version of `text-fabric`,
+it may have been caused by caching. Then say:
 
-Why do I **still** not get the latest version of Text-Fabric!?!?
-:   Old versions on your system might get in the way.
+```sh
+pip3 install --upgrade --no-cache-dir text-fabric
+```
 
-    Sometimes `pip3 uninstall text-fabric` fails to remove all traces of Text-Fabric.
-    Here is how you can remove them manually:
+You can check what the newest distributed version of Text-Fabric is on
+[PyPi](https://pypi.org/project/text-fabric/).
 
-    * locate the `bin` directory of the current Python, it is something like
+### Failed to upgrade Text-Fabric (still)!
 
-      * (Macos regular Python) `/Library/Frameworks/Python.framework/Versions/3.7/bin`
-      * (Windows Anaconda) `C:\Users\You\Anaconda3\Scripts`
+Old versions on your system might get in the way.
 
-      Remove the file `text-fabric` from this directory if it exists.
+Sometimes `pip3 uninstall text-fabric` fails to remove all traces of Text-Fabric.
+Here is how you can remove them manually:
 
-    * locate the `site-packages` directory of the current Python, it is something like
+* locate the `bin` directory of the current Python, it is something like
 
-      * (Macos regular Python)
-        `/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages`
+  * (Macos regular Python) `/Library/Frameworks/Python.framework/Versions/3.7/bin`
+  * (Windows Anaconda) `C:\Users\You\Anaconda3\Scripts`
 
-        Remove the subdirectory `tf` from this location, plus all files with
-        `text-fabric` in the name.
+  Remove the file `text-fabric` from this directory if it exists.
 
-    * After this, you can make a fresh install of `text-fabric`:
+* locate the `site-packages` directory of the current Python, it is something like
 
-      ```sh
-      pip3 install text-fabric
-      ```
+  * (Macos regular Python)
+    `/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages`
+
+    Remove the subdirectory `tf` from this location, plus all files with
+    `text-fabric` in the name.
+
+* After this, you can make a fresh install of `text-fabric`:
+
+```sh
+pip3 install text-fabric
+```
 
 ## Python setup
 
@@ -76,74 +79,110 @@ If you make unlucky choices, and work with trial and error, things might get mes
 Most of the times when `text-fabric` does not appear to work, it is because of this.
 Here are some hints to recover from that.
 
-Older versions do not get away!
-:   Older versions of Python may be in the way.
-    The following hygeneic measures are known to be beneficial:
+### Upgrade of Text-Fabric does not have any effect!
 
-    When you have upgraded Python, remove PATH statements for older versions
-    from your system startup files.
-  
-    * For the Macos: look at `.bashrc`, `.bash_profile` in your home directory.
-    * For Windows: on the command prompt, say `echo %path%` to see what the content
-      of your PATH variable is. If you see references to older versions of python
-      than you actually work with, they need to be removed.
-      [Here is how](https://www.computerhope.com/issues/ch000549.htm)
-    
-    Do not remove references to Python `2.*`, but only outdated Python `3.*` versions. 
+Most likely, you have multiple Pythons on your system.
+You installed Text-Fabric in one Python, but you are using it in another Python.
+
+This can happen if you installed Python from [python.org](https://www.python.org)
+and then later installed Jupyter from Anaconda, which brings its own Python.
+
+You can check whether you are in this situation.
+
+First, on the command line, do 
+
+```sh
+text-fabric
+```
+
+You will see the version of Text-Fabric that is used when you call the Text-Fabric browser.
+
+Then, in a Jupyter notebook, say
+
+```python
+from tf.parameters import VERSION
+print(VERSION)
+```
+
+You will see the version of Text-Fabric that you use in a Jupyter notebook.
+
+If they are equal, you might use the same Python in both cases.
+
+If they are different, you have to clean up your Python installation.
+Ask a local guru, or google your way out. Or read on.
+
+### Other Python versions
+
+The following hygeneic measures are known to be beneficial 
+when you have multiple versions of Python on your system.
+
+When you have upgraded Python, remove PATH statements for older versions
+from your system startup files.
+
+* For the Macos: look at `.zshrc`, `.bashrc`, and `.bash_profile` in your home directory.
+* For Windows: on the command prompt, say `echo %path%` to see what the content
+  of your PATH variable is. If you see references to older versions of python
+  than you actually work with, they need to be removed.
+  [Here is how](https://www.computerhope.com/issues/ch000549.htm)
+
+Do not remove references to Python `2.*`, but only outdated Python `3.*` versions. 
 
 ## Text-Fabric browser
 
-I get an *Internal Server Error*!
-:   When the TF browser opens with an Internal Server error, the most likely reason is that
-    the TF kernel has not started up without errors.
+### Internal Server Error!
 
-    Look back at the terminal or command prompt where you started `text-fabric`.
+When the TF browser opens with an Internal Server error, the most likely reason is that
+the TF kernel has not started up without errors.
 
-    If somewhere down the road you see `Error`, I offer you my apologies!
+Look back at the terminal or command prompt where you started `text-fabric`.
 
-    Copy and paste that error and send it to [me](mailto:dirk.roorda@dans.knaw.nl),
-    and I'll fix it as soon as I can, and I let you know on the
-    [issue list](https://github.com/annotation/text-fabric/issues).
+If somewhere down the road you see `Error`, I offer you my apologies!
 
-Out of memory
-:   If TF has run out of memory, you might be able to do something about it.
+Copy and paste that error and send it to [me](mailto:dirk.roorda@dans.knaw.nl),
+and I'll fix it as soon as I can, and I let you know on the
+[issue list](https://github.com/annotation/text-fabric/issues).
 
-    In this case, during loading TF did not have access too enough RAM memory.
-    Maybe you had too many programs (or browser tabs) open at that time.
+### Out of memory!
 
-    Close as many programs as possible (even better, restart your machine) and try again.
-    TF is know to work on Windows 10 machines with only 3GB RAM on board,
-    but only in the best of circumstances.
+If TF has run out of memory, you might be able to do something about it.
 
-    If your machine has 4GB of RAM, it should be possible to run TF, with care.
+In this case, during loading TF did not have access too enough RAM memory.
+Maybe you had too many programs (or browser tabs) open at that time.
+
+Close as many programs as possible (even better, restart your machine) and try again.
+TF is know to work on Windows 10 machines with only 3GB RAM on board,
+but only in the best of circumstances.
+
+If your machine has 4GB of RAM, it should be possible to run TF, with care.
 
 ## GitHub
 
 Text-Fabric uses the GitHub API to get its apps and data on the fly.
 
-I suffer from Github Rate Limiting, what can I do about it?
-:   Two solutions:
+### Github Rate Limit Exceeded!
 
-    1. increase your rate limit by making yourself known to GitHub (**recommended**)
-    2. use previously downloaded data or get data manually from GitHub
+Two solutions:
 
-    An increased rate limit is more than enough for normal use of using Text-Fabric
-    with default settings. In this scenario, you always work with the latest
-    release of Text-Fabric data and apps.
+1. increase your rate limit by making yourself known to GitHub (**recommended**)
+2. use previously downloaded data or get data manually from GitHub
 
-    The work needed to increase the rate is fairly simple, but it assumes a bit more
-    knowledge about how your terminal or your command line prompt operates.
+An increased rate limit is more than enough for normal use of using Text-Fabric
+with default settings. In this scenario, you always work with the latest
+release of Text-Fabric data and apps.
 
-    If you work very intensely with data, repeatedly accessing many corpora, it
-    is a waste to access GitHub for every single load action.
-    In those cases you can pass extra parameters to the commands by which you load
-    the data.
+The work needed to increase the rate is fairly simple, but it assumes a bit more
+knowledge about how your terminal or your command line prompt operates.
 
-    This does not require any extra knowledge, except a section of the Text-Fabric API
-    docs. But you must remember that in order to get the data the first time, you
-    need to pass different parameters than the subsequent times.
+If you work very intensely with data, repeatedly accessing many corpora, it
+is a waste to access GitHub for every single load action.
+In those cases you can pass extra parameters to the commands by which you load
+the data.
 
-    All in all, the second solution requires confidence with cloning and pulling
-    from GitHub and familiarity with all the ways that Text-Fabric can obtain its data.
+This does not require any extra knowledge, except a section of the Text-Fabric API
+docs. But you must remember that in order to get the data the first time, you
+need to pass different parameters than the subsequent times.
 
-    See `tf.applib.repo` for instructions to follow both solutions.
+All in all, the second solution requires confidence with cloning and pulling
+from GitHub and familiarity with all the ways that Text-Fabric can obtain its data.
+
+See `tf.applib.repo` for instructions to follow both solutions.

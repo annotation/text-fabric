@@ -49,6 +49,10 @@ class AppData(object):
 
         This is specified by the `org`, `repo` and `relative` settings under
         `provenanceSpec` in `config.yaml`.
+
+        See Also
+        --------
+        tf.applib.settings: options allowed in `config.yaml`
         """
 
         app = self.app
@@ -72,6 +76,10 @@ class AppData(object):
 
         These are specified in the `moduleSpecs` setting under
         `provenanceSpecs` in `config.yaml`.
+
+        See Also
+        --------
+        tf.applib.settings: options allowed in `config.yaml`
         """
 
         app = self.app

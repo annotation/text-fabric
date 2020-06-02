@@ -76,13 +76,9 @@ Then, when you invoke the app, pass the specifier `:clone`.
 This instructs Text-Fabric to look in your local GitHub clone, rather
 than online or in `text-fabric-data`, where downloaded data is stored.
 
-```python
-use('xxxx:clone', checkout="clone")
-```
+    use('xxxx:clone', checkout="clone")
 
-```sh
-text-fabric xxxx:clone --checkout=clone
-```
+    text-fabric xxxx:clone --checkout=clone
 
 In this way, you can work with data that is under your control.
 

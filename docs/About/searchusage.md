@@ -238,103 +238,107 @@ consist of verbs only:
 
 We have these kinds of lines in a template:
 
-*   *comment* lines
+#### *comment* lines
 
-    *   if the first non-white character on a line is `%` it is a comment line;
-    *   you cannot comment out parts of lines after a non-white part;
-    *   if a line is empty or has whitespace only, it is a comment line;
-    *   comment lines are allowed everywhere;
-    *   comment lines are ignored.
+*   if the first non-white character on a line is `%` it is a comment line;
+*   you cannot comment out parts of lines after a non-white part;
+*   if a line is empty or has whitespace only, it is a comment line;
+*   comment lines are allowed everywhere;
+*   comment lines are ignored.
 
-*   *atom* lines
+#### *atom* lines
 
-    *   (simple): **indent name:otype-or-set features**
+##### (simple): **indent name:otype-or-set features**
 
-        *   Examples
+Examples
 
-            1.  `word pos=verb gender=feminine`
-            2.  `vb:word pos=verb gender=feminine`
-            3.  `vb pos=verb gender=feminine`
+1.  `word pos=verb gender=feminine`
+2.  `vb:word pos=verb gender=feminine`
+3.  `vb pos=verb gender=feminine`
 
-        *   The indent is significant. Indent is counted as the number of white space
-            characters, where tabs count for just 1. **Avoid tabs!**.
-        *   The **name:** part is optional.
-            If present, it defines a name for this atom that can be used
-            in relational comparisons and other atoms.
-        *   The **otype-or-set** part is optional.
-            If it is absent, the **name** part must be present.
-            The meaning of
+Notes
 
-            ```
-            p:phrase sp=verb
-            p vs=qal
-            ```
+*   The indent is significant. Indent is counted as the number of white space
+    characters, where tabs count for just 1. **Avoid tabs!**.
+*   The **name:** part is optional.
+    If present, it defines a name for this atom that can be used
+    in relational comparisons and other atoms.
+*   The **otype-or-set** part is optional.
+    If it is absent, the **name** part must be present.
 
-            is identical to the meaning of
+The meaning of
 
-            ```
-            p:phrase sp=verb
-            pnew:phrase vs=qal
-            p = pnew
-            ```
+```
+p:phrase sp=verb
+p vs=qal
+```
 
-    *   (with relop): **indent op name:otype-or-set features**
+is identical to the meaning of
 
-        *   `<: word pos=verb gender=feminine`
-        *   The relation operator specifies an extra constraint between a preceding atom
-            and this atom.
-        *   The preceding atom may be the parent, provided we are at its first child, or
-            it may the preceding sibling.
-        *   You can leave out the **name:otype-or-set features** bit. In that case, the
-            relation holds between the preceding atom and its parent.
-        *   The **name:** part is optional. Exactly as in the case without relop.
-        *   The **otype-or-set** part is optional. Exactly as in the case without relop.
+```
+p:phrase sp=verb
+pnew:phrase vs=qal
+p = pnew
+```
 
-    The otype-or-set is either a node type that exists in your TF data set,
-    or it is the name of a set that you have passed in the `sets` parameter alongside
-    the query itself when you call `search` or `study`.
+##### (with relop): **indent op name:otype-or-set features**
 
-    See [*feature specifications*](#feature-specifications) below for all
-    full variety of feature constraints on nodes and edges.
+*   `<: word pos=verb gender=feminine`
+*   The relation operator specifies an extra constraint between a preceding atom
+    and this atom.
+*   The preceding atom may be the parent, provided we are at its first child, or
+    it may the preceding sibling.
+*   You can leave out the **name:otype-or-set features** bit. In that case, the
+    relation holds between the preceding atom and its parent.
+*   The **name:** part is optional. Exactly as in the case without relop.
+*   The **otype-or-set** part is optional. Exactly as in the case without relop.
 
-*   *feature* lines: **features**
+The otype-or-set is either a node type that exists in your TF data set,
+or it is the name of a set that you have passed in the `sets` parameter alongside
+the query itself when you call `search` or `study`.
 
-    *   Indent is not significant. Continuation of feature constraints after a
-        preceding atom line or other feature line. This way you can divide lengthy
-        feature constraints over multiple lines.
+See [*feature specifications*](#feature-specifications) below for all
+full variety of feature constraints on nodes and edges.
 
-    See
-    [*feature specifications*](#feature-specifications)
-    below for the
-    full variety of feature constraints on nodes and edges.
+#### *feature* lines: **features**
 
-*   *relation* lines: **name operator name**
+Indent is not significant. Continuation of feature constraints after a
+preceding atom line or other feature line. This way you can divide lengthy
+feature constraints over multiple lines.
 
-    *   `s := w`
-    *   `m -sub> s`
-    *   `m <sub- s`
-    *   `m <sub> s`
-    *   Indents and spacing are ignored.
-    *   There must be white-space around the operator.
-    *   Operators that come from edge features may be enriched with values.
+See
+[*feature specifications*](#feature-specifications)
+below for the
+full variety of feature constraints on nodes and edges.
 
-    See
-    [*relational operators*](#relational-operators)
-    below for the
-    whole spectrum of relational constraints on nodes.
+#### *relation* lines: **name operator name**
+
+*   `s := w`
+*   `m -sub> s`
+*   `m <sub- s`
+*   `m <sub> s`
+*   Indents and spacing are ignored.
+*   There must be white-space around the operator.
+*   Operators that come from edge features may be enriched with values.
+
+See
+[*relational operators*](#relational-operators)
+below for the
+whole spectrum of relational constraints on nodes.
 
 
-*   *quantifier* sub-templates:
-    Atom lines that contain an otype or set may be followed by
-    Quantifiers consist of search templates themselves, demarcated by some
-    special keywords:
+#### *quantifier* sub-templates:
 
-    *   `/without/`
-    *   `/where/` and `/have/`
-    *   `/with/` and `/or/`
-    *   `/-/`
+Atom lines that contain an otype or set may be followed by
+Quantifiers consist of search templates themselves, demarcated by some
+special keywords:
 
-    See [*quantifiers*](#quantifiers) below for all the syntax and semantics.
+*   `/without/`
+*   `/where/` and `/have/`
+*   `/with/` and `/or/`
+*   `/-/`
+
+See [*quantifiers*](#quantifiers) below for all the syntax and semantics.
 
 ### Feature specifications
 
@@ -503,9 +507,7 @@ Not only equality is covered, also inequality, comparison, and matching.
         and node `m` has feature `lex` with value `donkey_2`,
         then the following holds:
 
-        ```
-        n .lex~_[0-9]*$~lex. m
-        ```
+            n .lex~_[0-9]*$~lex. m
 
         The values are stripped of their final `_1` and `_2` strings before they
         are being compared, leaving the comparison `donkey` = `donkey`, which is True.
@@ -745,47 +747,47 @@ The indentation in quantifiers relative to their parent atom will be preserved.
 !!! example "Nested quantifiers"
     Consider
 
-    ```
-    clause
-    /where/
-      phrase function=Pred
-    /have/
-      /without/
-        word sp#verb
-      /-/
-    /-/
-      phrase function=Subj
-    ```
+```
+clause
+/where/
+  phrase function=Pred
+/have/
+  /without/
+    word sp#verb
+  /-/
+/-/
+  phrase function=Subj
+```
 
-    The auxiliary templates that will be run are:
+The auxiliary templates that will be run are:
 
-    For the outer quantifier:
+For the outer quantifier:
 
-    ```
-    clause
-      phrase function=Pred
-    ```
+```
+clause
+  phrase function=Pred
+```
 
-    and
+and
 
-    ```
-    clause
-      phrase function=Pred
-      /without/
-        word sp#verb
-      /-/
-    ```
+```
+clause
+  phrase function=Pred
+  /without/
+    word sp#verb
+  /-/
+```
 
-    For the inner quantifier:
+For the inner quantifier:
 
-    ```
-    phrase function=Pred
-      word sp#verb
-    ```
+```
+phrase function=Pred
+  word sp#verb
+```
 
-    Note that the auxiliary template for the inner quantifier
-    is shifted in its entirety to the left, but that the
-    relative indentation is exactly as it shows in the original template.
+Note that the auxiliary template for the inner quantifier
+is shifted in its entirety to the left, but that the
+relative indentation is exactly as it shows in the original template.
 
 ##### Implementation
 

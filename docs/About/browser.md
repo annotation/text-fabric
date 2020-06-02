@@ -17,18 +17,14 @@ it needs from GitHub automatically.
 !!! hint "On Windows?"
     You can click the Start Menu, and type
 
-    ```sh
-    text-fabric app
-    ```
+        text-fabric app
 
     in the search box, and then Enter.
 
 !!! hint "On Linux or Macos?"
     You can open a terminal (command prompt), and just say
 
-    ```sh
-    text-fabric app
-    ```
+        text-fabric app
 
 !!! explanation "All platforms"
     The corpus data will be downloaded automatically,
@@ -40,11 +36,9 @@ it needs from GitHub automatically.
 
 You can let TF use extra features: 
 
-```sh
-text-fabric app --mod=org/repo/path
-text-fabric app --mod=org/repo/path -c
-text-fabric app --mod=org/repo/path,org/repo/path
-```
+    text-fabric app --mod=org/repo/path
+    text-fabric app --mod=org/repo/path -c
+    text-fabric app --mod=org/repo/path,org/repo/path
 
 Here `org`, `repo` and `path` must be replaced with a github user or organization,
 a github repo, and a path within that repo.
@@ -57,9 +51,7 @@ You can create custom sets of nodes, give them a name, and use those names
 in search templates. 
 The TF browser can import those sets, so that you can use such queries in the browser too.
 
-```sh
-text-fabric app --sets=filePath
-```
+    text-fabric app --sets=filePath
 
 * Start a TF browser for `app`.
 * Loads custom sets from `filePath`.
@@ -99,11 +91,11 @@ than to start up a fresh kernel.
 
 You can also manually clean up TF related processes:
 
-`text-fabric app -k`
+    text-fabric app -k
 
 Or, if you have also processes running for other apps:
 
-`text-fabric -k` 
+    text-fabric -k 
 
 ## Work with exported results
 
@@ -152,27 +144,23 @@ in which Excel handles CSV files properly.
 
 So if you work with this file in Python, specify the encoding `utf_16`.
 
-```python
-with open('resultsx.tsv', encoding='utf_16') as fh:
-  for row in fh:
-  # do something with row 
-```
+    with open('resultsx.tsv', encoding='utf_16') as fh:
+      for row in fh:
+      # do something with row 
 
 Conversely, if you want to write a CSV with Hebrew in it,
 to be opened in Excel, take care to:
 
-* give the file name extension `.tsv` (not `.csv`)
-* make the file **tab** separated (do not use the comma or semicolon!)
-* use the encoding `utf_16_le` (not merely `utf_16`, nor `utf8`!)
-* start the file with a BOM mark.
+*   give the file name extension `.tsv` (not `.csv`)
+*   make the file **tab** separated (do not use the comma or semicolon!)
+*   use the encoding `utf_16_le` (not merely `utf_16`, nor `utf8`!)
+*   start the file with a BOM mark.
 
-```python
-with open('mydata.tsv', 'w', encoding='utf_16_le') as fh:
-  fh.write('\uFEFF')
-  for row in myData:
-    fh.write('\t'.join(row))
-    fh.write('\n')
-```
+        with open('mydata.tsv', 'w', encoding='utf_16_le') as fh:
+          fh.write('\uFEFF')
+          for row in myData:
+            fh.write('\t'.join(row))
+            fh.write('\n')
 
 !!! explanation "Gory details"
     The file has been written with the `utf_16_le` encoding,

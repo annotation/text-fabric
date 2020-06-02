@@ -328,21 +328,19 @@ class Search(object):
         !!! example "Iterating over the `fetch()` generator"
             You typically fetch results by saying:
 
-            ```python
-            i = 0
-            for tup in S.results():
-                do_something(tup[0])
-                do_something_else(tup[1])
-            ```
+                i = 0
+                for tup in S.results():
+                    do_something(tup[0])
+                    do_something_else(tup[1])
 
             Alternatively, you can set the `limit` parameter, to ask for just so many
             results. They will be fetched, and when they are all collected,
             returned as a tuple.
 
         !!! example "Fetching a limited amount of results"
-            ```python
-            S.fetch(limit=10)
-            ```
+            This
+
+                S.fetch(limit=10)
 
             gives you the first 10 results without further ado.
         """
@@ -464,10 +462,10 @@ class Search(object):
         Notes
         -----
         !!! example "Inspecting results"
-            ```
-            for result in S.fetch(limit=10):
-                print(S.glean(result))
-            ```
+            This
+
+                for result in S.fetch(limit=10):
+                    print(S.glean(result))
 
             is a handy way to get an impression of the first bunch of results.
 

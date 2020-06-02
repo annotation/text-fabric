@@ -96,8 +96,8 @@ def combine(
             In that case the new feature values for nodes of `componentType` will
             just be added to it.
 
-        !!! example
-            ```python
+        Example
+        -------
             combine(
                 ('banks', 'banks/tf/0.2'),
                 ('river', 'banks/tf/0.4'),
@@ -105,13 +105,12 @@ def combine(
                 componentType='volume',
                 componentFeature='vol',
             )
-            ```
 
-            This results of a dataset with nodes and features from the components
-            found at the indicated places on your file system.
-            After combination, the components are visible in the data set as nodes
-            of type `volume`, and the feature `vol` provides the names `banks` and `river`
-            for those nodes.
+        This results of a dataset with nodes and features from the components
+        found at the indicated places on your file system.
+        After combination, the components are visible in the data set as nodes
+        of type `volume`, and the feature `vol` provides the names `banks` and `river`
+        for those nodes.
 
     featureMeta: dict, optional `None`
         The meta data of the components involved will be merged.
@@ -148,74 +147,68 @@ def combine(
     silent: boolean, optional `False`
         Suppress or enable informational messages.
 
-    Example:
-
-    ```python
-    combine(
-        ('banks', 'banks/tf/0.2'),
-        ('river', 'banks/tf/0.4'),
-        'riverbanks/tf/1.0',
-        featureMeta=dict(
-          level=dict(
-            valueType='int',
-            description='level of a section node',
-          ),
-        ),
-    )
-    ```
-
-    Example:
-
-    ```python
-    combine(
-        ('banks', 'banks/tf/0.2'),
-        ('river', 'banks/tf/0.4'),
-        'riverbanks/tf/1.0',
-        featureMeta=dict(
-            otext=dict(
-                componentType='volume',
-                componentFeature='vol',
-                sectionTypes='volume,chapter,line',
-                sectionFeatures='title,number,number',
+    Example
+    -------
+        combine(
+            ('banks', 'banks/tf/0.2'),
+            ('river', 'banks/tf/0.4'),
+            'riverbanks/tf/1.0',
+            featureMeta=dict(
+              level=dict(
+                valueType='int',
+                description='level of a section node',
+              ),
             ),
-        ),
-        silent=False,
-    )
-    ```
+        )
+
+    Example
+    -------
+        combine(
+            ('banks', 'banks/tf/0.2'),
+            ('river', 'banks/tf/0.4'),
+            'riverbanks/tf/1.0',
+            featureMeta=dict(
+                otext=dict(
+                    componentType='volume',
+                    componentFeature='vol',
+                    sectionTypes='volume,chapter,line',
+                    sectionFeatures='title,number,number',
+                ),
+            ),
+            silent=False,
+        )
 
     This will give rise to something like this (assuming that `banks` and
     `rivers` have some deviating material in their `otext.tf`:
 
-    ```
-    @config
-    @compiler=Dirk Roorda
-    @dateWritten=2019-05-20T19:12:23Z
-    @fmt:line-default={letters:XXX}{terminator}
-    @fmt:line-term=line#{terminator}
-    @fmt:text-orig-extra={letters}{punc}{gap}
-    @fmt:text-orig-full={letters}
-    @fmt:text-orig-full!banks={letters}{punc}
-    @fmt:text-orig-full!rivers={letters}{gap}
-    @name=Culture quotes from Iain Banks
-    @purpose=exposition
-    @sectionFeatures=title,number,number
-    @sectionFeatures!banks=title,number,number
-    @sectionFeatures!rivers=number,number,number
-    @sectionTypes=volume,chapter,line
-    @sectionTypes!banks=book,chapter,sentence
-    @sectionTypes!rivers=chapter,sentence,line
-    @source=Good Reads
-    @status=with for similarities in a separate module
-    @structureFeatures!banks=title,number,number,number
-    @structureFeatures!rivers=title,number,number
-    @structureTypes!banks=book,chapter,sentence,line
-    @structureTypes!rivers=book,chapter,sentence
-    @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
-    @version=0.2
-    @writtenBy=Text-Fabric
-    @writtenBy=Text-Fabric
-    @dateWritten=2019-05-28T10:55:06Z
-    ```
+        @config
+        @compiler=Dirk Roorda
+        @dateWritten=2019-05-20T19:12:23Z
+        @fmt:line-default={letters:XXX}{terminator}
+        @fmt:line-term=line#{terminator}
+        @fmt:text-orig-extra={letters}{punc}{gap}
+        @fmt:text-orig-full={letters}
+        @fmt:text-orig-full!banks={letters}{punc}
+        @fmt:text-orig-full!rivers={letters}{gap}
+        @name=Culture quotes from Iain Banks
+        @purpose=exposition
+        @sectionFeatures=title,number,number
+        @sectionFeatures!banks=title,number,number
+        @sectionFeatures!rivers=number,number,number
+        @sectionTypes=volume,chapter,line
+        @sectionTypes!banks=book,chapter,sentence
+        @sectionTypes!rivers=chapter,sentence,line
+        @source=Good Reads
+        @status=with for similarities in a separate module
+        @structureFeatures!banks=title,number,number,number
+        @structureFeatures!rivers=title,number,number
+        @structureTypes!banks=book,chapter,sentence,line
+        @structureTypes!rivers=book,chapter,sentence
+        @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+        @version=0.2
+        @writtenBy=Text-Fabric
+        @writtenBy=Text-Fabric
+        @dateWritten=2019-05-28T10:55:06Z
 
     """
 

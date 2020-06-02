@@ -870,6 +870,7 @@ def showContext(app, *keys):
     See Also
     --------
     tf.applib.app.App.reuse
+    tf.applib.settings: options allowed in `config.yaml`
     """
 
     EM = "*empty*"

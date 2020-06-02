@@ -117,7 +117,9 @@ that steer the graph building.
 
     No further information is needed.
     Remember that you can add features to the node by later
-    `cv.feature(n, key=value, ...)`
+
+        cv.feature(n, key=value, ...)
+
     calls.
 
 `n = cv.node(nodeType)`
@@ -127,7 +129,9 @@ that steer the graph building.
     Non slot nodes will be automatically added to the set of embedders.
 
     Remember that you can add features to the node by later
-    `cv.feature(n, key=value, ...)`
+
+        cv.feature(n, key=value, ...)
+
     calls.
 
 `cv.terminate(n) `

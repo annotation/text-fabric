@@ -206,6 +206,10 @@ def webLink(
         It can be inhibited. This is useful for the TF-browser, which may want
         to attach an action to the link and navigate to a location based on
         other attributes.
+
+    See Also
+    --------
+    tf.applib.settings: options allowed in `config.yaml`
     """
 
     api = app.api

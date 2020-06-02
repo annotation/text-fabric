@@ -123,9 +123,7 @@ functions available by which you can make handy use of that information.
     your dataset, you can configure the right order in the *otext* feature, by means
     of a key `levels` with value a comma separated list of levels. Example:
 
-    ```
-    @levels=tablet,face,column,line,case,cluster,quad,comment,sign
-    ```
+        @levels=tablet,face,column,line,case,cluster,quad,comment,sign
 
 ## Book names and languages
 
@@ -266,7 +264,7 @@ features to furnish a decent representation.
     For example, if words are associated with lexemes, stored in a word
     feature `lex`, we can define a text format
 
-    ```lex-orig-full=word#{lex} ```
+       lex-orig-full=word#{lex} `
 
     When you call `T.text(n)` for a non-slot, non-word node,
     normally the node will be replaced by the slot nodes it contains,
@@ -274,7 +272,7 @@ features to furnish a decent representation.
     But if you pass a format that specifies a different node type,
     nodes will be replaced by contained nodes of that type. So
 
-    ```T.text(n, fmt='lex-orig-full')```
+        T.text(n, fmt='lex-orig-full')
 
     will lookup all word nodes under *n* and apply the template `{lex}`
     to them.

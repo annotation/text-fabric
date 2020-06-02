@@ -392,3 +392,14 @@ def mergeDictOfSets(d1, d2):
             d1[n] |= ms
         else:
             d1[n] = ms
+
+
+def mergeDict(source, overrides):
+    """Merge overrides into a source dictionary recursively.
+    """
+
+    for (k, v) in overrides.items():
+        if k in source and type(source[k]) is dict:
+            mergeDict(source[k], v)
+        else:
+            source[k] = v

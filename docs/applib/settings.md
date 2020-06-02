@@ -102,7 +102,7 @@ Separator between main and secondary sections in a passage reference;
 e.g. the space in `Genesis 1:1`
 
 Default:
-    string: ` ` (*space*)
+:   string: ` ` (*space*)
 
 ---
 
@@ -128,11 +128,10 @@ Default:
 
 ### `textFormats`
 
-!!! example
-    ```
-    textFormats:
-        layout-orig-full: layoutRich
-    ```
+```
+textFormats:
+    layout-orig-full: layoutRich
+```
 
 Additional text formats that can use HTML styling.
 

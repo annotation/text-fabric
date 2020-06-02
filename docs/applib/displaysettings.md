@@ -1,9 +1,13 @@
 # Display Settings.
 
 Display options are used by
-`tf.applib.display.plain`
+
+    tf.applib.display.plain
+
 and
-`tf.applib.display.pretty`
+
+    tf.applib.display.pretty
+
 and other display functions.
 
 This class manages
@@ -191,9 +195,7 @@ noneValues: set, optional `None`
         You can use `noneValues` also to suppress the normal values of a feature,
         in order to attract attention to the more special values, e.g.
 
-        ```python
-        noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}
-        ```
+            noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}
 
     !!! caution "None values affect all features"
         Beware of putting to much in `noneValues`.
@@ -219,7 +221,9 @@ tupleFeatures: iterable of 2-tuples, optional `()`
     features you choose.
 
     It should be a tuple of pairs
-    `(i, features)`
+
+        (i, features)
+
     which means that to member `i` of a result tuple we assign extra `features`.
 
     `features` may be given as an iterable or a space separated string of feature names.

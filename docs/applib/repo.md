@@ -1,86 +1,90 @@
 ## Auto downloading from GitHub
 
-!!! abstract "checkoutRepo()"
-    ```python
-    from tf.applib.repo import checkoutRepo
+```python
+from tf.applib.repo import checkoutRepo
 
-    checkoutRepo(
-      org='annotation'
-      repo='tutorials',
-      folder='text-fabric/examples/banks/tf',
-      version='',
-      checkout='',
-      source=None,
-      dest=None,
-      withPaths=True,
-      keep=True,
-      silent=False,
-      label='data',
-    )
-    ```
+checkoutRepo(
+  org='annotation'
+  repo='tutorials',
+  folder='text-fabric/examples/banks/tf',
+  version='',
+  checkout='',
+  source=None,
+  dest=None,
+  withPaths=True,
+  keep=True,
+  silent=False,
+  label='data',
+)
+```
 
-!!! explanation "Description"
-    Maintain a local copy of a subfolder *folder* in GitHub repository *repo* of *org*.
-    The copy may be taken from any point in the commit history of the online repo.
+## Description
 
-    If you call this function, it will check whether the requested data is already 
-    on your computer in the expected location.
-    If not, it may check whether the data is online and if so, download it to the
-    expected location.
+Maintain a local copy of a subfolder *folder* in GitHub repository *repo* of *org*.
+The copy may be taken from any point in the commit history of the online repo.
+
+If you call this function, it will check whether the requested data is already 
+on your computer in the expected location.
+If not, it may check whether the data is online and if so, download it to the
+expected location.
     
-!!! explanation "Result"
-    The result of a call to checkoutRepo() is a tuple:
+## Result
 
-    ```python
-        (commitOffline, releaseOffline, kindLocal, localBase, localDir)
-    ```
+The result of a call to checkoutRepo() is a tuple:
 
-    Here is the meaning:
+```python
+    (commitOffline, releaseOffline, kindLocal, localBase, localDir)
+```
 
-    *   *commitOffline* is the commit hash of the data you have offline afterwards
-    *   *releaseOffline* is the release tag of the data you have offline afterwards
-    *   *kindLocal* indicates whether an online check has been performed:
-        it is `None` if there has been an online check. Otherwise it is
-        `clone` if the data is in your `~/github` directory else it is `local`.
-    *   *localBase* where the data is under: `~/github` or `~/text-fabric-data`,
-        or whatever you have passed as *source* and *dest*, see below.
-    *   *localDir* releative path from *localBase* to your data.
-        If your data has versions, *localDir* points to directory that has the versions,
-        not to a specific version.
-     
+Here is the meaning:
 
-    Your local copy can be found under your `~/github` or `~/text-fabric-data`
-    directory using a relative path *org/repo/folder* if there is a *version*, else
-    *org/repo/folder/version*.
+*   *commitOffline* is the commit hash of the data you have offline afterwards
+*   *releaseOffline* is the release tag of the data you have offline afterwards
+*   *kindLocal* indicates whether an online check has been performed:
+    it is `None` if there has been an online check. Otherwise it is
+    `clone` if the data is in your `~/github` directory else it is `local`.
+*   *localBase* where the data is under: `~/github` or `~/text-fabric-data`,
+    or whatever you have passed as *source* and *dest*, see below.
+*   *localDir* releative path from *localBase* to your data.
+    If your data has versions, *localDir* points to directory that has the versions,
+    not to a specific version.
+ 
 
-!!! explanation "checkout, source and dest"
-    The *checkout* parameter determines from which point in the history the copy
-    will be taken and where it will be placed.
-    That will be either your `~/github` or your `~/text-fabric-data` directories.
+Your local copy can be found under your `~/github` or `~/text-fabric-data`
+directory using a relative path *org/repo/folder* if there is a *version*, else
+*org/repo/folder/version*.
 
-    You can override the hard-coded `~/github` and `~/text-fabric-data` directories
-    by passing *source* and *dest* respectively.
+## checkout, source and dest
 
-    See the
-    [repo](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb)
-    notebook for an exhaustive demo of all the checkout options.
+The *checkout* parameter determines from which point in the history the copy
+will be taken and where it will be placed.
+That will be either your `~/github` or your `~/text-fabric-data` directories.
 
-!!! explanation "other parameters"
-    *withPaths=False* will loose the directory structure of files that are being
-    downloaded.
+You can override the hard-coded `~/github` and `~/text-fabric-data` directories
+by passing *source* and *dest* respectively.
 
-    *keep=False* will destroy the destination directory before a download takes place.
+See the
+[repo](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb)
+notebook for an exhaustive demo of all the checkout options.
 
-    *silent=True* will suppress non-error messages.
+## other parameters
 
-    *label='something' will change the word "data" in log messages to what you choose.
-    We use `label='TF-app'` when we use this function to checkout the code
-    of a TF-app.
+*withPaths=False* will loose the directory structure of files that are being
+downloaded.
 
-!!! caution "Rate limiting"
-    The `checkRepo()` function uses the GitHub API.
-    GitHub has a rate limiting policy for its API of max 60 calls per hour.
-    See below to deal with this if it becomes a problem.
+*keep=False* will destroy the destination directory before a download takes place.
+
+*silent=True* will suppress non-error messages.
+
+*label='something' will change the word "data" in log messages to what you choose.
+We use `label='TF-app'` when we use this function to checkout the code
+of a TF-app.
+
+## Rate limiting
+
+The `checkRepo()` function uses the GitHub API.
+GitHub has a rate limiting policy for its API of max 60 calls per hour.
+See below to deal with this if it becomes a problem.
 
 # GitHub
 
@@ -139,9 +143,7 @@ Whatever is your case, pick the file indicated above and edit it.
     Assuming that you want to edit the `.zshrc` in your home directory,
     go to your terminal and say this:
 
-    ```
-    nano ~/.zshrc
-    ```
+        nano ~/.zshrc
 
     Then you get a view on your file. Then 
 

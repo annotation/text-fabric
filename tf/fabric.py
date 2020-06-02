@@ -110,11 +110,9 @@ class Fabric(object):
 
         Defaults:
 
-        ```
-        ~/Downloads/text-fabric-data
-        ~/text-fabric-data
-        ~/github/text-fabric-data
-        ```
+            ~/Downloads/text-fabric-data
+            ~/text-fabric-data
+            ~/github/text-fabric-data
 
         So if you have stored your main Text-Fabric dataset in
         `text-fabric-data` in one of these directories
@@ -213,9 +211,7 @@ Api reference : {APIREF}
 
         The best use of this is to get the metadata of features:
 
-        ```python
-        TF.features['fff'].metaData
-        ```
+            TF.features['fff'].metaData
 
         This works for all features `fff` that have been found,
         whether the feature is loaded or not.
@@ -755,9 +751,7 @@ Api reference : {APIREF}
         !!! hint "Destination directory"
             It is recommended to call this `importMQL` on a TF instance called with
 
-            ```python
-            TF = Fabric(locations=targetDir)
-            ```
+                TF = Fabric(locations=targetDir)
 
             Then the resulting features will be written in the targetDir.
             In fact, the rules are exactly the same as for `save()`.
@@ -773,24 +767,20 @@ Api reference : {APIREF}
             the parameter `otext`. This info will end up in the `otext.tf` feature.
             Pass it as a dictionary of keys and values, like so:
 
-            ```python
-            otext = {
-                'fmt:text-trans-plain': '{glyphs}{trailer}',
-                'sectionFeatures': 'book,chapter,verse',
-            }
-            ```
+                otext = {
+                    'fmt:text-trans-plain': '{glyphs}{trailer}',
+                    'sectionFeatures': 'book,chapter,verse',
+                }
 
         meta: dict
             Likewise, you can add a dictionary of keys and values that will added to
             the metadata of all features. Handy to add provenance data here:
 
-            ```python
-            meta = dict(
-                dataset='DLC',
-                datasetName='Digital Language Corpus',
-                author="That 's me",
-            )
-            ```
+                meta = dict(
+                    dataset='DLC',
+                    datasetName='Digital Language Corpus',
+                    author="That 's me",
+                )
         """
 
         tmObj = self.tmObj

@@ -11,22 +11,18 @@ class Transcription(object):
 
     Invoke the transcription functionality as follows:
 
-    ```python
-    from tf.writing.transcription import Transcription
-    ```
+        from tf.writing.transcription import Transcription
 
     Some of the attributes and methods below are *class* attributes,
     others are instance attributes.
 
     A class attribute `aaa` can be retrieved by saying
 
-    ```Transcription.aaa```.
+        Transcription.aaa
 
     To retrieve an instance attribute, you need an instance first, like
 
-    ```python
-    tr = Transcription()
-    ```
+        tr = Transcription()
 
     and then you can say `tr.aaa`.
     """
@@ -138,15 +134,11 @@ class Transcription(object):
 
     Example: print the sof-pasuq:
 
-    ```python
-    print(Transcription.hebrew_mapping['00'])
-    ```
+        print(Transcription.hebrew_mapping['00'])
 
     Output:
 
-    ```
-    ׃
-    ```
+        ׃
     """
 
     hebrew_cons = ">BGDHWZXVJKLMNS<PYQRFCT"
@@ -353,15 +345,11 @@ class Transcription(object):
 
     Example: print the semkath-final:
 
-    ```python
-    print(Transcription.syriac_mapping['s'])
-    ```
+        print(Transcription.syriac_mapping['s'])
 
     Output:
 
-    ```
-    ܤ
-    ```
+        ܤ
     """
 
     trans_syriac_pat = re.compile(r"([AE@IU][12]?|=[.#:\^/\\]|[\^#][!:\\]|.)")
@@ -434,29 +422,21 @@ class Transcription(object):
 
     Example: print the beh
 
-    ```python
-    print(Transcription.syriac_mapping['b'])
-    ```
+        print(Transcription.syriac_mapping['b'])
 
     Output:
 
-    ```
-    ب
-    ```
+        ب
 
     Maps an Arabic letter in unicode to its transliteration
 
     Example: print the beh transliteration
 
-    ```python
-    print(Transcription.syriac_mapping['ب'])
-    ```
+        print(Transcription.syriac_mapping['ب'])
 
     Output:
 
-    ```
-    b
-    ```
+        b
     """
 
     arabic_mappingi = dict((v, k) for (k, v) in arabic_mapping.items())
@@ -514,15 +494,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.suffix_and_finales('71T_H@>@95REY00'))
-        ```
+            print(Transcription.suffix_and_finales('71T_H@>@95REY00'))
 
         Output:
 
-        ```
-        ('71T_H@>@95REy', '00\n')
-        ```
+            ('71T_H@>@95REy', '00\n')
 
         Note that the `Y` has been replaced by `y`.
         """
@@ -599,19 +575,15 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.suppress_space('B.:&'))
-        print(Transcription.suppress_space('B.@R@74>'))
-        print(Transcription.suppress_space('71T_H@>@95REY00'))
-        ```
+            print(Transcription.suppress_space('B.:&'))
+            print(Transcription.suppress_space('B.@R@74>'))
+            print(Transcription.suppress_space('71T_H@>@95REY00'))
 
         Output:
 
-        ```
-        <re.Match object; span=(3, 4), match='&'>
-        None
-        <re.Match object; span=(13, 15), match='00'>
-        ```
+            <re.Match object; span=(3, 4), match='&'>
+            None
+            <re.Match object; span=(13, 15), match='00'>
         """
 
         return Transcription.noorigspace.search(word)
@@ -623,15 +595,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.to_etcbc_v('HAC.@MA73JIm'))
-        ```
+            print(Transcription.to_etcbc_v('HAC.@MA73JIm'))
 
         Output:
 
-        ```
-        HAC.@MAJIm
-        ```
+            HAC.@MAJIm
         """
 
         return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)
@@ -644,15 +612,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.to_etcbc_c('HAC.@MA73JIm'))
-        ```
+            print(Transcription.to_etcbc_c('HAC.@MA73JIm'))
 
         Output:
 
-        ```
-        H#MJM
-        ```
+            H#MJM
 
         Note that the pointed shin (`C`) is replaced by an unpointed one (`#`).
         """
@@ -676,15 +640,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.to_hebrew('HAC.@MA73JIm'))
-        ```
+            print(Transcription.to_hebrew('HAC.@MA73JIm'))
 
         Output:
 
-        ```
-        הַשָּׁמַ֖יִם
-        ```
+            הַשָּׁמַ֖יִם
         """
 
         word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
@@ -697,15 +657,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.to_hebrew_v('HAC.@MA73JIm'))
-        ```
+            print(Transcription.to_hebrew_v('HAC.@MA73JIm'))
 
         Output:
 
-        ```
-        הַשָּׁמַיִם
-        ```
+            הַשָּׁמַיִם
         """
 
         return Transcription.trans_hebrew_pat.sub(
@@ -719,15 +675,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.to_hebrew_c('HAC.@MA73JIm'))
-        ```
+            print(Transcription.to_hebrew_c('HAC.@MA73JIm'))
 
         Output:
 
-        ```
-        השמימ
-        ```
+            השמימ
 
         Note that final consonant forms are not being used.
         """
@@ -745,15 +697,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.to_hebrew_x('HAC.@MA73JIm'))
-        ```
+            print(Transcription.to_hebrew_x('HAC.@MA73JIm'))
 
         Output:
 
-        ```
-        הַשָּׁמַ֖יִם
-        ```
+            הַשָּׁמַ֖יִם
         """
 
         return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)
@@ -765,19 +713,15 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(Transcription.ph_simplify('ʔᵉlōhˈîm'))
-        print(Transcription.ph_simplify('māqˈôm'))
-        print(Transcription.ph_simplify('kol'))
-        ```
+            print(Transcription.ph_simplify('ʔᵉlōhˈîm'))
+            print(Transcription.ph_simplify('māqˈôm'))
+            print(Transcription.ph_simplify('kol'))
 
         Output:
 
-        ```
-        ʔlōhîm
-        måqôm
-        kål
-        ```
+            ʔlōhîm
+            måqôm
+            kål
 
         Note that the simplified version transliterates the qamets gadol and qatan
         to the same
@@ -793,15 +737,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(tr.from_hebrew('הָאָֽרֶץ׃'))
-        ```
+            print(tr.from_hebrew('הָאָֽרֶץ׃'))
 
         Output:
 
-        ```
-        H@>@95REy00
-        ```
+            H@>@95REy00
         """
 
         return "".join(
@@ -815,15 +755,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(tr.to_syriac('MKSJN'))
-        ```
+            print(tr.to_syriac('MKSJN'))
 
         Output:
 
-        ```
-        ܡܟܣܝܢ
-        ```
+            ܡܟܣܝܢ
         """
 
         return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)
@@ -835,15 +771,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(tr.from_syriac('ܡܟܣܝܢ'))
-        ```
+            print(tr.from_syriac('ܡܟܣܝܢ'))
 
         Output:
 
-        ```
-        MKSJN
-        ```
+            MKSJN
         """
 
         return "".join(self.syriac_mappingi.get(x, x) for x in word)
@@ -865,15 +797,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(tr.to_arabic('bisomi'))
-        ```
+            print(tr.to_arabic('bisomi'))
 
         Output:
 
-        ```
-        بِسْمِ
-        ```
+            بِسْمِ
         """
 
         return "".join(Transcription.arabic_mapping.get(x, x) for x in word)
@@ -885,15 +813,11 @@ class Transcription(object):
 
         Example:
 
-        ```python
-        print(tr.from_arabic('بِسْمِ'))
-        ```
+            print(tr.from_arabic('بِسْمِ'))
 
         Output:
 
-        ```
-        bisomi
-        ```
+            bisomi
         """
 
         return "".join(Transcription.arabic_mappingi.get(x, x) for x in word)

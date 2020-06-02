@@ -23,13 +23,11 @@ class Text(object):
 
         Here we take the BHSA as example: `bookName()` and `bookNode()`
 
-    ``` python
-    T.bookName(node, lang='en')
-    T.bookNode(name, lang='en')
-    ```
+            T.bookName(node, lang='en')
+            T.bookNode(name, lang='en')
 
-    with node:int the node in question, name:str the name in question,
-    and `lang='en'` the language of the book name.
+        with node:int the node in question, name:str the name in question,
+        and `lang='en'` the language of the book name.
     """
 
     def __init__(self, api):

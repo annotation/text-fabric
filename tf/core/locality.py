@@ -26,9 +26,7 @@ class Locality(object):
           Even if an `L`-function returns a single node, it is packed in a *tuple*.
           So to get the node itself, you have to dereference the tuple:
 
-          ```python
-          L.u(node)[0]
-          ```
+              L.u(node)[0]
 
     !!! caution "Locality and node types"
         When using `tf.core.nodes.Nodes.sortNodes` and the `L` methods,

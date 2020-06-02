@@ -27,88 +27,90 @@ But you can also create apps on your system and work with them.
 
 Each TF-*app* consists of a folder `code` with:
 
-static
-:   A folder with styles, fonts and logos, to be used by web servers such as the the
-    text-fabric browser, see `tf.server.web`.
+### static
 
-    In particular, `display.css` contains additional styles used for pretty displays.
-    These styles will be programmatically combined with other styles,
-    to deliver them to the TF browser on the one hand, and to Jupyter notebooks
-    on the other hand.
+A folder with styles, fonts and logos, to be used by web servers such as the the
+text-fabric browser, see `tf.server.web`.
 
-config.yaml
-:   Settings to feed the advanced API for this app. See `tf.applib.settings`.
+In particular, `display.css` contains additional styles used for pretty displays.
+These styles will be programmatically combined with other styles,
+to deliver them to the TF browser on the one hand, and to Jupyter notebooks
+on the other hand.
 
-app.py
-:   Corpus dependent helpers for the advanced API.
+### config.yaml
 
-other modules
-:   If you organize bits of the functionality of a TF-app into modules
-    to be imported by `app.py`, you can put them in this same directory.
+Settings to feed the advanced API for this app. See `tf.applib.settings`.
 
-    !!! caution "Do not `import` app-dependent modules"
-        If you import these other modules by means of the Python import system using 
-        `import module` or `from module import name` then everything works fine until you
-        load two apps in the same program, that in turn load their other modules.
-        As long as different apps load modules with different names, there is no problem.
-        But if two apps both have a module with the same name, then the first of them
-        will be loaded, and both apps use the same code.
+### app.py
 
-        In order to prevent this, you can use the function `loadModule()` to
-        dynamically load these modules. They will be given an app-dependent internal
-        name, so the Python importer will not conflate them.
+Corpus dependent helpers for the advanced API.
 
-    !!! explanation "loadModule()"
-        Here is how you load auxiliary modules in your `app.py`.
-        The example is taken from the `uruk` app, which loads
-        two modules, `atf` and `image`.
+### other modules
 
-        `atf` is a bunch of functions that enrich the api of the app.
-        The `atf` module contains a function that adds all these functions
-        to an object: 
-        [`atfApi`](https://github.com/annotation/app-uruk/blob/master/code/atf.py)
+If you organize bits of the functionality of a TF-app into modules
+to be imported by `app.py`, you can put them in this same directory.
 
-        ```python
-        from tf.applib.app import loadModule
+!!! caution "Do not `import` app-dependent modules"
+    If you import these other modules by means of the Python import system using 
+    `import module` or `from module import name` then everything works fine until you
+    load two apps in the same program, that in turn load their other modules.
+    As long as different apps load modules with different names, there is no problem.
+    But if two apps both have a module with the same name, then the first of them
+    will be loaded, and both apps use the same code.
 
-        class TfApp(App):
-            def __init__(app, *args, silent=False, **kwargs):
-                app.transform_ctype = types.MethodType(transform_ctype, app)
-                app.transform_prime = types.MethodType(transform_prime, app)
-                app.transform_atf = types.MethodType(transform_atf, app)
+    In order to prevent this, you can use the function `loadModule()` to
+    dynamically load these modules. They will be given an app-dependent internal
+    name, so the Python importer will not conflate them.
 
-                atf = loadModule("atf", *args)
-                atf.atfApi(app)
-                app.atf = atf
-                super().__init__(*args, silent=silent, **kwargs)
-                app.image = loadModule("image", *args)
+!!! explanation "loadModule()"
+    Here is how you load auxiliary modules in your `app.py`.
+    The example is taken from the `uruk` app, which loads
+    two modules, `atf` and `image`.
 
-                app.image.getImagery(app, silent, checkout=kwargs.get("checkout", ""))
+`atf` is a bunch of functions that enrich the api of the app.
+The `atf` module contains a function that adds all these functions
+to an object: 
+[`atfApi`](https://github.com/annotation/app-uruk/blob/master/code/atf.py)
 
-                app.reinit()
+```python
+from tf.applib.app import loadModule
 
+class TfApp(App):
+    def __init__(app, *args, silent=False, **kwargs):
+        app.transform_ctype = types.MethodType(transform_ctype, app)
+        app.transform_prime = types.MethodType(transform_prime, app)
+        app.transform_atf = types.MethodType(transform_atf, app)
 
-        ```
+        atf = loadModule("atf", *args)
+        atf.atfApi(app)
+        app.atf = atf
+        super().__init__(*args, silent=silent, **kwargs)
+        app.image = loadModule("image", *args)
 
-        The place to put the `loadModule()` calls is in the `__init()__` method of the
-        `TfApp` object, before the call to `super().__init()`.
-        Here the name of the app and the path to the code directory of the
-        app are known.
+        app.image.getImagery(app, silent, checkout=kwargs.get("checkout", ""))
 
-        The first argument for `loadModule()` is the file name of the module,
-        without the `.py`.
+        app.reinit()
+```
 
-        `loadModule()` needs the app name and the path to the code,
-        but we pass it all `*args`, received by `__init__()`.
+The place to put the `loadModule()` calls is in the `__init()__` method of the
+`TfApp` object, before the call to `super().__init()`.
+Here the name of the app and the path to the code directory of the
+app are known.
 
-        The result of loading the module is a code object,
-        from which you can get all the names defined by the module and their semantics.
+The first argument for `loadModule()` is the file name of the module,
+without the `.py`.
 
-        In the `atf` case, we use the `atfApi()` function of the module to add 
-        a bunch of functions defined in that module as methods to the TfApp object.
+`loadModule()` needs the app name and the path to the code,
+but we pass it all `*args`, received by `__init__()`.
 
-        In the `image` case, we add the code object as an attribute to the TfApp object,
-        so that all its methods can retrieve all names defined by the `image` module.
+The result of loading the module is a code object,
+from which you can get all the names defined by the module and their semantics.
+
+In the `atf` case, we use the `atfApi()` function of the module to add 
+a bunch of functions defined in that module as methods to the TfApp object.
+
+In the `image` case, we add the code object as an attribute to the TfApp object,
+so that all its methods can retrieve all names defined by the `image` module.
 
 ## Implementation
 
@@ -116,22 +118,23 @@ Most parts of the advanced API are implemented in the
 [api](https://github.com/annotation/text-fabric/blob/master/tf/applib)
 modules of TF.
 
-Two contexts
-:   Most functions with the `app` argument are meant to perform their duty
-    in two contexts:
+### Two contexts
 
-    * when called in a Jupyter notebook they deliver output meant
-      for a notebook output cell, using methods provided by the `ipython` package.
-    * when called by the web app they deliver output meant for the TF browser website,
-      generating raw HTML.
+Most functions with the `app` argument are meant to perform their duty
+in two contexts:
 
-    When we construct the rich, app-dependent API,
-    we let it know whether it is constructed for the purposes of the Jupyter notebook,
-    or for the purposes of the web app.
+* when called in a Jupyter notebook they deliver output meant
+  for a notebook output cell, using methods provided by the `ipython` package.
+* when called by the web app they deliver output meant for the TF browser website,
+  generating raw HTML.
 
-    We set the attribute `_browse` on the `app` object to `True` 
-    if we use the `app` in the web app context, otherwise in a programming context.
+When we construct the rich, app-dependent API,
+we let it know whether it is constructed for the purposes of the Jupyter notebook,
+or for the purposes of the web app.
 
-    Most of the code in most functions is independent of `_browse`.
-    The main difference is how to deliver the result:
-    by a call to an IPython display method, or by returning raw HTML.
+We set the attribute `_browse` on the `app` object to `True` 
+if we use the `app` in the web app context, otherwise in a programming context.
+
+Most of the code in most functions is independent of `_browse`.
+The main difference is how to deliver the result:
+by a call to an IPython display method, or by returning raw HTML.

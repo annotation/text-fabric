@@ -56,11 +56,15 @@ sudo apt install python3-pip
 
 ### Installation
 
-```sh tab="mac or linux (non-anaconda)"
+(macos or linux (non-anaconda))
+
+```sh
 pip3 install text-fabric
 ```
 
-```sh tab="windows and/or anaconda"
+(windows or linux (anaconda))
+
+```sh
 pip install text-fabric
 ```
 

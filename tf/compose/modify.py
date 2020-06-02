@@ -121,12 +121,12 @@ def modify(
         The result feature may exist already. Also then there is a risk of conflict.
         Again, the merge result wins.
 
-        ```python
-        mergeFeatures=dict(
-            resultFeature1=[feat1, feat2],
-            resultFeature2=[feat3, feat4],
-        ),
-        ```
+        Example
+        -------
+            mergeFeatures=dict(
+                resultFeature1=[feat1, feat2],
+                resultFeature2=[feat3, feat4],
+            ),
 
         If the resulting feature is new, or needs a new description, you can
         provide metadata in the `featureMeta` argument.
@@ -149,7 +149,19 @@ def modify(
         in, overriding assignments of the existing feature if there is a conflict.
         The meta data of the old and new feature will also be merged.
 
-        This parameter must have this shape as indicated below.
+        This parameter must have this shape:
+
+        Example
+        -------
+            addFeatures=dict(
+                nodeFeatures=dict(
+                  feat1=data1,
+                  feat2=data2,
+                ),
+                edgeFeatures=dict(
+                  feat3=data3,
+                  feat4=data4,
+                ),
 
         If the resulting features are new, or need a new description, you can
         provide metadata in the `featureMeta` argument.
@@ -165,7 +177,45 @@ def modify(
         of the new node type.
         These features can be used to discriminate between the merged types.
 
-        This parameter must have this shape as indicated below.
+        This parameter must have this shape:
+
+        Example
+        -------
+            mergeTypes=dict(
+                outTypeA=(
+                    'inType1',
+                    'inType2',
+                ),
+                outTypeB=(
+                    'inType3',
+                    'inType4',
+                ),
+            )
+
+        Example
+        -------
+            mergeTypes=dict(
+                outTypeA=dict(
+                    inType1=dict(
+                        featureI=valueI,
+                        featureK=valueK,
+                    ),
+                    inType2=dict(
+                        featureL=valueL,
+                        featureM=valueM,
+                    ),
+                ),
+                outTypeB=dict(
+                    inType3=dict(
+                        featureN=valueN,
+                        featureO=valueO,
+                    ),
+                    inType4=dict(
+                        featureP=valueP,
+                        featureQ=valueQ,
+                    ),
+                ),
+            )
 
         It does not matter if these types and features already occur.
         The outTypes may be existing types of really new types.
@@ -199,14 +249,13 @@ def modify(
         will be removed, and features that assign values to these nodes will have
         those assignments removed.
 
-        !!! example
-            ```python
+        Example
+        -------
             deleteTypes=('line', 'sentence')
-            ```
 
-            ```python
+        Example
+        -------
             deleteTypes=(' line sentence ')
-            ```
 
         !!! caution "slot types"
             Deleting is all about non-slot types.
@@ -219,7 +268,24 @@ def modify(
         that type and how all those nodes map to slots.
         You can also add features that assign values to those nodes:
 
-        See below for an example.
+        Example
+        -------
+            dict(
+                nodeType1=dict(
+                    nodeFrom=from1,
+                    nodeTo=to1,
+                    nodeSlots=slots1,
+                    nodeFeatures=nFeatures1,
+                    edgeFeatures=eFeatures1,
+                ),
+                nodeType2=dict(
+                    nodeFrom=from2,
+                    nodeTo=to2,
+                    nodeSlots=slots2,
+                    nodeFeatures=nFeatures2,
+                    edgeFeatures=eFeatures2,
+                ),
+            ),
 
         The boundaries may be completely arbitrary, so if you get your nodes from another
         TF data source, you do not need to align their values.
@@ -243,13 +309,66 @@ def modify(
             If these features have values to nodes that are not within the boundaries
             of the new node type, those values will not be assigned but silently discarded.
 
-            See below.
+            Example
+            -------
+                dict(
+                    feat1=dict(
+                        n1=val1,
+                        n2=val2,
+                    ),
+                    feat2=dict(
+                        n1=val1,
+                        n2=val2,
+                    ),
+                ),
 
+            Edge features without values are specified like this:
+
+            Example
+            -------
+                dict(
+                    feat1=dict(
+                        n1={m1, m2},
+                        n2={m3, m4},
+                    ),
+                    feat2=dict(
+                        n1={m5, m6},
+                        n2={m7, m8},
+                    ),
+                ),
+
+            Edge features with values are specified like this:
+
+            Example
+            -------
+                dict(
+                    feat1=dict(
+                        n1={m1: v1, m2: v2},
+                        n2={m3: v3, m4: v4},
+                    ),
+                    feat2=dict(
+                        n1={m5: v5, m6: v6},
+                        n2={m7: v7, m8: v8},
+                    ),
+                ),
 
     featureMeta: dict, optional `None`
         If the features you have specified in one of the paramers above are new,
         do not forget to pass metadata for them in this  parameter
-        It is especially important to state the value type, see below.
+        It is especially important to state the value type:
+
+        Example
+        -------
+            featureMeta=dict(
+                featureI=dict(
+                  valueType='int',
+                  description='level of node'
+                ),
+                featureK=dict(
+                  valueType='str',
+                  description='subtype of node'
+                ),
+            ),
 
         You can also tweak the section/structure configuration and the
         text-formats that are specified in the `otext` feature.
@@ -262,145 +381,6 @@ def modify(
 
     silent: boolean, optional `False`
         Suppress or enable informational messages.
-
-    Shape of `addFeatures`:
-
-    ```python
-    addFeatures=dict(
-        nodeFeatures=dict(
-          feat1=data1,
-          feat2=data2,
-        ),
-        edgeFeatures=dict(
-          feat3=data3,
-          feat4=data4,
-        ),
-    ```
-
-    Shape of `mergeTypes`:
-
-    ```python
-    mergeTypes=dict(
-        outTypeA=(
-            'inType1',
-            'inType2',
-        ),
-        outTypeB=(
-            'inType3',
-            'inType4',
-        ),
-    )
-    ```
-
-    or
-
-    ```python
-    mergeTypes=dict(
-        outTypeA=dict(
-            inType1=dict(
-                featureI=valueI,
-                featureK=valueK,
-            ),
-            inType2=dict(
-                featureL=valueL,
-                featureM=valueM,
-            ),
-        ),
-        outTypeB=dict(
-            inType3=dict(
-                featureN=valueN,
-                featureO=valueO,
-            ),
-            inType4=dict(
-                featureP=valueP,
-                featureQ=valueQ,
-            ),
-        ),
-    )
-    ```
-
-    Example of `addTypes`:
-
-    ```python
-    dict(
-        nodeType1=dict(
-            nodeFrom=from1,
-            nodeTo=to1,
-            nodeSlots=slots1,
-            nodeFeatures=nFeatures1,
-            edgeFeatures=eFeatures1,
-        ),
-        nodeType2=dict(
-            nodeFrom=from2,
-            nodeTo=to2,
-            nodeSlots=slots2,
-            nodeFeatures=nFeatures2,
-            edgeFeatures=eFeatures2,
-        ),
-    ),
-    ```
-
-    Feature specs in `addTypes`
-
-    Node features are specified like this:
-
-    ```python
-    dict(
-        feat1=dict(
-            n1=val1,
-            n2=val2,
-        ),
-        feat2=dict(
-            n1=val1,
-            n2=val2,
-        ),
-    ),
-    ```
-
-    Edge features without values are specified like this:
-
-    ```python
-    dict(
-        feat1=dict(
-            n1={m1, m2},
-            n2={m3, m4},
-        ),
-        feat2=dict(
-            n1={m5, m6},
-            n2={m7, m8},
-        ),
-    ),
-    ```
-
-    Edge features with values are specified like this:
-
-    ```python
-    dict(
-        feat1=dict(
-            n1={m1: v1, m2: v2},
-            n2={m3: v3, m4: v4},
-        ),
-        feat2=dict(
-            n1={m5: v5, m6: v6},
-            n2={m7: v7, m8: v8},
-        ),
-    ),
-    ```
-
-    Example of `featureMeta`:
-
-    ```python
-    featureMeta=dict(
-        featureI=dict(
-          valueType='int',
-          description='level of node'
-        ),
-        featureK=dict(
-          valueType='str',
-          description='subtype of node'
-        ),
-    ),
-    ```
     """
 
     addFeatures = addFeatures or {}

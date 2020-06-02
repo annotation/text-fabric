@@ -25,7 +25,7 @@ tutorial.
 
 The `text-fabric` command has several optional command line arguments: 
 
-`--mod=...`
+    --mod=...
 
 By means of these arguments you can load extra features, either from your own
 system, or from GitHub:
@@ -85,15 +85,15 @@ local github
 
     Your own data should be in such a repo as well, e.g.
 
-    `ch-jensen/Semantic-mapping-of-participants/actor/tf`
+        ch-jensen/Semantic-mapping-of-participants/actor/tf
 
     or
 
-    `etcbc/lingo/heads/tf`
+       etcbc/lingo/heads/tf`
 
     or
 
-    `annotation/banks/sim/tf`
+       annotation/banks/sim/tf`
 
 synchronized with GitHub
 :   You must have your local repo contents synchronized with that on GitHub.
@@ -122,7 +122,8 @@ get data
     Based on the string `{org}/{repo}/{path}` it will find the online
     repository, check the latest release, find the zip file,
     download and expand it to your local
-    `~/text-fabric/data/{org}/{repo}/{path}`
+
+       ~/text-fabric/data/{org}/{repo}/{path}`
 
     If there are no releases, it will find the latest commit and use the
     data from there.
@@ -144,372 +145,389 @@ you take the trouble of publishing them as a zip file attached to a release/
 Here we describe the easiest workflow to work with your developing data with a view to share
 it much less often than you modify it.
 
-Produce in your local GitHub folder
-:   You probably have a program or notebook that synthesizes a bunch of new features.
-    It is a good idea to have that program in a version control system, and publish
-    it on GitHub, in a repository of your choice.
+### Produce in your local GitHub folder
 
-    Set up that program in such a way, that your features end up in the same repository,
-    in a folder of your choosing, but directly under a folder that corresponds with
-    the version of the main data source against which you are building your data.
+You probably have a program or notebook that synthesizes a bunch of new features.
+It is a good idea to have that program in a version control system, and publish
+it on GitHub, in a repository of your choice.
 
-    Currently, your features only live on your computer, in your local github folder.
-    You may or may not commit your local changes to the online GitHub.
-    But you do not want to create a new release and attach your zipped feature data to it yet.
+Set up that program in such a way, that your features end up in the same repository,
+in a folder of your choosing, but directly under a folder that corresponds with
+the version of the main data source against which you are building your data.
 
-    We use the existing
-    [annotation/banks/tf](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/convert.ipynb)
-    data as an example.
+Currently, your features only live on your computer, in your local github folder.
+You may or may not commit your local changes to the online GitHub.
+But you do not want to create a new release and attach your zipped feature data to it yet.
 
-    We assume you have this data locally, in 
+We use the existing
+[annotation/banks/tf](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/convert.ipynb)
+data as an example.
 
-    ```
-    ~/github/annotation/banks/tf
-    ```
+We assume you have this data locally, in 
 
-    under which there are versions such as `0.2`, which contain the actual `.tf` files.
+```
+~/github/annotation/banks/tf
+```
 
-    We are going to develop the `sim` feature, in
+under which there are versions such as `0.2`, which contain the actual `.tf` files.
 
-    ```
-    ~/github/annotation/banks/sim/tf
-    ```
+We are going to develop the `sim` feature, in
 
-Test the features
-:   When you want to load the new features, you can use
-    the `mod` parameter:
-    
-    ```python
-    use('banks', mod=f'annotation/banks/sim/tf')
-    ```
+```
+~/github/annotation/banks/sim/tf
+```
 
-    But TF then tries to download it from GitHub, or look it up from your `~/text-fabric-data`.
-    Both will fail, especially when you let TF manage your `~/text-fabric-data` directory.
+### Test the features
 
-    You have to pass 'clone' as the checkout option: 
+When you want to load the new features, you can use
+the `mod` parameter:
 
-    ```python
-    use('banks', mod=f'annotation/banks/sim/tf:clone')
-    ```
+```python
+use('banks', mod=f'annotation/banks/sim/tf')
+```
 
-    The `clone` option means: use local data under `~/github`.
-    With this set, TF looks in the right place inside your `~/github` directory.
-    It will not go online, and not look into `~/text-fabric-data`.
+But TF then tries to download it from GitHub, or look it up from your `~/text-fabric-data`.
+Both will fail, especially when you let TF manage your `~/text-fabric-data` directory.
 
-Commit and push your features
-:   When the time comes to share your new feature data, everything is already in place
-    to do that.
+You have to pass 'clone' as the checkout option: 
 
-    !!! caution "Write access"
-        You can only do the following steps for repositories for which you have write access,
-        so do not try to perform this on `annotation/banks` but use a repo of your own.**
+```python
+use('banks', mod=f'annotation/banks/sim/tf:clone')
+```
 
-    On the command line, go to the directory of your repository, and say
+The `clone` option means: use local data under `~/github`.
+With this set, TF looks in the right place inside your `~/github` directory.
+It will not go online, and not look into `~/text-fabric-data`.
 
-    ```sh
-    git add --all .
-    git commit -m "data update or whatever"
-    git push origin master
-    ```
+### Commit and push your features
 
-    and then your data is shared in the most basic way possible.
-    But very effectively.
+When the time comes to share your new feature data, everything is already in place
+to do that.
 
-    From now on, other users (and you too) can use that data by passing just the switch
+!!! caution "Write access"
+    You can only do the following steps for repositories for which you have write access,
+    so do not try to perform this on `annotation/banks` but use a repo of your own.**
 
-    ```python
-    use('banks', mod=f'annotation/banks/sim/tf')
-    ```
+On the command line, go to the directory of your repository, and say
 
-    without the `clone` option.
-    If you do this, you get a freshly downloaded copy of your features in
-    your `~/text-fabric-data` directory.
-    And every time you do this again, a check for updates will be performed.
+```sh
+git add --all .
+git commit -m "data update or whatever"
+git push origin master
+```
 
-Make a release
-:   If you want to single out a certain commit as stable data and give it a version number,
-    go to your repo on GitHub, click the releases link, and make a new release.
+and then your data is shared in the most basic way possible.
+But very effectively.
 
-    ![releases](../images/add-releases.png)
+From now on, other users (and you too) can use that data by passing just the switch
 
-    Then click *Draft a new release*
+```python
+use('banks', mod=f'annotation/banks/sim/tf')
+```
 
-    ![releases](../images/add-draft.png)
+without the `clone` option.
+If you do this, you get a freshly downloaded copy of your features in
+your `~/text-fabric-data` directory.
+And every time you do this again, a check for updates will be performed.
 
-    Fill in the details, especially the release version (something like `0.2`),
-    although nothing in the workflow depends on the exact form of the version number;
-    you will see the release version in the provenance, though.
+### Make a release
 
-    Click the button *Publish release*.
+If you want to single out a certain commit as stable data and give it a version number,
+go to your repo on GitHub, click the releases link, and make a new release.
 
-    Now your data is available to others.
+![releases](../images/add-releases.png)
 
-    Now the users of your data can refer to that copy by means of the version number.
-    By default, the data from the latest release will be downloaded,
-    and subsequent unreleased commits will be ignored.
+Then click *Draft a new release*
 
-Package into zip files
-:   If you share many features, or a whole TF dataset,
-    it is more economical to zip that data and attach it as a binary to the release.
+![releases](../images/add-draft.png)
 
-    It is vitally important for the TF workflows that that zip file has the right name 
-    and the right structure.
+Fill in the details, especially the release version (something like `0.2`),
+although nothing in the workflow depends on the exact form of the version number;
+you will see the release version in the provenance, though.
 
-    Text-Fabric comes with a command to create that zip file for you.
+Click the button *Publish release*.
 
-    Execute the following command in your terminal:
+Now your data is available to others.
 
-    ```sh
-    text-fabric-zip annotation/banks/tf
-    ```
+Now the users of your data can refer to that copy by means of the version number.
+By default, the data from the latest release will be downloaded,
+and subsequent unreleased commits will be ignored.
 
-    You'll see
+### Package into zip files
 
-    ```
-    Create release data for annotation/banks/tf
-    Found 2 versions
-    zip files end up in /Users/dirk/Downloads/annotation-release/banks
-    zipping annotation/banks           0.1 with  10 features ==> tf-0.1.zip
-    zipping annotation/banks           0.2 with  10 features ==> tf-0.2.zip
-    ```
+If you share many features, or a whole TF dataset,
+it is more economical to zip that data and attach it as a binary to the release.
 
-    and as a result you have this in your Downloads folder
+It is vitally important for the TF workflows that that zip file has the right name 
+and the right structure.
 
-    ```
-    ~/Downloads/annotation-release/banks:
-      tf-0.1.zip
-      tf-0.2.zip
-    ```
+Text-Fabric comes with a command to create that zip file for you.
 
-    Attach these versions, or just the newest version, to the release and publish the release.
-            
-    ![releases](../images/add-attach.png)
+Execute the following command in your terminal:
 
-    Zip your data with the `text-fabric-zip` command as explained above.
-    It will look into your local github directory, pickup the features from there,
-    zip them, and put the zip files in your Downloads folder. Then you can pick
-    that zip file up and attach it manually to a new release of your repository
-    on the online GitHub.
+```sh
+text-fabric-zip annotation/banks/tf
+```
 
-Continue developing your features
-:   Probably you'll make changes to your features after having published them.
-    Then you have the cutting edge version of your features in your local github
-    directory, and the published version in your text-fabric-data directory.
+You'll see
 
-    When you make new commits, users that call up your data in the standard way,
-    will still get the latest stable release.
+```
+Create release data for annotation/banks/tf
+Found 2 versions
+zip files end up in /Users/dirk/Downloads/annotation-release/banks
+zipping annotation/banks           0.1 with  10 features ==> tf-0.1.zip
+zipping annotation/banks           0.2 with  10 features ==> tf-0.2.zip
+```
 
-    But users that say 
+and as a result you have this in your Downloads folder
 
-    ```python
-    use('banks', mod=f'annotation/banks/sim/tf:hot')
-    ```
+```
+~/Downloads/annotation-release/banks:
+  tf-0.1.zip
+  tf-0.2.zip
+```
 
-    will get your cutting edge latest commit.
+Attach these versions, or just the newest version, to the release and publish the release.
+        
+![releases](../images/add-attach.png)
+
+Zip your data with the `text-fabric-zip` command as explained above.
+It will look into your local github directory, pickup the features from there,
+zip them, and put the zip files in your Downloads folder. Then you can pick
+that zip file up and attach it manually to a new release of your repository
+on the online GitHub.
+
+### Continue developing your features
+
+Probably you'll make changes to your features after having published them.
+Then you have the cutting edge version of your features in your local github
+directory, and the published version in your text-fabric-data directory.
+
+When you make new commits, users that call up your data in the standard way,
+will still get the latest stable release.
+
+But users that say 
+
+```python
+use('banks', mod=f'annotation/banks/sim/tf:hot')
+```
+
+will get your cutting edge latest commit.
 
 ## Use data
 
 Now we are just reading data, so the following steps you can perform literally,
 without fear of overwriting data.
 
-Check it out!
-:   When calling up data and a TF-app, you can go back in history:
-    to previous releases and previous commits, using a `checkout` parameter.
+### Check it out!
 
-    You have already seen it, and here we spell them out in greater detail.
+When calling up data and a TF-app, you can go back in history:
+to previous releases and previous commits, using a `checkout` parameter.
 
-    You can specify the checkout parameter separately for 
+You have already seen it, and here we spell them out in greater detail.
 
-    * the TF-app code (so you can go back to previous instantiations of the TF-app)
-    * the main data of the app plus its standard data modules
-    * every data-module that you include by means of the `--mod=` parameter.
+You can specify the checkout parameter separately for 
 
-    The values of the checkout parameters tell you to use data that is:
+* the TF-app code (so you can go back to previous instantiations of the TF-app)
+* the main data of the app plus its standard data modules
+* every data-module that you include by means of the `--mod=` parameter.
 
-    * `clone`: locally present under `~/github` in the appropriate place
-    * `local`: locally present under `~/text-fabric-data` in the appropriate place
-    * `latest`: from the latest online release
-    * `hot`: from the latest online commit
-    * `''`: (default):
-      from the latest online release, or if there are no releases,
-      from the latest online commit
-    * `2387abc78f9de...`: a concrete commit hash found on GitHub (under Commits)
-    * `v1.3`: a release tag found on GitHub (under Releases)
+The values of the checkout parameters tell you to use data that is:
 
-    You pass the checkout values as follows:
+* `clone`: locally present under `~/github` in the appropriate place
+* `local`: locally present under `~/text-fabric-data` in the appropriate place
+* `latest`: from the latest online release
+* `hot`: from the latest online commit
+* `''`: (default):
+  from the latest online release, or if there are no releases,
+  from the latest online commit
+* `2387abc78f9de...`: a concrete commit hash found on GitHub (under Commits)
+* `v1.3`: a release tag found on GitHub (under Releases)
 
-    * for the TF-app:
-      **after the app name**:
-      `bhsa:clone`, `oldbabylonian:local`, `quran`.
-      If you leave it out, it defaults to the empty string: latest release or commit.
-    * for the main data and standard data modules of the app:
-      **in the `checkout` parameter**: 
-      `checkout='clone'`, `checkout='local'`, `checkout=''`.
-      If you omit `checkout` out, it defaults to the empty string: latest release or commit.
-    * for the data that you call up as a module:
-      **after the module name**:
-      `annotation/banks/sim/tf:clone`, `annotation/banks/sim/tf:local`,
-      `annotation/banks/sim/tf`.
-      If you leave it out, it defaults to the empty string: latest release or commit.
+You pass the checkout values as follows:
 
-    The checkout parameter can be used in the `use()` function when you call up
-    Text-Fabric in a program (or notebook) and when you call up the text-fabric
-    browser on the command line:
+* for the TF-app:
+  **after the app name**:
+  `bhsa:clone`, `oldbabylonian:local`, `quran`.
+  If you leave it out, it defaults to the empty string: latest release or commit.
+* for the main data and standard data modules of the app:
+  **in the `checkout` parameter**: 
+  `checkout='clone'`, `checkout='local'`, `checkout=''`.
+  If you omit `checkout` out, it defaults to the empty string: latest release or commit.
+* for the data that you call up as a module:
+  **after the module name**:
+  `annotation/banks/sim/tf:clone`, `annotation/banks/sim/tf:local`,
+  `annotation/banks/sim/tf`.
+  If you leave it out, it defaults to the empty string: latest release or commit.
 
-    ```python tab="notebook or program"
-    use('banks:clone', checkout='latest', mod='annotation/banks/sim/tf:hot')
-    ```
+The checkout parameter can be used in the `use()` function when you call up
+Text-Fabric in a program (or notebook) and when you call up the text-fabric
+browser on the command line:
 
-    ```sh tab="TF browser"
-    text-fabric banks:clone --checkout=latest --mod=annotation/banks/sim/tf:hot
-    ```
+(in a program)
 
-    Note that you can pass different specifiers for the distinct portions of data and code
-    that you want to use.
+```python
+use('banks:clone', checkout='latest', mod='annotation/banks/sim/tf:hot')
+```
 
-    To see it in action, consult the [repo](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb) notebook.
+(on the command line)
 
-More about using data modules
-:   Suppose you have called up a data module:
+```sh
+text-fabric banks:clone --checkout=latest --mod=annotation/banks/sim/tf:hot
+```
 
-    ```python tab="notebook or program"
-    A = use('banks', mod='annotation/banks/sim/tf')
-    ```
+Note that you can pass different specifiers for the distinct portions of data and code
+that you want to use.
 
-    ```sh tab="TF browser"
-    text-fabric banks --mod=annotation/banks/sim/tf
-    ```
+To see it in action, consult the [repo](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb) notebook.
 
-    You can then use the features of the module in everywhere.
+### More about using data modules
 
-    Fill out this query:
+Suppose you have called up a data module:
 
-    ```
-    word letters~th
-    -sim=100> word
-    ```
+(in a program)
 
-    and expand the first result in Genesis 1:1.
+```python
+A = use('banks', mod='annotation/banks/sim/tf')
+```
 
-    The display looks like this:
+(on the command line)
 
-    ![sense](../images/add-sim.png)
+```sh
+text-fabric banks --mod=annotation/banks/sim/tf
+```
 
-    And if you export the data, the extra module is listed in the provenance.
+You can then use the features of the module in everywhere.
 
-    ![sense](../images/add-sim-prov.png)
+Fill out this query:
 
-    !!! explanation "Feature display in the TF browser"
-        You can use new features in queries.
-        Pretty displays will show those features automatically, because
-        all features used in a query are displayed in the expanded view.
+```
+word letters~th
+-sim=100> word
+```
 
-        If you want to see a feature that is not used in the query
-        you can add it as a trivial search criterion.
+and expand the first result in Genesis 1:1.
 
-        For example, if you want to see the `sense` feature when looking for phrases,
-        add it like this
+The display looks like this:
 
-        ```
-        clause
-          phrase sense*
-        ```
+![sense](../images/add-sim.png)
 
-        The `*` means: always true, so it will not influence the query result set,
-        only its display;
+And if you export the data, the extra module is listed in the provenance.
 
-        In fact, the feature sense is only present on nodes of type `word`.
-        But mentioning a feature anywhere in the query
-        will trigger the display wherever it occurs with a non-trivial values.
+![sense](../images/add-sim-prov.png)
 
-        The extra data modules are also shown in the provenance listings
-        when you export data from the browser.
+!!! explanation "Feature display in the TF browser"
+    You can use new features in queries.
+    Pretty displays will show those features automatically, because
+    all features used in a query are displayed in the expanded view.
 
-    !!! explanation "Feature display in a Jupyter notebook"
-        After the incantation, you see an overview of all features per module
-        where they come from, linked to their documentation or repository.
+If you want to see a feature that is not used in the query
+you can add it as a trivial search criterion.
 
-        You can use the new features exactly as you are used to, with `F` and `E`
-        (for edge features).
+For example, if you want to see the `sense` feature when looking for phrases,
+add it like this
 
-        They will also automatically show up in `pretty` displays,
-        provided you have run a query using them before.
+```
+clause
+  phrase sense*
+```
 
-        Alternatively, you can
-        tell which features you want to add to the display.
-        That can be done by `tf.applib.display.displaySetup` and
-        `tf.applib.display.displayReset` using the parameter `extraFeatures`.
+The `*` means: always true, so it will not influence the query result set,
+only its display;
 
-More modules at the same time
-:   Now that we get the hang of it, we would like to use multiple modules
-    added to a main data source.
+In fact, the feature sense is only present on nodes of type `word`.
+But mentioning a feature anywhere in the query
+will trigger the display wherever it occurs with a non-trivial values.
 
-    We go to the `bhsa` (Hebrew Bible) and use
-    the `heads` feature that Cody Kingham prepared in
-    [etcbc/lingo/heads](https://github.com/etcbc/lingo/tree/master/heads)
-    as well as the `actor` feature that Christian Høygaard-Jensen prepared in
-    [ch-jensen/Semantic-mapping-of-participants](https://github.com/ch-jensen/Semantic-mapping-of-participants)
-    We'll include it next to the valence data, by calling the TF browser like this:
+The extra data modules are also shown in the provenance listings
+when you export data from the browser.
 
-    ```sh
-    text-fabric bhsa --mod=etcbc/valence/tf,etcbc/lingo/heads/tf,ch-jensen/Semantic-mapping-of-participants/actor/tf
-    ```
+!!! explanation "Feature display in a Jupyter notebook"
+    After the incantation, you see an overview of all features per module
+    where they come from, linked to their documentation or repository.
 
-    Unsurprisingly: the `heads` and `actor` features and friends
-    are downloaded and made ready for import.
+You can use the new features exactly as you are used to, with `F` and `E`
+(for edge features).
 
-    You can test it by means of this query
+They will also automatically show up in `pretty` displays,
+provided you have run a query using them before.
 
-    ```
-    book book=Leviticus
-      phrase sense*
-        phrase_atom actor=KHN
-      -heads> word
-    ```
+Alternatively, you can
+tell which features you want to add to the display.
+That can be done by `tf.applib.display.displaySetup` and
+`tf.applib.display.displayReset` using the parameter `extraFeatures`.
 
-    Note that `heads` is an edge feature.
+### More modules at the same time
 
-    ![sense](../images/add-heads.png)
+Now that we get the hang of it, we would like to use multiple modules
+added to a main data source.
 
-    In a Jupyter notebook, it goes like this:
+We go to the `bhsa` (Hebrew Bible) and use
+the `heads` feature that Cody Kingham prepared in
+[etcbc/lingo/heads](https://github.com/etcbc/lingo/tree/master/heads)
+as well as the `actor` feature that Christian Høygaard-Jensen prepared in
+[ch-jensen/Semantic-mapping-of-participants](https://github.com/ch-jensen/Semantic-mapping-of-participants)
+We'll include it next to the valence data, by calling the TF browser like this:
 
-    ```python
-    from tf.app import use
-    A = use(
-        'bhsa',
-        mod=(
-            'etcbc/valence/tf,'
-            'etcbc/lingo/heads/tf,'
-            'ch-jensen/Semantic-mapping-of-participants/actor/tf'
-        ),
-        hoist=globals(),
-    )
-    ```
+```sh
+text-fabric bhsa --mod=etcbc/valence/tf,etcbc/lingo/heads/tf,ch-jensen/Semantic-mapping-of-participants/actor/tf
+```
 
-    ![sense](../images/add-incantation.png)
+Unsurprisingly: the `heads` and `actor` features and friends
+are downloaded and made ready for import.
 
-    Now you can run the same query as before:
+You can test it by means of this query
 
-    ```python
-    results = A.search('''
-    book book=Leviticus
-      phrase sense*
-        phrase_atom actor=KHN
-      -heads> word
-    ''')
-    ```
+```
+book book=Leviticus
+  phrase sense*
+    phrase_atom actor=KHN
+  -heads> word
+```
 
-    And let's see results in pretty display.
-    We have to manually declare that we want to see the `sense` and `actor` feature.
+Note that `heads` is an edge feature.
 
-    ```
-    A.displaySetup(extraFeatures='sense actor')
-    A.show(results, start=8, end=8, condensed=True, condenseType='verse')
-    ```
+![sense](../images/add-heads.png)
 
-    See the
-    [share](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/share.ipynb)
-    tutorial.
+In a Jupyter notebook, it goes like this:
+
+```python
+from tf.app import use
+A = use(
+    'bhsa',
+    mod=(
+        'etcbc/valence/tf,'
+        'etcbc/lingo/heads/tf,'
+        'ch-jensen/Semantic-mapping-of-participants/actor/tf'
+    ),
+    hoist=globals(),
+)
+```
+
+![sense](../images/add-incantation.png)
+
+Now you can run the same query as before:
+
+```python
+results = A.search('''
+book book=Leviticus
+  phrase sense*
+    phrase_atom actor=KHN
+  -heads> word
+''')
+```
+
+And let's see results in pretty display.
+We have to manually declare that we want to see the `sense` and `actor` feature.
+
+```
+A.displaySetup(extraFeatures='sense actor')
+A.show(results, start=8, end=8, condensed=True, condenseType='verse')
+```
+
+See the
+[share](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/share.ipynb)
+tutorial.
 
 ## Exercise
 

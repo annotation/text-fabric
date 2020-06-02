@@ -10,22 +10,30 @@ See the app-specific tutorials in
 When TF apps have been updated, they will be autoloaded to the newest version
 provided you call the app as follows:
 
-```python tab="notebook or program"
+(in a program)
+
+```python
 use('appName:latest', ... )
 ```
 
-```sh tab="TF browser"
+(on the command line)
+
+```sh
 text-fabric appName:latest
 ```
 
 This will get you the newest stable version.
 To get the newest unstable version:
 
-```python tab="notebook or program"
+(in a program)
+
+```python
 use('appName:hot', ...)
 ```
 
-```sh tab="TF browser"
+(on the command line)
+
+```sh
 text-fabric appName:hot
 ```
 
@@ -37,6 +45,13 @@ text-fabric appName:hot
 ## 8
 
 ### 8.2
+
+#### 8.2.2
+
+2020-06-02
+
+When you load a corpus by means of `use`, you can now also override the config settings of the
+app on the fly. See `tf.applib.app.App`
 
 #### 8.2.1
 
@@ -72,20 +87,18 @@ all exposed methods now fall under one of `A TF N F E L T S`.
     If you upgrade TF to this version, you also have to upgrade the
     TF apps you work with.
     You can do that by adding the checkout specifier `latest` when
-    you call the corpus, e.g. for the BHSA:
+    you call the corpus, e.g. for the BHSA (one time is enough):
 
-    ```
-    A = use("bhsa:latest", hoist=globals()")
-    ```
+```python
+A = use("bhsa:latest", hoist=globals()")
+```
 
-    One time is enough.
 
 !!! caution "logging functions"
     The methods `info` `error` `warning` are no longer hoisted to the
     global name space.
 
     Use `A.info` or `TF.info` for these methods.
-
 
 !!! caution "node functions"
     `N()` has become: `N.walk()`
@@ -555,9 +568,13 @@ at the end where the performance parameters are tweaked.
 2019-05-20
 
 New functions
-`cv.active()`
+
+    cv.active(  
+
 and
-`cv.activeTypes()`
+
+    cv.activeTypes()
+
 in the walker conversion (requested by Ernst Boogert). 
 
 #### 7.7.5
@@ -862,7 +879,9 @@ Further tweaks in layout of `plain()`.
 2019-03-13
 
 API addition for `E` (edges):
-`E.feature.b()`
+
+    E.feature.b()
+
 gives the symmetrical closure
 of the edges under `feature`. That means it combines the results of
 `E.feature.f()` and `E.feature.t()`.
@@ -1819,18 +1838,18 @@ Small fix: command line args for text-fabric.
     When the TF web interface is started, it cleans up remnant process that might get in the way otherwise.
     You can also say
 
-    ```
-    text-fabric -k
-    ```
+```
+text-fabric -k
+```
 
-    to kill all remnant processes,
-    or
+to kill all remnant processes,
+or
 
-    ```
-    text-fabric -k corpus
-    ```
+```
+text-fabric -k corpus
+```
 
-    to kill the processes for a specific corpus only.
+to kill the processes for a specific corpus only.
 
 !!! abstract "Manual node entry"
     You can enter nodes manually in the TF browser.
@@ -1977,25 +1996,19 @@ Docs and metadata update
 
     In search templates I recently added things like
 
-    ```
-      word vt!
-    ```
+        word vt!
 
     which checks for words that do not have a value for feature `vt`.
 
     The syntax for this has now changed to
 
-    ```
-      word vt#
-    ```
+        word vt#
 
 *   Unequal (#) in feature value conditions.
 
     Now you can say things like
 
-    ```
-      word vt#infa|infc
-    ```
+        word vt#infa|infc
 
     meaning that the value of feature is not one of `infa`, `infc`.
 

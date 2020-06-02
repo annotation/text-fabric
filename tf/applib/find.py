@@ -19,6 +19,10 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
     of the config settings with the current version of Text-Fabric.
 
     If there is no such file, fill in a few basic settings.
+
+    See Also
+    --------
+    tf.applib.settings: options allowed in `config.yaml`
     """
 
     configPath = f"{appPath}/{APP_CONFIG}"
