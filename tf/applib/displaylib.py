@@ -1,13 +1,12 @@
 from collections import namedtuple
+from itertools import chain
 
 from .helpers import getText, htmlSafe, NB
 from .highlight import getHlAtt
 from ..core.text import DEFAULT_FORMAT
-from ..core.nodes import GAP_START, GAP_END
 from ..core.helpers import (
     htmlEsc,
     rangesFromList,
-    rangesFromSet,
     console,
 )
 from .settings import ORIG
@@ -107,6 +106,191 @@ __pdoc__["NodeContext.cls"] = (
     " for the container, the label, and the children of the node;"
     " might be set by prettyCustom"
 )
+
+
+# UNRAVEL and  FRIENDS
+
+
+def unravel(app, isPretty, dContext, oContext, n):
+    api = app.api
+    E = api.E
+    F = api.F
+    L = api.L
+    N = api.N
+    eOslots = E.oslots.s
+    fOtypeV = F.otype.v
+    fOtypeAll = F.otype.all
+    nType = fOtypeV(n)
+    sortKeyChunk = N.sortKeyChunk
+    sortKeyChunkLength = N.sortKeyChunkLength
+
+    aContext = app.context
+    verseTypes = aContext.verseTypes
+    showVerseInTuple = aContext.showVerseInTuple
+    isHidden = aContext.isHidden
+
+    full = dContext.full
+    showHidden = dContext.showHidden
+
+    inTuple = oContext.inTuple
+    ltr = oContext.ltr
+
+    startCls = "r" if ltr == "rtl" else "l"
+    endCls = "l" if ltr == "rtl" else "r"
+
+    chunks = None
+
+    isBigType = (
+        inTuple
+        if not isPretty and nType in verseTypes and not showVerseInTuple
+        else _getBigType(app, dContext, nType)
+    )
+
+    # determine intersecting nodes
+
+    iNodes = set(L.i(n)) if full or not isBigType else set()
+
+    if not showHidden:
+        iNodes -= set(m for m in iNodes if fOtypeV(m) in isHidden)
+
+    iNodes.add(n)
+
+    # chunkify all nodes and determine all true boundaries:
+    # of nodes and of their maximal contiguous chunks
+
+    chunks = {}
+    boundaries = {}
+
+    for n in iNodes:
+        nType = fOtypeV(n)
+        slots = eOslots(n)
+        ranges = rangesFromList(slots)
+        bounds = {}
+        minSlot = min(slots)
+        maxSlot = max(slots)
+
+        # for each node n the boundaries value is a dict keyed by slots
+        # and valued by a tuple: (left bound, right bound)
+        # where bound is:
+        # None if there is no left resp. right boundary there
+        # True if the left resp. right node boundary is there
+        # False if a left resp. right inner chunk boundary is there
+
+        for r in ranges:
+            chunks.setdefault(nType, set()).add((n, r))
+            (b, e) = r
+            bounds[b] = ((b == minSlot), (None if b != e else e == maxSlot))
+            bounds[e] = ((b == minSlot if b == e else None), (e == maxSlot))
+        boundaries[n] = bounds
+
+    # fragmentize all chunks
+
+    typeLen = len(fOtypeAll) - 1  # exclude the slot type
+
+    for (p, pType) in enumerate(fOtypeAll):
+        pChunks = chunks.get(pType, ())
+        if not pChunks:
+            continue
+
+        # fragmentize nodes of the same type, largest first
+
+        splits = []
+
+        pChunksLen = len(pChunks)
+        pSortedChunks = sorted(pChunks, key=sortKeyChunkLength)
+        for (i, (n1, (b1, e1))) in enumerate(pSortedChunks):
+            for j in range(i + 1, pChunksLen):
+                (n2, (b2, e2)) = pSortedChunks[j]
+                if b2 <= b1 <= e2:
+                    splits.append(((n2, (b2, e2)), b1))
+                elif b2 <= e1 <= e2:
+                    splits.append(((n2, (b2, e2)), e1))
+
+        # apply the splits for nodes of this type
+
+        for (chunk, s) in splits:
+            pChunks.remove(chunk)
+            (n, (b, e)) = chunk
+            pChunks.add((n, (b, s)))
+            pChunks.add((n, (s, e)))
+
+        # fragmentize nodes of other types
+
+        for q in range(p + 1, typeLen):
+            qType = fOtypeAll[q]
+            qChunks = chunks.get(qType, ())
+            splits = []
+            if not qChunks:
+                continue
+            for (n1, (b1, e1)) in pChunks:
+                for (n2, (b2, e2)) in qChunks:
+                    if b2 <= b1 <= e2:
+                        splits.append(((n2, (b2, e2)), b1))
+                    elif b2 <= e1 <= e2:
+                        splits.append(((n2, (b2, e2)), e1))
+            for (chunk, s) in splits:
+                qChunks.remove(chunk)
+                (n, (b, e)) = chunk
+                qChunks.add((n, (b, s)))
+                qChunks.add((n, (s, e)))
+
+    # collect all chunks for all types in one list, ordered canonically
+
+    chunks = sorted(chain.from_iterable(chunks.values()), key=sortKeyChunk)
+
+    # add boundary classes
+
+    chunkx = []
+    for (n, (b, e)) in chunks:
+        bounds = boundaries[n]
+        css = []
+        code = bounds[b][0] if b in bounds else None
+        cls = f"{startCls}no" if code is None else "" if code else startCls
+        if cls:
+            css.append(cls)
+        code = bounds[e][1] if e in bounds else None
+        cls = f"{endCls}no" if code is None else "" if code else endCls
+        if cls:
+            css.append(cls)
+
+        chunkx.append((n, (b, e), ' '.join(css)))
+
+    # stack the chunks hierarchically
+
+    tree = (None, [])
+    parent = {}
+    rightmost = None
+
+    for chunk in chunkx:
+        rightnode = rightmost
+        added = False
+
+        while rightnode is not None:
+            (br, er) = rightnode[0][1]
+            cr = rightnode[1]
+            if e <= er:
+                rightmost = (chunk, [])
+                cr.append(rightmost)
+                parent[chunk] = rightnode
+                added = True
+                break
+
+            rightnode = parent[rightmost[0]]
+
+        if not added:
+            rightmost = (chunk, [])
+            tree[1].append(rightmost)
+            parent[chunk] = tree
+
+    return tree[1]
+
+
+def printChunks(app, chunks, level):
+    fOtypeV = app.api.F.otype.v
+    indent = QUAD * level
+    for ((n, (b, e), cls), children) in chunks:
+        print(f"{indent}{fOtypeV(n)} {n} [{b}:{e}] {cls}")
+        printChunks(app, children, level + 1)
 
 
 # PLAIN LOW-LEVEL
@@ -905,9 +1089,7 @@ def _getChildren(app, isPretty, dContext, oContext, n, nType, slots, called, don
         toHide = isHidden - baseTypes
         children = tuple(ch for ch in children if fOtypev(ch) not in toHide)
 
-    return chunkify(
-        app, ltr, ((n, eOslots(n)) for n in children), substrate, called,
-    )
+    return chunkify(app, ltr, ((n, eOslots(n)) for n in children), substrate, called,)
 
 
 def chunkify(app, ltr, protoChunks, substrate, called):
@@ -972,51 +1154,7 @@ def chunkify(app, ltr, protoChunks, substrate, called):
     tf.core.nodes: canonical ordering
     """
 
-    api = app.api
-    N = api.N
-    sortKeyChunk = N.sortKeyChunk
-
-    startCls = "r" if ltr == "rtl" else "l"
-    endCls = "l" if ltr == "rtl" else "r"
-
-    chunks = set()
-    boundaries = {}
-
-    for (n, slots) in protoChunks:
-        ranges = list(rangesFromList(slots))
-        nR = len(ranges) - 1
-        for (i, (b, e)) in enumerate(ranges):
-            protoChunkSlots = frozenset(range(b, e + 1)) & substrate
-            if not protoChunkSlots:
-                continue
-            substrateRanges = rangesFromList(sorted(protoChunkSlots))
-            for (bS, eS) in substrateRanges:
-                chunkSlots = frozenset(range(bS, eS + 1))
-                if n in called and chunkSlots <= called[n]:
-                    continue
-                boundaryL = f"{startCls}no" if bS != b else "" if i == 0 else startCls
-                boundaryR = f"{endCls}no" if eS != e else "" if i == nR else endCls
-                chunkKey = (n, chunkSlots)
-                chunks.add(chunkKey)
-                boundaries[chunkKey] = f"{boundaryL} {boundaryR}"
-    sortedChunks = sorted(chunks, key=sortKeyChunk)
-    gaps = set()
-    covered = set()
-    for (n, slots) in sortedChunks:
-        covered |= slots
-    coveredRanges = rangesFromSet(covered)
-    prevEnd = None
-    for (b, e) in coveredRanges:
-        if prevEnd is not None and b != prevEnd + 1:
-            gsKey = (GAP_START, frozenset([prevEnd]))
-            geKey = (GAP_END, frozenset([b]))
-            gaps.add(gsKey)
-            gaps.add(geKey)
-            boundaries[gsKey] = "g" + startCls
-            boundaries[geKey] = "g" + endCls
-        prevEnd = e
-    sortedChunks = sorted(sortedChunks + list(gaps), key=sortKeyChunk)
-    return (sortedChunks, boundaries)
+    pass
 
 
 def _getNodePart(app, isPretty, dContext, n, nType, isSlot, outer, isHl):

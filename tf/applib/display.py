@@ -14,6 +14,8 @@ from .highlight import getTupleHighlights
 from .displaysettings import DisplaySettings
 from .displaylib import (
     OuterContext,
+    unravel,
+    printChunks,
     _doPlain,
     _doPretty,
     _getPassage,
@@ -60,6 +62,7 @@ def displayApi(app, silent):
     app.show = types.MethodType(show, app)
     app.prettyTuple = types.MethodType(prettyTuple, app)
     app.pretty = types.MethodType(pretty, app)
+    app.unravel = types.MethodType(unravel, app)
     app.loadCss = types.MethodType(loadCss, app)
     app.displaySetup = types.MethodType(displaySetup, app)
     app.displayReset = types.MethodType(displayReset, app)
@@ -515,6 +518,92 @@ def plainTuple(
 
 
 def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
+    """Display the plain text of a node.
+
+    Displays the material that corresponds to a node in a compact way.
+    Nodes with little content will be represented by their text content,
+    nodes with large content will be represented by an identifying label.
+
+    Parameters
+    ----------
+    n: integer
+        Node
+    options: dict
+        Display options, see `tf.applib.displaysettings`.
+    _inTuple: boolean, optional `False`
+        Whether the result is meant too end up in a table cell produced by
+        `plainTuple`. In that case some extra node types count as big and will
+        not be displayed in full.
+    _asString: boolean, optional `False`
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+    explain: boolean, optional `False`
+        Whether to print a trace of which nodes have been visited and how these
+        calls have contributed to the end result.
+
+    Result
+    ------
+    html string or `None`
+        Depending on *asString* above.
+    """
+
+    display = app.display
+
+    if not display.check("plain", options):
+        return ""
+
+    aContext = app.context
+    formatHtml = aContext.formatHtml
+
+    dContext = display.get(options)
+    fmt = dContext.fmt
+
+    dContext.isHtml = fmt in formatHtml
+
+    _browse = app._browse
+    api = app.api
+    E = api.E
+
+    ltr = _getLtr(app, dContext)
+    textCls = _getTextCls(app, fmt)
+    slots = frozenset(E.oslots.s(n))
+
+    oContext = OuterContext(ltr, textCls, slots, _inTuple, not not explain)
+    tree = unravel(app, False, dContext, oContext, n)
+
+    printChunks(app, tree, 0)
+    print(api.T.text(n))
+    return
+
+    passage = _getPassage(app, True, dContext, oContext, n)
+    boundaryCls = ""
+    rep = _doPlain(
+        app,
+        dContext,
+        oContext,
+        n,
+        slots,
+        boundaryCls,
+        True,
+        True,
+        True,
+        0,
+        passage,
+        [],
+        set(),
+        {},
+    )
+    sep = " " if passage and rep else ""
+
+    result = passage + sep + rep
+
+    if _browse or _asString:
+        return result
+    dh(result)
+
+
+def plainOld(app, n, _inTuple=False, _asString=False, explain=False, **options):
     """Display the plain text of a node.
 
     Displays the material that corresponds to a node in a compact way.

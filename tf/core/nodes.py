@@ -5,10 +5,6 @@
 import functools
 
 
-GAP_START = "_gapStart_"
-GAP_END = "_gapEnd_"
-
-
 class Nodes:
     def __init__(self, api):
         self.api = api
@@ -55,7 +51,7 @@ class Nodes:
         tf.core.nodes: canonical ordering
         """
 
-        self.sortKeyChunk = self.makeSortKeyChunk()
+        (self.sortKeyChunk, self.sortKeyChunkLength) = self.makeSortKeyChunk()
         """Sort key function for the canonical ordering between chunks of nodes.
 
             sorted(chunks, key=sortKeyChunk)
@@ -84,129 +80,71 @@ class Nodes:
         fOtype = api.F.otype
         otypeRank = self.otypeRank
         fOtypev = fOtype.v
-        maxNode = fOtype.maxNode
-        upperRank = len(otypeRank)
 
-        def beforeOld(chunkA, chunkB):
-            """Determines the order between two chunks
-
-            Parameters
-            ----------
-            chunkA: tuple of string, set of int
-            chunkB: tuple of string, set of int
-
-            Notes
-            -----
-            The slot sets in both parameters will be compared.
-            If they are equal, then the rank of the types of the nodes
-            will be used to force a decision.
-            """
-
-            (nodeA, slotsA) = chunkA
-            (nodeB, slotsB) = chunkB
-            rankA = None
-            rankB = None
-            if nodeA == GAP_START:
-                nodeA = 0
-                rankA = -1
-            elif nodeA == GAP_END:
-                nodeA = maxNode + 1
-                rankA = upperRank
-            if nodeB == GAP_START:
-                nodeB = 0
-                rankB = -1
-            elif nodeB == GAP_END:
-                nodeB = maxNode + 1
-                rankB = upperRank
-
-            if rankA is None:
-                rankA = otypeRank[fOtypev(nodeA)]
-            if rankB is None:
-                rankB = otypeRank[fOtypev(nodeB)]
-
-            if slotsA == slotsB:
-                return (
-                    (-1 if nodeA < nodeB else 1 if nodeA > nodeB else 0)
-                    if rankA == rankB
-                    else -1
-                    if rankA > rankB
-                    else 1
-                )
-            if slotsA > slotsB:
+        def beforePosition(chunk1, chunk2):
+            (n1, (b1, e1)) = chunk1
+            (n2, (b2, e2)) = chunk2
+            if b1 < b2:
                 return -1
-            if slotsA < slotsB:
-                return 1
-            minA = min(slotsA - slotsB)
-            minB = min(slotsB - slotsA)
-            return -1 if minA < minB else 1 if minB < minA else None
-
-        def beforeNew(chunkA, chunkB):
-            """Determines the order between two chunks
-
-            Parameters
-            ----------
-            chunkA: tuple (string, set of int)
-            chunkB: tuple (string, set of int)
-
-            Notes
-            -----
-            The slot sets in both parameters will be compared.
-            If they start at the same slot, the rank of the types of the nodes
-            will be decisive.
-            If the ranks are equal, the canonical order on the slot sets is decisive.
-            If that is equal to, the node itself (as integer) is decisive.
-            If they are equal, then the rank of the types of the nodes
-            will be used to force a decision.
-            """
-
-            (nodeA, slotsA) = chunkA
-            (nodeB, slotsB) = chunkB
-            minA = min(slotsA)
-            minB = min(slotsB)
-            if minA < minB:
-                return -1
-            elif minA > minB:
+            elif b1 > b2:
                 return 1
 
-            rankA = None
-            rankB = None
-            if nodeA == GAP_START:
-                nodeA = 0
-                rankA = -1
-            elif nodeA == GAP_END:
-                nodeA = maxNode + 1
-                rankA = upperRank
-            if nodeB == GAP_START:
-                nodeB = 0
-                rankB = -1
-            elif nodeB == GAP_END:
-                nodeB = maxNode + 1
-                rankB = upperRank
+            r1 = otypeRank[fOtypev(n1)]
+            r2 = otypeRank[fOtypev(n2)]
 
-            if rankA is None:
-                rankA = otypeRank[fOtypev(nodeA)]
-            if rankB is None:
-                rankB = otypeRank[fOtypev(nodeB)]
-
-            if rankA > rankB:
+            if r2 > r1:
                 return -1
-            elif rankA < rankB:
+            elif r1 > r2:
                 return 1
 
-            if slotsA > slotsB:
+            return (
+                -1
+                if e1 > e2
+                else 1
+                if e1 < e2
+                else -1
+                if n1 < n2
+                else 1
+                if n1 > n2
+                else 0
+            )
+
+        def beforeLength(chunk1, chunk2):
+            (n1, (b1, e1)) = chunk1
+            (n2, (b2, e2)) = chunk2
+
+            size1 = e1 - b1
+            size2 = e2 - b2
+
+            if size1 > size2:
                 return -1
-            elif slotsA < slotsB:
+            elif size2 > size1:
                 return 1
-            if slotsA == slotsB:
-                return -1 if nodeA < nodeB else 1 if nodeA > nodeB else 0
+            elif b1 < b2:
+                return -1
+            elif b1 > b2:
+                return 1
 
-            minA = min(slotsA - slotsB)
-            minB = min(slotsB - slotsA)
-            return -1 if minA < minB else 1 if minB < minA else None
+            r1 = otypeRank[fOtypev(n1)]
+            r2 = otypeRank[fOtypev(n2)]
 
-        # before = beforeNew
-        before = beforeOld
-        return functools.cmp_to_key(before)
+            if r2 > r1:
+                return -1
+            elif r1 > r2:
+                return 1
+
+            return (
+                -1
+                if n1 < n2
+                else 1
+                if n1 > n2
+                else 0
+            )
+
+        return (
+            functools.cmp_to_key(beforePosition),
+            functools.cmp_to_key(beforeLength),
+        )
 
     def sortNodes(self, nodeSet):
         """Delivers a tuple of nodes sorted by the *canonical ordering*.
