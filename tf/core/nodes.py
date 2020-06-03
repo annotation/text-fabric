@@ -87,7 +87,7 @@ class Nodes:
         maxNode = fOtype.maxNode
         upperRank = len(otypeRank)
 
-        def before(chunkA, chunkB):
+        def beforeOld(chunkA, chunkB):
             """Determines the order between two chunks
 
             Parameters
@@ -140,6 +140,72 @@ class Nodes:
             minB = min(slotsB - slotsA)
             return -1 if minA < minB else 1 if minB < minA else None
 
+        def beforeNew(chunkA, chunkB):
+            """Determines the order between two chunks
+
+            Parameters
+            ----------
+            chunkA: tuple (string, set of int)
+            chunkB: tuple (string, set of int)
+
+            Notes
+            -----
+            The slot sets in both parameters will be compared.
+            If they start at the same slot, the rank of the types of the nodes
+            will be decisive.
+            If the ranks are equal, the canonical order on the slot sets is decisive.
+            If that is equal to, the node itself (as integer) is decisive.
+            If they are equal, then the rank of the types of the nodes
+            will be used to force a decision.
+            """
+
+            (nodeA, slotsA) = chunkA
+            (nodeB, slotsB) = chunkB
+            minA = min(slotsA)
+            minB = min(slotsB)
+            if minA < minB:
+                return -1
+            elif minA > minB:
+                return 1
+
+            rankA = None
+            rankB = None
+            if nodeA == GAP_START:
+                nodeA = 0
+                rankA = -1
+            elif nodeA == GAP_END:
+                nodeA = maxNode + 1
+                rankA = upperRank
+            if nodeB == GAP_START:
+                nodeB = 0
+                rankB = -1
+            elif nodeB == GAP_END:
+                nodeB = maxNode + 1
+                rankB = upperRank
+
+            if rankA is None:
+                rankA = otypeRank[fOtypev(nodeA)]
+            if rankB is None:
+                rankB = otypeRank[fOtypev(nodeB)]
+
+            if rankA > rankB:
+                return -1
+            elif rankA < rankB:
+                return 1
+
+            if slotsA > slotsB:
+                return -1
+            elif slotsA < slotsB:
+                return 1
+            if slotsA == slotsB:
+                return -1 if nodeA < nodeB else 1 if nodeA > nodeB else 0
+
+            minA = min(slotsA - slotsB)
+            minB = min(slotsB - slotsA)
+            return -1 if minA < minB else 1 if minB < minA else None
+
+        # before = beforeNew
+        before = beforeOld
         return functools.cmp_to_key(before)
 
     def sortNodes(self, nodeSet):
