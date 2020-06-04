@@ -1,27 +1,19 @@
 from collections import namedtuple
 from itertools import chain
 
-from .helpers import getText, htmlSafe, NB
+from .helpers import getText, htmlSafe, NB, dh
 from .highlight import getHlAtt
 from ..core.text import DEFAULT_FORMAT
-from ..core.helpers import (
-    htmlEsc,
-    rangesFromList,
-    console,
-)
+from ..core.helpers import htmlEsc, rangesFromList, console, flattenToSet
 from .settings import ORIG
 
 QUAD = "  "
-LIMIT_DISPLAY_DEPTH = 100
 
 __pdoc__ = {}
 
 
 class OuterContext:
-    """Outer node properties during plain() and pretty().
-    Only the properties of the node for which the outer call
-    plain() or pretty() has been made, not the nodes encountered
-    during recursion."
+    """Common properties during plain() and pretty().
     """
 
     pass
@@ -30,19 +22,16 @@ class OuterContext:
 OuterContext = namedtuple(  # noqa: F811
     "OuterContext",
     """
+    slotType
     ltr
+    fmt
     textCls
-    slots
-    inTuple
-    explain
 """.strip().split(),
 )
+__pdoc__["OuterContext.slotType"] = "The slot type of the dataset."
 __pdoc__["OuterContext.ltr"] = "writing direction."
+__pdoc__["OuterContext.fmt"] = "the currently selected text format."
 __pdoc__["OuterContext.textCls"] = "Css class for full text."
-__pdoc__["OuterContext.slots"] = "Set of slots under the outer node."
-__pdoc__[
-    "OuterContext.inTuple"
-] = "Whether the outer node is displayed as part of a tuple of nodes."
 
 
 class NodeContext:
@@ -55,22 +44,19 @@ class NodeContext:
 NodeContext = namedtuple(  # noqa: F811
     "NodeContext",
     """
-    slotType
     nType
     isSlot
     isSlotOrDescend
     descend
     isBaseNonSlot
-    chunks
-    chunkBoundaries
     textCls
     hlCls
     hlStyle
-    nodePart
     cls
+    hasGraphics
+    after
 """.strip().split(),
 )
-__pdoc__["NodeContext.slotType"] = "The slot type of the data set."
 __pdoc__["NodeContext.nType"] = "The node type of the current node."
 __pdoc__["NodeContext.isSlot"] = "Whether the current node is a slot node."
 __pdoc__["NodeContext.isSlotOrDescend"] = (
@@ -87,68 +73,281 @@ __pdoc__["NodeContext.isBaseNonSlot"] = (
     " i.e. a type where a pretty display should stop unfolding."
     " No need to put the slot type in this set."
 )
-__pdoc__["NodeContext.chunks"] = (
-    "The chunks of the current node."
-    " They result from unraveling the node into child pieces."
-)
-__pdoc__["NodeContext.chunkBoundaries"] = (
-    "The boundary Css classes of the chunks of the current node."
-    " Nodes can have a firm of dotted left/right boundary, or no boundary at all."
-)
 __pdoc__["NodeContext.textCls"] = "The text Css class of the current node."
 __pdoc__["NodeContext.hlCls"] = "The highlight Css class of the current node."
 __pdoc__["NodeContext.hlStyle"] = "The highlight style attribute of the current node."
-__pdoc__[
-    "NodeContext.nodePart"
-] = "The node type/number insofar it has to be displayed for the current node"
 __pdoc__["NodeContext.cls"] = (
     "A dict of several classes for the display of the node:"
     " for the container, the label, and the children of the node;"
     " might be set by prettyCustom"
 )
+__pdoc__["NodeContext.hasGraphics"] = "Whether this node type has graphics."
+__pdoc__[
+    "NodeContext.after"
+] = "Whether the app defines a custom method to generate material after a child."
 
 
 # UNRAVEL and  FRIENDS
 
 
-def unravel(app, isPretty, dContext, oContext, n):
+def render(app, isPretty, n, _inTuple, _asString, explain, **options):
+    display = app.display
+
+    if not display.check("pretty" if isPretty else "plain", options):
+        return ""
+
+    _browse = app._browse
+
+    aContext = app.context
+    formatHtml = aContext.formatHtml
+
+    dContext = display.get(options)
+    fmt = dContext.fmt
+
+    dContext.isHtml = fmt in formatHtml
+
+    tree = _unravel(app, isPretty, dContext, n, _inTuple=False, explain=explain)
+    oContext = tree[1]
+    subTrees = tree[2]
+
+    passage = _getPassage(app, isPretty, dContext, oContext, n)
+
+    html = []
+
+    if isPretty:
+        tupleFeatures = dContext.tupleFeatures
+        extraFeatures = dContext.extraFeatures
+
+        dContext.features = sorted(
+            flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)
+        )
+        dContext.featuresIndirect = extraFeatures[1]
+
+    for subTree in subTrees:
+        _render(app, isPretty, subTree, True, True, 0, passage, html)
+    rep = "".join(html)
+    sep = " " if passage and rep else ""
+
+    result = passage + sep + rep
+
+    if _browse or _asString:
+        return result
+    dh(result)
+
+
+def _render(
+    app,
+    isPretty,
+    tree,
+    first,
+    last,
+    level,
+    passage,
+    html,
+    switched=False,
+    _asString=False,
+):
+    outer = level == 0
+    (chunk, info, children) = tree
+    (n, (b, e)) = chunk
+    dContext = info["dContext"]
+    oContext = info["oContext"]
+    nContext = info["nContext"]
+    boundaryCls = info["boundaryCls"]
+
+    ltr = oContext.ltr
+
+    isBaseNonSlot = nContext.isBaseNonSlot
+
+    if isPretty:
+        nodePlain = None
+        if isBaseNonSlot:
+            nodePlain = _render(
+                app,
+                False,
+                tree,
+                first,
+                last,
+                level,
+                "",
+                [],
+                switched=True,
+                _asString=True,
+            )
+        (label, featurePart) = _doPrettyNode(
+            app,
+            dContext,
+            oContext,
+            nContext,
+            tree,
+            outer,
+            first,
+            last,
+            level,
+            nodePlain,
+        )
+        (containerB, containerE) = _doPrettyWrapPre(
+            app,
+            tree,
+            outer,
+            label,
+            featurePart,
+            boundaryCls,
+            html,
+            dContext,
+            nContext,
+            ltr,
+        )
+        cls = nContext.cls
+        childCls = cls["children"]
+
+        if children and not isBaseNonSlot:
+            html.append(f'<div class="{childCls} {ltr}">')
+            after = nContext.after
+    else:
+        contrib = _doPlainNode(
+            app,
+            dContext,
+            oContext,
+            nContext,
+            tree,
+            outer,
+            first,
+            last,
+            level,
+            boundaryCls,
+            passage,
+        )
+        _doPlainWrapPre(
+            app, dContext, nContext, n, boundaryCls, outer, switched, ltr, html
+        )
+        html.append(contrib)
+
+    lastCh = len(children) - 1
+
+    if not (isPretty and isBaseNonSlot):
+        for (i, subTree) in enumerate(children):
+            thisFirst = first and i == 0
+            thisLast = last and i == lastCh
+            _render(app, isPretty, subTree, thisFirst, thisLast, level + 1, "", html)
+            if isPretty and after:
+                html.append(after(subTree[0][0]))
+
+    if isPretty:
+        if children and not isBaseNonSlot:
+            html.append("</div>")
+        _doPrettyWrapPost(label, featurePart, html, containerB, containerE)
+    else:
+        _doPlainWrapPost(html)
+
+    return "".join(html) if outer or _asString else None
+
+
+def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     api = app.api
+    N = api.N
     E = api.E
     F = api.F
     L = api.L
-    N = api.N
-    eOslots = E.oslots.s
-    fOtypeV = F.otype.v
-    fOtypeAll = F.otype.all
-    nType = fOtypeV(n)
+    T = api.T
+
     sortKeyChunk = N.sortKeyChunk
     sortKeyChunkLength = N.sortKeyChunkLength
+    eOslots = E.oslots.s
+    fOtype = F.otype
+    fOtypeV = fOtype.v
+    fOtypeAll = fOtype.all
+    slotType = fOtype.slotType
+    nType = fOtypeV(n)
 
     aContext = app.context
     verseTypes = aContext.verseTypes
+    descendantType = aContext.descendantType
     showVerseInTuple = aContext.showVerseInTuple
     isHidden = aContext.isHidden
+    levelCls = aContext.levelCls
+    prettyCustom = aContext.prettyCustom
+    styles = aContext.styles
+    formatHtml = aContext.formatHtml
+    hasGraphics = aContext.hasGraphics
+    afterChild = aContext.afterChild
+    childrenCustom = aContext.childrenCustom
 
     full = dContext.full
     showHidden = dContext.showHidden
-
-    inTuple = oContext.inTuple
-    ltr = oContext.ltr
+    baseTypes = dContext.baseTypes
+    highlights = dContext.highlights
+    fmt = dContext.fmt
+    dContext.isHtml = fmt in formatHtml
+    ltr = _getLtr(app, dContext)
+    textCls = _getTextCls(app, fmt)
+    descendType = T.formats.get(fmt, slotType)
 
     startCls = "r" if ltr == "rtl" else "l"
     endCls = "l" if ltr == "rtl" else "r"
 
-    chunks = None
-
     isBigType = (
-        inTuple
+        _inTuple
         if not isPretty and nType in verseTypes and not showVerseInTuple
         else _getBigType(app, dContext, nType)
     )
 
+    oContext = OuterContext(slotType, ltr, fmt, textCls)
+
+    nodeInfo = {}
+
+    def distillChunkInfo(m, chunkInfo):
+        mType = fOtypeV(m)
+        isSlot = mType == slotType
+        (hlCls, hlStyle) = getHlAtt(app, m, highlights, baseTypes, not isPretty)
+        cls = {}
+        if isPretty:
+            if mType in levelCls:
+                cls.update(levelCls[mType])
+            if mType in prettyCustom:
+                prettyCustom[mType](app, m, mType, cls)
+        textCls = styles.get(mType, oContext.textCls)
+        isBaseNonSlot = not isSlot and mType in baseTypes
+        nodeInfoM = nodeInfo.setdefault(
+            m,
+            NodeContext(
+                mType,
+                isSlot,
+                isSlot or mType == descendType,
+                False if descendType == mType else None,
+                isBaseNonSlot,
+                textCls,
+                hlCls,
+                hlStyle,
+                cls,
+                mType in hasGraphics,
+                afterChild.get(mType, None),
+            ),
+        )
+        chunkInfo.update(
+            dContext=dContext,
+            oContext=oContext,
+            nContext=nodeInfoM,
+            boundaryCls=chunkBoundaries[chunk],
+        )
+
     # determine intersecting nodes
 
-    iNodes = set(L.i(n)) if full or not isBigType else set()
+    if isBigType and not full:
+        iNodes = set()
+    elif nType in descendantType:
+        myDescendantType = descendantType[nType]
+        iNodes = set(L.i(n, otype=myDescendantType))
+        if nType in childrenCustom:
+            (condition, method, add) = childrenCustom[nType]
+            if condition(n):
+                others = method(n)
+                if add:
+                    iNodes |= set(others)
+                else:
+                    iNodes = set(others)
+    else:
+        iNodes = set(L.i(n))
 
     if not showHidden:
         iNodes -= set(m for m in iNodes if fOtypeV(m) in isHidden)
@@ -162,7 +361,7 @@ def unravel(app, isPretty, dContext, oContext, n):
     boundaries = {}
 
     for m in iNodes:
-        nType = fOtypeV(m)
+        mType = fOtypeV(m)
         slots = eOslots(m)
         ranges = rangesFromList(slots)
         bounds = {}
@@ -177,7 +376,7 @@ def unravel(app, isPretty, dContext, oContext, n):
         # False if a left resp. right inner chunk boundary is there
 
         for r in ranges:
-            chunks.setdefault(nType, set()).add((m, r))
+            chunks.setdefault(mType, set()).add((m, r))
             (b, e) = r
             bounds[b] = ((b == minSlot), (None if b != e else e == maxSlot))
             bounds[e] = ((b == minSlot if b == e else None), (e == maxSlot))
@@ -194,52 +393,42 @@ def unravel(app, isPretty, dContext, oContext, n):
 
         # fragmentize nodes of the same type, largest first
 
-        splits = []
+        splits = {}
 
         pChunksLen = len(pChunks)
         pSortedChunks = sorted(pChunks, key=sortKeyChunkLength)
         for (i, pChunk) in enumerate(pSortedChunks):
             for j in range(i + 1, pChunksLen):
                 qChunk = pSortedChunks[j]
-                splitPoints = getSplitPoints(pChunk, qChunk)
-                splits.append(qChunk, splitPoints)
+                splits.setdefault(qChunk, set()).update(getSplitPoints(pChunk, qChunk))
 
         # apply the splits for nodes of this type
 
-        for (chunk, s) in splits:
-            pChunks.discard(chunk)
-            (m, (b, e)) = chunk
-            pChunks.add((m, (b, s)))
-            pChunks.add((m, (s + 1, e)))
+        applySplits(pChunks, splits)
 
         # fragmentize nodes of other types
 
-    for pChunk in pChunks:
         for q in range(p + 1, typeLen):
             qType = fOtypeAll[q]
             qChunks = chunks.get(qType, ())
-            splits = []
             if not qChunks:
                 continue
-            for (n1, (b1, e1)) in pChunks:
-                for (n2, (b2, e2)) in qChunks:
-                    if b2 <= b1 <= e2:
-                        splits.append(((n2, (b2, e2)), b1))
-                    elif b2 <= e1 <= e2:
-                        splits.append(((n2, (b2, e2)), e1))
-            for (chunk, s) in splits:
-                qChunks.discard(chunk)
-                (m, (b, e)) = chunk
-                qChunks.add((m, (b, s)))
-                qChunks.add((m, (s + 1, e)))
+            splits = {}
+            for qChunk in qChunks:
+                for pChunk in pChunks:
+                    splits.setdefault(qChunk, set()).update(
+                        getSplitPoints(pChunk, qChunk)
+                    )
+            applySplits(qChunks, splits)
 
     # collect all chunks for all types in one list, ordered canonically
 
     chunks = sorted(chain.from_iterable(chunks.values()), key=sortKeyChunk)
 
-    # add boundary classes
+    # determine boundary classes
 
-    chunkx = []
+    chunkBoundaries = {}
+
     for (m, (b, e)) in chunks:
         bounds = boundaries[m]
         css = []
@@ -252,27 +441,26 @@ def unravel(app, isPretty, dContext, oContext, n):
         if cls:
             css.append(cls)
 
-        chunkx.append((m, (b, e), ' '.join(css)))
-
-    for c in chunkx:
-        print(c)
+        chunkBoundaries[(m, (b, e))] = " ".join(css)
 
     # stack the chunks hierarchically
 
-    tree = (None, [])
+    tree = (None, oContext, [])
     parent = {}
     rightmost = tree
 
-    for chunk in chunkx:
+    for chunk in chunks:
         rightnode = rightmost
         added = False
+        m = chunk[0]
         e = chunk[1][1]
+        chunkInfo = {}
 
         while rightnode is not tree:
             (br, er) = rightnode[0][1]
-            cr = rightnode[1]
+            cr = rightnode[2]
             if e <= er:
-                rightmost = (chunk, [])
+                rightmost = (chunk, chunkInfo, [])
                 cr.append(rightmost)
                 parent[chunk] = rightnode
                 added = True
@@ -281,14 +469,21 @@ def unravel(app, isPretty, dContext, oContext, n):
             rightnode = parent[rightnode[0]]
 
         if not added:
-            rightmost = (chunk, [])
-            tree[1].append(rightmost)
+            rightmost = (chunk, chunkInfo, [])
+            tree[2].append(rightmost)
             parent[chunk] = tree
 
-    return tree[1]
+        distillChunkInfo(m, chunkInfo)
+
+    if explain:
+        showChunkTree(tree, 0)
+    return tree
 
 
 def getSplitPoints(pChunk, qChunk):
+    """Determines where the boundaries of one chunk cut through another chunk.
+    """
+
     (b1, e1) = pChunk[1]
     (b2, e2) = qChunk[1]
     if b2 == e2 or (b1 <= b2 and e1 >= e2):
@@ -298,182 +493,77 @@ def getSplitPoints(pChunk, qChunk):
         splitPoints.add(b1)
     elif (b2 < e1 < e2) or (e1 == b2 and b1 < e1):
         splitPoints.add(e1)
-    return sorted(splitPoints)
+    return splitPoints
 
 
-def printChunks(app, chunks, level):
-    fOtypeV = app.api.F.otype.v
+def applySplits(chunks, splits):
+    """Splits a chunk in multiple pieces marked by a given sets of points.
+    """
+
+    if not splits:
+        return
+
+    for (target, splitPoints) in splits.items():
+        if not splitPoints:
+            continue
+        chunks.remove(target)
+        (m, (b, e)) = target
+        prevB = b
+        for sp in splitPoints:
+            chunks.add((m, (prevB, sp)))
+            prevB = sp + 1
+        if prevB <= e:
+            chunks.add((m, (prevB, e)))
+
+
+def showChunkTree(tree, level):
     indent = QUAD * level
-    for ((n, (b, e), cls), children) in chunks:
-        console(f"{indent}<{level}> {fOtypeV(n)} {n} [{b}:{e}] {cls}")
-        printChunks(app, children, level + 1)
+    (chunk, info, children) = tree
+    if chunk is None:
+        console(f"{indent}<{level}> TOP")
+    else:
+        (n, (b, e)) = chunk
+        rangeRep = "{" + (str(b) if b == e else f"{b}-{e}") + "}"
+        nContext = info["nContext"]
+        nType = nContext.nType
+        boundaryCls = info["boundaryCls"]
+        console(f"{indent}<{level}> {nType} {n} {rangeRep} {boundaryCls}")
+    for subTree in children:
+        showChunkTree(subTree, level + 1)
 
 
 # PLAIN LOW-LEVEL
 
 
-def _doPlain(
+def _doPlainWrapPre(
+    app, dContext, nContext, n, boundaryCls, outer, switched, ltr, html
+):
+    hlCls = nContext.hlCls
+    hlStyle = nContext.hlStyle
+
+    nodePart = _getNodePart(app, False, dContext, nContext, n, outer, switched)
+
+    outerCls = f"outer" if outer else ""
+    clses = f"plain {outerCls} {ltr} {boundaryCls} {hlCls}"
+    html.append(f'<span class="{clses}" {hlStyle}>{nodePart}')
+
+
+def _doPlainWrapPost(html):
+    html.append("</span>")
+
+
+def _doPlainNode(
     app,
     dContext,
     oContext,
-    n,
-    slots,
-    boundaryCls,
+    nContext,
+    tree,
     outer,
     first,
     last,
     level,
+    boundaryCls,
     passage,
-    html,
-    done,
-    called,
-):
-    if _depthExceeded(level):
-        return
-
-    if type(n) is str:
-        html.append(f'<span class="{boundaryCls}"> </span>')
-        return
-
-    origOuter = outer
-    if outer is None:
-        outer = True
-
-    nContext = _prepareDisplay(
-        app, False, dContext, oContext, n, slots, origOuter, done=done, called=called
-    )
-    if type(nContext) is str:
-        _note(
-            app,
-            False,
-            oContext,
-            n,
-            nContext,
-            slots,
-            first,
-            last,
-            level,
-            None,
-            "nothing to do",
-        )
-        return "".join(html) if outer else None
-
-    nCalled = called.setdefault(n, set())
-
-    finished = slots <= done
-    calledBefore = slots <= nCalled
-    if finished or calledBefore:
-        _note(
-            app,
-            False,
-            oContext,
-            n,
-            nContext.nType,
-            slots,
-            first,
-            last,
-            level,
-            "already " + ("finished" if finished else "called"),
-            task=slots,
-            done=done,
-            called=nCalled,
-        )
-        return "".join(html) if outer else None
-
-    ltr = oContext.ltr
-
-    hlCls = nContext.hlCls
-    hlStyle = nContext.hlStyle
-    nodePart = nContext.nodePart
-
-    outerCls = f"outer" if outer else ""
-
-    clses = f"plain {outerCls} {ltr} {boundaryCls} {hlCls}"
-    html.append(f'<span class="{clses}" {hlStyle}>')
-
-    if nodePart:
-        html.append(nodePart)
-
-    contrib = _doPlainNode(
-        app, dContext, oContext, nContext, n, outer, first, last, level, passage, done,
-    )
-    _note(
-        app, False, oContext, n, nContext.nType, slots, first, last, level, contrib,
-    )
-    html.append(contrib)
-
-    nCalled.update(slots)
-
-    chunks = nContext.chunks
-    chunkBoundaries = nContext.chunkBoundaries
-    lastCh = len(chunks) - 1
-
-    _note(
-        app,
-        False,
-        oContext,
-        n,
-        nContext.nType,
-        slots,
-        first,
-        last,
-        level,
-        None,
-        "start subchunks" if chunks else "bottom node",
-        chunks=chunks,
-        chunkBoundaries=chunkBoundaries,
-        task=slots,
-        done=done,
-        called=nCalled,
-    )
-
-    for (i, ch) in enumerate(chunks):
-        (chN, chSlots) = ch
-        chBoundaryCls = chunkBoundaries[ch]
-        thisFirst = first and i == 0
-        thisLast = last and i == lastCh
-        _doPlain(
-            app,
-            dContext,
-            oContext,
-            chN,
-            chSlots,
-            chBoundaryCls,
-            False,
-            thisFirst,
-            thisLast,
-            level + 1,
-            "",
-            html,
-            done,
-            called,
-        )
-
-    html.append("</span>")
-
-    done |= slots
-
-    if chunks:
-        _note(
-            app,
-            False,
-            oContext,
-            n,
-            nContext.nType,
-            slots,
-            first,
-            last,
-            level,
-            None,
-            "end subchunks",
-            done=done,
-        )
-
-    return "".join(html) if outer else None
-
-
-def _doPlainNode(
-    app, dContext, oContext, nContext, n, outer, first, last, level, passage, done
 ):
     api = app.api
     T = api.T
@@ -485,16 +575,17 @@ def _doPlainNode(
     fmt = dContext.fmt
 
     ltr = oContext.ltr
+
     textCls = nContext.textCls
-
     nType = nContext.nType
-
     isSlotOrDescend = nContext.isSlotOrDescend
     descend = nContext.descend
 
+    n = tree[0][0]
+
     if nType in plainCustom:
         method = plainCustom[nType]
-        contrib = method(app, dContext, oContext, nContext, n, outer, done=done)
+        contrib = method(app, dContext, oContext, nContext, n, outer)
         return contrib
     if isSlotOrDescend:
         text = htmlSafe(
@@ -532,208 +623,21 @@ def _doPlainNode(
 # PRETTY LOW-LEVEL
 
 
-def _doPretty(
-    app,
-    dContext,
-    oContext,
-    n,
-    slots,
-    boundaryCls,
-    outer,
-    first,
-    last,
-    level,
-    html,
-    done,
-    called,
-):
-    if _depthExceeded(level):
-        return
-
-    if type(n) is str:
-        html.append(f'<div class="{boundaryCls}"> </div>')
-        return
-
-    nContext = _prepareDisplay(
-        app, True, dContext, oContext, n, slots, outer, done=done, called=called
-    )
-    if type(nContext) is str:
-        _note(
-            app, True, oContext, n, nContext, slots, first, last, level, "nothing to do"
-        )
-        return "".join(html) if outer else None
-
-    nCalled = called.setdefault(n, set())
-
-    finished = slots <= done
-    calledBefore = slots <= nCalled
-    if finished or calledBefore:
-        _note(
-            app,
-            True,
-            oContext,
-            n,
-            nContext.nType,
-            slots,
-            first,
-            last,
-            level,
-            "already " + ("finished" if finished else "called"),
-            task=slots,
-            done=done,
-            called=nCalled,
-        )
-        return "".join(html) if outer else None
-
-    aContext = app.context
-    afterChild = aContext.afterChild
-    hasGraphics = aContext.hasGraphics
-
-    showGraphics = dContext.showGraphics
-
-    ltr = oContext.ltr
-
-    isBaseNonSlot = nContext.isBaseNonSlot
-    nType = nContext.nType
-
-    nodePlain = None
-    if isBaseNonSlot:
-        nodePlain = _doPlain(
-            app,
-            dContext,
-            oContext,
-            n,
-            slots,
-            boundaryCls,
-            None,
-            first,
-            last,
-            level,
-            "",
-            [],
-            done,
-            called,
-        )
-
-    (label, featurePart) = _doPrettyNode(
-        app, dContext, oContext, nContext, n, outer, first, last, level, nodePlain
-    )
-    (containerB, containerE) = _doPrettyWrapPre(
-        app,
-        n,
-        outer,
-        label,
-        featurePart,
-        boundaryCls,
-        html,
-        nContext,
-        showGraphics,
-        hasGraphics,
-        ltr,
-    )
-
-    nCalled.update(slots)
-
-    cls = nContext.cls
-    childCls = cls["children"]
-    chunks = nContext.chunks
-    chunkBoundaries = nContext.chunkBoundaries
-
-    if chunks:
-        html.append(f'<div class="{childCls} {ltr}">')
-
-    lastCh = len(chunks) - 1
-
-    _note(
-        app,
-        True,
-        oContext,
-        n,
-        nContext.nType,
-        slots,
-        first,
-        last,
-        level,
-        None,
-        "start subchunks" if chunks else "bottom node",
-        chunks=chunks,
-        chunkBoundaries=chunkBoundaries,
-        task=slots,
-        done=done,
-        called=nCalled,
-    )
-
-    for (i, ch) in enumerate(chunks):
-        (chN, chSlots) = ch
-        chBoundaryCls = chunkBoundaries[ch]
-        thisFirst = first and i == 0
-        thisLast = last and i == lastCh
-        _doPretty(
-            app,
-            dContext,
-            oContext,
-            chN,
-            chSlots,
-            chBoundaryCls,
-            False,
-            thisFirst,
-            thisLast,
-            level + 1,
-            html,
-            done,
-            called,
-        )
-        after = afterChild.get(nType, None)
-        if after:
-            html.append(after(ch))
-
-    done |= slots
-
-    if chunks:
-        _note(
-            app,
-            True,
-            oContext,
-            n,
-            nContext.nType,
-            slots,
-            first,
-            last,
-            level,
-            None,
-            "end subchunks",
-            task=slots,
-        )
-
-    if chunks:
-        html.append("</div>")
-
-    _doPrettyWrapPost(label, featurePart, html, containerB, containerE)
-
-    return "".join(html) if outer else None
-
-
 def _doPrettyWrapPre(
-    app,
-    n,
-    outer,
-    label,
-    featurePart,
-    boundaryCls,
-    html,
-    nContext,
-    showGraphics,
-    hasGraphics,
-    ltr,
+    app, tree, outer, label, featurePart, boundaryCls, html, dContext, nContext, ltr,
 ):
+    showGraphics = dContext.showGraphics
+    hasGraphics = nContext.hasGraphics
     nType = nContext.nType
     cls = nContext.cls
     contCls = cls["container"]
     hlCls = nContext.hlCls
     hlStyle = nContext.hlStyle
-    chunks = nContext.chunks
     label0 = label.get("", None)
     labelB = label.get("b", None)
+
+    n = tree[0][0]
+    children = tree[2]
 
     containerB = f'<div class="{contCls} {{}} {ltr} {boundaryCls} {hlCls}" {hlStyle}>'
     containerE = f"</div>"
@@ -744,7 +648,7 @@ def _doPrettyWrapPre(
         trm = terminalCls
         html.append(f"{containerB.format(trm)}{labelB}{material}{containerE}")
     if label0 is not None:
-        trm = "" if chunks else terminalCls
+        trm = "" if children else terminalCls
         html.append(f"{containerB.format(trm)}{label0}{material}")
 
     if showGraphics and nType in hasGraphics:
@@ -764,7 +668,7 @@ def _doPrettyWrapPost(label, featurePart, html, containerB, containerE):
 
 
 def _doPrettyNode(
-    app, dContext, oContext, nContext, n, outer, first, last, level, nodePlain
+    app, dContext, oContext, nContext, tree, outer, first, last, level, nodePlain
 ):
     api = app.api
     L = api.L
@@ -782,9 +686,11 @@ def _doPrettyNode(
     hlStyle = nContext.hlStyle
     descend = nContext.descend
     isBaseNonSlot = nContext.isBaseNonSlot
-    chunks = nContext.chunks
-    nodePart = nContext.nodePart
 
+    n = tree[0][0]
+    children = tree[2]
+
+    nodePart = _getNodePart(app, True, dContext, nContext, n, outer, False)
     labelHlCls = ""
     labelHlStyle = ""
 
@@ -826,7 +732,7 @@ def _doPrettyNode(
         key = f"label{x}"
         if key in cls:
             val = cls[key]
-            terminalCls = "trm" if x or not chunks else ""
+            terminalCls = "trm" if x or not children else ""
             sep = " " if nodePart and heading else ""
             material = f"{nodePart}{sep}{heading}" if nodePart or heading else ""
             label[x] = (
@@ -837,137 +743,6 @@ def _doPrettyNode(
             )
 
     return (label, featurePart)
-
-
-def _prepareDisplay(
-    app, isPretty, dContext, oContext, n, slots, outer, done=set(), called={},
-):
-    api = app.api
-    F = api.F
-    T = api.T
-    slotType = F.otype.slotType
-    nType = F.otype.v(n)
-
-    aContext = app.context
-    levelCls = aContext.levelCls
-    noChildren = aContext.noChildren
-    prettyCustom = aContext.prettyCustom
-    lexTypes = aContext.lexTypes
-    styles = aContext.styles
-
-    fmt = dContext.fmt
-    baseTypes = dContext.baseTypes
-    _setSubBaseTypes(aContext, dContext, slotType)
-
-    highlights = dContext.highlights
-
-    descendType = T.formats.get(fmt, slotType)
-    bottomTypes = baseTypes if isPretty else {descendType}
-
-    isSlot = nType == slotType
-
-    isBaseNonSlot = nType != slotType and nType in baseTypes
-
-    (chunks, chunkBoundaries) = (
-        ((), {})
-        if isSlot
-        or nType in bottomTypes
-        or nType in lexTypes
-        or (not isPretty and nType in noChildren)
-        else _getChildren(
-            app, isPretty, dContext, oContext, n, nType, slots, called, done
-        )
-    )
-
-    (hlCls, hlStyle) = getHlAtt(app, n, highlights, baseTypes, not isPretty)
-
-    isSlotOrDescend = isSlot or nType == descendType
-    descend = False if descendType == slotType else None
-
-    nodePart = _getNodePart(
-        app, isPretty, dContext, n, nType, isSlot, outer, hlCls != ""
-    )
-    cls = {}
-    if isPretty:
-        if nType in levelCls:
-            cls.update(levelCls[nType])
-        if nType in prettyCustom:
-            prettyCustom[nType](app, n, nType, cls)
-
-    textCls = styles.get(nType, oContext.textCls)
-
-    return NodeContext(
-        slotType,
-        nType,
-        isSlot,
-        isSlotOrDescend,
-        descend,
-        isBaseNonSlot,
-        chunks,
-        chunkBoundaries,
-        textCls,
-        hlCls,
-        hlStyle,
-        nodePart,
-        cls,
-    )
-
-
-def _depthExceeded(level):
-    if level > LIMIT_DISPLAY_DEPTH:
-        console("DISPLAY: maximal depth exceeded: {LIMIT_DISPLAY_DEPTH}", error=True)
-        return True
-    return False
-
-
-def _note(
-    app,
-    isPretty,
-    oContext,
-    n,
-    nType,
-    slots,
-    first,
-    last,
-    level,
-    contributes,
-    *labels,
-    **info,
-):
-    if not oContext.explain:
-        return
-    block = QUAD * level
-    kindRep = "pretty" if isPretty else "plain"
-    labelRep = " ".join(str(lab) for lab in labels)
-    slotsRep = "{" + ",".join(str(s) for s in sorted(slots)) + "}"
-    console(
-        f"{block}<{level}>{kindRep}({nType} {n} {slotsRep}): {labelRep}", error=True
-    )
-    if contributes is not None:
-        console(f"{block}<{level}> * {contributes}", error=True)
-
-    for (k, v) in info.items():
-        if k == "chunks":
-            _noteFmt(app, level, v, info.get("chunkBoundaries", {}))
-        elif k == "chunkBoundaries":
-            continue
-        else:
-            console(f"{block}<{level}>      {k:<10} = {repr(v)}", error=True)
-
-
-def _noteFmt(app, level, chunks, chunkBoundaries):
-    fOtypev = app.api.F.otype.v
-
-    block = QUAD * level
-    for ch in chunks:
-        boundaryCls = chunkBoundaries.get(ch, "")
-        (n, slots) = ch
-        nType = n if type(n) is str else fOtypev(n)
-        slotsRep = "{" + ",".join(str(s) for s in sorted(slots)) + "}"
-        console(
-            f"{block}<{level}> / {nType} {n} cls='{boundaryCls}' {slotsRep}",
-            error=True,
-        )
 
 
 def _setSubBaseTypes(aContext, dContext, slotType):
@@ -1041,151 +816,22 @@ def _getBigType(app, dContext, nType):
     return isBig
 
 
-def _getChildren(app, isPretty, dContext, oContext, n, nType, slots, called, done):
-    api = app.api
-    L = api.L
-    F = api.F
-    E = api.E
-    slotType = F.otype.slotType
-    fOtypev = F.otype.v
-    eOslots = E.oslots.s
-
-    aContext = app.context
-    verseTypes = aContext.verseTypes
-    descendantType = aContext.descendantType
-    isHidden = aContext.isHidden
-    baseTypes = dContext.baseTypes
-    subBaseTypes = dContext.subBaseTypes
-    showHidden = dContext.showHidden
-    childrenCustom = aContext.childrenCustom
-    showVerseInTuple = aContext.showVerseInTuple
-
-    inTuple = oContext.inTuple
-    substrate = slots - done
-    ltr = oContext.ltr
-
-    full = dContext.full
-
-    isBigType = (
-        inTuple
-        if not isPretty and nType in verseTypes and not showVerseInTuple
-        else _getBigType(app, dContext, nType)
-    )
-
-    if isBigType and not full:
-        children = ()
-    elif nType in descendantType:
-        myDescendantType = descendantType[nType]
-        children = tuple(
-            c
-            for c in L.i(n, otype=myDescendantType)
-            if fOtypev(c) != nType or not slots <= frozenset(eOslots(c))
-        )
-        if nType in childrenCustom:
-            (condition, method, add) = childrenCustom[nType]
-            if condition(n):
-                others = method(n)
-                if add:
-                    children += others
-                else:
-                    children = others
-
-            children = set(children) - {n}
-    else:
-        children = L.i(n)
-    if isPretty and baseTypes and baseTypes != {slotType}:
-        refSet = set(children)
-        children = tuple(
-            ch
-            for ch in children
-            if (fOtypev(ch) not in subBaseTypes)
-            and not (set(L.u(ch, otype=baseTypes)) & refSet)
-        )
-    if not showHidden:
-        toHide = isHidden - baseTypes
-        children = tuple(ch for ch in children if fOtypev(ch) not in toHide)
-
-    return chunkify(app, ltr, ((n, eOslots(n)) for n in children), substrate, called,)
-
-
-def chunkify(app, ltr, protoChunks, substrate, called):
-    """Divides and filters nodes into contiguous chunks.
-
-    Only nodes are retained that have slots in a given set of slots,
-    and for those nodes, all slots outside that set will be removed.
-
-    Moreover, if a chunk is member of the set `called`, it will be excluded.
-
-    Parameters
-    ----------
-    ltr: string
-        Writing direction of the corpus
-
-    protoChunks: iterable of tuple (int, tuple)
-        A proto chunk is a 2-tuple: a node and the tuple of its slots
-        in canonical ordering.
-
-    substrate: set of int
-        Set of slots that acts as a substrate: we are only interested in nodes
-        insofar they occupy these slots.
-        If there are gaps in the substrate, they will be added as a chunk with node
-        `None`.
-
-    called: dict
-        A mapping of nodes to the slots in the chunk with which they are in progress.
-        We skip chunks whose slots are already called before.
-
-    Returns
-    -------
-    2-tuple of set, dict
-        The first part is the set of real chunks (n, slots) of the nodes
-        where the slots are contiguous frozen sets of slots in so far as they are part
-        of the substrate.
-
-        The second part is a dict, where the real chunks are keys, and the values
-        are pairs of boundary types:
-
-        `lno` `rno`
-        : no left resp. right boundary
-
-        `ln` `rn`
-        : left resp. right node boundary
-
-        `lc` `rc`
-        : left resp.right chunk  boundary
-
-    Notes
-    -----
-    The real chunks are returned as a tuple in the canonical order.
-
-    Node and chunk boundaries are indicated if they occur within the substrate.
-    A node boundary is typically a left or right solid border of a box.
-    A chunk boundary is typically a left or right dotted border of a box.
-
-    If a boundary occurs at a slot which is not in the substrate, the box of that
-    chunk does not have corresponding left or right border.
-
-    See Also
-    --------
-    tf.core.nodes: canonical ordering
-    """
-
-    pass
-
-
-def _getNodePart(app, isPretty, dContext, n, nType, isSlot, outer, isHl):
+def _getNodePart(app, isPretty, dContext, nContext, n, outer, switched):
     _browse = app._browse
+    nType = nContext.nType
+    isSlot = nContext.isSlot
+    hlCls = nContext.hlCls
 
     Fs = app.api.Fs
 
     aContext = app.context
     lineNumberFeature = aContext.lineNumberFeature
-    allowInfo = isPretty or outer is None or outer or isHl
+    allowInfo = isPretty or (outer and not switched) or hlCls != ""
 
-    withNodes = dContext.withNodes and outer is not None
-    withTypes = dContext.withTypes and outer is not None
-    prettyTypes = dContext.prettyTypes and outer is not None
-    lineNumbers = dContext.lineNumbers and outer is not None
+    withNodes = dContext.withNodes and not switched
+    withTypes = dContext.withTypes and not switched
+    prettyTypes = dContext.prettyTypes and not switched
+    lineNumbers = dContext.lineNumbers and not switched
 
     num = ""
     if withNodes and allowInfo:

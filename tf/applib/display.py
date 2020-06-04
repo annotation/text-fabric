@@ -7,21 +7,14 @@ import os
 import types
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
-from ..core.helpers import mdEsc, flattenToSet
+from ..core.helpers import mdEsc
 from .helpers import getResultsX, tupleEnum, RESULT, dh
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights
 from .displaysettings import DisplaySettings
 from .displaylib import (
-    OuterContext,
-    unravel,
-    printChunks,
-    _doPlain,
-    _doPretty,
-    _getPassage,
+    render,
     _getRefMember,
-    _getLtr,
-    _getTextCls,
     _doPassage,
 )
 
@@ -62,7 +55,6 @@ def displayApi(app, silent):
     app.show = types.MethodType(show, app)
     app.prettyTuple = types.MethodType(prettyTuple, app)
     app.pretty = types.MethodType(pretty, app)
-    app.unravel = types.MethodType(unravel, app)
     app.loadCss = types.MethodType(loadCss, app)
     app.displaySetup = types.MethodType(displaySetup, app)
     app.displayReset = types.MethodType(displayReset, app)
@@ -548,139 +540,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
         Depending on *asString* above.
     """
 
-    display = app.display
-
-    if not display.check("plain", options):
-        return ""
-
-    aContext = app.context
-    formatHtml = aContext.formatHtml
-
-    dContext = display.get(options)
-    fmt = dContext.fmt
-
-    dContext.isHtml = fmt in formatHtml
-
-    _browse = app._browse
-    api = app.api
-    E = api.E
-
-    ltr = _getLtr(app, dContext)
-    textCls = _getTextCls(app, fmt)
-    slots = frozenset(E.oslots.s(n))
-
-    oContext = OuterContext(ltr, textCls, slots, _inTuple, not not explain)
-    tree = unravel(app, False, dContext, oContext, n)
-
-    printChunks(app, tree, 0)
-    print(api.T.text(n))
-    return
-
-    passage = _getPassage(app, True, dContext, oContext, n)
-    boundaryCls = ""
-    rep = _doPlain(
-        app,
-        dContext,
-        oContext,
-        n,
-        slots,
-        boundaryCls,
-        True,
-        True,
-        True,
-        0,
-        passage,
-        [],
-        set(),
-        {},
-    )
-    sep = " " if passage and rep else ""
-
-    result = passage + sep + rep
-
-    if _browse or _asString:
-        return result
-    dh(result)
-
-
-def plainOld(app, n, _inTuple=False, _asString=False, explain=False, **options):
-    """Display the plain text of a node.
-
-    Displays the material that corresponds to a node in a compact way.
-    Nodes with little content will be represented by their text content,
-    nodes with large content will be represented by an identifying label.
-
-    Parameters
-    ----------
-    n: integer
-        Node
-    options: dict
-        Display options, see `tf.applib.displaysettings`.
-    _inTuple: boolean, optional `False`
-        Whether the result is meant too end up in a table cell produced by
-        `plainTuple`. In that case some extra node types count as big and will
-        not be displayed in full.
-    _asString: boolean, optional `False`
-        Whether to deliver the result as a HTML string or to display it directly
-        inside a notebook. When the TF-browser uses this function it needs the
-        HTML string.
-    explain: boolean, optional `False`
-        Whether to print a trace of which nodes have been visited and how these
-        calls have contributed to the end result.
-
-    Result
-    ------
-    html string or `None`
-        Depending on *asString* above.
-    """
-
-    display = app.display
-
-    if not display.check("plain", options):
-        return ""
-
-    aContext = app.context
-    formatHtml = aContext.formatHtml
-
-    dContext = display.get(options)
-    fmt = dContext.fmt
-
-    dContext.isHtml = fmt in formatHtml
-
-    _browse = app._browse
-    api = app.api
-    E = api.E
-
-    ltr = _getLtr(app, dContext)
-    textCls = _getTextCls(app, fmt)
-    slots = frozenset(E.oslots.s(n))
-
-    oContext = OuterContext(ltr, textCls, slots, _inTuple, not not explain)
-    passage = _getPassage(app, True, dContext, oContext, n)
-    boundaryCls = ""
-    rep = _doPlain(
-        app,
-        dContext,
-        oContext,
-        n,
-        slots,
-        boundaryCls,
-        True,
-        True,
-        True,
-        0,
-        passage,
-        [],
-        set(),
-        {},
-    )
-    sep = " " if passage and rep else ""
-
-    result = passage + sep + rep
-
-    if _browse or _asString:
-        return result
-    dh(result)
+    render(app, False, n, _inTuple, _asString, explain, **options)
 
 
 # PRETTY and FRIENDS
@@ -847,79 +707,4 @@ def pretty(app, n, explain=False, **options):
         as HTML. Otherwise the result is directly displayed in a notebook.
     """
 
-    display = app.display
-
-    if not display.check("pretty", options):
-        return ""
-
-    _browse = app._browse
-
-    aContext = app.context
-    formatHtml = aContext.formatHtml
-
-    dContext = display.get(options)
-    condenseType = dContext.condenseType
-    condensed = dContext.condensed
-    tupleFeatures = dContext.tupleFeatures
-    extraFeatures = dContext.extraFeatures
-    fmt = dContext.fmt
-
-    dContext.isHtml = fmt in formatHtml
-    dContext.features = sorted(
-        flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)
-    )
-    dContext.featuresIndirect = extraFeatures[1]
-
-    api = app.api
-    F = api.F
-    E = api.E
-    L = api.L
-    N = api.N
-    otypeRank = N.otypeRank
-
-    ltr = _getLtr(app, dContext)
-    textCls = _getTextCls(app, fmt)
-
-    containerN = None
-
-    nType = F.otype.v(n)
-    if condensed and condenseType:
-        if nType == condenseType:
-            containerN = n
-        elif otypeRank[nType] < otypeRank[condenseType]:
-            ups = L.u(n, otype=condenseType)
-            if ups:
-                containerN = ups[0]
-
-    slots = frozenset(
-        E.oslots.s(
-            n if not condensed or not condenseType or containerN is None else containerN
-        )
-    )
-
-    oContext = OuterContext(ltr, textCls, slots, False, not not explain)
-    passage = _getPassage(app, False, dContext, oContext, n)
-
-    html = []
-
-    boundaryCls = ""
-    _doPretty(
-        app,
-        dContext,
-        oContext,
-        n,
-        slots,
-        boundaryCls,
-        True,
-        True,
-        True,
-        0,
-        html,
-        set(),
-        {},
-    )
-
-    htmlStr = passage + "".join(html)
-    if _browse:
-        return htmlStr
-    dh(htmlStr)
+    render(app, True, n, False, False, explain, **options)
