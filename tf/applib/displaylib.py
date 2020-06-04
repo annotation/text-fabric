@@ -198,16 +198,11 @@ def unravel(app, isPretty, dContext, oContext, n):
 
         pChunksLen = len(pChunks)
         pSortedChunks = sorted(pChunks, key=sortKeyChunkLength)
-        for (i, (n1, (b1, e1))) in enumerate(pSortedChunks):
+        for (i, pChunk) in enumerate(pSortedChunks):
             for j in range(i + 1, pChunksLen):
                 qChunk = pSortedChunks[j]
-                (b2, e2) = qChunk[1]
-                if b2 == e2:
-                    continue
-                if (b2 < b1 < e2) or (b1 == e2 and b1 < e1):
-                    splits.append((qChunk, b1))
-                elif (b2 < e1 < e2) or (e1 == b2 and b1 < e1):
-                    splits.append((qChunk, e1))
+                splitPoints = getSplitPoints(pChunk, qChunk)
+                splits.append(qChunk, splitPoints)
 
         # apply the splits for nodes of this type
 
@@ -219,6 +214,7 @@ def unravel(app, isPretty, dContext, oContext, n):
 
         # fragmentize nodes of other types
 
+    for pChunk in pChunks:
         for q in range(p + 1, typeLen):
             qType = fOtypeAll[q]
             qChunks = chunks.get(qType, ())
@@ -290,6 +286,19 @@ def unravel(app, isPretty, dContext, oContext, n):
             parent[chunk] = tree
 
     return tree[1]
+
+
+def getSplitPoints(pChunk, qChunk):
+    (b1, e1) = pChunk[1]
+    (b2, e2) = qChunk[1]
+    if b2 == e2 or (b1 <= b2 and e1 >= e2):
+        return []
+    splitPoints = set()
+    if (b2 < b1 < e2) or (b1 == e2 and b1 < e1):
+        splitPoints.add(b1)
+    elif (b2 < e1 < e2) or (e1 == b2 and b1 < e1):
+        splitPoints.add(e1)
+    return sorted(splitPoints)
 
 
 def printChunks(app, chunks, level):
