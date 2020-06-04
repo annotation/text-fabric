@@ -161,15 +161,15 @@ def unravel(app, isPretty, dContext, oContext, n):
     chunks = {}
     boundaries = {}
 
-    for n in iNodes:
-        nType = fOtypeV(n)
-        slots = eOslots(n)
+    for m in iNodes:
+        nType = fOtypeV(m)
+        slots = eOslots(m)
         ranges = rangesFromList(slots)
         bounds = {}
         minSlot = min(slots)
         maxSlot = max(slots)
 
-        # for each node n the boundaries value is a dict keyed by slots
+        # for each node m the boundaries value is a dict keyed by slots
         # and valued by a tuple: (left bound, right bound)
         # where bound is:
         # None if there is no left resp. right boundary there
@@ -177,11 +177,11 @@ def unravel(app, isPretty, dContext, oContext, n):
         # False if a left resp. right inner chunk boundary is there
 
         for r in ranges:
-            chunks.setdefault(nType, set()).add((n, r))
+            chunks.setdefault(nType, set()).add((m, r))
             (b, e) = r
             bounds[b] = ((b == minSlot), (None if b != e else e == maxSlot))
             bounds[e] = ((b == minSlot if b == e else None), (e == maxSlot))
-        boundaries[n] = bounds
+        boundaries[m] = bounds
 
     # fragmentize all chunks
 
@@ -200,19 +200,22 @@ def unravel(app, isPretty, dContext, oContext, n):
         pSortedChunks = sorted(pChunks, key=sortKeyChunkLength)
         for (i, (n1, (b1, e1))) in enumerate(pSortedChunks):
             for j in range(i + 1, pChunksLen):
-                (n2, (b2, e2)) = pSortedChunks[j]
-                if b2 <= b1 <= e2:
-                    splits.append(((n2, (b2, e2)), b1))
-                elif b2 <= e1 <= e2:
-                    splits.append(((n2, (b2, e2)), e1))
+                qChunk = pSortedChunks[j]
+                (b2, e2) = qChunk[1]
+                if b2 == e2:
+                    continue
+                if (b2 < b1 < e2) or (b1 == e2 and b1 < e1):
+                    splits.append((qChunk, b1))
+                elif (b2 < e1 < e2) or (e1 == b2 and b1 < e1):
+                    splits.append((qChunk, e1))
 
         # apply the splits for nodes of this type
 
         for (chunk, s) in splits:
-            pChunks.remove(chunk)
-            (n, (b, e)) = chunk
-            pChunks.add((n, (b, s)))
-            pChunks.add((n, (s, e)))
+            pChunks.discard(chunk)
+            (m, (b, e)) = chunk
+            pChunks.add((m, (b, s)))
+            pChunks.add((m, (s + 1, e)))
 
         # fragmentize nodes of other types
 
@@ -229,10 +232,10 @@ def unravel(app, isPretty, dContext, oContext, n):
                     elif b2 <= e1 <= e2:
                         splits.append(((n2, (b2, e2)), e1))
             for (chunk, s) in splits:
-                qChunks.remove(chunk)
-                (n, (b, e)) = chunk
-                qChunks.add((n, (b, s)))
-                qChunks.add((n, (s, e)))
+                qChunks.discard(chunk)
+                (m, (b, e)) = chunk
+                qChunks.add((m, (b, s)))
+                qChunks.add((m, (s + 1, e)))
 
     # collect all chunks for all types in one list, ordered canonically
 
@@ -241,8 +244,8 @@ def unravel(app, isPretty, dContext, oContext, n):
     # add boundary classes
 
     chunkx = []
-    for (n, (b, e)) in chunks:
-        bounds = boundaries[n]
+    for (m, (b, e)) in chunks:
+        bounds = boundaries[m]
         css = []
         code = bounds[b][0] if b in bounds else None
         cls = f"{startCls}no" if code is None else "" if code else startCls
@@ -253,19 +256,23 @@ def unravel(app, isPretty, dContext, oContext, n):
         if cls:
             css.append(cls)
 
-        chunkx.append((n, (b, e), ' '.join(css)))
+        chunkx.append((m, (b, e), ' '.join(css)))
+
+    for c in chunkx:
+        print(c)
 
     # stack the chunks hierarchically
 
     tree = (None, [])
     parent = {}
-    rightmost = None
+    rightmost = tree
 
     for chunk in chunkx:
         rightnode = rightmost
         added = False
+        e = chunk[1][1]
 
-        while rightnode is not None:
+        while rightnode is not tree:
             (br, er) = rightnode[0][1]
             cr = rightnode[1]
             if e <= er:
@@ -275,7 +282,7 @@ def unravel(app, isPretty, dContext, oContext, n):
                 added = True
                 break
 
-            rightnode = parent[rightmost[0]]
+            rightnode = parent[rightnode[0]]
 
         if not added:
             rightmost = (chunk, [])
@@ -289,7 +296,7 @@ def printChunks(app, chunks, level):
     fOtypeV = app.api.F.otype.v
     indent = QUAD * level
     for ((n, (b, e), cls), children) in chunks:
-        print(f"{indent}{fOtypeV(n)} {n} [{b}:{e}] {cls}")
+        console(f"{indent}<{level}> {fOtypeV(n)} {n} [{b}:{e}] {cls}")
         printChunks(app, children, level + 1)
 
 

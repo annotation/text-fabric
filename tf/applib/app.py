@@ -391,6 +391,10 @@ The app "{appName}" will not work!
         setAppSpecs(self, cfg, reset=True)
 
         if api:
+            TF = self.TF
+            TF._makeApi()
+            api = TF.api
+            self.api = api
             linksApi(self, True)
             searchApi(self)
             sectionsApi(self)

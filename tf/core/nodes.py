@@ -92,9 +92,9 @@ class Nodes:
             r1 = otypeRank[fOtypev(n1)]
             r2 = otypeRank[fOtypev(n2)]
 
-            if r2 > r1:
+            if r1 > r2:
                 return -1
-            elif r1 > r2:
+            elif r1 < r2:
                 return 1
 
             return (
