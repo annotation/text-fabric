@@ -314,23 +314,6 @@ class App:
                 # docs = self.api.makeAvailableIn(hoist)
                 self.api.makeAvailableIn(hoist)
                 if not silent:
-                    """
-                    dh(
-                        "<details open><summary><b>API members</b>:</summary>\n"
-                        + "<br/>\n".join(
-                            ", ".join(
-                                outLink(
-                                    entry,
-                                    f"{URL_TFDOC}/Api/{head}/#{ref}",
-                                    title="doc",
-                                )
-                                for entry in entries
-                            )
-                            for (head, ref, entries) in docs
-                        )
-                        + "</details>"
-                    )
-                    """
                     dh(
                         "<div>"
                         + outLink(
@@ -353,6 +336,13 @@ The app "{appName}" will not work!
 """,
                     error=True,
                 )
+
+    def reinit(self):
+        """TF-Apps may override this method.
+        It is called by `reuse`. Hence it needs to be present.
+        """
+
+        pass
 
     def reuse(self, hoist=False):
         """Re-initialize the app.
@@ -395,6 +385,7 @@ The app "{appName}" will not work!
             TF._makeApi()
             api = TF.api
             self.api = api
+            self.reinit()  # may be used by custom TF apps
             linksApi(self, True)
             searchApi(self)
             sectionsApi(self)

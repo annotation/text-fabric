@@ -70,6 +70,10 @@
 :   pretty rendering of node
 :   `tf.applib.display.pretty`
 
+```A.unravel(node, ...)```
+:   convert a graph to a tree
+:   `tf.applib.display.unravel`
+
 ---
 
 ## Search (high level)

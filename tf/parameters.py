@@ -5,7 +5,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '8.2.2'
+VERSION = '8.3.0'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -36,7 +36,7 @@ See Also
 tf.clean
 """
 
-API_VERSION = 2
+API_VERSION = 3
 """TF API version.
 
 Text-Fabric offers and API to TF apps.

@@ -26,6 +26,8 @@ class Timestamp(object):
         # cache =  0: only to console
         if self.verbose != -2 and self.level >= self.verbose:
             return
+        if type(msg) is not str:
+            msg = repr(msg)
         msg = ux(msg)
         if tm:
             msgRep = f"{self.levelRep}{self._elapsed():>7} {msg}".replace(

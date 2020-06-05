@@ -19,7 +19,7 @@ from .helpers import getText, dh
 from ..server.wrap import wrapProvenance
 
 
-UNSUPPORTED = "not online"
+UNSUPPORTED = ""
 
 pathRe = re.compile(
     r"^(.*/(?:github|text-fabric-data))/([^/]+)/([^/]+)/(.*)$", flags=re.I
@@ -88,22 +88,12 @@ def linksApi(app, silent):
         if isCompatible
         else UNSUPPORTED
     )
-    appLink = outLink(
-        f"{appName} API",
-        extraUrl,
-        f"{appName} API documentation"
+    appLink = (
+        outLink(f"app-{appName}", extraUrl, f"{appName} TF-app")
         if isCompatible and repo is not None
-        else UNSUPPORTED,
-    )
-    tfLink = (
-        outLink(
-            f"Text-Fabric API {app.TF.version}",
-            APIREF,
-            "text-fabric-api",
-        )
-        if isCompatible
         else UNSUPPORTED
     )
+    tfLink = outLink(f"Text-Fabric API {app.TF.version}", APIREF, "text-fabric-api",)
     tfsLink = (
         outLink(
             "Search Reference",

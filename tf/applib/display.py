@@ -8,11 +8,11 @@ import types
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
 from ..core.helpers import mdEsc, flattenToSet
-from .helpers import getResultsX, tupleEnum, RESULT, dh
+from .helpers import getResultsX, tupleEnum, RESULT, dh, NB
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights
 from .displaysettings import DisplaySettings
-from .unravel import unravel
+from .unravel import _unravel
 from .displaylib import _render, _getRefMember, _getPassage, _doPassage
 
 LIMIT_SHOW = 100
@@ -52,6 +52,7 @@ def displayApi(app, silent):
     app.show = types.MethodType(show, app)
     app.prettyTuple = types.MethodType(prettyTuple, app)
     app.pretty = types.MethodType(pretty, app)
+    app.unravel = types.MethodType(unravel, app)
     app.loadCss = types.MethodType(loadCss, app)
     app.displaySetup = types.MethodType(displaySetup, app)
     app.displayReset = types.MethodType(displayReset, app)
@@ -537,7 +538,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
         Depending on *asString* above.
     """
 
-    render(app, False, n, _inTuple, _asString, explain, **options)
+    return _renderOuter(app, False, n, _inTuple, _asString, explain, **options)
 
 
 # PRETTY and FRIENDS
@@ -704,13 +705,55 @@ def pretty(app, n, explain=False, **options):
         as HTML. Otherwise the result is directly displayed in a notebook.
     """
 
-    render(app, True, n, False, False, explain, **options)
+    return _renderOuter(app, True, n, False, False, explain, **options)
 
 
 # RENDER
 
 
-def render(app, isPretty, n, _inTuple, _asString, explain, **options):
+def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
+    """Unravels a node and its graph-neighbourhood into a tree of fragments.
+
+    Parameters
+    ----------
+    n: integer
+        The node to unravel.
+    isPlain: boolean, optional `True`
+        Whether to unravel for plain display. Otherwise it is for pretty display.
+        The tree structure is the same for both, but the tree is also dressed up
+        with formatting information, which may differ for both modes.
+    explain: boolean or `'details'`:
+        Whether to pretty-print the tree.
+        If the value `details` is passed, most of the dressing information of the tree
+        is also shown.
+    **options:
+        Any amount of legal display options.
+        These will influence the dressing information.
+
+    Returns
+    -------
+    chunk: tuple
+        `(node, (begin slot, end slot))`
+        The top of the tree has `None`
+    info: dict
+        dressing information in the form of key value pairs, among which:
+        `dContext` (the display options that are in force), `oContext` (properties
+        of the outer node and node independent properties), `nContext` (properties
+        of the node of the chunk), `boundaryCls` (css info for the boundaries of
+        the chunk). The top of the tree has only has oContext.
+    children: list
+        subtrees where each subtree is again a tuple of chunk, info and children.
+    """
+
+    display = app.display
+    dContext = display.get(options)
+    return _unravel(app, not isPlain, dContext, n, _inTuple=_inTuple, explain=explain)
+
+
+def _renderOuter(app, isPretty, n, _inTuple, _asString, explain, **options):
+    """Renders a node, in plain or pretty mode.
+    """
+
     display = app.display
 
     if not display.check("pretty" if isPretty else "plain", options):
@@ -726,11 +769,9 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
 
     dContext.isHtml = fmt in formatHtml
 
-    tree = unravel(app, isPretty, dContext, n, _inTuple=False, explain=explain)
+    tree = _unravel(app, isPretty, dContext, n, _inTuple=_inTuple, explain=explain)
     oContext = tree[1]
     subTrees = tree[2]
-
-    passage = _getPassage(app, isPretty, dContext, oContext, n)
 
     if isPretty:
         tupleFeatures = dContext.tupleFeatures
@@ -743,14 +784,20 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
 
     html = []
 
+    passage = _getPassage(app, dContext, oContext, n)
+
     for subTree in subTrees:
         _render(app, isPretty, subTree, True, True, 0, passage, html)
 
     rep = "".join(html)
-    sep = " " if passage and rep else ""
+    sep = NB if passage and rep else ""
     ltr = oContext.ltr
 
-    result = f"""<div class="{ltr} children">{passage}{sep}{rep}</div>"""
+    result = (
+        f"""{passage}<div class="{ltr} children">{rep}</div>"""
+        if isPretty else
+        f"""<div class="{ltr} children">{passage}{sep}{rep}</div>"""
+    )
 
     if _browse or _asString:
         return result

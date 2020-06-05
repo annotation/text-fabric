@@ -132,9 +132,9 @@ class Transcription(object):
     """
     Maps all ETCBC transliteration character combinations for Hebrew to Unicode.
 
-    Example: print the sof-pasuq:
+    Example: sof-pasuq:
 
-        print(Transcription.hebrew_mapping['00'])
+        Transcription.hebrew_mapping['00']
 
     Output:
 
@@ -343,9 +343,9 @@ class Transcription(object):
     """
     Maps all ETCBC transliteration character combinations for Syriac to Unicode.
 
-    Example: print the semkath-final:
+    Example: semkath-final:
 
-        print(Transcription.syriac_mapping['s'])
+        Transcription.syriac_mapping['s']
 
     Output:
 
@@ -420,9 +420,9 @@ class Transcription(object):
     """
     Maps an Arabic transliteration character to Unicode.
 
-    Example: print the beh
+    Example: beh
 
-        print(Transcription.syriac_mapping['b'])
+        Transcription.syriac_mapping['b']
 
     Output:
 
@@ -430,9 +430,9 @@ class Transcription(object):
 
     Maps an Arabic letter in unicode to its transliteration
 
-    Example: print the beh transliteration
+    Example: beh transliteration
 
-        print(Transcription.syriac_mapping['ب'])
+        Transcription.syriac_mapping['ب']
 
     Output:
 
@@ -494,7 +494,7 @@ class Transcription(object):
 
         Example:
 
-            print(Transcription.suffix_and_finales('71T_H@>@95REY00'))
+            Transcription.suffix_and_finales('71T_H@>@95REY00')
 
         Output:
 
@@ -575,9 +575,9 @@ class Transcription(object):
 
         Example:
 
-            print(Transcription.suppress_space('B.:&'))
-            print(Transcription.suppress_space('B.@R@74>'))
-            print(Transcription.suppress_space('71T_H@>@95REY00'))
+            Transcription.suppress_space('B.:&')
+            Transcription.suppress_space('B.@R@74>')
+            Transcription.suppress_space('71T_H@>@95REY00')
 
         Output:
 
@@ -595,7 +595,7 @@ class Transcription(object):
 
         Example:
 
-            print(Transcription.to_etcbc_v('HAC.@MA73JIm'))
+            Transcription.to_etcbc_v('HAC.@MA73JIm')
 
         Output:
 
@@ -612,7 +612,7 @@ class Transcription(object):
 
         Example:
 
-            print(Transcription.to_etcbc_c('HAC.@MA73JIm'))
+            Transcription.to_etcbc_c('HAC.@MA73JIm')
 
         Output:
 
@@ -640,7 +640,7 @@ class Transcription(object):
 
         Example:
 
-            print(Transcription.to_hebrew('HAC.@MA73JIm'))
+            Transcription.to_hebrew('HAC.@MA73JIm')
 
         Output:
 
@@ -657,7 +657,7 @@ class Transcription(object):
 
         Example:
 
-            print(Transcription.to_hebrew_v('HAC.@MA73JIm'))
+            Transcription.to_hebrew_v('HAC.@MA73JIm')
 
         Output:
 
@@ -675,7 +675,7 @@ class Transcription(object):
 
         Example:
 
-            print(Transcription.to_hebrew_c('HAC.@MA73JIm'))
+            Transcription.to_hebrew_c('HAC.@MA73JIm')
 
         Output:
 
@@ -697,7 +697,7 @@ class Transcription(object):
 
         Example:
 
-            print(Transcription.to_hebrew_x('HAC.@MA73JIm'))
+            Transcription.to_hebrew_x('HAC.@MA73JIm')
 
         Output:
 
@@ -713,9 +713,9 @@ class Transcription(object):
 
         Example:
 
-            print(Transcription.ph_simplify('ʔᵉlōhˈîm'))
-            print(Transcription.ph_simplify('māqˈôm'))
-            print(Transcription.ph_simplify('kol'))
+            Transcription.ph_simplify('ʔᵉlōhˈîm')
+            Transcription.ph_simplify('māqˈôm')
+            Transcription.ph_simplify('kol')
 
         Output:
 
@@ -737,7 +737,7 @@ class Transcription(object):
 
         Example:
 
-            print(tr.from_hebrew('הָאָֽרֶץ׃'))
+            tr.from_hebrew('הָאָֽרֶץ׃')
 
         Output:
 
@@ -755,7 +755,7 @@ class Transcription(object):
 
         Example:
 
-            print(tr.to_syriac('MKSJN'))
+            tr.to_syriac('MKSJN')
 
         Output:
 
@@ -771,7 +771,7 @@ class Transcription(object):
 
         Example:
 
-            print(tr.from_syriac('ܡܟܣܝܢ'))
+            tr.from_syriac('ܡܟܣܝܢ')
 
         Output:
 
@@ -797,7 +797,7 @@ class Transcription(object):
 
         Example:
 
-            print(tr.to_arabic('bisomi'))
+            tr.to_arabic('bisomi')
 
         Output:
 
@@ -813,7 +813,7 @@ class Transcription(object):
 
         Example:
 
-            print(tr.from_arabic('بِسْمِ'))
+            tr.from_arabic('بِسْمِ')
 
         Output:
 

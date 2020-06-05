@@ -126,7 +126,6 @@ TYPE_KEYS = set(
     """
     base
     children
-    childrenPlain
     condense
     features
     featuresBare
@@ -147,7 +146,6 @@ TYPE_KEYS = set(
 
 HOOKS = """
     afterChild
-    childrenCustom
     plainCustom
     prettyCustom
 """.strip().split()
@@ -205,6 +203,12 @@ class Check:
                 for tp in tps:
                     if tp not in nTypes:
                         errors.append(f"{k}: node type {tp} not present")
+            elif k == "exclude":
+                if type(v) is not dict():
+                    errors.append(f"{k}: must be a dict of features and values")
+                    for feat in v:
+                        if feat not in allNodeFeatures:
+                            errors.append(f"{k}: feature {feat} not loaded")
             elif k == "base":
                 pass
             elif k == "lineNumber":
@@ -215,7 +219,7 @@ class Check:
                 if v not in allowedValues:
                     allowed = ",".join(sorted(allowedValues))
                     errors.append(f"{k} must be an integer in {allowed}")
-            elif k in {"children", "xChildren"}:
+            elif k == "children":
                 if type(v) is not str and type(v) is not list:
                     errors.append(f"{k} must be a (list of) node types")
                 else:
@@ -288,7 +292,6 @@ class Check:
             elif k in {
                 "browseContentPretty",
                 "base",
-                "childrenPlain",
                 "condense",
                 "graphics",
                 "hidden",
@@ -565,7 +568,6 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
     specs = app.specs
 
-    noChildren = set()
     isHidden = set()
     featuresBare = {}
     features = {}
@@ -582,7 +584,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     givenLevels = {}
     levels = {}
     childType = {}
-    xChildType = {}
+    exclusions = {}
     transform = {}
 
     specs["transform"] = transform
@@ -673,9 +675,6 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         if graphics:
             hasGraphics.add(nType)
 
-        if not info.get("childrenPlain", True):
-            noChildren.add(nType)
-
         hidden = info.get("hidden", None)
         if hidden:
             isHidden.add(nType)
@@ -697,13 +696,8 @@ def getTypeDefaults(app, cfg, dKey, withApi):
                 childs = set(childs)
             childType[nType] = set(childs or ())
 
-        if "xChildren" in info:
-            xChilds = info["xChildren"] or ()
-            if type(xChilds) is str:
-                xChilds = {xChilds}
-            else:
-                xChilds = set(xChilds)
-            xChildType[nType] = set(xChilds or ())
+        if "exclude" in info:
+            exclusions[nType] = info["exclude"] or {}
 
         checker.report()
 
@@ -811,18 +805,12 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
     descendantType = transitiveClosure(childType, {slotType})
 
-    for (parent, xChildren) in xChildType.items():
-        if parent in descendantType:
-            descendants = descendantType[parent]
-            for xChild in xChildren:
-                descendants.discard(xChild)
-
     specs.update(
         baseTypes=baseTypes if baseTypes else {slotType},
         childType=childType,
-        xChildType=xChildType,
         condenseType=condenseType,
         descendantType=descendantType,
+        exclusions=exclusions,
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
@@ -833,7 +821,6 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         lexMap=lexMap,
         lexTypes=lexTypes,
         lineNumberFeature=lineNumberFeature,
-        noChildren=noChildren,
         noDescendTypes=lexTypes,
         styles=styles,
         templates=templates,

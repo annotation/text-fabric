@@ -551,47 +551,26 @@ children:
   - word
 ```
 
-### `xChildren`
+### `exclude`
 
-Which type of child nodes to be excluded in the display.
+Conditions that will exclude nodes of this type from the display.
+
+All nodes that satisfy at least one of these conditions will be left out.
 
 !!! hint
-    Use this if you want to exclude some types of nodes directly appearing
-    inside other nodes, e.g. in 
+    Use this if you want to exclude particular nodes of some type, e.g. in
     [dss](https://github.com/annotation/app-dss/blob/master/code/config.yaml).
-    where we want to prevent signs to be directly displayed below lines, because
-    there should always be a word around the signs.
-    The DSS has end-of-line tokens, outside any word, but inside the lines.
+    where we want to prevent line terminator signs.
 
-!!! caution "Loss of material"
-    By excluding certain child types you may loose slots in the display.
-    This might be intentional, as in the DSS, but it could lead to
-    unwanted omissions.
-
-The value should be a node type or a set of node types:
+The value is a dictionary of feature name - value pairs.
 
 ```
-xChildren: sign
-```
-
-```
-xChildren:
-  - sign
+exclude:
+    type: term
 ```
 
 Default:
-:   string | list, `[]`
-
----
-
-### `childrenPlain`
-
-Some types correspond to long sections. Such big types will not be expanded
-in pretty displays. If you also want to generate abreviated plain displays
-you can say `childrenPlain: false`.
-
-Default:
-:   boolean `true`
+:   dict, `{}`
 
 ---
 
@@ -662,7 +641,7 @@ type.
 The app needs to define a function
 
 ```
-getGraphics(node, nodeType, isOuter) => HTML code for sourcing the graphics
+getGraphics(isPretty, node, nodeType, isOuter) => HTML code for sourcing the graphics
 ```
 
 See [uruk](https://github.com/annotation/app-uruk/blob/master/code/app.py).

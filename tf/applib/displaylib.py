@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from .helpers import getText, htmlSafe, NB
+from .helpers import getText, htmlSafe
 from ..core.text import DEFAULT_FORMAT
 from ..core.helpers import htmlEsc
 from .settings import ORIG
@@ -69,7 +69,6 @@ __pdoc__["NodeContext.descend"] = (
 __pdoc__["NodeContext.isBaseNonSlot"] = (
     "Whether the current node has a type that is currently a baseType,"
     " i.e. a type where a pretty display should stop unfolding."
-    " No need to put the slot type in this set."
 )
 __pdoc__["NodeContext.textCls"] = "The text Css class of the current node."
 __pdoc__["NodeContext.hlCls"] = "The highlight Css class of the current node."
@@ -100,6 +99,8 @@ def _render(
     switched=False,
     _asString=False,
 ):
+    aContext = app.context
+
     outer = level == 0
     (chunk, info, children) = tree
     (n, (b, e)) = chunk
@@ -108,9 +109,12 @@ def _render(
     nContext = info["nContext"]
     boundaryCls = info["boundaryCls"]
 
+    plainCustom = aContext.plainCustom
     ltr = oContext.ltr
-
+    nType = nContext.nType
     isBaseNonSlot = nContext.isBaseNonSlot
+
+    custom = plainCustom and nType in plainCustom
 
     if isPretty:
         nodePlain = None
@@ -178,7 +182,7 @@ def _render(
 
     lastCh = len(children) - 1
 
-    if not (isPretty and isBaseNonSlot):
+    if not ((isPretty and isBaseNonSlot) or (not isPretty and custom)):
         for (i, subTree) in enumerate(children):
             thisFirst = first and i == 0
             thisLast = last and i == lastCh
@@ -240,6 +244,7 @@ def _doPlainNode(
 
     isHtml = dContext.isHtml
     fmt = dContext.fmt
+    showGraphics = dContext.showGraphics
 
     ltr = oContext.ltr
 
@@ -247,12 +252,14 @@ def _doPlainNode(
     nType = nContext.nType
     isSlotOrDescend = nContext.isSlotOrDescend
     descend = nContext.descend
+    hasGraphics = nContext.hasGraphics
 
-    n = tree[0][0]
+    chunk = tree[0]
+    n = chunk[0]
 
     if nType in plainCustom:
         method = plainCustom[nType]
-        contrib = method(app, dContext, oContext, nContext, n, outer)
+        contrib = method(app, dContext, chunk, nType, outer)
         return contrib
     if isSlotOrDescend:
         text = htmlSafe(
@@ -283,6 +290,8 @@ def _doPlainNode(
             dContext=dContext,
         )
         contrib = f'<span class="plain {textCls} {ltr}">{tplFilled}</span>'
+    if showGraphics and hasGraphics:
+        contrib += app.getGraphics(False, n, nType, outer)
 
     return contrib
 
@@ -318,8 +327,8 @@ def _doPrettyWrapPre(
         trm = "" if children else terminalCls
         html.append(f"{containerB.format(trm)}{label0}{material}")
 
-    if showGraphics and nType in hasGraphics:
-        html.append(app.getGraphics(n, nType, outer))
+    if showGraphics and hasGraphics:
+        html.append(app.getGraphics(True, n, nType, outer))
 
     return (containerB, containerE)
 
@@ -428,14 +437,14 @@ def _doPassage(dContext, i):
     return withPassage is not True and withPassage and i + 1 in withPassage
 
 
-def _getPassage(app, isPretty, dContext, oContext, n):
+def _getPassage(app, dContext, oContext, n):
     withPassage = dContext.withPassage
 
     if not withPassage:
         return ""
 
     passage = app.webLink(n, _asString=True)
-    return f'<span class="section ltr">{passage}{NB}</span>'
+    return f'<span class="section ltr">{passage}</span>'
 
 
 def _getTextCls(app, fmt):

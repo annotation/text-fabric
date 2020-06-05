@@ -15,11 +15,15 @@ from .displaylib import (
 )
 
 
-def unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
+def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
+    """Unravels a node in a tree of fragments dressed up with formatting properties.
+    """
+
     api = app.api
     N = api.N
     E = api.E
     F = api.F
+    Fs = api.Fs
     L = api.L
     T = api.T
 
@@ -34,7 +38,9 @@ def unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
 
     aContext = app.context
     verseTypes = aContext.verseTypes
+    lexTypes = aContext.lexTypes
     descendantType = aContext.descendantType
+    exclusions = aContext.exclusions
     showVerseInTuple = aContext.showVerseInTuple
     isHidden = aContext.isHidden
     levelCls = aContext.levelCls
@@ -43,7 +49,6 @@ def unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     formatHtml = aContext.formatHtml
     hasGraphics = aContext.hasGraphics
     afterChild = aContext.afterChild
-    childrenCustom = aContext.childrenCustom
 
     full = dContext.full
     showHidden = dContext.showHidden
@@ -58,17 +63,31 @@ def unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     startCls = "r" if ltr == "rtl" else "l"
     endCls = "l" if ltr == "rtl" else "r"
 
+    nSlots = eOslots(n)
+    if nType in lexTypes:
+        nSlots = (nSlots[0],)
+    nSlots = set(nSlots)
     isBigType = (
         _inTuple
         if not isPretty and nType in verseTypes and not showVerseInTuple
         else _getBigType(app, dContext, nType)
     )
 
+    subBaseTypes = set()
+
+    if baseTypes and baseTypes != {slotType}:
+        for bt in baseTypes:
+            if bt in descendantType:
+                subBaseTypes |= descendantType[bt]
+
     oContext = OuterContext(slotType, ltr, fmt, textCls)
 
     nodeInfo = {}
 
     def distillChunkInfo(m, chunkInfo):
+        """Gather all the dressing info for a chunk.
+        """
+
         mType = fOtypeV(m)
         isSlot = mType == slotType
         (hlCls, hlStyle) = getHlAtt(app, m, highlights, baseTypes, not isPretty)
@@ -79,14 +98,14 @@ def unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
             if mType in prettyCustom:
                 prettyCustom[mType](app, m, mType, cls)
         textCls = styles.get(mType, oContext.textCls)
-        isBaseNonSlot = not isSlot and mType in baseTypes
+        isBaseNonSlot = not isSlot and (mType in baseTypes or mType in subBaseTypes)
         nodeInfoM = nodeInfo.setdefault(
             m,
             NodeContext(
                 mType,
                 isSlot,
                 isSlot or mType == descendType,
-                False if descendType == mType else None,
+                False if descendType == mType or mType in lexTypes else None,
                 isBaseNonSlot,
                 textCls,
                 hlCls,
@@ -110,14 +129,8 @@ def unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     elif nType in descendantType:
         myDescendantType = descendantType[nType]
         iNodes = set(L.i(n, otype=myDescendantType))
-        if nType in childrenCustom:
-            (condition, method, add) = childrenCustom[nType]
-            if condition(n):
-                others = method(n)
-                if add:
-                    iNodes |= set(others)
-                else:
-                    iNodes = set(others)
+    elif nType in lexTypes:
+        iNodes = {n}
     else:
         iNodes = set(L.i(n))
 
@@ -134,7 +147,21 @@ def unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
 
     for m in iNodes:
         mType = fOtypeV(m)
+        if mType in exclusions:
+            skip = False
+            conditions = exclusions[mType]
+            for (feat, value) in conditions.items():
+                if Fs(feat).v(m) == value:
+                    skip = True
+                    break
+            if skip:
+                continue
+
         slots = eOslots(m)
+        if nType in lexTypes:
+            slots = (slots[0],)
+        if m != n and nSlots <= set(slots) and N.sortNodes((m, n))[0] == m:
+            continue
         ranges = rangesFromList(slots)
         bounds = {}
         minSlot = min(slots)
@@ -248,7 +275,16 @@ def unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
         distillChunkInfo(m, chunkInfo)
 
     if explain:
-        showChunkTree(tree, 0)
+        details = (
+            False if explain is True else True if explain == "details" else None
+        )
+        if details is None:
+            console(
+                "Illegal value for parameter explain: `{explain}`.\n"
+                "Must be `True` or `'details'`",
+                error=True,
+            )
+        _showTree(tree, 0, details=details)
     return tree
 
 
@@ -288,7 +324,7 @@ def _applySplits(chunks, splits):
             chunks.add((m, (prevB, e)))
 
 
-def showChunkTree(tree, level):
+def _showTree(tree, level, details=False):
     indent = QUAD * level
     (chunk, info, children) = tree
     if chunk is None:
@@ -298,7 +334,12 @@ def showChunkTree(tree, level):
         rangeRep = "{" + (str(b) if b == e else f"{b}-{e}") + "}"
         nContext = info["nContext"]
         nType = nContext.nType
+        isBaseNonSlot = nContext.isBaseNonSlot
+        base = "*" if isBaseNonSlot else ""
         boundaryCls = info["boundaryCls"]
-        console(f"{indent}<{level}> {nType} {n} {rangeRep} {boundaryCls}")
+        console(f"{indent}<{level}> {nType}{base} {n} {rangeRep} {boundaryCls}")
+        if details:
+            for (k, v) in sorted(nContext._asdict().items(), key=lambda x: x[0]):
+                console(f"{indent}{QUAD * 4}{k:<10} = {v}")
     for subTree in children:
-        showChunkTree(subTree, level + 1)
+        _showTree(subTree, level + 1, details=details)

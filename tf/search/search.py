@@ -465,7 +465,7 @@ class Search(object):
             This
 
                 for result in S.fetch(limit=10):
-                    print(S.glean(result))
+                    TF.info(S.glean(result))
 
             is a handy way to get an impression of the first bunch of results.
 

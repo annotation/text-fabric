@@ -33,7 +33,7 @@ setup(
             "text-fabric-zip = tf.applib.zipdata:main",
         ]
     },
-    version='8.2.2',
+    version='8.3.0',
     description="""Processor and browser for Text Fabric Data""",
     author="Dirk Roorda",
     author_email="dirk.roorda@dans.knaw.nl",

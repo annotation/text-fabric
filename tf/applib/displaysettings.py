@@ -106,7 +106,6 @@ class DisplayCurrent:
 
 
 class DisplaySettings:
-
     def __init__(self, app):
         self.app = app
 
@@ -177,7 +176,7 @@ class DisplaySettings:
                 value = set(int(v) for v in value.split()) if value else set()
             elif type(value) in {list, tuple, dict}:
                 value = set(value)
-            else:
+            elif type(value) is not set:
                 value = True
         elif option == "highlights":
             if value is not None and type(value) is not dict:
