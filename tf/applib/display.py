@@ -7,16 +7,13 @@ import os
 import types
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
-from ..core.helpers import mdEsc
+from ..core.helpers import mdEsc, flattenToSet
 from .helpers import getResultsX, tupleEnum, RESULT, dh
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights
 from .displaysettings import DisplaySettings
-from .displaylib import (
-    render,
-    _getRefMember,
-    _doPassage,
-)
+from .unravel import unravel
+from .displaylib import _render, _getRefMember, _getPassage, _doPassage
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
@@ -708,3 +705,53 @@ def pretty(app, n, explain=False, **options):
     """
 
     render(app, True, n, False, False, explain, **options)
+
+
+# RENDER
+
+
+def render(app, isPretty, n, _inTuple, _asString, explain, **options):
+    display = app.display
+
+    if not display.check("pretty" if isPretty else "plain", options):
+        return ""
+
+    _browse = app._browse
+
+    aContext = app.context
+    formatHtml = aContext.formatHtml
+
+    dContext = display.get(options)
+    fmt = dContext.fmt
+
+    dContext.isHtml = fmt in formatHtml
+
+    tree = unravel(app, isPretty, dContext, n, _inTuple=False, explain=explain)
+    oContext = tree[1]
+    subTrees = tree[2]
+
+    passage = _getPassage(app, isPretty, dContext, oContext, n)
+
+    if isPretty:
+        tupleFeatures = dContext.tupleFeatures
+        extraFeatures = dContext.extraFeatures
+
+        dContext.features = sorted(
+            flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)
+        )
+        dContext.featuresIndirect = extraFeatures[1]
+
+    html = []
+
+    for subTree in subTrees:
+        _render(app, isPretty, subTree, True, True, 0, passage, html)
+
+    rep = "".join(html)
+    sep = " " if passage and rep else ""
+    ltr = oContext.ltr
+
+    result = f"""<div class="{ltr} children">{passage}{sep}{rep}</div>"""
+
+    if _browse or _asString:
+        return result
+    dh(result)

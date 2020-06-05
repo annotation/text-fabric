@@ -31,6 +31,13 @@ INTERFACE_OPTIONS = (
         "Show the node type for every node in the expanded view, even if <b>show types</b> is off",
     ),
     (
+        "plainGaps",
+        True,
+        "plaing",
+        "show gaps",
+        "In plain displays, show the gaps in nodes by means of dotted lines",
+    ),
+    (
         "standardFeatures",
         False,
         "showf",

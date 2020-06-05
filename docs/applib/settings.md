@@ -259,93 +259,17 @@ The following options can be passed to the display functions
 `tf.applib.display.plain` and `tf.applib.display.pretty`.
 They can also be set in the Text-Fabric Browser.
 The values set here are the defaults as given by this app.
-Not all options work for all corpora.
+Not all options are relevant for all corpora.
+Only relevant options should be included.
+By setting the default to `None`, the option will not be shown
+on the TF-browser interface.
+
+These options are described in `tf.applib.displaysettings`: all options
+marked as **interface option**.
+
 
 Default:
 :   dict `{}`
-
----
-
-### `lineNumbers`
-
-Whether to show the line numbers within the source files of the corpus.
-The line numbers come from the source files from which the TF dataset
-has been generated.
-
-Those types for which `lineNumber="feat"` has been configured in `typeDisplay` below
-will cause plain and pretty to display a source line number, which will
-come from the feature `feat`.
-
-Default:
-:   boolean `false` for apps that define line numbers, else `null`.
-
----
-
-### `prettyTypes`
-
-If `withTypes` is `true`, you can set `prettyTypes` to `false` to prevent
-showing the types in pretty displays.
-
-Default:
-:   boolean `true` (all apps)
-
----
-
-### `queryFeatures`
-
-Whether to show the features mentioned in the last query in pretty displays.
-
-Default:
-:   boolean `true` (all apps)
-
----
-
-### `showHidden`
-
-Whether to use nodes of hidden types when unraveling nodes.
-
-Showing hidden types may clutter the displays, but sometimes you need that information.
-
-Default:
-:   boolean `false` for apps that define hidden node types, else `null`.
-
----
-
-### `standardFeatures`
-
-Whether to show the standard features and their values in pretty displays.
-
-Default:
-:   boolean `true`
-
----
-
-### `showGraphics`
-
-Whether to show additional graphics.
-Applies only to nodes of types for which `graphics=true` has been configured in
-`typeDisplay` below.
-
-Default:
-:   boolean `true` for apps that have graphics data, else `null`.
-
----
-
-### `withNodes`
-
-Whether to show the node numbers.
-
-Default:
-:   boolen `false`
-
----
-
-### `withTypes: false`
-
-Whether to show the node type.
-
-Default:
-:   boolen `false`
 
 ---
 

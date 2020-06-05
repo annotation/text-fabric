@@ -177,6 +177,7 @@ class Check:
         errors = self.errors
         dKey = self.dKey
         specs = app.specs
+        interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
 
         if withApi:
             api = app.api
@@ -232,16 +233,7 @@ class Check:
             elif k == "style":
                 if type(v) is not str or v.lower() != v:
                     errors.append(f"{k} must be an all lowercase string")
-            elif k in {
-                "lineNumbers",
-                "prettyTypes",
-                "queryFeatures",
-                "showHidden",
-                "showGraphics",
-                "standardFeatures",
-                "withNodes",
-                "withTypes",
-            }:
+            elif k in interfaceDefaults:
                 allowed = self.extra[k]
                 if not allowed and v is not None:
                     errors.append(
