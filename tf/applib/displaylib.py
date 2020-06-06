@@ -248,19 +248,24 @@ def _doPlainNode(
 
     ltr = oContext.ltr
 
+    hasGraphics = nContext.hasGraphics
     textCls = nContext.textCls
     nType = nContext.nType
     isSlotOrDescend = nContext.isSlotOrDescend
     descend = nContext.descend
-    hasGraphics = nContext.hasGraphics
 
     chunk = tree[0]
     n = chunk[0]
 
+    graphics = (
+        app.getGraphics(False, n, nType, outer) if showGraphics and hasGraphics else ""
+    )
+
     if nType in plainCustom:
         method = plainCustom[nType]
         contrib = method(app, dContext, chunk, nType, outer)
-        return contrib
+        return contrib + graphics
+
     if isSlotOrDescend:
         text = htmlSafe(
             T.text(
@@ -290,10 +295,8 @@ def _doPlainNode(
             dContext=dContext,
         )
         contrib = f'<span class="plain {textCls} {ltr}">{tplFilled}</span>'
-    if showGraphics and hasGraphics:
-        contrib += app.getGraphics(False, n, nType, outer)
 
-    return contrib
+    return contrib + graphics
 
 
 # PRETTY LOW-LEVEL
@@ -306,6 +309,7 @@ def _doPrettyWrapPre(
     hasGraphics = nContext.hasGraphics
     nType = nContext.nType
     cls = nContext.cls
+    isBaseNonSlot = nContext.isBaseNonSlot
     contCls = cls["container"]
     hlCls = nContext.hlCls
     hlStyle = nContext.hlStyle
@@ -324,7 +328,7 @@ def _doPrettyWrapPre(
         trm = terminalCls
         html.append(f"{containerB.format(trm)}{labelB}{material}{containerE}")
     if label0 is not None:
-        trm = "" if children else terminalCls
+        trm = terminalCls if isBaseNonSlot or not children else ""
         html.append(f"{containerB.format(trm)}{label0}{material}")
 
     if showGraphics and hasGraphics:
@@ -406,7 +410,7 @@ def _doPrettyNode(
         key = f"label{x}"
         if key in cls:
             val = cls[key]
-            terminalCls = "trm" if x or not children else ""
+            terminalCls = "trm" if x or isBaseNonSlot or not children else ""
             sep = " " if nodePart and heading else ""
             material = f"{nodePart}{sep}{heading}" if nodePart or heading else ""
             label[x] = (
@@ -468,7 +472,7 @@ def _getLtr(app, dContext):
     )
 
 
-def _getBigType(app, dContext, nType):
+def _getBigType(app, isPretty, dContext, nType):
     api = app.api
     T = api.T
     N = api.N
@@ -477,12 +481,18 @@ def _getBigType(app, dContext, nType):
     structureTypeSet = T.structureTypeSet
     otypeRank = N.otypeRank
 
+    aContext = app.context
+    bigTypes = aContext.bigTypes
+    isBigOverride = nType in bigTypes
+
     full = dContext.full
     condenseType = dContext.condenseType
 
     isBig = False
     if not full:
-        if sectionTypeSet and nType in sectionTypeSet | structureTypeSet:
+        if not isPretty and isBigOverride:
+            isBig = True
+        elif sectionTypeSet and nType in sectionTypeSet | structureTypeSet:
             if condenseType is None or otypeRank[nType] > otypeRank[condenseType]:
                 isBig = True
         elif condenseType is not None and otypeRank[nType] > otypeRank[condenseType]:

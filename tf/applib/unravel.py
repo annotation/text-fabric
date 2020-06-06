@@ -70,7 +70,7 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     isBigType = (
         _inTuple
         if not isPretty and nType in verseTypes and not showVerseInTuple
-        else _getBigType(app, dContext, nType)
+        else _getBigType(app, isPretty, dContext, nType)
     )
 
     subBaseTypes = set()
@@ -90,7 +90,7 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
 
         mType = fOtypeV(m)
         isSlot = mType == slotType
-        (hlCls, hlStyle) = getHlAtt(app, m, highlights, baseTypes, not isPretty)
+        (hlCls, hlStyle) = getHlAtt(app, m, highlights, isSlot, not isPretty)
         cls = {}
         if isPretty:
             if mType in levelCls:
@@ -160,7 +160,7 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
         slots = eOslots(m)
         if nType in lexTypes:
             slots = (slots[0],)
-        if m != n and nSlots <= set(slots) and N.sortNodes((m, n))[0] == m:
+        if m != n and mType == nType and nSlots <= set(slots):
             continue
         ranges = rangesFromList(slots)
         bounds = {}
@@ -175,8 +175,8 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
         # False if a left resp. right inner chunk boundary is there
 
         for r in ranges:
-            chunks.setdefault(mType, set()).add((m, r))
             (b, e) = r
+            chunks.setdefault(mType, set()).add((m, r))
             bounds[b] = ((b == minSlot), (None if b != e else e == maxSlot))
             bounds[e] = ((b == minSlot if b == e else None), (e == maxSlot))
         boundaries[m] = bounds
@@ -198,8 +198,8 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
         pSortedChunks = sorted(pChunks, key=sortKeyChunkLength)
         for (i, pChunk) in enumerate(pSortedChunks):
             for j in range(i + 1, pChunksLen):
-                qChunk = pSortedChunks[j]
-                splits.setdefault(qChunk, set()).update(_getSplitPoints(pChunk, qChunk))
+                p2Chunk = pSortedChunks[j]
+                splits.setdefault(p2Chunk, set()).update(_getSplitPoints(pChunk, p2Chunk))
 
         # apply the splits for nodes of this type
 
@@ -220,9 +220,17 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
                     )
             _applySplits(qChunks, splits)
 
-    # collect all chunks for all types in one list, ordered canonically
+    # collect all fragments for all types in one list, ordered canonically
+    # theorem: each fragment is either contained in the top node or completely
+    # outside the top node.
+    # We leave out the fragments that are outside the top node.
+    # In order to test that, it is sufficient to test only one slot of
+    # the fragment. We take the begin slot/
 
-    chunks = sorted(chain.from_iterable(chunks.values()), key=sortKeyChunk)
+    chunks = sorted(
+        (c for c in chain.from_iterable(chunks.values()) if c[1][0] in nSlots),
+        key=sortKeyChunk,
+    )
 
     # determine boundary classes
 
@@ -275,9 +283,7 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
         distillChunkInfo(m, chunkInfo)
 
     if explain:
-        details = (
-            False if explain is True else True if explain == "details" else None
-        )
+        details = False if explain is True else True if explain == "details" else None
         if details is None:
             console(
                 "Illegal value for parameter explain: `{explain}`.\n"
@@ -290,6 +296,9 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
 
 def _getSplitPoints(pChunk, qChunk):
     """Determines where the boundaries of one chunk cut through another chunk.
+
+    The splitpoint is the index where the second part starts.
+    So the split point is always greater than the start point.
     """
 
     (b1, e1) = pChunk[1]
@@ -297,10 +306,10 @@ def _getSplitPoints(pChunk, qChunk):
     if b2 == e2 or (b1 <= b2 and e1 >= e2):
         return []
     splitPoints = set()
-    if (b2 < b1 < e2) or (b1 == e2 and b1 < e1):
+    if (b2 < b1 <= e2):
         splitPoints.add(b1)
-    elif (b2 < e1 < e2) or (e1 == b2 and b1 < e1):
-        splitPoints.add(e1)
+    if (b2 <= e1 < e2):
+        splitPoints.add(e1 + 1)
     return splitPoints
 
 
@@ -317,11 +326,14 @@ def _applySplits(chunks, splits):
         chunks.remove(target)
         (m, (b, e)) = target
         prevB = b
-        for sp in splitPoints:
-            chunks.add((m, (prevB, sp)))
-            prevB = sp + 1
-        if prevB <= e:
-            chunks.add((m, (prevB, e)))
+        # invariant: sp > prevB
+        # initially true because it is the result of _getSPlitPoint
+        # after each iteration: the new split point cannot be the old one
+        # and the new start is the old split point.
+        for sp in sorted(splitPoints):
+            chunks.add((m, (prevB, sp - 1)))
+            prevB = sp
+        chunks.add((m, (prevB, e)))
 
 
 def _showTree(tree, level, details=False):

@@ -3,7 +3,7 @@ from itertools import chain
 from .search import runSearch
 
 
-def getHlAtt(app, n, highlights, baseTypes, isPlain):
+def getHlAtt(app, n, highlights, isSlot, isPlain):
     """Get the highlight attribute for a node.
 
     Parameters
@@ -19,8 +19,8 @@ def getHlAtt(app, n, highlights, baseTypes, isPlain):
         and if so, what the value is (in case of a dict).
         If given as set: use the default highlight color.
         If given as dict: use the value as color.
-    baseTypes: set
-        Which node types acts as a base type.
+    isSlot: boolean
+        Whether the node has the slotType
     isPlain:
         Whether we are highlighting for plain() or for pretty().
     """
@@ -39,13 +39,8 @@ def getHlAtt(app, n, highlights, baseTypes, isPlain):
     if color is None:
         return ("", "")
 
-    api = app.api
-    F = api.F
-
-    isBaseType = F.otype.v(n) in baseTypes
-
-    hlCls = ("hl" if isBaseType else "hlbx") if isPlain else "hl"
-    hlObject = ("background" if isBaseType else "border") if isPlain else "background"
+    hlCls = ("hl" if isSlot else "hlbx") if isPlain else "hl"
+    hlObject = ("background" if isSlot else "border") if isPlain else "background"
     hlStyle = f' style="{hlObject}-color: {color};" ' if color != "" else ""
 
     return (hlCls, hlStyle)

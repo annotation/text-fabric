@@ -132,6 +132,7 @@ TYPE_KEYS = set(
     flow
     graphics
     hidden
+    isBig
     label
     level
     lexOcc
@@ -295,6 +296,7 @@ class Check:
                 "condense",
                 "graphics",
                 "hidden",
+                "isBig",
                 "showVerseInTuple",
                 "stretch",
                 "verselike",
@@ -574,6 +576,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     lineNumberFeature = {}
     hasGraphics = set()
     verseTypes = {sectionTypes[-1]} if sectionTypes else set()
+    bigTypes = set()
     verseRank = otypeRank[sectionTypes[-1]] if sectionTypes else None
     lexMap = {}
     baseTypes = set()
@@ -682,6 +685,10 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         verselike = info.get("verselike", False)
         if verselike:
             verseTypes.add(nType)
+
+        isBig = info.get("isBig", False)
+        if isBig:
+            bigTypes.add(nType)
 
         if "level" in info or "flow" in info or "wrap" in info or "stretch" in info:
             givenLevels[nType] = {
@@ -807,6 +814,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
     specs.update(
         baseTypes=baseTypes if baseTypes else {slotType},
+        bigTypes=bigTypes,
         childType=childType,
         condenseType=condenseType,
         descendantType=descendantType,

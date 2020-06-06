@@ -103,10 +103,6 @@ withTypes: boolean, optional `False`
 
 baseTypes: string | iterable, optional `None`
     Node types at the bottom of pretty displays.
-    They are also the node type that receive the primary highlights
-    (colored backgrounds), whereas the highlights for other node types
-    are colored boxes.
-
     The default is app dependent, usually the slot type of the corpus.
 
 colorMap: dict, optional `None`
@@ -207,6 +203,10 @@ highlights: dict | set, optional `{}`
     qualifies.
 
     If you map a node to the empty string, it will get the default highlight color.
+
+    Highlights in plain display will be done, also for nodes deeply buried in the top node.
+    Slots are higlighted by coloring the background,
+    all other nodes by colored frames around their material.
 
     !!! note "one big highlights dictionary"
         It is OK to first compose a big highlights dictionary

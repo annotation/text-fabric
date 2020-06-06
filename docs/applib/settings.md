@@ -510,14 +510,6 @@ Default:
 
 If present and `true`: this type acts as the base type.
 
-plain display
-:   if the node needs to be highlighted, it gets a coloured background.
-    Nodes of other types receive their highlights as coloured borders
-    around their boxes.
-pretty
-:   children of these nodes are not expanded further, but displayed in
-    plain mode (with highlighting).
-
 Default:
 :   boolean `true` for the slot type, `false` for other types.
 
@@ -648,6 +640,15 @@ See [uruk](https://github.com/annotation/app-uruk/blob/master/code/app.py).
 
 Default
 :   boolean `null`
+
+---
+
+### `isBig`
+
+If `true`, then this type counts as a big type in plain displays.
+
+Default
+:   boolean `false`
 
 ---
 

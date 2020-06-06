@@ -257,7 +257,7 @@ As a consequence, if you have not upgraded Text-Fabric, it will fail.**
     *   Pretty displays can be tamed by cutting of the unfolding of structure at some level
         and replacing it by plain displays (`baseTypes` display option).
     *   Highlights in plain display will be done, also for nodes deeply buried in the top node.
-        This is also steered by `baseTypes`: a node of type in `baseTypes` will get full 
+        This is determined by `baseTypes`: a node of type in `baseTypes` will get full 
         highlighting, all other nodes will get highlighting by boxes around the material.
 *   Core API improvement:
     The `Locality` (`L`) functions `d()`, `u()`, `l()`, `r()` take an optional
